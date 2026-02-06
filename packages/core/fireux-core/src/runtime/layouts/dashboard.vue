@@ -134,7 +134,7 @@ const sortNavItems = (items: NavItem[]) =>
 
 const TOP_PRIORITY = [
   { key: 'dashboard-developer', to: '/dashboard/developer' },
-  { key: 'dashboard-app', to: '/dashboard/app' },
+  { key: 'admin', to: '/admin' },
   { key: 'dashboard-home', to: '/dashboard' },
   { key: 'dashboard-user-profile', to: '/dashboard/user-profile' },
 ]
@@ -150,7 +150,7 @@ const topPosition = (item: NavItem) =>
   )
 
 const canShowNavItem = (item: NavItem) => {
-  if (item.key === 'dashboard-app' || item.to === '/dashboard/app') {
+  if (item.key === 'admin' || item.to === '/admin') {
     return isAdmin.value
   }
 

@@ -3,7 +3,6 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <BlogCTA />
       <BlogCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>

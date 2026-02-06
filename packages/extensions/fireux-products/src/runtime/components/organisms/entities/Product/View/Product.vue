@@ -1,94 +1,117 @@
 <template>
-  <UCard>
-    <template #header v-if="variant === 'cell'">
-      <h3 class="cell-title">
-        {{ display(product?.name) || 'Unnamed Product' }}
-      </h3>
-    </template>
-
-    <template #default>
-      <div v-if="variant === 'cell'" class="product-cell">
-        <div v-if="product?.main_image" class="cell-thumb">
-          <img :src="product.main_image" alt="Product image" />
+  <div>
+    <div v-if="variant === 'cell'" class="product-cell">
+      <div v-if="product?.main_image" class="cell-thumb">
+        <img :src="product.main_image" alt="Product image" />
+      </div>
+      <div class="cell-text">
+        <h3 class="cell-title">
+          {{ display(product?.name) || 'Unnamed Product' }}
+        </h3>
+        <p class="cell-description">{{ display(product?.description) }}</p>
+        <p v-if="product?.default_price" class="cell-price">
+          {{ formatDefaultPrice(product) }}
+        </p>
+        <div class="purchace-buttons">
+          <UButton :disabled="props.mode === 'preview'" color="primary">Buy Now</UButton>
+          <UButton :disabled="props.mode === 'preview'" variant="outline">Add to Basket</UButton>
         </div>
-        <div class="cell-text">
-          <p class="cell-description">{{ display(product?.description) }}</p>
-          <p v-if="product?.default_price" class="cell-price">
-            {{ formatDefaultPrice(product) }}
-          </p>
+      </div>
+    </div>
+
+    <div v-else-if="variant === 'customer'">
+      <p>
+        <strong>{{ display(product?.name) }}</strong>
+      </p>
+      <p>{{ display(product?.description) }}</p>
+      <p v-if="product?.default_price">{{ formatDefaultPrice(product) }}</p>
+      <div class="purchace-buttons">
+        <UButton :disabled="props.mode === 'preview'" color="primary">Buy Now</UButton>
+        <UButton :disabled="props.mode === 'preview'" variant="outline">Add to Basket</UButton>
+      </div>
+    </div>
+
+    <div v-else-if="variant === 'info'">
+      <ul>
+        <li v-if="product?.id"><strong>ID:</strong> {{ product.id }}</li>
+        <li><strong>Name:</strong> {{ display(product?.name) }}</li>
+        <li><strong>Slug:</strong> {{ display(product?.slug) }}</li>
+        <li><strong>Created:</strong> {{ display(product?.created_at) }}</li>
+        <li><strong>Updated:</strong> {{ display(product?.updated_at) }}</li>
+        <li><strong>Tenant:</strong> {{ display(product?.appId) }}</li>
+        <li><strong>Creator:</strong> {{ display(product?.creator_id) }}</li>
+        <li>
+          <strong>Image Supplied:</strong>
+          {{ product?.main_image ? 'Yes' : 'No' }}
+        </li>
+        <li><strong>Type:</strong> {{ display(product?.product_type) }}</li>
+        <li>
+          <strong>Stock:</strong>
+          <span :style="{ color: product?.stock == null ? 'red' : 'inherit' }">{{
+            product?.stock ?? '!'
+          }}</span>
+        </li>
+        <li>
+          <strong>Track Stock:</strong>
+          {{ display(product?.track_stock ? 'Yes' : 'No') }}
+        </li>
+        <li><strong>Content:</strong> {{ display(product?.content) }}</li>
+        <li>
+          <strong>Default Price:</strong>
+          <span
+            :style="{
+              color:
+                product?.default_price?.unit_amount == null ? 'red' : 'inherit',
+            }"
+            >{{ product?.default_price?.unit_amount ?? '!' }}</span
+          >
+        </li>
+      </ul>
+    </div>
+
+    <div v-else-if="variant === 'page'">
+        <div class="product-page">
+          <header class="product-hero">
+            <div>
+              <p class="product-kicker">{{ display(product?.tagline) }}</p>
+              <h1 class="product-title">{{ display(product?.name) }}</h1>
+              <p class="product-summary">{{ display(product?.description) }}</p>
+            </div>
+            <div class="product-price">
+              <span class="price-label">From</span>
+              <span class="price-value">{{ formatDefaultPrice(product) || 'Custom' }}</span>
+              <span class="price-note">Hosted and maintained</span>
+            </div>
+          </header>
+
+          <section class="product-section">
+            <h2>Overview</h2>
+            <div v-html="product?.content" v-if="product?.content" />
+            <p v-else class="missing">!</p>
+          </section>
+
+          <ProductViewOnboarding :product="product" />
+
+          <section class="product-section">
+            <h2>Questions</h2>
+            <div class="qa">
+              <p class="qa-q">{{ display(product?.Q) }}</p>
+              <p class="qa-a">{{ display(product?.A) }}</p>
+            </div>
+          </section>
+
           <div class="purchace-buttons">
-            <UButton :disabled="props.mode === 'preview'" color="primary">Buy Now</UButton>
-            <UButton :disabled="props.mode === 'preview'" variant="outline">Add to Basket</UButton>
+            <UButton :disabled="props.mode === 'preview'" color="primary">Start onboarding</UButton>
+            <UButton :disabled="props.mode === 'preview'" variant="outline">Book a call</UButton>
           </div>
         </div>
       </div>
-
-      <div v-else-if="variant === 'customer'">
-        <p>
-          <strong>{{ display(product?.name) }}</strong>
-        </p>
-        <p>{{ display(product?.description) }}</p>
-        <p v-if="product?.default_price">{{ formatDefaultPrice(product) }}</p>
-        <div class="purchace-buttons">
-          <UButton :disabled="props.mode === 'preview'" color="primary">Buy Now</UButton>
-          <UButton :disabled="props.mode === 'preview'" variant="outline">Add to Basket</UButton>
-        </div>
-      </div>
-
-      <div v-else-if="variant === 'info'">
-        <ul>
-          <li v-if="product?.id"><strong>ID:</strong> {{ product.id }}</li>
-          <li><strong>Name:</strong> {{ display(product?.name) }}</li>
-          <li><strong>Slug:</strong> {{ display(product?.slug) }}</li>
-          <li><strong>Created:</strong> {{ display(product?.created_at) }}</li>
-          <li><strong>Updated:</strong> {{ display(product?.updated_at) }}</li>
-          <li><strong>Tenant:</strong> {{ display(product?.appId) }}</li>
-          <li><strong>Creator:</strong> {{ display(product?.creator_id) }}</li>
-          <li>
-            <strong>Image Supplied:</strong>
-            {{ product?.main_image ? 'Yes' : 'No' }}
-          </li>
-          <li><strong>Type:</strong> {{ display(product?.product_type) }}</li>
-          <li>
-            <strong>Stock:</strong>
-            <span :style="{ color: product?.stock == null ? 'red' : 'inherit' }">{{
-              product?.stock ?? '!'
-            }}</span>
-          </li>
-          <li>
-            <strong>Track Stock:</strong>
-            {{ display(product?.track_stock ? 'Yes' : 'No') }}
-          </li>
-          <li><strong>Content:</strong> {{ display(product?.content) }}</li>
-          <li>
-            <strong>Default Price:</strong>
-            <span
-              :style="{
-                color:
-                  product?.default_price?.unit_amount == null ? 'red' : 'inherit',
-              }"
-              >{{ product?.default_price?.unit_amount ?? '!' }}</span
-            >
-          </li>
-        </ul>
-      </div>
-
-      <div v-else-if="variant === 'page'">
-        <h1>{{ display(product?.name) }}</h1>
-        <p>{{ display(product?.description) }}</p>
-        <div v-html="product?.content" v-if="product?.content" />
-        <p v-else class="missing">!</p>
-        <div class="purchace-buttons">
-          <UButton :disabled="props.mode === 'preview'" color="primary">Buy Now</UButton>
-          <UButton :disabled="props.mode === 'preview'" variant="outline">Add to Basket</UButton>
-        </div>
-      </div>
-    </template>
-  </UCard>
+    </div>
 </template>
 
 <script setup lang="ts">
 import type { FirebaseProduct } from '../../../../../models/objects/product.model'
+import ProductViewOnboarding from './Onboarding.vue'
 
 const props = defineProps<{
   product?: Partial<FirebaseProduct>
@@ -175,4 +198,87 @@ function formatDefaultPrice(product?: Partial<FirebaseProduct>): string {
   display: flex;
   gap: 0.75rem;
 }
+
+.product-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.product-hero {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--ui-border);
+}
+
+.product-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.product-title {
+  font-size: 2rem;
+  margin: 0.25rem 0 0.5rem;
+}
+
+.product-summary {
+  max-width: 36rem;
+  color: #4b5563;
+}
+
+.product-price {
+  min-width: 14rem;
+  padding: 1rem;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-md);
+  background: var(--ui-bg-elevated);
+  text-align: left;
+}
+
+.price-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.price-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0.25rem 0;
+}
+
+.price-note {
+  display: block;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.product-section h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1.1rem;
+}
+
+.qa {
+  padding: 1rem;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--radius-md);
+  background: var(--ui-bg);
+}
+
+.qa-q {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.qa-a {
+  color: #4b5563;
+}
+
 </style>

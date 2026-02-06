@@ -13,12 +13,15 @@ function computeReadingTime(content: string): string {
   return `${minutes} min`
 }
 
-async function getAuthor(): Promise<Author> {
-  const { useUser } = await import(
-    'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
-  )
-  const { currentUser } = useUser()
-  const user = currentUser.value
+function getAuthor(
+  user?: {
+    id?: string
+    display_name?: string
+    handle?: string
+    avatar?: string
+    email?: string
+  } | null
+): Author {
   return {
     id: user?.id || '',
     display_name: user?.display_name || user?.email || '',

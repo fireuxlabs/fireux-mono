@@ -1,5 +1,10 @@
 # fireux-app
 
+
+Editing Rules:
+- This is a living document; rewrite for clarity, not chronology.
+- Anything below `#end` is scratch and will be deleted on the next update.
+
 Status: **Active**
 Updated: 2026-02-05
 
@@ -30,3 +35,5 @@ Configured modules (current):
 
 - Lean, first-party FireUX app shell
 - Used for FireUX-branded surfaces and module-driven pages
+
+#end

@@ -25,11 +25,6 @@
       :product="previewProduct"
     />
   </div>
-  <pre>product  {{ product }}</pre>
-  <pre>prices  {{ prices }}</pre>
-  <pre>defaultPrice  {{ defaultPrice }}</pre>
-  <pre>mainImageData length: {{ mainImageData?.length || 0 }}</pre>
-  <pre>previewProduct {{ previewProduct }}</pre>
 </template>
 
 <script setup lang="ts">

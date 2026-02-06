@@ -12,7 +12,7 @@ Blog/posts module for FireUX apps.
 - **Runtime pages**:
   - `/blog` (index)
   - `/blog/:slug` (public post page)
-  - `/blog/create` (admin create surface)
+  - `/admin/blogs/create` (admin create surface)
   - `/dev/fireux-blogs` (dev surface)
 - **Composables**: `useBlogPermissions` (`src/runtime/composables/useBlogPermissions.ts`)
 - **Editor/runtime deps**: TipTap + DOMPurify

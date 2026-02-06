@@ -1,5 +1,10 @@
 # FireUX – Cleanbox Ecosystem
 
+
+Editing Rules:
+- This is a living document; rewrite for clarity, not chronology.
+- Anything below `#end` is scratch and will be deleted on the next update.
+
 Status: **Active**
 Updated: 2026-02-05
 
@@ -60,3 +65,5 @@ Each app is single-company focused and uses FireUX primitives.
 - Used to validate pricing and scope
 - Actively influencing FireUX decisions
 - `cleanbox.app` is currently landing-first; many operational routes referenced by CTAs are not yet scaffolded.
+
+#end

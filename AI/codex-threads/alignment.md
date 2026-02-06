@@ -1,4 +1,9 @@
-# Alignment Notes — use*Interface (2026-02-05)
+# Alignment Notes — use*Interface (2026-02-06)
+
+
+Editing Rules:
+- This is a living document; rewrite for clarity, not chronology.
+- Anything below `#end` is scratch and will be deleted on the next update.
 
 Scope: `use*Interface` siblings across core + extensions, with emphasis on `useProductInterface`. This thread is about products; other notes are to align expectations and flag unwanted fallbacks.
 
@@ -89,6 +94,12 @@ Internal rule:
 - Decide if Jobs subtitle should fall back to `workplace_label` or stay empty (current is empty).
 - Keep Product interface minimal and explicit.
 
-check all drift managers are working the same.
+## Drift Rules
+- Drift managers should behave consistently across entities.
+- Dev drift should flag only props that fall outside the canonical shape.
 
-reall dev drift should only flag props that have fallen outside of the shape. so we can simplify the drift system by along way
+## Watchlist
+- Product interface + product create/validation paths change frequently; keep `useProductInterface` lean and deterministic.
+- Entity collection managers changed recently; re-validate no new fallback chains were added.
+
+#end

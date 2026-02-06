@@ -1,5 +1,10 @@
 # cleanbox-app
 
+
+Editing Rules:
+- This is a living document; rewrite for clarity, not chronology.
+- Anything below `#end` is scratch and will be deleted on the next update.
+
 Status: **Active**
 Updated: 2026-02-05
 
@@ -58,3 +63,5 @@ No marketplace logic. No job matching.
 - Active
 - Base for Richie’s app
 - Evolving slowly and deliberately
+
+#end

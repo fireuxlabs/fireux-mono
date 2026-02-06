@@ -1,5 +1,10 @@
 # FireUX — Extensions Scan (Codex Thread)
 
+
+Editing Rules:
+- This is a living document; rewrite for clarity, not chronology.
+- Anything below `#end` is scratch and will be deleted on the next update.
+
 Status: **Active**
 Version: **v1**
 Updated: 2026-02-05
@@ -194,14 +199,9 @@ Impact:
 
 ---
 
-## 6. Updates (2026-02-05)
+## 6. Active Change Areas (Keep Eyes On)
 
-Changes applied for canonical alignment and future consistency:
-- **Canonical wiring helper:** added `configureFireuxModule(...)` in `fireux-core` and migrated all extension `module.ts` to use it (runtime → plugins → composables → components → layouts → models → pages → server).
-- **No runtime aliases:** removed `#fireux-*` runtime alias usage and switched internal imports to `fireux-<ext>/runtime/*`.
-- **Core module order standardized:** core module now follows the same order and uses typed `configurePages(resolver, nuxt)`.
-- **`fireux-drop` config parity:** added `src/config/module/*-config.ts` files for `fireux-drop` to match other extensions.
-- **Glob-based page filtering:** added `filterPagesByGlob(...)` to core pages-config and used it in misebox to avoid manual file checks.
+- Products module wiring + defaults are actively evolving; re-check module template decisions before standardizing.
+- Extension workflow guidance is evolving in `docs/copilot-documentation/copilot-instructions/extensions.md`; treat that as the baseline when aligning conventions.
 
-Still unique / follow-up:
-- Ecosystem packages (`fireux-cleanbox`, `fireux-misebox`, `fireux-fireux`, `fireux-ecosystem-controller`) still have custom config layout + alias usage; decide if they should follow the same canonical module wiring.
+#end

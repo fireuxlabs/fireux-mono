@@ -47,11 +47,11 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
     }
 
     // 🔎 Confirm it actually landed where we expect
-    const pub = (nuxt.options.runtimeConfig as any)?.public
+    const publicRuntime = (nuxt.options.runtimeConfig as any)?.public
     if (debug) {
       console.log(
         '[fireux-fireux/module] after setRuntimeFirebaseEcosystem public.firebaseEcosystem',
-        pub?.firebaseEcosystem
+        publicRuntime?.firebaseEcosystem
       )
     }
 

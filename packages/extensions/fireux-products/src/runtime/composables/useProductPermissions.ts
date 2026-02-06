@@ -11,9 +11,6 @@ export function useProductPermissions() {
     return isAdmin.value === true || appUser.value?.canManageProducts === true
   })
 
-  // Alias to mirror blog permissions shape
-  const canPublishProduct = computed(() => canManageProducts.value)
-
   // Expose pending to match the blog permissions chain
-  return { canManageProducts, canPublishProduct, pending }
+  return { canManageProducts, pending }
 }

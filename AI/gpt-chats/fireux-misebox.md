@@ -1,5 +1,10 @@
 # FireUX – Misebox Ecosystem
 
+
+Editing Rules:
+- This is a living document; rewrite for clarity, not chronology.
+- Anything below `#end` is scratch and will be deleted on the next update.
+
 Status: **Active**
 Updated: 2026-02-05
 
@@ -58,3 +63,5 @@ Apps share Core and ecosystem rules. Global apps carry modules; tenant apps stay
 - Jobs: evolving
 - UI: Nuxt UI + FireUX design system
 - Focus: usable pipelines over completeness
+
+#end

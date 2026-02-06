@@ -1,5 +1,10 @@
 # FireUX – FireUX Ecosystem
 
+
+Editing Rules:
+- This is a living document; rewrite for clarity, not chronology.
+- Anything below `#end` is scratch and will be deleted on the next update.
+
 Status: **Active**
 Updated: 2026-02-05
 
@@ -34,3 +39,5 @@ Current apps (from `projects/fireux/`):
 
 - Ecosystem package exists and is stable
 - Global app config is lean (products + blogs)
+
+#end

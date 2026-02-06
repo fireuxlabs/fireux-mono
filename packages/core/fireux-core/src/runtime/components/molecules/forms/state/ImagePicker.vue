@@ -1,6 +1,6 @@
 <template>
   <div class="picker">
-    <label :for="id" class="picker-label">{{ label }}</label>
+    <label v-if="label?.trim()" :for="id" class="picker-label">{{ label }}</label>
 
     <!-- Hidden file input -->
     <input

@@ -1,5 +1,11 @@
 // ~/server/api/stripe/create-product.post.ts
-import { defineEventHandler, readBody, createError, type H3Event } from 'h3'
+import {
+  defineEventHandler,
+  readBody,
+  createError,
+  type H3Event,
+  type H3Error,
+} from 'h3'
 import { createRequire } from 'node:module'
 import { STRIPE_API_VERSION } from '../../stripe/version'
 
@@ -116,6 +122,21 @@ export default defineEventHandler(async (event: H3Event) => {
     }
   } catch (error) {
     console.error('❌ [create-product] Error:', error)
+
+    // Preserve explicit h3 status codes (e.g. 501 when Stripe is not configured).
+    const maybeH3 = error as Partial<H3Error>
+    if (
+      typeof maybeH3?.statusCode === 'number' &&
+      maybeH3.statusCode >= 400 &&
+      maybeH3.statusCode < 600
+    ) {
+      throw createError({
+        statusCode: maybeH3.statusCode,
+        statusMessage:
+          maybeH3.statusMessage ||
+          (error instanceof Error ? error.message : 'Request failed'),
+      })
+    }
 
     const errorMessage =
       error instanceof Error ? error.message : 'Unknown error occurred'

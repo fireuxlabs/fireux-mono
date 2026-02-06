@@ -3,10 +3,9 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
 
-    <UPageBody class="pagebody">
-      <ProductCTA />
+  <UPageBody class="pagebody">
       <ProductCollectionManager :collection="collection" />
-    </UPageBody>
+  </UPageBody>
   </UPage>
 </template>
 

@@ -13,7 +13,7 @@
     </template>
 
     <template #links>
-      <UButton color="primary" size="lg" to="/products/create">
+      <UButton color="primary" size="lg" to="/admin/products/create">
         Create product
       </UButton>
     </template>
@@ -21,9 +21,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useProductPermissions } from '../../../../composables/useProductPermissions';
+import { computed } from 'vue'
+import { useProductPermissions } from '../../../../composables/useProductPermissions'
 
-const { canPublishProduct } = useProductPermissions()
-const showCTA = computed(() => canPublishProduct.value)
+const { canManageProducts } = useProductPermissions()
+const showCTA = computed(() => canManageProducts.value)
 </script>

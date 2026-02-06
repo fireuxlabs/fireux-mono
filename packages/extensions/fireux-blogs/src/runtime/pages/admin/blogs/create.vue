@@ -1,4 +1,4 @@
-<!-- FILE: packages/extensions/fireux-blogs/src/runtime/pages/blog/create.vue -->
+<!-- FILE: packages/extensions/fireux-blogs/src/runtime/pages/admin/blogs/create.vue -->
 <template>
   <UPage>
     <UPageHeader
@@ -35,25 +35,18 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useHead, useRouter } from '#imports'
-import { useBlogPermissions } from '../../composables/useBlogPermissions'
+import { useBlogPermissions } from '../../../composables/useBlogPermissions'
 // Nuxt UI provides useToast via auto-import in app context; fall back if unavailable
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
-import { useBlogDraftState } from '../../composables/fireux/firestore/blogs/post/state/useBlogDraftState'
-import { useBlogCreateSubmit } from '../../composables/fireux/firestore/blogs/post/state/useBlogCreateSubmit'
+import { useBlogDraftState } from '../../../composables/fireux/firestore/blogs/post/state/useBlogDraftState'
+import { useBlogCreateSubmit } from '../../../composables/fireux/firestore/blogs/post/state/useBlogCreateSubmit'
 
 definePageMeta({
-  layout: 'default',
-  nav: {
-    key: 'blog-create',
-    label: 'Create blog post',
-    icon: 'i-lucide-plus',
-    order: 31,
-    desktop: false,
-    mobile: false,
-    layouts: ['default'],
-  },
+  layout: 'dashboard',
   title: 'Create Blog Post',
+  requiresAuth: true,
+  roles: ['admin'],
 })
 
 const { canPublishBlog } = useBlogPermissions()

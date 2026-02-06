@@ -1,5 +1,10 @@
 # fireux-tenant
 
+
+Editing Rules:
+- This is a living document; rewrite for clarity, not chronology.
+- Anything below `#end` is scratch and will be deleted on the next update.
+
 Status: **Planned**
 Version: **v1**
 Updated: 2026-02-05
@@ -26,3 +31,5 @@ Configured modules (current):
 
 - Safe place to test new modules, UI surfaces, and flows without impacting `fireux-app`.
 - Keep lean; only enable modules when a specific test requires them.
+
+#end

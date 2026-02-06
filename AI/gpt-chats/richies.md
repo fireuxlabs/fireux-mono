@@ -1,5 +1,10 @@
 # Richie’s Reinigung
 
+
+Editing Rules:
+- This is a living document; rewrite for clarity, not chronology.
+- Anything below `#end` is scratch and will be deleted on the next update.
+
 Status: **Active**
 Updated: 2026-02-05
 
@@ -55,3 +60,5 @@ Configured modules (current):
 - Active development
 - Continuous reference app
 - One of the most important apps in the system
+
+#end

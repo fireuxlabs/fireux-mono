@@ -7,7 +7,7 @@
     variant="naked"
   >
     <template #links>
-      <UButton color="primary" size="lg" to="/blog/create">
+      <UButton color="primary" size="lg" to="/admin/blogs/create">
         Draft a post
       </UButton>
     </template>

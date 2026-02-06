@@ -12,7 +12,7 @@ Products/catalog module for FireUX apps.
 - **Runtime pages**:
   - `/products` (index)
   - `/products/:slug` (public product page)
-  - `/products/create` (admin create surface)
+  - `/admin/products/create` (admin create surface)
   - `/dev/fireux-products` (dev model + drift tooling)
 - **UI components**: globally registered as `Product*` (cards, collection, create/write/preview, view)
 - **Composables**: fetch/create/update/delete product docs + prices helpers

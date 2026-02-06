@@ -6,13 +6,39 @@ import type {
 	StripePriceInput,
 } from '../../../../../../models/objects/product.model'
 
+const starterMonthlyPrice: Partial<Price> = {
+	unit_amount: 2000,
+	currency: 'CHF',
+	type: 'recurring',
+	interval: 'month',
+	interval_count: 1,
+	billing_scheme: 'per_unit',
+	metadata: { kind: 'subscription' },
+}
+
 export function useCreatePricesState() {
 	const prices = useStorage<Partial<Price>[]>('createProductPrices', [
-		{
-			unit_amount: 0,
-			currency: 'CHF',
-		},
+		{ ...starterMonthlyPrice },
 	])
+
+	const applyPriceDefaults = () => {
+		const first = prices.value?.[0]
+		if (!first) {
+			prices.value = [{ ...starterMonthlyPrice }]
+			return
+		}
+
+		const isLegacyEmpty =
+			Number(first.unit_amount ?? 0) <= 0 &&
+			!String(first.type || '').trim() &&
+			!String(first.interval || '').trim()
+
+		if (!isLegacyEmpty) return
+
+		prices.value = [{ ...starterMonthlyPrice }]
+	}
+
+	applyPriceDefaults()
 
 	function addPrice() {
 		prices.value.push({
@@ -27,10 +53,7 @@ export function useCreatePricesState() {
 
 	function resetPrices() {
 		prices.value = [
-			{
-				unit_amount: 0,
-				currency: 'CHF',
-			},
+			{ ...starterMonthlyPrice },
 		]
 	}
 

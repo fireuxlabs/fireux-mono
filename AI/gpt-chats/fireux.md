@@ -1,5 +1,10 @@
 # FireUX Project — AI Working Contract
 
+
+Editing Rules:
+- This is a living document; rewrite for clarity, not chronology.
+- Anything below `#end` is scratch and will be deleted on the next update.
+
 Status: **Active**
 Version: **v2**
 Updated: 2026-02-05
@@ -259,3 +264,5 @@ It should be questioned, reduced, or removed.
 
 FireUX School still exists — we are not losing knowledge.
 We are protecting execution.
+
+#end

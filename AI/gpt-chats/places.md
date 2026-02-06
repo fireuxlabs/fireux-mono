@@ -1,5 +1,10 @@
 # FireUX Places — Canonical Package Contract
 
+
+Editing Rules:
+- This is a living document; rewrite for clarity, not chronology.
+- Anything below `#end` is scratch and will be deleted on the next update.
+
 Status: **Stable**
 Version: **v2**
 Updated: 2026-02-05
@@ -171,3 +176,5 @@ Places must remain:
 - Dependency-safe
 
 If Places become exciting, something has gone wrong.
+
+#end

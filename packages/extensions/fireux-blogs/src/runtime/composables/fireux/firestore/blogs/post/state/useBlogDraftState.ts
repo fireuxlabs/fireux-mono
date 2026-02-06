@@ -1,6 +1,7 @@
 import { useStorage } from '@vueuse/core'
 import { onMounted } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useBlogUtils } from '../../../objects/blog/utils/useBlogUtils'
 import type { BlogPostEntry } from '../../../../../../models/objects/blogPost.model'
 
@@ -37,6 +38,7 @@ const defaultBlogPost: BlogPostEntry = {
  */
 export function useBlogDraftState() {
   const { appId: tenantId } = useFireUXConfig()
+  const { currentUser } = useUser()
   const { getAuthor, getDefaultImages } = useBlogUtils()
 
   const blogPost = useStorage<BlogPostEntry>('createBlogPost', defaultBlogPost)
@@ -46,9 +48,9 @@ export function useBlogDraftState() {
   )
   const socialImageData = useStorage<string>('createBlogSocialImageData', '')
 
-  onMounted(async () => {
+  onMounted(() => {
     if (!blogPost.value.author.id) {
-      blogPost.value.author = await getAuthor()
+      blogPost.value.author = getAuthor(currentUser.value)
     }
 
     const defaults = getDefaultImages()

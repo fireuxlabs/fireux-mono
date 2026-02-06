@@ -1,5 +1,10 @@
 # FireUX — Products & Revenue (Codex Thread)
 
+
+Editing Rules:
+- This is a living document; rewrite for clarity, not chronology.
+- Anything below `#end` is scratch and will be deleted on the next update.
+
 Status: **Active**
 Version: **v1**
 Updated: 2026-02-05
@@ -188,15 +193,15 @@ Repo:
 Purpose:
 - Safe sandbox to test modules + tenant wiring without polluting real ecosystems
 
-Planned companion context file:
-- `AI/gpt-chats/fireux-tennat.md` (planned; filename spelling TBD)
+Companion context file:
+- `AI/gpt-chats/fireux-tenant.md`
 
 ### 3.2 Ecosystem baseline (Canon)
 
 Locked decisions:
 - Core modules are internal-only plumbing (never marketed): `fireux-core`, `fireux-ecosystem-controller`, `fireux-nuxtfire`.
 - Ecosystems are mandatory: every app resolves `fireux-${ecosystem}` (no ecosystem-less mode).
-- `fireux-fireux` is the neutral default ecosystem. Its standard domain baseline is:
+- `fireux-fireux` is the neutral default ecosystem. Baseline modules:
   - `fireux-products`
   - `fireux-blogs`
 - Not standard in `fireux-fireux` (opt-in per ecosystem/app):
@@ -204,8 +209,9 @@ Locked decisions:
   - `fireux-companies` (opinionated; promote to baseline only when mature)
   - Domain-heavy extensions (`fireux-jobs`, `fireux-kitchens`, `fireux-drop`, etc.)
 
-Implementation note (current repo reality):
-- Ecosystem defaults now set `fireux.products` + `fireux.blogs` in runtime config (fireux-fireux/cleanbox/misebox).
+Repo reality:
+- Ecosystem defaults set `fireux.products` + `fireux.blogs` in runtime config (fireux-fireux/cleanbox/misebox).
+- Product defaults + module wiring are active change areas; keep the sellable scope aligned with what’s live.
 - Apps can still override via `modules: [[ 'fireux-products', { ... } ], 'fireux-blogs']` in `nuxt.config.ts`.
 
 ---
@@ -518,9 +524,32 @@ It is:
 
 ⸻
 
+21. Client Fulfillment Flow (App as Product)
+
+This product is fulfilled by shipping a live app. Payment can happen before or after delivery.
+
+Client provides:
+	•	Brand assets (logo, colors, optional hero image)
+	•	Domain (or approve `client1.web.app` for launch)
+	•	Basic copy (name, tagline, short description, CTA)
+
+FireUX delivers:
+	•	App created in `fireux-fireux`
+	•	Deployed to Firebase Hosting (`client1.web.app`)
+	•	Front page includes “Buy now” / “Request this app” button until paid
+	•	After payment: replace CTA with real product info and remove the button
+
+Optional later:
+	•	Product catalog entries can be added after launch
+	• Custom domain can be attached after approval
+
+⸻
+
 If you want, next logical Codex threads would be:
 	•	“First Paid Offer: Richie’s (Exact Scope + Price)”
 	•	“Cleanbox Tenant Onboarding Checklist (1-hour rule)”
 	•	“Pricing & Grandfathering Policy (Internal)”
 
 But as a products & revenue debrief, this is coherent, defensible, and executable.
+
+#end

@@ -1,6 +1,6 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/pages/dashboard/app.vue -->
+<!-- FILE: packages/core/fireux-core/src/runtime/pages/admin.vue -->
 <template>
-  <UDashboardPanel id="dashboard-app">
+  <UDashboardPanel id="admin">
     <template #header>
       <LayoutsDashboardNavbar title="Admin" />
     </template>
@@ -48,6 +48,40 @@
         <!-- Main panels -->
         <div v-else class="panels-masonry">
           <div class="panels-masonry__item mb-10">
+            <div class="grid gap-4 md:grid-cols-2">
+              <UPageCard
+                title="Products"
+                description="Create and manage your product catalog."
+                variant="subtle"
+              >
+                <div class="flex flex-wrap gap-2">
+                  <UButton to="/admin/products" color="primary" class="w-fit">
+                    View products
+                  </UButton>
+                  <UButton to="/admin/products/create" variant="soft" class="w-fit">
+                    Create product
+                  </UButton>
+                </div>
+              </UPageCard>
+
+              <UPageCard
+                title="Blog"
+                description="Publish updates and announcements."
+                variant="subtle"
+              >
+                <div class="flex flex-wrap gap-2">
+                  <UButton to="/admin/blogs" color="primary" class="w-fit">
+                    View posts
+                  </UButton>
+                  <UButton to="/admin/blogs/create" variant="soft" class="w-fit">
+                    Create post
+                  </UButton>
+                </div>
+              </UPageCard>
+            </div>
+          </div>
+
+          <div class="panels-masonry__item mb-10">
             <OrganismsAppCardsProfile
               v-if="appCard"
               v-bind="appCard"
@@ -64,8 +98,8 @@
 
 <script setup lang="ts">
 import { computed, definePageMeta } from '#imports'
-import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
-import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
+import { useApp } from '../composables/fireux/firestore/core/app/useApp'
+import { useUser } from '../composables/fireux/firestore/core/user/useUser'
 
 const { app, pending, card: appToCard } = useApp()
 const { user, card: userToCard } = useUser()
@@ -77,7 +111,7 @@ const userCard = computed(() => userToCard(user.value))
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'dashboard-app',
+    key: 'admin',
     label: 'Admin',
     icon: 'i-lucide-badge-check',
     order: 10,

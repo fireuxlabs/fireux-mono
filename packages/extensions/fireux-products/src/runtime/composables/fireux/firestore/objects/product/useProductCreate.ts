@@ -49,22 +49,67 @@ export function useProductCreate() {
     try {
       const fireux = useFireUXConfig()
       const payload = getProductPayload()
-      const slug = payload.slug || payload.id
+      const requestedSlug = payload.slug || payload.id
 
-      if (!slug) {
+      if (!requestedSlug) {
         throw new Error('Product slug is required')
       }
 
       const collectionPath = getCollectionPath('products')
-      const ref = doc(db, collectionPath, slug)
-      const snap = await getDoc(ref)
-      if (snap.exists()) {
-        return { success: false, id: slug, error: 'Product already exists' }
+      const resolveAvailableSlug = async (baseSlug: string) => {
+        let attempt = 0
+        let candidate = baseSlug
+        while (attempt < 100) {
+          const checkRef = doc(db, collectionPath, candidate)
+          const checkSnap = await getDoc(checkRef)
+          if (!checkSnap.exists()) return candidate
+          attempt += 1
+          candidate = `${baseSlug}-${attempt + 1}`
+        }
+        throw new Error('Unable to allocate unique slug')
       }
+
+      const slug = await resolveAvailableSlug(requestedSlug)
 
       const priceInputs = pricesPayload.value
       if (!priceInputs.length) {
         throw new Error('At least one price is required')
+      }
+
+      const makeLocalIds = () => {
+        const productId = `local_${slug}`
+        const priceIds = priceInputs.map((_, index) => `local_${slug}_price_${index + 1}`)
+        return { productId, priceIds }
+      }
+
+      const canFallbackToLocal = (message: string) => {
+        const lower = message.toLowerCase()
+        return (
+          import.meta.dev &&
+          (lower.includes('stripe not configured') ||
+            lower.includes('missing stripe_secret_key') ||
+            lower.includes('stripe sdk not installed'))
+        )
+      }
+
+      const normalizePrices = (priceIds: string[]): Price[] =>
+        priceInputs.map((price, index) => ({
+          id: priceIds[index] || '',
+          currency: String(price.currency || 'usd').toLowerCase(),
+          unit_amount: Number(price.unit_amount ?? 0),
+          type: price.type,
+          interval: price.interval,
+          interval_count: price.interval_count,
+          billing_scheme: price.billing_scheme,
+          metadata: price.metadata ?? {},
+        }))
+
+      const chooseDefaultPrice = (normalizedPrices: Price[]) => {
+        const recurringMonthlyIndex = normalizedPrices.findIndex(
+          (price) => price.type === 'recurring' && price.interval === 'month'
+        )
+        const defaultIndex = recurringMonthlyIndex >= 0 ? recurringMonthlyIndex : 0
+        return normalizedPrices[defaultIndex]
       }
 
       // 1) Create the Stripe product + prices (source of truth for IDs)
@@ -86,6 +131,10 @@ export function useProductCreate() {
         }),
       })
 
+      let stripeProductId = ''
+      let stripePriceIds: string[] = []
+      let stripeConfigured = true
+
       if (!stripeResponse.ok) {
         let detail = stripeResponse.statusText || 'Stripe request failed'
         try {
@@ -94,40 +143,33 @@ export function useProductCreate() {
         } catch {
           // ignore
         }
-        throw new Error(detail)
+        if (!canFallbackToLocal(detail)) {
+          throw new Error(detail)
+        }
+
+        stripeConfigured = false
+        const local = makeLocalIds()
+        stripeProductId = local.productId
+        stripePriceIds = local.priceIds
+      } else {
+        const stripeResult = (await stripeResponse.json()) as {
+          success?: boolean
+          id?: string
+          stripe_prices?: string[]
+        }
+
+        stripeProductId = String(stripeResult?.id || '').trim()
+        stripePriceIds = Array.isArray(stripeResult?.stripe_prices)
+          ? stripeResult.stripe_prices.map((id) => String(id || '').trim())
+          : []
+
+        if (!stripeProductId) {
+          throw new Error('Stripe product creation failed (missing id)')
+        }
       }
 
-      const stripeResult = (await stripeResponse.json()) as {
-        success?: boolean
-        id?: string
-        stripe_prices?: string[]
-      }
-
-      const stripeProductId = String(stripeResult?.id || '').trim()
-      const stripePriceIds = Array.isArray(stripeResult?.stripe_prices)
-        ? stripeResult.stripe_prices.map((id) => String(id || '').trim())
-        : []
-
-      if (!stripeProductId) {
-        throw new Error('Stripe product creation failed (missing id)')
-      }
-
-      const normalizedPrices: Price[] = priceInputs.map((price, index) => ({
-        id: stripePriceIds[index] || '',
-        currency: String(price.currency || 'usd').toLowerCase(),
-        unit_amount: Number(price.unit_amount ?? 0),
-        type: price.type,
-        interval: price.interval,
-        interval_count: price.interval_count,
-        billing_scheme: price.billing_scheme,
-        metadata: price.metadata ?? {},
-      }))
-
-      const recurringMonthlyIndex = normalizedPrices.findIndex(
-        (price) => price.type === 'recurring' && price.interval === 'month'
-      )
-      const defaultIndex = recurringMonthlyIndex >= 0 ? recurringMonthlyIndex : 0
-      const defaultPriceCandidate = normalizedPrices[defaultIndex]
+      const normalizedPrices = normalizePrices(stripePriceIds)
+      const defaultPriceCandidate = chooseDefaultPrice(normalizedPrices)
 
       const data = {
         ...payload,
@@ -146,6 +188,7 @@ export function useProductCreate() {
           stripe: {
             product_id: stripeProductId,
             price_ids: stripePriceIds,
+            configured: stripeConfigured,
           },
         },
       } as Omit<FirebaseProduct, 'created_at' | 'updated_at' | 'creator_id'>
