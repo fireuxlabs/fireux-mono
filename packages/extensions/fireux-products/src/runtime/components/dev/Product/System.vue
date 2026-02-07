@@ -1,7 +1,7 @@
 <template>
   <section class="space-y-10">
-    <DevProductDummy />
-    <DevProductPricingPlans />
+    <DevProductDummy v-model:selected-id="selectedProductId" />
+    <DevProductPricingPlans :selected-id="selectedProductId" />
 
     <UCard>
       <DevModel
@@ -40,16 +40,18 @@
 
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useProductCollection } from '../../../composables/fireux/firestore/objects/product/fetch/useProductCollection'
 import {
   FirebaseProduct as ProductModelRuntime,
   type FirebaseProduct,
 } from '../../../models/objects/product.model'
+import { dummyProductList } from '../../../../../../../../dummy/product.dummy'
 
 defineOptions({ name: 'DevProductSystem' })
 
 const productModelRuntime = ProductModelRuntime
+const selectedProductId = ref(dummyProductList[0]?.id ?? '')
 
 const { products } = useProductCollection()
 

@@ -22,6 +22,10 @@ import { computed } from 'vue'
 import { dummyProductList } from '../../../../../../../../dummy/product.dummy'
 import type { FirebaseProduct, Price } from '../../../models/objects/product.model'
 
+const props = defineProps<{
+  selectedId?: string
+}>()
+
 const formatMoney = (unitAmount: number, currency?: string) => {
   const amount = Number(unitAmount ?? 0)
   const iso = (currency || 'USD').toUpperCase()
@@ -31,13 +35,6 @@ const formatMoney = (unitAmount: number, currency?: string) => {
   }).format(amount / 100)
 }
 
-const findSetupPrice = (prices: Price[]) =>
-  prices.find(
-    (price) =>
-      price?.metadata?.kind === 'setup_fee' ||
-      price?.type === 'one_time'
-  )
-
 const findMonthlyPrice = (prices: Price[]) =>
   prices.find(
     (price) =>
@@ -45,15 +42,16 @@ const findMonthlyPrice = (prices: Price[]) =>
       (price?.type === 'recurring' && price?.interval === 'month')
   )
 
-const plans = computed(() =>
-  dummyProductList.map((product: FirebaseProduct, index: number) => {
-    const prices = Array.isArray(product.prices) ? product.prices : []
-    const setup = findSetupPrice(prices)
-    const monthly = findMonthlyPrice(prices)
+const selectedProducts = computed(() => {
+  if (!props.selectedId) return dummyProductList
+  const match = dummyProductList.filter((product) => product.id === props.selectedId)
+  return match.length ? match : dummyProductList
+})
 
-    const setupLabel = setup
-      ? `Setup ${formatMoney(setup.unit_amount, setup.currency)}`
-      : ''
+const plans = computed(() =>
+  selectedProducts.value.map((product: FirebaseProduct, index: number) => {
+    const prices = Array.isArray(product.prices) ? product.prices : []
+    const monthly = findMonthlyPrice(prices)
 
     const monthlyLabel = monthly
       ? formatMoney(monthly.unit_amount, monthly.currency)
@@ -77,7 +75,7 @@ const plans = computed(() =>
       badge: (product as any)?.metadata?.category || undefined,
       price: monthlyLabel,
       billingCycle: monthly ? '/mo' : undefined,
-      billingPeriod: setupLabel || undefined,
+      billingPeriod: undefined,
       features,
       highlight,
       scale: highlight,

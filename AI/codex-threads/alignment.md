@@ -76,6 +76,41 @@ Scope: `use*Interface` siblings across core + extensions, with emphasis on `useP
 - Drift managers should behave consistently across entities.
 - Dev drift should flag only props that fall outside the canonical shape.
 
+## Product Stack Slice Alignment (Create + Index + Solutions)
+Scope reviewed:
+- `packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Create/System.vue`
+- `packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Create/Write.vue`
+- `packages/extensions/fireux-products/src/runtime/pages/products/index.vue`
+- `packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Solutions.vue`
+
+### Similarities (already aligned with canon)
+- Create flow is deterministic: `handleCreate()` blocks on missing name and gates success/reset on `response.success`.
+- Page composition is cleanly layered: index page composes solution entry points + collection manager without hidden data transforms.
+- Solution cards map through `useProductInterface().card()` before render, keeping the product view model canon-first.
+
+### Diffs to Flag (align candidates)
+- `Create/System.vue`: toast acquisition uses runtime fallback (`globalThis as any`) rather than a canonical composable import.
+  - Why align: this introduces interface drift and weak typing for a shared UX primitive.
+  - Target: standardize on a single toast access pattern across entity create stacks.
+- `Create/System.vue`: `createProduct()` call is not wrapped in `try/finally`.
+  - Why align: if `createProduct()` throws, `isCreating` can remain `true` and lock submit UX.
+  - Target: canonical async guard pattern (`try/catch/finally`) for all create stack submit handlers.
+- `Create/System.vue`: clear action uses browser `confirm(...)`.
+  - Why align: native confirm is inconsistent with app UI patterns and hard to theme/localize.
+  - Target: use shared modal/confirm UX component pattern used by other stacks.
+- `Create/Write.vue`: shipping stage is commented out (`<!-- <ProductCreateShipping /> -->`).
+  - Why align: stack stage removal-by-comment creates structural drift and uncertainty about intended order.
+  - Target: either remove the stage contract explicitly or gate it via feature/runtime config instead of commented markup.
+- `pages/products/index.vue`: two near-duplicate descriptions diverge (`pageDescription` vs `definePageMeta.description`).
+  - Why align: copy drift creates avoidable inconsistency across SEO/header metadata.
+  - Target: one canonical description source for page header + meta.
+
+### Diffs that look intentional (do not force-align)
+- `Solutions.vue` hard-codes solution routing for `fireux-app` and `fireux-template`.
+  - Keep if these are contractual core offers with dedicated pages; this is specialization, not accidental drift.
+- `Write.vue` runtime-configurable `productKinds` fallback list.
+  - Keep as extension/runtime variability; this is expected stack-level configurability.
+
 ## Watchlist (48h)
 - Product interface + product create/validation paths change frequently; keep `useProductInterface` lean.
 - Entity collection managers changed recently; re-validate no new fallback chains were added.

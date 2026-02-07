@@ -1,13 +1,18 @@
 <template>
-  <UCard class="preview">
-    <div class="preview__row">
+  <UCard class="preview transition-colors hover:bg-primary/5 hover:border-primary/30">
+    <div class="preview__row flex gap-4">
       <UAvatar :src="card.imageUrl || undefined" :alt="card.title" size="md" />
 
-      <div class="preview__main">
-        <div class="preview__top">
-          <div class="preview__title">{{ card.title }}</div>
+      <div class="preview__main flex-1 space-y-2">
+        <div class="preview__top flex items-start justify-between gap-3">
+          <div class="preview__title text-base font-semibold">
+            {{ card.title }}
+          </div>
 
-          <div v-if="showBadges && card.badges.length" class="preview__badges">
+          <div
+            v-if="showBadges && card.badges.length"
+            class="preview__badges flex flex-wrap items-center justify-end gap-1"
+          >
             <UBadge
               v-for="badge in card.badges"
               :key="badge"
@@ -20,18 +25,21 @@
           </div>
         </div>
 
-        <div v-if="showSubtitle && card.subtitle" class="preview__subtitle">
+        <div
+          v-if="showSubtitle && card.subtitle"
+          class="preview__subtitle text-sm text-muted-foreground"
+        >
           {{ card.subtitle }}
         </div>
 
-        <div v-if="showBody" class="preview__body">
-          <div v-if="card.description" class="preview__line">
+        <div v-if="showBody" class="preview__body space-y-2 text-sm">
+          <div v-if="card.description" class="preview__line text-muted-foreground">
             {{ card.description }}
           </div>
-          <div v-if="contentSnippet" class="preview__line">
+          <div v-if="contentSnippet" class="preview__line text-muted-foreground">
             {{ contentSnippet }}
           </div>
-          <div v-if="features.length" class="preview__meta">
+          <div v-if="features.length" class="preview__meta flex flex-wrap gap-1">
             <UBadge
               v-for="feature in features"
               :key="feature"
@@ -42,7 +50,7 @@
               {{ feature }}
             </UBadge>
           </div>
-          <div class="preview__line">
+          <div class="preview__line text-xs uppercase tracking-wide text-muted-foreground">
             <span v-if="prop">{{ prop }}</span>
             <span v-else class="italic">missing</span>
           </div>

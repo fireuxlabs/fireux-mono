@@ -51,21 +51,29 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { ProductCard } from '../../../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface'
 import type { FirebaseProduct } from '../../../../../models/objects/product.model'
 
-const { card, avatar: avatarProp, prop, product } = defineProps<{
+const props = defineProps<{
   card: ProductCard.Card
   avatar?: string | null
   prop?: string
   product?: FirebaseProduct | null
 }>()
 
-const title = card.title || card.name
-const subtitle = card.subtitle || card.description
-const avatar = avatarProp ?? card.avatarUrl ?? card.imageUrl ?? null
-const description = card.description || product?.description || ''
-const content = product?.content ? String(product.content).trim() : ''
-const features =
-  product?.features?.map((feature) => feature.title).filter(Boolean) ?? []
+const title = computed(() => props.card.title || props.card.name)
+const subtitle = computed(() => props.card.subtitle || props.card.description)
+const avatar = computed(
+  () => props.avatar ?? props.card.avatarUrl ?? props.card.imageUrl ?? null
+)
+const description = computed(
+  () => props.card.description || props.product?.description || ''
+)
+const content = computed(() =>
+  props.product?.content ? String(props.product.content).trim() : ''
+)
+const features = computed(
+  () => props.product?.features?.map((feature) => feature.title).filter(Boolean) ?? []
+)
 </script>

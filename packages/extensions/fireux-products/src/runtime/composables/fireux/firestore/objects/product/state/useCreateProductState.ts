@@ -12,26 +12,6 @@ type ProductDraft = Partial<FirebaseProduct> & {
 const STORAGE_KEY = 'createProduct'
 const IMAGE_KEY = 'createProductMainImageData'
 
-const starterName = 'FireUX Template'
-const starterTagline = 'A neutral FireUX app starter you run yourself.'
-const starterQ =
-  "I'm a developer. Can I buy a starter and build it myself?"
-const starterA =
-  'Yes. FireUX Template gives you a runnable neutral app baseline with products and blogs.'
-const starterDescription = 'A neutral FireUX app starter for self-hosted builds.'
-const starterContent = `
-<p>FireUX Template is a developer starter designed to ship fast.</p>
-<p>It includes a neutral FireUX app shape with products and blogs so you can extend from a proven baseline.</p>
-<p>You host and operate it yourself.</p>
-`.trim()
-const starterFeatures = [
-  { title: 'Neutral FireUX app starter', available: true },
-  { title: 'Products module included', available: true },
-  { title: 'Blogs module included', available: true },
-  { title: 'Self-hosted control', available: true },
-  { title: 'One-time purchase', available: true },
-]
-
 function toSlug(name: string) {
   const base = name
     .toLowerCase()
@@ -48,118 +28,51 @@ export function useCreateProductState() {
     Array.isArray(cfg.productKinds) && cfg.productKinds.length
       ? String(cfg.productKinds[0])
       : 'service'
-  const starterSlug = toSlug(starterName)
-  const mainImageData = useStorage<string>(IMAGE_KEY, '/img/app/logo.png')
+  const mainImageData = useStorage<string>(IMAGE_KEY, '')
 
   const product = useStorage<ProductDraft>(STORAGE_KEY, {
-    id: starterSlug,
-    name: starterName,
-    tagline: starterTagline,
-    Q: starterQ,
-    A: starterA,
-    description: starterDescription,
-    content: starterContent,
+    id: '',
+    name: '',
+    tagline: '',
+    Q: '',
+    A: '',
+    description: '',
+    content: '',
     active: true,
-    slug: starterSlug,
-    product_type: 'template',
-    features: starterFeatures,
-    metadata: {
-      category: 'template',
-      kind: 'template',
-      route: { scenario: 6, product: 'Templates + Optional Modules' },
-      ecosystem: 'fireux-fireux',
-      pricing: { one_time: { amount: 99, currency: 'CHF' } },
-      delivery: {
-        estimated_time: 'Instant',
-        requirements: ['Stripe payment', 'Email for repository access'],
-      },
-      cta: { label: 'Buy template', action: 'checkout' },
-      status: 'active',
-    },
+    slug: '',
+    product_type: defaultKind,
+    features: [],
+    metadata: {},
     appId: tenantId,
     creator_id: currentUser.value?.uid || '',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   })
 
-  const applyStarterDefaults = () => {
-    const current = product.value ?? {}
-    const isLegacyEmpty =
-      !String(current.name || '').trim() &&
-      !String(current.slug || '').trim() &&
-      !String(current.id || '').trim()
-
-    if (!isLegacyEmpty) return
-
+  const applyBlankDefaults = () => {
     product.value = {
-      ...current,
-      id: starterSlug,
-      name: starterName,
-      tagline: starterTagline,
-      description: starterDescription,
-      content: starterContent,
-      slug: starterSlug,
-      product_type: String(current.product_type || 'template'),
-      active: typeof current.active === 'boolean' ? current.active : true,
-      appId: current.appId || tenantId,
-      creator_id: current.creator_id || currentUser.value?.uid || '',
-      created_at: current.created_at || new Date().toISOString(),
+      id: '',
+      name: '',
+      tagline: '',
+      Q: '',
+      A: '',
+      description: '',
+      content: '',
+      active: true,
+      slug: '',
+      product_type: defaultKind,
+      features: [],
+      metadata: {},
+      appId: tenantId,
+      creator_id: currentUser.value?.uid || '',
+      created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     }
+    mainImageData.value = ''
   }
 
-  const backfillStarterDefaults = () => {
-    const current = product.value ?? {}
-    const mergedMetadata =
-      current.metadata && typeof current.metadata === 'object'
-        ? { ...current.metadata }
-        : {}
+  applyBlankDefaults()
 
-    if (!mergedMetadata.category) mergedMetadata.category = 'template'
-    if (!mergedMetadata.kind) mergedMetadata.kind = 'template'
-    if (!mergedMetadata.route) {
-      mergedMetadata.route = { scenario: 6, product: 'Templates + Optional Modules' }
-    }
-    if (!mergedMetadata.ecosystem) mergedMetadata.ecosystem = 'fireux-fireux'
-    if (!mergedMetadata.pricing) mergedMetadata.pricing = { one_time: { amount: 99, currency: 'CHF' } }
-    if (!mergedMetadata.delivery) {
-      mergedMetadata.delivery = {
-        estimated_time: 'Instant',
-        requirements: ['Stripe payment', 'Email for repository access'],
-      }
-    }
-    if (!mergedMetadata.cta) mergedMetadata.cta = { label: 'Buy template', action: 'checkout' }
-    if (!mergedMetadata.status) mergedMetadata.status = 'active'
-
-    product.value = {
-      ...current,
-      id: current.id || starterSlug,
-      name: current.name || starterName,
-      tagline: current.tagline || starterTagline,
-      Q: current.Q || starterQ,
-      A: current.A || starterA,
-      description: current.description || starterDescription,
-      content: current.content || starterContent,
-      slug: current.slug || starterSlug,
-      product_type: current.product_type || 'template',
-      features: Array.isArray(current.features) && current.features.length
-        ? current.features
-        : starterFeatures,
-      metadata: mergedMetadata,
-      active: typeof current.active === 'boolean' ? current.active : true,
-      appId: current.appId || tenantId,
-      creator_id: current.creator_id || currentUser.value?.uid || '',
-      created_at: current.created_at || new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    }
-
-    if (!mainImageData.value) {
-      mainImageData.value = '/img/app/logo.png'
-    }
-  }
-
-  applyStarterDefaults()
-  backfillStarterDefaults()
   const isSlugTaken = ref(false)
 
   watch(
@@ -179,8 +92,7 @@ export function useCreateProductState() {
   )
 
   onMounted(() => {
-    applyStarterDefaults()
-    backfillStarterDefaults()
+    applyBlankDefaults()
     if (currentUser.value?.uid) {
       product.value.creator_id = currentUser.value.uid
     }
@@ -190,42 +102,11 @@ export function useCreateProductState() {
   })
 
   function resetCreateProductState() {
-    product.value = {
-      id: starterSlug,
-      name: starterName,
-      tagline: starterTagline,
-      Q: starterQ,
-      A: starterA,
-      description: starterDescription,
-      content: starterContent,
-      active: true,
-      slug: starterSlug,
-      product_type: 'template',
-      features: starterFeatures,
-      metadata: {
-        category: 'template',
-        kind: 'template',
-        route: { scenario: 6, product: 'Templates + Optional Modules' },
-        ecosystem: 'fireux-fireux',
-        pricing: { one_time: { amount: 99, currency: 'CHF' } },
-        delivery: {
-          estimated_time: 'Instant',
-          requirements: ['Stripe payment', 'Email for repository access'],
-        },
-        cta: { label: 'Buy template', action: 'checkout' },
-        status: 'active',
-      },
-      appId: tenantId,
-      creator_id: currentUser.value?.uid || '',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    }
-    mainImageData.value = '/img/app/logo.png'
+    applyBlankDefaults()
     isSlugTaken.value = false
   }
 
   function getProductPayload(): ProductDraft {
-    backfillStarterDefaults()
     if (!product.value.name?.trim()) {
       throw new Error('Product name is required')
     }

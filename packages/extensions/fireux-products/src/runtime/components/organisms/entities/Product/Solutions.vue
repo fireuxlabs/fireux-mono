@@ -9,14 +9,70 @@
       </div>
     </template>
 
-    <div class="flex flex-wrap gap-2">
-      <UButton to="/solutions/fireux-app" color="primary" variant="solid">
-        FireUX App
-      </UButton>
-      <UButton to="/solutions/fireux-template" color="primary" variant="outline">
-        FireUX Template
-      </UButton>
+    <div class="space-y-3">
+      <NuxtLink
+        v-for="item in solutionItems"
+        :key="item.product.id || item.product.slug"
+        :to="resolveSolutionRoute(item.product)"
+        class="block"
+      >
+        <ProductCardsPreview
+          :card="item.card"
+          :product="item.product"
+          prop="Solution"
+          :show-badges="true"
+          :show-body="true"
+        />
+      </NuxtLink>
     </div>
+
+    <UAlert
+      v-if="!solutionItems.length"
+      color="amber"
+      title="No solution products found"
+      description="Create FireUX starter products to show solution previews here."
+      class="mt-3"
+    />
   </UCard>
 </template>
 
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useProductFetch } from '../../../../composables/fireux/firestore/objects/product/fetch/useProductFetch'
+import { useProductInterface } from '../../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface'
+import type { FirebaseProduct } from '../../../../models/objects/product.model'
+
+const SOLUTION_SLUGS = ['fireux-app', 'fireux-template']
+
+const { products } = useProductFetch()
+const { card: mapCard } = useProductInterface()
+
+const solutionItems = computed(() =>
+  SOLUTION_SLUGS
+    .map((slug) =>
+      (products.value ?? []).find(
+        (product) => product.slug === slug || product.id === slug
+      )
+    )
+    .filter((product): product is FirebaseProduct => Boolean(product))
+    .map((product) => {
+      const card = mapCard(product)
+      return card ? { product, card } : null
+    })
+    .filter(
+      (
+        item
+      ): item is {
+        product: FirebaseProduct
+        card: NonNullable<ReturnType<typeof mapCard>>
+      } => Boolean(item)
+    )
+)
+
+const resolveSolutionRoute = (product: FirebaseProduct) => {
+  const slug = String(product.slug || product.id || '').trim()
+  if (slug === 'fireux-app') return '/solutions/fireux-app'
+  if (slug === 'fireux-template') return '/solutions/fireux-template'
+  return product.id ? `/products/${product.id}` : '/products'
+}
+</script>

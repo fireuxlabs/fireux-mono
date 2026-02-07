@@ -12,13 +12,17 @@
     </template>
 
     <div class="space-y-4">
+      <div class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        Pill
+      </div>
+
       <div class="flex flex-wrap gap-2">
         <ProductCardsPill
-          v-for="(item, index) in pillItems"
+          v-for="item in pillItems"
           :key="item.key"
           v-bind="item.pill"
           action
-          @action="selectedIndex = index"
+          @action="selectedId = item.id"
         />
       </div>
 
@@ -29,11 +33,19 @@
         :product="currentPreview.product"
       />
 
+      <div class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        Preview
+      </div>
+
       <ProductCardsCell
         v-if="currentCell"
         :card="currentCell.card"
         :prop="currentCell.prop"
       />
+
+      <div class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        Cell
+      </div>
 
       <ProductCardsProfile
         v-if="currentCard"
@@ -41,6 +53,9 @@
         :prop="currentProp"
         :product="currentProduct"
       />
+      <div class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+        Profile
+      </div>
     </div>
   </UCard>
 </template>
@@ -48,15 +63,34 @@
 <script setup lang="ts">
 defineOptions({ name: 'DevProductDummy' })
 
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { dummyProductSurfaceList } from '../../../../../../../../dummy/product.dummy'
 
 const productSurfaces = dummyProductSurfaceList
 
-const selectedIndex = ref(0)
-const current = computed(
-  () => productSurfaces[selectedIndex.value] ?? productSurfaces[0] ?? null
-)
+const props = defineProps<{
+  selectedId?: string
+}>()
+
+const emit = defineEmits<{
+  (event: 'update:selectedId', value: string): void
+}>()
+
+const fallbackId = productSurfaces[0]?.product?.id ?? ''
+const selectedId = computed({
+  get: () => props.selectedId || fallbackId,
+  set: (value: string) => emit('update:selectedId', value),
+})
+
+const current = computed(() => {
+  const currentId = selectedId.value
+  if (!currentId) return productSurfaces[0] ?? null
+  return (
+    productSurfaces.find((surface) => surface.product.id === currentId) ??
+    productSurfaces[0] ??
+    null
+  )
+})
 const currentProduct = computed(() => current.value?.product ?? null)
 const currentCard = computed(() => current.value?.card ?? null)
 
@@ -89,6 +123,7 @@ const pillItems = computed(() =>
 
       return {
         key: product.id || String(index),
+        id: product.id,
         pill: {
           to: card.to,
           avatarUrl: card.avatarUrl,
@@ -99,7 +134,7 @@ const pillItems = computed(() =>
       }
     })
     .filter(
-      (item): item is { key: string; pill: Record<string, unknown> } =>
+      (item): item is { key: string; id: string; pill: Record<string, unknown> } =>
         Boolean(item)
     )
 )

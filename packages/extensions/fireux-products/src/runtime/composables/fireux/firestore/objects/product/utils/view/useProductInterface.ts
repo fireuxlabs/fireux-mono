@@ -58,7 +58,7 @@ export function useProductInterface() {
 
     const badges: string[] = []
     if (setup?.unit_amount && setup.currency) {
-      badges.push(`Setup ${formatMoney(setup.unit_amount, setup.currency)}`)
+      badges.push(`${formatMoney(setup.unit_amount, setup.currency)}`)
     }
     if (monthly?.unit_amount && monthly.currency) {
       badges.push(`${formatMoney(monthly.unit_amount, monthly.currency)}/mo`)
