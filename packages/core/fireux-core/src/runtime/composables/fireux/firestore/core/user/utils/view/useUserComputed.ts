@@ -56,13 +56,13 @@ export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
   const currentUser = computed(() => coreUser.value ?? null)
 
   const isAdmin = computed(() => {
-    // If an app-scoped overlay is resolved (even if role is 'user'), treat it as
-    // the source of truth for admin UI gating.
-    if (appUser.value !== undefined) {
-      return appUser.value?.role === 'admin'
-    }
+    if (appUser.value?.role === 'admin') return true
+
     const activeAppId = appId?.trim()
     if (!activeAppId) return false
+
+    // Fall back to core app membership so admin UI works when app overlay
+    // docs are missing or still onboarding.
     return Boolean(coreUser.value?.adminOf?.some((id) => id === activeAppId))
   })
 

@@ -45,7 +45,6 @@ import type { FirebaseProduct } from '../../../../models/objects/product.model'
 const SOLUTION_ROUTES: Record<string, string> = {
   'fireux-app': '/solutions/fireux-app',
   'fireux-template': '/solutions/fireux-template',
-  'fireux-kitchens': '/solutions/fireux-kitchens',
 }
 const SOLUTION_SLUGS = Object.keys(SOLUTION_ROUTES)
 

@@ -14,7 +14,7 @@
     </UPageHeader>
 
     <UPageBody class="pagebody">
-      <IngredientCTA :kitchen-id="runtimeKitchenId" :can-create="isAdmin" />
+      <IngredientCTA :can-create="isAdmin" />
       <IngredientCollectionManager :collection="ingredients" />
     </UPageBody>
   </UPage>
@@ -22,10 +22,9 @@
 
 <script setup lang="ts">
 import { useHead } from '#imports'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useKitchenDashboardSelection } from '../../composables/fireux/app/useKitchenDashboardSelection'
-import { useKitchenIngredientFetch } from '../../composables/fireux/firestore/objects/ingredient/fetch/useKitchenIngredientFetch'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useIngredientFetch } from '../../composables/fireux/firestore/objects/ingredient/fetch/useIngredientFetch'
 
 definePageMeta({
   layout: 'default',
@@ -40,16 +39,15 @@ definePageMeta({
     mobile: true,
     layouts: ['default'],
   },
-  name: 'KitchenIngredientsIndexPage',
+  name: 'IngredientsIndexPage',
 })
 
-const { runtimeKitchenId } = useKitchenDashboardSelection()
 const { isAdmin } = useUser()
-const { ingredients } = useKitchenIngredientFetch(runtimeKitchenId)
+const { ingredients } = useIngredientFetch()
 
 const pageTitle = 'Ingredients'
 const pageDescription =
-  'Create ingredients and browse inventory records for the active kitchen context.'
+  'Create and browse global ingredient records for this runtime.'
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })

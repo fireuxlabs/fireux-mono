@@ -4,7 +4,7 @@
       <div class="collection-manager__header">
         <div class="collection-manager__title">
           <div>Ingredients</div>
-          <p>Browse ingredients for the active kitchen context.</p>
+          <p>Browse global ingredients available to this runtime.</p>
         </div>
 
         <div class="collection-manager__controls">
@@ -52,7 +52,7 @@
     <div v-if="isDev">
       <DevJson
         title="Ingredients (JSON)"
-        context="Ingredients collection manager · active kitchen context"
+        context="Ingredients collection manager · global runtime collection"
         :data="collection"
         :default-open="false"
       />
@@ -62,10 +62,10 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { KitchenIngredientResolved } from '../../../../../models/objects/ingredient.model'
+import type { Ingredient } from '../../../../../models/objects/ingredient.model'
 
 const props = defineProps<{
-  collection?: KitchenIngredientResolved[]
+  collection?: Ingredient[]
 }>()
 
 const query = ref('')

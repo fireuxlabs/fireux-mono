@@ -7,7 +7,7 @@
     "moduleResolution": "Bundler",
     "paths": {
       "#pwa": ["@vite-pwa/nuxt/dist/runtime/composables/index"],
-      "#imports": [".nuxt/imports.d.ts"],
+      "#imports": [".nuxt/imports.d.ts", "../../../types/nuxt-shims.d.ts"],
       "#build/*": [".nuxt/*"],
 
       "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
@@ -18,7 +18,12 @@
       "fireux-fireux": ["../../../packages/ecosystem/fireux-fireux/src/module.ts"],
       "fireux-fireux/*": ["../../../packages/ecosystem/fireux-fireux/src/*"],
       "fireux-fireux/runtime/*": ["../../../packages/ecosystem/fireux-fireux/src/runtime/*"],
-      "@fireux-fireux/*": ["../../../packages/ecosystem/fireux-fireux/src/*"]
+      "@fireux-fireux/*": ["../../../packages/ecosystem/fireux-fireux/src/*"],
+
+      "fireux-products": ["../../../packages/extensions/fireux-products/src/module.ts"],
+      "fireux-products/*": ["../../../packages/extensions/fireux-products/src/*"],
+      "fireux-products/runtime/*": ["../../../packages/extensions/fireux-products/src/runtime/*"],
+      "@fireux-products/*": ["../../../packages/extensions/fireux-products/src/*"]
 
       // Do NOT override ~/*, @/*, ~~/* here; Nuxt sets them to srcDir (app/)
     },

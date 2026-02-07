@@ -2,13 +2,13 @@
   <UPageCTA
     class="cta"
     title="Ingredients"
-    description="Manage global ingredient records and attach them to your active kitchen."
+    description="Manage global ingredient records for this runtime."
     variant="naked"
   >
     <template #default>
       <div class="space-y-3">
         <UAlert
-          v-if="!canCreate"
+          v-if="!props.canCreate"
           color="neutral"
           title="Admin action"
           description="Only admins can add ingredients."
@@ -20,25 +20,13 @@
               size="sm"
               color="primary"
               icon="i-lucide-plus"
-              :disabled="!resolvedKitchenId"
               @click="showCreate = !showCreate"
             >
               {{ showCreate ? 'Hide add' : 'Add ingredient' }}
             </UButton>
           </div>
 
-          <UAlert
-            v-if="!resolvedKitchenId"
-            color="amber"
-            title="Kitchen not resolved"
-            description="Set a runtime kitchen to add ingredients."
-          />
-
-          <KitchenIngredientsCreateSystem
-            v-else-if="showCreate"
-            :kitchen-id="resolvedKitchenId"
-            @created="showCreate = false"
-          />
+          <IngredientCreateSystem v-if="showCreate" @created="showCreate = false" />
         </div>
       </div>
     </template>
@@ -46,19 +34,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 
 const props = withDefaults(
   defineProps<{
-    kitchenId?: string
     canCreate?: boolean
   }>(),
   {
-    kitchenId: '',
     canCreate: false,
   }
 )
 
 const showCreate = ref(false)
-const resolvedKitchenId = computed(() => String(props.kitchenId || '').trim())
 </script>

@@ -46,41 +46,16 @@
         </div>
       </UCard>
 
-      <UCard>
-        <template #header>
-          <div class="space-y-2">
-            <h2 class="text-xl font-semibold">FireUX Kitchens</h2>
-            <p class="text-sm text-muted-foreground">
-              Back-of-house kitchen operations for menus, ingredients, mise, team, and costs.
-            </p>
-          </div>
-        </template>
-
-        <div class="flex flex-wrap gap-2">
-          <UButton to="/solutions/fireux-kitchens" color="primary" variant="solid">
-            View Product
-          </UButton>
-          <UButton to="/modules/fireux-kitchens" color="neutral" variant="outline">
-            View Module
-          </UButton>
-        </div>
-      </UCard>
-
       <ProductCollectionManager
         :collection="nonModuleProducts"
         header-text="FireUX products."
       />
 
-      <ProductCollectionManager
-        :collection="moduleProducts"
-        header-text="FireUX modules."
-      />
-
       <DevJson
         v-if="isDev"
         :title="'Solutions (JSON)'"
-        context="fireux-app solutions · filtered products/modules"
-        :data="{ all: products, products: nonModuleProducts, modules: moduleProducts }"
+        context="fireux-app solutions · filtered non-module products"
+        :data="{ all: products, products: nonModuleProducts }"
         :default-open="false"
       />
     </UPageBody>
@@ -98,7 +73,7 @@ import type { FirebaseProduct } from 'fireux-products/runtime/models/objects/pro
 definePageMeta({
   layout: 'default',
   title: 'Solutions',
-  description: 'FireUX app, template, and kitchen operations solutions.',
+  description: 'FireUX app and template solutions.',
   nav: {
     key: 'solutions',
     label: 'Solutions',
@@ -128,10 +103,6 @@ const isModuleProduct = (product: FirebaseProduct) => {
     productType.includes('module')
   )
 }
-
-const moduleProducts = computed(() =>
-  (products.value ?? []).filter((product) => isModuleProduct(product))
-)
 
 const nonModuleProducts = computed(() =>
   (products.value ?? []).filter((product) => !isModuleProduct(product))
