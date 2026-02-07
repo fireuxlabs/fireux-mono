@@ -3,8 +3,7 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <div>Products</div>
-          <p>Browse {{ appName }} products.</p>
+          <p>{{ resolvedHeaderText }}</p>
         </div>
 
         <div class="collection-manager__controls">
@@ -65,10 +64,16 @@ import { computed } from 'vue';
 import { useProductInterface } from '../../../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface';
 import type { FirebaseProduct } from '../../../../../models/objects/product.model';
 
-const props = defineProps<{ collection?: FirebaseProduct[] }>()
+const props = defineProps<{
+  collection?: FirebaseProduct[]
+  headerText?: string
+}>()
 const { appName } = useFireUXConfig()
 
 const collection = computed(() => props.collection ?? [])
+const resolvedHeaderText = computed(
+  () => props.headerText || `${appName} products.`
+)
 const { card: makeCard, searchText } = useProductInterface()
 
 const {

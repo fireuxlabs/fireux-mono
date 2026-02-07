@@ -2,7 +2,11 @@ import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useFirestore } from 'vuefire'
-import type { FirebaseProduct, Price } from '../../../../../models/objects/product.model'
+import type {
+  FirebaseProduct,
+  Price,
+  StripePriceInput,
+} from '../../../../../models/objects/product.model'
 import { useCreatePricesState } from './Prices/useCreatePricesState'
 import { useCreateProductState } from './state/useCreateProductState'
 
@@ -40,79 +44,73 @@ export function useProductCreate() {
   const { setDocument, getCollectionPath } = useFirestoreManager()
   const { getProductPayload } = useCreateProductState()
   const { pricesPayload } = useCreatePricesState()
+  const fireux = useFireUXConfig()
 
-  async function createProduct(): Promise<{
+  const collectionPath = getCollectionPath('products')
+
+  const resolveAvailableSlug = async (baseSlug: string) => {
+    let attempt = 0
+    let candidate = baseSlug
+    while (attempt < 100) {
+      const checkRef = doc(db, collectionPath, candidate)
+      const checkSnap = await getDoc(checkRef)
+      if (!checkSnap.exists()) return candidate
+      attempt += 1
+      candidate = `${baseSlug}-${attempt + 1}`
+    }
+    throw new Error('Unable to allocate unique slug')
+  }
+
+  const normalizePrices = (
+    inputs: StripePriceInput[],
+    priceIds: string[]
+  ): Price[] =>
+    inputs.map((price, index) => ({
+      id: priceIds[index] || '',
+      currency: String(price.currency || 'usd').toLowerCase(),
+      unit_amount: Number(price.unit_amount ?? 0),
+      ...(price.type ? { type: price.type } : {}),
+      ...(price.interval ? { interval: price.interval } : {}),
+      ...(typeof price.interval_count === 'number'
+        ? { interval_count: price.interval_count }
+        : {}),
+      ...(price.billing_scheme ? { billing_scheme: price.billing_scheme } : {}),
+      ...(price.metadata ? { metadata: price.metadata } : {}),
+    }))
+
+  const chooseDefaultPrice = (normalizedPrices: Price[]) => {
+    const recurringMonthlyIndex = normalizedPrices.findIndex(
+      (price) => price.type === 'recurring' && price.interval === 'month'
+    )
+    const defaultIndex = recurringMonthlyIndex >= 0 ? recurringMonthlyIndex : 0
+    return normalizedPrices[defaultIndex]
+  }
+
+  const createProductFromInput = async (input: {
+    payload: Omit<FirebaseProduct, 'created_at' | 'updated_at' | 'creator_id'> &
+      Partial<Pick<FirebaseProduct, 'created_at' | 'updated_at' | 'creator_id'>>
+    priceInputs: StripePriceInput[]
+  }): Promise<{
     success: boolean
     id?: string
     error?: string
-  }> {
+  }> => {
     try {
-      const fireux = useFireUXConfig()
-      const payload = getProductPayload()
+      const payload = input.payload
       const requestedSlug = payload.slug || payload.id
-
       if (!requestedSlug) {
         throw new Error('Product slug is required')
       }
 
-      const collectionPath = getCollectionPath('products')
-      const resolveAvailableSlug = async (baseSlug: string) => {
-        let attempt = 0
-        let candidate = baseSlug
-        while (attempt < 100) {
-          const checkRef = doc(db, collectionPath, candidate)
-          const checkSnap = await getDoc(checkRef)
-          if (!checkSnap.exists()) return candidate
-          attempt += 1
-          candidate = `${baseSlug}-${attempt + 1}`
-        }
-        throw new Error('Unable to allocate unique slug')
-      }
-
       const slug = await resolveAvailableSlug(requestedSlug)
-
-      const priceInputs = pricesPayload.value
-      if (!priceInputs.length) {
+      const normalizedPriceInputs = input.priceInputs.map((price) => ({
+        ...price,
+        currency: String(price.currency || 'usd').toLowerCase(),
+      }))
+      if (!normalizedPriceInputs.length) {
         throw new Error('At least one price is required')
       }
 
-      const makeLocalIds = () => {
-        const productId = `local_${slug}`
-        const priceIds = priceInputs.map((_, index) => `local_${slug}_price_${index + 1}`)
-        return { productId, priceIds }
-      }
-
-      const canFallbackToLocal = (message: string) => {
-        const lower = message.toLowerCase()
-        return (
-          import.meta.dev &&
-          (lower.includes('stripe not configured') ||
-            lower.includes('missing stripe_secret_key') ||
-            lower.includes('stripe sdk not installed'))
-        )
-      }
-
-      const normalizePrices = (priceIds: string[]): Price[] =>
-        priceInputs.map((price, index) => ({
-          id: priceIds[index] || '',
-          currency: String(price.currency || 'usd').toLowerCase(),
-          unit_amount: Number(price.unit_amount ?? 0),
-          type: price.type,
-          interval: price.interval,
-          interval_count: price.interval_count,
-          billing_scheme: price.billing_scheme,
-          metadata: price.metadata ?? {},
-        }))
-
-      const chooseDefaultPrice = (normalizedPrices: Price[]) => {
-        const recurringMonthlyIndex = normalizedPrices.findIndex(
-          (price) => price.type === 'recurring' && price.interval === 'month'
-        )
-        const defaultIndex = recurringMonthlyIndex >= 0 ? recurringMonthlyIndex : 0
-        return normalizedPrices[defaultIndex]
-      }
-
-      // 1) Create the Stripe product + prices (source of truth for IDs)
       const stripeResponse = await fetch('/api/stripe/create-product', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -122,18 +120,10 @@ export function useProductCreate() {
             description: payload.description,
             slug,
             appId: payload.appId || fireux.appId,
-            // Stripe expects lowercase currency codes.
-            prices: priceInputs.map((price) => ({
-              ...price,
-              currency: String(price.currency || 'usd').toLowerCase(),
-            })),
+            prices: normalizedPriceInputs,
           },
         }),
       })
-
-      let stripeProductId = ''
-      let stripePriceIds: string[] = []
-      let stripeConfigured = true
 
       if (!stripeResponse.ok) {
         let detail = stripeResponse.statusText || 'Stripe request failed'
@@ -143,44 +133,43 @@ export function useProductCreate() {
         } catch {
           // ignore
         }
-        if (!canFallbackToLocal(detail)) {
-          throw new Error(detail)
-        }
-
-        stripeConfigured = false
-        const local = makeLocalIds()
-        stripeProductId = local.productId
-        stripePriceIds = local.priceIds
-      } else {
-        const stripeResult = (await stripeResponse.json()) as {
-          success?: boolean
-          id?: string
-          stripe_prices?: string[]
-        }
-
-        stripeProductId = String(stripeResult?.id || '').trim()
-        stripePriceIds = Array.isArray(stripeResult?.stripe_prices)
-          ? stripeResult.stripe_prices.map((id) => String(id || '').trim())
-          : []
-
-        if (!stripeProductId) {
-          throw new Error('Stripe product creation failed (missing id)')
-        }
+        throw new Error(detail)
       }
 
-      const normalizedPrices = normalizePrices(stripePriceIds)
+      const stripeResult = (await stripeResponse.json()) as {
+        success?: boolean
+        id?: string
+        stripe_prices?: string[]
+      }
+
+      const stripeProductId = String(stripeResult?.id || '').trim()
+      const stripePriceIds = Array.isArray(stripeResult?.stripe_prices)
+        ? stripeResult.stripe_prices.map((id) => String(id || '').trim())
+        : []
+
+      if (!stripeProductId) {
+        throw new Error('Stripe product creation failed (missing id)')
+      }
+      if (!stripePriceIds.length) {
+        throw new Error('Stripe product creation failed (missing prices)')
+      }
+
+      const normalizedPrices = normalizePrices(normalizedPriceInputs, stripePriceIds)
       const defaultPriceCandidate = chooseDefaultPrice(normalizedPrices)
 
       const data = {
         ...payload,
         id: slug,
+        slug,
         appId: payload.appId || fireux.appId,
         prices: normalizedPrices,
         default_price: defaultPriceCandidate
           ? {
               id: defaultPriceCandidate.id || '',
               unit_amount: defaultPriceCandidate.unit_amount || 0,
-              interval: defaultPriceCandidate.interval,
+              ...(defaultPriceCandidate.interval
+                ? { interval: defaultPriceCandidate.interval }
+                : {}),
             }
           : payload.default_price,
         metadata: {
@@ -188,7 +177,7 @@ export function useProductCreate() {
           stripe: {
             product_id: stripeProductId,
             price_ids: stripePriceIds,
-            configured: stripeConfigured,
+            configured: true,
           },
         },
       } as Omit<FirebaseProduct, 'created_at' | 'updated_at' | 'creator_id'>
@@ -197,7 +186,6 @@ export function useProductCreate() {
         creator: true,
       })
 
-      // 2) Mirror prices in a Firestore subcollection for read-time hydration
       const pricesCollectionPath = `${collectionPath}/${slug}/prices`
       await Promise.all(
         normalizedPrices
@@ -213,11 +201,24 @@ export function useProductCreate() {
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
       if (import.meta.dev) {
-        console.error('[fireux-products] createProduct failed', error)
+        console.error('[fireux-products] createProductFromInput failed', error)
       }
       return { success: false, error: message }
     }
   }
 
-  return { createProduct }
+  async function createProduct(): Promise<{
+    success: boolean
+    id?: string
+    error?: string
+  }> {
+    const payload = getProductPayload()
+    const inputs = pricesPayload.value as StripePriceInput[]
+    return createProductFromInput({
+      payload: payload as any,
+      priceInputs: inputs,
+    })
+  }
+
+  return { createProduct, createProductFromInput }
 }

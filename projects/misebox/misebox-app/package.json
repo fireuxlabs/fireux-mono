@@ -9,7 +9,7 @@
     "preview": "nuxi preview",
     "deploy": "npx firebase-tools@15.5.1 deploy --only hosting --project misebox-78f9c --config firebase.json",
     "check:env": "node ../../../scripts/check-env.mjs",
-    "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit'});\"",
+    "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
     "clean": "rimraf .nuxt dist",
     "migrate:chefs": "tsx scripts/migrate-chef-data.ts"
   },

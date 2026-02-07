@@ -7,13 +7,11 @@ import type {
 } from '../../../../../../models/objects/product.model'
 
 const starterMonthlyPrice: Partial<Price> = {
-	unit_amount: 2000,
+	unit_amount: 9900,
 	currency: 'CHF',
-	type: 'recurring',
-	interval: 'month',
-	interval_count: 1,
+	type: 'one_time',
 	billing_scheme: 'per_unit',
-	metadata: { kind: 'subscription' },
+	metadata: { kind: 'license' },
 }
 
 export function useCreatePricesState() {

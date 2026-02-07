@@ -4,66 +4,27 @@
       All assets should be on transparent backgrounds. Preferred formats:
       PNG for raster, SVG for vector. If you only have JPG, we can convert.
     </p>
+    <div class="asset-actions">
+      <UButton variant="subtle" color="primary" @click="applyRandomTestAssets">
+        Use random test images
+      </UButton>
+    </div>
     <div class="assets-grid">
-      <div class="asset-card">
-        <p class="asset-label">Logo</p>
-        <MoleculesFormsStateImagePicker
-          label=""
-          state-key="onboardingAssetLogo"
-        />
-        <p class="asset-meta">SVG preferred, PNG ok. Opaque artwork, transparent background.</p>
-      </div>
-      <div class="asset-card">
-        <p class="asset-label">Wordmark (Light)</p>
-        <MoleculesFormsStateImagePicker
-          label=""
-          state-key="onboardingAssetWordmarkLight"
-        />
-        <p class="asset-meta">SVG preferred, PNG ok. Opaque artwork, transparent background.</p>
-      </div>
-      <div class="asset-card">
-        <p class="asset-label">Wordmark (Dark)</p>
-        <MoleculesFormsStateImagePicker
-          label=""
-          state-key="onboardingAssetWordmarkDark"
-        />
-        <p class="asset-meta">SVG preferred, PNG ok. Opaque artwork, transparent background.</p>
-      </div>
-      <div class="asset-card">
-        <p class="asset-label">Cover Image</p>
-        <MoleculesFormsStateImagePicker
-          label=""
-          state-key="onboardingAssetCover"
-        />
-        <p class="asset-meta">PNG 1600x900+. Opaque artwork, transparent background.</p>
-      </div>
-      <div class="asset-card">
-        <p class="asset-label">Thumbnail</p>
-        <MoleculesFormsStateImagePicker
-          label=""
-          state-key="onboardingAssetThumbnail"
-        />
-        <p class="asset-meta">PNG 1200x1200. Opaque artwork, transparent background.</p>
-      </div>
-      <div class="asset-card">
-        <p class="asset-label">PWA Icon 192</p>
-        <MoleculesFormsStateImagePicker
-          label=""
-          state-key="onboardingAssetPwa192"
-        />
-        <p class="asset-meta">PNG 192x192. Opaque artwork, transparent background.</p>
-      </div>
-      <div class="asset-card">
-        <p class="asset-label">PWA Icon 512</p>
-        <MoleculesFormsStateImagePicker
-          label=""
-          state-key="onboardingAssetPwa512"
-        />
-        <p class="asset-meta">PNG 512x512. Opaque artwork, transparent background.</p>
+      <div v-for="spec in onboardingAssetSpecs" :key="spec.key" class="asset-card">
+        <p class="asset-label">{{ spec.label }}</p>
+        <MoleculesFormsStateImagePicker label="" :state-key="spec.key" />
+        <p class="asset-meta">{{ spec.note }}</p>
       </div>
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { useProductFulfillmentOnboarding } from '../../../../../composables/fireux/onboarding/useProductFulfillmentOnboarding'
+
+const { onboardingAssetSpecs, applyRandomTestAssets } =
+  useProductFulfillmentOnboarding()
+</script>
 
 <style scoped>
 .step-content {
@@ -73,6 +34,10 @@
 
 .asset-help {
   color: #6b7280;
+  margin-bottom: 1rem;
+}
+
+.asset-actions {
   margin-bottom: 1rem;
 }
 

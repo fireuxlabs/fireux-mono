@@ -15,6 +15,11 @@ export function configurePages(resolver: Resolver, nuxt: Nuxt) {
         name: 'admin-products-create',
         path: '/admin/products/create',
         file: resolver.resolve('./runtime/pages/admin/products/create.vue'),
+      },
+      {
+        name: 'admin-licenses',
+        path: '/admin/licenses',
+        file: resolver.resolve('./runtime/pages/admin/licenses/index.vue'),
       }
     )
   })

@@ -6,7 +6,7 @@ Editing Rules:
 
 Status: **Active**
 Version: **v1**
-Updated: 2026-02-06
+Updated: 2026-02-07
 
 Purpose:
 - Track asset quality (size, transparency, correct exports) across FireUX apps.

@@ -8,7 +8,7 @@
     "generate": "nuxi generate",
     "preview": "nuxi preview",
     "check:env": "node ../../../scripts/check-env.mjs",
-    "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit'});\"",
+    "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
     "clean": "rimraf .nuxt dist"
   },
   "dependencies": {

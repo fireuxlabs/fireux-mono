@@ -7,7 +7,7 @@ Editing Rules:
 
 Status: **Active**
 Version: **v2**
-Updated: 2026-02-05
+Updated: 2026-02-07
 Previous: v1 (2026-02-04)
 
 This file defines how ChatGPT should behave inside the **FireUX Project**.

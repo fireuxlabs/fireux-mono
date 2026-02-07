@@ -11,6 +11,7 @@
       :items="accordionSteps"
       :default-value="accordionSteps[0]?.value"
       collapsible
+      :ui="{ color: 'primary' }"
     >
       <template #leading="{ item, index }">
         <UButton
@@ -42,12 +43,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useStorage } from '@vueuse/core'
 import type { FirebaseProduct } from '../../../../../models/objects/product.model'
 import ProductViewOnboardingAssets from './OnboardingAssets.vue'
 import ProductViewOnboardingContent from './OnboardingContent.vue'
 import ProductViewOnboardingReview from './OnboardingReview.vue'
 import ProductViewOnboardingLaunch from './OnboardingLaunch.vue'
+import { useProductFulfillmentOnboarding } from '../../../../../composables/fireux/onboarding/useProductFulfillmentOnboarding'
 
 const props = defineProps<{
   product?: Partial<FirebaseProduct>
@@ -60,20 +61,8 @@ const accordionSteps = [
   { value: 'launch', label: 'Launch' },
 ]
 
-const assetKeys = [
-  'onboardingAssetLogo',
-  'onboardingAssetWordmarkLight',
-  'onboardingAssetWordmarkDark',
-  'onboardingAssetCover',
-  'onboardingAssetThumbnail',
-  'onboardingAssetPwa192',
-  'onboardingAssetPwa512',
-]
-
-const assetRefs = assetKeys.map((key) => useStorage<string>(`${key}Data`, ''))
-
-const assetsComplete = computed(() => assetRefs.every((ref) => Boolean(ref.value)))
-const contentComplete = computed(() => Boolean(props.product?.content?.trim()))
+const { requiredAssetsComplete, requiredContentComplete } =
+  useProductFulfillmentOnboarding(computed(() => props.product))
 
 const requirements = computed<string[]>(() => {
   const value = props.product?.metadata?.delivery?.requirements
@@ -81,9 +70,15 @@ const requirements = computed<string[]>(() => {
 })
 
 const stepIsComplete = (value: string) => {
-  if (value === 'assets') return assetsComplete.value
-  if (value === 'content') return contentComplete.value
-  return false
+  if (value === 'assets') return requiredAssetsComplete.value
+  if (value === 'content') return requiredContentComplete.value
+  if (value === 'review') {
+    return requiredAssetsComplete.value && requiredContentComplete.value
+  }
+  if (value === 'launch') {
+    return requiredAssetsComplete.value && requiredContentComplete.value
+  }
+  return true
 }
 </script>
 

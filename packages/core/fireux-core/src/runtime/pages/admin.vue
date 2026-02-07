@@ -61,6 +61,9 @@
                   <UButton to="/admin/products/create" variant="soft" class="w-fit">
                     Create product
                   </UButton>
+                  <UButton to="/admin/licenses" variant="outline" class="w-fit">
+                    Template licenses
+                  </UButton>
                 </div>
               </UPageCard>
 

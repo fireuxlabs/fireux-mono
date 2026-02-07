@@ -7,7 +7,7 @@ Editing Rules:
 
 Status: **Active**
 Version: **v1**
-Updated: 2026-02-05
+Updated: 2026-02-07
 
 Purpose:
 - Compare `packages/extensions/fireux-products` against other extensions.

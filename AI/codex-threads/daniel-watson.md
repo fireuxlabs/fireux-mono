@@ -6,7 +6,7 @@ Editing Rules:
 
 Status: **Active**
 Version: **v1**
-Updated: 2026-02-06
+Updated: 2026-02-07
 
 Purpose:
 - Present a clear, sellable snapshot of Daniel Watson’s skills and strengths.
@@ -80,5 +80,3 @@ Scope (source of truth):
 - Which 1–2 live URLs can be shared publicly?
 
 #end
-
-just contract freelance but happy to maintain apps afetr at a negotion.

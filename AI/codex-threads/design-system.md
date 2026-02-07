@@ -7,7 +7,7 @@ Editing Rules:
 
 Status: **Draft**
 Version: **v2**
-Updated: 2026-02-05
+Updated: 2026-02-07
 Previous: v1 (2026-02-05)
 
 This file is a Codex-owned working thread. It is **not canon** and should remain lean.

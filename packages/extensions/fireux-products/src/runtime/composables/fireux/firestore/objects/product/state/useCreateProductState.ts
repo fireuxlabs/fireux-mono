@@ -12,24 +12,24 @@ type ProductDraft = Partial<FirebaseProduct> & {
 const STORAGE_KEY = 'createProduct'
 const IMAGE_KEY = 'createProductMainImageData'
 
-const starterName = 'FireUX App'
-const starterTagline = 'A professional app, built with FireUX.'
-const starterQ = "I need something professional online that I don't have to maintain. Can you help?"
+const starterName = 'FireUX Template'
+const starterTagline = 'A neutral FireUX app starter you run yourself.'
+const starterQ =
+  "I'm a developer. Can I buy a starter and build it myself?"
 const starterA =
-  'Yes. FireUX App gives you a modern website + installable app (PWA) with products and a blog, hosted and maintained for you.'
-const starterDescription = 'A professional app, built with FireUX.'
+  'Yes. FireUX Template gives you a runnable neutral app baseline with products and blogs.'
+const starterDescription = 'A neutral FireUX app starter for self-hosted builds.'
 const starterContent = `
-<p>A FireUX App gives your business a professional digital home that works everywhere and is easy to manage.</p>
-<p>You get a fast, modern website and an installable app that your customers can use on phone or desktop.</p>
-<p>You can present your products clearly, publish content, and keep everything up to date without worrying about hosting, updates, or technical maintenance.</p>
+<p>FireUX Template is a developer starter designed to ship fast.</p>
+<p>It includes a neutral FireUX app shape with products and blogs so you can extend from a proven baseline.</p>
+<p>You host and operate it yourself.</p>
 `.trim()
 const starterFeatures = [
-  { title: 'Professional website and app', available: true },
-  { title: 'Product catalogue', available: true },
-  { title: 'Blog and content publishing', available: true },
-  { title: 'Hosting and maintenance', available: true },
-  { title: 'Regular updates', available: true },
-  { title: 'Setup included this month', available: true },
+  { title: 'Neutral FireUX app starter', available: true },
+  { title: 'Products module included', available: true },
+  { title: 'Blogs module included', available: true },
+  { title: 'Self-hosted control', available: true },
+  { title: 'One-time purchase', available: true },
 ]
 
 function toSlug(name: string) {
@@ -61,19 +61,19 @@ export function useCreateProductState() {
     content: starterContent,
     active: true,
     slug: starterSlug,
-    product_type: 'saas_app',
+    product_type: 'template',
     features: starterFeatures,
     metadata: {
-      category: 'app',
-      route: { scenario: 1, product: 'FireUX App' },
+      category: 'template',
+      kind: 'template',
+      route: { scenario: 6, product: 'Templates + Optional Modules' },
       ecosystem: 'fireux-fireux',
-      promo: { setup_fee: 'free_this_month' },
-      pricing: { subscription: { amount: 20, currency: 'CHF', interval: 'month' } },
+      pricing: { one_time: { amount: 99, currency: 'CHF' } },
       delivery: {
-        estimated_time: '3–5 days',
-        requirements: ['App name', 'Branding (logo, colours)', 'Initial products or content'],
+        estimated_time: 'Instant',
+        requirements: ['Stripe payment', 'Email for repository access'],
       },
-      cta: { label: 'Get started', action: 'contact' },
+      cta: { label: 'Buy template', action: 'checkout' },
       status: 'active',
     },
     appId: tenantId,
@@ -99,7 +99,7 @@ export function useCreateProductState() {
       description: starterDescription,
       content: starterContent,
       slug: starterSlug,
-      product_type: String(current.product_type || defaultKind),
+      product_type: String(current.product_type || 'template'),
       active: typeof current.active === 'boolean' ? current.active : true,
       appId: current.appId || tenantId,
       creator_id: current.creator_id || currentUser.value?.uid || '',
@@ -115,20 +115,20 @@ export function useCreateProductState() {
         ? { ...current.metadata }
         : {}
 
-    if (!mergedMetadata.category) mergedMetadata.category = 'app'
-    if (!mergedMetadata.route) mergedMetadata.route = { scenario: 1, product: 'FireUX App' }
-    if (!mergedMetadata.ecosystem) mergedMetadata.ecosystem = 'fireux-fireux'
-    if (!mergedMetadata.promo) mergedMetadata.promo = { setup_fee: 'free_this_month' }
-    if (!mergedMetadata.pricing) {
-      mergedMetadata.pricing = { subscription: { amount: 20, currency: 'CHF', interval: 'month' } }
+    if (!mergedMetadata.category) mergedMetadata.category = 'template'
+    if (!mergedMetadata.kind) mergedMetadata.kind = 'template'
+    if (!mergedMetadata.route) {
+      mergedMetadata.route = { scenario: 6, product: 'Templates + Optional Modules' }
     }
+    if (!mergedMetadata.ecosystem) mergedMetadata.ecosystem = 'fireux-fireux'
+    if (!mergedMetadata.pricing) mergedMetadata.pricing = { one_time: { amount: 99, currency: 'CHF' } }
     if (!mergedMetadata.delivery) {
       mergedMetadata.delivery = {
-        estimated_time: '3–5 days',
-        requirements: ['App name', 'Branding (logo, colours)', 'Initial products or content'],
+        estimated_time: 'Instant',
+        requirements: ['Stripe payment', 'Email for repository access'],
       }
     }
-    if (!mergedMetadata.cta) mergedMetadata.cta = { label: 'Get started', action: 'contact' }
+    if (!mergedMetadata.cta) mergedMetadata.cta = { label: 'Buy template', action: 'checkout' }
     if (!mergedMetadata.status) mergedMetadata.status = 'active'
 
     product.value = {
@@ -141,7 +141,7 @@ export function useCreateProductState() {
       description: current.description || starterDescription,
       content: current.content || starterContent,
       slug: current.slug || starterSlug,
-      product_type: current.product_type || 'saas_app',
+      product_type: current.product_type || 'template',
       features: Array.isArray(current.features) && current.features.length
         ? current.features
         : starterFeatures,
@@ -200,19 +200,19 @@ export function useCreateProductState() {
       content: starterContent,
       active: true,
       slug: starterSlug,
-      product_type: 'saas_app',
+      product_type: 'template',
       features: starterFeatures,
       metadata: {
-        category: 'app',
-        route: { scenario: 1, product: 'FireUX App' },
+        category: 'template',
+        kind: 'template',
+        route: { scenario: 6, product: 'Templates + Optional Modules' },
         ecosystem: 'fireux-fireux',
-        promo: { setup_fee: 'free_this_month' },
-        pricing: { subscription: { amount: 20, currency: 'CHF', interval: 'month' } },
+        pricing: { one_time: { amount: 99, currency: 'CHF' } },
         delivery: {
-          estimated_time: '3–5 days',
-          requirements: ['App name', 'Branding (logo, colours)', 'Initial products or content'],
+          estimated_time: 'Instant',
+          requirements: ['Stripe payment', 'Email for repository access'],
         },
-        cta: { label: 'Get started', action: 'contact' },
+        cta: { label: 'Buy template', action: 'checkout' },
         status: 'active',
       },
       appId: tenantId,

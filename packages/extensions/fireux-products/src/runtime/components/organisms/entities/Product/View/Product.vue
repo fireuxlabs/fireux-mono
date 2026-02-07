@@ -13,7 +13,13 @@
           {{ formatDefaultPrice(product) }}
         </p>
         <div class="purchace-buttons">
-          <UButton :disabled="props.mode === 'preview'" color="primary">Buy Now</UButton>
+          <UButton
+            :disabled="props.mode === 'preview' || isBuying"
+            color="primary"
+            @click="startCheckout"
+          >
+            {{ isBuying ? 'Starting checkout...' : 'Buy Now' }}
+          </UButton>
           <UButton :disabled="props.mode === 'preview'" variant="outline">Add to Basket</UButton>
         </div>
       </div>
@@ -26,7 +32,13 @@
       <p>{{ display(product?.description) }}</p>
       <p v-if="product?.default_price">{{ formatDefaultPrice(product) }}</p>
       <div class="purchace-buttons">
-        <UButton :disabled="props.mode === 'preview'" color="primary">Buy Now</UButton>
+        <UButton
+          :disabled="props.mode === 'preview' || isBuying"
+          color="primary"
+          @click="startCheckout"
+        >
+          {{ isBuying ? 'Starting checkout...' : 'Buy Now' }}
+        </UButton>
         <UButton :disabled="props.mode === 'preview'" variant="outline">Add to Basket</UButton>
       </div>
     </div>
@@ -101,7 +113,13 @@
           </section>
 
           <div class="purchace-buttons">
-            <UButton :disabled="props.mode === 'preview'" color="primary">Start onboarding</UButton>
+            <UButton
+              :disabled="props.mode === 'preview' || isBuying"
+              color="primary"
+              @click="startCheckout"
+            >
+              {{ isBuying ? 'Starting checkout...' : 'Buy now' }}
+            </UButton>
             <UButton :disabled="props.mode === 'preview'" variant="outline">Book a call</UButton>
           </div>
         </div>
@@ -110,14 +128,19 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import type { FirebaseProduct } from '../../../../../models/objects/product.model'
 import ProductViewOnboarding from './Onboarding.vue'
+
+const useToastFn = (globalThis as any).useToast as undefined | (() => any)
+const toast = useToastFn ? useToastFn() : undefined
 
 const props = defineProps<{
   product?: Partial<FirebaseProduct>
   variant?: 'customer' | 'info' | 'cell' | 'page'
   mode?: 'preview' | 'fetch'
 }>()
+const isBuying = ref(false)
 
 function display(value: unknown): string {
   return typeof value === 'string' && value.trim() !== '' ? value : '!'
@@ -138,6 +161,98 @@ function formatDefaultPrice(product?: Partial<FirebaseProduct>): string {
   return product.default_price.interval
     ? `${base}/${product.default_price.interval}`
     : base
+}
+
+const notify = (
+  title: string,
+  description: string,
+  color: 'green' | 'amber' | 'red' = 'amber'
+) => {
+  if (toast) {
+    toast.add({
+      title,
+      description,
+      color,
+      icon:
+        color === 'green'
+          ? 'i-heroicons-check-circle'
+          : color === 'red'
+            ? 'i-heroicons-x-circle'
+            : 'i-heroicons-exclamation-triangle',
+    })
+    return
+  }
+  console.warn(`${title}: ${description}`)
+}
+
+function resolveCheckoutPriceId(product?: Partial<FirebaseProduct>): string {
+  const stripe = (product?.metadata as any)?.stripe || {}
+  const ids = Array.isArray(stripe?.price_ids)
+    ? stripe.price_ids.map((id: unknown) => String(id || '').trim()).filter(Boolean)
+    : []
+  if (ids.length) return ids[0]
+
+  const fallback = String(product?.default_price?.id || '').trim()
+  if (!fallback || fallback.startsWith('local_')) return ''
+  return fallback
+}
+
+function resolveCheckoutMode(product?: Partial<FirebaseProduct>) {
+  const firstType = String(product?.prices?.[0]?.type || '').trim()
+  return firstType === 'recurring' ? 'subscription' : 'payment'
+}
+
+async function startCheckout() {
+  if (props.mode === 'preview') return
+
+  const product = props.product
+  const appId = String(product?.appId || '').trim()
+  const productId = String(product?.id || '').trim()
+  const slug = String(product?.slug || '').trim()
+  const priceId = resolveCheckoutPriceId(product)
+
+  if (!appId || !productId || !slug) {
+    notify('Checkout unavailable', 'Product data is incomplete for checkout.', 'red')
+    return
+  }
+
+  if (!priceId) {
+    notify(
+      'Checkout unavailable',
+      'No live Stripe price found for this product yet.',
+      'amber'
+    )
+    return
+  }
+
+  isBuying.value = true
+  try {
+    const response = await $fetch<{ success?: boolean; url?: string }>(
+      '/api/stripe/create-checkout-session',
+      {
+        method: 'POST',
+        body: {
+          appId,
+          productId,
+          slug,
+          priceId,
+          mode: resolveCheckoutMode(product),
+        },
+      }
+    )
+
+    const checkoutUrl = String(response?.url || '').trim()
+    if (!checkoutUrl) {
+      throw new Error('Checkout session URL missing')
+    }
+
+    window.location.href = checkoutUrl
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to start checkout'
+    notify('Checkout failed', message, 'red')
+  } finally {
+    isBuying.value = false
+  }
 }
 </script>
 

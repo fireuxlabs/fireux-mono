@@ -3,9 +3,17 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
 
-  <UPageBody class="pagebody">
+    <UPageBody class="pagebody">
+      <ProductsSolutions />
       <ProductCollectionManager :collection="collection" />
-  </UPageBody>
+      <DevJson
+        v-if="isDev"
+        :title="'Products (JSON)'"
+        context="products index · products list"
+        :data="collection"
+        :default-open="false"
+      />
+    </UPageBody>
   </UPage>
 </template>
 
@@ -14,6 +22,7 @@ import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
 import { useProductFetch } from '../../composables/fireux/firestore/objects/product/fetch/useProductFetch'
+import ProductsSolutions from '../../components/organisms/entities/Product/Solutions.vue'
 
 const { appName } = useFireUXConfig()
 
@@ -41,4 +50,5 @@ useHead({ title: `${appName} | ${pageTitle}` })
 
 const { products } = useProductFetch()
 const collection = computed(() => products.value ?? [])
+const isDev = import.meta.dev
 </script>
