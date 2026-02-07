@@ -19,13 +19,25 @@ const fireuxConfig = defineFireuxConfig({
 
 export default defineNuxtConfig({
   ...fireuxConfig,
+  experimental: {
+    ...(fireuxConfig.experimental || {}),
+    // Avoid stale dev client requests to /_nuxt/builds/meta/dev.json.
+    appManifest: process.env.NODE_ENV === 'production',
+  },
   css: [...(fireuxConfig.css ?? []), '@/assets/styles/main.css'],
   pwa: {
+    ...(fireuxConfig.pwa || {}),
     registerType: 'autoUpdate',
     workbox: {
+      ...(fireuxConfig.pwa?.workbox || {}),
       cleanupOutdatedCaches: true,
       clientsClaim: true,
       skipWaiting: true,
+    },
+    // Keep service worker disabled during local development.
+    devOptions: {
+      ...(fireuxConfig.pwa?.devOptions || {}),
+      enabled: false,
     },
   },
 })

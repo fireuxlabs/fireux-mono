@@ -74,10 +74,18 @@ export function useProductInterface() {
     const name = safeString(product.name)
     const tagline = safeString(product.tagline)
     const description = safeString(product.description)
+    const productType = safeString(product.product_type).trim()
+    const solutionIds = new Set(['fireux-app', 'fireux-template'])
+    const to =
+      productType === 'module'
+        ? `/modules/${id}`
+        : solutionIds.has(id) || productType === 'saas_app' || productType === 'template'
+          ? `/solutions/${id}`
+          : `/products/${id}`
 
     return {
       id,
-      to: id ? `/products/${id}` : '',
+      to: id ? to : '',
 
       avatarUrl: imageUrl,
       title: name,

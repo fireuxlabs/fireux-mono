@@ -4,7 +4,7 @@
       <div class="space-y-1">
         <h2 class="text-lg font-semibold">Solutions</h2>
         <p class="text-sm text-muted-foreground">
-          Jump to dedicated pages for each core FireUX offer.
+          Jump to dedicated pages for selected FireUX offers.
         </p>
       </div>
     </template>
@@ -42,7 +42,12 @@ import { useProductFetch } from '../../../../composables/fireux/firestore/object
 import { useProductInterface } from '../../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface'
 import type { FirebaseProduct } from '../../../../models/objects/product.model'
 
-const SOLUTION_SLUGS = ['fireux-app', 'fireux-template']
+const SOLUTION_ROUTES: Record<string, string> = {
+  'fireux-app': '/solutions/fireux-app',
+  'fireux-template': '/solutions/fireux-template',
+  'fireux-kitchens': '/solutions/fireux-kitchens',
+}
+const SOLUTION_SLUGS = Object.keys(SOLUTION_ROUTES)
 
 const { products } = useProductFetch()
 const { card: mapCard } = useProductInterface()
@@ -71,8 +76,7 @@ const solutionItems = computed(() =>
 
 const resolveSolutionRoute = (product: FirebaseProduct) => {
   const slug = String(product.slug || product.id || '').trim()
-  if (slug === 'fireux-app') return '/solutions/fireux-app'
-  if (slug === 'fireux-template') return '/solutions/fireux-template'
+  if (SOLUTION_ROUTES[slug]) return SOLUTION_ROUTES[slug]
   return product.id ? `/products/${product.id}` : '/products'
 }
 </script>

@@ -14,10 +14,10 @@
           <UButton
             size="xs"
             color="primary"
-            icon="i-lucide-layout-dashboard"
-            :to="dashboardTo"
+            icon="i-lucide-carrot"
+            :to="ingredientsTo"
           >
-            Open Kitchen Dashboard
+            Open Ingredients
           </UButton>
         </template>
       </UPageHeader>
@@ -43,17 +43,17 @@
 
           <UCard>
             <template #header>
-              <div class="text-sm font-semibold">Kitchen Dashboard</div>
+              <div class="text-sm font-semibold">Ingredients</div>
             </template>
             <div class="space-y-2 text-sm text-dimmed">
-              <p>Upgrade to unlock team, inventory, and operational tools.</p>
+              <p>Manage ingredient inventory for this kitchen.</p>
               <UButton
                 size="xs"
                 variant="soft"
                 color="primary"
-                :to="dashboardTo"
+                :to="ingredientsTo"
               >
-                Upgrade to Kitchen Dashboard
+                Open Ingredients
               </UButton>
             </div>
           </UCard>
@@ -125,8 +125,13 @@ const route = useRoute()
 const raw = route.params.id
 const docId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
-const dashboardTo = computed(() =>
-  docId ? `/kitchens/dashboard/${encodeURIComponent(docId)}` : '/kitchens'
+const ingredientsTo = computed(() =>
+  docId
+    ? {
+        path: '/ingredients',
+        query: { kitchenId: docId },
+      }
+    : '/ingredients'
 )
 
 const { kitchen: fetchKitchen } = useKitchenFetch()

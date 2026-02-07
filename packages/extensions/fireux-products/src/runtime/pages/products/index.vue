@@ -20,12 +20,12 @@ const { appName } = useFireUXConfig()
 
 const pageTitle = 'Products'
 const pageDescription =
-  'Create a product and browse all products available to this runtime.'
+  'Create and browse products available to this runtime.'
 
 definePageMeta({
   layout: 'default',
   title: 'Products',
-  description: 'Create and browse products for this runtime.',
+  description: pageDescription,
   nav: {
     key: 'products',
     label: 'Products',

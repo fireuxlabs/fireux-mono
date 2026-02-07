@@ -11,6 +11,7 @@ import { configureServer } from './config/module/server-config'
 
 export interface ModuleOptions {
   prefix?: string
+  defaultKitchenId?: string
 }
 
 declare module '@nuxt/schema' {
@@ -31,12 +32,17 @@ export default defineNuxtModule<ModuleOptions>({
   },
   defaults: {
     prefix: 'Fire',
+    defaultKitchenId: '',
   },
-  async setup(_options, nuxt) {
+  async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
 
     configureFireuxModule(resolver, nuxt, {
-      runtime: (nuxt) => configureRuntime(nuxt, 'kitchens'),
+      runtime: (nuxt) =>
+        configureRuntime(nuxt, 'kitchens', {
+          enabled: true,
+          defaultKitchenId: String(options.defaultKitchenId || '').trim(),
+        }),
       plugins: configurePlugins,
       composables: configureComposables,
       components: configureComponents,

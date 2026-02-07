@@ -102,8 +102,6 @@
             <p v-else class="missing">!</p>
           </section>
 
-          <ProductViewOnboarding :product="product" />
-
           <section class="product-section">
             <h2>Questions</h2>
             <div class="qa">
@@ -130,7 +128,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import type { FirebaseProduct } from '../../../../../models/objects/product.model'
-import ProductViewOnboarding from './Onboarding.vue'
 
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined

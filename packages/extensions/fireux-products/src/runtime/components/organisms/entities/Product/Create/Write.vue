@@ -60,9 +60,6 @@
     <!-- Stock & Capacity Management -->
     <ProductCreateStock />
 
-    <!-- Shiping -->
-    <!-- <ProductCreateShipping /> -->
-
     <!-- Main Product Image -->
     <div class="image-section">
       <MoleculesFormsStateImagePicker

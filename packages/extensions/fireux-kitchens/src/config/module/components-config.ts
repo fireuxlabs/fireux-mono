@@ -17,6 +17,16 @@ export function configureComponents(resolver: Resolver) {
     prefix: 'Kitchen',
   })
 
+  registerComponentsDir(
+    resolver,
+    './runtime/components/organisms/entities/Ingredient',
+    {
+      global: true,
+      pathPrefix: true,
+      prefix: 'Ingredient',
+    }
+  )
+
   registerComponentsDir(resolver, './runtime/components/organisms/profiles/Chef', {
     global: true,
     pathPrefix: true,
@@ -27,5 +37,11 @@ export function configureComponents(resolver: Resolver) {
     resolver,
     './runtime/components/organisms/entities/Kitchen',
     'Kitchen'
+  )
+
+  registerComponentAliases(
+    resolver,
+    './runtime/components/organisms/entities/Ingredient',
+    'Ingredient'
   )
 }

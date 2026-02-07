@@ -86,3 +86,58 @@ Source: `AI/chatcontext-2026-02-06.md` (Section 3.2 Ecosystem baseline)
 ## Future
 - Draft a full spec for the chosen scenario (roles, objects, flows, screens).
 - Map kitchen module data models to FireUX defaults and opt-in modules.
+# Kitchens Module — Concepts & Handover (2026-02-07)
+
+Purpose: capture current kitchen-module intent so we can align product copy, roadmap, and build scope.
+
+Core idea (current)
+- Kitchen module is not “hospitality branding”; it is operational kitchen tooling.
+- Primary focus is back‑of‑house workflows: receiving, menu creation, recipes, mise en place, ingredient stock, and station workflow.
+- It should support touch‑friendly order processing in a kitchen environment.
+
+Key capability themes
+- Menu creation and management (structure, pricing, availability).
+- Recipe + ingredient management (BOM, stock awareness).
+- Mise en place tasks and prep checklists.
+- Order processing and station routing (line, pass, prep stations).
+- Inventory and ordering support (ingredients, suppliers).
+- Kitchen tools/operations (open/close diary, health & safety records, training).
+
+Chef profiles
+- We moved chef profiles from Misebox to Kitchens (routes stay under `apps/{appId}/chefs`).
+- Chef profile should be a first‑class part of Kitchens.
+
+Product messaging direction
+- “Kitchen operations pages and dashboards.”
+- “Menus, ingredients, mise, team, costs.”
+- Emphasize operational control and consistency (not just branding).
+
+Roadmap framing (for modules/[id])
+- Now: kitchen profile + menus/ingredients/mise/team/costs sections.
+- Next: prep lists, inventory workflows, station tools.
+- Later: touch‑friendly order handling + integrations.
+
+Open questions
+- Do we want orders to be a formal entity now, or just a simple station board?
+- How deep should inventory go (full stock system vs lightweight ingredient list)?
+- Are supplier order workflows part of Kitchens or a future add‑on?
+
+## Canon Decision — Ingredient Identity (2026-02-07)
+
+Rule
+- Ingredient identity is named by kitchen usage, not by supplier naming and not by biological taxonomy.
+- If kitchens prep it differently, order it separately, or cost it differently, it is a different ingredient.
+
+Implications
+- `Tomato` and `Cherry tomato` are different ingredients.
+- Supplier SKUs do not define ingredient identity.
+- Supplier products map to ingredients; ingredients do not derive from supplier products.
+
+Modeling guardrails
+- Do not implement parent/child ingredient trees.
+- Do not auto-generate ingredients from supplier catalogs.
+- Keep ingredient names canonical and stable for recipe and costing consistency.
+
+Practical stop rule
+- If a kitchen would substitute it without renaming the dish, keep it as the same ingredient.
+- If substitution is intentional and meaningfully changes prep/behavior (fresh vs canned, cherry vs chopped), split it.

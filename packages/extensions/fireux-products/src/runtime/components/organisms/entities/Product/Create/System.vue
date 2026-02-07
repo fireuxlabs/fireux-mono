@@ -3,7 +3,7 @@
     :loading="isCreating"
     submit-label="Create"
     @submit="handleCreate"
-    @clear="handleClear"
+    @clear="requestClear"
   >
     <template #write>
       <ProductCreateWrite />
@@ -12,12 +12,31 @@
       <ProductCreatePreview />
     </template>
   </MoleculesCreateShell>
+
+  <UModal
+    v-model="isClearConfirmOpen"
+    title="Clear product draft?"
+    description="This will remove unsaved product and pricing changes."
+  >
+    <template #body>
+      <div class="flex justify-end gap-2">
+        <UButton
+          variant="ghost"
+          color="neutral"
+          @click="isClearConfirmOpen = false"
+        >
+          Cancel
+        </UButton>
+        <UButton color="error" @click="confirmClear">
+          Clear draft
+        </UButton>
+      </div>
+    </template>
+  </UModal>
 </template>
 <script setup lang="ts">
 import { ref } from 'vue'
-// Use Nuxt UI toast if available (auto-imported in app)
-const useToastFn = (globalThis as any).useToast as undefined | (() => any)
-const toast = useToastFn ? useToastFn() : undefined
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useCreatePricesState } from '../../../../../composables/fireux/firestore/objects/product/Prices/useCreatePricesState'
 import { useCreateProductState } from '../../../../../composables/fireux/firestore/objects/product/state/useCreateProductState'
 import { useProductCreate } from '../../../../../composables/fireux/firestore/objects/product/useProductCreate'
@@ -27,55 +46,66 @@ const { product, resetCreateProductState } = await useCreateProductState()
 const { resetCreatePricesState } = useCreatePricesState()
 
 const { createProduct } = await useProductCreate()
+const toast = useToastify()
 
 const isCreating = ref(false)
+const isClearConfirmOpen = ref(false)
+
+function clearDraftState() {
+  resetCreateProductState()
+  resetCreatePricesState()
+}
 
 async function handleCreate() {
+  if (isCreating.value) return
+
   // Validate required fields
   if (!product.value?.name?.trim()) {
-    if (toast)
-      toast.add({
-        title: 'Missing name',
-        description: 'Product name is required',
-        icon: 'i-heroicons-exclamation-circle',
-        color: 'amber',
-      })
+    toast.add({
+      title: 'Missing name',
+      description: 'Product name is required',
+      color: 'amber',
+    })
     return
   }
 
   isCreating.value = true
+  try {
+    const response = await createProduct()
 
-  const response = await createProduct()
-
-  if (!response.success) {
-    if (toast)
+    if (!response.success) {
       toast.add({
         title: 'Create failed',
         description: String(response.error || 'Unknown error'),
-        icon: 'i-heroicons-x-circle',
         color: 'red',
       })
-    isCreating.value = false
-    return
-  }
+      return
+    }
 
-  // Success! Clear the form and show success message
-  if (toast)
     toast.add({
       title: 'Created',
       description: 'Product created successfully',
-      icon: 'i-heroicons-check-circle',
       color: 'green',
     })
-  resetCreateProductState()
-  resetCreatePricesState()
-  isCreating.value = false
+    clearDraftState()
+  } catch (error: any) {
+    toast.add({
+      title: 'Create failed',
+      description: String(error?.message || 'Unknown error'),
+      color: 'red',
+    })
+  } finally {
+    isCreating.value = false
+  }
 }
 
-function handleClear() {
-  if (confirm('Are you sure you want to clear the form?')) {
-    resetCreateProductState()
-    resetCreatePricesState()
-  }
+function requestClear() {
+  if (isCreating.value) return
+  isClearConfirmOpen.value = true
+}
+
+function confirmClear() {
+  clearDraftState()
+  isClearConfirmOpen.value = false
 }
 </script>

@@ -46,6 +46,26 @@
         </div>
       </UCard>
 
+      <UCard>
+        <template #header>
+          <div class="space-y-2">
+            <h2 class="text-xl font-semibold">FireUX Kitchens</h2>
+            <p class="text-sm text-muted-foreground">
+              Back-of-house kitchen operations for menus, ingredients, mise, team, and costs.
+            </p>
+          </div>
+        </template>
+
+        <div class="flex flex-wrap gap-2">
+          <UButton to="/solutions/fireux-kitchens" color="primary" variant="solid">
+            View Product
+          </UButton>
+          <UButton to="/modules/fireux-kitchens" color="neutral" variant="outline">
+            View Module
+          </UButton>
+        </div>
+      </UCard>
+
       <ProductCollectionManager
         :collection="nonModuleProducts"
         header-text="FireUX products."
@@ -78,7 +98,7 @@ import type { FirebaseProduct } from 'fireux-products/runtime/models/objects/pro
 definePageMeta({
   layout: 'default',
   title: 'Solutions',
-  description: 'FireUX app and template solutions.',
+  description: 'FireUX app, template, and kitchen operations solutions.',
   nav: {
     key: 'solutions',
     label: 'Solutions',
