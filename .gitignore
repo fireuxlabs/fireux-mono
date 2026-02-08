@@ -103,6 +103,9 @@ migrations/backups/*.json
 # Documentation artifacts
 artifacts/
 
+# AI work trees and chat outputs
+AI/
+
 # Mirror (disposable snapshots; safe to delete/recreate)
 mirror/**
 !mirror/README.md
