@@ -6,38 +6,37 @@
     />
 
     <UPageBody class="pagebody">
-      <UCard>
-        <DevModel
-          :title="'Suppliers · Model'"
-          :model="supplierModelRuntime"
-        />
-      </UCard>
+      <DevModel
+        :title="'Suppliers · Model'"
+        :model="supplierModelRuntime"
+      />
 
       <UCard>
         <template #header>
-          <div class="flex items-start justify-between gap-3">
-            <div class="space-y-3">
+          <div class="space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
               <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
                 Suppliers collection
               </p>
-              <p class="text-xs text-gray-500 dark:text-gray-400">
-                Browse suppliers resolved for this runtime and filter by model drift.
-              </p>
-              <DevDriftToolbar
-                :drift-kind="suppliersDriftKind"
-                :selected-field="suppliersSelectedField"
-                :filter-options="suppliersFilterOptions"
-                :copy-label="'Copy drift · Suppliers'"
-                :copy-payload="suppliersDriftCopyPayload"
-                @update:drift-kind="setSuppliersDriftKind"
-                @update:selected-field="updateSuppliersSelectedField"
-              />
+              <UBadge variant="soft">{{ visibleSuppliers }} / {{ totalSuppliers }}</UBadge>
             </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              Filter suppliers by model drift before browsing records.
+            </p>
+            <DevDriftToolbar
+              :drift-kind="suppliersDriftKind"
+              :selected-field="suppliersSelectedField"
+              :filter-options="suppliersFilterOptions"
+              :copy-label="'Copy drift · Suppliers'"
+              :copy-payload="suppliersDriftCopyPayload"
+              @update:drift-kind="setSuppliersDriftKind"
+              @update:selected-field="updateSuppliersSelectedField"
+            />
           </div>
         </template>
-
-        <OrganismsProfilesSupplierCollectionManager :collection="filteredSuppliers" />
       </UCard>
+
+      <OrganismsProfilesSupplierCollectionManager :collection="filteredSuppliers" />
     </UPageBody>
   </UPage>
 </template>
@@ -80,6 +79,9 @@ const {
   collection: suppliersCollection,
   runtimeModel: supplierModelRuntime,
 })
+
+const totalSuppliers = computed(() => suppliersCollection.value.length)
+const visibleSuppliers = computed(() => filteredSuppliers.value.length)
 
 
 const filteredSuppliersDriftPayload = computed(() =>

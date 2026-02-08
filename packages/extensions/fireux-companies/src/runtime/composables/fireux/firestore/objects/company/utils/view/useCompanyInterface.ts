@@ -75,7 +75,7 @@ export function useCompanyInterface() {
     imageShade?: PlaceImageShade
     name: string
     formattedAddress: string
-    source: PlaceSource
+    source?: PlaceSource
     prop?: string
   }
 
@@ -158,8 +158,8 @@ export function useCompanyInterface() {
     if (!base) return null
     return {
       ...base,
-      title: base.title || base.name,
-      subtitle: base.subtitle || base.shortAddress || base.formattedAddress || '',
+      title: base.title,
+      subtitle: base.subtitle,
     }
   }
 
@@ -174,7 +174,7 @@ export function useCompanyInterface() {
       imageUrl: base.imageUrl,
       imageShade: base.imageShade,
       source: (target as any)?.source,
-      prop: (target as any)?.brand_tagline || (target as any)?.website || base.shortName,
+      prop: (target as any)?.brand_tagline,
     }
   }
 
@@ -186,8 +186,8 @@ export function useCompanyInterface() {
       imageShade: base.imageShade,
       name: base.name,
       formattedAddress: base.formattedAddress,
-      source: ((target as any)?.source as PlaceSource) ?? 'fireux',
-      prop: (target as any)?.brand_tagline || (target as any)?.website || base.shortName,
+      source: (target as any)?.source as PlaceSource | undefined,
+      prop: (target as any)?.brand_tagline,
     }
   }
 
@@ -201,7 +201,7 @@ export function useCompanyInterface() {
       subtitle: base.subtitle,
       imageUrl: base.imageUrl,
       imageShade: base.imageShade,
-      prop: (target as any)?.brand_tagline || (target as any)?.website || base.shortName,
+      prop: (target as any)?.brand_tagline,
       website: (target as any)?.website,
       address,
       phone: (target as any)?.phone,

@@ -34,7 +34,7 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { ref } from 'vue'
-import { useIngredientCreate } from '../../../../../../composables/fireux/firestore/objects/ingredient/mutations/useIngredientCreate'
+import { useIngredientCreate } from '../../../../../composables/fireux/firestore/objects/ingredient/mutations/useIngredientCreate'
 import { createDefaultIngredientForm, type IngredientCreateForm } from './types'
 
 const emit = defineEmits<{

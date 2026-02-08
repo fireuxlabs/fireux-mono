@@ -1,6 +1,11 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/pages/dev/forms.vue -->
 <template>
   <UPage>
+    <UPageHeader
+      title="Dev · Forms"
+      description="Sandbox for Firestore and local form components."
+    />
+
     <UPageBody class="pagebody">
       <UCard class="space-y-2">
         <template #header>
@@ -332,6 +337,8 @@ import { useFirestoreRead } from '../../composables/fireux/firestore/operations/
 
 definePageMeta({
   layout: 'dev',
+  title: 'Dev · Forms',
+  description: 'Sandbox for Firestore and local form components.',
   nav: {
     key: 'dev-forms',
     label: 'Forms',

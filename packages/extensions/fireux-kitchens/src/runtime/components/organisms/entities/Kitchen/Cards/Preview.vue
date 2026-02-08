@@ -83,7 +83,7 @@ type Props = {
   imageShade?: PlaceImageShade
   name: string
   formattedAddress: string
-  source: 'google' | 'fireux' | 'manual'
+  source?: 'google' | 'fireux' | 'manual'
   prop?: string
   showBadges?: boolean
   showBody?: boolean

@@ -6,38 +6,37 @@
     />
 
     <UPageBody class="pagebody">
-      <UCard>
-        <DevModel
-          :title="'Blogs · Model'"
-          :model="blogPostModelRuntime"
-        />
-      </UCard>
+      <DevModel
+        :title="'Blogs · Model'"
+        :model="blogPostModelRuntime"
+      />
 
       <UCard>
         <template #header>
-          <div class="flex items-start justify-between gap-3">
-            <div class="space-y-3">
+          <div class="space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
               <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
                 Blogs collection
               </p>
-              <p class="text-xs text-gray-500 dark:text-gray-400">
-                Browse blog posts resolved for this runtime and filter by model drift.
-              </p>
-              <DevDriftToolbar
-                :drift-kind="blogsDriftKind"
-                :selected-field="blogsSelectedField"
-                :filter-options="blogsFilterOptions"
-                :copy-label="'Copy drift · Blogs'"
-                :copy-payload="blogsDriftCopyPayload"
-                @update:drift-kind="setBlogsDriftKind"
-                @update:selected-field="updateBlogsSelectedField"
-              />
+              <UBadge variant="soft">{{ visibleBlogs }} / {{ totalBlogs }}</UBadge>
             </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              Filter blog posts by model drift before browsing records.
+            </p>
+            <DevDriftToolbar
+              :drift-kind="blogsDriftKind"
+              :selected-field="blogsSelectedField"
+              :filter-options="blogsFilterOptions"
+              :copy-label="'Copy drift · Blogs'"
+              :copy-payload="blogsDriftCopyPayload"
+              @update:drift-kind="setBlogsDriftKind"
+              @update:selected-field="updateBlogsSelectedField"
+            />
           </div>
         </template>
-
-        <BlogCollectionManager :collection="filteredBlogs" />
       </UCard>
+
+      <BlogCollectionManager :collection="filteredBlogs" />
     </UPageBody>
   </UPage>
 </template>
@@ -80,6 +79,9 @@ const {
   collection: blogsCollection,
   runtimeModel: blogPostModelRuntime,
 })
+
+const totalBlogs = computed(() => blogsCollection.value.length)
+const visibleBlogs = computed(() => filteredBlogs.value.length)
 
 
 const filteredBlogsDriftPayload = computed(() =>

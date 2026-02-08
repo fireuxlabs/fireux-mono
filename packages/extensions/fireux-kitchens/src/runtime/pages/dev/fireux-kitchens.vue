@@ -2,10 +2,12 @@
   <UPage>
     <UPageHeader
       title="Dev · Kitchens (Ext)"
-      description="Model shape for Kitchens collection."
+      description="Model and collection tools for kitchens, ingredients, and chefs."
     />
     <UPageBody class="pagebody">
       <DevKitchenSystem />
+      <DevIngredientSystem />
+      <DevChefSystem />
     </UPageBody>
   </UPage>
 </template>

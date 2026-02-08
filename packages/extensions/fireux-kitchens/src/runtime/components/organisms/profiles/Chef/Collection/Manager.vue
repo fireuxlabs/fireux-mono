@@ -64,20 +64,11 @@ type ChefEntry = ChefCore & { user?: unknown }
 const props = defineProps<{ collection?: ChefEntry[] }>()
 
 const collection = computed(() => props.collection ?? [])
-const { card: makeCard } = useChef()
-const searchTextFor = (entry: ChefEntry) => {
-  const displayName = (entry as any)?.user?.display_name ?? ''
-  const title = (entry as any)?.title ?? ''
-  const tagline = (entry as any)?.tagline ?? ''
-  const organization = (entry as any)?.organization_name ?? ''
-  return `${displayName} ${title} ${tagline} ${organization} ${entry.id ?? ''}`
-    .trim()
-    .toLowerCase()
-}
+const { card: makeCard, searchText } = useChef()
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
   useCollectionSearch<ChefEntry, ReturnType<typeof makeCard>>({
     items: collection,
-    searchText: (entry) => searchTextFor(entry),
+    searchText: (entry) => searchText(entry as ChefCore, (entry as any)?.user ?? null),
     makeCard: (entry) => makeCard(entry as ChefCore, (entry as any)?.user ?? null),
   })
 

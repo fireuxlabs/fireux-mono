@@ -1,7 +1,7 @@
 <template>
   <UPage>
     <UPageHeader
-      title="Cleanbox Ecosystem"
+      title="Dev · Cleanbox"
       description="Ops-facing inspection tools for workforce scheduling and job postings."
     />
 
@@ -112,7 +112,7 @@
 </template>
 
 <script setup lang="ts">
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts';
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig';
 
 definePageMeta({
   layout: 'dev',

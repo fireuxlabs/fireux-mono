@@ -1,5 +1,11 @@
 <template>
-  <div class="space-y-6">
+  <UPage>
+    <UPageHeader
+      title="Dev · Overview"
+      description="Diagnostics and inspection utilities for the active FireUX runtime."
+    />
+
+    <UPageBody class="pagebody space-y-6">
     <!-- Intro -->
     
     <UCard>
@@ -212,7 +218,8 @@
         :default-open="false"
       />
     </UCard>
-  </div>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
@@ -221,7 +228,8 @@ import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useAppEnvCheck } from '../../composables/fireux/app/utils/useAppEnvCheck'
 
 definePageMeta({
-  title: 'Development Tools',
+  title: 'Dev · Overview',
+  description: 'Diagnostics and inspection utilities for the active FireUX runtime.',
   layout: 'dev',
   nav: {
     key: 'dev-index',

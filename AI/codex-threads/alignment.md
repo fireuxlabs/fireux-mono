@@ -111,8 +111,121 @@ Scope reviewed:
 - `Write.vue` runtime-configurable `productKinds` fallback list.
   - Keep as extension/runtime variability; this is expected stack-level configurability.
 
+## use*Interface Alignment Batch (2026-02-08)
+Scope:
+- `usePlacesInterface`
+- `useCompanyInterface`
+- `useKitchenInterface`
+- Profile collection managers that consume interface `searchText` (`Professional`, `Chef`, `Supplier`)
+
+### Completed (aligned)
+- Collection managers now use canonical interface search functions instead of bespoke `searchTextFor` builders:
+  - `Professional/Collection/Manager.vue`
+  - `Chef/Collection/Manager.vue`
+  - `Supplier/Collection/Manager.vue`
+- Removed pill fallback chains in rich object interfaces:
+  - `title: base.title || base.name` -> `title: base.title`
+  - `subtitle: base.subtitle || ...` -> `subtitle: base.subtitle`
+- Removed `prop` fallback chains in company/kitchen/place object interfaces:
+  - now `prop` is sourced directly from `brand_tagline`.
+- Removed preview-source defaulting (`?? "fireux"`) in place/company/kitchen interfaces.
+  - Preview card components now accept optional `source` to match canonical deterministic mapping.
+
+### Remaining interface drifts to evaluate next
+- Agent profile interface still has multiple legacy fallback chains (headline, summary, placement tags, contact fields).
+- Chef/Supplier interfaces still intentionally include legacy fallback paths for headline/summary/org fields.
+  - Decide whether to preserve as compatibility mode or tighten to single-source canon.
+
 ## Watchlist (48h)
 - Product interface + product create/validation paths change frequently; keep `useProductInterface` lean.
 - Entity collection managers changed recently; re-validate no new fallback chains were added.
+
+## Kitchens DevEntitySystem Alignment (2026-02-08)
+Scope reviewed:
+- `packages/extensions/fireux-kitchens/src/runtime/pages/dev/fireux-kitchens.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/components/dev/Kitchen/System.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/components/dev/Ingredient/System.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/components/dev/Chef/System.vue`
+
+### Similarities (aligned now)
+- All three systems (`DevKitchenSystem`, `DevIngredientSystem`, `DevChefSystem`) now use:
+  - a dedicated model surface (`DevModel` inside `UCard`)
+  - a collection surface with `DevDriftToolbar`
+  - drift copy payload builders (`buildDriftPayload` + `buildCopyPayload`)
+  - `driftMode: 'extras-only'` drift behavior
+- `/dev/fireux-kitchens` now contains only kitchens-owned entities:
+  - kitchens, ingredients, chefs (supplier removed from this page)
+
+### Diffs (why kitchen shows more UI surfaces)
+- `DevKitchenSystem` includes `DevKitchenDummy`, which renders all card surfaces:
+  - Pill, Cell, Preview, Profile
+- `DevIngredientSystem` does not yet include an ingredient dummy/card-surface block.
+  - It currently shows only model + drifted collection manager.
+  - Kitchens extension also does not yet have ingredient card components (`Pill/Cell/Preview/Profile`) or a kitchens `useIngredientInterface`.
+- `DevChefSystem` does not yet include a chef dummy/card-surface block.
+  - It currently shows only model + drifted collection manager.
+  - Chef card components exist, but no dev dummy surface section is mounted yet.
+
+### Alignment Target (DevEntitySystem principle)
+- Canon for each `Dev*System` (entity-owned):
+  - Surface A: Dummy card surfaces (Pill, Cell, Preview, Profile)
+  - Surface B: Model view (`DevModel`)
+  - Surface C: Drifted collection manager (`DevDriftToolbar` + manager)
+- Priority to close gaps:
+  - P1: Add `DevChefDummy` and mount it in `DevChefSystem`
+  - P2: Add kitchens-owned ingredient card stack + `DevIngredientDummy`, then mount in `DevIngredientSystem`
+
+## System-Wide Dev*System Alignment Scan (2026-02-08)
+Scope:
+- Repo-wide scan for `defineOptions({ name: 'Dev*System' })`
+- Dev pages under `runtime/pages/dev/*`
+
+### Dev*System inventory (current)
+- `DevProductSystem`
+- `DevPlaceSystem`
+- `DevJobSystem`
+- `DevProfessionalSystem`
+- `DevAgentSystem`
+- `DevKitchenSystem`
+- `DevIngredientSystem`
+- `DevChefSystem`
+- `DevSupplierSystem` (kitchens handoff-only; no longer mounted on `/dev/fireux-kitchens`)
+
+### Similarities (aligned across systems)
+- Entity-owned systems consistently use:
+  - model surface (`DevModel`)
+  - drift toolbar (`DevDriftToolbar`)
+  - collection manager surface
+- Drift logic is mostly on `useDevDriftFilter` with `buildDriftPayload` + `buildCopyPayload`.
+- Modern pattern (`driftMode: 'extras-only'`) is used by:
+  - product, place, kitchen, ingredient, chef
+
+### Diffs (system-wide)
+- Dummy card-surface coverage is uneven:
+  - Full Pill/Cell/Preview/Profile dummy: `DevProductSystem`, `DevPlaceSystem`, `DevKitchenSystem`, `DevJobSystem`
+  - Partial dummy (Pill/Cell/Preview only): `DevAgentSystem`, `DevProfessionalSystem`
+  - No dummy yet: `DevIngredientSystem`, `DevChefSystem`
+  - Handoff only: `DevSupplierSystem` (no model/drift; points to Misebox owner)
+- Required-path drift checks are uneven:
+  - Uses `requiredPaths`: product (`slug`), place (`place_type`), kitchen (`name`), ingredient (`name`, `unit`)
+  - No `requiredPaths` currently: job, professional, agent, chef
+
+### Dev pages not yet using Dev*System wrappers
+- Inline (non-`Dev*System`) dev pages still exist and should be considered in alignment scope:
+  - `fireux-companies` dev page
+  - `fireux-blogs` dev page
+  - `fireux-misebox` dev page (supplier owner)
+  - core dev pages (`apps`, `users`, etc.)
+- These pages currently use an older/manual drift payload style (`driftById` + handcrafted payload), not the newer helper-builder pattern.
+
+### System-wide alignment target
+- Canon for each entity dev stack:
+  - Surface A: dummy card surfaces (Pill, Cell, Preview, Profile) when card suite exists
+  - Surface B: model surface (`DevModel`)
+  - Surface C: drifted collection surface (`DevDriftToolbar` + collection manager)
+- Canon for drift implementation:
+  - use `useDevDriftFilter` with `buildDriftPayload` + `buildCopyPayload`
+  - default to `driftMode: 'extras-only'`
+  - define `requiredPaths` per entity (explicit contract fields)
 
 #end

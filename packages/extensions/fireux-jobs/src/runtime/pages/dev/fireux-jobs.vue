@@ -2,12 +2,14 @@
   <UPage>
     <UPageHeader
       title="Dev · Jobs (Ext)"
-      description="Professionals Agents and jobs Development tools"
+      description="Model and collection tools for jobs, professionals, and agents."
     />
 
-    <DevJobSystem />
-    <DevProfessionalSystem />
-    <DevAgentSystem />
+    <UPageBody class="pagebody">
+      <DevJobSystem />
+      <DevProfessionalSystem />
+      <DevAgentSystem />
+    </UPageBody>
   </UPage>
 </template>
 

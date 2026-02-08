@@ -8,38 +8,37 @@
     <UPageBody class="pagebody">
       <DevCompanyDummy />
 
-      <UCard>
-        <DevModel
-          :title="'Companies · Model'"
-          :model="companyModelRuntime"
-        />
-      </UCard>
+      <DevModel
+        :title="'Companies · Model'"
+        :model="companyModelRuntime"
+      />
 
       <UCard>
         <template #header>
-          <div class="flex items-start justify-between gap-3">
-            <div class="space-y-3">
+          <div class="space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
               <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
                 Companies collection
               </p>
-              <p class="text-xs text-gray-500 dark:text-gray-400">
-                Browse companies resolved for this runtime and filter by model drift.
-              </p>
-              <DevDriftToolbar
-                :drift-kind="companiesDriftKind"
-                :selected-field="companiesSelectedField"
-                :filter-options="companiesFilterOptions"
-                :copy-label="'Copy drift · Companies'"
-                :copy-payload="companiesDriftCopyPayload"
-                @update:drift-kind="setCompaniesDriftKind"
-                @update:selected-field="updateCompaniesSelectedField"
-              />
+              <UBadge variant="soft">{{ visibleCompanies }} / {{ totalCompanies }}</UBadge>
             </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              Filter companies by model drift before browsing records.
+            </p>
+            <DevDriftToolbar
+              :drift-kind="companiesDriftKind"
+              :selected-field="companiesSelectedField"
+              :filter-options="companiesFilterOptions"
+              :copy-label="'Copy drift · Companies'"
+              :copy-payload="companiesDriftCopyPayload"
+              @update:drift-kind="setCompaniesDriftKind"
+              @update:selected-field="updateCompaniesSelectedField"
+            />
           </div>
         </template>
-
-        <CompanyCollectionManager :collection="filteredCompaniesResolved" />
       </UCard>
+
+      <CompanyCollectionManager :collection="filteredCompaniesResolved" />
     </UPageBody>
   </UPage>
 </template>
@@ -97,6 +96,9 @@ const filteredCompaniesResolved = computed(() =>
     .map((company) => hydratedById.value.get(String(company.id)))
     .filter(Boolean) as CompanyView[]
 )
+
+const totalCompanies = computed(() => companiesCollection.value.length)
+const visibleCompanies = computed(() => filteredCompaniesResolved.value.length)
 
 const filteredCompaniesDriftPayload = computed(() =>
   filteredCompanies.value.map((company) => {

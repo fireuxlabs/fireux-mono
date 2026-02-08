@@ -17,38 +17,37 @@
 
       <DevBinding :app="bindingApp" :apps="bindingApps" />
 
-      <UCard>
-        <DevModel
-          :title="'Users · Model'"
-          :model="userModelRuntime"
-        />
-      </UCard>
+      <DevModel
+        :title="'Users · Model'"
+        :model="userModelRuntime"
+      />
 
       <UCard>
         <template #header>
-          <div class="flex items-start justify-between gap-3">
-            <div class="space-y-3">
+          <div class="space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
               <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
                 Users collection
               </p>
-              <p class="text-xs text-gray-500 dark:text-gray-400">
-                Browse users resolved for this runtime and filter by model drift.
-              </p>
-              <DevDriftToolbar
-                :drift-kind="usersDriftKind"
-                :selected-field="usersSelectedField"
-                :filter-options="usersFilterOptions"
-                :copy-label="'Copy drift · Users'"
-                :copy-payload="usersDriftCopyPayload"
-                @update:drift-kind="setUsersDriftKind"
-                @update:selected-field="updateUsersSelectedField"
-              />
+              <UBadge variant="soft">{{ visibleUsers }} / {{ totalUsers }}</UBadge>
             </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+              Filter users by model drift before browsing records.
+            </p>
+            <DevDriftToolbar
+              :drift-kind="usersDriftKind"
+              :selected-field="usersSelectedField"
+              :filter-options="usersFilterOptions"
+              :copy-label="'Copy drift · Users'"
+              :copy-payload="usersDriftCopyPayload"
+              @update:drift-kind="setUsersDriftKind"
+              @update:selected-field="updateUsersSelectedField"
+            />
           </div>
         </template>
-
-        <OrganismsUserCollectionManager :collection="filteredUsers" />
       </UCard>
+
+      <OrganismsUserCollectionManager :collection="filteredUsers" />
     </UPageBody>
   </UPage>
 </template>
@@ -105,6 +104,9 @@ const {
   collection: userCollection,
   runtimeModel: userModelRuntime,
 })
+
+const totalUsers = computed(() => userCollection.value.length)
+const visibleUsers = computed(() => filteredUsers.value.length)
 
 
 const filteredUsersDriftPayload = computed(() =>

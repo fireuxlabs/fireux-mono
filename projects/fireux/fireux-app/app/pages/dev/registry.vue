@@ -5,7 +5,7 @@
       description="Copy modules, apps, and ecosystems directly from the Firestore registry collections."
     />
 
-    <UPageBody>
+    <UPageBody class="pagebody">
       <UCard>
         <template #header>
           <div class="flex flex-wrap items-center justify-between gap-3">

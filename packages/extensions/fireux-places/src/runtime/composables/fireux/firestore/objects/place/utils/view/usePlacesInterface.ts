@@ -58,7 +58,7 @@ type PlacePreview = {
   imageShade?: PlaceImageShade
   name: string
   formattedAddress: string
-  source: PlaceSource
+  source?: PlaceSource
   prop?: string
 }
 
@@ -163,8 +163,8 @@ export function usePlacesInterface() {
     if (!base) return null
     return {
       ...base,
-      title: base.title || base.name,
-      subtitle: base.subtitle || base.shortAddress || base.formattedAddress || '',
+      title: base.title,
+      subtitle: base.subtitle,
     }
   }
 
@@ -191,8 +191,8 @@ export function usePlacesInterface() {
       imageShade: base.imageShade,
       name: base.name,
       formattedAddress: base.formattedAddress,
-      source: ((target as any)?.source as PlaceSource) ?? 'fireux',
-      prop: (target as any)?.brand_tagline || (target as any)?.short_name || '',
+      source: (target as any)?.source as PlaceSource | undefined,
+      prop: (target as any)?.brand_tagline,
     }
   }
 

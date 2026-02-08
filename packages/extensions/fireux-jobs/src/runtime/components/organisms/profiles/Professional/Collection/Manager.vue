@@ -63,23 +63,11 @@ type ProfessionalEntry = ProfessionalCore & { user?: unknown }
 const props = defineProps<{ collection?: ProfessionalEntry[] }>()
 
 const collection = computed(() => props.collection ?? [])
-const { card: makeCard } = useProfessional()
-const searchTextFor = (entry: ProfessionalEntry) => {
-  const displayName = (entry as any)?.user?.display_name ?? ''
-  const jobTitle = (entry as any)?.job_title ?? ''
-  const summary = (entry as any)?.summary ?? ''
-  const positions = Array.isArray((entry as any)?.positions)
-    ? (entry as any).positions.join(' ')
-    : ''
-  const id = entry?.id ?? ''
-  return `${displayName} ${jobTitle} ${summary} ${positions} ${id}`
-    .trim()
-    .toLowerCase()
-}
+const { card: makeCard, searchText } = useProfessional()
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
   useCollectionSearch<ProfessionalEntry, ReturnType<typeof makeCard>>({
     items: collection,
-    searchText: (entry) => searchTextFor(entry),
+    searchText: (entry) => searchText(entry as any),
     makeCard: (entry) => makeCard(entry as ProfessionalCore),
   })
 

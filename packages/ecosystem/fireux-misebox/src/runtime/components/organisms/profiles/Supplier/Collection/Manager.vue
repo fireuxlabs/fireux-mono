@@ -64,19 +64,11 @@ type SupplierEntry = SupplierCore & { user?: unknown }
 const props = defineProps<{ collection?: SupplierEntry[] }>()
 
 const collection = computed(() => props.collection ?? [])
-const { card: makeCard } = useSupplier()
-const searchTextFor = (entry: SupplierEntry) => {
-  const displayName = (entry as any)?.user?.display_name ?? ''
-  const title = (entry as any)?.title ?? ''
-  const tagline = (entry as any)?.tagline ?? ''
-  return `${displayName} ${title} ${tagline} ${entry.id ?? ''}`
-    .trim()
-    .toLowerCase()
-}
+const { card: makeCard, searchText } = useSupplier()
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
   useCollectionSearch<SupplierEntry, ReturnType<typeof makeCard>>({
     items: collection,
-    searchText: (entry) => searchTextFor(entry),
+    searchText: (entry) => searchText(entry as SupplierCore, (entry as any)?.user ?? null),
     makeCard: (entry) => makeCard(entry as SupplierCore, (entry as any)?.user ?? null),
   })
 

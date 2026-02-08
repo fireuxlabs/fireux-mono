@@ -1,4 +1,4 @@
-import type { IngredientUnit } from '../../../../../../models/objects/ingredient.model'
+import type { IngredientUnit } from '../../../../../models/objects/ingredient.model'
 
 export type IngredientCreateForm = {
   name: string
