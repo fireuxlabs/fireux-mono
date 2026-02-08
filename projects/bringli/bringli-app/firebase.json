@@ -1,0 +1,26 @@
+{
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "bringli-ssr",
+      "runtime": "nodejs22",
+      "entryPoint": "bringliApp"
+    }
+  ],
+  "hosting": {
+    "site": "bringli",
+    "public": ".output/public",
+    "cleanUrls": true,
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "function": {
+          "functionId": "bringliApp",
+          "codebase": "bringli-ssr",
+          "region": "us-central1"
+        }
+      }
+    ]
+  }
+}

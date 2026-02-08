@@ -3,6 +3,7 @@
   "files": [],
   "references": [
     { "path": "fireux-misebox" },
+    { "path": "fireux-bringli" },
     { "path": "fireux-cleanbox" },
     { "path": "fireux-fireux" }
   ],

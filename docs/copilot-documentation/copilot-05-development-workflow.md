@@ -39,6 +39,10 @@ This chapter describes the standard local workflow, branching expectations, and 
 
 ## Coding Practices
 
+- Pipeline-first default:
+  - Start with the narrowest end-to-end slice that proves the path works.
+  - Avoid adding non-essential polish, abstractions, or optional features in the first pass.
+  - Widen scope only after the initial pipeline is working and verified.
 - Keep changes small and scoped to a single feature or fix.
 - Run `pnpm lint` and appropriate `pnpm typecheck:*` commands before pushing.
 - Add or update package docs in `packages/**/docs/` alongside code changes.

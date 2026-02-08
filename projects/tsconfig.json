@@ -2,6 +2,7 @@
 {
   "files": [],
   "references": [
+    { "path": "bringli/bringli-app" },
     { "path": "cleanbox/cleanbox-app" },
     { "path": "cleanbox/richies-reinigung" },
     { "path": "fireux/fireux-app" },

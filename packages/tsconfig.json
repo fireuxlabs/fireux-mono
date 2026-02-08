@@ -12,6 +12,7 @@
     { "path": "extensions/fireux-jobs" },
     { "path": "extensions/fireux-places" },
     { "path": "extensions/fireux-products" },
+    { "path": "ecosystem/fireux-bringli" },
     { "path": "ecosystem/fireux-cleanbox" },
     { "path": "ecosystem/fireux-fireux" },
     { "path": "ecosystem/fireux-misebox" }

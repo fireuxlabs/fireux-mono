@@ -24,54 +24,83 @@
       <h2>1. Create Firebase Project</h2>
       <ol>
         <li>Create a new Firebase project.</li>
+        <li>Switch billing plan from Spark to Blaze.</li>
         <li>Enable Authentication, Firestore, and Storage.</li>
         <li>Create a Web App for your global app.</li>
         <li>
-          Save these values from Firebase Web config:
+          Save these values from Firebase Web config and place them as follows:
           <code>apiKey</code>, <code>authDomain</code>, <code>projectId</code>,
           <code>storageBucket</code>, <code>messagingSenderId</code>,
           <code>appId</code>, optional <code>measurementId</code>.
         </li>
-        <li>Create a service account key JSON for local admin/server tasks.</li>
+        <li>
+          Create a service account key JSON for local admin/server tasks and place it at
+          <code>packages/ecosystem/fireux-&lt;name&gt;/src/config/firebase/service-account.json</code>.
+        </li>
       </ol>
+      <p>Firebase console checklist (Bringli baseline):</p>
+      <ul>
+        <li>Auth providers: enable <code>Google</code>, <code>Email/Password</code>, and <code>Anonymous</code>.</li>
+        <li>
+          Google Auth support email can be temporary now.
+          <strong>TODO:</strong> replace personal Gmail with business support email.
+        </li>
+        <li>Set server region to Zurich <code>europe-west6</code>.</li>
+        <li><strong>TODO (FireUX):</strong> enable additional auth providers later.</li>
+      </ul>
 
       <h2>2. Create Ecosystem Package</h2>
+      <p>Fast path command (repo-local scaffolder):</p>
+      <pre><code>pnpm create:ecosystem -- --name &lt;name&gt; --firebase-project &lt;firebase-project-id&gt;</code></pre>
+      <p>
+        This is the repo equivalent of an <code>npm create</code> flow for ecosystems.
+        Use <code>pnpm create:ecosystem -- --help</code> for options.
+        Display labels are auto-generated from <code>&lt;name&gt;</code>.
+      </p>
+      <p>Install Firebase CLI first:</p>
+      <pre><code>npm install -g firebase-tools</code></pre>
       <p>Use this package shape:</p>
       <ul>
-        <li><code>packages/ecosystem/fireux-&lt;ecosystem&gt;/package.json</code></li>
-        <li><code>packages/ecosystem/fireux-&lt;ecosystem&gt;/registry.json</code></li>
-        <li><code>packages/ecosystem/fireux-&lt;ecosystem&gt;/README.md</code></li>
-        <li><code>packages/ecosystem/fireux-&lt;ecosystem&gt;/docs/</code></li>
-        <li><code>packages/ecosystem/fireux-&lt;ecosystem&gt;/.firebaserc</code></li>
-        <li><code>packages/ecosystem/fireux-&lt;ecosystem&gt;/tsconfig.json</code></li>
-        <li><code>packages/ecosystem/fireux-&lt;ecosystem&gt;/src/module.ts</code></li>
+        <li><code>packages/ecosystem/fireux-&lt;name&gt;/package.json</code></li>
+        <li><code>packages/ecosystem/fireux-&lt;name&gt;/registry.json</code></li>
+        <li><code>packages/ecosystem/fireux-&lt;name&gt;/README.md</code></li>
+        <li><code>packages/ecosystem/fireux-&lt;name&gt;/docs/</code></li>
+        <li><code>packages/ecosystem/fireux-&lt;name&gt;/.firebaserc</code></li>
+        <li><code>packages/ecosystem/fireux-&lt;name&gt;/tsconfig.json</code></li>
+        <li><code>packages/ecosystem/fireux-&lt;name&gt;/src/module.ts</code></li>
         <li>
-          <code>packages/ecosystem/fireux-&lt;ecosystem&gt;/src/config/firebase/ecosystem.config.ts</code>
+          <code>packages/ecosystem/fireux-&lt;name&gt;/src/config/firebase/ecosystem.config.ts</code>
         </li>
         <li>
-          <code>packages/ecosystem/fireux-&lt;ecosystem&gt;/src/config/firebase/service-account.json</code>
-          (local only, do not commit)
+          <code>packages/ecosystem/fireux-&lt;name&gt;/src/config/firebase/service-account.json</code>
+          (commit placeholder shape only; keep real credentials out of git)
         </li>
-        <li><code>packages/ecosystem/fireux-&lt;ecosystem&gt;/src/runtime/public/</code></li>
+        <li><code>packages/ecosystem/fireux-&lt;name&gt;/src/runtime/public/</code></li>
       </ul>
 
       <h2>3. Place Firebase Values Correctly</h2>
       <ul>
         <li>
-          Ecosystem firebase public config goes in
-          <code>src/config/firebase/ecosystem.config.ts</code>.
+          Put <code>apiKey</code>, <code>authDomain</code>, <code>projectId</code>,
+          <code>storageBucket</code>, <code>messagingSenderId</code> in
+          <code>packages/ecosystem/fireux-&lt;name&gt;/src/config/firebase/ecosystem.config.ts</code>
+          under the <code>firebase</code> object.
         </li>
         <li>
-          App web app id goes in app <code>.env</code>:
+          Put Firebase web <code>appId</code> in app <code>.env</code>:
           <code>NUXT_FIREBASE_APP_ID</code>.
         </li>
         <li>
-          Optional analytics id goes in app <code>.env</code>:
+          Put optional Firebase web <code>measurementId</code> in app <code>.env</code>:
           <code>NUXT_FIREBASE_MEASUREMENT_ID</code>.
         </li>
         <li>
-          Service account key file goes at
-          <code>src/config/firebase/service-account.json</code>.
+          Save service account JSON at
+          <code>packages/ecosystem/fireux-&lt;name&gt;/src/config/firebase/service-account.json</code>.
+        </li>
+        <li>
+          Set default Firebase project binding in
+          <code>packages/ecosystem/fireux-&lt;name&gt;/.firebaserc</code>.
         </li>
       </ul>
 
@@ -98,6 +127,13 @@
         Do not place <code>.firebaserc</code> inside app folders under
         <code>projects/*/*</code>.
       </p>
+      <p>
+        Setup Hosting during app scaffold and use a clean site id without numeric noise when possible
+        (example: <code>bringli</code>).
+      </p>
+      <p>
+        <strong>TODO per app:</strong> define and test Firestore Database Rules before production release.
+      </p>
 
       <h2>5. Nuxt Config Pattern</h2>
       <pre><code>export default defineNuxtConfig(
@@ -107,7 +143,7 @@
     name: '&lt;App Name&gt;',
     shortName: '&lt;Short Name&gt;',
     role: 'global',
-    modules: ['fireux-&lt;ecosystem&gt;'],
+    modules: ['fireux-&lt;name&gt;'],
   })
 )</code></pre>
 
@@ -115,7 +151,7 @@
       <p>
         Preferred local setup:
         <code>GOOGLE_APPLICATION_CREDENTIALS</code> points to
-        <code>packages/ecosystem/fireux-&lt;ecosystem&gt;/src/config/firebase/service-account.json</code>.
+        <code>packages/ecosystem/fireux-&lt;name&gt;/src/config/firebase/service-account.json</code>.
       </p>
       <p>Alternatives: <code>FIREBASE_SERVICE_ACCOUNT_FILE</code> or <code>FIREBASE_SERVICE_ACCOUNT</code>.</p>
 

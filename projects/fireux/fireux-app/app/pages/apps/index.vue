@@ -61,7 +61,74 @@
         <li>Required feature modules (examples: <code>fireux-drop</code>, <code>fireux-jobs</code>)</li>
       </ul>
 
-      <h2>5. App .env keys</h2>
+      <h2>5. Required brand assets</h2>
+      <p>
+        Store app brand assets under <code>public/img/app/</code>. Store PWA icons
+        under <code>public/img/app/pwa/</code>. Store the required favicon at
+        <code>public/favicon.ico</code>.
+      </p>
+      <table class="asset-table">
+        <thead>
+          <tr>
+            <th>Asset</th>
+            <th>Public path</th>
+            <th>Dimensions</th>
+            <th>Transparency rule</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Logo</td>
+            <td><code>/img/app/logo.png</code></td>
+            <td><code>512x512</code> exact (enforced)</td>
+            <td>Transparent background</td>
+          </tr>
+          <tr>
+            <td>Wordmark (light)</td>
+            <td><code>/img/app/wordmark-light.png</code></td>
+            <td><code>&gt;=256x64</code> and aspect ratio <code>&gt;=3</code> (enforced)</td>
+            <td>Transparent background</td>
+          </tr>
+          <tr>
+            <td>Wordmark (dark)</td>
+            <td><code>/img/app/wordmark-dark.png</code></td>
+            <td><code>&gt;=256x64</code> and aspect ratio <code>&gt;=3</code> (enforced)</td>
+            <td>Transparent background</td>
+          </tr>
+          <tr>
+            <td>Cover</td>
+            <td><code>/img/app/cover.png</code></td>
+            <td>No strict runtime enforcement; target <code>1600x900+</code></td>
+            <td>Transparent background</td>
+          </tr>
+          <tr>
+            <td>Thumbnail</td>
+            <td><code>/img/app/thumbnail.png</code></td>
+            <td>No strict runtime enforcement; target <code>1200x1200</code></td>
+            <td>Transparent background</td>
+          </tr>
+          <tr>
+            <td>PWA icon 192</td>
+            <td><code>/img/app/pwa/icon-192.png</code></td>
+            <td>Target <code>192x192</code></td>
+            <td>Transparent background</td>
+          </tr>
+          <tr>
+            <td>PWA icon 512</td>
+            <td><code>/img/app/pwa/icon-512.png</code></td>
+            <td>Target <code>512x512</code></td>
+            <td>Transparent background</td>
+          </tr>
+          <tr>
+            <td>Favicon</td>
+            <td><code>/favicon.ico</code></td>
+            <td>Required file; no strict runtime dimensions</td>
+            <td>Not specified</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>6. App .env keys</h2>
       <ul>
         <li><code>APP_DOMAIN</code></li>
         <li><code>NUXT_FIREBASE_APP_ID</code></li>
@@ -73,7 +140,7 @@
         not app <code>.env</code>.
       </p>
 
-      <h2>6. Firebase deploy config baseline</h2>
+      <h2>7. Firebase deploy config baseline</h2>
       <pre><code>{
   "functions": [
     {
@@ -101,7 +168,7 @@
   }
 }</code></pre>
 
-      <h2>7. Validate</h2>
+      <h2>8. Validate</h2>
       <ol>
         <li><code>pnpm guard</code></li>
         <li><code>pnpm typecheck:packages</code></li>
@@ -183,5 +250,30 @@ pre {
   border-radius: 0.75rem;
   padding: 1rem;
   background: rgba(15, 23, 42, 0.35);
+}
+
+.asset-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.asset-table th,
+.asset-table td {
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+.asset-table thead th {
+  background: rgba(15, 23, 42, 0.35);
+  font-weight: 700;
+}
+
+.asset-table tbody tr:last-child td {
+  border-bottom: none;
 }
 </style>
