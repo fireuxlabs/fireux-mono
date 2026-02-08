@@ -37,7 +37,7 @@ export function useSupplierCreate() {
         subtitle: '',
         tagline: '',
         tags: [],
-        bio_short: '',
+        summary: '',
         bio_long: '',
         specialties: [],
         categories: [],

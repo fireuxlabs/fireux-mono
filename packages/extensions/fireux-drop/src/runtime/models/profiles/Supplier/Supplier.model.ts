@@ -15,7 +15,7 @@ export const SupplierCore = {
 
   // Supplier (scoped, v1)
   supplier_headline: '',
-  supplier_summary: '',
+  summary: '',
   supplier_bio: '',
   supplier_image: '',
 
@@ -31,7 +31,6 @@ export const SupplierCore = {
   subtitle: '',
   tagline: '',
   tags: [] as string[],
-  bio_short: '',
   bio_long: '',
   specialties: [] as string[],
   categories: [] as string[],
@@ -68,4 +67,3 @@ export type SupplierApp = {
 }
 
 export { supplierConfig };
-

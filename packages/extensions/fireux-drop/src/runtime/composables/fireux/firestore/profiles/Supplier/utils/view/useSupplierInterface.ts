@@ -24,7 +24,7 @@ export namespace SupplierCard {
     badges: string[]
 
     // Summary fields for list views
-    bioShort: string
+    summary: string
     specialtiesCsv: string
     categoriesCsv: string
     organizationName: string
@@ -39,7 +39,7 @@ export function useSupplierInterface(
   function map(p: SupplierCore, u?: UserLike | null): SupplierCard.Card {
     const id = safeString(p.id).trim()
     const headline = safeString(p.supplier_headline) || safeString(p.title)
-    const summary = safeString(p.supplier_summary) || safeString(p.bio_short)
+    const summary = safeString(p.summary)
     const profileImage = safeString(p.supplier_image)
     const userAvatar = safeString(u?.avatar)
     const secondaryAvatarUrl = profileImage && userAvatar && profileImage !== userAvatar
@@ -67,7 +67,7 @@ export function useSupplierInterface(
       tagline: headline,
       badges: productCategories.length ? productCategories : safeStringArray(p.tags),
 
-      bioShort: summary,
+      summary,
       specialtiesCsv: csv(productCategories),
       categoriesCsv: csv(productCategories),
       organizationName: org,
@@ -88,17 +88,5 @@ export function useSupplierInterface(
     return mapped.id ? mapped : null
   }
 
-  function searchText(target?: SupplierCore | null | undefined, userOverride?: UserLike | null): string {
-    const p = target ?? profile?.coreProfile.value ?? null
-    if (!p) return ''
-    const u = userOverride ?? userRef?.value ?? null
-    const displayName = safeString(u?.display_name)
-    const headline = safeString(p.supplier_headline) || safeString(p.title)
-    const summary = safeString(p.supplier_summary) || safeString(p.bio_short)
-    const org = safeString(p.supplier_organization_name) || safeString(p.organization_name)
-    const id = safeString(p.id)
-    return `${displayName} ${headline} ${summary} ${org} ${id}`.trim().toLowerCase()
-  }
-
-  return { card, searchText }
+  return { card }
 }

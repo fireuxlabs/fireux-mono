@@ -28,7 +28,6 @@ export const ProfessionalCore = {
   summary: '' as string,
   bio: '' as string,
   image: '' as string,
-  positions: [] as string[],
 
   // Experience 
   relevant_experience: [] as RelevantExperienceItem[],

@@ -37,9 +37,9 @@
       </div>
 
       <div class="space-y-1">
-        <div class="text-xs text-dimmed">Bio</div>
+        <div class="text-xs text-dimmed">Summary</div>
         <div class="text-sm">
-          <span v-if="prop || card.bioShort">{{ prop || card.bioShort }}</span>
+          <span v-if="prop || card.summary">{{ prop || card.summary }}</span>
           <span v-else class="text-dimmed italic">missing</span>
         </div>
       </div>

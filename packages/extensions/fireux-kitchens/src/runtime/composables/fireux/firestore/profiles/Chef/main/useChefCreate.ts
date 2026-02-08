@@ -37,7 +37,7 @@ export function useChefCreate() {
         subtitle: '',
         tagline: '',
         tags: [],
-        bio_short: '',
+        summary: '',
         bio_long: '',
         specialties: [],
         locations: [],

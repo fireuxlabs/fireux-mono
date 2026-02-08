@@ -85,9 +85,7 @@ const toast = useToastify()
 const headline = computed(
   () => supplier.value?.supplier_headline ?? supplier.value?.title ?? ''
 )
-const summary = computed(
-  () => supplier.value?.supplier_summary ?? supplier.value?.bio_short ?? ''
-)
+const summary = computed(() => supplier.value?.summary ?? '')
 const bio = computed(() => supplier.value?.supplier_bio ?? supplier.value?.bio_long ?? '')
 const imageUrl = computed(() => supplier.value?.supplier_image ?? '')
 

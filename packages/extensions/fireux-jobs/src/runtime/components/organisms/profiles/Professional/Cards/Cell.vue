@@ -12,17 +12,13 @@
         size="sm"
       >
         <template #avatar>
-          <UAvatarGroup v-if="avatarUrl && secondaryAvatarUrl" size="xs">
-            <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="xs" />
-            <UAvatar :src="secondaryAvatarUrl || undefined" :alt="displayName" size="2xs" />
-          </UAvatarGroup>
-          <UAvatar v-else :src="avatarUrl || undefined" :alt="displayName" size="xs" />
+          <UAvatar :src="image || avatarUrl || undefined" :alt="displayName" size="xs" />
         </template>
       </UUser>
 
       <div class="card__content card__stack">
-        <div v-if="locationsCsv" class="text-xs text-muted">
-          Locations · {{ locationsCsv }}
+        <div v-if="showTagline && (prop || summary)" class="text-xs text-muted">
+          {{ prop || summary }}
         </div>
       </div>
     </div>
@@ -34,7 +30,7 @@ import type { ProfessionalCard } from '../../../../../composables/fireux/firesto
 
 type Props = Pick<
   ProfessionalCard.Card,
-  'to' | 'avatarUrl' | 'secondaryAvatarUrl' | 'displayName' | 'title' | 'locationsCsv'
+  'to' | 'avatarUrl' | 'image' | 'displayName' | 'title' | 'summary'
 > & {
   prop?: string
   showSubtitle?: boolean

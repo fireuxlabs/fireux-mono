@@ -24,7 +24,7 @@ export function useSupplierQuickCreate() {
         updated_at: emptyTimestamp,
         tags: [],
         tagline: '',
-        bio_short: '',
+        summary: '',
         bio_long: '',
         specialties: [],
         categories: [],

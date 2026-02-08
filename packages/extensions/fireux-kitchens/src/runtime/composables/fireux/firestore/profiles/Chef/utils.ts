@@ -235,7 +235,7 @@ export function useChefValidation() {
     // Support both snake_case (canonical) and camelCase inputs
     const bios = [
       {
-        val: (chefData as any).bio_short ?? (chefData as any).bioShort,
+        val: (chefData as any).summary,
         kind: 'short' as const,
       },
       {

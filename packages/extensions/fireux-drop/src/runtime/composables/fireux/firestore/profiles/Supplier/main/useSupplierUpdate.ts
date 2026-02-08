@@ -34,7 +34,7 @@ export function useSupplierUpdate(
 
   const updateSummary = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ supplier_summary: normalized ?? undefined })
+    await updateCoreProfile({ summary: normalized ?? undefined })
   }
 
   const updateBio = async (value: string) => {

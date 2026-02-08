@@ -70,8 +70,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useIngredientCreate } from '../../../../../composables/fireux/firestore/objects/ingredient/useIngredientCreate'
-import { useSupplierList } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierList'
-import SupplierCreateQuick from '../../../profiles/Supplier/Create/QuickCreate.vue'
+import { useSupplierList } from 'fireux-drop/runtime/composables/fireux/firestore/profiles/Supplier/main/useSupplierList'
+import SupplierCreateQuick from 'fireux-drop/runtime/components/organisms/profiles/Supplier/Create/QuickCreate.vue'
 
 const { createIngredient, creating, createError } = useIngredientCreate()
 const { supplierOptions } = useSupplierList()

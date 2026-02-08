@@ -115,7 +115,7 @@ const { DisplayName } = useUserFormattingAndValidation()
 const toast = useToastify()
 
 const headline = computed(() => agent.value?.agent_headline ?? agent.value?.title ?? '')
-const summary = computed(() => agent.value?.agent_summary ?? agent.value?.bio_short ?? '')
+const summary = computed(() => agent.value?.summary ?? '')
 const bio = computed(() => agent.value?.agent_bio ?? '')
 const imageUrl = computed(() => agent.value?.agent_image ?? '')
 

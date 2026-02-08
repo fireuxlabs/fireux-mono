@@ -1,121 +1,141 @@
 <template>
-  <main class="space-y-10 py-10">
-    <header class="space-y-4 text-center md:text-left">
-      <p class="text-xs uppercase tracking-[0.25em] text-primary/70">
-        FireUX Platform
+  <main class="ecosystem-doc">
+    <header>
+      <p class="eyebrow">Developer Docs</p>
+      <h1>Create A New FireUX Ecosystem</h1>
+      <p>
+        This page is the canonical quick-start for creating a new ecosystem and
+        wiring Firebase in the correct places.
       </p>
-      <div class="space-y-2">
-        <h1 class="text-3xl font-semibold text-primary-foreground">
-          Ecosystems Overview
-        </h1>
-        <p class="text-base text-muted-foreground">
-          Snapshot of every tenant ecosystem, their installed modules, and
-          ownership. This keeps app-driven configuration visible to the entire
-          platform.
-        </p>
-      </div>
     </header>
 
-    <section class="space-y-4">
-      <h2 class="text-xl font-medium text-primary-foreground">
-        Active ecosystems
-      </h2>
-      <p class="text-sm text-muted-foreground">
-        Cleanbox, Misebox, and Richie can each toggle modules independently. Use
-        this table to audit parity and ensure required modules are enabled
-        before deploys.
-      </p>
-
-      <div class="overflow-hidden rounded-2xl border border-border/70">
-        <table class="w-full text-sm">
-          <thead class="bg-muted/70 text-left text-muted-foreground">
-            <tr>
-              <th class="px-4 py-3 font-medium">Ecosystem</th>
-              <th class="px-4 py-3 font-medium">Stage</th>
-              <th class="px-4 py-3 font-medium">Owner</th>
-              <th class="px-4 py-3 font-medium">Modules</th>
-              <th class="px-4 py-3 font-medium">Notes</th>
-            </tr>
-          </thead>
-          <tbody class="bg-card">
-            <tr
-              v-for="eco in ecosystems"
-              :key="eco.id"
-              class="border-t border-border/60"
-            >
-              <td class="px-4 py-4">
-                <p class="text-lg font-semibold text-primary-foreground">
-                  {{ eco.name }}
-                </p>
-                <p class="text-xs uppercase tracking-[0.3em] text-primary/60">
-                  {{ eco.slug }}
-                </p>
-              </td>
-              <td class="px-4 py-4">
-                <span
-                  class="rounded-full border px-3 py-1 text-xs"
-                  :class="
-                    eco.stage === 'active'
-                      ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
-                      : 'border-yellow-500/40 bg-yellow-500/10 text-yellow-200'
-                  "
-                >
-                  {{ eco.stage }}
-                </span>
-              </td>
-              <td class="px-4 py-4 text-primary-foreground">{{ eco.owner }}</td>
-              <td class="px-4 py-4">
-                <ul class="flex flex-wrap gap-2 text-xs">
-                  <li
-                    v-for="mod in eco.modules"
-                    :key="mod"
-                    class="rounded-full bg-muted px-3 py-1 text-primary-foreground"
-                  >
-                    {{ mod }}
-                  </li>
-                </ul>
-              </td>
-              <td class="px-4 py-4 text-muted-foreground">{{ eco.notes }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="space-y-4">
-      <h2 class="text-xl font-medium text-primary-foreground">
-        Registry alignment
-      </h2>
-      <p class="text-sm text-muted-foreground">
-        Use <code>pnpm registry:list</code> to validate that each ecosystem has
-        a matching entry under <code>registry/ecosystem/&lt;slug&gt;</code> with
-        the same module selections.
-      </p>
-      <ol class="list-decimal space-y-2 pl-5 text-sm text-muted-foreground">
+    <section class="content">
+      <h2>Docs hierarchy</h2>
+      <ul>
         <li>
-          Generate or sync each ecosystem&apos;s <code>registry.json</code>.
+          <strong>/ecosystems</strong>: create a new ecosystem and wire Firebase
+          project-level config.
         </li>
-        <li>Run <code>pnpm registry:register &lt;path&gt;</code> to upsert.</li>
-        <li>Re-run this page (or /dev/modules once built) to ensure parity.</li>
+        <li>
+          <strong>/apps</strong>: create global or tenant apps under an ecosystem.
+        </li>
+      </ul>
+
+      <h2>1. Create Firebase Project</h2>
+      <ol>
+        <li>Create a new Firebase project.</li>
+        <li>Enable Authentication, Firestore, and Storage.</li>
+        <li>Create a Web App for your global app.</li>
+        <li>
+          Save these values from Firebase Web config:
+          <code>apiKey</code>, <code>authDomain</code>, <code>projectId</code>,
+          <code>storageBucket</code>, <code>messagingSenderId</code>,
+          <code>appId</code>, optional <code>measurementId</code>.
+        </li>
+        <li>Create a service account key JSON for local admin/server tasks.</li>
+      </ol>
+
+      <h2>2. Create Ecosystem Package</h2>
+      <p>Use this package shape:</p>
+      <ul>
+        <li><code>packages/ecosystem/fireux-&lt;ecosystem&gt;/package.json</code></li>
+        <li><code>packages/ecosystem/fireux-&lt;ecosystem&gt;/registry.json</code></li>
+        <li><code>packages/ecosystem/fireux-&lt;ecosystem&gt;/README.md</code></li>
+        <li><code>packages/ecosystem/fireux-&lt;ecosystem&gt;/docs/</code></li>
+        <li><code>packages/ecosystem/fireux-&lt;ecosystem&gt;/.firebaserc</code></li>
+        <li><code>packages/ecosystem/fireux-&lt;ecosystem&gt;/tsconfig.json</code></li>
+        <li><code>packages/ecosystem/fireux-&lt;ecosystem&gt;/src/module.ts</code></li>
+        <li>
+          <code>packages/ecosystem/fireux-&lt;ecosystem&gt;/src/config/firebase/ecosystem.config.ts</code>
+        </li>
+        <li>
+          <code>packages/ecosystem/fireux-&lt;ecosystem&gt;/src/config/firebase/service-account.json</code>
+          (local only, do not commit)
+        </li>
+        <li><code>packages/ecosystem/fireux-&lt;ecosystem&gt;/src/runtime/public/</code></li>
+      </ul>
+
+      <h2>3. Place Firebase Values Correctly</h2>
+      <ul>
+        <li>
+          Ecosystem firebase public config goes in
+          <code>src/config/firebase/ecosystem.config.ts</code>.
+        </li>
+        <li>
+          App web app id goes in app <code>.env</code>:
+          <code>NUXT_FIREBASE_APP_ID</code>.
+        </li>
+        <li>
+          Optional analytics id goes in app <code>.env</code>:
+          <code>NUXT_FIREBASE_MEASUREMENT_ID</code>.
+        </li>
+        <li>
+          Service account key file goes at
+          <code>src/config/firebase/service-account.json</code>.
+        </li>
+      </ul>
+
+      <h2>4. Create Global App</h2>
+      <p>
+        For full app scaffolding and app-level env/deploy configuration, continue to
+        <NuxtLink to="/apps">/apps</NuxtLink>.
+      </p>
+      <ul>
+        <li><code>projects/&lt;ecosystem&gt;/&lt;app-id&gt;/app/</code></li>
+        <li><code>projects/&lt;ecosystem&gt;/&lt;app-id&gt;/public/</code></li>
+        <li><code>projects/&lt;ecosystem&gt;/&lt;app-id&gt;/server/</code></li>
+        <li><code>projects/&lt;ecosystem&gt;/&lt;app-id&gt;/nuxt.config.ts</code></li>
+        <li><code>projects/&lt;ecosystem&gt;/&lt;app-id&gt;/package.json</code></li>
+        <li><code>projects/&lt;ecosystem&gt;/&lt;app-id&gt;/tsconfig.json</code></li>
+        <li><code>projects/&lt;ecosystem&gt;/&lt;app-id&gt;/firebase.json</code></li>
+        <li><code>projects/&lt;ecosystem&gt;/&lt;app-id&gt;/.env</code></li>
+      </ul>
+      <p>
+        Add ecosystem-level Firebase project binding at
+        <code>projects/&lt;ecosystem&gt;/.firebaserc</code>.
+      </p>
+      <p>
+        Do not place <code>.firebaserc</code> inside app folders under
+        <code>projects/*/*</code>.
+      </p>
+
+      <h2>5. Nuxt Config Pattern</h2>
+      <pre><code>export default defineNuxtConfig(
+  defineFireuxConfig({
+    ecosystem: '&lt;ecosystem&gt;',
+    id: '&lt;app-id&gt;',
+    name: '&lt;App Name&gt;',
+    shortName: '&lt;Short Name&gt;',
+    role: 'global',
+    modules: ['fireux-&lt;ecosystem&gt;'],
+  })
+)</code></pre>
+
+      <h2>6. Local Credential Setup</h2>
+      <p>
+        Preferred local setup:
+        <code>GOOGLE_APPLICATION_CREDENTIALS</code> points to
+        <code>packages/ecosystem/fireux-&lt;ecosystem&gt;/src/config/firebase/service-account.json</code>.
+      </p>
+      <p>Alternatives: <code>FIREBASE_SERVICE_ACCOUNT_FILE</code> or <code>FIREBASE_SERVICE_ACCOUNT</code>.</p>
+
+      <h2>7. Validate</h2>
+      <ol>
+        <li><code>pnpm guard</code></li>
+        <li><code>pnpm typecheck:packages</code></li>
+        <li><code>pnpm typecheck:apps</code></li>
+        <li>Run app and verify <code>/dev</code> environment panel is healthy.</li>
       </ol>
     </section>
   </main>
 </template>
 
 <script setup lang="ts">
-import type { FireuxEcosystemRegistryDoc } from 'fireux-core/runtime/models/system/ecosystem.model'
-import { useState } from 'nuxt/app'
-
-type EcosystemStage = 'active' | 'rolling'
-
-interface FireuxEcosystemRow extends FireuxEcosystemRegistryDoc {
-  id: string
-  slug: string
-  stage: EcosystemStage
-  modules: string[]
-  owner: string
-  notes?: string
-}
+useSeoMeta({
+  title: 'FireUX Ecosystem Setup',
+  description:
+    'Developer documentation for creating a new ecosystem and wiring Firebase correctly.',
+})
 
 definePageMeta({
   nav: {
@@ -126,14 +146,60 @@ definePageMeta({
     mobile: true,
   },
 })
-
-useSeoMeta({
-  title: 'FireUX Ecosystems',
-  description: 'Tenant ecosystem inventory with module selections.',
-})
-
-const ecosystems = useState<FireuxEcosystemRow[]>(
-  'fireux-ecosystems-directory',
-  () => []
-)
 </script>
+
+<style scoped>
+.ecosystem-doc {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 4rem;
+  display: grid;
+  gap: 2rem;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+header h1 {
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin-bottom: 0.5rem;
+}
+
+header p {
+  max-width: 70ch;
+}
+
+.content {
+  display: grid;
+  gap: 1.5rem;
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.content ul,
+.content ol {
+  margin-left: 1.25rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.content code {
+  background: rgba(148, 163, 184, 0.15);
+  padding: 0.1em 0.3em;
+  border-radius: 0.3em;
+  font-size: 0.95em;
+}
+
+pre {
+  margin: 0;
+  overflow-x: auto;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.35);
+}
+</style>

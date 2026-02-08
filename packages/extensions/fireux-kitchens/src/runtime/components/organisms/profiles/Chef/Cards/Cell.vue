@@ -35,7 +35,7 @@
         </div>
 
         <div v-if="showTagline" class="card__tagline">
-          <span v-if="prop || bioShort">{{ prop || bioShort }}</span>
+          <span v-if="prop || summary">{{ prop || summary }}</span>
           <span v-else class="italic">missing</span>
         </div>
       </div>
@@ -54,7 +54,7 @@ type Props = Pick<
   | 'displayName'
   | 'tagline'
   | 'badges'
-  | 'bioShort'
+  | 'summary'
 > & {
   prop?: string
   showSubtitle?: boolean

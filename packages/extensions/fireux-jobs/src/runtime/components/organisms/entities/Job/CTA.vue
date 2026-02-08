@@ -84,7 +84,7 @@ const check = computed(() => {
   if (!agent.title) missing.push('title')
   if (!agent.contact_email) missing.push('contact_email')
   if (!agent.website_url) missing.push('website_url')
-  if (!agent.bio_short) missing.push('bio_short')
+  if (!agent.summary) missing.push('summary')
 
   return {
     status: missing.length ? 'incomplete' : 'ready',

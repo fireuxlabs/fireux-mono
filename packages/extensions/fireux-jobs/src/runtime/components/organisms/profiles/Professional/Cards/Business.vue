@@ -14,8 +14,8 @@
         style="width: 72px; height: 72px;"
       >
         <img
-          v-if="card?.avatarUrl"
-          :src="card.avatarUrl"
+          v-if="card?.image || card?.avatarUrl"
+          :src="card?.image || card?.avatarUrl || undefined"
           :alt="card?.displayName || 'Professional'"
           class="object-cover"
           style="width: 72px; height: 72px;"

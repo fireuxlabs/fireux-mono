@@ -60,16 +60,21 @@ import { computed } from 'vue';
 import { useAgentInterface } from '../../../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface';
 import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model';
 
-const props = defineProps<{ collection?: AgentCore[] }>()
+type AgentEntry = AgentCore & { user?: unknown }
+
+const props = defineProps<{ collection?: AgentEntry[] }>()
 const { appName } = useFireUXConfig()
 
 const collection = computed(() => props.collection ?? [])
-const { card: makeCard, searchText } = useAgentInterface()
+const { card: makeCard } = useAgentInterface()
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
-  useCollectionSearch<AgentCore, ReturnType<typeof makeCard>>({
+  useCollectionSearch<AgentEntry, ReturnType<typeof makeCard>>({
     items: collection,
-    searchText: (entry) => searchText(entry),
-    makeCard: (entry) => makeCard(entry),
+    searchText: (entry) => {
+      const card = makeCard(entry as any)
+      return card?.displayName.trim().toLowerCase() ?? ''
+    },
+    makeCard: (entry) => makeCard(entry as any),
   })
 
 const totalCount = computed(() => collection.value.length)

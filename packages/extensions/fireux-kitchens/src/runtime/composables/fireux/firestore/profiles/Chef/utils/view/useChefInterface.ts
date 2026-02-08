@@ -24,7 +24,7 @@ export namespace ChefCard {
     badges: string[]
 
     // Summary fields for list views
-    bioShort: string
+    summary: string
     specialtiesCsv: string
     locationsCsv: string
     organizationName: string
@@ -38,7 +38,7 @@ export function useChefInterface(
   function map(p: ChefCore, u?: UserLike | null): ChefCard.Card {
     const id = safeString(p.id).trim()
     const headline = safeString(p.chef_headline) || safeString(p.title)
-    const summary = safeString(p.chef_summary) || safeString(p.bio_short)
+    const summary = safeString(p.summary)
     const signatureDishes =
       safeStringArray(p.chef_signature_dishes).length
         ? safeStringArray(p.chef_signature_dishes)
@@ -65,7 +65,7 @@ export function useChefInterface(
       tagline: headline,
       badges: signatureDishes,
 
-      bioShort: summary,
+      summary,
       specialtiesCsv: csv(signatureDishes),
       locationsCsv: csv(p.locations),
       organizationName: org,
@@ -83,17 +83,5 @@ export function useChefInterface(
     return mapped.id ? mapped : null
   }
 
-  function searchText(target?: ChefCore | null | undefined, userOverride?: UserLike | null): string {
-    const p = target ?? profile?.coreProfile.value ?? null
-    if (!p) return ''
-    const u = userOverride ?? userRef?.value ?? null
-    const displayName = safeString(u?.display_name)
-    const headline = safeString(p.chef_headline) || safeString(p.title)
-    const summary = safeString(p.chef_summary) || safeString(p.bio_short)
-    const org = safeString(p.chef_organization_name) || safeString(p.organization_name)
-    const id = safeString(p.id)
-    return `${displayName} ${headline} ${summary} ${org} ${id}`.trim().toLowerCase()
-  }
-
-  return { card, searchText }
+  return { card }
 }

@@ -30,7 +30,7 @@
 
         <div v-if="showBody" class="preview__body">
           <div class="preview__line">
-            <span v-if="prop || bioShort">{{ prop || bioShort }}</span>
+            <span v-if="prop || summary">{{ prop || summary }}</span>
             <span v-else class="italic">missing</span>
           </div>
 
@@ -51,7 +51,7 @@ type Props = {
   displayName: string
   tagline: string
   badges: string[]
-  bioShort: string
+  summary: string
   specialtiesCsv: string
 
   prop?: string

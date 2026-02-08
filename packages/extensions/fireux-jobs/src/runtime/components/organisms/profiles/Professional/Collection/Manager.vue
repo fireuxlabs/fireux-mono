@@ -63,12 +63,15 @@ type ProfessionalEntry = ProfessionalCore & { user?: unknown }
 const props = defineProps<{ collection?: ProfessionalEntry[] }>()
 
 const collection = computed(() => props.collection ?? [])
-const { card: makeCard, searchText } = useProfessional()
+const { card: makeCard } = useProfessional()
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
   useCollectionSearch<ProfessionalEntry, ReturnType<typeof makeCard>>({
     items: collection,
-    searchText: (entry) => searchText(entry as any),
-    makeCard: (entry) => makeCard(entry as ProfessionalCore),
+    searchText: (entry) => {
+      const card = makeCard(entry as ProfessionalCore, (entry as any)?.user ?? null)
+      return card?.displayName.trim().toLowerCase() ?? ''
+    },
+    makeCard: (entry) => makeCard(entry as ProfessionalCore, (entry as any)?.user ?? null),
   })
 
 const totalCount = computed(() => collection.value.length)

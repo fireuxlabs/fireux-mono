@@ -69,7 +69,7 @@ const { updateHeadline, updateSummary, updateBio, updateImage, updateSignatureDi
 const toast = useToastify()
 
 const headline = computed(() => chef.value?.chef_headline ?? chef.value?.title ?? '')
-const summary = computed(() => chef.value?.chef_summary ?? chef.value?.bio_short ?? '')
+const summary = computed(() => chef.value?.summary ?? '')
 const bio = computed(() => chef.value?.chef_bio ?? chef.value?.bio_long ?? '')
 const imageUrl = computed(() => chef.value?.chef_image ?? '')
 

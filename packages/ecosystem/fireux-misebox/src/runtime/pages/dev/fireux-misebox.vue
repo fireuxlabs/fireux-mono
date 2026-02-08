@@ -2,50 +2,62 @@
   <UPage>
     <UPageHeader
       title="Dev · Misebox"
-      description="Model shapes for Suppliers."
+      description="Misebox ecosystem overview for the active runtime."
     />
 
-    <UPageBody class="pagebody">
-      <DevModel
-        :title="'Suppliers · Model'"
-        :model="supplierModelRuntime"
-      />
+    <UPageBody class="pagebody space-y-6">
+      <UCard>
+        <template #header>
+          <div class="flex flex-col gap-1">
+            <h2 class="text-base font-semibold">Ecosystem status</h2>
+            <p class="text-sm text-gray-500">
+              Misebox remains the app ecosystem. Supplier domain is now provided by Drop extension.
+            </p>
+          </div>
+        </template>
+
+        <dl class="grid gap-4 sm:grid-cols-2 text-sm">
+          <div>
+            <dt class="text-gray-500">Ecosystem</dt>
+            <dd class="font-medium">{{ cfg.ecosystem }}</dd>
+          </div>
+          <div>
+            <dt class="text-gray-500">Role</dt>
+            <dd class="font-medium capitalize">{{ cfg.role }}</dd>
+          </div>
+          <div>
+            <dt class="text-gray-500">App ID</dt>
+            <dd class="font-mono">{{ cfg.appId || 'not set' }}</dd>
+          </div>
+          <div>
+            <dt class="text-gray-500">Modules</dt>
+            <dd class="font-mono">{{ cfg.modules.length ? cfg.modules.join(', ') : 'none' }}</dd>
+          </div>
+        </dl>
+      </UCard>
 
       <UCard>
         <template #header>
-          <div class="space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                Suppliers collection
-              </p>
-              <UBadge variant="soft">{{ visibleSuppliers }} / {{ totalSuppliers }}</UBadge>
-            </div>
-            <p class="text-xs text-gray-500 dark:text-gray-400">
-              Filter suppliers by model drift before browsing records.
+          <div class="flex flex-col gap-1">
+            <h2 class="text-base font-semibold">Domain ownership</h2>
+            <p class="text-sm text-gray-500">
+              Canonical ownership after migration.
             </p>
-            <DevDriftToolbar
-              :drift-kind="suppliersDriftKind"
-              :selected-field="suppliersSelectedField"
-              :filter-options="suppliersFilterOptions"
-              :copy-label="'Copy drift · Suppliers'"
-              :copy-payload="suppliersDriftCopyPayload"
-              @update:drift-kind="setSuppliersDriftKind"
-              @update:selected-field="updateSuppliersSelectedField"
-            />
           </div>
         </template>
-      </UCard>
 
-      <OrganismsProfilesSupplierCollectionManager :collection="filteredSuppliers" />
+        <ul class="list-disc pl-5 space-y-2 text-sm text-gray-700 dark:text-gray-300">
+          <li>Misebox ecosystem: app composition, ecosystem config, runtime identity.</li>
+          <li>Drop extension: suppliers pages, models, composables, and UI components.</li>
+          <li>Misebox ingredient create flow consumes Supplier APIs from Drop.</li>
+        </ul>
+      </UCard>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
-import { computed } from 'vue'
-import { useSupplierCollection } from '../../composables/fireux/firestore/profiles/Supplier/main/useSupplierCollection'
-import { SupplierCore as SupplierCoreRuntime } from '../../models/profiles/Supplier/Supplier.model'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 
 definePageMeta({
   layout: 'dev',
@@ -59,54 +71,5 @@ definePageMeta({
   },
 })
 
-const supplierModelRuntime = SupplierCoreRuntime
-
-const { coreSuppliers, appSuppliers } = useSupplierCollection()
-
-const suppliersCollection = computed(() => [
-  ...(appSuppliers?.value ?? []),
-  ...(coreSuppliers.value ?? []),
-])
-
-const {
-  driftKind: suppliersDriftKind,
-  setDriftKind: setSuppliersDriftKind,
-  selectedField: suppliersSelectedField,
-  driftById: suppliersDriftById,
-  filterOptions: suppliersFilterOptions,
-  filteredCollection: filteredSuppliers,
-} = useDevDriftFilter({
-  collection: suppliersCollection,
-  runtimeModel: supplierModelRuntime,
-})
-
-const totalSuppliers = computed(() => suppliersCollection.value.length)
-const visibleSuppliers = computed(() => filteredSuppliers.value.length)
-
-
-const filteredSuppliersDriftPayload = computed(() =>
-  filteredSuppliers.value.map((entry) => {
-    const drift = suppliersDriftById.value.get(entry.id) ?? { missing: [], extra: [] }
-    return {
-      id: entry.id,
-      displayName:
-        (entry as any)?.display_name ??
-        (entry as any)?.handle ??
-        entry.id ?? '',
-      drift,
-    }
-  })
-)
-
-const suppliersDriftCopyPayload = computed(() => ({
-  modelPath: 'packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier/Supplier.model.ts',
-  driftKind: suppliersDriftKind.value,
-  selectedField: suppliersSelectedField.value || null,
-  totalSuppliers: suppliersCollection.value.length,
-  suppliers: filteredSuppliersDriftPayload.value,
-}))
-
-const updateSuppliersSelectedField = (value: string) => {
-  suppliersSelectedField.value = value
-}
+const cfg = useFireUXConfig()
 </script>

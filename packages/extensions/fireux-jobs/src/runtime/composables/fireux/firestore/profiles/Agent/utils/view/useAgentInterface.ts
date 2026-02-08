@@ -23,8 +23,8 @@ export namespace AgentCard {
     // Status/label chips
     badges: string[]
 
-    // Short bio shown in lists
-    bioShort: string
+    // Summary shown in lists
+    summary: string
 
     // IMPORTANT: only render contactEmail on authorized UI surfaces.
     contactEmail: string
@@ -45,7 +45,7 @@ export function useAgentInterface(
   function map(p: AgentCore, u?: UserLike | null): AgentCard.Card {
     const id = safeString(p.id).trim()
     const headline = safeString(p.agent_headline) || safeString(p.title)
-    const summary = safeString(p.agent_summary) || safeString(p.bio_short)
+    const summary = safeString(p.summary)
     const placementTypes =
       safeStringArray(p.agent_placement_types).length
         ? safeStringArray(p.agent_placement_types)
@@ -70,7 +70,7 @@ export function useAgentInterface(
       tagline: headline,
       badges: placementTypes,
 
-      bioShort: summary,
+      summary,
 
       contactEmail: safeString(p.agent_contact_email || p.contact_email).trim(),
       contactPhone: safeString(p.agent_contact_phone || p.contact_phone).trim(),
@@ -88,18 +88,5 @@ export function useAgentInterface(
     return mapped.id ? mapped : null
   }
 
-  function searchText(
-    target?: AgentCore | AgentResolved | null | undefined
-  ): string {
-    const p = target ?? profile?.coreProfile.value ?? null
-    if (!p) return ''
-    const u = resolveUser(target as AgentCore | AgentResolved | null)
-    const displayName = safeString(u?.display_name)
-    const headline = safeString(p.agent_headline) || safeString(p.title)
-    const summary = safeString(p.agent_summary) || safeString(p.bio_short)
-    const id = safeString(p.id)
-    return `${displayName} ${headline} ${summary} ${id}`.trim().toLowerCase()
-  }
-
-  return { card, searchText }
+  return { card }
 }

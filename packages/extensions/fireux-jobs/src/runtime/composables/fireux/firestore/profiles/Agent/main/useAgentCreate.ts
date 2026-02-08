@@ -37,7 +37,7 @@ export function useAgentCreate() {
         subtitle: '',
         tagline: '',
         tags: [],
-        bio_short: '',
+        summary: '',
         contact_email: '',
         contact_phone: '',
         website_url: '',

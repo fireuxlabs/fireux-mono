@@ -6,11 +6,7 @@
     @click="onClick"
   >
     <div class="card__media">
-      <UAvatarGroup v-if="secondaryAvatarUrl" size="sm">
-        <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
-        <UAvatar :src="secondaryAvatarUrl || undefined" :alt="displayName" size="2xs" />
-      </UAvatarGroup>
-      <UAvatar v-else :src="avatarUrl || undefined" :alt="displayName" size="sm" />
+      <UAvatar :src="image || avatarUrl || undefined" :alt="displayName" size="sm" />
 
       <div class="card__content card__stack">
         <div class="card__header">
@@ -23,12 +19,8 @@
         </div>
 
         <div v-if="showBody" class="card__tagline">
-          <div v-if="prop || bioShort">
-            {{ prop || bioShort }}
-          </div>
-
-          <div v-if="locationsCsv" class="text-dimmed">
-            {{ locationsCsv }}
+          <div v-if="prop || summary">
+            {{ prop || summary }}
           </div>
         </div>
       </div>
@@ -43,11 +35,10 @@ type Props = Pick<
   ProfessionalCard.Card,
   | 'to'
   | 'avatarUrl'
-  | 'secondaryAvatarUrl'
+  | 'image'
   | 'displayName'
   | 'title'
-  | 'bioShort'
-  | 'locationsCsv'
+  | 'summary'
 > & {
   prop?: string
   showSubtitle?: boolean

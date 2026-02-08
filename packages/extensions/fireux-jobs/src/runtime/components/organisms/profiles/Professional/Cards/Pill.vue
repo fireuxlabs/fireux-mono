@@ -11,11 +11,7 @@
       size="sm"
     >
       <template #avatar>
-        <UAvatarGroup v-if="avatarUrl && secondaryAvatarUrl" size="xs">
-          <UAvatar :src="avatarUrl || undefined" :alt="displayName || ''" size="xs" />
-          <UAvatar :src="secondaryAvatarUrl || undefined" :alt="displayName || ''" size="2xs" />
-        </UAvatarGroup>
-        <UAvatar v-else :src="avatarUrl || undefined" :alt="displayName || ''" size="xs" />
+        <UAvatar :src="image || avatarUrl || undefined" :alt="displayName || ''" size="xs" />
       </template>
     </UUser>
   </component>
@@ -30,7 +26,7 @@ const emit = defineEmits<{
 
 const props = withDefaults(
   defineProps<
-    Pick<ProfessionalCard.Card, 'to' | 'avatarUrl' | 'secondaryAvatarUrl' | 'displayName' | 'title'> & {
+    Pick<ProfessionalCard.Card, 'to' | 'avatarUrl' | 'image' | 'displayName' | 'title'> & {
       showSubtitle?: boolean
       link?: boolean
       action?: boolean

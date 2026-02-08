@@ -22,6 +22,12 @@
               </NuxtLink>
             </li>
             <li>
+              Create apps:
+              <NuxtLink class="text-primary-500 hover:underline" to="/apps">
+                /apps
+              </NuxtLink>
+            </li>
+            <li>
               Developer utilities:
               <NuxtLink class="text-primary-500 hover:underline" to="/dev">
                 /dev

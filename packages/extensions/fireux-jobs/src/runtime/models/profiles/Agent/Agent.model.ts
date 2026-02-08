@@ -16,7 +16,7 @@ export const AgentCore = {
 
   // Agent (scoped, v1)
   agent_headline: '',
-  agent_summary: '',
+  summary: '',
   agent_bio: '',
   agent_image: '',
 
@@ -34,7 +34,6 @@ export const AgentCore = {
   subtitle: '',
   tagline: '',
   tags: [] as string[],
-  bio_short: '',
   contact_email: '',
   contact_phone: '',
   website_url: '',
@@ -70,4 +69,3 @@ export type AgentResolved = AgentCore & {
 }
 
 export { agentConfig }
-

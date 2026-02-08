@@ -11,6 +11,7 @@ const fireuxConfig = defineFireuxConfig({
     'fireux-places',
     'fireux-companies',
     'fireux-kitchens',
+    'fireux-drop',
     ['fireux-jobs', { workplaces: ['kitchen', 'ship', 'truck'] }],
     'fireux-products',
     'fireux-blogs',

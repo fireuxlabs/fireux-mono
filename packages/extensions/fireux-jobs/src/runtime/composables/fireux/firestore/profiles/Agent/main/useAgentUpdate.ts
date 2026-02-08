@@ -48,7 +48,7 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
 
   const updateSummary = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ agent_summary: normalized ?? undefined })
+    await updateCoreProfile({ summary: normalized ?? undefined })
   }
 
   const updateBio = async (value: string) => {

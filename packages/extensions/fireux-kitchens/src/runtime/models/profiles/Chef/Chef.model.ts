@@ -15,7 +15,7 @@ export const ChefCore = {
 
   // Chef (scoped, v1)
   chef_headline: '',
-  chef_summary: '',
+  summary: '',
   chef_bio: '',
   chef_image: '',
 
@@ -30,7 +30,6 @@ export const ChefCore = {
   subtitle: '',
   tagline: '',
   tags: [] as string[],
-  bio_short: '',
   bio_long: '',
   specialties: [] as string[],
   locations: [] as string[],
@@ -60,4 +59,3 @@ export type ChefApp = {
 }
 
 export { chefConfig }
-
