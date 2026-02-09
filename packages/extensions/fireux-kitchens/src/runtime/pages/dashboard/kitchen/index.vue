@@ -28,10 +28,17 @@
               size="sm"
             />
             <UButton
-              to="/ingredients"
+              :to="ingredientsRoute"
               label="Ingredients"
               color="neutral"
               icon="i-lucide-carrot"
+              size="sm"
+            />
+            <UButton
+              :to="miseRoute"
+              label="Mise en place"
+              color="neutral"
+              icon="i-lucide-clipboard-check"
               size="sm"
             />
             <UButton
@@ -62,6 +69,24 @@ const menuRoute = computed(() =>
         query: { kitchenId: runtimeKitchenId.value },
       }
     : '/dashboard/kitchen/menu'
+)
+
+const ingredientsRoute = computed(() =>
+  runtimeKitchenId.value
+    ? {
+        path: '/dashboard/kitchen/ingredients',
+        query: { kitchenId: runtimeKitchenId.value },
+      }
+    : '/dashboard/kitchen/ingredients'
+)
+
+const miseRoute = computed(() =>
+  runtimeKitchenId.value
+    ? {
+        path: '/dashboard/kitchen/mise',
+        query: { kitchenId: runtimeKitchenId.value },
+      }
+    : '/dashboard/kitchen/mise'
 )
 
 definePageMeta({

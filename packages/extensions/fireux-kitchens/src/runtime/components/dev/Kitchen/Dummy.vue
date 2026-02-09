@@ -7,7 +7,7 @@
             Dummy kitchen surfaces
           </p>
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            Preview Pill, Cell, Preview, and Profile surfaces using a hydrated dummy kitchen.
+            Dummy surfaces for kitchens.
           </p>
         </div>
       </div>
@@ -23,7 +23,7 @@
       />
     </div>
 
-    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div class="space-y-4">
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Pill</div>
         <KitchenCardsPill

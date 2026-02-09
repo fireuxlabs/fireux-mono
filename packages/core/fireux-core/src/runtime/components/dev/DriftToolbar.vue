@@ -4,15 +4,6 @@
 
     <UButton
       size="xs"
-      :variant="driftKind === 'missing' ? 'solid' : 'ghost'"
-      color="primary"
-      @click="$emit('update:drift-kind', 'missing')"
-    >
-      Missing
-    </UButton>
-
-    <UButton
-      size="xs"
       :variant="driftKind === 'extra' ? 'solid' : 'ghost'"
       color="primary"
       @click="$emit('update:drift-kind', 'extra')"
@@ -21,7 +12,7 @@
     </UButton>
 
     <span class="font-medium ml-2">
-      Filter {{ driftKind }}:
+      Filter extra:
     </span>
 
     <UButton

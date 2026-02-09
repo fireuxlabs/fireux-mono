@@ -13,12 +13,9 @@
       <template #header>
         <div class="flex items-start justify-between gap-3">
           <div class="space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                Ingredients collection
-              </p>
-              <UBadge variant="soft">{{ visibleIngredients }} / {{ totalIngredients }}</UBadge>
-            </div>
+            <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              Ingredients collection
+            </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
               Browse ingredients resolved for this runtime and filter by model drift.
             </p>
@@ -85,9 +82,6 @@ const filteredDriftPayload = buildDriftPayload({
     },
   }),
 })
-
-const totalIngredients = computed(() => ingredientsCollection.value.length)
-const visibleIngredients = computed(() => filteredCollection.value.length)
 
 const driftCopyPayload = buildCopyPayload({
   modelPath: 'packages/extensions/fireux-kitchens/src/runtime/models/objects/ingredient.model.ts',

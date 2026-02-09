@@ -3,7 +3,7 @@
     <template #header>
       <div class="space-y-1">
         <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">Professional card surfaces</p>
-        <p class="text-xs text-gray-500 dark:text-gray-400">Pill, cell, and preview variants.</p>
+        <p class="text-xs text-gray-500 dark:text-gray-400">Pill, cell, preview, and profile variants.</p>
       </div>
     </template>
 
@@ -21,6 +21,7 @@
       <OrganismsProfilesProfessionalCardsPill v-bind="current.pill" />
       <OrganismsProfilesProfessionalCardsCell v-bind="current.cell" />
       <OrganismsProfilesProfessionalCardsPreview v-bind="current.preview" />
+      <OrganismsProfilesProfessionalCardsProfile :card="current.profile" />
     </div>
   </UCard>
 </template>
@@ -45,5 +46,6 @@ const current = computed(() => ({
   pill: pillList[selectedIndex.value] ?? pillList[0],
   cell: cellList[selectedIndex.value] ?? cellList[0],
   preview: previewList[selectedIndex.value] ?? previewList[0],
+  profile: previewList[selectedIndex.value] ?? previewList[0],
 }))
 </script>

@@ -13,12 +13,9 @@
       <template #header>
         <div class="flex items-start justify-between gap-3">
           <div class="space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                Kitchens collection
-              </p>
-              <UBadge variant="soft">{{ visibleKitchens }} / {{ totalKitchens }}</UBadge>
-            </div>
+            <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              Kitchens collection
+            </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
               Browse kitchens resolved for this runtime and filter by model drift.
             </p>
@@ -86,9 +83,6 @@ const filteredKitchensResolved = computed(() =>
     .map((kitchen) => hydratedById.value.get(String(kitchen.id)))
     .filter(Boolean) as Kitchen[]
 )
-
-const totalKitchens = computed(() => kitchensCollection.value.length)
-const visibleKitchens = computed(() => filteredKitchensResolved.value.length)
 
 const filteredKitchensDriftPayload = buildKitchensDriftPayload({
   map: ({ doc, id, drift }) => ({

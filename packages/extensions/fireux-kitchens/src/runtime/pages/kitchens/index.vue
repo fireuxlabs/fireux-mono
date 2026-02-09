@@ -23,7 +23,7 @@
           variant="soft"
           color="neutral"
           icon="i-lucide-carrot"
-          to="/ingredients"
+          :to="ingredientsRoute"
         >
           Ingredients
         </UButton>
@@ -288,5 +288,14 @@ const kitchenDashboardTo = computed(() =>
         query: { kitchenId: runtimeKitchenId.value },
       }
     : '/dashboard/kitchen'
+)
+
+const ingredientsRoute = computed(() =>
+  runtimeKitchenId.value
+    ? {
+        path: '/dashboard/kitchen/ingredients',
+        query: { kitchenId: runtimeKitchenId.value },
+      }
+    : '/dashboard/kitchen/ingredients'
 )
 </script>

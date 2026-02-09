@@ -7,7 +7,7 @@
             Dummy ingredient surfaces
           </p>
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            Preview Pill, Cell, Preview, and Profile surfaces from `dummy/ingredient.dummy.ts`.
+            Dummy surfaces for ingredients.
           </p>
         </div>
       </div>
@@ -23,7 +23,7 @@
       />
     </div>
 
-    <div v-if="pillItems.length" class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div v-if="pillItems.length" class="space-y-4">
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Pill</div>
         <IngredientCardsPill
@@ -59,7 +59,7 @@
 
     <UCard v-else variant="subtle">
       <p class="text-sm text-dimmed">
-        No ingredient samples available yet. Add entries to `dummy/ingredient.dummy.ts` or create runtime ingredients.
+        No ingredient samples available yet. Add entries to `dummy/ingredient.dummy.ts`.
       </p>
     </UCard>
   </UCard>
@@ -68,7 +68,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { dummyIngredientList } from '../../../../../../../../dummy/ingredient.dummy'
-import { useIngredientFetch } from '../../../composables/fireux/firestore/objects/ingredient/fetch/useIngredientFetch'
 import { useIngredientInterface } from '../../../composables/fireux/firestore/objects/ingredient/utils/view/useIngredientInterface'
 import type { Ingredient } from '../../../models/objects/ingredient.model'
 import IngredientCardsCell from '../../organisms/entities/Ingredient/Cards/Cell.vue'
@@ -82,13 +81,10 @@ const emit = defineEmits<{
   (event: 'ready', ingredient: Ingredient): void
 }>()
 
-const { ingredients } = useIngredientFetch()
 const { pill, cell, preview, profile } = useIngredientInterface()
 
 const surfaceIngredients = computed<Ingredient[]>(() => {
-  const fromDummy = dummyIngredientList ?? []
-  if (fromDummy.length > 0) return fromDummy
-  return (ingredients.value ?? []).slice(0, 8)
+  return dummyIngredientList ?? []
 })
 
 const selectedId = ref('')

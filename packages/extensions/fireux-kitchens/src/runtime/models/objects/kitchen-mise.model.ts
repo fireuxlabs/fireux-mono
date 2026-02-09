@@ -29,6 +29,8 @@ export const KitchenMiseTask = {
   estimated_minutes: 0 as number,
 
   ingredient_ids: [] as string[],
+  mise_ids: [] as string[],
+  recipe_id: '' as string,
   assignee_ids: [] as string[],
   checklist: [] as KitchenMiseChecklistItem[],
 

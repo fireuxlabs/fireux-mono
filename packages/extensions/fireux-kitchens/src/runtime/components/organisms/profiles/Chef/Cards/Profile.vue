@@ -78,7 +78,7 @@ const { coreProfile, card: toCard } = useChef()
 
 const isChefCard = (value: unknown): value is ChefCard.Card => {
   if (!value || typeof value !== 'object') return false
-  return 'to' in value && 'title' in value && 'badges' in value && 'line1' in value
+  return 'displayName' in value && 'tagline' in value && 'badges' in value
 }
 
 const resolvedCard = computed<ChefCard.Card | null>(() => {
@@ -86,7 +86,7 @@ const resolvedCard = computed<ChefCard.Card | null>(() => {
 
   const supplied = props.chef ?? null
   if (supplied) {
-    return isChefCard(supplied) ? supplied : toCard(supplied)
+    return isChefCard(supplied) ? supplied : toCard(supplied as ChefCore)
   }
 
   return coreProfile.value ? toCard(coreProfile.value) : null
@@ -95,15 +95,28 @@ const resolvedCard = computed<ChefCard.Card | null>(() => {
 const vm = computed(() => {
   const card = resolvedCard.value
 
-  const title = props.title ?? card?.title ?? 'Chef'
-  const subtitle = props.subtitle ?? (card?.subtitle || undefined)
-  const avatar = props.avatar ?? (card?.avatarUrl || null)
-  const avatarSecondary = props.avatarSecondary ?? (card?.secondaryAvatarUrl || null)
+  const cardAny = card as ChefCard.Card & {
+    title?: string
+    subtitle?: string
+    line1?: string
+    line2?: string
+    line3?: string
+    avatar?: string | null
+    avatarSecondary?: string | null
+  }
+
+  const title = props.title ?? cardAny?.displayName ?? cardAny?.title ?? 'Chef'
+  const subtitle = props.subtitle ?? (cardAny?.tagline || cardAny?.subtitle || undefined)
+  const avatar = props.avatar ?? (cardAny?.avatarUrl || cardAny?.avatar || null)
+  const avatarSecondary =
+    props.avatarSecondary ?? (cardAny?.secondaryAvatarUrl || cardAny?.avatarSecondary || null)
   const badges = card?.badges ?? []
 
-  const line1 = String((typeof props.prop === 'string' ? props.prop : card?.line1) ?? '').trim()
-  const line2 = String(card?.line2 ?? '').trim()
-  const line3 = String(card?.line3 ?? '').trim()
+  const line1 = String(
+    (typeof props.prop === 'string' ? props.prop : cardAny?.summary || cardAny?.line1) ?? ''
+  ).trim()
+  const line2 = String((cardAny?.specialtiesCsv || cardAny?.line2) ?? '').trim()
+  const line3 = String((cardAny?.locationsCsv || cardAny?.line3) ?? '').trim()
 
   return { title, subtitle, avatar, avatarSecondary, badges, line1, line2, line3 }
 })

@@ -1,5 +1,7 @@
 <template>
   <section class="space-y-10">
+    <DevChefDummy />
+
     <UCard>
       <DevModel
         :title="'Chefs · Core Model'"
@@ -58,6 +60,7 @@ const collection = computed(() => [
   ...(appChefs?.value ?? []),
   ...(coreChefs.value ?? []),
 ])
+
 
 const {
   driftKind,
