@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       title="Dev · Products (Ext)"
-      description="Collection-first view; filter by missing or extra fields (against the runtime Product model)."
+      description="Collection-first view; filter by extra fields (against the runtime Product model)."
     />
 
     <UPageBody class="pagebody">

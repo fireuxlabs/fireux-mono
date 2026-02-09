@@ -25,14 +25,11 @@
       <UCard>
         <template #header>
           <div class="space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                Users collection
-              </p>
-              <UBadge variant="soft">{{ visibleUsers }} / {{ totalUsers }}</UBadge>
-            </div>
+            <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              Users collection
+            </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Filter users by model drift before browsing records.
+              Filter users by model drift (extra fields) before browsing records.
             </p>
             <DevDriftToolbar
               :drift-kind="usersDriftKind"
@@ -104,10 +101,6 @@ const {
   collection: userCollection,
   runtimeModel: userModelRuntime,
 })
-
-const totalUsers = computed(() => userCollection.value.length)
-const visibleUsers = computed(() => filteredUsers.value.length)
-
 
 const filteredUsersDriftPayload = computed(() =>
   filteredUsers.value.map((user) => {

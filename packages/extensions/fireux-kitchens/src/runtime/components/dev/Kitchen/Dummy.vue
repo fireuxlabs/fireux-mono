@@ -4,7 +4,7 @@
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div class="space-y-2">
           <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            Dummy kitchen surfaces
+            Dummy surfaces for kitchens
           </p>
           <p class="text-xs text-gray-500 dark:text-gray-400">
             Dummy surfaces for kitchens.

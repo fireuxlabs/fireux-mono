@@ -3,19 +3,15 @@
     <template #header>
       <div class="space-y-1">
         <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-          Product card surfaces
+          Dummy surfaces for products
         </p>
         <p class="text-xs text-gray-500 dark:text-gray-400">
-          Pill, preview, cell, and profile variants with a real-looking payload.
+          Dummy surfaces for products.
         </p>
       </div>
     </template>
 
     <div class="space-y-4">
-      <div class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        Pill
-      </div>
-
       <div class="flex flex-wrap gap-2">
         <ProductCardsPill
           v-for="item in pillItems"
@@ -26,35 +22,38 @@
         />
       </div>
 
-      <ProductCardsPreview
-        v-if="currentPreview"
-        :card="currentPreview.card"
-        :prop="currentPreview.prop"
-        :product="currentPreview.product"
-      />
-
-      <div class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        Preview
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Pill</div>
+        <ProductCardsPill v-if="currentPill" v-bind="currentPill" />
       </div>
 
-      <ProductCardsCell
-        v-if="currentCell"
-        :card="currentCell.card"
-        :prop="currentCell.prop"
-      />
-
-      <div class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        Cell
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Cell</div>
+        <ProductCardsCell
+          v-if="currentCell"
+          :card="currentCell.card"
+          :prop="currentCell.prop"
+        />
       </div>
 
-      <ProductCardsProfile
-        v-if="currentCard"
-        :card="currentCard"
-        :prop="currentProp"
-        :product="currentProduct"
-      />
-      <div class="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-        Profile
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Preview</div>
+        <ProductCardsPreview
+          v-if="currentPreview"
+          :card="currentPreview.card"
+          :prop="currentPreview.prop"
+          :product="currentPreview.product"
+        />
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Profile</div>
+        <ProductCardsProfile
+          v-if="currentCard"
+          :card="currentCard"
+          :prop="currentProp"
+          :product="currentProduct"
+        />
       </div>
     </div>
   </UCard>
@@ -138,6 +137,11 @@ const pillItems = computed(() =>
         Boolean(item)
     )
 )
+
+const currentPill = computed(() => {
+  const id = selectedId.value
+  return pillItems.value.find((item) => item.id === id)?.pill ?? pillItems.value[0]?.pill ?? null
+})
 
 const currentCell = computed(() => {
   const card = currentCard.value

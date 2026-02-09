@@ -14,14 +14,11 @@
       <UCard>
         <template #header>
           <div class="space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                Suppliers collection
-              </p>
-              <UBadge variant="soft">{{ visibleSuppliers }} / {{ totalSuppliers }}</UBadge>
-            </div>
+            <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              Suppliers collection
+            </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Filter suppliers by model drift before browsing records.
+              Filter suppliers by model drift (extra fields) before browsing records.
             </p>
             <DevDriftToolbar
               :drift-kind="suppliersDriftKind"
@@ -79,10 +76,6 @@ const {
   collection: suppliersCollection,
   runtimeModel: supplierModelRuntime,
 })
-
-const totalSuppliers = computed(() => suppliersCollection.value.length)
-const visibleSuppliers = computed(() => filteredSuppliers.value.length)
-
 
 const filteredSuppliersDriftPayload = computed(() =>
   filteredSuppliers.value.map((entry) => {

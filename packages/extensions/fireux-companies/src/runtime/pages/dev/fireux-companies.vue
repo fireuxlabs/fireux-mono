@@ -16,14 +16,11 @@
       <UCard>
         <template #header>
           <div class="space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                Companies collection
-              </p>
-              <UBadge variant="soft">{{ visibleCompanies }} / {{ totalCompanies }}</UBadge>
-            </div>
+            <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              Companies collection
+            </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Filter companies by model drift before browsing records.
+              Filter companies by model drift (extra fields) before browsing records.
             </p>
             <DevDriftToolbar
               :drift-kind="companiesDriftKind"
@@ -96,9 +93,6 @@ const filteredCompaniesResolved = computed(() =>
     .map((company) => hydratedById.value.get(String(company.id)))
     .filter(Boolean) as CompanyView[]
 )
-
-const totalCompanies = computed(() => companiesCollection.value.length)
-const visibleCompanies = computed(() => filteredCompaniesResolved.value.length)
 
 const filteredCompaniesDriftPayload = computed(() =>
   filteredCompanies.value.map((company) => {

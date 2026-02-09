@@ -25,14 +25,11 @@
       <UCard>
         <template #header>
           <div class="space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                Apps collection
-              </p>
-              <UBadge variant="soft">{{ visibleApps }} / {{ totalApps }}</UBadge>
-            </div>
+            <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              Apps collection
+            </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Filter apps by model drift before browsing records.
+              Filter apps by model drift (extra fields) before browsing records.
             </p>
             <DevDriftToolbar
               :drift-kind="appsDriftKind"
@@ -103,10 +100,6 @@ const {
   collection: appCollection,
   runtimeModel: appModelRuntime,
 })
-
-const totalApps = computed(() => appCollection.value.length)
-const visibleApps = computed(() => filteredApps.value.length)
-
 
 const filteredAppsDriftPayload = computed(() =>
   filteredApps.value.map((app) => {

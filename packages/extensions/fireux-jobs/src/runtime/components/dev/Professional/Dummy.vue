@@ -2,8 +2,8 @@
   <UCard>
     <template #header>
       <div class="space-y-1">
-        <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">Professional card surfaces</p>
-        <p class="text-xs text-gray-500 dark:text-gray-400">Pill, cell, preview, and profile variants.</p>
+        <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">Dummy surfaces for professionals</p>
+        <p class="text-xs text-gray-500 dark:text-gray-400">Dummy surfaces for professionals.</p>
       </div>
     </template>
 
@@ -18,10 +18,25 @@
         />
       </div>
 
-      <OrganismsProfilesProfessionalCardsPill v-bind="current.pill" />
-      <OrganismsProfilesProfessionalCardsCell v-bind="current.cell" />
-      <OrganismsProfilesProfessionalCardsPreview v-bind="current.preview" />
-      <OrganismsProfilesProfessionalCardsProfile :card="current.profile" />
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Pill</div>
+        <OrganismsProfilesProfessionalCardsPill v-bind="current.pill" />
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Cell</div>
+        <OrganismsProfilesProfessionalCardsCell v-bind="current.cell" />
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Preview</div>
+        <OrganismsProfilesProfessionalCardsPreview v-bind="current.preview" />
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Profile</div>
+        <OrganismsProfilesProfessionalCardsProfile :card="current.profile" />
+      </div>
     </div>
   </UCard>
 </template>

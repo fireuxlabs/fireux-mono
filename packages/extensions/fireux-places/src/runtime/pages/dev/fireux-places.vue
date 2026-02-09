@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       title="Dev · Places (Ext)"
-      description="Collection-first view; filter by missing or extra fields (against the runtime Place model)."
+      description="Collection-first view; filter by extra fields (against the runtime Place model)."
     />
 
     <UPageBody class="pagebody">

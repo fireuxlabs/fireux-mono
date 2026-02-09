@@ -2,8 +2,8 @@
   <UCard>
     <template #header>
       <div class="space-y-1">
-        <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">Agent card surfaces</p>
-        <p class="text-xs text-gray-500 dark:text-gray-400">Pill, cell, preview, and profile variants.</p>
+        <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">Dummy surfaces for agents</p>
+        <p class="text-xs text-gray-500 dark:text-gray-400">Dummy surfaces for agents.</p>
       </div>
     </template>
 
@@ -18,10 +18,25 @@
         />
       </div>
 
-      <OrganismsProfilesAgentCardsPill v-bind="current.pill" />
-      <OrganismsProfilesAgentCardsCell v-bind="current.cell" />
-      <OrganismsProfilesAgentCardsPreview v-bind="current.preview" />
-      <OrganismsProfilesAgentCardsProfile :card="current.profile" />
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Pill</div>
+        <OrganismsProfilesAgentCardsPill v-bind="current.pill" />
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Cell</div>
+        <OrganismsProfilesAgentCardsCell v-bind="current.cell" />
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Preview</div>
+        <OrganismsProfilesAgentCardsPreview v-bind="current.preview" />
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Profile</div>
+        <OrganismsProfilesAgentCardsProfile :card="current.profile" />
+      </div>
     </div>
   </UCard>
 </template>

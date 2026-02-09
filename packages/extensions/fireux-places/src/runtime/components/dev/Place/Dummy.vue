@@ -4,10 +4,10 @@
       <div class="flex items-start justify-between gap-3">
         <div class="space-y-2">
           <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            Dummy place surfaces
+            Dummy surfaces for places
           </p>
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            Preview Pill, Cell, Preview, and Profile surfaces using a rich dummy place.
+            Dummy surfaces for places.
           </p>
         </div>
       </div>
@@ -23,7 +23,7 @@
       />
     </div>
 
-    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div class="space-y-4">
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Pill</div>
         <PlaceCardsPill

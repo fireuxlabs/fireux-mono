@@ -4,8 +4,8 @@
   <UCard>
     <template #header>
       <div class="space-y-1">
-        <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">Job card surfaces</p>
-        <p class="text-xs text-gray-500 dark:text-gray-400">Pill, preview, cell, and profile variants with a real-looking payload.</p>
+        <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">Dummy surfaces for jobs</p>
+        <p class="text-xs text-gray-500 dark:text-gray-400">Dummy surfaces for jobs.</p>
       </div>
     </template>
 
@@ -20,18 +20,32 @@
         />
       </div>
 
-      <JobCardsPreview
-        v-if="currentPreview"
-        :image-url="currentPreview.imageUrl"
-        :title="currentPreview.title"
-        :subtitle="currentPreview.subtitle"
-        :badges="currentPreview.badges"
-        :prop="currentPreview.prop"
-      />
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Pill</div>
+        <JobCardsPill v-if="currentPill" v-bind="currentPill" />
+      </div>
 
-      <JobCardsCell v-if="currentCell" v-bind="currentCell" />
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Cell</div>
+        <JobCardsCell v-if="currentCell" v-bind="currentCell" />
+      </div>
 
-      <JobCardsProfile :card="currentCard" :job="currentJob" />
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Preview</div>
+        <JobCardsPreview
+          v-if="currentPreview"
+          :image-url="currentPreview.imageUrl"
+          :title="currentPreview.title"
+          :subtitle="currentPreview.subtitle"
+          :badges="currentPreview.badges"
+          :prop="currentPreview.prop"
+        />
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Profile</div>
+        <JobCardsProfile :card="currentCard" :job="currentJob" />
+      </div>
     </div>
   </UCard>
 </template>
@@ -76,6 +90,8 @@ const pillItems = computed(() =>
     })
     .filter((item) => Boolean(item.key))
 )
+
+const currentPill = computed(() => pillItems.value[selectedIndex.value]?.pill ?? null)
 
 const currentCell = computed(() => {
   const card = currentCard.value
