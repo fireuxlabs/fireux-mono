@@ -2,8 +2,8 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <OrganismsAppCTA />
-      <OrganismsAppCollectionManager :collection="collection" />
+      <AppCTA />
+      <AppCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>

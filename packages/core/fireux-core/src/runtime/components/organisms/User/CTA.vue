@@ -14,19 +14,19 @@
           </UButton>
         </div>
 
-        <OrganismsUserCardsPreview
+        <UserCardsPreview
           v-if="view === 'preview'"
           v-bind="card(currentUser)"
         />
 
-        <OrganismsUserCardsProfile
+        <UserCardsProfile
           v-else
           v-bind="card(currentUser)"
           :user="currentUser"
         />
       </div>
 
-      <OrganismsUserCreateSystem v-else />
+      <UserCreateSystem v-else />
     </template>
   </UPageCTA>
 </template>

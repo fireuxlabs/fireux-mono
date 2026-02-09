@@ -8,7 +8,7 @@ Blog/posts module for FireUX apps.
 
 ## What it ships
 
-- **Firestore model**: `BlogPost` (`src/runtime/models/objects/blogPost.model.ts`)
+- **Firestore model**: `BlogPost` (`src/runtime/models/blogPost.model.ts`)
 - **Runtime pages**:
   - `/blog` (index)
   - `/blog/:slug` (public post page)

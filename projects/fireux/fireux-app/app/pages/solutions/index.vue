@@ -48,7 +48,6 @@
 
       <ProductCollectionManager
         :collection="nonModuleProducts"
-        header-text="FireUX products."
       />
 
       <DevJson
@@ -63,12 +62,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import ProductCollectionManager from 'fireux-products/runtime/components/organisms/entities/Product/Collection/Manager.vue'
-import { useProductFetch } from 'fireux-products/runtime/composables/fireux/firestore/objects/product/fetch/useProductFetch'
-import type { FirebaseProduct } from 'fireux-products/runtime/models/objects/product.model'
+import ProductCollectionManager from 'fireux-products/runtime/components/organisms/Product/Collection/Manager.vue'
+import { useProductFetch } from 'fireux-products/runtime/composables/fireux/firestore/product/fetch/useProductFetch'
+import type { FirebaseProduct } from 'fireux-products/runtime/models/product.model'
+import { computed } from 'vue'
 
 definePageMeta({
   layout: 'default',

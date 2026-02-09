@@ -6,12 +6,38 @@
     />
 
     <UPageBody class="pagebody">
-      <DevPlaceSystem />
+      <div class="space-y-4">
+        <UCard>
+          <div class="flex items-center justify-between gap-3">
+            <div class="text-sm font-semibold">Places</div>
+            <UButton
+              variant="ghost"
+              size="xs"
+              @click="toggleSection('places')"
+            >
+              {{ openSections.places ? 'Hide' : 'Show' }}
+            </UButton>
+          </div>
+          <div v-show="openSections.places" class="mt-4">
+            <DevPlaceSystem />
+          </div>
+        </UCard>
+      </div>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
+import { reactive } from 'vue'
+
+const openSections = reactive({
+  places: false,
+})
+
+const toggleSection = (key: keyof typeof openSections) => {
+  openSections[key] = !openSections[key]
+}
+
 definePageMeta({
   layout: 'dev',
   nav: {

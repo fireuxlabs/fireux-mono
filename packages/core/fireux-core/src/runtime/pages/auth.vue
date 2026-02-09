@@ -17,7 +17,7 @@
         </div>
       </section>
 
-      <OrganismsAuthSystem />
+      <AuthSystem />
     </UContainer>
   </div>
 </template>

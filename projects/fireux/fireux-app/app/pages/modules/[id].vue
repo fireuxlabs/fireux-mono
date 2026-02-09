@@ -136,9 +136,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { useProductFetch } from 'fireux-products/runtime/composables/fireux/firestore/objects/product/fetch/useProductFetch'
-import { useProductInterface } from 'fireux-products/runtime/composables/fireux/firestore/objects/product/utils/view/useProductInterface'
-import type { FirebaseProduct } from 'fireux-products/runtime/models/objects/product.model'
+import { useProductFetch } from 'fireux-products/runtime/composables/fireux/firestore/product/fetch/useProductFetch'
+import { useProductInterface } from 'fireux-products/runtime/composables/fireux/firestore/product/utils/view/useProductInterface'
+import type { FirebaseProduct } from 'fireux-products/runtime/models/product.model'
 
 definePageMeta({
   nav: {

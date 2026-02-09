@@ -1,7 +1,7 @@
 <template>
   <template v-if="app">
     <div class="panels-masonry__item dashboard-item mb-10">
-      <OrganismsAppEditSectionsLockedConfig
+      <AppEditSectionsLockedConfig
         :app="app"
         :is-dev="isDev"
         :noop-update="noopUpdate"
@@ -10,7 +10,7 @@
     </div>
 
     <div class="panels-masonry__item dashboard-item mb-10">
-      <OrganismsAppEditSectionsAbout
+      <AppEditSectionsAbout
         :app="app"
         :handle-tagline-update="handleTaglineUpdate"
         :handle-description-update="handleDescriptionUpdate"
@@ -20,18 +20,18 @@
     </div>
 
     <div class="panels-masonry__item dashboard-item mb-10">
-      <OrganismsAppEditSectionsSurfaces :app-card="appCard" />
+      <AppEditSectionsSurfaces :app-card="appCard" />
     </div>
 
     <div class="panels-masonry__item dashboard-item mb-10">
-      <OrganismsAppEditSectionsSocial
+      <AppEditSectionsSocial
         :app="app"
         :handle-update-social-links="handleUpdateSocialLinks"
       />
     </div>
 
     <div class="panels-masonry__item dashboard-item mb-10">
-      <OrganismsAppEditSectionsJoinRequests
+      <AppEditSectionsJoinRequests
         :items="joinRequestItems"
         :on-approve="onApprove"
         :on-remove="onRemove"
@@ -39,7 +39,7 @@
     </div>
 
     <div class="panels-masonry__item dashboard-item mb-10">
-      <OrganismsAppEditSectionsAdmins
+      <AppEditSectionsAdmins
         :rows="adminRows"
         :action-uid="adminActionUid"
         :pill-for="adminPillFor"
@@ -48,7 +48,7 @@
     </div>
 
     <div class="panels-masonry__item dashboard-item mb-10">
-      <OrganismsAppEditSectionsTenantOverrides />
+      <AppEditSectionsTenantOverrides />
     </div>
   </template>
 

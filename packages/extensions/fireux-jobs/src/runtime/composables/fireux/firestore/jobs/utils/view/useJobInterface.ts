@@ -1,5 +1,5 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { Job, JobResolved } from '../../../../../../models/objects/job.model'
+import type { Job, JobResolved } from '../../../../../../models/job.model'
 
 export namespace JobCard {
   export type Card = {

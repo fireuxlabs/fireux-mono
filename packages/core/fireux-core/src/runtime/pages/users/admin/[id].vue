@@ -1,98 +1,94 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/pages/users/admin/[id].vue -->
 <template>
-  <ClientOnly>
-    <UPage>
-      <UPageHeader :title="pageTitle" :description="pageDescription" />
+  <UPage>
+    <UPageHeader :title="pageTitle" :description="pageDescription" />
 
-      <UPageBody class="pagebody">
+    <UPageBody class="pagebody">
+      <ClientOnly>
         <div class="dashboard-profile">
-        <div class="dashboard-profile__pills">
-          <OrganismsAppCardsPill
-            v-if="appCard"
-            :to="appCard.to"
-            :thumbnail-url="appCard.thumbnailUrl"
-            :display-name="appCard.displayName"
-            :ecosystem="appCard.ecosystem"
-            :badges="appCard.badges"
-            :show-subtitle="false"
-            :link="Boolean(appCard.to)"
-            class="block"
+          <div class="dashboard-profile__pills">
+            <AppCardsPill
+              v-if="appCard"
+              :to="appCard.to"
+              :thumbnail-url="appCard.thumbnailUrl"
+              :display-name="appCard.displayName"
+              :ecosystem="appCard.ecosystem"
+              :badges="appCard.badges"
+              :show-subtitle="false"
+              :link="Boolean(appCard.to)"
+              class="block"
+            />
+
+            <UserCardsPill
+              v-if="userCard"
+              v-bind="userCard"
+              :show-subtitle="false"
+              :link="Boolean(userCard.to)"
+              class="block"
+            />
+          </div>
+
+          <UPageCard v-if="isDev" variant="subtle">
+            <p class="text-xs text-gray-500">Debug: dashboard nav items</p>
+            <pre class="text-xs text-gray-600 whitespace-pre-wrap">{{ items }}</pre>
+          </UPageCard>
+
+          <UPageCard v-if="isLoading" variant="subtle">
+            <p class="text-sm text-dimmed">Loading user…</p>
+          </UPageCard>
+
+          <UPageCard
+            v-else-if="!isAdmin"
+            title="Admin access required"
+            description="You need admin access to edit other users."
+            variant="subtle"
           />
 
-          <OrganismsUserCardsPill
-            v-if="userCard"
-            v-bind="userCard"
-            :show-subtitle="false"
-            :link="Boolean(userCard.to)"
-            class="block"
+          <UPageCard
+            v-else-if="!resolvedUser"
+            title="User not available"
+            description="No profile data found for this user."
+            variant="subtle"
+          />
+
+          <ClientOnly v-else>
+            <LayoutsDashboardProfileEdit class="panels-masonry">
+              <template #preview>
+                <UserCardsProfile
+                  v-if="userCard"
+                  v-bind="userCard"
+                  :user="resolvedUser"
+                />
+              </template>
+
+              <template #core>
+                <UserEditCore :user="resolvedUser" :user-refs="targetRefs" />
+              </template>
+
+              <template #app>
+                <UserEditApp :user="resolvedUser" :user-refs="targetRefs" />
+              </template>
+
+            </LayoutsDashboardProfileEdit>
+          </ClientOnly>
+
+          <DevJson
+            v-if="isDev && resolvedUser"
+            :title="'User (Edit Target)'"
+            context="Users admin page · users/admin/[id] · target user"
+            :data="resolvedUser"
+            :default-open="false"
           />
         </div>
 
-        <UPageCard v-if="isDev" variant="subtle">
-          <p class="text-xs text-gray-500">Debug: dashboard nav items</p>
-          <pre class="text-xs text-gray-600 whitespace-pre-wrap">{{ items }}</pre>
-        </UPageCard>
-
-        <UPageCard v-if="isLoading" variant="subtle">
-          <p class="text-sm text-dimmed">Loading user…</p>
-        </UPageCard>
-
-        <UPageCard
-          v-else-if="!isAdmin"
-          title="Admin access required"
-          description="You need admin access to edit other users."
-          variant="subtle"
-        />
-
-        <UPageCard
-          v-else-if="!resolvedUser"
-          title="User not available"
-          description="No profile data found for this user."
-          variant="subtle"
-        />
-
-        <ClientOnly v-else>
-          <LayoutsDashboardProfileEdit class="panels-masonry">
-            <template #preview>
-              <OrganismsUserCardsProfile
-                v-if="userCard"
-                v-bind="userCard"
-                :user="resolvedUser"
-              />
-            </template>
-
-            <template #core>
-              <OrganismsUserEditCore :user="resolvedUser" :user-refs="targetRefs" />
-            </template>
-
-            <template #app>
-              <OrganismsUserEditApp :user="resolvedUser" :user-refs="targetRefs" />
-            </template>
-
-          </LayoutsDashboardProfileEdit>
-        </ClientOnly>
-
-        <DevJson
-          v-if="isDev && resolvedUser"
-          :title="'User (Edit Target)'"
-          context="Users admin page · users/admin/[id] · target user"
-          :data="resolvedUser"
-          :default-open="false"
-        />
-        </div>
-      </UPageBody>
-    </UPage>
-    <template #fallback>
-      <UPage>
-        <UPageHeader title="Edit User" />
-        <UPageBody class="pagebody">
+        <template #fallback>
           <UPageCard variant="subtle">
             <p class="text-sm text-dimmed">Loading…</p>
           </UPageCard>
-        </UPageBody>
-      </UPage>
-    </template>
-  </ClientOnly>
+        </template>
+      </ClientOnly>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">

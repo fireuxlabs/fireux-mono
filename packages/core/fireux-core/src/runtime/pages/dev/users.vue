@@ -44,7 +44,7 @@
         </template>
       </UCard>
 
-      <OrganismsUserCollectionManager :collection="filteredUsers" />
+      <UserCollectionManager :collection="filteredUsers" />
     </UPageBody>
   </UPage>
 </template>

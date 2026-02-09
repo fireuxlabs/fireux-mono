@@ -23,22 +23,22 @@
       </div>
     </template>
 
-    <OrganismsProfilesChefCollectionList
+    <ProfilesChefCollectionList
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
       <template #pill="{ card }">
         <NuxtLink :to="card.to">
-          <OrganismsProfilesChefCardsPill v-bind="card" />
+          <ProfilesChefCardsPill v-bind="card" />
         </NuxtLink>
       </template>
       <template #cell="{ card }">
         <NuxtLink :to="card.to">
-          <OrganismsProfilesChefCardsCell v-bind="card" />
+          <ProfilesChefCardsCell v-bind="card" />
         </NuxtLink>
       </template>
-    </OrganismsProfilesChefCollectionList>
+    </ProfilesChefCollectionList>
 
     <p v-else>No chefs found.</p>
 

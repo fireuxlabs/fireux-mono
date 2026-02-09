@@ -27,14 +27,14 @@
       </div>
     </template>
 
-    <OrganismsAppCollectionList
+    <AppCollectionList
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
       <template #pill="{ card }">
-        <NuxtLink :to="card.to || `/apps/${card.id}`">
-          <OrganismsAppCardsPill
+        <NuxtLink :to="card.to">
+          <AppCardsPill
             :to="card.to"
             :thumbnail-url="card.thumbnailUrl"
             :display-name="card.displayName"
@@ -44,8 +44,8 @@
         </NuxtLink>
       </template>
       <template #cell="{ card }">
-        <NuxtLink :to="card.to || `/apps/${card.id}`">
-          <OrganismsAppCardsCell
+        <NuxtLink :to="card.to">
+          <AppCardsCell
             :to="card.to"
             :thumbnail-url="card.thumbnailUrl"
             :display-name="card.displayName"
@@ -55,7 +55,7 @@
           />
         </NuxtLink>
       </template>
-    </OrganismsAppCollectionList>
+    </AppCollectionList>
 
     <p v-else>
       {{ query ? 'No apps match your search.' : 'No apps found.' }}

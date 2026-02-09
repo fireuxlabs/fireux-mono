@@ -22,29 +22,29 @@
       </div>
     </template>
 
-    <OrganismsProfilesProfessionalCollectionList
+    <ProfilesProfessionalCollectionList
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
       <template #pill="{ card }">
         <NuxtLink :to="card.to">
-          <OrganismsProfilesProfessionalCardsPill v-bind="card" />
+          <ProfilesProfessionalCardsPill v-bind="card" />
         </NuxtLink>
       </template>
       <template #cell="{ card }">
         <NuxtLink :to="card.to">
-          <OrganismsProfilesProfessionalCardsCell v-bind="card" />
+          <ProfilesProfessionalCardsCell v-bind="card" />
         </NuxtLink>
       </template>
-    </OrganismsProfilesProfessionalCollectionList>
+    </ProfilesProfessionalCollectionList>
 
     <p v-else>No professionals found.</p>
 
     <div v-if="isDev">
       <DevJson
         :title="'Professionals (JSON)'"
-        context="collection manager · professionals · hydrated"
+        context="collection manager · professionals"
         :data="collection"
         :default-open="false"
       />

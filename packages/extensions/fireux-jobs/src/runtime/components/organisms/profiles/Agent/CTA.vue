@@ -7,11 +7,11 @@
     orientation="horizontal"
   >
     <div v-if="card()" class="cta__body space-y-4">
-      <OrganismsProfilesAgentCardsPreview v-bind="card()" :link="true" />
+      <ProfilesAgentCardsPreview v-bind="card()" :link="true" />
     </div>
 
     <div v-else class="cta__body space-y-2">
-      <OrganismsProfilesAgentCreateSystem />
+      <ProfilesAgentCreateSystem />
     </div>
   </UPageCTA>
 </template>

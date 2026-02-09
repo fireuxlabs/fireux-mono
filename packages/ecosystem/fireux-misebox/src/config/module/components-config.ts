@@ -1,6 +1,9 @@
 import { addComponentsDir, type Resolver } from '@nuxt/kit';
 import type { Nuxt } from '@nuxt/schema';
-import { registerComponentsDir } from 'fireux-core/config/module/module-helpers';
+import {
+    registerComponentAliases,
+    registerComponentsDir,
+} from 'fireux-core/config/module/module-helpers';
 
 /**
  * Register runtime components for this module.
@@ -9,7 +12,7 @@ export function configureComponents(resolver: Resolver, nuxt: Nuxt) {
   const componentsDir = registerComponentsDir(resolver, './runtime/components', {
     global: false,
     // Keep path segments in component names to avoid collisions
-    // e.g. organisms/entities/Ingredient/Profile.vue -> IngredientProfile
+    // e.g. organisms/Ingredient/Profile.vue -> IngredientProfile
     pathPrefix: true,
     // Ensure ecosystem components override core defaults
     priority: 1,
@@ -22,16 +25,28 @@ export function configureComponents(resolver: Resolver, nuxt: Nuxt) {
   }
 
   addComponentsDir({
-    path: resolver.resolve('./runtime/components/organisms/entities/Ingredient'),
+    path: resolver.resolve('./runtime/components/organisms/Ingredient'),
     global: true,
     pathPrefix: true,
     prefix: 'Ingredient',
   })
+  registerComponentAliases(
+    resolver,
+    './runtime/components/organisms/Ingredient',
+    'Ingredient',
+    { global: true }
+  )
 
   addComponentsDir({
-    path: resolver.resolve('./runtime/components/organisms/entities/Recipe'),
+    path: resolver.resolve('./runtime/components/organisms/Recipe'),
     global: true,
     pathPrefix: true,
     prefix: 'Recipe',
   })
+  registerComponentAliases(
+    resolver,
+    './runtime/components/organisms/Recipe',
+    'Recipe',
+    { global: true }
+  )
 }

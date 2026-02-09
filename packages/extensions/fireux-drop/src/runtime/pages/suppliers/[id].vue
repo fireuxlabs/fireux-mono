@@ -1,58 +1,64 @@
 <template>
-  <ClientOnly>
-    <div class="profile-page">
-      <div v-if="loading" class="py-10 text-sm opacity-70">Loading profile…</div>
+  <UPage>
+    <UPageHeader :title="pageTitle" :description="pageDescription">
+      <template #ctas>
+        <UButton
+          v-if="profile && isAdminUser && docId"
+          icon="i-lucide-shield"
+          size="xs"
+          color="primary"
+          variant="solid"
+          :to="`/suppliers/admin/${docId}`"
+        >
+          Admin
+        </UButton>
+        <UButton
+          v-if="profile && isSelf"
+          icon="i-lucide-pencil"
+          size="xs"
+          color="neutral"
+          variant="soft"
+          @click="navigateTo('/dashboard/supplier/profile')"
+        >
+          Edit
+        </UButton>
+      </template>
+    </UPageHeader>
 
-      <div v-else-if="!profile" class="space-y-2">
-        <MoleculesProfilesAdminCreateCard
-          v-if="isAdminUser"
-          title="Supplier profile not available"
-          description="Create a supplier profile for this user."
-          :button-label="supplierConfig.cta || 'Create Supplier profile'"
-          :loading="isCreating"
-          :error="createError"
-          @create="createProfile"
-        />
+    <UPageBody class="pagebody">
+      <ClientOnly>
+        <div class="profile-page">
+          <div v-if="loading" class="py-10 text-sm opacity-70">Loading profile…</div>
 
-        <div v-else>
-          <h1 class="text-lg font-semibold">Profile Not Found</h1>
-          <p>The profile you're looking for doesn't exist.</p>
-          <NuxtLink to="/suppliers" class="text-primary hover:underline">← Back</NuxtLink>
+          <div v-else-if="!profile" class="space-y-2">
+            <MoleculesProfilesAdminCreateCard
+              v-if="isAdminUser"
+              title="Supplier profile not available"
+              description="Create a supplier profile for this user."
+              :button-label="supplierConfig.cta || 'Create Supplier profile'"
+              :loading="isCreating"
+              :error="createError"
+              @create="createProfile"
+            />
+
+            <div v-else>
+              <h1 class="text-lg font-semibold">Profile Not Found</h1>
+              <p>The profile you're looking for doesn't exist.</p>
+              <NuxtLink to="/suppliers" class="text-primary hover:underline">← Back</NuxtLink>
+            </div>
+          </div>
+
+          <div v-else class="space-y-4">
+            <ProfilesSupplierCardsProfile :supplier="profile" />
+          </div>
         </div>
-      </div>
 
-      <div v-else class="space-y-4">
-        <div class="flex flex-wrap gap-2">
-          <UButton
-            v-if="profile && isAdminUser && docId"
-            icon="i-lucide-shield"
-            size="md"
-            color="primary"
-            variant="solid"
-            :to="`/suppliers/admin/${docId}`"
-          >
-            Admin
-          </UButton>
-          <UButton
-            v-if="profile && isSelf"
-            icon="i-lucide-pencil"
-            size="md"
-            color="neutral"
-            variant="soft"
-            @click="navigateTo('/dashboard/supplier/profile')"
-          >
-            Edit
-          </UButton>
-        </div>
-
-        <OrganismsProfilesSupplierCardsProfile :supplier="profile" />
-      </div>
-    </div>
-
-    <template #fallback>
-      <div class="py-10 text-sm opacity-70">Loading profile…</div>
-    </template>
-  </ClientOnly>
+        <template #fallback>
+          <div class="py-10 text-sm opacity-70">Loading profile…</div>
+        </template>
+      </ClientOnly>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
@@ -91,10 +97,20 @@ const resolveName = (p: any) =>
   p?.professional_name ||
   'Profile'
 
+const displayName = computed(() =>
+  profile.value ? resolveName(profile.value) : null
+)
+const pageTitle = computed(() => displayName.value ?? 'Supplier Profile')
+const pageDescription = computed(() =>
+  displayName.value
+    ? `Inspect ${displayName.value}.`
+    : 'Supplier profile details.'
+)
+
 useHead({
   title: computed(() =>
-    profile.value
-      ? `${resolveName(profile.value)} - Supplier Profile`
+    displayName.value
+      ? `${displayName.value} - Supplier Profile`
       : 'Supplier Profile'
   ),
 })

@@ -12,7 +12,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useBlogFetch } from '../../composables/fireux/firestore/objects/blog/fetch/useBlogFetch'
+import { useBlogFetch } from '../../composables/fireux/firestore/blog/fetch/useBlogFetch'
 
 const { appName } = useFireUXConfig()
 

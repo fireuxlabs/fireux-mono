@@ -172,9 +172,9 @@
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, ref } from 'vue'
 import { useKitchenDashboardSelection } from '../../../composables/fireux/app/useKitchenDashboardSelection'
-import { useIngredientFetch } from '../../../composables/fireux/firestore/objects/ingredient/fetch/useIngredientFetch'
-import { useKitchenMenuStackFetch } from '../../../composables/fireux/firestore/objects/kitchen/fetch/useKitchenMenuStackFetch'
-import { useKitchenMenuStackCreate } from '../../../composables/fireux/firestore/objects/kitchen/mutations/useKitchenMenuStackCreate'
+import { useIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
+import { useKitchenMenuStackFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenMenuStackFetch'
+import { useKitchenMenuStackCreate } from '../../../composables/fireux/firestore/kitchen/mutations/useKitchenMenuStackCreate'
 
 definePageMeta({
   layout: 'kitchen-dashboard',

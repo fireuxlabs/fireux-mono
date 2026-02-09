@@ -32,7 +32,7 @@
         </div>
       </template>
 
-      <OrganismsProfilesAgentCollectionManager :collection="filteredAgents" />
+      <ProfilesAgentCollectionManager :collection="filteredAgents" />
     </UCard>
   </section>
 </template>

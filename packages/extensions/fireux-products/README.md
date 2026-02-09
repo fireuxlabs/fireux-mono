@@ -8,7 +8,7 @@ Products/catalog module for FireUX apps.
 
 ## What it ships
 
-- **Firestore model**: `FirebaseProduct` (`src/runtime/models/objects/product.model.ts`)
+- **Firestore model**: `FirebaseProduct` (`src/runtime/models/product.model.ts`)
 - **Runtime pages**:
   - `/products` (index)
   - `/products/:slug` (public product page)
@@ -37,7 +37,7 @@ FireUX uses app-scoped collections by default:
 - `apps/{appId}/products/{productId}/prices/{priceId}` (if used)
 
 The canonical shape is defined in:
-- `src/runtime/models/objects/product.model.ts`
+- `src/runtime/models/product.model.ts`
 
 ---
 

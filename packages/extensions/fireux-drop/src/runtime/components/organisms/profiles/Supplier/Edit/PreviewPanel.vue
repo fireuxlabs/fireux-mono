@@ -26,13 +26,13 @@
           </UButton>
         </header>
 
-        <OrganismsProfilesSupplierCardsCell
+        <ProfilesSupplierCardsCell
           v-if="showCellCard && previewCard"
           v-bind="previewCard"
           :link="Boolean(previewCard.to)"
           class="block"
         />
-        <OrganismsProfilesSupplierCardsPill
+        <ProfilesSupplierCardsPill
           v-else-if="previewCard"
           v-bind="previewCard"
           :link="Boolean(previewCard.to)"

@@ -9,7 +9,7 @@
 
     <div class="space-y-4">
       <div class="flex flex-wrap gap-2">
-        <OrganismsProfilesProfessionalCardsPill
+        <ProfilesProfessionalCardsPill
           v-for="(pillItem, index) in pillList"
           :key="pillItem.displayName"
           v-bind="pillItem"
@@ -20,22 +20,22 @@
 
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Pill</div>
-        <OrganismsProfilesProfessionalCardsPill v-bind="current.pill" />
+        <ProfilesProfessionalCardsPill v-bind="current.pill" />
       </div>
 
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Cell</div>
-        <OrganismsProfilesProfessionalCardsCell v-bind="current.cell" />
+        <ProfilesProfessionalCardsCell v-bind="current.cell" />
       </div>
 
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Preview</div>
-        <OrganismsProfilesProfessionalCardsPreview v-bind="current.preview" />
+        <ProfilesProfessionalCardsPreview v-bind="current.preview" />
       </div>
 
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Profile</div>
-        <OrganismsProfilesProfessionalCardsProfile :card="current.profile" />
+        <ProfilesProfessionalCardsProfile :card="current.profile" />
       </div>
     </div>
   </UCard>
@@ -46,9 +46,9 @@ defineOptions({ name: 'DevProfessionalDummy' })
 
 import { computed, ref } from 'vue'
 import {
-  dummyProfessionalCellList,
-  dummyProfessionalPillList,
-  dummyProfessionalPreviewList,
+    dummyProfessionalCellList,
+    dummyProfessionalPillList,
+    dummyProfessionalPreviewList,
 } from '../../../../../../../../dummy/professional.dummy'
 
 const pillList = dummyProfessionalPillList

@@ -8,30 +8,75 @@
       class="bg-elevated/25"
     >
       <template #header>
-        <div class="flex items-center justify-between gap-2 px-2 py-2">
-          <div class="min-w-0">
-            <p class="truncate text-sm font-semibold">Kitchen Dashboard</p>
-            <p class="truncate text-xs text-dimmed">Operational workspace</p>
-          </div>
+        <div class="space-y-3">
+          <LayoutsDashboardProfilesMenu />
 
-          <UButton
-            to="/dashboard"
-            size="xs"
-            variant="ghost"
-            color="neutral"
-            icon="i-lucide-arrow-left"
-            aria-label="Back to app dashboard"
-          />
+          <div class="flex items-center justify-between gap-2 px-2 py-2">
+            <div class="min-w-0">
+              <p class="truncate text-sm font-semibold">Kitchen Dashboard</p>
+              <p class="truncate text-xs text-dimmed">Operational workspace</p>
+            </div>
+
+            <UButton
+              to="/dashboard"
+              size="xs"
+              variant="ghost"
+              color="neutral"
+              icon="i-lucide-arrow-left"
+              aria-label="Back to app dashboard"
+            />
+          </div>
         </div>
       </template>
 
       <template #default="{ collapsed }">
-        <UNavigationMenu
-          v-if="desktop.length"
-          :collapsed="collapsed ?? false"
-          :items="desktop"
-          orientation="vertical"
-        />
+        <div class="flex flex-col gap-3">
+          <UNavigationMenu
+            v-if="topNav.length"
+            :collapsed="collapsed ?? false"
+            :items="topNav"
+            orientation="vertical"
+          />
+
+          <USeparator v-if="topNav.length && (middleNav.length || bottomNav.length)" />
+
+          <UNavigationMenu
+            v-if="middleNav.length"
+            :collapsed="collapsed ?? false"
+            :items="middleNav"
+            orientation="vertical"
+          />
+
+          <USeparator v-if="middleNav.length && bottomNav.length" />
+
+          <UNavigationMenu
+            v-if="bottomNav.length"
+            :collapsed="collapsed ?? false"
+            :items="bottomNav"
+            orientation="vertical"
+          />
+
+          <div class="lg:hidden">
+            <USeparator
+              v-if="topNav.length || middleNav.length || bottomNav.length"
+            />
+
+            <div class="pt-3">
+              <LayoutsDashboardSidebarFooterActions
+                :collapsed="collapsed ?? false"
+              />
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <template #footer="{ collapsed }">
+        <div class="hidden lg:flex">
+          <LayoutsDashboardSidebarFooterActions
+            :collapsed="collapsed ?? false"
+            compact-profile
+          />
+        </div>
       </template>
     </UDashboardSidebar>
 
@@ -39,14 +84,36 @@
       <NuxtPage />
     </div>
   </UDashboardGroup>
+
+  <LayoutsDashboardNotificationsSlideover
+    v-model:open="isNotificationsSlideoverOpen"
+  />
 </template>
 
 <script setup lang="ts">
+import { useNavGrouping } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useNavGrouping'
+import { useAuthRedirect } from 'fireux-core/runtime/composables/fireux/app/ui/useAuthRedirect'
+import { useDashboardNotifications } from 'fireux-core/runtime/composables/fireux/app/ui/useDashboardNotifications'
 import { ref } from 'vue'
-import { useNav } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useNav'
+import { useKitchenDashboardNav } from '../composables/fireux/app/routing/useKitchenDashboardNav'
 
 defineOptions({ name: 'kitchen-dashboard' })
 
 const open = ref(false)
-const { desktop } = useNav(['kitchen-dashboard'])
+const { desktop } = useKitchenDashboardNav()
+const { isOpen: isNotificationsSlideoverOpen } = useDashboardNotifications()
+
+type NavItem = (typeof desktop.value)[number]
+
+useAuthRedirect()
+
+const TOP_PRIORITY = [{ key: 'dashboard-kitchen-home', to: '/dashboard/kitchen' }]
+
+const baseNavFilter = (item: NavItem) =>
+  item.group !== 'profiles' && !item.profileId
+
+const { topNav, middleNav, bottomNav } = useNavGrouping(desktop, {
+  topPriority: TOP_PRIORITY,
+  filter: baseNavFilter,
+})
 </script>

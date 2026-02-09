@@ -16,7 +16,7 @@
         </div>
 
         <div class="dashboard-profile__pills">
-          <OrganismsProfilesSupplierCardsPill
+          <ProfilesSupplierCardsPill
             v-if="supplierCard"
             v-bind="supplierCard"
             :link="Boolean(supplierCard.to)"
@@ -40,16 +40,16 @@
 
         <ClientOnly v-else>
           <div v-if="view === 'profile'" class="dashboard-profile__section">
-            <OrganismsProfilesSupplierCardsProfile
+            <ProfilesSupplierCardsProfile
               v-if="supplierCard"
               :card="supplierCard"
             />
           </div>
 
           <div v-else class="dashboard-profile__section">
-            <OrganismsProfilesSupplierEditCore :supplier="resolvedCoreProfile" />
+            <ProfilesSupplierEditCore :supplier="resolvedCoreProfile" />
 
-            <OrganismsProfilesSupplierEditApp
+            <ProfilesSupplierEditApp
               v-if="resolvedAppProfile"
               :supplier="resolvedAppProfile"
             />

@@ -12,7 +12,7 @@
     <template v-if="isAuthenticated">
       <div class="signed-in">
         <p class="status">You're signed in.</p>
-     <OrganismsUserCardsPill
+     <UserCardsPill
         v-bind="currentUserPill"
         :link="Boolean(currentUserPill && currentUserPill.to)"
         :show-badges="false"
@@ -49,7 +49,7 @@
         <span class="divider-label">or continue with email</span>
         <span class="divider-line" />
       </div>
-      <OrganismsAuthEmailPanel :brand-label="ecosystemLabel" />
+      <AuthEmailPanel :brand-label="ecosystemLabel" />
     </template>
   </section>
 </template>

@@ -1,29 +1,29 @@
 <template>
-  <ClientOnly>
-    <UPage class="page edit-page">
-      <UPageHeader :title="pageTitle" :description="pageSubtitle">
-        <template #ctas>
-          <UButton
-            size="xs"
-            variant="ghost"
-            icon="i-lucide-arrow-left"
-            :to="placeId ? `/places/${encodeURIComponent(placeId)}` : '/places'"
-          >
-            Back to details
-          </UButton>
-          <UButton
-            size="xs"
-            variant="ghost"
-            color="neutral"
-            icon="i-lucide-copy"
-            :disabled="!placeId"
-            aria-label="Copy place id"
-            @click="onCopyPlaceId"
-          />
-        </template>
-      </UPageHeader>
+  <UPage class="page edit-page">
+    <UPageHeader :title="pageTitle" :description="pageSubtitle">
+      <template #ctas>
+        <UButton
+          size="xs"
+          variant="ghost"
+          icon="i-lucide-arrow-left"
+          :to="placeId ? `/places/${encodeURIComponent(placeId)}` : '/places'"
+        >
+          Back to details
+        </UButton>
+        <UButton
+          size="xs"
+          variant="ghost"
+          color="neutral"
+          icon="i-lucide-copy"
+          :disabled="!placeId"
+          aria-label="Copy place id"
+          @click="onCopyPlaceId"
+        />
+      </template>
+    </UPageHeader>
 
-      <UPageBody class="pagebody">
+    <UPageBody class="pagebody">
+      <ClientOnly>
         <UPageCard v-if="loading" variant="subtle">
           <p class="text-sm text-dimmed">Loading place…</p>
         </UPageCard>
@@ -64,7 +64,7 @@
             </template>
           </UAlert>
 
-          <OrganismsEntitiesPlaceEdit v-if="canEdit" :place="place" />
+          <PlaceEdit v-if="canEdit" :place="place" />
           <UAlert
             v-else
             color="warning"
@@ -81,13 +81,13 @@
           :data="editableFields"
           :default-open="false"
         />
-      </UPageBody>
-    </UPage>
 
-    <template #fallback>
-      <div class="py-10 text-sm opacity-70">Loading place…</div>
-    </template>
-  </ClientOnly>
+        <template #fallback>
+          <div class="py-10 text-sm opacity-70">Loading place…</div>
+        </template>
+      </ClientOnly>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
@@ -97,8 +97,8 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
-import { usePlacesInterface } from '../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
-import type { Place } from '../../../models/objects/place.model'
+import { usePlacesInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlacesInterface'
+import type { Place } from '../../../models/place.model'
 
 definePageMeta({
   layout: 'default',

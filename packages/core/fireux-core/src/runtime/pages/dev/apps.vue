@@ -44,7 +44,7 @@
         </template>
       </UCard>
 
-      <OrganismsAppCollectionManager :collection="filteredApps" />
+      <AppCollectionManager :collection="filteredApps" />
     </UPageBody>
   </UPage>
 </template>

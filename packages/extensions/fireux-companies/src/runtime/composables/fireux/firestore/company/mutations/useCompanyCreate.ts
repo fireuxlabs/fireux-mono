@@ -1,0 +1,34 @@
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
+import type { Company, CompanyCreateInput } from '../../../../../../models/company.model'
+
+export const CompanyPayload = {
+  id: '',
+}
+
+export const CompanyStampOptions = {
+  creator: false,
+} as const
+
+export function useCompanyCreate() {
+  const { setDocument } = useFirestoreCreate()
+
+  async function createCompany(
+    input: CompanyCreateInput & { place?: PlaceUpsertInput }
+  ): Promise<string> {
+    if (!input?.id) {
+      throw new Error('Company id is required')
+    }
+
+    const { place, ...payload } = input
+    void place
+
+    await setDocument<Company>('companies', payload.id, payload as Company, {
+      creator: false,
+    })
+
+    return payload.id
+  }
+
+  return { createCompany }
+}

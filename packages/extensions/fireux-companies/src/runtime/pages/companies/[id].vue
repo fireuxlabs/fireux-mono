@@ -1,40 +1,30 @@
 <template>
-  <ClientOnly>
-    <UPage>
-      <UPageHeader :title="pageTitle" :description="pageDescription">
-        <template #ctas>
-          <UButton
-            size="xs"
-            variant="ghost"
-            icon="i-lucide-arrow-left"
-            to="/companies"
-          >
-            Back
-          </UButton>
-          <UButton
-            v-if="canEditAsAdmin"
-            size="xs"
-            color="primary"
-            icon="i-lucide-pencil"
-            :disabled="!docId"
-            :to="editTo"
-          >
-            You are admin of this app. You can edit this company
-          </UButton>
-          <UButton
-            v-if="canEditAsClaimer"
-            size="xs"
-            variant="soft"
-            color="primary"
-            icon="i-lucide-pencil"
-            :disabled="!docId"
-            :to="editTo"
-          >
-            You have claimed this company. You can edit it
-          </UButton>
-        </template>
-      </UPageHeader>
-      <UPageBody class="pagebody">
+  <UPage>
+    <UPageHeader :title="pageTitle" :description="pageDescription">
+      <template #ctas>
+        <UButton
+          size="xs"
+          variant="ghost"
+          icon="i-lucide-arrow-left"
+          to="/companies"
+        >
+          Back
+        </UButton>
+        <UButton
+          v-if="canEditAsAdmin || canEditAsClaimer"
+          size="xs"
+          variant="soft"
+          color="neutral"
+          icon="i-lucide-pencil"
+          :disabled="!docId"
+          :to="editTo"
+        >
+          Edit
+        </UButton>
+      </template>
+    </UPageHeader>
+    <UPageBody class="pagebody">
+      <ClientOnly>
         <div v-if="loading" class="py-10 text-sm opacity-70">
           Loading company…
         </div>
@@ -56,7 +46,7 @@
             </template>
             <div class="flex items-center gap-3">
               <span class="text-xs text-gray-500">Claimed by</span>
-              <OrganismsUserCardsPill
+              <UserCardsPill
                 v-if="claimedUserPill"
                 v-bind="claimedUserPill"
                 :show-subtitle="false"
@@ -112,13 +102,13 @@
             :default-open="false"
           />
         </div>
-      </UPageBody>
-    </UPage>
-    <!-- fallback slot must be a direct child of ClientOnly -->
-    <template #fallback>
-      <div class="py-10 text-sm opacity-70">Loading company…</div>
-    </template>
-  </ClientOnly>
+
+        <template #fallback>
+          <div class="py-10 text-sm opacity-70">Loading company…</div>
+        </template>
+      </ClientOnly>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
@@ -128,11 +118,11 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/mutations/usePlaceClaim'
+import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceClaim'
 import { computed, ref } from 'vue'
-import { useCompanyFetch } from '../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
-import { useCompanyInterface } from '../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
-import type { CompanyView } from '../../models/objects/company.model'
+import { useCompanyFetch } from '../../composables/fireux/firestore/company/fetch/useCompanyFetch'
+import { useCompanyInterface } from '../../composables/fireux/firestore/company/utils/view/useCompanyInterface'
+import type { CompanyView } from '../../models/company.model'
 
 definePageMeta({
   layout: 'default',

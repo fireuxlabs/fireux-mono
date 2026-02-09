@@ -1,0 +1,89 @@
+<template>
+  <UCard>
+    <template #header>
+      <div class="collection-manager__header">
+        <div class="collection-manager__title">
+          <div>Jobs</div>
+          <p>Browse {{ appName }} jobs.</p>
+        </div>
+
+        <div class="collection-manager__controls">
+          <UInput
+            v-model="query"
+            size="xs"
+            placeholder="Search jobs…"
+          />
+
+          <UButton
+            size="xs"
+            variant="ghost"
+            :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
+            :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+            @click="toggleVariant"
+          />
+          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+        </div>
+      </div>
+    </template>
+
+    <JobCollectionList
+      v-if="cardsFiltered.length"
+      :cards="cardsFiltered"
+      :variant="variant"
+    >
+      <template #pill="{ card }">
+        <NuxtLink :to="card.to">
+          <JobCardsPill v-bind="card" :show-badges="false" />
+        </NuxtLink>
+      </template>
+      <template #cell="{ card }">
+        <NuxtLink :to="card.to">
+          <JobCardsCell v-bind="card" />
+        </NuxtLink>
+      </template>
+    </JobCollectionList>
+
+    <p v-else>
+      {{ query ? 'No jobs match your search.' : 'No jobs found.' }}
+    </p>
+
+    <div v-if="isDev">
+      <DevJson
+        :title="'Jobs (JSON)'"
+        context="collection manager · jobs"
+        :data="collection"
+        :default-open="false"
+      />
+    </div>
+  </UCard>
+</template>
+
+<script setup lang="ts">
+import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig';
+import { computed } from 'vue';
+import { useJobInterface } from '../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface';
+import type { Job } from '../../../../../models/job.model';
+
+const props = defineProps<{ collection?: Job[] }>()
+const { appName } = useFireUXConfig()
+
+const collection = computed(() => props.collection ?? [])
+const { card: makeCard, searchText } = useJobInterface()
+
+const {
+  query,
+  variant,
+  toggleVariant,
+  cards: cardsFiltered,
+  visibleCount,
+} = useCollectionSearch<Job, ReturnType<typeof makeCard>>({
+  items: collection,
+  searchText: (job: Job) => searchText(job),
+  makeCard: (job: Job) => makeCard(job),
+})
+
+const totalCount = computed(() => collection.value.length)
+const isDev = import.meta.dev
+
+</script>

@@ -40,10 +40,10 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
-import { useKitchenFetch } from '../../../composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch'
-import { useKitchens } from '../../../composables/fireux/firestore/objects/kitchen/useKitchens'
-import type { Kitchen, KitchenCollection } from '../../../models/objects/kitchen.model'
-import { KitchenCollection as KitchenModelRuntime } from '../../../models/objects/kitchen.model'
+import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
+import { useKitchens } from '../../../composables/fireux/firestore/kitchen/useKitchens'
+import type { Kitchen, KitchenCollection } from '../../../models/kitchen.model'
+import { KitchenCollection as KitchenModelRuntime } from '../../../models/kitchen.model'
 
 defineOptions({ name: 'DevKitchenSystem' })
 
@@ -93,7 +93,7 @@ const filteredKitchensDriftPayload = buildKitchensDriftPayload({
 })
 
 const kitchensDriftCopyPayload = buildKitchensCopyPayload({
-  modelPath: 'packages/extensions/fireux-kitchens/src/runtime/models/objects/kitchen.model.ts',
+  modelPath: 'packages/extensions/fireux-kitchens/src/runtime/models/kitchen.model.ts',
   itemsKey: 'kitchens',
   items: filteredKitchensDriftPayload,
   total: computed(() => kitchensCollection.value.length),

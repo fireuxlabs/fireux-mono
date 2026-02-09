@@ -78,19 +78,19 @@
 </template>
 
 <script setup lang="ts">
-import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
-import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
+import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/company/fetch/useCompanyFetch'
+import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/company/utils/view/useCompanyInterface'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch'
-import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
+import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
+import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import { useHead } from 'nuxt/app'
 import { computed, defineComponent, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import JobCardsProfile from '../../components/organisms/entities/Job/Cards/Profile.vue'
+import JobCardsProfile from '../../components/organisms/Job/Cards/Profile.vue'
 import { useJobFetch } from '../../composables/fireux/firestore/jobs/fetch/useJobFetch'
 import { useJobUpdate } from '../../composables/fireux/firestore/jobs/mutations/useJobUpdate'
 import { useJobInterface } from '../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
-import type { JobStatus } from '../../models/objects/job.model'
+import type { JobStatus } from '../../models/job.model'
 
 const route = useRoute()
 const paramId = route.params.id

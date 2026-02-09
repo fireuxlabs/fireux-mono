@@ -19,7 +19,7 @@
     <template #body>
       <div class="dashboard-profile">
         <div class="dashboard-profile__pills">
-          <OrganismsProfilesChefCardsPill
+          <ProfilesChefCardsPill
             v-if="chefCard"
             v-bind="chefCard"
             :link="Boolean(chefCard.to)"
@@ -51,16 +51,16 @@
 
         <ClientOnly v-else>
           <div v-if="view === 'profile'" class="dashboard-profile__section">
-            <OrganismsProfilesChefCardsProfile
+            <ProfilesChefCardsProfile
               v-if="chefCard"
               :card="chefCard"
             />
           </div>
 
           <div v-else class="dashboard-profile__section">
-            <OrganismsProfilesChefEditCore :chef="resolvedCoreProfile" />
+            <ProfilesChefEditCore :chef="resolvedCoreProfile" />
 
-            <OrganismsProfilesChefEditApp
+            <ProfilesChefEditApp
               v-if="resolvedAppProfile"
               :chef="resolvedAppProfile"
             />

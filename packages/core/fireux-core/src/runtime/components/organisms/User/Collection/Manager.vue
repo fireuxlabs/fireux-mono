@@ -27,28 +27,26 @@
       </div>
     </template>
 
-    <ClientOnly>
-      <OrganismsUserCollectionList
-        v-if="cardsFiltered.length"
-        :cards="cardsFiltered"
-        :variant="variant"
-      >
-        <template #pill="{ card }">
-          <NuxtLink :to="card.to || `/users/${card.id}`">
-            <OrganismsUserCardsPill v-bind="card" />
-          </NuxtLink>
-        </template>
-        <template #cell="{ card }">
-          <NuxtLink :to="card.to || `/users/${card.id}`">
-            <OrganismsUserCardsCell v-bind="card" />
-          </NuxtLink>
-        </template>
-      </OrganismsUserCollectionList>
+    <UserCollectionList
+      v-if="cardsFiltered.length"
+      :cards="cardsFiltered"
+      :variant="variant"
+    >
+      <template #pill="{ card }">
+        <NuxtLink :to="card.to">
+          <UserCardsPill v-bind="card" />
+        </NuxtLink>
+      </template>
+      <template #cell="{ card }">
+        <NuxtLink :to="card.to">
+          <UserCardsCell v-bind="card" />
+        </NuxtLink>
+      </template>
+    </UserCollectionList>
 
-      <p v-else>
-        {{ query ? 'No users match your search.' : 'No users found.' }}
-      </p>
-    </ClientOnly>
+    <p v-else>
+      {{ query ? 'No users match your search.' : 'No users found.' }}
+    </p>
 
     <div v-if="isDev">
       <DevJson

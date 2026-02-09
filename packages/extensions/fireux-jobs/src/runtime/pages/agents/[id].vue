@@ -46,19 +46,7 @@
       </div>
 
       <div v-else class="space-y-4">
-        <div v-if="canEdit">
-          <UButton
-            icon="i-lucide-pencil"
-            size="md"
-            color="primary"
-            variant="solid"
-            @click="navigateTo('/dashboard/agent/profile')"
-          >
-            Edit Profile
-          </UButton>
-        </div>
-
-        <OrganismsProfilesAgentCardsProfile v-if="agentCard" :card="agentCard" />
+        <ProfilesAgentCardsProfile v-if="agentCard" :card="agentCard" />
       </div>
     </UPageBody>
   </UPage>

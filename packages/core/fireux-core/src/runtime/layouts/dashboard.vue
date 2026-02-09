@@ -82,20 +82,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
 import { useState } from '#imports'
-import { useDashboardNav } from '../composables/fireux/app/routing/presets'
-import { useDashboardNotifications } from '../composables/fireux/app/ui/useDashboardNotifications'
-import { useAuth } from '../composables/fireux/firebase/useAuth'
-import { useUser } from '../composables/fireux/firestore/core/user/useUser'
+import { computed, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import type { NavItem } from '../../types/nav'
+import { useDashboardNav } from '../composables/fireux/app/routing/presets'
+import { useNavGrouping } from '../composables/fireux/app/ui/nav/useNavGrouping'
+import { useAuthRedirect } from '../composables/fireux/app/ui/useAuthRedirect'
+import { useDashboardNotifications } from '../composables/fireux/app/ui/useDashboardNotifications'
+import { useUser } from '../composables/fireux/firestore/core/user/useUser'
 
 defineOptions({ name: 'dashboard' })
 
 const open = ref(false)
 const route = useRoute()
-const router = useRouter()
 const activeProfileState = useState<string | null>(
   'fireux-dashboard-profile',
   () => null
@@ -107,34 +107,11 @@ const { isAdmin } = useUser()
 
 const isDev = computed(() => import.meta.dev)
 
-const { isAuthenticated, isReady, hasAuthState, lastBindError } = useAuth()
-
-if (import.meta.client) {
-  watch(
-    [isReady, hasAuthState, isAuthenticated, lastBindError],
-    ([ready, resolved, authed, bindError]: [boolean, boolean, boolean, unknown]) => {
-      if (!ready) return
-      if (!resolved) return
-      if (authed) return
-      if (bindError) {
-        router.replace('/').catch(() => {})
-        return
-      }
-      router.replace('/auth').catch(() => {})
-    },
-    { immediate: true }
-  )
-}
-
-const sortNavItems = (items: NavItem[]) =>
-  items.slice().sort((a, b) => {
-    if (a.order !== b.order) return a.order - b.order
-    return a.label.localeCompare(b.label)
-  })
+useAuthRedirect()
 
 const TOP_PRIORITY = [
   { key: 'dashboard-developer', to: '/dashboard/developer' },
-  { key: 'admin', to: '/admin' },
+  { key: 'admin', to: '/dashboard/admin' },
   { key: 'dashboard-home', to: '/dashboard' },
   { key: 'dashboard-user-profile', to: '/dashboard/user-profile' },
 ]
@@ -150,7 +127,7 @@ const topPosition = (item: NavItem) =>
   )
 
 const canShowNavItem = (item: NavItem) => {
-  if (item.key === 'admin' || item.to === '/admin') {
+  if (item.key === 'admin' || item.to === '/dashboard/admin') {
     return isAdmin.value
   }
 
@@ -161,14 +138,8 @@ const canShowNavItem = (item: NavItem) => {
   return true
 }
 
-const baseNav = computed(() =>
-  sortNavItems(
-    desktop.value
-      .filter((i) => i.group !== 'profiles')
-      .filter((i) => !i.profileId)
-      .filter(canShowNavItem)
-  )
-)
+const baseNavFilter = (item: NavItem) =>
+  item.group !== 'profiles' && !item.profileId && canShowNavItem(item)
 
 const routeProfileId = computed(
   () => (route.meta as { nav?: { profileId?: string } }).nav?.profileId ?? null
@@ -189,23 +160,14 @@ const activeProfileId = computed(() => activeProfileState.value)
 const profileExtras = computed(() => {
   const profileId = activeProfileId.value
   if (!profileId) return []
-  return sortNavItems(
-    desktop.value
-      .filter((item) => item.group !== 'profiles')
-      .filter((item) => item.profileId === profileId)
-  )
+  return desktop.value
+    .filter((item) => item.group !== 'profiles')
+    .filter((item) => item.profileId === profileId)
 })
 
-const topNav = computed(() =>
-  baseNav.value
-    .filter(isTopNavItem)
-    .sort((a, b) => topPosition(a) - topPosition(b))
-    .filter((item) => topPosition(item) !== -1)
-)
-
-const bottomNav = computed(() =>
-  baseNav.value.filter((item) => !isTopNavItem(item))
-)
-
-const middleNav = computed(() => sortNavItems(profileExtras.value))
+const { topNav, middleNav, bottomNav } = useNavGrouping(desktop, {
+  topPriority: TOP_PRIORITY,
+  filter: baseNavFilter,
+  extras: profileExtras,
+})
 </script>

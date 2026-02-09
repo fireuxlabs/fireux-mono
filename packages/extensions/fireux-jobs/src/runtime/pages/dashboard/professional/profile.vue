@@ -22,7 +22,7 @@
     <template #body>
       <div class="dashboard-profile">
         <div class="dashboard-profile__pills">
-          <OrganismsProfilesProfessionalCardsPill
+          <ProfilesProfessionalCardsPill
             v-if="professionalCard"
             v-bind="professionalCard"
             :link="Boolean(professionalCard.to)"
@@ -54,7 +54,7 @@
 
         <ClientOnly v-else>
           <div v-if="view === 'profile'" class="dashboard-profile__section">
-            <OrganismsProfilesProfessionalCardsProfile
+            <ProfilesProfessionalCardsProfile
               v-if="professionalCard"
               :card="professionalCard"
               :profile="resolvedCoreProfile"
@@ -63,11 +63,11 @@
           </div>
 
           <div v-else class="dashboard-profile__section">
-            <OrganismsProfilesProfessionalEditCore
+            <ProfilesProfessionalEditCore
               :professional="resolvedCoreProfile"
             />
 
-            <OrganismsProfilesProfessionalEditApp
+            <ProfilesProfessionalEditApp
               v-if="resolvedAppProfile"
               :professional="resolvedAppProfile"
             />

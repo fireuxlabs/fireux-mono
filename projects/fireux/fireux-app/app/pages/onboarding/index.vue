@@ -38,7 +38,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from '#imports'
-import { useProductFetch } from 'fireux-products/runtime/composables/fireux/firestore/objects/product/fetch/useProductFetch'
+import { useProductFetch } from 'fireux-products/runtime/composables/fireux/firestore/product/fetch/useProductFetch'
 
 definePageMeta({
   layout: 'default',

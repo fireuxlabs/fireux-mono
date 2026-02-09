@@ -1,10 +1,10 @@
 import { computed } from '#imports'
-import { useAuth } from '../../../../../firebase/useAuth'
-import { useFireUXConfig } from '../../../../../app/FireUXConfig'
 import type {
-  User,
   AppUser,
+  User,
 } from '../../../../../../../models/core/user.model'
+import { useFireUXConfig } from '../../../../../app/FireUXConfig'
+import { useAuth } from '../../../../../firebase/useAuth'
 import type { UserRefs } from '../../fetch/useUserFetch'
 
 type UserCtaKey = 'sign-in' | 'create-core-user' | 'join-app' | 'avatar'

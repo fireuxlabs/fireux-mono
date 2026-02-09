@@ -4,9 +4,9 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
-      <OrganismsProfilesProfessionalCTA />
+      <ProfilesProfessionalCTA />
       <ClientOnly>
-        <OrganismsProfilesProfessionalCollectionManager :collection="collection" />
+        <ProfilesProfessionalCollectionManager :collection="collection" />
       </ClientOnly>
     </UPageBody>
   </UPage>

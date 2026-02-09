@@ -1,10 +1,8 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/pages/users/[id].vue -->
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
-    <UPageBody class="pagebody">
-      <p v-if="isMounted" class="mb-2 text-xs text-muted">Page loaded.</p>
-      <div class="mb-3 flex flex-wrap gap-2">
+    <UPageHeader :title="pageTitle" :description="pageDescription">
+      <template #ctas>
         <UButton
           v-if="isAdmin && userId"
           size="xs"
@@ -24,8 +22,11 @@
         >
           Edit
         </UButton>
-      </div>
-      <OrganismsUserCardsProfile v-if="userCard" v-bind="userCard" />
+      </template>
+    </UPageHeader>
+    <UPageBody class="pagebody">
+      <p v-if="isMounted" class="mb-2 text-xs text-muted">Page loaded.</p>
+      <UserCardsProfile v-if="userCard" v-bind="userCard" />
     </UPageBody>
   </UPage>
 </template>

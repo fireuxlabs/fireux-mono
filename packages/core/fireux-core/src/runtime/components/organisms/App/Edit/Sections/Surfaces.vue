@@ -16,7 +16,7 @@
         <div class="mb-2">
           <UBadge size="xs" variant="soft" color="neutral">Cell</UBadge>
         </div>
-        <OrganismsAppCardsCell
+        <AppCardsCell
           :to="appCard.to"
           :thumbnail-url="appCard.thumbnailUrl"
           :display-name="appCard.displayName"
@@ -32,7 +32,7 @@
         <div class="mb-2">
           <UBadge size="xs" variant="soft" color="neutral">Preview</UBadge>
         </div>
-        <OrganismsAppCardsPreview
+        <AppCardsPreview
           :id="appCard.id"
           :short-name="appCard.shortName"
           :thumbnail-url="appCard.thumbnailUrl"

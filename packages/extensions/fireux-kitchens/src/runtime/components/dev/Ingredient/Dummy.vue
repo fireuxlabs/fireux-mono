@@ -68,12 +68,12 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { dummyIngredientList } from '../../../../../../../../dummy/ingredient.dummy'
-import { useIngredientInterface } from '../../../composables/fireux/firestore/objects/ingredient/utils/view/useIngredientInterface'
-import type { Ingredient } from '../../../models/objects/ingredient.model'
-import IngredientCardsCell from '../../organisms/entities/Ingredient/Cards/Cell.vue'
-import IngredientCardsPill from '../../organisms/entities/Ingredient/Cards/Pill.vue'
-import IngredientCardsPreview from '../../organisms/entities/Ingredient/Cards/Preview.vue'
-import IngredientCardsProfile from '../../organisms/entities/Ingredient/Cards/Profile.vue'
+import { useIngredientInterface } from '../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
+import type { Ingredient } from '../../../models/ingredient.model'
+import IngredientCardsCell from '../../organisms/Ingredient/Cards/Cell.vue'
+import IngredientCardsPill from '../../organisms/Ingredient/Cards/Pill.vue'
+import IngredientCardsPreview from '../../organisms/Ingredient/Cards/Preview.vue'
+import IngredientCardsProfile from '../../organisms/Ingredient/Cards/Profile.vue'
 
 defineOptions({ name: 'DevIngredientDummy' })
 

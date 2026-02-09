@@ -1,20 +1,20 @@
 <template>
-  <ClientOnly>
-    <UPage>
-      <UPageHeader :title="pageTitle" :description="pageDescription">
-        <template #ctas>
-          <UButton
-            size="xs"
-            variant="ghost"
-            icon="i-lucide-arrow-left"
-            to="/kitchens"
-          >
-            Back
-          </UButton>
-        </template>
-      </UPageHeader>
+  <UPage>
+    <UPageHeader :title="pageTitle" :description="pageDescription">
+      <template #ctas>
+        <UButton
+          size="xs"
+          variant="ghost"
+          icon="i-lucide-arrow-left"
+          to="/kitchens"
+        >
+          Back
+        </UButton>
+      </template>
+    </UPageHeader>
 
-      <UPageBody class="pagebody">
+    <UPageBody class="pagebody">
+      <ClientOnly>
         <div v-if="loading" class="py-10 text-sm opacity-70">
           Loading kitchen…
         </div>
@@ -63,22 +63,22 @@
             </div>
           </UCard>
         </div>
-      </UPageBody>
-    </UPage>
 
-    <template #fallback>
-      <div class="py-10 text-sm opacity-70">Loading kitchen…</div>
-    </template>
-  </ClientOnly>
+        <template #fallback>
+          <div class="py-10 text-sm opacity-70">Loading kitchen…</div>
+        </template>
+      </ClientOnly>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
 import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useKitchenFetch } from '../../composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch'
-import { useKitchenInterface } from '../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
-import type { Kitchen } from '../../models/objects/kitchen.model'
+import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
+import { useKitchenInterface } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
+import type { Kitchen } from '../../models/kitchen.model'
 
 definePageMeta({
   layout: 'default',

@@ -88,7 +88,7 @@
       :ui="{ overlay: 'bg-black/80' }"
     >
       <div class="h-[calc(100vh-4rem)] w-full max-w-none p-4">
-        <OrganismsProfilesProfessionalCardsBusiness
+        <ProfilesProfessionalCardsBusiness
           :card="professionalCard"
           :profile-url="professionalUrl"
           @press="handleBusinessCardPress"

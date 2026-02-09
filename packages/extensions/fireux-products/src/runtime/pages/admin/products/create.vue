@@ -57,8 +57,8 @@ import {
   useProductCreate,
   useCreateProductState,
   useCreatePricesState,
-} from '../../../composables/fireux/firestore/objects/product/useProduct'
-import type { StripePriceInput } from '../../../models/objects/product.model'
+} from '../../../composables/fireux/firestore/product/useProduct'
+import type { StripePriceInput } from '../../../models/product.model'
 
 definePageMeta({
   layout: 'dashboard',

@@ -23,22 +23,22 @@
       </div>
     </template>
 
-    <OrganismsProfilesAgentCollectionList
+    <ProfilesAgentCollectionList
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
       <template #pill="{ card }">
         <NuxtLink :to="card.to">
-          <OrganismsProfilesAgentCardsPill v-bind="card" />
+          <ProfilesAgentCardsPill v-bind="card" />
         </NuxtLink>
       </template>
       <template #cell="{ card }">
         <NuxtLink :to="card.to">
-          <OrganismsProfilesAgentCardsCell v-bind="card" />
+          <ProfilesAgentCardsCell v-bind="card" />
         </NuxtLink>
       </template>
-    </OrganismsProfilesAgentCollectionList>
+    </ProfilesAgentCollectionList>
 
     <p v-else>No agents found.</p>
 
@@ -54,8 +54,8 @@
 </template>
 
 <script setup lang="ts">
-import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig';
+import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
 import { useAgentInterface } from '../../../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface';
 import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model';

@@ -1,6 +1,6 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { ref } from 'vue'
-import type { JobStatus } from '../../../../../models/objects/job.model'
+import type { JobStatus } from '../../../../../models/job.model'
 import { useFireuxJobsConfig } from '../../../../config/useFireuxJobsConfig'
 
 export const JobPayload = {

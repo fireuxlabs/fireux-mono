@@ -2,7 +2,7 @@
   <UContainer>
     <!-- 1) Auth -->
     <template v-if="!coreUser">
-      <OrganismsAuthSystem />
+      <AuthSystem />
     </template>
 
     <!-- 2) PIN -->
@@ -33,7 +33,7 @@
           <UButton size="xs" variant="soft" @click="onRefreshEnv">Refresh</UButton>
         </header>
 
-        <OrganismsAppCreateOnboardingVariables
+        <AppCreateOnboardingVariables
           :env-data="env"
           :pending="pending"
           :error="envError"

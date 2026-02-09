@@ -7,7 +7,7 @@
 
       <div class="space-y-2">
         <div class="w-fit max-w-full">
-          <OrganismsUserCardsPill
+          <UserCardsPill
             v-if="pill"
             v-bind="pill"
             :link="Boolean(pill.to)"

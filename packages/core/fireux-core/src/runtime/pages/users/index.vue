@@ -13,8 +13,8 @@
         />
       </UCard>
 
-      <OrganismsUserCTA />
-      <OrganismsUserCollectionManager :collection="collection" />
+      <UserCTA />
+      <UserCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
@@ -22,8 +22,8 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useGlobalUserCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useGlobalUserCollection'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { computed } from 'vue'
 
 definePageMeta({
@@ -55,12 +55,10 @@ const collection = computed(() => users.value ?? [])
 
 const isDev = import.meta.dev
 
-const {
-  user: currentUser,
-  myKitchenIds,
-  hasTestKitchen,
-  myPrimaryKitchenId,
-} = useUser()
+const { user: currentUser } = useUser()
+const myKitchenIds = computed<string[]>(() => [])
+const hasTestKitchen = computed(() => false)
+const myPrimaryKitchenId = computed(() => null)
 
 const currentUserId = computed(() => String(currentUser.value?.id || '').trim())
 

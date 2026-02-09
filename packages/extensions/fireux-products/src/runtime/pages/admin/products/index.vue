@@ -19,7 +19,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useProductFetch } from '../../../composables/fireux/firestore/objects/product/fetch/useProductFetch'
+import { useProductFetch } from '../../../composables/fireux/firestore/product/fetch/useProductFetch'
 
 const { appName } = useFireUXConfig()
 

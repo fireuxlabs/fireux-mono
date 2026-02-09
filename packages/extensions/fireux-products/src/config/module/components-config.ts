@@ -5,15 +5,16 @@ import {
 } from 'fireux-core/config/module/module-helpers'
 
 export function configureComponents(resolver: Resolver) {
-  registerComponentsDir(resolver, './runtime/components/organisms/entities/Product', {
+  registerComponentsDir(resolver, './runtime/components', {
+    global: true,
+    pathPrefix: true,
+  })
+  registerComponentsDir(resolver, './runtime/components/organisms/Product', {
     global: true,
     pathPrefix: true,
     prefix: 'Product',
   })
-
-  registerComponentAliases(
-    resolver,
-    './runtime/components/organisms/entities/Product',
-    'Product'
-  )
+  registerComponentAliases(resolver, './runtime/components/organisms/Product', 'Product', {
+    global: true,
+  })
 }

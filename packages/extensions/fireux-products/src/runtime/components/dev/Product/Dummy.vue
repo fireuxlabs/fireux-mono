@@ -62,8 +62,8 @@
 <script setup lang="ts">
 defineOptions({ name: 'DevProductDummy' })
 
-import { computed } from 'vue'
-import { dummyProductSurfaceList } from '../../../../../../../../dummy/product.dummy'
+import { computed } from 'vue';
+import { dummyProductSurfaceList } from '../../../../../../../../dummy/product.dummy';
 
 const productSurfaces = dummyProductSurfaceList
 
@@ -133,8 +133,11 @@ const pillItems = computed(() =>
       }
     })
     .filter(
-      (item): item is { key: string; id: string; pill: Record<string, unknown> } =>
-        Boolean(item)
+      (item): item is {
+        key: string
+        id: string
+        pill: { to: string; avatarUrl: string; title: string; subtitle: string; badges: string[] }
+      } => Boolean(item)
     )
 )
 

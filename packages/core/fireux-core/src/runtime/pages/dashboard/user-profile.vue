@@ -9,7 +9,7 @@
       <div class="dashboard-profile">
         <!-- Header pills -->
         <div class="dashboard-profile__pills">
-          <OrganismsAppCardsPill
+          <AppCardsPill
             v-if="appCard"
             :to="appCard.to"
             :thumbnail-url="appCard.thumbnailUrl"
@@ -21,7 +21,7 @@
             class="block"
           />
 
-          <OrganismsUserCardsPill
+          <UserCardsPill
             v-if="userCard"
             v-bind="userCard"
             :show-subtitle="false"
@@ -49,7 +49,7 @@
         <ClientOnly v-else>
           <LayoutsDashboardProfileEdit class="panels-masonry">
             <template #preview>
-              <OrganismsUserCardsProfile
+              <UserCardsProfile
                 v-if="resolvedUser"
                 v-bind="card(resolvedUser)"
                 :user="resolvedUser"
@@ -57,11 +57,11 @@
             </template>
 
             <template #core>
-              <OrganismsUserEditCore :user="resolvedUser" />
+              <UserEditCore :user="resolvedUser" />
             </template>
 
             <template #app>
-              <OrganismsUserEditApp :user="resolvedUser" />
+              <UserEditApp :user="resolvedUser" />
             </template>
           </LayoutsDashboardProfileEdit>
         </ClientOnly>

@@ -22,7 +22,7 @@
             </UPageCard>
 
             <div v-else class="space-y-6">
-              <OrganismsAppCardsPill
+              <AppCardsPill
                 v-if="previewCard"
                 :to="previewCard.to"
                 :thumbnail-url="previewCard.thumbnailUrl"
@@ -32,7 +32,7 @@
                 :link="Boolean(previewCard.to)"
                 class="block"
               />
-              <OrganismsAppEditDev :app="appSnapshot" />
+              <AppEditDev :app="appSnapshot" />
             </div>
           </UPageBody>
         </UPage>

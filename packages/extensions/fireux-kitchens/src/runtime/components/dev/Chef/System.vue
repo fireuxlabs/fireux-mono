@@ -36,7 +36,7 @@
         <p class="text-sm text-dimmed">Loading chefs...</p>
       </UCard>
 
-      <OrganismsProfilesChefCollectionManager
+      <ProfilesChefCollectionManager
         v-else
         :collection="filteredCollection"
       />

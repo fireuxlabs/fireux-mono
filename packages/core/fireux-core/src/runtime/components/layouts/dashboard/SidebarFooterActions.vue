@@ -20,7 +20,7 @@
       />
     </NuxtLink>
 
-    <OrganismsUserCardsPill
+    <UserCardsPill
       v-else-if="pillUser"
       v-bind="pillUser"
       :link="Boolean(pillUser.to)"

@@ -13,7 +13,7 @@
           </UButton>
         </div>
 
-        <OrganismsAppCardsPreview
+        <AppCardsPreview
           v-if="app && view === 'preview'"
           :id="card(app).id"
           :short-name="card(app).shortName"
@@ -25,7 +25,7 @@
           :badges="card(app).badges"
         />
 
-        <OrganismsAppCardsProfile
+        <AppCardsProfile
           v-else-if="app"
           :id="card(app).id"
           :short-name="card(app).shortName"
@@ -37,7 +37,7 @@
           :badges="card(app).badges"
           :app="app"
         />
-        <OrganismsAppCreateSystem v-else />
+        <AppCreateSystem v-else />
 
         <div class="cta__toolbar flex justify-end">
           <UButton variant="ghost" size="sm" to="/apps/learn-more">Learn more</UButton>

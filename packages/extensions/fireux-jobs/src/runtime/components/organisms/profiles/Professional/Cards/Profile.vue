@@ -1,6 +1,6 @@
 <template>
   <div class="mx-auto w-full max-w-3xl space-y-3">
-    <OrganismsProfilesProfessionalCardsCell
+    <ProfilesProfessionalCardsCell
       v-bind="card"
       :show-tagline="true"
       :show-subtitle="true"
@@ -175,11 +175,11 @@
 
 <script setup lang="ts">
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle'
-import { mapPlaceToBasePlace } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/mapPlaceToBasePlace'
-import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
-import { usePlacesInterface } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
-import type { Place } from 'fireux-places/runtime/models/objects/place.model'
+import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/google/usePlacesGoogle'
+import { mapPlaceToBasePlace } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/mapPlaceToBasePlace'
+import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlacesInterface'
+import { usePlacesInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlacesInterface'
+import type { Place } from 'fireux-places/runtime/models/place.model'
 import type { Ref } from 'vue'
 import { computed, reactive, shallowRef, toRefs, watch, watchEffect } from 'vue'
 import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional'

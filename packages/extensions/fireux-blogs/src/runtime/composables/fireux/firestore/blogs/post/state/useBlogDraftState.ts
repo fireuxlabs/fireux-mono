@@ -3,7 +3,7 @@ import { onMounted } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useBlogUtils } from '../../../objects/blog/utils/useBlogUtils'
-import type { BlogPostEntry } from '../../../../../../models/objects/blogPost.model'
+import type { BlogPostEntry } from '../../../../../../models/blogPost.model'
 
 type BlogPostPayload = BlogPostEntry & {
   created_at: string

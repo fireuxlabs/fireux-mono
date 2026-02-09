@@ -554,8 +554,8 @@ Total files: 1277
                   - packages/ecosystem/fireux-cleanbox/src/runtime/composables/fireux/app/utils/effects/
                     - packages/ecosystem/fireux-cleanbox/src/runtime/composables/fireux/app/utils/effects/useLandingEffect.ts
           - packages/ecosystem/fireux-cleanbox/src/runtime/models/
-            - packages/ecosystem/fireux-cleanbox/src/runtime/models/objects/
-              - packages/ecosystem/fireux-cleanbox/src/runtime/models/objects/location.model.ts
+            - packages/ecosystem/fireux-cleanbox/src/runtime/models/
+              - packages/ecosystem/fireux-cleanbox/src/runtime/models/location.model.ts
           - packages/ecosystem/fireux-cleanbox/src/runtime/pages/
             - packages/ecosystem/fireux-cleanbox/src/runtime/pages/dev/
               - packages/ecosystem/fireux-cleanbox/src/runtime/pages/dev/fireux-cleanbox.vue
@@ -701,33 +701,33 @@ Total files: 1277
               - packages/ecosystem/fireux-misebox/src/runtime/components/molecules/Places/
                 - packages/ecosystem/fireux-misebox/src/runtime/components/molecules/Places/PlacesSearch.vue
             - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/
-              - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/
-                - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/
-                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/CTA.vue
-                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Cards/
-                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Cards/Cell.vue
-                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Cards/Pill.vue
-                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Cards/Preview.vue
-                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Cards/Profile.vue
-                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Collection/
-                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Collection/Manager.vue
-                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Create/
-                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Create/Preview.vue
-                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Create/System.vue
-                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Create/Write.vue
-                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Edit.vue
-                - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/
-                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/CTA.vue
-                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/Cards/
-                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/Cards/Cell.vue
-                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/Cards/Pill.vue
-                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/Cards/Preview.vue
-                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/Cards/Profile.vue
-                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/Collection/
-                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/Collection/Manager.vue
-                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/Create/
-                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/Create/System.vue
-                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/Edit.vue
+              - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/
+                - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/
+                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/CTA.vue
+                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Cards/
+                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Cards/Cell.vue
+                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Cards/Pill.vue
+                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Cards/Preview.vue
+                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Cards/Profile.vue
+                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Collection/
+                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Collection/Manager.vue
+                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Create/
+                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Create/Preview.vue
+                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Create/System.vue
+                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Create/Write.vue
+                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Edit.vue
+                - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/
+                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/CTA.vue
+                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/Cards/
+                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/Cards/Cell.vue
+                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/Cards/Pill.vue
+                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/Cards/Preview.vue
+                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/Cards/Profile.vue
+                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/Collection/
+                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/Collection/Manager.vue
+                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/Create/
+                    - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/Create/System.vue
+                  - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/Edit.vue
               - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/
                 - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Chef/
                   - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Chef/CTA.vue
@@ -780,22 +780,22 @@ Total files: 1277
               - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/
                 - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/core/
                   - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/core/useMiseApp.ts
-                - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/
-                  - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/Recipe/
-                    - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/Recipe/useRecipeCreate.ts
-                    - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/Recipe/useRecipeDelete.ts
-                    - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/Recipe/useRecipeUpdate.ts
-                    - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/Recipe/useRecipes.ts
-                    - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/Recipe/utils/
-                      - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/Recipe/utils/view/
-                        - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/Recipe/utils/view/useRecipeInterface.ts
-                  - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/ingredient/
-                    - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/ingredient/useIngredient.ts
-                    - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/ingredient/useIngredientCreate.ts
-                    - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/ingredient/useIngredientFilters.ts
-                    - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/ingredient/utils/
-                      - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/ingredient/utils/view/
-                        - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/ingredient/utils/view/useIngredientInterface.ts
+                - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/
+                  - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/Recipe/
+                    - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/Recipe/useRecipeCreate.ts
+                    - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/Recipe/useRecipeDelete.ts
+                    - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/Recipe/useRecipeUpdate.ts
+                    - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/Recipe/useRecipes.ts
+                    - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/Recipe/utils/
+                      - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/Recipe/utils/view/
+                        - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/Recipe/utils/view/useRecipeInterface.ts
+                  - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/ingredient/
+                    - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/ingredient/useIngredient.ts
+                    - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/ingredient/useIngredientCreate.ts
+                    - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/ingredient/useIngredientFilters.ts
+                    - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/ingredient/utils/
+                      - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/ingredient/utils/view/
+                        - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/ingredient/utils/view/useIngredientInterface.ts
                 - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/
                   - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Chef/
                     - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Chef/main/
@@ -824,14 +824,14 @@ Total files: 1277
                         - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface.ts
                     - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Supplier/utils.ts
           - packages/ecosystem/fireux-misebox/src/runtime/models/
-            - packages/ecosystem/fireux-misebox/src/runtime/models/objects/
-              - packages/ecosystem/fireux-misebox/src/runtime/models/objects/Dish.model.ts
-              - packages/ecosystem/fireux-misebox/src/runtime/models/objects/Ingredient.model.ts
-              - packages/ecosystem/fireux-misebox/src/runtime/models/objects/Menu.model.ts
-              - packages/ecosystem/fireux-misebox/src/runtime/models/objects/MiseEnPlace.model.ts
-              - packages/ecosystem/fireux-misebox/src/runtime/models/objects/Recipe.model.ts
-              - packages/ecosystem/fireux-misebox/src/runtime/models/objects/RecipeSimple.model.ts
-              - packages/ecosystem/fireux-misebox/src/runtime/models/objects/Task.model.ts
+            - packages/ecosystem/fireux-misebox/src/runtime/models/
+              - packages/ecosystem/fireux-misebox/src/runtime/models/Dish.model.ts
+              - packages/ecosystem/fireux-misebox/src/runtime/models/Ingredient.model.ts
+              - packages/ecosystem/fireux-misebox/src/runtime/models/Menu.model.ts
+              - packages/ecosystem/fireux-misebox/src/runtime/models/MiseEnPlace.model.ts
+              - packages/ecosystem/fireux-misebox/src/runtime/models/Recipe.model.ts
+              - packages/ecosystem/fireux-misebox/src/runtime/models/RecipeSimple.model.ts
+              - packages/ecosystem/fireux-misebox/src/runtime/models/Task.model.ts
             - packages/ecosystem/fireux-misebox/src/runtime/models/profiles/
               - packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef/
                 - packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef/Chef.model.ts
@@ -902,28 +902,28 @@ Total files: 1277
         - packages/extensions/fireux-blogs/src/runtime/
           - packages/extensions/fireux-blogs/src/runtime/components/
             - packages/extensions/fireux-blogs/src/runtime/components/organisms/
-              - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/
-                - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/
-                  - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/CTA.vue
-                  - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Cards/
-                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Cards/Cell.vue
-                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Cards/Pill.vue
-                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Cards/Preview.vue
-                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Cards/Profile.vue
-                  - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Collection/
-                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Collection/Manager.vue
-                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Collection/Provider.vue
-                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Collection/View.vue
-                  - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Create/
-                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Create/Advanced.vue
-                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Create/Images.vue
-                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Create/Preview.vue
-                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Create/System.vue
-                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Create/Write.vue
-                  - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Edit.vue
-                  - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/View/
-                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/View/Article.vue
-                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/View/Page.vue
+              - packages/extensions/fireux-blogs/src/runtime/components/organisms/
+                - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/
+                  - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/CTA.vue
+                  - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Cards/
+                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Cards/Cell.vue
+                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Cards/Pill.vue
+                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Cards/Preview.vue
+                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Cards/Profile.vue
+                  - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Collection/
+                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Collection/Manager.vue
+                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Collection/Provider.vue
+                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Collection/View.vue
+                  - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Create/
+                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Create/Advanced.vue
+                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Create/Images.vue
+                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Create/Preview.vue
+                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Create/System.vue
+                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Create/Write.vue
+                  - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Edit.vue
+                  - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/View/
+                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/View/Article.vue
+                    - packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/View/Page.vue
           - packages/extensions/fireux-blogs/src/runtime/composables/
             - packages/extensions/fireux-blogs/src/runtime/composables/fireux/
               - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/
@@ -932,25 +932,25 @@ Total files: 1277
                     - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blogs/post/state/
                       - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blogs/post/state/useBlogCreateSubmit.ts
                       - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blogs/post/state/useBlogDraftState.ts
-                - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/
-                  - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/
-                    - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/fetch/
-                      - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/fetch/useBlogFetch.ts
-                    - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/mutations/
-                      - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/mutations/useBlogCreate.ts
-                      - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/mutations/useBlogDelete.ts
-                      - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/mutations/useBlogUpdate.ts
-                    - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/useBlog.ts
-                    - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/utils/
-                      - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/utils/useBlogUtils.ts
-                      - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/utils/view/
-                        - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/utils/view/useBlogInterface.ts
+                - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/
+                  - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/
+                    - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/fetch/
+                      - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/fetch/useBlogFetch.ts
+                    - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/mutations/
+                      - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/mutations/useBlogCreate.ts
+                      - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/mutations/useBlogDelete.ts
+                      - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/mutations/useBlogUpdate.ts
+                    - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/useBlog.ts
+                    - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/utils/
+                      - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/utils/useBlogUtils.ts
+                      - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/utils/view/
+                        - packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/utils/view/useBlogInterface.ts
             - packages/extensions/fireux-blogs/src/runtime/composables/useBlogPermissions.ts
           - packages/extensions/fireux-blogs/src/runtime/models/
             - packages/extensions/fireux-blogs/src/runtime/models/core/
               - packages/extensions/fireux-blogs/src/runtime/models/core/user.ext.ts
-            - packages/extensions/fireux-blogs/src/runtime/models/objects/
-              - packages/extensions/fireux-blogs/src/runtime/models/objects/blogPost.model.ts
+            - packages/extensions/fireux-blogs/src/runtime/models/
+              - packages/extensions/fireux-blogs/src/runtime/models/blogPost.model.ts
           - packages/extensions/fireux-blogs/src/runtime/pages/
             - packages/extensions/fireux-blogs/src/runtime/pages/blog/
               - packages/extensions/fireux-blogs/src/runtime/pages/blog/[slug].vue
@@ -978,37 +978,37 @@ Total files: 1277
         - packages/extensions/fireux-companies/src/runtime/
           - packages/extensions/fireux-companies/src/runtime/components/
             - packages/extensions/fireux-companies/src/runtime/components/organisms/
-              - packages/extensions/fireux-companies/src/runtime/components/organisms/entities/
-                - packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/
-                  - packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/CTA.vue
-                  - packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/Cards/
-                    - packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/Cards/Cell.vue
-                    - packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/Cards/Pill.vue
-                    - packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/Cards/Preview.vue
-                    - packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/Cards/Profile.vue
-                  - packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/Collection/
-                    - packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/Collection/Manager.vue
-                  - packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/Create/
-                    - packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/Create/System.vue
-                  - packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/Edit.vue
+              - packages/extensions/fireux-companies/src/runtime/components/organisms/
+                - packages/extensions/fireux-companies/src/runtime/components/organisms/Company/
+                  - packages/extensions/fireux-companies/src/runtime/components/organisms/Company/CTA.vue
+                  - packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Cards/
+                    - packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Cards/Cell.vue
+                    - packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Cards/Pill.vue
+                    - packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Cards/Preview.vue
+                    - packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Cards/Profile.vue
+                  - packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Collection/
+                    - packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Collection/Manager.vue
+                  - packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Create/
+                    - packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Create/System.vue
+                  - packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Edit.vue
           - packages/extensions/fireux-companies/src/runtime/composables/
             - packages/extensions/fireux-companies/src/runtime/composables/fireux/
               - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/
-                - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/objects/
-                  - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/objects/company/
-                    - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/objects/company/fetch/
-                      - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/objects/company/fetch/useCompanyCollection.ts
-                      - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/objects/company/fetch/useCompanyFetch.ts
-                    - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/objects/company/mutations/
-                      - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/objects/company/mutations/useCompanyCreate.ts
-                      - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/objects/company/mutations/useCompanyUpdate.ts
-                    - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/objects/company/useCompanies.ts
-                    - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/objects/company/utils/
-                      - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/objects/company/utils/view/
-                        - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/objects/company/utils/view/useCompanyInterface.ts
+                - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/
+                  - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/
+                    - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/fetch/
+                      - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/fetch/useCompanyCollection.ts
+                      - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/fetch/useCompanyFetch.ts
+                    - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/mutations/
+                      - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/mutations/useCompanyCreate.ts
+                      - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/mutations/useCompanyUpdate.ts
+                    - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/useCompanies.ts
+                    - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/utils/
+                      - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/utils/view/
+                        - packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/utils/view/useCompanyInterface.ts
           - packages/extensions/fireux-companies/src/runtime/models/
-            - packages/extensions/fireux-companies/src/runtime/models/objects/
-              - packages/extensions/fireux-companies/src/runtime/models/objects/company.model.ts
+            - packages/extensions/fireux-companies/src/runtime/models/
+              - packages/extensions/fireux-companies/src/runtime/models/company.model.ts
           - packages/extensions/fireux-companies/src/runtime/pages/
             - packages/extensions/fireux-companies/src/runtime/pages/companies/
               - packages/extensions/fireux-companies/src/runtime/pages/companies/[id].vue
@@ -1048,26 +1048,26 @@ Total files: 1277
         - packages/extensions/fireux-jobs/src/runtime/
           - packages/extensions/fireux-jobs/src/runtime/components/
             - packages/extensions/fireux-jobs/src/runtime/components/organisms/
-              - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/
-                - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/
-                  - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/CTA.vue
-                  - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Cards/
-                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Cards/Cell.vue
-                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Cards/Pill.vue
-                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Cards/Preview.vue
-                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Cards/Profile.vue
-                  - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Collection/
-                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Collection/Manager.vue
-                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Collection/Provider.vue
-                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Collection/View.vue
-                  - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Create/
-                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Create/Preview.vue
-                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Create/System.vue
-                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Create/Write.vue
-                  - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Edit.vue
-                  - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Sections/
-                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Sections/AgentCollection.vue
-                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Sections/GlobalCollection.vue
+              - packages/extensions/fireux-jobs/src/runtime/components/organisms/
+                - packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/
+                  - packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/CTA.vue
+                  - packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Cards/
+                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Cards/Cell.vue
+                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Cards/Pill.vue
+                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Cards/Preview.vue
+                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Cards/Profile.vue
+                  - packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Collection/
+                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Collection/Manager.vue
+                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Collection/Provider.vue
+                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Collection/View.vue
+                  - packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Create/
+                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Create/Preview.vue
+                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Create/System.vue
+                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Create/Write.vue
+                  - packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Edit.vue
+                  - packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Sections/
+                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Sections/AgentCollection.vue
+                    - packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Sections/GlobalCollection.vue
               - packages/extensions/fireux-jobs/src/runtime/components/organisms/profiles/
                 - packages/extensions/fireux-jobs/src/runtime/components/organisms/profiles/Agent/
                   - packages/extensions/fireux-jobs/src/runtime/components/organisms/profiles/Agent/CTA.vue
@@ -1162,8 +1162,8 @@ Total files: 1277
                     - packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/utils.ts
             - packages/extensions/fireux-jobs/src/runtime/composables/useJobPermissions.ts
           - packages/extensions/fireux-jobs/src/runtime/models/
-            - packages/extensions/fireux-jobs/src/runtime/models/objects/
-              - packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts
+            - packages/extensions/fireux-jobs/src/runtime/models/
+              - packages/extensions/fireux-jobs/src/runtime/models/job.model.ts
             - packages/extensions/fireux-jobs/src/runtime/models/profiles/
               - packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/
                 - packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts
@@ -1219,37 +1219,37 @@ Total files: 1277
         - packages/extensions/fireux-kitchens/src/runtime/
           - packages/extensions/fireux-kitchens/src/runtime/components/
             - packages/extensions/fireux-kitchens/src/runtime/components/organisms/
-              - packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/
-                - packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/
-                  - packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/CTA.vue
-                  - packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/Cards/
-                    - packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/Cards/Cell.vue
-                    - packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/Cards/Pill.vue
-                    - packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/Cards/Preview.vue
-                    - packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/Cards/Profile.vue
-                  - packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/Collection/
-                    - packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/Collection/Manager.vue
-                  - packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/Create/
-                    - packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/Create/System.vue
-                  - packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/Edit.vue
+              - packages/extensions/fireux-kitchens/src/runtime/components/organisms/
+                - packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/
+                  - packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/CTA.vue
+                  - packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Cards/
+                    - packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Cards/Cell.vue
+                    - packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Cards/Pill.vue
+                    - packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Cards/Preview.vue
+                    - packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Cards/Profile.vue
+                  - packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Collection/
+                    - packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Collection/Manager.vue
+                  - packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Create/
+                    - packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Create/System.vue
+                  - packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Edit.vue
           - packages/extensions/fireux-kitchens/src/runtime/composables/
             - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/
               - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/
-                - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/objects/
-                  - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/objects/kitchen/
-                    - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/objects/kitchen/fetch/
-                      - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/objects/kitchen/fetch/useKitchenCollection.ts
-                      - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch.ts
-                    - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/objects/kitchen/mutations/
-                      - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/objects/kitchen/mutations/useKitchenCreate.ts
-                      - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/objects/kitchen/mutations/useKitchenUpdate.ts
-                    - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/objects/kitchen/useKitchens.ts
-                    - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/objects/kitchen/utils/
-                      - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/objects/kitchen/utils/view/
-                        - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface.ts
+                - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/
+                  - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/
+                    - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/fetch/
+                      - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenCollection.ts
+                      - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenFetch.ts
+                    - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/
+                      - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenCreate.ts
+                      - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenUpdate.ts
+                    - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/useKitchens.ts
+                    - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/utils/
+                      - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/utils/view/
+                        - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface.ts
           - packages/extensions/fireux-kitchens/src/runtime/models/
-            - packages/extensions/fireux-kitchens/src/runtime/models/objects/
-              - packages/extensions/fireux-kitchens/src/runtime/models/objects/kitchen.model.ts
+            - packages/extensions/fireux-kitchens/src/runtime/models/
+              - packages/extensions/fireux-kitchens/src/runtime/models/kitchen.model.ts
           - packages/extensions/fireux-kitchens/src/runtime/pages/
             - packages/extensions/fireux-kitchens/src/runtime/pages/dev/
               - packages/extensions/fireux-kitchens/src/runtime/pages/dev/fireux-kitchens.vue
@@ -1280,49 +1280,49 @@ Total files: 1277
         - packages/extensions/fireux-places/src/runtime/
           - packages/extensions/fireux-places/src/runtime/components/
             - packages/extensions/fireux-places/src/runtime/components/organisms/
-              - packages/extensions/fireux-places/src/runtime/components/organisms/entities/
-                - packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/
-                  - packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/CTA.vue
-                  - packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Cards/
-                    - packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Cards/Cell.vue
-                    - packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Cards/Pill.vue
-                    - packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Cards/Preview.vue
-                    - packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Cards/Profile.vue
-                  - packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Collection/
-                    - packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Collection/Manager.vue
-                    - packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Collection/View.vue
-                  - packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Create/
-                    - packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Create/System.vue
-                  - packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Edit.vue
-                  - packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Search/
-                    - packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Search/Bar.vue
-                    - packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Search/Dropdown.vue
-                    - packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Search/Section.vue
-                    - packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Search/Selected.vue
+              - packages/extensions/fireux-places/src/runtime/components/organisms/
+                - packages/extensions/fireux-places/src/runtime/components/organisms/Place/
+                  - packages/extensions/fireux-places/src/runtime/components/organisms/Place/CTA.vue
+                  - packages/extensions/fireux-places/src/runtime/components/organisms/Place/Cards/
+                    - packages/extensions/fireux-places/src/runtime/components/organisms/Place/Cards/Cell.vue
+                    - packages/extensions/fireux-places/src/runtime/components/organisms/Place/Cards/Pill.vue
+                    - packages/extensions/fireux-places/src/runtime/components/organisms/Place/Cards/Preview.vue
+                    - packages/extensions/fireux-places/src/runtime/components/organisms/Place/Cards/Profile.vue
+                  - packages/extensions/fireux-places/src/runtime/components/organisms/Place/Collection/
+                    - packages/extensions/fireux-places/src/runtime/components/organisms/Place/Collection/Manager.vue
+                    - packages/extensions/fireux-places/src/runtime/components/organisms/Place/Collection/View.vue
+                  - packages/extensions/fireux-places/src/runtime/components/organisms/Place/Create/
+                    - packages/extensions/fireux-places/src/runtime/components/organisms/Place/Create/System.vue
+                  - packages/extensions/fireux-places/src/runtime/components/organisms/Place/Edit.vue
+                  - packages/extensions/fireux-places/src/runtime/components/organisms/Place/Search/
+                    - packages/extensions/fireux-places/src/runtime/components/organisms/Place/Search/Bar.vue
+                    - packages/extensions/fireux-places/src/runtime/components/organisms/Place/Search/Dropdown.vue
+                    - packages/extensions/fireux-places/src/runtime/components/organisms/Place/Search/Section.vue
+                    - packages/extensions/fireux-places/src/runtime/components/organisms/Place/Search/Selected.vue
           - packages/extensions/fireux-places/src/runtime/composables/
             - packages/extensions/fireux-places/src/runtime/composables/fireux/
               - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/
-                - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/
-                  - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/
-                    - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/fetch/
-                      - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/fetch/google/
-                        - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle.ts
-                      - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/fetch/search/
-                        - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch.ts
-                      - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/fetch/usePlaceCollection.ts
-                    - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/mutations/
-                      - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/mutations/usePlaceClaim.ts
-                      - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/mutations/usePlaceCreate.ts
-                      - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/mutations/usePlaceSave.ts
-                    - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/usePlaces.ts
-                    - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/utils/
-                      - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/utils/placeCollections.ts
-                      - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/utils/view/
-                        - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/utils/view/usePlaceLogos.ts
-                        - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface.ts
+                - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/
+                  - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/
+                    - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/fetch/
+                      - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/fetch/google/
+                        - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/fetch/google/usePlacesGoogle.ts
+                      - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/fetch/search/
+                        - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/fetch/search/usePlacesSearch.ts
+                      - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/fetch/usePlaceCollection.ts
+                    - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/mutations/
+                      - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/mutations/usePlaceClaim.ts
+                      - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate.ts
+                      - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/mutations/usePlaceSave.ts
+                    - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/usePlaces.ts
+                    - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/utils/
+                      - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/utils/placeCollections.ts
+                      - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/utils/view/
+                        - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/utils/view/usePlaceLogos.ts
+                        - packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/utils/view/usePlacesInterface.ts
           - packages/extensions/fireux-places/src/runtime/models/
-            - packages/extensions/fireux-places/src/runtime/models/objects/
-              - packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts
+            - packages/extensions/fireux-places/src/runtime/models/
+              - packages/extensions/fireux-places/src/runtime/models/place.model.ts
           - packages/extensions/fireux-places/src/runtime/pages/
             - packages/extensions/fireux-places/src/runtime/pages/dev/
               - packages/extensions/fireux-places/src/runtime/pages/dev/fireux-places.vue
@@ -1361,62 +1361,62 @@ Total files: 1277
         - packages/extensions/fireux-products/src/runtime/
           - packages/extensions/fireux-products/src/runtime/components/
             - packages/extensions/fireux-products/src/runtime/components/organisms/
-              - packages/extensions/fireux-products/src/runtime/components/organisms/entities/
-                - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/
-                  - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/CTA.vue
-                  - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Cards/
-                    - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Cards/Cell.vue
-                    - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Cards/Pill.vue
-                    - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Cards/Preview.vue
-                    - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Cards/Profile.vue
-                  - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Collection/
-                    - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Collection/Manager.vue
-                    - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Collection/Provider.vue
-                    - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Collection/Root.vue
-                    - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Collection/View.vue
-                  - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Create/
-                    - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Create/Basic.vue
-                    - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Create/Preview.vue
-                    - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Create/Price.vue
-                    - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Create/Prices.vue
-                    - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Create/Stock.vue
-                    - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Create/System.vue
-                    - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Create/Write.vue
-                  - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Edit.vue
-                  - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/View/
-                    - packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/View/Product.vue
+              - packages/extensions/fireux-products/src/runtime/components/organisms/
+                - packages/extensions/fireux-products/src/runtime/components/organisms/Product/
+                  - packages/extensions/fireux-products/src/runtime/components/organisms/Product/CTA.vue
+                  - packages/extensions/fireux-products/src/runtime/components/organisms/Product/Cards/
+                    - packages/extensions/fireux-products/src/runtime/components/organisms/Product/Cards/Cell.vue
+                    - packages/extensions/fireux-products/src/runtime/components/organisms/Product/Cards/Pill.vue
+                    - packages/extensions/fireux-products/src/runtime/components/organisms/Product/Cards/Preview.vue
+                    - packages/extensions/fireux-products/src/runtime/components/organisms/Product/Cards/Profile.vue
+                  - packages/extensions/fireux-products/src/runtime/components/organisms/Product/Collection/
+                    - packages/extensions/fireux-products/src/runtime/components/organisms/Product/Collection/Manager.vue
+                    - packages/extensions/fireux-products/src/runtime/components/organisms/Product/Collection/Provider.vue
+                    - packages/extensions/fireux-products/src/runtime/components/organisms/Product/Collection/Root.vue
+                    - packages/extensions/fireux-products/src/runtime/components/organisms/Product/Collection/View.vue
+                  - packages/extensions/fireux-products/src/runtime/components/organisms/Product/Create/
+                    - packages/extensions/fireux-products/src/runtime/components/organisms/Product/Create/Basic.vue
+                    - packages/extensions/fireux-products/src/runtime/components/organisms/Product/Create/Preview.vue
+                    - packages/extensions/fireux-products/src/runtime/components/organisms/Product/Create/Price.vue
+                    - packages/extensions/fireux-products/src/runtime/components/organisms/Product/Create/Prices.vue
+                    - packages/extensions/fireux-products/src/runtime/components/organisms/Product/Create/Stock.vue
+                    - packages/extensions/fireux-products/src/runtime/components/organisms/Product/Create/System.vue
+                    - packages/extensions/fireux-products/src/runtime/components/organisms/Product/Create/Write.vue
+                  - packages/extensions/fireux-products/src/runtime/components/organisms/Product/Edit.vue
+                  - packages/extensions/fireux-products/src/runtime/components/organisms/Product/View/
+                    - packages/extensions/fireux-products/src/runtime/components/organisms/Product/View/Product.vue
           - packages/extensions/fireux-products/src/runtime/composables/
             - packages/extensions/fireux-products/src/runtime/composables/fireux/
               - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/
-                - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/
-                  - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/
-                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/Prices/
-                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/Prices/useCreatePricesState.ts
-                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/fetch/
-                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/fetch/useProductBySlug.ts
-                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/fetch/useProductCollection.ts
-                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/fetch/useProductPrices.ts
-                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/fetch/useProductRead.ts
-                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/state/
-                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/state/useCreateProductState.ts
-                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/state/useProductCreateSubmit.ts
-                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/useProduct.ts
-                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/useProductCreate.ts
-                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/useProductDelete.ts
-                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/useProductUpdate.ts
-                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/useProductUtils.ts
-                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/useProducts.ts
-                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/utils/
-                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/utils/useProductFormatting.ts
-                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/utils/useProductValidation.ts
-                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/utils/view/
-                        - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/utils/view/useProductInterface.ts
+                - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/
+                  - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/
+                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/Prices/
+                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/Prices/useCreatePricesState.ts
+                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/fetch/
+                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/fetch/useProductBySlug.ts
+                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/fetch/useProductCollection.ts
+                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/fetch/useProductPrices.ts
+                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/fetch/useProductRead.ts
+                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/state/
+                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/state/useCreateProductState.ts
+                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/state/useProductCreateSubmit.ts
+                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/useProduct.ts
+                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/useProductCreate.ts
+                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/useProductDelete.ts
+                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/useProductUpdate.ts
+                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/useProductUtils.ts
+                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/useProducts.ts
+                    - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/utils/
+                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/utils/useProductFormatting.ts
+                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/utils/useProductValidation.ts
+                      - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/utils/view/
+                        - packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/utils/view/useProductInterface.ts
             - packages/extensions/fireux-products/src/runtime/composables/useProductPermissions.ts
           - packages/extensions/fireux-products/src/runtime/models/
             - packages/extensions/fireux-products/src/runtime/models/core/
               - packages/extensions/fireux-products/src/runtime/models/core/user.ext.ts
-            - packages/extensions/fireux-products/src/runtime/models/objects/
-              - packages/extensions/fireux-products/src/runtime/models/objects/product.model.ts
+            - packages/extensions/fireux-products/src/runtime/models/
+              - packages/extensions/fireux-products/src/runtime/models/product.model.ts
           - packages/extensions/fireux-products/src/runtime/pages/
             - packages/extensions/fireux-products/src/runtime/pages/dev/
               - packages/extensions/fireux-products/src/runtime/pages/dev/fireux-products.vue
@@ -7342,10 +7342,10 @@ See also:
 ## 1) Canon paths
 
 - **Model (shape-only):**
-  - `src/runtime/models/objects/<thing>.model.ts`
+  - `src/runtime/models/<thing>.model.ts`
 
 - **Composable facade (public entry):**
-  - `src/runtime/composables/fireux/firestore/objects/<thing>/use<Thing>s.ts`
+  - `src/runtime/composables/fireux/firestore/<thing>/use<Thing>s.ts`
 
 ## 2) Canon folder layout (inside each object)
 
@@ -8145,7 +8145,7 @@ Examples
 - Add a file:
 
 ```
-packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts
+packages/extensions/fireux-places/src/runtime/models/place.model.ts
 ```
 
 - Add a file with a custom symlink name:
@@ -30370,7 +30370,7 @@ export function useLandingEffect() {
 
 ```
 
-### packages/ecosystem/fireux-cleanbox/src/runtime/models/objects/location.model.ts
+### packages/ecosystem/fireux-cleanbox/src/runtime/models/location.model.ts
 
 ```ts
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -32217,14 +32217,14 @@ export function configureComponents(resolver: Resolver, nuxt: Nuxt) {
   }
 
   addComponentsDir({
-    path: resolver.resolve('./runtime/components/organisms/entities/Ingredient'),
+    path: resolver.resolve('./runtime/components/organisms/Ingredient'),
     global: true,
     pathPrefix: true,
     prefix: 'Ingredient',
   })
 
   addComponentsDir({
-    path: resolver.resolve('./runtime/components/organisms/entities/Recipe'),
+    path: resolver.resolve('./runtime/components/organisms/Recipe'),
     global: true,
     pathPrefix: true,
     prefix: 'Recipe',
@@ -32525,7 +32525,7 @@ const handleSelectPlace = (place: any) => {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/CTA.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/CTA.vue
 
 ```vue
 <template>
@@ -32534,7 +32534,7 @@ const handleSelectPlace = (place: any) => {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Cards/Cell.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Cards/Cell.vue
 
 ```vue
 <template>
@@ -32574,7 +32574,7 @@ const handleSelectPlace = (place: any) => {
 </template>
 
 <script setup lang="ts">
-import type { IngredientCard } from '../../../../../composables/fireux/firestore/objects/ingredient/utils/view/useIngredientInterface'
+import type { IngredientCard } from '../../../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
 
 type Props = Pick<IngredientCard.Card, 'to' | 'name' | 'category' | 'badges'> & {
   avatarUrl?: string
@@ -32595,7 +32595,7 @@ withDefaults(defineProps<Props>(), {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Cards/Pill.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Cards/Pill.vue
 
 ```vue
 <template>
@@ -32624,7 +32624,7 @@ withDefaults(defineProps<Props>(), {
 </template>
 
 <script setup lang="ts">
-import type { IngredientCard } from '../../../../../composables/fireux/firestore/objects/ingredient/utils/view/useIngredientInterface';
+import type { IngredientCard } from '../../../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface';
 
 type PillProps = Pick<IngredientCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
   showSubtitle?: boolean
@@ -32639,7 +32639,7 @@ withDefaults(defineProps<PillProps>(), {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Cards/Preview.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Cards/Preview.vue
 
 ```vue
 <template>
@@ -32657,8 +32657,8 @@ withDefaults(defineProps<PillProps>(), {
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Ingredient } from '../../../../../models/objects/Ingredient.model'
-import { useIngredientInterface } from '../../../../../composables/fireux/firestore/objects/ingredient/utils/view/useIngredientInterface'
+import type { Ingredient } from '../../../../../models/Ingredient.model'
+import { useIngredientInterface } from '../../../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
 
 const props = defineProps<{
   title?: string
@@ -32678,7 +32678,7 @@ const vmAvatar = computed(() => props.avatar ?? null)
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Cards/Profile.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Cards/Profile.vue
 
 ```vue
 <template>
@@ -32696,8 +32696,8 @@ const vmAvatar = computed(() => props.avatar ?? null)
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Ingredient } from '../../../../../models/objects/Ingredient.model'
-import { useIngredientInterface } from '../../../../../composables/fireux/firestore/objects/ingredient/utils/view/useIngredientInterface'
+import type { Ingredient } from '../../../../../models/Ingredient.model'
+import { useIngredientInterface } from '../../../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
 
 const props = defineProps<{
   title?: string
@@ -32717,7 +32717,7 @@ const vmAvatar = computed(() => props.avatar ?? null)
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Collection/Manager.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Collection/Manager.vue
 
 ```vue
 <template>
@@ -32780,8 +32780,8 @@ const vmAvatar = computed(() => props.avatar ?? null)
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useIngredientInterface } from '../../../../../composables/fireux/firestore/objects/ingredient/utils/view/useIngredientInterface';
-import type { Ingredient } from '../../../../../models/objects/Ingredient.model';
+import { useIngredientInterface } from '../../../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface';
+import type { Ingredient } from '../../../../../models/Ingredient.model';
 
 const props = defineProps<{ collection?: Ingredient[] }>()
 
@@ -32811,7 +32811,7 @@ const wrapperPropsFor = (card: IngredientCardShape) => (card.to ? { to: card.to 
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Create/Preview.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Create/Preview.vue
 
 ```vue
 <template>
@@ -32820,7 +32820,7 @@ const wrapperPropsFor = (card: IngredientCardShape) => (card.to ? { to: card.to 
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Create/System.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Create/System.vue
 
 ```vue
 <template>
@@ -32894,7 +32894,7 @@ const wrapperPropsFor = (card: IngredientCardShape) => (card.to ? { to: card.to 
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useIngredientCreate } from '../../../../../composables/fireux/firestore/objects/ingredient/useIngredientCreate'
+import { useIngredientCreate } from '../../../../../composables/fireux/firestore/ingredient/useIngredientCreate'
 import { useSupplierList } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierList'
 import SupplierCreateQuick from '../../../profiles/Supplier/Create/QuickCreate.vue'
 
@@ -33024,7 +33024,7 @@ const handleSupplierCreated = (supplier: any) => {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Create/Write.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Create/Write.vue
 
 ```vue
 <template>
@@ -33037,7 +33037,7 @@ defineOptions({ inheritAttrs: false })
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Ingredient/Edit.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Ingredient/Edit.vue
 
 ```vue
 <script setup lang="ts">
@@ -33049,7 +33049,7 @@ defineOptions({ inheritAttrs: false })
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/CTA.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/CTA.vue
 
 ```vue
 <template>
@@ -33058,7 +33058,7 @@ defineOptions({ inheritAttrs: false })
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/Cards/Cell.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/Cards/Cell.vue
 
 ```vue
 <template>
@@ -33098,7 +33098,7 @@ defineOptions({ inheritAttrs: false })
 </template>
 
 <script setup lang="ts">
-import type { RecipeCard } from '../../../../../composables/fireux/firestore/objects/recipe/utils/view/useRecipeInterface'
+import type { RecipeCard } from '../../../../../composables/fireux/firestore/recipe/utils/view/useRecipeInterface'
 
 type Props = Pick<RecipeCard.Card, 'to' | 'title' | 'status' | 'badges'> & {
   avatarUrl?: string
@@ -33119,7 +33119,7 @@ withDefaults(defineProps<Props>(), {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/Cards/Pill.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/Cards/Pill.vue
 
 ```vue
 <template>
@@ -33148,7 +33148,7 @@ withDefaults(defineProps<Props>(), {
 </template>
 
 <script setup lang="ts">
-import type { RecipeCard } from '../../../../../composables/fireux/firestore/objects/recipe/utils/view/useRecipeInterface';
+import type { RecipeCard } from '../../../../../composables/fireux/firestore/recipe/utils/view/useRecipeInterface';
 
 type PillProps = Pick<RecipeCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
   showSubtitle?: boolean
@@ -33163,7 +33163,7 @@ withDefaults(defineProps<PillProps>(), {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/Cards/Preview.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/Cards/Preview.vue
 
 ```vue
 <template>
@@ -33181,8 +33181,8 @@ withDefaults(defineProps<PillProps>(), {
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Recipe } from '../../../../../models/objects/Recipe.model'
-import { useRecipeInterface } from '../../../../../composables/fireux/firestore/objects/recipe/utils/view/useRecipeInterface'
+import type { Recipe } from '../../../../../models/Recipe.model'
+import { useRecipeInterface } from '../../../../../composables/fireux/firestore/recipe/utils/view/useRecipeInterface'
 
 const props = defineProps<{
   title?: string
@@ -33202,7 +33202,7 @@ const vmAvatar = computed(() => props.avatar ?? null)
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/Cards/Profile.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/Cards/Profile.vue
 
 ```vue
 <template>
@@ -33220,8 +33220,8 @@ const vmAvatar = computed(() => props.avatar ?? null)
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Recipe } from '../../../../../models/objects/Recipe.model'
-import { useRecipeInterface } from '../../../../../composables/fireux/firestore/objects/recipe/utils/view/useRecipeInterface'
+import type { Recipe } from '../../../../../models/Recipe.model'
+import { useRecipeInterface } from '../../../../../composables/fireux/firestore/recipe/utils/view/useRecipeInterface'
 
 const props = defineProps<{
   title?: string
@@ -33241,7 +33241,7 @@ const vmAvatar = computed(() => props.avatar ?? null)
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/Collection/Manager.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/Collection/Manager.vue
 
 ```vue
 <template>
@@ -33304,8 +33304,8 @@ const vmAvatar = computed(() => props.avatar ?? null)
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useRecipeInterface } from '../../../../../composables/fireux/firestore/objects/recipe/utils/view/useRecipeInterface';
-import type { Recipe } from '../../../../../models/objects/Recipe.model';
+import { useRecipeInterface } from '../../../../../composables/fireux/firestore/recipe/utils/view/useRecipeInterface';
+import type { Recipe } from '../../../../../models/Recipe.model';
 
 const props = defineProps<{ collection?: Recipe[] }>()
 
@@ -33335,7 +33335,7 @@ const wrapperPropsFor = (card: RecipeCardShape) => (card.to ? { to: card.to } : 
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/Create/System.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/Create/System.vue
 
 ```vue
 <template>
@@ -33344,7 +33344,7 @@ const wrapperPropsFor = (card: RecipeCardShape) => (card.to ? { to: card.to } : 
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/entities/Recipe/Edit.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/Edit.vue
 
 ```vue
 <template>
@@ -35882,7 +35882,7 @@ export function useMiseApp() {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/Recipe/useRecipeCreate.ts
+### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/Recipe/useRecipeCreate.ts
 
 ```ts
 import { ref } from 'vue'
@@ -35927,7 +35927,7 @@ export function useRecipeCreate() {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/Recipe/useRecipeDelete.ts
+### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/Recipe/useRecipeDelete.ts
 
 ```ts
 // Simple stub for recipe delete functionality
@@ -35938,7 +35938,7 @@ export function useRecipeDelete() {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/Recipe/useRecipeUpdate.ts
+### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/Recipe/useRecipeUpdate.ts
 
 ```ts
 // Simple stub for recipe update functionality
@@ -35949,7 +35949,7 @@ export function useRecipeUpdate() {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/Recipe/useRecipes.ts
+### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/Recipe/useRecipes.ts
 
 ```ts
 import { computed } from 'vue'
@@ -35984,10 +35984,10 @@ export function useRecipes() {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/Recipe/utils/view/useRecipeInterface.ts
+### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/Recipe/utils/view/useRecipeInterface.ts
 
 ```ts
-import type { Recipe } from '../../../../../../../models/objects/Recipe.model'
+import type { Recipe } from '../../../../../../../models/Recipe.model'
 
 export namespace RecipeCard {
   export type Card = {
@@ -36039,13 +36039,13 @@ export function useRecipeInterface() {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/ingredient/useIngredient.ts
+### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/ingredient/useIngredient.ts
 
 ```ts
 import { collection, doc, orderBy, query } from 'firebase/firestore'
 import { computed, ref } from 'vue'
 import { useCollection, useDocument, useFirestore } from 'vuefire'
-import { normalizeIngredient } from '../../../../../models/objects/Ingredient.model'
+import { normalizeIngredient } from '../../../../../models/Ingredient.model'
 import { useIngredientCreate } from './useIngredientCreate'
 
 // Simple firestore collection fetch - just ingredients
@@ -36110,7 +36110,7 @@ export function useIngredient() {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/ingredient/useIngredientCreate.ts
+### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/ingredient/useIngredientCreate.ts
 
 ```ts
 import { ref } from 'vue'
@@ -36194,11 +36194,11 @@ export function useIngredientCreate() {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/ingredient/useIngredientFilters.ts
+### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/ingredient/useIngredientFilters.ts
 
 ```ts
 import { ref, computed, type Ref } from 'vue'
-import type { Ingredient } from '../../../../models/objects/Ingredient.model'
+import type { Ingredient } from '../../../../models/Ingredient.model'
 
 // Ingredient-specific filtering composable
 export function useIngredientFilters(ingredients: Ref<Ingredient[]>) {
@@ -36317,10 +36317,10 @@ export function useIngredientFilters(ingredients: Ref<Ingredient[]>) {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/ingredient/utils/view/useIngredientInterface.ts
+### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/ingredient/utils/view/useIngredientInterface.ts
 
 ```ts
-import type { Ingredient } from '../../../../../../../models/objects/Ingredient.model'
+import type { Ingredient } from '../../../../../../../models/Ingredient.model'
 
 export namespace IngredientCard {
   export type Card = {
@@ -37611,7 +37611,7 @@ export function useSupplierInterface(
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/models/objects/Dish.model.ts
+### packages/ecosystem/fireux-misebox/src/runtime/models/Dish.model.ts
 
 ```ts
 export interface FirestoreObject {
@@ -37633,7 +37633,7 @@ export const dishConfig = {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/models/objects/Ingredient.model.ts
+### packages/ecosystem/fireux-misebox/src/runtime/models/Ingredient.model.ts
 
 ```ts
 /**
@@ -37704,7 +37704,7 @@ export type IngredientUpdate = Partial<IngredientInput>
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/models/objects/Menu.model.ts
+### packages/ecosystem/fireux-misebox/src/runtime/models/Menu.model.ts
 
 ```ts
 export interface FirestoreObject {
@@ -37726,7 +37726,7 @@ export const menuConfig = {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/models/objects/MiseEnPlace.model.ts
+### packages/ecosystem/fireux-misebox/src/runtime/models/MiseEnPlace.model.ts
 
 ```ts
 export interface FirestoreObject {
@@ -37748,7 +37748,7 @@ export const miseEnPlaceConfig = {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/models/objects/Recipe.model.ts
+### packages/ecosystem/fireux-misebox/src/runtime/models/Recipe.model.ts
 
 ```ts
 // Minimal local copy to avoid cross-package type import
@@ -37887,7 +37887,7 @@ export type RecipeUpdate = Partial<RecipeInput>
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/models/objects/RecipeSimple.model.ts
+### packages/ecosystem/fireux-misebox/src/runtime/models/RecipeSimple.model.ts
 
 ```ts
 export interface FirestoreObject {
@@ -37909,7 +37909,7 @@ export const recipeSimpleConfig = {
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/models/objects/Task.model.ts
+### packages/ecosystem/fireux-misebox/src/runtime/models/Task.model.ts
 
 ```ts
 export interface FirestoreObject {
@@ -38300,7 +38300,7 @@ useHead({ title: 'Chef Profile · Learn More' })
 
 <script setup lang="ts">
 import { useHead } from '#imports'
-import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
+import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/company/fetch/useCompanyFetch'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
 
@@ -39007,7 +39007,7 @@ const suppliersDriftCopyPayload = computed(() => ({
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
-import { useIngredient } from '../../composables/fireux/firestore/objects/ingredient/useIngredient'
+import { useIngredient } from '../../composables/fireux/firestore/ingredient/useIngredient'
 
 const route = useRoute()
 const ingredientId = route.params.id as string
@@ -39086,7 +39086,7 @@ const navigateToEdit = () => {
 </template>
 
 <script setup lang="ts">
-import { useIngredient } from '../../composables/fireux/firestore/objects/ingredient/useIngredient';
+import { useIngredient } from '../../composables/fireux/firestore/ingredient/useIngredient';
 
 const { all: ingredients } = useIngredient()
 
@@ -39283,7 +39283,7 @@ const wrapperPropsFor = (ingredient: { to?: string | null }) =>
 </template>
 
 <script setup lang="ts">
-import { useRecipes } from '../../composables/fireux/firestore/objects/recipe/useRecipes'
+import { useRecipes } from '../../composables/fireux/firestore/recipe/useRecipes'
 import { computed, watchEffect } from 'vue'
 
 definePageMeta({
@@ -39441,7 +39441,7 @@ const recipe = computed(() => {
 
 <script setup lang="ts">
 import { computed, ref } from '#imports'
-import type { RecipeCard } from '../../composables/fireux/firestore/objects/recipe/utils/view/useRecipeInterface'
+import type { RecipeCard } from '../../composables/fireux/firestore/recipe/utils/view/useRecipeInterface'
 
 // Data and state
 const searchQuery = ref('')
@@ -39718,8 +39718,8 @@ useHead({ title: 'Supplier Profile · Learn More' })
     "dist",
     // Defer objects domain from package-level tsc per scope agreement
     "src/runtime/composables/objects/**",
-    "src/runtime/composables/fireux/firestore/objects/**",
-    "src/runtime/models/objects/**"
+    "src/runtime/composables/fireux/firestore/**",
+    "src/runtime/models/**"
   ]
 }
 
@@ -39845,7 +39845,7 @@ import {
 } from 'fireux-core/config/module/module-helpers'
 
 export function configureComponents(resolver: Resolver) {
-  registerComponentsDir(resolver, './runtime/components/organisms/entities/Blog', {
+  registerComponentsDir(resolver, './runtime/components/organisms/Blog', {
     global: true,
     pathPrefix: true,
     prefix: 'Blog',
@@ -39853,7 +39853,7 @@ export function configureComponents(resolver: Resolver) {
 
   registerComponentAliases(
     resolver,
-    './runtime/components/organisms/entities/Blog',
+    './runtime/components/organisms/Blog',
     'Blog'
   )
 }
@@ -40024,7 +40024,7 @@ function registerBlogPages(nuxt: Nuxt, resolver: any, runtimeDir: string) {
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/CTA.vue
+### packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/CTA.vue
 
 ```vue
 <template>
@@ -40058,7 +40058,7 @@ const ctaDescription = computed(
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Cards/Cell.vue
+### packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Cards/Cell.vue
 
 ```vue
 <template>
@@ -40098,7 +40098,7 @@ const ctaDescription = computed(
 </template>
 
 <script setup lang="ts">
-import type { BlogCard } from '../../../../../composables/fireux/firestore/objects/blog/utils/view/useBlogInterface'
+import type { BlogCard } from '../../../../../composables/fireux/firestore/blog/utils/view/useBlogInterface'
 
 type Props = Pick<
   BlogCard.Card,
@@ -40119,7 +40119,7 @@ withDefaults(defineProps<Props>(), {
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Cards/Pill.vue
+### packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Cards/Pill.vue
 
 ```vue
 <template>
@@ -40148,7 +40148,7 @@ withDefaults(defineProps<Props>(), {
 </template>
 
 <script setup lang="ts">
-import type { BlogCard } from '../../../../../composables/fireux/firestore/objects/blog/utils/view/useBlogInterface';
+import type { BlogCard } from '../../../../../composables/fireux/firestore/blog/utils/view/useBlogInterface';
 
 type PillProps = Pick<BlogCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
   showSubtitle?: boolean
@@ -40163,7 +40163,7 @@ withDefaults(defineProps<PillProps>(), {
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Cards/Preview.vue
+### packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Cards/Preview.vue
 
 ```vue
 <template>
@@ -40225,7 +40225,7 @@ withDefaults(defineProps<Props>(), {
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Cards/Profile.vue
+### packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Cards/Profile.vue
 
 ```vue
 <template>
@@ -40244,7 +40244,7 @@ withDefaults(defineProps<Props>(), {
 </template>
 
 <script setup lang="ts">
-import type { BlogCard } from '../../../../../composables/fireux/firestore/objects/blog/utils/view/useBlogInterface'
+import type { BlogCard } from '../../../../../composables/fireux/firestore/blog/utils/view/useBlogInterface'
 
 const { card, avatar: avatarProp, prop } = defineProps<{
   card: BlogCard.Teaser
@@ -40259,7 +40259,7 @@ const avatar = avatarProp ?? cardAvatar ?? null
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Collection/Manager.vue
+### packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Collection/Manager.vue
 
 ```vue
 <template>
@@ -40322,8 +40322,8 @@ const avatar = avatarProp ?? cardAvatar ?? null
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useBlogInterface } from '../../../../../composables/fireux/firestore/objects/blog/utils/view/useBlogInterface';
-import type { BlogPost } from '../../../../../models/objects/blogPost.model';
+import { useBlogInterface } from '../../../../../composables/fireux/firestore/blog/utils/view/useBlogInterface';
+import type { BlogPost } from '../../../../../models/blogPost.model';
 
 const props = defineProps<{ collection?: BlogPost[] }>()
 
@@ -40354,7 +40354,7 @@ const wrapperPropsFor = (card: BlogCardShape) => (card.to ? { to: card.to } : {}
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Collection/Provider.vue
+### packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Collection/Provider.vue
 
 ```vue
 <template>
@@ -40363,8 +40363,8 @@ const wrapperPropsFor = (card: BlogCardShape) => (card.to ? { to: card.to } : {}
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useBlog } from '../../../../../composables/fireux/firestore/objects/blog/useBlog'
-import type { BlogPost } from '../../../../../models/objects/blogPost.model'
+import { useBlog } from '../../../../../composables/fireux/firestore/blog/useBlog'
+import type { BlogPost } from '../../../../../models/blogPost.model'
 
 const { items } = useBlog()
 
@@ -40374,7 +40374,7 @@ const total = computed(() => posts.value.length)
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Collection/View.vue
+### packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Collection/View.vue
 
 ```vue
 <template>
@@ -40382,7 +40382,7 @@ const total = computed(() => posts.value.length)
 </template>
 
 <script setup lang="ts">
-import type { BlogPost } from '../../../../../models/objects/blogPost.model';
+import type { BlogPost } from '../../../../../models/blogPost.model';
 
 withDefaults(
   defineProps<{
@@ -40394,7 +40394,7 @@ withDefaults(
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Create/Advanced.vue
+### packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Create/Advanced.vue
 
 ```vue
 <!-- app/components/organisms/Blog/Create/Advanced.vue -->
@@ -40488,7 +40488,7 @@ const { blogPost } = useBlogDraftState()
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Create/Images.vue
+### packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Create/Images.vue
 
 ```vue
 <!-- Blog Image Upload Component -->
@@ -40693,7 +40693,7 @@ defineExpose({
   margin-top: var(--space-2);
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Create/Preview.vue
+### packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Create/Preview.vue
 
 ```vue
 <template>
@@ -40898,7 +40898,7 @@ const fallbackLogo = '/img/app/logo.png'
 }
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Create/System.vue
+### packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Create/System.vue
 
 ```vue
 <template>
@@ -40971,7 +40971,7 @@ function handleClear() {
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Create/Write.vue
+### packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Create/Write.vue
 
 ```vue
 <!-- app/components/organisms/Blog/Create/Write.vue -->
@@ -41060,7 +41060,7 @@ import {
   shallowRef,
 } from 'vue'
 import { useBlogDraftState } from '../../../../../composables/fireux/firestore/blogs/post/state/useBlogDraftState'
-import { useBlog } from '../../../../../composables/fireux/firestore/objects/blog/useBlog'
+import { useBlog } from '../../../../../composables/fireux/firestore/blog/useBlog'
 
 const EditorContent = defineAsyncComponent(async () => {
   const mod = await import('@tiptap/vue-3')
@@ -41176,7 +41176,7 @@ const can = (action: 'undo' | 'redo') => {
   border-radius: 0.5rem;
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/Edit.vue
+### packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Edit.vue
 
 ```vue
 <template>
@@ -41185,7 +41185,7 @@ const can = (action: 'undo' | 'redo') => {
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/View/Article.vue
+### packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/View/Article.vue
 
 ```vue
 <template>
@@ -41228,8 +41228,8 @@ const can = (action: 'undo' | 'redo') => {
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { BlogPost } from '../../../../../models/objects/blogPost.model'
-import { useBlogInterface } from '../../../../../composables/fireux/firestore/objects/blog/utils/view/useBlogInterface'
+import type { BlogPost } from '../../../../../models/blogPost.model'
+import { useBlogInterface } from '../../../../../composables/fireux/firestore/blog/utils/view/useBlogInterface'
 
 const props = defineProps<{ post: BlogPost }>()
 
@@ -41263,7 +41263,7 @@ const thumbStyle = {
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/components/organisms/entities/Blog/View/Page.vue
+### packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/View/Page.vue
 
 ```vue
 <template>
@@ -41290,7 +41290,7 @@ const thumbStyle = {
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { BlogPost } from '../../../../../models/objects/blogPost.model'
+import type { BlogPost } from '../../../../../models/blogPost.model'
 
 const props = defineProps<{ post: BlogPost }>()
 
@@ -41339,7 +41339,7 @@ import { useStorage } from '@vueuse/core'
 import { onMounted } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useBlogUtils } from '../../../objects/blog/utils/useBlogUtils'
-import type { BlogPostEntry } from '../../../../../../models/objects/blogPost.model'
+import type { BlogPostEntry } from '../../../../../../models/blogPost.model'
 
 type BlogPostPayload = BlogPostEntry & {
   created_at: string
@@ -41452,12 +41452,12 @@ export function useBlogDraftState() {
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/fetch/useBlogFetch.ts
+### packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/fetch/useBlogFetch.ts
 
 ```ts
 import { computed, type Ref } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead.ts'
-import type { BlogPost } from '../../../../../../models/objects/blogPost.model'
+import type { BlogPost } from '../../../../../../models/blogPost.model'
 
 /**
  * Fetch helpers for blog posts (list + single).
@@ -41493,14 +41493,14 @@ export function useBlogFetch() {
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/mutations/useBlogCreate.ts
+### packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/mutations/useBlogCreate.ts
 
 ```ts
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestore } from 'vuefire'
-import type { BlogPost, BlogPostEntry } from '../../../../../../models/objects/blogPost.model'
+import type { BlogPost, BlogPostEntry } from '../../../../../../models/blogPost.model'
 
 export const BlogPayload = {
   id: '',
@@ -41571,7 +41571,7 @@ export function useBlogCreate() {
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/mutations/useBlogDelete.ts
+### packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/mutations/useBlogDelete.ts
 
 ```ts
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager.ts'
@@ -41601,12 +41601,12 @@ export function useBlogDelete() {
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/mutations/useBlogUpdate.ts
+### packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/mutations/useBlogUpdate.ts
 
 ```ts
 import { serverTimestamp } from 'firebase/firestore'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate.ts'
-import type { BlogPost } from '../../../../../../models/objects/blogPost.model'
+import type { BlogPost } from '../../../../../../models/blogPost.model'
 
 export function useBlogUpdate() {
   const { updateDocument } = useFirestoreUpdate()
@@ -41640,7 +41640,7 @@ export function useBlogUpdate() {
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/useBlog.ts
+### packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/useBlog.ts
 
 ```ts
 import { useBlogFetch } from './fetch/useBlogFetch.ts'
@@ -41674,10 +41674,10 @@ export function useBlog() {
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/utils/useBlogUtils.ts
+### packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/utils/useBlogUtils.ts
 
 ```ts
-import type { Author, BlogPost } from '../../../../../../models/objects/blogPost.model'
+import type { Author, BlogPost } from '../../../../../../models/blogPost.model'
 
 function generateSlug(title: string): string {
   let out = title.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-')
@@ -41728,10 +41728,10 @@ export function useBlogUtils() {
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/utils/view/useBlogInterface.ts
+### packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/utils/view/useBlogInterface.ts
 
 ```ts
-import type { BlogPost } from '../../../../../../../models/objects/blogPost.model'
+import type { BlogPost } from '../../../../../../../models/blogPost.model'
 
 export namespace BlogCard {
   export type Card = {
@@ -41840,10 +41840,10 @@ export {}
 
 ```
 
-### packages/extensions/fireux-blogs/src/runtime/models/objects/blogPost.model.ts
+### packages/extensions/fireux-blogs/src/runtime/models/blogPost.model.ts
 
 ```ts
-// FILE: packages/extensions/fireux-blogs/src/runtime/models/objects/blogPost.model.ts
+// FILE: packages/extensions/fireux-blogs/src/runtime/models/blogPost.model.ts
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -41950,7 +41950,7 @@ export type BlogPostEntry = Omit<
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useBlog } from '../../composables/fireux/firestore/objects/blog/useBlog'
+import { useBlog } from '../../composables/fireux/firestore/blog/useBlog'
 
 const route = useRoute()
 const { fetchBySlug } = useBlog()
@@ -42089,7 +42089,7 @@ function handleClear() {
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useBlogFetch } from '../../composables/fireux/firestore/objects/blog/fetch/useBlogFetch'
+import { useBlogFetch } from '../../composables/fireux/firestore/blog/fetch/useBlogFetch'
 
 const { appName } = useFireUXConfig()
 
@@ -42178,9 +42178,9 @@ const collection = computed(() => items.value ?? [])
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
-import { useBlogFetch } from '../../composables/fireux/firestore/objects/blog/fetch/useBlogFetch'
-import type { BlogPost } from '../../models/objects/blogPost.model'
-import { BlogPost as BlogPostModelRuntime } from '../../models/objects/blogPost.model'
+import { useBlogFetch } from '../../composables/fireux/firestore/blog/fetch/useBlogFetch'
+import type { BlogPost } from '../../models/blogPost.model'
+import { BlogPost as BlogPostModelRuntime } from '../../models/blogPost.model'
 
 definePageMeta({
   layout: 'dev',
@@ -42231,7 +42231,7 @@ const filteredBlogsDriftPayload = computed(() =>
 )
 
 const blogsDriftCopyPayload = computed(() => ({
-  modelPath: 'packages/extensions/fireux-blogs/src/runtime/models/objects/blogPost.model.ts',
+  modelPath: 'packages/extensions/fireux-blogs/src/runtime/models/blogPost.model.ts',
   driftKind: blogsDriftKind.value,
   selectedField: blogsSelectedField.value || null,
   totalBlogs: filteredBlogs.value.length,
@@ -42349,7 +42349,7 @@ import {
 } from 'fireux-core/config/module/module-helpers'
 
 export function configureComponents(resolver: Resolver) {
-  registerComponentsDir(resolver, './runtime/components/organisms/entities/Company', {
+  registerComponentsDir(resolver, './runtime/components/organisms/Company', {
     global: true,
     pathPrefix: true,
     prefix: 'Company',
@@ -42357,7 +42357,7 @@ export function configureComponents(resolver: Resolver) {
 
   registerComponentAliases(
     resolver,
-    './runtime/components/organisms/entities/Company',
+    './runtime/components/organisms/Company',
     'Company'
   )
 }
@@ -42539,7 +42539,7 @@ function registerCompanyPages(nuxt: Nuxt, resolver: any, runtimeDir: string) {
 
 ```
 
-### packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/CTA.vue
+### packages/extensions/fireux-companies/src/runtime/components/organisms/Company/CTA.vue
 
 ```vue
 <template>
@@ -42556,7 +42556,7 @@ function registerCompanyPages(nuxt: Nuxt, resolver: any, runtimeDir: string) {
 
 ```
 
-### packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/Cards/Cell.vue
+### packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Cards/Cell.vue
 
 ```vue
 <template>
@@ -42601,7 +42601,7 @@ function registerCompanyPages(nuxt: Nuxt, resolver: any, runtimeDir: string) {
 </template>
 
 <script setup lang="ts">
-import type { CompanyCard } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
+import type { CompanyCard } from '../../../../../composables/fireux/firestore/company/utils/view/useCompanyInterface'
 
 type Props = Pick<CompanyCard.Card, 'to' | 'name' | 'website' | 'badges'> & {
   prop?: string
@@ -42636,7 +42636,7 @@ const avatarUrl = props.avatarUrl || props.card?.avatarUrl || props.avatar || ''
 
 ```
 
-### packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/Cards/Pill.vue
+### packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Cards/Pill.vue
 
 ```vue
 <template>
@@ -42670,7 +42670,7 @@ const avatarUrl = props.avatarUrl || props.card?.avatarUrl || props.avatar || ''
 </template>
 
 <script setup lang="ts">
-import type { CompanyCard } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface';
+import type { CompanyCard } from '../../../../../composables/fireux/firestore/company/utils/view/useCompanyInterface';
 
 type PillProps = Pick<CompanyCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
   showSubtitle?: boolean
@@ -42685,7 +42685,7 @@ withDefaults(defineProps<PillProps>(), {
 
 ```
 
-### packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/Cards/Preview.vue
+### packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Cards/Preview.vue
 
 ```vue
 <template>
@@ -42751,7 +42751,7 @@ withDefaults(defineProps<Props>(), {
 
 ```
 
-### packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/Cards/Profile.vue
+### packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Cards/Profile.vue
 
 ```vue
 <template>
@@ -42775,7 +42775,7 @@ withDefaults(defineProps<Props>(), {
 </template>
 
 <script setup lang="ts">
-import type { CompanyCard } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface';
+import type { CompanyCard } from '../../../../../composables/fireux/firestore/company/utils/view/useCompanyInterface';
 
 const { card, avatar: avatarProp, prop } = defineProps<{
   card: CompanyCard.Pill
@@ -42789,7 +42789,7 @@ const avatar = avatarProp ?? null
 
 ```
 
-### packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/Collection/Manager.vue
+### packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Collection/Manager.vue
 
 ```vue
 <template>
@@ -42852,8 +42852,8 @@ const avatar = avatarProp ?? null
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useCompanyInterface } from '../../../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface';
-import type { Company } from '../../../../../models/objects/company.model';
+import { useCompanyInterface } from '../../../../../composables/fireux/firestore/company/utils/view/useCompanyInterface';
+import type { Company } from '../../../../../models/company.model';
 
 const props = defineProps<{ collection?: Company[] }>()
 
@@ -42884,7 +42884,7 @@ const wrapperPropsFor = (card: CompanyCardShape) => (card.to ? { to: card.to } :
 
 ```
 
-### packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/Create/System.vue
+### packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Create/System.vue
 
 ```vue
 <template>
@@ -42931,11 +42931,11 @@ const wrapperPropsFor = (card: CompanyCardShape) => (card.to ? { to: card.to } :
 
 <script setup lang="ts">
 import { doc, getDoc } from 'firebase/firestore'
-import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { ref } from 'vue'
 import { useFirestore } from 'vuefire'
-import { useCompanyCreate } from '../../../../../composables/fireux/firestore/objects/company/mutations/useCompanyCreate'
-import { useCompanyUpdate } from '../../../../../composables/fireux/firestore/objects/company/mutations/useCompanyUpdate'
+import { useCompanyCreate } from '../../../../../composables/fireux/firestore/company/mutations/useCompanyCreate'
+import { useCompanyUpdate } from '../../../../../composables/fireux/firestore/company/mutations/useCompanyUpdate'
 
 const { createCompany } = useCompanyCreate()
 const { updateCompany } = useCompanyUpdate()
@@ -43004,7 +43004,7 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
 
 ```
 
-### packages/extensions/fireux-companies/src/runtime/components/organisms/entities/Company/Edit.vue
+### packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Edit.vue
 
 ```vue
 <template>
@@ -43067,8 +43067,8 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { computed, ref } from 'vue'
-import { useCompanyUpdate } from '../../../../composables/fireux/firestore/objects/company/mutations/useCompanyUpdate'
-import type { Company } from '../../../../models/objects/company.model'
+import { useCompanyUpdate } from '../../../../composables/fireux/firestore/company/mutations/useCompanyUpdate'
+import type { Company } from '../../../../models/company.model'
 
 const props = defineProps<{ company: Company | null }>()
 const company = computed(() => props.company)
@@ -43170,7 +43170,7 @@ async function handleUpdateAddress(value: string) {
 
 ```
 
-### packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/objects/company/fetch/useCompanyCollection.ts
+### packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/fetch/useCompanyCollection.ts
 
 ```ts
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
@@ -43202,12 +43202,12 @@ export function useCompanyCollection<
 }
 ```
 
-### packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/objects/company/fetch/useCompanyFetch.ts
+### packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/fetch/useCompanyFetch.ts
 
 ```ts
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
-import type { Company } from '../../../../../../models/objects/company.model'
+import type { Company } from '../../../../../../models/company.model'
 
 const COLLECTION_PATH = 'companies'
 
@@ -43231,12 +43231,12 @@ export function useCompanyFetch() {
 
 ```
 
-### packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/objects/company/mutations/useCompanyCreate.ts
+### packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/mutations/useCompanyCreate.ts
 
 ```ts
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
-import type { Company, CompanyCreateInput } from '../../../../../../models/objects/company.model'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
+import type { Company, CompanyCreateInput } from '../../../../../../models/company.model'
 
 export const CompanyPayload = {
   id: '',
@@ -43277,11 +43277,11 @@ export function useCompanyCreate() {
 
 ```
 
-### packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/objects/company/mutations/useCompanyUpdate.ts
+### packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/mutations/useCompanyUpdate.ts
 
 ```ts
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import type { Company, CompanyUpdateInput } from '../../../../../../models/objects/company.model'
+import type { Company, CompanyUpdateInput } from '../../../../../../models/company.model'
 
 const COLLECTION_PATH = 'companies'
 
@@ -43306,7 +43306,7 @@ export function useCompanyUpdate() {
 
 ```
 
-### packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/objects/company/useCompanies.ts
+### packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/useCompanies.ts
 
 ```ts
 import { useCompanyCollection } from './fetch/useCompanyCollection'
@@ -43327,10 +43327,10 @@ export function useCompanies<
 
 ```
 
-### packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/objects/company/utils/view/useCompanyInterface.ts
+### packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/utils/view/useCompanyInterface.ts
 
 ```ts
-import type { Company } from '../../../../../../../models/objects/company.model'
+import type { Company } from '../../../../../../../models/company.model'
 
 export namespace CompanyCard {
   export type Card = {
@@ -43382,10 +43382,10 @@ export function useCompanyInterface() {
 
 ```
 
-### packages/extensions/fireux-companies/src/runtime/models/objects/company.model.ts
+### packages/extensions/fireux-companies/src/runtime/models/company.model.ts
 
 ```ts
-// FILE: packages/extensions/fireux-companies/src/runtime/models/objects/company.model.ts
+// FILE: packages/extensions/fireux-companies/src/runtime/models/company.model.ts
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -43532,8 +43532,8 @@ export type CompanyUpdateInput = Partial<Omit<CompanyCreateInput, 'id'>>
 import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useCompanyFetch } from '../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
-import type { Company } from '../../models/objects/company.model'
+import { useCompanyFetch } from '../../composables/fireux/firestore/company/fetch/useCompanyFetch'
+import type { Company } from '../../models/company.model'
 
 definePageMeta({
   layout: 'default',
@@ -43659,7 +43659,7 @@ useHead({ title: `${appName} | Create Company` })
         </template>
 
         <template #core>
-          <OrganismsEntitiesCompanyEdit :company="company" />
+          <CompanyEdit :company="company" />
         </template>
       </LayoutsDashboardProfileEdit>
     </UPageBody>
@@ -43671,8 +43671,8 @@ import { useHead, useRoute } from '#imports'
 import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useCompanyFetch } from '../../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
-import type { Company } from '../../../models/objects/company.model'
+import { useCompanyFetch } from '../../../composables/fireux/firestore/company/fetch/useCompanyFetch'
+import type { Company } from '../../../models/company.model'
 
 definePageMeta({
   layout: 'default',
@@ -43719,9 +43719,9 @@ const pageSubtitle = computed(() =>
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { usePlaces } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/usePlaces'
+import { usePlaces } from 'fireux-places/runtime/composables/fireux/firestore/place/usePlaces'
 import { computed } from 'vue'
-import { useCompanyFetch } from '../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
+import { useCompanyFetch } from '../../composables/fireux/firestore/company/fetch/useCompanyFetch'
 
 definePageMeta({
   layout: 'default',
@@ -43925,8 +43925,8 @@ useHead({ title: `${appName} | Companies · Learn more` })
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
-import { useCompanyFetch } from '../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
-import { Company as CompanyModelRuntime } from '../../models/objects/company.model'
+import { useCompanyFetch } from '../../composables/fireux/firestore/company/fetch/useCompanyFetch'
+import { Company as CompanyModelRuntime } from '../../models/company.model'
 
 definePageMeta({
   layout: 'dev',
@@ -43975,7 +43975,7 @@ const filteredCompaniesDriftPayload = computed(() =>
 )
 
 const companiesDriftCopyPayload = computed(() => ({
-  modelPath: 'packages/extensions/fireux-companies/src/runtime/models/objects/company.model.ts',
+  modelPath: 'packages/extensions/fireux-companies/src/runtime/models/company.model.ts',
   driftKind: companiesDriftKind.value,
   selectedField: companiesSelectedField.value || null,
   totalCompanies: filteredCompanies.value.length,
@@ -44264,7 +44264,7 @@ import {
 } from 'fireux-core/config/module/module-helpers'
 
 export function configureComponents(resolver: Resolver) {
-  registerComponentsDir(resolver, './runtime/components/organisms/entities/Job', {
+  registerComponentsDir(resolver, './runtime/components/organisms/Job', {
     global: true,
     pathPrefix: true,
     prefix: 'Job',
@@ -44272,7 +44272,7 @@ export function configureComponents(resolver: Resolver) {
 
   registerComponentAliases(
     resolver,
-    './runtime/components/organisms/entities/Job',
+    './runtime/components/organisms/Job',
     'Job'
   )
 }
@@ -44393,7 +44393,7 @@ export default module
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/CTA.vue
+### packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/CTA.vue
 
 ```vue
 <template>
@@ -44477,7 +44477,7 @@ const check = computed(() => {
 </script>
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Cards/Cell.vue
+### packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Cards/Cell.vue
 
 ```vue
 <template>
@@ -44540,7 +44540,7 @@ withDefaults(defineProps<Props>(), {
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Cards/Pill.vue
+### packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Cards/Pill.vue
 
 ```vue
 <template>
@@ -44584,7 +44584,7 @@ withDefaults(defineProps<PillProps>(), {
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Cards/Preview.vue
+### packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Cards/Preview.vue
 
 ```vue
 <template>
@@ -44643,7 +44643,7 @@ withDefaults(defineProps<Props>(), {
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Cards/Profile.vue
+### packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Cards/Profile.vue
 
 ```vue
 <template>
@@ -44671,7 +44671,7 @@ const prop = toRef(props, 'prop')
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Collection/Manager.vue
+### packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Collection/Manager.vue
 
 ```vue
 <template>
@@ -44733,7 +44733,7 @@ const prop = toRef(props, 'prop')
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import { useJobInterface } from '../../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface';
-import type { Job } from '../../../../../models/objects/job.model';
+import type { Job } from '../../../../../models/job.model';
 
 const props = defineProps<{ collection?: Job[] }>()
 
@@ -44764,7 +44764,7 @@ const wrapperPropsFor = (card: JobCardShape) => (card.to ? { to: card.to } : {})
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Collection/Provider.vue
+### packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Collection/Provider.vue
 
 ```vue
 <template>
@@ -44781,7 +44781,7 @@ const showAgentCollection = computed(() => Boolean(coreProfile.value))
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Collection/View.vue
+### packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Collection/View.vue
 
 ```vue
 <template>
@@ -44789,7 +44789,7 @@ const showAgentCollection = computed(() => Boolean(coreProfile.value))
 </template>
 
 <script setup lang="ts">
-import type { Job } from '../../../../../models/objects/job.model';
+import type { Job } from '../../../../../models/job.model';
 
 withDefaults(
   defineProps<{
@@ -44801,7 +44801,7 @@ withDefaults(
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Create/Preview.vue
+### packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Create/Preview.vue
 
 ```vue
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/Organisms/Jobs/Create/Preview.vue -->
@@ -44896,7 +44896,7 @@ const wrapperPropsFor = (agent: AgentCard | null) => (agent?.to ? { to: agent.to
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Create/System.vue
+### packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Create/System.vue
 
 ```vue
 <template>
@@ -44972,7 +44972,7 @@ const check = computed(() => {
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Create/Write.vue
+### packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Create/Write.vue
 
 ```vue
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/Organisms/Jobs/Create/Write.vue -->
@@ -45065,7 +45065,7 @@ const check = computed(() => {
 </template>
 
 <script setup lang="ts">
-import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import type { JobCreateForm } from '../../../../../composables/fireux/firestore/jobs/mutations/useJobCreate'
 
 const statusOptions = [
@@ -45086,7 +45086,7 @@ const onPlaceConfirmed = (payload: { placeId: string; place: PlaceUpsertInput })
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Edit.vue
+### packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Edit.vue
 
 ```vue
 <template>
@@ -45095,7 +45095,7 @@ const onPlaceConfirmed = (payload: { placeId: string; place: PlaceUpsertInput })
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Sections/AgentCollection.vue
+### packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Sections/AgentCollection.vue
 
 ```vue
 <template>
@@ -45155,7 +45155,7 @@ import { computed } from 'vue'
 import { useJobCollection } from '../../../../../composables/fireux/firestore/jobs/fetch/useJobCollection.ts'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import type { Job } from '../../../../../models/objects/job.model'
+import type { Job } from '../../../../../models/job.model'
 
 const { jobs: allJobs, pending: isPending } = useJobCollection()
 const { coreUser } = useUser()
@@ -45178,7 +45178,7 @@ const badgeColor = (status?: Job['status']) => {
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/components/organisms/entities/Job/Sections/GlobalCollection.vue
+### packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Sections/GlobalCollection.vue
 
 ```vue
 <template>
@@ -45238,7 +45238,7 @@ const badgeColor = (status?: Job['status']) => {
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useJobCollection } from '../../../../../composables/fireux/firestore/jobs/fetch/useJobCollection.ts'
-import type { Job } from '../../../../../models/objects/job.model'
+import type { Job } from '../../../../../models/job.model'
 
 const { appJobs, pending: isPending } = useJobCollection()
 
@@ -47723,7 +47723,7 @@ export function getJobRoutes(hasProfile: (profileType: string) => boolean) {
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import type { Job } from '../../../../../models/objects/job.model'
+import type { Job } from '../../../../../models/job.model'
 
 export function useJobCollection() {
   const fireUXConfig = useFireUXConfig()
@@ -47754,7 +47754,7 @@ export function useJobCollection() {
 import { doc } from 'firebase/firestore'
 import { computed, isRef, type Ref } from 'vue'
 import { useDocument, useFirestore } from 'vuefire'
-import type { Job } from '../../../../../models/objects/job.model'
+import type { Job } from '../../../../../models/job.model'
 
 export function useJobFetch(
   id: string | null | undefined | Ref<string | null | undefined>
@@ -47784,7 +47784,7 @@ export type JobFetchRefs = ReturnType<typeof useJobFetch>
 ```ts
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { ref } from 'vue'
-import type { JobStatus } from '../../../../../models/objects/job.model'
+import type { JobStatus } from '../../../../../models/job.model'
 
 export const JobPayload = {
   company_id: '',
@@ -47885,7 +47885,7 @@ export function useJobDelete() {
 ### packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/mutations/useJobUpdate.ts
 
 ```ts
-import type { Job } from '../../../../../models/objects/job.model'
+import type { Job } from '../../../../../models/job.model'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
 export function useJobUpdate() {
@@ -47963,7 +47963,7 @@ import { useJobCreate } from './mutations/useJobCreate'
 import { useJobUpdate } from './mutations/useJobUpdate'
 import { useJobDelete } from './mutations/useJobDelete'
 
-export type { Job } from '../../../../models/objects/job.model'
+export type { Job } from '../../../../models/job.model'
 
 /**
  * useJob (canon)
@@ -47999,7 +47999,7 @@ export function useJob(jobId: string | Ref<string | null | undefined>) {
 
 ```ts
 import type { Ref } from 'vue'
-import type { Job } from '../../../../../../models/objects/job.model'
+import type { Job } from '../../../../../../models/job.model'
 
 export function useJobComputed(job: Ref<Job | null>, pending: Ref<boolean>) {
   // Stub: keep args for future use, avoid TS “unused” warnings
@@ -48014,7 +48014,7 @@ export function useJobComputed(job: Ref<Job | null>, pending: Ref<boolean>) {
 ### packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/utils/view/useJobInterface.ts
 
 ```ts
-import type { Job } from '../../../../../../models/objects/job.model'
+import type { Job } from '../../../../../../models/job.model'
 
 export namespace JobCard {
   export type Card = {
@@ -49082,9 +49082,9 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle'
-import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/mutations/usePlaceSave'
-import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
+import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/google/usePlacesGoogle'
+import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceSave'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { useFirestore } from 'vuefire'
 import type { ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
 import type {
@@ -49642,10 +49642,10 @@ export function useJobPermissions(agentRef?: Ref<Agent>) {
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts
+### packages/extensions/fireux-jobs/src/runtime/models/job.model.ts
 
 ```ts
-// FILE: packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts
+// FILE: packages/extensions/fireux-jobs/src/runtime/models/job.model.ts
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -50817,7 +50817,7 @@ import { useAgentCollection } from '../../composables/fireux/firestore/profiles/
 import { useAgentsInterface } from '../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentsInterface'
 import { useProfessionalCollection } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection'
 import { useProfessional } from '../../composables/fireux/firestore/profiles/Professional/useProfessional'
-import { Job as JobModelRuntime } from '../../models/objects/job.model'
+import { Job as JobModelRuntime } from '../../models/job.model'
 import { AgentCore as AgentCoreRuntime } from '../../models/profiles/Agent/Agent.model'
 import type { ProfessionalCore } from '../../models/profiles/Professional/Professional.model'
 import { ProfessionalCore as ProfessionalCoreRuntime } from '../../models/profiles/Professional/Professional.model'
@@ -50951,7 +50951,7 @@ const filteredJobsDriftPayload = computed(() =>
 import { computed, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import { useHead } from 'nuxt/app'
-import type { JobStatus } from '../../models/objects/job.model'
+import type { JobStatus } from '../../models/job.model'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useJobFetch } from '../../composables/fireux/firestore/jobs/fetch/useJobFetch'
 import { useJobUpdate } from '../../composables/fireux/firestore/jobs/mutations/useJobUpdate'
@@ -51193,7 +51193,7 @@ import { computed, reactive, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import { useHead } from 'nuxt/app'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import type { Job, JobStatus } from '../../../models/objects/job.model'
+import type { Job, JobStatus } from '../../../models/job.model'
 import { useJobFetch } from '../../../composables/fireux/firestore/jobs/fetch/useJobFetch'
 import { useJobUpdate } from '../../../composables/fireux/firestore/jobs/mutations/useJobUpdate'
 
@@ -51739,7 +51739,7 @@ import {
 } from 'fireux-core/config/module/module-helpers'
 
 export function configureComponents(resolver: Resolver) {
-  registerComponentsDir(resolver, './runtime/components/organisms/entities/Kitchen', {
+  registerComponentsDir(resolver, './runtime/components/organisms/Kitchen', {
     global: true,
     pathPrefix: true,
     prefix: 'Kitchen',
@@ -51747,7 +51747,7 @@ export function configureComponents(resolver: Resolver) {
 
   registerComponentAliases(
     resolver,
-    './runtime/components/organisms/entities/Kitchen',
+    './runtime/components/organisms/Kitchen',
     'Kitchen'
   )
 }
@@ -51870,7 +51870,7 @@ export default module
 
 ```
 
-### packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/CTA.vue
+### packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/CTA.vue
 
 ```vue
 <template>
@@ -51887,7 +51887,7 @@ export default module
 
 ```
 
-### packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/Cards/Cell.vue
+### packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Cards/Cell.vue
 
 ```vue
 <template>
@@ -51932,7 +51932,7 @@ export default module
 </template>
 
 <script setup lang="ts">
-import type { KitchenCard } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface'
+import type { KitchenCard } from '../../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 type Props = Pick<KitchenCard.Card, 'to' | 'name' | 'website' | 'badges'> & {
   prop?: string
@@ -51967,7 +51967,7 @@ const avatarUrl = props.avatarUrl || props.card?.avatarUrl || props.avatar || ''
 
 ```
 
-### packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/Cards/Pill.vue
+### packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Cards/Pill.vue
 
 ```vue
 <template>
@@ -52001,7 +52001,7 @@ const avatarUrl = props.avatarUrl || props.card?.avatarUrl || props.avatar || ''
 </template>
 
 <script setup lang="ts">
-import type { KitchenCard } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface';
+import type { KitchenCard } from '../../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface';
 
 type PillProps = Pick<KitchenCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
   showSubtitle?: boolean
@@ -52016,7 +52016,7 @@ withDefaults(defineProps<PillProps>(), {
 
 ```
 
-### packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/Cards/Preview.vue
+### packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Cards/Preview.vue
 
 ```vue
 <template>
@@ -52082,7 +52082,7 @@ withDefaults(defineProps<Props>(), {
 
 ```
 
-### packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/Cards/Profile.vue
+### packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Cards/Profile.vue
 
 ```vue
 <template>
@@ -52106,7 +52106,7 @@ withDefaults(defineProps<Props>(), {
 </template>
 
 <script setup lang="ts">
-import type { KitchenCard } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface';
+import type { KitchenCard } from '../../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface';
 
 const { card, avatar: avatarProp, prop } = defineProps<{
   card: KitchenCard.Pill
@@ -52120,7 +52120,7 @@ const avatar = avatarProp ?? null
 
 ```
 
-### packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/Collection/Manager.vue
+### packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Collection/Manager.vue
 
 ```vue
 <template>
@@ -52183,8 +52183,8 @@ const avatar = avatarProp ?? null
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useKitchenInterface } from '../../../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface';
-import type { Kitchen } from '../../../../../models/objects/kitchen.model';
+import { useKitchenInterface } from '../../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface';
+import type { Kitchen } from '../../../../../models/kitchen.model';
 
 const props = defineProps<{ collection?: Kitchen[] }>()
 
@@ -52214,7 +52214,7 @@ const wrapperPropsFor = (card: KitchenCardShape) => (card.to ? { to: card.to } :
 
 ```
 
-### packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/Create/System.vue
+### packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Create/System.vue
 
 ```vue
 <template>
@@ -52261,11 +52261,11 @@ const wrapperPropsFor = (card: KitchenCardShape) => (card.to ? { to: card.to } :
 
 <script setup lang="ts">
 import { doc, getDoc } from 'firebase/firestore'
-import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { ref } from 'vue'
 import { useFirestore } from 'vuefire'
-import { useKitchenCreate } from '../../../../../composables/fireux/firestore/objects/kitchen/mutations/useKitchenCreate'
-import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/objects/kitchen/mutations/useKitchenUpdate'
+import { useKitchenCreate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenCreate'
+import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 
 const { createKitchen } = useKitchenCreate()
 const { updateKitchen } = useKitchenUpdate()
@@ -52335,7 +52335,7 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
 
 ```
 
-### packages/extensions/fireux-kitchens/src/runtime/components/organisms/entities/Kitchen/Edit.vue
+### packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Edit.vue
 
 ```vue
 <template>
@@ -52398,8 +52398,8 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { computed, ref } from 'vue'
-import { useKitchenUpdate } from '../../../../composables/fireux/firestore/objects/kitchen/mutations/useKitchenUpdate'
-import type { Kitchen } from '../../../../models/objects/kitchen.model'
+import { useKitchenUpdate } from '../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
+import type { Kitchen } from '../../../../models/kitchen.model'
 
 const props = defineProps<{ kitchen: Kitchen | null }>()
 const kitchen = computed(() => props.kitchen)
@@ -52501,7 +52501,7 @@ async function handleUpdateAddress(value: string) {
 
 ```
 
-### packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/objects/kitchen/fetch/useKitchenCollection.ts
+### packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenCollection.ts
 
 ```ts
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
@@ -52534,12 +52534,12 @@ export function useKitchenCollection<
 
 ```
 
-### packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch.ts
+### packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenFetch.ts
 
 ```ts
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
-import type { Kitchen } from '../../../../../../models/objects/kitchen.model'
+import type { Kitchen } from '../../../../../../models/kitchen.model'
 
 const COLLECTION_PATH = 'kitchens'
 
@@ -52562,12 +52562,12 @@ export function useKitchenFetch() {
 }
 ```
 
-### packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/objects/kitchen/mutations/useKitchenCreate.ts
+### packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenCreate.ts
 
 ```ts
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import type { PlaceUpsertInput } from 'fireux-places/runtime/models/objects/place.model'
-import type { Kitchen, KitchenCreateInput } from '../../../../../../models/objects/kitchen.model'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
+import type { Kitchen, KitchenCreateInput } from '../../../../../../models/kitchen.model'
 
 export const KitchenPayload = {
   id: '',
@@ -52608,11 +52608,11 @@ export function useKitchenCreate() {
 
 ```
 
-### packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/objects/kitchen/mutations/useKitchenUpdate.ts
+### packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenUpdate.ts
 
 ```ts
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import type { Kitchen, KitchenUpdateInput } from '../../../../../../models/objects/kitchen.model'
+import type { Kitchen, KitchenUpdateInput } from '../../../../../../models/kitchen.model'
 
 const COLLECTION_PATH = 'kitchens'
 
@@ -52636,7 +52636,7 @@ export function useKitchenUpdate() {
 }
 ```
 
-### packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/objects/kitchen/useKitchens.ts
+### packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/useKitchens.ts
 
 ```ts
 import { useKitchenCollection } from './fetch/useKitchenCollection'
@@ -52657,10 +52657,10 @@ export function useKitchens<
 
 ```
 
-### packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface.ts
+### packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface.ts
 
 ```ts
-import type { Kitchen } from '../../../../../../../models/objects/kitchen.model'
+import type { Kitchen } from '../../../../../../../models/kitchen.model'
 
 export namespace KitchenCard {
   export type Card = {
@@ -52712,10 +52712,10 @@ export function useKitchenInterface() {
 
 ```
 
-### packages/extensions/fireux-kitchens/src/runtime/models/objects/kitchen.model.ts
+### packages/extensions/fireux-kitchens/src/runtime/models/kitchen.model.ts
 
 ```ts
-// FILE: packages/extensions/fireux-kitchens/src/runtime/models/objects/kitchen.model.ts
+// FILE: packages/extensions/fireux-kitchens/src/runtime/models/kitchen.model.ts
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -52825,9 +52825,9 @@ export type KitchenUpdateInput = Partial<Omit<KitchenCreateInput, 'id'>>
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
-import { useKitchens } from '../../composables/fireux/firestore/objects/kitchen/useKitchens'
-import type { Kitchen } from '../../models/objects/kitchen.model'
-import { Kitchen as KitchenModelRuntime } from '../../models/objects/kitchen.model'
+import { useKitchens } from '../../composables/fireux/firestore/kitchen/useKitchens'
+import type { Kitchen } from '../../models/kitchen.model'
+import { Kitchen as KitchenModelRuntime } from '../../models/kitchen.model'
 
 definePageMeta({
   layout: 'dev',
@@ -52876,7 +52876,7 @@ const filteredKitchensDriftPayload = computed(() =>
 )
 
 const kitchensDriftCopyPayload = computed(() => ({
-  modelPath: 'packages/extensions/fireux-kitchens/src/runtime/models/objects/kitchen.model.ts',
+  modelPath: 'packages/extensions/fireux-kitchens/src/runtime/models/kitchen.model.ts',
   driftKind: kitchensDriftKind.value,
   selectedField: kitchensSelectedField.value || null,
   totalKitchens: filteredKitchens.value.length,
@@ -52985,8 +52985,8 @@ const updateKitchensSelectedField = (value: string) => {
 import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useKitchenFetch } from '../../composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch'
-import type { Kitchen } from '../../models/objects/kitchen.model'
+import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
+import type { Kitchen } from '../../models/kitchen.model'
 
 definePageMeta({
   layout: 'default',
@@ -53112,7 +53112,7 @@ useHead({ title: `${appName} | Create Kitchen` })
         </template>
 
         <template #core>
-          <OrganismsEntitiesKitchenEdit :kitchen="kitchen" />
+          <KitchenEdit :kitchen="kitchen" />
         </template>
       </LayoutsDashboardProfileEdit>
     </UPageBody>
@@ -53124,8 +53124,8 @@ import { useHead, useRoute } from '#imports'
 import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useKitchenFetch } from '../../../composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch'
-import type { Kitchen } from '../../../models/objects/kitchen.model'
+import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
+import type { Kitchen } from '../../../models/kitchen.model'
 
 definePageMeta({
   layout: 'default',
@@ -53172,9 +53172,9 @@ const pageSubtitle = computed(() =>
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { usePlaces } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/usePlaces'
+import { usePlaces } from 'fireux-places/runtime/composables/fireux/firestore/place/usePlaces'
 import { computed } from 'vue'
-import { useKitchenFetch } from '../../composables/fireux/firestore/objects/kitchen/fetch/useKitchenFetch'
+import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 
 definePageMeta({
   nav: {
@@ -53435,7 +53435,7 @@ import {
  * Register runtime components for this module.
  */
 export function configureComponents(resolver: Resolver) {
-  registerComponentsDir(resolver, './runtime/components/organisms/entities/Place', {
+  registerComponentsDir(resolver, './runtime/components/organisms/Place', {
     global: true,
     pathPrefix: true,
     prefix: 'Place',
@@ -53443,7 +53443,7 @@ export function configureComponents(resolver: Resolver) {
 
   registerComponentAliases(
     resolver,
-    './runtime/components/organisms/entities/Place',
+    './runtime/components/organisms/Place',
     'Place'
   )
 }
@@ -53598,7 +53598,7 @@ export default module
 
 ```
 
-### packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/CTA.vue
+### packages/extensions/fireux-places/src/runtime/components/organisms/Place/CTA.vue
 
 ```vue
 <template>
@@ -53633,7 +53633,7 @@ const emit = defineEmits<{
 
 ```
 
-### packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Cards/Cell.vue
+### packages/extensions/fireux-places/src/runtime/components/organisms/Place/Cards/Cell.vue
 
 ```vue
 <template>
@@ -53673,8 +53673,8 @@ const emit = defineEmits<{
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePlaceLogoState } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos'
-import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import { usePlaceLogoState } from '../../../../../composables/fireux/firestore/place/utils/view/usePlaceLogos'
+import type { PlaceCard } from '../../../../../composables/fireux/firestore/place/utils/view/usePlacesInterface'
 
 type Props = Pick<PlaceCard.Card, 'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl'> & {
   formatted_address?: string
@@ -53724,7 +53724,7 @@ const sourceLabel = computed(() =>
 
 ```
 
-### packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Cards/Pill.vue
+### packages/extensions/fireux-places/src/runtime/components/organisms/Place/Cards/Pill.vue
 
 ```vue
 <template>
@@ -53760,7 +53760,7 @@ const sourceLabel = computed(() =>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import type { PlaceCard } from '../../../../../composables/fireux/firestore/place/utils/view/usePlacesInterface'
 
 defineOptions({ inheritAttrs: false })
 
@@ -53779,7 +53779,7 @@ const resolvedAvatarUrl = computed(() => props.avatarUrl || '')
 
 ```
 
-### packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Cards/Preview.vue
+### packages/extensions/fireux-places/src/runtime/components/organisms/Place/Cards/Preview.vue
 
 ```vue
 <template>
@@ -53850,7 +53850,7 @@ const sourceLabel = computed(() =>
 
 ```
 
-### packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Cards/Profile.vue
+### packages/extensions/fireux-places/src/runtime/components/organisms/Place/Cards/Profile.vue
 
 ```vue
 <template>
@@ -53874,7 +53874,7 @@ const sourceLabel = computed(() =>
 </template>
 
 <script setup lang="ts">
-import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
+import type { PlaceCard } from '../../../../../composables/fireux/firestore/place/utils/view/usePlacesInterface';
 
 const { card, imageUrl: imageUrlProp, prop } = defineProps<{
   card: PlaceCard.Card
@@ -53888,7 +53888,7 @@ const imageUrl = imageUrlProp ?? cardImageUrl
 
 ```
 
-### packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Collection/Manager.vue
+### packages/extensions/fireux-places/src/runtime/components/organisms/Place/Collection/Manager.vue
 
 ```vue
 <template>
@@ -53949,8 +53949,8 @@ const imageUrl = imageUrlProp ?? cardImageUrl
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { usePlacesInterface } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
-import type { BasePlace } from '../../../../../models/objects/place.model';
+import { usePlacesInterface } from '../../../../../composables/fireux/firestore/place/utils/view/usePlacesInterface';
+import type { BasePlace } from '../../../../../models/place.model';
 
 const props = defineProps<{ collection?: BasePlace[] }>()
 
@@ -53977,7 +53977,7 @@ const toggleVariant = () => {
 
 ```
 
-### packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Collection/View.vue
+### packages/extensions/fireux-places/src/runtime/components/organisms/Place/Collection/View.vue
 
 ```vue
 <template>
@@ -53985,14 +53985,14 @@ const toggleVariant = () => {
 </template>
 
 <script setup lang="ts">
-import type { BasePlace } from '../../../../../models/objects/place.model';
+import type { BasePlace } from '../../../../../models/place.model';
 
 defineProps<{ collection: BasePlace[] }>()
 </script>
 
 ```
 
-### packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Create/System.vue
+### packages/extensions/fireux-places/src/runtime/components/organisms/Place/Create/System.vue
 
 ```vue
 <template>
@@ -54001,7 +54001,7 @@ defineProps<{ collection: BasePlace[] }>()
 
 ```
 
-### packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Edit.vue
+### packages/extensions/fireux-places/src/runtime/components/organisms/Place/Edit.vue
 
 ```vue
 <template>
@@ -54148,8 +54148,8 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { computed, ref } from 'vue'
-import { usePlaceClaim } from '../../../../composables/fireux/firestore/objects/place/mutations/usePlaceClaim'
-import type { Place } from '../../../../models/objects/place.model'
+import { usePlaceClaim } from '../../../../composables/fireux/firestore/place/mutations/usePlaceClaim'
+import type { Place } from '../../../../models/place.model'
 
 const props = defineProps<{ place: Place | null }>()
 const place = computed(() => props.place)
@@ -54206,7 +54206,7 @@ const parseNumber = (value: string | number) => {
 }
 ```
 
-### packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Search/Bar.vue
+### packages/extensions/fireux-places/src/runtime/components/organisms/Place/Search/Bar.vue
 
 ```vue
 <template>
@@ -54237,7 +54237,7 @@ const internalValue = computed({
 
 ```
 
-### packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Search/Dropdown.vue
+### packages/extensions/fireux-places/src/runtime/components/organisms/Place/Search/Dropdown.vue
 
 ```vue
 <template>
@@ -54272,7 +54272,7 @@ const internalValue = computed({
 
 <script setup lang="ts">
 import { computed, toRefs } from 'vue';
-import type { PlaceCard } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface';
+import type { PlaceCard } from '../../../../../composables/fireux/firestore/place/utils/view/usePlacesInterface';
 
 const SHORTLIST_LIMIT = 4
 
@@ -54298,7 +54298,7 @@ const wrapperPropsFor = (cell: PlaceCard.Card) => ({
 
 ```
 
-### packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Search/Section.vue
+### packages/extensions/fireux-places/src/runtime/components/organisms/Place/Search/Section.vue
 
 ```vue
 <template>
@@ -54343,11 +54343,11 @@ import { computed, ref } from 'vue'
 import {
   canonicalPlaceId,
   fetchPlaceDetails,
-} from '../../../../../composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle'
-import { usePlacesSearch } from '../../../../../composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch'
-import { usePlaceClaim } from '../../../../../composables/fireux/firestore/objects/place/mutations/usePlaceClaim'
-import { usePlaceSave } from '../../../../../composables/fireux/firestore/objects/place/mutations/usePlaceSave'
-import type { BasePlace, PlaceUpsertInput } from '../../../../../models/objects/place.model'
+} from '../../../../../composables/fireux/firestore/place/fetch/google/usePlacesGoogle'
+import { usePlacesSearch } from '../../../../../composables/fireux/firestore/place/fetch/search/usePlacesSearch'
+import { usePlaceClaim } from '../../../../../composables/fireux/firestore/place/mutations/usePlaceClaim'
+import { usePlaceSave } from '../../../../../composables/fireux/firestore/place/mutations/usePlaceSave'
+import type { BasePlace, PlaceUpsertInput } from '../../../../../models/place.model'
 
 interface Props {
   type?: string | null
@@ -54503,7 +54503,7 @@ async function onConfirm(place: BasePlace) {
         lng: place.lng,
 ```
 
-### packages/extensions/fireux-places/src/runtime/components/organisms/entities/Place/Search/Selected.vue
+### packages/extensions/fireux-places/src/runtime/components/organisms/Place/Search/Selected.vue
 
 ```vue
 <template>
@@ -54608,8 +54608,8 @@ async function onConfirm(place: BasePlace) {
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { usePlaceLogoState } from '../../../../../composables/fireux/firestore/objects/place/utils/view/usePlaceLogos';
-import type { BasePlace } from '../../../../../models/objects/place.model';
+import { usePlaceLogoState } from '../../../../../composables/fireux/firestore/place/utils/view/usePlaceLogos';
+import type { BasePlace } from '../../../../../models/place.model';
 
 const emit = defineEmits<{
   (e: 'clear'): void
@@ -54672,10 +54672,10 @@ const resolvedImageUrl = computed(
 
 ```
 
-### packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/fetch/google/usePlacesGoogle.ts
+### packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/fetch/google/usePlacesGoogle.ts
 
 ```ts
-import type { GooglePlace, PlaceUpsertInput } from '../../../../../../../models/objects/place.model'
+import type { GooglePlace, PlaceUpsertInput } from '../../../../../../../models/place.model'
 import type { PlaceCard } from '../../utils/view/usePlacesInterface'
 
 const GOOGLE_AUTOCOMPLETE_ENDPOINT = '/api/places/autocomplete'
@@ -54877,13 +54877,13 @@ function toStoredPlace(g: GooglePlace): PlaceUpsertInput {
     formatted_address: g.formatted_address,
 ```
 
-### packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/fetch/search/usePlacesSearch.ts
+### packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/fetch/search/usePlacesSearch.ts
 
 ```ts
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestoreSearch } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreSearch'
 import { ref, watch } from 'vue'
-import type { BasePlace } from '../../../../../../../models/objects/place.model'
+import type { BasePlace } from '../../../../../../../models/place.model'
 import type { PlaceCard } from '../../utils/view/usePlacesInterface'
 import {
   canonicalPlaceId,
@@ -55082,7 +55082,7 @@ export function usePlacesSearch(options?: {
                   ? firestoreError.message
 ```
 
-### packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/fetch/usePlaceCollection.ts
+### packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/fetch/usePlaceCollection.ts
 
 ```ts
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
@@ -55123,12 +55123,12 @@ export function usePlaceCollection<T extends Record<string, any> = Record<string
 
 ```
 
-### packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/mutations/usePlaceClaim.ts
+### packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/mutations/usePlaceClaim.ts
 
 ```ts
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
-import type { Place } from '../../../../../../models/objects/place.model'
+import type { Place } from '../../../../../../models/place.model'
 import { toPlaceCollectionPath, usePlaceTypesConfig } from '../utils/placeCollections'
 
 export interface UsePlaceClaimOptions {
@@ -55161,13 +55161,13 @@ export function usePlaceClaim(options: UsePlaceClaimOptions = {}) {
 
 ```
 
-### packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/mutations/usePlaceCreate.ts
+### packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate.ts
 
 ```ts
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useFirestore } from 'vuefire'
-import type { Place, PlaceUpsertInput } from '../../../../../../models/objects/place.model'
+import type { Place, PlaceUpsertInput } from '../../../../../../models/place.model'
 import { canonicalPlaceId } from '../fetch/google/usePlacesGoogle'
 import { toPlaceCollectionPath, usePlaceTypesConfig } from '../utils/placeCollections'
 
@@ -55231,13 +55231,13 @@ export function usePlaceCreate(options: UsePlaceCreateOptions = {}) {
 
 ```
 
-### packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/mutations/usePlaceSave.ts
+### packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/mutations/usePlaceSave.ts
 
 ```ts
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useFirestore } from 'vuefire'
-import type { PlaceUpsertInput } from '../../../../../../models/objects/place.model'
+import type { PlaceUpsertInput } from '../../../../../../models/place.model'
 import { canonicalPlaceId } from '../fetch/google/usePlacesGoogle'
 import { toPlaceCollectionPath, usePlaceTypesConfig } from '../utils/placeCollections'
 
@@ -55308,7 +55308,7 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
 
 ```
 
-### packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/usePlaces.ts
+### packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/usePlaces.ts
 
 ```ts
 import { usePlaceCollection } from './fetch/usePlaceCollection'
@@ -55339,7 +55339,7 @@ export function usePlaces<T extends Record<string, any> = Record<string, any>>(
 
 ```
 
-### packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/utils/placeCollections.ts
+### packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/utils/placeCollections.ts
 
 ```ts
 import { useRuntimeConfig } from '#imports'
@@ -55367,10 +55367,10 @@ export function normalizePlaceType(raw: unknown): string | null {
 
 ```
 
-### packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface.ts
+### packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/utils/view/usePlacesInterface.ts
 
 ```ts
-import type { BasePlace, PlaceSource } from '../../../../../../../models/objects/place.model'
+import type { BasePlace, PlaceSource } from '../../../../../../../models/place.model'
 
 export namespace PlaceCard {
   export type Card = {
@@ -55439,10 +55439,10 @@ export function usePlacesInterface() {
 
 ```
 
-### packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts
+### packages/extensions/fireux-places/src/runtime/models/place.model.ts
 
 ```ts
-// FILE: packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts
+// FILE: packages/extensions/fireux-places/src/runtime/models/place.model.ts
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -55568,9 +55568,9 @@ export type PlaceUpsertInput = Omit<Place, 'created_at' | 'updated_at' | 'creato
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
-import { usePlaces } from '../../composables/fireux/firestore/objects/place/usePlaces'
-import type { Place } from '../../models/objects/place.model'
-import { Place as PlaceModelRuntime } from '../../models/objects/place.model'
+import { usePlaces } from '../../composables/fireux/firestore/place/usePlaces'
+import type { Place } from '../../models/place.model'
+import { Place as PlaceModelRuntime } from '../../models/place.model'
 
 definePageMeta({
   layout: 'dev',
@@ -55619,7 +55619,7 @@ const filteredDriftPayload = computed(() =>
 )
 
 const driftCopyPayload = computed(() => ({
-  modelPath: 'packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts',
+  modelPath: 'packages/extensions/fireux-places/src/runtime/models/place.model.ts',
   driftKind: driftKind.value,
   selectedField: selectedField.value || null,
   totalPlaces: filteredCollection.value.length,
@@ -55778,7 +55778,7 @@ import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
-import type { Place } from '../../models/objects/place.model'
+import type { Place } from '../../models/place.model'
 
 definePageMeta({
   layout: 'default',
@@ -55869,7 +55869,7 @@ const json = computed(() => {
 import { useHead, useRoute, useRouter } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { normalizePlaceType } from '../../composables/fireux/firestore/objects/place/utils/placeCollections'
+import { normalizePlaceType } from '../../composables/fireux/firestore/place/utils/placeCollections'
 
 definePageMeta({
   layout: 'default',
@@ -55951,7 +55951,7 @@ async function onConfirmed(payload: { placeId: string }) {
           </template>
 
           <template #core>
-            <OrganismsEntitiesPlaceEdit :place="place" />
+            <PlaceEdit :place="place" />
           </template>
         </LayoutsDashboardProfileEdit>
 
@@ -55980,7 +55980,7 @@ import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
-import type { Place } from '../../../models/objects/place.model'
+import type { Place } from '../../../models/place.model'
 
 definePageMeta({
   layout: 'default',
@@ -56051,8 +56051,8 @@ const json = computed(() => {
 import { useHead, useRoute, useRouter } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { usePlaces } from '../../composables/fireux/firestore/objects/place/usePlaces'
-import { normalizePlaceType } from '../../composables/fireux/firestore/objects/place/utils/placeCollections'
+import { usePlaces } from '../../composables/fireux/firestore/place/usePlaces'
+import { normalizePlaceType } from '../../composables/fireux/firestore/place/utils/placeCollections'
 
 definePageMeta({
   layout: 'default',
@@ -56824,7 +56824,7 @@ import {
 } from 'fireux-core/config/module/module-helpers'
 
 export function configureComponents(resolver: Resolver) {
-  registerComponentsDir(resolver, './runtime/components/organisms/entities/Product', {
+  registerComponentsDir(resolver, './runtime/components/organisms/Product', {
     global: true,
     pathPrefix: true,
     prefix: 'Product',
@@ -56832,7 +56832,7 @@ export function configureComponents(resolver: Resolver) {
 
   registerComponentAliases(
     resolver,
-    './runtime/components/organisms/entities/Product',
+    './runtime/components/organisms/Product',
     'Product'
   )
 }
@@ -57005,7 +57005,7 @@ function registerProductPages(nuxt: Nuxt, resolver: any, runtimeDir: string) {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/CTA.vue
+### packages/extensions/fireux-products/src/runtime/components/organisms/Product/CTA.vue
 
 ```vue
 <template>
@@ -57039,7 +57039,7 @@ const showCTA = computed(() => canPublishProduct.value)
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Cards/Cell.vue
+### packages/extensions/fireux-products/src/runtime/components/organisms/Product/Cards/Cell.vue
 
 ```vue
 <template>
@@ -57079,7 +57079,7 @@ const showCTA = computed(() => canPublishProduct.value)
 </template>
 
 <script setup lang="ts">
-import type { ProductCard } from '../../../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface'
+import type { ProductCard } from '../../../../../composables/fireux/firestore/product/utils/view/useProductInterface'
 
 type Props = Pick<ProductCard.Card, 'to' | 'name' | 'description' | 'imageUrl' | 'badges'> & {
   prop?: string
@@ -57100,7 +57100,7 @@ const subtitle = props.description
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Cards/Pill.vue
+### packages/extensions/fireux-products/src/runtime/components/organisms/Product/Cards/Pill.vue
 
 ```vue
 <template>
@@ -57129,7 +57129,7 @@ const subtitle = props.description
 </template>
 
 <script setup lang="ts">
-import type { ProductCard } from '../../../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface';
+import type { ProductCard } from '../../../../../composables/fireux/firestore/product/utils/view/useProductInterface';
 
 type PillProps = Pick<ProductCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
   showSubtitle?: boolean
@@ -57144,7 +57144,7 @@ withDefaults(defineProps<PillProps>(), {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Cards/Preview.vue
+### packages/extensions/fireux-products/src/runtime/components/organisms/Product/Cards/Preview.vue
 
 ```vue
 <template>
@@ -57205,7 +57205,7 @@ withDefaults(defineProps<Props>(), {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Cards/Profile.vue
+### packages/extensions/fireux-products/src/runtime/components/organisms/Product/Cards/Profile.vue
 
 ```vue
 <template>
@@ -57222,7 +57222,7 @@ withDefaults(defineProps<Props>(), {
 </template>
 
 <script setup lang="ts">
-import type { ProductCardProps } from '../../../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface'
+import type { ProductCardProps } from '../../../../../composables/fireux/firestore/product/utils/view/useProductInterface'
 
 const { card, avatar: avatarProp, prop } = defineProps<{
   card: ProductCardProps
@@ -57237,7 +57237,7 @@ const avatar = avatarProp ?? null
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Collection/Manager.vue
+### packages/extensions/fireux-products/src/runtime/components/organisms/Product/Collection/Manager.vue
 
 ```vue
 <template>
@@ -57300,8 +57300,8 @@ const avatar = avatarProp ?? null
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { useProductInterface } from '../../../../../composables/fireux/firestore/objects/product/utils/view/useProductInterface';
-import type { FirebaseProduct } from '../../../../../models/objects/product.model';
+import { useProductInterface } from '../../../../../composables/fireux/firestore/product/utils/view/useProductInterface';
+import type { FirebaseProduct } from '../../../../../models/product.model';
 
 const props = defineProps<{ collection?: FirebaseProduct[] }>()
 
@@ -57332,7 +57332,7 @@ const wrapperPropsFor = (card: ProductCardShape) => (card.to ? { to: card.to } :
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Collection/Provider.vue
+### packages/extensions/fireux-products/src/runtime/components/organisms/Product/Collection/Provider.vue
 
 ```vue
 <template>
@@ -57341,8 +57341,8 @@ const wrapperPropsFor = (card: ProductCardShape) => (card.to ? { to: card.to } :
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useProducts } from '../../../../../composables/fireux/firestore/objects/product/useProducts'
-import type { FirebaseProduct } from '../../../../../models/objects/product.model'
+import { useProducts } from '../../../../../composables/fireux/firestore/product/useProducts'
+import type { FirebaseProduct } from '../../../../../models/product.model'
 
 const { productsCollection } = await useProducts()
 
@@ -57354,7 +57354,7 @@ const total = computed(() => products.value.length)
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Collection/Root.vue
+### packages/extensions/fireux-products/src/runtime/components/organisms/Product/Collection/Root.vue
 
 ```vue
 <template>
@@ -57362,14 +57362,14 @@ const total = computed(() => products.value.length)
 </template>
 
 <script setup lang="ts">
-import { useProductCollection } from '../../../../../composables/fireux/firestore/objects/product/fetch/useProductCollection';
+import { useProductCollection } from '../../../../../composables/fireux/firestore/product/fetch/useProductCollection';
 
 const { products } = useProductCollection()
 </script>
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Collection/View.vue
+### packages/extensions/fireux-products/src/runtime/components/organisms/Product/Collection/View.vue
 
 ```vue
 <template>
@@ -57377,7 +57377,7 @@ const { products } = useProductCollection()
 </template>
 
 <script setup lang="ts">
-import type { FirebaseProduct } from '../../../../../models/objects/product.model';
+import type { FirebaseProduct } from '../../../../../models/product.model';
 
 withDefaults(
   defineProps<{
@@ -57389,7 +57389,7 @@ withDefaults(
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Create/Basic.vue
+### packages/extensions/fireux-products/src/runtime/components/organisms/Product/Create/Basic.vue
 
 ```vue
 <template>
@@ -57410,7 +57410,7 @@ withDefaults(
 </template>
 
 <script setup lang="ts">
-import { useCreateProductState } from '../../../../../composables/fireux/firestore/objects/product/state/useCreateProductState'
+import { useCreateProductState } from '../../../../../composables/fireux/firestore/product/state/useCreateProductState'
 
 // Shared creation state
 const { product, isSlugTaken } = await useCreateProductState()
@@ -57432,7 +57432,7 @@ const { product, isSlugTaken } = await useCreateProductState()
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Create/Preview.vue
+### packages/extensions/fireux-products/src/runtime/components/organisms/Product/Create/Preview.vue
 
 ```vue
 <template>
@@ -57472,9 +57472,9 @@ const { product, isSlugTaken } = await useCreateProductState()
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 import { computed } from 'vue'
-import { useCreateProductState } from '../../../../../composables/fireux/firestore/objects/product/state/useCreateProductState'
-import { useCreatePricesState } from '../../../../../composables/fireux/firestore/objects/product/Prices/useCreatePricesState'
-import type { FirebaseProduct } from '../../../../../models/objects/product.model'
+import { useCreateProductState } from '../../../../../composables/fireux/firestore/product/state/useCreateProductState'
+import { useCreatePricesState } from '../../../../../composables/fireux/firestore/product/Prices/useCreatePricesState'
+import type { FirebaseProduct } from '../../../../../models/product.model'
 
 const { product } = await useCreateProductState()
 const { prices, defaultPrice } = useCreatePricesState()
@@ -57505,7 +57505,7 @@ const previewProduct = computed(
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Create/Price.vue
+### packages/extensions/fireux-products/src/runtime/components/organisms/Product/Create/Price.vue
 
 ```vue
 <template>
@@ -57561,9 +57561,9 @@ const previewProduct = computed(
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { RadioGroupItem, RadioGroupValue } from '@nuxt/ui'
-import { useCreatePricesState } from '../../../../../composables/fireux/firestore/objects/product/Prices/useCreatePricesState'
-import { useCreateProductState } from '../../../../../composables/fireux/firestore/objects/product/state/useCreateProductState'
-import { useProducts } from '../../../../../composables/fireux/firestore/objects/product/useProducts'
+import { useCreatePricesState } from '../../../../../composables/fireux/firestore/product/Prices/useCreatePricesState'
+import { useCreateProductState } from '../../../../../composables/fireux/firestore/product/state/useCreateProductState'
+import { useProducts } from '../../../../../composables/fireux/firestore/product/useProducts'
 
 const props = defineProps<{
   index: number
@@ -57669,7 +57669,7 @@ const uiFrequency = computed<RadioGroupValue>({
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Create/Prices.vue
+### packages/extensions/fireux-products/src/runtime/components/organisms/Product/Create/Prices.vue
 
 ```vue
 <template>
@@ -57697,7 +57697,7 @@ const uiFrequency = computed<RadioGroupValue>({
 </template>
 
 <script setup lang="ts">
-import { useCreatePricesState } from '../../../../../composables/fireux/firestore/objects/product/Prices/useCreatePricesState'
+import { useCreatePricesState } from '../../../../../composables/fireux/firestore/product/Prices/useCreatePricesState'
 
 const { prices, addPrice, removePrice } = useCreatePricesState()
 
@@ -57721,7 +57721,7 @@ function movePriceToTop(index: number) {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Create/Stock.vue
+### packages/extensions/fireux-products/src/runtime/components/organisms/Product/Create/Stock.vue
 
 ```vue
 <template>
@@ -57796,7 +57796,7 @@ function movePriceToTop(index: number) {
 
 <script setup lang="ts">
 import { watch } from 'vue'
-import { useCreateProductState } from '../../../../../composables/fireux/firestore/objects/product/state/useCreateProductState'
+import { useCreateProductState } from '../../../../../composables/fireux/firestore/product/state/useCreateProductState'
 
 const { product } = await useCreateProductState()
 
@@ -57841,7 +57841,7 @@ watch(
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Create/System.vue
+### packages/extensions/fireux-products/src/runtime/components/organisms/Product/Create/System.vue
 
 ```vue
 <template>
@@ -57864,9 +57864,9 @@ import { ref } from 'vue'
 // Use Nuxt UI toast if available (auto-imported in app)
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
-import { useCreatePricesState } from '../../../../../composables/fireux/firestore/objects/product/Prices/useCreatePricesState'
-import { useCreateProductState } from '../../../../../composables/fireux/firestore/objects/product/state/useCreateProductState'
-import { useProductCreate } from '../../../../../composables/fireux/firestore/objects/product/useProductCreate'
+import { useCreatePricesState } from '../../../../../composables/fireux/firestore/product/Prices/useCreatePricesState'
+import { useCreateProductState } from '../../../../../composables/fireux/firestore/product/state/useCreateProductState'
+import { useProductCreate } from '../../../../../composables/fireux/firestore/product/useProductCreate'
 
 const { product, resetCreateProductState } = await useCreateProductState()
 
@@ -57928,7 +57928,7 @@ function handleClear() {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Create/Write.vue
+### packages/extensions/fireux-products/src/runtime/components/organisms/Product/Create/Write.vue
 
 ```vue
 <template>
@@ -58027,7 +58027,7 @@ function handleClear() {
 </template>
 
 <script setup lang="ts">
-import { useCreateProductState } from '../../../../../composables/fireux/firestore/objects/product/state/useCreateProductState'
+import { useCreateProductState } from '../../../../../composables/fireux/firestore/product/state/useCreateProductState'
 
 const { product } = await useCreateProductState()
 
@@ -58108,7 +58108,7 @@ const productTypeOptions = [
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/Edit.vue
+### packages/extensions/fireux-products/src/runtime/components/organisms/Product/Edit.vue
 
 ```vue
 <template>
@@ -58117,7 +58117,7 @@ const productTypeOptions = [
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/components/organisms/entities/Product/View/Product.vue
+### packages/extensions/fireux-products/src/runtime/components/organisms/Product/View/Product.vue
 
 ```vue
 <template>
@@ -58213,7 +58213,7 @@ const productTypeOptions = [
 </template>
 
 <script setup lang="ts">
-import type { FirebaseProduct } from '../../../../../models/objects/product.model'
+import type { FirebaseProduct } from '../../../../../models/product.model'
 
 const props = defineProps<{
   product?: Partial<FirebaseProduct>
@@ -58287,7 +58287,7 @@ function display(value: unknown): string {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/Prices/useCreatePricesState.ts
+### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/Prices/useCreatePricesState.ts
 
 ```ts
 import { useStorage } from '@vueuse/core'
@@ -58296,7 +58296,7 @@ import type {
 	DefaultPrice,
 	Price,
 	StripePriceInput,
-} from '../../../../../../models/objects/product.model'
+} from '../../../../../../models/product.model'
 
 export function useCreatePricesState() {
 	const prices = useStorage<Partial<Price>[]>('createProductPrices', [
@@ -58384,10 +58384,10 @@ export function useCreatePricesState() {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/fetch/useProductBySlug.ts
+### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/fetch/useProductBySlug.ts
 
 ```ts
-import type { FirebaseProduct } from '#fireux-products/models/objects/product.model'
+import type { FirebaseProduct } from '#fireux-products/models/product.model'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
 /** Lookup a product by slug (server-side friendly). */
@@ -58402,11 +58402,11 @@ export function useProductBySlug() {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/fetch/useProductCollection.ts
+### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/fetch/useProductCollection.ts
 
 ```ts
 import { computed } from 'vue'
-import type { FirebaseProduct } from '#fireux-products/models/objects/product.model'
+import type { FirebaseProduct } from '#fireux-products/models/product.model'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
 /** Fetches the products collection for the current runtime scope. */
@@ -58420,10 +58420,10 @@ export function useProductCollection() {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/fetch/useProductPrices.ts
+### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/fetch/useProductPrices.ts
 
 ```ts
-import type { Price } from '#fireux-products/models/objects/product.model'
+import type { Price } from '#fireux-products/models/product.model'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
 /** Fetch subcollection prices for a given product. */
@@ -58446,10 +58446,10 @@ export function useProductPrices() {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/fetch/useProductRead.ts
+### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/fetch/useProductRead.ts
 
 ```ts
-import type { FirebaseProduct } from '#fireux-products/models/objects/product.model'
+import type { FirebaseProduct } from '#fireux-products/models/product.model'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
 /** Fetch a single product by id/slug. */
@@ -58465,7 +58465,7 @@ export function useProductRead() {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/state/useCreateProductState.ts
+### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/state/useCreateProductState.ts
 
 ```ts
 import { useStorage } from '@vueuse/core'
@@ -58473,7 +58473,7 @@ import { onMounted, ref, watch } from 'vue'
 import { useCurrentUser } from 'vuefire'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import type { FirebaseProduct } from '../../../../../../models/objects/product.model'
+import type { FirebaseProduct } from '../../../../../../models/product.model'
 
 type ProductDraft = Partial<FirebaseProduct> & {
   main_image?: string
@@ -58581,7 +58581,7 @@ export function useCreateProductState() {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/state/useProductCreateSubmit.ts
+### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/state/useProductCreateSubmit.ts
 
 ```ts
 import { useCreateProductState } from './useCreateProductState'
@@ -58608,7 +58608,7 @@ export function useProductCreateSubmit() {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/useProduct.ts
+### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/useProduct.ts
 
 ```ts
 // Canonical entrypoint for product composables
@@ -58630,14 +58630,14 @@ export * from './utils/view/useProductInterface'
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/useProductCreate.ts
+### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/useProductCreate.ts
 
 ```ts
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useFirestore } from 'vuefire'
-import type { FirebaseProduct } from '../../../../../models/objects/product.model'
+import type { FirebaseProduct } from '../../../../../models/product.model'
 import { useCreateProductState } from './state/useCreateProductState'
 
 export const ProductPayload = {
@@ -58718,7 +58718,7 @@ export function useProductCreate() {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/useProductDelete.ts
+### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/useProductDelete.ts
 
 ```ts
 import { useCurrentUser } from 'vuefire'
@@ -58748,10 +58748,10 @@ export function useProductDelete() {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/useProductUpdate.ts
+### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/useProductUpdate.ts
 
 ```ts
-import type { FirebaseProduct } from '../../../../../models/objects/product.model'
+import type { FirebaseProduct } from '../../../../../models/product.model'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
 export function useProductUpdate() {
@@ -58776,7 +58776,7 @@ export function useProductUpdate() {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/useProductUtils.ts
+### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/useProductUtils.ts
 
 ```ts
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
@@ -58825,13 +58825,13 @@ export function useProductUtils() {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/useProducts.ts
+### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/useProducts.ts
 
 ```ts
 import type {
   FirebaseProduct,
   Price,
-} from '../../../../../models/objects/product.model'
+} from '../../../../../models/product.model'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useProductCreate } from './useProductCreate.ts'
 import { useProductUpdate } from './useProductUpdate.ts'
@@ -58899,13 +58899,13 @@ export function useProducts() {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/utils/useProductFormatting.ts
+### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/utils/useProductFormatting.ts
 
 ```ts
 import type {
   FirebaseProduct,
   Price,
-} from '#fireux-products/models/objects/product.model'
+} from '#fireux-products/models/product.model'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
@@ -59102,10 +59102,10 @@ export function useProductFormatting() {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/utils/useProductValidation.ts
+### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/utils/useProductValidation.ts
 
 ```ts
-import type { FirebaseProduct } from '#fireux-products/models/objects/product.model'
+import type { FirebaseProduct } from '#fireux-products/models/product.model'
 
 export function useProductValidation() {
   function validateProduct(product: Partial<FirebaseProduct>) {
@@ -59199,10 +59199,10 @@ export function useProductValidation() {
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/utils/view/useProductInterface.ts
+### packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/utils/view/useProductInterface.ts
 
 ```ts
-import type { FirebaseProduct } from '../../../../../../../models/objects/product.model'
+import type { FirebaseProduct } from '../../../../../../../models/product.model'
 
 export namespace ProductCard {
   export type Card = {
@@ -59307,10 +59307,10 @@ export {}
 
 ```
 
-### packages/extensions/fireux-products/src/runtime/models/objects/product.model.ts
+### packages/extensions/fireux-products/src/runtime/models/product.model.ts
 
 ```ts
-// FILE: packages/extensions/fireux-products/src/runtime/models/objects/product.model.ts
+// FILE: packages/extensions/fireux-products/src/runtime/models/product.model.ts
 
 /**
  * Product models (Firestore-shape oriented).
@@ -59480,8 +59480,8 @@ export type ProductUpdateInput = Partial<Omit<ProductCreationInput, 'appId'>>
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
-import { useProductCollection } from '../../composables/fireux/firestore/objects/product/fetch/useProductCollection'
-import { FirebaseProduct as ProductModelRuntime } from '../../models/objects/product.model'
+import { useProductCollection } from '../../composables/fireux/firestore/product/fetch/useProductCollection'
+import { FirebaseProduct as ProductModelRuntime } from '../../models/product.model'
 
 definePageMeta({
   layout: 'dev',
@@ -59530,7 +59530,7 @@ const filteredProductsDriftPayload = computed(() =>
 )
 
 const productsDriftCopyPayload = computed(() => ({
-  modelPath: 'packages/extensions/fireux-products/src/runtime/models/objects/product.model.ts',
+  modelPath: 'packages/extensions/fireux-products/src/runtime/models/product.model.ts',
   driftKind: productsDriftKind.value,
   selectedField: productsSelectedField.value || null,
   totalProducts: filteredProducts.value.length,
@@ -59562,7 +59562,7 @@ const updateProductsSelectedField = (value: string) => {
 
 <script setup lang="ts">
 import { useRoute } from '#imports'
-import { useProducts } from '../../composables/fireux/firestore/objects/product/useProducts'
+import { useProducts } from '../../composables/fireux/firestore/product/useProducts'
 
 const route = useRoute()
 const { fetchProductBySlug, fetchProductPrices } = await useProducts()
@@ -59628,7 +59628,7 @@ import {
   useCreateProductState,
   useCreatePricesState,
   useProductCreateSubmit,
-} from '../../composables/fireux/firestore/objects/product/useProduct'
+} from '../../composables/fireux/firestore/product/useProduct'
 
 definePageMeta({
   layout: 'default',
@@ -59712,7 +59712,7 @@ function handleClear() {
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useProductCollection } from '../../composables/fireux/firestore/objects/product/fetch/useProductCollection'
+import { useProductCollection } from '../../composables/fireux/firestore/product/fetch/useProductCollection'
 
 const { appName } = useFireUXConfig()
 
@@ -76421,7 +76421,7 @@ This note maps the Phase-1 “prove the graph” briefing onto the current FireU
 
 **Exists** ✅ (strong match, slightly different field names)
 - Collection: `places/{placeId}` (the composable expects an ID when fetching a doc)
-- Model: `packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts`
+- Model: `packages/extensions/fireux-places/src/runtime/models/place.model.ts`
 - Identity:
   - Uses `place_id` (Google Place ID)
 - Core fields:
@@ -76455,7 +76455,7 @@ This note maps the Phase-1 “prove the graph” briefing onto the current FireU
 
 **Exists** ✅ (minimal, but the graph links are mostly missing)
 - Collection: `jobs/{jobId}`
-- Model: `packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts`
+- Model: `packages/extensions/fireux-jobs/src/runtime/models/job.model.ts`
 - Current core fields:
   - `id`, `app_id`, `created_by`, `title`, `status ('open'|'closed')`, optional `description`
 - Links present:
@@ -77763,7 +77763,7 @@ That file is now considered “source notes”, and this `temp/dashboard/users.m
 
 ```json
 {
-  "modelPath": "packages/extensions/fireux-blogs/src/runtime/models/objects/blogPost.model.ts",
+  "modelPath": "packages/extensions/fireux-blogs/src/runtime/models/blogPost.model.ts",
   "driftKind": "missing",
   "selectedField": null,
   "totalBlogs": 1,
@@ -77846,7 +77846,7 @@ That file is now considered “source notes”, and this `temp/dashboard/users.m
 
 ```json
 {
-  "modelPath": "packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts",
+  "modelPath": "packages/extensions/fireux-places/src/runtime/models/place.model.ts",
   "driftKind": "missing",
   "selectedField": null,
   "totalPlaces": 32,
@@ -78462,7 +78462,7 @@ Used by:
 
 Blogs:
 
-- `packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/objects/blog/utils/view/useBlogInterface.ts`
+- `packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/utils/view/useBlogInterface.ts`
 
 Jobs:
 
@@ -78470,11 +78470,11 @@ Jobs:
 
 Products:
 
-- `packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/objects/product/utils/view/useProductInterface.ts`
+- `packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/utils/view/useProductInterface.ts`
 
 Places:
 
-- `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface.ts`
+- `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/utils/view/usePlacesInterface.ts`
 
 Jobs profiles:
 
@@ -78697,7 +78697,7 @@ Purpose: Blog/Products are evolving, so this doc compares Places against a broad
 ### Companies (clean facade; minimal but consistent)
 
 - Facade:
-  - `packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/objects/company/useCompanies.ts`
+  - `packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/useCompanies.ts`
 - Fetch:
   - `.../company/fetch/useCompanyFetch.ts` → `{ companies, company }`
 - Mutations:
@@ -78711,12 +78711,12 @@ Useful bits:
 ### Misebox ecosystem objects (pragmatic; direct vuefire)
 
 - Ingredient:
-  - `packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/ingredient/useIngredient.ts`
+  - `packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/ingredient/useIngredient.ts`
   - Uses `vuefire` `useCollection/useDocument` directly, has SSR keys, includes normalization.
   - Also has a pure “domain helper” composable `useIngredientFilters.ts`.
 
 - Recipes:
-  - `packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/objects/recipe/useRecipes.ts`
+  - `packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/recipe/useRecipes.ts`
   - Similar: direct `vuefire`, returns `{ all, pending, error }` plus CRUD composables.
 
 Useful bits:
@@ -78824,9 +78824,9 @@ Placement rules:
 
 Repo paths today (FireUX mono conventions):
 - Data model (not yet under `models/objects/`):
-  - `packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts`
+  - `packages/extensions/fireux-places/src/runtime/models/place.model.ts`
 - Entry point:
-  - `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/objects/place/usePlaces.ts`
+  - `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/usePlaces.ts`
 - Fetch:
   - `.../place/fetch/usePlaceCollection.ts` (collectionPath + collection + count)
   - `.../place/fetch/search/usePlacesSearch.ts` (search orchestration)
@@ -78847,7 +78847,7 @@ Repo paths today (FireUX mono conventions):
 - ✅ UI components can import UI shapes/mappers from `view/usePlacesInterface.ts`.
 
 Gaps (against the starter stack):
-- ⚠️ Model placement: Places uses `runtime/models/objects/place.model.ts`; starter wants `runtime/models/objects/Place.model.ts`.
+- ⚠️ Model placement: Places uses `runtime/models/place.model.ts`; starter wants `runtime/models/Place.model.ts`.
 - ⚠️ Model contents: `place.model.ts` still includes UI-ish types/mappers (`PlaceCard`, `toCell`). Starter wants those only in `view/use<Object>Interface.ts`.
 - ⚠️ Fetch shape: `usePlaceCollection` returns `collection` (possibly `undefined`) and `count`, but does not expose a first-class `pending` + `error` pair like Misebox’s patterns.
 - ⚠️ Naming: we currently use `utils/view/usePlacesInterface.ts` rather than `view/usePlaceInterface.ts` directly under the object. Starter template puts `view/` alongside `fetch/` and `mutations/`.

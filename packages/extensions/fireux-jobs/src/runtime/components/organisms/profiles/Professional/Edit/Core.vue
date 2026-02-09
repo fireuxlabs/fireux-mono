@@ -64,7 +64,7 @@
         </div>
       </UCard>
 
-      <OrganismsProfilesProfessionalFieldsExperienceSection
+      <ProfilesProfessionalFieldsExperienceSection
         :label="relevantExperienceLabel"
         :items="professional.relevant_experience || []"
         :onSave="handleRelevantExperience"
@@ -72,33 +72,33 @@
         :place-collections="placeCollections"
       />
 
-      <OrganismsProfilesProfessionalFieldsExperienceSection
+      <ProfilesProfessionalFieldsExperienceSection
         label="Other Experience"
         :items="professional.other_experience || []"
         :onSave="handleOtherExperience"
       />
 
-      <OrganismsProfilesProfessionalEditSectionsLanguages
+      <ProfilesProfessionalEditSectionsLanguages
         :items="languages"
         :onSave="handleLanguages"
       />
 
-      <OrganismsProfilesProfessionalEditSectionsCertifications
+      <ProfilesProfessionalEditSectionsCertifications
         :items="certifications"
         :onSave="handleCertifications"
       />
 
-      <OrganismsProfilesProfessionalEditSectionsEducation
+      <ProfilesProfessionalEditSectionsEducation
         :items="education"
         :onSave="handleEducation"
       />
 
-      <OrganismsProfilesProfessionalEditSectionsVolunteering
+      <ProfilesProfessionalEditSectionsVolunteering
         :items="volunteering"
         :onSave="handleVolunteering"
       />
 
-      <OrganismsProfilesProfessionalEditSectionsProjects
+      <ProfilesProfessionalEditSectionsProjects
         :items="projects"
         :onSave="handleProjects"
       />

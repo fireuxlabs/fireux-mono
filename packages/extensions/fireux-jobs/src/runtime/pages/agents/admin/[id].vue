@@ -16,7 +16,7 @@
         </div>
 
         <div class="dashboard-profile__pills">
-          <OrganismsProfilesAgentCardsPill
+          <ProfilesAgentCardsPill
             v-if="agentCard"
             v-bind="agentCard"
             :link="Boolean(agentCard.to)"
@@ -40,16 +40,16 @@
 
         <ClientOnly v-else>
           <div v-if="view === 'profile'" class="dashboard-profile__section">
-            <OrganismsProfilesAgentCardsProfile
+            <ProfilesAgentCardsProfile
               v-if="agentCard"
               :card="agentCard"
             />
           </div>
 
           <div v-else class="dashboard-profile__section">
-            <OrganismsProfilesAgentEditCore :agent="resolvedCoreProfile" />
+            <ProfilesAgentEditCore :agent="resolvedCoreProfile" />
 
-            <OrganismsProfilesAgentEditApp
+            <ProfilesAgentEditApp
               v-if="resolvedAppProfile"
               :agent="resolvedAppProfile"
             />

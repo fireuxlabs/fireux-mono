@@ -13,7 +13,7 @@
     </div>
 
     <div v-else-if="adminCards.length" class="footer-admins__grid">
-      <OrganismsUserCardsPill
+      <UserCardsPill
         v-for="admin in adminCards"
         :key="admin.key"
         v-bind="admin.card"

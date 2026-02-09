@@ -1,31 +1,31 @@
 <template>
-  <ClientOnly>
-    <UPage>
-      <UPageHeader :title="pageTitle" :description="pageDescription">
-        <template #ctas>
-          <UButton
-            size="xs"
-            variant="ghost"
-            icon="i-lucide-arrow-left"
-            to="/places"
-          >
-            Back
-          </UButton>
-        </template>
-      </UPageHeader>
+  <UPage>
+    <UPageHeader :title="pageTitle" :description="pageDescription">
+      <template #ctas>
+        <UButton
+          size="xs"
+          variant="ghost"
+          icon="i-lucide-arrow-left"
+          to="/places"
+        >
+          Back
+        </UButton>
+        <UButton
+          v-if="canEditAsAdmin || canEditAsClaimer"
+          size="xs"
+          variant="soft"
+          color="neutral"
+          icon="i-lucide-pencil"
+          :disabled="!docId"
+          :to="editTo"
+        >
+          Edit
+        </UButton>
+      </template>
+    </UPageHeader>
 
-      <UPageBody class="pagebody">
-        <div v-if="canEditAsAdmin || canEditAsClaimer" class="flex flex-wrap gap-2">
-          <UButton
-            size="xs"
-            color="primary"
-            icon="i-lucide-pencil"
-            :disabled="!docId"
-            :to="editTo"
-          >
-            Edit
-          </UButton>
-        </div>
+    <UPageBody class="pagebody">
+      <ClientOnly>
         <div v-if="loading" class="py-10 text-sm opacity-70">
           Loading place…
         </div>
@@ -45,7 +45,7 @@
             </template>
             <div class="flex items-center gap-3">
               <span class="text-xs text-gray-500">Claimed by</span>
-              <OrganismsUserCardsPill
+              <UserCardsPill
                 v-if="claimedUserPill"
                 v-bind="claimedUserPill"
                 :show-subtitle="false"
@@ -121,13 +121,13 @@
             :default-open="false"
           />
         </div>
-      </UPageBody>
-    </UPage>
 
-    <template #fallback>
-      <div class="py-10 text-sm opacity-70">Loading place…</div>
-    </template>
-  </ClientOnly>
+        <template #fallback>
+          <div class="py-10 text-sm opacity-70">Loading place…</div>
+        </template>
+      </ClientOnly>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
@@ -138,8 +138,8 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
-import { usePlacesInterface } from '../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
-import type { Place } from '../../models/objects/place.model'
+import { usePlacesInterface } from '../../composables/fireux/firestore/place/utils/view/usePlacesInterface'
+import type { Place } from '../../models/place.model'
 
 definePageMeta({
   layout: 'default',

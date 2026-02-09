@@ -40,13 +40,13 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
-import DevIngredientDummy from './Dummy.vue'
-import IngredientCollectionManager from '../../organisms/entities/Ingredient/Collection/Manager.vue'
-import { useIngredientFetch } from '../../../composables/fireux/firestore/objects/ingredient/fetch/useIngredientFetch'
+import { useIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
 import {
-  Ingredient as IngredientModelRuntime,
-  type Ingredient as IngredientType,
-} from '../../../models/objects/ingredient.model'
+    Ingredient as IngredientModelRuntime,
+    type Ingredient as IngredientType,
+} from '../../../models/ingredient.model'
+import IngredientCollectionManager from '../../organisms/Ingredient/Collection/Manager.vue'
+import DevIngredientDummy from './Dummy.vue'
 
 defineOptions({ name: 'DevIngredientSystem' })
 
@@ -84,7 +84,7 @@ const filteredDriftPayload = buildDriftPayload({
 })
 
 const driftCopyPayload = buildCopyPayload({
-  modelPath: 'packages/extensions/fireux-kitchens/src/runtime/models/objects/ingredient.model.ts',
+  modelPath: 'packages/extensions/fireux-kitchens/src/runtime/models/ingredient.model.ts',
   itemsKey: 'ingredients',
   items: filteredDriftPayload,
   total: computed(() => ingredientsCollection.value.length),

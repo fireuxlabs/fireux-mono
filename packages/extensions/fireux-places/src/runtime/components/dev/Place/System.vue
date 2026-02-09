@@ -39,8 +39,8 @@
 
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
-import { usePlaces } from '../../../composables/fireux/firestore/objects/place/usePlaces'
-import { Place as PlaceModelRuntime, type Place as PlaceType } from '../../../models/objects/place.model'
+import { usePlaces } from '../../../composables/fireux/firestore/place/usePlaces'
+import { Place as PlaceModelRuntime, type Place as PlaceType } from '../../../models/place.model'
 
 defineOptions({ name: 'DevPlaceSystem' })
 
@@ -74,7 +74,7 @@ const filteredDriftPayload = buildDriftPayload({
 })
 
 const driftCopyPayload = buildCopyPayload({
-  modelPath: 'packages/extensions/fireux-places/src/runtime/models/objects/place.model.ts',
+  modelPath: 'packages/extensions/fireux-places/src/runtime/models/place.model.ts',
   itemsKey: 'places',
   items: filteredDriftPayload,
 })

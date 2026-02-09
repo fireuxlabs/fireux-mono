@@ -41,11 +41,11 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed, ref } from 'vue'
-import { useProductCollection } from '../../../composables/fireux/firestore/objects/product/fetch/useProductCollection'
+import { useProductCollection } from '../../../composables/fireux/firestore/product/fetch/useProductCollection'
 import {
   FirebaseProduct as ProductModelRuntime,
   type FirebaseProduct,
-} from '../../../models/objects/product.model'
+} from '../../../models/product.model'
 import { dummyProductList } from '../../../../../../../../dummy/product.dummy'
 
 defineOptions({ name: 'DevProductSystem' })
@@ -84,7 +84,7 @@ const filteredDriftPayload = buildDriftPayload({
 
 const driftCopyPayload = buildCopyPayload({
   modelPath:
-    'packages/extensions/fireux-products/src/runtime/models/objects/product.model.ts',
+    'packages/extensions/fireux-products/src/runtime/models/product.model.ts',
   itemsKey: 'products',
   items: filteredDriftPayload,
   total: computed(() => productsCollection.value.length),

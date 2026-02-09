@@ -32,7 +32,7 @@
         </div>
       </template>
 
-      <OrganismsProfilesProfessionalCollectionManager :collection="filteredProfessionals" />
+      <ProfilesProfessionalCollectionManager :collection="filteredProfessionals" />
     </UCard>
   </section>
 </template>

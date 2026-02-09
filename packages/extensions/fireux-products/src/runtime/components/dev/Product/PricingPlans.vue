@@ -20,7 +20,7 @@ defineOptions({ name: 'DevProductPricingPlans' })
 
 import { computed } from 'vue'
 import { dummyProductList } from '../../../../../../../../dummy/product.dummy'
-import type { FirebaseProduct, Price } from '../../../models/objects/product.model'
+import type { FirebaseProduct, Price } from '../../../models/product.model'
 
 const props = defineProps<{
   selectedId?: string

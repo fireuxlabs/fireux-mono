@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useBlog } from '../../composables/fireux/firestore/objects/blog/useBlog'
+import { useBlog } from '../../composables/fireux/firestore/blog/useBlog'
 
 const route = useRoute()
 const { fetchBySlug } = useBlog()

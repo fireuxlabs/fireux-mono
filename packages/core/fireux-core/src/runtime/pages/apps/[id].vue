@@ -4,7 +4,7 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <div class="space-y-6">
-        <OrganismsAppCardsProfile
+        <AppCardsProfile
           v-if="appProfile"
           v-bind="appProfile"
           :app="currentApp"
@@ -47,7 +47,7 @@
               <div v-if="usersPending" class="text-sm text-dimmed">Loading users…</div>
 
               <div v-else class="flex flex-wrap gap-2">
-                <OrganismsUserCardsPill
+                <UserCardsPill
                   v-for="card in visibleCards"
                   :key="card.id"
                   v-bind="card"

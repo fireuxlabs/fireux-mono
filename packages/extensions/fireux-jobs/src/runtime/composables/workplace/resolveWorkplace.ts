@@ -1,5 +1,5 @@
-import type { Kitchen } from 'fireux-kitchens/runtime/models/objects/kitchen.model'
-import type { Job } from '../../models/objects/job.model'
+import type { Kitchen } from 'fireux-kitchens/runtime/models/kitchen.model'
+import type { Job } from '../../models/job.model'
 
 export type WorkplaceRegistries = {
   kitchens?: Map<string, Kitchen>

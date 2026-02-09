@@ -6,12 +6,38 @@
     />
 
     <UPageBody class="pagebody">
-      <DevProductSystem />
+      <div class="space-y-4">
+        <UCard>
+          <div class="flex items-center justify-between gap-3">
+            <div class="text-sm font-semibold">Products</div>
+            <UButton
+              variant="ghost"
+              size="xs"
+              @click="toggleSection('products')"
+            >
+              {{ openSections.products ? 'Hide' : 'Show' }}
+            </UButton>
+          </div>
+          <div v-show="openSections.products" class="mt-4">
+            <DevProductSystem />
+          </div>
+        </UCard>
+      </div>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
+import { reactive } from 'vue'
+
+const openSections = reactive({
+  products: false,
+})
+
+const toggleSection = (key: keyof typeof openSections) => {
+  openSections[key] = !openSections[key]
+}
+
 definePageMeta({
   layout: 'dev',
   nav: {

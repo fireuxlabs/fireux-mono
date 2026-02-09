@@ -85,8 +85,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Price } from 'fireux-products/runtime/models/objects/product.model'
-import { useProducts } from 'fireux-products/runtime/composables/fireux/firestore/objects/product/useProducts'
+import type { Price } from 'fireux-products/runtime/models/product.model'
+import { useProducts } from 'fireux-products/runtime/composables/fireux/firestore/product/useProducts'
 
 definePageMeta({
   layout: 'default',

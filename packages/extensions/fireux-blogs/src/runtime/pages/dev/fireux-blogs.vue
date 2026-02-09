@@ -6,44 +6,74 @@
     />
 
     <UPageBody class="pagebody">
-      <DevModel
-        :title="'Blogs · Model'"
-        :model="blogPostModelRuntime"
-      />
-
-      <UCard>
-        <template #header>
-          <div class="space-y-3">
-            <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-              Blogs collection
-            </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">
-              Filter blog posts by model drift (extra fields) before browsing records.
-            </p>
-            <DevDriftToolbar
-              :drift-kind="blogsDriftKind"
-              :selected-field="blogsSelectedField"
-              :filter-options="blogsFilterOptions"
-              :copy-label="'Copy drift · Blogs'"
-              :copy-payload="blogsDriftCopyPayload"
-              @update:drift-kind="setBlogsDriftKind"
-              @update:selected-field="updateBlogsSelectedField"
+      <div class="space-y-4">
+        <UCard>
+          <div class="flex items-center justify-between gap-3">
+            <div class="text-sm font-semibold">Model</div>
+            <UButton
+              variant="ghost"
+              size="xs"
+              @click="toggleSection('model')"
+            >
+              {{ openSections.model ? 'Hide' : 'Show' }}
+            </UButton>
+          </div>
+          <div v-show="openSections.model" class="mt-4">
+            <DevModel
+              :title="'Blogs · Model'"
+              :model="blogPostModelRuntime"
             />
           </div>
-        </template>
-      </UCard>
+        </UCard>
 
-      <BlogCollectionManager :collection="filteredBlogs" />
+        <UCard>
+          <div class="flex items-center justify-between gap-3">
+            <div class="text-sm font-semibold">Collection</div>
+            <UButton
+              variant="ghost"
+              size="xs"
+              @click="toggleSection('collection')"
+            >
+              {{ openSections.collection ? 'Hide' : 'Show' }}
+            </UButton>
+          </div>
+          <div v-show="openSections.collection" class="mt-4">
+            <UCard>
+              <template #header>
+                <div class="space-y-3">
+                  <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                    Blogs collection
+                  </p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                    Filter blog posts by model drift (extra fields) before browsing records.
+                  </p>
+                  <DevDriftToolbar
+                    :drift-kind="blogsDriftKind"
+                    :selected-field="blogsSelectedField"
+                    :filter-options="blogsFilterOptions"
+                    :copy-label="'Copy drift · Blogs'"
+                    :copy-payload="blogsDriftCopyPayload"
+                    @update:drift-kind="setBlogsDriftKind"
+                    @update:selected-field="updateBlogsSelectedField"
+                  />
+                </div>
+              </template>
+            </UCard>
+
+            <BlogCollectionManager :collection="filteredBlogs" />
+          </div>
+        </UCard>
+      </div>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
-import { computed } from 'vue'
-import { useBlogCollection } from '../../composables/fireux/firestore/objects/blog/fetch/useBlogCollection'
-import type { BlogPost } from '../../models/objects/blogPost.model'
-import { BlogPost as BlogPostModelRuntime } from '../../models/objects/blogPost.model'
+import { computed, reactive } from 'vue'
+import { useBlogCollection } from '../../composables/fireux/firestore/blog/fetch/useBlogCollection'
+import type { BlogPost } from '../../models/blogPost.model'
+import { BlogPost as BlogPostModelRuntime } from '../../models/blogPost.model'
 
 definePageMeta({
   layout: 'dev',
@@ -56,6 +86,15 @@ definePageMeta({
     layouts: ['dev'],
   },
 })
+
+const openSections = reactive({
+  model: false,
+  collection: false,
+})
+
+const toggleSection = (key: keyof typeof openSections) => {
+  openSections[key] = !openSections[key]
+}
 
 const blogPostModelRuntime = BlogPostModelRuntime
 
@@ -89,7 +128,7 @@ const filteredBlogsDriftPayload = computed(() =>
 )
 
 const blogsDriftCopyPayload = computed(() => ({
-  modelPath: 'packages/extensions/fireux-blogs/src/runtime/models/objects/blogPost.model.ts',
+  modelPath: 'packages/extensions/fireux-blogs/src/runtime/models/blogPost.model.ts',
   driftKind: blogsDriftKind.value,
   selectedField: blogsSelectedField.value || null,
   totalBlogs: filteredBlogs.value.length,

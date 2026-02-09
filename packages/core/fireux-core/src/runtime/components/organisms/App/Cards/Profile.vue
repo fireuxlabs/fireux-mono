@@ -99,7 +99,7 @@
           <div class="profile__kv">
             <div class="profile__k">Creator</div>
             <div class="profile__v">
-              <OrganismsUserCardsPill
+              <UserCardsPill
                 v-if="creatorCard"
                 v-bind="creatorCard"
                 :show-subtitle="false"

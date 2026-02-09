@@ -1,5 +1,5 @@
 import { useDocumentUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/operations/useDocumentUpdateBase'
-import type { Job, JobUpdateInput } from '../../../../../models/objects/job.model'
+import type { Job, JobUpdateInput } from '../../../../../models/job.model'
 
 export function useJobUpdate() {
   const base = useDocumentUpdateBase<Job>('jobs', { resolvePath: false })

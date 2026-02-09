@@ -68,7 +68,7 @@ import { computed, reactive, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import { useJobFetch } from '../../../composables/fireux/firestore/jobs/fetch/useJobFetch'
 import { useJobUpdate } from '../../../composables/fireux/firestore/jobs/mutations/useJobUpdate'
-import type { Job, JobStatus } from '../../../models/objects/job.model'
+import type { Job, JobStatus } from '../../../models/job.model'
 
 definePageMeta({
   layout: 'default',

@@ -1,7 +1,7 @@
 import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { ref, watch } from 'vue'
 import { useFirestore } from 'vuefire'
 
@@ -91,20 +91,16 @@ export default defineNuxtPlugin(() => {
         }
       }
 
-      const kitchenRef = doc(db, 'kitchens', id)
-      const kitchenSnap = await getDoc(kitchenRef)
-      if (kitchenSnap.exists()) {
-        const kitchenData = (kitchenSnap.data() as any) ?? {}
-        if (placeShouldBeTestKitchen && kitchenData.is_test_kitchen !== true) {
-          await setDoc(
-            kitchenRef,
-            {
-              is_test_kitchen: true,
-              updated_at: serverTimestamp(),
-            },
-            { merge: true }
-          )
-        }
+      if (!placeShouldBeTestKitchen) return
+
+      const testKitchenRef = doc(db, 'test-kitchens', id)
+      const testKitchenSnap = await getDoc(testKitchenRef)
+      if (!testKitchenSnap.exists()) {
+        await setDoc(testKitchenRef, {
+          id,
+          created_at: serverTimestamp(),
+          updated_at: serverTimestamp(),
+        })
       }
 
       ensuredForUid.value = id

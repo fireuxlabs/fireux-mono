@@ -146,9 +146,9 @@
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, ref } from 'vue'
 import { useKitchenDashboardSelection } from '../../../composables/fireux/app/useKitchenDashboardSelection'
-import { useKitchenIngredientFetch } from '../../../composables/fireux/firestore/objects/ingredient/fetch/useKitchenIngredientFetch'
-import { useKitchenIngredientDelete } from '../../../composables/fireux/firestore/objects/ingredient/mutations/useKitchenIngredientDelete'
-import type { KitchenIngredientResolved } from '../../../models/objects/ingredient.model'
+import { useKitchenIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useKitchenIngredientFetch'
+import { useKitchenIngredientDelete } from '../../../composables/fireux/firestore/ingredient/mutations/useKitchenIngredientDelete'
+import type { KitchenIngredientResolved } from '../../../models/ingredient.model'
 
 definePageMeta({
   layout: 'kitchen-dashboard',

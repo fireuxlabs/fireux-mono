@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { usePlaces } from '../../composables/fireux/firestore/objects/place/usePlaces'
+import { usePlaces } from '../../composables/fireux/firestore/place/usePlaces'
 
 definePageMeta({
   layout: 'default',

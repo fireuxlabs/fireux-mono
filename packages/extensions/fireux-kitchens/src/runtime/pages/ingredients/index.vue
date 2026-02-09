@@ -24,7 +24,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useIngredientFetch } from '../../composables/fireux/firestore/objects/ingredient/fetch/useIngredientFetch'
+import { useIngredientFetch } from '../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
 
 definePageMeta({
   layout: 'default',

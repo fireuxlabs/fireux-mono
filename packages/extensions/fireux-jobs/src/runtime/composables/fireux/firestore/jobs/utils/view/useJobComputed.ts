@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import type { JobResolved } from '../../../../../../models/objects/job.model'
+import type { JobResolved } from '../../../../../../models/job.model'
 import { useJobInterface } from './useJobInterface'
 
 export function useJobComputed(job: Ref<JobResolved | null>, pending: Ref<boolean>) {

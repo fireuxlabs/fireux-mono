@@ -41,7 +41,7 @@
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useJobCollection } from '../../../composables/fireux/firestore/jobs/fetch/useJobCollection'
-import { Job as JobModelRuntime } from '../../../models/objects/job.model'
+import { Job as JobModelRuntime } from '../../../models/job.model'
 
 defineOptions({ name: 'DevJobSystem' })
 
@@ -77,7 +77,7 @@ const filteredJobsDriftPayload = buildJobsDriftPayload({
 })
 
 const jobsDriftCopyPayload = buildJobsCopyPayload({
-  modelPath: 'packages/extensions/fireux-jobs/src/runtime/models/objects/job.model.ts',
+  modelPath: 'packages/extensions/fireux-jobs/src/runtime/models/job.model.ts',
   itemsKey: 'jobs',
   items: filteredJobsDriftPayload,
   total: computed(() => jobsCollection.value.length),

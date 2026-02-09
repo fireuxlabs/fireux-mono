@@ -13,7 +13,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useCompanyFetch } from '../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
+import { useCompanyFetch } from '../../composables/fireux/firestore/company/fetch/useCompanyFetch'
 
 definePageMeta({
   layout: 'default',

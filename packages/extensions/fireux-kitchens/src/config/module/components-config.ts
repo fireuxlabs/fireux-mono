@@ -11,19 +11,30 @@ export function configureComponents(resolver: Resolver) {
     prefix: 'Dev',
   })
 
-  registerComponentsDir(resolver, './runtime/components/organisms/entities/Kitchen', {
+  registerComponentsDir(resolver, './runtime/components/organisms/Kitchen', {
     global: true,
     pathPrefix: true,
     prefix: 'Kitchen',
   })
+  registerComponentAliases(resolver, './runtime/components/organisms/Kitchen', 'Kitchen', {
+    global: true,
+  })
 
   registerComponentsDir(
     resolver,
-    './runtime/components/organisms/entities/Ingredient',
+    './runtime/components/organisms/Ingredient',
     {
       global: true,
       pathPrefix: true,
       prefix: 'Ingredient',
+    }
+  )
+  registerComponentAliases(
+    resolver,
+    './runtime/components/organisms/Ingredient',
+    'Ingredient',
+    {
+      global: true,
     }
   )
 
@@ -32,16 +43,14 @@ export function configureComponents(resolver: Resolver) {
     pathPrefix: true,
     prefix: 'OrganismsProfilesChef',
   })
-
   registerComponentAliases(
     resolver,
-    './runtime/components/organisms/entities/Kitchen',
-    'Kitchen'
+    './runtime/components/organisms/profiles/Chef',
+    'Chef',
+    {
+      global: true,
+    }
   )
 
-  registerComponentAliases(
-    resolver,
-    './runtime/components/organisms/entities/Ingredient',
-    'Ingredient'
-  )
+  // Aliases removed; rely on component directory registration.
 }

@@ -180,7 +180,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRecipes } from '../../composables/fireux/firestore/objects/recipe/useRecipes'
+import { useRecipes } from '../../composables/fireux/firestore/recipe/useRecipes'
 import { computed, watchEffect } from 'vue'
 
 definePageMeta({

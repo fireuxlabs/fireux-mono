@@ -14,7 +14,7 @@
     </template>
 
     <div v-if="pillItems.length" class="flex flex-wrap gap-2">
-      <OrganismsProfilesChefCardsPill
+      <ProfilesChefCardsPill
         v-for="item in pillItems"
         :key="item.chef.id"
         v-bind="item.card"
@@ -26,22 +26,22 @@
     <div v-if="pillItems.length" class="space-y-4">
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Pill</div>
-        <OrganismsProfilesChefCardsPill v-if="selectedCard" v-bind="selectedCard" />
+        <ProfilesChefCardsPill v-if="selectedCard" v-bind="selectedCard" />
       </div>
 
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Cell</div>
-        <OrganismsProfilesChefCardsCell v-if="selectedCard" v-bind="selectedCard" />
+        <ProfilesChefCardsCell v-if="selectedCard" v-bind="selectedCard" />
       </div>
 
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Preview</div>
-        <OrganismsProfilesChefCardsPreview v-if="selectedCard" v-bind="selectedCard" />
+        <ProfilesChefCardsPreview v-if="selectedCard" v-bind="selectedCard" />
       </div>
 
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Profile</div>
-        <OrganismsProfilesChefCardsProfile v-if="selectedCard" :card="selectedCard" />
+        <ProfilesChefCardsProfile v-if="selectedCard" :card="selectedCard" />
       </div>
     </div>
 
@@ -56,9 +56,9 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { dummyChefSurfaceList } from '../../../../../../../../dummy/chef.dummy'
+import type { ChefCard } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
 import { useChef } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
 import type { ChefCore } from '../../../models/profiles/Chef/Chef.model'
-import type { ChefCard } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
 
 defineOptions({ name: 'DevChefDummy' })
 
@@ -91,10 +91,25 @@ const selectChef = (chef: ChefCore) => {
   selectedId.value = String(chef.id)
 }
 
+type ChefCardUser = Parameters<typeof toCard>[1]
+
+const toUserLike = (
+  user: (typeof dummyChefSurfaceList)[number]['user'] | null | undefined
+): ChefCardUser => {
+  if (!user) return null
+  return {
+    display_name: String((user as any).display_name ?? ''),
+    avatar: String((user as any).avatar ?? ''),
+    id: (user as any).id,
+    handle: (user as any).handle,
+    email: (user as any).email,
+  } as ChefCardUser
+}
+
 const pillItems = computed(() =>
   surfaceChefs.value
     .map((surface) => {
-      const card = toCard(surface.chef as ChefCore, surface.user ?? null)
+      const card = toCard(surface.chef as ChefCore, toUserLike(surface.user))
       if (!card) return null
       return { chef: surface.chef, card }
     })
@@ -104,6 +119,8 @@ const pillItems = computed(() =>
 )
 
 const selectedCard = computed(() =>
-  selectedChef.value ? toCard(selectedChef.value.chef as ChefCore, selectedChef.value.user ?? null) : null
+  selectedChef.value
+    ? toCard(selectedChef.value.chef as ChefCore, toUserLike(selectedChef.value.user))
+    : null
 )
 </script>

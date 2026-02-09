@@ -10,10 +10,6 @@
           icon="i-lucide-qr-code"
           @click="showBusinessCard = true"
         />
-      </template>
-    </UPageHeader>
-    <UPageBody class="pagebody">
-      <div class="mb-4 flex flex-wrap gap-2">
         <UButton
           v-if="professionalProfile && isAdminUser && professionalId"
           icon="i-lucide-shield"
@@ -34,8 +30,9 @@
         >
           Edit
         </UButton>
-      </div>
-
+      </template>
+    </UPageHeader>
+    <UPageBody class="pagebody">
       <div v-if="pending">Loading profile…</div>
 
       <div v-else-if="!professionalProfile">
@@ -57,7 +54,7 @@
       </div>
 
       <div v-else>
-        <OrganismsProfilesProfessionalCardsProfile
+        <ProfilesProfessionalCardsProfile
           v-if="professionalCard"
           :card="professionalCard"
           :profile="professionalProfile"
@@ -77,7 +74,7 @@
     <UModal v-model="showBusinessCard">
       <div class="p-4 space-y-3">
         <div class="text-sm font-semibold">Professional card</div>
-        <OrganismsProfilesProfessionalCardsCell
+        <ProfilesProfessionalCardsCell
           v-if="professionalCard"
           v-bind="professionalCard"
           :link="Boolean(professionalCard.to)"

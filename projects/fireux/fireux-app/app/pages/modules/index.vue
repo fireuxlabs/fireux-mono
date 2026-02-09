@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useProductFetch } from 'fireux-products/runtime/composables/fireux/firestore/objects/product/fetch/useProductFetch'
+import { useProductFetch } from 'fireux-products/runtime/composables/fireux/firestore/product/fetch/useProductFetch'
 
 definePageMeta({
   nav: {

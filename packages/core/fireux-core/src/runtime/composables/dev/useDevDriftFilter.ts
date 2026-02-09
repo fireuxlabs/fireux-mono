@@ -30,7 +30,7 @@ export function useDevDriftFilter<T extends WithOptionalId>(params: {
   const driftKind = ref<DriftKind>('extra')
   const selectedField = ref<string>('')
 
-  const setDriftKind = (kind: DriftKind) => {
+  const setDriftKind = () => {
     driftKind.value = 'extra'
   }
 

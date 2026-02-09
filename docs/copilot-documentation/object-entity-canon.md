@@ -9,10 +9,10 @@ See also:
 ## 1) Canon paths
 
 - **Model (shape-only):**
-  - `src/runtime/models/objects/<thing>.model.ts`
+  - `src/runtime/models/<thing>.model.ts`
 
 - **Composable facade (public entry):**
-  - `src/runtime/composables/fireux/firestore/objects/<thing>/use<Thing>s.ts`
+  - `src/runtime/composables/fireux/firestore/<thing>/use<Thing>s.ts`
 
 ## 2) Canon folder layout (inside each object)
 

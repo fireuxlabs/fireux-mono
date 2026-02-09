@@ -7,7 +7,7 @@ import { useJobCreate } from './mutations/useJobCreate'
 import { useJobUpdate } from './mutations/useJobUpdate'
 import { useJobDelete } from './mutations/useJobDelete'
 
-export type { Job } from '../../../../models/objects/job.model'
+export type { Job } from '../../../../models/job.model'
 
 /**
  * useJob (canon)

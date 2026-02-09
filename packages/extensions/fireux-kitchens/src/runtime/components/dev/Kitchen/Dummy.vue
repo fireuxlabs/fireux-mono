@@ -62,8 +62,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { dummyKitchenHydratedList } from '../../../../../../../../dummy/kitchen.dummy';
-import { useKitchenInterface } from '../../../composables/fireux/firestore/objects/kitchen/utils/view/useKitchenInterface';
-import type { Kitchen } from '../../../models/objects/kitchen.model';
+import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface';
+import type { Kitchen } from '../../../models/kitchen.model';
 
 const emit = defineEmits<{
   (event: 'ready', kitchen: Kitchen): void

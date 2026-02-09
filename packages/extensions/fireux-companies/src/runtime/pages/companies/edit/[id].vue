@@ -1,29 +1,29 @@
 <template>
-  <ClientOnly>
-    <UPage class="page edit-page">
-      <UPageHeader :title="pageTitle" :description="pageSubtitle">
-        <template #ctas>
-          <UButton
-            size="xs"
-            variant="ghost"
-            icon="i-lucide-arrow-left"
-            :to="companyId ? `/companies/${encodeURIComponent(companyId)}` : '/companies'"
-          >
-            Back to details
-          </UButton>
-          <UButton
-            size="xs"
-            variant="ghost"
-            color="neutral"
-            icon="i-lucide-copy"
-            :disabled="!companyId"
-            aria-label="Copy company id"
-            @click="onCopyCompanyId"
-          />
-        </template>
-      </UPageHeader>
+  <UPage class="page edit-page">
+    <UPageHeader :title="pageTitle" :description="pageSubtitle">
+      <template #ctas>
+        <UButton
+          size="xs"
+          variant="ghost"
+          icon="i-lucide-arrow-left"
+          :to="companyId ? `/companies/${encodeURIComponent(companyId)}` : '/companies'"
+        >
+          Back to details
+        </UButton>
+        <UButton
+          size="xs"
+          variant="ghost"
+          color="neutral"
+          icon="i-lucide-copy"
+          :disabled="!companyId"
+          aria-label="Copy company id"
+          @click="onCopyCompanyId"
+        />
+      </template>
+    </UPageHeader>
 
-      <UPageBody class="pagebody">
+    <UPageBody class="pagebody">
+      <ClientOnly>
         <UPageCard v-if="loading" variant="subtle">
           <p class="text-sm text-dimmed">Loading company…</p>
         </UPageCard>
@@ -65,7 +65,7 @@
             </template>
           </UAlert>
 
-          <OrganismsEntitiesPlaceEdit v-if="canEdit" :place="placeObject" />
+          <PlaceEdit v-if="canEdit" :place="placeObject" />
           <UAlert
             v-else
             color="warning"
@@ -74,13 +74,13 @@
             description="Only the claiming user or an admin can edit this place."
           />
         </div>
-      </UPageBody>
-    </UPage>
 
-    <template #fallback>
-      <div class="py-10 text-sm opacity-70">Loading company…</div>
-    </template>
-  </ClientOnly>
+        <template #fallback>
+          <div class="py-10 text-sm opacity-70">Loading company…</div>
+        </template>
+      </ClientOnly>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
@@ -88,10 +88,10 @@ import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { usePlacesInterface } from 'fireux-places/runtime/composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import { usePlacesInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlacesInterface'
 import { computed } from 'vue'
-import { useCompanyFetch } from '../../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
-import type { CompanyView } from '../../../models/objects/company.model'
+import { useCompanyFetch } from '../../../composables/fireux/firestore/company/fetch/useCompanyFetch'
+import type { CompanyView } from '../../../models/company.model'
 
 definePageMeta({
   layout: 'default',

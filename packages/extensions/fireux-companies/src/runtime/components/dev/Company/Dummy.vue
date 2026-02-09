@@ -62,8 +62,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { dummyCompanyHydratedList } from '../../../../../../../../dummy/company.dummy'
-import { useCompanyInterface } from '../../../composables/fireux/firestore/objects/company/utils/view/useCompanyInterface'
-import type { CompanyView } from '../../../models/objects/company.model'
+import { useCompanyInterface } from '../../../composables/fireux/firestore/company/utils/view/useCompanyInterface'
+import type { CompanyView } from '../../../models/company.model'
 
 const { pill, cell, preview, profile } = useCompanyInterface()
 

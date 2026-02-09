@@ -6,47 +6,91 @@
     />
 
     <UPageBody class="pagebody">
-      <DevCompanyDummy />
+      <div class="space-y-4">
+        <UCard>
+          <div class="flex items-center justify-between gap-3">
+            <div class="text-sm font-semibold">Dummy</div>
+            <UButton
+              variant="ghost"
+              size="xs"
+              @click="toggleSection('dummy')"
+            >
+              {{ openSections.dummy ? 'Hide' : 'Show' }}
+            </UButton>
+          </div>
+          <div v-show="openSections.dummy" class="mt-4">
+            <DevCompanyDummy />
+          </div>
+        </UCard>
 
-      <DevModel
-        :title="'Companies · Model'"
-        :model="companyModelRuntime"
-      />
-
-      <UCard>
-        <template #header>
-          <div class="space-y-3">
-            <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-              Companies collection
-            </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400">
-              Filter companies by model drift (extra fields) before browsing records.
-            </p>
-            <DevDriftToolbar
-              :drift-kind="companiesDriftKind"
-              :selected-field="companiesSelectedField"
-              :filter-options="companiesFilterOptions"
-              :copy-label="'Copy drift · Companies'"
-              :copy-payload="companiesDriftCopyPayload"
-              @update:drift-kind="setCompaniesDriftKind"
-              @update:selected-field="updateCompaniesSelectedField"
+        <UCard>
+          <div class="flex items-center justify-between gap-3">
+            <div class="text-sm font-semibold">Model</div>
+            <UButton
+              variant="ghost"
+              size="xs"
+              @click="toggleSection('model')"
+            >
+              {{ openSections.model ? 'Hide' : 'Show' }}
+            </UButton>
+          </div>
+          <div v-show="openSections.model" class="mt-4">
+            <DevModel
+              :title="'Companies · Model'"
+              :model="companyModelRuntime"
             />
           </div>
-        </template>
-      </UCard>
+        </UCard>
 
-      <CompanyCollectionManager :collection="filteredCompaniesResolved" />
+        <UCard>
+          <div class="flex items-center justify-between gap-3">
+            <div class="text-sm font-semibold">Collection</div>
+            <UButton
+              variant="ghost"
+              size="xs"
+              @click="toggleSection('collection')"
+            >
+              {{ openSections.collection ? 'Hide' : 'Show' }}
+            </UButton>
+          </div>
+          <div v-show="openSections.collection" class="mt-4">
+            <UCard>
+              <template #header>
+                <div class="space-y-3">
+                  <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                    Companies collection
+                  </p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                    Filter companies by model drift (extra fields) before browsing records.
+                  </p>
+                  <DevDriftToolbar
+                    :drift-kind="companiesDriftKind"
+                    :selected-field="companiesSelectedField"
+                    :filter-options="companiesFilterOptions"
+                    :copy-label="'Copy drift · Companies'"
+                    :copy-payload="companiesDriftCopyPayload"
+                    @update:drift-kind="setCompaniesDriftKind"
+                    @update:selected-field="updateCompaniesSelectedField"
+                  />
+                </div>
+              </template>
+            </UCard>
+
+            <CompanyCollectionManager :collection="filteredCompaniesResolved" />
+          </div>
+        </UCard>
+      </div>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
-import { computed } from 'vue'
-import { useCompanyFetch } from '../../composables/fireux/firestore/objects/company/fetch/useCompanyFetch'
-import { useCompanies } from '../../composables/fireux/firestore/objects/company/useCompanies'
-import type { Company, CompanyView } from '../../models/objects/company.model'
-import { Company as CompanyModelRuntime } from '../../models/objects/company.model'
+import { computed, reactive } from 'vue'
+import { useCompanyFetch } from '../../composables/fireux/firestore/company/fetch/useCompanyFetch'
+import { useCompanies } from '../../composables/fireux/firestore/company/useCompanies'
+import type { Company, CompanyView } from '../../models/company.model'
+import { Company as CompanyModelRuntime } from '../../models/company.model'
 
 definePageMeta({
   layout: 'dev',
@@ -59,6 +103,16 @@ definePageMeta({
     layouts: ['dev'],
   },
 })
+
+const openSections = reactive({
+  dummy: false,
+  model: false,
+  collection: false,
+})
+
+const toggleSection = (key: keyof typeof openSections) => {
+  openSections[key] = !openSections[key]
+}
 
 const companyModelRuntime = CompanyModelRuntime
 
@@ -107,7 +161,7 @@ const filteredCompaniesDriftPayload = computed(() =>
 )
 
 const companiesDriftCopyPayload = computed(() => ({
-  modelPath: 'packages/extensions/fireux-companies/src/runtime/models/objects/company.model.ts',
+  modelPath: 'packages/extensions/fireux-companies/src/runtime/models/company.model.ts',
   driftKind: companiesDriftKind.value,
   selectedField: companiesSelectedField.value || null,
   totalCompanies: filteredCompanies.value.length,

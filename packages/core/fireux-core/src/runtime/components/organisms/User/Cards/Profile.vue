@@ -1,7 +1,7 @@
 <template>
   <UCard class="profile">
     <template #header>
-      <OrganismsUserCardsCell
+      <UserCardsCell
         :avatar-url="avatarUrl"
         :display-name="displayName"
         :handle="handle"
@@ -67,7 +67,7 @@
       </section>
     </div>
     <template #footer>
-      <OrganismsUserCardsPill
+      <UserCardsPill
         :avatar-url="avatarUrl"
         :display-name="displayName"
         :handle="handle"

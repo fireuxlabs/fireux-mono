@@ -1,16 +1,56 @@
 import { useRoute, useRuntimeConfig } from '#imports'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { computed } from 'vue'
-import type { Kitchen } from '../../../models/objects/kitchen.model'
-import { useKitchenFetch } from '../firestore/objects/kitchen/fetch/useKitchenFetch'
+import type { Kitchen } from '../../../models/kitchen.model'
+import { useKitchenFetch } from '../firestore/kitchen/fetch/useKitchenFetch'
 
 type KitchenDashboardStatus = 'ready' | 'needs_configuration' | 'empty'
 
 export function useKitchenDashboardSelection() {
   const route = useRoute()
   const runtimeConfig = useRuntimeConfig()
-  const { user, myKitchenIds, hasTestKitchen } = useUser()
+  const { user, coreUser, appUser } = useUser()
   const { kitchens } = useKitchenFetch()
+  const { kitchens: testKitchens } = useKitchenFetch({ collectionPath: 'test-kitchens' })
+
+  const normalizeIds = (value: unknown): string[] =>
+    Array.isArray(value)
+      ? value
+          .map((item) => String(item || '').trim())
+          .filter(Boolean)
+      : []
+
+  const myKitchenIds = computed<string[]>(() => {
+    const sources = [
+      user.value as Record<string, unknown> | null,
+      coreUser.value as Record<string, unknown> | null,
+      appUser.value as Record<string, unknown> | null,
+    ].filter(Boolean) as Record<string, unknown>[]
+
+    const resolved = sources.flatMap((rawUser) => [
+      ...normalizeIds(rawUser.myKitchenIds),
+      ...normalizeIds(rawUser.kitchenIds),
+      ...normalizeIds(rawUser.kitchen_ids),
+      ...normalizeIds(rawUser.kitchens),
+    ])
+
+    return Array.from(new Set(resolved))
+  })
+
+  const hasTestKitchenFromUser = computed(() => {
+    const sources = [
+      user.value as Record<string, unknown> | null,
+      coreUser.value as Record<string, unknown> | null,
+      appUser.value as Record<string, unknown> | null,
+    ].filter(Boolean) as Record<string, unknown>[]
+
+    return sources.some((rawUser) => {
+      const raw = rawUser.hasTestKitchen ?? rawUser.has_test_kitchen
+      if (typeof raw === 'boolean') return raw
+      if (typeof raw === 'string') return raw === 'true'
+      return false
+    })
+  })
 
   const configuredKitchenId = computed(() => {
     const cfg = (runtimeConfig.public as any)?.fireux?.kitchens ?? {}
@@ -35,6 +75,18 @@ export function useKitchenDashboardSelection() {
     return String(user.value?.id || '').trim()
   })
   const hasResolvedTestKitchen = computed(() => Boolean(testKitchenId.value))
+
+  const hasTestKitchenFromCollection = computed(() => {
+    const id = String(user.value?.id || '').trim()
+    if (!id) return false
+    return (testKitchens.value ?? []).some(
+      (kitchen) => String(kitchen.id || '').trim() === id
+    )
+  })
+
+  const hasTestKitchen = computed(
+    () => hasTestKitchenFromUser.value || hasTestKitchenFromCollection.value
+  )
 
   const preferredKitchenIds = computed(() =>
     myKitchenIdsInCollection.value.length

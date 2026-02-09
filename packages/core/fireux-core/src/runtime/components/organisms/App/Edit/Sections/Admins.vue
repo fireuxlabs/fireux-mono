@@ -16,7 +16,7 @@
           :key="admin.id"
           class="flex items-center justify-between gap-3"
         >
-          <OrganismsUserCardsPill
+          <UserCardsPill
             v-bind="pillFor(admin)"
             :link="Boolean(pillFor(admin).to)"
             class="min-w-0"
