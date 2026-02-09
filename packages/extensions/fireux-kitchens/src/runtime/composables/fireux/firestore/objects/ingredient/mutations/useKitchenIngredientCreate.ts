@@ -24,7 +24,7 @@ type KitchenIngredientCreateDraft = Partial<
   Partial<
     Pick<
       IngredientCreateInput,
-      'name' | 'description' | 'sku' | 'unit' | 'supplier_id' | 'supplier_name'
+      'name' | 'description' | 'category' | 'unit'
     >
   > & {
     allergens?: string[]
@@ -95,11 +95,10 @@ const buildGlobalIngredientPayload = (
   id: ingredientId,
   name: String(draft.name || '').trim(),
   description: String(draft.description || '').trim(),
-  sku: String(draft.sku || '').trim(),
+  category: String(draft.category || '').trim(),
+  image_url: String(draft.image_url || '').trim(),
   unit: resolveUnit(draft.unit),
   status: resolveIngredientStatus('active'),
-  supplier_id: String(draft.supplier_id || '').trim(),
-  supplier_name: String(draft.supplier_name || '').trim(),
   allergens: toStringArray(draft.allergens),
   tags: toStringArray(draft.tags),
 })
@@ -113,6 +112,8 @@ const buildKitchenIngredientPayload = (
   id: ingredientId,
   kitchen_id: kitchenId,
   ingredient_id: ingredientId,
+  supplier_id: String(draft.supplier_id || '').trim(),
+  supplier_name: String(draft.supplier_name || '').trim(),
   status: resolveKitchenStatus(draft.status),
   on_hand_qty: toNonNegativeNumber(draft.on_hand_qty),
   par_qty: toNonNegativeNumber(draft.par_qty),

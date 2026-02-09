@@ -21,10 +21,14 @@
             :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
             @click="toggleVariant"
           />
-          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+          <UBadge variant="soft">{{ visibleCount }} / {{ visibleTotalCount }}</UBadge>
         </div>
       </div>
     </template>
+
+    <p v-if="hiddenTestKitchenCount > 0" class="mb-2 text-xs text-dimmed">
+      Hidden {{ hiddenTestKitchenCount }} test kitchen{{ hiddenTestKitchenCount === 1 ? '' : 's' }}.
+    </p>
 
     <OrganismsEntitiesKitchenCollectionList
       v-if="cardsFiltered.length"
@@ -51,7 +55,7 @@
       <DevJson
         :title="'Kitchens (JSON)'"
         context="Kitchens collection manager · kitchens list · runtime-resolved"
-        :data="collection"
+        :data="visibleCollection"
         :default-open="false"
       />
     </div>
@@ -69,6 +73,25 @@ const props = defineProps<{ collection?: Kitchen[] }>()
 const { appName } = useFireUXConfig()
 
 const collection = computed(() => props.collection ?? [])
+const isTestKitchen = (kitchen: Kitchen) => {
+  if ((kitchen as any)?.is_test_kitchen === true) return true
+
+  const tags = Array.isArray((kitchen as any)?.tags)
+    ? (kitchen as any).tags.map((tag: unknown) => String(tag || '').trim().toLowerCase())
+    : []
+  if (tags.includes('test-kitchen')) return true
+
+  const name = String((kitchen as any)?.name || '').trim().toLowerCase()
+  const shortName = String((kitchen as any)?.short_name || '').trim().toLowerCase()
+  return name === 'test kitchen' || shortName === 'test kitchen'
+}
+const visibleCollection = computed(() =>
+  collection.value.filter((kitchen) => !isTestKitchen(kitchen))
+)
+const hiddenTestKitchenCount = computed(
+  () => collection.value.length - visibleCollection.value.length
+)
+
 const { card: makeCard, searchText } = useKitchenInterface()
 
 const {
@@ -78,10 +101,10 @@ const {
   cards: cardsFiltered,
   visibleCount,
 } = useCollectionSearch<Kitchen, ReturnType<typeof makeCard>>({
-  items: collection,
+  items: visibleCollection,
   searchText: (kitchen: Kitchen) => searchText(kitchen),
   makeCard: (kitchen: Kitchen) => makeCard(kitchen),
 })
-const totalCount = computed(() => collection.value.length)
+const visibleTotalCount = computed(() => visibleCollection.value.length)
 const isDev = import.meta.dev
 </script>

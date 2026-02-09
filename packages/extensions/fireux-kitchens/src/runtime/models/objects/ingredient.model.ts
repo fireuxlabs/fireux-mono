@@ -29,22 +29,12 @@ export const Ingredient = {
 
   name: '' as string,
   description: '' as string,
-  sku: '' as string,
+  category: '' as string,
+  image_url: '' as string,
   unit: 'piece' as IngredientUnit,
   status: 'active' as IngredientStatus,
 
-  // Inventory
-  on_hand_qty: 0 as number,
-  par_qty: 0 as number,
-  reorder_qty: 0 as number,
-  storage_location: '' as string,
-
-  // Procurement + cost
-  supplier_id: '' as string,
-  supplier_name: '' as string,
-  cost_per_unit: 0 as number,
-  currency: 'CHF' as string,
-
+  // Ingredient identity metadata.
   allergens: [] as string[],
   tags: [] as string[],
 
@@ -74,6 +64,8 @@ export const KitchenIngredient = {
   id: '' as string,
   kitchen_id: '' as string,
   ingredient_id: '' as string,
+  supplier_id: '' as string,
+  supplier_name: '' as string,
   supplier_product_id: '' as string,
   variety_note: '' as string,
   status: 'active' as KitchenIngredientStatus,
@@ -118,10 +110,8 @@ export type KitchenIngredientResolved = KitchenIngredient &
       Ingredient,
       | 'name'
       | 'description'
-      | 'sku'
+      | 'category'
       | 'unit'
-      | 'supplier_id'
-      | 'supplier_name'
       | 'allergens'
       | 'tags'
     >

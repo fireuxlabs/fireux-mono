@@ -55,14 +55,6 @@ const toStringArray = (value: unknown) =>
     )
   )
 
-const toSafeNumber = (value: unknown, fallback = 0) => {
-  const n = Number(value)
-  return Number.isFinite(n) ? n : fallback
-}
-
-const toNonNegativeNumber = (value: unknown, fallback = 0) =>
-  Math.max(0, toSafeNumber(value, fallback))
-
 const buildIngredientPayload = (
   ingredientId: string,
   draft: IngredientCreateDraft
@@ -71,17 +63,10 @@ const buildIngredientPayload = (
   id: ingredientId,
   name: String(draft.name || '').trim(),
   description: String(draft.description || '').trim(),
-  sku: String(draft.sku || '').trim(),
+  category: String(draft.category || '').trim(),
+  image_url: String(draft.image_url || '').trim(),
   unit: resolveUnit(draft.unit),
   status: resolveIngredientStatus(draft.status),
-  on_hand_qty: toNonNegativeNumber(draft.on_hand_qty),
-  par_qty: toNonNegativeNumber(draft.par_qty),
-  reorder_qty: toNonNegativeNumber(draft.reorder_qty),
-  storage_location: String(draft.storage_location || '').trim(),
-  supplier_id: String(draft.supplier_id || '').trim(),
-  supplier_name: String(draft.supplier_name || '').trim(),
-  cost_per_unit: toNonNegativeNumber(draft.cost_per_unit),
-  currency: String(draft.currency || 'CHF').trim().toUpperCase() || 'CHF',
   allergens: toStringArray(draft.allergens),
   tags: toStringArray(draft.tags),
 })

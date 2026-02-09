@@ -13,7 +13,7 @@
 */
 
 import { applicationDefault, cert, initializeApp } from 'firebase-admin/app'
-import { FieldPath, FieldValue, getFirestore } from 'firebase-admin/firestore'
+import { FieldPath, FieldValue, Timestamp, getFirestore } from 'firebase-admin/firestore'
 import { readFile } from 'node:fs/promises'
 import { parseArgs } from './_lib/args.mjs'
 
@@ -48,6 +48,8 @@ if (help) {
   console.log('  - places-backfill-short-address')
   console.log('  - places-backfill-short-name')
   console.log('  - places-backfill-place-type')
+  console.log('  - ingredients-canonical-shape')
+  console.log('  - ingredients-assign-images')
   console.log('  - apply-drift-payload')
   console.log('\nAuth (one required):')
   console.log('  - GOOGLE_APPLICATION_CREDENTIALS (path to JSON)')
@@ -698,6 +700,339 @@ async function runPlacesMigrateImageUrl() {
   })
 }
 
+const INGREDIENT_UNITS = new Set([
+  'g',
+  'kg',
+  'ml',
+  'l',
+  'piece',
+  'pack',
+  'tray',
+  'case',
+])
+
+const INGREDIENT_STATUSES = new Set(['active', 'archived'])
+
+function toSafeNumber(value, fallback = 0) {
+  const n = Number(value)
+  return Number.isFinite(n) ? n : fallback
+}
+
+function toNonNegativeNumber(value, fallback = 0) {
+  return Math.max(0, toSafeNumber(value, fallback))
+}
+
+function toStringArray(value) {
+  return Array.from(
+    new Set(
+      (Array.isArray(value) ? value : [])
+        .map((item) => asString(item, '').trim())
+        .filter(Boolean)
+    )
+  )
+}
+
+function resolveTimestamp(value) {
+  if (!value) return null
+
+  if (value instanceof Timestamp) return value
+
+  if (typeof value?.toDate === 'function') {
+    const date = value.toDate()
+    if (date instanceof Date && Number.isFinite(date.getTime())) {
+      return Timestamp.fromDate(date)
+    }
+  }
+
+  if (value instanceof Date && Number.isFinite(value.getTime())) {
+    return Timestamp.fromDate(value)
+  }
+
+  if (typeof value === 'string') {
+    const parsed = new Date(value)
+    if (Number.isFinite(parsed.getTime())) {
+      return Timestamp.fromDate(parsed)
+    }
+    return null
+  }
+
+  if (typeof value === 'object') {
+    const seconds = Number(value.seconds)
+    const nanoseconds = Number(value.nanoseconds ?? 0)
+    if (Number.isFinite(seconds) && Number.isFinite(nanoseconds)) {
+      return new Timestamp(seconds, nanoseconds)
+    }
+  }
+
+  return null
+}
+
+function timestampToMillis(value) {
+  const ts = resolveTimestamp(value)
+  return ts ? ts.toMillis() : null
+}
+
+function valuesEqual(a, b) {
+  const aMillis = timestampToMillis(a)
+  const bMillis = timestampToMillis(b)
+  if (aMillis != null || bMillis != null) {
+    return aMillis === bMillis
+  }
+
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return false
+    for (let i = 0; i < a.length; i += 1) {
+      if (!valuesEqual(a[i], b[i])) return false
+    }
+    return true
+  }
+
+  return JSON.stringify(a) === JSON.stringify(b)
+}
+
+function resolveIngredientUnit(value) {
+  const normalized = asString(value, '').trim().toLowerCase()
+  return INGREDIENT_UNITS.has(normalized) ? normalized : 'piece'
+}
+
+function resolveIngredientStatus(value) {
+  const normalized = asString(value, '').trim().toLowerCase()
+  return INGREDIENT_STATUSES.has(normalized) ? normalized : 'active'
+}
+
+function resolveCreatorId(data) {
+  const creatorId = asString(data.creator_id, '').trim()
+  if (creatorId) return creatorId
+
+  const createdBy = data.created_by
+  if (typeof createdBy === 'string') return createdBy.trim()
+
+  if (createdBy && typeof createdBy === 'object') {
+    return asString(createdBy.id, '').trim()
+  }
+
+  return ''
+}
+
+function buildCanonicalIngredient(docId, data) {
+  const category = asString(data.category, '').trim()
+  const tags = toStringArray(data.tags)
+  if (category && !tags.includes(category)) tags.push(category)
+
+  const createdAt =
+    resolveTimestamp(data.created_at) ??
+    resolveTimestamp(data.createdAt) ??
+    resolveTimestamp(data.updated_at) ??
+    resolveTimestamp(data.updatedAt) ??
+    Timestamp.now()
+
+  const updatedAt =
+    resolveTimestamp(data.updated_at) ??
+    resolveTimestamp(data.updatedAt) ??
+    createdAt
+
+  const appId =
+    asString(data.app_id, '').trim() ||
+    asString(data.appId, '').trim() ||
+    asString(targetAppId, '').trim()
+
+  return {
+    id: docId,
+    name: asString(data.name, '').trim(),
+    description: asString(data.description, '').trim(),
+    category,
+    image_url: asString(data.image_url ?? data.imageUrl, '').trim(),
+    unit: resolveIngredientUnit(data.unit),
+    status: resolveIngredientStatus(data.status),
+    allergens: toStringArray(data.allergens),
+    tags,
+    app_id: appId,
+    creator_id: resolveCreatorId(data),
+    created_at: createdAt,
+    updated_at: updatedAt,
+  }
+}
+
+function needsIngredientRewrite(data, canonical) {
+  const canonicalKeys = Object.keys(canonical)
+  const dataKeys = Object.keys(data || {})
+
+  for (const key of canonicalKeys) {
+    if (!valuesEqual(data?.[key], canonical[key])) return true
+  }
+
+  for (const key of dataKeys) {
+    if (!canonicalKeys.includes(key)) return true
+  }
+
+  return false
+}
+
+async function runIngredientsCanonicalShape() {
+  console.log('[migrate] ingredients-canonical-shape start', {
+    projectId,
+    commit,
+    pageSize,
+    limit,
+    app: targetAppId,
+  })
+
+  let processed = 0
+  let updated = 0
+  let skipped = 0
+  let lastDoc = null
+
+  while (true) {
+    if (limit && processed >= limit) break
+
+    let q = db.collection('ingredients').orderBy(FieldPath.documentId()).limit(pageSize)
+    if (lastDoc) q = q.startAfter(lastDoc)
+
+    const snap = await q.get()
+    if (snap.empty) break
+
+    let batch = db.batch()
+    let batchOps = 0
+
+    for (const docSnap of snap.docs) {
+      if (limit && processed >= limit) break
+
+      processed += 1
+      const data = docSnap.data() || {}
+      const canonical = buildCanonicalIngredient(docSnap.id, data)
+
+      if (!needsIngredientRewrite(data, canonical)) {
+        skipped += 1
+        continue
+      }
+
+      updated += 1
+
+      if (commit) {
+        batch.set(docSnap.ref, canonical)
+        batchOps += 1
+      } else {
+        console.log('[dry-run]', docSnap.ref.path, canonical)
+      }
+
+      if (commit && batchOps >= 400) {
+        await batch.commit()
+        batch = db.batch()
+        batchOps = 0
+      }
+    }
+
+    if (commit && batchOps > 0) {
+      await batch.commit()
+    }
+
+    lastDoc = snap.docs[snap.docs.length - 1]
+  }
+
+  console.log('[migrate] ingredients-canonical-shape done', {
+    processed,
+    updated,
+    skipped,
+    commit,
+  })
+}
+
+const INGREDIENT_IMAGE_BY_ID = {
+  '3COhy9KZU5yelq08HvZx':
+    'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2F3COhy9KZU5yelq08HvZx%2Fimage_url.jpg?alt=media&token=6894fdc7-edc3-42b6-8591-c369d7674b4d',
+  EZQU6kv6cnnVg20lqQpo:
+    'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2FEZQU6kv6cnnVg20lqQpo%2Fimage_url.jpg?alt=media&token=390ad7f2-29fd-40f5-97e5-61381fd03efc',
+  Pp2zGemsNhi6zW58fOFj:
+    'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2FPp2zGemsNhi6zW58fOFj%2Fimage_url.jpg?alt=media&token=a99945fd-dddf-48b7-b984-67ac6fa34935',
+  YQ9Oi5Jd9IclhElHvVYX:
+    'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2FYQ9Oi5Jd9IclhElHvVYX%2Fimage_url.jpg?alt=media&token=79e32ec5-ef13-4482-92cf-eb51d27b7d77',
+  YiEySWR2eEsadcoYsCLz:
+    'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2FYiEySWR2eEsadcoYsCLz%2Fimage_url.jpg?alt=media&token=d477f897-539d-4c0b-8abf-a90700531c34',
+  cc2xKU4FbCeZm5mv0pWW:
+    'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2Fcc2xKU4FbCeZm5mv0pWW%2Fimage_url.jpg?alt=media&token=4ba9aea0-75b2-4c1a-b798-2360f64f7e16',
+  ing_mea20g6t_ys9m8:
+    'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=1200',
+  oAjH2J6d7AWdGOtEcfmk:
+    'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2FoAjH2J6d7AWdGOtEcfmk%2Fimage_url.jpg?alt=media&token=5fd4decd-57c7-4ce8-86ef-682f2d7b972f',
+  rxRjlOJYXR9Z0q7Nq31W:
+    'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2FrxRjlOJYXR9Z0q7Nq31W%2Fimage_url.jpg?alt=media&token=3ced6edd-79d7-4653-81a2-a4c07e83352a',
+  tz9pN7sTBVeOIMtnHgp1:
+    'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2Ftz9pN7sTBVeOIMtnHgp1%2Fimage_url.jpg?alt=media&token=e827c480-e2c0-4a8e-92c0-0136ae5e93da',
+  wZ6yS0vxqOTnkdFenM3W:
+    'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2FwZ6yS0vxqOTnkdFenM3W%2Fimage_url.jpg?alt=media&token=49696907-ca51-42b8-8e5d-0bcdd5119794',
+}
+
+async function runIngredientsAssignImages() {
+  console.log('[migrate] ingredients-assign-images start', {
+    projectId,
+    commit,
+    app: targetAppId,
+    count: Object.keys(INGREDIENT_IMAGE_BY_ID).length,
+  })
+
+  let processed = 0
+  let updated = 0
+  let skipped = 0
+  let missing = 0
+
+  let batch = db.batch()
+  let batchOps = 0
+
+  for (const [ingredientId, imageUrlRaw] of Object.entries(INGREDIENT_IMAGE_BY_ID)) {
+    processed += 1
+
+    const imageUrl = asString(imageUrlRaw, '').trim()
+    if (!imageUrl) {
+      skipped += 1
+      continue
+    }
+
+    const ref = db.collection('ingredients').doc(ingredientId)
+    const snap = await ref.get()
+    if (!snap.exists) {
+      missing += 1
+      continue
+    }
+
+    const current = asString(snap.get('image_url'), '').trim()
+    if (current === imageUrl) {
+      skipped += 1
+      continue
+    }
+
+    updated += 1
+    const patch = {
+      image_url: imageUrl,
+      updated_at: Timestamp.now(),
+    }
+
+    if (commit) {
+      batch.update(ref, patch)
+      batchOps += 1
+    } else {
+      console.log('[dry-run]', ref.path, patch)
+    }
+
+    if (commit && batchOps >= 400) {
+      await batch.commit()
+      batch = db.batch()
+      batchOps = 0
+    }
+  }
+
+  if (commit && batchOps > 0) {
+    await batch.commit()
+  }
+
+  console.log('[migrate] ingredients-assign-images done', {
+    processed,
+    updated,
+    skipped,
+    missing,
+    commit,
+  })
+}
+
 async function readPayloadInput() {
   if (payloadFile) {
     return JSON.parse(await readFile(payloadFile, 'utf8'))
@@ -1018,6 +1353,8 @@ const recipes = {
   'places-backfill-short-address': runPlacesBackfillShortAddress,
   'places-backfill-short-name': runPlacesBackfillShortName,
   'places-backfill-place-type': runPlacesBackfillPlaceType,
+  'ingredients-canonical-shape': runIngredientsCanonicalShape,
+  'ingredients-assign-images': runIngredientsAssignImages,
   'apply-drift-payload': runApplyDriftPayload,
 }
 

@@ -8,6 +8,6 @@ export default defineNuxtConfig(
     name: 'Cleanbox',
     shortName: 'Cleanbox',
     role: 'global',
-    modules: ['fireux-products', 'fireux-blogs'],
+    modules: ['fireux-jobs', 'fireux-products', 'fireux-blogs'],
   })
 )

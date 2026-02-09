@@ -2,7 +2,10 @@ import type { IngredientUnit } from '../../../../../../models/objects/ingredient
 
 export type KitchenIngredientCreateForm = {
   name: string
+  category: string
+  description: string
   unit: IngredientUnit
+  supplier_id: string
   on_hand_qty: number
   par_qty: number
   reorder_qty: number
@@ -25,7 +28,10 @@ export const ingredientUnitOptions = [
 
 export const createDefaultKitchenIngredientForm = (): KitchenIngredientCreateForm => ({
   name: '',
+  category: '',
+  description: '',
   unit: 'piece',
+  supplier_id: '',
   on_hand_qty: 0,
   par_qty: 0,
   reorder_qty: 0,

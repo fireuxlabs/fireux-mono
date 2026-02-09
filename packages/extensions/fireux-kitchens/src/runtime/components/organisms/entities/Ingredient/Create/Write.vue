@@ -12,27 +12,11 @@
       <USelect v-model="form.unit" :options="ingredientUnitOptions" />
     </UFormField>
 
-    <UFormField label="Supplier">
+    <UFormField label="Category">
       <UInput
-        v-model="form.supplier_name"
-        placeholder="e.g. Metro"
-        icon="i-lucide-truck"
-      />
-    </UFormField>
-
-    <UInputNumber
-      v-model="form.cost_per_unit"
-      label="Cost per unit"
-      placeholder="0.00"
-      :min="0"
-      :step="0.01"
-    />
-
-    <UFormField label="SKU">
-      <UInput
-        v-model="form.sku"
-        placeholder="e.g. OIL-001"
-        icon="i-lucide-barcode"
+        v-model="form.category"
+        placeholder="e.g. Produce"
+        icon="i-lucide-tag"
       />
     </UFormField>
 

@@ -15,13 +15,13 @@
         v-html="paragraph"
       ></p>
 
-      <div v-if="badges?.length" class="flex items-center gap-6 pt-2">
+      <div v-if="badges?.length" class="flex flex-col items-start gap-3 pt-2">
         <img
           v-for="badge in badges"
           :key="badge.alt"
           :src="badge.src"
           :alt="badge.alt"
-          class="h-10 opacity-80"
+          :class="badgeImageClass(badge)"
         />
       </div>
 
@@ -76,6 +76,14 @@ export interface LandingHeroProps {
 }
 
 const props = defineProps<LandingHeroProps>()
+
+const badgeImageClass = (badge: { src: string; alt: string }) => {
+  const badgeId = `${badge.alt} ${badge.src}`.toLowerCase()
+  const isLogo = badgeId.includes('logo') || badgeId.includes('emblem')
+  return isLogo
+    ? 'h-14 w-14 rounded-full object-cover opacity-90'
+    : 'h-10 w-auto opacity-80'
+}
 
 const titleText = computed(() => {
   if (props.title) return props.title

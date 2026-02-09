@@ -21,6 +21,13 @@
 
           <div class="mt-4 flex flex-wrap gap-2">
             <UButton
+              :to="menuRoute"
+              label="Menus"
+              color="primary"
+              icon="i-lucide-book-open-check"
+              size="sm"
+            />
+            <UButton
               to="/ingredients"
               label="Ingredients"
               color="neutral"
@@ -43,6 +50,20 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useKitchenDashboardSelection } from '../../../composables/fireux/app/useKitchenDashboardSelection'
+
+const { runtimeKitchenId } = useKitchenDashboardSelection()
+
+const menuRoute = computed(() =>
+  runtimeKitchenId.value
+    ? {
+        path: '/dashboard/kitchen/menu',
+        query: { kitchenId: runtimeKitchenId.value },
+      }
+    : '/dashboard/kitchen/menu'
+)
+
 definePageMeta({
   layout: 'kitchen-dashboard',
   nav: {

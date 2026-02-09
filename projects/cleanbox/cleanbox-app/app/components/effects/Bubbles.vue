@@ -39,12 +39,14 @@ onBeforeUnmount(() => {
   border-radius: 50%;
   background: radial-gradient(
     circle at 35% 35%,
-    rgba(34, 197, 94, 0.24) 0%,
-    rgba(34, 197, 94, 0.18) 32%,
-    rgba(34, 197, 94, 0.08) 68%,
+    rgba(255, 255, 255, 0.36) 0%,
+    rgba(255, 255, 255, 0.24) 28%,
+    rgba(96, 165, 250, 0.2) 54%,
+    rgba(59, 130, 246, 0.1) 74%,
     transparent 100%
   );
-  border: 1px solid rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 0 18px rgba(147, 197, 253, 0.16);
   transform-origin: center;
   animation: bubble-rise var(--bubble-rise, 22s) linear infinite,
     bubble-pulse var(--bubble-pulse, 6s) ease-in-out infinite alternate;

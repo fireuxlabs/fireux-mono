@@ -11,14 +11,6 @@
           >
             Back
           </UButton>
-          <UButton
-            size="xs"
-            color="primary"
-            icon="i-lucide-carrot"
-            :to="ingredientsTo"
-          >
-            Open Ingredients
-          </UButton>
         </template>
       </UPageHeader>
 
@@ -43,24 +35,7 @@
 
           <UCard>
             <template #header>
-              <div class="text-sm font-semibold">Ingredients</div>
-            </template>
-            <div class="space-y-2 text-sm text-dimmed">
-              <p>Manage ingredient inventory for this kitchen.</p>
-              <UButton
-                size="xs"
-                variant="soft"
-                color="primary"
-                :to="ingredientsTo"
-              >
-                Open Ingredients
-              </UButton>
-            </div>
-          </UCard>
-
-          <UCard>
-            <template #header>
-              <div class="text-sm font-semibold">Location</div>
+              <div class="text-sm font-semibold">Details</div>
             </template>
 
             <div class="space-y-2 text-sm">
@@ -86,13 +61,6 @@
                 </UButton>
               </div>
             </div>
-          </UCard>
-
-          <UCard>
-            <template #header>
-              <div class="text-sm font-semibold">Active jobs</div>
-            </template>
-            <p class="text-sm text-dimmed">No active jobs listed yet.</p>
           </UCard>
         </div>
       </UPageBody>
@@ -125,15 +93,6 @@ const route = useRoute()
 const raw = route.params.id
 const docId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
-const ingredientsTo = computed(() =>
-  docId
-    ? {
-        path: '/ingredients',
-        query: { kitchenId: docId },
-      }
-    : '/ingredients'
-)
-
 const { kitchen: fetchKitchen } = useKitchenFetch()
 const rawDoc = docId ? await fetchKitchen(docId) : null
 
@@ -158,6 +117,10 @@ const details = computed(() => {
     {
       label: 'Address',
       value: formatValue(v.formatted_address || v.short_address),
+    },
+    {
+      label: 'Source',
+      value: formatValue((v as any).source),
     },
   ]
 

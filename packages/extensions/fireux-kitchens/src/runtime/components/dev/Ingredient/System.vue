@@ -1,5 +1,7 @@
 <template>
   <section class="space-y-10">
+    <DevIngredientDummy />
+
     <UCard>
       <DevModel
         :title="'Ingredients · Model'"
@@ -11,9 +13,12 @@
       <template #header>
         <div class="flex items-start justify-between gap-3">
           <div class="space-y-3">
-            <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-              Ingredients collection
-            </p>
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                Ingredients collection
+              </p>
+              <UBadge variant="soft">{{ visibleIngredients }} / {{ totalIngredients }}</UBadge>
+            </div>
             <p class="text-xs text-gray-500 dark:text-gray-400">
               Browse ingredients resolved for this runtime and filter by model drift.
             </p>
@@ -38,6 +43,8 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
+import DevIngredientDummy from './Dummy.vue'
+import IngredientCollectionManager from '../../organisms/entities/Ingredient/Collection/Manager.vue'
 import { useIngredientFetch } from '../../../composables/fireux/firestore/objects/ingredient/fetch/useIngredientFetch'
 import {
   Ingredient as IngredientModelRuntime,
@@ -64,18 +71,23 @@ const {
   collection: ingredientsCollection,
   runtimeModel: ingredientModelRuntime,
   driftMode: 'extras-only',
-  requiredPaths: ['name', 'unit'],
 })
 
 const filteredDriftPayload = buildDriftPayload({
   map: ({ doc, id, drift }) => ({
     id,
     name: doc.name,
+    category: (doc as any).category ?? '',
     unit: doc.unit,
-    supplier: doc.supplier_name,
-    drift,
+    status: doc.status,
+    drift: {
+      extra: drift.extra,
+    },
   }),
 })
+
+const totalIngredients = computed(() => ingredientsCollection.value.length)
+const visibleIngredients = computed(() => filteredCollection.value.length)
 
 const driftCopyPayload = buildCopyPayload({
   modelPath: 'packages/extensions/fireux-kitchens/src/runtime/models/objects/ingredient.model.ts',

@@ -55,8 +55,8 @@ useSeoMeta({
 })
 
 const hero = {
-  title: 'Bling with',
-  accent: 'Operational Clarity',
+  title: 'Bring your bling',
+  accent: 'to your operations',
   paragraph:
     'Coordinate crews, quality checks, and billing from one dashboard. Cleanbox keeps every service <span class="text-primary">scheduled</span>, <span class="text-primary">verified</span>, and <span class="text-primary">client-ready</span>.',
   badges: [

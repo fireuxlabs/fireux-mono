@@ -8,6 +8,22 @@
       />
     </UFormField>
 
+    <UFormField label="Category">
+      <UInput
+        v-model="form.category"
+        placeholder="e.g. Produce"
+        icon="i-lucide-tag"
+      />
+    </UFormField>
+
+    <UFormField label="Description">
+      <UTextarea
+        v-model="form.description"
+        :rows="2"
+        placeholder="Optional notes for this ingredient"
+      />
+    </UFormField>
+
     <UFormField label="Unit" required>
       <USelect v-model="form.unit" :options="ingredientUnitOptions" />
     </UFormField>
@@ -49,6 +65,14 @@
       />
     </UFormField>
 
+    <UFormField label="Supplier ID">
+      <UInput
+        v-model="form.supplier_id"
+        placeholder="Optional supplier reference id"
+        icon="i-lucide-fingerprint"
+      />
+    </UFormField>
+
     <UInputNumber
       v-model="form.cost_per_unit"
       label="Cost per unit"
@@ -65,4 +89,3 @@ import type { KitchenIngredientCreateForm } from './types'
 
 const form = defineModel<KitchenIngredientCreateForm>('form', { required: true })
 </script>
-

@@ -1,0 +1,148 @@
+<template>
+  <UCard>
+    <template #header>
+      <div class="flex flex-wrap items-start justify-between gap-3">
+        <div class="space-y-2">
+          <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+            Dummy ingredient surfaces
+          </p>
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            Preview Pill, Cell, Preview, and Profile surfaces from `dummy/ingredient.dummy.ts`.
+          </p>
+        </div>
+      </div>
+    </template>
+
+    <div v-if="pillItems.length" class="flex flex-wrap gap-2">
+      <IngredientCardsPill
+        v-for="item in pillItems"
+        :key="item.ingredient.id"
+        v-bind="item.card"
+        action
+        @action="selectIngredient(item.ingredient)"
+      />
+    </div>
+
+    <div v-if="pillItems.length" class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Pill</div>
+        <IngredientCardsPill
+          v-if="dummyPill"
+          v-bind="dummyPill"
+        />
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Cell</div>
+        <IngredientCardsCell
+          v-if="dummyCell"
+          v-bind="dummyCell"
+        />
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Preview</div>
+        <IngredientCardsPreview
+          v-if="dummyPreview"
+          v-bind="dummyPreview"
+        />
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-xs font-medium text-dimmed">Profile</div>
+        <IngredientCardsProfile
+          v-if="dummyProfile"
+          :model="dummyProfile"
+        />
+      </div>
+    </div>
+
+    <UCard v-else variant="subtle">
+      <p class="text-sm text-dimmed">
+        No ingredient samples available yet. Add entries to `dummy/ingredient.dummy.ts` or create runtime ingredients.
+      </p>
+    </UCard>
+  </UCard>
+</template>
+
+<script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue'
+import { dummyIngredientList } from '../../../../../../../../dummy/ingredient.dummy'
+import { useIngredientFetch } from '../../../composables/fireux/firestore/objects/ingredient/fetch/useIngredientFetch'
+import { useIngredientInterface } from '../../../composables/fireux/firestore/objects/ingredient/utils/view/useIngredientInterface'
+import type { Ingredient } from '../../../models/objects/ingredient.model'
+import IngredientCardsCell from '../../organisms/entities/Ingredient/Cards/Cell.vue'
+import IngredientCardsPill from '../../organisms/entities/Ingredient/Cards/Pill.vue'
+import IngredientCardsPreview from '../../organisms/entities/Ingredient/Cards/Preview.vue'
+import IngredientCardsProfile from '../../organisms/entities/Ingredient/Cards/Profile.vue'
+
+defineOptions({ name: 'DevIngredientDummy' })
+
+const emit = defineEmits<{
+  (event: 'ready', ingredient: Ingredient): void
+}>()
+
+const { ingredients } = useIngredientFetch()
+const { pill, cell, preview, profile } = useIngredientInterface()
+
+const surfaceIngredients = computed<Ingredient[]>(() => {
+  const fromDummy = dummyIngredientList ?? []
+  if (fromDummy.length > 0) return fromDummy
+  return (ingredients.value ?? []).slice(0, 8)
+})
+
+const selectedId = ref('')
+
+watch(
+  surfaceIngredients,
+  (next) => {
+    if (!next.length) {
+      selectedId.value = ''
+      return
+    }
+    if (!selectedId.value || !next.some((item) => String(item.id) === selectedId.value)) {
+      selectedId.value = String(next[0]?.id ?? '')
+    }
+  },
+  { immediate: true }
+)
+
+const selectedIngredient = computed(() => {
+  const selected = surfaceIngredients.value.find(
+    (ingredient) => String(ingredient.id) === selectedId.value
+  )
+  return (selected ?? surfaceIngredients.value[0] ?? null) as Ingredient | null
+})
+
+const selectIngredient = (ingredient: Ingredient) => {
+  selectedId.value = String(ingredient.id)
+}
+
+const pillItems = computed(() =>
+  surfaceIngredients.value
+    .map((ingredient) => {
+      const card = pill(ingredient)
+      if (!card) return null
+      return { ingredient, card }
+    })
+    .filter(
+      (
+        item
+      ): item is { ingredient: Ingredient; card: NonNullable<ReturnType<typeof pill>> } =>
+        Boolean(item)
+    )
+)
+
+const dummyPill = computed(() => pill(selectedIngredient.value))
+const dummyCell = computed(() => cell(selectedIngredient.value))
+const dummyPreview = computed(() => preview(selectedIngredient.value))
+const dummyProfile = computed(() => profile(selectedIngredient.value))
+
+onMounted(() => {
+  if (selectedIngredient.value) emit('ready', selectedIngredient.value)
+})
+
+watch(selectedIngredient, (next) => {
+  if (next) emit('ready', next)
+})
+</script>

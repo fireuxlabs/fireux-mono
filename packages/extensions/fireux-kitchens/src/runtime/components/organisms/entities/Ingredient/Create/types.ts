@@ -2,12 +2,9 @@ import type { IngredientUnit } from '../../../../../models/objects/ingredient.mo
 
 export type IngredientCreateForm = {
   name: string
+  category: string
   unit: IngredientUnit
-  supplier_name: string
-  cost_per_unit: number
-  currency: string
   description: string
-  sku: string
 }
 
 export const ingredientUnitOptions = [
@@ -23,10 +20,7 @@ export const ingredientUnitOptions = [
 
 export const createDefaultIngredientForm = (): IngredientCreateForm => ({
   name: '',
+  category: '',
   unit: 'piece',
-  supplier_name: '',
-  cost_per_unit: 0,
-  currency: 'CHF',
   description: '',
-  sku: '',
 })
