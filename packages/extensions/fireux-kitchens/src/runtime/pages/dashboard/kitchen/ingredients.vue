@@ -143,9 +143,9 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, ref } from 'vue'
-import { useKitchenDashboardSelection } from '../../../composables/fireux/app/useKitchenDashboardSelection'
 import { useKitchenIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useKitchenIngredientFetch'
 import { useKitchenIngredientDelete } from '../../../composables/fireux/firestore/ingredient/mutations/useKitchenIngredientDelete'
 import type { KitchenIngredientResolved } from '../../../models/ingredient.model'
@@ -164,7 +164,15 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtimeKitchenId, selectedKitchen, dashboardQuery } = useKitchenDashboardSelection()
+const route = useRoute()
+const runtimeKitchenId = computed(() => {
+  const raw = route.query.kitchenId
+  const value = Array.isArray(raw) ? raw[0] : raw
+  return String(value || '').trim()
+})
+const dashboardQuery = computed(() =>
+  runtimeKitchenId.value ? { kitchenId: runtimeKitchenId.value } : undefined
+)
 const { ingredients, count } = useKitchenIngredientFetch(runtimeKitchenId)
 const { removeKitchenIngredient } = useKitchenIngredientDelete()
 const toast = useToastify()
@@ -174,9 +182,7 @@ const isRemoveConfirmOpen = ref(false)
 const isRemoving = ref(false)
 const pendingRemove = ref<KitchenIngredientResolved | null>(null)
 
-const selectedKitchenName = computed(() =>
-  String(selectedKitchen.value?.name || selectedKitchen.value?.short_name || runtimeKitchenId.value)
-)
+const selectedKitchenName = computed(() => runtimeKitchenId.value)
 
 const homeRoute = computed(() =>
   dashboardQuery.value

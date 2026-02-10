@@ -166,9 +166,9 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, ref } from 'vue'
-import { useKitchenDashboardSelection } from '../../../composables/fireux/app/useKitchenDashboardSelection'
 import { useIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
 import { useKitchenMenuStackFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenMenuStackFetch'
 import { useKitchenMiseCreate } from '../../../composables/fireux/firestore/mise/mutations/useKitchenMiseCreate'
@@ -188,7 +188,15 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtimeKitchenId, selectedKitchen, dashboardQuery } = useKitchenDashboardSelection()
+const route = useRoute()
+const runtimeKitchenId = computed(() => {
+  const raw = route.query.kitchenId
+  const value = Array.isArray(raw) ? raw[0] : raw
+  return String(value || '').trim()
+})
+const dashboardQuery = computed(() =>
+  runtimeKitchenId.value ? { kitchenId: runtimeKitchenId.value } : undefined
+)
 const { miseTasks } = useKitchenMenuStackFetch(runtimeKitchenId)
 const { createKitchenMiseTask } = useKitchenMiseCreate()
 const { ingredients } = useIngredientFetch()
@@ -218,9 +226,7 @@ const form = ref({
 
 const isCreating = ref(false)
 
-const selectedKitchenName = computed(() =>
-  String(selectedKitchen.value?.name || selectedKitchen.value?.short_name || runtimeKitchenId.value)
-)
+const selectedKitchenName = computed(() => runtimeKitchenId.value)
 
 const homeRoute = computed(() =>
   dashboardQuery.value

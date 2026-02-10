@@ -1,6 +1,8 @@
+import { doc, getDoc } from 'firebase/firestore'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
-import type { KitchenCollection, KitchenCreateInput } from '../../../../../../models/kitchen.model'
+import { useFirestore } from 'vuefire'
+import type { KitchenCollection, KitchenCreateInput } from '../../../../../models/kitchen.model'
 
 export const KitchenPayload = {
   id: '',
@@ -10,8 +12,15 @@ export const KitchenStampOptions = {
   creator: false,
 } as const
 
-export function useKitchenCreate() {
+export type KitchenCreateOptions = {
+  collectionPath?: string
+  test?: boolean
+}
+
+export function useKitchenCreate(options: KitchenCreateOptions = {}) {
   const { setDocument } = useFirestoreCreate()
+  const db = useFirestore()
+  const collectionPath = options.test ? 'test-kitchens' : options.collectionPath ?? 'kitchens'
 
   async function createKitchen(
     input: KitchenCreateInput & { place?: PlaceUpsertInput }
@@ -23,11 +32,24 @@ export function useKitchenCreate() {
     const { place, ...payload } = input
     void place
 
-    await setDocument<KitchenCollection>('kitchens', payload.id, payload as KitchenCollection, {
-      creator: false,
-    })
+    const resolvedPayload = options.test
+      ? { ...payload, is_test_kitchen: true }
+      : payload
 
-    return payload.id
+    const ref = doc(db, collectionPath, resolvedPayload.id)
+    const snap = await getDoc(ref)
+    if (snap.exists()) return resolvedPayload.id
+
+    await setDocument<KitchenCollection>(
+      collectionPath,
+      resolvedPayload.id,
+      resolvedPayload as KitchenCollection,
+      {
+        creator: false,
+      }
+    )
+
+    return resolvedPayload.id
   }
 
   return { createKitchen }

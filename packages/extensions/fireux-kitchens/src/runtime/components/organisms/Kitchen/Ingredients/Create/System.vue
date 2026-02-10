@@ -54,13 +54,13 @@
 </template>
 
 <script setup lang="ts">
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { computed, ref } from 'vue'
-import { useKitchenIngredientCreate } from '../../../../../../composables/fireux/firestore/ingredient/mutations/useKitchenIngredientCreate'
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify';
+import { computed, ref } from 'vue';
+import { useKitchenIngredientCreate } from '../../../../../composables/fireux/firestore/ingredient/mutations/useKitchenIngredientCreate';
 import {
   createDefaultKitchenIngredientForm,
   type KitchenIngredientCreateForm,
-} from './types'
+} from './types';
 
 const props = defineProps<{
   kitchenId: string

@@ -169,9 +169,9 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, ref } from 'vue'
-import { useKitchenDashboardSelection } from '../../../composables/fireux/app/useKitchenDashboardSelection'
 import { useIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
 import { useKitchenMenuStackFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenMenuStackFetch'
 import { useKitchenMenuStackCreate } from '../../../composables/fireux/firestore/kitchen/mutations/useKitchenMenuStackCreate'
@@ -190,7 +190,15 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtimeKitchenId, selectedKitchen, dashboardQuery } = useKitchenDashboardSelection()
+const route = useRoute()
+const runtimeKitchenId = computed(() => {
+  const raw = route.query.kitchenId
+  const value = Array.isArray(raw) ? raw[0] : raw
+  return String(value || '').trim()
+})
+const dashboardQuery = computed(() =>
+  runtimeKitchenId.value ? { kitchenId: runtimeKitchenId.value } : undefined
+)
 const { ingredients } = useIngredientFetch()
 const { menus, dishes, recipes, miseTasks, counts } = useKitchenMenuStackFetch(runtimeKitchenId)
 const { createStarterKitchenMenuStack } = useKitchenMenuStackCreate()
@@ -198,9 +206,7 @@ const toast = useToastify()
 
 const isSeeding = ref(false)
 
-const selectedKitchenName = computed(() =>
-  String(selectedKitchen.value?.name || selectedKitchen.value?.short_name || runtimeKitchenId.value)
-)
+const selectedKitchenName = computed(() => runtimeKitchenId.value)
 
 const dishesSorted = computed(() =>
   [...(dishes.value ?? [])].sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0))

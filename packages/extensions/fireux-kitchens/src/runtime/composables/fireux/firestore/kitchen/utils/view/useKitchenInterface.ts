@@ -116,11 +116,15 @@ export function useKitchenInterface() {
 
   function map(kitchen: Kitchen): KitchenCard.Card {
     const id = safeString(kitchen.id).trim()
-    const name = safeString(kitchen.name)
+    const isTestKitchen = Boolean((kitchen as any)?.is_test_kitchen)
+    let name = safeString(kitchen.name)
     const shortName = safeString((kitchen as any)?.short_name)
     const shortAddress = sanitizeShortAddress((kitchen as any)?.short_address)
     const formattedAddress = safeString((kitchen as any)?.formatted_address)
-    const displayTitle = shortName || stripLocationFromTitle(name, shortAddress || formattedAddress)
+    if (isTestKitchen && !name) name = 'Test Kitchen'
+    const displayTitle = isTestKitchen
+      ? shortName || name
+      : shortName || stripLocationFromTitle(name, shortAddress || formattedAddress)
     const imageUrl = safeString((kitchen as any)?.image_url)
 
     return {

@@ -1,13 +1,13 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import type { Ingredient } from '../../../../../../models/ingredient.model'
-import { KitchenMiseTask, type KitchenMiseTask as KitchenMiseTaskDoc } from '../../../../../../models/kitchen-mise.model'
-import { KitchenDish, type KitchenDish as KitchenDishDoc } from '../../../../../../models/kitchen-dish.model'
-import { KitchenMenu, type KitchenMenu as KitchenMenuDoc } from '../../../../../../models/kitchen-menu.model'
+import type { Ingredient } from '../../../../../models/ingredient.model'
+import { KitchenDish, type KitchenDish as KitchenDishDoc } from '../../../../../models/kitchen-dish.model'
+import { KitchenMenu, type KitchenMenu as KitchenMenuDoc } from '../../../../../models/kitchen-menu.model'
+import { KitchenMiseTask, type KitchenMiseTask as KitchenMiseTaskDoc } from '../../../../../models/kitchen-mise.model'
 import {
   KitchenRecipe,
   type KitchenRecipe as KitchenRecipeDoc,
   type KitchenRecipeIngredientLine,
-} from '../../../../../../models/kitchen-recipe.model'
+} from '../../../../../models/kitchen-recipe.model'
 
 const resolveCollectionPath = (kitchenId: string, collectionName: string) =>
   `kitchens/${kitchenId}/${collectionName}`

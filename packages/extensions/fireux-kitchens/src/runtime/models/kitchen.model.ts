@@ -20,6 +20,9 @@ export const KitchenCollection = {
   /** Canonical Place ID (also the Firestore document ID). */
   id: '' as string,
 
+  // Optional flag for test kitchens
+  is_test_kitchen: false as boolean,
+
   // Timestamps only
   created_at: {} as FirebaseTimestamp,
   updated_at: {} as FirebaseTimestamp,
@@ -50,5 +53,12 @@ export type Kitchen = KitchenCollection &
     >
   >
 
-export type KitchenCreateInput = Omit<KitchenCollection, 'created_at' | 'updated_at'>
+export type KitchenCreateInput = Omit<
+  KitchenCollection,
+  'created_at' | 'updated_at' | 'is_test_kitchen'
+> & {
+  is_test_kitchen?: boolean
+  name?: string
+  image_url?: string
+}
 export type KitchenUpdateInput = Partial<Omit<KitchenCreateInput, 'id'>>

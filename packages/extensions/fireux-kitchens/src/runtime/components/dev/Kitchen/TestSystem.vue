@@ -37,9 +37,9 @@
 
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
-import { useKitchens } from '../../../composables/fireux/firestore/kitchen/useKitchens'
 import type { Kitchen, KitchenCollection } from '../../../models/kitchen.model'
 import { KitchenCollection as KitchenModelRuntime } from '../../../models/kitchen.model'
 
@@ -47,14 +47,13 @@ defineOptions({ name: 'DevTestKitchenSystem' })
 
 const kitchenModelRuntime = KitchenModelRuntime
 
-const { collection } = useKitchens<KitchenCollection>({
-  collectionPath: 'test-kitchens',
-})
+const { firestoreFetchCollection } = useFirestoreRead()
+const kitchensCollection = firestoreFetchCollection<KitchenCollection>('test-kitchens')
 const { kitchens: hydratedKitchens } = useKitchenFetch({
   collectionPath: 'test-kitchens',
 })
 
-const kitchensCollection = computed(() => collection.value ?? [])
+const kitchensCollectionValue = computed(() => kitchensCollection.value ?? [])
 
 const {
   driftKind: kitchensDriftKind,
@@ -66,7 +65,7 @@ const {
   buildDriftPayload: buildKitchensDriftPayload,
   buildCopyPayload: buildKitchensCopyPayload,
 } = useDevDriftFilter({
-  collection: kitchensCollection,
+  collection: kitchensCollectionValue,
   runtimeModel: kitchenModelRuntime,
   driftMode: 'extras-only',
   requiredPaths: ['name'],
@@ -98,6 +97,6 @@ const kitchensDriftCopyPayload = buildKitchensCopyPayload({
   modelPath: 'packages/extensions/fireux-kitchens/src/runtime/models/kitchen.model.ts',
   itemsKey: 'testKitchens',
   items: filteredKitchensDriftPayload,
-  total: computed(() => kitchensCollection.value.length),
+  total: computed(() => kitchensCollectionValue.value.length),
 })
 </script>

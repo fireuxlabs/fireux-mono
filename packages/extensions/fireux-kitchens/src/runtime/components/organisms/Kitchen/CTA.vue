@@ -7,17 +7,24 @@
     orientation="horizontal"
   >
     <template #links>
-      <div class="flex flex-wrap items-center gap-3">
-        <KitchenMyKitchensCta />
-        <UButton
-          size="sm"
-          variant="subtle"
-          color="neutral"
-          to="/dashboard/kitchen"
-          trailing-icon="i-lucide-arrow-right"
-        >
-          go to dash
-        </UButton>
+      <div class="grid gap-4">
+        <div class="space-y-3">
+          <p class="text-xs font-semibold text-gray-900 dark:text-gray-100">Test Kitchen</p>
+          <KitchenCardsPill
+            v-bind="testKitchenPill"
+            :show-badges="false"
+          />
+          <UButton
+            size="sm"
+            variant="subtle"
+            color="neutral"
+            :disabled="!testKitchenId"
+            trailing-icon="i-lucide-arrow-right"
+            @click="openRuntimeKitchen({ name: testKitchenTitle, image_url: testKitchenImageUrl })"
+          >
+            go to dash
+          </UButton>
+        </div>
       </div>
     </template>
     <template #default>
@@ -32,3 +39,30 @@
     </template>
   </UPageCTA>
 </template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useRuntimeKitchen } from '../../../composables/fireux/app/useRuntimeKitchen'
+
+const testKitchen = {
+  id: 'jMK33p5XlhYS8rBCEf8qUiogfMg2',
+  name: "Daniel's Test Kitchen",
+  image_url:
+    'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=640&h=520&q=80',
+  is_test_kitchen: true,
+}
+
+const testKitchenId = testKitchen.id
+const testKitchenTitle = testKitchen.name
+const testKitchenImageUrl = testKitchen.image_url
+
+const testKitchenPill = computed(() => ({
+  to: '',
+  imageUrl: testKitchenImageUrl,
+  title: testKitchenTitle,
+  subtitle: 'Test kitchen',
+  badges: [],
+}))
+
+const { openRuntimeKitchen } = useRuntimeKitchen(testKitchenId, true)
+</script>
