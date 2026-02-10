@@ -4,8 +4,8 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
-      <ProfilesSupplierCTA />
-      <ProfilesSupplierCollectionManager :collection="collection" />
+      <SupplierCTA />
+      <SupplierCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>

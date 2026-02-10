@@ -16,4 +16,10 @@ export function configureComponents(resolver: Resolver) {
     'Supplier',
     { global: true }
   )
+  registerComponentAliases(
+    resolver,
+    './runtime/components/organisms/profiles/Supplier',
+    'ProfilesSupplier',
+    { global: true }
+  )
 }

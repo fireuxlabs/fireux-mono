@@ -4,8 +4,8 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
-      <ProfilesChefCTA />
-      <ProfilesChefCollectionManager :collection="collection" />
+      <ChefCTA />
+      <ChefCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>

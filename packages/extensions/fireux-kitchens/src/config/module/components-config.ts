@@ -1,7 +1,7 @@
 import type { Resolver } from '@nuxt/kit'
 import {
-  registerComponentAliases,
-  registerComponentsDir,
+    registerComponentAliases,
+    registerComponentsDir,
 } from 'fireux-core/config/module/module-helpers'
 
 export function configureComponents(resolver: Resolver) {
@@ -50,6 +50,12 @@ export function configureComponents(resolver: Resolver) {
     {
       global: true,
     }
+  )
+  registerComponentAliases(
+    resolver,
+    './runtime/components/organisms/profiles/Chef',
+    'ProfilesChef',
+    { global: true }
   )
 
   // Aliases removed; rely on component directory registration.

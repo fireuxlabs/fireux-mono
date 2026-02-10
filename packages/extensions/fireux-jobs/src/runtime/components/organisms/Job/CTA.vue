@@ -48,7 +48,7 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 import { computed, ref } from 'vue'
-import { useAgent } from '../../../../composables/fireux/firestore/profiles/Agent/useAgent'
+import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 const { appName, ecosystem, isTenant } = useFireUXConfig()
 const { hasProfile } = useUser()

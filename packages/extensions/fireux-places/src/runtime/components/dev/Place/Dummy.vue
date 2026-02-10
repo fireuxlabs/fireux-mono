@@ -4,10 +4,10 @@
       <div class="flex items-start justify-between gap-3">
         <div class="space-y-2">
           <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            Dummy surfaces for places
+            Dummy place surfaces
           </p>
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            Dummy surfaces for places.
+            Preview Pill, Cell, Preview, and Profile surfaces using a rich dummy place.
           </p>
         </div>
       </div>
@@ -23,7 +23,7 @@
       />
     </div>
 
-    <div class="space-y-4">
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Pill</div>
         <PlaceCardsPill
@@ -62,9 +62,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { dummyPlaceDocDataList, dummyPlaceGoogleData } from '../../../../../../../../dummy/place.dummy'
-import { usePlacesInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlacesInterface'
-import type { Place } from '../../../models/place.model'
-import { Place as PlaceModelRuntime } from '../../../models/place.model'
+import { usePlacesInterface } from '../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import type { Place } from '../../../models/objects/place.model'
+import { Place as PlaceModelRuntime } from '../../../models/objects/place.model'
 
 const emit = defineEmits<{
   (event: 'ready', place: Place): void

@@ -12,7 +12,7 @@ export function configureComponents(resolver: Resolver, nuxt: Nuxt) {
   const componentsDir = registerComponentsDir(resolver, './runtime/components', {
     global: false,
     // Keep path segments in component names to avoid collisions
-    // e.g. organisms/Ingredient/Profile.vue -> IngredientProfile
+    // e.g. organisms/Recipe/Profile.vue -> RecipeProfile
     pathPrefix: true,
     // Ensure ecosystem components override core defaults
     priority: 1,
@@ -23,19 +23,6 @@ export function configureComponents(resolver: Resolver, nuxt: Nuxt) {
     ;(nuxt.options.alias as Record<string, string>)['#fireux-misebox-components'] =
       componentsDir
   }
-
-  addComponentsDir({
-    path: resolver.resolve('./runtime/components/organisms/Ingredient'),
-    global: true,
-    pathPrefix: true,
-    prefix: 'Ingredient',
-  })
-  registerComponentAliases(
-    resolver,
-    './runtime/components/organisms/Ingredient',
-    'Ingredient',
-    { global: true }
-  )
 
   addComponentsDir({
     path: resolver.resolve('./runtime/components/organisms/Recipe'),

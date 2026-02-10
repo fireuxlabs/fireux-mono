@@ -43,7 +43,7 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useJobCreate } from '../../../../composables/fireux/firestore/jobs/mutations/useJobCreate.ts'
-import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
+import { useAgent } from '../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 const router = useRouter()
 const { form, reset, submit } = useJobCreate()

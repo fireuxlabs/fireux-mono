@@ -3,8 +3,8 @@
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <ProfilesAgentCTA />
-      <ProfilesAgentCollectionManager :collection="collection" />
+      <AgentCTA />
+      <AgentCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
