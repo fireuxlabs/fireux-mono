@@ -62,7 +62,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { dummyPlaceDocDataList, dummyPlaceGoogleData } from '../../../../../../../../dummy/place.dummy'
-import { usePlacesInterface } from '../../../composables/fireux/firestore/objects/place/utils/view/usePlacesInterface'
+import { usePlacesInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlacesInterface'
 import type { Place } from '../../../models/objects/place.model'
 import { Place as PlaceModelRuntime } from '../../../models/objects/place.model'
 

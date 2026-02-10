@@ -42,6 +42,8 @@ export function useRuntimeKitchen(
     persistKitchenId(runtimeKitchenId)
   }
 
+  const runtimeKitchenCollectionPath = isTest ? 'test-kitchens' : 'kitchens'
+
   console.info('[useRuntimeKitchen] init', {
     runtimeKitchenId,
     isTest,
@@ -81,6 +83,8 @@ export function useRuntimeKitchen(
 
   return {
     runtimeKitchenId,
+    runtimeKitchenCollectionPath,
+    runtimeKitchenIsTest: isTest,
     openRuntimeKitchen,
     fetchRuntimeKitchen,
     theRuntimeKitchen,

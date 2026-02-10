@@ -8,58 +8,22 @@
       class="bg-elevated/25"
     >
       <template #header>
-        <div class="space-y-3">
-          <LayoutsDashboardProfilesMenu />
-
-          <div class="flex items-center justify-between gap-2 px-2 py-2">
-            <div class="min-w-0">
-              <p class="truncate text-sm font-semibold">Kitchen Dashboard</p>
-              <p class="truncate text-xs text-dimmed">Operational workspace</p>
-            </div>
-
-            <UButton
-              to="/dashboard"
-              size="xs"
-              variant="ghost"
-              color="neutral"
-              icon="i-lucide-arrow-left"
-              aria-label="Back to app dashboard"
-            />
-          </div>
+        <div class="px-2 py-2">
+          <KitchenCardsPill v-if="pillCard" v-bind="pillCard" :show-badges="false" />
         </div>
       </template>
 
       <template #default="{ collapsed }">
         <div class="flex flex-col gap-3">
           <UNavigationMenu
-            v-if="topNav.length"
+            v-if="navItems.length"
             :collapsed="collapsed ?? false"
-            :items="topNav"
-            orientation="vertical"
-          />
-
-          <USeparator v-if="topNav.length && (middleNav.length || bottomNav.length)" />
-
-          <UNavigationMenu
-            v-if="middleNav.length"
-            :collapsed="collapsed ?? false"
-            :items="middleNav"
-            orientation="vertical"
-          />
-
-          <USeparator v-if="middleNav.length && bottomNav.length" />
-
-          <UNavigationMenu
-            v-if="bottomNav.length"
-            :collapsed="collapsed ?? false"
-            :items="bottomNav"
+            :items="navItems"
             orientation="vertical"
           />
 
           <div class="lg:hidden">
-            <USeparator
-              v-if="topNav.length || middleNav.length || bottomNav.length"
-            />
+            <USeparator v-if="navItems.length" />
 
             <div class="pt-3">
               <LayoutsDashboardSidebarFooterActions
@@ -80,40 +44,42 @@
       </template>
     </UDashboardSidebar>
 
-    <div class="h-screen w-full overflow-y-auto bg-elevated/50 p-0 lg:p-4">
+    <!-- Page content -->
+    <div class="w-full h-screen overflow-y-auto p-0 lg:p-4 bg-elevated/50">
       <NuxtPage />
     </div>
   </UDashboardGroup>
 
+  <!-- Notifications slideover controlled by shared state -->
   <LayoutsDashboardNotificationsSlideover
     v-model:open="isNotificationsSlideoverOpen"
   />
 </template>
 
 <script setup lang="ts">
-import { useNavGrouping } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useNavGrouping'
 import { useAuthRedirect } from 'fireux-core/runtime/composables/fireux/app/ui/useAuthRedirect'
 import { useDashboardNotifications } from 'fireux-core/runtime/composables/fireux/app/ui/useDashboardNotifications'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useKitchenDashboardNav } from '../composables/fireux/app/routing/useKitchenDashboardNav'
+import { useRuntimeKitchen } from '../composables/fireux/app/useRuntimeKitchen'
+import { useKitchenInterface } from '../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 defineOptions({ name: 'kitchen-dashboard' })
 
 const open = ref(false)
 const { desktop } = useKitchenDashboardNav()
 const { isOpen: isNotificationsSlideoverOpen } = useDashboardNotifications()
+const { theRuntimeKitchen } = useRuntimeKitchen()
+const { pill } = useKitchenInterface()
 
-type NavItem = (typeof desktop.value)[number]
-
+const pillCard = computed(() => pill(theRuntimeKitchen.value))
 useAuthRedirect()
-
-const TOP_PRIORITY = [{ key: 'dashboard-kitchen-home', to: '/dashboard/kitchen' }]
-
-const baseNavFilter = (item: NavItem) =>
-  item.group !== 'profiles' && !item.profileId
-
-const { topNav, middleNav, bottomNav } = useNavGrouping(desktop, {
-  topPriority: TOP_PRIORITY,
-  filter: baseNavFilter,
-})
+const navItems = computed(() =>
+  desktop.value.filter(
+    (item) =>
+      item.group !== 'profiles' &&
+      !item.profileId &&
+      item.to !== '/dashboard/kitchen'
+  )
+)
 </script>

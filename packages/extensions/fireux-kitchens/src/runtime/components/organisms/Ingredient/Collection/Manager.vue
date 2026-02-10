@@ -3,8 +3,8 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <div>Ingredients</div>
-          <p>Browse global ingredients available to this runtime.</p>
+          <div>{{ title }}</div>
+          <p>{{ description }}</p>
         </div>
 
         <div class="collection-manager__controls">
@@ -31,12 +31,22 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <NuxtLink :to="card.to">
+        <NuxtLink
+          :to="linkEnabled ? card.to : undefined"
+          class="block"
+          :class="linkEnabled ? '' : 'cursor-pointer'"
+          @click.prevent="linkEnabled ? undefined : handleSelect(card.id)"
+        >
           <IngredientCardsPill v-bind="card" />
         </NuxtLink>
       </template>
       <template #cell="{ card }">
-        <NuxtLink :to="card.to">
+        <NuxtLink
+          :to="linkEnabled ? card.to : undefined"
+          class="block"
+          :class="linkEnabled ? '' : 'cursor-pointer'"
+          @click.prevent="linkEnabled ? undefined : handleSelect(card.id)"
+        >
           <IngredientCardsCell v-bind="card" :prop="card.description" />
         </NuxtLink>
       </template>
@@ -58,19 +68,44 @@
 </template>
 
 <script setup lang="ts">
-import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-import { computed } from 'vue'
-import { useIngredientInterface } from '../../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
-import type { Ingredient } from '../../../../models/ingredient.model'
+import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
+import { computed } from 'vue';
+import { useIngredientInterface } from '../../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface';
+import type { Ingredient } from '../../../../models/ingredient.model';
 
-const props = defineProps<{
-  collection?: Ingredient[]
+const props = withDefaults(
+  defineProps<{
+    collection?: Ingredient[]
+    title?: string
+    description?: string
+    link?: boolean
+  }>(),
+  {
+    title: 'Ingredients',
+    description: 'Browse global ingredients available to this runtime.',
+    link: true,
+  }
+)
+
+const emit = defineEmits<{
+  (event: 'select', ingredient: Ingredient): void
 }>()
 
 const { card: makeCard, searchText } = useIngredientInterface()
 
 const collection = computed(() => props.collection ?? [])
+const linkEnabled = computed(() => props.link !== false)
 const totalCount = computed(() => collection.value.length)
+
+const ingredientById = computed(() => {
+  const map = new Map<string, Ingredient>()
+  for (const ingredient of collection.value) {
+    const id = String(ingredient.id || '').trim()
+    if (!id) continue
+    map.set(id, ingredient)
+  }
+  return map
+})
 
 const {
   query,
@@ -85,4 +120,9 @@ const {
 })
 
 const isDev = import.meta.dev
+
+const handleSelect = (id: string) => {
+  const ingredient = ingredientById.value.get(String(id || '').trim())
+  if (ingredient) emit('select', ingredient)
+}
 </script>

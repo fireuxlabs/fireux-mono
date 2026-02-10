@@ -15,8 +15,9 @@ import {
 
 const GLOBAL_COLLECTION_PATH = 'ingredients'
 
-const resolveKitchenCollectionPath = (kitchenId: string) =>
-  `kitchens/${kitchenId}/ingredients`
+const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
+const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
+  `${basePath}/${kitchenId}/ingredients`
 
 type KitchenIngredientCreateDraft = Partial<
   Omit<KitchenIngredientCreateInput, 'ingredient_id' | 'kitchen_id'>
@@ -27,6 +28,8 @@ type KitchenIngredientCreateDraft = Partial<
       'name' | 'description' | 'category' | 'unit'
     >
   > & {
+    ingredient_id?: string
+    id?: string
     allergens?: string[]
     tags?: string[]
   }
@@ -130,30 +133,36 @@ export function useKitchenIngredientCreate() {
 
   const createKitchenIngredient = async (
     kitchenId: string,
-    draft: KitchenIngredientCreateDraft
+    draft: KitchenIngredientCreateDraft,
+    options: { kitchenCollectionPath?: string } = {}
   ) => {
     const resolvedKitchenId = String(kitchenId || '').trim()
     if (!resolvedKitchenId) throw new Error('Kitchen id is required')
 
+    const providedIngredientId = String(draft.ingredient_id || draft.id || '').trim()
     const name = String(draft.name || '').trim()
-    if (!name) throw new Error('Ingredient name is required')
+    if (!providedIngredientId && !name) {
+      throw new Error('Ingredient name is required')
+    }
 
     const unit = resolveUnit(draft.unit)
-    const ingredientId = resolveIngredientId(name, unit)
+    const ingredientId = providedIngredientId || resolveIngredientId(name, unit)
     if (!ingredientId) throw new Error('Unable to resolve ingredient id')
 
-    const globalRef = doc(db, GLOBAL_COLLECTION_PATH, ingredientId)
-    const globalSnap = await getDoc(globalRef)
+    if (!providedIngredientId) {
+      const globalRef = doc(db, GLOBAL_COLLECTION_PATH, ingredientId)
+      const globalSnap = await getDoc(globalRef)
 
-    if (!globalSnap.exists()) {
-      const globalPayload = buildGlobalIngredientPayload(ingredientId, {
-        ...draft,
-        unit,
-      })
-      await setDocument<IngredientDoc>(GLOBAL_COLLECTION_PATH, ingredientId, globalPayload, {
-        app: true,
-        creator: true,
-      })
+      if (!globalSnap.exists()) {
+        const globalPayload = buildGlobalIngredientPayload(ingredientId, {
+          ...draft,
+          unit,
+        })
+        await setDocument<IngredientDoc>(GLOBAL_COLLECTION_PATH, ingredientId, globalPayload, {
+          app: true,
+          creator: true,
+        })
+      }
     }
 
     const kitchenPayload = buildKitchenIngredientPayload(
@@ -162,8 +171,23 @@ export function useKitchenIngredientCreate() {
       draft
     )
 
+    const kitchenCollectionPath = String(
+      options.kitchenCollectionPath || DEFAULT_KITCHEN_COLLECTION_PATH
+    ).trim()
+    const kitchenIngredientPath = resolveKitchenCollectionPath(
+      kitchenCollectionPath,
+      resolvedKitchenId
+    )
+
+    console.info('[useKitchenIngredientCreate] write', {
+      kitchenId: resolvedKitchenId,
+      ingredientId,
+      kitchenCollectionPath,
+      kitchenIngredientPath,
+    })
+
     await setDocument<KitchenIngredientDoc>(
-      resolveKitchenCollectionPath(resolvedKitchenId),
+      kitchenIngredientPath,
       ingredientId,
       kitchenPayload,
       { app: true, creator: true }
