@@ -20,7 +20,7 @@
             color="neutral"
             :disabled="!testKitchenId"
             trailing-icon="i-lucide-arrow-right"
-            @click="goToKitchen()"
+            @click="goToKitchen('test', testKitchenId)"
           >
             go to dash
           </UButton>
@@ -38,7 +38,7 @@
             color="neutral"
             :disabled="!dummyKitchenId"
             trailing-icon="i-lucide-arrow-right"
-            @click="goToKitchen()"
+            @click="goToKitchen('dummy', dummyKitchenId)"
           >
             go to dash
           </UButton>
@@ -62,6 +62,7 @@
 import { useRouter } from '#imports'
 import { computed } from 'vue'
 import { dummyKitchenHydrated } from '../../../../../../../../dummy/kitchen.dummy'
+import { useRuntimeKitchenSelection, type RuntimeKitchenMode } from '../../../composables/fireux/app/useRuntimeKitchen'
 
 const testKitchen = {
   id: 'jMK33p5XlhYS8rBCEf8qUiogfMg2',
@@ -84,8 +85,11 @@ const testKitchenPill = computed(() => ({
 }))
 
 const router = useRouter()
+const { setRuntimeKitchen } = useRuntimeKitchenSelection()
 
-const goToKitchen = async () => {
+const goToKitchen = async (mode: RuntimeKitchenMode, kitchenId?: string) => {
+  const resolvedId = String(kitchenId ?? '').trim()
+  setRuntimeKitchen({ mode, kitchenId: resolvedId })
   await router.push('/dashboard/kitchen')
 }
 

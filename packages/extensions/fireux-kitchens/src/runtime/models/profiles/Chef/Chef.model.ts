@@ -11,29 +11,30 @@ import { chefConfig } from './supporting'
  */
 
 export const ChefCore = {
-  id: '',
+  id: '' as string,
 
   // Chef (scoped, v1)
-  chef_headline: '',
-  summary: '',
-  chef_bio: '',
-  chef_image: '',
+  chef_headline: '' as string,
+  summary: '' as string,
+  chef_bio: '' as string,
+  chef_image: '' as string,
 
   // Chef descriptors (scoped)
   chef_signature_dishes: [] as string[],
+  kitchen_ids: [] as string[],
 
   // Optional org label (scoped)
-  chef_organization_name: '',
+  chef_organization_name: '' as string,
 
   // Legacy (deprecated) — kept temporarily for non-breaking migration
-  title: '',
-  subtitle: '',
-  tagline: '',
+  title: '' as string,
+  subtitle: '' as string,
+  tagline: '' as string,
   tags: [] as string[],
-  bio_long: '',
+  bio_long: '' as string,
   specialties: [] as string[],
   locations: [] as string[],
-  organization_name: '',
+  organization_name: '' as string,
 
   // Stamps
   creator_id: undefined as FireuxStamped['creator_id'],
@@ -46,7 +47,7 @@ export type ChefCore = {
 }
 
 export const ChefApp = {
-  id: '',
+  id: '' as string,
 
   // Stamps
   creator_id: undefined as FireuxStamped['creator_id'],

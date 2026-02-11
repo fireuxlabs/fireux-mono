@@ -1,7 +1,7 @@
 import type { Resolver } from '@nuxt/kit'
 import {
-    registerComponentAliases,
-    registerComponentsDir,
+  registerComponentAliases,
+  registerComponentsDir,
 } from 'fireux-core/config/module/module-helpers'
 
 export function configureComponents(resolver: Resolver) {
@@ -36,6 +36,30 @@ export function configureComponents(resolver: Resolver) {
     {
       global: true,
     }
+  )
+
+  registerComponentsDir(resolver, './runtime/components/organisms/Mise', {
+    global: true,
+    pathPrefix: true,
+    prefix: 'Mise',
+  })
+  registerComponentAliases(
+    resolver,
+    './runtime/components/organisms/Mise',
+    'Mise',
+    { global: true }
+  )
+
+  registerComponentsDir(resolver, './runtime/components/organisms/Dish', {
+    global: true,
+    pathPrefix: true,
+    prefix: 'Dish',
+  })
+  registerComponentAliases(
+    resolver,
+    './runtime/components/organisms/Dish',
+    'Dish',
+    { global: true }
   )
 
   registerComponentsDir(resolver, './runtime/components/organisms/profiles/Chef', {

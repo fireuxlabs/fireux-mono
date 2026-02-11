@@ -1,6 +1,6 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Ref, ShallowRef } from 'vue'
-import { computed, shallowRef, watch } from 'vue'
+import { computed, shallowRef, unref, watch } from 'vue'
 import type {
     Ingredient,
     KitchenIngredient,
@@ -13,7 +13,7 @@ const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
   `${basePath}/${kitchenId}/ingredients`
 
 type UseKitchenIngredientFetchOptions = {
-  kitchenCollectionPath?: string
+  kitchenCollectionPath?: string | Ref<string | null | undefined>
 }
 
 export function useKitchenIngredientFetch(
@@ -27,7 +27,7 @@ export function useKitchenIngredientFetch(
   )
 
   const kitchenCollectionPath = computed(() =>
-    String(options.kitchenCollectionPath || DEFAULT_KITCHEN_COLLECTION_PATH).trim()
+    String(unref(options.kitchenCollectionPath) || DEFAULT_KITCHEN_COLLECTION_PATH).trim()
   )
 
   const collectionPath = computed(() =>
