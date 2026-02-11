@@ -1,16 +1,4 @@
-export interface FirestoreObject {
-  slug: string
-  appId: string
-  created_at: string | Date
-  updated_at: string | Date
-  creator_id: string
-}
+// Deprecated compatibility shim.
+// Canonical dish model now lives in `fireux-kitchens/runtime/models/dish.model`.
 
-export interface DishObject extends Partial<FirestoreObject> {
-  name: string
-}
-
-export const dishConfig = {
-  collectionName: 'dishes',
-  objectType: 'Dish',
-}
+export * from 'fireux-kitchens/runtime/models/dish.model'

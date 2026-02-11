@@ -1,13 +1,21 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Ref, ShallowRef } from 'vue'
-import { computed, shallowRef, watch } from 'vue'
+import { computed, shallowRef, unref, watch } from 'vue'
 import type { KitchenMiseTask } from '../../../../../../models/kitchen-mise.model'
-import type { KitchenDish } from '../../../../../../models/kitchen-dish.model'
+import type { KitchenDish } from '../../../../../../models/dish.model'
 import type { KitchenMenu } from '../../../../../../models/kitchen-menu.model'
 import type { KitchenRecipe } from '../../../../../../models/kitchen-recipe.model'
 
-const resolveKitchenCollectionPath = (kitchenId: string, collectionName: string) =>
-  `kitchens/${kitchenId}/${collectionName}`
+const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
+const resolveKitchenCollectionPath = (
+  kitchenCollectionPath: string,
+  kitchenId: string,
+  collectionName: string
+) => `${kitchenCollectionPath}/${kitchenId}/${collectionName}`
+
+type UseKitchenMenuStackFetchOptions = {
+  kitchenCollectionPath?: string | Ref<string | null | undefined>
+}
 
 function useKitchenSubcollection<T>(collectionPath: Ref<string>) {
   const { firestoreFetchCollection } = useFirestoreRead()
@@ -25,22 +33,36 @@ function useKitchenSubcollection<T>(collectionPath: Ref<string>) {
   return computed<T[]>(() => collectionRef.value?.value ?? [])
 }
 
-export function useKitchenMenuStackFetch(kitchenId: Ref<string> | string) {
+export function useKitchenMenuStackFetch(
+  kitchenId: Ref<string> | string,
+  options: UseKitchenMenuStackFetchOptions = {}
+) {
   const resolvedKitchenId = computed(() =>
     String(typeof kitchenId === 'string' ? kitchenId : kitchenId.value || '').trim()
   )
+  const kitchenCollectionPath = computed(() =>
+    String(unref(options.kitchenCollectionPath) || DEFAULT_KITCHEN_COLLECTION_PATH).trim()
+  )
 
   const menusPath = computed(() =>
-    resolvedKitchenId.value ? resolveKitchenCollectionPath(resolvedKitchenId.value, 'menus') : ''
+    resolvedKitchenId.value
+      ? resolveKitchenCollectionPath(kitchenCollectionPath.value, resolvedKitchenId.value, 'menus')
+      : ''
   )
   const dishesPath = computed(() =>
-    resolvedKitchenId.value ? resolveKitchenCollectionPath(resolvedKitchenId.value, 'dishes') : ''
+    resolvedKitchenId.value
+      ? resolveKitchenCollectionPath(kitchenCollectionPath.value, resolvedKitchenId.value, 'dishes')
+      : ''
   )
   const recipesPath = computed(() =>
-    resolvedKitchenId.value ? resolveKitchenCollectionPath(resolvedKitchenId.value, 'recipes') : ''
+    resolvedKitchenId.value
+      ? resolveKitchenCollectionPath(kitchenCollectionPath.value, resolvedKitchenId.value, 'recipes')
+      : ''
   )
   const misePath = computed(() =>
-    resolvedKitchenId.value ? resolveKitchenCollectionPath(resolvedKitchenId.value, 'mise') : ''
+    resolvedKitchenId.value
+      ? resolveKitchenCollectionPath(kitchenCollectionPath.value, resolvedKitchenId.value, 'mise')
+      : ''
   )
 
   const menus = useKitchenSubcollection<KitchenMenu>(menusPath)
@@ -57,6 +79,7 @@ export function useKitchenMenuStackFetch(kitchenId: Ref<string> | string) {
 
   return {
     kitchenId: resolvedKitchenId,
+    kitchenCollectionPath,
     menus,
     dishes,
     recipes,
@@ -64,4 +87,3 @@ export function useKitchenMenuStackFetch(kitchenId: Ref<string> | string) {
     counts,
   }
 }
-

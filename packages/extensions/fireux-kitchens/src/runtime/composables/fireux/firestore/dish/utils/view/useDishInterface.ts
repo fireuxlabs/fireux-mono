@@ -1,8 +1,24 @@
 import { safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { KitchenDish } from '../../../../../../models/kitchen-dish.model'
+import type { KitchenDish } from '../../../../../../models/dish.model'
 
 const joinSubtitle = (station: string, course: string): string =>
   [safeString(station).trim(), safeString(course).trim()].filter(Boolean).join(' · ')
+
+const DUMMY_PILL_LABELS: Record<string, string> = {
+  'beef-patty-piece': 'Beef Patty',
+  'bun-brioche-piece': 'Brioche Bun',
+  'prep-lettuce-leaves-piece': 'Lettuce Leaves',
+  'prep-tomato-slice-piece': 'Tomato Slice',
+}
+
+const toPillTitle = (id: string): string =>
+  DUMMY_PILL_LABELS[String(id || '').trim()] ||
+  String(id || '')
+    .trim()
+    .split('-')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
 
 export namespace DishCard {
   export type Card = {
@@ -19,6 +35,8 @@ export namespace DishCard {
     status: string
     tags: string[]
     recipeId: string
+    ingredientIds: string[]
+    miseIds: string[]
   }
 }
 
@@ -45,12 +63,8 @@ export function useDishInterface() {
 
   type DishPreview = {
     imageUrl: string
-    name: string
-    subtitle: string
-    status: string
-    prop?: string
-    badges: string[]
-    details: Array<{ label: string; value: string | number }>
+    ingredientPills: Array<{ id: string; to: string; title: string; imageUrl: string }>
+    misePills: Array<{ id: string; to: string; title: string; imageUrl: string }>
   }
 
   function map(dish: KitchenDish): DishCard.Card {
@@ -63,6 +77,8 @@ export function useDishInterface() {
     const course = safeString(dish.course).trim()
     const status = safeString(dish.status).trim()
     const tags = safeStringArray(dish.tags)
+    const ingredientIds = safeStringArray(dish.ingredient_ids)
+    const miseIds = safeStringArray(dish.mise_ids)
 
     return {
       id,
@@ -78,6 +94,8 @@ export function useDishInterface() {
       status,
       tags,
       recipeId: safeString(dish.recipe_id).trim(),
+      ingredientIds,
+      miseIds,
     }
   }
 
@@ -118,16 +136,18 @@ export function useDishInterface() {
 
     return {
       imageUrl: base.imageUrl,
-      name: base.name,
-      subtitle: base.subtitle,
-      status: base.status,
-      prop: base.description,
-      badges: base.badges,
-      details: [
-        { label: 'Station', value: base.station || '—' },
-        { label: 'Course', value: base.course || '—' },
-        { label: 'Recipe', value: base.recipeId || '—' },
-      ],
+      ingredientPills: base.ingredientIds.map((id) => ({
+        id,
+        to: '',
+        title: toPillTitle(id),
+        imageUrl: '',
+      })),
+      misePills: base.miseIds.map((id) => ({
+        id,
+        to: '',
+        title: toPillTitle(id),
+        imageUrl: '',
+      })),
     }
   }
 
@@ -155,6 +175,8 @@ export function useDishInterface() {
       mapped.course,
       mapped.status,
       mapped.tags.join(' '),
+      mapped.ingredientIds.join(' '),
+      mapped.miseIds.join(' '),
       mapped.id,
     ]
       .join(' ')

@@ -1,6 +1,6 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import type { Ingredient } from '../../../../../models/ingredient.model'
-import { KitchenDish, type KitchenDish as KitchenDishDoc } from '../../../../../models/kitchen-dish.model'
+import { KitchenDish, type KitchenDish as KitchenDishDoc } from '../../../../../models/dish.model'
 import { KitchenMenu, type KitchenMenu as KitchenMenuDoc } from '../../../../../models/kitchen-menu.model'
 import { KitchenMiseTask, type KitchenMiseTask as KitchenMiseTaskDoc } from '../../../../../models/kitchen-mise.model'
 import {
@@ -140,6 +140,20 @@ export function useKitchenMenuStackCreate() {
         station: 'grill',
         recipe_id: recipeIds[0],
         tags: ['burger', 'grill'],
+        ingredient_ids: [
+          resolved.burgerBuns,
+          resolved.beefPatty,
+          resolved.americanCheese,
+          resolved.lettuce,
+          resolved.tomato,
+          resolved.onion,
+          resolved.ketchup,
+        ],
+        mise_ids: [
+          miseTaskIds[0],
+          miseTaskIds[1],
+          miseTaskIds[2],
+        ],
         sort_order: 10,
         active: true,
       },
@@ -154,6 +168,15 @@ export function useKitchenMenuStackCreate() {
         station: 'cold',
         recipe_id: recipeIds[1],
         tags: ['salad', 'cold'],
+        ingredient_ids: [
+          resolved.tomato,
+          resolved.mozzarella,
+          resolved.lemon,
+        ],
+        mise_ids: [
+          miseTaskIds[0],
+          miseTaskIds[3],
+        ],
         sort_order: 20,
         active: true,
       },
@@ -168,6 +191,17 @@ export function useKitchenMenuStackCreate() {
         station: 'grill',
         recipe_id: recipeIds[2],
         tags: ['burger', 'grill'],
+        ingredient_ids: [
+          resolved.beefPatty,
+          resolved.americanCheese,
+          resolved.onion,
+          resolved.burgerBuns,
+          resolved.ketchup,
+        ],
+        mise_ids: [
+          miseTaskIds[1],
+          miseTaskIds[2],
+        ],
         sort_order: 30,
         active: true,
       },
@@ -417,4 +451,3 @@ export function useKitchenMenuStackCreate() {
     createStarterKitchenMenuStack,
   }
 }
-

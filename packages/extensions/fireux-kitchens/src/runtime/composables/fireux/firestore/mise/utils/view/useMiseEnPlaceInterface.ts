@@ -1,8 +1,8 @@
 import { safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { KitchenIngredientResolved } from '../../../../../../../models/ingredient.model'
+import type { KitchenMiseTask } from '../../../../../../../models/kitchen-mise.model'
 
-const joinSubtitle = (category: string, unit: string): string =>
-  [safeString(category).trim(), safeString(unit).trim()].filter(Boolean).join(' · ')
+const joinSubtitle = (station: string, serviceDate: string): string =>
+  [safeString(station).trim(), safeString(serviceDate).trim()].filter(Boolean).join(' · ')
 
 export namespace MiseEnPlaceCard {
   export type Card = {
@@ -59,23 +59,26 @@ export function useMiseEnPlaceInterface() {
     details: Array<{ label: string; value: string | number }>
   }
 
-  function map(component: KitchenIngredientResolved): MiseEnPlaceCard.Card {
-    const id = safeString(component.id).trim()
-    const name = safeString(component.name).trim()
-    const category = safeString(component.category).trim()
-    const unit = safeString(component.unit).trim()
-    const status = safeString(component.status).trim()
-    const tags = safeStringArray(component.tags)
+  function map(task: KitchenMiseTask): MiseEnPlaceCard.Card {
+    const id = safeString(task.id).trim()
+    const name = safeString(task.title).trim() || id
+    const category = safeString(task.station).trim()
+    const unit = Number(task.estimated_minutes || 0) > 0 ? `${Number(task.estimated_minutes)}m` : ''
+    const status = safeString(task.status).trim()
+    const tags = [
+      safeString(task.priority).trim(),
+      ...safeStringArray(task.ingredient_ids).slice(0, 3),
+    ].filter(Boolean)
 
     return {
       id,
       to: '',
-      imageUrl: safeString(component.image_url).trim(),
+      imageUrl: '',
       title: name,
-      subtitle: joinSubtitle(category, unit),
+      subtitle: joinSubtitle(category, safeString(task.service_date).trim()),
       badges: tags.slice(0, 4),
       name,
-      description: safeString(component.description).trim(),
+      description: safeString(task.description).trim(),
       category,
       unit,
       status,
@@ -83,13 +86,13 @@ export function useMiseEnPlaceInterface() {
     }
   }
 
-  function card(target?: KitchenIngredientResolved | null | undefined): MiseEnPlaceCard.Card | null {
+  function card(target?: KitchenMiseTask | null | undefined): MiseEnPlaceCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
 
-  function pill(target?: KitchenIngredientResolved | null | undefined): MiseEnPlacePill | null {
+  function pill(target?: KitchenMiseTask | null | undefined): MiseEnPlacePill | null {
     const base = card(target)
     if (!base) return null
     return {
@@ -99,7 +102,7 @@ export function useMiseEnPlaceInterface() {
     }
   }
 
-  function cell(target?: KitchenIngredientResolved | null | undefined): MiseEnPlaceCell | null {
+  function cell(target?: KitchenMiseTask | null | undefined): MiseEnPlaceCell | null {
     const base = card(target)
     if (!base) return null
     return {
@@ -115,7 +118,7 @@ export function useMiseEnPlaceInterface() {
     }
   }
 
-  function preview(target?: KitchenIngredientResolved | null | undefined): MiseEnPlacePreview | null {
+  function preview(target?: KitchenMiseTask | null | undefined): MiseEnPlacePreview | null {
     const base = card(target)
     if (!base) return null
 
@@ -127,13 +130,13 @@ export function useMiseEnPlaceInterface() {
       prop: base.description,
       badges: base.badges,
       details: [
-        { label: 'Category', value: base.category || '—' },
-        { label: 'Unit', value: base.unit || '—' },
+        { label: 'Station', value: base.category || '—' },
+        { label: 'ETA', value: base.unit || '—' },
       ],
     }
   }
 
-  function profile(target?: KitchenIngredientResolved | null | undefined): MiseEnPlaceProfile | null {
+  function profile(target?: KitchenMiseTask | null | undefined): MiseEnPlaceProfile | null {
     const base = card(target)
     if (!base) return null
 
@@ -149,14 +152,16 @@ export function useMiseEnPlaceInterface() {
     }
   }
 
-  function searchText(component: KitchenIngredientResolved): string {
-    const mapped = map(component)
+  function searchText(task: KitchenMiseTask): string {
+    const mapped = map(task)
     return [
       mapped.name,
       mapped.category,
       mapped.unit,
       mapped.status,
       mapped.tags.join(' '),
+      safeString(task.recipe_id).trim(),
+      safeStringArray(task.ingredient_ids).join(' '),
       mapped.id,
     ]
       .join(' ')

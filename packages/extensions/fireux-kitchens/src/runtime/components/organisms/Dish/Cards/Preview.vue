@@ -1,73 +1,44 @@
 <template>
   <UCard class="overflow-hidden">
     <div class="space-y-3">
-      <div class="flex items-center gap-3">
-        <UAvatar
-          :src="imageUrl || undefined"
-          icon="i-lucide-utensils"
-          size="xl"
-        />
-
-        <div class="min-w-0 flex-1">
-          <div class="flex items-start justify-between gap-2">
-            <div class="min-w-0">
-              <div class="truncate text-base font-semibold">{{ name }}</div>
-              <div
-                v-if="subtitle"
-                class="truncate text-xs text-dimmed"
-              >
-                {{ subtitle }}
-              </div>
-            </div>
-
-            <UBadge
-              v-if="status"
-              variant="soft"
-              color="neutral"
-              size="xs"
-              class="shrink-0"
-            >
-              {{ status }}
-            </UBadge>
-          </div>
-
-          <div
-            v-if="showBody"
-            class="mt-1 line-clamp-2 text-xs text-dimmed"
-          >
-            <span v-if="prop">{{ prop }}</span>
-            <span v-else class="italic">missing</span>
-          </div>
+      <div class="mx-auto h-[200px] w-[200px] overflow-hidden rounded-md border border-default bg-elevated/40">
+        <img
+          v-if="imageUrl"
+          :src="imageUrl"
+          alt="Dish image"
+          class="h-[200px] w-[200px] object-cover"
+          loading="lazy"
+        >
+        <div v-else class="flex h-[200px] w-[200px] items-center justify-center text-dimmed">
+          <UIcon name="i-lucide-utensils" class="size-6" />
         </div>
       </div>
 
-      <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
-        <UBadge
-          v-for="badge in badges"
-          :key="badge"
-          variant="soft"
-          color="neutral"
-          size="xs"
-        >
-          {{ badge }}
-        </UBadge>
+      <div class="space-y-2">
+        <div v-if="ingredientPills.length" class="flex flex-wrap items-center gap-1">
+          <IngredientCardsPill
+            v-for="pill in ingredientPills"
+            :key="pill.id"
+            :to="pill.to"
+            :title="pill.title"
+            :image-url="pill.imageUrl"
+            :link="false"
+          >
+          </IngredientCardsPill>
+        </div>
       </div>
 
-      <div
-        v-if="details?.length"
-        class="space-y-2 text-xs text-dimmed"
-      >
-        <div
-          v-for="item in details"
-          :key="item.label"
-          class="grid gap-0.5"
-        >
-          <div class="text-[11px] font-medium uppercase tracking-wide text-muted">
-            {{ item.label }}
-          </div>
-          <div class="truncate">
-            {{ formatValue(item.value) }}
-          </div>
+      <div class="space-y-2">
+        <div v-if="misePills.length" class="flex flex-wrap items-center gap-1">
+          <MiseCardsPill
+            v-for="pill in misePills"
+            :key="pill.id"
+            :to="pill.to"
+            :title="pill.title"
+            :image-url="pill.imageUrl"
+            :link="false"
+          >
+          </MiseCardsPill>
         </div>
       </div>
 
@@ -79,33 +50,14 @@
 </template>
 
 <script setup lang="ts">
-type DishPreviewDetail = {
-  label: string
-  value?: string | number | null
-}
-
 type Props = {
   imageUrl: string
-  name: string
-  subtitle: string
-  status: string
-  prop?: string
-  badges?: string[]
-  details?: DishPreviewDetail[]
-  showBadges?: boolean
-  showBody?: boolean
+  ingredientPills?: Array<{ id: string; to: string; title: string; imageUrl: string }>
+  misePills?: Array<{ id: string; to: string; title: string; imageUrl: string }>
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  badges: () => [],
-  details: () => [],
-  showBadges: true,
-  showBody: true,
+  ingredientPills: () => [],
+  misePills: () => [],
 })
-
-const formatValue = (value?: string | number | null) => {
-  if (value == null) return '—'
-  const str = String(value).trim()
-  return str || '—'
-}
 </script>

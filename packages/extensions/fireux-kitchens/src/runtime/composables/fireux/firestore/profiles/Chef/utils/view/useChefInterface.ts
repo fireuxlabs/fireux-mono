@@ -12,7 +12,7 @@ export namespace ChefCard {
     id: string
     to: string
 
-    // Media (empty string means unset)
+    // Canonical media: hydrated user avatar only (empty string means unset).
     avatarUrl: string
     secondaryAvatarUrl?: string
 
@@ -44,18 +44,13 @@ export function useChefInterface(
         ? safeStringArray(p.chef_signature_dishes)
         : safeStringArray(p.specialties)
     const org = safeString(p.chef_organization_name) || safeString(p.organization_name)
-    const profileImage = safeString(p.chef_image)
     const userAvatar = safeString(u?.avatar)
-    const secondaryAvatarUrl = profileImage && userAvatar && profileImage !== userAvatar
-      ? userAvatar
-      : ''
 
     return {
       id,
       to: id ? `/${chefConfig.collectionName}/${id}` : '',
 
-      avatarUrl: profileImage || userAvatar,
-      secondaryAvatarUrl,
+      avatarUrl: userAvatar,
 
       // Canonical: chef pills are user-hydrated; no legacy profile-name fallbacks.
       displayName: safeString(u?.display_name),

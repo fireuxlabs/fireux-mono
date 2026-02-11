@@ -78,7 +78,7 @@
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
 import { useDishInterface } from '../../../../composables/fireux/firestore/dish/utils/view/useDishInterface';
-import type { KitchenDish } from '../../../../models/kitchen-dish.model';
+import type { KitchenDish } from '../../../../models/dish.model';
 
 const props = withDefaults(
   defineProps<{
