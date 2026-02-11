@@ -12,6 +12,9 @@
             :collection="myIngredients"
             title="My ingredients"
             description="Ingredients attached to this kitchen."
+            dev-json-title="Kitchen ingredients (JSON)"
+            dev-json-context="dashboard kitchen · my ingredients"
+            :dev-json-data="myIngredientsDevJson"
           />
         </section>
 
@@ -32,11 +35,9 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { buildKitchenIngredient, dummyKitchenScenario } from '../../../../../../../../dummy/scenario'
 import { useRuntimeKitchen } from '../../../composables/fireux/app/useRuntimeKitchen'
-import { useIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
-import { useKitchenIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useKitchenIngredientFetch'
-import { useKitchenIngredientCreate } from '../../../composables/fireux/firestore/ingredient/mutations/useKitchenIngredientCreate'
 import type { Ingredient } from '../../../models/ingredient.model'
 
 definePageMeta({
@@ -53,38 +54,43 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtimeKitchenId, runtimeKitchenCollectionPath } = useRuntimeKitchen()
-
-const { ingredients: kitchenIngredientsResolved } = useKitchenIngredientFetch(
-  runtimeKitchenId,
-  { kitchenCollectionPath: runtimeKitchenCollectionPath }
-)
-const { ingredients: globalIngredientsResolved } = useIngredientFetch()
-const { createKitchenIngredient } = useKitchenIngredientCreate()
+const runtimeKitchen = useRuntimeKitchen()
+const runtimeKitchenId = computed(() => String(runtimeKitchen.value?.id || '').trim())
+const runtimeKitchenCollectionPath = 'test-kitchens'
 const toast = useToastify()
 
-const myIngredients = computed(() => kitchenIngredientsResolved.value ?? [])
-const globalIngredients = computed(() => globalIngredientsResolved.value ?? [])
+const myIngredients = ref([...dummyKitchenScenario.kitchenIngredients])
+const globalIngredients = computed(() => dummyKitchenScenario.globalIngredients)
+
+const myIngredientsDevJson = computed(() => ({
+  kitchenId: String(runtimeKitchenId.value || '').trim(),
+  kitchenCollectionPath: runtimeKitchenCollectionPath,
+  kitchenIngredientsPath: `${runtimeKitchenCollectionPath}/${runtimeKitchenId.value}/ingredients`,
+  count: myIngredients.value.length,
+  ingredients: myIngredients.value,
+}))
 
 const handleGlobalSelect = async (ingredient: Ingredient) => {
-  const kitchenId = String(runtimeKitchenId || '').trim()
+  const kitchenId = String(runtimeKitchenId.value || '').trim()
   if (!kitchenId) {
     toast.error('Kitchen id missing')
     return
   }
 
   try {
-    console.info('[dashboard-kitchen-ingredients] attach click', {
-      kitchenId,
-      kitchenCollectionPath: runtimeKitchenCollectionPath,
-      ingredientId: ingredient.id,
-    })
-    await createKitchenIngredient(kitchenId, {
-      ingredient_id: ingredient.id,
-    }, {
-      kitchenCollectionPath: runtimeKitchenCollectionPath,
-    })
-    toast.success('Ingredient attached to kitchen')
+    const exists = myIngredients.value.some(
+      (entry) => String(entry.ingredient_id || entry.id || '').trim() === String(ingredient.id)
+    )
+    if (exists) {
+      toast.info('Ingredient already attached')
+      return
+    }
+
+    myIngredients.value = [
+      buildKitchenIngredient(ingredient, kitchenId),
+      ...myIngredients.value,
+    ]
+    toast.success('Ingredient attached (dummy)')
   } catch (error: any) {
     toast.error(String(error?.message || 'Failed to attach ingredient'))
   }

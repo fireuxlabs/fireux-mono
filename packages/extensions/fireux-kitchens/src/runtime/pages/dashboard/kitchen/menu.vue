@@ -1,180 +1,97 @@
 <template>
   <UDashboardPanel id="dashboard-kitchen-menu">
     <template #header>
-      <LayoutsDashboardNavbar title="Menu Stack" />
+      <LayoutsDashboardNavbar title="Menu" />
     </template>
 
     <template #body>
-      <div class="panels-stack">
+      <div class="space-y-6">
         <UAlert
           v-if="!runtimeKitchenId"
           icon="i-lucide-triangle-alert"
           color="warning"
           title="Select a kitchen first"
-          description="Open /kitchens and select a runtime kitchen before creating menu data."
+          description="Open /kitchens and select a runtime kitchen before building a menu."
         />
 
-        <template v-else>
-          <UCard>
-            <template #header>
-              <div class="space-y-1">
-                <div class="flex items-center justify-between gap-2">
-                  <h2 class="text-base font-semibold">Starter menu builder</h2>
-                  <UBadge variant="soft" color="neutral">
-                    {{ selectedKitchenName }}
-                  </UBadge>
-                </div>
-                <p class="text-xs text-dimmed">
-                  Create one menu, three dishes, linked recipes, and mise en place tasks from your
-                  current global ingredients.
-                </p>
+        <UCard v-else>
+          <template #header>
+            <div class="space-y-1">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <h2 class="text-base font-semibold">Add dish</h2>
+                <UBadge variant="soft" color="neutral">
+                  {{ runtimeKitchenId }}
+                </UBadge>
               </div>
-            </template>
+              <p class="text-xs text-dimmed">
+                Create dishes for the menu. This is UI-only for now.
+              </p>
+            </div>
+          </template>
 
-            <div class="flex flex-wrap items-center gap-2">
-              <UButton
-                :loading="isSeeding"
-                color="primary"
-                icon="i-lucide-wand-sparkles"
-                @click="handleSeed"
-              >
-                Seed starter menu stack
+          <div class="space-y-3">
+            <div>
+              <div class="text-xs font-medium text-dimmed">Dish name</div>
+              <UInput v-model="form.name" placeholder="Cheeseburger" />
+            </div>
+
+            <div>
+              <div class="text-xs font-medium text-dimmed">Description</div>
+              <UTextarea
+                v-model="form.description"
+                placeholder="Toasted bun, beef patty, lettuce, tomato, cheese"
+              />
+            </div>
+
+            <div class="pt-2">
+              <UButton color="primary" @click="handleSubmit">
+                Add dish
               </UButton>
               <UButton
-                variant="soft"
+                class="ml-2"
+                variant="ghost"
                 color="neutral"
-                icon="i-lucide-house"
-                :to="homeRoute"
+                @click="resetForm"
               >
-                Back to kitchen home
+                Clear
               </UButton>
             </div>
-          </UCard>
-
-          <div class="grid gap-4 lg:grid-cols-2">
-            <UCard>
-              <template #header>
-                <div class="flex items-center justify-between gap-2">
-                  <div class="text-sm font-semibold">Menus</div>
-                  <UBadge variant="soft">{{ counts.menus }}</UBadge>
-                </div>
-              </template>
-
-              <div v-if="menus.length" class="space-y-2 text-sm">
-                <div
-                  v-for="menu in menus"
-                  :key="menu.id"
-                  class="rounded-md border border-default p-2"
-                >
-                  <p class="font-medium">{{ menu.name || menu.id }}</p>
-                  <p class="text-xs text-dimmed">{{ menu.description || 'No description' }}</p>
-                  <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-dimmed">
-                    <span>Status: {{ menu.status }}</span>
-                    <span>Service: {{ menu.service }}</span>
-                    <span>Dishes: {{ menu.dish_ids?.length ?? 0 }}</span>
-                  </div>
-                </div>
-              </div>
-              <p v-else class="text-sm text-dimmed">
-                No menus yet.
-              </p>
-            </UCard>
-
-            <UCard>
-              <template #header>
-                <div class="flex items-center justify-between gap-2">
-                  <div class="text-sm font-semibold">Dishes</div>
-                  <UBadge variant="soft">{{ counts.dishes }}</UBadge>
-                </div>
-              </template>
-
-              <div v-if="dishes.length" class="space-y-2 text-sm">
-                <div
-                  v-for="dish in dishesSorted"
-                  :key="dish.id"
-                  class="rounded-md border border-default p-2"
-                >
-                  <p class="font-medium">{{ dish.name || dish.id }}</p>
-                  <p class="text-xs text-dimmed">{{ dish.description || 'No description' }}</p>
-                  <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-dimmed">
-                    <span>Station: {{ dish.station || 'n/a' }}</span>
-                    <span>Course: {{ dish.course || 'n/a' }}</span>
-                    <span>Recipe: {{ dish.recipe_id || 'n/a' }}</span>
-                  </div>
-                </div>
-              </div>
-              <p v-else class="text-sm text-dimmed">
-                No dishes yet.
-              </p>
-            </UCard>
-
-            <UCard>
-              <template #header>
-                <div class="flex items-center justify-between gap-2">
-                  <div class="text-sm font-semibold">Recipes</div>
-                  <UBadge variant="soft">{{ counts.recipes }}</UBadge>
-                </div>
-              </template>
-
-              <div v-if="recipes.length" class="space-y-2 text-sm">
-                <div
-                  v-for="recipe in recipes"
-                  :key="recipe.id"
-                  class="rounded-md border border-default p-2"
-                >
-                  <p class="font-medium">{{ recipe.name || recipe.id }}</p>
-                  <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-dimmed">
-                    <span>Lines: {{ recipe.ingredient_lines?.length ?? 0 }}</span>
-                    <span>Steps: {{ recipe.steps?.length ?? 0 }}</span>
-                    <span>Yield: {{ recipe.yield_qty }} {{ recipe.yield_unit }}</span>
-                  </div>
-                </div>
-              </div>
-              <p v-else class="text-sm text-dimmed">
-                No recipes yet.
-              </p>
-            </UCard>
-
-            <UCard>
-              <template #header>
-                <div class="flex items-center justify-between gap-2">
-                  <div class="text-sm font-semibold">Mise en place tasks</div>
-                  <UBadge variant="soft">{{ counts.mise }}</UBadge>
-                </div>
-              </template>
-
-              <div v-if="miseTasks.length" class="space-y-2 text-sm">
-                <div
-                  v-for="task in miseTasks"
-                  :key="task.id"
-                  class="rounded-md border border-default p-2"
-                >
-                  <p class="font-medium">{{ task.title || task.id }}</p>
-                  <div class="mt-1 flex flex-wrap items-center gap-2 text-xs text-dimmed">
-                    <span>Station: {{ task.station || 'n/a' }}</span>
-                    <span>Status: {{ task.status }}</span>
-                    <span>Checklist: {{ task.checklist?.length ?? 0 }}</span>
-                  </div>
-                </div>
-              </div>
-              <p v-else class="text-sm text-dimmed">
-                No mise tasks yet.
-              </p>
-            </UCard>
           </div>
-        </template>
+        </UCard>
+
+        <UCard v-if="runtimeKitchenId">
+          <template #header>
+            <div class="flex items-center justify-between gap-2">
+              <div class="text-sm font-semibold">Dishes</div>
+              <UBadge variant="soft">{{ dishes.length }}</UBadge>
+            </div>
+          </template>
+
+          <div v-if="dishes.length" class="space-y-2">
+            <div
+              v-for="dish in dishes"
+              :key="dish.id"
+              class="rounded-md border border-default p-3"
+            >
+              <div class="text-sm font-semibold">{{ dish.name }}</div>
+              <p class="text-xs text-dimmed">
+                {{ dish.description || 'No description yet.' }}
+              </p>
+            </div>
+          </div>
+          <p v-else class="text-sm text-dimmed">
+            No dishes yet.
+          </p>
+        </UCard>
       </div>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { useRoute } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, ref } from 'vue'
-import { useIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
-import { useKitchenMenuStackFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenMenuStackFetch'
-import { useKitchenMenuStackCreate } from '../../../composables/fireux/firestore/kitchen/mutations/useKitchenMenuStackCreate'
+import { useRuntimeKitchen } from '../../../composables/fireux/app/useRuntimeKitchen'
 
 definePageMeta({
   layout: 'kitchen-dashboard',
@@ -190,57 +107,39 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const route = useRoute()
-const runtimeKitchenId = computed(() => {
-  const raw = route.query.kitchenId
-  const value = Array.isArray(raw) ? raw[0] : raw
-  return String(value || '').trim()
-})
-const dashboardQuery = computed(() =>
-  runtimeKitchenId.value ? { kitchenId: runtimeKitchenId.value } : undefined
-)
-const { ingredients } = useIngredientFetch()
-const { menus, dishes, recipes, miseTasks, counts } = useKitchenMenuStackFetch(runtimeKitchenId)
-const { createStarterKitchenMenuStack } = useKitchenMenuStackCreate()
+const runtimeKitchen = useRuntimeKitchen()
+const runtimeKitchenId = computed(() => String(runtimeKitchen.value?.id || '').trim())
+
 const toast = useToastify()
 
-const isSeeding = ref(false)
+const dishes = ref<{ id: string; name: string; description: string }[]>([])
 
-const selectedKitchenName = computed(() => runtimeKitchenId.value)
+const form = ref({
+  name: '',
+  description: '',
+})
 
-const dishesSorted = computed(() =>
-  [...(dishes.value ?? [])].sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0))
-)
+const resetForm = () => {
+  form.value = {
+    name: '',
+    description: '',
+  }
+}
 
-const homeRoute = computed(() =>
-  dashboardQuery.value
-    ? {
-        path: '/dashboard/kitchen',
-        query: dashboardQuery.value,
-      }
-    : '/dashboard/kitchen'
-)
-
-const handleSeed = async () => {
-  if (!runtimeKitchenId.value) {
-    toast.warn('Select a kitchen first')
+const handleSubmit = () => {
+  if (!form.value.name.trim()) {
+    toast.error('Dish name is required')
     return
   }
 
-  isSeeding.value = true
-  try {
-    const result = await createStarterKitchenMenuStack(
-      runtimeKitchenId.value,
-      ingredients.value ?? []
-    )
-    toast.success(
-      `Seeded menu stack (${result.dishIds.length} dishes, ${result.recipeIds.length} recipes, ${result.miseTaskIds.length} mise tasks).`
-    )
-  } catch (error: any) {
-    toast.error(String(error?.message || 'Failed to seed kitchen menu stack'))
-  } finally {
-    isSeeding.value = false
+  const nextDish = {
+    id: `${form.value.name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${Date.now()}`,
+    name: form.value.name.trim(),
+    description: form.value.description.trim(),
   }
+  dishes.value = [nextDish, ...dishes.value]
+  toast.success('Dish added (UI only)')
+  resetForm()
 }
 </script>
 

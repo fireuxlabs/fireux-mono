@@ -25,6 +25,14 @@
           <div class="text-xs font-medium text-dimmed">Profile</div>
           <KitchenCardsProfile v-if="profileCard" :model="profileCard" />
         </div>
+
+        <div v-if="isDev" class="space-y-2">
+          <div class="text-xs font-medium text-dimmed">Runtime debug</div>
+          <pre class="rounded-md border border-default bg-muted/30 p-3 text-xs">
+{{ JSON.stringify(debugPayload, null, 2) }}
+          </pre>
+        </div>
+
       </div>
     </template>
   </UDashboardPanel>
@@ -35,7 +43,7 @@ import { computed } from 'vue'
 import { useRuntimeKitchen } from '../../../composables/fireux/app/useRuntimeKitchen'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
-const { theRuntimeKitchen } = useRuntimeKitchen()
+const theRuntimeKitchen = useRuntimeKitchen()
 const { pill, cell, preview, profile } = useKitchenInterface()
 
 const pillCard = computed(() => pill(theRuntimeKitchen.value))
@@ -43,6 +51,12 @@ const cellCard = computed(() => cell(theRuntimeKitchen.value))
 const previewCard = computed(() => preview(theRuntimeKitchen.value))
 const profileCard = computed(() => profile(theRuntimeKitchen.value))
 
+const isDev = import.meta.dev
+
+const debugPayload = computed(() => ({
+  runtimeKitchenId: theRuntimeKitchen.value?.id || '',
+  runtimeKitchen: theRuntimeKitchen.value,
+}))
 
 definePageMeta({
   layout: 'kitchen-dashboard',

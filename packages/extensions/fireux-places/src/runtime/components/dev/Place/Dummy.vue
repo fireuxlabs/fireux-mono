@@ -63,8 +63,8 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { dummyPlaceDocDataList, dummyPlaceGoogleData } from '../../../../../../../../dummy/place.dummy'
 import { usePlacesInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlacesInterface'
-import type { Place } from '../../../models/objects/place.model'
-import { Place as PlaceModelRuntime } from '../../../models/objects/place.model'
+import type { Place } from '../../../models/place.model'
+import { Place as PlaceModelRuntime } from '../../../models/place.model'
 
 const emit = defineEmits<{
   (event: 'ready', place: Place): void

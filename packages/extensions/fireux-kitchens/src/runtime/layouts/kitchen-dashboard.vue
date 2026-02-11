@@ -69,7 +69,7 @@ defineOptions({ name: 'kitchen-dashboard' })
 const open = ref(false)
 const { desktop } = useKitchenDashboardNav()
 const { isOpen: isNotificationsSlideoverOpen } = useDashboardNotifications()
-const { theRuntimeKitchen } = useRuntimeKitchen()
+const theRuntimeKitchen = useRuntimeKitchen()
 const { pill } = useKitchenInterface()
 
 const pillCard = computed(() => pill(theRuntimeKitchen.value))

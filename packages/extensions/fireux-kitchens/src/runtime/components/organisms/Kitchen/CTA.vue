@@ -20,7 +20,25 @@
             color="neutral"
             :disabled="!testKitchenId"
             trailing-icon="i-lucide-arrow-right"
-            @click="openRuntimeKitchen({ name: testKitchenTitle, image_url: testKitchenImageUrl })"
+            @click="goToKitchen()"
+          >
+            go to dash
+          </UButton>
+        </div>
+
+        <div class="space-y-3">
+          <p class="text-xs font-semibold text-gray-900 dark:text-gray-100">Dummy Kitchen</p>
+          <KitchenCardsPill
+            v-bind="dummyKitchenPill"
+            :show-badges="false"
+          />
+          <UButton
+            size="sm"
+            variant="subtle"
+            color="neutral"
+            :disabled="!dummyKitchenId"
+            trailing-icon="i-lucide-arrow-right"
+            @click="goToKitchen()"
           >
             go to dash
           </UButton>
@@ -41,8 +59,9 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from '#imports'
 import { computed } from 'vue'
-import { useRuntimeKitchen } from '../../../composables/fireux/app/useRuntimeKitchen'
+import { dummyKitchenHydrated } from '../../../../../../../../dummy/kitchen.dummy'
 
 const testKitchen = {
   id: 'jMK33p5XlhYS8rBCEf8qUiogfMg2',
@@ -64,5 +83,23 @@ const testKitchenPill = computed(() => ({
   badges: [],
 }))
 
-const { openRuntimeKitchen } = useRuntimeKitchen(testKitchenId, true)
+const router = useRouter()
+
+const goToKitchen = async () => {
+  await router.push('/dashboard/kitchen')
+}
+
+const dummyKitchenId = String(dummyKitchenHydrated?.id || '').trim()
+const dummyKitchenTitle = String(dummyKitchenHydrated?.name || 'Dummy kitchen')
+const dummyKitchenImageUrl =
+  String(dummyKitchenHydrated?.image_url || testKitchenImageUrl)
+
+const dummyKitchenPill = computed(() => ({
+  to: '',
+  imageUrl: dummyKitchenImageUrl,
+  title: dummyKitchenTitle,
+  subtitle: 'Dummy kitchen',
+  badges: [],
+}))
+
 </script>

@@ -58,10 +58,11 @@
 
     <div v-if="isDev">
       <DevJson
-        title="Ingredients (JSON)"
-        context="collection manager · ingredients"
-        :data="collection"
-        :default-open="false"
+        :title="devJsonTitle"
+        :context="devJsonContext"
+        :data="devJsonData"
+        :default-open="devJsonDefaultOpen"
+        :hide-when-empty="devJsonHideWhenEmpty"
       />
     </div>
   </UCard>
@@ -79,6 +80,11 @@ const props = withDefaults(
     title?: string
     description?: string
     link?: boolean
+    devJsonTitle?: string
+    devJsonContext?: string
+    devJsonData?: unknown
+    devJsonDefaultOpen?: boolean
+    devJsonHideWhenEmpty?: boolean
   }>(),
   {
     title: 'Ingredients',
@@ -120,6 +126,14 @@ const {
 })
 
 const isDev = import.meta.dev
+
+const devJsonTitle = computed(() => props.devJsonTitle || 'Ingredients (JSON)')
+const devJsonContext = computed(
+  () => props.devJsonContext || 'collection manager · ingredients'
+)
+const devJsonData = computed(() => props.devJsonData ?? collection.value)
+const devJsonDefaultOpen = computed(() => props.devJsonDefaultOpen ?? false)
+const devJsonHideWhenEmpty = computed(() => props.devJsonHideWhenEmpty ?? true)
 
 const handleSelect = (id: string) => {
   const ingredient = ingredientById.value.get(String(id || '').trim())
