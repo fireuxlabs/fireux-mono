@@ -169,22 +169,3 @@ export const buildGooglePlaceActionLinksProjection = (
     placeActionType: link.action_type,
     isPreferred: Boolean(link.preferred),
   }))
-
-// Backward-compatible aliases for existing kitchens imports.
-export const KitchenMenu = Menu
-export type KitchenMenu = Menu
-export type KitchenMenuStatus = MenuStatus
-export type KitchenMenuService = MenuService
-export type KitchenMenuCreateInput = MenuCreateInput
-export type KitchenMenuUpdateInput = MenuUpdateInput
-
-// Backward-compatible simple model used by local dummy fixtures.
-export const MenuSimple = {
-  id: '' as string,
-  name: '' as string,
-  dish_ids: [] as string[],
-} as const
-
-export type MenuSimple = {
-  [K in keyof typeof MenuSimple]: (typeof MenuSimple)[K]
-}

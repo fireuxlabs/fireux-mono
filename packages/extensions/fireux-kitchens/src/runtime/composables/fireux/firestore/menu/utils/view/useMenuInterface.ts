@@ -1,5 +1,5 @@
 import { safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { KitchenMenu } from '../../../../../../models/menu.model'
+import type { Menu } from '../../../../../../models/menu.model'
 
 const joinSubtitle = (service: string, status: string): string =>
   [safeString(service).trim(), safeString(status).trim()].filter(Boolean).join(' · ')
@@ -95,7 +95,7 @@ export function useMenuInterface() {
     return `${hh}:${mm}`
   }
 
-  function map(menu: KitchenMenu): MenuCard.Card {
+  function map(menu: Menu): MenuCard.Card {
     const id = safeString(menu.id).trim()
     const name = safeString(menu.name).trim() || id
     const service = safeString(menu.service).trim()
@@ -134,13 +134,13 @@ export function useMenuInterface() {
     }
   }
 
-  function card(target?: KitchenMenu | null | undefined): MenuCard.Card | null {
+  function card(target?: Menu | null | undefined): MenuCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
 
-  function pill(target?: KitchenMenu | null | undefined): MenuPill | null {
+  function pill(target?: Menu | null | undefined): MenuPill | null {
     const base = card(target)
     if (!base) return null
     return {
@@ -150,7 +150,7 @@ export function useMenuInterface() {
     }
   }
 
-  function cell(target?: KitchenMenu | null | undefined): MenuCell | null {
+  function cell(target?: Menu | null | undefined): MenuCell | null {
     const base = card(target)
     if (!base) return null
     return {
@@ -168,7 +168,7 @@ export function useMenuInterface() {
     }
   }
 
-  function preview(target?: KitchenMenu | null | undefined): MenuPreview | null {
+  function preview(target?: Menu | null | undefined): MenuPreview | null {
     const base = card(target)
     if (!base) return null
 
@@ -189,7 +189,7 @@ export function useMenuInterface() {
     }
   }
 
-  function profile(target?: KitchenMenu | null | undefined): MenuProfile | null {
+  function profile(target?: Menu | null | undefined): MenuProfile | null {
     const base = card(target)
     if (!base) return null
 
@@ -205,7 +205,7 @@ export function useMenuInterface() {
     }
   }
 
-  function searchText(menu: KitchenMenu): string {
+  function searchText(menu: Menu): string {
     const mapped = map(menu)
     return [
       mapped.name,

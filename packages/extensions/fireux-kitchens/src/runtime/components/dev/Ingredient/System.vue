@@ -74,9 +74,6 @@ const filteredDriftPayload = buildDriftPayload({
   map: ({ doc, id, drift }) => ({
     id,
     name: doc.name,
-    category: (doc as any).category ?? '',
-    unit: doc.unit,
-    status: doc.status,
     drift: {
       extra: drift.extra,
     },

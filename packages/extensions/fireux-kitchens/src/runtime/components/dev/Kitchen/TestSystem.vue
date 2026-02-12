@@ -44,6 +44,9 @@
           <UBadge variant="soft">Recipes: {{ syncCounts.recipes }}</UBadge>
           <UBadge variant="soft">Dishes: {{ syncCounts.dishes }}</UBadge>
           <UBadge variant="soft">Menus: {{ syncCounts.menus }}</UBadge>
+          <UBadge variant="soft">Suppliers: {{ syncCounts.suppliers }}</UBadge>
+          <UBadge variant="soft">Purchases: {{ syncCounts.purchases }}</UBadge>
+          <UBadge variant="soft">Orders: {{ syncCounts.orders }}</UBadge>
         </div>
 
         <p v-if="syncError" class="text-xs text-error">
@@ -102,12 +105,9 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore'
 import { computed, ref } from 'vue'
 import { useFirestore } from 'vuefire'
-import {
-  buildKitchenIngredient,
-  dummyKitchenScenario,
-} from '../../../../../../../../dummy/scenario'
+import { dummyKitchenScenario } from '../../../../../../../../dummy/scenario'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
-import type { Ingredient } from '../../../models/ingredient.model'
+import { KitchenIngredient as KitchenIngredientModel } from '../../../models/ingredient.model'
 import type { Kitchen, KitchenCollection } from '../../../models/kitchen.model'
 import { KitchenCollection as KitchenModelRuntime } from '../../../models/kitchen.model'
 
@@ -170,7 +170,15 @@ const kitchensDriftCopyPayload = buildKitchensCopyPayload({
   total: computed(() => kitchensCollectionValue.value.length),
 })
 
-type KitchenCollectionName = 'ingredients' | 'mise' | 'recipes' | 'dishes' | 'menus'
+type KitchenCollectionName =
+  | 'ingredients'
+  | 'mise'
+  | 'recipes'
+  | 'dishes'
+  | 'menus'
+  | 'suppliers'
+  | 'purchases'
+  | 'orders'
 
 const targetKitchenId = ref(String(dummyKitchenScenario.kitchen?.id || '').trim())
 const pruneMissing = ref(true)
@@ -180,12 +188,15 @@ const syncSummary = ref<{ kitchenId: string; written: number; pruned: number } |
 
 const syncCounts = computed(() => ({
   ingredients:
-    (dummyKitchenScenario.globalIngredients?.length ?? 0) +
+    (dummyKitchenScenario.kitchenIngredients?.length ?? 0) +
     (dummyKitchenScenario.kitchenPreparedComponents?.length ?? 0),
   mise: dummyKitchenScenario.menuStack.miseTasks.length,
   recipes: dummyKitchenScenario.menuStack.recipes.length,
   dishes: dummyKitchenScenario.menuStack.dishes.length,
   menus: dummyKitchenScenario.menuStack.menus.length,
+  suppliers: dummyKitchenScenario.procurementStack?.suppliers?.length ?? 0,
+  purchases: dummyKitchenScenario.procurementStack?.purchases?.length ?? 0,
+  orders: dummyKitchenScenario.serviceStack?.incomingOrders?.length ?? 0,
 }))
 
 const resolveCollectionPath = (kitchenId: string, name: KitchenCollectionName) =>
@@ -198,28 +209,33 @@ const withKitchenId = <T extends Record<string, unknown>>(docs: T[], kitchenId: 
     kitchen_id: kitchenId,
   }))
 
-const buildKitchenIngredientsForSync = (kitchenId: string) => {
+const buildKitchenIngredientsForSync = () => {
   const map = new Map<string, Record<string, unknown>>()
 
-  const push = (entry: Ingredient) => {
-    const doc = buildKitchenIngredient(entry, kitchenId) as unknown as Record<string, unknown>
-    const id = String(doc.id || '').trim()
+  const push = (entry: Record<string, unknown>) => {
+    const id = String(entry.id || '').trim()
     if (!id) return
+
     map.set(id, {
-      ...doc,
+      ...KitchenIngredientModel,
+      ...entry,
       id,
-      ingredient_id: id,
-      kitchen_id: kitchenId,
+      supplier_id: String(entry.supplier_id || '').trim(),
     })
   }
 
-  for (const ingredient of dummyKitchenScenario.globalIngredients ?? []) push(ingredient)
+  for (const ingredient of dummyKitchenScenario.kitchenIngredients ?? []) {
+    push(ingredient as unknown as Record<string, unknown>)
+  }
   for (const prepared of dummyKitchenScenario.kitchenPreparedComponents ?? []) {
-    push(prepared as unknown as Ingredient)
+    push(prepared as unknown as Record<string, unknown>)
   }
 
   return [...map.values()]
 }
+
+const asDocs = (value: unknown): Record<string, unknown>[] =>
+  Array.isArray(value) ? (value as Record<string, unknown>[]) : []
 
 const upsertCollection = async (
   kitchenId: string,
@@ -280,17 +296,29 @@ const syncDummyToTestKitchen = async () => {
     })
 
     const collections: Record<KitchenCollectionName, Record<string, unknown>[]> = {
-      ingredients: buildKitchenIngredientsForSync(kitchenId),
+      ingredients: buildKitchenIngredientsForSync(),
       mise: withKitchenId(dummyKitchenScenario.menuStack.miseTasks as Record<string, unknown>[], kitchenId),
       recipes: withKitchenId(dummyKitchenScenario.menuStack.recipes as Record<string, unknown>[], kitchenId),
       dishes: withKitchenId(dummyKitchenScenario.menuStack.dishes as Record<string, unknown>[], kitchenId),
       menus: withKitchenId(dummyKitchenScenario.menuStack.menus as Record<string, unknown>[], kitchenId),
+      suppliers: withKitchenId(asDocs(dummyKitchenScenario.procurementStack?.suppliers), kitchenId),
+      purchases: withKitchenId(asDocs(dummyKitchenScenario.procurementStack?.purchases), kitchenId),
+      orders: withKitchenId(asDocs(dummyKitchenScenario.serviceStack?.incomingOrders), kitchenId),
     }
 
     let totalWritten = 0
     let totalPruned = 0
 
-    for (const name of ['ingredients', 'mise', 'recipes', 'dishes', 'menus'] as KitchenCollectionName[]) {
+    for (const name of [
+      'ingredients',
+      'mise',
+      'recipes',
+      'dishes',
+      'menus',
+      'suppliers',
+      'purchases',
+      'orders',
+    ] as KitchenCollectionName[]) {
       const { collectionPath, keepIds, written } = await upsertCollection(
         kitchenId,
         name,

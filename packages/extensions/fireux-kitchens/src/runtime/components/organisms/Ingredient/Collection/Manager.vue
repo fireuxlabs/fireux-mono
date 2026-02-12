@@ -40,6 +40,7 @@
         >
           <IngredientCardsPill
             v-bind="card"
+            :show-slug="showSlug"
             :warning="warningByIngredientId[card.id]"
           />
         </NuxtLink>
@@ -53,7 +54,7 @@
         >
           <IngredientCardsCell
             v-bind="card"
-            :prop="card.description"
+            :show-slug="showSlug"
             :warning="warningByIngredientId[card.id]"
           />
         </NuxtLink>
@@ -97,11 +98,13 @@ const props = withDefaults(
     devJsonDefaultOpen?: boolean
     devJsonHideWhenEmpty?: boolean
     warningByIngredientId?: Record<string, string>
+    showSlug?: boolean
   }>(),
   {
     title: 'Ingredients',
     description: 'Browse global ingredients available to this runtime.',
     link: true,
+    showSlug: false,
   }
 )
 
@@ -112,6 +115,7 @@ const emit = defineEmits<{
 const { card: makeCard, searchText } = useIngredientInterface()
 
 const collection = computed(() => props.collection ?? [])
+const showSlug = computed(() => props.showSlug === true)
 const warningByIngredientId = computed(() => props.warningByIngredientId ?? {})
 const linkEnabled = computed(() => props.link !== false)
 const totalCount = computed(() => collection.value.length)

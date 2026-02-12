@@ -2,10 +2,10 @@
   <UCard>
     <template #header>
       <div class="space-y-1">
-        <div class="text-sm font-semibold">Add Ingredient</div>
+        <div class="text-sm font-semibold">Add Ingredient To Kitchen</div>
         <p class="text-xs text-dimmed">
-          Create a bare ingredient for kitchen usage. If it does not exist in
-          global yet, it will be created there first.
+          Attach an ingredient to this kitchen. If it does not exist in global
+          yet, it will be created first.
         </p>
       </div>
     </template>
@@ -56,7 +56,7 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify';
 import { computed, ref } from 'vue';
-import { useKitchenIngredientCreate } from '../../../../../composables/fireux/firestore/ingredient/mutations/useKitchenIngredientCreate';
+import { useKitchenIngredientAdd } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenIngredientAdd';
 import {
   createDefaultKitchenIngredientForm,
   type KitchenIngredientCreateForm,
@@ -72,7 +72,7 @@ const emit = defineEmits<{
 }>()
 
 const toast = useToastify()
-const { createKitchenIngredient } = useKitchenIngredientCreate()
+const { addIngredientToKitchen } = useKitchenIngredientAdd()
 
 const submitting = ref(false)
 const isClearConfirmOpen = ref(false)
@@ -95,7 +95,7 @@ const handleCreate = async () => {
 
   try {
     const kitchenCollectionPath = String(props.kitchenCollectionPath || '').trim()
-    const createdId = await createKitchenIngredient(
+    const createdId = await addIngredientToKitchen(
       resolvedKitchenId.value,
       form.value,
       kitchenCollectionPath

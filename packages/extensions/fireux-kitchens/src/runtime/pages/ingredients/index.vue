@@ -15,7 +15,10 @@
 
     <UPageBody class="pagebody">
       <IngredientCTA :can-create="isAdmin" />
-      <IngredientCollectionManager :collection="ingredients" />
+      <IngredientCollectionManager
+        :collection="ingredients"
+        :show-slug="true"
+      />
     </UPageBody>
   </UPage>
 </template>

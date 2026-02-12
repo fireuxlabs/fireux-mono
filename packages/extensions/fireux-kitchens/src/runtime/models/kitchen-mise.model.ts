@@ -30,6 +30,7 @@ export const KitchenMiseTask = {
 
   ingredient_ids: [] as string[],
   mise_ids: [] as string[],
+  menu_id: '' as string,
   recipe_id: '' as string,
   assignee_ids: [] as string[],
   checklist: [] as KitchenMiseChecklistItem[],
@@ -56,4 +57,3 @@ export type KitchenMiseTaskCreateInput = Omit<
 export type KitchenMiseTaskUpdateInput = Partial<
   Omit<KitchenMiseTaskCreateInput, 'id' | 'kitchen_id'>
 >
-

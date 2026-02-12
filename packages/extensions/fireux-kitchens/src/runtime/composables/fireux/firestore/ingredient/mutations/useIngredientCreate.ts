@@ -5,8 +5,6 @@ import {
     Ingredient,
     type IngredientCreateInput,
     type Ingredient as IngredientDoc,
-    type IngredientStatus,
-    type IngredientUnit,
 } from '../../../../../models/ingredient.model'
 
 const GLOBAL_COLLECTION_PATH = 'ingredients'
@@ -20,40 +18,10 @@ const toSlug = (value: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
 
-const resolveIngredientId = (name: string, unit: IngredientUnit) => {
+const resolveIngredientId = (name: string) => {
   const base = toSlug(name)
-  return base ? `${base}-${unit}` : ''
+  return base || ''
 }
-
-const resolveUnit = (value: unknown): IngredientUnit => {
-  const allowed = new Set<IngredientUnit>([
-    'g',
-    'kg',
-    'ml',
-    'l',
-    'piece',
-    'pack',
-    'tray',
-    'case',
-  ])
-  const normalized = String(value || '').trim() as IngredientUnit
-  return allowed.has(normalized) ? normalized : 'piece'
-}
-
-const resolveIngredientStatus = (value: unknown): IngredientStatus => {
-  const allowed = new Set<IngredientStatus>(['active', 'archived'])
-  const normalized = String(value || '').trim() as IngredientStatus
-  return allowed.has(normalized) ? normalized : 'active'
-}
-
-const toStringArray = (value: unknown) =>
-  Array.from(
-    new Set(
-      (Array.isArray(value) ? value : [])
-        .map((item) => String(item || '').trim())
-        .filter(Boolean)
-    )
-  )
 
 const buildIngredientPayload = (
   ingredientId: string,
@@ -62,13 +30,7 @@ const buildIngredientPayload = (
   ...Ingredient,
   id: ingredientId,
   name: String(draft.name || '').trim(),
-  description: String(draft.description || '').trim(),
-  category: String(draft.category || '').trim(),
   image_url: String(draft.image_url || '').trim(),
-  unit: resolveUnit(draft.unit),
-  status: resolveIngredientStatus(draft.status),
-  allergens: toStringArray(draft.allergens),
-  tags: toStringArray(draft.tags),
 })
 
 export function useIngredientCreate() {
@@ -79,8 +41,7 @@ export function useIngredientCreate() {
     const name = String(draft.name || '').trim()
     if (!name) throw new Error('Ingredient name is required')
 
-    const unit = resolveUnit(draft.unit)
-    const ingredientId = resolveIngredientId(name, unit)
+    const ingredientId = resolveIngredientId(name)
     if (!ingredientId) throw new Error('Unable to resolve ingredient id')
 
     const ingredientRef = doc(db, GLOBAL_COLLECTION_PATH, ingredientId)
@@ -89,10 +50,7 @@ export function useIngredientCreate() {
       throw new Error('Ingredient already exists')
     }
 
-    const payload = buildIngredientPayload(ingredientId, {
-      ...draft,
-      unit,
-    })
+    const payload = buildIngredientPayload(ingredientId, draft)
 
     await setDocument<IngredientDoc>(GLOBAL_COLLECTION_PATH, ingredientId, payload, {
       app: true,

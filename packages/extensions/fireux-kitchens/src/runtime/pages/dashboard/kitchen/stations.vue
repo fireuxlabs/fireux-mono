@@ -60,7 +60,7 @@ import {
 } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
 import { useKitchenMenuStackFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenMenuStackFetch'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import type { KitchenMenu } from '../../../models/menu.model'
+import type { Menu } from '../../../models/menu.model'
 
 definePageMeta({
   layout: 'kitchen-dashboard',
@@ -97,7 +97,7 @@ const { menus: firestoreMenus } = useKitchenMenuStackFetch(runtimeKitchenId, {
 })
 const dummyMenus = ref([...dummyKitchenScenario.menuStack.menus])
 
-const menus = computed<KitchenMenu[]>(() =>
+const menus = computed<Menu[]>(() =>
   runtimeKitchenMode.value === 'dummy'
     ? dummyMenus.value
     : [...(firestoreMenus.value ?? [])]
@@ -133,7 +133,7 @@ const toDate = (value: unknown): Date | null => {
   return null
 }
 
-const isMenuActiveNow = (menu: KitchenMenu) => {
+const isMenuActiveNow = (menu: Menu) => {
   if (!menu.active) return false
 
   const startsAt = toDate(menu.starts_at)

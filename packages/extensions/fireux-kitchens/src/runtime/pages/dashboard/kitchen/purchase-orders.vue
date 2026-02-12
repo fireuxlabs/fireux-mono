@@ -52,8 +52,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { dummyKitchenScenario } from '../../../../../../../../dummy/scenario'
 import KitchenCardsPill from '../../../components/organisms/Kitchen/Cards/Pill.vue'
-import { useRuntimeKitchen } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
+import {
+  useRuntimeKitchen,
+  useRuntimeKitchenSelection,
+} from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 definePageMeta({
@@ -80,10 +84,17 @@ type PurchaseOrder = {
 }
 
 const runtimeKitchen = useRuntimeKitchen()
+const { runtimeKitchenMode } = useRuntimeKitchenSelection()
 const { pill: kitchenPillBuilder } = useKitchenInterface()
 const kitchenPill = computed(() => kitchenPillBuilder(runtimeKitchen.value))
 
-const purchaseOrders = computed<PurchaseOrder[]>(() => [
+const statusMeta = (value: string): Pick<PurchaseOrder, 'statusLabel' | 'statusColor'> => {
+  if (value === 'draft') return { statusLabel: 'draft', statusColor: 'neutral' }
+  if (value === 'received') return { statusLabel: 'received', statusColor: 'success' }
+  return { statusLabel: 'sent', statusColor: 'primary' }
+}
+
+const fallbackPurchaseOrders: PurchaseOrder[] = [
   {
     id: 'PO-2201',
     supplierName: 'wholesaler',
@@ -108,5 +119,36 @@ const purchaseOrders = computed<PurchaseOrder[]>(() => [
     statusLabel: 'received',
     statusColor: 'success',
   },
-])
+]
+
+const purchaseOrders = computed<PurchaseOrder[]>(() => {
+  if (runtimeKitchenMode.value !== 'dummy') return fallbackPurchaseOrders
+
+  const supplierNameById = new Map(
+    (dummyKitchenScenario.procurementStack?.suppliers ?? []).map((supplier) => [
+      String(supplier.id || '').trim(),
+      String(supplier.name || '').trim() || String(supplier.id || '').trim(),
+    ])
+  )
+
+  const orders = dummyKitchenScenario.procurementStack?.purchases ?? []
+  return orders.map((order) => {
+    const status = String(order.status || '').trim()
+    const meta = statusMeta(status)
+    const supplierId = String(order.supplier_id || '').trim()
+    const summary = (order.lines ?? [])
+      .map((line) => `${line.item_name} ${line.quantity} ${line.unit}`)
+      .join(', ')
+    const received = Boolean(order.received_at)
+
+    return {
+      id: String(order.id || '').trim(),
+      supplierName: supplierNameById.get(supplierId) || supplierId,
+      etaLabel: received ? 'Received today' : 'Pending receipt',
+      summary,
+      statusLabel: meta.statusLabel,
+      statusColor: meta.statusColor,
+    }
+  })
+})
 </script>

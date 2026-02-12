@@ -2,8 +2,8 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import type { Ref, ShallowRef } from 'vue'
 import { computed, shallowRef, unref, watch } from 'vue'
 import type { KitchenMiseTask } from '../../../../../../models/kitchen-mise.model'
-import type { KitchenDish } from '../../../../../../models/dish.model'
-import type { KitchenMenu } from '../../../../../../models/menu.model'
+import type { Dish } from '../../../../../../models/dish.model'
+import type { Menu } from '../../../../../../models/menu.model'
 import type { KitchenRecipe } from '../../../../../../models/kitchen-recipe.model'
 
 const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
@@ -65,8 +65,8 @@ export function useKitchenMenuStackFetch(
       : ''
   )
 
-  const menus = useKitchenSubcollection<KitchenMenu>(menusPath)
-  const dishes = useKitchenSubcollection<KitchenDish>(dishesPath)
+  const menus = useKitchenSubcollection<Menu>(menusPath)
+  const dishes = useKitchenSubcollection<Dish>(dishesPath)
   const recipes = useKitchenSubcollection<KitchenRecipe>(recipesPath)
   const miseTasks = useKitchenSubcollection<KitchenMiseTask>(misePath)
 

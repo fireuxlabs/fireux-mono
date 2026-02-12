@@ -1,7 +1,7 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import type { Ingredient } from '../../../../../models/ingredient.model'
-import { KitchenDish, type KitchenDish as KitchenDishDoc } from '../../../../../models/dish.model'
-import { KitchenMenu, type KitchenMenu as KitchenMenuDoc } from '../../../../../models/menu.model'
+import { Dish, type Dish as DishDoc } from '../../../../../models/dish.model'
+import { Menu, type Menu as MenuDoc } from '../../../../../models/menu.model'
 import { KitchenMiseTask, type KitchenMiseTask as KitchenMiseTaskDoc } from '../../../../../models/kitchen-mise.model'
 import {
   KitchenRecipe,
@@ -114,8 +114,8 @@ export function useKitchenMenuStackCreate() {
       'mise-service-pass-check',
     ]
 
-    const menuDoc: KitchenMenuDoc = {
-      ...KitchenMenu,
+    const menuDoc: MenuDoc = {
+      ...Menu,
       id: menuId,
       kitchen_id: resolvedKitchenId,
       name: 'Starter Service Menu',
@@ -128,9 +128,9 @@ export function useKitchenMenuStackCreate() {
       active: true,
     }
 
-    const dishes: KitchenDishDoc[] = [
+    const dishes: DishDoc[] = [
       {
-        ...KitchenDish,
+        ...Dish,
         id: dishIds[0],
         kitchen_id: resolvedKitchenId,
         name: 'Classic Cheeseburger',
@@ -158,7 +158,7 @@ export function useKitchenMenuStackCreate() {
         active: true,
       },
       {
-        ...KitchenDish,
+        ...Dish,
         id: dishIds[1],
         kitchen_id: resolvedKitchenId,
         name: 'Caprese Lemon Salad',
@@ -181,7 +181,7 @@ export function useKitchenMenuStackCreate() {
         active: true,
       },
       {
-        ...KitchenDish,
+        ...Dish,
         id: dishIds[2],
         kitchen_id: resolvedKitchenId,
         name: 'Cheddar Onion Melt',
@@ -340,6 +340,7 @@ export function useKitchenMenuStackCreate() {
         description: 'Wash and slice produce for burger and salad service.',
         station: 'prep',
         service_date: '',
+        menu_id: menuId,
         status: 'todo',
         priority: 'high',
         estimated_minutes: 20,
@@ -358,6 +359,7 @@ export function useKitchenMenuStackCreate() {
         description: 'Prepare mozzarella, cheddar, and American slices.',
         station: 'prep',
         service_date: '',
+        menu_id: menuId,
         status: 'todo',
         priority: 'normal',
         estimated_minutes: 15,
@@ -375,6 +377,7 @@ export function useKitchenMenuStackCreate() {
         description: 'Stage buns, patties, and sauce for grill service.',
         station: 'grill',
         service_date: '',
+        menu_id: menuId,
         status: 'todo',
         priority: 'high',
         estimated_minutes: 15,
@@ -393,6 +396,7 @@ export function useKitchenMenuStackCreate() {
         description: 'Final checks before opening service.',
         station: 'pass',
         service_date: '',
+        menu_id: menuId,
         status: 'todo',
         priority: 'normal',
         estimated_minutes: 10,
@@ -405,7 +409,7 @@ export function useKitchenMenuStackCreate() {
       },
     ]
 
-    await setDocument<KitchenMenuDoc>(
+    await setDocument<MenuDoc>(
       resolveCollectionPath(resolvedKitchenId, 'menus'),
       menuDoc.id,
       menuDoc,
@@ -413,7 +417,7 @@ export function useKitchenMenuStackCreate() {
     )
 
     for (const dish of dishes) {
-      await setDocument<KitchenDishDoc>(
+      await setDocument<DishDoc>(
         resolveCollectionPath(resolvedKitchenId, 'dishes'),
         dish.id,
         dish,

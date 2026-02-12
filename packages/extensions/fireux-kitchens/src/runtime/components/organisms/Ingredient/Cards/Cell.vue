@@ -26,6 +26,12 @@
             >
               {{ subtitle }}
             </div>
+            <code
+              v-if="showSlug && id"
+              class="block truncate text-[11px] text-dimmed"
+            >
+              {{ id }}
+            </code>
           </div>
 
           <div class="flex items-center gap-1">
@@ -50,20 +56,6 @@
             </UBadge>
           </div>
         </div>
-
-        <div class="truncate text-xs text-dimmed">
-          <span>Category: {{ category || '—' }}</span>
-          <span class="mx-1">·</span>
-          <span>Unit: {{ unit || '—' }}</span>
-        </div>
-
-        <div
-          v-if="showTagline"
-          class="truncate text-xs text-dimmed"
-        >
-          <span v-if="prop">{{ prop }}</span>
-          <span v-else class="italic">missing</span>
-        </div>
       </div>
     </div>
   </component>
@@ -75,13 +67,12 @@ import type { IngredientCard } from '../../../../composables/fireux/firestore/in
 
 type Props = Pick<
   IngredientCard.Card,
-  'to' | 'name' | 'subtitle' | 'status' | 'category' | 'unit' | 'imageUrl'
+  'id' | 'to' | 'name' | 'subtitle' | 'status' | 'imageUrl'
 > & {
-  prop?: string
   warning?: string
+  showSlug?: boolean
   showSubtitle?: boolean
   showStatus?: boolean
-  showTagline?: boolean
   link?: boolean
   action?: boolean
 }
@@ -91,10 +82,9 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<Props>(), {
-  prop: '',
+  showSlug: false,
   showSubtitle: true,
   showStatus: true,
-  showTagline: true,
   link: false,
   action: false,
 })

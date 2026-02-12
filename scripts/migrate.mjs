@@ -49,7 +49,9 @@ if (help) {
   console.log('  - places-backfill-short-name')
   console.log('  - places-backfill-place-type')
   console.log('  - ingredients-canonical-shape')
+  console.log('  - ingredients-normalize-id-shape')
   console.log('  - ingredients-assign-images')
+  console.log('  - ingredients-upsert-payload')
   console.log('  - apply-drift-payload')
   console.log('\nAuth (one required):')
   console.log('  - GOOGLE_APPLICATION_CREDENTIALS (path to JSON)')
@@ -711,7 +713,6 @@ const INGREDIENT_UNITS = new Set([
   'case',
 ])
 
-const INGREDIENT_STATUSES = new Set(['active', 'archived'])
 
 function toSafeNumber(value, fallback = 0) {
   const n = Number(value)
@@ -795,9 +796,12 @@ function resolveIngredientUnit(value) {
   return INGREDIENT_UNITS.has(normalized) ? normalized : 'piece'
 }
 
-function resolveIngredientStatus(value) {
-  const normalized = asString(value, '').trim().toLowerCase()
-  return INGREDIENT_STATUSES.has(normalized) ? normalized : 'active'
+function toSlug(value) {
+  return asString(value, '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
 }
 
 function resolveCreatorId(data) {
@@ -815,10 +819,6 @@ function resolveCreatorId(data) {
 }
 
 function buildCanonicalIngredient(docId, data) {
-  const category = asString(data.category, '').trim()
-  const tags = toStringArray(data.tags)
-  if (category && !tags.includes(category)) tags.push(category)
-
   const createdAt =
     resolveTimestamp(data.created_at) ??
     resolveTimestamp(data.createdAt) ??
@@ -839,13 +839,7 @@ function buildCanonicalIngredient(docId, data) {
   return {
     id: docId,
     name: asString(data.name, '').trim(),
-    description: asString(data.description, '').trim(),
-    category,
     image_url: asString(data.image_url ?? data.imageUrl, '').trim(),
-    unit: resolveIngredientUnit(data.unit),
-    status: resolveIngredientStatus(data.status),
-    allergens: toStringArray(data.allergens),
-    tags,
     app_id: appId,
     creator_id: resolveCreatorId(data),
     created_at: createdAt,
@@ -932,6 +926,251 @@ async function runIngredientsCanonicalShape() {
   console.log('[migrate] ingredients-canonical-shape done', {
     processed,
     updated,
+    skipped,
+    commit,
+  })
+}
+
+function resolveCanonicalIngredientId(docId, data) {
+  const nameSlug = toSlug(data?.name)
+  if (!nameSlug) return docId
+
+  const unit = resolveIngredientUnit(data?.unit)
+  const legacyUnitId = `${nameSlug}-${unit}`
+
+  if (docId === legacyUnitId) return nameSlug
+  if (/^ing_[a-z0-9_]+$/i.test(docId)) return nameSlug
+
+  return docId
+}
+
+function isPlainObject(value) {
+  return Boolean(value) && typeof value === 'object' && value.constructor === Object
+}
+
+function remapIngredientIdsDeep(value, idMap) {
+  if (typeof value === 'string') {
+    const mapped = idMap.get(value)
+    if (!mapped || mapped === value) return { value, changed: false }
+    return { value: mapped, changed: true }
+  }
+
+  if (Array.isArray(value)) {
+    let changed = false
+    const next = value.map((entry) => {
+      const mapped = remapIngredientIdsDeep(entry, idMap)
+      if (mapped.changed) changed = true
+      return mapped.value
+    })
+    return changed ? { value: next, changed: true } : { value, changed: false }
+  }
+
+  if (!isPlainObject(value)) return { value, changed: false }
+
+  let changed = false
+  const next = {}
+  for (const [key, entry] of Object.entries(value)) {
+    const mapped = remapIngredientIdsDeep(entry, idMap)
+    if (mapped.changed) changed = true
+    next[key] = mapped.value
+  }
+
+  return changed ? { value: next, changed: true } : { value, changed: false }
+}
+
+function isKitchenScopedPath(path) {
+  const segments = String(path || '').split('/')
+  return (
+    segments.length >= 2 &&
+    (segments[0] === 'kitchens' || segments[0] === 'test-kitchens')
+  )
+}
+
+async function runIngredientsNormalizeIdShape() {
+  console.log('[migrate] ingredients-normalize-id-shape start', {
+    projectId,
+    commit,
+    pageSize,
+    limit,
+    app: targetAppId,
+  })
+
+  let scanned = 0
+  let skipped = 0
+  let renamed = 0
+  let refUpdates = 0
+  let rootDeletes = 0
+
+  const idMap = new Map()
+  const sourceById = new Map()
+  let lastDoc = null
+
+  while (true) {
+    if (limit && scanned >= limit) break
+
+    let q = db.collection('ingredients').orderBy(FieldPath.documentId()).limit(pageSize)
+    if (lastDoc) q = q.startAfter(lastDoc)
+
+    const snap = await q.get()
+    if (snap.empty) break
+
+    for (const docSnap of snap.docs) {
+      if (limit && scanned >= limit) break
+      scanned += 1
+
+      const data = docSnap.data() || {}
+      if (targetAppId) {
+        const appId = asString(data.app_id, '').trim()
+        if (appId && appId !== targetAppId) {
+          skipped += 1
+          continue
+        }
+      }
+
+      sourceById.set(docSnap.id, data)
+      const nextId = resolveCanonicalIngredientId(docSnap.id, data)
+      if (nextId && nextId !== docSnap.id) {
+        idMap.set(docSnap.id, nextId)
+      } else {
+        skipped += 1
+      }
+    }
+
+    lastDoc = snap.docs[snap.docs.length - 1]
+  }
+
+  if (!idMap.size) {
+    console.log('[migrate] ingredients-normalize-id-shape done', {
+      scanned,
+      renamed,
+      refUpdates,
+      rootDeletes,
+      skipped,
+      commit,
+    })
+    return
+  }
+
+  // 1) Create/overwrite canonical root ingredient docs first.
+  for (const [fromId, toId] of idMap.entries()) {
+    const source = sourceById.get(fromId) || {}
+    const canonical = buildCanonicalIngredient(toId, source)
+
+    if (commit) {
+      await db.collection('ingredients').doc(toId).set(canonical)
+    } else {
+      console.log('[dry-run][root-set]', `ingredients/${toId}`, canonical)
+    }
+    renamed += 1
+  }
+
+  // 2) Move kitchen ingredient link docs to canonical ids.
+  const legacyIngredientIds = new Set(idMap.keys())
+  let ingredientGroupLast = null
+  while (true) {
+    let q = db.collectionGroup('ingredients').orderBy(FieldPath.documentId()).limit(pageSize)
+    if (ingredientGroupLast) q = q.startAfter(ingredientGroupLast)
+
+    const snap = await q.get()
+    if (snap.empty) break
+
+    for (const docSnap of snap.docs) {
+      if (!isKitchenScopedPath(docSnap.ref.path)) continue
+
+      const data = docSnap.data() || {}
+      const fromDocId = asString(docSnap.id, '').trim()
+      const fromFieldId = asString(data.ingredient_id, '').trim()
+      const fromDataId = asString(data.id, '').trim()
+
+      const legacyId =
+        (legacyIngredientIds.has(fromDocId) && fromDocId) ||
+        (legacyIngredientIds.has(fromFieldId) && fromFieldId) ||
+        (legacyIngredientIds.has(fromDataId) && fromDataId) ||
+        ''
+
+      if (!legacyId) continue
+
+      const toId = asString(idMap.get(legacyId), '').trim()
+      if (!toId) continue
+
+      const mapped = remapIngredientIdsDeep(data, idMap)
+      const next = isPlainObject(mapped.value) ? mapped.value : { ...(data || {}) }
+      next.id = toId
+      next.ingredient_id = toId
+
+      const targetRef = docSnap.ref.parent.doc(toId)
+
+      if (commit) {
+        await targetRef.set(next)
+        if (targetRef.path !== docSnap.ref.path) await docSnap.ref.delete()
+      } else {
+        console.log('[dry-run][kitchen-ingredient-move]', docSnap.ref.path, '->', targetRef.path)
+      }
+
+      refUpdates += 1
+    }
+
+    ingredientGroupLast = snap.docs[snap.docs.length - 1]
+  }
+
+  // 3) Update all kitchen-scoped refs in dependent collections.
+  const referenceCollections = [
+    'dishes',
+    'recipes',
+    'mise',
+    'menus',
+    'purchases',
+    'purchase-orders',
+    'incoming-orders',
+    'orders',
+    'catalog',
+  ]
+
+  for (const group of referenceCollections) {
+    let groupLast = null
+    while (true) {
+      let q = db.collectionGroup(group).orderBy(FieldPath.documentId()).limit(pageSize)
+      if (groupLast) q = q.startAfter(groupLast)
+
+      const snap = await q.get()
+      if (snap.empty) break
+
+      for (const docSnap of snap.docs) {
+        if (!isKitchenScopedPath(docSnap.ref.path)) continue
+
+        const data = docSnap.data() || {}
+        const mapped = remapIngredientIdsDeep(data, idMap)
+        if (!mapped.changed) continue
+
+        if (commit) {
+          await docSnap.ref.set(mapped.value)
+        } else {
+          console.log('[dry-run][ref-update]', docSnap.ref.path)
+        }
+
+        refUpdates += 1
+      }
+
+      groupLast = snap.docs[snap.docs.length - 1]
+    }
+  }
+
+  // 4) Delete old root docs.
+  for (const fromId of idMap.keys()) {
+    const oldRef = db.collection('ingredients').doc(fromId)
+    if (commit) {
+      await oldRef.delete()
+    } else {
+      console.log('[dry-run][root-delete]', oldRef.path)
+    }
+    rootDeletes += 1
+  }
+
+  console.log('[migrate] ingredients-normalize-id-shape done', {
+    scanned,
+    renamed,
+    refUpdates,
+    rootDeletes,
     skipped,
     commit,
   })
@@ -1140,6 +1379,10 @@ function resolveDriftTarget(payload) {
     return { collection: 'professionals', items: payload.professionals }
   }
 
+  if (Array.isArray(payload.ingredients)) {
+    return { collection: 'ingredients', items: payload.ingredients }
+  }
+
   if (typeof payload.modelPath === 'string') {
     if (payload.modelPath.includes('/fireux-core/') && payload.modelPath.includes('/app.model')) {
       return { collection: 'apps', items: payload.apps || [] }
@@ -1156,9 +1399,112 @@ function resolveDriftTarget(payload) {
     if (payload.modelPath.includes('/Professional/Professional.model')) {
       return { collection: 'professionals', items: payload.professionals || [] }
     }
+    if (payload.modelPath.includes('/ingredient.model')) {
+      return { collection: 'ingredients', items: payload.ingredients || [] }
+    }
   }
 
   return null
+}
+
+function buildIngredientUpsertDoc(item, existing = {}) {
+  const now = Timestamp.now()
+
+  const existingName = asString(existing.name, '').trim()
+  const existingImageUrl = asString(existing.image_url, '').trim()
+  const existingAppId = asString(existing.app_id, '').trim()
+  const existingCreatorId = asString(existing.creator_id, '').trim()
+
+  const createdAt =
+    resolveTimestamp(item?.created_at) ??
+    resolveTimestamp(existing.created_at) ??
+    resolveTimestamp(existing.updated_at) ??
+    now
+
+  return {
+    id: asString(item?.id, '').trim(),
+    name: asString(item?.name, existingName).trim(),
+    image_url: asString(item?.image_url, '').trim() || existingImageUrl,
+    app_id: asString(item?.app_id, '').trim() || existingAppId || asString(targetAppId, '').trim(),
+    creator_id: asString(item?.creator_id, '').trim() || existingCreatorId,
+    created_at: createdAt,
+    updated_at: now,
+  }
+}
+
+async function runIngredientsUpsertPayload() {
+  const payload = await readPayloadInput()
+  if (!payload) {
+    console.error('Missing payload. Provide --payload, --payloadFile, or pipe JSON to stdin.')
+    process.exit(1)
+  }
+
+  const target = resolveDriftTarget(payload)
+  if (!target || target.collection !== 'ingredients') {
+    console.error('ingredients-upsert-payload requires an ingredients payload.')
+    process.exit(1)
+  }
+
+  const { items } = target
+  console.log('[migrate] ingredients-upsert-payload start', {
+    projectId,
+    commit,
+    total: Array.isArray(items) ? items.length : 0,
+    app: targetAppId,
+  })
+
+  if (!Array.isArray(items) || items.length === 0) {
+    console.log('[migrate] ingredients-upsert-payload done', {
+      processed: 0,
+      created: 0,
+      updated: 0,
+      skipped: 0,
+      commit,
+    })
+    return
+  }
+
+  let processed = 0
+  let created = 0
+  let updated = 0
+  let skipped = 0
+
+  for (const item of items) {
+    processed += 1
+    const id = asString(item?.id, '').trim()
+    if (!id) {
+      skipped += 1
+      continue
+    }
+
+    const ref = db.collection('ingredients').doc(id)
+    const snap = await ref.get()
+    const existed = snap.exists
+    const existing = existed ? snap.data() || {} : {}
+
+    const next = buildIngredientUpsertDoc(item, existing)
+    if (!next.name) {
+      skipped += 1
+      continue
+    }
+
+    if (commit) {
+      await ref.set(next, { merge: true })
+    } else {
+      console.log('[dry-run]', ref.path, next)
+    }
+
+    if (existed) updated += 1
+    else created += 1
+  }
+
+  console.log('[migrate] ingredients-upsert-payload done', {
+    processed,
+    created,
+    updated,
+    skipped,
+    commit,
+  })
 }
 
 async function runApplyDriftPayload() {
@@ -1354,7 +1700,9 @@ const recipes = {
   'places-backfill-short-name': runPlacesBackfillShortName,
   'places-backfill-place-type': runPlacesBackfillPlaceType,
   'ingredients-canonical-shape': runIngredientsCanonicalShape,
+  'ingredients-normalize-id-shape': runIngredientsNormalizeIdShape,
   'ingredients-assign-images': runIngredientsAssignImages,
+  'ingredients-upsert-payload': runIngredientsUpsertPayload,
   'apply-drift-payload': runApplyDriftPayload,
 }
 

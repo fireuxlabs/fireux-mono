@@ -52,8 +52,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { dummyKitchenScenario } from '../../../../../../../../dummy/scenario'
 import KitchenCardsPill from '../../../components/organisms/Kitchen/Cards/Pill.vue'
-import { useRuntimeKitchen } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
+import {
+  useRuntimeKitchen,
+  useRuntimeKitchenSelection,
+} from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 definePageMeta({
@@ -80,15 +84,27 @@ type IncomingOrder = {
 }
 
 const runtimeKitchen = useRuntimeKitchen()
+const { runtimeKitchenMode } = useRuntimeKitchenSelection()
 const { pill: kitchenPillBuilder } = useKitchenInterface()
 const kitchenPill = computed(() => kitchenPillBuilder(runtimeKitchen.value))
 
-const incomingOrders = computed<IncomingOrder[]>(() => [
+const channelLabel = (value: string) => {
+  if (value === 'dine_in') return 'dine-in'
+  return value
+}
+
+const statusMeta = (value: string): Pick<IncomingOrder, 'statusLabel' | 'statusColor'> => {
+  if (value === 'new') return { statusLabel: 'new', statusColor: 'warning' }
+  if (value === 'ready') return { statusLabel: 'ready', statusColor: 'success' }
+  return { statusLabel: 'in progress', statusColor: 'primary' }
+}
+
+const fallbackIncomingOrders: IncomingOrder[] = [
   {
     id: 'ORD-1042',
     channel: 'dine-in',
     tableLabel: 'Table 12',
-    summary: '2x Classic Beef, 1x Smoky Bacon, 1x fries',
+    summary: '2x Classic Beef, 1x Smoky Bacon, 1x Skinny Fries',
     statusLabel: 'new',
     statusColor: 'warning',
   },
@@ -108,5 +124,26 @@ const incomingOrders = computed<IncomingOrder[]>(() => [
     statusLabel: 'ready',
     statusColor: 'success',
   },
-])
+]
+
+const incomingOrders = computed<IncomingOrder[]>(() => {
+  if (runtimeKitchenMode.value !== 'dummy') return fallbackIncomingOrders
+
+  const orders = dummyKitchenScenario.serviceStack?.incomingOrders ?? []
+  return orders.map((order) => {
+    const summary = order.lines
+      .map((line) => `${line.quantity}x ${line.dish_name}`)
+      .join(', ')
+    const meta = statusMeta(String(order.status || '').trim())
+
+    return {
+      id: String(order.id || '').trim(),
+      channel: channelLabel(String(order.channel || '').trim()) as IncomingOrder['channel'],
+      tableLabel: String(order.table_ref || '').trim() || 'Service',
+      summary,
+      statusLabel: meta.statusLabel,
+      statusColor: meta.statusColor,
+    }
+  })
+})
 </script>

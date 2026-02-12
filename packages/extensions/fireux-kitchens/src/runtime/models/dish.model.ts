@@ -42,11 +42,3 @@ export type DishCreateInput = Omit<
   'app_id' | 'creator_id' | 'created_at' | 'updated_at'
 >
 export type DishUpdateInput = Partial<Omit<DishCreateInput, 'id' | 'kitchen_id'>>
-
-// Backward-compatible aliases for existing kitchens imports.
-export const KitchenDish = Dish
-export type KitchenDish = Dish
-export type KitchenDishStatus = DishStatus
-export type KitchenDishCourse = DishCourse
-export type KitchenDishCreateInput = DishCreateInput
-export type KitchenDishUpdateInput = DishUpdateInput

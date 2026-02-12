@@ -110,11 +110,11 @@ import MenuCardsPill from '../Cards/Pill.vue'
 import MenuCardsPreview from '../Cards/Preview.vue'
 import MenuCollectionList from './List.vue'
 import { useMenuInterface } from '../../../../composables/fireux/firestore/menu/utils/view/useMenuInterface'
-import type { KitchenMenu } from '../../../../models/menu.model'
+import type { Menu } from '../../../../models/menu.model'
 
 const props = withDefaults(
   defineProps<{
-    collection?: KitchenMenu[]
+    collection?: Menu[]
     title?: string
     description?: string
   }>(),
@@ -224,10 +224,10 @@ const {
   toggleVariant,
   cards: cardsFiltered,
   visibleCount,
-} = useCollectionSearch<KitchenMenu, ReturnType<typeof makeCard>>({
+} = useCollectionSearch<Menu, ReturnType<typeof makeCard>>({
   items: collectionOrganized,
-  searchText: (menu: KitchenMenu) => searchText(menu),
-  makeCard: (menu: KitchenMenu) => makeCard(menu),
+  searchText: (menu: Menu) => searchText(menu),
+  makeCard: (menu: Menu) => makeCard(menu),
 })
 const isDev = import.meta.dev
 </script>

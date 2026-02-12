@@ -7,7 +7,7 @@
     <template #body>
       <div class="space-y-8">
         <section class="space-y-2">
-          <div class="text-xs font-medium text-dimmed">Create ingredient</div>
+          <div class="text-xs font-medium text-dimmed">Attach ingredient</div>
           <KitchenIngredientsCreateSystem
             v-if="runtimeKitchenMode !== 'dummy' && runtimeKitchenId"
             :kitchen-id="runtimeKitchenId"
@@ -15,7 +15,7 @@
           />
           <UCard v-else>
             <p class="text-sm text-dimmed">
-              Ingredient creation is for test/live kitchens. In dummy mode, edit
+              Kitchen ingredient attachment is for test/live kitchens. In dummy mode, edit
               <code>dummy/scenario.ts</code>.
             </p>
           </UCard>
@@ -41,6 +41,9 @@
             :collection="globalIngredients"
             title="Global ingredients"
             description="Click to attach an ingredient to this kitchen."
+            dev-json-title="Global ingredients (JSON)"
+            dev-json-context="dashboard kitchen · global ingredients"
+            :dev-json-data="globalIngredientsDevJson"
             :link="false"
             @select="handleGlobalSelect"
           />
@@ -61,7 +64,7 @@ import {
 } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
 import { useIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
 import { useKitchenIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useKitchenIngredientFetch'
-import { useKitchenIngredientCreate } from '../../../composables/fireux/firestore/ingredient/mutations/useKitchenIngredientCreate'
+import { useKitchenIngredientAdd } from '../../../composables/fireux/firestore/kitchen/mutations/useKitchenIngredientAdd'
 import { useKitchenMenuStackFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenMenuStackFetch'
 import type { Ingredient } from '../../../models/ingredient.model'
 
@@ -82,13 +85,16 @@ definePageMeta({
 const runtimeKitchen = useRuntimeKitchen()
 const { runtimeKitchenMode } = useRuntimeKitchenSelection()
 const runtimeKitchenId = computed(() => String(runtimeKitchen.value?.id || '').trim())
+const firestoreKitchenId = computed(() =>
+  runtimeKitchenMode.value === 'dummy' ? '' : runtimeKitchenId.value
+)
 const runtimeKitchenCollectionPath = computed(() =>
   runtimeKitchenMode.value === 'live' ? 'kitchens' : 'test-kitchens'
 )
 const toast = useToastify()
-const { createKitchenIngredient } = useKitchenIngredientCreate()
+const { addIngredientToKitchen } = useKitchenIngredientAdd()
 const { ingredients: firestoreGlobalIngredients } = useIngredientFetch()
-const { ingredients: firestoreKitchenIngredients } = useKitchenIngredientFetch(runtimeKitchenId, {
+const { ingredients: firestoreKitchenIngredients } = useKitchenIngredientFetch(firestoreKitchenId, {
   kitchenCollectionPath: runtimeKitchenCollectionPath,
 })
 const {
@@ -96,7 +102,7 @@ const {
   dishes: firestoreDishes,
   recipes: firestoreRecipes,
   miseTasks: firestoreMiseTasks,
-} = useKitchenMenuStackFetch(runtimeKitchenId, {
+} = useKitchenMenuStackFetch(firestoreKitchenId, {
   kitchenCollectionPath: runtimeKitchenCollectionPath,
 })
 const dummyMyIngredients = ref([...dummyKitchenScenario.kitchenIngredients])
@@ -239,27 +245,50 @@ const ingredientWarningById = computed<Record<string, string>>(() => {
 
   for (const ingredient of myIngredients.value) {
     const id = normalizeId((ingredient as any)?.id)
-    const ingredientId = normalizeId((ingredient as any)?.ingredient_id)
-    const candidateIds = Array.from(new Set([id, ingredientId].filter(Boolean)))
+    const candidateIds = id ? [id] : []
     if (!candidateIds.length) continue
 
     const appearsAnywhere = candidateIds.some((candidate) => usedAnywhere.has(candidate))
     const appearsOnMenuPath = candidateIds.some((candidate) => usedOnMenuPath.has(candidate))
     if (appearsOnMenuPath) continue
 
-    warnings[id || ingredientId] = appearsAnywhere ? 'Off menu' : 'Unused'
+    warnings[id] = appearsAnywhere ? 'Off menu' : 'Unused'
   }
 
   return warnings
 })
 
 const myIngredientsDevJson = computed(() => ({
+  source:
+    runtimeKitchenMode.value === 'dummy'
+      ? 'dummy/scenario.ts :: dummyKitchenScenario.kitchenIngredients'
+      : 'firestore',
   kitchenId: String(runtimeKitchenId.value || '').trim(),
-  kitchenCollectionPath: runtimeKitchenCollectionPath.value,
-  kitchenIngredientsPath: `${runtimeKitchenCollectionPath.value}/${runtimeKitchenId.value}/ingredients`,
+  kitchenCollectionPath:
+    runtimeKitchenMode.value === 'dummy'
+      ? 'dummy (local scenario)'
+      : runtimeKitchenCollectionPath.value,
+  kitchenIngredientsPath:
+    runtimeKitchenMode.value === 'dummy'
+      ? 'dummy/scenario.ts :: dummyKitchenScenario.kitchenIngredients'
+      : `${runtimeKitchenCollectionPath.value}/${runtimeKitchenId.value}/ingredients`,
   runtimeKitchenMode: runtimeKitchenMode.value,
   count: myIngredients.value.length,
   ingredients: myIngredients.value,
+}))
+
+const globalIngredientsDevJson = computed(() => ({
+  source:
+    runtimeKitchenMode.value === 'dummy'
+      ? 'dummy/scenario.ts :: dummyKitchenScenario.globalIngredients'
+      : 'firestore',
+  collectionPath:
+    runtimeKitchenMode.value === 'dummy'
+      ? 'dummy/scenario.ts :: dummyKitchenScenario.globalIngredients'
+      : 'ingredients',
+  runtimeKitchenMode: runtimeKitchenMode.value,
+  count: globalIngredients.value.length,
+  ingredients: globalIngredients.value,
 }))
 
 const handleGlobalSelect = async (ingredient: Ingredient) => {
@@ -271,7 +300,7 @@ const handleGlobalSelect = async (ingredient: Ingredient) => {
 
   try {
     const exists = myIngredients.value.some(
-      (entry) => String(entry.ingredient_id || entry.id || '').trim() === String(ingredient.id)
+      (entry) => String(entry.id || '').trim() === String(ingredient.id)
     )
     if (exists) {
       toast.info('Ingredient already attached')
@@ -280,17 +309,16 @@ const handleGlobalSelect = async (ingredient: Ingredient) => {
 
     if (runtimeKitchenMode.value === 'dummy') {
       dummyMyIngredients.value = [
-        buildKitchenIngredient(ingredient, kitchenId),
+        buildKitchenIngredient(ingredient),
         ...myIngredients.value,
       ]
       toast.success('Ingredient attached (dummy)')
       return
     }
 
-    await createKitchenIngredient(
+    await addIngredientToKitchen(
       kitchenId,
       {
-        ingredient_id: String(ingredient.id || '').trim(),
         id: String(ingredient.id || '').trim(),
       },
       {

@@ -1,5 +1,5 @@
 import { safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { KitchenDish } from '../../../../../../models/dish.model'
+import type { Dish } from '../../../../../../models/dish.model'
 
 const joinSubtitle = (station: string, course: string): string =>
   [safeString(station).trim(), safeString(course).trim()].filter(Boolean).join(' · ')
@@ -67,7 +67,7 @@ export function useDishInterface() {
     misePills: Array<{ id: string; to: string; title: string; imageUrl: string }>
   }
 
-  function map(dish: KitchenDish): DishCard.Card {
+  function map(dish: Dish): DishCard.Card {
     const id =
       safeString(dish.id).trim() ||
       safeString(dish.name).trim() ||
@@ -99,12 +99,12 @@ export function useDishInterface() {
     }
   }
 
-  function card(target?: KitchenDish | null | undefined): DishCard.Card | null {
+  function card(target?: Dish | null | undefined): DishCard.Card | null {
     if (!target) return null
     return map(target)
   }
 
-  function pill(target?: KitchenDish | null | undefined): DishPill | null {
+  function pill(target?: Dish | null | undefined): DishPill | null {
     const base = card(target)
     if (!base) return null
     return {
@@ -114,7 +114,7 @@ export function useDishInterface() {
     }
   }
 
-  function cell(target?: KitchenDish | null | undefined): DishCell | null {
+  function cell(target?: Dish | null | undefined): DishCell | null {
     const base = card(target)
     if (!base) return null
     return {
@@ -130,7 +130,7 @@ export function useDishInterface() {
     }
   }
 
-  function preview(target?: KitchenDish | null | undefined): DishPreview | null {
+  function preview(target?: Dish | null | undefined): DishPreview | null {
     const base = card(target)
     if (!base) return null
 
@@ -151,7 +151,7 @@ export function useDishInterface() {
     }
   }
 
-  function profile(target?: KitchenDish | null | undefined): DishProfile | null {
+  function profile(target?: Dish | null | undefined): DishProfile | null {
     const base = card(target)
     if (!base) return null
 
@@ -167,7 +167,7 @@ export function useDishInterface() {
     }
   }
 
-  function searchText(dish: KitchenDish): string {
+  function searchText(dish: Dish): string {
     const mapped = map(dish)
     return [
       mapped.name,

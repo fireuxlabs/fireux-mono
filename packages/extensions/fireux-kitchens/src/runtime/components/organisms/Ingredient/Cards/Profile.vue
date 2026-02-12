@@ -17,12 +17,6 @@
             >
               {{ model.subtitle }}
             </div>
-            <div
-              v-if="model.prop"
-              class="truncate text-xs text-dimmed"
-            >
-              {{ model.prop }}
-            </div>
           </div>
 
           <UBadge
@@ -35,26 +29,8 @@
           </UBadge>
         </div>
 
-        <div class="grid gap-1 text-xs text-dimmed sm:grid-cols-2">
-          <div>Category: {{ model.category || '—' }}</div>
-          <div>Unit: {{ model.unit || '—' }}</div>
+        <div class="grid gap-1 text-xs text-dimmed sm:grid-cols-1">
           <div>Status: {{ model.status || '—' }}</div>
-        </div>
-
-        <div v-if="model.tags.length" class="flex flex-wrap items-center gap-1">
-          <UBadge
-            v-for="tag in model.tags"
-            :key="tag"
-            variant="soft"
-            color="neutral"
-            size="xs"
-          >
-            {{ tag }}
-          </UBadge>
-        </div>
-
-        <div v-if="model.allergens.length" class="text-xs text-dimmed">
-          Allergens: {{ model.allergens.join(', ') }}
         </div>
       </div>
     </div>

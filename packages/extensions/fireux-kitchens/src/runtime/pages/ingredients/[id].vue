@@ -42,7 +42,8 @@
             variant="soft"
             color="error"
             icon="i-lucide-trash"
-            @click="isDeleteConfirmOpen = true"
+            :loading="deleting"
+            @click="requestDelete"
           >
             Delete
           </UButton>
@@ -62,24 +63,22 @@
           </template>
 
           <div class="space-y-4">
+            <UFormGroup label="Image">
+              <div class="flex flex-col items-center gap-2">
+                <MoleculesFormsFirestoreImagePicker
+                  :src="ingredient?.image_url || ''"
+                  :alt="ingredient?.name || 'Ingredient'"
+                  :initials="imageInitials"
+                  :update-function="handleImageUpload"
+                />
+                <p v-if="imageUploading" class="text-xs text-gray-500">
+                  Uploading image…
+                </p>
+              </div>
+            </UFormGroup>
+
             <UFormGroup label="Name" required>
               <UInput v-model="form.name" placeholder="Ingredient name" />
-            </UFormGroup>
-
-            <UFormGroup label="Category">
-              <UInput v-model="form.category" placeholder="Category" />
-            </UFormGroup>
-
-            <UFormGroup label="Unit" required>
-              <USelect v-model="form.unit" :options="ingredientUnitOptions" />
-            </UFormGroup>
-
-            <UFormGroup label="Status" required>
-              <USelect v-model="form.status" :options="statusOptions" />
-            </UFormGroup>
-
-            <UFormGroup label="Description">
-              <UTextarea v-model="form.description" placeholder="Optional description" />
             </UFormGroup>
 
             <div class="flex justify-end gap-2">
@@ -105,45 +104,18 @@
     </UPageBody>
   </UPage>
 
-  <UModal
-    v-model="isDeleteConfirmOpen"
-    title="Delete ingredient?"
-    :description="deleteDescription"
-  >
-    <template #body>
-      <div class="flex justify-end gap-2">
-        <UButton
-          variant="ghost"
-          color="neutral"
-          :disabled="deleting"
-          @click="isDeleteConfirmOpen = false"
-        >
-          Cancel
-        </UButton>
-        <UButton
-          color="error"
-          :loading="deleting"
-          @click="confirmDelete"
-        >
-          Delete
-        </UButton>
-      </div>
-    </template>
-  </UModal>
 </template>
 
 <script setup lang="ts">
 import { navigateTo, useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { computed, reactive, ref, watchEffect } from 'vue'
-import { ingredientUnitOptions } from '../../components/organisms/Ingredient/Create/types'
-import { useIngredientFetch } from '../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
-import { useIngredientInterface } from '../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
-import type { Ingredient, IngredientStatus, IngredientUnit } from '../../models/ingredient.model'
+import { useIngredient } from '../../composables/fireux/firestore/ingredient/useIngredient'
+import type { Ingredient } from '../../models/ingredient.model'
 
 definePageMeta({
   layout: 'default',
@@ -156,10 +128,10 @@ const route = useRoute()
 const raw = route.params.id
 const docId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
-const { ingredients } = useIngredientFetch()
+const { ingredients, profile, deleteIngredient } = useIngredient()
 const { isAdmin } = useUser()
 const { updateDocument } = useFirestoreUpdate()
-const { deleteDocument } = useFirestoreDelete()
+const { uploadImage } = useImageStorage()
 const toast = useToastify()
 
 const ingredient = computed<Ingredient | null>(() => {
@@ -169,63 +141,58 @@ const ingredient = computed<Ingredient | null>(() => {
 
 const loading = computed(() => ingredients.value === undefined)
 
-const { profile } = useIngredientInterface()
 const ingredientProfile = computed(() => profile(ingredient.value))
 
 const showAdmin = ref(false)
-const isDeleteConfirmOpen = ref(false)
 const saving = ref(false)
 const deleting = ref(false)
+const imageUploading = ref(false)
 
 const form = reactive<{
   name: string
-  category: string
-  unit: IngredientUnit
-  status: IngredientStatus
-  description: string
 }>({
   name: '',
-  category: '',
-  unit: 'piece',
-  status: 'active',
-  description: '',
 })
-
-const statusOptions = [
-  { label: 'Active', value: 'active' },
-  { label: 'Archived', value: 'archived' },
-] as const
 
 watchEffect(() => {
   const entry = ingredient.value
   if (!entry) return
   form.name = entry.name ?? ''
-  form.category = entry.category ?? ''
-  form.unit = entry.unit ?? 'piece'
-  form.status = entry.status ?? 'active'
-  form.description = entry.description ?? ''
 })
 
 const isDirty = computed(() => {
   const entry = ingredient.value
   if (!entry) return false
-  return (
-    form.name.trim() !== String(entry.name ?? '').trim() ||
-    form.category.trim() !== String(entry.category ?? '').trim() ||
-    form.unit !== (entry.unit ?? 'piece') ||
-    form.status !== (entry.status ?? 'active') ||
-    form.description.trim() !== String(entry.description ?? '').trim()
-  )
+  return form.name.trim() !== String(entry.name ?? '').trim()
 })
 
 const resetForm = () => {
   const entry = ingredient.value
   if (!entry) return
   form.name = entry.name ?? ''
-  form.category = entry.category ?? ''
-  form.unit = entry.unit ?? 'piece'
-  form.status = entry.status ?? 'active'
-  form.description = entry.description ?? ''
+}
+
+const imageInitials = computed(() => {
+  const rawName = String(ingredient.value?.name || '').trim()
+  if (!rawName) return 'I'
+  const parts = rawName.split(/\s+/).filter(Boolean)
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+  return `${parts[0][0] || ''}${parts[1][0] || ''}`.toUpperCase()
+})
+
+const handleImageUpload = async (file: File) => {
+  if (!docId) return
+  imageUploading.value = true
+  try {
+    const url = await uploadImage(`ingredients/${docId}/image_url`, file)
+    await updateDocument<Ingredient>('ingredients', docId, { image_url: url })
+    toast.success('Ingredient image updated')
+  } catch (error: any) {
+    toast.error(String(error?.message || 'Failed to update ingredient image'))
+    throw error
+  } finally {
+    imageUploading.value = false
+  }
 }
 
 const saveChanges = async () => {
@@ -234,10 +201,6 @@ const saveChanges = async () => {
   try {
     await updateDocument<Ingredient>('ingredients', docId, {
       name: form.name.trim(),
-      category: form.category.trim(),
-      unit: form.unit,
-      status: form.status as Ingredient['status'],
-      description: form.description.trim(),
     })
     toast.success('Ingredient updated')
   } catch (error: any) {
@@ -252,27 +215,28 @@ const deleteDescription = computed(() => {
   return `Delete ${name}? This cannot be undone.`
 })
 
+const requestDelete = async () => {
+  if (!docId || deleting.value) return
+  if (import.meta.client && !window.confirm(deleteDescription.value)) return
+  await confirmDelete()
+}
+
 const confirmDelete = async () => {
   if (!docId) return
   deleting.value = true
   try {
-    await deleteDocument('ingredients', docId)
+    await deleteIngredient(docId)
     toast.success('Ingredient deleted')
     await navigateTo('/ingredients')
   } catch (error: any) {
     toast.error(String(error?.message || 'Failed to delete ingredient'))
   } finally {
     deleting.value = false
-    isDeleteConfirmOpen.value = false
   }
 }
 
 const pageTitle = computed(() => ingredient.value?.name || 'Ingredient')
-const pageDescription = computed(() => {
-  const entry = ingredient.value
-  if (!entry) return 'Ingredient details.'
-  return [entry.category, entry.unit].filter(Boolean).join(' · ') || 'Ingredient details.'
-})
+const pageDescription = computed(() => 'Ingredient details.')
 
 useHead({
   title: computed(() => `${appName} | ${pageTitle.value}`),

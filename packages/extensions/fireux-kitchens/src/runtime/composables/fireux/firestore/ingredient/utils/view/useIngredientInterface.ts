@@ -1,10 +1,10 @@
-import { safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type {
   Ingredient,
   KitchenIngredientResolved,
-} from '../../../../../../../models/ingredient.model'
+} from '../../../../../../models/ingredient.model'
 
-const joinSubtitle = (supplierName = ''): string => safeString(supplierName).trim()
+const joinSubtitle = (supplierRef = ''): string => safeString(supplierRef).trim()
 
 export type IngredientInterfaceItem = Ingredient | KitchenIngredientResolved
 
@@ -15,15 +15,9 @@ export namespace IngredientCard {
     imageUrl: string
     title: string
     subtitle: string
-    badges: string[]
     name: string
-    description: string
-    category: string
-    unit: string
     status: string
     supplierName: string
-    allergens: string[]
-    tags: string[]
   }
 }
 
@@ -31,12 +25,7 @@ export type IngredientProfile = {
   card: IngredientCard.Card
   title: string
   subtitle: string
-  prop?: string
-  category: string
-  unit: string
   status: string
-  allergens: string[]
-  tags: string[]
 }
 
 export function useIngredientInterface() {
@@ -50,47 +39,34 @@ export function useIngredientInterface() {
     | 'name'
     | 'subtitle'
     | 'status'
-    | 'category'
-    | 'unit'
     | 'supplierName'
-  > & {
-    prop?: string
-  }
+  >
 
   type IngredientPreview = {
     imageUrl: string
     name: string
     subtitle: string
     status: string
-    prop?: string
-    badges: string[]
     details: Array<{ label: string; value: string | number }>
   }
 
   function map(ingredient: IngredientInterfaceItem): IngredientCard.Card {
     const id = safeString(ingredient.id).trim()
     const name = safeString(ingredient.name).trim()
-    const category = safeString(ingredient.category).trim()
-    const unit = safeString(ingredient.unit).trim()
-    const status = safeString(ingredient.status).trim()
+    const status = safeString((ingredient as any)?.status).trim()
     const supplierName = safeString((ingredient as any)?.supplier_name).trim()
-    const tags = safeStringArray(ingredient.tags)
+    const supplierId = safeString((ingredient as any)?.supplier_id).trim()
+    const supplierRef = supplierName || supplierId
 
     return {
       id,
       to: id ? `/ingredients/${encodeURIComponent(id)}` : '',
       imageUrl: safeString(ingredient.image_url).trim(),
       title: name,
-      subtitle: joinSubtitle(supplierName),
-      badges: tags.slice(0, 4),
+      subtitle: joinSubtitle(supplierRef),
       name,
-      description: safeString(ingredient.description).trim(),
-      category,
-      unit,
       status,
-      supplierName,
-      allergens: safeStringArray(ingredient.allergens),
-      tags,
+      supplierName: supplierRef,
     }
   }
 
@@ -122,10 +98,7 @@ export function useIngredientInterface() {
       name: base.name,
       subtitle: base.subtitle,
       status: base.status,
-      category: base.category,
-      unit: base.unit,
       supplierName: base.supplierName,
-      prop: base.description,
     }
   }
 
@@ -140,16 +113,8 @@ export function useIngredientInterface() {
       name: base.name,
       subtitle: base.subtitle,
       status: base.status,
-      prop: base.description,
-      badges: base.badges,
       details: [
-        { label: 'Category', value: base.category || '—' },
-        { label: 'Unit', value: base.unit || '—' },
         { label: 'Supplier', value: base.supplierName },
-        {
-          label: 'Allergens',
-          value: base.allergens.length ? base.allergens.join(', ') : 'None',
-        },
       ],
     }
   }
@@ -164,12 +129,7 @@ export function useIngredientInterface() {
       card: base,
       title: base.title,
       subtitle: base.subtitle,
-      prop: base.description,
-      category: base.category,
-      unit: base.unit,
       status: base.status,
-      allergens: base.allergens,
-      tags: base.tags,
     }
   }
 
@@ -177,11 +137,8 @@ export function useIngredientInterface() {
     const mapped = map(ingredient)
     return [
       mapped.name,
-      mapped.category,
-      mapped.unit,
       mapped.status,
       mapped.supplierName,
-      mapped.tags.join(' '),
       mapped.id,
     ]
       .join(' ')

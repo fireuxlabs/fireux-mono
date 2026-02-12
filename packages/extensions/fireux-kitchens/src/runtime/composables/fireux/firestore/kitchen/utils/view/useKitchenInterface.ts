@@ -4,7 +4,7 @@ import type {
     PlaceSocialLinks,
     PlaceSource,
 } from 'fireux-places/runtime/models/place.model'
-import type { Kitchen } from '../../../../../../../models/kitchen.model'
+import type { Kitchen } from '../../../../../../models/kitchen.model'
 
 export namespace KitchenCard {
   export type Card = {

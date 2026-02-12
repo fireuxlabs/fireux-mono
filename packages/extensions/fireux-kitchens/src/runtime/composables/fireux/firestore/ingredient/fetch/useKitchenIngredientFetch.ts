@@ -67,14 +67,12 @@ export function useKitchenIngredientFetch(
 
     return kitchenItems.map((entry) => {
       const linkId = String(entry.id || '').trim()
-      const ingredientId = String(entry.ingredient_id || linkId).trim()
-      const global = ingredientById.value.get(ingredientId)
+      const global = ingredientById.value.get(linkId)
 
       return {
         ...(global ?? {}),
         ...entry,
-        id: linkId || ingredientId,
-        ingredient_id: ingredientId,
+        id: linkId,
       }
     })
   })

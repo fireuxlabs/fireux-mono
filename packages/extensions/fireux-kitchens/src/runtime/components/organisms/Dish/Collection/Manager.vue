@@ -87,11 +87,11 @@
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
 import { useDishInterface } from '../../../../composables/fireux/firestore/dish/utils/view/useDishInterface';
-import type { KitchenDish } from '../../../../models/dish.model';
+import type { Dish } from '../../../../models/dish.model';
 
 const props = withDefaults(
   defineProps<{
-    collection?: KitchenDish[]
+    collection?: Dish[]
     title?: string
     description?: string
   }>(),
@@ -122,10 +122,10 @@ const {
   toggleVariant,
   cards: cardsFiltered,
   visibleCount,
-} = useCollectionSearch<KitchenDish, ReturnType<typeof makeCard>>({
+} = useCollectionSearch<Dish, ReturnType<typeof makeCard>>({
   items: collection,
-  searchText: (dish: KitchenDish) => searchText(dish),
-  makeCard: (dish: KitchenDish) => makeCard(dish),
+  searchText: (dish: Dish) => searchText(dish),
+  makeCard: (dish: Dish) => makeCard(dish),
 })
 const isDev = import.meta.dev
 </script>
