@@ -37,7 +37,10 @@
           :class="linkEnabled ? '' : 'cursor-pointer'"
           @click.prevent="linkEnabled ? undefined : handleSelect(card.id)"
         >
-          <IngredientCardsPill v-bind="card" />
+          <IngredientCardsPill
+            v-bind="card"
+            :warning="warningByIngredientId[card.id]"
+          />
         </NuxtLink>
       </template>
       <template #cell="{ card }">
@@ -47,7 +50,11 @@
           :class="linkEnabled ? '' : 'cursor-pointer'"
           @click.prevent="linkEnabled ? undefined : handleSelect(card.id)"
         >
-          <IngredientCardsCell v-bind="card" :prop="card.description" />
+          <IngredientCardsCell
+            v-bind="card"
+            :prop="card.description"
+            :warning="warningByIngredientId[card.id]"
+          />
         </NuxtLink>
       </template>
     </IngredientCollectionList>
@@ -85,6 +92,7 @@ const props = withDefaults(
     devJsonData?: unknown
     devJsonDefaultOpen?: boolean
     devJsonHideWhenEmpty?: boolean
+    warningByIngredientId?: Record<string, string>
   }>(),
   {
     title: 'Ingredients',
@@ -100,6 +108,7 @@ const emit = defineEmits<{
 const { card: makeCard, searchText } = useIngredientInterface()
 
 const collection = computed(() => props.collection ?? [])
+const warningByIngredientId = computed(() => props.warningByIngredientId ?? {})
 const linkEnabled = computed(() => props.link !== false)
 const totalCount = computed(() => collection.value.length)
 

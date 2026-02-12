@@ -78,6 +78,10 @@
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
+import MiseCardsCell from '../Cards/Cell.vue'
+import MiseCardsPill from '../Cards/Pill.vue'
+import MiseCardsPreview from '../Cards/Preview.vue'
+import MiseCollectionList from './List.vue'
 import { useMiseEnPlaceInterface } from '../../../../composables/fireux/firestore/mise/utils/view/useMiseEnPlaceInterface'
 import type { KitchenMiseTask } from '../../../../models/kitchen-mise.model'
 

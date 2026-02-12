@@ -10,47 +10,23 @@
           <template #header>
             <div class="space-y-1">
               <div class="flex flex-wrap items-center justify-between gap-2">
-                <h2 class="text-base font-semibold">Lumen Burger Board</h2>
-                <UBadge variant="soft" color="neutral">
-                  {{ runtimeKitchenName }}
-                </UBadge>
+                <h2 class="text-base font-semibold">Menu board</h2>
+                <KitchenCardsPill v-if="kitchenPill" v-bind="kitchenPill" />
               </div>
               <p class="text-xs text-dimmed">
-                Five signature burgers, built from the Lumen scenario stack.
+                Menus for the active runtime kitchen (collection output: [menu]).
               </p>
             </div>
           </template>
         </UCard>
 
-        <UCard>
-          <template #header>
-            <div class="flex items-center justify-between gap-2">
-              <div class="text-sm font-semibold">Menus</div>
-              <UBadge variant="soft">{{ menus.length }}</UBadge>
-            </div>
-          </template>
-
-          <div v-if="menus.length" class="space-y-2">
-            <div
-              v-for="menu in menus"
-              :key="menu.id"
-              class="rounded-md border border-default p-3"
-            >
-              <div class="flex flex-wrap items-center justify-between gap-2">
-                <div class="text-sm font-semibold">{{ menu.name }}</div>
-                <UBadge variant="soft" color="neutral">{{ menu.status }}</UBadge>
-              </div>
-              <p class="text-xs text-dimmed">
-                {{ menu.description || 'No description yet.' }}
-              </p>
-              <div class="mt-2 flex flex-wrap gap-2 text-xs text-dimmed">
-                <span>Service: {{ menu.service }}</span>
-                <span>Dishes: {{ menu.dish_ids?.length || 0 }}</span>
-              </div>
-            </div>
-          </div>
-          <p v-else class="text-sm text-dimmed">No menus yet.</p>
-        </UCard>
+        <MenuCollectionManager
+          v-if="menusOrganized.length"
+          :collection="menusOrganized"
+          title="Menus"
+          description="Organize and sort kitchen menus as a collection."
+        />
+        <p v-else class="text-sm text-dimmed">No menus yet.</p>
       </div>
     </template>
   </UDashboardPanel>
@@ -59,7 +35,14 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { dummyKitchenScenario } from '../../../../../../../../dummy/scenario'
-import { useRuntimeKitchen } from '../../../composables/fireux/app/useRuntimeKitchen'
+import KitchenCardsPill from '../../../components/organisms/Kitchen/Cards/Pill.vue'
+import MenuCollectionManager from '../../../components/organisms/Menu/Collection/Manager.vue'
+import {
+  useRuntimeKitchen,
+  useRuntimeKitchenSelection,
+} from '../../../composables/fireux/app/useRuntimeKitchen'
+import { useKitchenMenuStackFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenMenuStackFetch'
+import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 definePageMeta({
   layout: 'kitchen-dashboard',
@@ -76,7 +59,30 @@ definePageMeta({
 })
 
 const runtimeKitchen = useRuntimeKitchen()
-const runtimeKitchenName = computed(() => String(runtimeKitchen.value?.name || ''))
-const menus = ref([...dummyKitchenScenario.menuStack.menus])
-</script>
+const { pill: kitchenPillBuilder } = useKitchenInterface()
+const { runtimeKitchenMode } = useRuntimeKitchenSelection()
+const kitchenPill = computed(() => kitchenPillBuilder(runtimeKitchen.value))
+const runtimeKitchenId = computed(() => String(runtimeKitchen.value?.id || '').trim())
+const runtimeKitchenCollectionPath = computed(() =>
+  runtimeKitchenMode.value === 'live' ? 'kitchens' : 'test-kitchens'
+)
+const { menus: firestoreMenus } = useKitchenMenuStackFetch(runtimeKitchenId, {
+  kitchenCollectionPath: runtimeKitchenCollectionPath,
+})
+const dummyMenus = ref([...dummyKitchenScenario.menuStack.menus])
 
+// TODO(kitchen-menu-sync): Add "Import from Google" into draft menus and flag likely missing items
+// because many restaurants have partial/outdated online menu coverage.
+const menus = computed(() =>
+  runtimeKitchenMode.value === 'dummy'
+    ? dummyMenus.value
+    : [...(firestoreMenus.value ?? [])]
+)
+
+const menusOrganized = computed(() =>
+  [...menus.value].sort((a, b) =>
+    Number(a.sort_order || 0) - Number(b.sort_order || 0) ||
+    String(a.name || '').localeCompare(String(b.name || ''))
+  )
+)
+</script>

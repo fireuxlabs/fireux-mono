@@ -4,8 +4,8 @@
       <div class="space-y-1">
         <div class="text-sm font-semibold">Add Ingredient</div>
         <p class="text-xs text-dimmed">
-          Attach an ingredient from the global catalog to this kitchen. If it does
-          not exist yet, it will be created globally first.
+          Create a bare ingredient for kitchen usage. If it does not exist in
+          global yet, it will be created there first.
         </p>
       </div>
     </template>
@@ -64,6 +64,7 @@ import {
 
 const props = defineProps<{
   kitchenId: string
+  kitchenCollectionPath?: string
 }>()
 
 const emit = defineEmits<{
@@ -93,7 +94,14 @@ const handleCreate = async () => {
   submitting.value = true
 
   try {
-    const createdId = await createKitchenIngredient(resolvedKitchenId.value, form.value)
+    const kitchenCollectionPath = String(props.kitchenCollectionPath || '').trim()
+    const createdId = await createKitchenIngredient(
+      resolvedKitchenId.value,
+      form.value,
+      kitchenCollectionPath
+        ? { kitchenCollectionPath }
+        : undefined
+    )
     toast.success('Ingredient added')
     clearDraft()
     emit('created', createdId)

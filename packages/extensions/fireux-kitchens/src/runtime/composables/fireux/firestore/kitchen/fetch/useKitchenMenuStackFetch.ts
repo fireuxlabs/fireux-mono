@@ -3,7 +3,7 @@ import type { Ref, ShallowRef } from 'vue'
 import { computed, shallowRef, unref, watch } from 'vue'
 import type { KitchenMiseTask } from '../../../../../../models/kitchen-mise.model'
 import type { KitchenDish } from '../../../../../../models/dish.model'
-import type { KitchenMenu } from '../../../../../../models/kitchen-menu.model'
+import type { KitchenMenu } from '../../../../../../models/menu.model'
 import type { KitchenRecipe } from '../../../../../../models/kitchen-recipe.model'
 
 const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'

@@ -1,7 +1,7 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import type { Ingredient } from '../../../../../models/ingredient.model'
 import { KitchenDish, type KitchenDish as KitchenDishDoc } from '../../../../../models/dish.model'
-import { KitchenMenu, type KitchenMenu as KitchenMenuDoc } from '../../../../../models/kitchen-menu.model'
+import { KitchenMenu, type KitchenMenu as KitchenMenuDoc } from '../../../../../models/menu.model'
 import { KitchenMiseTask, type KitchenMiseTask as KitchenMiseTaskDoc } from '../../../../../models/kitchen-mise.model'
 import {
   KitchenRecipe,

@@ -3,10 +3,9 @@
     <UCard>
       <template #header>
         <div class="space-y-2">
-          <div class="text-sm font-semibold">Menu stack (simple dummy)</div>
+          <div class="text-sm font-semibold">Menu stack (scenario dummy)</div>
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            Burger and cheeseburger flow with simple models for ingredients, mise, recipes, dishes,
-            and menu.
+            Canon kitchen scenario for ingredients, mise, recipes, dishes, and menus.
           </p>
         </div>
       </template>
@@ -23,8 +22,8 @@
     <UCard>
       <DevJson
         title="Menu stack (JSON)"
-        context="dev kitchens · simple menu stack"
-        :data="dummyMenuStackSimple"
+        context="dev kitchens · scenario menu stack"
+        :data="menuStackDevJson"
         :default-open="false"
       />
     </UCard>
@@ -33,15 +32,27 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { dummyMenuStackSimple } from '../../../../../../../../dummy/menu-stack.simple.dummy';
+import { dummyKitchenScenario } from '../../../../../../../../dummy/scenario';
 
 defineOptions({ name: 'DevMenuStackSystem' })
 
 const counts = computed(() => ({
-  ingredients: dummyMenuStackSimple.ingredients.length,
-  mise: dummyMenuStackSimple.mise.length,
-  recipes: dummyMenuStackSimple.recipes.length,
-  dishes: dummyMenuStackSimple.dishes.length,
-  menus: dummyMenuStackSimple.menus.length,
+  ingredients: (dummyKitchenScenario.globalIngredients?.length ?? 0) + (dummyKitchenScenario.kitchenPreparedComponents?.length ?? 0),
+  mise: dummyKitchenScenario.menuStack.miseTasks.length,
+  recipes: dummyKitchenScenario.menuStack.recipes.length,
+  dishes: dummyKitchenScenario.menuStack.dishes.length,
+  menus: dummyKitchenScenario.menuStack.menus.length,
+}))
+
+const menuStackDevJson = computed(() => ({
+  ingredients: [
+    ...(dummyKitchenScenario.globalIngredients ?? []),
+    ...(dummyKitchenScenario.kitchenPreparedComponents ?? []),
+  ],
+  mise: dummyKitchenScenario.menuStack.miseTasks,
+  recipes: dummyKitchenScenario.menuStack.recipes,
+  dishes: dummyKitchenScenario.menuStack.dishes,
+  menus: dummyKitchenScenario.menuStack.menus,
+  stations: dummyKitchenScenario.menuStack.stations,
 }))
 </script>

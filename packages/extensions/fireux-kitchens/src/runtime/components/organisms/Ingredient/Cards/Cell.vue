@@ -28,15 +28,27 @@
             </div>
           </div>
 
-          <UBadge
-            v-if="showStatus && status"
-            variant="soft"
-            color="neutral"
-            size="xs"
-            class="shrink-0"
-          >
-            {{ status }}
-          </UBadge>
+          <div class="flex items-center gap-1">
+            <UChip
+              v-if="warning"
+              color="warning"
+              variant="soft"
+              size="xs"
+              class="shrink-0"
+            >
+              {{ warning }}
+            </UChip>
+
+            <UBadge
+              v-if="showStatus && status"
+              variant="soft"
+              color="neutral"
+              size="xs"
+              class="shrink-0"
+            >
+              {{ status }}
+            </UBadge>
+          </div>
         </div>
 
         <div class="truncate text-xs text-dimmed">
@@ -65,6 +77,7 @@ type Props = Pick<
   'to' | 'name' | 'subtitle' | 'status' | 'category' | 'unit' | 'imageUrl'
 > & {
   prop?: string
+  warning?: string
   showSubtitle?: boolean
   showStatus?: boolean
   showTagline?: boolean

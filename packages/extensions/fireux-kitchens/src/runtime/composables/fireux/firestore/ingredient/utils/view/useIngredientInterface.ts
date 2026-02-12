@@ -1,8 +1,7 @@
 import { safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Ingredient } from '../../../../../../../models/ingredient.model'
 
-const joinSubtitle = (category: string, unit: string): string =>
-  [safeString(category).trim(), safeString(unit).trim()].filter(Boolean).join(' · ')
+const joinSubtitle = (supplierName = ''): string => safeString(supplierName).trim()
 
 export namespace IngredientCard {
   export type Card = {
@@ -17,6 +16,7 @@ export namespace IngredientCard {
     category: string
     unit: string
     status: string
+    supplierName: string
     allergens: string[]
     tags: string[]
   }
@@ -47,6 +47,7 @@ export function useIngredientInterface() {
     | 'status'
     | 'category'
     | 'unit'
+    | 'supplierName'
   > & {
     prop?: string
   }
@@ -67,6 +68,7 @@ export function useIngredientInterface() {
     const category = safeString(ingredient.category).trim()
     const unit = safeString(ingredient.unit).trim()
     const status = safeString(ingredient.status).trim()
+    const supplierName = safeString((ingredient as any)?.supplier_name).trim()
     const tags = safeStringArray(ingredient.tags)
 
     return {
@@ -74,13 +76,14 @@ export function useIngredientInterface() {
       to: id ? `/ingredients/${encodeURIComponent(id)}` : '',
       imageUrl: safeString(ingredient.image_url).trim(),
       title: name,
-      subtitle: joinSubtitle(category, unit),
+      subtitle: joinSubtitle(supplierName),
       badges: tags.slice(0, 4),
       name,
       description: safeString(ingredient.description).trim(),
       category,
       unit,
       status,
+      supplierName,
       allergens: safeStringArray(ingredient.allergens),
       tags,
     }
@@ -114,6 +117,7 @@ export function useIngredientInterface() {
       status: base.status,
       category: base.category,
       unit: base.unit,
+      supplierName: base.supplierName,
       prop: base.description,
     }
   }
@@ -132,6 +136,7 @@ export function useIngredientInterface() {
       details: [
         { label: 'Category', value: base.category || '—' },
         { label: 'Unit', value: base.unit || '—' },
+        { label: 'Supplier', value: base.supplierName },
         {
           label: 'Allergens',
           value: base.allergens.length ? base.allergens.join(', ') : 'None',
@@ -164,6 +169,7 @@ export function useIngredientInterface() {
       mapped.category,
       mapped.unit,
       mapped.status,
+      mapped.supplierName,
       mapped.tags.join(' '),
       mapped.id,
     ]
