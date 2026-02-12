@@ -1,6 +1,9 @@
 <template>
-  <div
-    class="rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm dark:border-gray-800/60 dark:bg-gray-900/40"
+  <component
+    :is="link && to ? 'NuxtLink' : 'div'"
+    :to="link && to ? to : undefined"
+    @click="onClick"
+    class="pill"
   >
     <UUser
       :name="title"
@@ -8,15 +11,27 @@
       :avatar="{ icon: 'i-lucide-store', alt: title || '' }"
       size="sm"
     />
-
-    <div class="mt-2 flex items-center justify-end gap-2">
-      <code class="truncate text-[11px] text-dimmed">{{ id }}</code>
-    </div>
-  </div>
+  </component>
 </template>
 
 <script setup lang="ts">
 import type { SupplierCard } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
-defineProps<Pick<SupplierCard.Card, 'id' | 'title' | 'subtitle'>>()
+type PillProps = Pick<SupplierCard.Card, 'to' | 'title' | 'subtitle'> & {
+  link?: boolean
+  action?: boolean
+}
+
+const emit = defineEmits<{
+  (event: 'action'): void
+}>()
+
+const props = withDefaults(defineProps<PillProps>(), {
+  link: false,
+  action: false,
+})
+
+const onClick = () => {
+  if (props.action) emit('action')
+}
 </script>

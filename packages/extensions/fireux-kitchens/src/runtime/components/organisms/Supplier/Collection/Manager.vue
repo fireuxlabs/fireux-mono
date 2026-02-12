@@ -31,34 +31,42 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <component
-          :is="linkEnabled && card.to ? 'NuxtLink' : 'div'"
-          :to="linkEnabled && card.to ? card.to : undefined"
+        <div
           class="block"
-          :class="linkEnabled ? '' : 'cursor-default'"
+          :class="linkEnabled && card.to ? 'cursor-pointer' : 'cursor-default'"
+          @click="openCard(card)"
         >
           <SupplierCardsPill v-bind="card" />
-        </component>
+        </div>
       </template>
       <template #cell="{ card }">
-        <component
-          :is="linkEnabled && card.to ? 'NuxtLink' : 'div'"
-          :to="linkEnabled && card.to ? card.to : undefined"
+        <div
           class="block"
-          :class="linkEnabled ? '' : 'cursor-default'"
+          :class="linkEnabled && card.to ? 'cursor-pointer' : 'cursor-default'"
+          @click="openCard(card)"
         >
           <SupplierCardsCell v-bind="card" />
-        </component>
+        </div>
       </template>
     </SupplierCollectionList>
 
     <p v-else class="text-sm text-dimmed">
       {{ query ? 'No suppliers match your search.' : 'No suppliers found.' }}
     </p>
+
+    <div v-if="isDev">
+      <DevJson
+        :title="'Suppliers (JSON)'"
+        context="collection manager · suppliers"
+        :data="collection"
+        :default-open="false"
+      />
+    </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
+import { navigateTo } from '#imports'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
 import { useSupplierInterface, type SupplierSurface } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
@@ -98,4 +106,12 @@ const {
   searchText: (supplier: SupplierCollectionEntry) => searchText(supplier),
   makeCard: (supplier: SupplierCollectionEntry) => makeCard(supplier),
 })
+const isDev = import.meta.dev
+
+const openCard = (card: NonNullable<ReturnType<typeof makeCard>>) => {
+  if (!linkEnabled.value) return
+  const to = String(card?.to || '').trim()
+  if (!to) return
+  navigateTo(to)
+}
 </script>

@@ -78,7 +78,6 @@
             :collection="globalSuppliers"
             title="Global suppliers"
             description="Supplier profiles available globally."
-            :link="false"
           />
         </section>
       </div>

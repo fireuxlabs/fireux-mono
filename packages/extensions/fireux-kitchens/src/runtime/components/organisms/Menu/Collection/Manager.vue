@@ -90,6 +90,15 @@
     <p v-else class="text-sm text-dimmed">
       {{ query ? 'No menus match your search.' : 'No menus found.' }}
     </p>
+
+    <div v-if="isDev">
+      <DevJson
+        :title="'Menus (JSON)'"
+        context="collection manager · menus"
+        :data="collection"
+        :default-open="false"
+      />
+    </div>
   </UCard>
 </template>
 
@@ -220,4 +229,5 @@ const {
   searchText: (menu: KitchenMenu) => searchText(menu),
   makeCard: (menu: KitchenMenu) => makeCard(menu),
 })
+const isDev = import.meta.dev
 </script>

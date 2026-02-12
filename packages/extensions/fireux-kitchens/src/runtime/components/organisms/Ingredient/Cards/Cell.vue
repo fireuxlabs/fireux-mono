@@ -36,7 +36,7 @@
               size="xs"
               class="shrink-0"
             >
-              {{ warning }}
+              {{ warningText }}
             </UChip>
 
             <UBadge
@@ -70,6 +70,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { IngredientCard } from '../../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
 
 type Props = Pick<
@@ -96,6 +97,21 @@ const props = withDefaults(defineProps<Props>(), {
   showTagline: true,
   link: false,
   action: false,
+})
+
+const warningText = computed(() => {
+  const value = String(props.warning || '').trim()
+  if (!value) return ''
+
+  const normalized = value.toLowerCase()
+  if (normalized === 'unused') {
+    return 'Not used in recipes, mise, or active menu dishes.'
+  }
+  if (normalized === 'off menu') {
+    return 'Used in prep or recipes, but not on any active menu dish.'
+  }
+
+  return value
 })
 
 const onClick = () => {

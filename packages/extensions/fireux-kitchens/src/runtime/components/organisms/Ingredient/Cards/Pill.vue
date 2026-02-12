@@ -17,8 +17,9 @@
         color="warning"
         variant="soft"
         size="xs"
+        :title="warning"
       >
-        {{ warning }}
+        <UIcon name="i-lucide-triangle-alert" />
       </UChip>
     </div>
   </component>

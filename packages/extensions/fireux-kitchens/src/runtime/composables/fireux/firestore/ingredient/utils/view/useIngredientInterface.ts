@@ -1,7 +1,12 @@
 import { safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { Ingredient } from '../../../../../../../models/ingredient.model'
+import type {
+  Ingredient,
+  KitchenIngredientResolved,
+} from '../../../../../../../models/ingredient.model'
 
 const joinSubtitle = (supplierName = ''): string => safeString(supplierName).trim()
+
+export type IngredientInterfaceItem = Ingredient | KitchenIngredientResolved
 
 export namespace IngredientCard {
   export type Card = {
@@ -62,7 +67,7 @@ export function useIngredientInterface() {
     details: Array<{ label: string; value: string | number }>
   }
 
-  function map(ingredient: Ingredient): IngredientCard.Card {
+  function map(ingredient: IngredientInterfaceItem): IngredientCard.Card {
     const id = safeString(ingredient.id).trim()
     const name = safeString(ingredient.name).trim()
     const category = safeString(ingredient.category).trim()
@@ -89,13 +94,15 @@ export function useIngredientInterface() {
     }
   }
 
-  function card(target?: Ingredient | null | undefined): IngredientCard.Card | null {
+  function card(
+    target?: IngredientInterfaceItem | null | undefined
+  ): IngredientCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
 
-  function pill(target?: Ingredient | null | undefined): IngredientPill | null {
+  function pill(target?: IngredientInterfaceItem | null | undefined): IngredientPill | null {
     const base = card(target)
     if (!base) return null
     return {
@@ -105,7 +112,7 @@ export function useIngredientInterface() {
     }
   }
 
-  function cell(target?: Ingredient | null | undefined): IngredientCell | null {
+  function cell(target?: IngredientInterfaceItem | null | undefined): IngredientCell | null {
     const base = card(target)
     if (!base) return null
     return {
@@ -122,7 +129,9 @@ export function useIngredientInterface() {
     }
   }
 
-  function preview(target?: Ingredient | null | undefined): IngredientPreview | null {
+  function preview(
+    target?: IngredientInterfaceItem | null | undefined
+  ): IngredientPreview | null {
     const base = card(target)
     if (!base) return null
 
@@ -145,7 +154,9 @@ export function useIngredientInterface() {
     }
   }
 
-  function profile(target?: Ingredient | null | undefined): IngredientProfile | null {
+  function profile(
+    target?: IngredientInterfaceItem | null | undefined
+  ): IngredientProfile | null {
     const base = card(target)
     if (!base) return null
 
@@ -162,7 +173,7 @@ export function useIngredientInterface() {
     }
   }
 
-  function searchText(ingredient: Ingredient): string {
+  function searchText(ingredient: IngredientInterfaceItem): string {
     const mapped = map(ingredient)
     return [
       mapped.name,

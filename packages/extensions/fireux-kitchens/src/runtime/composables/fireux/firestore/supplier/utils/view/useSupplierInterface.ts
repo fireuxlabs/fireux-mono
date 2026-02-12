@@ -53,7 +53,7 @@ export function useSupplierInterface() {
 
     return {
       id,
-      to: id ? `/dashboard/kitchen/suppliers/${encodeURIComponent(id)}` : '',
+      to: id ? `/dashboard/kitchen/supplier/${encodeURIComponent(id)}` : '',
       title: name,
       subtitle: category || '',
       name,

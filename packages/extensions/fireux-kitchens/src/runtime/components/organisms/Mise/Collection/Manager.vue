@@ -72,6 +72,15 @@
     <p v-else class="text-sm text-dimmed">
       {{ query ? 'No mise tasks match your search.' : 'No mise tasks found.' }}
     </p>
+
+    <div v-if="isDev">
+      <DevJson
+        :title="'Mise Tasks (JSON)'"
+        context="collection manager · mise"
+        :data="collection"
+        :default-open="false"
+      />
+    </div>
   </UCard>
 </template>
 
@@ -123,4 +132,5 @@ const {
   searchText: (task: KitchenMiseTask) => searchText(task),
   makeCard: (task: KitchenMiseTask) => makeCard(task),
 })
+const isDev = import.meta.dev
 </script>

@@ -71,6 +71,15 @@
     <p v-else class="text-sm text-dimmed">
       {{ query ? 'No dishes match your search.' : 'No dishes found.' }}
     </p>
+
+    <div v-if="isDev">
+      <DevJson
+        :title="'Dishes (JSON)'"
+        context="collection manager · dishes"
+        :data="collection"
+        :default-open="false"
+      />
+    </div>
   </UCard>
 </template>
 
@@ -118,4 +127,5 @@ const {
   searchText: (dish: KitchenDish) => searchText(dish),
   makeCard: (dish: KitchenDish) => makeCard(dish),
 })
+const isDev = import.meta.dev
 </script>

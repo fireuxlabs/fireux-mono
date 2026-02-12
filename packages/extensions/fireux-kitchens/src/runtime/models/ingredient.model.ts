@@ -111,6 +111,7 @@ export type KitchenIngredientResolved = KitchenIngredient &
       | 'name'
       | 'description'
       | 'category'
+      | 'image_url'
       | 'unit'
       | 'allergens'
       | 'tags'

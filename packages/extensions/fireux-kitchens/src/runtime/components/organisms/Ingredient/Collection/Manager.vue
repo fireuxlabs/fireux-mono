@@ -21,6 +21,7 @@
             @click="toggleVariant"
           />
           <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+          <slot name="controls" />
         </div>
       </div>
     </template>
@@ -78,12 +79,15 @@
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
-import { useIngredientInterface } from '../../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface';
+import {
+  useIngredientInterface,
+  type IngredientInterfaceItem,
+} from '../../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface';
 import type { Ingredient } from '../../../../models/ingredient.model';
 
 const props = withDefaults(
   defineProps<{
-    collection?: Ingredient[]
+    collection?: IngredientInterfaceItem[]
     title?: string
     description?: string
     link?: boolean
@@ -113,7 +117,7 @@ const linkEnabled = computed(() => props.link !== false)
 const totalCount = computed(() => collection.value.length)
 
 const ingredientById = computed(() => {
-  const map = new Map<string, Ingredient>()
+  const map = new Map<string, IngredientInterfaceItem>()
   for (const ingredient of collection.value) {
     const id = String(ingredient.id || '').trim()
     if (!id) continue
@@ -128,10 +132,10 @@ const {
   toggleVariant,
   cards: cardsFiltered,
   visibleCount,
-} = useCollectionSearch<Ingredient, ReturnType<typeof makeCard>>({
+} = useCollectionSearch<IngredientInterfaceItem, ReturnType<typeof makeCard>>({
   items: collection,
-  searchText: (ingredient: Ingredient) => searchText(ingredient),
-  makeCard: (ingredient: Ingredient) => makeCard(ingredient),
+  searchText: (ingredient: IngredientInterfaceItem) => searchText(ingredient),
+  makeCard: (ingredient: IngredientInterfaceItem) => makeCard(ingredient),
 })
 
 const isDev = import.meta.dev
@@ -146,6 +150,6 @@ const devJsonHideWhenEmpty = computed(() => props.devJsonHideWhenEmpty ?? true)
 
 const handleSelect = (id: string) => {
   const ingredient = ingredientById.value.get(String(id || '').trim())
-  if (ingredient) emit('select', ingredient)
+  if (ingredient) emit('select', ingredient as Ingredient)
 }
 </script>
