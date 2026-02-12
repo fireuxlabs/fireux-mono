@@ -62,7 +62,7 @@
 import { useRouter } from '#imports'
 import { computed } from 'vue'
 import { dummyKitchenHydrated } from '../../../../../../../../dummy/kitchen.dummy'
-import { useRuntimeKitchenSelection, type RuntimeKitchenMode } from '../../../composables/fireux/app/useRuntimeKitchen'
+import { useRuntimeKitchenSelection, type RuntimeKitchenMode } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
 
 const testKitchen = {
   id: 'jMK33p5XlhYS8rBCEf8qUiogfMg2',

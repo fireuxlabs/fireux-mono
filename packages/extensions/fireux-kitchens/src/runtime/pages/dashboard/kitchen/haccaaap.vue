@@ -53,7 +53,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import KitchenCardsPill from '../../../components/organisms/Kitchen/Cards/Pill.vue'
-import { useRuntimeKitchen } from '../../../composables/fireux/app/useRuntimeKitchen'
+import { useRuntimeKitchen } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 definePageMeta({

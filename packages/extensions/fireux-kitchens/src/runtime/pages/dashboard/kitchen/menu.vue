@@ -40,7 +40,7 @@ import MenuCollectionManager from '../../../components/organisms/Menu/Collection
 import {
   useRuntimeKitchen,
   useRuntimeKitchenSelection,
-} from '../../../composables/fireux/app/useRuntimeKitchen'
+} from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
 import { useKitchenMenuStackFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenMenuStackFetch'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 

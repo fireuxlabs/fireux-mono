@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { dummyKitchenScenario } from '../../../../../../../../dummy/scenario'
-import { useRuntimeKitchen } from '../../../composables/fireux/app/useRuntimeKitchen'
+import { useRuntimeKitchen } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
 import type { ChefCore } from '../../../models/profiles/Chef/Chef.model'
 
 definePageMeta({

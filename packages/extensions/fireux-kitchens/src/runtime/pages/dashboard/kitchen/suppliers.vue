@@ -78,6 +78,7 @@
             :collection="globalSuppliers"
             title="Global suppliers"
             description="Supplier profiles available globally."
+            :link="false"
           />
         </section>
       </div>
@@ -96,7 +97,7 @@ import SupplierCollectionManager from '../../../components/organisms/Supplier/Co
 import {
   useRuntimeKitchen,
   useRuntimeKitchenSelection,
-} from '../../../composables/fireux/app/useRuntimeKitchen'
+} from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 definePageMeta({
@@ -128,7 +129,6 @@ type KitchenSupplier = {
   kitchen_id: string
   name: string
   category: string
-  status: 'active' | 'archived'
 }
 
 const runtimeKitchen = useRuntimeKitchen()
@@ -240,7 +240,6 @@ const createTestSupplier = async () => {
         kitchen_id: kitchenId,
         name: supplierId,
         category,
-        status: 'active',
       }
 
       dummyKitchenSuppliers.value = [payload, ...kitchenSuppliers.value]
@@ -259,7 +258,6 @@ const createTestSupplier = async () => {
       kitchen_id: kitchenId,
       name: supplierId,
       category,
-      status: 'active',
     }
 
     await setDocument<KitchenSupplier>(collectionPath, supplierId, payload, {

@@ -58,7 +58,7 @@ import KitchenIngredientsCreateSystem from '../../../components/organisms/Kitche
 import {
   useRuntimeKitchen,
   useRuntimeKitchenSelection,
-} from '../../../composables/fireux/app/useRuntimeKitchen'
+} from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
 import { useIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
 import { useKitchenIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useKitchenIngredientFetch'
 import { useKitchenIngredientCreate } from '../../../composables/fireux/firestore/ingredient/mutations/useKitchenIngredientCreate'
