@@ -9,36 +9,41 @@
 
         <div class="collection-manager__controls">
           <UInput
+            v-if="showSearch"
             v-model="query"
             size="xs"
-            placeholder="Search menus..."
+            :placeholder="searchPlaceholder"
           />
-          <span class="text-[11px] text-dimmed">service</span>
+          <span v-if="showServiceFilter" class="text-[11px] text-dimmed">service</span>
           <USelect
+            v-if="showServiceFilter"
             v-model="serviceFilter"
             size="xs"
             :options="serviceOptions"
           />
-          <span class="text-[11px] text-dimmed">status</span>
+          <span v-if="showStatusFilter" class="text-[11px] text-dimmed">status</span>
           <USelect
+            v-if="showStatusFilter"
             v-model="statusFilter"
             size="xs"
             :options="statusOptions"
           />
-          <span class="text-[11px] text-dimmed">sort</span>
+          <span v-if="showSort" class="text-[11px] text-dimmed">sort</span>
           <USelect
+            v-if="showSort"
             v-model="sortBy"
             size="xs"
             :options="sortOptions"
           />
           <UButton
+            v-if="showVariantToggle"
             size="xs"
             variant="ghost"
             :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
             :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
             @click="toggleVariant"
           />
-          <UBadge variant="soft">{{ visibleCount }} / {{ filteredCount }} / {{ totalCount }}</UBadge>
+          <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ filteredCount }} / {{ totalCount }}</UBadge>
         </div>
       </div>
     </template>
@@ -52,9 +57,9 @@
         <UPopover :popper="{ placement: 'right-start' }">
           <template #default>
             <NuxtLink
-              :to="card.to || undefined"
+              :to="linkEnabled ? (card.to || undefined) : undefined"
               class="block"
-              :class="card.to ? '' : 'cursor-pointer'"
+              :class="linkEnabled && card.to ? '' : 'cursor-default'"
             >
               <MenuCardsPill v-bind="card" />
             </NuxtLink>
@@ -71,9 +76,9 @@
         <UPopover :popper="{ placement: 'right-start' }">
           <template #default>
             <NuxtLink
-              :to="card.to || undefined"
+              :to="linkEnabled ? (card.to || undefined) : undefined"
               class="block"
-              :class="card.to ? '' : 'cursor-pointer'"
+              :class="linkEnabled && card.to ? '' : 'cursor-default'"
             >
               <MenuCardsCell v-bind="card" :prop="card.description" />
             </NuxtLink>
@@ -117,16 +122,42 @@ const props = withDefaults(
     collection?: Menu[]
     title?: string
     description?: string
+    searchPlaceholder?: string
+    showSearch?: boolean
+    showServiceFilter?: boolean
+    showStatusFilter?: boolean
+    showSort?: boolean
+    showVariantToggle?: boolean
+    showCount?: boolean
+    initialVariant?: 'pill' | 'cell'
+    link?: boolean
   }>(),
   {
     title: 'Menus',
     description: 'Browse menus for this kitchen.',
+    searchPlaceholder: 'Search menus...',
+    showSearch: true,
+    showServiceFilter: true,
+    showStatusFilter: true,
+    showSort: true,
+    showVariantToggle: true,
+    showCount: true,
+    initialVariant: 'pill',
+    link: true,
   }
 )
 
 const { card: makeCard, preview: makePreview, searchText } = useMenuInterface()
 
 const collection = computed(() => props.collection ?? [])
+const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search menus...'))
+const showSearch = computed(() => props.showSearch !== false)
+const showServiceFilter = computed(() => props.showServiceFilter !== false)
+const showStatusFilter = computed(() => props.showStatusFilter !== false)
+const showSort = computed(() => props.showSort !== false)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
+const showCount = computed(() => props.showCount !== false)
+const linkEnabled = computed(() => props.link !== false)
 const totalCount = computed(() => collection.value.length)
 const serviceFilter = ref('all')
 const statusFilter = ref('all')
@@ -228,6 +259,7 @@ const {
   items: collectionOrganized,
   searchText: (menu: Menu) => searchText(menu),
   makeCard: (menu: Menu) => makeCard(menu),
+  initialVariant: props.initialVariant,
 })
 const isDev = import.meta.dev
 </script>

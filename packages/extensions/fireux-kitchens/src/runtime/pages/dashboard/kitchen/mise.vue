@@ -137,6 +137,7 @@ import {
   useRuntimeKitchen,
   useRuntimeKitchenSelection,
 } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
+import { useIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
 import { useKitchenIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useKitchenIngredientFetch'
 import { useKitchenMenuStackFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenMenuStackFetch'
 import { useKitchenMiseCreate } from '../../../composables/fireux/firestore/mise/mutations/useKitchenMiseCreate'
@@ -171,12 +172,16 @@ const runtimeKitchenId = computed(() => String(runtimeKitchen.value?.id || '').t
 const runtimeKitchenCollectionPath = computed(() =>
   runtimeKitchenMode.value === 'live' ? 'kitchens' : 'test-kitchens'
 )
-const { miseTasks: firestoreMiseTasks, menus: firestoreMenus } = useKitchenMenuStackFetch(runtimeKitchenId, {
+const firestoreKitchenId = computed(() =>
+  runtimeKitchenMode.value === 'dummy' ? '' : runtimeKitchenId.value
+)
+const { miseTasks: firestoreMiseTasks, menus: firestoreMenus } = useKitchenMenuStackFetch(firestoreKitchenId, {
   kitchenCollectionPath: runtimeKitchenCollectionPath,
 })
-const { ingredients: firestoreKitchenIngredients } = useKitchenIngredientFetch(runtimeKitchenId, {
+const { ingredients: firestoreKitchenIngredients } = useKitchenIngredientFetch(firestoreKitchenId, {
   kitchenCollectionPath: runtimeKitchenCollectionPath,
 })
+const { ingredients: firestoreGlobalIngredients } = useIngredientFetch()
 
 const dummyMiseTasks = ref([...dummyKitchenScenario.menuStack.miseTasks])
 const isCreating = ref(false)
@@ -226,10 +231,41 @@ const toSlug = (value: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
 
-const kitchenIngredientsForMise = computed(() =>
+const globalIngredientsForMise = computed(() =>
+  runtimeKitchenMode.value === 'dummy'
+    ? [...dummyKitchenScenario.globalIngredients]
+    : [...(firestoreGlobalIngredients.value ?? [])]
+)
+
+const globalIngredientById = computed(() => {
+  const map = new Map<string, any>()
+  for (const ingredient of globalIngredientsForMise.value) {
+    const id = String((ingredient as any)?.id || '').trim()
+    if (!id) continue
+    map.set(id, ingredient)
+  }
+  return map
+})
+
+const kitchenIngredientsRawForMise = computed(() =>
   runtimeKitchenMode.value === 'dummy'
     ? [...dummyKitchenScenario.kitchenIngredients]
     : [...(firestoreKitchenIngredients.value ?? [])]
+)
+
+const kitchenIngredientsForMise = computed(() =>
+  runtimeKitchenMode.value === 'dummy'
+    ? kitchenIngredientsRawForMise.value.map((entry: any) => {
+      const ingredientId = String(entry.ingredient_id || entry.id || '').trim()
+      const global = globalIngredientById.value.get(ingredientId)
+      return {
+        ...(global ?? {}),
+        ...entry,
+        id: String(entry.id || ingredientId).trim() || ingredientId,
+        ingredient_id: ingredientId,
+      }
+    })
+    : kitchenIngredientsRawForMise.value
 )
 
 const menusForMise = computed(() =>

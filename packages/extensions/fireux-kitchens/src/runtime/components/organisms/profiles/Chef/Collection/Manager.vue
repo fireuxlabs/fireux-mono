@@ -3,14 +3,20 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <h2>Chefs</h2>
-          <p>Browse chefs available to this runtime.</p>
+          <h2>{{ title }}</h2>
+          <p>{{ description }}</p>
         </div>
 
         <div class="collection-manager__controls">
-          <UInput v-model="query" size="xs" placeholder="Search chefs…" />
+          <UInput
+            v-if="showSearch"
+            v-model="query"
+            size="xs"
+            :placeholder="searchPlaceholder"
+          />
 
           <UButton
+            v-if="showVariantToggle"
             size="xs"
             variant="ghost"
             :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
@@ -18,7 +24,7 @@
             @click="toggleVariant"
           />
 
-          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+          <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
         </div>
       </div>
     </template>
@@ -29,18 +35,26 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <NuxtLink :to="card.to">
+        <NuxtLink
+          :to="linkEnabled ? card.to : undefined"
+          class="block"
+          :class="linkEnabled ? '' : 'cursor-default'"
+        >
           <ProfilesChefCardsPill v-bind="card" />
         </NuxtLink>
       </template>
       <template #cell="{ card }">
-        <NuxtLink :to="card.to">
+        <NuxtLink
+          :to="linkEnabled ? card.to : undefined"
+          class="block"
+          :class="linkEnabled ? '' : 'cursor-default'"
+        >
           <ProfilesChefCardsCell v-bind="card" />
         </NuxtLink>
       </template>
     </ProfilesChefCollectionList>
 
-    <p v-else>No chefs found.</p>
+    <p v-else>{{ query ? 'No chefs match your search.' : 'No chefs found.' }}</p>
 
     <div v-if="isDev">
       <DevJson
@@ -61,9 +75,40 @@ import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model';
 
 type ChefEntry = ChefCore & { user?: unknown }
 
-const props = defineProps<{ collection?: ChefEntry[] }>()
+const props = withDefaults(
+  defineProps<{
+    collection?: ChefEntry[]
+    title?: string
+    description?: string
+    link?: boolean
+    searchPlaceholder?: string
+    showSearch?: boolean
+    showVariantToggle?: boolean
+    showCount?: boolean
+    initialVariant?: 'pill' | 'cell'
+  }>(),
+  {
+    title: 'Chefs',
+    description: 'Browse chefs available to this runtime.',
+    link: true,
+    searchPlaceholder: 'Search chefs…',
+    showSearch: true,
+    showVariantToggle: true,
+    showCount: true,
+    initialVariant: 'pill',
+  }
+)
 
 const collection = computed(() => props.collection ?? [])
+const title = computed(() => String(props.title || 'Chefs'))
+const description = computed(
+  () => String(props.description || 'Browse chefs available to this runtime.')
+)
+const linkEnabled = computed(() => props.link !== false)
+const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search chefs…'))
+const showSearch = computed(() => props.showSearch !== false)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
+const showCount = computed(() => props.showCount !== false)
 const { card: makeCard } = useChef()
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
   useCollectionSearch<ChefEntry, ReturnType<typeof makeCard>>({
@@ -73,6 +118,7 @@ const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
       return card?.displayName.trim().toLowerCase() ?? ''
     },
     makeCard: (entry) => makeCard(entry as ChefCore, (entry as any)?.user ?? null),
+    initialVariant: props.initialVariant,
   })
 
 const totalCount = computed(() => collection.value.length)

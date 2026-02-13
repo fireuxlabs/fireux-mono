@@ -187,9 +187,7 @@ const syncError = ref('')
 const syncSummary = ref<{ kitchenId: string; written: number; pruned: number } | null>(null)
 
 const syncCounts = computed(() => ({
-  ingredients:
-    (dummyKitchenScenario.kitchenIngredients?.length ?? 0) +
-    (dummyKitchenScenario.kitchenPreparedComponents?.length ?? 0),
+  ingredients: dummyKitchenScenario.kitchenIngredients?.length ?? 0,
   mise: dummyKitchenScenario.menuStack.miseTasks.length,
   recipes: dummyKitchenScenario.menuStack.recipes.length,
   dishes: dummyKitchenScenario.menuStack.dishes.length,
@@ -213,22 +211,18 @@ const buildKitchenIngredientsForSync = () => {
   const map = new Map<string, Record<string, unknown>>()
 
   const push = (entry: Record<string, unknown>) => {
-    const id = String(entry.id || '').trim()
+    const id = String(entry.id || entry.ingredient_id || '').trim()
     if (!id) return
 
     map.set(id, {
       ...KitchenIngredientModel,
-      ...entry,
       id,
-      supplier_id: String(entry.supplier_id || '').trim(),
+      ingredient_id: String(entry.ingredient_id || id).trim(),
     })
   }
 
   for (const ingredient of dummyKitchenScenario.kitchenIngredients ?? []) {
     push(ingredient as unknown as Record<string, unknown>)
-  }
-  for (const prepared of dummyKitchenScenario.kitchenPreparedComponents ?? []) {
-    push(prepared as unknown as Record<string, unknown>)
   }
 
   return [...map.values()]

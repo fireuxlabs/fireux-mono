@@ -49,6 +49,7 @@ import {
   useRuntimeKitchen,
   useRuntimeKitchenSelection,
 } from '../../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
+import { useIngredientFetch } from '../../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
 import { useKitchenIngredientFetch } from '../../../../composables/fireux/firestore/ingredient/fetch/useKitchenIngredientFetch'
 import type { KitchenIngredientResolved } from '../../../../models/ingredient.model'
 
@@ -78,6 +79,9 @@ const supplierId = computed(() => {
 const runtimeKitchenId = computed(() => String(runtimeKitchen.value?.id || '').trim())
 const runtimeKitchenCollectionPath = computed(() =>
   runtimeKitchenMode.value === 'live' ? 'kitchens' : 'test-kitchens'
+)
+const firestoreKitchenId = computed(() =>
+  runtimeKitchenMode.value === 'dummy' ? '' : runtimeKitchenId.value
 )
 
 const kitchenSuppliersPath = computed(() => {
@@ -140,13 +144,40 @@ const linkedIngredientsDescription = computed(() => {
   return `Ingredients using ${name}.`
 })
 
-const { ingredients: firestoreKitchenIngredients } = useKitchenIngredientFetch(runtimeKitchenId, {
+const { ingredients: firestoreKitchenIngredients } = useKitchenIngredientFetch(firestoreKitchenId, {
   kitchenCollectionPath: runtimeKitchenCollectionPath,
+})
+const { ingredients: firestoreGlobalIngredients } = useIngredientFetch()
+
+const globalIngredients = computed(() =>
+  runtimeKitchenMode.value === 'dummy'
+    ? [...dummyKitchenScenario.globalIngredients]
+    : [...(firestoreGlobalIngredients.value ?? [])]
+)
+
+const globalIngredientById = computed(() => {
+  const map = new Map<string, any>()
+  for (const ingredient of globalIngredients.value) {
+    const id = String((ingredient as any)?.id || '').trim()
+    if (!id) continue
+    map.set(id, ingredient)
+  }
+  return map
 })
 
 const kitchenIngredients = computed<KitchenIngredientResolved[]>(() =>
   runtimeKitchenMode.value === 'dummy'
-    ? [...dummyKitchenScenario.kitchenIngredients]
+    ? dummyKitchenScenario.kitchenIngredients
+      .map((entry: any) => {
+        const ingredientId = String(entry.ingredient_id || entry.id || '').trim()
+        const global = globalIngredientById.value.get(ingredientId)
+        return {
+          ...(global ?? {}),
+          ...entry,
+          id: String(entry.id || ingredientId).trim() || ingredientId,
+          ingredient_id: ingredientId,
+        } as KitchenIngredientResolved
+      })
     : [...(firestoreKitchenIngredients.value ?? [])]
 )
 

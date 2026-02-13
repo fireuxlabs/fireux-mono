@@ -23,6 +23,12 @@ const resolveIngredientId = (name: string) => {
   return base || ''
 }
 
+const resolveIngredientSlug = (draft: IngredientCreateDraft) => {
+  const provided = toSlug(String(draft.slug || ''))
+  if (provided) return provided
+  return toSlug(String(draft.name || ''))
+}
+
 const buildIngredientPayload = (
   ingredientId: string,
   draft: IngredientCreateDraft
@@ -30,6 +36,7 @@ const buildIngredientPayload = (
   ...Ingredient,
   id: ingredientId,
   name: String(draft.name || '').trim(),
+  slug: resolveIngredientSlug(draft),
   image_url: String(draft.image_url || '').trim(),
 })
 

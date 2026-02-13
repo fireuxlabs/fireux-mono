@@ -9,18 +9,20 @@
 
         <div class="collection-manager__controls">
           <UInput
+            v-if="showSearch"
             v-model="query"
             size="xs"
-            placeholder="Search mise tasks..."
+            :placeholder="searchPlaceholder"
           />
           <UButton
+            v-if="showVariantToggle"
             size="xs"
             variant="ghost"
             :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
             :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
             @click="toggleVariant"
           />
-          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+          <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
         </div>
       </div>
     </template>
@@ -34,9 +36,9 @@
         <UPopover :popper="{ placement: 'right-start' }">
           <template #default>
             <NuxtLink
-              :to="card.to || undefined"
+              :to="linkEnabled ? (card.to || undefined) : undefined"
               class="block"
-              :class="card.to ? '' : 'cursor-pointer'"
+              :class="linkEnabled && card.to ? '' : 'cursor-default'"
             >
               <MiseCardsPill v-bind="card" />
             </NuxtLink>
@@ -53,9 +55,9 @@
         <UPopover :popper="{ placement: 'right-start' }">
           <template #default>
             <NuxtLink
-              :to="card.to || undefined"
+              :to="linkEnabled ? (card.to || undefined) : undefined"
               class="block"
-              :class="card.to ? '' : 'cursor-pointer'"
+              :class="linkEnabled && card.to ? '' : 'cursor-default'"
             >
               <MiseCardsCell v-bind="card" :prop="card.description" />
             </NuxtLink>
@@ -99,16 +101,33 @@ const props = withDefaults(
     collection?: KitchenMiseTask[]
     title?: string
     description?: string
+    searchPlaceholder?: string
+    showSearch?: boolean
+    showVariantToggle?: boolean
+    showCount?: boolean
+    initialVariant?: 'pill' | 'cell'
+    link?: boolean
   }>(),
   {
     title: 'Mise Tasks',
     description: 'Browse mise tasks for this kitchen.',
+    searchPlaceholder: 'Search mise tasks...',
+    showSearch: true,
+    showVariantToggle: true,
+    showCount: true,
+    initialVariant: 'pill',
+    link: true,
   }
 )
 
 const { card: makeCard, preview: makePreview, searchText } = useMiseEnPlaceInterface()
 
 const collection = computed(() => props.collection ?? [])
+const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search mise tasks...'))
+const showSearch = computed(() => props.showSearch !== false)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
+const showCount = computed(() => props.showCount !== false)
+const linkEnabled = computed(() => props.link !== false)
 const totalCount = computed(() => collection.value.length)
 
 const previewById = computed(() => {
@@ -131,6 +150,7 @@ const {
   items: collection,
   searchText: (task: KitchenMiseTask) => searchText(task),
   makeCard: (task: KitchenMiseTask) => makeCard(task),
+  initialVariant: props.initialVariant,
 })
 const isDev = import.meta.dev
 </script>

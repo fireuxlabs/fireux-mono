@@ -3,25 +3,27 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <div>Kitchens</div>
-          <p>Browse {{ appName }} kitchens.</p>
+          <div>{{ title }}</div>
+          <p>{{ description }}</p>
         </div>
 
         <div class="collection-manager__controls">
           <UInput
+            v-if="showSearch"
             v-model="query"
             size="xs"
-            placeholder="Search kitchens…"
+            :placeholder="searchPlaceholder"
           />
 
           <UButton
+            v-if="showVariantToggle"
             size="xs"
             variant="ghost"
             :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
             :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
             @click="toggleVariant"
           />
-          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+          <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
         </div>
       </div>
     </template>
@@ -32,12 +34,20 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <NuxtLink :to="card.to">
+        <NuxtLink
+          :to="linkEnabled ? card.to : undefined"
+          class="block"
+          :class="linkEnabled ? '' : 'cursor-default'"
+        >
           <KitchenCardsPill v-bind="card" />
         </NuxtLink>
       </template>
       <template #cell="{ card }">
-        <NuxtLink :to="card.to">
+        <NuxtLink
+          :to="linkEnabled ? card.to : undefined"
+          class="block"
+          :class="linkEnabled ? '' : 'cursor-default'"
+        >
           <KitchenCardsCell v-bind="card" />
         </NuxtLink>
       </template>
@@ -65,10 +75,40 @@ import { computed } from 'vue'
 import { useKitchenInterface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { Kitchen } from '../../../../models/kitchen.model'
 
-const props = defineProps<{ collection?: Kitchen[] }>()
+const props = withDefaults(
+  defineProps<{
+    collection?: Kitchen[]
+    title?: string
+    description?: string
+    searchPlaceholder?: string
+    showSearch?: boolean
+    showVariantToggle?: boolean
+    showCount?: boolean
+    initialVariant?: 'pill' | 'cell'
+    link?: boolean
+  }>(),
+  {
+    title: 'Kitchens',
+    searchPlaceholder: 'Search kitchens…',
+    showSearch: true,
+    showVariantToggle: true,
+    showCount: true,
+    initialVariant: 'pill',
+    link: true,
+  }
+)
 const { appName } = useFireUXConfig()
 
 const collection = computed(() => props.collection ?? [])
+const title = computed(() => String(props.title || 'Kitchens'))
+const description = computed(
+  () => String(props.description || `Browse ${appName} kitchens.`)
+)
+const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search kitchens…'))
+const showSearch = computed(() => props.showSearch !== false)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
+const showCount = computed(() => props.showCount !== false)
+const linkEnabled = computed(() => props.link !== false)
 const { card: makeCard, searchText } = useKitchenInterface()
 
 const {
@@ -81,6 +121,7 @@ const {
   items: collection,
   searchText: (kitchen: Kitchen) => searchText(kitchen),
   makeCard: (kitchen: Kitchen) => makeCard(kitchen),
+  initialVariant: props.initialVariant,
 })
 const totalCount = computed(() => collection.value.length)
 const isDev = import.meta.dev

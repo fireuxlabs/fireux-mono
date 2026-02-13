@@ -15,8 +15,8 @@ const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
 const resolveKitchenIngredientsPath = (basePath: string, kitchenId: string) =>
   `${basePath}/${kitchenId}/ingredients`
 
-type KitchenIngredientAddDraft = Partial<Pick<KitchenIngredientDoc, 'id' | 'supplier_id'>> &
-  Partial<Pick<IngredientCreateInput, 'name' | 'image_url'>>
+type KitchenIngredientAddDraft = Partial<Pick<KitchenIngredientDoc, 'id'>> &
+  Partial<Pick<IngredientCreateInput, 'name' | 'slug' | 'image_url'>>
 
 const toSlug = (value: string) =>
   value
@@ -38,16 +38,16 @@ const buildGlobalIngredientPayload = (
   ...Ingredient,
   id: ingredientId,
   name: String(draft.name || '').trim(),
+  slug: toSlug(String(draft.slug || draft.name || ingredientId)),
   image_url: String(draft.image_url || '').trim(),
 })
 
 const buildKitchenIngredientPayload = (
-  ingredientId: string,
-  draft: KitchenIngredientAddDraft
+  ingredientId: string
 ): KitchenIngredientDoc => ({
   ...KitchenIngredient,
   id: ingredientId,
-  supplier_id: String(draft.supplier_id || '').trim(),
+  ingredient_id: ingredientId,
 })
 
 export function useKitchenIngredientAdd() {
@@ -81,7 +81,7 @@ export function useKitchenIngredientAdd() {
       }
     }
 
-    const kitchenPayload = buildKitchenIngredientPayload(ingredientId, draft)
+    const kitchenPayload = buildKitchenIngredientPayload(ingredientId)
     const kitchenCollectionPath = String(
       options.kitchenCollectionPath || DEFAULT_KITCHEN_COLLECTION_PATH
     ).trim()

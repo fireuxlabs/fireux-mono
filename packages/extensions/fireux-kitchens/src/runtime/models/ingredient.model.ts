@@ -17,6 +17,7 @@ export const Ingredient = {
   id: '' as string,
 
   name: '' as string,
+  slug: '' as string,
   image_url: '' as string,
 
   app_id: '' as FireuxStamped['app_id'],
@@ -42,9 +43,8 @@ export type IngredientUpdateInput = Partial<Omit<IngredientCreateInput, never>>
 
 export const KitchenIngredient = {
   id: '' as string,
-
-  // Optional preferred/primary supplier for this kitchen ingredient.
-  supplier_id: '' as string,
+  // Same value as document id; kept explicit for query and migration ergonomics.
+  ingredient_id: '' as string,
 
   app_id: '' as FireuxStamped['app_id'],
   creator_id: '' as FireuxStamped['creator_id'],
@@ -60,7 +60,9 @@ export type KitchenIngredientCreateInput = Omit<
   KitchenIngredient,
   'id' | 'app_id' | 'creator_id' | 'created_at' | 'updated_at'
 >
-export type KitchenIngredientUpdateInput = Partial<KitchenIngredientCreateInput>
+export type KitchenIngredientUpdateInput = Partial<
+  Omit<KitchenIngredientCreateInput, 'ingredient_id'>
+>
 
 /**
  * KitchenSupplierIngredient (kitchen supplier <-> ingredient link)
@@ -95,6 +97,10 @@ export type KitchenSupplierIngredientUpdateInput = Partial<
  * This is not stored as-is.
  */
 export type KitchenIngredientResolved = KitchenIngredient &
+  {
+    supplier_id?: string
+    supplier_name?: string
+  } &
   Partial<
     Pick<
       Ingredient,

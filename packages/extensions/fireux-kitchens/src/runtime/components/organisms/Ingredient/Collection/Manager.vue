@@ -9,18 +9,20 @@
 
         <div class="collection-manager__controls">
           <UInput
+            v-if="showSearch"
             v-model="query"
             size="xs"
-            placeholder="Search ingredients..."
+            :placeholder="searchPlaceholder"
           />
           <UButton
+            v-if="showVariantToggle"
             size="xs"
             variant="ghost"
             :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
             :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
             @click="toggleVariant"
           />
-          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+          <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
           <slot name="controls" />
         </div>
       </div>
@@ -34,9 +36,8 @@
       <template #pill="{ card }">
         <NuxtLink
           :to="linkEnabled ? card.to : undefined"
-          class="block"
-          :class="linkEnabled ? '' : 'cursor-pointer'"
-          @click.prevent="linkEnabled ? undefined : handleSelect(card.id)"
+          class="block cursor-pointer"
+          @click="linkEnabled ? undefined : handleSelect(card.id)"
         >
           <IngredientCardsPill
             v-bind="card"
@@ -48,9 +49,8 @@
       <template #cell="{ card }">
         <NuxtLink
           :to="linkEnabled ? card.to : undefined"
-          class="block"
-          :class="linkEnabled ? '' : 'cursor-pointer'"
-          @click.prevent="linkEnabled ? undefined : handleSelect(card.id)"
+          class="block cursor-pointer"
+          @click="linkEnabled ? undefined : handleSelect(card.id)"
         >
           <IngredientCardsCell
             v-bind="card"
@@ -99,12 +99,22 @@ const props = withDefaults(
     devJsonHideWhenEmpty?: boolean
     warningByIngredientId?: Record<string, string>
     showSlug?: boolean
+    searchPlaceholder?: string
+    showSearch?: boolean
+    showVariantToggle?: boolean
+    showCount?: boolean
+    initialVariant?: 'pill' | 'cell'
   }>(),
   {
     title: 'Ingredients',
     description: 'Browse global ingredients available to this runtime.',
     link: true,
     showSlug: false,
+    searchPlaceholder: 'Search ingredients...',
+    showSearch: true,
+    showVariantToggle: true,
+    showCount: true,
+    initialVariant: 'pill',
   }
 )
 
@@ -118,6 +128,10 @@ const collection = computed(() => props.collection ?? [])
 const showSlug = computed(() => props.showSlug === true)
 const warningByIngredientId = computed(() => props.warningByIngredientId ?? {})
 const linkEnabled = computed(() => props.link !== false)
+const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search ingredients...'))
+const showSearch = computed(() => props.showSearch !== false)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
+const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
 
 const ingredientById = computed(() => {
@@ -140,6 +154,7 @@ const {
   items: collection,
   searchText: (ingredient: IngredientInterfaceItem) => searchText(ingredient),
   makeCard: (ingredient: IngredientInterfaceItem) => makeCard(ingredient),
+  initialVariant: props.initialVariant,
 })
 
 const isDev = import.meta.dev

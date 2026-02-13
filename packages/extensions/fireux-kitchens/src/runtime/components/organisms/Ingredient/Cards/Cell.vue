@@ -27,23 +27,39 @@
               {{ subtitle }}
             </div>
             <code
-              v-if="showSlug && id"
+              v-if="showSlug && slug"
               class="block truncate text-[11px] text-dimmed"
             >
-              {{ id }}
+              {{ slug }}
             </code>
           </div>
 
           <div class="flex items-center gap-1">
-            <UChip
-              v-if="warning"
+            <UTooltip
+              v-if="warningLabel && warningDescription"
+              :text="warningDescription"
+              :popper="{ placement: 'top' }"
+            >
+              <UBadge
+                color="warning"
+                variant="soft"
+                size="xs"
+                class="shrink-0"
+              >
+                <UIcon name="i-lucide-triangle-alert" class="mr-1" />
+                {{ warningLabel }}
+              </UBadge>
+            </UTooltip>
+            <UBadge
+              v-else-if="warningLabel"
               color="warning"
               variant="soft"
               size="xs"
               class="shrink-0"
             >
-              {{ warningText }}
-            </UChip>
+              <UIcon name="i-lucide-triangle-alert" class="mr-1" />
+              {{ warningLabel }}
+            </UBadge>
 
             <UBadge
               v-if="showStatus && status"
@@ -67,7 +83,7 @@ import type { IngredientCard } from '../../../../composables/fireux/firestore/in
 
 type Props = Pick<
   IngredientCard.Card,
-  'id' | 'to' | 'name' | 'subtitle' | 'status' | 'imageUrl'
+  'slug' | 'to' | 'name' | 'subtitle' | 'status' | 'imageUrl'
 > & {
   warning?: string
   showSlug?: boolean
@@ -89,19 +105,21 @@ const props = withDefaults(defineProps<Props>(), {
   action: false,
 })
 
-const warningText = computed(() => {
+const warningLabel = computed(() => String(props.warning || '').trim())
+
+const warningDescription = computed(() => {
   const value = String(props.warning || '').trim()
   if (!value) return ''
 
   const normalized = value.toLowerCase()
   if (normalized === 'unused') {
-    return 'Not used in recipes, mise, or active menu dishes.'
+    return 'Not used in recipes, mise, or active menu dishes'
   }
   if (normalized === 'off menu') {
-    return 'Used in prep or recipes, but not on any active menu dish.'
+    return 'Used in prep or recipes, but not on any active menu dish'
   }
 
-  return value
+  return ''
 })
 
 const onClick = () => {

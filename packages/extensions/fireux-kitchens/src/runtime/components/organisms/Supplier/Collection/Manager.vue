@@ -9,18 +9,20 @@
 
         <div class="collection-manager__controls">
           <UInput
+            v-if="showSearch"
             v-model="query"
             size="xs"
-            placeholder="Search suppliers..."
+            :placeholder="searchPlaceholder"
           />
           <UButton
+            v-if="showVariantToggle"
             size="xs"
             variant="ghost"
             :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
             :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
             @click="toggleVariant"
           />
-          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+          <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
         </div>
       </div>
     </template>
@@ -82,11 +84,21 @@ const props = withDefaults(
     title?: string
     description?: string
     link?: boolean
+    searchPlaceholder?: string
+    showSearch?: boolean
+    showVariantToggle?: boolean
+    showCount?: boolean
+    initialVariant?: 'pill' | 'cell'
   }>(),
   {
     title: 'Suppliers',
     description: 'Browse suppliers for this runtime.',
     link: true,
+    searchPlaceholder: 'Search suppliers...',
+    showSearch: true,
+    showVariantToggle: true,
+    showCount: true,
+    initialVariant: 'pill',
   }
 )
 
@@ -94,6 +106,10 @@ const { card: makeCard, searchText } = useSupplierInterface()
 
 const collection = computed(() => props.collection ?? [])
 const linkEnabled = computed(() => props.link !== false)
+const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search suppliers...'))
+const showSearch = computed(() => props.showSearch !== false)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
+const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
 const {
   query,
@@ -105,6 +121,7 @@ const {
   items: collection,
   searchText: (supplier: SupplierCollectionEntry) => searchText(supplier),
   makeCard: (supplier: SupplierCollectionEntry) => makeCard(supplier),
+  initialVariant: props.initialVariant,
 })
 const isDev = import.meta.dev
 

@@ -107,16 +107,51 @@ const {
 })
 const dummyMyIngredients = ref([...dummyKitchenScenario.kitchenIngredients])
 
-const myIngredients = computed(() =>
-  runtimeKitchenMode.value === 'dummy'
-    ? dummyMyIngredients.value
-    : [...(firestoreKitchenIngredients.value ?? [])]
-)
 const globalIngredients = computed(() =>
   runtimeKitchenMode.value === 'dummy'
     ? [...dummyKitchenScenario.globalIngredients]
     : [...(firestoreGlobalIngredients.value ?? [])]
 )
+const globalIngredientById = computed(() => {
+  const map = new Map<string, Ingredient>()
+  for (const ingredient of globalIngredients.value) {
+    const id = String(ingredient.id || '').trim()
+    if (!id) continue
+    map.set(id, ingredient)
+  }
+  return map
+})
+const myIngredientsRaw = computed(() =>
+  runtimeKitchenMode.value === 'dummy'
+    ? [...dummyMyIngredients.value]
+    : [...(firestoreKitchenIngredients.value ?? [])]
+)
+const resolveIngredientLinkId = (entry: any) =>
+  String(
+    entry?.ingredient_id ||
+      entry?.ingredientId ||
+      entry?.global_ingredient_id ||
+      entry?.globalIngredientId ||
+      entry?.id ||
+      ''
+  ).trim()
+
+const myIngredients = computed(() => {
+  return myIngredientsRaw.value.map((entry: any) => {
+    const ingredientId = resolveIngredientLinkId(entry)
+    const global = globalIngredientById.value.get(ingredientId)
+    const resolvedId = String(ingredientId || entry.id || '').trim()
+    const resolvedName = String(entry.name || global?.name || resolvedId).trim()
+
+    return {
+      ...(global ?? {}),
+      ...entry,
+      name: resolvedName,
+      id: resolvedId,
+      ingredient_id: ingredientId || resolvedId,
+    }
+  })
+})
 
 const menusForUsage = computed(() =>
   runtimeKitchenMode.value === 'dummy'
@@ -273,8 +308,8 @@ const myIngredientsDevJson = computed(() => ({
       ? 'dummy/scenario.ts :: dummyKitchenScenario.kitchenIngredients'
       : `${runtimeKitchenCollectionPath.value}/${runtimeKitchenId.value}/ingredients`,
   runtimeKitchenMode: runtimeKitchenMode.value,
-  count: myIngredients.value.length,
-  ingredients: myIngredients.value,
+  count: myIngredientsRaw.value.length,
+  ingredients: myIngredientsRaw.value,
 }))
 
 const globalIngredientsDevJson = computed(() => ({
@@ -310,7 +345,7 @@ const handleGlobalSelect = async (ingredient: Ingredient) => {
     if (runtimeKitchenMode.value === 'dummy') {
       dummyMyIngredients.value = [
         buildKitchenIngredient(ingredient),
-        ...myIngredients.value,
+        ...dummyMyIngredients.value,
       ]
       toast.success('Ingredient attached (dummy)')
       return

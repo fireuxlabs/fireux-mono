@@ -839,6 +839,7 @@ function buildCanonicalIngredient(docId, data) {
   return {
     id: docId,
     name: asString(data.name, '').trim(),
+    slug: toSlug(asString(data.slug, '').trim() || asString(data.name, '').trim() || docId),
     image_url: asString(data.image_url ?? data.imageUrl, '').trim(),
     app_id: appId,
     creator_id: resolveCreatorId(data),

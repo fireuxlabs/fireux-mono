@@ -11,6 +11,7 @@ export type IngredientInterfaceItem = Ingredient | KitchenIngredientResolved
 export namespace IngredientCard {
   export type Card = {
     id: string
+    slug: string
     to: string
     imageUrl: string
     title: string
@@ -52,6 +53,7 @@ export function useIngredientInterface() {
 
   function map(ingredient: IngredientInterfaceItem): IngredientCard.Card {
     const id = safeString(ingredient.id).trim()
+    const slug = safeString((ingredient as Ingredient).slug).trim() || id
     const name = safeString(ingredient.name).trim()
     const status = safeString((ingredient as any)?.status).trim()
     const supplierName = safeString((ingredient as any)?.supplier_name).trim()
@@ -60,6 +62,7 @@ export function useIngredientInterface() {
 
     return {
       id,
+      slug,
       to: id ? `/ingredients/${encodeURIComponent(id)}` : '',
       imageUrl: safeString(ingredient.image_url).trim(),
       title: name,
@@ -137,6 +140,7 @@ export function useIngredientInterface() {
     const mapped = map(ingredient)
     return [
       mapped.name,
+      mapped.slug,
       mapped.status,
       mapped.supplierName,
       mapped.id,

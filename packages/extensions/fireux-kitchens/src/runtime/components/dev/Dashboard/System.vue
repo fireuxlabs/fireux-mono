@@ -37,7 +37,7 @@ import { dummyKitchenScenario } from '../../../../../../../../dummy/scenario';
 defineOptions({ name: 'DevDashboardSystem' })
 
 const counts = computed(() => ({
-  ingredients: (dummyKitchenScenario.globalIngredients?.length ?? 0) + (dummyKitchenScenario.kitchenPreparedComponents?.length ?? 0),
+  ingredients: dummyKitchenScenario.globalIngredients?.length ?? 0,
   mise: dummyKitchenScenario.menuStack.miseTasks.length,
   recipes: dummyKitchenScenario.menuStack.recipes.length,
   dishes: dummyKitchenScenario.menuStack.dishes.length,
@@ -46,10 +46,7 @@ const counts = computed(() => ({
 
 const dashboardDevJson = computed(() => ({
   kitchen: dummyKitchenScenario.kitchen,
-  ingredients: [
-    ...(dummyKitchenScenario.globalIngredients ?? []),
-    ...(dummyKitchenScenario.kitchenPreparedComponents ?? []),
-  ],
+  ingredients: [...(dummyKitchenScenario.globalIngredients ?? [])],
   mise: dummyKitchenScenario.menuStack.miseTasks,
   recipes: dummyKitchenScenario.menuStack.recipes,
   dishes: dummyKitchenScenario.menuStack.dishes,
