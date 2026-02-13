@@ -1,15 +1,13 @@
 <template>
   <UPageCTA
-    class="cta"
     title="Kitchen dashboard"
     description="Quick routes grouped by kitchen context."
-    variant="soft"
     orientation="horizontal"
   >
     <template #links>
       <div class="grid gap-3 sm:grid-cols-3">
-        <div class="space-y-2 rounded-lg border border-gray-200/70 p-3 dark:border-gray-800/70">
-          <p class="text-xs font-semibold text-gray-900 dark:text-gray-100">My Kitchens</p>
+        <section class="space-y-2">
+          <p class="text-sm font-semibold">My Kitchens</p>
           <div v-if="myKitchenPills.length" class="space-y-2">
             <KitchenCardsPill
               v-for="kitchen in myKitchenPills"
@@ -23,17 +21,17 @@
             />
           </div>
           <div v-else class="space-y-2">
-            <p class="text-xs text-gray-600 dark:text-gray-400">
+            <p class="text-sm text-dimmed">
               No kitchens linked to your chef profile yet.
             </p>
             <UButton to="/kitchens/create" size="sm" variant="subtle" icon="i-lucide-plus">
               Create kitchen
             </UButton>
           </div>
-        </div>
+        </section>
 
-        <div class="space-y-2 rounded-lg border border-gray-200/70 p-3 dark:border-gray-800/70">
-          <p class="text-xs font-semibold text-gray-900 dark:text-gray-100">Test Kitchen</p>
+        <section class="space-y-2">
+          <p class="text-sm font-semibold">Test Kitchen</p>
           <KitchenCardsPill
             v-if="testKitchenPill"
             v-bind="testKitchenPill"
@@ -43,13 +41,13 @@
             class="cursor-pointer"
             @action="goToKitchen('test', testKitchenId)"
           />
-          <p v-else class="text-xs text-gray-600 dark:text-gray-400">
+          <p v-else class="text-sm text-dimmed">
             No test kitchen available.
           </p>
-        </div>
+        </section>
 
-        <div class="space-y-2 rounded-lg border border-gray-200/70 p-3 dark:border-gray-800/70">
-          <p class="text-xs font-semibold text-gray-900 dark:text-gray-100">Kitchen Simulations</p>
+        <section class="space-y-2">
+          <p class="text-sm font-semibold">Read-only Kitchens</p>
           <div v-if="simulationPills.length" class="space-y-2">
             <KitchenCardsPill
               v-for="kitchen in simulationPills"
@@ -59,13 +57,13 @@
               :action="true"
               :show-badges="false"
               class="cursor-pointer"
-              @action="goToKitchen('dummy', kitchen.id)"
+              @action="goToKitchen('read-only', kitchen.id)"
             />
           </div>
-          <p v-else class="text-xs text-gray-600 dark:text-gray-400">
-            No simulation kitchens loaded.
+          <p v-else class="text-sm text-dimmed">
+            No read-only kitchens loaded.
           </p>
-        </div>
+        </section>
       </div>
     </template>
     <template #default>

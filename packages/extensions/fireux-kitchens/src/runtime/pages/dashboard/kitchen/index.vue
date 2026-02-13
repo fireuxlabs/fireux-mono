@@ -40,22 +40,28 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRuntimeKitchenSelection } from '../../../composables/fireux/app/runtime-kitchen/state'
 import { useRuntimeKitchen } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
-const theRuntimeKitchen = useRuntimeKitchen()
+const { runtimeKitchenId, runtimeKitchenMode } = useRuntimeKitchenSelection()
+const runtimeKitchen = useRuntimeKitchen({
+  kitchenId: runtimeKitchenId,
+  mode: runtimeKitchenMode,
+})
 const { pill, cell, preview, profile } = useKitchenInterface()
 
-const pillCard = computed(() => pill(theRuntimeKitchen.value))
-const cellCard = computed(() => cell(theRuntimeKitchen.value))
-const previewCard = computed(() => preview(theRuntimeKitchen.value))
-const profileCard = computed(() => profile(theRuntimeKitchen.value))
+const pillCard = computed(() => pill(runtimeKitchen.kitchen.value))
+const cellCard = computed(() => cell(runtimeKitchen.kitchen.value))
+const previewCard = computed(() => preview(runtimeKitchen.kitchen.value))
+const profileCard = computed(() => profile(runtimeKitchen.kitchen.value))
 
 const isDev = import.meta.dev
 
 const debugPayload = computed(() => ({
-  runtimeKitchenId: theRuntimeKitchen.value?.id || '',
-  runtimeKitchen: theRuntimeKitchen.value,
+  mode: runtimeKitchen.mode.value,
+  runtimeKitchenId: runtimeKitchen.id.value,
+  runtimeKitchen: runtimeKitchen.kitchen.value,
 }))
 
 definePageMeta({

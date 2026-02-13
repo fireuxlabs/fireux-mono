@@ -122,7 +122,7 @@ const fallbackPurchaseOrders: PurchaseOrder[] = [
 ]
 
 const purchaseOrders = computed<PurchaseOrder[]>(() => {
-  if (runtimeKitchenMode.value !== 'dummy') return fallbackPurchaseOrders
+  if (runtimeKitchenMode.value !== 'read-only') return fallbackPurchaseOrders
 
   const supplierNameById = new Map(
     (dummyKitchenScenario.procurementStack?.suppliers ?? []).map((supplier) => [

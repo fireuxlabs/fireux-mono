@@ -3,7 +3,7 @@
     <UCard>
       <template #header>
         <div class="space-y-2">
-          <div class="text-sm font-semibold">Menu stack (scenario dummy)</div>
+          <div class="text-sm font-semibold">Menu stack (read-only scenario)</div>
           <p class="text-xs text-gray-500 dark:text-gray-400">
             Canon kitchen scenario for ingredients, mise, recipes, dishes, and menus.
           </p>
@@ -32,24 +32,24 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { dummyKitchenScenario } from '../../../../../../../../dummy/scenario';
+import { dummyKitchenScenario as readOnlyKitchenScenario } from '../../../../../../../../dummy/scenario';
 
 defineOptions({ name: 'DevMenuStackSystem' })
 
 const counts = computed(() => ({
-  ingredients: dummyKitchenScenario.globalIngredients?.length ?? 0,
-  mise: dummyKitchenScenario.menuStack.miseTasks.length,
-  recipes: dummyKitchenScenario.menuStack.recipes.length,
-  dishes: dummyKitchenScenario.menuStack.dishes.length,
-  menus: dummyKitchenScenario.menuStack.menus.length,
+  ingredients: readOnlyKitchenScenario.globalIngredients?.length ?? 0,
+  mise: readOnlyKitchenScenario.menuStack.miseTasks.length,
+  recipes: readOnlyKitchenScenario.menuStack.recipes.length,
+  dishes: readOnlyKitchenScenario.menuStack.dishes.length,
+  menus: readOnlyKitchenScenario.menuStack.menus.length,
 }))
 
 const menuStackDevJson = computed(() => ({
-  ingredients: [...(dummyKitchenScenario.globalIngredients ?? [])],
-  mise: dummyKitchenScenario.menuStack.miseTasks,
-  recipes: dummyKitchenScenario.menuStack.recipes,
-  dishes: dummyKitchenScenario.menuStack.dishes,
-  menus: dummyKitchenScenario.menuStack.menus,
-  stations: dummyKitchenScenario.menuStack.stations,
+  ingredients: [...(readOnlyKitchenScenario.globalIngredients ?? [])],
+  mise: readOnlyKitchenScenario.menuStack.miseTasks,
+  recipes: readOnlyKitchenScenario.menuStack.recipes,
+  dishes: readOnlyKitchenScenario.menuStack.dishes,
+  menus: readOnlyKitchenScenario.menuStack.menus,
+  stations: readOnlyKitchenScenario.menuStack.stations,
 }))
 </script>

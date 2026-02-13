@@ -61,6 +61,7 @@ import { useAuthRedirect } from 'fireux-core/runtime/composables/fireux/app/ui/u
 import { useDashboardNotifications } from 'fireux-core/runtime/composables/fireux/app/ui/useDashboardNotifications'
 import { computed, ref } from 'vue'
 import { useKitchenDashboardNav } from '../composables/fireux/app/routing/useKitchenDashboardNav'
+import { useRuntimeKitchenSelection } from '../composables/fireux/app/runtime-kitchen/state'
 import { useRuntimeKitchen } from '../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
 import { useKitchenInterface } from '../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
@@ -69,10 +70,14 @@ defineOptions({ name: 'kitchen-dashboard' })
 const open = ref(false)
 const { desktop } = useKitchenDashboardNav()
 const { isOpen: isNotificationsSlideoverOpen } = useDashboardNotifications()
-const theRuntimeKitchen = useRuntimeKitchen()
+const { runtimeKitchenId, runtimeKitchenMode } = useRuntimeKitchenSelection()
+const runtimeKitchen = useRuntimeKitchen({
+  kitchenId: runtimeKitchenId,
+  mode: runtimeKitchenMode,
+})
 const { pill } = useKitchenInterface()
 
-const pillCard = computed(() => pill(theRuntimeKitchen.value))
+const pillCard = computed(() => pill(runtimeKitchen.kitchen.value))
 useAuthRedirect()
 const navItems = computed(() =>
   desktop.value.filter(

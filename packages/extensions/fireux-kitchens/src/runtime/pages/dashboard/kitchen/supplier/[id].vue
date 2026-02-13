@@ -81,7 +81,7 @@ const runtimeKitchenCollectionPath = computed(() =>
   runtimeKitchenMode.value === 'live' ? 'kitchens' : 'test-kitchens'
 )
 const firestoreKitchenId = computed(() =>
-  runtimeKitchenMode.value === 'dummy' ? '' : runtimeKitchenId.value
+  runtimeKitchenMode.value === 'read-only' ? '' : runtimeKitchenId.value
 )
 
 const kitchenSuppliersPath = computed(() => {
@@ -118,7 +118,7 @@ watch(
 )
 
 const kitchenSuppliers = computed<KitchenSupplier[]>(() =>
-  runtimeKitchenMode.value === 'dummy'
+  runtimeKitchenMode.value === 'read-only'
     ? [...dummyKitchenSuppliers.value]
     : [...kitchenSuppliersRemote.value]
 )
@@ -150,7 +150,7 @@ const { ingredients: firestoreKitchenIngredients } = useKitchenIngredientFetch(f
 const { ingredients: firestoreGlobalIngredients } = useIngredientFetch()
 
 const globalIngredients = computed(() =>
-  runtimeKitchenMode.value === 'dummy'
+  runtimeKitchenMode.value === 'read-only'
     ? [...dummyKitchenScenario.globalIngredients]
     : [...(firestoreGlobalIngredients.value ?? [])]
 )
@@ -166,7 +166,7 @@ const globalIngredientById = computed(() => {
 })
 
 const kitchenIngredients = computed<KitchenIngredientResolved[]>(() =>
-  runtimeKitchenMode.value === 'dummy'
+  runtimeKitchenMode.value === 'read-only'
     ? dummyKitchenScenario.kitchenIngredients
       .map((entry: any) => {
         const ingredientId = String(entry.ingredient_id || entry.id || '').trim()

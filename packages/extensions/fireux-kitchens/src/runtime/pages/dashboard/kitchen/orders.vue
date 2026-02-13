@@ -127,7 +127,7 @@ const fallbackIncomingOrders: IncomingOrder[] = [
 ]
 
 const incomingOrders = computed<IncomingOrder[]>(() => {
-  if (runtimeKitchenMode.value !== 'dummy') return fallbackIncomingOrders
+  if (runtimeKitchenMode.value !== 'read-only') return fallbackIncomingOrders
 
   const orders = dummyKitchenScenario.serviceStack?.incomingOrders ?? []
   return orders.map((order) => {

@@ -74,7 +74,7 @@ const dummyMenus = ref([...dummyKitchenScenario.menuStack.menus])
 // TODO(kitchen-menu-sync): Add "Import from Google" into draft menus and flag likely missing items
 // because many restaurants have partial/outdated online menu coverage.
 const menus = computed(() =>
-  runtimeKitchenMode.value === 'dummy'
+  runtimeKitchenMode.value === 'read-only'
     ? dummyMenus.value
     : [...(firestoreMenus.value ?? [])]
 )

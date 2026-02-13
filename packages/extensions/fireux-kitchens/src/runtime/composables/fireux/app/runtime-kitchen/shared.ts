@@ -1,4 +1,4 @@
-export type RuntimeKitchenMode = 'dummy' | 'test' | 'live'
+export type RuntimeKitchenMode = 'read-only' | 'test' | 'live'
 
 export type RuntimeKitchenSelection = {
   kitchenId?: string | null | undefined
@@ -15,7 +15,8 @@ export const normalizeString = (value: unknown): string =>
 
 export const normalizeMode = (value: unknown): RuntimeKitchenMode | null => {
   const normalized = normalizeString(value).toLowerCase()
-  if (normalized === 'dummy' || normalized === 'test' || normalized === 'live') {
+  if (normalized === 'dummy') return 'read-only'
+  if (normalized === 'read-only' || normalized === 'test' || normalized === 'live') {
     return normalized
   }
   return null

@@ -98,7 +98,7 @@ const { menus: firestoreMenus } = useKitchenMenuStackFetch(runtimeKitchenId, {
 const dummyMenus = ref([...dummyKitchenScenario.menuStack.menus])
 
 const menus = computed<Menu[]>(() =>
-  runtimeKitchenMode.value === 'dummy'
+  runtimeKitchenMode.value === 'read-only'
     ? dummyMenus.value
     : [...(firestoreMenus.value ?? [])]
 )

@@ -4,10 +4,10 @@
       <template #header>
         <div class="space-y-2">
           <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            Dummy -> Test sync
+            Read-only -> Test sync
           </p>
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            Build in dummy first, then sync this exact stack into a test kitchen.
+            Build in read-only mode first, then sync this exact stack into a test kitchen.
           </p>
         </div>
       </template>
@@ -32,9 +32,9 @@
             size="sm"
             :loading="isSyncing"
             icon="i-lucide-refresh-cw"
-            @click="syncDummyToTestKitchen"
+            @click="syncReadOnlyToTestKitchen"
           >
-            Sync Dummy -> Test
+            Sync Read-only -> Test
           </UButton>
         </div>
 
@@ -105,7 +105,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore'
 import { computed, ref } from 'vue'
 import { useFirestore } from 'vuefire'
-import { dummyKitchenScenario } from '../../../../../../../../dummy/scenario'
+import { dummyKitchenScenario as readOnlyKitchenScenario } from '../../../../../../../../dummy/scenario'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { KitchenIngredient as KitchenIngredientModel } from '../../../models/ingredient.model'
 import type { Kitchen, KitchenCollection } from '../../../models/kitchen.model'
@@ -180,21 +180,21 @@ type KitchenCollectionName =
   | 'purchases'
   | 'orders'
 
-const targetKitchenId = ref(String(dummyKitchenScenario.kitchen?.id || '').trim())
+const targetKitchenId = ref(String(readOnlyKitchenScenario.kitchen?.id || '').trim())
 const pruneMissing = ref(true)
 const isSyncing = ref(false)
 const syncError = ref('')
 const syncSummary = ref<{ kitchenId: string; written: number; pruned: number } | null>(null)
 
 const syncCounts = computed(() => ({
-  ingredients: dummyKitchenScenario.kitchenIngredients?.length ?? 0,
-  mise: dummyKitchenScenario.menuStack.miseTasks.length,
-  recipes: dummyKitchenScenario.menuStack.recipes.length,
-  dishes: dummyKitchenScenario.menuStack.dishes.length,
-  menus: dummyKitchenScenario.menuStack.menus.length,
-  suppliers: dummyKitchenScenario.procurementStack?.suppliers?.length ?? 0,
-  purchases: dummyKitchenScenario.procurementStack?.purchases?.length ?? 0,
-  orders: dummyKitchenScenario.serviceStack?.incomingOrders?.length ?? 0,
+  ingredients: readOnlyKitchenScenario.kitchenIngredients?.length ?? 0,
+  mise: readOnlyKitchenScenario.menuStack.miseTasks.length,
+  recipes: readOnlyKitchenScenario.menuStack.recipes.length,
+  dishes: readOnlyKitchenScenario.menuStack.dishes.length,
+  menus: readOnlyKitchenScenario.menuStack.menus.length,
+  suppliers: readOnlyKitchenScenario.procurementStack?.suppliers?.length ?? 0,
+  purchases: readOnlyKitchenScenario.procurementStack?.purchases?.length ?? 0,
+  orders: readOnlyKitchenScenario.serviceStack?.incomingOrders?.length ?? 0,
 }))
 
 const resolveCollectionPath = (kitchenId: string, name: KitchenCollectionName) =>
@@ -221,7 +221,7 @@ const buildKitchenIngredientsForSync = () => {
     })
   }
 
-  for (const ingredient of dummyKitchenScenario.kitchenIngredients ?? []) {
+  for (const ingredient of readOnlyKitchenScenario.kitchenIngredients ?? []) {
     push(ingredient as unknown as Record<string, unknown>)
   }
 
@@ -265,7 +265,7 @@ const pruneCollection = async (collectionPath: string, keepIds: Set<string>) => 
   return removed
 }
 
-const syncDummyToTestKitchen = async () => {
+const syncReadOnlyToTestKitchen = async () => {
   if (isSyncing.value) return
 
   const kitchenId = String(targetKitchenId.value || '').trim()
@@ -279,7 +279,7 @@ const syncDummyToTestKitchen = async () => {
 
   try {
     const kitchenDoc: KitchenCollection = {
-      ...(dummyKitchenScenario.kitchen as KitchenCollection),
+      ...(readOnlyKitchenScenario.kitchen as KitchenCollection),
       id: kitchenId,
       is_test_kitchen: true,
     }
@@ -291,13 +291,13 @@ const syncDummyToTestKitchen = async () => {
 
     const collections: Record<KitchenCollectionName, Record<string, unknown>[]> = {
       ingredients: buildKitchenIngredientsForSync(),
-      mise: withKitchenId(dummyKitchenScenario.menuStack.miseTasks as Record<string, unknown>[], kitchenId),
-      recipes: withKitchenId(dummyKitchenScenario.menuStack.recipes as Record<string, unknown>[], kitchenId),
-      dishes: withKitchenId(dummyKitchenScenario.menuStack.dishes as Record<string, unknown>[], kitchenId),
-      menus: withKitchenId(dummyKitchenScenario.menuStack.menus as Record<string, unknown>[], kitchenId),
-      suppliers: withKitchenId(asDocs(dummyKitchenScenario.procurementStack?.suppliers), kitchenId),
-      purchases: withKitchenId(asDocs(dummyKitchenScenario.procurementStack?.purchases), kitchenId),
-      orders: withKitchenId(asDocs(dummyKitchenScenario.serviceStack?.incomingOrders), kitchenId),
+      mise: withKitchenId(readOnlyKitchenScenario.menuStack.miseTasks as Record<string, unknown>[], kitchenId),
+      recipes: withKitchenId(readOnlyKitchenScenario.menuStack.recipes as Record<string, unknown>[], kitchenId),
+      dishes: withKitchenId(readOnlyKitchenScenario.menuStack.dishes as Record<string, unknown>[], kitchenId),
+      menus: withKitchenId(readOnlyKitchenScenario.menuStack.menus as Record<string, unknown>[], kitchenId),
+      suppliers: withKitchenId(asDocs(readOnlyKitchenScenario.procurementStack?.suppliers), kitchenId),
+      purchases: withKitchenId(asDocs(readOnlyKitchenScenario.procurementStack?.purchases), kitchenId),
+      orders: withKitchenId(asDocs(readOnlyKitchenScenario.serviceStack?.incomingOrders), kitchenId),
     }
 
     let totalWritten = 0
@@ -331,7 +331,7 @@ const syncDummyToTestKitchen = async () => {
       pruned: totalPruned,
     }
   } catch (error: any) {
-    syncError.value = String(error?.message || error || 'Failed to sync dummy to test kitchen.')
+    syncError.value = String(error?.message || error || 'Failed to sync read-only scenario to test kitchen.')
   } finally {
     isSyncing.value = false
   }

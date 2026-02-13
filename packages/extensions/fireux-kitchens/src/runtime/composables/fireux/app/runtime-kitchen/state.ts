@@ -11,7 +11,7 @@ import {
 
 export const useRuntimeKitchenState = () => {
   const runtimeKitchenIdState = useState<string>(RUNTIME_KITCHEN_ID_KEY, () => '')
-  const runtimeKitchenModeState = useState<RuntimeKitchenMode>(RUNTIME_KITCHEN_MODE_KEY, () => 'dummy')
+  const runtimeKitchenModeState = useState<RuntimeKitchenMode>(RUNTIME_KITCHEN_MODE_KEY, () => 'read-only')
   return { runtimeKitchenIdState, runtimeKitchenModeState }
 }
 
@@ -19,13 +19,18 @@ export function useRuntimeKitchenSelection() {
   const { runtimeKitchenIdState, runtimeKitchenModeState } = useRuntimeKitchenState()
 
   const setRuntimeKitchen = (selection: RuntimeKitchenSelection = {}) => {
-    runtimeKitchenModeState.value = normalizeMode(selection.mode) ?? runtimeKitchenModeState.value ?? 'dummy'
+    runtimeKitchenModeState.value =
+      normalizeMode(selection.mode) ??
+      normalizeMode(runtimeKitchenModeState.value) ??
+      'read-only'
     runtimeKitchenIdState.value = normalizeString(selection.kitchenId)
   }
 
   return {
     runtimeKitchenId: computed(() => runtimeKitchenIdState.value),
-    runtimeKitchenMode: computed(() => runtimeKitchenModeState.value),
+    runtimeKitchenMode: computed(
+      () => normalizeMode(runtimeKitchenModeState.value) ?? 'read-only'
+    ),
     setRuntimeKitchen,
   }
 }

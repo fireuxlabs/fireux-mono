@@ -20,7 +20,7 @@
           </template>
         </UCard>
 
-        <UCard>
+        <UCard v-if="runtimeKitchenMode !== 'read-only'">
           <template #header>
             <div class="space-y-1">
               <div class="text-sm font-semibold">Add mise task</div>
@@ -115,6 +115,17 @@
           </div>
         </UCard>
 
+        <UCard v-else>
+          <template #header>
+            <div class="space-y-1">
+              <div class="text-sm font-semibold">Add mise task</div>
+              <p class="text-xs text-dimmed">
+                Read-only mode. Edit <code>dummy/scenario.ts</code> to update mise tasks.
+              </p>
+            </div>
+          </template>
+        </UCard>
+
         <MiseCollectionManager
           v-if="miseTasks.length"
           :collection="miseTasks"
@@ -143,9 +154,7 @@ import { useKitchenMenuStackFetch } from '../../../composables/fireux/firestore/
 import { useKitchenMiseCreate } from '../../../composables/fireux/firestore/mise/mutations/useKitchenMiseCreate'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import {
-  KitchenMiseTask as KitchenMiseTaskModel,
   type KitchenMisePriority,
-  type KitchenMiseTask,
 } from '../../../models/kitchen-mise.model'
 
 definePageMeta({
@@ -173,7 +182,7 @@ const runtimeKitchenCollectionPath = computed(() =>
   runtimeKitchenMode.value === 'live' ? 'kitchens' : 'test-kitchens'
 )
 const firestoreKitchenId = computed(() =>
-  runtimeKitchenMode.value === 'dummy' ? '' : runtimeKitchenId.value
+  runtimeKitchenMode.value === 'read-only' ? '' : runtimeKitchenId.value
 )
 const { miseTasks: firestoreMiseTasks, menus: firestoreMenus } = useKitchenMenuStackFetch(firestoreKitchenId, {
   kitchenCollectionPath: runtimeKitchenCollectionPath,
@@ -224,15 +233,8 @@ const resetDraft = () => {
   selectedIngredientIds.value = []
 }
 
-const toSlug = (value: string) =>
-  String(value || '')
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-
 const globalIngredientsForMise = computed(() =>
-  runtimeKitchenMode.value === 'dummy'
+  runtimeKitchenMode.value === 'read-only'
     ? [...dummyKitchenScenario.globalIngredients]
     : [...(firestoreGlobalIngredients.value ?? [])]
 )
@@ -248,13 +250,13 @@ const globalIngredientById = computed(() => {
 })
 
 const kitchenIngredientsRawForMise = computed(() =>
-  runtimeKitchenMode.value === 'dummy'
+  runtimeKitchenMode.value === 'read-only'
     ? [...dummyKitchenScenario.kitchenIngredients]
     : [...(firestoreKitchenIngredients.value ?? [])]
 )
 
 const kitchenIngredientsForMise = computed(() =>
-  runtimeKitchenMode.value === 'dummy'
+  runtimeKitchenMode.value === 'read-only'
     ? kitchenIngredientsRawForMise.value.map((entry: any) => {
       const ingredientId = String(entry.ingredient_id || entry.id || '').trim()
       const global = globalIngredientById.value.get(ingredientId)
@@ -269,7 +271,7 @@ const kitchenIngredientsForMise = computed(() =>
 )
 
 const menusForMise = computed(() =>
-  runtimeKitchenMode.value === 'dummy'
+  runtimeKitchenMode.value === 'read-only'
     ? [...dummyKitchenScenario.menuStack.menus]
     : [...(firestoreMenus.value ?? [])]
 )
@@ -317,6 +319,10 @@ const toggleIngredient = (ingredientId: string) => {
 
 const createMiseTask = async () => {
   if (isCreating.value) return
+  if (runtimeKitchenMode.value === 'read-only') {
+    toast.info('Read-only kitchen: edit dummy/scenario.ts')
+    return
+  }
 
   const kitchenId = runtimeKitchenId.value
   if (!kitchenId) {
@@ -346,27 +352,6 @@ const createMiseTask = async () => {
 
   isCreating.value = true
   try {
-    if (runtimeKitchenMode.value === 'dummy') {
-      const idBase = toSlug(title) || 'mise-task'
-      const task: KitchenMiseTask = {
-        ...KitchenMiseTaskModel,
-        id: `mise-${idBase}-${Date.now().toString(36)}`,
-        kitchen_id: kitchenId,
-        title,
-        station: String(draft.value.station || '').trim(),
-        menu_id: menuId,
-        service_date: String(draft.value.service_date || '').trim(),
-        priority: draft.value.priority,
-        estimated_minutes: Number(draft.value.estimated_minutes || 0),
-        ingredient_ids: ingredientIds,
-        status: 'todo',
-      }
-      dummyMiseTasks.value = [task, ...dummyMiseTasks.value]
-      resetDraft()
-      toast.success('Dummy mise task created')
-      return
-    }
-
     await createKitchenMiseTask(
       kitchenId,
       {
@@ -392,7 +377,7 @@ const createMiseTask = async () => {
 }
 
 const miseTasks = computed(() =>
-  runtimeKitchenMode.value === 'dummy'
+  runtimeKitchenMode.value === 'read-only'
     ? dummyMiseTasks.value
     : [...(firestoreMiseTasks.value ?? [])]
 )

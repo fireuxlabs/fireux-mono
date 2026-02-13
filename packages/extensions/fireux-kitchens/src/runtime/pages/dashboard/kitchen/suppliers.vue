@@ -14,8 +14,11 @@
                 <KitchenCardsPill v-if="kitchenPill" v-bind="kitchenPill" />
               </div>
               <p class="text-xs text-dimmed">
-                <template v-if="runtimeKitchenMode !== 'live'">
-                  Non-live mode: create simple kitchen suppliers with id + category.
+                <template v-if="runtimeKitchenMode === 'read-only'">
+                  Read-only mode: supplier edits are disabled.
+                </template>
+                <template v-else-if="runtimeKitchenMode === 'test'">
+                  Test mode: create simple kitchen suppliers with id + category.
                 </template>
                 <template v-else>
                   Runtime mode: browse global suppliers.
@@ -25,7 +28,7 @@
           </template>
         </UCard>
 
-        <section v-if="runtimeKitchenMode !== 'live'" class="space-y-2">
+        <section v-if="runtimeKitchenMode === 'test'" class="space-y-2">
           <UCard>
             <template #header>
               <div class="space-y-1">
@@ -70,6 +73,14 @@
             :collection="kitchenSuppliers"
             title="Kitchen suppliers"
             description="Simple suppliers for kitchen linking."
+          />
+        </section>
+
+        <section v-else-if="runtimeKitchenMode === 'read-only'" class="space-y-2">
+          <SupplierCollectionManager
+            :collection="kitchenSuppliers"
+            title="Kitchen suppliers"
+            description="Read-only suppliers from local scenario."
           />
         </section>
 
@@ -183,7 +194,7 @@ watch(
 )
 
 const kitchenSuppliers = computed<KitchenSupplier[]>(() =>
-  runtimeKitchenMode.value === 'dummy'
+  runtimeKitchenMode.value === 'read-only'
     ? [...dummyKitchenSuppliers.value]
     : [...kitchenSuppliersRemote.value]
 )
@@ -232,21 +243,8 @@ const createTestSupplier = async () => {
 
   isCreating.value = true
   try {
-    if (runtimeKitchenMode.value === 'dummy') {
-      const payload: KitchenSupplier = {
-        id: supplierId,
-        supplier_id: supplierId,
-        kitchen_id: kitchenId,
-        name: supplierId,
-        category,
-      }
-
-      dummyKitchenSuppliers.value = [payload, ...kitchenSuppliers.value]
-      draft.value = {
-        id: '',
-        category: '',
-      }
-      toast.success('Dummy supplier created')
+    if (runtimeKitchenMode.value === 'read-only') {
+      toast.info('Read-only kitchen: edit dummy/scenario.ts')
       return
     }
 

@@ -1,5 +1,6 @@
 import { computed, unref, type Ref } from 'vue'
-import { dummyKitchenScenario } from '../../../../../../../../../dummy/scenario'
+import { dummyKitchenScenario as readOnlyKitchenScenario } from '../../../../../../../../../dummy/scenario'
+import { useKitchenIngredientFetch } from '../../firestore/ingredient/fetch/useKitchenIngredientFetch'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 import {
   normalizeMode,
@@ -7,33 +8,75 @@ import {
   resolveRuntimeKitchenCollectionPath,
   type RuntimeKitchenMode,
 } from './shared'
-import { useRuntimeKitchenState } from './state'
+import { useRuntimeKitchenSelection } from './state'
 
 export { useRuntimeKitchenSelection } from './state'
 export type { RuntimeKitchenMode } from './shared'
 
-export function useRuntimeKitchen(
-  kitchenId?: string | Ref<string | null | undefined>,
-  mode?: RuntimeKitchenMode | Ref<RuntimeKitchenMode | null | undefined>
-) {
+type UseRuntimeKitchenParams = {
+  kitchenId: string | Ref<string | null | undefined>
+  mode: RuntimeKitchenMode | Ref<RuntimeKitchenMode | null | undefined>
+}
+
+/**
+ * Runtime kitchen resolver
+ *
+ * Supports:
+ * 1) useRuntimeKitchen()                      -> reads from global selection state
+ * 2) useRuntimeKitchen({ kitchenId, mode })  -> explicit override
+ */
+export function useRuntimeKitchen(params?: UseRuntimeKitchenParams) {
+  const selection = useRuntimeKitchenSelection()
+
+  const kitchenIdSource = computed(() => {
+    if (params?.kitchenId !== undefined) return unref(params.kitchenId)
+    return selection.runtimeKitchenId.value
+  })
+
+  const modeSource = computed(() => {
+    if (params?.mode !== undefined) return unref(params.mode)
+    return selection.runtimeKitchenMode.value
+  })
+
   const { kitchen: fetchKitchen } = useKitchenFetch()
-  const { runtimeKitchenIdState, runtimeKitchenModeState } = useRuntimeKitchenState()
+  const id = computed(() => normalizeString(kitchenIdSource.value) || '')
+  const mode = computed<RuntimeKitchenMode>(() => normalizeMode(modeSource.value) ?? 'read-only')
+  const kitchenCollectionPath = computed(() => resolveRuntimeKitchenCollectionPath(mode.value))
 
-  const kitchenIdValue = computed(() => normalizeString(unref(kitchenId)) || runtimeKitchenIdState.value || '')
-  const modeValue = computed<RuntimeKitchenMode>(
-    () => normalizeMode(unref(mode)) ?? runtimeKitchenModeState.value ?? 'dummy'
-  )
-  const isDummy = computed(() => modeValue.value === 'dummy')
+  const kitchen = computed(() => {
+    if (mode.value === 'read-only') return readOnlyKitchenScenario.kitchen
+    if (!id.value) return null
 
-  return computed(() => {
-    if (isDummy.value) return dummyKitchenScenario.kitchen
-    if (!kitchenIdValue.value) return null
-
-    const collectionPath = resolveRuntimeKitchenCollectionPath(modeValue.value)
     return (
-      fetchKitchen(kitchenIdValue.value, collectionPath, {
-        hydrate: modeValue.value !== 'test',
+      fetchKitchen(id.value, kitchenCollectionPath.value, {
+        hydrate: mode.value !== 'test',
       }).value ?? null
     )
   })
+
+  // Prevent Firestore kitchen-ingredient queries in read-only mode.
+  const firestoreKitchenId = computed(() => (mode.value === 'read-only' ? '' : id.value))
+  const { ingredients: firestoreKitchenIngredients } = useKitchenIngredientFetch(
+    firestoreKitchenId,
+    {
+      kitchenCollectionPath,
+    }
+  )
+
+  const kitchenIngredients = computed(() => {
+    if (mode.value === 'read-only') {
+      return [...(readOnlyKitchenScenario.kitchenIngredients ?? [])]
+    }
+    return [...(firestoreKitchenIngredients.value ?? [])]
+  })
+
+  return {
+    id,
+    mode,
+    kitchen,
+    kitchenCollectionPath,
+    data: {
+      kitchenIngredients,
+    },
+  }
 }
