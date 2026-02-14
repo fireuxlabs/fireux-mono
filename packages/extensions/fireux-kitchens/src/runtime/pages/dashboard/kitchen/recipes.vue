@@ -5,63 +5,53 @@
     </template>
 
     <template #body>
-      <div class="space-y-6">
-        <UCard>
-          <template #header>
-            <div class="space-y-1">
-              <div class="flex items-center justify-between gap-2">
-                <h2 class="text-base font-semibold">Lumen Recipes</h2>
-                <UBadge variant="soft" color="neutral">{{ recipes.length }}</UBadge>
+      <section class="space-y-8">
+        <div class="flex flex-wrap items-center gap-2 text-xs text-dimmed">
+          <span>Mode: <span class="font-medium">{{ mode }}</span></span>
+          <span>·</span>
+          <span>Recipes: <span class="font-medium">{{ recipes.length }}</span></span>
+        </div>
+
+        <div v-if="recipes.length" class="space-y-3">
+          <UCard
+            v-for="(recipe, index) in recipes"
+            :key="recipeKey(recipe, index)"
+          >
+            <div class="space-y-2">
+              <div class="text-sm font-semibold">
+                {{ recipeName(recipe) }}
               </div>
-              <p class="text-xs text-dimmed">
-                Read-only recipe stack for the Lumen Burger board.
+              <p v-if="recipeDescription(recipe)" class="text-xs text-dimmed">
+                {{ recipeDescription(recipe) }}
               </p>
-            </div>
-          </template>
-
-          <div v-if="recipes.length" class="space-y-3">
-            <div
-              v-for="recipe in recipes"
-              :key="recipe.id"
-              class="rounded-md border border-default p-3"
-            >
-              <div class="flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <div class="text-sm font-semibold">{{ recipe.name || recipe.id }}</div>
-                  <p class="text-xs text-dimmed">
-                    {{ recipe.description || 'No description.' }}
-                  </p>
-                </div>
-                <UBadge variant="soft" color="neutral">{{ recipe.status }}</UBadge>
+              <div class="text-xs text-dimmed">
+                {{ recipeMeta(recipe) }}
               </div>
-
-              <div class="mt-2 flex flex-wrap gap-2 text-xs text-dimmed">
-                <span>Yield: {{ recipe.yield_qty }} {{ recipe.yield_unit }}</span>
-                <span>Prep: {{ recipe.prep_minutes }}m</span>
-                <span>Cook: {{ recipe.cook_minutes }}m</span>
+              <div
+                v-if="recipeIngredientLabel(recipe)"
+                class="text-xs text-dimmed"
+              >
+                Ingredients: {{ recipeIngredientLabel(recipe) }}
               </div>
-
-              <div v-if="recipe.ingredient_lines?.length" class="mt-2 text-xs text-dimmed">
-                Ingredients:
-                {{ ingredientLineLabel(recipe.ingredient_lines) }}
-              </div>
-
-              <div v-if="recipe.steps?.length" class="mt-2 text-xs text-dimmed">
-                Steps:
-                {{ stepLabel(recipe.steps) }}
+              <div
+                v-if="recipeStepLabel(recipe)"
+                class="text-xs text-dimmed"
+              >
+                Steps: {{ recipeStepLabel(recipe) }}
               </div>
             </div>
-          </div>
-          <p v-else class="text-sm text-dimmed">No recipes yet.</p>
-        </UCard>
-      </div>
+          </UCard>
+        </div>
+
+        <p v-else class="text-sm text-dimmed">No recipes yet.</p>
+      </section>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { dummyKitchenScenario } from '../../../../../../../../dummy/scenario'
+import { useRuntimeKitchen } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
 
 definePageMeta({
   layout: 'kitchen-dashboard',
@@ -77,19 +67,72 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const recipes = computed(() => dummyKitchenScenario.menuStack.recipes)
+const runtime = useRuntimeKitchen()
+const mode = runtime.mode
+const recipes = computed(() => runtime.data.value.recipes ?? [])
 
-const ingredientLineLabel = (
-  lines: Array<{ ingredient_name: string; quantity: number; unit: string }>
-) =>
-  lines
-    .map((line) => `${line.ingredient_name} (${line.quantity} ${line.unit})`)
+const normalize = (value: unknown) => String(value || '').trim()
+const recipeKey = (recipe: Record<string, unknown>, index: number) =>
+  normalize(recipe.id) || `recipe-${index}`
+const recipeName = (recipe: Record<string, unknown>) =>
+  normalize(recipe.name) || normalize(recipe.id) || 'Untitled recipe'
+const recipeDescription = (recipe: Record<string, unknown>) => normalize(recipe.description)
+const toNumber = (value: unknown) => {
+  const numeric = Number(value)
+  return Number.isFinite(numeric) ? numeric : 0
+}
+const recipeMeta = (recipe: Record<string, unknown>) => {
+  const status = normalize(recipe.status) || 'draft'
+  const yieldQty = toNumber((recipe as { yield_qty?: unknown }).yield_qty)
+  const yieldUnit = normalize((recipe as { yield_unit?: unknown }).yield_unit)
+  const prepMinutes = toNumber((recipe as { prep_minutes?: unknown }).prep_minutes)
+  const cookMinutes = toNumber((recipe as { cook_minutes?: unknown }).cook_minutes)
+  const totalMinutes = prepMinutes + cookMinutes
+
+  const summaryParts = [status]
+  if (yieldQty > 0) {
+    summaryParts.push(`yield ${yieldQty}${yieldUnit ? ` ${yieldUnit}` : ''}`)
+  }
+  if (totalMinutes > 0) {
+    summaryParts.push(`${totalMinutes} min total`)
+  }
+
+  return summaryParts.join(' · ')
+}
+
+const recipeIngredientLabel = (recipe: Record<string, unknown>) => {
+  const lines = Array.isArray((recipe as { ingredient_lines?: unknown[] }).ingredient_lines)
+    ? ((recipe as { ingredient_lines?: Array<Record<string, unknown>> }).ingredient_lines ?? [])
+    : []
+
+  return lines
+    .map((line) => {
+      const ingredientName = normalize(line.ingredient_name)
+      const quantity = toNumber(line.quantity)
+      const unit = normalize(line.unit)
+      if (!ingredientName) return ''
+      if (quantity > 0) return `${ingredientName} (${quantity}${unit ? ` ${unit}` : ''})`
+      return ingredientName
+    })
+    .filter(Boolean)
     .join(', ')
+}
 
-const stepLabel = (steps: Array<{ order: number; title: string }>) =>
-  steps
+const recipeStepLabel = (recipe: Record<string, unknown>) => {
+  const steps = Array.isArray((recipe as { steps?: unknown[] }).steps)
+    ? ((recipe as { steps?: Array<Record<string, unknown>> }).steps ?? [])
+    : []
+
+  return steps
     .slice()
-    .sort((a, b) => a.order - b.order)
-    .map((step) => `${step.order}. ${step.title}`)
+    .sort((left, right) => toNumber(left.order) - toNumber(right.order))
+    .map((step, index) => {
+      const title = normalize(step.title)
+      if (!title) return ''
+      const order = toNumber(step.order) || index + 1
+      return `${order}. ${title}`
+    })
+    .filter(Boolean)
     .join(' / ')
+}
 </script>

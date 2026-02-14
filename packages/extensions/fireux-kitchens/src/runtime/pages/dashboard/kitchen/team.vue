@@ -5,36 +5,24 @@
     </template>
 
     <template #body>
-      <div class="space-y-6">
-        <UCard>
-          <template #header>
-            <div class="space-y-1">
-              <div class="flex flex-wrap items-center justify-between gap-2">
-                <h2 class="text-base font-semibold">Team roster</h2>
-                <UBadge variant="soft" color="neutral">{{ teamCollection.length }}</UBadge>
-              </div>
-              <p class="text-xs text-dimmed">
-                Active chef team for {{ runtimeKitchenName }}.
-              </p>
-            </div>
-          </template>
-        </UCard>
+      <section class="space-y-4">
+        <div class="text-xs text-dimmed">
+          Mode: <span class="font-medium">{{ mode }}</span>
+        </div>
 
-        <ProfilesChefCollectionManager
-          v-if="teamCollection.length"
-          :collection="teamCollection"
+        <UAlert
+          color="neutral"
+          variant="soft"
+          title="Page stub"
+          description="Temporarily stubbed while we build from Ingredients and Mise foundations."
         />
-        <p v-else class="text-sm text-dimmed">No team members yet.</p>
-      </div>
+      </section>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { dummyKitchenScenario } from '../../../../../../../../dummy/scenario'
 import { useRuntimeKitchen } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
-import type { ChefCore } from '../../../models/profiles/Chef/Chef.model'
 
 definePageMeta({
   layout: 'kitchen-dashboard',
@@ -50,15 +38,6 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const runtimeKitchen = useRuntimeKitchen()
-const runtimeKitchenName = computed(
-  () => String(runtimeKitchen.value?.name || runtimeKitchen.value?.id || 'Kitchen')
-)
-
-const teamCollection = computed<Array<ChefCore & { user?: unknown }>>(() =>
-  (dummyKitchenScenario.teamMembers ?? []).map((entry) => ({
-    ...entry.chef,
-    user: entry.user ?? null,
-  }))
-)
+const runtime = useRuntimeKitchen()
+const mode = runtime.mode
 </script>

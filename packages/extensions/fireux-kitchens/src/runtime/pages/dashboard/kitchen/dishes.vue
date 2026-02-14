@@ -5,40 +5,24 @@
     </template>
 
     <template #body>
-      <div class="space-y-6">
-        <UCard>
-          <template #header>
-            <div class="space-y-1">
-              <div class="flex flex-wrap items-center justify-between gap-2">
-                <h2 class="text-base font-semibold">Lumen Burger Board</h2>
-                <KitchenCardsPill v-if="kitchenPill" v-bind="kitchenPill" />
-              </div>
-              <p class="text-xs text-dimmed">
-                Dish lineup for the Lumen kitchen.
-              </p>
-            </div>
-          </template>
-        </UCard>
+      <section class="space-y-4">
+        <div class="text-xs text-dimmed">
+          Mode: <span class="font-medium">{{ mode }}</span>
+        </div>
 
-        <DishCollectionManager
-          v-if="dishes.length"
-          :collection="dishes"
-          title="Dishes"
-          description=""
+        <UAlert
+          color="neutral"
+          variant="soft"
+          title="Page stub"
+          description="Temporarily stubbed while we build from Ingredients and Mise foundations."
         />
-        <p v-else class="text-sm text-dimmed">No dishes yet.</p>
-      </div>
+      </section>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { dummyKitchenScenario } from '../../../../../../../../dummy/scenario'
-import DishCollectionManager from '../../../components/organisms/Dish/Collection/Manager.vue'
-import KitchenCardsPill from '../../../components/organisms/Kitchen/Cards/Pill.vue'
 import { useRuntimeKitchen } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
-import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 definePageMeta({
   layout: 'kitchen-dashboard',
@@ -54,8 +38,6 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const runtimeKitchen = useRuntimeKitchen()
-const { pill: kitchenPillBuilder } = useKitchenInterface()
-const kitchenPill = computed(() => kitchenPillBuilder(runtimeKitchen.value))
-const dishes = ref([...dummyKitchenScenario.menuStack.dishes])
+const runtime = useRuntimeKitchen()
+const mode = runtime.mode
 </script>

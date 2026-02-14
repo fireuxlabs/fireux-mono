@@ -105,7 +105,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore'
 import { computed, ref } from 'vue'
 import { useFirestore } from 'vuefire'
-import { dummyKitchenScenario as readOnlyKitchenScenario } from '../../../../../../../../dummy/scenario'
+import { getDefaultReadOnlyKitchenScenario } from '../../../dev/read-only-scenarios'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { KitchenIngredient as KitchenIngredientModel } from '../../../models/ingredient.model'
 import type { Kitchen, KitchenCollection } from '../../../models/kitchen.model'
@@ -114,6 +114,7 @@ import { KitchenCollection as KitchenModelRuntime } from '../../../models/kitche
 defineOptions({ name: 'DevTestKitchenSystem' })
 
 const kitchenModelRuntime = KitchenModelRuntime
+const readOnlyKitchenScenario = getDefaultReadOnlyKitchenScenario()
 const db = useFirestore()
 const { setDocument } = useFirestoreCreate()
 

@@ -32,9 +32,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { dummyKitchenScenario as readOnlyKitchenScenario } from '../../../../../../../../dummy/scenario';
+import { getDefaultReadOnlyKitchenScenario } from '../../../dev/read-only-scenarios';
 
 defineOptions({ name: 'DevDashboardSystem' })
+
+const readOnlyKitchenScenario = getDefaultReadOnlyKitchenScenario()
 
 const counts = computed(() => ({
   ingredients: readOnlyKitchenScenario.globalIngredients?.length ?? 0,

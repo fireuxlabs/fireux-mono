@@ -5,60 +5,24 @@
     </template>
 
     <template #body>
-      <div class="space-y-6">
-        <UCard>
-          <template #header>
-            <div class="space-y-1">
-              <div class="flex flex-wrap items-center justify-between gap-2">
-                <h2 class="text-base font-semibold">Incoming service orders</h2>
-                <KitchenCardsPill v-if="kitchenPill" v-bind="kitchenPill" />
-              </div>
-              <p class="text-xs text-dimmed">
-                Customer orders coming into service for prep and fulfillment.
-              </p>
-            </div>
-          </template>
-
-          <div class="text-xs text-dimmed">{{ incomingOrders.length }} open tickets</div>
-        </UCard>
-
-        <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          <div
-            v-for="order in incomingOrders"
-            :key="order.id"
-            class="rounded-md border border-default p-3"
-          >
-            <div class="flex items-start justify-between gap-2">
-              <div class="min-w-0">
-                <p class="truncate text-sm font-medium">{{ order.id }}</p>
-                <p class="text-xs text-dimmed">{{ order.channel }} · {{ order.tableLabel }}</p>
-              </div>
-
-              <div class="flex items-center gap-1 text-xs capitalize text-dimmed">
-                <UChip :color="order.statusColor" inset />
-                <span>{{ order.statusLabel }}</span>
-              </div>
-            </div>
-
-            <p class="mt-2 text-xs text-dimmed">
-              {{ order.summary }}
-            </p>
-          </div>
+      <section class="space-y-4">
+        <div class="text-xs text-dimmed">
+          Mode: <span class="font-medium">{{ mode }}</span>
         </div>
-      </div>
+
+        <UAlert
+          color="neutral"
+          variant="soft"
+          title="Page stub"
+          description="Temporarily stubbed while we build from Ingredients and Mise foundations."
+        />
+      </section>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { dummyKitchenScenario } from '../../../../../../../../dummy/scenario'
-import KitchenCardsPill from '../../../components/organisms/Kitchen/Cards/Pill.vue'
-import {
-  useRuntimeKitchen,
-  useRuntimeKitchenSelection,
-} from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
-import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
+import { useRuntimeKitchen } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
 
 definePageMeta({
   layout: 'kitchen-dashboard',
@@ -74,76 +38,6 @@ definePageMeta({
   requiresAuth: true,
 })
 
-type IncomingOrder = {
-  id: string
-  channel: 'dine-in' | 'delivery' | 'takeaway'
-  tableLabel: string
-  summary: string
-  statusLabel: 'new' | 'in progress' | 'ready'
-  statusColor: 'warning' | 'primary' | 'success'
-}
-
-const runtimeKitchen = useRuntimeKitchen()
-const { runtimeKitchenMode } = useRuntimeKitchenSelection()
-const { pill: kitchenPillBuilder } = useKitchenInterface()
-const kitchenPill = computed(() => kitchenPillBuilder(runtimeKitchen.value))
-
-const channelLabel = (value: string) => {
-  if (value === 'dine_in') return 'dine-in'
-  return value
-}
-
-const statusMeta = (value: string): Pick<IncomingOrder, 'statusLabel' | 'statusColor'> => {
-  if (value === 'new') return { statusLabel: 'new', statusColor: 'warning' }
-  if (value === 'ready') return { statusLabel: 'ready', statusColor: 'success' }
-  return { statusLabel: 'in progress', statusColor: 'primary' }
-}
-
-const fallbackIncomingOrders: IncomingOrder[] = [
-  {
-    id: 'ORD-1042',
-    channel: 'dine-in',
-    tableLabel: 'Table 12',
-    summary: '2x Classic Beef, 1x Smoky Bacon, 1x Skinny Fries',
-    statusLabel: 'new',
-    statusColor: 'warning',
-  },
-  {
-    id: 'ORD-1043',
-    channel: 'delivery',
-    tableLabel: 'App pickup',
-    summary: '1x Crispy Chicken, 1x Garden Veggie',
-    statusLabel: 'in progress',
-    statusColor: 'primary',
-  },
-  {
-    id: 'ORD-1044',
-    channel: 'takeaway',
-    tableLabel: 'Counter',
-    summary: '2x Full English, 1x Eggs Royale',
-    statusLabel: 'ready',
-    statusColor: 'success',
-  },
-]
-
-const incomingOrders = computed<IncomingOrder[]>(() => {
-  if (runtimeKitchenMode.value !== 'read-only') return fallbackIncomingOrders
-
-  const orders = dummyKitchenScenario.serviceStack?.incomingOrders ?? []
-  return orders.map((order) => {
-    const summary = order.lines
-      .map((line) => `${line.quantity}x ${line.dish_name}`)
-      .join(', ')
-    const meta = statusMeta(String(order.status || '').trim())
-
-    return {
-      id: String(order.id || '').trim(),
-      channel: channelLabel(String(order.channel || '').trim()) as IncomingOrder['channel'],
-      tableLabel: String(order.table_ref || '').trim() || 'Service',
-      summary,
-      statusLabel: meta.statusLabel,
-      statusColor: meta.statusColor,
-    }
-  })
-})
+const runtime = useRuntimeKitchen()
+const mode = runtime.mode
 </script>

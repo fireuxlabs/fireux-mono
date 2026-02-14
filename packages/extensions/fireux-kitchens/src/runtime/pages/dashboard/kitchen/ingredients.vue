@@ -17,6 +17,7 @@
         />
 
         <IngredientCollectionManager
+          v-if="mode !== 'read-only'"
           :collection="globalIngredients"
           title="Global library"
           description="Shared ingredient catalog."
@@ -27,8 +28,8 @@
 </template>
 
 <script setup lang="ts">
-import IngredientCollectionManager from '../../../components/organisms/Ingredient/Collection/Manager.vue'
-import { useRuntimeKitchen, useRuntimeKitchenSelection } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
+import { computed } from 'vue'
+import { useRuntimeKitchen } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
 import { useIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
 
 definePageMeta({
@@ -45,14 +46,10 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtimeKitchenId, runtimeKitchenMode } = useRuntimeKitchenSelection()
-const runtime = useRuntimeKitchen({
-  kitchenId: runtimeKitchenId,
-  mode: runtimeKitchenMode,
-})
+const runtime = useRuntimeKitchen()
+const { ingredients: globalIngredients } = useIngredientFetch()
 
 const mode = runtime.mode
-const kitchenIngredients = runtime.data.kitchenIngredients
-const { ingredients: globalIngredients } = useIngredientFetch()
+const kitchenIngredients = computed(() => runtime.data.value.kitchenIngredients ?? [])
 
 </script>

@@ -54,6 +54,65 @@ export const readOnlyKitchens: ReadOnlyKitchen[] = [
   {
     mode: 'read-only',
     kitchen: {
+      id: 'shio-ramen',
+      name: 'Takumi Ramen-ya',
+      kind: 'ramen',
+      description: 'Hypothetical ramen concept for Takumi. Prep-first kitchen with focused bowl lineup.',
+      address_label: 'Demo Location - Old Town',
+      image_url:
+        'https://images.unsplash.com/photo-1557872943-16a5ac26437e?auto=format&fit=crop&w=640&h=520&q=80',
+    },
+    ingredients: [
+      { id: 'ing-noodles', name: 'Ramen noodles', category: 'dry', unit: 'kg', par_level: 20, on_hand: 9 },
+      { id: 'ing-broth', name: 'Shio broth base', category: 'broth', unit: 'l', par_level: 50, on_hand: 18 },
+      { id: 'ing-shoyu', name: 'Shoyu tare', category: 'sauce', unit: 'l', par_level: 10, on_hand: 4 },
+      { id: 'ing-chashu', name: 'Chashu pork', category: 'protein', unit: 'kg', par_level: 12, on_hand: 5 },
+      { id: 'ing-ajitama', name: 'Ajitama eggs', category: 'protein', unit: 'pcs', par_level: 160, on_hand: 58 },
+      { id: 'ing-nori', name: 'Nori sheets', category: 'dry', unit: 'pcs', par_level: 250, on_hand: 95 },
+      { id: 'ing-scallion', name: 'Spring onions', category: 'veg', unit: 'kg', par_level: 6, on_hand: 2 },
+      { id: 'ing-menma', name: 'Menma', category: 'other', unit: 'kg', par_level: 4, on_hand: 1 },
+    ],
+    prep: [
+      { id: 'prep-c1', name: 'Broth simmer', station: 'prep', notes: 'Maintain gentle simmer and skim regularly', status: 'doing' },
+      { id: 'prep-c2', name: 'Ajitama batch', station: 'prep', notes: '6-hour marination target', status: 'todo' },
+      { id: 'prep-c3', name: 'Chashu slice', station: 'ramen-line', notes: 'Slice thin for service', status: 'doing' },
+      { id: 'prep-c4', name: 'Scallion prep', station: 'prep', notes: 'Fine cut, hold chilled', status: 'done' },
+    ],
+    menus: [
+      {
+        id: 'menu-c1',
+        name: 'Shio Ramen',
+        category: 'mains',
+        price_chf: 22,
+        description: 'Clear shio-style bowl with chashu, egg, nori, and scallion.',
+        bom: [
+          { ingredient_name: 'Ramen noodles', qty: 140, unit: 'g' },
+          { ingredient_name: 'Shio broth base', qty: 450, unit: 'ml' },
+          { ingredient_name: 'Shoyu tare', qty: 30, unit: 'ml' },
+          { ingredient_name: 'Chashu pork', qty: 60, unit: 'g' },
+          { ingredient_name: 'Ajitama eggs', qty: 1, unit: 'pcs' },
+          { ingredient_name: 'Nori sheets', qty: 1, unit: 'pcs' },
+        ],
+      },
+      {
+        id: 'menu-c2',
+        name: 'Shoyu Ramen',
+        category: 'mains',
+        price_chf: 22,
+        description: 'Soy-forward bowl with menma and spring onion.',
+        bom: [
+          { ingredient_name: 'Ramen noodles', qty: 140, unit: 'g' },
+          { ingredient_name: 'Shio broth base', qty: 450, unit: 'ml' },
+          { ingredient_name: 'Shoyu tare', qty: 35, unit: 'ml' },
+          { ingredient_name: 'Menma', qty: 25, unit: 'g' },
+          { ingredient_name: 'Spring onions', qty: 15, unit: 'g' },
+        ],
+      },
+    ],
+  },
+  {
+    mode: 'read-only',
+    kitchen: {
       id: 'ro-kitchen-burger-01',
       name: 'Stack & Sizzle',
       kind: 'burger',
