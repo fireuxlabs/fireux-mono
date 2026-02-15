@@ -138,7 +138,7 @@ export function useKitchenMenuStackCreate() {
         status: 'active',
         course: 'main',
         station: 'grill',
-        recipe_id: recipeIds[0],
+        recipe_ids: [recipeIds[0]],
         tags: ['burger', 'grill'],
         ingredient_ids: [
           resolved.burgerBuns,
@@ -166,7 +166,7 @@ export function useKitchenMenuStackCreate() {
         status: 'active',
         course: 'starter',
         station: 'cold',
-        recipe_id: recipeIds[1],
+        recipe_ids: [recipeIds[1]],
         tags: ['salad', 'cold'],
         ingredient_ids: [
           resolved.tomato,
@@ -189,7 +189,7 @@ export function useKitchenMenuStackCreate() {
         status: 'active',
         course: 'main',
         station: 'grill',
-        recipe_id: recipeIds[2],
+        recipe_ids: [recipeIds[2]],
         tags: ['burger', 'grill'],
         ingredient_ids: [
           resolved.beefPatty,

@@ -5,16 +5,33 @@
     </template>
 
     <template #body>
-      <section class="space-y-4">
+      <section class="space-y-8">
         <div class="text-xs text-dimmed">
-          Mode: <span class="font-medium">{{ mode }}</span>
+          Mode: <span class="font-medium">{{ mode }}</span> · Stations:
+          <span class="font-medium">{{ stations.length }}</span>
         </div>
 
+        <UCard v-if="stations.length">
+          <div class="space-y-2">
+            <div
+              v-for="station in stations"
+              :key="station.id || station.label"
+              class="rounded border border-default p-3"
+            >
+              <div class="font-medium">{{ station.label || station.id || 'Untitled station' }}</div>
+              <div class="text-xs text-dimmed">
+                {{ station.description || 'No description' }}
+              </div>
+            </div>
+          </div>
+        </UCard>
+
         <UAlert
+          v-else
           color="neutral"
           variant="soft"
-          title="Page stub"
-          description="Temporarily stubbed while we build from Ingredients and Mise foundations."
+          title="No stations loaded"
+          description="No station data yet for this kitchen context."
         />
       </section>
     </template>
@@ -22,6 +39,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRuntimeKitchen } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
 
 definePageMeta({
@@ -40,4 +58,11 @@ definePageMeta({
 
 const runtime = useRuntimeKitchen()
 const mode = runtime.mode
+const stations = computed(() =>
+  (runtime.data.value.stations ?? []).map((station: any) => ({
+    id: String(station?.id || '').trim(),
+    label: String(station?.label || station?.name || '').trim(),
+    description: String(station?.description || '').trim(),
+  }))
+)
 </script>

@@ -5,16 +5,36 @@
     </template>
 
     <template #body>
-      <section class="space-y-4">
+      <section class="space-y-8">
         <div class="text-xs text-dimmed">
-          Mode: <span class="font-medium">{{ mode }}</span>
+          Mode: <span class="font-medium">{{ mode }}</span> · Orders Out:
+          <span class="font-medium">{{ purchases.length }}</span>
         </div>
 
+        <UCard v-if="purchases.length">
+          <div class="space-y-2">
+            <div
+              v-for="purchase in purchases"
+              :key="purchase.id || purchase.order_number"
+              class="rounded border border-default p-3"
+            >
+              <div class="font-medium">
+                {{ purchase.order_number || purchase.name || purchase.id || 'Purchase Order' }}
+              </div>
+              <div class="text-xs text-dimmed">
+                {{ purchase.status || 'draft' }}
+                <template v-if="purchase.supplier_name"> · {{ purchase.supplier_name }}</template>
+              </div>
+            </div>
+          </div>
+        </UCard>
+
         <UAlert
+          v-else
           color="neutral"
           variant="soft"
-          title="Page stub"
-          description="Temporarily stubbed while we build from Ingredients and Mise foundations."
+          title="No purchase orders loaded"
+          description="No outgoing purchase orders yet for this kitchen context."
         />
       </section>
     </template>
@@ -22,6 +42,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRuntimeKitchen } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
 
 definePageMeta({
@@ -40,4 +61,5 @@ definePageMeta({
 
 const runtime = useRuntimeKitchen()
 const mode = runtime.mode
+const purchases = computed(() => runtime.data.value.purchases ?? [])
 </script>

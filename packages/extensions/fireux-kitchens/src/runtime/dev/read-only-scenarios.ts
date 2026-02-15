@@ -1,16 +1,22 @@
-import { resolveScenario, type ScenarioKey } from '../../../../../../dummy/scenarios'
+import {
+  resolveScenario,
+  type ScenarioKey,
+} from '../composables/fireux/app/runtime-kitchen/read-only-scenarios'
 
 const readOnlyScenarioByKitchenId: Record<string, ScenarioKey> = {
-  // Tiny burger ids
-  'tiny-burger': 'tiny-burger',
-  'ro-kitchen-burger-01': 'tiny-burger',
+  // Canon read-only ids
+  'stack-sizzle': 'stack-sizzle',
+  'takumi-ramen': 'takumi-ramen',
+  'broth-bloom': 'broth-bloom',
 
-  // Takumi ramen ids
+  // Legacy aliases (safe migration for any persisted runtime state)
+  'tiny-burger': 'stack-sizzle',
+  'ro-kitchen-burger-01': 'stack-sizzle',
   'shio-ramen': 'takumi-ramen',
-  'ro-kitchen-ramen-01': 'takumi-ramen',
+  'ro-kitchen-ramen-01': 'broth-bloom',
 }
 
-const defaultScenarioKey: ScenarioKey = 'tiny-burger'
+const defaultScenarioKey: ScenarioKey = 'stack-sizzle'
 
 const normalize = (value: unknown) => String(value || '').trim()
 

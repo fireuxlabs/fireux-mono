@@ -34,7 +34,7 @@ export namespace DishCard {
     course: string
     status: string
     tags: string[]
-    recipeId: string
+    recipeIds: string[]
     ingredientIds: string[]
     miseIds: string[]
   }
@@ -68,10 +68,12 @@ export function useDishInterface() {
   }
 
   function map(dish: Dish): DishCard.Card {
+    const recipeIds = safeStringArray(dish.recipe_ids)
     const id =
       safeString(dish.id).trim() ||
       safeString(dish.name).trim() ||
-      safeString(dish.recipe_id).trim()
+      recipeIds[0] ||
+      ''
     const name = safeString(dish.name).trim()
     const station = safeString(dish.station).trim()
     const course = safeString(dish.course).trim()
@@ -93,7 +95,7 @@ export function useDishInterface() {
       course,
       status,
       tags,
-      recipeId: safeString(dish.recipe_id).trim(),
+      recipeIds,
       ingredientIds,
       miseIds,
     }
@@ -175,6 +177,7 @@ export function useDishInterface() {
       mapped.course,
       mapped.status,
       mapped.tags.join(' '),
+      mapped.recipeIds.join(' '),
       mapped.ingredientIds.join(' '),
       mapped.miseIds.join(' '),
       mapped.id,

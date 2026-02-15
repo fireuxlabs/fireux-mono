@@ -78,27 +78,35 @@ export function useRuntimeKitchen(params?: UseRuntimeKitchenParams) {
       const scenario = readOnlyScenario.value
       return {
         kitchenIngredients: scenario.kitchenIngredients ?? [],
+        stations: scenario.menuStack.stations ?? [],
         menus: scenario.menuStack.menus ?? [],
         dishes: scenario.menuStack.dishes ?? [],
         recipes: scenario.menuStack.recipes ?? [],
         miseTasks: scenario.menuStack.miseTasks ?? [],
         teamMembers: scenario.teamMembers ?? [],
         suppliers: scenario.procurementStack?.suppliers ?? [],
+        supplierIngredients: scenario.procurementStack?.supplierIngredients ?? [],
         purchases: scenario.procurementStack?.purchases ?? [],
         incomingOrders: scenario.serviceStack?.incomingOrders ?? [],
+        trainingModules: scenario.trainingStack?.modules ?? [],
+        haccpChecks: scenario.haccpStack?.checks ?? [],
       }
     }
 
     return {
       kitchenIngredients: firestoreKitchenIngredients.value ?? [],
+      stations: [],
       menus: firestoreMenus.value ?? [],
       dishes: firestoreDishes.value ?? [],
       recipes: firestoreRecipes.value ?? [],
       miseTasks: firestoreMiseTasks.value ?? [],
       teamMembers: [],
       suppliers: [],
+      supplierIngredients: [],
       purchases: [],
       incomingOrders: [],
+      trainingModules: [],
+      haccpChecks: [],
     }
   })
 

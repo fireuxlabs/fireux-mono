@@ -54,7 +54,7 @@ export const readOnlyKitchens: ReadOnlyKitchen[] = [
   {
     mode: 'read-only',
     kitchen: {
-      id: 'shio-ramen',
+      id: 'takumi-ramen',
       name: 'Takumi Ramen-ya',
       kind: 'ramen',
       description: 'Hypothetical ramen concept for Takumi. Prep-first kitchen with focused bowl lineup.',
@@ -113,7 +113,7 @@ export const readOnlyKitchens: ReadOnlyKitchen[] = [
   {
     mode: 'read-only',
     kitchen: {
-      id: 'ro-kitchen-burger-01',
+      id: 'stack-sizzle',
       name: 'Stack & Sizzle',
       kind: 'burger',
       description: 'Smash burgers, crisp fries, simple sauces. High volume, tight line.',
@@ -186,7 +186,7 @@ export const readOnlyKitchens: ReadOnlyKitchen[] = [
   {
     mode: 'read-only',
     kitchen: {
-      id: 'ro-kitchen-ramen-01',
+      id: 'broth-bloom',
       name: 'Broth & Bloom',
       kind: 'ramen',
       description: 'Tonkotsu + shoyu focus. Prep-heavy, calm service rhythm.',

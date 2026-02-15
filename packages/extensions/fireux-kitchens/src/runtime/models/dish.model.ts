@@ -19,7 +19,7 @@ export const Dish = {
   status: 'draft' as DishStatus,
   course: 'main' as DishCourse,
   station: '' as string,
-  recipe_id: '' as string,
+  recipe_ids: [] as string[],
   image_url: '' as string,
   tags: [] as string[],
   ingredient_ids: [] as string[],

@@ -96,11 +96,14 @@ export function useMenuInterface() {
   }
 
   function map(menu: Menu): MenuCard.Card {
-    const id = safeString(menu.id).trim()
-    const name = safeString(menu.name).trim() || id
     const service = safeString(menu.service).trim()
     const status = safeString(menu.status).trim()
     const dishes = safeStringArray(menu.dish_ids)
+    const id =
+      safeString(menu.id).trim() ||
+      safeString(menu.name).trim() ||
+      `${service || 'menu'}-${status || 'status'}-${dishes.length}`
+    const name = safeString(menu.name).trim() || id
     const stations = safeStringArray(menu.stations)
     const startsAt = toDate((menu as any)?.starts_at)
     const endsAt = toDate((menu as any)?.ends_at)

@@ -5,16 +5,17 @@
     </template>
 
     <template #body>
-      <section class="space-y-4">
+      <section class="space-y-8">
         <div class="text-xs text-dimmed">
           Mode: <span class="font-medium">{{ mode }}</span>
+          <span class="mx-2">·</span>
+          Menus loaded: <span class="font-medium">{{ menus.length }}</span>
         </div>
 
-        <UAlert
-          color="neutral"
-          variant="soft"
-          title="Page stub"
-          description="Temporarily stubbed while we build from Ingredients and Mise foundations."
+        <MenuCollectionManager
+          :collection="menus"
+          title="Menus"
+          description="Service menus built from kitchen dishes."
         />
       </section>
     </template>
@@ -22,6 +23,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRuntimeKitchen } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
 
 definePageMeta({
@@ -40,4 +42,5 @@ definePageMeta({
 
 const runtime = useRuntimeKitchen()
 const mode = runtime.mode
+const menus = computed(() => runtime.data.value.menus ?? [])
 </script>
