@@ -50,6 +50,34 @@ const runtime = useRuntimeKitchen()
 const { ingredients: globalIngredients } = useIngredientFetch()
 
 const mode = runtime.mode
-const kitchenIngredients = computed(() => runtime.data.value.kitchenIngredients ?? [])
+const kitchenIngredients = computed(() => {
+  const kitchenItems = runtime.data.value.kitchenIngredients ?? []
+  const globalById = new Map(
+    (globalIngredients.value ?? [])
+      .map((ingredient) => [String(ingredient.id || '').trim(), ingredient] as const)
+      .filter(([id]) => Boolean(id))
+  )
+
+  return kitchenItems.map((entry) => {
+    const ingredientId = String((entry as any).ingredient_id || entry.id || '').trim()
+    if (!ingredientId) return entry
+
+    const global = globalById.get(ingredientId)
+    if (!global) return entry
+
+    const entryImage = String((entry as any).image_url || '').trim()
+    const globalImage = String((global as any).image_url || '').trim()
+    const entryName = String((entry as any).name || '').trim()
+    const globalName = String((global as any).name || '').trim()
+
+    return {
+      ...global,
+      ...entry,
+      ingredient_id: ingredientId,
+      image_url: entryImage || globalImage,
+      name: entryName || globalName,
+    }
+  })
+})
 
 </script>

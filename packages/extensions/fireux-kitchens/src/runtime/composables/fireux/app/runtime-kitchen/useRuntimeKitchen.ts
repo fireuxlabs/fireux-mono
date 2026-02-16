@@ -2,6 +2,7 @@ import { computed, unref, type Ref } from 'vue'
 import { getReadOnlyKitchenScenario } from '../../../../dev/read-only-scenarios'
 import { useKitchenIngredientFetch } from '../../firestore/ingredient/fetch/useKitchenIngredientFetch'
 import { useKitchenMenuStackFetch } from '../../firestore/kitchen/fetch/useKitchenMenuStackFetch'
+import { useKitchenSupplierFetch } from '../../firestore/kitchen/fetch/useKitchenSupplierFetch'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 import {
   normalizeMode,
@@ -72,6 +73,10 @@ export function useRuntimeKitchen(params?: UseRuntimeKitchenParams) {
   } = useKitchenMenuStackFetch(firestoreKitchenId, {
     kitchenCollectionPath,
   })
+  const { suppliers: firestoreSuppliers } = useKitchenSupplierFetch(firestoreKitchenId, {
+    kitchenCollectionPath,
+    enabled: computed(() => !isReadOnly.value),
+  })
 
   const data = computed(() => {
     if (isReadOnly.value) {
@@ -101,7 +106,7 @@ export function useRuntimeKitchen(params?: UseRuntimeKitchenParams) {
       recipes: firestoreRecipes.value ?? [],
       miseTasks: firestoreMiseTasks.value ?? [],
       teamMembers: [],
-      suppliers: [],
+      suppliers: firestoreSuppliers.value ?? [],
       supplierIngredients: [],
       purchases: [],
       incomingOrders: [],

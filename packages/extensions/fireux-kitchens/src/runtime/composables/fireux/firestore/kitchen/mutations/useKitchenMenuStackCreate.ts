@@ -122,10 +122,14 @@ export function useKitchenMenuStackCreate() {
       description: 'Generated from global ingredient records for kitchen dashboard prototyping.',
       status: 'live',
       service: 'all_day',
+      service_rules: {
+        days: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+        start_time: '11:00',
+        end_time: '22:00',
+      },
       dish_ids: dishIds,
       stations: ['prep', 'grill', 'cold', 'pass'],
       sort_order: 10,
-      active: true,
     }
 
     const dishes: DishDoc[] = [
@@ -193,7 +197,7 @@ export function useKitchenMenuStackCreate() {
         tags: ['burger', 'grill'],
         ingredient_ids: [
           resolved.beefPatty,
-          resolved.americanCheese,
+          resolved.cheddar,
           resolved.onion,
           resolved.burgerBuns,
           resolved.ketchup,

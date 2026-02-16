@@ -1,4 +1,11 @@
 import type { DummyScenario } from '../_shared/types'
+import {
+  buildMenu,
+  buildReadOnlySupplierIngredients,
+  buildReadOnlyStations,
+  buildReadOnlySuppliers,
+  buildReadOnlyTrainingModules,
+} from '../_shared/builders'
 import { takumiRamenScenario } from '../takumi-ramen'
 
 const dishIdMap = {
@@ -34,8 +41,10 @@ export const brothBloomScenario = (): DummyScenario => {
     id: kitchenId,
     name: 'Broth & Bloom',
     short_name: 'Broth & Bloom',
-    short_address: 'Broth & Bloom',
-    formatted_address: 'Broth & Bloom',
+    short_address: 'Riverside',
+    formatted_address: 'Demo Location - Riverside',
+    image_url:
+      'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=640&h=520&q=80',
   }
 
   const kitchenIngredients = (base.kitchenIngredients ?? []).map((ingredient: any) => {
@@ -89,71 +98,44 @@ export const brothBloomScenario = (): DummyScenario => {
   })
 
   const menus = [
-    {
-      ...(base.menuStack.menus?.[0] ?? {}),
-      id: 'menu-broth-core',
-      kitchen_id: kitchenId,
-      name: 'Core Bowls',
-      description: 'Broth-forward bowls for all-day service.',
-      status: 'live',
-      service: 'all_day',
-      dish_ids: ['tonkotsu-shoyu', 'miso-ramen', 'spicy-garlic-ramen'],
-      sort_order: 1,
-      active: true,
-      stations: ['noodle-station', 'pass'],
-    },
-    {
-      ...(base.menuStack.menus?.[1] ?? {}),
-      id: 'menu-broth-late',
-      kitchen_id: kitchenId,
-      name: 'Late Night Bowls',
-      description: 'Reduced lineup for late service.',
-      status: 'draft',
-      service: 'dinner',
-      dish_ids: ['tonkotsu-shoyu', 'veggie-shoyu-ramen'],
-      sort_order: 2,
-      active: true,
-      stations: ['noodle-station', 'pass'],
-    },
+    buildMenu({
+      kitchenId,
+      overrides: {
+        id: 'menu-broth-core',
+        name: 'Core Bowls',
+        description: 'Broth-forward bowls for all-day service.',
+        status: 'live',
+        service: 'all_day',
+        service_rules: {
+          days: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+          start_time: '11:00',
+          end_time: '21:30',
+        },
+        dish_ids: ['tonkotsu-shoyu', 'miso-ramen', 'spicy-garlic-ramen'],
+        sort_order: 1,
+        stations: ['prep', 'pass'],
+      },
+    }),
+    buildMenu({
+      kitchenId,
+      overrides: {
+        id: 'menu-broth-late',
+        name: 'Late Night Bowls',
+        description: 'Reduced lineup for late service.',
+        status: 'live',
+        service: 'dinner',
+        service_rules: {
+          days: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'],
+          start_time: '21:30',
+          end_time: '01:30',
+        },
+        dish_ids: ['tonkotsu-shoyu', 'veggie-shoyu-ramen'],
+        sort_order: 2,
+        stations: ['prep', 'pass'],
+      },
+    }),
   ]
-  const stations: Array<Record<string, unknown>> = [
-    {
-      id: 'station-noodle',
-      kitchen_id: kitchenId,
-      name: 'Noodle station',
-      key: 'noodle-station',
-      description: 'Pickup station for bowls.',
-      sort_order: 1,
-      active: true,
-    },
-    {
-      id: 'station-broth',
-      kitchen_id: kitchenId,
-      name: 'Broth hold',
-      key: 'broth',
-      description: 'Broth management + top-ups.',
-      sort_order: 2,
-      active: true,
-    },
-    {
-      id: 'station-prep',
-      kitchen_id: kitchenId,
-      name: 'Prep',
-      key: 'prep',
-      description: 'Eggs, chashu, toppings.',
-      sort_order: 3,
-      active: true,
-    },
-    {
-      id: 'station-pass',
-      kitchen_id: kitchenId,
-      name: 'Pass',
-      key: 'pass',
-      description: 'Final checks.',
-      sort_order: 4,
-      active: true,
-    },
-  ]
+  const stations = buildReadOnlyStations(kitchenId)
   const teamMembers: Array<Record<string, unknown>> = [
     {
       id: 'team-bb-01',
@@ -170,7 +152,7 @@ export const brothBloomScenario = (): DummyScenario => {
       kitchen_id: kitchenId,
       name: 'Hugo Weiss',
       role: 'Ramen Cook',
-      station: 'noodle-station',
+      station: 'grill',
       is_lead: false,
       contact: { email: 'hugo@brothbloom.demo', phone: '+41 79 000 0202' },
       tags: ['noodles', 'pickup'],
@@ -186,67 +168,12 @@ export const brothBloomScenario = (): DummyScenario => {
       tags: ['prep', 'broth', 'mise'],
     },
   ]
-  const suppliers: Array<Record<string, unknown>> = [
-    {
-      id: 'supplier-specialty-01',
-      kitchen_id: kitchenId,
-      name: 'Bloom Imports',
-      kind: 'specialty',
-      contact: { email: 'orders@bloomimports.demo', phone: '+41 79 100 0201' },
-      lead_time_days: 2,
-      notes: 'Nori + noodles + pantry goods.',
-      active: true,
-    },
-    {
-      id: 'supplier-butcher-01',
-      kitchen_id: kitchenId,
-      name: 'City Butchers',
-      kind: 'butcher',
-      contact: { email: 'sales@citybutchers.demo', phone: '+41 79 100 0202' },
-      lead_time_days: 1,
-      notes: 'Pork cuts + bones.',
-      active: true,
-    },
-    {
-      id: 'supplier-produce-01',
-      kitchen_id: kitchenId,
-      name: 'Riverside Produce',
-      kind: 'produce',
-      contact: { email: 'hello@riversideproduce.demo', phone: '+41 79 100 0203' },
-      lead_time_days: 2,
-      notes: 'Aromatics + spring onions.',
-      active: true,
-    },
-  ]
-  const trainingModules: Array<Record<string, unknown>> = [
-    {
-      id: 'train-bb-01',
-      kitchen_id: kitchenId,
-      title: 'Broth management',
-      description: 'Hold temps, top-ups, skimming, label changes.',
-      status: 'published',
-      minutes: 25,
-      tags: ['broth', 'haccp'],
-    },
-    {
-      id: 'train-bb-02',
-      kitchen_id: kitchenId,
-      title: 'Pickup rhythm',
-      description: 'Ticket flow, bowl build sequence, pass calls.',
-      status: 'published',
-      minutes: 20,
-      tags: ['service', 'pass'],
-    },
-    {
-      id: 'train-bb-03',
-      kitchen_id: kitchenId,
-      title: 'Cleaning: noodle station',
-      description: 'Mid-service wipe downs + end-of-night breakdown.',
-      status: 'draft',
-      minutes: 15,
-      tags: ['cleaning', 'ops'],
-    },
-  ]
+  const suppliers = buildReadOnlySuppliers(kitchenId)
+  const supplierIngredients = buildReadOnlySupplierIngredients(
+    kitchenId,
+    (base.menuStack.ingredientIds ?? {}) as Record<string, string>
+  )
+  const trainingModules = buildReadOnlyTrainingModules(kitchenId)
   const haccpChecks: Array<Record<string, unknown>> = [
     {
       id: 'haccp-bb-01',
@@ -298,6 +225,7 @@ export const brothBloomScenario = (): DummyScenario => {
       ...base.procurementStack,
       kitchenId,
       suppliers,
+      supplierIngredients,
     },
     serviceStack: {
       ...base.serviceStack,

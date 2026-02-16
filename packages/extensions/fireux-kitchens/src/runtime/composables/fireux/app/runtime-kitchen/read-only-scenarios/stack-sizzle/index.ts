@@ -10,6 +10,10 @@ import {
   buildKitchenIngredient,
   buildMenu,
   buildMise,
+  buildReadOnlySupplierIngredients,
+  buildReadOnlyStations,
+  buildReadOnlySuppliers,
+  buildReadOnlyTrainingModules,
 } from '../_shared/builders'
 import type { DummyRecipe, DummyScenario } from '../_shared/types'
 
@@ -17,180 +21,74 @@ export const stackSizzleScenario = (): DummyScenario => {
   const kitchen = createReadOnlyKitchen({
     id: 'stack-sizzle',
     name: 'Stack & Sizzle',
+    shortAddress: 'High Street',
+    formattedAddress: 'Demo Location - High Street',
+    imageUrl:
+      'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=640&h=520&q=80',
   })
 
   const kitchenId = String(kitchen.id || '').trim()
 
   const ingredientIds = {
-    // Burger
     beefPatty: 'beef-patty',
-    bun: 'burger-buns',
+    burgerBuns: 'burger-buns',
+    americanCheese: 'american-cheese',
+    bacon: 'bacon',
+    chickenBreast: 'chicken-breast',
+    veggiePatty: 'veggie-patty',
+    fryerOil: 'fryer-oil',
+    potato: 'potato',
     lettuce: 'lettuce',
     tomato: 'tomato',
-
-    // Tomato variants
-    cherryTomato: 'cherry-tomato',
-    sanMarzanoTomato: 'san-marzano-tomato',
-
-    // Basics for salad/soup
-    avocadoOil: 'avocado-oil',
+    whiteOnion: 'white-onion',
+    pickles: 'pickles',
+    ketchup: 'ketchup',
+    mayo: 'mayo',
+    mustard: 'mustard',
+    cabbage: 'cabbage',
+    carrot: 'carrot',
+    vinegar: 'vinegar',
+    sugar: 'sugar',
+    butter: 'butter',
     seaSalt: 'sea-salt',
     blackPepper: 'black-pepper',
-    garlic: 'garlic-bulb',
-    whiteOnion: 'white-onion',
   } as const
 
   const globalIngredientSeed: Array<
     Pick<Ingredient, 'id' | 'name' | 'image_url' | 'app_id'>
   > = [
+    { id: ingredientIds.beefPatty, name: 'Beef Patty', image_url: '', app_id: 'misebox-app' },
+    { id: ingredientIds.burgerBuns, name: 'Burger Buns', image_url: '', app_id: 'misebox-app' },
     {
-      id: 'american-cheese',
+      id: ingredientIds.americanCheese,
       name: 'American Cheese',
-      image_url:
-        'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2Famerican-cheese%2Fimage_url?alt=media&token=c57b8916-1a20-4b03-8b81-53b9fd19e2d7',
-      app_id: 'misebox-app',
-    },
-    {
-      id: 'avocado-oil',
-      name: 'Avocado Oil',
-      image_url:
-        'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2Favocado-oil%2Fimage_url?alt=media&token=910a4b6e-19a9-4c57-9583-95f819e2f216',
-      app_id: 'misebox-app',
-    },
-    {
-      id: 'bacon',
-      name: 'Bacon',
-      image_url:
-        'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2Fbacon%2Fimage_url?alt=media&token=d80da4fa-d731-4c1b-b789-838febfa3237',
-      app_id: 'misebox-app',
-    },
-    {
-      id: 'baked-beans',
-      name: 'Baked Beans',
-      image_url:
-        'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2Fbaked-beans%2Fimage_url?alt=media&token=19b770df-55ff-4125-8a95-a517ce2ec2d7',
-      app_id: 'misebox-app',
-    },
-    {
-      id: 'beef-patty',
-      name: 'Beef Patty',
-      image_url:
-        'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2FoAjH2J6d7AWdGOtEcfmk%2Fimage_url.jpg?alt=media&token=5fd4decd-57c7-4ce8-86ef-682f2d7b972f',
-      app_id: 'misebox-app',
-    },
-    {
-      id: 'black-pepper',
-      name: 'Black Pepper',
-      image_url:
-        'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2Fblack-pepper%2Fimage_url?alt=media&token=57ba7122-57dd-4f36-a98a-ae5699d2e8b9',
-      app_id: 'misebox-app',
-    },
-    {
-      id: 'burger-buns',
-      name: 'Burger Buns',
-      image_url:
-        'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2Fcc2xKU4FbCeZm5mv0pWW%2Fimage_url.jpg?alt=media&token=4ba9aea0-75b2-4c1a-b798-2360f64f7e16',
-      app_id: 'misebox-app',
-    },
-    {
-      id: 'chicken-breast',
-      name: 'Chicken Breast',
-      image_url:
-        'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2Fchicken-breast%2Fimage_url?alt=media&token=2c8f200f-39b5-4071-91a8-3b6a142f6ccf',
-      app_id: 'misebox-app',
-    },
-    {
-      id: 'english-muffin',
-      name: 'English Muffin',
-      image_url:
-        'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2Fenglish-muffin%2Fimage_url?alt=media&token=7d853712-ddde-47d4-9a78-cef428c31b7d',
-      app_id: 'misebox-app',
-    },
-    {
-      id: 'flat-mushroom',
-      name: 'Flat Mushroom',
-      image_url:
-        'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2Fflat-mushroom%2Fimage_url?alt=media&token=72ab7c4f-2f48-4747-9d64-f49c9b9dde61',
-      app_id: 'misebox-app',
-    },
-    { id: 'fryer-oil', name: 'Fryer Oil', image_url: '', app_id: 'misebox-app' },
-    { id: 'garlic-bulb', name: 'Garlic Bulb', image_url: '', app_id: 'misebox-app' },
-    { id: 'ham-slice', name: 'Ham Slice', image_url: '', app_id: 'misebox-app' },
-    {
-      id: 'jalapeno',
-      name: 'Jalapeno',
-      image_url:
-        'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2Fjalapeno%2Fimage_url?alt=media&token=b92122f7-76aa-42f3-a59f-175be143f3c9',
-      app_id: 'misebox-app',
-    },
-    {
-      id: 'ketchup',
-      name: 'Ketchup',
-      image_url:
-        'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2Ftz9pN7sTBVeOIMtnHgp1%2Fimage_url.jpg?alt=media&token=e827c480-e2c0-4a8e-92c0-0136ae5e93da',
-      app_id: 'misebox-app',
-    },
-    {
-      id: 'lemon',
-      name: 'Lemon',
-      image_url:
-        'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2FYiEySWR2eEsadcoYsCLz%2Fimage_url.jpg?alt=media&token=d477f897-539d-4c0b-8abf-a90700531c34',
-      app_id: 'misebox-app',
-    },
-    {
-      id: 'lettuce',
-      name: 'Lettuce',
-      image_url:
-        'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2FwZ6yS0vxqOTnkdFenM3W%2Fimage_url.jpg?alt=media&token=49696907-ca51-42b8-8e5d-0bcdd5119794',
-      app_id: 'misebox-app',
-    },
-    {
-      id: 'lime',
-      name: 'Lime',
-      image_url:
-        'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2Flime%2Fimage_url?alt=media&token=05a8d476-358e-4f25-a262-6d4a9317cb00',
-      app_id: 'misebox-app',
-    },
-    {
-      id: 'pork-sausage',
-      name: 'Pork Sausage',
-      image_url:
-        'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2Fpork-sausage%2Fimage_url?alt=media&token=4da0feb2-4ef6-4d7f-9abf-6da4bd774d32',
-      app_id: 'misebox-app',
-    },
-    { id: 'potato', name: 'Potatoes', image_url: '', app_id: 'misebox-app' },
-    {
-      id: 'sea-salt',
-      name: 'Sea Salt',
-      image_url:
-        'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2Fsea-salt%2Fimage_url?alt=media&token=46c0bbbb-1f24-4429-98e2-2190f84fecca',
-      app_id: 'misebox-app',
-    },
-    { id: 'smoked-salmon', name: 'Smoked Salmon', image_url: '', app_id: 'misebox-app' },
-    { id: 'spinach', name: 'Spinach', image_url: '', app_id: 'misebox-app' },
-    {
-      id: 'tomato',
-      name: 'Tomato',
-      image_url:
-        'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2F3COhy9KZU5yelq08HvZx%2Fimage_url.jpg?alt=media&token=6894fdc7-edc3-42b6-8591-c369d7674b4d',
-      app_id: 'misebox-app',
-    },
-    { id: 'veggie-patty', name: 'Veggie Patty', image_url: '', app_id: 'misebox-app' },
-    { id: 'veggie-sausage', name: 'Veggie Sausage', image_url: '', app_id: 'misebox-app' },
-    {
-      id: 'white-onion',
-      name: 'White Onion',
-      image_url:
-        'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/ingredients%2Fwhite-onion%2Fimage_url?alt=media&token=65dc1e6d-4866-4305-a023-81aa069c700e',
-      app_id: 'misebox-app',
-    },
-    { id: 'cherry-tomato', name: 'Cherry Tomato', image_url: '', app_id: 'misebox-app' },
-    {
-      id: 'san-marzano-tomato',
-      name: 'San Marzano Tomato',
       image_url: '',
       app_id: 'misebox-app',
     },
+    { id: ingredientIds.bacon, name: 'Bacon', image_url: '', app_id: 'misebox-app' },
+    {
+      id: ingredientIds.chickenBreast,
+      name: 'Chicken Breast',
+      image_url: '',
+      app_id: 'misebox-app',
+    },
+    { id: ingredientIds.veggiePatty, name: 'Veggie Patty', image_url: '', app_id: 'misebox-app' },
+    { id: ingredientIds.fryerOil, name: 'Fryer Oil', image_url: '', app_id: 'misebox-app' },
+    { id: ingredientIds.potato, name: 'Potato', image_url: '', app_id: 'misebox-app' },
+    { id: ingredientIds.lettuce, name: 'Lettuce', image_url: '', app_id: 'misebox-app' },
+    { id: ingredientIds.tomato, name: 'Tomato', image_url: '', app_id: 'misebox-app' },
+    { id: ingredientIds.whiteOnion, name: 'White Onion', image_url: '', app_id: 'misebox-app' },
+    { id: ingredientIds.pickles, name: 'Pickles', image_url: '', app_id: 'misebox-app' },
+    { id: ingredientIds.ketchup, name: 'Ketchup', image_url: '', app_id: 'misebox-app' },
+    { id: ingredientIds.mayo, name: 'Mayo', image_url: '', app_id: 'misebox-app' },
+    { id: ingredientIds.mustard, name: 'Mustard', image_url: '', app_id: 'misebox-app' },
+    { id: ingredientIds.cabbage, name: 'Cabbage', image_url: '', app_id: 'misebox-app' },
+    { id: ingredientIds.carrot, name: 'Carrot', image_url: '', app_id: 'misebox-app' },
+    { id: ingredientIds.vinegar, name: 'Vinegar', image_url: '', app_id: 'misebox-app' },
+    { id: ingredientIds.sugar, name: 'Sugar', image_url: '', app_id: 'misebox-app' },
+    { id: ingredientIds.butter, name: 'Butter', image_url: '', app_id: 'misebox-app' },
+    { id: ingredientIds.seaSalt, name: 'Sea Salt', image_url: '', app_id: 'misebox-app' },
+    { id: ingredientIds.blackPepper, name: 'Black Pepper', image_url: '', app_id: 'misebox-app' },
   ]
 
   const globalIngredients: Ingredient[] = globalIngredientSeed.map((entry) =>
@@ -220,65 +118,146 @@ export const stackSizzleScenario = (): DummyScenario => {
     })
     .filter((ingredient): ingredient is KitchenIngredientDoc => Boolean(ingredient))
 
+  const serviceDate = '2026-02-12'
+
   const kitchenMiseTasks = [
     buildMise({
       kitchenId,
       overrides: {
-        id: 'slice-tomato',
-        title: 'Slice tomato',
-        service_date: '2026-02-12',
+        id: 'prep-produce-pans',
+        title: 'Prep produce pans',
+        description: 'Wash/shred lettuce, slice tomato and onion, and stage pickles.',
+        station: 'cold',
+        service_date: serviceDate,
         status: 'todo',
-        ingredient_ids: [ingredientIds.tomato],
+        priority: 'high',
+        estimated_minutes: 30,
+        ingredient_ids: [
+          ingredientIds.lettuce,
+          ingredientIds.tomato,
+          ingredientIds.whiteOnion,
+          ingredientIds.pickles,
+        ],
       },
     }),
     buildMise({
       kitchenId,
       overrides: {
-        id: 'wash-lettuce',
-        title: 'Wash lettuce',
-        service_date: '2026-02-12',
+        id: 'portion-season-beef',
+        title: 'Portion + season beef',
+        description: 'Set burger portions and season with salt + pepper.',
+        station: 'prep',
+        service_date: serviceDate,
         status: 'todo',
-        ingredient_ids: [ingredientIds.lettuce],
+        priority: 'high',
+        estimated_minutes: 25,
+        ingredient_ids: [ingredientIds.beefPatty, ingredientIds.seaSalt, ingredientIds.blackPepper],
       },
     }),
     buildMise({
       kitchenId,
       overrides: {
-        id: 'dice-onion',
-        title: 'Dice onion',
-        service_date: '2026-02-12',
+        id: 'bun-toast-station',
+        title: 'Bun setup + toast station',
+        description: 'Open bun packs and setup toasted bun station with butter.',
+        station: 'grill',
+        service_date: serviceDate,
         status: 'todo',
-        ingredient_ids: [ingredientIds.whiteOnion],
+        estimated_minutes: 15,
+        ingredient_ids: [ingredientIds.burgerBuns, ingredientIds.butter],
       },
     }),
     buildMise({
       kitchenId,
       overrides: {
-        id: 'crush-garlic',
-        title: 'Crush garlic',
-        service_date: '2026-02-12',
+        id: 'cook-bacon-batch',
+        title: 'Cook bacon batch',
+        description: 'Par-cook bacon for bacon burger + loaded fries.',
+        station: 'grill',
+        service_date: serviceDate,
         status: 'todo',
-        ingredient_ids: [ingredientIds.garlic],
+        estimated_minutes: 20,
+        ingredient_ids: [ingredientIds.bacon],
+      },
+    }),
+    buildMise({
+      kitchenId,
+      overrides: {
+        id: 'fries-portion-hold',
+        title: 'Fries portion + fryer setup',
+        description: 'Portion fries and setup fryer station for chicken + frozen veggie patties.',
+        station: 'fryer',
+        service_date: serviceDate,
+        status: 'todo',
+        priority: 'high',
+        estimated_minutes: 25,
+        ingredient_ids: [
+          ingredientIds.potato,
+          ingredientIds.fryerOil,
+          ingredientIds.chickenBreast,
+          ingredientIds.veggiePatty,
+        ],
+      },
+    }),
+    buildMise({
+      kitchenId,
+      overrides: {
+        id: 'slaw-mix',
+        title: 'Mix house slaw',
+        description: 'Shred cabbage/carrot and fold with slaw dressing base.',
+        station: 'cold',
+        service_date: serviceDate,
+        status: 'todo',
+        estimated_minutes: 20,
+        ingredient_ids: [
+          ingredientIds.cabbage,
+          ingredientIds.carrot,
+          ingredientIds.mayo,
+          ingredientIds.vinegar,
+          ingredientIds.sugar,
+          ingredientIds.seaSalt,
+        ],
       },
     }),
   ]
+
+  const coreDishIds = [
+    'classic-burger',
+    'cheese-burger',
+    'double-burger',
+    'bacon-burger',
+    'stack-burger',
+    'fried-chicken-burger',
+    'veggie-burger',
+    'fries',
+    'loaded-fries',
+    'house-slaw',
+  ]
+
+  const lateDishIds = ['classic-burger', 'cheese-burger', 'double-burger', 'fried-chicken-burger']
 
   const kitchenDishes = [
     buildDish({
       kitchenId,
       overrides: {
         id: 'classic-burger',
-        name: 'Classic Smash',
-        description: 'Double smash burger, cheddar, lettuce, tomato, house style.',
+        name: 'Classic Burger',
+        description: 'Beef patty, lettuce, tomato, onion, pickles, ketchup and mustard.',
         status: 'active',
-        recipe_ids: ['recipe-classic-beef-patty'],
+        course: 'main',
+        station: 'grill',
+        recipe_ids: ['recipe-beef-burger-line'],
         ingredient_ids: [
           ingredientIds.beefPatty,
-          ingredientIds.bun,
+          ingredientIds.burgerBuns,
           ingredientIds.lettuce,
           ingredientIds.tomato,
+          ingredientIds.whiteOnion,
+          ingredientIds.pickles,
+          ingredientIds.ketchup,
+          ingredientIds.mustard,
         ],
-        mise_ids: ['slice-tomato', 'wash-lettuce'],
+        mise_ids: ['prep-produce-pans', 'portion-season-beef', 'bun-toast-station'],
         sort_order: 1,
         active: true,
       },
@@ -286,19 +265,25 @@ export const stackSizzleScenario = (): DummyScenario => {
     buildDish({
       kitchenId,
       overrides: {
-        id: 'tomato-salad',
-        name: 'Tomato Salad',
-        description: 'Cherry tomato salad with lettuce, oil, salt and pepper.',
+        id: 'cheese-burger',
+        name: 'Cheese Burger',
+        description: 'Classic burger build with melted American cheese.',
         status: 'active',
-        recipe_ids: ['recipe-cherry-tomato-salad'],
+        course: 'main',
+        station: 'grill',
+        recipe_ids: ['recipe-beef-burger-line'],
         ingredient_ids: [
-          ingredientIds.cherryTomato,
+          ingredientIds.beefPatty,
+          ingredientIds.burgerBuns,
+          ingredientIds.americanCheese,
           ingredientIds.lettuce,
-          ingredientIds.avocadoOil,
-          ingredientIds.seaSalt,
-          ingredientIds.blackPepper,
+          ingredientIds.tomato,
+          ingredientIds.whiteOnion,
+          ingredientIds.pickles,
+          ingredientIds.ketchup,
+          ingredientIds.mustard,
         ],
-        mise_ids: ['wash-lettuce'],
+        mise_ids: ['prep-produce-pans', 'portion-season-beef', 'bun-toast-station'],
         sort_order: 2,
         active: true,
       },
@@ -306,21 +291,192 @@ export const stackSizzleScenario = (): DummyScenario => {
     buildDish({
       kitchenId,
       overrides: {
-        id: 'tomato-soup',
-        name: 'Tomato Soup',
-        description: 'San Marzano tomato soup with onion and garlic.',
+        id: 'double-burger',
+        name: 'Double Burger',
+        description: 'Double beef patties, cheese, onion, pickles, ketchup and mustard.',
         status: 'active',
-        recipe_ids: ['recipe-tomato-soup-base'],
+        course: 'main',
+        station: 'grill',
+        recipe_ids: ['recipe-beef-burger-line'],
         ingredient_ids: [
-          ingredientIds.sanMarzanoTomato,
+          ingredientIds.beefPatty,
+          ingredientIds.burgerBuns,
+          ingredientIds.americanCheese,
           ingredientIds.whiteOnion,
-          ingredientIds.garlic,
-          ingredientIds.avocadoOil,
+          ingredientIds.pickles,
+          ingredientIds.ketchup,
+          ingredientIds.mustard,
+        ],
+        mise_ids: ['portion-season-beef', 'bun-toast-station'],
+        sort_order: 3,
+        active: true,
+      },
+    }),
+    buildDish({
+      kitchenId,
+      overrides: {
+        id: 'bacon-burger',
+        name: 'Bacon Burger',
+        description: 'Cheese burger with crisp bacon and produce garnish.',
+        status: 'active',
+        course: 'main',
+        station: 'grill',
+        recipe_ids: ['recipe-beef-burger-line', 'recipe-bacon-finish'],
+        ingredient_ids: [
+          ingredientIds.beefPatty,
+          ingredientIds.burgerBuns,
+          ingredientIds.americanCheese,
+          ingredientIds.bacon,
+          ingredientIds.lettuce,
+          ingredientIds.tomato,
+          ingredientIds.whiteOnion,
+          ingredientIds.pickles,
+          ingredientIds.ketchup,
+          ingredientIds.mustard,
+        ],
+        mise_ids: ['prep-produce-pans', 'portion-season-beef', 'bun-toast-station', 'cook-bacon-batch'],
+        sort_order: 4,
+        active: true,
+      },
+    }),
+    buildDish({
+      kitchenId,
+      overrides: {
+        id: 'stack-burger',
+        name: 'Stack Burger',
+        description: 'House stack burger with beef, cheese, bacon, pickles, and sauce stack.',
+        status: 'active',
+        course: 'main',
+        station: 'grill',
+        recipe_ids: ['recipe-beef-burger-line', 'recipe-bacon-finish'],
+        ingredient_ids: [
+          ingredientIds.beefPatty,
+          ingredientIds.burgerBuns,
+          ingredientIds.americanCheese,
+          ingredientIds.bacon,
+          ingredientIds.whiteOnion,
+          ingredientIds.pickles,
+          ingredientIds.ketchup,
+          ingredientIds.mayo,
+          ingredientIds.mustard,
+        ],
+        mise_ids: ['portion-season-beef', 'bun-toast-station', 'cook-bacon-batch', 'prep-produce-pans'],
+        sort_order: 5,
+        active: true,
+      },
+    }),
+    buildDish({
+      kitchenId,
+      overrides: {
+        id: 'fried-chicken-burger',
+        name: 'Fried Chicken Burger',
+        description: 'Fried chicken breast burger with pickles, lettuce, and mayo.',
+        status: 'active',
+        course: 'main',
+        station: 'fryer',
+        recipe_ids: ['recipe-fried-chicken-burger'],
+        ingredient_ids: [
+          ingredientIds.chickenBreast,
+          ingredientIds.burgerBuns,
+          ingredientIds.lettuce,
+          ingredientIds.pickles,
+          ingredientIds.mayo,
+          ingredientIds.fryerOil,
+        ],
+        mise_ids: ['prep-produce-pans', 'bun-toast-station', 'fries-portion-hold'],
+        sort_order: 6,
+        active: true,
+      },
+    }),
+    buildDish({
+      kitchenId,
+      overrides: {
+        id: 'veggie-burger',
+        name: 'Veggie Burger',
+        description: 'Fryer-cooked frozen veggie patty with fresh produce and house sauces.',
+        status: 'active',
+        course: 'main',
+        station: 'fryer',
+        recipe_ids: ['recipe-veggie-fryer-burger'],
+        ingredient_ids: [
+          ingredientIds.veggiePatty,
+          ingredientIds.burgerBuns,
+          ingredientIds.lettuce,
+          ingredientIds.tomato,
+          ingredientIds.whiteOnion,
+          ingredientIds.pickles,
+          ingredientIds.mayo,
+          ingredientIds.mustard,
+          ingredientIds.fryerOil,
+        ],
+        mise_ids: ['prep-produce-pans', 'bun-toast-station', 'fries-portion-hold'],
+        sort_order: 7,
+        active: true,
+      },
+    }),
+    buildDish({
+      kitchenId,
+      overrides: {
+        id: 'fries',
+        name: 'Fries',
+        description: 'Salted fries from dedicated fryer station.',
+        status: 'active',
+        course: 'side',
+        station: 'fryer',
+        recipe_ids: ['recipe-fries-batch'],
+        ingredient_ids: [ingredientIds.potato, ingredientIds.fryerOil, ingredientIds.seaSalt],
+        mise_ids: ['fries-portion-hold'],
+        sort_order: 8,
+        active: true,
+      },
+    }),
+    buildDish({
+      kitchenId,
+      overrides: {
+        id: 'loaded-fries',
+        name: 'Loaded Fries',
+        description: 'Fries topped with cheese sauce, bacon bits, pickles, and sauce trio.',
+        status: 'active',
+        course: 'side',
+        station: 'fryer',
+        recipe_ids: ['recipe-loaded-fries-finish'],
+        ingredient_ids: [
+          ingredientIds.potato,
+          ingredientIds.fryerOil,
+          ingredientIds.americanCheese,
+          ingredientIds.bacon,
+          ingredientIds.pickles,
+          ingredientIds.ketchup,
+          ingredientIds.mayo,
+          ingredientIds.mustard,
+          ingredientIds.seaSalt,
+        ],
+        mise_ids: ['fries-portion-hold', 'cook-bacon-batch'],
+        sort_order: 9,
+        active: true,
+      },
+    }),
+    buildDish({
+      kitchenId,
+      overrides: {
+        id: 'house-slaw',
+        name: 'House Slaw',
+        description: 'Crunchy cabbage and carrot slaw with light dressing.',
+        status: 'active',
+        course: 'side',
+        station: 'cold',
+        recipe_ids: ['recipe-house-slaw'],
+        ingredient_ids: [
+          ingredientIds.cabbage,
+          ingredientIds.carrot,
+          ingredientIds.mayo,
+          ingredientIds.vinegar,
+          ingredientIds.sugar,
           ingredientIds.seaSalt,
           ingredientIds.blackPepper,
         ],
-        mise_ids: ['dice-onion', 'crush-garlic'],
-        sort_order: 3,
+        mise_ids: ['slaw-mix'],
+        sort_order: 10,
         active: true,
       },
     }),
@@ -332,12 +488,16 @@ export const stackSizzleScenario = (): DummyScenario => {
       overrides: {
         id: 'menu-burger-core',
         name: 'Core Menu',
-        description: 'Burgers, salad, and soup for everyday service.',
+        description: 'Full Stack & Sizzle lineup for standard service.',
         status: 'live',
         service: 'all_day',
-        dish_ids: ['classic-burger', 'tomato-salad', 'tomato-soup'],
+        service_rules: {
+          days: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+          start_time: '11:00',
+          end_time: '21:00',
+        },
+        dish_ids: [...coreDishIds],
         sort_order: 1,
-        active: true,
       },
     }),
     buildMenu({
@@ -345,123 +505,192 @@ export const stackSizzleScenario = (): DummyScenario => {
       overrides: {
         id: 'menu-burger-late',
         name: 'Late Menu',
-        description: 'Smaller lineup for quieter late service.',
-        status: 'draft',
+        description: 'Late service burgers only.',
+        status: 'live',
         service: 'dinner',
-        dish_ids: ['classic-burger', 'tomato-salad'],
+        service_rules: {
+          days: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'],
+          start_time: '22:00',
+          end_time: '02:00',
+        },
+        dish_ids: [...lateDishIds],
         sort_order: 2,
-        active: true,
       },
     }),
   ]
 
   const kitchenRecipes: DummyRecipe[] = [
     {
-      id: 'recipe-classic-beef-patty',
-      name: 'Classic Beef Patty',
-      description: 'Season, form, and chill patties ready for service.',
+      id: 'recipe-beef-burger-line',
+      name: 'Beef Burger Line Base',
+      description: 'Core grill workflow for classic/cheese/double/stack service.',
       status: 'active',
-      yield_qty: 10,
-      yield_unit: 'patties',
-      prep_minutes: 15,
-      cook_minutes: 0,
-      ingredient_lines: [
-        { ingredient_name: 'Beef Patty', quantity: 10, unit: 'pc' },
-        { ingredient_name: 'Sea Salt', quantity: 10, unit: 'g' },
-        { ingredient_name: 'Black Pepper', quantity: 3, unit: 'g' },
-      ],
-      steps: [
-        { order: 1, title: 'Portion mince into 100g balls.' },
-        { order: 2, title: 'Press into patties; season both sides.' },
-        { order: 3, title: 'Chill on tray (covered) until service.' },
-      ],
-    },
-    {
-      id: 'recipe-tomato-soup-base',
-      name: 'Tomato Soup Base',
-      description: 'San Marzano tomato base with onion + garlic for quick pickup.',
-      status: 'active',
-      yield_qty: 4,
-      yield_unit: 'litres',
+      yield_qty: 12,
+      yield_unit: 'burgers',
       prep_minutes: 20,
-      cook_minutes: 45,
+      cook_minutes: 35,
       ingredient_lines: [
-        { ingredient_name: 'San Marzano Tomato', quantity: 2, unit: 'kg' },
-        { ingredient_name: 'White Onion', quantity: 400, unit: 'g' },
-        { ingredient_name: 'Garlic Bulb', quantity: 30, unit: 'g' },
-        { ingredient_name: 'Avocado Oil', quantity: 60, unit: 'ml' },
+        { ingredient_name: 'Beef Patty', quantity: 12, unit: 'pc' },
+        { ingredient_name: 'Burger Buns', quantity: 12, unit: 'pc' },
+        { ingredient_name: 'American Cheese', quantity: 12, unit: 'slice' },
         { ingredient_name: 'Sea Salt', quantity: 12, unit: 'g' },
-        { ingredient_name: 'Black Pepper', quantity: 3, unit: 'g' },
+        { ingredient_name: 'Black Pepper', quantity: 4, unit: 'g' },
       ],
       steps: [
-        { order: 1, title: 'Sweat diced onion in oil until soft.' },
-        { order: 2, title: 'Add crushed garlic; cook 1 minute.' },
-        { order: 3, title: 'Add tomatoes + seasoning; simmer 35-45 min.' },
-        { order: 4, title: 'Blend smooth; adjust seasoning.' },
+        { order: 1, title: 'Season and smash patties on hot flat top.' },
+        { order: 2, title: 'Melt cheese as needed and toast buttered buns.' },
+        { order: 3, title: 'Assemble with cold garnish and sauces to ticket.' },
       ],
     },
     {
-      id: 'recipe-cherry-tomato-salad',
-      name: 'Cherry Tomato Salad',
-      description: 'Fast salad prep for service (wash, toss, season).',
+      id: 'recipe-bacon-finish',
+      name: 'Bacon Finish Batch',
+      description: 'Batch cook + hold bacon for burger and loaded fries service.',
+      status: 'active',
+      yield_qty: 30,
+      yield_unit: 'strips',
+      prep_minutes: 5,
+      cook_minutes: 18,
+      ingredient_lines: [{ ingredient_name: 'Bacon', quantity: 30, unit: 'slice' }],
+      steps: [
+        { order: 1, title: 'Lay bacon on tray and cook until crisp.' },
+        { order: 2, title: 'Drain and hold hot in shallow pan.' },
+      ],
+    },
+    {
+      id: 'recipe-fried-chicken-burger',
+      name: 'Fried Chicken Burger',
+      description: 'Fryer workflow for crispy chicken burgers.',
+      status: 'active',
+      yield_qty: 8,
+      yield_unit: 'burgers',
+      prep_minutes: 10,
+      cook_minutes: 24,
+      ingredient_lines: [
+        { ingredient_name: 'Chicken Breast', quantity: 8, unit: 'pc' },
+        { ingredient_name: 'Burger Buns', quantity: 8, unit: 'pc' },
+        { ingredient_name: 'Mayo', quantity: 120, unit: 'ml' },
+        { ingredient_name: 'Pickles', quantity: 160, unit: 'g' },
+      ],
+      steps: [
+        { order: 1, title: 'Fry chicken portions until cooked through.' },
+        { order: 2, title: 'Toast buns and build with mayo, pickles, and lettuce.' },
+      ],
+    },
+    {
+      id: 'recipe-veggie-fryer-burger',
+      name: 'Veggie Fryer Burger',
+      description: 'Cook frozen veggie patties in fryer and build to spec.',
+      status: 'active',
+      yield_qty: 8,
+      yield_unit: 'burgers',
+      prep_minutes: 8,
+      cook_minutes: 18,
+      ingredient_lines: [
+        { ingredient_name: 'Veggie Patty', quantity: 8, unit: 'pc' },
+        { ingredient_name: 'Burger Buns', quantity: 8, unit: 'pc' },
+        { ingredient_name: 'Mayo', quantity: 120, unit: 'ml' },
+        { ingredient_name: 'Mustard', quantity: 80, unit: 'ml' },
+      ],
+      steps: [
+        { order: 1, title: 'Cook frozen veggie patties in fryer.' },
+        { order: 2, title: 'Toast buns and finish with produce and sauces.' },
+      ],
+    },
+    {
+      id: 'recipe-fries-batch',
+      name: 'Fries Batch',
+      description: 'Portioned fries for fast service pickup.',
+      status: 'active',
+      yield_qty: 20,
+      yield_unit: 'portions',
+      prep_minutes: 15,
+      cook_minutes: 25,
+      ingredient_lines: [
+        { ingredient_name: 'Potato', quantity: 5, unit: 'kg' },
+        { ingredient_name: 'Fryer Oil', quantity: 1, unit: 'batch' },
+        { ingredient_name: 'Sea Salt', quantity: 25, unit: 'g' },
+      ],
+      steps: [
+        { order: 1, title: 'Cut/portion fries and stage by service tubs.' },
+        { order: 2, title: 'Fry to golden and season at pass.' },
+      ],
+    },
+    {
+      id: 'recipe-loaded-fries-finish',
+      name: 'Loaded Fries Finish',
+      description: 'Finish fries with cheese, bacon, pickles, and sauces.',
       status: 'active',
       yield_qty: 6,
       yield_unit: 'portions',
-      prep_minutes: 10,
-      cook_minutes: 0,
+      prep_minutes: 8,
+      cook_minutes: 4,
       ingredient_lines: [
-        { ingredient_name: 'Cherry Tomato', quantity: 600, unit: 'g' },
-        { ingredient_name: 'Lettuce', quantity: 2, unit: 'heads' },
-        { ingredient_name: 'Avocado Oil', quantity: 45, unit: 'ml' },
-        { ingredient_name: 'Sea Salt', quantity: 8, unit: 'g' },
-        { ingredient_name: 'Black Pepper', quantity: 2, unit: 'g' },
+        { ingredient_name: 'American Cheese', quantity: 6, unit: 'slice' },
+        { ingredient_name: 'Bacon', quantity: 12, unit: 'slice' },
+        { ingredient_name: 'Pickles', quantity: 120, unit: 'g' },
       ],
       steps: [
-        { order: 1, title: 'Wash + spin lettuce; chill.' },
-        { order: 2, title: 'Halve cherry tomatoes.' },
-        { order: 3, title: 'Toss with oil, salt, pepper right before service.' },
+        { order: 1, title: 'Top hot fries with melted cheese and bacon.' },
+        { order: 2, title: 'Finish with pickles and sauce trio.' },
+      ],
+    },
+    {
+      id: 'recipe-house-slaw',
+      name: 'House Slaw',
+      description: 'Cold prep slaw for side service.',
+      status: 'active',
+      yield_qty: 18,
+      yield_unit: 'portions',
+      prep_minutes: 20,
+      cook_minutes: 0,
+      ingredient_lines: [
+        { ingredient_name: 'Cabbage', quantity: 1.5, unit: 'kg' },
+        { ingredient_name: 'Carrot', quantity: 500, unit: 'g' },
+        { ingredient_name: 'Mayo', quantity: 400, unit: 'ml' },
+        { ingredient_name: 'Vinegar', quantity: 80, unit: 'ml' },
+        { ingredient_name: 'Sugar', quantity: 40, unit: 'g' },
+      ],
+      steps: [
+        { order: 1, title: 'Shred cabbage/carrot and combine in cold bowl.' },
+        { order: 2, title: 'Whisk dressing and fold through veg; hold chilled.' },
       ],
     },
   ]
 
-  const kitchenStations: Array<Record<string, unknown>> = [
+  const kitchenStations = buildReadOnlyStations(kitchenId)
+
+  const competencyGroups: Array<Record<string, unknown>> = [
     {
-      id: 'station-grill',
+      id: 'raw-meat-prep',
       kitchen_id: kitchenId,
-      name: 'Grill',
-      key: 'grill',
-      description: 'Smash station: patties, buns, cheese melt.',
-      sort_order: 1,
-      active: true,
+      label: 'Raw Meat Prep',
+      description: 'Portion and season beef safely for burger service.',
+      mise_ids: ['portion-season-beef'],
     },
     {
-      id: 'station-fryer',
+      id: 'grill-station',
       kitchen_id: kitchenId,
-      name: 'Fryer',
-      key: 'fryer',
-      description: 'Fries + crispy sides.',
-      sort_order: 2,
-      active: true,
+      label: 'Grill Station',
+      description: 'Smash patties, toast buns, and melt cheese to ticket.',
+      mise_ids: ['bun-toast-station', 'cook-bacon-batch'],
     },
     {
-      id: 'station-cold',
+      id: 'fryer-station',
       kitchen_id: kitchenId,
-      name: 'Cold',
-      key: 'cold',
-      description: 'Salads, sauces, garnish.',
-      sort_order: 3,
-      active: true,
+      label: 'Fryer Station',
+      description: 'Run fries, fried chicken, and frozen veggie patty workflows.',
+      mise_ids: ['fries-portion-hold'],
     },
     {
-      id: 'station-pass',
+      id: 'cold-prep',
       kitchen_id: kitchenId,
-      name: 'Pass',
-      key: 'pass',
-      description: 'Assembly + checks + send.',
-      sort_order: 4,
-      active: true,
+      label: 'Cold Prep',
+      description: 'Produce pans, sauce bottles, and slaw setup.',
+      mise_ids: ['prep-produce-pans', 'slaw-mix'],
     },
   ]
+
   const kitchenTeamMembers: Array<Record<string, unknown>> = [
     {
       id: 'team-ss-01',
@@ -470,6 +699,7 @@ export const stackSizzleScenario = (): DummyScenario => {
       role: 'Head Chef',
       station: 'pass',
       is_lead: true,
+      competency_ids: ['raw-meat-prep', 'grill-station', 'fryer-station', 'cold-prep'],
       contact: { email: 'ava@stackandsizzle.demo', phone: '+41 79 000 0001' },
       tags: ['lead', 'service', 'training'],
     },
@@ -480,84 +710,34 @@ export const stackSizzleScenario = (): DummyScenario => {
       role: 'Line Cook',
       station: 'grill',
       is_lead: false,
+      competency_ids: ['raw-meat-prep', 'grill-station', 'fryer-station'],
       contact: { email: 'liam@stackandsizzle.demo', phone: '+41 79 000 0002' },
-      tags: ['grill', 'prep'],
+      tags: ['grill', 'fryer'],
     },
     {
       id: 'team-ss-03',
       kitchen_id: kitchenId,
       name: 'Maya Chen',
       role: 'Prep Cook',
-      station: 'prep',
+      station: 'cold',
       is_lead: false,
+      competency_ids: ['cold-prep', 'fryer-station'],
       contact: { email: 'maya@stackandsizzle.demo', phone: '+41 79 000 0003' },
       tags: ['prep', 'stock', 'hygiene'],
     },
   ]
-  const kitchenSuppliers: Array<Record<string, unknown>> = [
-    {
-      id: 'supplier-butcher-01',
-      kitchen_id: kitchenId,
-      name: 'Old Town Butchers',
-      kind: 'butcher',
-      contact: { email: 'orders@oldtownbutchers.demo', phone: '+41 79 100 0001' },
-      lead_time_days: 1,
-      notes: 'Daily mince + patty supply.',
-      active: true,
-    },
-    {
-      id: 'supplier-produce-01',
-      kitchen_id: kitchenId,
-      name: 'Market Greens Co.',
-      kind: 'produce',
-      contact: { email: 'sales@marketgreens.demo', phone: '+41 79 100 0002' },
-      lead_time_days: 2,
-      notes: 'Lettuce + tomatoes + onions.',
-      active: true,
-    },
-    {
-      id: 'supplier-bakery-01',
-      kitchen_id: kitchenId,
-      name: 'Sunrise Bakery',
-      kind: 'bakery',
-      contact: { email: 'hello@sunrisebakery.demo', phone: '+41 79 100 0003' },
-      lead_time_days: 1,
-      notes: 'Brioche buns, deliver mornings.',
-      active: true,
-    },
-  ]
-  const kitchenSupplierIngredients: Array<Record<string, unknown>> = []
+
+  const kitchenSuppliers = buildReadOnlySuppliers(kitchenId)
+  const kitchenSupplierIngredients = buildReadOnlySupplierIngredients(
+    kitchenId,
+    ingredientIds as unknown as Record<string, string>
+  )
+
   const kitchenPurchases: Array<Record<string, unknown>> = []
   const kitchenIncomingOrders: Array<Record<string, unknown>> = []
-  const trainingModules: Array<Record<string, unknown>> = [
-    {
-      id: 'train-ss-01',
-      kitchen_id: kitchenId,
-      title: 'Smash station basics',
-      description: 'Patty smash technique, bun toast, cheese melt timing.',
-      status: 'published',
-      minutes: 25,
-      tags: ['grill', 'service'],
-    },
-    {
-      id: 'train-ss-02',
-      kitchen_id: kitchenId,
-      title: 'Allergen + cross-contamination',
-      description: 'Core allergens, glove policy, clean-down routine.',
-      status: 'published',
-      minutes: 20,
-      tags: ['hygiene', 'haccp'],
-    },
-    {
-      id: 'train-ss-03',
-      kitchen_id: kitchenId,
-      title: 'Closing checklist',
-      description: 'Line breakdown, labeling, safe cooling, trash, mop.',
-      status: 'draft',
-      minutes: 15,
-      tags: ['close', 'ops'],
-    },
-  ]
+
+  const trainingModules = buildReadOnlyTrainingModules(kitchenId)
+
   const haccpChecks: Array<Record<string, unknown>> = [
     {
       id: 'haccp-ss-01',
@@ -596,6 +776,7 @@ export const stackSizzleScenario = (): DummyScenario => {
     globalIngredients,
     kitchenIngredients,
     teamMembers: kitchenTeamMembers,
+    competencyGroups,
     menuStack: {
       kitchenId,
       ingredientIds: ingredientIds as unknown as Record<string, string>,
@@ -625,15 +806,3 @@ export const stackSizzleScenario = (): DummyScenario => {
     },
   }
 }
-
-const stackSizzleKitchenId = 'stack-sizzle'
-
-export const buildKitchenIngredientForStackSizzle = (
-  ingredient: Ingredient,
-  overrides: Partial<KitchenIngredientDoc> = {}
-) =>
-  buildKitchenIngredient({
-    kitchenId: stackSizzleKitchenId,
-    ingredient,
-    overrides,
-  })

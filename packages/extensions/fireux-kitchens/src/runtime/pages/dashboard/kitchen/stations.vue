@@ -15,12 +15,15 @@
           <div class="space-y-2">
             <div
               v-for="station in stations"
-              :key="station.id || station.label"
+              :key="station.id || station.key"
               class="rounded border border-default p-3"
             >
-              <div class="font-medium">{{ station.label || station.id || 'Untitled station' }}</div>
+              <div class="font-medium">
+                {{ station.name || station.id || 'Untitled station' }}
+              </div>
               <div class="text-xs text-dimmed">
-                {{ station.description || 'No description' }}
+                {{ station.key || 'no-key' }}
+                <template v-if="station.description"> · {{ station.description }}</template>
               </div>
             </div>
           </div>
@@ -59,9 +62,10 @@ definePageMeta({
 const runtime = useRuntimeKitchen()
 const mode = runtime.mode
 const stations = computed(() =>
-  (runtime.data.value.stations ?? []).map((station: any) => ({
-    id: String(station?.id || '').trim(),
-    label: String(station?.label || station?.name || '').trim(),
+  (runtime.data.value.stations ?? []).map((station: any, index: number) => ({
+    id: String(station?.id || '').trim() || `station-${index + 1}`,
+    key: String(station?.key || '').trim(),
+    name: String(station?.name || station?.label || '').trim(),
     description: String(station?.description || '').trim(),
   }))
 )

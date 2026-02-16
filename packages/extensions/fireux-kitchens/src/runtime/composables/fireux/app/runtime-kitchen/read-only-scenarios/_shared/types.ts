@@ -24,6 +24,7 @@ export type DummyScenario = {
   globalIngredients: Ingredient[]
   kitchenIngredients: KitchenIngredientDoc[]
   teamMembers: Array<Record<string, unknown>>
+  competencyGroups?: Array<Record<string, unknown>>
   menuStack: {
     kitchenId: string
     ingredientIds: Record<string, string>

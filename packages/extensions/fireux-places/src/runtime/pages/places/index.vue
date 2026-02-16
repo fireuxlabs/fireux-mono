@@ -22,8 +22,8 @@ definePageMeta({
     label: 'Places',
     icon: 'i-lucide-map-pin',
     order: 25,
-    desktop: true,
-    mobile: true,
+    desktop: false,
+    mobile: false,
     layouts: ['default', 'landing'],
   },
   name: 'PlacesIndexPage',
@@ -38,4 +38,3 @@ useHead({ title: `${appName} | ${pageTitle}` })
 
 const { collection } = usePlaces<Record<string, any>>()
 </script>
-

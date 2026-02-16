@@ -9,17 +9,22 @@ type CreateReadOnlyKitchenParams = {
   imageUrl?: string
 }
 
-export const createReadOnlyKitchen = (params: CreateReadOnlyKitchenParams): Kitchen => ({
-  ...KitchenCollection,
-  id: String(params.id || '').trim(),
-  is_test_kitchen: true,
-  name: String(params.name || '').trim(),
-  short_name: String(params.shortName || params.name || '').trim(),
-  short_address: String(params.shortAddress || params.name || '').trim(),
-  formatted_address: String(params.formattedAddress || params.name || '').trim(),
-  image_url: String(params.imageUrl || '').trim(),
-  image_shade: 'none',
-  source: 'read-only-scenario' as any,
-  lat: 0,
-  lng: 0,
-})
+export const createReadOnlyKitchen = (params: CreateReadOnlyKitchenParams): Kitchen => {
+  const id = String(params.id || '').trim()
+  const imageUrl = String(params.imageUrl || '').trim()
+
+  return {
+    ...KitchenCollection,
+    id,
+    is_test_kitchen: false,
+    name: String(params.name || '').trim(),
+    short_name: String(params.shortName || params.name || '').trim(),
+    short_address: String(params.shortAddress || '').trim(),
+    formatted_address: String(params.formattedAddress || '').trim(),
+    image_url: imageUrl,
+    image_shade: 'none',
+    source: 'read-only-scenario' as any,
+    lat: 0,
+    lng: 0,
+  }
+}

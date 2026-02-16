@@ -11,26 +11,47 @@
       :avatar="imageUrl ? { src: imageUrl, alt: title || '' } : { icon: 'i-lucide-carrot', alt: title || '' }"
       size="sm"
     >
-      <template #default>
-        <div
-          v-if="(showSlug && slug) || warningLabel"
-          class="flex flex-wrap items-center gap-1"
-        >
-          <UBadge
-            v-if="showSlug && slug"
-            variant="soft"
-            color="neutral"
-            size="xs"
-            class="font-mono"
+      <template
+        v-if="showMetaLine || (showSubtitle && subtitle)"
+        #description
+      >
+        <div class="flex flex-col gap-1">
+          <span
+            v-if="showSubtitle && subtitle"
+            class="text-xs text-muted-foreground"
           >
-            {{ slug }}
-          </UBadge>
-          <UTooltip
-            v-if="warningLabel && warningDescription"
-            :text="warningDescription"
-            :popper="{ placement: 'top' }"
+            {{ subtitle }}
+          </span>
+
+          <div
+            v-if="showMetaLine"
+            class="flex flex-wrap items-center gap-1"
           >
             <UBadge
+              v-if="showSlug && slug"
+              variant="soft"
+              color="neutral"
+              size="xs"
+              class="font-mono"
+            >
+              {{ slug }}
+            </UBadge>
+            <UTooltip
+              v-if="warningLabel && warningDescription"
+              :text="warningDescription"
+              :popper="{ placement: 'top' }"
+            >
+              <UBadge
+                variant="soft"
+                color="warning"
+                size="xs"
+              >
+                <UIcon name="i-lucide-triangle-alert" class="mr-1" />
+                {{ warningLabel }}
+              </UBadge>
+            </UTooltip>
+            <UBadge
+              v-else-if="warningLabel"
               variant="soft"
               color="warning"
               size="xs"
@@ -38,16 +59,7 @@
               <UIcon name="i-lucide-triangle-alert" class="mr-1" />
               {{ warningLabel }}
             </UBadge>
-          </UTooltip>
-          <UBadge
-            v-else-if="warningLabel"
-            variant="soft"
-            color="warning"
-            size="xs"
-          >
-            <UIcon name="i-lucide-triangle-alert" class="mr-1" />
-            {{ warningLabel }}
-          </UBadge>
+          </div>
         </div>
       </template>
     </UUser>
@@ -78,6 +90,7 @@ const props = withDefaults(defineProps<PillProps>(), {
 })
 
 const warningLabel = computed(() => String(props.warning || '').trim())
+const showMetaLine = computed(() => Boolean((props.showSlug && props.slug) || warningLabel.value))
 const warningDescription = computed(() => {
   const value = warningLabel.value
   if (!value) return ''

@@ -2,6 +2,8 @@ import { safeString, safeStringArray } from 'fireux-core/runtime/composables/sha
 
 export type SupplierSurface = {
   id?: string
+  supplier_id?: string
+  source_supplier_id?: string
   name?: string
   category?: string
   supplier_headline?: string
@@ -33,14 +35,15 @@ export namespace SupplierCard {
 export function useSupplierInterface() {
   function map(supplier: SupplierSurface): SupplierCard.Card {
     const id = safeString(supplier.id).trim()
+    const profileId = firstNonEmpty([supplier.supplier_id, supplier.source_supplier_id, id]) || id
     const name =
       firstNonEmpty([
         supplier.name,
         supplier.supplier_organization_name,
         supplier.supplier_headline,
         supplier.title,
-        id,
-      ]) || id
+        profileId,
+      ]) || profileId || id
 
     const category =
       firstNonEmpty([
@@ -52,8 +55,8 @@ export function useSupplierInterface() {
       ]) || ''
 
     return {
-      id,
-      to: id ? `/dashboard/kitchen/supplier/${encodeURIComponent(id)}` : '',
+      id: profileId || id,
+      to: profileId ? `/suppliers/${encodeURIComponent(profileId)}` : '',
       title: name,
       subtitle: category || '',
       name,

@@ -3,7 +3,11 @@
     <UPageHeader :title="pageTitle" />
     <UPageBody class="pagebody">
       <KitchenCTA />
-      <KitchenCollectionManager :collection="collection" />
+      <KitchenCollectionManager
+        :collection="collection"
+        title="Misebox kitchens."
+        description=""
+      />
     </UPageBody>
   </UPage>
 </template>

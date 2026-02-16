@@ -18,7 +18,6 @@ export namespace MenuCard {
     service: string
     dishCount: number
     stations: string[]
-    active: boolean
     isActiveNow: boolean
     windowLabel: string
     sortOrder: number
@@ -66,33 +65,60 @@ export function useMenuInterface() {
     details: Array<{ label: string; value: string | number }>
   }
 
-  const toDate = (value: unknown): Date | null => {
-    if (!value) return null
+  const menuDayByDateDay: Array<'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat'> = [
+    'sun',
+    'mon',
+    'tue',
+    'wed',
+    'thu',
+    'fri',
+    'sat',
+  ]
 
-    if (typeof value === 'string') {
-      const parsed = new Date(value)
-      return Number.isNaN(parsed.getTime()) ? null : parsed
-    }
-
-    if (typeof value === 'object') {
-      const seconds = Number((value as any)?.seconds)
-      if (Number.isFinite(seconds) && seconds > 0) return new Date(seconds * 1000)
-
-      const maybeToDate = (value as any)?.toDate
-      if (typeof maybeToDate === 'function') {
-        const parsed = maybeToDate.call(value)
-        if (parsed instanceof Date && !Number.isNaN(parsed.getTime())) return parsed
-      }
-    }
-
-    return null
+  const toMinutes = (value: string): number => {
+    const clean = safeString(value).trim()
+    const match = clean.match(/^(\d{1,2}):(\d{2})$/)
+    if (!match) return -1
+    const hours = Number(match[1])
+    const minutes = Number(match[2])
+    if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return -1
+    if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return -1
+    return hours * 60 + minutes
   }
 
-  const formatTime = (date: Date | null): string => {
-    if (!date) return ''
-    const hh = String(date.getHours()).padStart(2, '0')
-    const mm = String(date.getMinutes()).padStart(2, '0')
-    return `${hh}:${mm}`
+  const resolveMenuIsActiveNow = (menu: Menu): boolean => {
+    const status = safeString((menu as any)?.status).trim().toLowerCase()
+    if (status !== 'live') return false
+
+    const rawRules = (menu as any)?.service_rules
+    const days = Array.isArray(rawRules?.days)
+      ? rawRules.days.map((day: unknown) => safeString(day).trim().toLowerCase()).filter(Boolean)
+      : []
+    const startMinutes = toMinutes(safeString(rawRules?.start_time))
+    const endMinutes = toMinutes(safeString(rawRules?.end_time))
+
+    // If rules are not fully defined, activity is unknown -> treat as inactive.
+    if (!days.length || startMinutes < 0 || endMinutes < 0) return false
+
+    const now = new Date()
+    const nowDay = menuDayByDateDay[now.getDay()]
+    const previousDay = menuDayByDateDay[(now.getDay() + 6) % 7]
+    const nowMinutes = now.getHours() * 60 + now.getMinutes()
+
+    if (startMinutes === endMinutes) {
+      // 24h service for the listed days.
+      return days.includes(nowDay)
+    }
+
+    if (endMinutes > startMinutes) {
+      return days.includes(nowDay) && nowMinutes >= startMinutes && nowMinutes < endMinutes
+    }
+
+    // Overnight window (e.g. 22:00 -> 02:00).
+    return (
+      (days.includes(nowDay) && nowMinutes >= startMinutes) ||
+      (days.includes(previousDay) && nowMinutes < endMinutes)
+    )
   }
 
   function map(menu: Menu): MenuCard.Card {
@@ -105,14 +131,11 @@ export function useMenuInterface() {
       `${service || 'menu'}-${status || 'status'}-${dishes.length}`
     const name = safeString(menu.name).trim() || id
     const stations = safeStringArray(menu.stations)
-    const startsAt = toDate((menu as any)?.starts_at)
-    const endsAt = toDate((menu as any)?.ends_at)
-    const now = new Date()
-    const inWindow =
-      (!startsAt || now.getTime() >= startsAt.getTime()) &&
-      (!endsAt || now.getTime() <= endsAt.getTime())
-    const isActiveNow = Boolean(menu.active) && inWindow
-    const windowLabel = [formatTime(startsAt), formatTime(endsAt)].filter(Boolean).join(' - ')
+    const rules = (menu as any)?.service_rules
+    const rulesStart = safeString(rules?.start_time).trim()
+    const rulesEnd = safeString(rules?.end_time).trim()
+    const isActiveNow = resolveMenuIsActiveNow(menu)
+    const windowLabel = rulesStart && rulesEnd ? `${rulesStart} - ${rulesEnd}` : ''
 
     return {
       id,
@@ -130,7 +153,6 @@ export function useMenuInterface() {
       service,
       dishCount: dishes.length,
       stations,
-      active: Boolean(menu.active),
       isActiveNow,
       windowLabel,
       sortOrder: Number(menu.sort_order || 0),

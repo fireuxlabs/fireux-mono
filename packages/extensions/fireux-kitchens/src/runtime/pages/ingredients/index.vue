@@ -17,7 +17,6 @@
       <IngredientCTA :can-create="isAdmin" />
       <IngredientCollectionManager
         :collection="ingredients"
-        :show-slug="true"
       />
     </UPageBody>
   </UPage>
@@ -38,8 +37,8 @@ definePageMeta({
     label: 'Ingredients',
     icon: 'i-lucide-carrot',
     order: 55,
-    desktop: true,
-    mobile: true,
+    desktop: false,
+    mobile: false,
     layouts: ['default'],
   },
   name: 'IngredientsIndexPage',

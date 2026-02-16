@@ -4,7 +4,7 @@
       <div class="collection-manager__header">
         <div class="collection-manager__title">
           <div>{{ title }}</div>
-          <p>{{ description }}</p>
+          <p v-if="description">{{ description }}</p>
         </div>
 
         <div class="collection-manager__controls">
@@ -101,9 +101,10 @@ const { appName } = useFireUXConfig()
 
 const collection = computed(() => props.collection ?? [])
 const title = computed(() => String(props.title || 'Kitchens'))
-const description = computed(
-  () => String(props.description || `Browse ${appName} kitchens.`)
-)
+const description = computed(() => {
+  if (props.description !== undefined) return String(props.description || '').trim()
+  return `Browse ${appName} kitchens.`
+})
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search kitchens…'))
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)

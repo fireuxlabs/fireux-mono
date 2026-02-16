@@ -10,6 +10,10 @@ import {
   buildKitchenIngredient,
   buildMenu,
   buildMise,
+  buildReadOnlySupplierIngredients,
+  buildReadOnlyStations,
+  buildReadOnlySuppliers,
+  buildReadOnlyTrainingModules,
 } from '../_shared/builders'
 import type { DummyRecipe, DummyScenario } from '../_shared/types'
 
@@ -18,6 +22,10 @@ export const takumiRamenScenario = (): DummyScenario => {
     id: 'takumi-ramen',
     name: 'Takumi Ramen-ya',
     shortName: 'Takumi',
+    shortAddress: 'Old Town',
+    formattedAddress: 'Demo Location - Old Town',
+    imageUrl:
+      'https://images.unsplash.com/photo-1557872943-16a5ac26437e?auto=format&fit=crop&w=640&h=520&q=80',
   })
 
   const kitchenId = String(kitchen.id || '').trim()
@@ -290,10 +298,14 @@ export const takumiRamenScenario = (): DummyScenario => {
         description: 'Signature bowls for all-day service.',
         status: 'live',
         service: 'all_day',
+        service_rules: {
+          days: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
+          start_time: '11:30',
+          end_time: '22:00',
+        },
         dish_ids: ['shio-ramen', 'shoyu-ramen', 'miso-corn-butter-ramen', 'veg-mushroom-ramen'],
         sort_order: 1,
-        active: true,
-        stations: ['noodle-station', 'pass'],
+        stations: ['prep', 'pass'],
       },
     }),
     buildMenu({
@@ -302,12 +314,16 @@ export const takumiRamenScenario = (): DummyScenario => {
         id: 'menu-ramen-late',
         name: 'Late Bowl Menu',
         description: 'Reduced bowl lineup for late service.',
-        status: 'draft',
+        status: 'live',
         service: 'dinner',
+        service_rules: {
+          days: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'],
+          start_time: '22:00',
+          end_time: '02:00',
+        },
         dish_ids: ['shio-ramen', 'veg-mushroom-ramen'],
         sort_order: 2,
-        active: true,
-        stations: ['noodle-station', 'pass'],
+        stations: ['prep', 'pass'],
       },
     }),
   ]
@@ -406,44 +422,7 @@ export const takumiRamenScenario = (): DummyScenario => {
     },
   ]
 
-  const kitchenStations: Array<Record<string, unknown>> = [
-    {
-      id: 'station-noodle',
-      kitchen_id: kitchenId,
-      name: 'Noodle station',
-      key: 'noodle-station',
-      description: 'Noodle cook + bowl build.',
-      sort_order: 1,
-      active: true,
-    },
-    {
-      id: 'station-broth',
-      kitchen_id: kitchenId,
-      name: 'Broth + tare',
-      key: 'broth',
-      description: 'Broth hold, tare, aroma oils.',
-      sort_order: 2,
-      active: true,
-    },
-    {
-      id: 'station-prep',
-      kitchen_id: kitchenId,
-      name: 'Prep',
-      key: 'prep',
-      description: 'Eggs, chashu, toppings, labeling.',
-      sort_order: 3,
-      active: true,
-    },
-    {
-      id: 'station-pass',
-      kitchen_id: kitchenId,
-      name: 'Pass',
-      key: 'pass',
-      description: 'Final check + send.',
-      sort_order: 4,
-      active: true,
-    },
-  ]
+  const kitchenStations = buildReadOnlyStations(kitchenId)
   const kitchenTeamMembers: Array<Record<string, unknown>> = [
     {
       id: 'team-tr-01',
@@ -460,7 +439,7 @@ export const takumiRamenScenario = (): DummyScenario => {
       kitchen_id: kitchenId,
       name: 'Noah Meier',
       role: 'Ramen Cook',
-      station: 'noodle-station',
+      station: 'grill',
       is_lead: false,
       contact: { email: 'noah@takumi.demo', phone: '+41 79 000 0102' },
       tags: ['noodles', 'service'],
@@ -476,70 +455,14 @@ export const takumiRamenScenario = (): DummyScenario => {
       tags: ['prep', 'broth', 'mise'],
     },
   ]
-  const kitchenSuppliers: Array<Record<string, unknown>> = [
-    {
-      id: 'supplier-asian-01',
-      kitchen_id: kitchenId,
-      name: 'Nippon Pantry',
-      kind: 'specialty',
-      contact: { email: 'orders@nipponpantry.demo', phone: '+41 79 100 0101' },
-      lead_time_days: 2,
-      notes: 'Kombu, katsuobushi, niboshi, nori.',
-      active: true,
-    },
-    {
-      id: 'supplier-butcher-01',
-      kitchen_id: kitchenId,
-      name: 'Riverside Butchery',
-      kind: 'butcher',
-      contact: { email: 'sales@riversidebutchery.demo', phone: '+41 79 100 0102' },
-      lead_time_days: 1,
-      notes: 'Pork belly, bones.',
-      active: true,
-    },
-    {
-      id: 'supplier-produce-01',
-      kitchen_id: kitchenId,
-      name: 'Fresh Fields Produce',
-      kind: 'produce',
-      contact: { email: 'hello@freshfields.demo', phone: '+41 79 100 0103' },
-      lead_time_days: 2,
-      notes: 'Spring onions, ginger, garlic, onions.',
-      active: true,
-    },
-  ]
-  const kitchenSupplierIngredients: Array<Record<string, unknown>> = []
+  const kitchenSuppliers = buildReadOnlySuppliers(kitchenId)
+  const kitchenSupplierIngredients = buildReadOnlySupplierIngredients(
+    kitchenId,
+    ingredientIds as unknown as Record<string, string>
+  )
   const kitchenPurchases: Array<Record<string, unknown>> = []
   const kitchenIncomingOrders: Array<Record<string, unknown>> = []
-  const trainingModules: Array<Record<string, unknown>> = [
-    {
-      id: 'train-tr-01',
-      kitchen_id: kitchenId,
-      title: 'Ramen bowl build',
-      description: 'Noodle timing, tare dose, broth volume, topping order.',
-      status: 'published',
-      minutes: 30,
-      tags: ['service', 'noodle-station'],
-    },
-    {
-      id: 'train-tr-02',
-      kitchen_id: kitchenId,
-      title: 'Cooling + labeling',
-      description: 'Rapid chill, date labels, FIFO for broth and toppings.',
-      status: 'published',
-      minutes: 20,
-      tags: ['haccp', 'prep'],
-    },
-    {
-      id: 'train-tr-03',
-      kitchen_id: kitchenId,
-      title: 'Allergen: soy / sesame / egg',
-      description: 'Guest questions, cross-contact controls, substitutions.',
-      status: 'draft',
-      minutes: 15,
-      tags: ['allergens', 'front'],
-    },
-  ]
+  const trainingModules = buildReadOnlyTrainingModules(kitchenId)
   const haccpChecks: Array<Record<string, unknown>> = [
     {
       id: 'haccp-tr-01',

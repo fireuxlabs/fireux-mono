@@ -1,7 +1,6 @@
 <template>
   <UPageCTA
     title="Kitchen dashboard"
-    description="Quick routes grouped by kitchen context."
     orientation="horizontal"
   >
     <template #links>
@@ -88,7 +87,7 @@ import { useRuntimeKitchenSelection, type RuntimeKitchenMode } from '../../../co
 import { useChef } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { getReadOnlyKitchenList } from '../../../dev/read-only-kitchens'
+import { getReadOnlyKitchenScenarioList } from '../../../dev/read-only-scenarios'
 import type { Kitchen } from '../../../models/kitchen.model'
 import KitchenCardsPill from './Cards/Pill.vue'
 
@@ -101,18 +100,11 @@ const { kitchens: testKitchens } = useKitchenFetch({
   hydrate: false,
 })
 
-const currentUserId = computed(() =>
-  String(uid.value || user.value?.id || '').trim()
-)
+const currentUserId = computed(() => String(uid.value || '').trim())
 
 const testKitchenLabel = computed(() => {
-  const displayName = String(
-    (user.value as any)?.display_name ||
-      (user.value as any)?.displayName ||
-      (user.value as any)?.handle ||
-      'Chef'
-  ).trim()
-  const firstWord = String(displayName.split(/\s+/).filter(Boolean)[0] || 'Chef').trim()
+  const displayName = String((user.value as any)?.display_name || '').trim()
+  const firstWord = String(displayName.split(/\s+/).filter(Boolean)[0] || '').trim()
   if (!firstWord) return 'Test Kitchen'
   const suffix = /s$/i.test(firstWord) ? "'" : "'s"
   return `${firstWord}${suffix} Test Kitchen`
@@ -155,7 +147,7 @@ const myKitchenIdSet = computed(() =>
 )
 
 const readOnlyKitchens = computed(() =>
-  getReadOnlyKitchenList()
+  getReadOnlyKitchenScenarioList()
     .map((entry) => ({
       id: String(entry.id || '').trim(),
       name: String(entry.name || '').trim(),
@@ -163,7 +155,6 @@ const readOnlyKitchens = computed(() =>
       short_address: String(entry.address_label || '').trim(),
       formatted_address: String(entry.address_label || '').trim(),
       image_url: String(entry.image_url || '').trim(),
-      is_test_kitchen: false,
     }))
     .filter((kitchen) => Boolean(kitchen.id))
     .filter((kitchen) => !myKitchenIdSet.value.has(String(kitchen.id || '').trim())) as Kitchen[]
@@ -184,9 +175,9 @@ const testKitchen = computed<Kitchen | null>(() => {
       is_test_kitchen: true,
       name: testKitchenLabel.value,
       short_name: testKitchenLabel.value,
-      short_address: String(fromCollection.short_address || testKitchenLabel.value).trim(),
-      formatted_address: String(fromCollection.formatted_address || testKitchenLabel.value).trim(),
-      image_url: String(fromCollection.image_url || user.value?.avatar || '').trim(),
+      short_address: String(fromCollection.short_address || '').trim(),
+      formatted_address: String(fromCollection.formatted_address || '').trim(),
+      image_url: String(fromCollection.image_url || '').trim(),
     }
   }
 
@@ -195,9 +186,9 @@ const testKitchen = computed<Kitchen | null>(() => {
     is_test_kitchen: true,
     name: testKitchenLabel.value,
     short_name: testKitchenLabel.value,
-    short_address: testKitchenLabel.value,
-    formatted_address: testKitchenLabel.value,
-    image_url: String(user.value?.avatar || '').trim(),
+    short_address: '',
+    formatted_address: '',
+    image_url: '',
   } as Kitchen
 })
 

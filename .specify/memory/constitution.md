@@ -22,6 +22,7 @@ Prefer a single, explicit implementation over parallel helpers or shims; dedupli
 - Do not add hidden fallbacks that auto-fill missing config/data; validate and fail loudly instead.
 - Do not expose private fields as UI fallbacks (e.g., never use email when displayName is missing); use neutral placeholders or block the flow.
 - Do not add UI fallbacks that mask missing data; missing data should be visible so it can be fixed at the source.
+- Do not chain fallbacks across identity/location/media fields (e.g., name -> subtitle, short_address -> formatted_address -> name, image_url -> generic image) unless explicitly specified.
 - Only add a fallback when explicitly requested in a spec (example: short address → long address).
 - If two functions/files do the same job, pick one, delete the other, and update call sites.
 - After v1, migration layers may be added deliberately with docs; before v1, legacy does not exist.
@@ -44,4 +45,4 @@ Prefer a single, explicit implementation over parallel helpers or shims; dedupli
 - This constitution supersedes other practices for FireUX pre-v1.
 - Amendments require documenting intent, scope, and migration plan.
 
-**Version**: 0.1.2 | **Ratified**: 2025-12-07 | **Last Amended**: 2026-02-04
+**Version**: 0.1.3 | **Ratified**: 2025-12-07 | **Last Amended**: 2026-02-15

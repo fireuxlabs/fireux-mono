@@ -14,6 +14,12 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 export type MenuStatus = 'draft' | 'live' | 'paused' | 'archived'
 export type MenuService = 'all_day' | 'breakfast' | 'lunch' | 'dinner' | 'custom'
 export type MenuOrderingActionType = 'FOOD_ORDERING' | 'FOOD_DELIVERY' | 'FOOD_TAKEOUT'
+export type MenuServiceDay = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun'
+export type MenuServiceRules = {
+  days: MenuServiceDay[]
+  start_time: string
+  end_time: string
+}
 
 export type MenuSectionItem = {
   id: string
@@ -62,6 +68,11 @@ export const Menu = {
   description: '' as string,
   status: 'draft' as MenuStatus,
   service: 'all_day' as MenuService,
+  service_rules: {
+    days: [] as MenuServiceDay[],
+    start_time: '',
+    end_time: '',
+  } as MenuServiceRules,
 
   // Legacy + current runtime references
   dish_ids: [] as string[],
@@ -70,7 +81,6 @@ export const Menu = {
   // Canon sectioned menu shape (future-proof for external projections)
   sections: [] as MenuSection[],
   sort_order: 0 as number,
-  active: true as boolean,
 
   // Stable public menu URL for website/GBP attribute projection
   url_menu: '' as string,
@@ -84,10 +94,6 @@ export const Menu = {
     last_sync_error: '',
     last_sync_version: '',
   } as MenuGoogleSyncState,
-
-  // Empty timestamp object means unset.
-  starts_at: {} as FirebaseTimestamp,
-  ends_at: {} as FirebaseTimestamp,
 
   app_id: '' as FireuxStamped['app_id'],
   creator_id: '' as FireuxStamped['creator_id'],
