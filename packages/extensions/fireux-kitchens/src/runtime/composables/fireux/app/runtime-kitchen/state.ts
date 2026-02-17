@@ -1,36 +1,64 @@
-import { useState } from '#imports'
+import { useCookie, useState } from '#imports'
 import { computed } from 'vue'
 import {
   normalizeMode,
   normalizeString,
-  RUNTIME_KITCHEN_ID_KEY,
-  RUNTIME_KITCHEN_MODE_KEY,
   type RuntimeKitchenMode,
-  type RuntimeKitchenSelection,
 } from './shared'
 
-export const useRuntimeKitchenState = () => {
-  const runtimeKitchenIdState = useState<string>(RUNTIME_KITCHEN_ID_KEY, () => '')
-  const runtimeKitchenModeState = useState<RuntimeKitchenMode>(RUNTIME_KITCHEN_MODE_KEY, () => 'read-only')
-  return { runtimeKitchenIdState, runtimeKitchenModeState }
+type RuntimeKitchenSelectionState = {
+  kitchenId: string
+  mode: RuntimeKitchenMode
+}
+
+const COOKIE_KEY = 'fireux_runtime_kitchen'
+
+const normalizeSelectionState = (value: unknown): RuntimeKitchenSelectionState => {
+  const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
+  return {
+    kitchenId: normalizeString(source.kitchenId),
+    mode: normalizeMode(source.mode) ?? 'live',
+  }
 }
 
 export function useRuntimeKitchenSelection() {
-  const { runtimeKitchenIdState, runtimeKitchenModeState } = useRuntimeKitchenState()
+  const cookie = useCookie<RuntimeKitchenSelectionState>(COOKIE_KEY, {
+    default: () => ({ kitchenId: '', mode: 'live' }),
+    sameSite: 'lax',
+  })
 
-  const setRuntimeKitchen = (selection: RuntimeKitchenSelection = {}) => {
-    runtimeKitchenModeState.value =
-      normalizeMode(selection.mode) ??
-      normalizeMode(runtimeKitchenModeState.value) ??
-      'read-only'
-    runtimeKitchenIdState.value = normalizeString(selection.kitchenId)
+  const runtimeKitchenState = useState<RuntimeKitchenSelectionState>(COOKIE_KEY, () =>
+    normalizeSelectionState(cookie.value)
+  )
+
+  cookie.value = normalizeSelectionState(runtimeKitchenState.value)
+
+  const setRuntimeKitchen = (selection: Partial<RuntimeKitchenSelectionState> = {}) => {
+    const next: RuntimeKitchenSelectionState = {
+      kitchenId:
+        selection.kitchenId !== undefined
+          ? normalizeString(selection.kitchenId)
+          : runtimeKitchenState.value.kitchenId,
+      mode:
+        selection.mode !== undefined
+          ? normalizeMode(selection.mode) ?? runtimeKitchenState.value.mode
+          : runtimeKitchenState.value.mode,
+    }
+
+    runtimeKitchenState.value = next
+    cookie.value = next
+  }
+
+  const clearRuntimeKitchen = () => {
+    const next: RuntimeKitchenSelectionState = { kitchenId: '', mode: 'live' }
+    runtimeKitchenState.value = next
+    cookie.value = next
   }
 
   return {
-    runtimeKitchenId: computed(() => runtimeKitchenIdState.value),
-    runtimeKitchenMode: computed(
-      () => normalizeMode(runtimeKitchenModeState.value) ?? 'read-only'
-    ),
+    runtimeKitchenId: computed(() => runtimeKitchenState.value.kitchenId),
+    runtimeKitchenMode: computed(() => normalizeMode(runtimeKitchenState.value.mode) ?? 'live'),
     setRuntimeKitchen,
+    clearRuntimeKitchen,
   }
 }

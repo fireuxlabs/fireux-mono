@@ -5,7 +5,11 @@ export type SupplierSurface = {
   supplier_id?: string
   source_supplier_id?: string
   name?: string
+  short_name?: string
   category?: string
+  image_url?: string
+  logo_url?: string
+  avatar_url?: string
   supplier_headline?: string
   supplier_organization_name?: string
   title?: string
@@ -29,6 +33,7 @@ export namespace SupplierCard {
     subtitle: string
     name: string
     category: string
+    avatarUrl: string
   }
 }
 
@@ -39,6 +44,7 @@ export function useSupplierInterface() {
     const name =
       firstNonEmpty([
         supplier.name,
+        supplier.short_name,
         supplier.supplier_organization_name,
         supplier.supplier_headline,
         supplier.title,
@@ -54,6 +60,9 @@ export function useSupplierInterface() {
         firstFromArray(supplier.tags),
       ]) || ''
 
+    const avatarUrl =
+      firstNonEmpty([supplier.image_url, supplier.logo_url, supplier.avatar_url]) || ''
+
     return {
       id: profileId || id,
       to: profileId ? `/suppliers/${encodeURIComponent(profileId)}` : '',
@@ -61,6 +70,7 @@ export function useSupplierInterface() {
       subtitle: category || '',
       name,
       category,
+      avatarUrl,
     }
   }
 
@@ -76,6 +86,7 @@ export function useSupplierInterface() {
       mapped.id,
       mapped.name,
       mapped.category,
+      safeString(target.short_name),
       safeString(target.supplier_headline),
       safeString(target.supplier_organization_name),
       safeStringArray(target.supplier_product_categories).join(' '),

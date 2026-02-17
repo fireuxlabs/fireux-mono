@@ -28,8 +28,8 @@
     </template>
 
     <SupplierCollectionList
-      v-if="cardsFiltered.length"
-      :cards="cardsFiltered"
+      v-if="cardsRenderable.length"
+      :cards="cardsRenderable"
       :variant="variant"
     >
       <template #pill="{ card }">
@@ -38,7 +38,13 @@
           :class="linkEnabled && card.to ? 'cursor-pointer' : 'cursor-default'"
           @click="openCard(card)"
         >
-          <SupplierCardsPill v-bind="card" />
+          <SupplierCardsPill
+            :to="card.to"
+            :title="card.title"
+            :subtitle="card.subtitle"
+            :avatar-url="card.avatarUrl"
+            :link="false"
+          />
         </div>
       </template>
       <template #cell="{ card }">
@@ -47,7 +53,12 @@
           :class="linkEnabled && card.to ? 'cursor-pointer' : 'cursor-default'"
           @click="openCard(card)"
         >
-          <SupplierCardsCell v-bind="card" />
+          <SupplierCardsCell
+            :id="card.id"
+            :name="card.name"
+            :subtitle="card.subtitle"
+            :avatar-url="card.avatarUrl"
+          />
         </div>
       </template>
     </SupplierCollectionList>
@@ -71,7 +82,11 @@
 import { navigateTo } from '#imports'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import { useSupplierInterface, type SupplierSurface } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
+import {
+  useSupplierInterface,
+  type SupplierCard,
+  type SupplierSurface,
+} from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 import SupplierCardsCell from '../Cards/Cell.vue'
 import SupplierCardsPill from '../Cards/Pill.vue'
 import SupplierCollectionList from './List.vue'
@@ -123,9 +138,40 @@ const {
   makeCard: (supplier: SupplierCollectionEntry) => makeCard(supplier),
   initialVariant: props.initialVariant,
 })
+
+const fallbackCards = computed<SupplierCard.Card[]>(() =>
+  (collection.value ?? [])
+    .map((supplier, index) => {
+      const row = supplier as Record<string, unknown>
+      const id = String(row.id || row.supplier_id || `supplier-${index + 1}`).trim()
+      if (!id) return null
+
+      const profileId = String(row.supplier_id || row.source_supplier_id || id).trim()
+      const name = String(row.name || row.short_name || profileId || id).trim()
+      const category = String(row.category || row.business_type || '').trim()
+      const avatarUrl = String(row.image_url || row.logo_url || row.avatar_url || '').trim()
+
+      return {
+        id: profileId || id,
+        to: profileId ? `/suppliers/${encodeURIComponent(profileId)}` : '',
+        title: name,
+        subtitle: category,
+        name,
+        category,
+        avatarUrl,
+      } satisfies SupplierCard.Card
+    })
+    .filter((card): card is SupplierCard.Card => Boolean(card))
+)
+
+const cardsRenderable = computed<SupplierCard.Card[]>(() => {
+  if (cardsFiltered.value.length) return cardsFiltered.value as SupplierCard.Card[]
+  if (query.value.trim()) return []
+  return fallbackCards.value
+})
 const isDev = import.meta.dev
 
-const openCard = (card: NonNullable<ReturnType<typeof makeCard>>) => {
+const openCard = (card: SupplierCard.Card) => {
   if (!linkEnabled.value) return
   const to = String(card?.to || '').trim()
   if (!to) return

@@ -39,19 +39,19 @@ defineOptions({ name: 'DevMenuStackSystem' })
 const readOnlyKitchenScenario = getDefaultReadOnlyKitchenScenario()
 
 const counts = computed(() => ({
-  ingredients: readOnlyKitchenScenario.globalIngredients?.length ?? 0,
-  mise: readOnlyKitchenScenario.menuStack.miseTasks.length,
-  recipes: readOnlyKitchenScenario.menuStack.recipes.length,
-  dishes: readOnlyKitchenScenario.menuStack.dishes.length,
-  menus: readOnlyKitchenScenario.menuStack.menus.length,
+  ingredients: readOnlyKitchenScenario.globalIngredients.length,
+  mise: readOnlyKitchenScenario.stacks.menu.miseTasks.length,
+  recipes: readOnlyKitchenScenario.stacks.menu.recipes.length,
+  dishes: readOnlyKitchenScenario.stacks.menu.dishes.length,
+  menus: readOnlyKitchenScenario.stacks.menu.menus.length,
 }))
 
 const menuStackDevJson = computed(() => ({
-  ingredients: [...(readOnlyKitchenScenario.globalIngredients ?? [])],
-  mise: readOnlyKitchenScenario.menuStack.miseTasks,
-  recipes: readOnlyKitchenScenario.menuStack.recipes,
-  dishes: readOnlyKitchenScenario.menuStack.dishes,
-  menus: readOnlyKitchenScenario.menuStack.menus,
-  stations: readOnlyKitchenScenario.menuStack.stations,
+  ingredients: [...readOnlyKitchenScenario.globalIngredients],
+  mise: readOnlyKitchenScenario.stacks.menu.miseTasks,
+  recipes: readOnlyKitchenScenario.stacks.menu.recipes,
+  dishes: readOnlyKitchenScenario.stacks.menu.dishes,
+  menus: readOnlyKitchenScenario.stacks.menu.menus,
+  stations: readOnlyKitchenScenario.stacks.menu.stations,
 }))
 </script>

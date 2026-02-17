@@ -8,16 +8,23 @@
     <UUser
       :name="title"
       :description="subtitle || undefined"
-      :avatar="{ icon: 'i-lucide-store', alt: title || '' }"
       size="sm"
-    />
+    >
+      <template #avatar>
+        <UAvatar
+          :src="avatarUrl || undefined"
+          icon="i-lucide-store"
+          size="xs"
+        />
+      </template>
+    </UUser>
   </component>
 </template>
 
 <script setup lang="ts">
 import type { SupplierCard } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
-type PillProps = Pick<SupplierCard.Card, 'to' | 'title' | 'subtitle'> & {
+type PillProps = Pick<SupplierCard.Card, 'to' | 'title' | 'subtitle' | 'avatarUrl'> & {
   link?: boolean
   action?: boolean
 }

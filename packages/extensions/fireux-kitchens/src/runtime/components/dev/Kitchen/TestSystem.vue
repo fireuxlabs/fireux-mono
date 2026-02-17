@@ -45,6 +45,7 @@
           <UBadge variant="soft">Dishes: {{ syncCounts.dishes }}</UBadge>
           <UBadge variant="soft">Menus: {{ syncCounts.menus }}</UBadge>
           <UBadge variant="soft">Suppliers: {{ syncCounts.suppliers }}</UBadge>
+          <UBadge variant="soft">Supplier Ingredients: {{ syncCounts.supplierIngredients }}</UBadge>
           <UBadge variant="soft">Purchases: {{ syncCounts.purchases }}</UBadge>
           <UBadge variant="soft">Orders: {{ syncCounts.orders }}</UBadge>
         </div>
@@ -178,6 +179,7 @@ type KitchenCollectionName =
   | 'dishes'
   | 'menus'
   | 'suppliers'
+  | 'supplierIngredients'
   | 'purchases'
   | 'orders'
 
@@ -188,14 +190,15 @@ const syncError = ref('')
 const syncSummary = ref<{ kitchenId: string; written: number; pruned: number } | null>(null)
 
 const syncCounts = computed(() => ({
-  ingredients: readOnlyKitchenScenario.kitchenIngredients?.length ?? 0,
-  mise: readOnlyKitchenScenario.menuStack.miseTasks.length,
-  recipes: readOnlyKitchenScenario.menuStack.recipes.length,
-  dishes: readOnlyKitchenScenario.menuStack.dishes.length,
-  menus: readOnlyKitchenScenario.menuStack.menus.length,
-  suppliers: readOnlyKitchenScenario.procurementStack?.suppliers?.length ?? 0,
-  purchases: readOnlyKitchenScenario.procurementStack?.purchases?.length ?? 0,
-  orders: readOnlyKitchenScenario.serviceStack?.incomingOrders?.length ?? 0,
+  ingredients: readOnlyKitchenScenario.kitchenIngredients.length,
+  mise: readOnlyKitchenScenario.stacks.menu.miseTasks.length,
+  recipes: readOnlyKitchenScenario.stacks.menu.recipes.length,
+  dishes: readOnlyKitchenScenario.stacks.menu.dishes.length,
+  menus: readOnlyKitchenScenario.stacks.menu.menus.length,
+  suppliers: readOnlyKitchenScenario.stacks.procurement.suppliers.length,
+  supplierIngredients: readOnlyKitchenScenario.stacks.procurement.supplierIngredients.length,
+  purchases: readOnlyKitchenScenario.stacks.procurement.purchases.length,
+  orders: readOnlyKitchenScenario.stacks.service.incomingOrders.length,
 }))
 
 const resolveCollectionPath = (kitchenId: string, name: KitchenCollectionName) =>
@@ -222,7 +225,7 @@ const buildKitchenIngredientsForSync = () => {
     })
   }
 
-  for (const ingredient of readOnlyKitchenScenario.kitchenIngredients ?? []) {
+  for (const ingredient of readOnlyKitchenScenario.kitchenIngredients) {
     push(ingredient as unknown as Record<string, unknown>)
   }
 
@@ -292,13 +295,17 @@ const syncReadOnlyToTestKitchen = async () => {
 
     const collections: Record<KitchenCollectionName, Record<string, unknown>[]> = {
       ingredients: buildKitchenIngredientsForSync(),
-      mise: withKitchenId(readOnlyKitchenScenario.menuStack.miseTasks as Record<string, unknown>[], kitchenId),
-      recipes: withKitchenId(readOnlyKitchenScenario.menuStack.recipes as Record<string, unknown>[], kitchenId),
-      dishes: withKitchenId(readOnlyKitchenScenario.menuStack.dishes as Record<string, unknown>[], kitchenId),
-      menus: withKitchenId(readOnlyKitchenScenario.menuStack.menus as Record<string, unknown>[], kitchenId),
-      suppliers: withKitchenId(asDocs(readOnlyKitchenScenario.procurementStack?.suppliers), kitchenId),
-      purchases: withKitchenId(asDocs(readOnlyKitchenScenario.procurementStack?.purchases), kitchenId),
-      orders: withKitchenId(asDocs(readOnlyKitchenScenario.serviceStack?.incomingOrders), kitchenId),
+      mise: withKitchenId(asDocs(readOnlyKitchenScenario.stacks.menu.miseTasks), kitchenId),
+      recipes: withKitchenId(asDocs(readOnlyKitchenScenario.stacks.menu.recipes), kitchenId),
+      dishes: withKitchenId(asDocs(readOnlyKitchenScenario.stacks.menu.dishes), kitchenId),
+      menus: withKitchenId(asDocs(readOnlyKitchenScenario.stacks.menu.menus), kitchenId),
+      suppliers: withKitchenId(asDocs(readOnlyKitchenScenario.stacks.procurement.suppliers), kitchenId),
+      supplierIngredients: withKitchenId(
+        asDocs(readOnlyKitchenScenario.stacks.procurement.supplierIngredients),
+        kitchenId
+      ),
+      purchases: withKitchenId(asDocs(readOnlyKitchenScenario.stacks.procurement.purchases), kitchenId),
+      orders: withKitchenId(asDocs(readOnlyKitchenScenario.stacks.service.incomingOrders), kitchenId),
     }
 
     let totalWritten = 0
@@ -311,6 +318,7 @@ const syncReadOnlyToTestKitchen = async () => {
       'dishes',
       'menus',
       'suppliers',
+      'supplierIngredients',
       'purchases',
       'orders',
     ] as KitchenCollectionName[]) {
