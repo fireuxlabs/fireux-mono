@@ -106,7 +106,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore'
 import { computed, ref } from 'vue'
 import { useFirestore } from 'vuefire'
-import { getDefaultReadOnlyKitchenScenario } from '../../../dev/read-only-scenarios'
+import { getDefaultReadOnlyKitchenScenario } from '../../../composables/fireux/app/runtime-kitchen/read-only-scenarios'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { KitchenIngredient as KitchenIngredientModel } from '../../../models/ingredient.model'
 import type { Kitchen, KitchenCollection } from '../../../models/kitchen.model'
@@ -191,14 +191,14 @@ const syncSummary = ref<{ kitchenId: string; written: number; pruned: number } |
 
 const syncCounts = computed(() => ({
   ingredients: readOnlyKitchenScenario.kitchenIngredients.length,
-  mise: readOnlyKitchenScenario.stacks.menu.miseTasks.length,
-  recipes: readOnlyKitchenScenario.stacks.menu.recipes.length,
-  dishes: readOnlyKitchenScenario.stacks.menu.dishes.length,
-  menus: readOnlyKitchenScenario.stacks.menu.menus.length,
-  suppliers: readOnlyKitchenScenario.stacks.procurement.suppliers.length,
-  supplierIngredients: readOnlyKitchenScenario.stacks.procurement.supplierIngredients.length,
-  purchases: readOnlyKitchenScenario.stacks.procurement.purchases.length,
-  orders: readOnlyKitchenScenario.stacks.service.incomingOrders.length,
+  mise: readOnlyKitchenScenario.menuStack.miseTasks.length,
+  recipes: readOnlyKitchenScenario.menuStack.recipes.length,
+  dishes: readOnlyKitchenScenario.menuStack.dishes.length,
+  menus: readOnlyKitchenScenario.menuStack.menus.length,
+  suppliers: readOnlyKitchenScenario.procurementStack.suppliers.length,
+  supplierIngredients: readOnlyKitchenScenario.procurementStack.supplierIngredients.length,
+  purchases: readOnlyKitchenScenario.procurementStack.purchases.length,
+  orders: readOnlyKitchenScenario.serviceStack.incomingOrders.length,
 }))
 
 const resolveCollectionPath = (kitchenId: string, name: KitchenCollectionName) =>
@@ -295,17 +295,17 @@ const syncReadOnlyToTestKitchen = async () => {
 
     const collections: Record<KitchenCollectionName, Record<string, unknown>[]> = {
       ingredients: buildKitchenIngredientsForSync(),
-      mise: withKitchenId(asDocs(readOnlyKitchenScenario.stacks.menu.miseTasks), kitchenId),
-      recipes: withKitchenId(asDocs(readOnlyKitchenScenario.stacks.menu.recipes), kitchenId),
-      dishes: withKitchenId(asDocs(readOnlyKitchenScenario.stacks.menu.dishes), kitchenId),
-      menus: withKitchenId(asDocs(readOnlyKitchenScenario.stacks.menu.menus), kitchenId),
-      suppliers: withKitchenId(asDocs(readOnlyKitchenScenario.stacks.procurement.suppliers), kitchenId),
+      mise: withKitchenId(asDocs(readOnlyKitchenScenario.menuStack.miseTasks), kitchenId),
+      recipes: withKitchenId(asDocs(readOnlyKitchenScenario.menuStack.recipes), kitchenId),
+      dishes: withKitchenId(asDocs(readOnlyKitchenScenario.menuStack.dishes), kitchenId),
+      menus: withKitchenId(asDocs(readOnlyKitchenScenario.menuStack.menus), kitchenId),
+      suppliers: withKitchenId(asDocs(readOnlyKitchenScenario.procurementStack.suppliers), kitchenId),
       supplierIngredients: withKitchenId(
-        asDocs(readOnlyKitchenScenario.stacks.procurement.supplierIngredients),
+        asDocs(readOnlyKitchenScenario.procurementStack.supplierIngredients),
         kitchenId
       ),
-      purchases: withKitchenId(asDocs(readOnlyKitchenScenario.stacks.procurement.purchases), kitchenId),
-      orders: withKitchenId(asDocs(readOnlyKitchenScenario.stacks.service.incomingOrders), kitchenId),
+      purchases: withKitchenId(asDocs(readOnlyKitchenScenario.procurementStack.purchases), kitchenId),
+      orders: withKitchenId(asDocs(readOnlyKitchenScenario.serviceStack.incomingOrders), kitchenId),
     }
 
     let totalWritten = 0

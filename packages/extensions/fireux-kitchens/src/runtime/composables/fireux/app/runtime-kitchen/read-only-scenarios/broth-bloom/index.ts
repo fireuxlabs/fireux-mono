@@ -169,10 +169,7 @@ export const brothBloomScenario = (): DummyScenario => {
     },
   ]
   const suppliers = buildReadOnlySuppliers(kitchenId)
-  const supplierIngredients = buildReadOnlySupplierIngredients(
-    kitchenId,
-    (base.menuStack.ingredientIds ?? {}) as Record<string, string>
-  )
+  const supplierIngredients = buildReadOnlySupplierIngredients(kitchenId)
   const trainingModules = buildReadOnlyTrainingModules(kitchenId)
   const haccpChecks: Array<Record<string, unknown>> = [
     {

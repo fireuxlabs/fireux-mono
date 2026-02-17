@@ -12,6 +12,10 @@ import type { Menu as MenuDoc } from 'fireux-kitchens/runtime/models/menu.model'
 import { Menu as MenuModel } from 'fireux-kitchens/runtime/models/menu.model'
 import type { KitchenMiseTask as KitchenMiseTaskDoc } from 'fireux-kitchens/runtime/models/kitchen-mise.model'
 import { KitchenMiseTask as KitchenMiseTaskModel } from 'fireux-kitchens/runtime/models/kitchen-mise.model'
+import {
+  readOnlySupplierIngredients,
+  readOnlySuppliers,
+} from './packs/suppliers.pack'
 
 export const buildIngredient = (overrides: Partial<Ingredient>): Ingredient =>
   ({
@@ -112,137 +116,22 @@ type ReadOnlySupplierIngredientsOverride = {
 export const buildReadOnlySuppliers = (kitchenId: string): Array<Record<string, unknown>> => {
   const resolvedKitchenId = String(kitchenId || '').trim()
 
-  return [
-    {
-      id: 'supplier-butcher-01',
-      kitchen_id: resolvedKitchenId,
-      name: 'Old Town Butchers',
-      kind: 'butcher',
-      contact: { email: 'orders@oldtownbutchers.demo', phone: '+41 79 100 0001' },
-      lead_time_days: 1,
-      notes: 'Core protein supplier.',
-      active: true,
-    },
-    {
-      id: 'supplier-produce-01',
-      kitchen_id: resolvedKitchenId,
-      name: 'Market Greens Co.',
-      kind: 'produce',
-      contact: { email: 'sales@marketgreens.demo', phone: '+41 79 100 0002' },
-      lead_time_days: 2,
-      notes: 'Produce, herbs, and daily veg.',
-      active: true,
-    },
-    {
-      id: 'supplier-bakery-01',
-      kitchen_id: resolvedKitchenId,
-      name: 'Sunrise Bakery',
-      kind: 'bakery',
-      contact: { email: 'hello@sunrisebakery.demo', phone: '+41 79 100 0003' },
-      lead_time_days: 1,
-      notes: 'Bread and bakery deliveries.',
-      active: true,
-    },
-    {
-      id: 'supplier-specialty-01',
-      kitchen_id: resolvedKitchenId,
-      name: 'Pantry Select',
-      kind: 'specialty',
-      contact: { email: 'orders@pantryselect.demo', phone: '+41 79 100 0004' },
-      lead_time_days: 2,
-      notes: 'Specialty pantry and imported dry goods.',
-      active: true,
-    },
-  ]
+  return readOnlySuppliers.map((supplier) => ({
+    ...supplier,
+    kitchen_id: resolvedKitchenId,
+  }))
 }
 
 export const buildReadOnlySupplierIngredients = (
   kitchenId: string,
-  ingredientIds?: Record<string, string>,
   overrides?: ReadOnlySupplierIngredientsOverride
 ): Array<Record<string, unknown>> => {
   const resolvedKitchenId = String(kitchenId || '').trim()
-  if (!ingredientIds) return []
-
-  const templates = [
-    {
-      key: 'beefPatty',
-      supplier_id: 'supplier-butcher-01',
-      pack_size_label: '5 kg case',
-      pack_cost_minor: 42000,
-      cost_per_unit_minor: 8400,
-      unit: 'kg',
-    },
-    {
-      key: 'bacon',
-      supplier_id: 'supplier-butcher-01',
-      pack_size_label: '2 kg slab',
-      pack_cost_minor: 26000,
-      cost_per_unit_minor: 13000,
-      unit: 'kg',
-    },
-    {
-      key: 'chickenBreast',
-      supplier_id: 'supplier-butcher-01',
-      pack_size_label: '4 kg box',
-      pack_cost_minor: 36000,
-      cost_per_unit_minor: 9000,
-      unit: 'kg',
-    },
-    {
-      key: 'burgerBuns',
-      supplier_id: 'supplier-bakery-01',
-      pack_size_label: '48 buns',
-      pack_cost_minor: 7200,
-      cost_per_unit_minor: 150,
-      unit: 'pc',
-    },
-    {
-      key: 'lettuce',
-      supplier_id: 'supplier-produce-01',
-      pack_size_label: '12 heads',
-      pack_cost_minor: 3600,
-      cost_per_unit_minor: 300,
-      unit: 'head',
-    },
-    {
-      key: 'tomato',
-      supplier_id: 'supplier-produce-01',
-      pack_size_label: '6 kg crate',
-      pack_cost_minor: 7800,
-      cost_per_unit_minor: 1300,
-      unit: 'kg',
-    },
-    {
-      key: 'whiteOnion',
-      supplier_id: 'supplier-produce-01',
-      pack_size_label: '5 kg bag',
-      pack_cost_minor: 2800,
-      cost_per_unit_minor: 560,
-      unit: 'kg',
-    },
-    {
-      key: 'potato',
-      supplier_id: 'supplier-produce-01',
-      pack_size_label: '10 kg sack',
-      pack_cost_minor: 5200,
-      cost_per_unit_minor: 520,
-      unit: 'kg',
-    },
-    {
-      key: 'fryerOil',
-      supplier_id: 'supplier-produce-01',
-      pack_size_label: '20 L can',
-      pack_cost_minor: 16800,
-      cost_per_unit_minor: 840,
-      unit: 'l',
-    },
-  ]
 
   let result: Array<Record<string, unknown>> = []
 
-  for (const template of templates) {
-    const ingredient_id = String(ingredientIds?.[template.key] || '').trim()
+  for (const template of readOnlySupplierIngredients) {
+    const ingredient_id = String(template.ingredient_id || '').trim()
     if (!ingredient_id) continue
     result.push({
       id: `si-${resolvedKitchenId}-${ingredient_id}`,
@@ -251,9 +140,16 @@ export const buildReadOnlySupplierIngredients = (
       ingredient_id,
       pack_size_label: template.pack_size_label,
       pack_cost_minor: template.pack_cost_minor,
-      currency_code: 'CHF',
+      currency_code: template.currency_code,
       cost_per_unit_minor: template.cost_per_unit_minor,
       unit: template.unit,
+      ...(template.lead_time_days !== undefined
+        ? { lead_time_days: template.lead_time_days }
+        : {}),
+      ...(template.delivery_days?.length
+        ? { delivery_days: [...template.delivery_days] }
+        : {}),
+      ...(template.note ? { note: template.note } : {}),
     })
   }
 

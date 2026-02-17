@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import { getReadOnlyKitchenScenario } from '../../../../dev/read-only-scenarios'
+import { getReadOnlyKitchenScenario } from './read-only-scenarios'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 
 export function useRuntimeKitchenDocument(params: {

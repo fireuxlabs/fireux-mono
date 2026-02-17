@@ -87,7 +87,7 @@ import { useRuntimeKitchenSelection, type RuntimeKitchenMode } from '../../../co
 import { useChef } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { getReadOnlyKitchenScenarioList } from '../../../dev/read-only-scenarios'
+import { getReadOnlyKitchenScenarioList } from '../../../composables/fireux/app/runtime-kitchen/read-only-scenarios'
 import type { Kitchen } from '../../../models/kitchen.model'
 import KitchenCardsPill from './Cards/Pill.vue'
 

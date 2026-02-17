@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import { getReadOnlyKitchenScenario } from '../../../../dev/read-only-scenarios'
+import { getReadOnlyKitchenScenario } from './read-only-scenarios'
 import { useKitchenIngredientFetch } from '../../firestore/ingredient/fetch/useKitchenIngredientFetch'
 import { useKitchenMenuStackFetch } from '../../firestore/kitchen/fetch/useKitchenMenuStackFetch'
 import { useKitchenSupplierFetch } from '../../firestore/kitchen/fetch/useKitchenSupplierFetch'
@@ -55,18 +55,18 @@ export function useRuntimeKitchenData(params: {
       const scenario = getReadOnlyKitchenScenario(params.id.value)
       return {
         kitchenIngredients: scenario.kitchenIngredients,
-        stations: scenario.stacks.menu.stations,
-        menus: scenario.stacks.menu.menus,
-        dishes: scenario.stacks.menu.dishes,
-        recipes: scenario.stacks.menu.recipes,
-        miseTasks: scenario.stacks.menu.miseTasks,
+        stations: scenario.menuStack.stations,
+        menus: scenario.menuStack.menus,
+        dishes: scenario.menuStack.dishes,
+        recipes: scenario.menuStack.recipes,
+        miseTasks: scenario.menuStack.miseTasks,
         teamMembers: scenario.teamMembers,
-        suppliers: scenario.stacks.procurement.suppliers,
-        supplierIngredients: scenario.stacks.procurement.supplierIngredients,
-        purchases: scenario.stacks.procurement.purchases,
-        incomingOrders: scenario.stacks.service.incomingOrders,
-        trainingModules: scenario.stacks.training.modules,
-        haccpChecks: scenario.stacks.haccp.checks,
+        suppliers: scenario.procurementStack.suppliers,
+        supplierIngredients: scenario.procurementStack.supplierIngredients,
+        purchases: scenario.procurementStack.purchases,
+        incomingOrders: scenario.serviceStack.incomingOrders,
+        trainingModules: scenario.trainingStack.modules,
+        haccpChecks: scenario.haccpStack.checks,
       }
     }
 

@@ -456,10 +456,7 @@ export const takumiRamenScenario = (): DummyScenario => {
     },
   ]
   const kitchenSuppliers = buildReadOnlySuppliers(kitchenId)
-  const kitchenSupplierIngredients = buildReadOnlySupplierIngredients(
-    kitchenId,
-    ingredientIds as unknown as Record<string, string>
-  )
+  const kitchenSupplierIngredients = buildReadOnlySupplierIngredients(kitchenId)
   const kitchenPurchases: Array<Record<string, unknown>> = []
   const kitchenIncomingOrders: Array<Record<string, unknown>> = []
   const trainingModules = buildReadOnlyTrainingModules(kitchenId)
