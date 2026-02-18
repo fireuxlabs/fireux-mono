@@ -74,6 +74,15 @@
 	align-items: center;
 	gap: 0.5rem;
 	flex-wrap: wrap;
+	flex: 1 1 auto;
+	justify-content: flex-end;
+	min-width: 0;
+}
+
+@media (max-width: 640px) {
+	:where(.collection-manager__controls) {
+		flex-basis: 100%;
+	}
 }
 
 :where(.panels-stack) {
