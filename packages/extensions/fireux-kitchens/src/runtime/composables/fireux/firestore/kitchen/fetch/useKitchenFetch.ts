@@ -43,6 +43,7 @@ export function useKitchenFetch(options: UseKitchenFetchOptions = {}) {
       | 'image_shade'
       | 'claimed_by'
       | 'source'
+      | 'slug'
     >
   > => {
     if (!place) return {}
@@ -57,6 +58,7 @@ export function useKitchenFetch(options: UseKitchenFetchOptions = {}) {
       image_shade: place.image_shade,
       claimed_by: place.claimed_by,
       source: place.source,
+      slug: place.slug,
     }
   }
 

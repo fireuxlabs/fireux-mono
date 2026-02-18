@@ -101,7 +101,19 @@
                 Edit kitchen
               </UButton>
               <UButton
-                v-else
+                v-if="showClaimButton"
+                size="xs"
+                variant="soft"
+                color="primary"
+                icon="i-lucide-key-round"
+                :loading="isClaiming"
+                :disabled="isClaiming"
+                @click="onClaimKitchen"
+              >
+                Claim this kitchen
+              </UButton>
+              <UButton
+                v-if="!canEdit && !showClaimButton"
                 size="xs"
                 variant="soft"
                 color="neutral"
@@ -120,8 +132,10 @@
 <script setup lang="ts">
 import { navigateTo, useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { computed } from 'vue'
+import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceClaim'
+import { computed, ref } from 'vue'
 import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenInterface } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { Kitchen } from '../../models/kitchen.model'
@@ -137,13 +151,29 @@ definePageMeta({
 const { appName } = useFireUXConfig()
 const route = useRoute()
 
-const raw = route.params.id
-const kitchenId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
+const kitchenRouteKey = computed(() => {
+  const raw = route.params.id
+  return Array.isArray(raw)
+    ? String(raw[0] ?? '').trim()
+    : String(raw ?? '').trim()
+})
 
-const { kitchen: fetchKitchen } = useKitchenFetch()
-const rawDoc = kitchenId ? fetchKitchen(kitchenId) : null
-const kitchen = computed<Kitchen | null>(() => rawDoc?.value ?? null)
-const loading = computed(() => Boolean(kitchenId) && rawDoc?.value === undefined)
+const { kitchens } = useKitchenFetch()
+const kitchen = computed<Kitchen | null>(() => {
+  const key = kitchenRouteKey.value
+  if (!key) return null
+  const keyLower = key.toLowerCase()
+  const list = kitchens.value ?? []
+  const found = list.find((entry) => {
+    const id = String(entry?.id ?? '').trim()
+    const slug = String((entry as any)?.slug ?? '').trim().toLowerCase()
+    return id === key || (slug.length > 0 && slug === keyLower)
+  })
+  return found ?? null
+})
+
+const kitchenId = computed(() => String(kitchen.value?.id ?? '').trim())
+const loading = computed(() => Boolean(kitchenRouteKey.value) && kitchens.value === undefined)
 
 const { profile } = useKitchenInterface()
 const kitchenProfile = computed(() => profile(kitchen.value))
@@ -162,10 +192,31 @@ const permissionMessage = computed(() => {
     return 'You can edit this kitchen.'
   }
   if (!claimedBy.value) {
-    return 'This kitchen is unclaimed. Only admins can edit unclaimed kitchens.'
+    return 'This kitchen is not claimed yet. Claim it to unlock dashboard tools, edit access, and team features.'
   }
   return 'This kitchen is claimed by another user. You can view details but cannot edit.'
 })
+
+const { claimPlace } = usePlaceClaim()
+const toast = useToastify()
+const isClaiming = ref(false)
+const showClaimButton = computed(() => !claimedBy.value)
+
+const onClaimKitchen = async () => {
+  if (isClaiming.value) return
+  const targetId = kitchenId.value
+  if (!targetId) return
+  isClaiming.value = true
+  try {
+    await claimPlace(targetId)
+    toast.success('Kitchen claimed')
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Please try again.'
+    toast.error(`Failed to claim kitchen: ${message}`)
+  } finally {
+    isClaiming.value = false
+  }
+}
 
 const pageTitle = computed(() => kitchen.value?.name || 'Kitchen')
 const pageDescription = computed(() =>
@@ -174,8 +225,8 @@ const pageDescription = computed(() =>
 const isDev = import.meta.dev
 
 const goToEdit = async () => {
-  if (!kitchenId) return
-  await navigateTo(`/kitchens/edit/${encodeURIComponent(kitchenId)}`)
+  if (!kitchenId.value) return
+  await navigateTo(`/kitchens/edit/${encodeURIComponent(kitchenId.value)}`)
 }
 
 useHead({

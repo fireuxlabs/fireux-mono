@@ -116,6 +116,7 @@ export function useKitchenInterface() {
 
   function map(kitchen: Kitchen): KitchenCard.Card {
     const id = safeString(kitchen.id).trim()
+    const slug = safeString((kitchen as any)?.slug).trim()
     const isTestKitchen = Boolean((kitchen as any)?.is_test_kitchen)
     let name = safeString(kitchen.name)
     const shortName = safeString((kitchen as any)?.short_name)
@@ -129,7 +130,11 @@ export function useKitchenInterface() {
 
     return {
       id,
-      to: id ? `/kitchens/${encodeURIComponent(id)}` : '',
+      to: slug
+        ? `/kitchens/${encodeURIComponent(slug)}`
+        : id
+          ? `/kitchens/${encodeURIComponent(id)}`
+          : '',
 
       title: displayTitle || name,
       subtitle: shortAddress || formattedAddress,

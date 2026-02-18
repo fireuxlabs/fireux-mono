@@ -110,6 +110,9 @@ export const Place = {
 	claimed_by: '' as string,
 	verified: false as boolean,
 
+	/** URL-friendly slug derived from name + location. */
+	slug: '' as string,
+
 	source: 'fireux' as PlaceSource,
 
 	/** “How we found this place” (kept for UX + duplicate avoidance). */
@@ -140,6 +143,7 @@ export type BasePlace = Pick<
 	| 'image_shade'
 	| 'claimed_by'
 	| 'source'
+	| 'slug'
 >
 
 /** Google Place (transient/provider). */

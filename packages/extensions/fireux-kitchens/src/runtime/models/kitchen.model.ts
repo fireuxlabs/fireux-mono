@@ -50,6 +50,7 @@ export type Kitchen = KitchenCollection &
       | 'image_shade'
       | 'claimed_by'
       | 'source'
+      | 'slug'
     >
   >
 

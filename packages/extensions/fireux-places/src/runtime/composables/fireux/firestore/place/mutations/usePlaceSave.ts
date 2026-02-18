@@ -1,4 +1,4 @@
-import { doc, getDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, limit as fslimit, query as fsq, where } from 'firebase/firestore'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useFirestore } from 'vuefire'
@@ -6,6 +6,7 @@ import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { canonicalPlaceId, fetchPlaceDetails } from '../fetch/google/usePlacesGoogle'
 import { toShortAddress } from '../utils/view/formatPlaceAddress'
 import { sanitizeLogoAvatar } from '../utils/view/usePlaceLogos'
+import { toPlaceSlug, toPlaceSlugWithSuffix } from '../utils/view/toPlaceSlug'
 
 export interface UsePlaceSaveOptions {
   type?: string | null | undefined
@@ -150,6 +151,21 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
         ? shadeRaw
         : 'none'
 
+    // ── Collision-safe slug ─────────────────────────────────
+    const baseSlug = toPlaceSlug(name, shortAddress)
+    let slug = baseSlug
+    if (slug) {
+      const slugQ = fsq(
+        collection(db, 'places'),
+        where('slug', '==', slug),
+        fslimit(1)
+      )
+      const slugSnap = await getDocs(slugQ)
+      if (!slugSnap.empty) {
+        slug = toPlaceSlugWithSuffix(baseSlug, id)
+      }
+    }
+
     const payload = {
       id,
       source: 'fireux',
@@ -157,6 +173,7 @@ export function usePlaceSave(options: UsePlaceSaveOptions = {}) {
       short_name: shortName,
       formatted_address: formatted,
       short_address: shortAddress,
+      slug,
       image_url,
       image_shade,
       lat,
