@@ -1,8 +1,8 @@
 import { safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Dish } from '../../../../../../models/dish.model'
 
-const joinSubtitle = (station: string, course: string): string =>
-  [safeString(station).trim(), safeString(course).trim()].filter(Boolean).join(' · ')
+const joinSubtitle = (active: boolean): string =>
+  active ? 'Active' : 'Inactive'
 
 const DUMMY_PILL_LABELS: Record<string, string> = {
   'beef-patty-piece': 'Beef Patty',
@@ -30,10 +30,7 @@ export namespace DishCard {
     badges: string[]
     name: string
     description: string
-    station: string
-    course: string
-    status: string
-    tags: string[]
+    active: boolean
     recipeIds: string[]
     ingredientIds: string[]
     miseIds: string[]
@@ -45,10 +42,7 @@ export type DishProfile = {
   title: string
   subtitle: string
   prop?: string
-  station: string
-  course: string
-  status: string
-  tags: string[]
+  active: boolean
 }
 
 export function useDishInterface() {
@@ -56,7 +50,7 @@ export function useDishInterface() {
 
   type DishCell = Pick<
     DishCard.Card,
-    'id' | 'to' | 'imageUrl' | 'name' | 'subtitle' | 'status' | 'station' | 'course'
+    'id' | 'to' | 'imageUrl' | 'name' | 'subtitle' | 'active'
   > & {
     prop?: string
   }
@@ -75,26 +69,20 @@ export function useDishInterface() {
       recipeIds[0] ||
       ''
     const name = safeString(dish.name).trim()
-    const station = safeString(dish.station).trim()
-    const course = safeString(dish.course).trim()
-    const status = safeString(dish.status).trim()
-    const tags = safeStringArray(dish.tags)
+    const active = Boolean(dish.active)
     const ingredientIds = safeStringArray(dish.ingredient_ids)
     const miseIds = safeStringArray(dish.mise_ids)
 
     return {
       id,
-      to: '',
+      to: id ? `/dashboard/kitchen/dishes?dish=${encodeURIComponent(id)}` : '/dashboard/kitchen/dishes',
       imageUrl: safeString(dish.image_url).trim(),
       title: name,
-      subtitle: joinSubtitle(station, course),
-      badges: tags.slice(0, 4),
+      subtitle: joinSubtitle(active),
+      badges: [active ? 'active' : 'inactive'],
       name,
       description: safeString(dish.description).trim(),
-      station,
-      course,
-      status,
-      tags,
+      active,
       recipeIds,
       ingredientIds,
       miseIds,
@@ -125,9 +113,7 @@ export function useDishInterface() {
       imageUrl: base.imageUrl,
       name: base.name,
       subtitle: base.subtitle,
-      status: base.status,
-      station: base.station,
-      course: base.course,
+      active: base.active,
       prop: base.description,
     }
   }
@@ -140,13 +126,13 @@ export function useDishInterface() {
       imageUrl: base.imageUrl,
       ingredientPills: base.ingredientIds.map((id) => ({
         id,
-        to: '',
+        to: id ? `/dashboard/kitchen/ingredients?ingredient=${encodeURIComponent(id)}` : '/dashboard/kitchen/ingredients',
         title: toPillTitle(id),
         imageUrl: '',
       })),
       misePills: base.miseIds.map((id) => ({
         id,
-        to: '',
+        to: id ? `/dashboard/kitchen/mise?mise=${encodeURIComponent(id)}` : '/dashboard/kitchen/mise',
         title: toPillTitle(id),
         imageUrl: '',
       })),
@@ -162,10 +148,7 @@ export function useDishInterface() {
       title: base.title,
       subtitle: base.subtitle,
       prop: base.description,
-      station: base.station,
-      course: base.course,
-      status: base.status,
-      tags: base.tags,
+      active: base.active,
     }
   }
 
@@ -173,10 +156,7 @@ export function useDishInterface() {
     const mapped = map(dish)
     return [
       mapped.name,
-      mapped.station,
-      mapped.course,
-      mapped.status,
-      mapped.tags.join(' '),
+      mapped.active ? 'active' : 'inactive',
       mapped.recipeIds.join(' '),
       mapped.ingredientIds.join(' '),
       mapped.miseIds.join(' '),

@@ -1,3 +1,5 @@
+import type { Dish as DishDoc } from 'fireux-kitchens/runtime/models/dish.model'
+import { Dish as DishModel } from 'fireux-kitchens/runtime/models/dish.model'
 import type {
   Ingredient,
   KitchenIngredient as KitchenIngredientDoc,
@@ -6,12 +8,10 @@ import {
   Ingredient as IngredientModel,
   KitchenIngredient as KitchenIngredientModel,
 } from 'fireux-kitchens/runtime/models/ingredient.model'
-import type { Dish as DishDoc } from 'fireux-kitchens/runtime/models/dish.model'
-import { Dish as DishModel } from 'fireux-kitchens/runtime/models/dish.model'
-import type { Menu as MenuDoc } from 'fireux-kitchens/runtime/models/menu.model'
-import { Menu as MenuModel } from 'fireux-kitchens/runtime/models/menu.model'
 import type { KitchenMiseTask as KitchenMiseTaskDoc } from 'fireux-kitchens/runtime/models/kitchen-mise.model'
 import { KitchenMiseTask as KitchenMiseTaskModel } from 'fireux-kitchens/runtime/models/kitchen-mise.model'
+import type { Menu as MenuDoc } from 'fireux-kitchens/runtime/models/menu.model'
+import { Menu as MenuModel } from 'fireux-kitchens/runtime/models/menu.model'
 import {
   readOnlySupplierIngredients,
   readOnlySuppliers,
@@ -43,25 +43,96 @@ export const buildKitchenIngredient = (params: {
   } as KitchenIngredientDoc
 }
 
+export const normalizeKitchenIngredient = (params: {
+  kitchenId: string
+  ingredient: Partial<KitchenIngredientDoc & Ingredient>
+}): KitchenIngredientDoc => {
+  const kitchenId = String(params.kitchenId || '').trim()
+  const source = params.ingredient ?? {}
+  const ingredientId = String(source.ingredient_id || source.id || '').trim()
+  const kitchenIngredientDocId = ingredientId
+    ? `k_${kitchenId}__${ingredientId}`
+    : String(source.id || '').trim()
+
+  return {
+    ...KitchenIngredientModel,
+    ...source,
+    id: kitchenIngredientDocId,
+    kitchen_id: kitchenId,
+    ingredient_id: ingredientId,
+    name: String(source.name || '').trim(),
+    image_url: String(source.image_url || '').trim(),
+  } as KitchenIngredientDoc
+}
+
 export const buildDish = (params: {
   kitchenId: string
-  overrides: Partial<DishDoc>
-}): DishDoc =>
-  ({
+  overrides: Partial<DishDoc> & {
+    status?: string
+    course?: string
+    station?: string
+    tags?: string[]
+  }
+}): DishDoc => {
+  const {
+    status: _legacyStatus,
+    course: _legacyCourse,
+    station: _legacyStation,
+    tags: _legacyTags,
+    ...dishOverrides
+  } = params.overrides
+
+  return {
     ...DishModel,
     kitchen_id: params.kitchenId,
-    ...params.overrides,
-  } as DishDoc)
+    ...dishOverrides,
+  } as DishDoc
+}
 
 export const buildMenu = (params: {
   kitchenId: string
-  overrides: Partial<MenuDoc>
+  overrides: Partial<MenuDoc> & {
+    dish_ids?: string[]
+    stations?: string[]
+  }
 }): MenuDoc =>
-  ({
-    ...MenuModel,
-    kitchen_id: params.kitchenId,
-    ...params.overrides,
-  } as MenuDoc)
+  {
+    const { dish_ids, stations: _legacyStations, ...menuOverrides } = params.overrides
+    const sections = Array.isArray(menuOverrides.sections) ? menuOverrides.sections : []
+    const hasSections = sections.length > 0
+    const legacyDishIds = Array.isArray(dish_ids)
+      ? dish_ids.map((id) => String(id || '').trim()).filter(Boolean)
+      : []
+
+    return {
+      ...MenuModel,
+      kitchen_id: params.kitchenId,
+      ...menuOverrides,
+      sections: hasSections
+        ? sections
+        : legacyDishIds.length
+          ? [
+              {
+                id: 'section-main',
+                label: 'Menu',
+                description: '',
+                sort_order: 1,
+                items: legacyDishIds.map((dishId, index) => ({
+                  id: `item-${dishId}`,
+                  dish_id: dishId,
+                  label: '',
+                  description: '',
+                  price_minor: 0,
+                  currency_code: '',
+                  photo_url: '',
+                  active: true,
+                  sort_order: index + 1,
+                })),
+              },
+            ]
+          : [],
+    } as MenuDoc
+  }
 
 export const buildMise = (params: {
   kitchenId: string

@@ -1,8 +1,12 @@
-import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import {
+  safeString,
+  sanitizeShortAddress,
+  stripLocationFromTitle,
+} from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type {
-    PlaceImageShade,
-    PlaceSocialLinks,
-    PlaceSource,
+  PlaceImageShade,
+  PlaceSocialLinks,
+  PlaceSource,
 } from 'fireux-places/runtime/models/place.model'
 import type { Kitchen } from '../../../../../../models/kitchen.model'
 
@@ -77,41 +81,6 @@ export function useKitchenInterface() {
     formattedAddress: string
     source?: PlaceSource
     prop?: string
-  }
-
-  const sanitizeShortAddress = (value: string) =>
-    safeString(value).replace(/^[^\p{L}\p{N}]+/gu, '').trim()
-
-  const escapeRegExp = (value: string) =>
-    value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-
-  const stripLocationFromTitle = (title: string, shortAddress: string) => {
-    const cleanedTitle = safeString(title)
-    const cleanedShort = sanitizeShortAddress(shortAddress)
-    if (!cleanedTitle || !cleanedShort) return cleanedTitle
-
-    const parts = cleanedShort
-      .split(',')
-      .map((part) => part.trim())
-      .filter(Boolean)
-
-    if (!parts.length) return cleanedTitle
-
-    let next = cleanedTitle
-    for (const part of parts) {
-      if (part.length < 3) continue
-      const pattern = new RegExp(`\\b${escapeRegExp(part)}\\b`, 'gi')
-      next = next.replace(pattern, '').trim()
-    }
-
-    next = next
-      .replace(/\s{2,}/g, ' ')
-      .replace(/\s*[-–—|/]\s*(?=[-–—|/]|$)/g, ' ')
-      .replace(/^[-–—|/\s]+/, '')
-      .replace(/[-–—|/\s]+$/, '')
-      .trim()
-
-    return next || cleanedTitle
   }
 
   function map(kitchen: Kitchen): KitchenCard.Card {
@@ -214,7 +183,6 @@ export function useKitchenInterface() {
       website: (target as any)?.website,
       address,
       phone: (target as any)?.phone,
-      email: (target as any)?.email,
       socialLinks: (target as any)?.social_links as Partial<PlaceSocialLinks> | undefined,
       coverImage: (target as any)?.cover_image,
       galleryImages: ((target as any)?.gallery_images as string[] | undefined)?.slice(0, 3),

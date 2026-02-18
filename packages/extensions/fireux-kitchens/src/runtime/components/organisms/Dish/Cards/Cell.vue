@@ -28,20 +28,17 @@
           </div>
 
           <UBadge
-            v-if="showStatus && status"
             variant="soft"
-            color="neutral"
+            :color="active ? 'success' : 'neutral'"
             size="xs"
             class="shrink-0"
           >
-            {{ status }}
+            {{ active ? 'active' : 'inactive' }}
           </UBadge>
         </div>
 
         <div class="truncate text-xs text-dimmed">
-          <span>Station: {{ station || '—' }}</span>
-          <span class="mx-1">·</span>
-          <span>Course: {{ course || '—' }}</span>
+          <span>Dish</span>
         </div>
 
         <div v-if="showTagline" class="truncate text-xs text-dimmed">
@@ -58,11 +55,10 @@ import type { DishCard } from '../../../../composables/fireux/firestore/dish/uti
 
 type Props = Pick<
   DishCard.Card,
-  'to' | 'name' | 'subtitle' | 'status' | 'station' | 'course' | 'imageUrl'
+  'to' | 'name' | 'subtitle' | 'active' | 'imageUrl'
 > & {
   prop?: string
   showSubtitle?: boolean
-  showStatus?: boolean
   showTagline?: boolean
   link?: boolean
 }
@@ -70,7 +66,6 @@ type Props = Pick<
 const props = withDefaults(defineProps<Props>(), {
   prop: '',
   showSubtitle: true,
-  showStatus: true,
   showTagline: true,
   link: false,
 })

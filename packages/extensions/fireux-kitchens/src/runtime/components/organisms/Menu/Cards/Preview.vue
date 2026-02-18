@@ -25,14 +25,6 @@
                 <UChip :color="isActiveNow ? 'success' : 'error'" inset />
                 <span>{{ isActiveNow ? 'active' : 'inactive' }}</span>
               </div>
-              <UBadge
-                v-if="status"
-                variant="soft"
-                color="neutral"
-                size="xs"
-              >
-                {{ status }}
-              </UBadge>
             </div>
           </div>
 
@@ -93,7 +85,6 @@ type Props = {
   imageUrl: string
   name: string
   subtitle: string
-  status: string
   isActiveNow: boolean
   prop?: string
   badges?: string[]

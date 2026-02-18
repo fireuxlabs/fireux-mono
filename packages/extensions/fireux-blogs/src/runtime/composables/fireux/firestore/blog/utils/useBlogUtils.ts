@@ -1,4 +1,4 @@
-import type { Author, BlogPost } from '../../../../../../models/blogPost.model'
+import type { BlogAuthor } from '../../../../../models/blogPost.model'
 
 function generateSlug(title: string): string {
   let out = title.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-')
@@ -21,17 +21,17 @@ function getAuthor(
     avatar?: string
     email?: string
   } | null
-): Author {
+): BlogAuthor {
   return {
     id: user?.id || '',
-    display_name: user?.display_name || user?.email || '',
+    display_name: user?.display_name || '',
     handle: user?.handle || '',
     avatar: user?.avatar || '/img/core/defaults/default-thumbnail.png',
     email: user?.email || '',
   }
 }
 
-function getDefaultImages(): Pick<BlogPost, 'featuredImage' | 'socialImage'> {
+function getDefaultImages(): { featuredImage: string; socialImage: string } {
   return {
     featuredImage: '/img/app/wordmark-dark.png',
     socialImage: '/img/app/logo.png',

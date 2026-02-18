@@ -2,7 +2,6 @@ import type {
   Ingredient,
   KitchenIngredient as KitchenIngredientDoc,
 } from 'fireux-kitchens/runtime/models/ingredient.model'
-import { createReadOnlyKitchen } from '../_shared/kitchen'
 import {
   assertAllKitchenIngredientsResolve,
   buildDish,
@@ -10,11 +9,12 @@ import {
   buildKitchenIngredient,
   buildMenu,
   buildMise,
-  buildReadOnlySupplierIngredients,
   buildReadOnlyStations,
+  buildReadOnlySupplierIngredients,
   buildReadOnlySuppliers,
   buildReadOnlyTrainingModules,
 } from '../_shared/builders'
+import { createReadOnlyKitchen } from '../_shared/kitchen'
 import type { DummyRecipe, DummyScenario } from '../_shared/types'
 
 export const takumiRamenScenario = (): DummyScenario => {
@@ -296,13 +296,7 @@ export const takumiRamenScenario = (): DummyScenario => {
         id: 'menu-ramen-bowls',
         name: 'Ramen Bowls',
         description: 'Signature bowls for all-day service.',
-        status: 'live',
-        service: 'all_day',
-        service_rules: {
-          days: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-          start_time: '11:30',
-          end_time: '22:00',
-        },
+        active: true,
         dish_ids: ['shio-ramen', 'shoyu-ramen', 'miso-corn-butter-ramen', 'veg-mushroom-ramen'],
         sort_order: 1,
         stations: ['prep', 'pass'],
@@ -314,13 +308,7 @@ export const takumiRamenScenario = (): DummyScenario => {
         id: 'menu-ramen-late',
         name: 'Late Bowl Menu',
         description: 'Reduced bowl lineup for late service.',
-        status: 'live',
-        service: 'dinner',
-        service_rules: {
-          days: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'],
-          start_time: '22:00',
-          end_time: '02:00',
-        },
+        active: true,
         dish_ids: ['shio-ramen', 'veg-mushroom-ramen'],
         sort_order: 2,
         stations: ['prep', 'pass'],

@@ -32,19 +32,11 @@
               <UChip :color="isActiveNow ? 'success' : 'error'" inset />
               <span>{{ isActiveNow ? 'active' : 'inactive' }}</span>
             </div>
-            <UBadge
-              v-if="showStatus && status"
-              variant="soft"
-              color="neutral"
-              size="xs"
-            >
-              {{ status }}
-            </UBadge>
           </div>
         </div>
 
         <div class="truncate text-xs text-dimmed">
-          <span>Service: {{ service || '—' }}</span>
+          <span>Menu: {{ active ? 'Active' : 'Inactive' }}</span>
           <span class="mx-1">·</span>
           <span>Dishes: {{ dishCount }}</span>
           <template v-if="windowLabel">
@@ -70,8 +62,7 @@ type Props = Pick<
   | 'to'
   | 'name'
   | 'subtitle'
-  | 'status'
-  | 'service'
+  | 'active'
   | 'dishCount'
   | 'imageUrl'
   | 'isActiveNow'
@@ -79,7 +70,6 @@ type Props = Pick<
 > & {
   prop?: string
   showSubtitle?: boolean
-  showStatus?: boolean
   showTagline?: boolean
   link?: boolean
 }
@@ -87,7 +77,6 @@ type Props = Pick<
 const props = withDefaults(defineProps<Props>(), {
   prop: '',
   showSubtitle: true,
-  showStatus: true,
   showTagline: true,
   link: false,
 })

@@ -195,7 +195,6 @@
           </div>
           <div class="fx-card__stack">
             <div v-if="model.phone"><span class="fx-card__detail-label">Phone:</span> {{ model.phone }}</div>
-            <div v-if="model.email"><span class="fx-card__detail-label">Email:</span> {{ model.email }}</div>
             <div v-if="model.website">
               <span class="fx-card__detail-label">Website:</span>
               <span>{{ model.website }}</span>
@@ -254,13 +253,12 @@ const socialItems = computed(() =>
 const contactItems = computed(() =>
   [
     model.value.phone ? { key: 'phone', label: 'Call', icon: 'i-lucide-phone', href: `tel:${model.value.phone}` } : null,
-    model.value.email ? { key: 'email', label: 'Email', icon: 'i-lucide-mail', href: `mailto:${model.value.email}` } : null,
     model.value.website ? { key: 'website', label: 'Website', icon: 'i-lucide-globe', href: model.value.website } : null,
   ].filter(Boolean) as { key: string; label: string; icon: string; href: string }[]
 )
 
 const hasContactDetails = computed(() =>
-  Boolean(model.value.phone || model.value.email || model.value.website)
+  Boolean(model.value.phone || model.value.website)
 )
 
 const claimedUserId = computed(() => model.value.card.claimedBy || '')

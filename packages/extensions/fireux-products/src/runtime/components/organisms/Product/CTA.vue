@@ -22,7 +22,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useProductPermissions } from '../../../../composables/useProductPermissions'
+import { useProductPermissions } from '../../../composables/useProductPermissions'
 
 const { canManageProducts } = useProductPermissions()
 const showCTA = computed(() => canManageProducts.value)

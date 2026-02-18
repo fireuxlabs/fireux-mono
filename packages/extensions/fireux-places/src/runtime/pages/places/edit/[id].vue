@@ -140,7 +140,6 @@ const placePreviewDetails = computed(() => {
     { label: 'Brand tagline', value: v.brand_tagline ?? '' },
     { label: 'About', value: v.about ?? '' },
     { label: 'Phone', value: v.phone ?? '' },
-    { label: 'Email', value: v.email ?? '' },
     { label: 'Website', value: v.website ?? '' },
     { label: 'Price level', value: v.price_level ?? '' },
     { label: 'Rating', value: v.rating ? String(v.rating) : '' },

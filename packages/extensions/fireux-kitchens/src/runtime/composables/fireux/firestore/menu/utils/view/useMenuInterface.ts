@@ -1,8 +1,8 @@
-import { safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Menu } from '../../../../../../models/menu.model'
 
-const joinSubtitle = (service: string, status: string): string =>
-  [safeString(service).trim(), safeString(status).trim()].filter(Boolean).join(' · ')
+const joinSubtitle = (active: boolean): string =>
+  active ? 'Active' : 'Inactive'
 
 export namespace MenuCard {
   export type Card = {
@@ -14,10 +14,8 @@ export namespace MenuCard {
     badges: string[]
     name: string
     description: string
-    status: string
-    service: string
+    active: boolean
     dishCount: number
-    stations: string[]
     isActiveNow: boolean
     windowLabel: string
     sortOrder: number
@@ -29,10 +27,8 @@ export type MenuProfile = {
   title: string
   subtitle: string
   prop?: string
-  status: string
-  service: string
+  active: boolean
   dishCount: number
-  stations: string[]
 }
 
 export function useMenuInterface() {
@@ -45,8 +41,7 @@ export function useMenuInterface() {
     | 'imageUrl'
     | 'name'
     | 'subtitle'
-    | 'status'
-    | 'service'
+    | 'active'
     | 'dishCount'
     | 'isActiveNow'
     | 'windowLabel'
@@ -58,101 +53,40 @@ export function useMenuInterface() {
     imageUrl: string
     name: string
     subtitle: string
-    status: string
     isActiveNow: boolean
     prop?: string
     badges: string[]
     details: Array<{ label: string; value: string | number }>
   }
 
-  const menuDayByDateDay: Array<'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat'> = [
-    'sun',
-    'mon',
-    'tue',
-    'wed',
-    'thu',
-    'fri',
-    'sat',
-  ]
-
-  const toMinutes = (value: string): number => {
-    const clean = safeString(value).trim()
-    const match = clean.match(/^(\d{1,2}):(\d{2})$/)
-    if (!match) return -1
-    const hours = Number(match[1])
-    const minutes = Number(match[2])
-    if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return -1
-    if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return -1
-    return hours * 60 + minutes
-  }
-
-  const resolveMenuIsActiveNow = (menu: Menu): boolean => {
-    const status = safeString((menu as any)?.status).trim().toLowerCase()
-    if (status !== 'live') return false
-
-    const rawRules = (menu as any)?.service_rules
-    const days = Array.isArray(rawRules?.days)
-      ? rawRules.days.map((day: unknown) => safeString(day).trim().toLowerCase()).filter(Boolean)
-      : []
-    const startMinutes = toMinutes(safeString(rawRules?.start_time))
-    const endMinutes = toMinutes(safeString(rawRules?.end_time))
-
-    // If rules are not fully defined, activity is unknown -> treat as inactive.
-    if (!days.length || startMinutes < 0 || endMinutes < 0) return false
-
-    const now = new Date()
-    const nowDay = menuDayByDateDay[now.getDay()]
-    const previousDay = menuDayByDateDay[(now.getDay() + 6) % 7]
-    const nowMinutes = now.getHours() * 60 + now.getMinutes()
-
-    if (startMinutes === endMinutes) {
-      // 24h service for the listed days.
-      return days.includes(nowDay)
-    }
-
-    if (endMinutes > startMinutes) {
-      return days.includes(nowDay) && nowMinutes >= startMinutes && nowMinutes < endMinutes
-    }
-
-    // Overnight window (e.g. 22:00 -> 02:00).
-    return (
-      (days.includes(nowDay) && nowMinutes >= startMinutes) ||
-      (days.includes(previousDay) && nowMinutes < endMinutes)
-    )
-  }
-
   function map(menu: Menu): MenuCard.Card {
-    const service = safeString(menu.service).trim()
-    const status = safeString(menu.status).trim()
-    const dishes = safeStringArray(menu.dish_ids)
+    const active = Boolean(menu.active)
+    const dishes = (menu.sections ?? [])
+      .flatMap((section) => section.items ?? [])
+      .map((item) => safeString(item?.dish_id).trim())
+      .filter(Boolean)
     const id =
       safeString(menu.id).trim() ||
       safeString(menu.name).trim() ||
-      `${service || 'menu'}-${status || 'status'}-${dishes.length}`
+      `menu-${dishes.length}`
     const name = safeString(menu.name).trim() || id
-    const stations = safeStringArray(menu.stations)
-    const rules = (menu as any)?.service_rules
-    const rulesStart = safeString(rules?.start_time).trim()
-    const rulesEnd = safeString(rules?.end_time).trim()
-    const isActiveNow = resolveMenuIsActiveNow(menu)
-    const windowLabel = rulesStart && rulesEnd ? `${rulesStart} - ${rulesEnd}` : ''
+    const isActiveNow = active
+    const windowLabel = ''
 
     return {
       id,
-      to: '',
+      to: id ? `/dashboard/kitchen/menu?menu=${encodeURIComponent(id)}` : '/dashboard/kitchen/menu',
       imageUrl: '',
       title: name,
-      subtitle: joinSubtitle(service, status),
+      subtitle: joinSubtitle(active),
       badges: [
-        service || 'service',
+        active ? 'active' : 'inactive',
         `${dishes.length} ${dishes.length === 1 ? 'dish' : 'dishes'}`,
       ],
       name,
       description: safeString(menu.description).trim(),
-      status,
-      service,
+      active,
       dishCount: dishes.length,
-      stations,
       isActiveNow,
       windowLabel,
       sortOrder: Number(menu.sort_order || 0),
@@ -184,8 +118,7 @@ export function useMenuInterface() {
       imageUrl: base.imageUrl,
       name: base.name,
       subtitle: base.subtitle,
-      status: base.status,
-      service: base.service,
+      active: base.active,
       dishCount: base.dishCount,
       isActiveNow: base.isActiveNow,
       windowLabel: base.windowLabel,
@@ -201,14 +134,12 @@ export function useMenuInterface() {
       imageUrl: base.imageUrl,
       name: base.name,
       subtitle: base.subtitle,
-      status: base.status,
       isActiveNow: base.isActiveNow,
       prop: base.description,
       badges: base.badges,
       details: [
-        { label: 'Service', value: base.service || '—' },
+        { label: 'Active', value: base.active ? 'Yes' : 'No' },
         { label: 'Dishes', value: base.dishCount },
-        { label: 'Stations', value: base.stations.join(', ') || '—' },
         ...(base.windowLabel ? [{ label: 'Window', value: base.windowLabel }] : []),
       ],
     }
@@ -223,10 +154,8 @@ export function useMenuInterface() {
       title: base.title,
       subtitle: base.subtitle,
       prop: base.description,
-      status: base.status,
-      service: base.service,
+      active: base.active,
       dishCount: base.dishCount,
-      stations: base.stations,
     }
   }
 
@@ -234,9 +163,7 @@ export function useMenuInterface() {
     const mapped = map(menu)
     return [
       mapped.name,
-      mapped.status,
-      mapped.service,
-      mapped.stations.join(' '),
+      mapped.active ? 'active' : 'inactive',
       mapped.dishCount,
       mapped.windowLabel,
       mapped.id,

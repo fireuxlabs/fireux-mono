@@ -1,11 +1,12 @@
-import type { DummyScenario } from '../_shared/types'
 import {
   buildMenu,
-  buildReadOnlySupplierIngredients,
+  normalizeKitchenIngredient,
   buildReadOnlyStations,
+  buildReadOnlySupplierIngredients,
   buildReadOnlySuppliers,
   buildReadOnlyTrainingModules,
 } from '../_shared/builders'
+import type { DummyScenario } from '../_shared/types'
 import { takumiRamenScenario } from '../takumi-ramen'
 
 const dishIdMap = {
@@ -47,15 +48,12 @@ export const brothBloomScenario = (): DummyScenario => {
       'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=640&h=520&q=80',
   }
 
-  const kitchenIngredients = (base.kitchenIngredients ?? []).map((ingredient: any) => {
-    const ingredientId = String(ingredient?.ingredient_id || ingredient?.id || '').trim()
-
-    return {
-      ...ingredient,
-      id: ingredientId ? `k_${kitchenId}__${ingredientId}` : ingredient.id,
-      kitchen_id: kitchenId,
-    }
-  })
+  const kitchenIngredients = (base.kitchenIngredients ?? []).map((ingredient: any) =>
+    normalizeKitchenIngredient({
+      kitchenId,
+      ingredient,
+    })
+  )
 
   const miseTasks = (base.menuStack.miseTasks ?? []).map((task: any) => ({
     ...task,
@@ -104,13 +102,7 @@ export const brothBloomScenario = (): DummyScenario => {
         id: 'menu-broth-core',
         name: 'Core Bowls',
         description: 'Broth-forward bowls for all-day service.',
-        status: 'live',
-        service: 'all_day',
-        service_rules: {
-          days: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-          start_time: '11:00',
-          end_time: '21:30',
-        },
+        active: true,
         dish_ids: ['tonkotsu-shoyu', 'miso-ramen', 'spicy-garlic-ramen'],
         sort_order: 1,
         stations: ['prep', 'pass'],
@@ -122,13 +114,7 @@ export const brothBloomScenario = (): DummyScenario => {
         id: 'menu-broth-late',
         name: 'Late Night Bowls',
         description: 'Reduced lineup for late service.',
-        status: 'live',
-        service: 'dinner',
-        service_rules: {
-          days: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'],
-          start_time: '21:30',
-          end_time: '01:30',
-        },
+        active: true,
         dish_ids: ['tonkotsu-shoyu', 'veggie-shoyu-ramen'],
         sort_order: 2,
         stations: ['prep', 'pass'],

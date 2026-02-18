@@ -2,7 +2,6 @@ import type {
   Ingredient,
   KitchenIngredient as KitchenIngredientDoc,
 } from 'fireux-kitchens/runtime/models/ingredient.model'
-import { createReadOnlyKitchen } from '../_shared/kitchen'
 import {
   assertAllKitchenIngredientsResolve,
   buildDish,
@@ -10,11 +9,12 @@ import {
   buildKitchenIngredient,
   buildMenu,
   buildMise,
-  buildReadOnlySupplierIngredients,
   buildReadOnlyStations,
+  buildReadOnlySupplierIngredients,
   buildReadOnlySuppliers,
   buildReadOnlyTrainingModules,
 } from '../_shared/builders'
+import { createReadOnlyKitchen } from '../_shared/kitchen'
 import type { DummyRecipe, DummyScenario } from '../_shared/types'
 
 export const stackSizzleScenario = (): DummyScenario => {
@@ -489,13 +489,7 @@ export const stackSizzleScenario = (): DummyScenario => {
         id: 'menu-burger-core',
         name: 'Core Menu',
         description: 'Full Stack & Sizzle lineup for standard service.',
-        status: 'live',
-        service: 'all_day',
-        service_rules: {
-          days: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-          start_time: '11:00',
-          end_time: '21:00',
-        },
+        active: true,
         dish_ids: [...coreDishIds],
         sort_order: 1,
       },
@@ -506,13 +500,7 @@ export const stackSizzleScenario = (): DummyScenario => {
         id: 'menu-burger-late',
         name: 'Late Menu',
         description: 'Late service burgers only.',
-        status: 'live',
-        service: 'dinner',
-        service_rules: {
-          days: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat'],
-          start_time: '22:00',
-          end_time: '02:00',
-        },
+        active: true,
         dish_ids: [...lateDishIds],
         sort_order: 2,
       },

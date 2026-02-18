@@ -33,7 +33,7 @@
         <UCard v-for="license in licenses" :key="license.id">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p class="font-medium">{{ license.email || 'unknown email' }}</p>
+              <p class="font-medium">Buyer hidden</p>
               <p class="text-xs text-[var(--ui-text-muted)]">
                 Product: {{ license.product_slug || '-' }}
               </p>

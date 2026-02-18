@@ -2,6 +2,9 @@
   "name": "misebox-app",
   "private": true,
   "type": "module",
+  "imports": {
+    "#internal/nuxt/paths": "./app/internal/nuxt-paths.mjs"
+  },
   "scripts": {
     "dev": "nuxi prepare && nuxi dev --port 3001",
     "build": "nuxi build",

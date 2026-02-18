@@ -31,7 +31,7 @@
                 </UBadge>
               </div>
               <div class="mt-1 text-xs text-dimmed">
-                {{ member.email || 'no-email' }} · {{ member.phone || 'no-phone' }}
+                {{ member.phone || 'no-phone' }}
               </div>
               <div v-if="member.tags.length" class="mt-2 flex flex-wrap gap-1">
                 <UBadge
@@ -88,7 +88,6 @@ const teamMembers = computed(() =>
     role: String(member?.role || '').trim(),
     station: String(member?.station || '').trim(),
     isLead: Boolean(member?.is_lead),
-    email: String(member?.contact?.email || '').trim(),
     phone: String(member?.contact?.phone || '').trim(),
     tags: Array.isArray(member?.tags)
       ? member.tags.map((tag: unknown) => String(tag || '').trim()).filter(Boolean)

@@ -1,12 +1,12 @@
-import { collection, doc, getDoc, getDocs, limit as fslimit, query as fsq, where } from 'firebase/firestore'
+import { collection, doc, limit as fslimit, query as fsq, getDoc, getDocs, where } from 'firebase/firestore'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import { useFirestore } from 'vuefire'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
+import { useFirestore } from 'vuefire'
 import { canonicalPlaceId, fetchPlaceDetails } from '../fetch/google/usePlacesGoogle'
 import { toShortAddress } from '../utils/view/formatPlaceAddress'
-import { sanitizeLogoAvatar } from '../utils/view/usePlaceLogos'
 import { toPlaceSlug, toPlaceSlugWithSuffix } from '../utils/view/toPlaceSlug'
+import { sanitizeLogoAvatar } from '../utils/view/usePlaceLogos'
 
 export interface UsePlaceSaveOptions {
   type?: string | null | undefined

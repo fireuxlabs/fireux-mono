@@ -120,7 +120,7 @@ definePageMeta({
 const { currentUser } = useUser()
 const greetingName = computed(() => {
   const user = currentUser.value
-  return user?.display_name?.trim() || user?.email?.trim() || 'there'
+  return user?.display_name?.trim() || 'there'
 })
 
 const { coreProfile } = useAgent()

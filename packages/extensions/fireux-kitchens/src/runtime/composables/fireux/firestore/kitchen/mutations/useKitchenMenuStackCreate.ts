@@ -1,13 +1,13 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import type { Ingredient } from '../../../../../models/ingredient.model'
 import { Dish, type Dish as DishDoc } from '../../../../../models/dish.model'
-import { Menu, type Menu as MenuDoc } from '../../../../../models/menu.model'
+import type { Ingredient } from '../../../../../models/ingredient.model'
 import { KitchenMiseTask, type KitchenMiseTask as KitchenMiseTaskDoc } from '../../../../../models/kitchen-mise.model'
 import {
   KitchenRecipe,
   type KitchenRecipe as KitchenRecipeDoc,
   type KitchenRecipeIngredientLine,
 } from '../../../../../models/kitchen-recipe.model'
+import { Menu, type Menu as MenuDoc } from '../../../../../models/menu.model'
 
 const resolveCollectionPath = (kitchenId: string, collectionName: string) =>
   `kitchens/${kitchenId}/${collectionName}`
@@ -120,15 +120,26 @@ export function useKitchenMenuStackCreate() {
       kitchen_id: resolvedKitchenId,
       name: 'Starter Service Menu',
       description: 'Generated from global ingredient records for kitchen dashboard prototyping.',
-      status: 'live',
-      service: 'all_day',
-      service_rules: {
-        days: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'],
-        start_time: '11:00',
-        end_time: '22:00',
-      },
-      dish_ids: dishIds,
-      stations: ['prep', 'grill', 'cold', 'pass'],
+      active: true,
+      sections: [
+        {
+          id: 'section-starter-service',
+          label: 'Starter Service',
+          description: '',
+          sort_order: 1,
+          items: dishIds.map((dishId, index) => ({
+            id: `item-${dishId}`,
+            dish_id: dishId,
+            label: '',
+            description: '',
+            price_minor: 0,
+            currency_code: '',
+            photo_url: '',
+            active: true,
+            sort_order: index + 1,
+          })),
+        },
+      ],
       sort_order: 10,
     }
 
@@ -139,11 +150,7 @@ export function useKitchenMenuStackCreate() {
         kitchen_id: resolvedKitchenId,
         name: 'Classic Cheeseburger',
         description: 'Burger bun, beef patty, cheese, lettuce, tomato, onion, ketchup.',
-        status: 'active',
-        course: 'main',
-        station: 'grill',
         recipe_ids: [recipeIds[0]],
-        tags: ['burger', 'grill'],
         ingredient_ids: [
           resolved.burgerBuns,
           resolved.beefPatty,
@@ -167,11 +174,7 @@ export function useKitchenMenuStackCreate() {
         kitchen_id: resolvedKitchenId,
         name: 'Caprese Lemon Salad',
         description: 'Tomato and mozzarella finished with lemon.',
-        status: 'active',
-        course: 'starter',
-        station: 'cold',
         recipe_ids: [recipeIds[1]],
-        tags: ['salad', 'cold'],
         ingredient_ids: [
           resolved.tomato,
           resolved.mozzarella,
@@ -190,11 +193,7 @@ export function useKitchenMenuStackCreate() {
         kitchen_id: resolvedKitchenId,
         name: 'Cheddar Onion Melt',
         description: 'Beef patty, cheddar, onion, bun, and ketchup.',
-        status: 'active',
-        course: 'main',
-        station: 'grill',
         recipe_ids: [recipeIds[2]],
-        tags: ['burger', 'grill'],
         ingredient_ids: [
           resolved.beefPatty,
           resolved.cheddar,

@@ -4,11 +4,9 @@ import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
- * Dish (canonical Firestore shape)
+ * Minimal dish model (Phase 1)
  * Firestore: kitchens/{kitchenId}/dishes/{dishId}
  */
-export type DishStatus = 'draft' | 'active' | 'archived'
-export type DishCourse = 'starter' | 'main' | 'dessert' | 'side' | 'drink' | 'other'
 
 export const Dish = {
   id: '' as string,
@@ -16,14 +14,12 @@ export const Dish = {
 
   name: '' as string,
   description: '' as string,
-  status: 'draft' as DishStatus,
-  course: 'main' as DishCourse,
-  station: '' as string,
-  recipe_ids: [] as string[],
   image_url: '' as string,
-  tags: [] as string[],
+
+  recipe_ids: [] as string[],
   ingredient_ids: [] as string[],
   mise_ids: [] as string[],
+
   sort_order: 0 as number,
   active: true as boolean,
 

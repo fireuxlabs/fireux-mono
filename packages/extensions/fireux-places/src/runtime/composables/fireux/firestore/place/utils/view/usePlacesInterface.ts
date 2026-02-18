@@ -1,4 +1,8 @@
-import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import {
+  safeString,
+  sanitizeShortAddress,
+  stripLocationFromTitle,
+} from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type {
   BasePlace,
   PlaceImageShade,
@@ -86,41 +90,6 @@ export type PlaceProfile = {
 }
 
 export function usePlacesInterface() {
-  const sanitizeShortAddress = (value: string) =>
-    safeString(value).replace(/^[^\p{L}\p{N}]+/gu, '').trim()
-
-  const escapeRegExp = (value: string) =>
-    value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-
-  const stripLocationFromTitle = (title: string, shortAddress: string) => {
-    const cleanedTitle = safeString(title)
-    const cleanedShort = sanitizeShortAddress(shortAddress)
-    if (!cleanedTitle || !cleanedShort) return cleanedTitle
-
-    const parts = cleanedShort
-      .split(',')
-      .map((part) => part.trim())
-      .filter(Boolean)
-
-    if (!parts.length) return cleanedTitle
-
-    let next = cleanedTitle
-    for (const part of parts) {
-      if (part.length < 3) continue
-      const pattern = new RegExp(`\\b${escapeRegExp(part)}\\b`, 'gi')
-      next = next.replace(pattern, '').trim()
-    }
-
-    next = next
-      .replace(/\s{2,}/g, ' ')
-      .replace(/\s*[-–—|/]\s*(?=[-–—|/]|$)/g, ' ')
-      .replace(/^[-–—|/\s]+/, '')
-      .replace(/[-–—|/\s]+$/, '')
-      .trim()
-
-    return next || cleanedTitle
-  }
-
   function map(place: BasePlace): PlaceCard.Card {
     const id = safeString(place.id).trim()
     const name = safeString(place.name)
@@ -205,7 +174,6 @@ export function usePlacesInterface() {
     const tags = (target as any)?.tags as string[] | undefined
     const types = (target as any)?.types as string[] | undefined
     const phone = (target as any)?.phone as string | undefined
-    const email = (target as any)?.email as string | undefined
     const website = (target as any)?.website as string | undefined
     const socialLinks = (target as any)?.social_links as Partial<PlaceSocialLinks> | undefined
     return {
@@ -224,7 +192,6 @@ export function usePlacesInterface() {
       types,
       hoursText: (target as any)?.hours_text,
       phone,
-      email,
       website,
       socialLinks,
       verified: (target as any)?.verified,
