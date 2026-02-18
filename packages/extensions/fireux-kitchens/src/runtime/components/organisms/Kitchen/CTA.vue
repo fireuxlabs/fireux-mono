@@ -83,11 +83,11 @@ import { useRouter } from '#imports'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { computed } from 'vue'
+import { getReadOnlyKitchenScenarioList } from '../../../composables/fireux/app/runtime-kitchen/read-only-scenarios'
 import { useRuntimeKitchenSelection, type RuntimeKitchenMode } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
-import { useChef } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { getReadOnlyKitchenScenarioList } from '../../../composables/fireux/app/runtime-kitchen/read-only-scenarios'
+import { useChef } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
 import type { Kitchen } from '../../../models/kitchen.model'
 import KitchenCardsPill from './Cards/Pill.vue'
 
@@ -136,8 +136,22 @@ const chefKitchenIds = computed(() => {
   )
 })
 
+const claimedKitchenIds = computed(() => {
+  const userId = currentUserId.value
+  if (!userId) return [] as string[]
+
+  return (kitchens.value ?? [])
+    .filter((kitchen) => String((kitchen as any)?.claimed_by || '').trim() === userId)
+    .map((kitchen) => String(kitchen.id || '').trim())
+    .filter(Boolean)
+})
+
+const myKitchenIds = computed(() =>
+  Array.from(new Set([...chefKitchenIds.value, ...claimedKitchenIds.value]))
+)
+
 const myKitchens = computed(() =>
-  chefKitchenIds.value
+  myKitchenIds.value
     .map((id) => kitchenById.value.get(id))
     .filter(Boolean) as Kitchen[]
 )

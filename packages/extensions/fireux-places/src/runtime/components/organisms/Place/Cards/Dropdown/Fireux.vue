@@ -3,7 +3,7 @@
     <UUser
       :name="primaryLabel"
       :description="address || undefined"
-      :avatar="imageUrl ? { src: imageUrl || undefined, alt: primaryLabel || '', class: avatarClass } : undefined"
+      :avatar="{ src: imageUrl || undefined, alt: '', text: '', class: avatarClass }"
       size="sm"
     >
       <template #default>
@@ -33,7 +33,7 @@ const props = withDefaults(defineProps<Props>(), {
   shortName: '',
   imageUrl: '',
   imageShade: 'none',
-  showSource: true,
+  showSource: false,
 })
 
 const emit = defineEmits<{

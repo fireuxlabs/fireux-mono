@@ -10,6 +10,14 @@
           :app="currentApp"
         />
 
+        <DevJson
+          v-if="isDev && currentApp"
+          :title="'App (Doc)'"
+          context="App detail page · apps/[id] · app doc"
+          :data="currentApp"
+          :default-open="false"
+        />
+
         <section id="users">
           <UPageCard
             title="Users"
@@ -134,6 +142,7 @@ const usersDescription = computed(() => {
   if (activeFilter.value === 'users') return 'Non-admin users for this app.'
   return 'All users for this app.'
 })
+const isDev = import.meta.dev
 
 const appName = computed(() => currentApp.value?.app_name ?? null)
 const pageTitle = computed(() => appName.value ?? 'App Details')

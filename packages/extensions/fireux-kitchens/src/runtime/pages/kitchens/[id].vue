@@ -42,6 +42,14 @@
           :model="kitchenProfile"
         />
 
+        <DevJson
+          v-if="isDev && kitchen"
+          :title="'Kitchen (Doc)'"
+          context="Kitchen detail page · kitchens/[id] · hydrated kitchen doc"
+          :data="kitchen"
+          :default-open="false"
+        />
+
         <UCard>
           <template #header>
             <div class="space-y-1">
@@ -163,6 +171,7 @@ const pageTitle = computed(() => kitchen.value?.name || 'Kitchen')
 const pageDescription = computed(() =>
   kitchen.value?.short_address || kitchen.value?.formatted_address || 'Kitchen details.'
 )
+const isDev = import.meta.dev
 
 const goToEdit = async () => {
   if (!kitchenId) return

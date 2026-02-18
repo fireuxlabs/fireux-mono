@@ -5,7 +5,7 @@
         v-if="cell.source === 'google'"
         :name="cell.name"
         :address="cell.subtitle"
-        :image-url="cell.imageUrl"
+        :image-url="resolveImageUrl(cell)"
         @select="onSelect(cell)"
       />
       <PlaceCardsDropdownFireux
@@ -13,10 +13,9 @@
         :name="cell.name"
         :short-name="cell.shortName"
         :address="cell.subtitle"
-        :image-url="cell.imageUrl"
+        :image-url="resolveImageUrl(cell)"
         :image-shade="cell.imageShade"
         :source="cell.source"
-        :show-source="true"
         @select="onSelect(cell)"
       />
     </template>
@@ -26,7 +25,7 @@
       <DevJson
         :title="'Places (Dropdown Debug)'"
         context="Places search dropdown · live cells"
-        :data="cells"
+        :data="debugCells"
         :default-open="false"
       />
     </div>
@@ -34,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { loadLogoForPlace } from '../../../../composables/fireux/firestore/place/utils/view/usePlaceLogos';
 import type { PlaceCard } from '../../../../composables/fireux/firestore/place/utils/view/usePlacesInterface';
 import type { BasePlace, PlaceImageShade, PlaceSource } from '../../../../models/place.model';
@@ -52,31 +51,58 @@ const emit = defineEmits<{
 }>()
 
 const cells = computed(() => (props.cells ?? []) as PlaceCard.Card[])
+const debugCells = computed(() =>
+  cells.value.map((cell) => ({
+    ...cell,
+    imageUrl: resolveImageUrl(cell),
+  }))
+)
 
 const logoLoading = new Set<string>()
+const logoById = ref<Record<string, string>>({})
 
 watch(
   cells,
   (next) => {
     if (!Array.isArray(next)) return
+    const activeIds = new Set<string>()
     for (const card of next) {
+      const cardId = String(card?.id || '').trim()
+      if (cardId) activeIds.add(cardId)
       if (!card || card.source !== 'google') continue
       if (card.imageUrl) continue
-      if (logoLoading.has(card.id)) continue
-      logoLoading.add(card.id)
-      void loadLogoForPlace(card, { timeoutMs: 6000, priority: false })
+      if (logoById.value[cardId]) continue
+      if (logoLoading.has(cardId)) continue
+      logoLoading.add(cardId)
+      void loadLogoForPlace(card, { timeoutMs: 6000, priority: true })
         .then((url) => {
-          if (url) {
-            card.imageUrl = url
+          if (!url) return
+          logoById.value = {
+            ...logoById.value,
+            [cardId]: url,
           }
         })
         .finally(() => {
-          logoLoading.delete(card.id)
+          logoLoading.delete(cardId)
         })
     }
+
+    // Keep cache aligned to currently rendered rows.
+    const nextLogoById: Record<string, string> = {}
+    for (const [id, url] of Object.entries(logoById.value)) {
+      if (!activeIds.has(id)) continue
+      nextLogoById[id] = url
+    }
+    logoById.value = nextLogoById
   },
   { immediate: true }
 )
+
+function resolveImageUrl(card: PlaceCard.Card) {
+  const cardId = String(card?.id || '').trim()
+  if (!cardId) return String(card?.imageUrl || '')
+  return String(logoById.value[cardId] || card.imageUrl || '')
+}
 
 function toBasePlace(card: PlaceCard.Card): BasePlace {
   return {
@@ -88,7 +114,7 @@ function toBasePlace(card: PlaceCard.Card): BasePlace {
     short_address: card.shortAddress || '',
     lat: (card as any).lat ?? 0,
     lng: (card as any).lng ?? 0,
-    image_url: card.imageUrl || '',
+    image_url: resolveImageUrl(card),
     image_shade: (card.imageShade as PlaceImageShade) ?? 'none',
     claimed_by: (card.claimedBy as string) ?? '',
     source: (card.source as PlaceSource) ?? 'fireux',
@@ -99,4 +125,3 @@ function onSelect(card: PlaceCard.Card) {
   emit('select', toBasePlace(card))
 }
 </script>
-

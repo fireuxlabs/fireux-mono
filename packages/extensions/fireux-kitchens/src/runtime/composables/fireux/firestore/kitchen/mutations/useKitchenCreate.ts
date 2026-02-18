@@ -1,5 +1,6 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceSave'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { useFirestore } from 'vuefire'
 import type { KitchenCollection, KitchenCreateInput } from '../../../../../models/kitchen.model'
@@ -15,41 +16,67 @@ export const KitchenStampOptions = {
 export type KitchenCreateOptions = {
   collectionPath?: string
   test?: boolean
+  ensurePlace?: boolean
 }
 
 export function useKitchenCreate(options: KitchenCreateOptions = {}) {
   const { setDocument } = useFirestoreCreate()
+  const { ensurePlaceExists } = usePlaceSave()
   const db = useFirestore()
-  const collectionPath = options.test ? 'test-kitchens' : options.collectionPath ?? 'kitchens'
+  const collectionPath =
+    options.test ? 'test-kitchens' : options.collectionPath ?? 'kitchens'
+  const isTestKitchenCollection =
+    options.test === true || collectionPath === 'test-kitchens'
+  const shouldEnsurePlace = options.ensurePlace ?? !isTestKitchenCollection
 
   async function createKitchen(
     input: KitchenCreateInput & { place?: PlaceUpsertInput }
   ): Promise<string> {
-    if (!input?.id) {
+    const resolvedId = String(input?.id || '').trim()
+    if (!resolvedId) {
       throw new Error('Kitchen id is required')
     }
 
-    const { place, ...payload } = input
-    void place
+    const place = input?.place
 
-    const resolvedPayload = options.test
-      ? { ...payload, is_test_kitchen: true }
-      : payload
+    if (shouldEnsurePlace) {
+      if (place) {
+        const ok = await ensurePlaceExists({
+          ...place,
+          id: resolvedId,
+        })
+        if (!ok) {
+          throw new Error(`Unable to resolve place for kitchen "${resolvedId}"`)
+        }
+      } else {
+        const placeSnap = await getDoc(doc(db, 'places', resolvedId))
+        if (!placeSnap.exists()) {
+          throw new Error(
+            `Kitchen "${resolvedId}" requires an existing place or a place payload`
+          )
+        }
+      }
+    }
 
-    const ref = doc(db, collectionPath, resolvedPayload.id)
+    const resolvedPayload: KitchenCollection = {
+      id: resolvedId,
+      is_test_kitchen: isTestKitchenCollection,
+    } as KitchenCollection
+
+    const ref = doc(db, collectionPath, resolvedId)
     const snap = await getDoc(ref)
-    if (snap.exists()) return resolvedPayload.id
+    if (snap.exists()) return resolvedId
 
     await setDocument<KitchenCollection>(
       collectionPath,
-      resolvedPayload.id,
+      resolvedId,
       resolvedPayload as KitchenCollection,
       {
         creator: false,
       }
     )
 
-    return resolvedPayload.id
+    return resolvedId
   }
 
   return { createKitchen }

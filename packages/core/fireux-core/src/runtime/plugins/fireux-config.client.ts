@@ -11,11 +11,6 @@ const FIREUX_CACHE_KEY = '__FIREUX_CONFIG'
  */
 export default defineNuxtPlugin(() => {
   const globalScope = globalThis as Record<string, unknown>
-  const cached = globalScope[FIREUX_CACHE_KEY]
-  if (cached) {
-    return { provide: { fireuxConfig: cached } }
-  }
-
   const cfg = useFireUXConfig()
   globalScope[FIREUX_CACHE_KEY] = cfg
   return { provide: { fireuxConfig: cfg } }

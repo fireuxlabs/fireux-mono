@@ -58,7 +58,5 @@ export type KitchenCreateInput = Omit<
   'created_at' | 'updated_at' | 'is_test_kitchen'
 > & {
   is_test_kitchen?: boolean
-  name?: string
-  image_url?: string
 }
-export type KitchenUpdateInput = Partial<Omit<KitchenCreateInput, 'id'>>
+export type KitchenUpdateInput = Partial<Pick<KitchenCollection, 'is_test_kitchen'>>

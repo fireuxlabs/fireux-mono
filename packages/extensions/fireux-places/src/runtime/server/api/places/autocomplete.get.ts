@@ -1,10 +1,10 @@
 import { useRuntimeConfig } from '#imports'
 import {
-    defineEventHandler,
-    getQuery,
-    getRequestHeader,
-    getRequestIP,
-    setResponseStatus,
+  defineEventHandler,
+  getQuery,
+  getRequestHeader,
+  getRequestIP,
+  setResponseStatus,
 } from 'h3'
 import { resolvePlacesApiKey } from '../../utils/places-api-key'
 
@@ -99,7 +99,7 @@ export default defineEventHandler(async (event: any) => {
   const radius =
     (queryParams.radius as string) ||
     (typeof defaults?.radius === 'string' ? defaults.radius : '')
-  const query = String(q || '')
+  const query = String(q || '').trim()
   if (!query) {
     if (dev) {
       console.info('[places][autocomplete]', { reqId, stage: 'empty_query' })
@@ -202,7 +202,22 @@ export default defineEventHandler(async (event: any) => {
         url: safeUrl.toString(),
       })
     }
-    if (data.status !== 'OK') {
+    const upstreamStatus = String(data?.status || '')
+    const isNoResults = upstreamStatus === 'ZERO_RESULTS'
+
+    if (isNoResults) {
+      if (dev) {
+        console.info('[places][autocomplete]', {
+          reqId,
+          stage: 'zero_results',
+          query,
+          type: contextType,
+        })
+      }
+      return { predictions: [] }
+    }
+
+    if (upstreamStatus !== 'OK') {
       console.warn('[places][autocomplete]', {
         reqId,
         stage: 'upstream_not_ok',

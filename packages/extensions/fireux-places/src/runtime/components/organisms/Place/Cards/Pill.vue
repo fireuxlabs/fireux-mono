@@ -8,7 +8,7 @@
     <UUser
       :name="title"
       :description="showSubtitle ? (subtitle || undefined) : undefined"
-      :avatar="imageUrl ? { src: imageUrl || undefined, alt: title || '', class: avatarClass } : undefined"
+      :avatar="{ src: imageUrl || undefined, alt: '', text: '', class: avatarClass }"
       size="sm"
     >
       <template #default>

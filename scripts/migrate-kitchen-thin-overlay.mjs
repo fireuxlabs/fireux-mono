@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
-  Firestore migration: trim kitchens to thin overlay fields.
+  Firestore migration: reconcile kitchens to thin overlay canon.
 
   Usage:
     node scripts/migrate-kitchen-thin-overlay.mjs --project <projectId> [--commit] [--limit N] [--pageSize N]
@@ -41,11 +41,15 @@ if (!projectId) {
 
 const fieldsToRemove = [
   'name',
+  'short_name',
+  'short_address',
   'formatted_address',
   'lat',
   'lng',
+  'image_url',
   'place_image',
   'image_shade',
+  'website',
   'search_term',
   'search_term_normalized',
   'source',
@@ -81,6 +85,8 @@ console.log('[migrate] kitchen-thin-overlay start', {
 let processed = 0
 let updated = 0
 let skipped = 0
+let violations = 0
+const missingPlaceKitchenIds = []
 
 let lastDoc = null
 
@@ -101,9 +107,34 @@ while (true) {
 
     processed += 1
     const data = docSnap.data() || {}
+    const kitchenId = String(docSnap.id || '').trim()
+    const isTestKitchen = Boolean(data.is_test_kitchen)
+
+    if (!isTestKitchen) {
+      const placeSnap = await db.collection('places').doc(kitchenId).get()
+      if (!placeSnap.exists) {
+        violations += 1
+        missingPlaceKitchenIds.push(kitchenId)
+        console.error('[migrate] kitchen-thin-overlay missing_place_for_live_kitchen', {
+          kitchenId,
+        })
+        skipped += 1
+        continue
+      }
+    }
 
     const patch = {}
     let needs = false
+
+    if (typeof data.is_test_kitchen !== 'boolean') {
+      patch.is_test_kitchen = false
+      needs = true
+    }
+
+    if (String(data.id || '').trim() !== kitchenId) {
+      patch.id = kitchenId
+      needs = true
+    }
 
     for (const field of fieldsToRemove) {
       if (Object.prototype.hasOwnProperty.call(data, field)) {
@@ -138,6 +169,27 @@ while (true) {
   }
 
   lastDoc = snap.docs[snap.docs.length - 1]
+
+  console.log('[migrate] kitchen-thin-overlay progress', {
+    processed,
+    updated,
+    skipped,
+    violations,
+    lastId: lastDoc?.id,
+  })
 }
 
-console.log('[migrate] kitchen-thin-overlay done', { processed, updated, skipped, commit })
+console.log('[migrate] kitchen-thin-overlay done', {
+  processed,
+  updated,
+  skipped,
+  violations,
+  commit,
+})
+
+if (violations > 0) {
+  console.error('[migrate] kitchen-thin-overlay invariant_violations', {
+    missingPlaceKitchenIds,
+  })
+  process.exit(2)
+}

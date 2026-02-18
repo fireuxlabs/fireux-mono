@@ -27,6 +27,13 @@
     <UPageBody class="pagebody">
       <p v-if="isMounted" class="mb-2 text-xs text-muted">Page loaded.</p>
       <UserCardsProfile v-if="userCard" v-bind="userCard" />
+      <DevJson
+        v-if="isDev && currentUser"
+        :title="'User (Doc)'"
+        context="User detail page · users/[id] · user doc"
+        :data="currentUser"
+        :default-open="false"
+      />
     </UPageBody>
   </UPage>
 </template>
@@ -69,6 +76,7 @@ const pageDescription = computed(() =>
     ? `Inspect ${displayName.value}, their overlays, and related users.`
     : 'Inspect the selected user, their overlays, and related users.'
 )
+const isDev = import.meta.dev
 
 const headTitle = computed(() =>
   displayName.value ? `${displayName.value} · User` : 'User Details'

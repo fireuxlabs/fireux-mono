@@ -116,15 +116,21 @@ function buildConfig(): Readonly<FireUXConfig> {
 export function useFireUXConfig(): Readonly<FireUXConfig> {
   const g = globalThis as any
 
-  // Client cache (fast path)
-  if (import.meta.client && g?.[FIREUX_CACHE_KEY]) {
-    return g[FIREUX_CACHE_KEY] as Readonly<FireUXConfig>
-  }
-
+  // Always (re)read runtime config first, then decide whether existing cache is
+  // still valid. This avoids stale app/ecosystem values across HMR or context
+  // switches during local multi-app development.
   const cfg = buildConfig()
 
-  // Populate cache on client so all calls share the same frozen object.
   if (import.meta.client) {
+    const cached = g?.[FIREUX_CACHE_KEY] as Readonly<FireUXConfig> | undefined
+    const isCacheValid =
+      !!cached &&
+      cached.appId === cfg.appId &&
+      cached.ecosystem === cfg.ecosystem &&
+      cached.role === cfg.role
+
+    if (isCacheValid) return cached
+
     g[FIREUX_CACHE_KEY] = cfg
   }
 

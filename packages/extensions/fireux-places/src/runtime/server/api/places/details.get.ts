@@ -1,10 +1,10 @@
 import { useRuntimeConfig } from '#imports'
 import {
-    defineEventHandler,
-    getQuery,
-    getRequestHeader,
-    getRequestIP,
-    setResponseStatus,
+  defineEventHandler,
+  getQuery,
+  getRequestHeader,
+  getRequestIP,
+  setResponseStatus,
 } from 'h3'
 import { resolvePlacesApiKey } from '../../utils/places-api-key'
 
@@ -85,7 +85,23 @@ export default defineEventHandler(async (event: any) => {
         url: safeUrl.toString(),
       })
     }
-    if (data.status !== 'OK') {
+    const upstreamStatus = String(data?.status || '')
+    const isNoResultStatus =
+      upstreamStatus === 'ZERO_RESULTS' || upstreamStatus === 'NOT_FOUND'
+
+    if (isNoResultStatus) {
+      if (dev) {
+        console.info('[places][details]', {
+          reqId,
+          stage: 'no_result',
+          placeId,
+          upstreamStatus,
+        })
+      }
+      return { result: null }
+    }
+
+    if (upstreamStatus !== 'OK') {
       console.warn('[places][details]', {
         reqId,
         stage: 'upstream_not_ok',

@@ -23,6 +23,14 @@
       />
 
       <template v-else>
+        <DevJson
+          v-if="isDev && job"
+          :title="'Job (Doc)'"
+          context="Job detail page · jobs/[id] · job doc"
+          :data="job"
+          :default-open="false"
+        />
+
         <div class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <div class="space-y-6">
             <JobCardsProfile v-if="job" :card="jobCard" :job="job" />
@@ -155,6 +163,7 @@ const jobSubtitle = computed(() =>
 const statusColor = computed(() =>
   job.value?.status === 'open' ? 'success' : 'neutral'
 )
+const isDev = import.meta.dev
 
 const statusOptions = [
   { label: 'Open', value: 'open' },

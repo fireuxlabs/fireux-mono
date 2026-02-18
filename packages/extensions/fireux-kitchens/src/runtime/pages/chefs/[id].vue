@@ -50,6 +50,14 @@
 
           <div v-else class="space-y-4">
             <ProfilesChefCardsProfile :chef="profile" />
+
+            <DevJson
+              v-if="isDev && profile"
+              :title="'Chef (Doc)'"
+              context="Chef detail page · chefs/[id] · profile doc"
+              :data="profile"
+              :default-open="false"
+            />
           </div>
         </div>
 
@@ -104,6 +112,7 @@ const pageDescription = computed(() =>
     ? `Inspect ${displayName.value}.`
     : 'Chef profile details.'
 )
+const isDev = import.meta.dev
 
 useHead({
   title: computed(() =>

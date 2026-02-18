@@ -50,6 +50,14 @@
 
           <div v-else class="space-y-4">
             <ProfilesSupplierCardsProfile :supplier="profile" />
+
+            <DevJson
+              v-if="isDev && profile"
+              :title="'Supplier (Doc)'"
+              context="Supplier detail page · suppliers/[id] · profile doc"
+              :data="profile"
+              :default-open="false"
+            />
           </div>
         </div>
 
@@ -106,6 +114,7 @@ const pageDescription = computed(() =>
     ? `Inspect ${displayName.value}.`
     : 'Supplier profile details.'
 )
+const isDev = import.meta.dev
 
 useHead({
   title: computed(() =>

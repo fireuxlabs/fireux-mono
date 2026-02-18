@@ -54,6 +54,14 @@
           :model="ingredientProfile"
         />
 
+        <DevJson
+          v-if="isDev && ingredient"
+          :title="'Ingredient (Doc)'"
+          context="Ingredient detail page · ingredients/[id] · ingredient doc"
+          :data="ingredient"
+          :default-open="false"
+        />
+
         <UCard v-if="isAdmin && showAdmin">
           <template #header>
             <div class="space-y-1">
@@ -237,6 +245,7 @@ const confirmDelete = async () => {
 
 const pageTitle = computed(() => ingredient.value?.name || 'Ingredient')
 const pageDescription = computed(() => 'Ingredient details.')
+const isDev = import.meta.dev
 
 useHead({
   title: computed(() => `${appName} | ${pageTitle.value}`),
