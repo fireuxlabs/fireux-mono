@@ -7,43 +7,24 @@
           <p>{{ description }}</p>
         </div>
 
-        <div class="collection-manager__controls">
-          <UInput
-            v-if="showSearch"
-            v-model="query"
-            size="xs"
-            :placeholder="searchPlaceholder"
-          />
-          <span v-if="showServiceFilter" class="text-[11px] text-dimmed">service</span>
-          <USelect
-            v-if="showServiceFilter"
-            v-model="serviceFilter"
-            size="xs"
-            :options="serviceOptions"
-          />
-          <span v-if="showStatusFilter" class="text-[11px] text-dimmed">status</span>
-          <USelect
-            v-if="showStatusFilter"
-            v-model="statusFilter"
-            size="xs"
-            :options="statusOptions"
-          />
-          <span v-if="showSort" class="text-[11px] text-dimmed">sort</span>
-          <USelect
-            v-if="showSort"
-            v-model="sortBy"
-            size="xs"
-            :options="sortOptions"
-          />
-          <UButton
-            v-if="showVariantToggle"
-            size="xs"
-            variant="ghost"
-            :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
-            :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
-            @click="toggleVariant"
-          />
-          <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ filteredCount }} / {{ totalCount }}</UBadge>
+        <div class="collection-manager__controls flex items-center gap-2">
+          <div class="ml-auto flex items-center gap-2">
+            <UInput
+              v-if="showSearchInput"
+              v-model="query"
+              size="xs"
+              :placeholder="searchPlaceholder"
+            />
+            <UButton
+              v-if="showVariantToggle"
+              size="xs"
+              variant="ghost"
+              :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
+              :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+              @click="toggleVariant"
+            />
+            <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+          </div>
         </div>
       </div>
     </template>
@@ -124,9 +105,6 @@ const props = withDefaults(
     description?: string
     searchPlaceholder?: string
     showSearch?: boolean
-    showServiceFilter?: boolean
-    showStatusFilter?: boolean
-    showSort?: boolean
     showVariantToggle?: boolean
     showCount?: boolean
     initialVariant?: 'pill' | 'cell'
@@ -137,9 +115,6 @@ const props = withDefaults(
     description: 'Browse menus for this kitchen.',
     searchPlaceholder: 'Search menus...',
     showSearch: true,
-    showServiceFilter: true,
-    showStatusFilter: true,
-    showSort: true,
     showVariantToggle: true,
     showCount: true,
     initialVariant: 'pill',
@@ -152,16 +127,11 @@ const { card: makeCard, preview: makePreview, searchText } = useMenuInterface()
 const collection = computed(() => props.collection ?? [])
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search menus...'))
 const showSearch = computed(() => props.showSearch !== false)
-const showServiceFilter = computed(() => props.showServiceFilter !== false)
-const showStatusFilter = computed(() => props.showStatusFilter !== false)
-const showSort = computed(() => props.showSort !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
 const totalCount = computed(() => collection.value.length)
-const serviceFilter = ref('all')
-const statusFilter = ref('all')
-const sortBy = ref('sort-order')
+const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
 const nowTick = ref(Date.now())
 let tickInterval: ReturnType<typeof setInterval> | null = null
 
@@ -177,71 +147,20 @@ onBeforeUnmount(() => {
   tickInterval = null
 })
 
-const serviceOptions = computed(() => {
-  const values = Array.from(
-    new Set(
-      collection.value
-        .map((menu) => String(menu.service || '').trim())
-        .filter(Boolean)
-    )
-  ).sort((a, b) => a.localeCompare(b))
-  return ['all', ...values]
-})
-
-const statusOptions = computed(() => {
-  const values = Array.from(
-    new Set(
-      collection.value
-        .map((menu) => String(menu.status || '').trim())
-        .filter(Boolean)
-    )
-  ).sort((a, b) => a.localeCompare(b))
-  return ['all', ...values]
-})
-
-const sortOptions = ['sort-order', 'name', 'service', 'dishes']
-
-const collectionOrganized = computed(() => {
+const collectionVisible = computed(() => {
   // Recompute cards periodically so active/inactive menu chips follow time windows.
   void nowTick.value
 
-  let result = [...collection.value]
-
-  if (serviceFilter.value !== 'all') {
-    result = result.filter((menu) => String(menu.service || '').trim() === serviceFilter.value)
-  }
-
-  if (statusFilter.value !== 'all') {
-    result = result.filter((menu) => String(menu.status || '').trim() === statusFilter.value)
-  }
-
-  result.sort((a, b) => {
-    if (sortBy.value === 'name') {
-      return String(a.name || '').localeCompare(String(b.name || ''))
-    }
-
-    if (sortBy.value === 'service') {
-      return String(a.service || '').localeCompare(String(b.service || ''))
-    }
-
-    if (sortBy.value === 'dishes') {
-      return Number((b.dish_ids ?? []).length) - Number((a.dish_ids ?? []).length)
-    }
-
-    return (
+  return [...collection.value].sort(
+    (a, b) =>
       Number(a.sort_order || 0) - Number(b.sort_order || 0) ||
       String(a.name || '').localeCompare(String(b.name || ''))
-    )
-  })
-
-  return result
+  )
 })
-
-const filteredCount = computed(() => collectionOrganized.value.length)
 
 const previewById = computed(() => {
   const map: Record<string, ReturnType<typeof makePreview> | null> = {}
-  for (const menu of collectionOrganized.value) {
+  for (const menu of collectionVisible.value) {
     const card = makeCard(menu)
     if (!card?.id) continue
     map[card.id] = makePreview(menu)
@@ -256,7 +175,7 @@ const {
   cards: cardsFiltered,
   visibleCount,
 } = useCollectionSearch<Menu, ReturnType<typeof makeCard>>({
-  items: collectionOrganized,
+  items: collectionVisible,
   searchText: (menu: Menu) => searchText(menu),
   makeCard: (menu: Menu) => makeCard(menu),
   initialVariant: props.initialVariant,

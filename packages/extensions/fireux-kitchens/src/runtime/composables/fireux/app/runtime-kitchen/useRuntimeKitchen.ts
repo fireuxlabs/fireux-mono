@@ -3,6 +3,7 @@ import { useRuntimeKitchenSelection } from './state'
 import { useRuntimeKitchenContext, type UseRuntimeKitchenParams } from './useRuntimeKitchenContext'
 import { useRuntimeKitchenDocument } from './useRuntimeKitchenDocument'
 import { useRuntimeKitchenData } from './useRuntimeKitchenData'
+import { resolveRuntimeKitchenCollectionPath } from './shared'
 
 export { useRuntimeKitchenSelection } from './state'
 export type { RuntimeKitchenMode } from './shared'
@@ -19,10 +20,7 @@ export function useRuntimeKitchen(params?: UseRuntimeKitchenParams) {
   const selection = useRuntimeKitchenSelection()
 
   const { id, mode, isReadOnly } = useRuntimeKitchenContext(params, selection)
-  // Firestore root collection (only used in live/test).
-  const kitchenCollectionPath = computed(() =>
-    mode.value === 'test' ? 'test-kitchens' : 'kitchens'
-  )
+  const kitchenCollectionPath = computed(() => resolveRuntimeKitchenCollectionPath(mode.value))
 
   const kitchen = useRuntimeKitchenDocument({
     id,

@@ -61,6 +61,14 @@
 	gap: 0.25rem;
 }
 
+:where(.collection-manager__title > p, .collection-manager__subtitle) {
+	margin: 0;
+	font-size: 0.75rem;
+	line-height: 1.25;
+	font-weight: 400;
+	color: var(--ui-text-muted, var(--ui-text));
+}
+
 :where(.collection-manager__controls) {
 	display: flex;
 	align-items: center;

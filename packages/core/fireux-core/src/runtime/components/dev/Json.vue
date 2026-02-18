@@ -1,31 +1,51 @@
 <template>
   <div v-if="shouldRender">
-    <div class="jsonpanel-header">
-      <div>
-        <h2 class="jsonpanel-title">{{ title }}</h2>
-        <p class="jsonpanel-context">{{ context }}</p>
-      </div>
-      <div class="jsonpanel-actions">
-        <UButton
-          icon="i-heroicons-clipboard-document"
-          size="sm"
-          variant="outline"
-          :disabled="copying"
-          @click="onCopy"
-        >
-          {{ copyLabel }}
-        </UButton>
-        <UButton
-          :icon="expanded ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'"
-          size="sm"
-          variant="ghost"
-          @click="expanded = !expanded"
-        >
-          {{ expanded ? 'Hide' : 'Show' }} JSON
-        </UButton>
-      </div>
+    <div
+      v-if="!panelVisible"
+      class="jsonpanel-launcher"
+    >
+      <UButton
+        icon="i-heroicons-code-bracket-square"
+        size="xs"
+        variant="ghost"
+        aria-label="Show dev JSON panel"
+        @click="openPanel"
+      />
     </div>
-    <pre v-if="expanded">{{ jsonString }}</pre>
+    <div v-else class="jsonpanel-panel">
+      <div class="jsonpanel-header">
+        <div>
+          <h2 class="jsonpanel-title">{{ title }}</h2>
+          <p class="jsonpanel-context">{{ context }}</p>
+        </div>
+        <div class="jsonpanel-actions">
+          <UButton
+            icon="i-heroicons-clipboard-document"
+            size="sm"
+            variant="outline"
+            :disabled="copying"
+            @click="onCopy"
+          >
+            {{ copyLabel }}
+          </UButton>
+          <UButton
+            :icon="expanded ? 'i-heroicons-chevron-up' : 'i-heroicons-chevron-down'"
+            size="sm"
+            variant="ghost"
+            @click="expanded = !expanded"
+          >
+            {{ expanded ? 'Hide' : 'Show' }} JSON
+          </UButton>
+          <UButton
+            icon="i-heroicons-x-mark"
+            size="sm"
+            variant="ghost"
+            @click="panelVisible = false"
+          />
+        </div>
+      </div>
+      <pre v-if="expanded">{{ jsonString }}</pre>
+    </div>
   </div>
 </template>
 
@@ -51,6 +71,7 @@ const props = withDefaults(defineProps<JsonPanelProps>(), {
 })
 
 const expanded = ref(props.defaultOpen)
+const panelVisible = ref(props.defaultOpen)
 const isEmpty = computed(() => {
   const value = props.data as any
   if (value === null || value === undefined) return true
@@ -79,6 +100,11 @@ const copyLabel = computed(() => {
 
 const { copyText, copying } = useDevClipboard()
 
+const openPanel = () => {
+  panelVisible.value = true
+  expanded.value = true
+}
+
 const onCopy = async () => {
   const payload = `${props.title}\n${props.context}\n${jsonString.value}`
   const ok = await copyText(payload, {
@@ -93,6 +119,11 @@ const onCopy = async () => {
 </script>
 
 <style scoped>
+.jsonpanel-launcher {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .jsonpanel-header {
   display: flex;
   justify-content: space-between;

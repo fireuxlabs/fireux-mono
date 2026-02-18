@@ -7,22 +7,27 @@
           <p>{{ description }}</p>
         </div>
 
-        <div class="collection-manager__controls">
-          <UInput
-            v-if="showSearch"
-            v-model="query"
-            size="xs"
-            :placeholder="searchPlaceholder"
-          />
-          <UButton
-            v-if="showVariantToggle"
-            size="xs"
-            variant="ghost"
-            :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
-            :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
-            @click="toggleVariant"
-          />
-          <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+        <div class="collection-manager__controls flex items-center gap-2">
+          <div class="flex items-center gap-2">
+            <slot name="controls" />
+          </div>
+          <div class="ml-auto flex items-center gap-2">
+            <UInput
+              v-if="showSearchInput"
+              v-model="query"
+              size="xs"
+              :placeholder="searchPlaceholder"
+            />
+            <UButton
+              v-if="showVariantToggle"
+              size="xs"
+              variant="ghost"
+              :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
+              :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+              @click="toggleVariant"
+            />
+            <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+          </div>
         </div>
       </div>
     </template>
@@ -34,8 +39,11 @@
     >
       <template #pill="{ card }">
         <div
-          class="block"
-          :class="linkEnabled && card.to ? 'cursor-pointer' : 'cursor-default'"
+          class="block rounded-lg transition"
+          :class="[
+            linkEnabled && card.to ? 'cursor-pointer' : 'cursor-default',
+            selectedId === card.id ? 'ring-2 ring-primary/60 p-1' : '',
+          ]"
           @click="openCard(card)"
         >
           <SupplierCardsPill
@@ -49,8 +57,11 @@
       </template>
       <template #cell="{ card }">
         <div
-          class="block"
-          :class="linkEnabled && card.to ? 'cursor-pointer' : 'cursor-default'"
+          class="block rounded-lg transition"
+          :class="[
+            linkEnabled && card.to ? 'cursor-pointer' : 'cursor-default',
+            selectedId === card.id ? 'ring-2 ring-primary/60 p-1' : '',
+          ]"
           @click="openCard(card)"
         >
           <SupplierCardsCell
@@ -99,6 +110,7 @@ const props = withDefaults(
     title?: string
     description?: string
     link?: boolean
+    selectedId?: string | null
     searchPlaceholder?: string
     showSearch?: boolean
     showVariantToggle?: boolean
@@ -117,15 +129,21 @@ const props = withDefaults(
   }
 )
 
+const emit = defineEmits<{
+  (event: 'select', supplierId: string): void
+}>()
+
 const { card: makeCard, searchText } = useSupplierInterface()
 
 const collection = computed(() => props.collection ?? [])
 const linkEnabled = computed(() => props.link !== false)
+const selectedId = computed(() => String(props.selectedId || '').trim())
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search suppliers...'))
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
+const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
 const {
   query,
   variant,
@@ -172,6 +190,11 @@ const cardsRenderable = computed<SupplierCard.Card[]>(() => {
 const isDev = import.meta.dev
 
 const openCard = (card: SupplierCard.Card) => {
+  const supplierId = String(card?.id || '').trim()
+  if (supplierId) {
+    emit('select', selectedId.value === supplierId ? '' : supplierId)
+  }
+
   if (!linkEnabled.value) return
   const to = String(card?.to || '').trim()
   if (!to) return

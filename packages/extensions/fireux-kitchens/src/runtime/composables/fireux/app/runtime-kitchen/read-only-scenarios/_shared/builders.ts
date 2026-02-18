@@ -131,10 +131,13 @@ export const buildReadOnlySupplierIngredients = (
   let result: Array<Record<string, unknown>> = []
 
   for (const template of readOnlySupplierIngredients) {
+    const templateId = String(template.id || '').trim()
     const ingredient_id = String(template.ingredient_id || '').trim()
-    if (!ingredient_id) continue
+    if (!ingredient_id || !templateId) continue
+
+    const id = `si-${resolvedKitchenId}-${templateId}`
     result.push({
-      id: `si-${resolvedKitchenId}-${ingredient_id}`,
+      id,
       kitchen_id: resolvedKitchenId,
       supplier_id: template.supplier_id,
       ingredient_id,
@@ -170,8 +173,7 @@ export const buildReadOnlySupplierIngredients = (
   }
 
   for (const extra of overrides?.add ?? []) {
-    const ingredientId = String(extra.ingredient_id || '').trim()
-    const id = String(extra.id || '').trim() || (ingredientId ? `si-${resolvedKitchenId}-${ingredientId}` : '')
+    const id = String(extra.id || '').trim()
     if (!id) continue
     result.push({
       ...extra,

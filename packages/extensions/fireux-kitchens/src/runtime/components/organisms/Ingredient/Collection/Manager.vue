@@ -7,23 +7,27 @@
           <p>{{ description }}</p>
         </div>
 
-        <div class="collection-manager__controls">
-          <UInput
-            v-if="showSearch"
-            v-model="query"
-            size="xs"
-            :placeholder="searchPlaceholder"
-          />
-          <UButton
-            v-if="showVariantToggle"
-            size="xs"
-            variant="ghost"
-            :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
-            :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
-            @click="toggleVariant"
-          />
-          <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
-          <slot name="controls" />
+        <div class="collection-manager__controls flex items-center gap-2">
+          <div class="flex items-center gap-2">
+            <slot name="controls" />
+          </div>
+          <div class="ml-auto flex items-center gap-2">
+            <UInput
+              v-if="showSearchInput"
+              v-model="query"
+              size="xs"
+              :placeholder="searchPlaceholder"
+            />
+            <UButton
+              v-if="showVariantToggle"
+              size="xs"
+              variant="ghost"
+              :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
+              :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+              @click="toggleVariant"
+            />
+            <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+          </div>
         </div>
       </div>
     </template>
@@ -133,6 +137,7 @@ const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
+const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
 
 const ingredientById = computed(() => {
   const map = new Map<string, IngredientInterfaceItem>()
