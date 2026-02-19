@@ -1,10 +1,10 @@
 import {
   buildMenu,
-  normalizeKitchenIngredient,
   buildReadOnlyStations,
   buildReadOnlySupplierIngredients,
   buildReadOnlySuppliers,
   buildReadOnlyTrainingModules,
+  normalizeKitchenIngredient,
 } from '../_shared/builders'
 import type { DummyScenario } from '../_shared/types'
 import { takumiRamenScenario } from '../takumi-ramen'

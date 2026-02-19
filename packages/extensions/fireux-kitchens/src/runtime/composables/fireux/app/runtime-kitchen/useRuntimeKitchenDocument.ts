@@ -1,6 +1,6 @@
 import { computed, type Ref } from 'vue'
-import { getReadOnlyKitchenScenario } from './read-only-scenarios'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
+import { getReadOnlyKitchenScenario } from './read-only-scenarios'
 
 export function useRuntimeKitchenDocument(params: {
   id: Ref<string>
@@ -8,6 +8,9 @@ export function useRuntimeKitchenDocument(params: {
   kitchenCollectionPath: Ref<string>
 }) {
   const { kitchen: fetchKitchen } = useKitchenFetch()
+  const liveKitchen = fetchKitchen(params.id, params.kitchenCollectionPath, {
+    hydrate: true,
+  })
 
   return computed(() => {
     if (params.isReadOnly.value) {
@@ -16,10 +19,6 @@ export function useRuntimeKitchenDocument(params: {
     }
     if (!params.id.value) return null
 
-    return (
-      fetchKitchen(params.id.value, params.kitchenCollectionPath.value, {
-        hydrate: true,
-      }).value ?? null
-    )
+    return liveKitchen.value ?? null
   })
 }

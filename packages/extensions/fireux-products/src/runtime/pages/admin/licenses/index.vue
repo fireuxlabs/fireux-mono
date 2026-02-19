@@ -59,9 +59,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useFetch } from '#app'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { computed } from 'vue'
 
 definePageMeta({
   layout: 'dashboard',

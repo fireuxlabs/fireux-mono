@@ -8,7 +8,34 @@
       <section class="space-y-8">
         <div class="text-xs text-dimmed">
           Mode: <span class="font-medium">{{ mode }}</span>
+          <span class="mx-2">·</span>
+          Kitchen: <span class="font-medium">{{ kitchenId || 'none' }}</span>
+          <span class="mx-2">·</span>
+          Dishes loaded: <span class="font-medium">{{ dishes.length }}</span>
         </div>
+
+        <UCard v-if="dishes.length">
+          <div class="space-y-2">
+            <div
+              v-for="dish in dishes"
+              :key="dish.id"
+              class="rounded border border-default p-3"
+            >
+              <div class="font-bold">{{ dish.name || dish.id }}</div>
+              <div class="text-sm text-dimmed">
+                {{ dish.active ? 'Active' : 'Inactive' }} · Sort: {{ dish.sort_order || 0 }}
+              </div>
+            </div>
+          </div>
+        </UCard>
+
+        <UAlert
+          v-else
+          color="neutral"
+          variant="soft"
+          title="No dishes loaded"
+          description="No dish documents found for the current kitchen context."
+        />
 
         <DishCollectionManager
           :collection="dishes"
@@ -40,5 +67,6 @@ definePageMeta({
 
 const runtime = useRuntimeKitchen()
 const mode = runtime.mode
+const kitchenId = runtime.id
 const dishes = computed(() => runtime.data.value.dishes ?? [])
 </script>

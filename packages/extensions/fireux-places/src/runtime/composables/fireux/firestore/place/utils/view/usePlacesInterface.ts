@@ -1,7 +1,6 @@
 import {
   safeString,
-  sanitizeShortAddress,
-  stripLocationFromTitle,
+  sanitizeShortAddress
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type {
   BasePlace,

@@ -4,9 +4,9 @@ import {
   stripLocationFromTitle,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type {
-    PlaceImageShade,
-    PlaceSocialLinks,
-    PlaceSource,
+  PlaceImageShade,
+  PlaceSocialLinks,
+  PlaceSource,
 } from 'fireux-places/runtime/models/place.model'
 import type { CompanyView } from '../../../../../../../models/company.model'
 

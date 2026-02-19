@@ -1,7 +1,9 @@
+import { doc } from 'firebase/firestore'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { hydratePlaceCollection, hydratePlaceDoc } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceHydration'
 import type { Place } from 'fireux-places/runtime/models/place.model'
-import { computed } from 'vue'
+import { computed, isRef, unref, type Ref } from 'vue'
+import { useDocument, useFirestore } from 'vuefire'
 import type { Kitchen, KitchenCollection } from '../../../../../models/kitchen.model'
 
 const DEFAULT_COLLECTION_PATH = 'kitchens'
@@ -21,7 +23,8 @@ type KitchenFetchOptions = {
  */
 export function useKitchenFetch(options: UseKitchenFetchOptions = {}) {
   const collectionPath = options.collectionPath ?? DEFAULT_COLLECTION_PATH
-  const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreRead()
+  const { firestoreFetchCollection } = useFirestoreRead()
+  const db = useFirestore()
   const shouldHydrateCollection = options.hydrate !== false
 
   const placesCollection = shouldHydrateCollection
@@ -88,14 +91,48 @@ export function useKitchenFetch(options: UseKitchenFetchOptions = {}) {
       )
 
   // ✅ hydrated single doc (UI-ready)
+  const fetchDocRef = <T>(
+    collectionRef: Ref<string>,
+    idRef: Ref<string>,
+    ssrKeyPrefix?: string
+  ): Ref<T | undefined> => {
+    const docRef = computed(() => {
+      const resolvedPath = String(unref(collectionRef) || '').trim()
+      const resolvedId = String(unref(idRef) || '').trim()
+      if (!resolvedPath || !resolvedId) return null
+      return doc(db, resolvedPath, resolvedId)
+    })
+
+    const ssrKey = computed(() => {
+      const resolvedPath = String(unref(collectionRef) || '').trim()
+      const resolvedId = String(unref(idRef) || '').trim()
+      if (!resolvedPath || !resolvedId) return undefined
+      return ssrKeyPrefix ? `${ssrKeyPrefix}-${resolvedPath}-${resolvedId}` : `${resolvedPath}-${resolvedId}`
+    })
+
+    const { data } = useDocument(docRef, {
+      ssrKey,
+      transform: (docSnap) => docSnap.data() as T | undefined,
+    } as any)
+
+    return data as Ref<T | undefined>
+  }
+
   const kitchen = (
-    id: string,
-    collectionPathOverride?: string,
+    id: string | Ref<string>,
+    collectionPathOverride?: string | Ref<string>,
     kitchenOptions: KitchenFetchOptions = {}
   ) => {
-    const resolvedPath = String(collectionPathOverride || collectionPath).trim()
+    const idRef = isRef(id) ? id : computed(() => String(id))
+    const pathRef = isRef(collectionPathOverride)
+      ? collectionPathOverride
+      : computed(() => String(collectionPathOverride || collectionPath))
+
+    const resolvedId = computed(() => String(unref(idRef) || '').trim())
+    const resolvedPath = computed(() => String(unref(pathRef) || '').trim())
     const shouldHydrateDoc = kitchenOptions.hydrate ?? shouldHydrateCollection
-    const kitchenDoc = firestoreFetchDoc<KitchenCollection>(resolvedPath, id)
+
+    const kitchenDoc = fetchDocRef<KitchenCollection>(resolvedPath, resolvedId)
 
     if (!shouldHydrateDoc) {
       return computed<Kitchen | undefined>(() => {
@@ -103,17 +140,17 @@ export function useKitchenFetch(options: UseKitchenFetchOptions = {}) {
         if (!entry) return undefined
         return {
           ...entry,
-          id: String(entry.id ?? id).trim(),
+          id: String(entry.id ?? resolvedId.value).trim(),
         }
       })
     }
 
-    const placeDoc = firestoreFetchDoc<Place>('places', id)
+    const placeDoc = fetchDocRef<Place>(computed(() => 'places'), resolvedId, 'places')
 
     return hydrateDoc(
       computed(() => kitchenDoc.value),
       computed(() => placeDoc.value),
-      computed(() => id),
+      computed(() => resolvedId.value),
       (entry, place, docId) => {
         if (!entry) return undefined
         return {
