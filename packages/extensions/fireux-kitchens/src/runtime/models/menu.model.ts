@@ -10,6 +10,8 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Publishing structure only, optimized for current product needs.
  */
 
+export type MenuServiceMode = 'dine_in' | 'collection' | 'delivery'
+
 export type MenuSectionItem = {
   id: string
   dish_id: string
@@ -47,7 +49,11 @@ export const Menu = {
 
   name: '' as string,
   description: '' as string,
+
+  // Publishing toggle for this menu record (separate from per-mode availability)
   active: true as boolean,
+
+  // Default currency for items
   currency_code: 'CHF' as string,
   defaults: {
     currency_code: 'CHF',
@@ -55,6 +61,9 @@ export const Menu = {
     description: '',
     photo_url: '',
   } as Partial<MenuItemDefaults>,
+
+  // If empty/undefined in existing docs, treat as ['dine_in'] in view logic.
+  service_modes: ['dine_in'] as MenuServiceMode[],
 
   // Canon sectioned menu shape
   sections: [] as MenuSection[],

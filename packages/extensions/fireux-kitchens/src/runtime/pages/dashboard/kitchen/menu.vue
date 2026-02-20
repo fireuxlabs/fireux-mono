@@ -30,6 +30,33 @@
           @select="onSelectMenu"
         />
 
+        <!-- QR moved out to /dashboard/kitchen/menu/qrs -->
+        <UCard>
+          <template #header>
+            <div class="flex items-start justify-between gap-3">
+              <div class="space-y-1">
+                <div class="text-sm font-semibold">QR Codes</div>
+                <p class="text-xs text-dimmed">
+                  View QR links for this kitchen (kept separate from menu editing).
+                </p>
+              </div>
+
+              <UButton
+                size="xs"
+                variant="soft"
+                icon="i-lucide-qr-code"
+                to="/dashboard/kitchen/menu/qrs"
+              >
+                Open
+              </UButton>
+            </div>
+          </template>
+
+          <div class="text-xs text-dimmed">
+            Tip: keep this page focused on menus. QR/service presets live in the QR page.
+          </div>
+        </UCard>
+
         <UCard v-if="selectedMenu">
           <div class="flex items-start justify-between gap-3">
             <div class="space-y-1">
@@ -40,6 +67,7 @@
                 {{ selectedMenu.description || 'No description' }}
               </div>
             </div>
+
             <UButton
               size="xs"
               variant="soft"
@@ -81,10 +109,7 @@
                   </div>
                 </div>
 
-                <div
-                  v-if="!section.resolvedItems.length"
-                  class="text-xs italic text-dimmed"
-                >
+                <div v-if="!section.resolvedItems.length" class="text-xs italic text-dimmed">
                   No items in this section.
                 </div>
               </div>

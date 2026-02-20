@@ -55,7 +55,9 @@
           <template #header>
             <div class="space-y-1">
               <div class="text-sm font-semibold">Menus</div>
-              <div class="text-xs text-dimmed">Active menus are selectable. Inactive menus are shown but disabled.</div>
+              <div class="text-xs text-dimmed">
+                Active menus are selectable. Current service mode filters menu availability.
+              </div>
             </div>
           </template>
 
@@ -65,9 +67,9 @@
               :key="menu.id || menu.name"
               size="xs"
               :variant="isSelectedMenu(menu) ? 'solid' : 'soft'"
-              :color="menu.active ? 'primary' : 'neutral'"
-              :disabled="!menu.active"
-              :to="menu.active ? resolveMenuTo(menu) : undefined"
+              :color="isMenuSelectable(menu) ? 'primary' : 'neutral'"
+              :disabled="!isMenuSelectable(menu)"
+              :to="isMenuSelectable(menu) ? resolveMenuTo(menu) : undefined"
             >
               {{ menu.name || 'Untitled menu' }}
             </UButton>
@@ -78,8 +80,8 @@
           v-if="!selectedMenu"
           color="neutral"
           variant="soft"
-          title="No active menu available"
-          description="This kitchen has no active menu open for ordering right now."
+          :title="requestedModeLabel ? `No ${requestedModeLabel} menu available` : 'No active menu available'"
+          :description="noMenuDescription"
         />
 
         <div v-else class="space-y-6">
@@ -163,11 +165,10 @@
 <script setup lang="ts">
 import { useRoute } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useBasket } from 'fireux-orders/runtime/composables/useBasket'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useKitchenFetch } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
-import type { Menu, MenuSection } from '../../../../models/menu.model'
+import type { Menu, MenuSection, MenuServiceMode } from '../../../../models/menu.model'
 import {
   resolveMenuItemView,
   type ResolvedMenuItemView,
@@ -283,8 +284,48 @@ const sortedMenus = computed(() =>
   [...menus.value].sort((a, b) => Number(a?.sort_order || 0) - Number(b?.sort_order || 0))
 )
 
+const inferLegacyModes = (menu: Menu): MenuServiceMode[] => {
+  const id = String(menu?.id || '').trim().toLowerCase()
+  const name = String(menu?.name || '').trim().toLowerCase()
+  const joined = `${id} ${name}`
+  const inferred: MenuServiceMode[] = []
+
+  if (joined.includes('dine') || joined.includes('eat in')) inferred.push('dine_in')
+  if (joined.includes('collection') || joined.includes('pickup') || joined.includes('pick up')) {
+    inferred.push('collection')
+  }
+  if (joined.includes('delivery')) inferred.push('delivery')
+
+  return inferred
+}
+
+const resolveMenuModes = (menu: Menu): MenuServiceMode[] => {
+  const raw = Array.isArray((menu as any)?.service_modes)
+    ? (menu as any).service_modes
+    : []
+
+  const normalized = raw
+    .map((mode: unknown) => normalizeMode(mode))
+    .filter(Boolean) as MenuServiceMode[]
+
+  if (normalized.length) return normalized
+
+  const inferred = inferLegacyModes(menu)
+  if (inferred.length) return inferred
+
+  return ['dine_in']
+}
+
+const isMenuAvailableForMode = (menu: Menu, mode: '' | MenuServiceMode) => {
+  if (!mode) return true
+  return resolveMenuModes(menu).includes(mode)
+}
+
+const isMenuSelectable = (menu: Menu) =>
+  Boolean(menu?.active) && isMenuAvailableForMode(menu, requestedMode.value)
+
 const activeMenus = computed(() =>
-  sortedMenus.value.filter((menu) => Boolean(menu?.active))
+  sortedMenus.value.filter((menu) => isMenuSelectable(menu))
 )
 
 const activeMenu = computed(() => activeMenus.value[0] ?? null)
@@ -303,12 +344,32 @@ const selectedMenu = computed(() => {
 
 const selectedMenuId = computed(() => String(selectedMenu.value?.id || '').trim())
 
+const noMenuDescription = computed(() => {
+  if (requestedModeLabel.value) {
+    return `This kitchen has no active menu available for ${requestedModeLabel.value.toLowerCase()} right now.`
+  }
+  return 'This kitchen has no active menu open for ordering right now.'
+})
+
 const resolveMenuTo = (menu: Menu) => {
   const menuId = String(menu?.id || '').trim()
   const key = String(routeId.value || kitchenId.value || '').trim()
   if (!menuId || !key) return undefined
 
-  return `/kitchens/${encodeURIComponent(key)}/menu/${encodeURIComponent(menuId)}`
+  return {
+    path: `/kitchens/${encodeURIComponent(key)}/menu/${encodeURIComponent(menuId)}`,
+    query: {
+      mode: requestedMode.value || undefined,
+      table: requestedTable.value || undefined,
+      cover: requestedCover.value || undefined,
+      postcode: Array.isArray(route.query.postcode)
+        ? String(route.query.postcode[0] ?? '').trim() || undefined
+        : String(route.query.postcode ?? '').trim() || undefined,
+      slot: Array.isArray(route.query.slot)
+        ? String(route.query.slot[0] ?? '').trim() || undefined
+        : String(route.query.slot ?? '').trim() || undefined,
+    },
+  }
 }
 
 const isSelectedMenu = (menu: Menu) =>
