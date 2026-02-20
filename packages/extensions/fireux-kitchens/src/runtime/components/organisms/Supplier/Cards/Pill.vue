@@ -22,9 +22,11 @@
 </template>
 
 <script setup lang="ts">
-import type { SupplierCard } from '../../../../composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
-
-type PillProps = Pick<SupplierCard.Card, 'to' | 'title' | 'subtitle' | 'avatarUrl'> & {
+type PillProps = {
+  to: string
+  title: string
+  subtitle: string
+  avatarUrl: string
   link?: boolean
   action?: boolean
 }

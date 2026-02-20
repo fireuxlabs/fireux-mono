@@ -94,9 +94,9 @@ import { navigateTo } from '#imports'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
 import {
-  useSupplierInterface,
-  type SupplierCard,
-  type SupplierSurface,
+    useSupplierInterface,
+    type SupplierCard,
+    type SupplierSurface,
 } from '../../../../composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
 import SupplierCardsCell from '../Cards/Cell.vue'
 import SupplierCardsPill from '../Cards/Pill.vue'

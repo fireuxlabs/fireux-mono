@@ -8,6 +8,23 @@
         </div>
 
         <div class="collection-manager__controls flex flex-1 items-center gap-2">
+          <div class="flex items-center gap-1">
+            <UButton
+              size="xs"
+              :variant="menuScope === 'live' ? 'solid' : 'soft'"
+              @click="menuScope = 'live'"
+            >
+              Show live
+            </UButton>
+            <UButton
+              size="xs"
+              :variant="menuScope === 'all' ? 'solid' : 'soft'"
+              @click="menuScope = 'all'"
+            >
+              Show all
+            </UButton>
+          </div>
+
           <div class="ml-auto flex items-center gap-2">
             <UInput
               v-if="showSearchInput"
@@ -35,41 +52,28 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <UPopover :popper="{ placement: 'right-start' }">
-          <template #default>
-            <NuxtLink
-              :to="linkEnabled ? (card.to || undefined) : undefined"
-              class="block"
-              :class="linkEnabled && card.to ? '' : 'cursor-default'"
-            >
-              <MenuCardsPill v-bind="card" />
-            </NuxtLink>
-          </template>
-          <template #content>
-            <div class="w-[20rem] p-3">
-              <MenuCardsPreview v-if="previewById[card.id]" v-bind="previewById[card.id]" />
-            </div>
-          </template>
-        </UPopover>
+        <MenuCardsPill
+          v-bind="card"
+          class="transition"
+          :class="[
+            linkEnabled ? 'cursor-pointer' : 'cursor-default',
+            selectedId === card.id ? 'ring-2 ring-primary/60' : '',
+          ]"
+          @click="openCard(card)"
+        />
       </template>
 
       <template #cell="{ card }">
-        <UPopover :popper="{ placement: 'right-start' }">
-          <template #default>
-            <NuxtLink
-              :to="linkEnabled ? (card.to || undefined) : undefined"
-              class="block"
-              :class="linkEnabled && card.to ? '' : 'cursor-default'"
-            >
-              <MenuCardsCell v-bind="card" :prop="card.description" />
-            </NuxtLink>
-          </template>
-          <template #content>
-            <div class="w-[20rem] p-3">
-              <MenuCardsPreview v-if="previewById[card.id]" v-bind="previewById[card.id]" />
-            </div>
-          </template>
-        </UPopover>
+        <MenuCardsCell
+          v-bind="card"
+          :prop="card.description"
+          class="transition"
+          :class="[
+            linkEnabled ? 'cursor-pointer' : 'cursor-default',
+            selectedId === card.id ? 'ring-2 ring-primary/60' : '',
+          ]"
+          @click="openCard(card)"
+        />
       </template>
     </MenuCollectionList>
 
@@ -91,12 +95,11 @@
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import MenuCardsCell from '../Cards/Cell.vue'
-import MenuCardsPill from '../Cards/Pill.vue'
-import MenuCardsPreview from '../Cards/Preview.vue'
-import MenuCollectionList from './List.vue'
 import { useMenuInterface } from '../../../../composables/fireux/firestore/runtime-kitchen/menu/utils/view/useMenuInterface'
 import type { Menu } from '../../../../models/menu.model'
+import MenuCardsCell from '../Cards/Cell.vue'
+import MenuCardsPill from '../Cards/Pill.vue'
+import MenuCollectionList from './List.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -109,6 +112,7 @@ const props = withDefaults(
     showCount?: boolean
     initialVariant?: 'pill' | 'cell'
     link?: boolean
+    selectedId?: string | null
   }>(),
   {
     title: 'Menus',
@@ -122,7 +126,11 @@ const props = withDefaults(
   }
 )
 
-const { card: makeCard, preview: makePreview, searchText } = useMenuInterface()
+const emit = defineEmits<{
+  (event: 'select', menuId: string): void
+}>()
+
+const { card: makeCard, searchText } = useMenuInterface()
 
 const collection = computed(() => props.collection ?? [])
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search menus...'))
@@ -130,8 +138,8 @@ const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
-const totalCount = computed(() => collection.value.length)
-const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
+const selectedId = computed(() => String(props.selectedId || '').trim())
+const menuScope = ref<'live' | 'all'>('all')
 const nowTick = ref(Date.now())
 let tickInterval: ReturnType<typeof setInterval> | null = null
 
@@ -151,22 +159,21 @@ const collectionVisible = computed(() => {
   // Recompute cards periodically so active/inactive menu chips follow time windows.
   void nowTick.value
 
-  return [...collection.value].sort(
+  const sorted = [...collection.value].sort(
     (a, b) =>
       Number(a.sort_order || 0) - Number(b.sort_order || 0) ||
       String(a.name || '').localeCompare(String(b.name || ''))
   )
+
+  if (menuScope.value === 'live') {
+    return sorted.filter((menu) => Boolean(menu.active))
+  }
+
+  return sorted
 })
 
-const previewById = computed(() => {
-  const map: Record<string, ReturnType<typeof makePreview> | null> = {}
-  for (const menu of collectionVisible.value) {
-    const card = makeCard(menu)
-    if (!card?.id) continue
-    map[card.id] = makePreview(menu)
-  }
-  return map
-})
+const totalCount = computed(() => collectionVisible.value.length)
+const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
 
 const {
   query,
@@ -181,4 +188,10 @@ const {
   initialVariant: props.initialVariant,
 })
 const isDev = import.meta.dev
+
+const openCard = (card: ReturnType<typeof makeCard>) => {
+  const menuId = String(card?.id || '').trim()
+  if (!menuId) return
+  emit('select', selectedId.value === menuId ? '' : menuId)
+}
 </script>

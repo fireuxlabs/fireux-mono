@@ -15,15 +15,21 @@ export type MenuSectionItem = {
   dish_id: string
 
   label: string
-  description: string
-
   price_minor: number
-  currency_code: string
-
-  photo_url: string
-
-  active: boolean
   sort_order: number
+
+  // Optional item overrides (resolved at runtime from section/menu defaults)
+  description?: string
+  currency_code?: string
+  photo_url?: string
+  active?: boolean
+}
+
+export type MenuItemDefaults = {
+  currency_code: string
+  active: boolean
+  description: string
+  photo_url: string
 }
 
 export type MenuSection = {
@@ -32,6 +38,7 @@ export type MenuSection = {
   description: string
   items: MenuSectionItem[]
   sort_order: number
+  defaults?: Partial<MenuItemDefaults>
 }
 
 export const Menu = {
@@ -41,6 +48,13 @@ export const Menu = {
   name: '' as string,
   description: '' as string,
   active: true as boolean,
+  currency_code: 'CHF' as string,
+  defaults: {
+    currency_code: 'CHF',
+    active: true,
+    description: '',
+    photo_url: '',
+  } as Partial<MenuItemDefaults>,
 
   // Canon sectioned menu shape
   sections: [] as MenuSection[],

@@ -58,8 +58,8 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { computed, ref } from 'vue';
 import { useKitchenIngredientAdd } from '../../../../../composables/fireux/firestore/runtime-kitchen/ingredients/mutations/useKitchenIngredientAdd';
 import {
-  createDefaultKitchenIngredientForm,
-  type KitchenIngredientCreateForm,
+    createDefaultKitchenIngredientForm,
+    type KitchenIngredientCreateForm,
 } from './types';
 
 const props = defineProps<{

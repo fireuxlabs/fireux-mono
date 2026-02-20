@@ -14,10 +14,10 @@
       </div>
 
       <UAlert
-        v-else-if="!activeMenu"
+        v-else-if="!selectedMenu"
         color="neutral"
         variant="soft"
-        title="No active menu"
+        title="No menu available"
         description="This kitchen has no active menu yet."
       />
 
@@ -35,7 +35,7 @@
 
           <div class="space-y-3">
             <div
-              v-for="item in sortedItems(section.items)"
+              v-for="item in section.resolvedItems"
               :key="item.id || item.label"
               class="flex items-start justify-between gap-4 rounded border border-default p-3"
             >
@@ -48,7 +48,7 @@
 
               <div class="flex shrink-0 items-center gap-3">
                 <div class="text-sm font-semibold text-right min-w-[5rem]">
-                  {{ formatPrice(item.price_minor) }}
+                  {{ formatPrice(item.price_minor, item.currency_code) }}
                 </div>
                 <UButton
                   size="xs"
@@ -73,7 +73,11 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenOrderCreate } from '../../../composables/fireux/firestore/runtime-kitchen/orders/mutations/useKitchenOrderCreate'
-import type { Menu, MenuSection, MenuSectionItem } from '../../../models/menu.model'
+import type { Menu, MenuSection } from '../../../models/menu.model'
+import {
+  resolveMenuItemView,
+  type ResolvedMenuItemView,
+} from '../../../composables/fireux/firestore/runtime-kitchen/menu/utils/view/resolveMenuItemView'
 
 definePageMeta({
   layout: 'default',
@@ -86,6 +90,12 @@ definePageMeta({
 const route = useRoute()
 const routeId = computed(() => {
   const raw = route.params.id
+  return Array.isArray(raw)
+    ? String(raw[0] ?? '').trim()
+    : String(raw ?? '').trim()
+})
+const routeMenuId = computed(() => {
+  const raw = route.query.menuId
   return Array.isArray(raw)
     ? String(raw[0] ?? '').trim()
     : String(raw ?? '').trim()
@@ -126,26 +136,47 @@ const menus = computed(() => menusRef.value?.value ?? [])
 
 const sortedMenus = computed(() =>
   [...menus.value]
-    .filter((menu) => Boolean(menu?.active))
     .sort((a, b) => Number(a?.sort_order || 0) - Number(b?.sort_order || 0))
 )
 
-const activeMenu = computed(() => sortedMenus.value[0] ?? null)
-
-const sortedSections = computed<MenuSection[]>(() =>
-  [...(activeMenu.value?.sections ?? [])].sort(
-    (a, b) => Number(a?.sort_order || 0) - Number(b?.sort_order || 0)
-  )
+const activeMenu = computed(() =>
+  sortedMenus.value.find((menu) => Boolean(menu?.active)) ?? null
 )
 
-const sortedItems = (items?: MenuSectionItem[]) =>
-  [...(items ?? [])].sort(
-    (a, b) => Number(a?.sort_order || 0) - Number(b?.sort_order || 0)
-  )
+const selectedMenu = computed(() => {
+  const requestedId = routeMenuId.value
+  if (requestedId) {
+    const requested = sortedMenus.value.find(
+      (menu) => String(menu?.id || '').trim() === requestedId
+    )
+    if (requested) return requested
+  }
+  return activeMenu.value
+})
+
+type PublicMenuSection = MenuSection & {
+  resolvedItems: ResolvedMenuItemView[]
+}
+
+const sortedSections = computed<PublicMenuSection[]>(() => {
+  const menu = selectedMenu.value
+  if (!menu) return []
+
+  return [...(menu.sections ?? [])]
+    .sort((a, b) => Number(a?.sort_order || 0) - Number(b?.sort_order || 0))
+    .map((section) => ({
+      ...section,
+      resolvedItems: [...(section.items ?? [])]
+        .map((item) => resolveMenuItemView(menu, section, item))
+        .filter((item) => item.active)
+        .sort((a, b) => Number(a?.sort_order || 0) - Number(b?.sort_order || 0)),
+    }))
+    .filter((section) => section.resolvedItems.length > 0)
+})
 
 const { createOrder } = useKitchenOrderCreate()
 
-const handleOrder = async (item: MenuSectionItem) => {
+const handleOrder = async (item: ResolvedMenuItemView) => {
   if (!kitchenId.value) return
 
   const orderId = await createOrder({
@@ -163,17 +194,18 @@ const handleOrder = async (item: MenuSectionItem) => {
   })
 }
 
-const formatPrice = (priceMinor?: number) => {
+const formatPrice = (priceMinor?: number, currencyCode?: string) => {
   const amount = Number(priceMinor || 0) / 100
+  const code = String(currencyCode || 'CHF').trim() || 'CHF'
   return new Intl.NumberFormat('de-CH', {
     style: 'currency',
-    currency: 'CHF',
+    currency: code,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(amount)
 }
 
-const headerTitle = computed(() => activeMenu.value?.name || 'Menu')
+const headerTitle = computed(() => selectedMenu.value?.name || 'Menu')
 const headerDescription = computed(() =>
   resolvedKitchen.value?.name
     ? `${resolvedKitchen.value.name} · Public menu`

@@ -2,11 +2,11 @@ import { doc, getDoc } from 'firebase/firestore'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestore } from 'vuefire'
 import {
-  Ingredient,
-  type Ingredient as IngredientDoc,
-  type IngredientCreateInput,
-  KitchenIngredient,
-  type KitchenIngredient as KitchenIngredientDoc,
+    Ingredient,
+    type IngredientCreateInput,
+    type Ingredient as IngredientDoc,
+    KitchenIngredient,
+    type KitchenIngredient as KitchenIngredientDoc,
 } from '../../../../../../models/ingredient.model'
 
 const GLOBAL_COLLECTION_PATH = 'ingredients'

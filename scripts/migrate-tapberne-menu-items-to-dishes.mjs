@@ -34,7 +34,7 @@ import { readFile } from 'node:fs/promises'
 import { parseArgs } from './_lib/args.mjs'
 
 const DEFAULT_KITCHEN_ID = 'ChIJ08WSgYSjj0cRD6oE3RwUFk0'
-const DEFAULT_MAIN_MENU_ID = 'menu-main'
+const DEFAULT_MAIN_MENU_IDS = ['menu-dine-in', 'menu-main']
 
 const args = parseArgs(process.argv.slice(2))
 const help = Boolean(args.help || args.h)
@@ -43,7 +43,7 @@ const commit = Boolean(args.commit)
 const kitchenId = String(args.kitchen || DEFAULT_KITCHEN_ID).trim()
 const appId = String(args['app-id'] || args.appId || 'misebox-app').trim()
 const creatorId = String(args['creator-id'] || args.creatorId || '').trim()
-const mainMenuId = String(args['main-menu-id'] || args.mainMenuId || DEFAULT_MAIN_MENU_ID).trim()
+const requestedMainMenuId = String(args['main-menu-id'] || args.mainMenuId || '').trim()
 
 if (help) {
   console.log('\nFirestore migration: canonicalize Tapberne menu items into dishes\n')
@@ -52,7 +52,7 @@ if (help) {
   console.log('  node scripts/migrate-tapberne-menu-items-to-dishes.mjs --project <projectId> --commit')
   console.log('\nOptions:')
   console.log('  --kitchen <id>       kitchen id (default: La Tapberne)')
-  console.log('  --main-menu-id <id>  source menu id for sort order (default: menu-main)')
+  console.log('  --main-menu-id <id>  source menu id for sort order (default: auto)')
   console.log('  --app-id <id>        app_id for newly created dishes (default: misebox-app)')
   console.log('  --creator-id <uid>   creator_id for newly created dishes (default: empty)')
   console.log('\nAuth (one required):')
@@ -114,6 +114,114 @@ const toDishId = (label) => {
   return `dish-${slug || 'item'}`
 }
 
+/**
+ * Canonical dish mapping for known menu label variants.
+ * Example:
+ * - "Alioli" / "Bravas" are Patatas variants, not standalone dishes.
+ */
+const DISH_LABEL_CANONICAL_BY_KEY = new Map([
+  ['alioli', 'Patatas'],
+  ['bravas', 'Patatas'],
+  ['patatas alioli', 'Patatas'],
+  ['patatas bravas', 'Patatas'],
+])
+
+const resolveCanonicalDishLabel = (label) => {
+  const raw = String(label || '').trim()
+  if (!raw) return ''
+  const normalized = normalizeLabel(raw)
+  return DISH_LABEL_CANONICAL_BY_KEY.get(normalized) || raw
+}
+
+const isTapasSection = (section) => normalizeLabel(section?.label) === 'tapas'
+
+const PATATAS_VARIANT_KEYS = new Set([
+  'patatas',
+  'alioli',
+  'bravas',
+  'patatas aioli',
+  'patatas bravas',
+])
+
+const sortItems = (items) =>
+  [...asArray(items)].sort(
+    (a, b) =>
+      Number(a?.sort_order || 0) - Number(b?.sort_order || 0)
+  )
+
+const buildPatatasVariantItem = (params) => {
+  const { id, label, source, sortOrder } = params
+  const sourcePrice = Number(source?.price_minor)
+  const priceMinor = Number.isFinite(sourcePrice) ? sourcePrice : 950
+  const description = String(source?.description || '').trim()
+  const currencyCode = String(source?.currency_code || 'CHF').trim() || 'CHF'
+  const photoUrl = String(source?.photo_url || '').trim()
+  const isActive = source?.active !== false
+
+  return {
+    id,
+    dish_id: 'dish-patatas',
+    label,
+    price_minor: priceMinor,
+    sort_order: sortOrder,
+    ...(description ? { description } : {}),
+    ...(currencyCode !== 'CHF' ? { currency_code: currencyCode } : {}),
+    ...(photoUrl ? { photo_url: photoUrl } : {}),
+    ...(isActive === false ? { active: false } : {}),
+  }
+}
+
+const normalizeTapasItems = (items) => {
+  const sorted = sortItems(items)
+  const variantCandidates = sorted.filter((menuItem) =>
+    PATATAS_VARIANT_KEYS.has(normalizeLabel(menuItem?.label))
+  )
+
+  if (!variantCandidates.length) {
+    return { items: sorted, changed: false }
+  }
+
+  const byKey = new Map(
+    variantCandidates.map((menuItem) => [normalizeLabel(menuItem?.label), menuItem])
+  )
+  const patatasSource = byKey.get('patatas') || null
+  const aioliSource =
+    byKey.get('patatas aioli') ||
+    byKey.get('alioli') ||
+    patatasSource
+  const bravasSource =
+    byKey.get('patatas bravas') ||
+    byKey.get('bravas') ||
+    patatasSource
+
+  const nextItems = [
+    buildPatatasVariantItem({
+      id: 'item-patatas-aioli',
+      label: 'Patatas · Aioli',
+      source: aioliSource,
+      sortOrder: 1,
+    }),
+    buildPatatasVariantItem({
+      id: 'item-patatas-bravas',
+      label: 'Patatas · Bravas',
+      source: bravasSource,
+      sortOrder: 2,
+    }),
+  ]
+
+  const remainder = sorted
+    .filter((menuItem) => !PATATAS_VARIANT_KEYS.has(normalizeLabel(menuItem?.label)))
+    .map((menuItem, index) => ({
+      ...menuItem,
+      sort_order: index + 3,
+    }))
+
+  return {
+    items: [...nextItems, ...remainder],
+    changed: true,
+  }
+}
+
 const asArray = (value) => (Array.isArray(value) ? value : [])
 
 initializeApp({ credential: await resolveCredential(), projectId })
@@ -122,7 +230,7 @@ const db = getFirestore()
 console.log('[migrate] tapberne-menu-items-to-dishes start', {
   projectId,
   kitchenId,
-  mainMenuId,
+  requestedMainMenuId: requestedMainMenuId || '(auto)',
   appId,
   commit,
 })
@@ -143,26 +251,56 @@ if (menusSnap.empty) {
 const menuDocs = menusSnap.docs
   .map((docSnap) => ({ id: docSnap.id, ref: docSnap.ref, data: docSnap.data() || {} }))
   .sort((a, b) => {
-    if (a.id === mainMenuId) return -1
-    if (b.id === mainMenuId) return 1
-    return String(a.id).localeCompare(String(b.id))
+    return (
+      Number(a.data?.sort_order || 0) - Number(b.data?.sort_order || 0) ||
+      String(a.data?.name || '').localeCompare(String(b.data?.name || '')) ||
+      String(a.id).localeCompare(String(b.id))
+    )
   })
 
-const mainMenu = menuDocs.find((menu) => menu.id === mainMenuId)
+const menuById = new Map(menuDocs.map((menu) => [menu.id, menu]))
+let mainMenu = null
+
+if (requestedMainMenuId) {
+  mainMenu = menuById.get(requestedMainMenuId) || null
+  if (!mainMenu) {
+    console.warn('[migrate] requested_main_menu_not_found', {
+      requestedMainMenuId,
+      foundMenus: menuDocs.map((menu) => menu.id),
+    })
+  }
+}
+
 if (!mainMenu) {
-  console.error('[migrate] missing_main_menu', {
-    expectedMenuId: mainMenuId,
-    foundMenus: menuDocs.map((menu) => menu.id),
-  })
+  for (const fallbackMenuId of DEFAULT_MAIN_MENU_IDS) {
+    const candidate = menuById.get(fallbackMenuId) || null
+    if (!candidate) continue
+    mainMenu = candidate
+    break
+  }
+}
+
+if (!mainMenu) {
+  mainMenu =
+    menuDocs.find((menu) => Boolean(menu.data?.active)) ||
+    menuDocs[0] ||
+    null
+}
+
+if (!mainMenu) {
+  console.error('[migrate] unable_to_resolve_main_menu', { foundMenus: menuDocs.map((menu) => menu.id) })
   process.exit(3)
 }
+
+console.log('[migrate] selected_main_menu', { mainMenuId: mainMenu.id })
 
 const sortOrderByKey = new Map()
 let appearanceCounter = 1
 for (const section of asArray(mainMenu.data.sections)) {
   for (const item of asArray(section?.items)) {
     const label = String(item?.label || '').trim()
-    const key = normalizeLabel(label)
+    const canonicalLabel = resolveCanonicalDishLabel(label)
+    const key = normalizeLabel(canonicalLabel)
     if (!key) continue
     if (sortOrderByKey.has(key)) continue
     sortOrderByKey.set(key, appearanceCounter)
@@ -176,12 +314,13 @@ for (const menu of menuDocs) {
     for (const menuItem of asArray(section?.items)) {
       const label = String(menuItem?.label || '').trim()
       const description = String(menuItem?.description || '').trim()
-      const key = normalizeLabel(label)
+      const canonicalLabel = resolveCanonicalDishLabel(label)
+      const key = normalizeLabel(canonicalLabel)
       if (!key) continue
       if (uniqueByKey.has(key)) continue
       uniqueByKey.set(key, {
         key,
-        label,
+        label: canonicalLabel,
         description,
       })
     }
@@ -222,14 +361,48 @@ for (const entry of dishRefs) {
 for (const menu of menuDocs) {
   const sections = asArray(menu.data.sections)
   let needsUpdate = false
+  const currentMenuCurrency = String(menu.data?.currency_code || '').trim()
+  const nextMenuCurrency = currentMenuCurrency || 'CHF'
+  if (!currentMenuCurrency) {
+    needsUpdate = true
+  }
+
+  const currentMenuDefaults = menu.data?.defaults || {}
+  const nextMenuDefaults = {
+    currency_code: String(currentMenuDefaults.currency_code || nextMenuCurrency).trim() || nextMenuCurrency,
+    active: currentMenuDefaults.active === false ? false : true,
+    description: String(currentMenuDefaults.description || '').trim(),
+    photo_url: String(currentMenuDefaults.photo_url || '').trim(),
+  }
+
+  if (
+    !menu.data?.defaults ||
+    String(currentMenuDefaults.currency_code || '').trim() !== nextMenuDefaults.currency_code ||
+    (typeof currentMenuDefaults.active === 'boolean'
+      ? currentMenuDefaults.active
+      : true) !== nextMenuDefaults.active ||
+    String(currentMenuDefaults.description || '').trim() !== nextMenuDefaults.description ||
+    String(currentMenuDefaults.photo_url || '').trim() !== nextMenuDefaults.photo_url
+  ) {
+    needsUpdate = true
+  }
+
   const nextSections = sections.map((section) => {
-    const items = asArray(section?.items)
-    const nextItems = items.map((menuItem) => {
+    const normalizedTapas = isTapasSection(section)
+      ? normalizeTapasItems(section?.items)
+      : { items: sortItems(section?.items), changed: false }
+
+    if (normalizedTapas.changed) {
+      needsUpdate = true
+    }
+
+    const nextItems = normalizedTapas.items.map((menuItem) => {
       const label = String(menuItem?.label || '').trim()
-      const key = normalizeLabel(label)
+      const canonicalLabel = resolveCanonicalDishLabel(label)
+      const key = normalizeLabel(canonicalLabel)
       if (!key) return menuItem
 
-      const canonicalDishId = toDishId(label)
+      const canonicalDishId = toDishId(canonicalLabel)
       const currentDishId = String(menuItem?.dish_id || '').trim()
 
       if (currentDishId === canonicalDishId) {
@@ -254,6 +427,8 @@ for (const menu of menuDocs) {
   plannedMenuUpdates += 1
 
   menu.nextSections = nextSections
+  menu.nextCurrencyCode = nextMenuCurrency
+  menu.nextDefaults = nextMenuDefaults
 }
 
 console.log('[migrate] analysis', {
@@ -324,6 +499,7 @@ for (const menu of menuDocs) {
   if (!commit) {
     console.log('[dry-run-update-menu]', menu.ref.path, {
       sections: asArray(menu.nextSections).length,
+      currency_code: menu.nextCurrencyCode,
       itemMappings: updates.length,
       updates,
     })
@@ -332,11 +508,14 @@ for (const menu of menuDocs) {
 
   await menu.ref.update({
     sections: menu.nextSections,
+    currency_code: menu.nextCurrencyCode,
+    defaults: menu.nextDefaults,
     updated_at: FieldValue.serverTimestamp(),
   })
 
   console.log('[update-menu]', menu.ref.path, {
     sections: asArray(menu.nextSections).length,
+    currency_code: menu.nextCurrencyCode,
     itemMappings: updates.length,
   })
 }

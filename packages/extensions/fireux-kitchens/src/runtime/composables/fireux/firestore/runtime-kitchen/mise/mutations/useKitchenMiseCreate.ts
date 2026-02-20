@@ -1,10 +1,10 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import {
-  KitchenMiseTask,
-  type KitchenMiseChecklistItem,
-  type KitchenMisePriority,
-  type KitchenMiseStatus,
-  type KitchenMiseTask as KitchenMiseTaskDoc,
+    KitchenMiseTask,
+    type KitchenMiseChecklistItem,
+    type KitchenMisePriority,
+    type KitchenMiseStatus,
+    type KitchenMiseTask as KitchenMiseTaskDoc,
 } from '../../../../../../models/kitchen-mise.model'
 
 const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'

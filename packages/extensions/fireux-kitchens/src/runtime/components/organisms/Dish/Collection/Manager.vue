@@ -35,7 +35,19 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <UPopover :popper="{ placement: 'right-start' }">
+        <div
+          v-if="selectionMode"
+          class="block rounded-lg transition"
+          :class="[
+            selectedId === card.id ? 'ring-2 ring-primary/60' : '',
+            'cursor-pointer',
+          ]"
+          @click="openCard(card)"
+        >
+          <DishCardsPill v-bind="card" />
+        </div>
+
+        <UPopover v-else :popper="{ placement: 'right-start' }">
           <template #default>
             <NuxtLink
               :to="linkEnabled ? (card.to || undefined) : undefined"
@@ -53,7 +65,19 @@
         </UPopover>
       </template>
       <template #cell="{ card }">
-        <UPopover :popper="{ placement: 'right-start' }">
+        <div
+          v-if="selectionMode"
+          class="block rounded-lg transition"
+          :class="[
+            selectedId === card.id ? 'ring-2 ring-primary/60' : '',
+            'cursor-pointer',
+          ]"
+          @click="openCard(card)"
+        >
+          <DishCardsCell v-bind="card" :prop="card.description" />
+        </div>
+
+        <UPopover v-else :popper="{ placement: 'right-start' }">
           <template #default>
             <NuxtLink
               :to="linkEnabled ? (card.to || undefined) : undefined"
@@ -104,6 +128,8 @@ const props = withDefaults(
     showCount?: boolean
     initialVariant?: 'pill' | 'cell'
     link?: boolean
+    selectionMode?: boolean
+    selectedId?: string | null
   }>(),
   {
     title: 'Dishes',
@@ -114,8 +140,13 @@ const props = withDefaults(
     showCount: true,
     initialVariant: 'pill',
     link: true,
+    selectionMode: false,
   }
 )
+
+const emit = defineEmits<{
+  (event: 'select', dishId: string): void
+}>()
 
 const { card: makeCard, preview: makePreview, searchText } = useDishInterface()
 
@@ -125,6 +156,8 @@ const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
+const selectionMode = computed(() => props.selectionMode === true)
+const selectedId = computed(() => String(props.selectedId || '').trim())
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
 
@@ -151,4 +184,10 @@ const {
   initialVariant: props.initialVariant,
 })
 const isDev = import.meta.dev
+
+const openCard = (card: ReturnType<typeof makeCard>) => {
+  const dishId = String(card?.id || '').trim()
+  if (!dishId) return
+  emit('select', selectedId.value === dishId ? '' : dishId)
+}
 </script>

@@ -29,6 +29,7 @@ const args = parseArgs(process.argv.slice(2))
 const help = Boolean(args.help || args.h)
 const projectId = args.project || process.env.FIREBASE_PROJECT_ID || process.env.GCLOUD_PROJECT
 const commit = Boolean(args.commit)
+const force = Boolean(args.force)
 const kitchenId = String(args.kitchen || DEFAULT_KITCHEN_ID).trim()
 const appId = String(args['app-id'] || args.appId || 'misebox-app').trim()
 const creatorId = String(args['creator-id'] || args.creatorId || '').trim()
@@ -41,6 +42,7 @@ if (help) {
   console.log('\nOptions:')
   console.log('  --app-id <id>       app_id value (default: misebox-app)')
   console.log('  --creator-id <uid>  creator_id value (default: empty)')
+  console.log('  --force             allow commit even if other menu IDs already exist')
   console.log('\nAuth (one required):')
   console.log('  - GOOGLE_APPLICATION_CREDENTIALS (path to JSON)')
   console.log('  - FIREBASE_SERVICE_ACCOUNT (JSON string)')
@@ -86,11 +88,7 @@ const item = (label, priceMinor, sortOrder) => ({
   id: `item-${slugify(label) || `n-${sortOrder}`}`,
   dish_id: '',
   label,
-  description: '',
   price_minor: Number(priceMinor || 0),
-  currency_code: 'CHF',
-  photo_url: '',
-  active: true,
   sort_order: sortOrder,
 })
 
@@ -108,12 +106,12 @@ const mainMenu = {
   name: 'La Tapberne — Main Menu',
   description: 'Seeded from paper menu photos (v0).',
   active: true,
+  currency_code: 'CHF',
   sort_order: 1,
   sections: [
     section('Tapas', [
-      { label: 'Patatas', price_minor: 950 },
-      { label: 'Alioli', price_minor: 950 },
-      { label: 'Bravas', price_minor: 950 },
+      { label: 'Patatas · Aioli', price_minor: 950 },
+      { label: 'Patatas · Bravas', price_minor: 950 },
       { label: 'Tortilla de Patata', price_minor: 950 },
       { label: 'Gebratene Pimientos de Padrón', price_minor: 950 },
       { label: 'Portobello Ajillo', price_minor: 900 },
@@ -166,12 +164,12 @@ const limitedMenu = {
   name: 'La Tapberne — Limited Menu',
   description: 'Reduced menu when chef is off.',
   active: false,
+  currency_code: 'CHF',
   sort_order: 2,
   sections: [
     section('Tapas', [
-      { label: 'Patatas', price_minor: 950 },
-      { label: 'Alioli', price_minor: 950 },
-      { label: 'Bravas', price_minor: 950 },
+      { label: 'Patatas · Aioli', price_minor: 950 },
+      { label: 'Patatas · Bravas', price_minor: 950 },
     ], 1),
     section('Oléhands', [
       { label: 'The Vegi Smashburger', price_minor: 2500 },
@@ -194,6 +192,7 @@ console.log('[migrate] tapberne-menus start', {
   projectId,
   kitchenId,
   appId,
+  force,
   commit,
 })
 
@@ -206,6 +205,21 @@ if (!kitchenSnap.exists) {
 
 const menus = [mainMenu, limitedMenu]
 const obsoleteMenuIds = ['menu-drinks-specials']
+const targetMenuIds = new Set(menus.map((menu) => String(menu.id || '').trim()).filter(Boolean))
+
+const existingMenusSnap = await kitchenRef.collection('menus').select().get()
+const existingMenuIds = existingMenusSnap.docs.map((docSnap) => String(docSnap.id || '').trim())
+const conflictingMenuIds = existingMenuIds.filter((menuId) => menuId && !targetMenuIds.has(menuId))
+
+if (commit && conflictingMenuIds.length && !force) {
+  console.error('[migrate] refusing_commit_due_existing_non_target_menus', {
+    kitchenPath: kitchenRef.path,
+    targetMenuIds: [...targetMenuIds],
+    conflictingMenuIds,
+    hint: 'Re-run with --force if you intentionally want to keep mixed menu IDs.',
+  })
+  process.exit(3)
+}
 
 for (const menu of menus) {
   const menuRef = kitchenRef.collection('menus').doc(menu.id)

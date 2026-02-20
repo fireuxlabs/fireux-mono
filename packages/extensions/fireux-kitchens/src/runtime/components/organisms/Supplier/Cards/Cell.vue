@@ -25,7 +25,10 @@
 </template>
 
 <script setup lang="ts">
-import type { SupplierCard } from '../../../../composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
-
-defineProps<Pick<SupplierCard.Card, 'id' | 'name' | 'subtitle' | 'avatarUrl'>>()
+defineProps<{
+  id: string
+  name: string
+  subtitle: string
+  avatarUrl: string
+}>()
 </script>
