@@ -9,6 +9,13 @@
     </UPageHeader>
 
     <UPageBody class="space-y-6">
+      <div v-if="checkoutKitchenId" class="flex flex-wrap items-center gap-2">
+        <UBadge variant="soft" color="neutral">Kitchen</UBadge>
+        <UBadge variant="soft">
+          {{ kitchenDisplayPill }}
+        </UBadge>
+      </div>
+
       <UAlert
         v-if="isEmpty"
         color="neutral"
@@ -87,12 +94,26 @@
           <div class="space-y-4">
             <div class="space-y-1">
               <div class="text-xs font-medium text-dimmed">Service mode</div>
-              <URadioGroup v-model="serviceMode" :items="serviceModeOptions" />
+              <div
+                v-if="serviceModeLocked"
+                class="rounded border border-default px-2.5 py-2 text-sm font-medium"
+              >
+                {{ formatServiceModeLabel(serviceMode) }}
+              </div>
+              <URadioGroup v-else v-model="serviceMode" :items="serviceModeOptions" />
             </div>
 
             <div v-if="serviceMode === 'dine_in'" class="space-y-1">
-              <div class="text-xs font-medium text-dimmed">Table (optional)</div>
-              <UInput v-model="tableLabel" placeholder="e.g. 12" />
+              <div class="text-xs font-medium text-dimmed">
+                {{ tableLocked ? 'Table' : 'Table (optional)' }}
+              </div>
+              <div
+                v-if="tableLocked"
+                class="rounded border border-default px-2.5 py-2 text-sm font-medium"
+              >
+                {{ tableLabel || 'N/A' }}
+              </div>
+              <UInput v-else v-model="tableLabel" placeholder="e.g. 12" />
             </div>
 
             <div class="space-y-1">
@@ -118,9 +139,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, shallowRef, watch, type Ref } from 'vue'
 import { useRoute } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { RadioGroupItem } from '@nuxt/ui'
 import type { OrderServiceMode } from '../../models/order.model'
 import { useBasket } from '../../composables/useBasket'
@@ -150,31 +172,97 @@ const serviceModeOptions: RadioGroupItem[] = [
   { label: 'Delivery', value: 'delivery' },
 ]
 
-const resolveModeFromQuery = (): OrderServiceMode => {
-  const raw = String(route.query.mode || '').trim().toLowerCase()
+type QueryServiceMode = '' | OrderServiceMode
+
+const parseModeFromQuery = (value: unknown): QueryServiceMode => {
+  const raw = String(value || '').trim().toLowerCase()
   if (raw === 'dine-in' || raw === 'dine_in') return 'dine_in'
   if (raw === 'collection') return 'collection'
   if (raw === 'delivery') return 'delivery'
-  return 'dine_in'
+  return ''
 }
 
-const serviceMode = ref<OrderServiceMode>(resolveModeFromQuery())
-const tableLabel = ref(String(route.query.table || '').trim())
+const modeFromQuery = computed<QueryServiceMode>(() => parseModeFromQuery(route.query.mode))
+const tableFromQuery = computed(() => String(route.query.table || '').trim())
+const kitchenIdFromQuery = computed(() => String(route.query.kitchen || '').trim())
+const kitchenNameFromQuery = computed(() =>
+  String(route.query.kitchenName || route.query.kitchen_name || '').trim()
+)
+const checkoutKitchenId = computed(() => String(kitchenId.value || kitchenIdFromQuery.value).trim())
+const serviceModeLocked = computed(() => Boolean(modeFromQuery.value))
+
+const serviceMode = ref<OrderServiceMode>(
+  (modeFromQuery.value || 'dine_in') as OrderServiceMode
+)
+const tableLabel = ref(tableFromQuery.value)
+const tableLocked = computed(
+  () => serviceModeLocked.value && serviceMode.value === 'dine_in' && Boolean(tableFromQuery.value)
+)
 const notes = ref('')
 const submitting = ref(false)
 const confirmedOrderId = ref('')
+
+watch(
+  modeFromQuery,
+  (nextMode) => {
+    if (!nextMode) return
+    serviceMode.value = nextMode
+  },
+  { immediate: true }
+)
+
+watch(
+  tableFromQuery,
+  (nextTable) => {
+    if (!nextTable) return
+    tableLabel.value = nextTable
+  },
+  { immediate: true }
+)
+
+const { firestoreFetchDoc } = useFirestoreRead()
+const kitchenRef = shallowRef<Ref<Record<string, unknown> | undefined> | null>(null)
+const placeRef = shallowRef<Ref<Record<string, unknown> | undefined> | null>(null)
+
+watch(
+  checkoutKitchenId,
+  (nextKitchenId) => {
+    kitchenRef.value = nextKitchenId
+      ? firestoreFetchDoc<Record<string, unknown>>('kitchens', nextKitchenId)
+      : null
+
+    placeRef.value = nextKitchenId
+      ? firestoreFetchDoc<Record<string, unknown>>('places', nextKitchenId)
+      : null
+  },
+  { immediate: true }
+)
+
+const kitchenDisplayName = computed(() => {
+  const kitchen = kitchenRef.value?.value ?? {}
+  const place = placeRef.value?.value ?? {}
+  return String(
+    kitchen?.name ||
+      kitchen?.short_name ||
+      place?.name ||
+      place?.short_name ||
+      kitchenNameFromQuery.value ||
+      ''
+  ).trim()
+})
+
+const kitchenDisplayPill = computed(() => kitchenDisplayName.value || 'Kitchen selected')
 
 const backToMenu = computed(() => {
   const returnTo = String(route.query.returnTo || '').trim()
   if (returnTo.startsWith('/kitchens/')) return returnTo
 
-  const id = kitchenId.value
+  const id = checkoutKitchenId.value
   return id ? `/kitchens/${encodeURIComponent(id)}/menu` : '/kitchens'
 })
 
 const checkoutDescription = computed(() => {
-  if (!kitchenId.value) return 'Review basket and submit your order.'
-  return `Kitchen: ${kitchenId.value}`
+  return 'Review basket and submit your order.'
 })
 
 const lineKey = (
@@ -199,6 +287,12 @@ const formatPrice = (priceMinor?: number, currency?: string) => {
   }).format(amount)
 }
 
+const formatServiceModeLabel = (mode: OrderServiceMode) => {
+  if (mode === 'delivery') return 'Delivery'
+  if (mode === 'collection') return 'Collection'
+  return 'Dine-in'
+}
+
 const submitCheckout = async () => {
   if (submitting.value) return
 
@@ -220,7 +314,10 @@ const submitCheckout = async () => {
       channel: 'menu',
       service: {
         mode: serviceMode.value,
-        table_label: serviceMode.value === 'dine_in' ? tableLabel.value : '',
+        table_label:
+          serviceMode.value === 'dine_in'
+            ? (tableLocked.value ? tableFromQuery.value : tableLabel.value)
+            : '',
         notes: notes.value,
       },
       lines: asOrderLines.value,

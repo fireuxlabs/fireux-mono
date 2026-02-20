@@ -41,6 +41,11 @@
       "fireux-places/runtime/*": [
         "packages/extensions/fireux-places/src/runtime/*"
       ],
+      "fireux-orders": ["packages/extensions/fireux-orders/src/module.ts"],
+      "fireux-orders/*": ["packages/extensions/fireux-orders/src/*"],
+      "fireux-orders/runtime/*": [
+        "packages/extensions/fireux-orders/src/runtime/*"
+      ],
       "fireux-misebox": ["packages/ecosystem/fireux-misebox/src/module.ts"],
       "fireux-misebox/*": ["packages/ecosystem/fireux-misebox/src/*"],
       "fireux-bringli": ["packages/ecosystem/fireux-bringli/src/module.ts"],
@@ -54,6 +59,7 @@
       "@fireux-kitchens/*": ["packages/extensions/fireux-kitchens/src/*"],
       "@fireux-companies/*": ["packages/extensions/fireux-companies/src/*"],
       "@fireux-places/*": ["packages/extensions/fireux-places/src/*"],
+      "@fireux-orders/*": ["packages/extensions/fireux-orders/src/*"],
       "@fireux-misebox/*": ["packages/ecosystem/fireux-misebox/src/*"],
       "@fireux-bringli/*": ["packages/ecosystem/fireux-bringli/src/*"],
       "@fireux-cleanbox/*": ["packages/ecosystem/fireux-cleanbox/src/*"],

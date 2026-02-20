@@ -13,6 +13,7 @@ export const Dish = {
   kitchen_id: '' as string,
 
   name: '' as string,
+  short_name: '' as string,
   description: '' as string,
   image_url: '' as string,
 

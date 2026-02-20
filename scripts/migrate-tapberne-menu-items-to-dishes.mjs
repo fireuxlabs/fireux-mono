@@ -114,6 +114,20 @@ const toDishId = (label) => {
   return `dish-${slug || 'item'}`
 }
 
+const toShortName = (label) => {
+  const raw = String(label || '').trim()
+  if (!raw) return ''
+  if (raw.length <= 24) return raw
+
+  const compact = raw
+    .replace(/\s*·\s*/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  if (compact.length <= 24) return compact
+  return `${compact.slice(0, 21).trim()}...`
+}
+
 /**
  * Canonical dish mapping for known menu label variants.
  * Example:
@@ -349,13 +363,23 @@ const existingDishSnaps = await db.getAll(...dishRefs.map((entry) => entry.ref))
 const existingDishById = new Map(existingDishSnaps.map((snap) => [snap.id, snap]))
 
 let plannedDishCreates = 0
+let plannedDishShortNameUpdates = 0
 let plannedMenuUpdates = 0
 let alreadyCorrectMenuItems = 0
 
 for (const entry of dishRefs) {
-  const exists = Boolean(existingDishById.get(entry.dishId)?.exists)
-  if (exists) continue
-  plannedDishCreates += 1
+  const snap = existingDishById.get(entry.dishId)
+  const exists = Boolean(snap?.exists)
+  if (!exists) {
+    plannedDishCreates += 1
+    continue
+  }
+
+  const currentShortName = String(snap?.get('short_name') || '').trim()
+  const nextShortName = toShortName(entry.label)
+  if (!currentShortName && nextShortName) {
+    plannedDishShortNameUpdates += 1
+  }
 }
 
 for (const menu of menuDocs) {
@@ -435,6 +459,7 @@ console.log('[migrate] analysis', {
   menusFound: menuDocs.length,
   uniqueItems: uniqueItems.length,
   plannedDishCreates,
+  plannedDishShortNameUpdates,
   plannedMenuUpdates,
   alreadyCorrectMenuItems,
 })
@@ -450,6 +475,7 @@ for (const entry of dishRefs) {
     id: entry.dishId,
     kitchen_id: kitchenId,
     name: entry.label,
+    short_name: toShortName(entry.label),
     description: entry.description,
     image_url: '',
     recipe_ids: [],
@@ -477,6 +503,33 @@ for (const entry of dishRefs) {
     id: payload.id,
     name: payload.name,
     sort_order: payload.sort_order,
+  })
+}
+
+for (const entry of dishRefs) {
+  const snap = existingDishById.get(entry.dishId)
+  if (!snap?.exists) continue
+
+  const currentShortName = String(snap.get('short_name') || '').trim()
+  if (currentShortName) continue
+
+  const nextShortName = toShortName(entry.label)
+  if (!nextShortName) continue
+
+  if (!commit) {
+    console.log('[dry-run-update-dish-short-name]', entry.ref.path, {
+      short_name: nextShortName,
+    })
+    continue
+  }
+
+  await entry.ref.update({
+    short_name: nextShortName,
+    updated_at: FieldValue.serverTimestamp(),
+  })
+
+  console.log('[update-dish-short-name]', entry.ref.path, {
+    short_name: nextShortName,
   })
 }
 
@@ -525,5 +578,6 @@ console.log('[migrate] tapberne-menu-items-to-dishes done', {
   kitchenPath: kitchenRef.path,
   uniqueItems: uniqueItems.length,
   plannedDishCreates,
+  plannedDishShortNameUpdates,
   plannedMenuUpdates,
 })

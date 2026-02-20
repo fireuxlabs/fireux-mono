@@ -7,9 +7,29 @@
       resizable
       class="bg-elevated/25"
     >
-      <template #header>
+      <template #header="{ collapsed }">
         <div class="px-2 py-2">
-          <KitchenCardsPill v-if="pillCard" v-bind="pillCard" :show-badges="false" />
+          <div
+            v-if="pillCard && (collapsed ?? false)"
+            class="flex items-center justify-center"
+            :title="`${pillCard.title || 'Kitchen'} · ${menuStatusLabel}`"
+          >
+            <UChip :color="hasActiveMenu ? 'success' : 'error'">
+              <UAvatar
+                :src="pillCard.imageUrl || undefined"
+                icon="i-lucide-chef-hat"
+                size="sm"
+              />
+            </UChip>
+          </div>
+
+          <KitchenCardsPill
+            v-else-if="pillCard"
+            v-bind="pillCard"
+            :subtitle="menuStatusLabel"
+            :show-subtitle="true"
+            :show-badges="false"
+          />
         </div>
       </template>
 
@@ -61,7 +81,7 @@ import { useAuthRedirect } from 'fireux-core/runtime/composables/fireux/app/ui/u
 import { useDashboardNotifications } from 'fireux-core/runtime/composables/fireux/app/ui/useDashboardNotifications'
 import { computed, ref } from 'vue'
 import { useKitchenDashboardNav } from '../composables/fireux/app/routing/useKitchenDashboardNav'
-import { useRuntimeKitchen } from '../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
+import { useRuntimeKitchenComputed } from '../composables/fireux/app/kitchen-runtime/useRuntimeKitchenComputed'
 import { useKitchenInterface } from '../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 defineOptions({ name: 'kitchen-dashboard' })
@@ -69,7 +89,7 @@ defineOptions({ name: 'kitchen-dashboard' })
 const open = ref(false)
 const { desktop } = useKitchenDashboardNav()
 const { isOpen: isNotificationsSlideoverOpen } = useDashboardNotifications()
-const runtimeKitchen = useRuntimeKitchen()
+const { runtimeKitchen, hasActiveMenu, menuStatusLabel } = useRuntimeKitchenComputed()
 const { pill } = useKitchenInterface()
 
 const pillCard = computed(() => pill(runtimeKitchen.kitchen.value))

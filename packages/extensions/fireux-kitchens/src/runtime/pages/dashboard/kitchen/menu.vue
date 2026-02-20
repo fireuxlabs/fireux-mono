@@ -181,7 +181,9 @@ const dishNameById = computed(() => {
   for (const dish of dishes.value) {
     const id = String(dish.id || '').trim()
     if (!id) continue
-    map.set(id, String(dish.name || '').trim() || id)
+    const shortName = String((dish as any).short_name || '').trim()
+    const fullName = String(dish.name || '').trim()
+    map.set(id, shortName || fullName || id)
   }
   return map
 })

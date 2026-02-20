@@ -69,6 +69,8 @@ export function useDishInterface() {
       recipeIds[0] ||
       ''
     const name = safeString(dish.name).trim()
+    const shortName = safeString((dish as any).short_name).trim()
+    const displayName = shortName || name
     const active = Boolean(dish.active)
     const ingredientIds = safeStringArray(dish.ingredient_ids)
     const miseIds = safeStringArray(dish.mise_ids)
@@ -77,10 +79,10 @@ export function useDishInterface() {
       id,
       to: id ? `/dashboard/kitchen/dishes?dish=${encodeURIComponent(id)}` : '/dashboard/kitchen/dishes',
       imageUrl: safeString(dish.image_url).trim(),
-      title: name,
+      title: displayName,
       subtitle: joinSubtitle(active),
       badges: [active ? 'active' : 'inactive'],
-      name,
+      name: displayName,
       description: safeString(dish.description).trim(),
       active,
       recipeIds,

@@ -6,12 +6,6 @@
 
     <template #body>
       <section class="space-y-4">
-        <div class="text-xs text-dimmed">
-          Mode: <span class="font-medium">{{ mode }}</span>
-          <template v-if="kitchenId"> · Kitchen: <span class="font-medium">{{ kitchenId }}</span></template>
-          · Orders: <span class="font-medium">{{ orders.length }}</span>
-        </div>
-
         <UAlert
           v-if="!kitchenId"
           color="neutral"
@@ -20,172 +14,37 @@
           description="Select a runtime kitchen before viewing incoming orders."
         />
 
-        <template v-else>
-          <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-            <UCard>
-              <template #header>
-                <div class="flex items-center justify-between gap-2">
-                  <div class="text-sm font-semibold">Latest orders</div>
-                  <UBadge variant="soft" color="neutral">{{ orders.length }}</UBadge>
-                </div>
-              </template>
+        <UAlert
+          v-else-if="!orderTickets.length"
+          color="neutral"
+          variant="soft"
+          title="No incoming orders loaded"
+          description="No orders yet for this kitchen context."
+        />
 
-              <div v-if="orders.length" class="space-y-2">
-                <button
-                  v-for="order in orders"
-                  :key="order.id"
-                  type="button"
-                  class="w-full rounded border border-default p-3 text-left hover:bg-[var(--ui-bg-elevated)]"
-                  :class="selectedOrderId === order.id ? 'ring-2 ring-inset ring-primary' : ''"
-                  @click="selectedOrderId = order.id"
-                >
-                  <div class="flex items-center justify-between gap-3">
-                    <div class="min-w-0">
-                      <div class="truncate font-medium">
-                        {{ order.lines?.[0]?.label || order.id || 'Order' }}
-                      </div>
-                      <div class="text-xs text-dimmed">
-                        {{ formatDate(order.created_at) }}
-                      </div>
-                    </div>
-
-                    <UBadge variant="soft" :color="statusColor(resolveStatus(order.status))">
-                      {{ statusLabel(resolveStatus(order.status)) }}
-                    </UBadge>
-                  </div>
-                </button>
-              </div>
-
-              <UAlert
-                v-else
-                color="neutral"
-                variant="soft"
-                title="No incoming orders loaded"
-                description="No orders yet for this kitchen context."
-              />
-            </UCard>
-
-            <UCard>
-              <template #header>
-                <div class="text-sm font-semibold">Order detail</div>
-              </template>
-
-              <div v-if="selectedOrder" class="space-y-4">
-                <div class="space-y-1">
-                  <div class="text-xs text-dimmed">Order id</div>
-                  <div class="font-mono text-xs">{{ selectedOrder.id }}</div>
-                </div>
-
-                <div class="grid gap-2 sm:grid-cols-2">
-                  <div>
-                    <div class="text-xs text-dimmed">Status</div>
-                    <UBadge variant="soft" :color="statusColor(currentStatus)">
-                      {{ statusLabel(currentStatus) }}
-                    </UBadge>
-                  </div>
-                  <div>
-                    <div class="text-xs text-dimmed">Channel</div>
-                    <div class="text-sm font-medium">{{ selectedOrder.channel || 'menu' }}</div>
-                  </div>
-                  <div>
-                    <div class="text-xs text-dimmed">Service</div>
-                    <div class="text-sm font-medium">{{ serviceLabel(selectedOrder.service?.mode) }}</div>
-                  </div>
-                  <div>
-                    <div class="text-xs text-dimmed">Table</div>
-                    <div class="text-sm font-medium">{{ selectedOrder.service?.table_label || '-' }}</div>
-                  </div>
-                </div>
-
-                <div class="space-y-2">
-                  <div class="text-xs text-dimmed">Lines</div>
-
-                  <div
-                    v-for="(line, index) in selectedOrder.lines || []"
-                    :key="`${selectedOrder.id}-${line.dish_id}-${index}`"
-                    class="flex items-center justify-between gap-3 rounded border border-default p-2"
-                  >
-                    <div class="min-w-0">
-                      <div class="truncate text-sm font-medium">{{ line.label }}</div>
-                      <div class="text-xs text-dimmed">
-                        {{ line.qty }} × {{ formatPrice(line.price_minor, line.currency_code) }}
-                      </div>
-                    </div>
-
-                    <div class="text-sm font-semibold">
-                      {{ formatPrice(Number(line.price_minor || 0) * Number(line.qty || 0), line.currency_code) }}
-                    </div>
-                  </div>
-                </div>
-
-                <div class="flex items-center justify-between border-t border-default pt-3">
-                  <div class="text-xs text-dimmed">Subtotal</div>
-                  <div class="font-semibold">
-                    {{ formatPrice(selectedOrder.totals?.subtotal_minor, selectedOrder.totals?.currency_code) }}
-                  </div>
-                </div>
-
-                <div class="space-y-2 border-t border-default pt-3">
-                  <div class="text-xs text-dimmed">Status progression</div>
-
-                  <div class="flex flex-wrap gap-2">
-                    <UButton
-                      v-for="status in progression"
-                      :key="status"
-                      size="xs"
-                      :variant="status === currentStatus ? 'solid' : 'soft'"
-                      :color="status === currentStatus ? 'primary' : 'neutral'"
-                      :disabled="!canMoveTo(status) || updating"
-                      @click="setSelectedStatus(status)"
-                    >
-                      {{ statusLabel(status) }}
-                    </UButton>
-
-                    <UButton
-                      v-if="canMoveTo('cancelled')"
-                      size="xs"
-                      color="error"
-                      variant="soft"
-                      :loading="updating"
-                      @click="setSelectedStatus('cancelled')"
-                    >
-                      Cancel
-                    </UButton>
-                  </div>
-
-                  <UButton
-                    v-if="nextStatus"
-                    size="sm"
-                    :loading="updating"
-                    :disabled="updating"
-                    @click="setSelectedStatus(nextStatus)"
-                  >
-                    Advance to {{ statusLabel(nextStatus) }}
-                  </UButton>
-                </div>
-              </div>
-
-              <UAlert
-                v-else
-                color="neutral"
-                variant="soft"
-                title="Select an order"
-                description="Choose an order from the list to review lines and update status."
-              />
-            </UCard>
-          </div>
-        </template>
+        <div
+          v-else
+          class="flex flex-wrap gap-3"
+        >
+          <OrderCard
+            v-for="(ticket, index) in orderTickets"
+            :key="ticket.id || `${ticket.contextLabel}-${ticket.timeLabel}-${index}`"
+            :id="ticket.id"
+            :context-label="ticket.contextLabel"
+            :time-label="ticket.timeLabel"
+            :server-name="ticket.serverName"
+            :lines="ticket.lines"
+          />
+        </div>
       </section>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { computed } from 'vue'
 import { useOrdersForKitchenFetch } from 'fireux-orders/runtime/composables/useOrdersForKitchenFetch'
-import { useOrderUpdateStatus } from 'fireux-orders/runtime/composables/useOrderUpdateStatus'
-import type { OrderStatus } from 'fireux-orders/runtime/models/order.model'
+import OrderCard from '../../../components/organisms/Order/Card.vue'
 import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
 
 definePageMeta({
@@ -203,48 +62,21 @@ definePageMeta({
 })
 
 const runtime = useRuntimeKitchen()
-const mode = runtime.mode
 const kitchenId = computed(() => String(runtime.id.value || '').trim())
-const toast = useToastify()
-
 const { orders } = useOrdersForKitchenFetch(kitchenId)
 
-const {
-  setStatus,
-  normalizeOrderStatus,
-  nextStatusFor,
-  canTransition,
-} = useOrderUpdateStatus()
+type TicketLine = {
+  label: string
+  qty: number
+}
 
-const selectedOrderId = ref('')
-const updating = ref(false)
-const progression: OrderStatus[] = ['accepted', 'in_progress', 'ready', 'completed']
-
-watch(
-  orders,
-  (nextOrders) => {
-    const selectedExists = nextOrders.some((order) => String(order.id || '').trim() === selectedOrderId.value)
-    if (selectedExists) return
-
-    const nextSelected = nextOrders[0]
-    selectedOrderId.value = String(nextSelected?.id || '').trim()
-  },
-  { immediate: true }
-)
-
-const selectedOrder = computed(() =>
-  orders.value.find((order) => String(order.id || '').trim() === selectedOrderId.value) || null
-)
-
-const currentStatus = computed<OrderStatus>(() =>
-  normalizeOrderStatus(selectedOrder.value?.status)
-)
-
-const nextStatus = computed<OrderStatus | null>(() =>
-  nextStatusFor(currentStatus.value)
-)
-
-const resolveStatus = (status: unknown): OrderStatus => normalizeOrderStatus(status)
+type OrderTicket = {
+  id: string
+  contextLabel: string
+  timeLabel: string
+  serverName: string
+  lines: TicketLine[]
+}
 
 const toMillis = (value: unknown): number => {
   if (!value) return 0
@@ -252,9 +84,7 @@ const toMillis = (value: unknown): number => {
 
   if (typeof value === 'object') {
     const source = value as Record<string, unknown>
-    if (typeof source.seconds === 'number') {
-      return source.seconds * 1000
-    }
+    if (typeof source.seconds === 'number') return source.seconds * 1000
     if (typeof source.toDate === 'function') {
       const toDate = source.toDate as () => Date
       const asDate = toDate()
@@ -265,72 +95,102 @@ const toMillis = (value: unknown): number => {
   return 0
 }
 
-const formatDate = (value: unknown) => {
+const formatTime = (value: unknown) => {
   const millis = toMillis(value)
   if (!millis) return '-'
-
-  return new Intl.DateTimeFormat('de-CH', {
-    dateStyle: 'short',
-    timeStyle: 'short',
-  }).format(millis)
-}
-
-const formatPrice = (priceMinor?: number, currencyCode?: string) => {
-  const amount = Number(priceMinor || 0) / 100
-  const code = String(currencyCode || 'CHF').trim().toUpperCase() || 'CHF'
-
-  return new Intl.NumberFormat('de-CH', {
-    style: 'currency',
-    currency: code,
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount)
-}
-
-const statusColor = (status: OrderStatus) => {
-  if (status === 'submitted') return 'warning'
-  if (status === 'accepted') return 'primary'
-  if (status === 'in_progress') return 'primary'
-  if (status === 'ready') return 'success'
-  if (status === 'completed') return 'neutral'
-  if (status === 'cancelled') return 'error'
-  return 'neutral'
-}
-
-const statusLabel = (status: OrderStatus) => {
-  if (status === 'in_progress') return 'In progress'
-  return status.charAt(0).toUpperCase() + status.slice(1)
+  return new Intl.DateTimeFormat('de-CH', { timeStyle: 'short' }).format(millis)
 }
 
 const serviceLabel = (mode: unknown) => {
   const raw = String(mode || '').trim()
-  if (raw === 'dine_in') return 'Dine-in'
   if (raw === 'collection') return 'Collection'
   if (raw === 'delivery') return 'Delivery'
-  return raw || 'Dine-in'
+  return 'Dine-in'
 }
 
-const canMoveTo = (target: OrderStatus) => {
-  if (!selectedOrder.value) return false
-  if (target === currentStatus.value) return false
-  return canTransition(currentStatus.value, target)
+const resolveMode = (service: Record<string, unknown>) => {
+  const raw = String(service.mode || '').trim()
+  if (raw === 'collection') return 'collection'
+  if (raw === 'delivery') return 'delivery'
+  return 'dine_in'
 }
 
-const setSelectedStatus = async (status: OrderStatus) => {
-  const orderId = String(selectedOrder.value?.id || '').trim()
-  if (!orderId) return
-  if (!canMoveTo(status)) return
-  if (updating.value) return
+const toTimeLabel = (value: unknown) => {
+  if (typeof value === 'string') return String(value || '').trim()
+  return formatTime(value)
+}
 
-  updating.value = true
+const resolveScheduledLabel = (service: Record<string, unknown>) =>
+  [
+    service.pickup_time,
+    service.pickup_at,
+    service.collection_time,
+    service.delivery_time,
+    service.delivery_at,
+    service.dropoff_time,
+    service.slot,
+  ]
+    .map((value) => toTimeLabel(value))
+    .find(Boolean) || ''
 
-  try {
-    await setStatus(orderId, status)
-    toast.success(`Order marked ${statusLabel(status)}`)
-  } catch (error: any) {
-    toast.error(String(error?.message || 'Failed to update order status'))
-  } finally {
-    updating.value = false
+const resolveContextLabel = (order: Record<string, any>) => {
+  const service = (order.service || {}) as Record<string, unknown>
+  const table = String(service.table_label || '').trim()
+  const mode = resolveMode(service)
+
+  if (mode === 'dine_in') {
+    if (table) return `Table ${table}`
+    return 'Dine-in'
   }
+
+  return serviceLabel(mode)
 }
+
+const resolveServerName = (order: Record<string, any>) => {
+  const explicit = String(order.server_name || order.service?.server_name || '').trim()
+  if (explicit) return explicit
+
+  const channel = String(order.channel || '').trim().toLowerCase()
+  const fromCustomer = String(order.customer?.name || '').trim()
+  if (channel === 'staff' && fromCustomer) return fromCustomer
+
+  return ''
+}
+
+const summarizeLines = (order: Record<string, any>): TicketLine[] => {
+  const byLabel = new Map<string, number>()
+  const lines = Array.isArray(order.lines) ? order.lines : []
+
+  for (const line of lines) {
+    const label = String(line?.label || line?.dish_id || 'Unnamed item').trim()
+    if (!label) continue
+    const qty = Math.max(0, Number(line?.qty || 0))
+    if (!qty) continue
+    byLabel.set(label, (byLabel.get(label) || 0) + qty)
+  }
+
+  return [...byLabel.entries()]
+    .map(([label, qty]) => ({ label, qty }))
+    .sort((a, b) => b.qty - a.qty || a.label.localeCompare(b.label))
+}
+
+const orderTickets = computed<OrderTicket[]>(() =>
+  orders.value.map((order) => {
+    const normalized = order as Record<string, any>
+    const service = (normalized.service || {}) as Record<string, unknown>
+    const mode = resolveMode(service)
+    const scheduledLabel = resolveScheduledLabel(service)
+
+    return {
+      id: String(normalized.id || '').trim(),
+      contextLabel: resolveContextLabel(normalized),
+      timeLabel:
+        (mode === 'collection' || mode === 'delivery') && scheduledLabel
+          ? `Scheduled ${scheduledLabel}`
+          : formatTime(normalized.created_at),
+      serverName: resolveServerName(normalized),
+      lines: summarizeLines(normalized),
+    }
+  })
+)
 </script>

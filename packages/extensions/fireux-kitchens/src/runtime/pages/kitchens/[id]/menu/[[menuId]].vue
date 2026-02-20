@@ -5,6 +5,15 @@
         <UButton size="xs" variant="ghost" icon="i-lucide-arrow-left" :to="backToKitchen">
           Back
         </UButton>
+        <UButton
+          v-if="itemCount > 0"
+          size="xs"
+          variant="soft"
+          icon="i-lucide-shopping-basket"
+          :to="checkoutRoute"
+        >
+          Basket · {{ itemCount }}
+        </UButton>
       </template>
     </UPageHeader>
 
@@ -50,6 +59,73 @@
           title="Basket has a different kitchen"
           description="Adding here will start a new basket for this kitchen."
         />
+
+        <UCard v-if="itemCount > 0">
+          <template #header>
+            <div class="flex items-center justify-between gap-3">
+              <div class="text-sm font-semibold">
+                Basket · {{ itemCount }} item{{ itemCount === 1 ? '' : 's' }}
+              </div>
+              <UButton
+                size="xs"
+                variant="soft"
+                icon="i-lucide-shopping-basket"
+                :to="checkoutRoute"
+              >
+                Checkout
+              </UButton>
+            </div>
+          </template>
+
+          <div class="space-y-2">
+            <div
+              v-for="(line, index) in basketItems"
+              :key="lineKey(line, index)"
+              class="flex items-center justify-between gap-3 rounded border border-default p-2.5"
+            >
+              <div class="min-w-0">
+                <div class="truncate text-sm font-medium">{{ line.label }}</div>
+                <div class="text-xs text-dimmed">
+                  {{ formatPrice(line.price_minor, line.currency_code) }} each
+                </div>
+              </div>
+
+              <div class="flex items-center gap-1">
+                <UButton
+                  size="xs"
+                  variant="ghost"
+                  color="neutral"
+                  icon="i-lucide-minus"
+                  @click="decrementAt(index)"
+                />
+                <div class="w-6 text-center text-sm font-medium">{{ line.qty }}</div>
+                <UButton
+                  size="xs"
+                  variant="ghost"
+                  color="neutral"
+                  icon="i-lucide-plus"
+                  @click="incrementAt(index)"
+                />
+                <UButton
+                  size="xs"
+                  variant="ghost"
+                  color="error"
+                  icon="i-lucide-trash-2"
+                  @click="removeAt(index)"
+                />
+              </div>
+            </div>
+          </div>
+
+          <template #footer>
+            <div class="flex items-center justify-between">
+              <div class="text-sm text-dimmed">Subtotal</div>
+              <div class="text-sm font-semibold">
+                {{ formatPrice(subtotalMinor, currencyCode) }}
+              </div>
+            </div>
+          </template>
+        </UCard>
 
         <UCard v-if="sortedMenus.length">
           <template #header>
@@ -138,7 +214,7 @@
                         color="neutral"
                         @click="handleAddToBasket(group, item)"
                       >
-                        Add
+                        Add to basket
                       </UButton>
                     </div>
                   </div>
@@ -163,7 +239,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from '#imports'
+import { useRoute, useBasket } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
@@ -474,11 +550,25 @@ const sortedSections = computed<PublicMenuSection[]>(() => {
 
 const {
   kitchenId: basketKitchenId,
+  items: basketItems,
   addLine,
   itemCount,
   subtotalMinor,
   currencyCode,
+  incrementAt,
+  decrementAt,
+  removeAt,
 } = useBasket()
+
+const lineKey = (
+  line: {
+    dish_id: string
+    label: string
+    price_minor: number
+    currency_code: string
+  },
+  index: number
+) => `${line.dish_id}:${line.label}:${line.price_minor}:${line.currency_code}:${index}`
 
 const basketKitchenMismatch = computed(() => {
   const basketId = String(basketKitchenId.value || '').trim()
@@ -522,6 +612,7 @@ const checkoutRoute = computed(() => ({
   path: '/orders/checkout',
   query: {
     kitchen: kitchenId.value || undefined,
+    kitchenName: String(resolvedKitchen.value?.name || '').trim() || undefined,
     mode: requestedMode.value || undefined,
     table: requestedTable.value || undefined,
     cover: requestedCover.value || undefined,
