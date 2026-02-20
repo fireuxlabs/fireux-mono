@@ -6,21 +6,6 @@
 
     <template #body>
       <section class="space-y-8">
-        <div class="text-xs text-dimmed">
-          Mode: <span class="font-medium">{{ mode }}</span>
-          <span class="mx-2">·</span>
-          Menus: <span class="font-medium">{{ menus.length }}</span>
-          <span class="mx-2">·</span>
-          Selected Menu:
-          <span class="font-medium">{{ selectedMenuLabel }}</span>
-          <span class="mx-2">·</span>
-          Sections: <span class="font-medium">{{ sectionCount }}</span>
-          <span class="mx-2">·</span>
-          Items: <span class="font-medium">{{ itemCount }}</span>
-          <span class="mx-2">·</span>
-          Linked: <span class="font-medium">{{ dishes.length }}</span>
-        </div>
-
         <MenuCollectionManager
           :collection="menus"
           :selected-id="selectedMenuId"
@@ -30,32 +15,7 @@
           @select="onSelectMenu"
         />
 
-        <!-- QR moved out to /dashboard/kitchen/menu/qrs -->
-        <UCard>
-          <template #header>
-            <div class="flex items-start justify-between gap-3">
-              <div class="space-y-1">
-                <div class="text-sm font-semibold">QR Codes</div>
-                <p class="text-xs text-dimmed">
-                  View QR links for this kitchen (kept separate from menu editing).
-                </p>
-              </div>
-
-              <UButton
-                size="xs"
-                variant="soft"
-                icon="i-lucide-qr-code"
-                to="/dashboard/kitchen/menu/qrs"
-              >
-                Open
-              </UButton>
-            </div>
-          </template>
-
-          <div class="text-xs text-dimmed">
-            Tip: keep this page focused on menus. QR/service presets live in the QR page.
-          </div>
-        </UCard>
+        <QRManager :size="72" />
 
         <UCard v-if="selectedMenu">
           <div class="flex items-start justify-between gap-3">
@@ -133,6 +93,7 @@
 import type { MenuSection } from '../../../models/menu.model'
 import { computed, ref, watch } from 'vue'
 import MenuCollectionManager from '../../../components/organisms/Menu/Collection/Manager.vue'
+import QRManager from '../../../components/runtimeKitchen/QRManager.vue'
 import {
   resolveMenuItemView,
   type ResolvedMenuItemView,
@@ -154,7 +115,6 @@ definePageMeta({
 })
 
 const runtime = useRuntimeKitchen()
-const mode = runtime.mode
 const menus = computed(() => runtime.data.value.menus ?? [])
 const dishes = computed(() => runtime.data.value.dishes ?? [])
 
@@ -176,10 +136,6 @@ const selectedMenu = computed(() => {
   if (!selected) return null
   return menus.value.find((menu) => String(menu.id || '').trim() === selected) || null
 })
-
-const selectedMenuLabel = computed(
-  () => selectedMenu.value?.name || selectedMenu.value?.id || 'none'
-)
 
 const selectedMenuViewTo = computed(() => {
   const kitchenId = String(selectedMenu.value?.kitchen_id || runtime.id.value || '').trim()
@@ -229,22 +185,6 @@ const dishNameById = computed(() => {
   }
   return map
 })
-
-const sectionCount = computed(() =>
-  menus.value.reduce((total, menu) => total + (menu.sections?.length || 0), 0)
-)
-
-const itemCount = computed(() =>
-  menus.value.reduce(
-    (total, menu) =>
-      total +
-      (menu.sections ?? []).reduce(
-        (sectionTotal, section) => sectionTotal + (section.items?.length || 0),
-        0
-      ),
-    0
-  )
-)
 
 const formatMinor = (value: unknown, currencyCode: unknown) => {
   const minor = Number(value || 0)
