@@ -5,17 +5,15 @@
     @click="onClick"
     class="pill"
   >
-    <div class="flex items-center gap-2">
+    <div class="flex w-full items-center justify-between gap-3">
       <UUser
         :name="title"
-        :description="showSubtitle ? (subtitle || undefined) : undefined"
-        :avatar="imageUrl ? { src: imageUrl, alt: title || '' } : { icon: 'i-lucide-book-open-check', alt: title || '' }"
+        :description="showSubtitle && subtitle ? subtitle : undefined"
+        :avatar="imageUrl ? { src: imageUrl, alt: title } : undefined"
         size="sm"
+        class="min-w-0"
       />
-      <div class="flex items-center gap-1 text-xs capitalize text-dimmed">
-        <UChip :color="isActiveNow ? 'success' : 'error'" inset />
-        <span>{{ isActiveNow ? 'active' : 'inactive' }}</span>
-      </div>
+      <UChip :color="isActiveNow ? 'success' : 'error'" inset class="shrink-0" />
     </div>
   </component>
 </template>

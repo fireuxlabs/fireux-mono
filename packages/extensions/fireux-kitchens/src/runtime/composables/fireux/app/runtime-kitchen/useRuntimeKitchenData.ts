@@ -1,8 +1,9 @@
 import { computed, type Ref } from 'vue'
+import { useKitchenIngredientFetch } from '../../firestore/runtime-kitchen/ingredients/fetch/useKitchenIngredientFetch'
+import { useKitchenOrderFetch } from '../../firestore/runtime-kitchen/orders/fetch/useKitchenOrderFetch'
+import { useKitchenMenuStackFetch } from '../../firestore/runtime-kitchen/stack/fetch/useKitchenMenuStackFetch'
+import { useKitchenSupplierFetch } from '../../firestore/runtime-kitchen/suppliers/fetch/useKitchenSupplierFetch'
 import { getReadOnlyKitchenScenario } from './read-only-scenarios'
-import { useKitchenIngredientFetch } from '../../firestore/ingredient/fetch/useKitchenIngredientFetch'
-import { useKitchenMenuStackFetch } from '../../firestore/kitchen/fetch/useKitchenMenuStackFetch'
-import { useKitchenSupplierFetch } from '../../firestore/kitchen/fetch/useKitchenSupplierFetch'
 
 export function useRuntimeKitchenData(params: {
   id: Ref<string>
@@ -32,6 +33,10 @@ export function useRuntimeKitchenData(params: {
     enabled,
   })
 
+  const { orders: firestoreKitchenOrders } = useKitchenOrderFetch(firestoreKitchenId, {
+    kitchenCollectionPath: params.kitchenCollectionPath,
+  })
+
   return computed(() => {
     if (params.isReadOnly.value) {
       if (!params.id.value) {
@@ -46,6 +51,7 @@ export function useRuntimeKitchenData(params: {
           suppliers: [],
           supplierIngredients: [],
           purchases: [],
+          kitchenOrders: [],
           incomingOrders: [],
           trainingModules: [],
           haccpChecks: [],
@@ -64,6 +70,7 @@ export function useRuntimeKitchenData(params: {
         suppliers: scenario.procurementStack.suppliers,
         supplierIngredients: scenario.procurementStack.supplierIngredients,
         purchases: scenario.procurementStack.purchases,
+        kitchenOrders: scenario.serviceStack.incomingOrders,
         incomingOrders: scenario.serviceStack.incomingOrders,
         trainingModules: scenario.trainingStack.modules,
         haccpChecks: scenario.haccpStack.checks,
@@ -81,7 +88,8 @@ export function useRuntimeKitchenData(params: {
       suppliers: firestoreSuppliers.value ?? [],
       supplierIngredients: [],
       purchases: [],
-      incomingOrders: [],
+      kitchenOrders: firestoreKitchenOrders.value ?? [],
+      incomingOrders: firestoreKitchenOrders.value ?? [],
       trainingModules: [],
       haccpChecks: [],
     }

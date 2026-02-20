@@ -1,8 +1,8 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Menu } from '../../../../../../models/menu.model'
 
-const joinSubtitle = (active: boolean): string =>
-  active ? 'Active' : 'Inactive'
+const stripKitchenPrefix = (value: string): string =>
+  value.replace(/^la\s+tapberne\s*[—-]\s*/i, '').trim()
 
 export namespace MenuCard {
   export type Card = {
@@ -69,16 +69,17 @@ export function useMenuInterface() {
       safeString(menu.id).trim() ||
       safeString(menu.name).trim() ||
       `menu-${dishes.length}`
-    const name = safeString(menu.name).trim() || id
+    const rawName = safeString(menu.name).trim()
+    const name = stripKitchenPrefix(rawName) || rawName || id
     const isActiveNow = active
     const windowLabel = ''
 
     return {
       id,
-      to: id ? `/dashboard/kitchen/menu?menu=${encodeURIComponent(id)}` : '/dashboard/kitchen/menu',
+      to: '/dashboard/kitchen/menu',
       imageUrl: '',
       title: name,
-      subtitle: joinSubtitle(active),
+      subtitle: '',
       badges: [
         active ? 'active' : 'inactive',
         `${dishes.length} ${dishes.length === 1 ? 'dish' : 'dishes'}`,

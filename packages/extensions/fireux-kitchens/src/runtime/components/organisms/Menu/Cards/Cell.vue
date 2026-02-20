@@ -5,16 +5,15 @@
     class="block w-full"
   >
     <div
-      class="flex w-full items-start gap-3 rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800/60 dark:bg-gray-900/40"
+      class="flex w-full items-start gap-3 rounded-lg border border-default bg-default p-3 transition hover:bg-[var(--ui-bg-elevated)]"
     >
       <UAvatar
-        :src="imageUrl || undefined"
-        icon="i-lucide-book-open-check"
+        :src="imageUrl"
         size="md"
         class="shrink-0"
       />
 
-      <div class="min-w-0 flex-1 space-y-1">
+      <div class="min-w-0 flex-1 space-y-1.5">
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
             <div class="truncate text-sm font-semibold">{{ name }}</div>
@@ -27,17 +26,12 @@
             </div>
           </div>
 
-          <div class="flex items-center gap-1 shrink-0">
-            <div class="flex items-center gap-1 text-xs capitalize text-dimmed">
-              <UChip :color="isActiveNow ? 'success' : 'error'" inset />
-              <span>{{ isActiveNow ? 'active' : 'inactive' }}</span>
-            </div>
+          <div class="shrink-0 pt-0.5">
+            <UChip :color="isActiveNow ? 'success' : 'error'" inset />
           </div>
         </div>
 
         <div class="truncate text-xs text-dimmed">
-          <span>Menu: {{ active ? 'Active' : 'Inactive' }}</span>
-          <span class="mx-1">·</span>
           <span>Dishes: {{ dishCount }}</span>
           <template v-if="windowLabel">
             <span class="mx-1">·</span>
@@ -45,9 +39,8 @@
           </template>
         </div>
 
-        <div v-if="showTagline" class="truncate text-xs text-dimmed">
-          <span v-if="prop">{{ prop }}</span>
-          <span v-else class="italic">missing</span>
+        <div v-if="showTagline && prop" class="truncate text-xs text-dimmed">
+          <span>{{ prop }}</span>
         </div>
       </div>
     </div>

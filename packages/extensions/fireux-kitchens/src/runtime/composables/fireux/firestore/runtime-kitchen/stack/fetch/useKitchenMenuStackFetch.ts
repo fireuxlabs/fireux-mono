@@ -1,10 +1,10 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Ref, ShallowRef } from 'vue'
 import { computed, shallowRef, unref, watch } from 'vue'
-import type { KitchenMiseTask } from '../../../../../../models/kitchen-mise.model'
 import type { Dish } from '../../../../../../models/dish.model'
-import type { Menu } from '../../../../../../models/menu.model'
+import type { KitchenMiseTask } from '../../../../../../models/kitchen-mise.model'
 import type { KitchenRecipe } from '../../../../../../models/kitchen-recipe.model'
+import type { Menu } from '../../../../../../models/menu.model'
 
 const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
 const resolveKitchenCollectionPath = (

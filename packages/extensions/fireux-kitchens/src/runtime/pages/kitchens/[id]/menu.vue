@@ -50,7 +50,12 @@
                 <div class="text-sm font-semibold text-right min-w-[5rem]">
                   {{ formatPrice(item.price_minor) }}
                 </div>
-                <UButton size="xs" variant="soft" color="neutral">
+                <UButton
+                  size="xs"
+                  variant="soft"
+                  color="neutral"
+                  @click="handleOrder(item)"
+                >
                   Order
                 </UButton>
               </div>
@@ -67,6 +72,7 @@ import { useRoute } from '#imports'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
+import { useKitchenOrderCreate } from '../../../composables/fireux/firestore/runtime-kitchen/orders/mutations/useKitchenOrderCreate'
 import type { Menu, MenuSection, MenuSectionItem } from '../../../models/menu.model'
 
 definePageMeta({
@@ -136,6 +142,26 @@ const sortedItems = (items?: MenuSectionItem[]) =>
   [...(items ?? [])].sort(
     (a, b) => Number(a?.sort_order || 0) - Number(b?.sort_order || 0)
   )
+
+const { createOrder } = useKitchenOrderCreate()
+
+const handleOrder = async (item: MenuSectionItem) => {
+  if (!kitchenId.value) return
+
+  const orderId = await createOrder({
+    kitchenId: kitchenId.value,
+    dish_id: String(item?.dish_id || '').trim(),
+    label: String(item?.label || '').trim() || 'Menu item',
+    channel: 'menu',
+  })
+
+  console.info('[kitchen-menu] order-created', {
+    kitchenId: kitchenId.value,
+    orderId,
+    dishId: String(item?.dish_id || '').trim(),
+    label: String(item?.label || '').trim() || 'Menu item',
+  })
+}
 
 const formatPrice = (priceMinor?: number) => {
   const amount = Number(priceMinor || 0) / 100
