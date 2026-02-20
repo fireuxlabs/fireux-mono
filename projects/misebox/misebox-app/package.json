@@ -32,6 +32,7 @@
     "fireux-drop": "workspace:*",
     "fireux-jobs": "workspace:*",
     "fireux-kitchens": "workspace:*",
+    "fireux-orders": "workspace:*",
     "fireux-misebox": "workspace:*",
     "fireux-places": "workspace:*",
     "nuxt": "4.1.2",

@@ -5,6 +5,7 @@
     { "path": "fireux-blogs" },
     { "path": "fireux-companies" },
     { "path": "fireux-kitchens" },
+    { "path": "fireux-orders" },
     { "path": "fireux-drop" },
     { "path": "fireux-jobs" },
     { "path": "fireux-places" },
