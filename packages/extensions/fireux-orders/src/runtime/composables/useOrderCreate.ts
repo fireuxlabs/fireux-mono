@@ -1,5 +1,12 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { Order, type OrderChannel, type OrderLine, type OrderServiceMode, type OrderStatus } from '../models/order.model'
+import {
+  Order,
+  type OrderChannel,
+  type OrderLine,
+  type OrderScopeType,
+  type OrderServiceMode,
+  type OrderStatus,
+} from '../models/order.model'
 
 const ORDERS_COLLECTION = 'orders'
 
@@ -10,7 +17,11 @@ const makeOrderId = () => {
 }
 
 type CreateOrderInput = {
-  kitchen_id: string
+  scope?: {
+    type?: OrderScopeType
+    id?: string
+  }
+  kitchen_id?: string
   place_id?: string
   channel?: OrderChannel
   status?: OrderStatus
@@ -43,9 +54,12 @@ export function useOrderCreate() {
   const { setDocument } = useFirestoreCreate()
 
   const createOrder = async (input: CreateOrderInput) => {
-    const kitchenId = String(input.kitchen_id || '').trim()
-    if (!kitchenId) {
-      throw new Error('Missing kitchen_id')
+    const legacyKitchenId = String(input.kitchen_id || '').trim()
+    const scopeType = String(input.scope?.type || (legacyKitchenId ? 'kitchen' : '')).trim()
+    const scopeId = String(input.scope?.id || legacyKitchenId).trim()
+
+    if (!scopeType || !scopeId) {
+      throw new Error('Missing order scope')
     }
 
     const lines = (input.lines || [])
@@ -64,9 +78,12 @@ export function useOrderCreate() {
     const currencyCode = String(lines[0]?.currency_code || 'CHF').trim().toUpperCase() || 'CHF'
 
     const orderId = makeOrderId()
+    const kitchenId = scopeType === 'kitchen' ? scopeId : ''
     const payload = {
       ...Order,
       id: orderId,
+      scope_type: scopeType,
+      scope_id: scopeId,
       kitchen_id: kitchenId,
       place_id: String(input.place_id || '').trim(),
       status: input.status || 'submitted',

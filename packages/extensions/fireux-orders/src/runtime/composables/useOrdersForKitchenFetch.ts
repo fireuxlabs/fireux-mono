@@ -3,6 +3,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestore } from 'vuefire'
 import type { Order } from '../models/order.model'
+import { useOrdersFetchByScope } from './useOrdersFetchByScope'
 
 const ORDERS_COLLECTION = 'orders'
 
@@ -35,6 +36,16 @@ export function useOrdersForKitchenFetch(kitchenId: Ref<string> | string) {
   )
 
   const sourceRef = shallowRef(null) as ShallowRef<Ref<Order[] | undefined> | null>
+  const { orders: scopeOrders } = useOrdersFetchByScope(
+    computed(() =>
+      resolvedKitchenId.value
+        ? {
+            type: 'kitchen',
+            id: resolvedKitchenId.value,
+          }
+        : null
+    )
+  )
 
   watch(
     resolvedKitchenId,
@@ -55,8 +66,17 @@ export function useOrdersForKitchenFetch(kitchenId: Ref<string> | string) {
   )
 
   const orders = computed<Order[]>(() => {
-    const base = sourceRef.value?.value ?? []
-    return [...base].sort((a, b) => toMillis(b.updated_at) - toMillis(a.updated_at))
+    const scoped = scopeOrders.value ?? []
+    const legacy = sourceRef.value?.value ?? []
+    const deduped = new Map<string, Order>()
+
+    for (const order of [...scoped, ...legacy]) {
+      const id = String(order?.id || '').trim()
+      if (!id) continue
+      if (!deduped.has(id)) deduped.set(id, order)
+    }
+
+    return [...deduped.values()].sort((a, b) => toMillis(b.updated_at) - toMillis(a.updated_at))
   })
 
   return {

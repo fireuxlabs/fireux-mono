@@ -14,6 +14,8 @@ export type OrderStatus =
 
 export type OrderChannel = 'menu' | 'qr' | 'staff' | 'api'
 
+export type OrderScopeType = 'kitchen' | 'product' | string
+
 export type OrderLine = {
   dish_id: string
   label: string
@@ -42,6 +44,10 @@ export const Order = {
   id: '' as string,
   app_id: '' as FireuxStamped['app_id'],
 
+  scope_type: '' as OrderScopeType,
+  scope_id: '' as string,
+
+  // Transitional legacy field. Prefer scope_type/scope_id for new writes.
   kitchen_id: '' as string,
   place_id: '' as string,
 

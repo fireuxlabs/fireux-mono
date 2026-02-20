@@ -590,6 +590,8 @@ const handleAddToBasket = (
 
   try {
     const result = addLine({
+      scope_type: 'kitchen',
+      scope_id: kitchenId.value,
       kitchen_id: kitchenId.value,
       dish_id: String(item?.dish_id || '').trim(),
       label,
@@ -611,6 +613,8 @@ const handleAddToBasket = (
 const checkoutRoute = computed(() => ({
   path: '/orders/checkout',
   query: {
+    scopeType: 'kitchen',
+    scopeId: kitchenId.value || undefined,
     kitchen: kitchenId.value || undefined,
     kitchenName: String(resolvedKitchen.value?.name || '').trim() || undefined,
     mode: requestedMode.value || undefined,

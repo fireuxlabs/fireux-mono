@@ -43,8 +43,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useOrdersForKitchenFetch } from 'fireux-orders/runtime/composables/useOrdersForKitchenFetch'
 import OrderCard from '../../../components/organisms/Order/Card.vue'
+import { useKitchenOrdersFetch } from '../../../composables/fireux/firestore/runtime-kitchen/orders/fetch/useKitchenOrdersFetch'
 import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
 
 definePageMeta({
@@ -63,7 +63,7 @@ definePageMeta({
 
 const runtime = useRuntimeKitchen()
 const kitchenId = computed(() => String(runtime.id.value || '').trim())
-const { orders } = useOrdersForKitchenFetch(kitchenId)
+const { orders } = useKitchenOrdersFetch(kitchenId)
 
 type TicketLine = {
   label: string

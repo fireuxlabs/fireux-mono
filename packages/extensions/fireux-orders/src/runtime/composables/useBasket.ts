@@ -7,12 +7,16 @@ const BASKET_STATE_KEY = 'fireux-orders:basket:state'
 const BASKET_HYDRATED_KEY = 'fireux-orders:basket:hydrated'
 
 type BasketState = {
+  scope_type: string
+  scope_id: string
   kitchen_id: string
   items: OrderLine[]
 }
 
 type BasketLineInput = {
-  kitchen_id: string
+  scope_type?: string
+  scope_id?: string
+  kitchen_id?: string
   dish_id: string
   label: string
   price_minor: number
@@ -21,6 +25,8 @@ type BasketLineInput = {
 }
 
 const createEmptyBasket = (): BasketState => ({
+  scope_type: '',
+  scope_id: '',
   kitchen_id: '',
   items: [],
 })
@@ -55,9 +61,13 @@ const normalizeBasket = (value: unknown): BasketState => {
   if (!source) return createEmptyBasket()
 
   const kitchenId = String(source.kitchen_id || '').trim()
+  const scopeType = String(source.scope_type || (kitchenId ? 'kitchen' : '')).trim()
+  const scopeId = String(source.scope_id || kitchenId).trim()
   const rawItems = Array.isArray(source.items) ? source.items : []
 
   return {
+    scope_type: scopeType,
+    scope_id: scopeId,
     kitchen_id: kitchenId,
     items: rawItems
       .map((line) => normalizeLine(line))
@@ -105,6 +115,8 @@ export function useBasket() {
 
   hydrate()
 
+  const scopeType = computed(() => String(basket.value.scope_type || '').trim())
+  const scopeId = computed(() => String(basket.value.scope_id || '').trim())
   const kitchenId = computed(() => String(basket.value.kitchen_id || '').trim())
   const items = computed(() => basket.value.items)
 
@@ -135,6 +147,8 @@ export function useBasket() {
     if (index < 0 || index >= basket.value.items.length) return
     basket.value.items.splice(index, 1)
     if (!basket.value.items.length) {
+      basket.value.scope_type = ''
+      basket.value.scope_id = ''
       basket.value.kitchen_id = ''
     }
     persist()
@@ -166,9 +180,15 @@ export function useBasket() {
   }
 
   const addLine = (input: BasketLineInput) => {
+    const nextScopeType = String(input.scope_type || '').trim()
+    const nextScopeId = String(input.scope_id || '').trim()
     const nextKitchenId = String(input.kitchen_id || '').trim()
-    if (!nextKitchenId) {
-      throw new Error('Basket line requires kitchen_id')
+
+    const resolvedScopeType = nextScopeType || (nextKitchenId ? 'kitchen' : '')
+    const resolvedScopeId = nextScopeId || nextKitchenId
+
+    if (!resolvedScopeType || !resolvedScopeId) {
+      throw new Error('Basket line requires scope_type and scope_id (or kitchen_id)')
     }
 
     const line = formatLineFromInput(input)
@@ -179,15 +199,18 @@ export function useBasket() {
     let replacedKitchen = false
 
     if (
-      basket.value.kitchen_id &&
-      basket.value.kitchen_id !== nextKitchenId &&
+      basket.value.scope_type &&
+      basket.value.scope_id &&
+      (basket.value.scope_type !== resolvedScopeType || basket.value.scope_id !== resolvedScopeId) &&
       basket.value.items.length
     ) {
       basket.value = createEmptyBasket()
       replacedKitchen = true
     }
 
-    basket.value.kitchen_id = nextKitchenId
+    basket.value.scope_type = resolvedScopeType
+    basket.value.scope_id = resolvedScopeId
+    basket.value.kitchen_id = resolvedScopeType === 'kitchen' ? resolvedScopeId : ''
 
     const targetIdentity = lineIdentity(line)
     const lineIndex = basket.value.items.findIndex(
@@ -224,6 +247,8 @@ export function useBasket() {
 
   return {
     basket,
+    scopeType,
+    scopeId,
     kitchenId,
     items,
     asOrderLines,
@@ -241,6 +266,8 @@ export function useBasket() {
 }
 
 export type UseBasketReturn = {
+  scopeType: ComputedRef<string>
+  scopeId: ComputedRef<string>
   kitchenId: ComputedRef<string>
   items: ComputedRef<OrderLine[]>
   asOrderLines: ComputedRef<OrderLine[]>
