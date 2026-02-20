@@ -35,29 +35,50 @@
 
           <div class="space-y-3">
             <div
-              v-for="item in section.resolvedItems"
-              :key="item.id || item.label"
-              class="flex items-start justify-between gap-4 rounded border border-default p-3"
+              v-for="group in section.itemGroups"
+              :key="group.key"
+              class="rounded border border-default p-3"
             >
-              <div class="min-w-0 space-y-1">
-                <div class="font-medium">{{ item.label || 'Menu item' }}</div>
-                <div v-if="item.description" class="text-sm text-dimmed">
-                  {{ item.description }}
-                </div>
+              <div
+                v-if="group.items.length > 1"
+                class="mb-2 text-sm font-semibold"
+              >
+                {{ group.label }}
               </div>
 
-              <div class="flex shrink-0 items-center gap-3">
-                <div class="text-sm font-semibold text-right min-w-[5rem]">
-                  {{ formatPrice(item.price_minor, item.currency_code) }}
-                </div>
-                <UButton
-                  size="xs"
-                  variant="soft"
-                  color="neutral"
-                  @click="handleOrder(item)"
+              <div class="space-y-2">
+                <div
+                  v-for="item in group.items"
+                  :key="item.id || item.label"
+                  class="flex items-start justify-between gap-4"
                 >
-                  Order
-                </UButton>
+                  <div class="min-w-0 space-y-1">
+                    <div class="font-medium">
+                      {{
+                        group.items.length > 1
+                          ? resolveVariantLabel(group.label, item.label)
+                          : (item.label || 'Menu item')
+                      }}
+                    </div>
+                    <div v-if="item.description" class="text-sm text-dimmed">
+                      {{ item.description }}
+                    </div>
+                  </div>
+
+                  <div class="flex shrink-0 items-center gap-3">
+                    <div class="text-sm font-semibold text-right min-w-[5rem]">
+                      {{ formatPrice(item.price_minor, item.currency_code) }}
+                    </div>
+                    <UButton
+                      size="xs"
+                      variant="soft"
+                      color="neutral"
+                      @click="handleOrder(item)"
+                    >
+                      Order
+                    </UButton>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -71,13 +92,13 @@
 import { useRoute } from '#imports'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
-import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
-import { useKitchenOrderCreate } from '../../../composables/fireux/firestore/runtime-kitchen/orders/mutations/useKitchenOrderCreate'
-import type { Menu, MenuSection } from '../../../models/menu.model'
+import { useKitchenFetch } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
+import { useKitchenOrderCreate } from '../../../../composables/fireux/firestore/runtime-kitchen/orders/mutations/useKitchenOrderCreate'
+import type { Menu, MenuSection } from '../../../../models/menu.model'
 import {
   resolveMenuItemView,
   type ResolvedMenuItemView,
-} from '../../../composables/fireux/firestore/runtime-kitchen/menu/utils/view/resolveMenuItemView'
+} from '../../../../composables/fireux/firestore/runtime-kitchen/menu/utils/view/resolveMenuItemView'
 
 definePageMeta({
   layout: 'default',
@@ -95,6 +116,12 @@ const routeId = computed(() => {
     : String(raw ?? '').trim()
 })
 const routeMenuId = computed(() => {
+  const rawParam = route.params.menuId
+  const menuIdFromParam = Array.isArray(rawParam)
+    ? String(rawParam[0] ?? '').trim()
+    : String(rawParam ?? '').trim()
+  if (menuIdFromParam) return menuIdFromParam
+
   const raw = route.query.menuId
   return Array.isArray(raw)
     ? String(raw[0] ?? '').trim()
@@ -155,7 +182,76 @@ const selectedMenu = computed(() => {
 })
 
 type PublicMenuSection = MenuSection & {
-  resolvedItems: ResolvedMenuItemView[]
+  itemGroups: PublicMenuItemGroup[]
+}
+
+type PublicMenuItemGroup = {
+  key: string
+  label: string
+  items: ResolvedMenuItemView[]
+}
+
+const resolveGroupLabel = (dishId: string, items: ResolvedMenuItemView[]) => {
+  const labels = items
+    .map((item) => String(item.label || '').trim())
+    .filter(Boolean)
+  if (!labels.length) return dishId || 'Menu item'
+
+  const prefixParts = labels.map((label) => {
+    const [prefix] = label.split('·')
+    return String(prefix || '').trim()
+  })
+
+  const firstPrefix = String(prefixParts[0] || '').trim()
+  const hasCommonPrefix = Boolean(firstPrefix) && prefixParts.every((part) => part === firstPrefix)
+  if (hasCommonPrefix) return firstPrefix
+
+  return labels[0] || dishId || 'Menu item'
+}
+
+const buildItemGroups = (items: ResolvedMenuItemView[]) => {
+  const groups: PublicMenuItemGroup[] = []
+  const groupsByKey = new Map<string, PublicMenuItemGroup>()
+
+  for (const item of items) {
+    const dishId = String(item.dish_id || '').trim()
+    const key = dishId || `item:${String(item.id || '').trim() || String(item.label || '').trim()}`
+    let group = groupsByKey.get(key)
+
+    if (!group) {
+      group = {
+        key,
+        label: '',
+        items: [],
+      }
+      groupsByKey.set(key, group)
+      groups.push(group)
+    }
+
+    group.items.push(item)
+  }
+
+  for (const group of groups) {
+    const dishId = String(group.items[0]?.dish_id || '').trim()
+    group.label = resolveGroupLabel(dishId, group.items)
+  }
+
+  return groups
+}
+
+const resolveVariantLabel = (groupLabel: string, itemLabel: string) => {
+  const label = String(itemLabel || '').trim()
+  const prefix = String(groupLabel || '').trim()
+  if (!label) return 'Option'
+  if (!prefix) return label
+
+  const normalizedPrefix = `${prefix} · `
+  if (label.startsWith(normalizedPrefix)) {
+    const variant = String(label.slice(normalizedPrefix.length) || '').trim()
+    return variant || label
+  }
+
+  return label
 }
 
 const sortedSections = computed<PublicMenuSection[]>(() => {
@@ -166,12 +262,14 @@ const sortedSections = computed<PublicMenuSection[]>(() => {
     .sort((a, b) => Number(a?.sort_order || 0) - Number(b?.sort_order || 0))
     .map((section) => ({
       ...section,
-      resolvedItems: [...(section.items ?? [])]
+      itemGroups: buildItemGroups(
+        [...(section.items ?? [])]
         .map((item) => resolveMenuItemView(menu, section, item))
         .filter((item) => item.active)
-        .sort((a, b) => Number(a?.sort_order || 0) - Number(b?.sort_order || 0)),
+        .sort((a, b) => Number(a?.sort_order || 0) - Number(b?.sort_order || 0))
+      ),
     }))
-    .filter((section) => section.resolvedItems.length > 0)
+    .filter((section) => section.itemGroups.length > 0)
 })
 
 const { createOrder } = useKitchenOrderCreate()

@@ -1,5 +1,7 @@
 <template>
-  <UPage>
+  <NuxtPage v-if="hasChildRoute" />
+
+  <UPage v-else>
     <UPageHeader :title="pageTitle" :description="pageDescription">
       <template #ctas>
         <UButton
@@ -49,6 +51,47 @@
           :data="kitchen"
           :default-open="false"
         />
+
+        <UCard>
+          <template #header>
+            <div class="space-y-1">
+              <div class="text-sm font-semibold">Menus</div>
+              <p class="text-xs text-dimmed">
+                See available menus for this kitchen.
+              </p>
+            </div>
+          </template>
+
+          <div class="space-y-3">
+            <UButton
+              v-if="activeMenu && menuLink(activeMenu.id)"
+              size="xs"
+              variant="soft"
+              color="primary"
+              icon="i-lucide-book-open-check"
+              :to="menuLink(activeMenu.id)"
+            >
+              View active menu
+            </UButton>
+
+            <div v-if="sortedMenus.length" class="flex flex-wrap gap-2">
+              <UButton
+                v-for="menu in sortedMenus"
+                :key="menu.id"
+                size="xs"
+                variant="soft"
+                color="neutral"
+                :to="menuLink(menu.id)"
+              >
+                {{ menu.name || menu.id || 'Untitled menu' }}
+              </UButton>
+            </div>
+
+            <p v-else class="text-sm text-dimmed">
+              No menus available yet.
+            </p>
+          </div>
+        </UCard>
 
         <UCard>
           <template #header>
@@ -133,12 +176,14 @@
 import { navigateTo, useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceClaim'
-import { computed, ref } from 'vue'
+import { computed, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenInterface } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { Kitchen } from '../../models/kitchen.model'
+import type { Menu } from '../../models/menu.model'
 
 definePageMeta({
   layout: 'default',
@@ -150,6 +195,10 @@ definePageMeta({
 
 const { appName } = useFireUXConfig()
 const route = useRoute()
+const hasChildRoute = computed(() => {
+  const path = String(route.path || '').trim()
+  return /\/kitchens\/[^/]+\/menu(?:\/|$)/.test(path)
+})
 
 const kitchenRouteKey = computed(() => {
   const raw = route.params.id
@@ -174,6 +223,34 @@ const kitchen = computed<Kitchen | null>(() => {
 
 const kitchenId = computed(() => String(kitchen.value?.id ?? '').trim())
 const loading = computed(() => Boolean(kitchenRouteKey.value) && kitchens.value === undefined)
+
+const { firestoreFetchCollection } = useFirestoreRead()
+const menusRef = shallowRef(null) as ShallowRef<Ref<Menu[] | undefined> | null>
+
+watch(
+  kitchenId,
+  (nextKitchenId) => {
+    const path = nextKitchenId ? `kitchens/${nextKitchenId}/menus` : ''
+    menusRef.value = path ? firestoreFetchCollection<Menu>(path) : null
+  },
+  { immediate: true }
+)
+
+const menus = computed(() => menusRef.value?.value ?? [])
+const sortedMenus = computed(() =>
+  [...menus.value].sort(
+    (a, b) =>
+      Number(a?.sort_order || 0) - Number(b?.sort_order || 0) ||
+      String(a?.name || '').localeCompare(String(b?.name || ''))
+  )
+)
+const activeMenu = computed(() => sortedMenus.value.find((menu) => Boolean(menu?.active)) || null)
+const menuLink = (menuIdRaw: unknown) => {
+  const resolvedKitchenId = String(kitchenId.value || '').trim()
+  const menuId = String(menuIdRaw || '').trim()
+  if (!resolvedKitchenId || !menuId) return ''
+  return `/kitchens/${encodeURIComponent(resolvedKitchenId)}/menu/${encodeURIComponent(menuId)}`
+}
 
 const { profile } = useKitchenInterface()
 const kitchenProfile = computed(() => profile(kitchen.value))

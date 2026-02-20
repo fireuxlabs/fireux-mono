@@ -157,10 +157,10 @@ const selectedMenuLabel = computed(
 )
 
 const selectedMenuViewTo = computed(() => {
-  const kitchenId = String(runtime.id.value || '').trim()
+  const kitchenId = String(selectedMenu.value?.kitchen_id || runtime.id.value || '').trim()
   const menuId = String(selectedMenu.value?.id || '').trim()
   if (!kitchenId || !menuId) return ''
-  return `/kitchens/${encodeURIComponent(kitchenId)}/menu?menuId=${encodeURIComponent(menuId)}`
+  return `/kitchens/${encodeURIComponent(kitchenId)}/menu/${encodeURIComponent(menuId)}`
 })
 
 const onSelectMenu = (menuId: string) => {
