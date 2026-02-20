@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import type { MiseEnPlaceCard } from '../../../../composables/fireux/firestore/mise/utils/view/useMiseEnPlaceInterface';
+import type { MiseEnPlaceCard } from '../../../../composables/fireux/firestore/runtime-kitchen/mise/utils/view/useMiseEnPlaceInterface';
 
 type PillProps = Pick<MiseEnPlaceCard.Card, 'to' | 'title' | 'imageUrl'> & {
   link?: boolean

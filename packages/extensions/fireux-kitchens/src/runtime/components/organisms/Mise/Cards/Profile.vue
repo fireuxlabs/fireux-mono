@@ -58,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import type { MiseEnPlaceProfile } from '../../../../composables/fireux/firestore/mise/utils/view/useMiseEnPlaceInterface';
+import type { MiseEnPlaceProfile } from '../../../../composables/fireux/firestore/runtime-kitchen/mise/utils/view/useMiseEnPlaceInterface';
 
 defineProps<{ model: MiseEnPlaceProfile }>()
 </script>

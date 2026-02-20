@@ -95,7 +95,7 @@ import MiseCardsCell from '../Cards/Cell.vue'
 import MiseCardsPill from '../Cards/Pill.vue'
 import MiseCardsPreview from '../Cards/Preview.vue'
 import MiseCollectionList from './List.vue'
-import { useMiseEnPlaceInterface } from '../../../../composables/fireux/firestore/mise/utils/view/useMiseEnPlaceInterface'
+import { useMiseEnPlaceInterface } from '../../../../composables/fireux/firestore/runtime-kitchen/mise/utils/view/useMiseEnPlaceInterface'
 import type { KitchenMiseTask } from '../../../../models/kitchen-mise.model'
 
 const props = withDefaults(

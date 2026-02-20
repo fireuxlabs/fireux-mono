@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { getDefaultReadOnlyKitchenScenario } from '../../../composables/fireux/app/runtime-kitchen/read-only-scenarios';
+import { getDefaultReadOnlyKitchenScenario } from '../../../composables/fireux/app/kitchen-runtime/read-only-scenarios';
 
 defineOptions({ name: 'DevMenuStackSystem' })
 

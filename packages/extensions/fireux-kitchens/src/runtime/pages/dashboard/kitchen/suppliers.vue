@@ -79,7 +79,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useRuntimeKitchen } from '../../../composables/fireux/app/runtime-kitchen/useRuntimeKitchen'
+import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
 import { useIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
 import SupplierCollectionManager from '../../../components/organisms/Supplier/Collection/Manager.vue'
 

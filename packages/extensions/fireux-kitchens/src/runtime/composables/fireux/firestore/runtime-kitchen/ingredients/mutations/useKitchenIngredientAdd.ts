@@ -7,7 +7,7 @@ import {
   type IngredientCreateInput,
   KitchenIngredient,
   type KitchenIngredient as KitchenIngredientDoc,
-} from '../../../../../models/ingredient.model'
+} from '../../../../../../models/ingredient.model'
 
 const GLOBAL_COLLECTION_PATH = 'ingredients'
 const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'

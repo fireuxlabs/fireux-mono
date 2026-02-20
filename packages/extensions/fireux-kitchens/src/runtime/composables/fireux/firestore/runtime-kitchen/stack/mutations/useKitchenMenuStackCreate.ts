@@ -3,14 +3,18 @@ import { Dish, type Dish as DishDoc } from '../../../../../../models/dish.model'
 import type { Ingredient } from '../../../../../../models/ingredient.model'
 import { KitchenMiseTask, type KitchenMiseTask as KitchenMiseTaskDoc } from '../../../../../../models/kitchen-mise.model'
 import {
-  KitchenRecipe,
-  type KitchenRecipe as KitchenRecipeDoc,
-  type KitchenRecipeIngredientLine,
+    KitchenRecipe,
+    type KitchenRecipe as KitchenRecipeDoc,
+    type KitchenRecipeIngredientLine,
 } from '../../../../../../models/kitchen-recipe.model'
 import { Menu, type Menu as MenuDoc } from '../../../../../../models/menu.model'
 
-const resolveCollectionPath = (kitchenId: string, collectionName: string) =>
-  `kitchens/${kitchenId}/${collectionName}`
+const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
+const resolveCollectionPath = (
+  kitchenCollectionPath: string,
+  kitchenId: string,
+  collectionName: string
+) => `${kitchenCollectionPath}/${kitchenId}/${collectionName}`
 
 const normalize = (value: string) =>
   value
@@ -73,10 +77,14 @@ export function useKitchenMenuStackCreate() {
 
   const createStarterKitchenMenuStack = async (
     kitchenId: string,
-    ingredients: Ingredient[]
+    ingredients: Ingredient[],
+    options: { kitchenCollectionPath?: string } = {}
   ) => {
     const resolvedKitchenId = String(kitchenId || '').trim()
     if (!resolvedKitchenId) throw new Error('Kitchen id is required')
+    const kitchenCollectionPath = String(
+      options.kitchenCollectionPath || DEFAULT_KITCHEN_COLLECTION_PATH
+    ).trim()
 
     const { resolved, missing, nameById } = resolveRequiredIngredients(ingredients ?? [])
     if (missing.length) {
@@ -413,7 +421,7 @@ export function useKitchenMenuStackCreate() {
     ]
 
     await setDocument<MenuDoc>(
-      resolveCollectionPath(resolvedKitchenId, 'menus'),
+      resolveCollectionPath(kitchenCollectionPath, resolvedKitchenId, 'menus'),
       menuDoc.id,
       menuDoc,
       { app: true, creator: true }
@@ -421,7 +429,7 @@ export function useKitchenMenuStackCreate() {
 
     for (const dish of dishes) {
       await setDocument<DishDoc>(
-        resolveCollectionPath(resolvedKitchenId, 'dishes'),
+        resolveCollectionPath(kitchenCollectionPath, resolvedKitchenId, 'dishes'),
         dish.id,
         dish,
         { app: true, creator: true }
@@ -430,7 +438,7 @@ export function useKitchenMenuStackCreate() {
 
     for (const recipe of recipes) {
       await setDocument<KitchenRecipeDoc>(
-        resolveCollectionPath(resolvedKitchenId, 'recipes'),
+        resolveCollectionPath(kitchenCollectionPath, resolvedKitchenId, 'recipes'),
         recipe.id,
         recipe,
         { app: true, creator: true }
@@ -439,7 +447,7 @@ export function useKitchenMenuStackCreate() {
 
     for (const task of miseTasks) {
       await setDocument<KitchenMiseTaskDoc>(
-        resolveCollectionPath(resolvedKitchenId, 'mise'),
+        resolveCollectionPath(kitchenCollectionPath, resolvedKitchenId, 'mise'),
         task.id,
         task,
         { app: true, creator: true }

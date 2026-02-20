@@ -7,6 +7,7 @@ import {
   normalizeKitchenIngredient,
 } from '../_shared/builders'
 import type { DummyScenario } from '../_shared/types'
+import type { Kitchen } from '../../../../../../models/kitchen.model'
 import { takumiRamenScenario } from '../takumi-ramen'
 
 const dishIdMap = {
@@ -37,8 +38,8 @@ export const brothBloomScenario = (): DummyScenario => {
   const base = takumiRamenScenario()
   const kitchenId = 'broth-bloom'
 
-  const kitchen = {
-    ...(base.kitchen as Record<string, unknown>),
+  const kitchen: Kitchen = {
+    ...(base.kitchen as Kitchen),
     id: kitchenId,
     name: 'Broth & Bloom',
     short_name: 'Broth & Bloom',

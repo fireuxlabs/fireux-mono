@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import type { DishCard } from '../../../../composables/fireux/firestore/dish/utils/view/useDishInterface'
+import type { DishCard } from '../../../../composables/fireux/firestore/runtime-kitchen/dish/utils/view/useDishInterface'
 
 type PillProps = Pick<DishCard.Card, 'to' | 'imageUrl' | 'title' | 'subtitle'> & {
   showSubtitle?: boolean

@@ -1,6 +1,6 @@
 import { collection, doc, serverTimestamp, setDoc } from 'firebase/firestore'
-import type { KitchenOrder, KitchenOrderItem } from '../../../../../../models/order.model'
 import { useFirestore } from 'vuefire'
+import type { KitchenOrder, KitchenOrderItem } from '../../../../../../models/order.model'
 
 const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
 

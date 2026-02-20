@@ -1,5 +1,5 @@
 import { safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { Dish } from '../../../../../../models/dish.model'
+import type { Dish } from '../../../../../../../models/dish.model'
 
 const joinSubtitle = (active: boolean): string =>
   active ? 'Active' : 'Inactive'

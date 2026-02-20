@@ -1,5 +1,5 @@
 import { safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { KitchenMiseTask } from '../../../../../../models/kitchen-mise.model'
+import type { KitchenMiseTask } from '../../../../../../../models/kitchen-mise.model'
 
 const joinSubtitle = (station: string, serviceDate: string): string =>
   [safeString(station).trim(), safeString(serviceDate).trim()].filter(Boolean).join(' · ')

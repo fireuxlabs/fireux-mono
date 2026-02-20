@@ -90,7 +90,7 @@
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
-import { useDishInterface } from '../../../../composables/fireux/firestore/dish/utils/view/useDishInterface';
+import { useDishInterface } from '../../../../composables/fireux/firestore/runtime-kitchen/dish/utils/view/useDishInterface';
 import type { Dish } from '../../../../models/dish.model';
 
 const props = withDefaults(

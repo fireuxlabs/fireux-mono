@@ -5,6 +5,7 @@ import type {
 import type { Dish as DishDoc } from 'fireux-kitchens/runtime/models/dish.model'
 import type { Menu as MenuDoc } from 'fireux-kitchens/runtime/models/menu.model'
 import type { KitchenMiseTask as KitchenMiseTaskDoc } from 'fireux-kitchens/runtime/models/kitchen-mise.model'
+import type { Kitchen } from '../../../../../../models/kitchen.model'
 
 export type DummyRecipe = {
   id: string
@@ -20,7 +21,7 @@ export type DummyRecipe = {
 }
 
 export type DummyScenario = {
-  kitchen: Record<string, unknown>
+  kitchen: Kitchen
   globalIngredients: Ingredient[]
   kitchenIngredients: KitchenIngredientDoc[]
   teamMembers: Array<Record<string, unknown>>

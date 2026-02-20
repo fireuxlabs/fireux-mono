@@ -97,7 +97,7 @@ import {
   useSupplierInterface,
   type SupplierCard,
   type SupplierSurface,
-} from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
+} from '../../../../composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
 import SupplierCardsCell from '../Cards/Cell.vue'
 import SupplierCardsPill from '../Cards/Pill.vue'
 import SupplierCollectionList from './List.vue'

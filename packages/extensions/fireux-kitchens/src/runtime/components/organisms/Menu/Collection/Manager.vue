@@ -95,7 +95,7 @@ import MenuCardsCell from '../Cards/Cell.vue'
 import MenuCardsPill from '../Cards/Pill.vue'
 import MenuCardsPreview from '../Cards/Preview.vue'
 import MenuCollectionList from './List.vue'
-import { useMenuInterface } from '../../../../composables/fireux/firestore/menu/utils/view/useMenuInterface'
+import { useMenuInterface } from '../../../../composables/fireux/firestore/runtime-kitchen/menu/utils/view/useMenuInterface'
 import type { Menu } from '../../../../models/menu.model'
 
 const props = withDefaults(
