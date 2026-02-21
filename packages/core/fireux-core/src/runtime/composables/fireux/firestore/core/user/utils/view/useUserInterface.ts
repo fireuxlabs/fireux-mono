@@ -1,6 +1,7 @@
 import { safeArray, safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
 import type { User } from '../../../../../../../models/core/user.model'
+import { normalizeUserHandle } from '../identity/useUserHandleIdentity'
 
 export namespace UserCard {
   export type Card = {
@@ -27,13 +28,13 @@ export namespace UserCard {
 export function useUserInterface(userRef?: Ref<User | null | undefined>) {
   function map(user: User): UserCard.Card {
     const id = safeString(user.id).trim()
-    const handle = safeString(user.handle).trim()
+    const handle = normalizeUserHandle(safeString(user.handle))
     const appCount = safeArray(user.userOf).length
     const profiles = safeArray<string>(user.profiles)
 
     return {
       id,
-      to: id ? `/users/${id}` : '',
+      to: handle ? `/u/${handle}` : id ? `/users/${id}` : '',
 
       avatarUrl: safeString(user.avatar).trim(),
       displayName: safeString(user.display_name).trim(),

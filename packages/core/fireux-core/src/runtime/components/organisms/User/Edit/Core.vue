@@ -191,10 +191,10 @@ const handleUpdateEmail = async () => {
   throw new Error('updateEmail not available')
 }
 
-const handleUpdateHandle = async () => {
-  toast.warn('Handle updates are not available yet')
-  throw new Error('updateHandle not available')
-}
+const handleUpdateHandle = withToast(coreProfile.setHandle, {
+  success: 'Handle updated',
+  failure: 'Failed to update handle',
+})
 
 const handleUpdateBio = withToast(coreProfile.setBio, {
   success: 'Bio updated',

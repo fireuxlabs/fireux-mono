@@ -7,13 +7,15 @@ import type { UserNotification } from '../../../../../../../models/core/user.sup
 import { useImageStorage } from '../../../../../firebase/useImageStorage'
 import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
 import type { UserRefs } from '../../fetch/useUserFetch'
+import { useUserHandleClaim } from '../../mutations/useUserHandleClaim'
 import { createUserNotification } from '../ensureHelpers'
 import { useUserFormattingAndValidation } from '../validation/useUserFormatting'
 
 export function useCoreUserUpdate(user: UserRefs) {
   const { updateDocument } = useFirestoreUpdate()
   const { uploadImage } = useImageStorage()
-  const { DisplayName, AvatarUrl, Bio } = useUserFormattingAndValidation()
+  const { DisplayName, AvatarUrl, Bio, Handle } = useUserFormattingAndValidation()
+  const { claimHandle } = useUserHandleClaim()
   const db = useFirestore()
 
   const core = user.coreUser as { value: User | undefined }
@@ -70,6 +72,12 @@ export function useCoreUserUpdate(user: UserRefs) {
     setBio: async (bio: string) => {
       const formatted = formatAndValidate(Bio, bio ?? '', 'Invalid bio')
       await updateCore({ bio: formatted || '' })
+    },
+    setHandle: async (handle: string) => {
+      const normalized = formatAndValidate(Handle, handle ?? '', 'Invalid handle')
+      const uid = requireCoreId()
+      if (!normalized) throw new Error('Handle cannot be empty.')
+      await claimHandle(uid, normalized)
     },
   }
 

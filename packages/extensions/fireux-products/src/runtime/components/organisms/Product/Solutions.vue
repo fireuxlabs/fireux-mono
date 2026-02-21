@@ -76,6 +76,6 @@ const solutionItems = computed(() =>
 const resolveSolutionRoute = (product: FirebaseProduct) => {
   const slug = String(product.slug || product.id || '').trim()
   if (SOLUTION_ROUTES[slug]) return SOLUTION_ROUTES[slug]
-  return product.id ? `/products/${product.id}` : '/products'
+  return slug ? `/products/${slug}` : '/products'
 }
 </script>

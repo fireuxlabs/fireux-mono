@@ -1,4 +1,6 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/useUserFormattingAndValidation.ts
+import { isReservedUserHandle } from '../identity/useUserHandleIdentity'
+
 const MIN_DISPLAY_NAME_LENGTH = 2
 const MAX_DISPLAY_NAME_LENGTH = 60
 const MIN_HANDLE_LENGTH = 3
@@ -39,6 +41,9 @@ function validateHandle(raw: string) {
       isValid: false,
       message: 'Use lowercase letters, numbers, and dashes only.',
     }
+  }
+  if (isReservedUserHandle(normalized)) {
+    return { isValid: false, message: 'This handle is reserved.' }
   }
   return { isValid: true }
 }

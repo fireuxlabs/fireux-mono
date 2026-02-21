@@ -64,7 +64,7 @@
     <div v-if="isDev">
       <DevJson
         :title="'Apps (JSON)'"
-        context="collection manager · apps"
+        :context="devJsonContext"
         :data="collection"
         :default-open="false"
       />
@@ -96,4 +96,5 @@ const {
 
 const totalCount = computed(() => collection.value.length)
 const isDev = import.meta.dev
+const devJsonContext = 'collection manager · apps · root: apps'
 </script>

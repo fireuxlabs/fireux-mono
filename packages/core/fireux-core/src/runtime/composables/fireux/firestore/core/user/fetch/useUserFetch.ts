@@ -21,6 +21,7 @@ function normalizeCoreUser(raw: User, fallbackId: string): User {
     display_name: (raw as any).display_name ?? raw.id ?? fallbackId,
     avatar: (raw as any).avatar ?? '',
     handle: (raw as any).handle ?? '',
+    handle_normalized: (raw as any).handle_normalized ?? (raw as any).handle ?? '',
     email: (raw as any).email ?? '',
     bio: (raw as any).bio ?? '',
     profiles: asStringArray(anyRaw.profiles),

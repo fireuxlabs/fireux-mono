@@ -50,7 +50,7 @@
     <div v-if="isDev">
       <DevJson
         :title="'Products (JSON)'"
-        context="collection manager · products"
+        :context="devJsonContext"
         :data="collection"
         :default-open="false"
       />
@@ -60,6 +60,7 @@
 
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
+import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager';
 import { computed } from 'vue';
 import { useProductInterface } from '../../../../composables/fireux/firestore/product/utils/view/useProductInterface';
 import type { FirebaseProduct } from '../../../../models/product.model';
@@ -85,5 +86,10 @@ const {
 
 const totalCount = computed(() => collection.value.length)
 const isDev = import.meta.dev
+const { getCollectionPath } = useFirestoreManager()
+const productCollectionRoot = getCollectionPath('products')
+const devJsonContext = computed(
+  () => `collection manager · products · root: ${productCollectionRoot}`
+)
 
 </script>

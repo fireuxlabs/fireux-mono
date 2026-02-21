@@ -36,6 +36,7 @@ Authority: Tier1 (Authoritative)
 - Current canonical mapping:
   - Blogs public detail route: slug-based.
   - Products public detail route: slug-based.
+  - Users public profile route: handle-based (`/u/[handle]`) resolved via handle index.
   - Dashboard/admin/internal routes: id-based.
   - Entities without a published slug contract remain id-based until their extension contract defines slug rollout.
 
@@ -51,6 +52,7 @@ Authority: Tier1 (Authoritative)
 | --- | --- | --- | --- |
 | fireux-blogs | BlogPost | slug | slug == doc id |
 | fireux-products | Product | slug | slug == doc id |
+| fireux-core | User | handle | handle -> uid via `handles/{handle}` |
 | fireux-places | Place | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
 | fireux-companies | Company | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
 | fireux-kitchens | Kitchen | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
@@ -66,6 +68,7 @@ Authority: Tier1 (Authoritative)
 - CI must fail if:
   - a public page is added without a strategy entry.
   - a public URL generator uses id while strategy requires slug.
+  - a public user route bypasses handle resolution and exposes uid routes as canonical.
 
 ## Selection vs Formatting
 - Selection/routing/identity must never rely on silent fallback chains.

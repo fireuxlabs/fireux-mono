@@ -30,6 +30,7 @@ export function useUserEnsure() {
         email: auth.email ?? '',
         avatar: auth.photoURL ?? '',
         handle: '',
+        handle_normalized: '',
         bio: '',
         profiles: [],
         userOf: [],

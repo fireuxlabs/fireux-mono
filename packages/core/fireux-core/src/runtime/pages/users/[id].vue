@@ -39,8 +39,8 @@
 </template>
 
 <script setup lang="ts">
-import { useHead } from '#imports'
-import { computed, onMounted, ref } from 'vue'
+import { navigateTo, useHead } from '#imports'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUserFetch } from '../../composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
@@ -62,6 +62,17 @@ const userId = computed(() => {
 
 const { user: currentUser } = useUserFetch(userId)
 const { isAdmin, user: sessionUser } = useUser()
+
+watch(
+  () => currentUser.value?.handle,
+  async (nextHandle) => {
+    const normalizedHandle = String(nextHandle || '').trim().toLowerCase()
+    if (!normalizedHandle) return
+    if (!userId.value) return
+    await navigateTo(`/u/${normalizedHandle}`, { replace: true })
+  },
+  { immediate: true }
+)
 
 const { card } = useUserInterface(currentUser)
 const userCard = computed(() => (currentUser.value ? card(currentUser.value) : null))

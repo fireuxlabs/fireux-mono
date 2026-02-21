@@ -71,6 +71,7 @@ export function useProductInterface() {
       safeString(product.main_image) ||
       safeString(product.images?.[0]?.url)
     const id = safeString(product.id).trim()
+    const slug = safeString(product.slug).trim() || id
     const name = safeString(product.name)
     const tagline = safeString(product.tagline)
     const description = safeString(product.description)
@@ -78,14 +79,14 @@ export function useProductInterface() {
     const solutionIds = new Set(['fireux-app', 'fireux-template'])
     const to =
       productType === 'module'
-        ? `/modules/${id}`
-        : solutionIds.has(id) || productType === 'saas_app' || productType === 'template'
-          ? `/solutions/${id}`
-          : `/products/${id}`
+        ? `/modules/${slug}`
+        : solutionIds.has(slug) || productType === 'saas_app' || productType === 'template'
+          ? `/solutions/${slug}`
+          : `/products/${slug}`
 
     return {
       id,
-      to: id ? to : '',
+      to: slug ? to : '',
 
       avatarUrl: imageUrl,
       title: name,
@@ -108,7 +109,8 @@ export function useProductInterface() {
   function searchText(product: FirebaseProduct): string {
     const name = safeString(product.name)
     const id = safeString(product.id)
-    return `${name} ${id}`.trim().toLowerCase()
+    const slug = safeString(product.slug)
+    return `${name} ${slug} ${id}`.trim().toLowerCase()
   }
 
   return { card, searchText }
