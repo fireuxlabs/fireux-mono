@@ -27,6 +27,19 @@ const REQUIRED_L1 = [
 
 const ALLOWED_NOISE = ['node_modules', 'tsconfig.tsbuildinfo', '.DS_Store']
 
+// Narrow exceptions for extension-level contract docs (docs/contract.md).
+// Keep this explicit instead of globally allowing arbitrary extra folders.
+const ALLOWED_EXTRA_BY_PACKAGE = {
+  'fireux-blogs': ['docs'],
+  'fireux-companies': ['docs'],
+  'fireux-drop': ['docs'],
+  'fireux-jobs': ['docs'],
+  'fireux-kitchens': ['docs'],
+  'fireux-orders': ['docs'],
+  'fireux-places': ['docs'],
+  'fireux-products': ['docs'],
+}
+
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
   const extRoot = path.join(repoRoot, 'packages', 'extensions')
@@ -44,7 +57,7 @@ export async function run(ctx) {
 
   for (const pkgName of extensionPackages) {
     const pkgPath = path.join(extRoot, pkgName)
-    const v = checkExtensionPackage(pkgPath)
+    const v = checkExtensionPackage(pkgPath, pkgName)
     if (v) violations.push(v)
   }
 
@@ -55,12 +68,16 @@ export async function run(ctx) {
   console.log('[guard] ✅ extension packages valid')
 }
 
-function checkExtensionPackage(pkgPath) {
+function checkExtensionPackage(pkgPath, pkgName) {
   const entries = readdirSync(pkgPath).filter((n) => n !== '.DS_Store')
+  const extraAllowed = ALLOWED_EXTRA_BY_PACKAGE[pkgName] ?? []
 
   const missing = REQUIRED_L1.filter((r) => !entries.includes(r))
   const unexpected = entries.filter(
-    (e) => !REQUIRED_L1.includes(e) && !ALLOWED_NOISE.includes(e)
+    (e) =>
+      !REQUIRED_L1.includes(e) &&
+      !ALLOWED_NOISE.includes(e) &&
+      !extraAllowed.includes(e)
   )
 
   if (!missing.length && !unexpected.length) return null

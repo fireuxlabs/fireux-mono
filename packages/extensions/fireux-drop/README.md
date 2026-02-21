@@ -1,14 +1,17 @@
 # fireux-drop
+Authority: Tier2 (Overview; Tier1 contract in `docs/contract.md`)
 
 Owned by `fireux`.
 
-Scaffold extension for future drop features.
+Supplier-domain extension for Drop.
 
-Today it only:
+It currently:
 - Ensures runtime config buckets under `runtimeConfig.public.fireux.drop`
-- Exposes runtime exports under `fireux-drop/runtime/*` (for future runtime code)
+- Exposes runtime exports under `fireux-drop/runtime/*`
+- Ships supplier runtime domain surfaces (pages/components/composables/models)
 
-No pages/components/server routes are shipped yet.
+Canonical contract:
+- `docs/contract.md`
 
 ## Quick start
 

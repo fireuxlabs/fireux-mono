@@ -1,37 +1,36 @@
 ---
 title: Package Documentation Map
-status: draft
+status: active
+authority: Tier2
 created: 2025-10-15
+updated: 2026-02-20
 ---
 
 # Package Documentation Map
+Authority: Tier2 (Index/reference)
 
-Package and tenant-specific documentation lives beside the code that owns it. Use this index to locate those docs quickly.
+Tier1 canon sources:
+- `docs/fireux-canon.md`
+- `docs/runtime-contract.md`
+- `docs/seo-canon.md`
 
-## Core Packages
+Per-extension Tier1 contracts:
+- `packages/extensions/fireux-blogs/docs/contract.md`
+- `packages/extensions/fireux-companies/docs/contract.md`
+- `packages/extensions/fireux-drop/docs/contract.md`
+- `packages/extensions/fireux-jobs/docs/contract.md`
+- `packages/extensions/fireux-kitchens/docs/contract.md`
+- `packages/extensions/fireux-orders/docs/contract.md`
+- `packages/extensions/fireux-places/docs/contract.md`
+- `packages/extensions/fireux-products/docs/contract.md`
 
-- `docs/10-core/figma.md` — ✅ canonical Figma export and staging workflow.
-- `docs/10-core/images.md` — ✅ canonical FireUX image system specification.
-- `packages/core/fireux-core/docs/`
-  - `molecules-forms.md` — status and migration plan for the Molecules forms system.
+Operational docs (Tier2) live across:
+- `docs/`
+- `packages/**/docs/`
+- `projects/**/docs/`
 
-## Extensions
-
-- `packages/extensions/fireux-places/docs/`
-  - `places-overview.md` — search flow, Places integration, and professional linking summary.
-- `packages/extensions/fireux-jobs/docs/`
-  - _(pending)_ migrate content from archive as jobs docs are rewritten.
-
-## Tenants & Apps
-
-- `packages/ecosystem/*/docs/` — create on demand when tenant-specific guidance is required.
-- `projects/<ecosystem>/<app>/docs/` — optional app-level notes (none at present).
-- `packages/ecosystem/fireux-fireux/docs/` — base FireUX ecosystem docs (shared by `fireux-app` and `tenant`).
-
-When adding a new package doc:
-
-1. Create the Markdown file beside the package (`packages/<scope>/<name>/docs/`).
-2. Summarize the topic in this index with a short description and relative link.
-3. Update the relevant handbook chapter if the new doc affects shared behaviour.
-
-Legacy reports were retired during the 2025-10-15 migration; pull historical context from git history when needed.
+Tooling/history docs (Tier3, non-authoritative) include:
+- `AI/**`
+- `.specify/**`
+- `.github/prompts/**`
+- `docs/copilot-documentation/imported/**`

@@ -1,4 +1,5 @@
 # fireux-places
+Authority: Tier2 (Overview; Tier1 contract in `docs/contract.md`)
 
 Places extension for FireUX.
 

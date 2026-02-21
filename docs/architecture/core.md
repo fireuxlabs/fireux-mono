@@ -1,9 +1,11 @@
 ---
 title: Core Architecture
 description: The pillars of FireUX—identity, composables, data, and runtime boundaries.
+authority: Tier2
 ---
 
 # Core Architecture
+Authority: Tier2 (Reference; Tier1 canon lives in `docs/fireux-canon.md` and `docs/runtime-contract.md`)
 
 ## Identity & tenancy
 

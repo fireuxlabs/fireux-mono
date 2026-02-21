@@ -110,3 +110,6 @@ AI/
 # Mirror (disposable snapshots; safe to delete/recreate)
 mirror/**
 !mirror/README.md
+
+# Local artifacts
+all-md-files.zip

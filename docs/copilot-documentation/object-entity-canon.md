@@ -1,6 +1,7 @@
 # Object / Entity Canon (Firestore)
+Authority: Tier2 (Reference; authoritative rules live in `docs/fireux-canon.md` and extension contracts)
 
-This doc defines the **repo-wide canon** for FireUX “objects/entities” stored in Firestore.
+This doc records Firestore object/entity conventions used across FireUX and should be read with Tier1 canon docs.
 
 See also:
 

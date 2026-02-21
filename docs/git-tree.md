@@ -1,4 +1,5 @@
 # Git Tree
+Authority: Tier3 (Non-authoritative generated/context artifact)
 
 Generated: 2026-01-21T13:34:51.170Z
 
@@ -80796,4 +80797,3 @@ declare module 'vuefire/server' {
 export {}
 
 ```
-

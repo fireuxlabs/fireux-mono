@@ -51,6 +51,9 @@ const ALLOWED_ROOT_FILES = new Set([
 
   // Linting
   'eslint.config.js',
+
+  // Temporary root docs exceptions (guard-specific allowlist)
+  'fulfillment.md',
 ])
 
 const ALLOWED_ROOT_DOTFILES = new Set([

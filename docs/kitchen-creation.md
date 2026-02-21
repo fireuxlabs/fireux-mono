@@ -1,4 +1,5 @@
 # Kitchen Creation Report
+Authority: Tier2 (Operational reference; canonical runtime policy is in `docs/runtime-contract.md`)
 
 Generated: 2026-02-18
 

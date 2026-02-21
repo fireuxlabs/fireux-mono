@@ -1,11 +1,15 @@
 ---
 title: FireUX Canon
 description: Canonical patterns—identity, stacks, and module conventions.
+authority: Tier2
 ---
 
 # FireUX Canon
+Authority: Tier2 (Reference; superseded by root Tier1 canon docs)
 
-This doc is the **single authoritative canon** for FireUX runtime folder shapes and “entity organism” UI structure.
+Tier1 sources: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`.
+
+This doc is a Tier2 reference for FireUX runtime folder shapes and “entity organism” UI structure.
 
 Related (more specific) canons:
 
@@ -22,6 +26,8 @@ Related (more specific) canons:
 ## Entity classes + page mode canon
 
 FireUX entities are grouped by how they are operated. This drives routing, edit patterns, and permissions.
+
+Route identity policy (`[id]` vs `[slug]`) is authoritative in `docs/runtime-contract.md`.
 
 ### 1) Workspace entities
 
@@ -63,7 +69,7 @@ These are created often, edited occasionally, and typically belong to a workspac
 
 - `/<objects>/index`
 - `/<objects>/create`
-- `/<objects>/[id]`
+- `/<objects>/[id-or-slug]` (per `docs/runtime-contract.md`)
 - `/<objects>/edit/[id]`
 
 **Examples**
@@ -89,7 +95,7 @@ These are shared, lightly edited system entities used by other objects.
 **Routing**
 
 - `/<objects>/index`
-- `/<objects>/[id]` (optional)
+- `/<objects>/[id-or-slug]` (optional, per `docs/runtime-contract.md`)
 - `/<objects>/edit/[id]` only if mutations exist
 
 **Examples**
@@ -103,8 +109,8 @@ These are shared, lightly edited system entities used by other objects.
 
 ### Canon rule (page modes)
 
-- `/<entity>/[id]` is read‑only, safe to view.
-- `/<entity>/edit/[id]` is the only mutation surface for operational objects.
+- `/<entity>/[id-or-slug]` read-only route identity follows `docs/runtime-contract.md`.
+- `/<entity>/edit/[id]` is the mutation surface for operational objects.
 - Inline editing is reserved for workspace dashboards.
 
 ## Docs conventions
@@ -227,4 +233,3 @@ This is a lightweight “what matches today” note based on the **CTA parent tr
 - Object organisms:
 	- `Blog` and `Product` already have `CTA`, `Cards`, and multi-step `Create` trees.
 	- `Job` currently has `CTA`, `Create`, and `Sections`, but does not yet show `Cards/` in the CTA-tree snapshot.
-
