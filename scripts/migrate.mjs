@@ -851,6 +851,14 @@ function buildCanonicalApp(docId, data) {
     resolveTimestamp(data.updatedAt) ??
     createdAt
 
+  const createdBy = resolveCreatorId(data)
+  const updatedBy = asString(data?.updated?.by, '').trim()
+  const created = { at: createdAt }
+  const updated = { at: updatedAt }
+
+  if (createdBy) created.by = createdBy
+  if (updatedBy) updated.by = updatedBy
+
   return {
     id: asString(data.id, '').trim() || docId,
     app_name: asString(data.app_name, ''),
@@ -881,14 +889,8 @@ function buildCanonicalApp(docId, data) {
         asString(media.wordmark_dark_url, '') || asString(data.wordmark_dark_url, ''),
       cover_url: asString(media.cover_url, ''),
     },
-    created: {
-      at: createdAt,
-      by: resolveCreatorId(data) || undefined,
-    },
-    updated: {
-      at: updatedAt,
-      by: asString(data?.updated?.by, '').trim() || undefined,
-    },
+    created,
+    updated,
   }
 }
 
