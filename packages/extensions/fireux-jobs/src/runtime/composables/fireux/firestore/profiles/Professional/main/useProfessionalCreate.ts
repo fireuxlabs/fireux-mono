@@ -45,7 +45,7 @@ export function useProfessionalCreate() {
         education: [],
         volunteering: [],
         projects: [],
-      } satisfies Omit<ProfessionalCore, 'created_at' | 'updated_at' | 'creator_id'>
+      } satisfies Omit<ProfessionalCore, 'created' | 'updated'>
 
       await setDocument<ProfessionalCore>(professionalConfig.collectionName, uid, payload as ProfessionalCore, {
         creator: 'require',
@@ -60,7 +60,7 @@ export function useProfessionalCreate() {
       if (!appSnap.exists()) {
         const payload = {
           id: uid,
-        } satisfies Omit<ProfessionalApp, 'created_at' | 'updated_at' | 'creator_id'>
+        } satisfies Omit<ProfessionalApp, 'created' | 'updated'>
 
         await setDocument<ProfessionalApp>(appCollection, uid, payload as ProfessionalApp, {
           creator: 'require',

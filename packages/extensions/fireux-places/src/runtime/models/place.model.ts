@@ -119,9 +119,14 @@ export const Place = {
 	search_term: '' as string,
 
 	// Stamps
-	creator_id: undefined as FireuxStamped['creator_id'],
-	created_at: {} as FirebaseTimestamp,
-	updated_at: {} as FirebaseTimestamp,
+	created: {
+	  at: {} as FirebaseTimestamp,
+	  by: undefined as FireuxStamped['created']['by'],
+	},
+	updated: {
+	  at: {} as FirebaseTimestamp,
+	  by: undefined as FireuxStamped['created']['by'],
+	},
 } as const
 
 export type Place = {
@@ -158,4 +163,4 @@ export type GooglePlace = BasePlace & {
 }
 
 /** Payload used before Firestore stamping is applied. */
-export type PlaceUpsertInput = Omit<Place, 'created_at' | 'updated_at' | 'creator_id'>
+export type PlaceUpsertInput = Omit<Place, 'created' | 'updated'>

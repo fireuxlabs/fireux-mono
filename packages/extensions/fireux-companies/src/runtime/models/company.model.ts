@@ -21,8 +21,12 @@ export const Company = {
   id: '',
 
   // Authored (timestamps only; no creator_id on thin record)
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+  },
 } as const
 
 export type Company = {
@@ -50,5 +54,5 @@ export type CompanyView = Company &
     >
   >
 
-export type CompanyCreateInput = Omit<Company, 'created_at' | 'updated_at'>
+export type CompanyCreateInput = Omit<Company, 'created' | 'updated'>
 export type CompanyUpdateInput = Partial<Omit<CompanyCreateInput, 'id'>>

@@ -99,7 +99,7 @@ export function useAppEnsure() {
         wordmark_dark_url: '',
         cover_url: '',
       },
-    } as Omit<AppModel, 'created_at' | 'updated_at' | 'creator_id'>
+    } as Omit<AppModel, 'created' | 'updated'>
 
     await setDocument('apps', fireux.appId, payload, {
       creator: true,

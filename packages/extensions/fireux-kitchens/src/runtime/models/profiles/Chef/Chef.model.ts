@@ -37,9 +37,14 @@ export const ChefCore = {
   organization_name: '' as string,
 
   // Stamps
-  creator_id: undefined as FireuxStamped['creator_id'],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
 } as const
 
 export type ChefCore = {
@@ -50,9 +55,14 @@ export const ChefApp = {
   id: '' as string,
 
   // Stamps
-  creator_id: undefined as FireuxStamped['creator_id'],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
 } as const
 
 export type ChefApp = {

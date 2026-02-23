@@ -42,7 +42,7 @@ export type OrderTotals = {
 
 export const Order = {
   id: '' as string,
-  app_id: '' as FireuxStamped['app_id'],
+  app_id: '' as FireuxStamped['created']['app_id'],
 
   scope_type: '' as OrderScopeType,
   scope_id: '' as string,
@@ -72,12 +72,16 @@ export const Order = {
     currency_code: 'CHF',
   } as OrderTotals,
 
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+  },
 } as const
 
 export type Order = {
   [K in keyof typeof Order]: (typeof Order)[K]
 }
 
-export type OrderCreateInput = Omit<Order, 'app_id' | 'created_at' | 'updated_at'>
+export type OrderCreateInput = Omit<Order, 'app_id' | 'created' | 'updated'>

@@ -34,9 +34,14 @@ export const User = {
   notifications: [] as UserNotification[],
 
   // Authored (FireuxStamped)
-  creator_id: undefined as FireuxStamped['creator_id'],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
 } as const
 
 export type User = {
@@ -51,9 +56,14 @@ export const AppUser = {
   id: '',
   role: 'user' as 'user' | 'admin',
   notifications: [] as UserNotification[],
-  creator_id: undefined as FireuxStamped['creator_id'],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
 } as const
 
 export type AppUser = {

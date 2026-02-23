@@ -11,8 +11,18 @@
       Extra
     </UButton>
 
+    <UButton
+      v-if="allowMissing"
+      size="xs"
+      :variant="driftKind === 'missing' ? 'solid' : 'ghost'"
+      color="primary"
+      @click="$emit('update:drift-kind', 'missing')"
+    >
+      Missing
+    </UButton>
+
     <span class="font-medium ml-2">
-      Filter extra:
+      Filter {{ driftKind }}:
     </span>
 
     <UButton
@@ -53,6 +63,7 @@ interface FilterOption {
 
 interface Props {
   driftKind: DriftKind
+  allowMissing?: boolean
   selectedField: string
   filterOptions: FilterOption[]
   copyPayload?: unknown

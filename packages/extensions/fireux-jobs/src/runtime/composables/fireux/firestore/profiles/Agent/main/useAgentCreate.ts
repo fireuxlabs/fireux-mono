@@ -41,7 +41,7 @@ export function useAgentCreate() {
         contact_email: '',
         contact_phone: '',
         website_url: '',
-      } satisfies Omit<AgentCore, 'created_at' | 'updated_at' | 'creator_id'>
+      } satisfies Omit<AgentCore, 'created' | 'updated'>
 
       await setDocument<AgentCore>(agentConfig.collectionName, uid, payload as AgentCore, {
         creator: 'require',
@@ -56,7 +56,7 @@ export function useAgentCreate() {
       if (!appSnap.exists()) {
         const payload = {
           id: uid,
-        } satisfies Omit<AgentApp, 'created_at' | 'updated_at' | 'creator_id'>
+        } satisfies Omit<AgentApp, 'created' | 'updated'>
 
         await setDocument<AgentApp>(appCollection, uid, payload as AgentApp, {
           creator: 'require',

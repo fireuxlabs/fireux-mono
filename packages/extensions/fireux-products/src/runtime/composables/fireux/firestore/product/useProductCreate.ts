@@ -87,8 +87,8 @@ export function useProductCreate() {
   }
 
   const createProductFromInput = async (input: {
-    payload: Omit<FirebaseProduct, 'created_at' | 'updated_at' | 'creator_id'> &
-      Partial<Pick<FirebaseProduct, 'created_at' | 'updated_at' | 'creator_id'>>
+    payload: Omit<FirebaseProduct, 'created' | 'updated'> &
+      Partial<Pick<FirebaseProduct, 'created' | 'updated'>>
     priceInputs: StripePriceInput[]
   }): Promise<{
     success: boolean
@@ -180,7 +180,7 @@ export function useProductCreate() {
             configured: true,
           },
         },
-      } as Omit<FirebaseProduct, 'created_at' | 'updated_at' | 'creator_id'>
+      } as Omit<FirebaseProduct, 'created' | 'updated'>
 
       await setDocument<FirebaseProduct>(collectionPath, slug, data as FirebaseProduct, {
         creator: true,

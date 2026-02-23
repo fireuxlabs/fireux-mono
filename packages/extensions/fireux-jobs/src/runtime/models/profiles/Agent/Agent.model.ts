@@ -39,9 +39,14 @@ export const AgentCore = {
   website_url: '',
 
   // Stamps
-  creator_id: undefined as FireuxStamped['creator_id'],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
 } as const
 
 export type AgentCore = {
@@ -52,9 +57,14 @@ export const AgentApp = {
   id: '',
 
   // Stamps
-  creator_id: undefined as FireuxStamped['creator_id'],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
 } as const
 
 export type AgentApp = {

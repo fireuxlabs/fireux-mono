@@ -29,10 +29,15 @@ export const KitchenCostSnapshot = {
 
   notes: '' as string,
 
-  app_id: '' as FireuxStamped['app_id'],
-  creator_id: '' as FireuxStamped['creator_id'],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+    app_id: '' as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+  },
 } as const
 
 export type KitchenCostSnapshot = {
@@ -41,7 +46,7 @@ export type KitchenCostSnapshot = {
 
 export type KitchenCostSnapshotCreateInput = Omit<
   KitchenCostSnapshot,
-  'app_id' | 'creator_id' | 'created_at' | 'updated_at'
+  'created' | 'updated'
 >
 export type KitchenCostSnapshotUpdateInput = Partial<
   Omit<KitchenCostSnapshotCreateInput, 'id' | 'kitchen_id'>

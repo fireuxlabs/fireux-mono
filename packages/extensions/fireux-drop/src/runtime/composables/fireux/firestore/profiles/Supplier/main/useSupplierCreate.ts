@@ -49,7 +49,7 @@ export function useSupplierCreate() {
         employee_count: 0,
         certifications: [],
         delivery_range: 0,
-      } satisfies Omit<SupplierCore, 'created_at' | 'updated_at' | 'creator_id'>
+      } satisfies Omit<SupplierCore, 'created' | 'updated'>
 
       await setDocument<SupplierCore>(supplierConfig.collectionName, uid, payload as SupplierCore, {
         creator: 'require',
@@ -64,7 +64,7 @@ export function useSupplierCreate() {
       if (!appSnap.exists()) {
         const payload = {
           id: uid,
-        } satisfies Omit<SupplierApp, 'created_at' | 'updated_at' | 'creator_id'>
+        } satisfies Omit<SupplierApp, 'created' | 'updated'>
 
         await setDocument<SupplierApp>(appCollection, uid, payload as SupplierApp, {
           creator: 'require',

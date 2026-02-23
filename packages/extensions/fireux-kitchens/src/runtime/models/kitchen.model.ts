@@ -24,8 +24,12 @@ export const KitchenCollection = {
   is_test_kitchen: false as boolean,
 
   // Timestamps only
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+  },
 } as const
 
 export type KitchenCollection = {
@@ -56,7 +60,7 @@ export type Kitchen = KitchenCollection &
 
 export type KitchenCreateInput = Omit<
   KitchenCollection,
-  'created_at' | 'updated_at' | 'is_test_kitchen'
+  'created' | 'updated' | 'is_test_kitchen'
 > & {
   is_test_kitchen?: boolean
 }

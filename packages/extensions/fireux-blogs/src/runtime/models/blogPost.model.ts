@@ -63,9 +63,14 @@ export const BlogPost = {
 	appId: '',
 
 	// Stamps
-	creator_id: undefined as FireuxStamped['creator_id'],
-	created_at: {} as FirebaseTimestamp,
-	updated_at: {} as FirebaseTimestamp,
+	created: {
+	  at: {} as FirebaseTimestamp,
+	  by: undefined as FireuxStamped['created']['by'],
+	},
+	updated: {
+	  at: {} as FirebaseTimestamp,
+	  by: undefined as FireuxStamped['created']['by'],
+	},
 } as const
 
 export type BlogPost = {
@@ -74,5 +79,5 @@ export type BlogPost = {
 
 export type BlogPostEntry = Omit<
 	BlogPost,
-	'created_at' | 'updated_at' | 'creator_id'
+	'created' | 'updated'
 >

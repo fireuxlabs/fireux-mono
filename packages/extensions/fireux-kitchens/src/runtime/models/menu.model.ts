@@ -69,10 +69,15 @@ export const Menu = {
   sections: [] as MenuSection[],
   sort_order: 0 as number,
 
-  app_id: '' as FireuxStamped['app_id'],
-  creator_id: '' as FireuxStamped['creator_id'],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+    app_id: '' as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+  },
 } as const
 
 export type Menu = {
@@ -81,6 +86,6 @@ export type Menu = {
 
 export type MenuCreateInput = Omit<
   Menu,
-  'app_id' | 'creator_id' | 'created_at' | 'updated_at'
+  'created' | 'updated'
 >
 export type MenuUpdateInput = Partial<Omit<MenuCreateInput, 'id' | 'kitchen_id'>>

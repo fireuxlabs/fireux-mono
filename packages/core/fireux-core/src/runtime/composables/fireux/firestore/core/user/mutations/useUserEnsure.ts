@@ -36,7 +36,7 @@ export function useUserEnsure() {
         userOf: [],
         adminOf: [],
         notifications: [],
-      } as Omit<User, 'created_at' | 'updated_at' | 'creator_id'>
+      } as Omit<User, 'created' | 'updated'>
 
       await setDocument<User>('users', uid, payload as User, {
         creator: 'require',
@@ -52,7 +52,7 @@ export function useUserEnsure() {
         id: uid,
         role: 'user',
         notifications: [],
-      } as Omit<AppUser, 'created_at' | 'updated_at' | 'creator_id'>
+      } as Omit<AppUser, 'created' | 'updated'>
 
       await setDocument<AppUser>(appCollection, uid, payload as AppUser, {
         creator: 'require',

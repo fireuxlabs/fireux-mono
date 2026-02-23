@@ -40,12 +40,17 @@ export const resolveDriftFromModel = (
   model: Record<string, unknown>,
   data: Record<string, unknown> | undefined,
   basePath = '',
-  options: { includeMissing?: boolean; requiredPaths?: Set<string> } = {}
+  options: {
+    includeMissing?: boolean
+    requiredPaths?: Set<string>
+    ignoreExtraTimestampFields?: boolean
+  } = {}
 ): ModelDrift => {
   const missing: string[] = []
   const extra: string[] = []
   const includeMissing = options.includeMissing !== false
   const requiredPaths = options.requiredPaths ?? new Set<string>()
+  const ignoreExtraTimestampFields = options.ignoreExtraTimestampFields !== false
 
   const addTypeMismatch = (path: string, expected: string, actual: string) => {
     extra.push(`${path} (type-mismatch: expected ${expected}; got ${actual})`)
@@ -136,7 +141,7 @@ export const resolveDriftFromModel = (
     // These fields are added by stamping modes (time/pinpoint) and should not
     // be treated as drift when the canonical model doesn't include them.
     const IGNORE_EXTRA_TIMESTAMP = /^(created_at(?:_ms)?|updated_at(?:_ms)?|stamp_mode)$/
-    if (IGNORE_EXTRA_TIMESTAMP.test(key)) continue
+    if (ignoreExtraTimestampFields && IGNORE_EXTRA_TIMESTAMP.test(key)) continue
 
     if (key in model) continue
     const path = basePath ? `${basePath}.${key}` : key

@@ -245,9 +245,11 @@ export function createUserNotification(
   return {
     message: input.message,
     scope: input.scope,
-    created_at: serverTimestamp() as unknown as FirebaseTimestamp,
+    created: {
+      at: serverTimestamp() as unknown as FirebaseTimestamp,
+      app_id: input.appId ?? '',
+    },
     read: false,
-    app_id: input.appId ?? '',
   }
 }
 

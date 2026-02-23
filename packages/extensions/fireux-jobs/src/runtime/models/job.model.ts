@@ -99,10 +99,15 @@ export const Job = {
   status: 'open' as JobStatus,
 
   /** Authored (FireuxStamped) */
-  app_id: '' as FireuxStamped['app_id'],
-  creator_id: '' as FireuxStamped['creator_id'],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+    app_id: '' as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+  },
 } as const
 
 export type Job = {
@@ -122,7 +127,7 @@ export type JobResolved = Job & {
  */
 export type JobCreateInput = Omit<
   Job,
-  'app_id' | 'creator_id' | 'created_at' | 'updated_at' | 'id'
+  'created' | 'updated' | 'id'
 >
 
 export type JobUpdateInput = Partial<Omit<JobCreateInput, never>>

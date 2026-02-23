@@ -43,10 +43,15 @@ export const KitchenRecipe = {
   notes: '' as string,
   tags: [] as string[],
 
-  app_id: '' as FireuxStamped['app_id'],
-  creator_id: '' as FireuxStamped['creator_id'],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+    app_id: '' as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+  },
 } as const
 
 export type KitchenRecipe = {
@@ -55,7 +60,7 @@ export type KitchenRecipe = {
 
 export type KitchenRecipeCreateInput = Omit<
   KitchenRecipe,
-  'app_id' | 'creator_id' | 'created_at' | 'updated_at'
+  'created' | 'updated'
 >
 export type KitchenRecipeUpdateInput = Partial<
   Omit<KitchenRecipeCreateInput, 'id' | 'kitchen_id' | 'dish_id'>

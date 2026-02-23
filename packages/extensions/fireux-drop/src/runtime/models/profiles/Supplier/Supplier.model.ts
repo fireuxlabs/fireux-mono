@@ -44,9 +44,14 @@ export const SupplierCore = {
   delivery_range: 0,
 
   // Stamps
-  creator_id: undefined as FireuxStamped['creator_id'],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
 } as const
 
 export type SupplierCore = {
@@ -57,9 +62,14 @@ export const SupplierApp = {
   id: '',
 
   // Stamps
-  creator_id: undefined as FireuxStamped['creator_id'],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
 } as const
 
 export type SupplierApp = {

@@ -10,9 +10,20 @@ type StampOpts = {
 }
 
 type Stamped<T> = T & {
+  created: {
+    at: ReturnType<typeof serverTimestamp>
+    by?: string
+    app_id?: string
+  }
+  updated: {
+    at: ReturnType<typeof serverTimestamp>
+    by?: string
+  }
+  // Legacy flat fields kept temporarily while data + readers migrate.
   created_at: ReturnType<typeof serverTimestamp>
   updated_at: ReturnType<typeof serverTimestamp>
   creator_id?: string
+  app_id?: string
 }
 
 export async function stampDoc<T>(data: T, opts: StampOpts = {}): Promise<T | Stamped<T>> {
@@ -20,17 +31,26 @@ export async function stampDoc<T>(data: T, opts: StampOpts = {}): Promise<T | St
 
   const base: any = {
     ...(data as any),
+    created: {
+      at: serverTimestamp(),
+    },
+    updated: {
+      at: serverTimestamp(),
+    },
     created_at: serverTimestamp(),
     updated_at: serverTimestamp(),
   }
 
   if (opts.app) {
     const fireux = useFireUXConfig()
+    base.created.app_id = fireux.appId
     base.app_id = fireux.appId
   }
 
   if (opts.creator) {
     const user = await useRequireUser()
+    base.created.by = user.uid
+    base.updated.by = user.uid
     base.creator_id = user.uid
   }
 

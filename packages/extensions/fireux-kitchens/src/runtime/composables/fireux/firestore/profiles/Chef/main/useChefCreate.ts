@@ -48,7 +48,7 @@ export function useChefCreate() {
         locations: [] as string[],
         organization_name: '',
         kitchen_ids: [] as string[],
-      } satisfies Omit<ChefCore, 'created_at' | 'updated_at' | 'creator_id'>
+      } satisfies Omit<ChefCore, 'created' | 'updated'>
 
       await setDocument<ChefCore>(chefConfig.collectionName, uid, payload as ChefCore, {
         creator: true,
@@ -63,7 +63,7 @@ export function useChefCreate() {
       if (!appSnap.exists()) {
         const payload = {
           id: uid,
-        } satisfies Omit<ChefApp, 'created_at' | 'updated_at' | 'creator_id'>
+        } satisfies Omit<ChefApp, 'created' | 'updated'>
 
         await setDocument<ChefApp>(appCollection, uid, payload as ChefApp, {
           creator: true,

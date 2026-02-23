@@ -41,9 +41,14 @@ export const ProfessionalCore = {
   projects: [] as ProjectItem[],
 
   // Stamps
-  creator_id: undefined as FireuxStamped['creator_id'],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
 } as const
 
 export type ProfessionalCore = {
@@ -53,9 +58,14 @@ export type ProfessionalCore = {
 export const ProfessionalApp = {
   id: '',
 
-  creator_id: undefined as FireuxStamped['creator_id'],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
 } as const
 
 export type ProfessionalApp = {

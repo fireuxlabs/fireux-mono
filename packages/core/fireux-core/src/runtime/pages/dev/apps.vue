@@ -29,10 +29,11 @@
               Apps collection
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Filter apps by model drift (extra fields) before browsing records.
+              Filter apps by model drift (missing + extra fields) before browsing records.
             </p>
             <DevDriftToolbar
               :drift-kind="appsDriftKind"
+              :allow-missing="appsAllowMissing"
               :selected-field="appsSelectedField"
               :filter-options="appsFilterOptions"
               :copy-label="'Copy drift · Apps'"
@@ -91,6 +92,7 @@ const bindingApp = computed(() =>
 
 const {
   driftKind: appsDriftKind,
+  allowMissing: appsAllowMissing,
   setDriftKind: setAppsDriftKind,
   selectedField: appsSelectedField,
   driftById: appsDriftById,
@@ -99,6 +101,8 @@ const {
 } = useDevDriftFilter({
   collection: appCollection,
   runtimeModel: appModelRuntime,
+  driftMode: 'all',
+  ignoreExtraTimestampFields: false,
 })
 
 const filteredAppsDriftPayload = computed(() =>

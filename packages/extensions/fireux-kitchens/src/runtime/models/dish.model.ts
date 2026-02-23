@@ -24,10 +24,15 @@ export const Dish = {
   sort_order: 0 as number,
   active: true as boolean,
 
-  app_id: '' as FireuxStamped['app_id'],
-  creator_id: '' as FireuxStamped['creator_id'],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+    app_id: '' as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+  },
 } as const
 
 export type Dish = {
@@ -36,6 +41,6 @@ export type Dish = {
 
 export type DishCreateInput = Omit<
   Dish,
-  'app_id' | 'creator_id' | 'created_at' | 'updated_at'
+  'created' | 'updated'
 >
 export type DishUpdateInput = Partial<Omit<DishCreateInput, 'id' | 'kitchen_id'>>

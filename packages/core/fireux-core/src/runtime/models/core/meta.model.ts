@@ -2,24 +2,37 @@
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
 
-/**
- * Canonical timestamps present on all Firestore documents.
- */
-export interface FireuxTimestamps {
-  created_at: FirebaseTimestamp
-  updated_at: FirebaseTimestamp
-}
-
-/**
- * Optional authored metadata.
- * Creator may be absent for system or migration writes.
- */
-export interface FireuxAuthored {
-  creator_id?: string
+export interface FireuxCreatedStamp {
+  at: FirebaseTimestamp
+  by?: string
   app_id?: string
 }
 
+export interface FireuxUpdatedStamp {
+  at: FirebaseTimestamp
+  by?: string
+}
+
 /**
- * Convenience type used by all persisted models.
+ * Canonical nested stamps for persisted FireUX entities.
  */
-export type FireuxStamped = FireuxTimestamps & FireuxAuthored
+export interface FireuxStamps {
+  created: FireuxCreatedStamp
+  updated: FireuxUpdatedStamp
+}
+
+/**
+ * Convenience type used by persisted models.
+ */
+export type FireuxStamped = FireuxStamps
+
+/**
+ * Legacy flat stamp shape still present in stored data during migration.
+ * Keep for migration tooling / transitional readers only.
+ */
+export interface FireuxLegacyStamped {
+  created_at: FirebaseTimestamp
+  updated_at: FirebaseTimestamp
+  creator_id?: string
+  app_id?: string
+}

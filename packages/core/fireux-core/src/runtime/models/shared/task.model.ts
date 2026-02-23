@@ -23,6 +23,13 @@ export interface CoreTask {
   due_at?: FirebaseTimestamp | null
   completed_at?: FirebaseTimestamp | null
 
-  created_at: FirebaseTimestamp
-  updated_at: FirebaseTimestamp
+  created: {
+    at: FirebaseTimestamp
+    by?: string
+    app_id?: string
+  }
+  updated: {
+    at: FirebaseTimestamp
+    by?: string
+  }
 }

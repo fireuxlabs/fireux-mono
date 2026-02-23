@@ -48,6 +48,7 @@ if (help) {
   console.log('  - places-backfill-short-address')
   console.log('  - places-backfill-short-name')
   console.log('  - places-backfill-place-type')
+  console.log('  - apps-canonical-shape')
   console.log('  - ingredients-canonical-shape')
   console.log('  - ingredients-normalize-id-shape')
   console.log('  - ingredients-assign-images')
@@ -816,6 +817,160 @@ function resolveCreatorId(data) {
   }
 
   return ''
+}
+
+function asRecord(value) {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value : {}
+}
+
+function asStringArray(value) {
+  return Array.isArray(value)
+    ? value
+        .map((entry) => asString(entry, '').trim())
+        .filter(Boolean)
+    : []
+}
+
+function buildCanonicalApp(docId, data) {
+  const media = asRecord(data.media)
+  const derived = asRecord(data.derived)
+  const socialLinks = asRecord(data.social_links)
+
+  const createdAt =
+    resolveTimestamp(data?.created?.at) ??
+    resolveTimestamp(data.created_at) ??
+    resolveTimestamp(data.createdAt) ??
+    resolveTimestamp(data?.updated?.at) ??
+    resolveTimestamp(data.updated_at) ??
+    resolveTimestamp(data.updatedAt) ??
+    Timestamp.now()
+
+  const updatedAt =
+    resolveTimestamp(data?.updated?.at) ??
+    resolveTimestamp(data.updated_at) ??
+    resolveTimestamp(data.updatedAt) ??
+    createdAt
+
+  return {
+    id: asString(data.id, '').trim() || docId,
+    app_name: asString(data.app_name, ''),
+    app_short_name: asString(data.app_short_name, ''),
+    role: asString(data.role, ''),
+    ecosystem: asString(data.ecosystem, ''),
+    join_requests: asStringArray(data.join_requests),
+    admin_ids: asStringArray(data.admin_ids),
+    tagline: asString(data.tagline, ''),
+    description: asString(data.description, ''),
+    short_bio: asString(data.short_bio, ''),
+    long_bio: asString(data.long_bio, ''),
+    social_links: socialLinks,
+    derived: {
+      user_count:
+        typeof derived.user_count === 'number' && Number.isFinite(derived.user_count)
+          ? derived.user_count
+          : (typeof data.user_count === 'number' && Number.isFinite(data.user_count)
+              ? data.user_count
+              : 0),
+    },
+    media: {
+      thumbnail_url: asString(media.thumbnail_url, '') || asString(data.thumbnail_url, ''),
+      logo_url: asString(media.logo_url, '') || asString(data.logo_url, ''),
+      wordmark_light_url:
+        asString(media.wordmark_light_url, '') || asString(data.wordmark_light_url, ''),
+      wordmark_dark_url:
+        asString(media.wordmark_dark_url, '') || asString(data.wordmark_dark_url, ''),
+      cover_url: asString(media.cover_url, ''),
+    },
+    created: {
+      at: createdAt,
+      by: resolveCreatorId(data) || undefined,
+    },
+    updated: {
+      at: updatedAt,
+      by: asString(data?.updated?.by, '').trim() || undefined,
+    },
+  }
+}
+
+function needsAppRewrite(data, canonical) {
+  const canonicalKeys = Object.keys(canonical)
+  const dataKeys = Object.keys(data || {})
+
+  for (const key of canonicalKeys) {
+    if (!valuesEqual(data?.[key], canonical[key])) return true
+  }
+
+  for (const key of dataKeys) {
+    if (!canonicalKeys.includes(key)) return true
+  }
+
+  return false
+}
+
+async function runAppsCanonicalShape() {
+  console.log('[migrate] apps-canonical-shape start', {
+    projectId,
+    commit,
+    pageSize,
+    limit,
+    app: targetAppId,
+  })
+
+  let processed = 0
+  let updated = 0
+  let skipped = 0
+  let lastDoc = null
+
+  while (true) {
+    if (limit && processed >= limit) break
+
+    let q = db.collection('apps').orderBy(FieldPath.documentId()).limit(pageSize)
+    if (lastDoc) q = q.startAfter(lastDoc)
+    if (targetAppId) q = db.collection('apps').where(FieldPath.documentId(), '==', targetAppId)
+
+    const snap = await q.get()
+    if (snap.empty) break
+
+    let batch = db.batch()
+    let batchOps = 0
+
+    for (const docSnap of snap.docs) {
+      if (limit && processed >= limit) break
+
+      processed += 1
+      const data = docSnap.data() || {}
+      const canonical = buildCanonicalApp(docSnap.id, data)
+
+      if (!needsAppRewrite(data, canonical)) {
+        skipped += 1
+        continue
+      }
+
+      updated += 1
+
+      if (commit) {
+        batch.set(docSnap.ref, canonical)
+        batchOps += 1
+      } else {
+        console.log('[dry-run]', docSnap.ref.path, canonical)
+      }
+
+      if (commit && batchOps >= 400) {
+        await batch.commit()
+        batch = db.batch()
+        batchOps = 0
+      }
+    }
+
+    if (commit && batchOps > 0) {
+      await batch.commit()
+    }
+
+    lastDoc = snap.docs[snap.docs.length - 1]
+    if (targetAppId) break
+  }
+
+  console.log('[migrate] apps-canonical-shape done', { processed, updated, skipped, commit })
 }
 
 function buildCanonicalIngredient(docId, data) {
@@ -1694,6 +1849,7 @@ async function runAppSocialLinksNormalize() {
 const recipes = {
   'app-media-flatten': runAppMediaFlatten,
   'app-social-links-normalize': runAppSocialLinksNormalize,
+  'apps-canonical-shape': runAppsCanonicalShape,
   'jobs-backfill-id': runJobsBackfillId,
   'places-normalize-image-shade': runPlacesNormalizeImageShade,
   'places-migrate-image-url': runPlacesMigrateImageUrl,

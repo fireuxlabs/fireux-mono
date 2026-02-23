@@ -7,7 +7,9 @@ export type NotificationScope = 'ecosystem' | 'app'
 export interface UserNotification {
   message: string
   scope: NotificationScope
-  created_at: FirebaseTimestamp
+  created: {
+    at: FirebaseTimestamp
+    app_id: string
+  }
   read: boolean
-  app_id: string
 }

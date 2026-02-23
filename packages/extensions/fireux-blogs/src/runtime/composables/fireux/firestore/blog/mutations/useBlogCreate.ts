@@ -59,7 +59,7 @@ export function useBlogCreate() {
       id: slug,
       slug,
       appId: payload.appId || fireux.appId,
-    } satisfies Omit<BlogPost, 'created_at' | 'updated_at' | 'creator_id'>
+    } satisfies Omit<BlogPost, 'created' | 'updated'>
 
     await setDocument<BlogPost>('blogs', slug, data as BlogPost, {
       creator: true,

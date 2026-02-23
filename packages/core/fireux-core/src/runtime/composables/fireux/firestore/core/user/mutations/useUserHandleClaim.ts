@@ -46,6 +46,14 @@ export function useUserHandleClaim() {
         }
       }
 
+      const previousHandleRef =
+        currentHandle && currentHandle !== nextHandle
+          ? doc(db, 'handles', currentHandle)
+          : null
+      const previousHandleSnap = previousHandleRef
+        ? await transaction.get(previousHandleRef)
+        : null
+
       const now = serverTimestamp()
       if (!nextHandleSnap.exists()) {
         transaction.set(nextHandleRef, {
@@ -66,14 +74,10 @@ export function useUserHandleClaim() {
         updated_at: now,
       })
 
-      if (currentHandle && currentHandle !== nextHandle) {
-        const previousHandleRef = doc(db, 'handles', currentHandle)
-        const previousHandleSnap = await transaction.get(previousHandleRef)
-        if (previousHandleSnap.exists()) {
-          const previousUid = String(previousHandleSnap.data()?.uid || '').trim()
-          if (previousUid === normalizedUid) {
-            transaction.delete(previousHandleRef)
-          }
+      if (previousHandleRef && previousHandleSnap?.exists()) {
+        const previousUid = String(previousHandleSnap.data()?.uid || '').trim()
+        if (previousUid === normalizedUid) {
+          transaction.delete(previousHandleRef)
         }
       }
 
@@ -85,4 +89,3 @@ export function useUserHandleClaim() {
 
   return { claimHandle }
 }
-

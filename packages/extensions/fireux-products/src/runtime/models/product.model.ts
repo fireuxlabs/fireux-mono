@@ -102,9 +102,14 @@ export const FirebaseProduct = {
   metadata: {} as Record<string, any>,
 
   // Stamps
-  creator_id: '' as FireuxStamped['creator_id'],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+  },
 } as const
 
 export type FirebaseProduct = {
@@ -113,7 +118,7 @@ export type FirebaseProduct = {
 
 export type ProductCreationInput = Omit<
   FirebaseProduct,
-  'id' | 'created_at' | 'updated_at' | 'creator_id'
+  'id' | 'created' | 'updated'
 >
 
 export type ProductUpdateInput = Partial<Omit<ProductCreationInput, 'appId'>>

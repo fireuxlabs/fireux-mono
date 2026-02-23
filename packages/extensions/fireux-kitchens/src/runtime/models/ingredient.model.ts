@@ -20,10 +20,15 @@ export const Ingredient = {
   slug: '' as string,
   image_url: '' as string,
 
-  app_id: '' as FireuxStamped['app_id'],
-  creator_id: '' as FireuxStamped['creator_id'],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+    app_id: '' as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+  },
 } as const
 
 export type Ingredient = {
@@ -32,7 +37,7 @@ export type Ingredient = {
 
 export type IngredientCreateInput = Omit<
   Ingredient,
-  'id' | 'app_id' | 'creator_id' | 'created_at' | 'updated_at'
+  'id' | 'created' | 'updated'
 >
 export type IngredientUpdateInput = Partial<Omit<IngredientCreateInput, never>>
 
@@ -46,10 +51,15 @@ export const KitchenIngredient = {
   // Same value as document id; kept explicit for query and migration ergonomics.
   ingredient_id: '' as string,
 
-  app_id: '' as FireuxStamped['app_id'],
-  creator_id: '' as FireuxStamped['creator_id'],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+    app_id: '' as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+  },
 } as const
 
 export type KitchenIngredient = {
@@ -58,7 +68,7 @@ export type KitchenIngredient = {
 
 export type KitchenIngredientCreateInput = Omit<
   KitchenIngredient,
-  'id' | 'app_id' | 'creator_id' | 'created_at' | 'updated_at'
+  'id' | 'created' | 'updated'
 >
 export type KitchenIngredientUpdateInput = Partial<
   Omit<KitchenIngredientCreateInput, 'ingredient_id'>
@@ -74,10 +84,15 @@ export const KitchenSupplierIngredient = {
   supplier_id: '' as string,
   ingredient_id: '' as string,
 
-  app_id: '' as FireuxStamped['app_id'],
-  creator_id: '' as FireuxStamped['creator_id'],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+    app_id: '' as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+  },
 } as const
 
 export type KitchenSupplierIngredient = {
@@ -86,7 +101,7 @@ export type KitchenSupplierIngredient = {
 
 export type KitchenSupplierIngredientCreateInput = Omit<
   KitchenSupplierIngredient,
-  'id' | 'app_id' | 'creator_id' | 'created_at' | 'updated_at'
+  'id' | 'created' | 'updated'
 >
 export type KitchenSupplierIngredientUpdateInput = Partial<
   Omit<KitchenSupplierIngredientCreateInput, 'kitchen_id' | 'supplier_id' | 'ingredient_id'>

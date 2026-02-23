@@ -25,13 +25,20 @@ export function useDevDriftFilter<T extends WithOptionalId>(params: {
   prepareForDrift?: (doc: T) => Record<string, unknown>
   driftMode?: 'all' | 'extras-only'
   requiredPaths?: string[]
+  ignoreExtraTimestampFields?: boolean
 }) {
-  const hasRequiredPaths = false
+  const requiredPaths = new Set((params.requiredPaths ?? []).filter(Boolean))
+  const hasRequiredPaths = requiredPaths.size > 0
+  const allowMissing = params.driftMode === 'all'
   const driftKind = ref<DriftKind>('extra')
   const selectedField = ref<string>('')
 
-  const setDriftKind = () => {
-    driftKind.value = 'extra'
+  const setDriftKind = (value?: DriftKind) => {
+    if (!allowMissing) {
+      driftKind.value = 'extra'
+      return
+    }
+    driftKind.value = value === 'missing' ? 'missing' : 'extra'
   }
 
   const setSelectedField = (value: string) => {
@@ -59,10 +66,11 @@ export function useDevDriftFilter<T extends WithOptionalId>(params: {
       ? params.prepareForDrift(doc)
       : (doc as unknown as Record<string, unknown>)
     const drift = resolveDriftFromModel(params.runtimeModel, payload, '', {
-      includeMissing: false,
-      requiredPaths: new Set(),
+      includeMissing: allowMissing || hasRequiredPaths,
+      requiredPaths,
+      ignoreExtraTimestampFields: params.ignoreExtraTimestampFields,
     })
-    if (hasRequiredPaths) {
+    if (hasRequiredPaths && !allowMissing) {
       return {
         id,
         drift: {
@@ -73,7 +81,7 @@ export function useDevDriftFilter<T extends WithOptionalId>(params: {
     }
     return {
       id,
-      drift: { ...drift, missing: [] },
+      drift: allowMissing ? drift : { ...drift, missing: [] },
     }
   }
 
@@ -89,7 +97,7 @@ export function useDevDriftFilter<T extends WithOptionalId>(params: {
   const fieldOptions = computed<DevDriftFieldOption[]>(() => {
     const counts = new Map<string, number>()
     for (const drift of driftById.value.values()) {
-      const list = drift.extra
+      const list = driftKind.value === 'missing' ? drift.missing : drift.extra
       for (const field of list) counts.set(field, (counts.get(field) ?? 0) + 1)
     }
 
@@ -115,7 +123,7 @@ export function useDevDriftFilter<T extends WithOptionalId>(params: {
       if (!id) return false
       const drift = driftById.value.get(id)
       if (!drift) return false
-      const list = drift.extra
+      const list = driftKind.value === 'missing' ? drift.missing : drift.extra
       return list.includes(selectedField.value)
     })
   })
@@ -157,6 +165,7 @@ export function useDevDriftFilter<T extends WithOptionalId>(params: {
 
   return {
     driftKind,
+    allowMissing,
     setDriftKind,
     selectedField,
     setSelectedField,

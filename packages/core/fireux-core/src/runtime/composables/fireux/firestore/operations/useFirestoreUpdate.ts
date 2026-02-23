@@ -10,9 +10,17 @@ export function useFirestoreUpdate() {
     id: string,
     data: Partial<T>
   ): Promise<void> {
-    await useRequireUser()
+    const user = await useRequireUser()
     const ref = doc(db, collectionPath, id)
-    await updateDoc(ref, { ...data, updated_at: serverTimestamp() })
+    await updateDoc(ref, {
+      ...data,
+      updated: {
+        at: serverTimestamp(),
+        by: user.uid,
+      } as any,
+      // Legacy flat field kept temporarily while readers/data migrate.
+      updated_at: serverTimestamp(),
+    })
   }
 
   return { updateDocument }
