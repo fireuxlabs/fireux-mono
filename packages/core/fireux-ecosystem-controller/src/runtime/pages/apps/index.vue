@@ -35,7 +35,7 @@ const { appName } = useFireUXConfig()
 
 const pageTitle = 'Apps'
 const pageDescription =
-  'Inspect the current app and browse all apps available to this runtime.'
+  'Inspect the current runtime app and browse apps available to this runtime.'
 
 useHead({ title: `${appName} | ${pageTitle}` })
 

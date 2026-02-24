@@ -24,6 +24,8 @@
       </p>
     </UCard>
 
+    <DevBinding :app="bindingApp" :apps="bindingApps" />
+
     <!-- Runtime Summary -->
     <UCard>
       <template #header>
@@ -226,6 +228,8 @@
 import { computed, ref } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useAppEnvCheck } from '../../composables/fireux/app/utils/useAppEnvCheck'
+import { useAppCollection } from '../../composables/fireux/firestore/core/app/fetch/useAppCollection'
+import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 
 definePageMeta({
   title: 'Dev · Overview',
@@ -247,6 +251,15 @@ if (!cfg.ecosystem || !cfg.ecosystem.trim()) {
   throw new Error('[dev] FireUX config missing ecosystem name')
 }
 const showRuntimeJson = ref(false)
+
+const { apps } = useAppCollection()
+const { app: activeApp } = useApp()
+const bindingApps = computed(() =>
+  cfg.isTenant ? (activeApp.value ? [activeApp.value] : []) : apps.value ?? []
+)
+const bindingApp = computed(
+  () => bindingApps.value.find((item) => item?.id === cfg.appId) ?? null
+)
 
 const {
   data: envData,

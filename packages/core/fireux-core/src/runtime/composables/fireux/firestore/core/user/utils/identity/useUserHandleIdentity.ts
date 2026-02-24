@@ -6,6 +6,7 @@ const RESERVED_HANDLES = new Set([
   'blog',
   'dashboard',
   'dev',
+  'id',
   'jobs',
   'kitchens',
   'modules',
@@ -57,4 +58,3 @@ export const validateUserHandleForPublicRoute = (rawHandle: string) => {
   }
   return { isValid: true, handle }
 }
-

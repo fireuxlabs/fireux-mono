@@ -128,6 +128,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     // VueFire/Firebase wiring lives in fireux-nuxtfire.
     'fireux-nuxtfire',
     'fireux-core',
+    ...(app.role === 'global' ? ['fireux-ecosystem-controller'] : []),
     '@vite-pwa/nuxt',
     ...(app.modules || []),
   ]

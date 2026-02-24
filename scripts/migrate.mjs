@@ -809,6 +809,12 @@ function resolveCreatorId(data) {
   const creatorId = asString(data.creator_id, '').trim()
   if (creatorId) return creatorId
 
+  const created = data?.created
+  if (created && typeof created === 'object') {
+    const nestedBy = asString(created.by, '').trim()
+    if (nestedBy) return nestedBy
+  }
+
   const createdBy = data.created_by
   if (typeof createdBy === 'string') return createdBy.trim()
 
@@ -1521,6 +1527,10 @@ function resolveDriftTarget(payload) {
     return { collection: 'apps', items: payload.apps }
   }
 
+  if (Array.isArray(payload.users)) {
+    return { collection: 'users', items: payload.users }
+  }
+
   if (Array.isArray(payload.blogs)) {
     return { collection: 'blogs', items: payload.blogs }
   }
@@ -1544,6 +1554,9 @@ function resolveDriftTarget(payload) {
   if (typeof payload.modelPath === 'string') {
     if (payload.modelPath.includes('/fireux-core/') && payload.modelPath.includes('/app.model')) {
       return { collection: 'apps', items: payload.apps || [] }
+    }
+    if (payload.modelPath.includes('/fireux-core/') && payload.modelPath.includes('/user.model')) {
+      return { collection: 'users', items: payload.users || [] }
     }
     if (payload.modelPath.includes('/fireux-blogs/')) {
       return { collection: 'blogs', items: payload.blogs || [] }

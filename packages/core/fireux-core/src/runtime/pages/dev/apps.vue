@@ -17,6 +17,8 @@
 
       <DevBinding :app="bindingApp" :apps="appCollection" />
 
+      <DevAppDummy />
+
       <DevModel
         :title="'Apps · Model'"
         :model="appModelRuntime"

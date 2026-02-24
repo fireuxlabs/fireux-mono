@@ -106,8 +106,8 @@
                 :link="Boolean(creatorCard.to)"
                 class="block"
               />
-              <span v-else-if="app?.creator_id" class="profile__mono">
-                {{ app.creator_id }}
+              <span v-else-if="creatorId" class="profile__mono">
+                {{ creatorId }}
               </span>
               <span v-else class="opacity-70">missing</span>
             </div>
@@ -123,12 +123,20 @@
                     :key="item.id"
                     :text="item.tooltip"
                   >
-                    <ULink :to="item.to" raw class="hover:ring-primary transition rounded-full">
+                    <template v-if="item.to">
+                      <ULink :to="item.to" raw class="hover:ring-primary transition rounded-full">
+                        <UAvatar
+                          :src="item.avatarUrl || undefined"
+                          :alt="item.alt"
+                        />
+                      </ULink>
+                    </template>
+                    <template v-else>
                       <UAvatar
                         :src="item.avatarUrl || undefined"
                         :alt="item.alt"
                       />
-                    </ULink>
+                    </template>
                   </UTooltip>
                 </UAvatarGroup>
 
@@ -230,13 +238,16 @@ const { toItems } = useSocialLinks()
 const socialItems = computed(() => toItems(props.socialLinks))
 
 const createdAtText = computed(() =>
-  formatFirestoreTimestamp(props.app?.created_at, {
+  formatFirestoreTimestamp(props.app?.created?.at, {
     fallback: undefined,
     format: { dateStyle: 'medium' },
   })
 )
 
-const creatorId = computed(() => props.app?.creator_id ?? null)
+const creatorId = computed(() => {
+  const raw = props.app?.created?.by
+  return typeof raw === 'string' && raw.trim() ? raw.trim() : null
+})
 const { user: creatorUser } = useUserFetch(creatorId)
 const { card: userToCard } = useUserInterface()
 
@@ -270,7 +281,7 @@ const adminAvatarItems = computed<AdminAvatarItem[]>(() => {
     const handle = (card?.handle ?? '').trim()
     return {
       id,
-      to: card?.to ?? `/users/${id}`,
+      to: card?.to ?? '',
       avatarUrl: card?.avatarUrl ?? '',
       alt: displayName || handle || id,
       tooltip: displayName || handle || id,

@@ -1,4 +1,4 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/pages/apps/[id].vue -->
+<!-- FILE: packages/core/fireux-ecosystem-controller/src/runtime/pages/apps/[id].vue -->
 <template>
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
@@ -79,11 +79,11 @@
 import { useHead } from '#imports'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { useAppFetch } from '../../composables/fireux/firestore/core/app/fetch/useAppFetch'
-import { useAppInterface } from '../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
-import { useUserCollectionByAppId } from '../../composables/fireux/firestore/core/user/fetch/useUserCollectionByAppId'
-import type { UserCard } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useAppFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppFetch'
+import { useAppInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import { useUserCollectionByAppId } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserCollectionByAppId'
+import type { UserCard } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 const route = useRoute()
 
@@ -157,7 +157,4 @@ const headTitle = computed(() =>
 )
 
 useHead({ title: headTitle })
-
-const wrapperFor = (card: UserCard.Card) => (card.to ? 'NuxtLink' : 'div')
-const wrapperPropsFor = (card: UserCard.Card) => (card.to ? { to: card.to } : {})
 </script>

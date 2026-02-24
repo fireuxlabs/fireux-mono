@@ -15,8 +15,6 @@
         </div>
       </UCard>
 
-      <DevBinding :app="bindingApp" :apps="bindingApps" />
-
       <DevModel
         :title="'Users · Model'"
         :model="userModelRuntime"
@@ -54,8 +52,6 @@ import { definePageMeta } from '#imports'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
-import { useAppCollection } from '../../composables/fireux/firestore/core/app/fetch/useAppCollection'
-import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 import { useGlobalUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useGlobalUserCollection'
 import { User as UserModelRuntime } from '../../models/core/user.model'
 
@@ -78,15 +74,7 @@ const userModelRuntime = UserModelRuntime
 
 const { users } = useGlobalUserCollection()
 
-const { apps } = useAppCollection()
-const { app: activeApp } = useApp()
-const { appId: configAppId, isTenant } = useFireUXConfig()
-const bindingApps = computed(() =>
-  isTenant ? (activeApp.value ? [activeApp.value] : []) : apps.value ?? []
-)
-const bindingApp = computed(
-  () => bindingApps.value.find((item) => item?.id === configAppId) ?? null
-)
+const { isTenant } = useFireUXConfig()
 
 const userCollection = computed(() => users.value ?? [])
 

@@ -86,7 +86,9 @@
 
               <div class="space-y-1 text-sm">
                 <code class="block">{{ img.urlPath }}</code>
-                <code class="block text-xs text-gray-500 dark:text-gray-400">{{ img.filePath }}</code>
+                <code class="block text-xs text-gray-500 dark:text-gray-400">
+                  {{ toPublicRelativePath(img.urlPath) }}
+                </code>
               </div>
             </li>
           </ul>
@@ -120,6 +122,10 @@ type ImageGroup = {
 
 const { data } = await useFetch<{ groups: ImageGroup[] }>('/api/dev/images')
 const groups = computed(() => data.value?.groups ?? [])
+
+function toPublicRelativePath(urlPath: string): string {
+  return urlPath.replace(/^\/+/, '')
+}
 
 type FirestoreAppImage = { key: string; label: string; url: string }
 type FirestoreAppGroup = { id: string; name: string; images: FirestoreAppImage[] }

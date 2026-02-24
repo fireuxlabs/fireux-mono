@@ -1,8 +1,8 @@
 <template>
   <UPageCTA
     class="cta"
-    title="Current app"
-    description="The app currently resolved for this runtime."
+    title="Runtime app"
+    description="The app currently resolved for this runtime. Use the collection below to inspect other apps in this ecosystem."
     variant="naked"
   >
     <template #default>
@@ -39,8 +39,11 @@
         />
         <AppCreateSystem v-else />
 
-        <div class="cta__toolbar flex justify-end">
-          <UButton variant="ghost" size="sm" to="/apps/learn-more">Learn more</UButton>
+        <div class="cta__toolbar flex flex-wrap justify-end gap-2">
+          <UButton v-if="app?.id" variant="soft" size="sm" :to="`/apps/${app.id}`">
+            Open current app
+          </UButton>
+          <UButton variant="ghost" size="sm" to="/docs/apps">Docs</UButton>
         </div>
       </div>
     </template>
