@@ -1,0 +1,21 @@
+FireUX components handoff (2026-02-09)
+Updated: 2026-02-20
+
+Goal:
+- Restore runtime page component rendering after entities/objects flattening.
+
+Status:
+- Component auto-registration for ./runtime/components enables Organisms* names.
+- Products index uses OrganismsProductSolutions and OrganismsProductCollectionManager.
+
+Next checks:
+- Confirm products index renders with Organisms prefix in dev runtime.
+- Verify component names in other index pages (places/jobs/kitchens) and align tags.
+- Scan module components-config files for mismatched pathPrefix or prefix values.
+- Re-check for stale import refs after refactor (products, places, kitchens).
+
+Notes:
+- packages/extensions/fireux-products/src/config/module/components-config.ts registers ./runtime/components and Product-prefixed components.
+- packages/extensions/fireux-products/src/runtime/pages/products/index.vue uses Organisms* tags.
+
+#end
