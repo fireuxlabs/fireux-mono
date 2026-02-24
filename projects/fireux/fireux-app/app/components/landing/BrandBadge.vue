@@ -10,7 +10,7 @@
     <img
       src="/img/app/logo.png"
       alt="FireUX emblem"
-      class="mx-auto h-14 w-14"
+      class="mx-auto h-14 w-14 rounded-full object-cover"
     />
   </div>
 </template>

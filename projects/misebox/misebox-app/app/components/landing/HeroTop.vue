@@ -10,6 +10,6 @@
 </template>
 
 <script setup lang="ts">
-const title = 'Professional recruitment for kitchens'
-const accent = ''
+const title = 'Kitchen operations,'
+const accent = 'made simple'
 </script>
