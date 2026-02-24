@@ -1,8 +1,7 @@
 <template>
   <EffectsLandingEffect />
 
-  <div>
-    <LandingShell>
+  <LandingShell>
       <template #left>
         <div class="space-y-6">
           <UBadge color="primary" variant="subtle">Bringli</UBadge>
@@ -98,46 +97,43 @@
       </template>
     </LandingShell>
 
-    <UContainer>
-      <UPageSection class="space-y-10 py-16 lg:py-24">
-        <div class="mx-auto max-w-2xl space-y-3 text-center">
-          <h2 class="text-3xl font-black">Bringli workflows</h2>
-          <p class="text-base text-[color:var(--ui-text-muted)] lg:text-lg">
-            The first pipe is supplier operations. Then we widen into full
-            marketplace flows.
-          </p>
-        </div>
+  <UPageSection class="space-y-10 py-12 lg:py-16">
+    <div class="mx-auto max-w-2xl space-y-3 text-center">
+      <h2 class="text-3xl font-black">Bringli workflows</h2>
+      <p class="text-base text-[color:var(--ui-text-muted)] lg:text-lg">
+        The first pipe is supplier operations. Then we widen into full
+        marketplace flows.
+      </p>
+    </div>
 
-        <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-          <UCard v-for="item in solutionCards" :key="item.title" :to="item.to">
-            <template #header>
-              <div class="flex items-start gap-3">
-                <div
-                  class="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary"
-                >
-                  <UIcon :name="item.icon" />
-                </div>
-                <div class="space-y-1">
-                  <UBadge variant="soft" color="primary">{{ item.badge }}</UBadge>
-                  <h3 class="text-lg font-semibold">{{ item.title }}</h3>
-                </div>
-              </div>
-            </template>
+    <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+      <UCard v-for="item in solutionCards" :key="item.title" :to="item.to">
+        <template #header>
+          <div class="flex items-start gap-3">
+            <div
+              class="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary"
+            >
+              <UIcon :name="item.icon" />
+            </div>
+            <div class="space-y-1">
+              <UBadge variant="soft" color="primary">{{ item.badge }}</UBadge>
+              <h3 class="text-lg font-semibold">{{ item.title }}</h3>
+            </div>
+          </div>
+        </template>
 
-            <p class="text-sm text-[color:var(--ui-text-muted)]">
-              {{ item.description }}
-            </p>
+        <p class="text-sm text-[color:var(--ui-text-muted)]">
+          {{ item.description }}
+        </p>
 
-            <template #footer>
-              <UButton variant="ghost" size="sm" trailing-icon="i-lucide-arrow-right">
-                {{ item.cta }}
-              </UButton>
-            </template>
-          </UCard>
-        </div>
-      </UPageSection>
-    </UContainer>
-  </div>
+        <template #footer>
+          <UButton variant="ghost" size="sm" trailing-icon="i-lucide-arrow-right">
+            {{ item.cta }}
+          </UButton>
+        </template>
+      </UCard>
+    </div>
+  </UPageSection>
 </template>
 
 <script setup lang="ts">

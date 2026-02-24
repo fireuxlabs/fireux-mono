@@ -1,22 +1,20 @@
 <template>
-  <UCard class="max-w-none px-0">
+  <UCard>
     <template #header>
       <div class="flex items-center justify-between">
-        <span class="uppercase tracking-wide text-xs text-[color:var(--ui-text-muted)]">
-          Quick links
-        </span>
+        <span>Quick links</span>
         <UBadge variant="subtle" color="neutral">At a glance</UBadge>
       </div>
     </template>
 
     <ul class="space-y-4">
-      <li class="flex items-start gap-4" v-for="item in quickLinks" :key="item.title">
-        <div class="flex-shrink-0 grid place-items-center rounded-lg w-12 h-12 bg-primary/15 text-primary">
-          <UIcon :name="item.icon" class="text-2xl" />
+      <li class="flex items-start gap-3" v-for="item in quickLinks" :key="item.title">
+        <div class="grid h-10 w-10 place-items-center rounded-md bg-primary/15 text-primary">
+          <UIcon :name="item.icon" />
         </div>
-        <div class="min-w-0">
+        <div>
           <h3 class="font-medium">{{ item.title }}</h3>
-          <p class="text-sm text-[color:var(--ui-text-muted)]">
+          <p class="text-sm">
             {{ item.copy }}
           </p>
         </div>
@@ -29,7 +27,7 @@
           <UButton :to="footerAction.to" block color="primary">
             {{ footerAction.label }}
           </UButton>
-          <div class="flex flex-wrap items-center gap-2">
+          <div class="flex flex-wrap gap-2">
             <NuxtLink to="/jobs">
               <UBadge variant="soft" color="primary">Jobs</UBadge>
             </NuxtLink>
@@ -56,7 +54,7 @@ const isAuthenticated = computed(() => auth?.isAuthenticated?.value ?? false)
 const footerAction = computed(() =>
   isAuthenticated.value
     ? { label: 'Go to dashboard', to: '/dashboard' }
-    : { label: 'Sign in', to: '/auth' }
+    : { label: 'Get started', to: '/get-started' }
 )
 
 const quickLinks = [

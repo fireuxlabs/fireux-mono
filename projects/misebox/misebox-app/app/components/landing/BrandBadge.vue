@@ -1,23 +1,16 @@
 <template>
-  <div class="flex flex-col items-center gap-3">
-    <img
-      src="/img/app/wordmark-light.png"
-      srcset="/img/app/wordmark-light.png 1x, /img/app/wordmark-light@2x.png 2x, /img/app/wordmark-light@3x.png 3x"
+  <div class="space-y-3 text-center">
+    <AppBrandWordmark
+      class="mx-auto"
+      size="large"
       alt="Misebox wordmark"
-      class="opacity-85"
-      style="height: 4.25rem"
+      light-src="/img/app/wordmark-light.png"
+      dark-src="/img/app/wordmark-dark.png"
     />
     <img
-      :src="brand.logo"
+      src="/img/app/logo.png"
       alt="Misebox emblem"
-      class="opacity-85"
-      style="height: 4.25rem"
+      class="mx-auto h-14 w-14"
     />
   </div>
 </template>
-
-<script setup lang="ts">
-const brand = {
-  logo: '/img/app/logo.png',
-}
-</script>
