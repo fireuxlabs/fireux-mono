@@ -1,7 +1,7 @@
 <!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/companies/index.vue -->
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageHeader class="border-b-0" :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
       <CompanyCTA />

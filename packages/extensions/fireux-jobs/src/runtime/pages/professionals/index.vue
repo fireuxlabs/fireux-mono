@@ -1,7 +1,7 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/professionals/index.vue -->
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageHeader class="border-b-0" :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
       <ProfessionalCTA />
@@ -29,7 +29,7 @@ definePageMeta({
     layouts: ['default'],
   },
   title: 'Professionals',
-  description: 'Professional profiles resolved for this runtime.',
+  description: 'Browse professional profiles.',
   layout: 'default',
   name: 'ProfessionalsIndexPage',
 })
@@ -38,7 +38,7 @@ const { appName } = useFireUXConfig()
 
 const pageTitle = 'Professionals'
 const pageDescription =
-  'Manage your profile and browse professionals.'
+  'View your profile and browse professionals.'
 
 useHead({ title: `${appName} | ${pageTitle}` })
 

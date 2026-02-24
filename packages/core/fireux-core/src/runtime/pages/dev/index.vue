@@ -1,6 +1,6 @@
 <template>
   <UPage>
-    <UPageHeader
+    <UPageHeader class="border-b-0"
       title="Dev · Overview"
       description="Diagnostics and inspection utilities for the active FireUX runtime."
     />

@@ -1,6 +1,6 @@
 <template>
   <UPage>
-    <UPageHeader
+    <UPageHeader class="border-b-0"
       title="Dev · Tools"
       description="Clipboard-first utilities for registry data, diagnostics, and FireUX automation."
     />

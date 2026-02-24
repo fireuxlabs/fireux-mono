@@ -1,7 +1,7 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/jobs/index.vue -->
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageHeader class="border-b-0" :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <JobCTA />
       <ClientOnly>

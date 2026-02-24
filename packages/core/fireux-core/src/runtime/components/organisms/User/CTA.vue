@@ -1,17 +1,22 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/User/CTA.vue -->
 <template>
   <UPageCTA
-    class="cta"
-    title="Current user"
-    description="The user currently resolved for this runtime."
+    :class="['cta', { 'cta--usage': isResolved && isInitialized && currentUser }]"
+    :title="isResolved && isInitialized && currentUser ? undefined : 'Current User'"
+    :description="isResolved && isInitialized && currentUser ? undefined : 'Sign in to view or create your profile.'"
     variant="naked"
   >
     <template #default>
-      <div v-if="isResolved && isInitialized && currentUser" class="cta__body space-y-3">
+      <div v-if="isResolved && isInitialized && currentUser" class="cta__body space-y-2">
         <div class="cta__toolbar flex justify-end">
-          <UButton size="xs" variant="ghost" @click="toggleView">
-            {{ view === 'preview' ? 'Profile' : 'Preview' }}
-          </UButton>
+          <UButton
+            size="xs"
+            variant="ghost"
+            :icon="view === 'preview' ? 'i-lucide-id-card' : 'i-lucide-eye'"
+            :aria-label="view === 'preview' ? 'Switch to profile view' : 'Switch to preview view'"
+            :title="view === 'preview' ? 'Profile' : 'Preview'"
+            @click="toggleView"
+          />
         </div>
 
         <UserCardsPreview
@@ -32,8 +37,8 @@
 </template>
 
 <script setup lang="ts">
-import { useUser } from '../../../composables/fireux/firestore/core/user/useUser';
-import { useCardViewToggle } from '../../../composables/shared/useCardViewToggle';
+import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
+import { useCardViewToggle } from '../../../composables/shared/useCardViewToggle'
 
 const { isResolved, isInitialized, currentUser, card } = useUser()
 const { view, toggleView } = useCardViewToggle(() => Boolean(currentUser.value))

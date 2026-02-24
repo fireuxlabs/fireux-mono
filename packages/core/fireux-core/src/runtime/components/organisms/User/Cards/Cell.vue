@@ -31,7 +31,7 @@
         </div>
 
         <div v-if="showTagline" class="card__tagline">
-          <span v-if="prop">{{ prop }}</span>
+          <span v-if="taglineOverride">{{ taglineOverride }}</span>
           <span v-else-if="profiles.length && appsLabel">{{ profiles.join(', ') }} · {{ appsLabel }}</span>
           <span v-else-if="profiles.length">{{ profiles.join(', ') }}</span>
           <span v-else-if="appsLabel">{{ appsLabel }}</span>
@@ -48,7 +48,8 @@ type Props = Pick<
   UserCard.Card,
   'to' | 'avatarUrl' | 'displayName' | 'handle' | 'badges' | 'profiles' | 'appsLabel'
 > & {
-  prop?: string
+  /** Optional override for the tagline line. */
+  taglineOverride?: string
   showSubtitle?: boolean
   showBadges?: boolean
   showTagline?: boolean

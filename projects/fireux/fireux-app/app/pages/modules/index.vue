@@ -1,6 +1,6 @@
 <template>
   <UPage>
-    <UPageHeader
+    <UPageHeader class="border-b-0"
       title="Modules"
       description="Browse FireUX modules available to this runtime."
     />

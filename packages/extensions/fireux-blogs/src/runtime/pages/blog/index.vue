@@ -1,7 +1,7 @@
 <!-- FILE: packages/extensions/fireux-blogs/src/runtime/pages/blog/index.vue -->
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageHeader class="border-b-0" :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <BlogCollectionManager :collection="collection" />
     </UPageBody>

@@ -1,7 +1,7 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/agents/index.vue -->
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageHeader class="border-b-0" :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <AgentCTA />
       <AgentCollectionManager :collection="collection" />
@@ -26,7 +26,7 @@ definePageMeta({
     layouts: ['default'],
   },
   title: 'Agents',
-  description: 'Agent profiles resolved for this runtime.',
+  description: 'Browse agent profiles.',
   layout: 'default',
   name: 'AgentsIndexPage',
 })
@@ -35,7 +35,7 @@ const { appName } = useFireUXConfig()
 
 const pageTitle = 'Agents'
 const pageDescription =
-  'Inspect your agent profile and browse all agents available to this runtime.'
+  'View your profile and browse agents.'
 
 useHead({ title: `${appName} | ${pageTitle}` })
 

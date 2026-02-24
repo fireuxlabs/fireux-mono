@@ -1,6 +1,6 @@
 <template>
   <UPage>
-    <UPageHeader
+    <UPageHeader class="border-b-0"
       title="Onboarding"
       description="Pick a product and run the fulfillment onboarding flow."
     />

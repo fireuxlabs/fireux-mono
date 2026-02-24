@@ -3,8 +3,7 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <div>Apps</div>
-          <p>Browse apps available to this runtime.</p>
+          <div>Available Apps</div>
         </div>
 
         <div class="collection-manager__controls">
@@ -73,10 +72,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface';
-import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch';
-import type { AppModel } from '../../../../models/core/app.model';
+import { computed } from 'vue'
+import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch'
+import type { AppModel } from '../../../../models/core/app.model'
 
 const props = defineProps<{ collection?: AppModel[] }>()
 

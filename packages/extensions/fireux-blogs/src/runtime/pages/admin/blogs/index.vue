@@ -1,7 +1,7 @@
 <!-- FILE: packages/extensions/fireux-blogs/src/runtime/pages/admin/blogs/index.vue -->
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription">
+    <UPageHeader class="border-b-0" :title="pageTitle" :description="pageDescription">
       <template #actions>
         <UButton to="/admin/blogs/create" color="primary">
           Create post

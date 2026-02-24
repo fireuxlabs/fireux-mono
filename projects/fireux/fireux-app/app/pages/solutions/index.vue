@@ -1,6 +1,6 @@
 <template>
   <UPage>
-    <UPageHeader
+    <UPageHeader class="border-b-0"
       title="Solutions"
       description="Dedicated offer pages powered by the live FireUX products catalog."
     />

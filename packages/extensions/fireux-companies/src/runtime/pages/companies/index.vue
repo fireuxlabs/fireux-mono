@@ -1,6 +1,6 @@
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageHeader class="border-b-0" :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
       <CompanyCTA />
@@ -18,7 +18,7 @@ import { useCompanyFetch } from '../../composables/fireux/firestore/company/fetc
 definePageMeta({
   layout: 'default',
   title: 'Companies',
-  description: 'Company collection records resolved for this runtime.',
+  description: 'Browse companies.',
   nav: {
     key: 'companies',
     label: 'Companies',
@@ -33,7 +33,7 @@ definePageMeta({
 
 const pageTitle = 'Companies'
 const pageDescription =
-  'Create a company and browse all companies available to this runtime.'
+  'Create and browse companies.'
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })

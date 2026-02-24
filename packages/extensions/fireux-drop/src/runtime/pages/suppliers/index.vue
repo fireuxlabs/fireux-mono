@@ -1,7 +1,7 @@
-<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/suppliers/index.vue -->
+<!-- FILE: packages/extensions/fireux-drop/src/runtime/pages/suppliers/index.vue -->
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageHeader class="border-b-0" :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
       <SupplierCTA />
@@ -27,14 +27,14 @@ definePageMeta({
     layouts: ['default'],
   },
   title: 'Suppliers',
-  description: 'Supplier profiles resolved for this runtime.',
+  description: 'Browse supplier profiles.',
   layout: 'default',
   name: 'SuppliersIndexPage',
 })
 
 const pageTitle = 'Suppliers'
 const pageDescription =
-  'Inspect your supplier profile and browse suppliers resolved for this runtime.'
+  'View your profile and browse suppliers.'
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })

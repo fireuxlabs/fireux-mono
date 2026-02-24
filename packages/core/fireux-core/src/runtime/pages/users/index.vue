@@ -1,7 +1,7 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/pages/users/index.vue -->
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageHeader class="border-b-0" :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
       <UCard v-if="isDev">
@@ -37,7 +37,7 @@ definePageMeta({
     layouts: ['default'],
   },
   title: 'Users',
-  description: 'FireUX users resolved for this runtime.',
+  description: 'Browse users.',
   layout: 'default',
   name: 'UsersIndexPage',
 })
@@ -46,7 +46,7 @@ const { appName } = useFireUXConfig()
 
 const pageTitle = 'Users'
 const pageDescription =
-  'Inspect the current user and browse all users available to this runtime.'
+  'View your profile and browse users.'
 
 useHead({ title: `${appName} | ${pageTitle}` })
 

@@ -24,6 +24,10 @@ export const useCardViewToggle = (
     view.value = view.value === 'preview' ? 'profile' : 'preview'
   }
 
+  const setView = (next: View) => {
+    view.value = next
+  }
+
   watch(
     () => Boolean(asPredicate(hasData)()),
     (present) => {
@@ -34,5 +38,6 @@ export const useCardViewToggle = (
   return {
     view,
     toggleView,
+    setView,
   }
 }

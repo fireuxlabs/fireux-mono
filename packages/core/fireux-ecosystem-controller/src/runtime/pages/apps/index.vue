@@ -1,6 +1,6 @@
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageHeader class="border-b-0" :title="pageTitle" />
     <UPageBody class="pagebody">
       <AppCTA />
       <AppCollectionManager :collection="collection" />
@@ -26,7 +26,7 @@ definePageMeta({
   },
   tenant: 'global',
   title: 'Apps',
-  description: 'FireUX apps resolved for this runtime.',
+  description: 'Current app and other apps in this ecosystem.',
   layout: 'default',
   name: 'AppsIndexPage',
 })
@@ -34,8 +34,6 @@ definePageMeta({
 const { appName } = useFireUXConfig()
 
 const pageTitle = 'Apps'
-const pageDescription =
-  'Inspect the current runtime app and browse apps available to this runtime.'
 
 useHead({ title: `${appName} | ${pageTitle}` })
 

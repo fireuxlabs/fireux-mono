@@ -1,7 +1,7 @@
 <!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/chefs/index.vue -->
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+    <UPageHeader class="border-b-0" :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
       <ChefCTA />
@@ -27,14 +27,14 @@ definePageMeta({
     layouts: ['default'],
   },
   title: 'Chefs',
-  description: 'Chef profiles resolved for this runtime.',
+  description: 'Browse chef profiles.',
   layout: 'default',
   name: 'ChefsIndexPage',
 })
 
 const pageTitle = 'Chefs'
 const pageDescription =
-  'Inspect your chef profile and browse all chefs resolved for this runtime.'
+  'View your profile and browse chefs.'
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })

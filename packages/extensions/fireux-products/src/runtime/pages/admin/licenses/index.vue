@@ -1,6 +1,6 @@
 <template>
   <UPage>
-    <UPageHeader
+    <UPageHeader class="border-b-0"
       title="Template Licenses"
       description="Paid buyers awaiting access delivery."
     />

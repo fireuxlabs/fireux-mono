@@ -26,7 +26,7 @@
 
         <div v-if="showBody" class="preview__body">
           <div class="preview__line">
-            <span v-if="prop || bio">{{ prop || bio }}</span>
+            <span v-if="bioOverride || bio">{{ bioOverride || bio }}</span>
             <span v-else class="italic">missing</span>
           </div>
 
@@ -52,7 +52,8 @@ type Props = {
 
   appsLabel: string
 
-  prop?: string
+  /** Optional override for the primary bio line. */
+  bioOverride?: string
   showSubtitle?: boolean
   showBadges?: boolean
   showBody?: boolean

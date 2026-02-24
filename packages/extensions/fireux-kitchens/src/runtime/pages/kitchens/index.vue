@@ -1,11 +1,11 @@
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" />
+    <UPageHeader class="border-b-0" :title="pageTitle" />
     <UPageBody class="pagebody">
       <KitchenCTA />
       <KitchenCollectionManager
         :collection="collection"
-        title="Misebox kitchens."
+        title="Available Kitchens"
         description=""
       />
     </UPageBody>
@@ -13,6 +13,7 @@
 </template>
 
 <script setup lang="ts">
+import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
 import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
@@ -28,7 +29,7 @@ definePageMeta({
     layouts: ['default'],
   },
   title: 'Kitchens',
-  description: 'Runtime kitchen selection and dashboard launch.',
+  description: 'Browse kitchens.',
   layout: 'default',
   name: 'KitchensIndexPage',
 })

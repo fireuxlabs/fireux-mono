@@ -30,14 +30,11 @@
   <!-- Sections to ship now -->
   <LandingProducts :items="products" />
 
-  <UContainer>
-    <UPageSection class="py-12 lg:py-16">
+  <UPageSection class="py-12 lg:py-16 space-y-10">
+    <section>
       <div class="flex items-end justify-between mb-6">
         <div>
           <h2 class="text-2xl lg:text-3xl font-bold">Our apps</h2>
-          <p class="text-[color:var(--ui-text-muted)] mt-1">
-            Avatars for every registered app.
-          </p>
         </div>
         <UBadge variant="soft" color="primary">{{ displayedApps.length }}</UBadge>
       </div>
@@ -52,17 +49,82 @@
       </div>
 
       <div v-else class="flex flex-wrap gap-2">
-        <UAvatar
+        <UTooltip
           v-for="app in displayedApps"
           :key="app.key"
-          :src="app.src"
-          :alt="app.name"
-          :text="app.text"
-          size="md"
-        />
+          :text="app.name"
+        >
+          <a
+            v-if="app.href"
+            :href="app.href"
+            :aria-label="`Open ${app.name}`"
+            class="inline-flex rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+          >
+            <UAvatar
+              :src="app.src"
+              :alt="app.name"
+              :text="app.text"
+              size="md"
+            />
+          </a>
+          <UAvatar
+            v-else
+            :src="app.src"
+            :alt="app.name"
+            :text="app.text"
+            size="md"
+          />
+        </UTooltip>
       </div>
-    </UPageSection>
-  </UContainer>
+    </section>
+
+    <section>
+      <div class="flex items-end justify-between mb-6">
+        <div>
+          <h2 class="text-2xl lg:text-3xl font-bold">Our Ecosystems</h2>
+        </div>
+        <UBadge variant="soft" color="primary">{{ displayedEcosystems.length }}</UBadge>
+      </div>
+
+      <div v-if="appsPending" class="flex flex-wrap gap-2">
+        <USkeleton class="h-10 w-10 rounded-lg" />
+        <USkeleton class="h-10 w-10 rounded-lg" />
+        <USkeleton class="h-10 w-10 rounded-lg" />
+        <USkeleton class="h-10 w-10 rounded-lg" />
+      </div>
+
+      <div v-else class="flex flex-wrap gap-2">
+        <UTooltip
+          v-for="ecosystem in displayedEcosystems"
+          :key="ecosystem.key"
+          :text="ecosystem.name"
+        >
+          <a
+            v-if="ecosystem.href"
+            :href="ecosystem.href"
+            :aria-label="`Open ${ecosystem.name}`"
+            class="inline-flex rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+          >
+            <UAvatar
+              :src="ecosystem.src"
+              :alt="ecosystem.name"
+              :text="ecosystem.text"
+              size="md"
+              class="rounded-lg"
+            />
+          </a>
+          <UAvatar
+            v-else
+            :src="ecosystem.src"
+            :alt="ecosystem.name"
+            :text="ecosystem.text"
+            size="md"
+            class="rounded-lg"
+          />
+        </UTooltip>
+      </div>
+    </section>
+  </UPageSection>
 
   <LandingFuel />
   <LandingFeatures first />
@@ -173,6 +235,24 @@ const initials = (name: string) =>
     .map((part) => part[0]?.toUpperCase())
     .join('')
 
+const normalizeSlug = (value: string) =>
+  String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
+const toDisplayName = (value: string) => {
+  const trimmed = String(value || '').trim()
+  if (!trimmed) return ''
+  if (trimmed.toLowerCase() === 'fireux') return 'FireUX'
+  return trimmed
+    .split(/[\s-_]+/g)
+    .filter(Boolean)
+    .map((part) => part[0]?.toUpperCase() + part.slice(1))
+    .join(' ')
+}
+
 const resolveIconUrl = (base: string, icon: string) => {
   const trimmed = icon.trim()
   if (!trimmed) return ''
@@ -234,9 +314,34 @@ const displayedApps = computed(() =>
       name: app.name,
       src: getProxiedAvatarUrl(resolved),
       text: initials(app.name),
+      href: base || '',
+      ecosystem: String(info?.app?.ecosystem || '').trim(),
     }
   })
 )
+
+const displayedEcosystems = computed(() => {
+  const byKey = new Map<
+    string,
+    { key: string; name: string; src: string; text: string; href: string }
+  >()
+
+  for (const app of displayedApps.value) {
+    const slug = normalizeSlug(app.ecosystem)
+    if (!slug || byKey.has(slug)) continue
+
+    const name = toDisplayName(app.ecosystem)
+    byKey.set(slug, {
+      key: slug,
+      name: name || app.ecosystem || app.name,
+      src: app.src,
+      text: initials(name || app.name),
+      href: app.href,
+    })
+  }
+
+  return Array.from(byKey.values())
+})
 
 const title = 'Ignite With'
 const accent = 'Powerful Applications'

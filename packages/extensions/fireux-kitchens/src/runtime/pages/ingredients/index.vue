@@ -1,6 +1,6 @@
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription">
+    <UPageHeader class="border-b-0" :title="pageTitle" :description="pageDescription">
       <template #ctas>
         <UButton
           size="xs"
@@ -31,7 +31,7 @@ import { useIngredientFetch } from '../../composables/fireux/firestore/ingredien
 definePageMeta({
   layout: 'default',
   title: 'Ingredients',
-  description: 'Global ingredient records resolved for this runtime.',
+  description: 'Browse global ingredients.',
   nav: {
     key: 'ingredients',
     label: 'Ingredients',
@@ -49,7 +49,7 @@ const { ingredients } = useIngredientFetch()
 
 const pageTitle = 'Ingredients'
 const pageDescription =
-  'Create and browse global ingredient records for this runtime.'
+  'Create and browse global ingredients.'
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
