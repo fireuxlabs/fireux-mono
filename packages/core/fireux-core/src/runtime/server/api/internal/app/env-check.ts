@@ -1,4 +1,4 @@
-// FILE: packages/core/fireux-core/src/runtime/server/api/app/env-check.ts
+// FILE: packages/core/fireux-core/src/runtime/server/api/internal/app/env-check.ts
 import { defineEventHandler, type H3Event } from 'h3'
 import {
   join,

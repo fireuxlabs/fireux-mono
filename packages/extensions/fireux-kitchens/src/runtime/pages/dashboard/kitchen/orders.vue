@@ -44,8 +44,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import OrderCard from '../../../components/organisms/Order/Card.vue'
-import { useKitchenOrdersFetch } from '../../../composables/fireux/firestore/runtime-kitchen/orders/fetch/useKitchenOrdersFetch'
 import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
+import { useKitchenOrdersFetch } from '../../../composables/fireux/firestore/runtime-kitchen/orders/fetch/useKitchenOrdersFetch'
 
 definePageMeta({
   layout: 'kitchen-dashboard',

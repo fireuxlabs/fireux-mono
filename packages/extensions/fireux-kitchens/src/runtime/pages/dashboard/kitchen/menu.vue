@@ -90,15 +90,15 @@
 </template>
 
 <script setup lang="ts">
-import type { MenuSection } from '../../../models/menu.model'
 import { computed, ref, watch } from 'vue'
 import MenuCollectionManager from '../../../components/organisms/Menu/Collection/Manager.vue'
 import QRManager from '../../../components/runtimeKitchen/QRManager.vue'
+import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
 import {
   resolveMenuItemView,
   type ResolvedMenuItemView,
 } from '../../../composables/fireux/firestore/runtime-kitchen/menu/utils/view/resolveMenuItemView'
-import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
+import type { MenuSection } from '../../../models/menu.model'
 
 definePageMeta({
   layout: 'kitchen-dashboard',

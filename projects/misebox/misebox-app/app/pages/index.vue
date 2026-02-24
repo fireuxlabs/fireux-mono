@@ -7,17 +7,18 @@
     }"
     color="primary"
   />
-  <LandingSolutions
-    :title="solutions.title"
-    :subtitle="solutions.subtitle"
-    :items="solutions.items"
-  />
+
+  <LandingGetStarted />
+
   <USeparator
     :avatar="{
       src: '/img/app/logo.png',
     }"
     color="primary"
   />
+
+  <LandingProducts />
+  <LandingApps />
 </template>
 
 <script setup lang="ts">
@@ -34,33 +35,8 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Misebox — Hospitality Jobs',
+  title: 'Misebox — Kitchen operations workspace',
   description:
-    'Recruit professionals for your kitchen. Post jobs and contact candidates.',
+    'A workspace for kitchens to manage daily operations, connect with professionals, and publish roles when you need to grow your team.',
 })
-
-const solutions = {
-  title: 'Get started',
-  subtitle: 'Post jobs, review professionals, and hire faster.',
-  items: [
-    {
-      title: 'Post a job',
-      description: 'Use quick create to get your job posted fast.',
-      to: '/jobs',
-      icon: 'i-lucide-briefcase',
-    },
-    {
-      title: 'Browse professionals',
-      description: 'Search our database of vetted professionals.',
-      to: '/professionals',
-      icon: 'i-lucide-user',
-    },
-    {
-      title: 'Showcase your kitchen',
-      description: 'Get your kitchen noticed for its menu and culture.',
-      to: '/kitchens',
-      icon: 'i-lucide-chef-hat',
-    },
-  ],
-}
 </script>

@@ -5,7 +5,7 @@ interface EnvCheckResponse {
 }
 
 export function useAppEnvCheck() {
-  return useFetch<EnvCheckResponse>('/api/app/env-check', {
+  return useFetch<EnvCheckResponse>('/api/internal/app/env-check', {
     method: 'GET',
   })
 }

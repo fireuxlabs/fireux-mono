@@ -202,7 +202,7 @@ const syncedItems: SyncedImageItem[] = [
     label: 'Logo',
     path: localLogoPath,
     requirements:
-      'Required. Must be exactly <span class="font-mono">512×512</span> (validated by <span class="font-mono">/api/app/env-check</span>).',
+      'Required. Must be exactly <span class="font-mono">512×512</span> (validated by <span class="font-mono">/api/internal/app/env-check</span>).',
     previewClass: 'h-10 w-auto object-contain',
     syncKind: 'logo',
   },
@@ -211,7 +211,7 @@ const syncedItems: SyncedImageItem[] = [
     label: 'Wordmark (light)',
     path: localWordmarkLightPath,
     requirements:
-      'Required. Must be <span class="font-mono">≥256×64</span> and aspect <span class="font-mono">≥3:1</span> (validated by <span class="font-mono">/api/app/env-check</span>).',
+      'Required. Must be <span class="font-mono">≥256×64</span> and aspect <span class="font-mono">≥3:1</span> (validated by <span class="font-mono">/api/internal/app/env-check</span>).',
     previewClass: 'h-8 w-auto object-contain',
     syncKind: 'wordmarkLight',
   },
@@ -220,7 +220,7 @@ const syncedItems: SyncedImageItem[] = [
     label: 'Wordmark (dark)',
     path: localWordmarkDarkPath,
     requirements:
-      'Required. Must be <span class="font-mono">≥256×64</span> and aspect <span class="font-mono">≥3:1</span> (validated by <span class="font-mono">/api/app/env-check</span>).',
+      'Required. Must be <span class="font-mono">≥256×64</span> and aspect <span class="font-mono">≥3:1</span> (validated by <span class="font-mono">/api/internal/app/env-check</span>).',
     previewClass: 'h-8 w-auto object-contain',
     syncKind: 'wordmarkDark',
   },

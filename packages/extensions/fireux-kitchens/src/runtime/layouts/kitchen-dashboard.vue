@@ -80,8 +80,8 @@
 import { useAuthRedirect } from 'fireux-core/runtime/composables/fireux/app/ui/useAuthRedirect'
 import { useDashboardNotifications } from 'fireux-core/runtime/composables/fireux/app/ui/useDashboardNotifications'
 import { computed, ref } from 'vue'
-import { useKitchenDashboardNav } from '../composables/fireux/app/routing/useKitchenDashboardNav'
 import { useRuntimeKitchenComputed } from '../composables/fireux/app/kitchen-runtime/useRuntimeKitchenComputed'
+import { useKitchenDashboardNav } from '../composables/fireux/app/routing/useKitchenDashboardNav'
 import { useKitchenInterface } from '../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 defineOptions({ name: 'kitchen-dashboard' })

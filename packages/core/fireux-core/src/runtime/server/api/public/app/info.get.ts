@@ -1,7 +1,7 @@
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 
 type PackageInfo = {
   name?: string
@@ -45,8 +45,8 @@ export default defineEventHandler((event: H3Event) => {
     },
     package: pkg,
     endpoints: {
-      info: '/api/app/info',
-      envCheck: '/api/app/env-check',
+      info: '/api/public/app/info',
+      envCheck: '/api/internal/app/env-check',
     },
     now: new Date().toISOString(),
   }

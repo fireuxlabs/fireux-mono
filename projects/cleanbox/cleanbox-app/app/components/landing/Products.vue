@@ -1,0 +1,3 @@
+<template>
+  <LandingFeatures first />
+</template>
