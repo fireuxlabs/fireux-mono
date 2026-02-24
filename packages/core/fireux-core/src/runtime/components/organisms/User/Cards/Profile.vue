@@ -18,7 +18,7 @@
       <section v-if="showDescription" class="profile__section">
         <div class="profile__label">Bio</div>
         <div class="profile__value">
-          <span v-if="prop || bio">{{ prop || bio }}</span>
+          <span v-if="bioOverride || bio">{{ bioOverride || bio }}</span>
           <span v-else class="italic">missing</span>
         </div>
       </section>
@@ -52,14 +52,14 @@
           <div class="profile__kv">
             <div class="profile__k">Created</div>
             <div class="profile__v">
-              <span v-if="user?.created_at">set</span>
+              <span v-if="user?.created?.at">set</span>
               <span v-else class="opacity-70">missing</span>
             </div>
           </div>
           <div class="profile__kv">
             <div class="profile__k">Updated</div>
             <div class="profile__v">
-              <span v-if="user?.updated_at">set</span>
+              <span v-if="user?.updated?.at">set</span>
               <span v-else class="opacity-70">missing</span>
             </div>
           </div>
@@ -92,10 +92,15 @@ type Props = {
 
   user?: {
     id?: string
-    created_at?: unknown
-    updated_at?: unknown
+    created?: {
+      at?: unknown
+    } | null
+    updated?: {
+      at?: unknown
+    } | null
   } | null
-  prop?: string
+  /** Optional override for the bio slot/value (e.g. caller wants to inject a different string). */
+  bioOverride?: string
   showSubtitle?: boolean
   showBadges?: boolean
   showDescription?: boolean
@@ -103,16 +108,13 @@ type Props = {
   showDetails?: boolean
 }
 
-withDefaults(
-  defineProps<Props>(),
-  {
-    badges: () => [],
-    profiles: () => [],
-    showSubtitle: true,
-    showBadges: true,
-    showDescription: true,
-    showMeta: true,
-    showDetails: true,
-  }
-)
+withDefaults(defineProps<Props>(), {
+  badges: () => [],
+  profiles: () => [],
+  showSubtitle: true,
+  showBadges: true,
+  showDescription: true,
+  showMeta: true,
+  showDetails: true,
+})
 </script>

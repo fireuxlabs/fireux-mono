@@ -7,6 +7,8 @@ type StampOpts = {
   stamp?: boolean
   creator?: boolean
   app?: boolean
+  /** When false, skip transitional flat stamp fields (`created_at`, `updated_at`, `creator_id`). */
+  legacyFlat?: boolean
 }
 
 type Stamped<T> = T & {
@@ -29,6 +31,8 @@ type Stamped<T> = T & {
 export async function stampDoc<T>(data: T, opts: StampOpts = {}): Promise<T | Stamped<T>> {
   if (opts.stamp === false) return data
 
+  const includeLegacyFlat = opts.legacyFlat !== false
+
   const base: any = {
     ...(data as any),
     created: {
@@ -37,8 +41,12 @@ export async function stampDoc<T>(data: T, opts: StampOpts = {}): Promise<T | St
     updated: {
       at: serverTimestamp(),
     },
-    created_at: serverTimestamp(),
-    updated_at: serverTimestamp(),
+    ...(includeLegacyFlat
+      ? {
+          created_at: serverTimestamp(),
+          updated_at: serverTimestamp(),
+        }
+      : {}),
   }
 
   if (opts.app) {
@@ -51,7 +59,9 @@ export async function stampDoc<T>(data: T, opts: StampOpts = {}): Promise<T | St
     const user = await useRequireUser()
     base.created.by = user.uid
     base.updated.by = user.uid
-    base.creator_id = user.uid
+    if (includeLegacyFlat) {
+      base.creator_id = user.uid
+    }
   }
 
   return base as Stamped<T>

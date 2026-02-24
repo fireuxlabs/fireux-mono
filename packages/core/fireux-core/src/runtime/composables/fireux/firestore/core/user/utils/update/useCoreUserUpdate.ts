@@ -27,7 +27,7 @@ export function useCoreUserUpdate(user: UserRefs) {
   }
 
   const updateCore = (data: Partial<User>) =>
-    updateDocument<User>('users', requireCoreId(), data)
+    updateDocument<User>('users', requireCoreId(), data, { legacyFlat: false })
 
   const formatAndValidate = <T>(
     formatter: {

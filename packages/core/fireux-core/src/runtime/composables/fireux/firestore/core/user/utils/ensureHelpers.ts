@@ -32,6 +32,14 @@ export type EnsureCoreResult = {
   displayName: string
 }
 
+function normalizePublicDisplayNameSeed(value: string): string {
+  const trimmed = value.trim()
+  if (!trimmed) return ''
+  return /^[^\s@]+@[^\s@]+$/.test(trimmed)
+    ? trimmed.split('@')[0]?.trim() || ''
+    : trimmed
+}
+
 export async function ensureCoreUserDocument(
   uid: string,
   options: EnsureCoreOptions = {}
@@ -72,7 +80,7 @@ export async function ensureCoreUserDocument(
     }
   }
 
-  const displayName = options.displayName
+  const displayName = normalizePublicDisplayNameSeed(options.displayName ?? '')
   if (!displayName) {
     throw new Error('[ensureCoreUserDocument] Missing displayName')
   }
@@ -168,7 +176,7 @@ export async function ensureUserAppMembership(
   batch.update(appRef, {
     admin_ids: (membershipRole === 'admin'
       ? arrayUnion(uid)
-      : arrayRemove(uid)) as unknown as App['admin_ids'],
+      : arrayRemove(uid)) as unknown as string[],
     updated_at: serverTimestamp(),
   })
 
@@ -217,7 +225,7 @@ export async function removeUserAppMembership(
   }
 
   batch.update(appRef, {
-    admin_ids: arrayRemove(uid) as unknown as App['admin_ids'],
+    admin_ids: arrayRemove(uid) as unknown as string[],
     updated_at: serverTimestamp(),
   })
 

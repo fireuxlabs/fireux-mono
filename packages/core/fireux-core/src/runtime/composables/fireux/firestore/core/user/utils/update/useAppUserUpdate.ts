@@ -50,20 +50,20 @@ export function useAppUserUpdate(user: UserRefs) {
       const { uid, appId } = requireContext()
       const role = makeAdmin ? 'admin' : 'user'
 
-      await updateDocument(`apps/${appId}/users`, uid, { role })
+      await updateDocument(`apps/${appId}/users`, uid, { role }, { legacyFlat: false })
 
       await updateDocument('apps', appId, {
         admin_ids: makeAdmin
           ? (arrayUnion(uid) as unknown as string[])
           : (arrayRemove(uid) as unknown as string[]),
-      })
+      }, { legacyFlat: false })
 
       await updateDocument('users', uid, {
         userOf: arrayUnion(appId) as unknown as string[],
         adminOf: makeAdmin
           ? (arrayUnion(appId) as unknown as string[])
           : (arrayRemove(appId) as unknown as string[]),
-      })
+      }, { legacyFlat: false })
     },
     leave: async () => {
       const { uid, appId } = requireContext()
@@ -77,12 +77,12 @@ export function useAppUserUpdate(user: UserRefs) {
       await updateDocument('apps', appId, {
         admin_ids: arrayRemove(uid) as unknown as string[],
         ...(existed ? { 'derived.user_count': increment(-1) } : {}),
-      })
+      }, { legacyFlat: false })
 
       await updateDocument('users', uid, {
         userOf: arrayRemove(appId) as unknown as string[],
         adminOf: arrayRemove(appId) as unknown as string[],
-      })
+      }, { legacyFlat: false })
     },
   }
 

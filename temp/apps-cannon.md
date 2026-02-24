@@ -39,6 +39,23 @@ This is the intended top-of-system shape:
 - Docs are `/docs/apps` only.
 - Route ownership rule: If a route is shipped by `fireux-ecosystem-controller`, it must not exist in `fireux-core` or any `projects/*/pages` override.
 
+### Fallback Policy (Canon Enforcement)
+
+This report follows a strict pre-ship canon rule:
+
+- Do not patch gaps with runtime fallbacks.
+- Do not add alias routes, redirect stubs, or dual-path support.
+- If something is missing, surface the gap and fix the canonical route/data path directly.
+- Migrations may read pre-canon shapes to transform data, but runtime code should not preserve pre-canon behavior.
+- Do not invent “temporary” compatibility layers that become accidental standards.
+
+Required workflow when a gap is found:
+1. State the missing invariant clearly.
+2. Decide the canon.
+3. Implement one canonical path.
+4. Migrate existing data.
+5. Delete old behavior.
+
 This is the enforcement model:
 - one owner per route
 - no duplication

@@ -16,7 +16,7 @@
       </template>
     </UPageHeader>
     <UPageBody class="pagebody">
-      <UserCardsProfile v-if="userCard" v-bind="userCard" />
+      <UserCardsProfile v-if="userCard" v-bind="userCard" :user="currentUser" />
       <UAlert
         v-else
         color="amber"

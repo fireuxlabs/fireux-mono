@@ -1,0 +1,21 @@
+{
+  "name": "git-tree-button",
+  "displayName": "Git Tree Button",
+  "publisher": "fireux",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "activationEvents": [
+    "onCommand:gitTreeButton.run"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "gitTreeButton.run",
+        "title": "Git Tree: Run Full"
+      }
+    ]
+  }
+}

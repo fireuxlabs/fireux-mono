@@ -54,7 +54,7 @@ export function useAppEnsure() {
 
     if (!Object.keys(patch).length) return
 
-    await updateDocument('apps', appId, patch)
+    await updateDocument('apps', appId, patch, { legacyFlat: false })
   }
 
   async function ensureApp(): Promise<EnsureAppResult> {
@@ -103,6 +103,7 @@ export function useAppEnsure() {
 
     await setDocument('apps', fireux.appId, payload, {
       creator: true,
+      legacyFlat: false,
     })
 
     await syncNewAppImages(fireux.appId)

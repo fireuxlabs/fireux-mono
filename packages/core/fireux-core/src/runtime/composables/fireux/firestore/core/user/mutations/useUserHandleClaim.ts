@@ -70,8 +70,10 @@ export function useUserHandleClaim() {
 
       transaction.update(userRef, {
         handle: nextHandle,
-        handle_normalized: nextHandle,
-        updated_at: now,
+        updated: {
+          at: now,
+          by: normalizedUid,
+        },
       })
 
       if (previousHandleRef && previousHandleSnap?.exists()) {

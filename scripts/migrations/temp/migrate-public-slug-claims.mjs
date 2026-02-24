@@ -30,7 +30,7 @@ const TARGETS = [
     ownerCollection: 'users',
     collectionPathTemplate: 'users',
     slugField: 'handle',
-    normalizedField: 'handle_normalized',
+    normalizedField: 'handle',
     legacyClaimCollection: 'handles',
     legacyClaimOwnerField: 'uid',
     stacks: ['fireux', 'misebox', 'cleanbox'],
@@ -360,4 +360,3 @@ console.log('[migrate-temp] public-slug-claims done', {
   skipped: totalSkipped,
   conflicts: totalConflicts,
 })
-

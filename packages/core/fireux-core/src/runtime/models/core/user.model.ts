@@ -22,7 +22,6 @@ export const User = {
   avatar: '',
 
   handle: '',
-  handle_normalized: '',
   email: '',
   bio: '',
 

@@ -6,6 +6,24 @@ import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { requireUid } from '../../../utils/useEnsureCommon'
 
+function looksLikeEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+$/.test(value)
+}
+
+function toPublicDisplayNameSeed(
+  displayName?: string | null,
+  email?: string | null
+): string {
+  const primary = String(displayName ?? '').trim()
+  if (primary) {
+    return looksLikeEmail(primary) ? primary.split('@')[0]?.trim() || '' : primary
+  }
+
+  const fallback = String(email ?? '').trim()
+  if (!fallback) return ''
+  return looksLikeEmail(fallback) ? fallback.split('@')[0]?.trim() || '' : fallback
+}
+
 export function useUserEnsure() {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
@@ -26,11 +44,10 @@ export function useUserEnsure() {
     if (!coreSnap.exists()) {
       const payload = {
         id: uid,
-        display_name: auth.displayName ?? auth.email ?? '',
+        display_name: toPublicDisplayNameSeed(auth.displayName, auth.email),
         email: auth.email ?? '',
         avatar: auth.photoURL ?? '',
         handle: '',
-        handle_normalized: '',
         bio: '',
         profiles: [],
         userOf: [],
@@ -40,6 +57,7 @@ export function useUserEnsure() {
 
       await setDocument<User>('users', uid, payload as User, {
         creator: 'require',
+        legacyFlat: false,
       } as any)
       createdCore = true
     }
@@ -56,6 +74,7 @@ export function useUserEnsure() {
 
       await setDocument<AppUser>(appCollection, uid, payload as AppUser, {
         creator: 'require',
+        legacyFlat: false,
       } as any)
       createdApp = true
     }
