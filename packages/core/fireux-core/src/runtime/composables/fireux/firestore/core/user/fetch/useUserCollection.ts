@@ -53,18 +53,24 @@ export function useUserCollection() {
 
     const enriched: EnrichedUser[] = []
     for (const member of members) {
-      const record = ensureCoreUser(member.id)?.value
-      if (!record?.id) continue
+      const memberId = String(member?.id ?? '').trim()
+      if (!memberId) continue
+
+      const record = ensureCoreUser(memberId)?.value
+      if (!record) continue
+      const recordId = String((record as any).id ?? memberId).trim() || memberId
+
+      const coreUser = { ...(record as any), id: recordId } as User
 
       enriched.push({
-        id: record.id,
-        display_name: record.display_name ?? record.id,
+        id: recordId,
+        display_name: record.display_name ?? recordId,
         avatar: record.avatar ?? '',
         handle: record.handle,
         email: record.email,
-        profiles: record.profiles ?? [],
+        profiles: [...(record.profiles ?? [])],
         appUser: member,
-        coreUser: record,
+        coreUser,
       })
     }
     return enriched

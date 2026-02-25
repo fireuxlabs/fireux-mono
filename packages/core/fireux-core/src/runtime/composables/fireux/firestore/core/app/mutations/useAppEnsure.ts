@@ -54,7 +54,7 @@ export function useAppEnsure() {
 
     if (!Object.keys(patch).length) return
 
-    await updateDocument('apps', appId, patch, { legacyFlat: false })
+    await updateDocument('apps', appId, patch)
   }
 
   async function ensureApp(): Promise<EnsureAppResult> {
@@ -72,7 +72,6 @@ export function useAppEnsure() {
     // User ↔ App binding is handled explicitly elsewhere.
 
     const payload = {
-      id: fireux.appId,
       app_name: fireux.appName,
       app_short_name: fireux.appShortName,
       role: fireux.role,
@@ -99,11 +98,10 @@ export function useAppEnsure() {
         wordmark_dark_url: '',
         cover_url: '',
       },
-    } as Omit<AppModel, 'created' | 'updated'>
+    } as Omit<AppModel, 'created' | 'updated' | 'id'>
 
     await setDocument('apps', fireux.appId, payload, {
       creator: true,
-      legacyFlat: false,
     })
 
     await syncNewAppImages(fireux.appId)

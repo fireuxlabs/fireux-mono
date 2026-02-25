@@ -1,5 +1,5 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts
-import { doc } from 'firebase/firestore'
+import { doc, type DocumentSnapshot } from 'firebase/firestore'
 import { useFirestore, useDocument } from 'vuefire'
 import { computed, isRef } from 'vue'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
@@ -62,11 +62,23 @@ export function useProfileFetch<
 
   const { data: coreProfile, pending: corePending } = useDocument<
     TCore | undefined
-  >(coreDoc as any)
+  >(coreDoc as any, {
+    transform: (docSnap: DocumentSnapshot<TCore>) => {
+      const raw = docSnap.data()
+      if (!raw) return undefined
+      return { ...(raw as any), id: docSnap.id } as TCore
+    },
+  } as any)
 
   const { data: appProfile, pending: appPending } = useDocument<
     Partial<TApp> | undefined
-  >(appDoc as any)
+  >(appDoc as any, {
+    transform: (docSnap: DocumentSnapshot<Partial<TApp>>) => {
+      const raw = docSnap.data()
+      if (!raw) return undefined
+      return { ...(raw as any), id: docSnap.id } as Partial<TApp>
+    },
+  } as any)
 
   const profile: ProfileRefs<TCore, TApp> = { coreProfile, appProfile }
   const pending = computed(
@@ -75,4 +87,3 @@ export function useProfileFetch<
 
   return { profile, pending }
 }
-

@@ -56,7 +56,7 @@ export async function ensureCoreUserDocument(
     }
 
     // Backfill canon-required fields for older documents.
-    const patch: Partial<User> = {}
+    const patch: Record<string, unknown> = {}
     if (typeof (data as any)?.avatar !== 'string') patch.avatar = ''
     if (typeof (data as any)?.handle !== 'string') patch.handle = makeHandle(existingName, uid)
     if (typeof (data as any)?.email !== 'string') patch.email = options.email ?? ''
@@ -90,8 +90,7 @@ export async function ensureCoreUserDocument(
   }
   // EnsureCore is responsible for creating the core document, but should not
   // create membership side effects (like notifications) by default.
-  const payload: User = {
-    id: uid,
+  const payload = {
     display_name: displayName,
     avatar: options.avatar ?? '',
     handle: makeHandle(displayName, uid),
@@ -106,7 +105,9 @@ export async function ensureCoreUserDocument(
   }
 
   const { setDocument } = useFirestoreManager()
-  await setDocument<User>('users', uid, payload, { mode: 'date' })
+  await setDocument<User>('users', uid, payload as unknown as User, {
+    mode: 'date',
+  } as any)
 
   return { created: true, displayName }
 }
@@ -152,7 +153,6 @@ export async function ensureUserAppMembership(
     batch.set(
       appUserRef,
       {
-        id: uid,
         role: membershipRole,
         notifications: [],
         created_at: serverTimestamp(),

@@ -43,7 +43,6 @@ export function useUserEnsure() {
     const coreSnap = await getDoc(coreRef)
     if (!coreSnap.exists()) {
       const payload = {
-        id: uid,
         display_name: toPublicDisplayNameSeed(auth.displayName, auth.email),
         email: auth.email ?? '',
         avatar: auth.photoURL ?? '',
@@ -53,11 +52,10 @@ export function useUserEnsure() {
         userOf: [],
         adminOf: [],
         notifications: [],
-      } as Omit<User, 'created' | 'updated'>
+      } as Omit<User, 'created' | 'updated' | 'id'>
 
       await setDocument<User>('users', uid, payload as User, {
-        creator: 'require',
-        legacyFlat: false,
+        creator: true,
       } as any)
       createdCore = true
     }
@@ -67,14 +65,12 @@ export function useUserEnsure() {
     const appSnap = await getDoc(appRef)
     if (!appSnap.exists()) {
       const payload = {
-        id: uid,
         role: 'user',
         notifications: [],
-      } as Omit<AppUser, 'created' | 'updated'>
+      } as Omit<AppUser, 'created' | 'updated' | 'id'>
 
       await setDocument<AppUser>(appCollection, uid, payload as AppUser, {
-        creator: 'require',
-        legacyFlat: false,
+        creator: true,
       } as any)
       createdApp = true
     }

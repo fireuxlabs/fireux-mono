@@ -1,4 +1,4 @@
-import { doc } from 'firebase/firestore'
+import { doc, type DocumentSnapshot } from 'firebase/firestore'
 import { computed, isRef, ref, type Ref } from 'vue'
 import { useDocument, useFirestore } from 'vuefire'
 import type { AppModel } from '../../../../../../models/core/app.model'
@@ -21,10 +21,17 @@ export function useAppFetch(
     targetId.value ? (doc(db, 'apps', targetId.value) as any) : null
   )
 
-  const docState = useDocument<AppModel | undefined>(docRef as any) || {
-    data: ref<AppModel | undefined>(undefined),
-    pending: ref(false),
-  }
+  const docState =
+    useDocument<AppModel | undefined>(docRef as any, {
+      transform: (docSnap: DocumentSnapshot<AppModel>) => {
+        const raw = docSnap.data()
+        if (!raw) return undefined
+        return { ...(raw as any), id: docSnap.id } as AppModel
+      },
+    } as any) || {
+      data: ref<AppModel | undefined>(undefined),
+      pending: ref(false),
+    }
 
   const app = docState.data ?? ref<AppModel | undefined>(undefined)
   const pending = docState.pending ?? ref(false)

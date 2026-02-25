@@ -32,12 +32,10 @@ export function useProfessionalCreate() {
     const coreSnap = await getDoc(coreRef)
     if (!coreSnap.exists()) {
       const payload = {
-        id: uid,
         job_title: '',
         summary: '',
         bio: '',
         image: '',
-        positions: [],
         relevant_experience: [],
         other_experience: [],
         languages: [],
@@ -45,10 +43,10 @@ export function useProfessionalCreate() {
         education: [],
         volunteering: [],
         projects: [],
-      } satisfies Omit<ProfessionalCore, 'created' | 'updated'>
+      } satisfies Omit<ProfessionalCore, 'created' | 'updated' | 'id'>
 
-      await setDocument<ProfessionalCore>(professionalConfig.collectionName, uid, payload as ProfessionalCore, {
-        creator: 'require',
+      await setDocument<ProfessionalCore>(professionalConfig.collectionName, uid, payload as unknown as ProfessionalCore, {
+        creator: true,
       })
       createdCore = true
     }
@@ -58,12 +56,10 @@ export function useProfessionalCreate() {
       const appRef = doc(db, 'apps', appId, professionalConfig.collectionName, uid)
       const appSnap = await getDoc(appRef)
       if (!appSnap.exists()) {
-        const payload = {
-          id: uid,
-        } satisfies Omit<ProfessionalApp, 'created' | 'updated'>
+        const payload = {} satisfies Omit<ProfessionalApp, 'created' | 'updated' | 'id'>
 
-        await setDocument<ProfessionalApp>(appCollection, uid, payload as ProfessionalApp, {
-          creator: 'require',
+        await setDocument<ProfessionalApp>(appCollection, uid, payload as unknown as ProfessionalApp, {
+          creator: true,
         })
         createdApp = true
       }

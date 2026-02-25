@@ -51,12 +51,18 @@ export function useUserCollectionByAppId(
 
     const enriched: EnrichedUser[] = []
     for (const member of members) {
-      const record = ensureCoreUser(member.id)?.value
-      if (!record?.id) continue
+      const memberId = String(member?.id ?? '').trim()
+      if (!memberId) continue
+
+      const record = ensureCoreUser(memberId)?.value
+      if (!record) continue
+      const recordId = String((record as any).id ?? memberId).trim() || memberId
+
+      const coreUser = { ...(record as any), id: recordId } as User
 
       enriched.push({
-        id: record.id,
-        coreUser: record,
+        id: recordId,
+        coreUser,
         appUser: member,
       })
     }

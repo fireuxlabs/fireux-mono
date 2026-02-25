@@ -2,35 +2,43 @@ import { updateDoc, doc, serverTimestamp } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useRequireUser } from '../../firebase/useRequireUser'
 
-type UpdateOpts = {
-  /** When false, skip transitional flat `updated_at` writes. */
-  legacyFlat?: boolean
-}
+type UpdateOpts = Record<string, never>
 
 export function useFirestoreUpdate() {
   const db = useFirestore()
+  const FORBIDDEN_TOP_LEVEL_KEYS = new Set(['id', 'uid', 'created', 'updated'])
 
   async function updateDocument<T>(
     collectionPath: string,
     id: string,
     data: Partial<T>,
-    opts: UpdateOpts = {}
+    _opts: UpdateOpts = {}
   ): Promise<void> {
     const user = await useRequireUser()
     const ref = doc(db, collectionPath, id)
-    const includeLegacyFlat = opts.legacyFlat !== false
+    const patch = { ...(data as any) } as Record<string, unknown>
+    const strippedKeys: string[] = []
+
+    for (const key of Object.keys(patch)) {
+      if (!FORBIDDEN_TOP_LEVEL_KEYS.has(key)) continue
+      delete patch[key]
+      strippedKeys.push(key)
+    }
+
+    if (import.meta.dev && strippedKeys.length) {
+      console.warn('[firestore][updateDocument] stripped forbidden top-level keys', {
+        collectionPath,
+        id,
+        keys: strippedKeys,
+      })
+    }
+
     await updateDoc(ref, {
-      ...data,
+      ...patch,
       updated: {
         at: serverTimestamp(),
         by: user.uid,
       } as any,
-      ...(includeLegacyFlat
-        ? {
-            // Legacy flat field kept temporarily while readers/data migrate.
-            updated_at: serverTimestamp(),
-          }
-        : {}),
     })
   }
 

@@ -32,7 +32,6 @@ export function useChefCreate() {
     const coreSnap = await getDoc(coreRef)
     if (!coreSnap.exists()) {
       const payload = {
-        id: uid,
         chef_headline: '',
         chef_bio: '',
         chef_image: '',
@@ -48,7 +47,7 @@ export function useChefCreate() {
         locations: [] as string[],
         organization_name: '',
         kitchen_ids: [] as string[],
-      } satisfies Omit<ChefCore, 'created' | 'updated'>
+      } satisfies Omit<ChefCore, 'created' | 'updated' | 'id'>
 
       await setDocument<ChefCore>(chefConfig.collectionName, uid, payload as ChefCore, {
         creator: true,
@@ -61,9 +60,7 @@ export function useChefCreate() {
       const appRef = doc(db, 'apps', appId, chefConfig.collectionName, uid)
       const appSnap = await getDoc(appRef)
       if (!appSnap.exists()) {
-        const payload = {
-          id: uid,
-        } satisfies Omit<ChefApp, 'created' | 'updated'>
+        const payload = {} satisfies Omit<ChefApp, 'created' | 'updated' | 'id'>
 
         await setDocument<ChefApp>(appCollection, uid, payload as ChefApp, {
           creator: true,

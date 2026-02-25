@@ -32,19 +32,26 @@ export function useAgentCreate() {
     const coreSnap = await getDoc(coreRef)
     if (!coreSnap.exists()) {
       const payload = {
-        id: uid,
+        agent_headline: '',
         title: '',
         subtitle: '',
         tagline: '',
-        tags: [],
+        tags: [] as string[],
+        agent_bio: '',
         summary: '',
+        agent_image: '',
+        agent_placement_types: [] as string[],
+        agent_coverage_areas: [] as string[],
+        agent_contact_email: '',
+        agent_contact_phone: '',
+        agent_website_url: '',
         contact_email: '',
         contact_phone: '',
         website_url: '',
-      } satisfies Omit<AgentCore, 'created' | 'updated'>
+      } satisfies Omit<AgentCore, 'created' | 'updated' | 'id'>
 
       await setDocument<AgentCore>(agentConfig.collectionName, uid, payload as AgentCore, {
-        creator: 'require',
+        creator: true,
       })
       createdCore = true
     }
@@ -54,12 +61,10 @@ export function useAgentCreate() {
       const appRef = doc(db, 'apps', appId, agentConfig.collectionName, uid)
       const appSnap = await getDoc(appRef)
       if (!appSnap.exists()) {
-        const payload = {
-          id: uid,
-        } satisfies Omit<AgentApp, 'created' | 'updated'>
+        const payload = {} satisfies Omit<AgentApp, 'created' | 'updated' | 'id'>
 
         await setDocument<AgentApp>(appCollection, uid, payload as AgentApp, {
-          creator: 'require',
+          creator: true,
         })
         createdApp = true
       }

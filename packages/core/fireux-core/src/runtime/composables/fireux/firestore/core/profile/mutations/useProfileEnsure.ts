@@ -31,20 +31,18 @@ export function useProfileEnsure(config: ProfileConfig) {
     const coreSnapshot = await getDoc(coreRef)
     if (!coreSnapshot.exists()) {
       await setDocument(config.collectionName, uid, {
-        id: uid,
         title: '',
         subtitle: '',
         tagline: '',
         tags: [],
         created_at: serverTimestamp(),
         updated_at: serverTimestamp(),
-      } as any, { mode: 'time' })
+      } as any, { mode: 'time' } as any)
       createdCore = true
     } else {
       // Backfill required fields for older docs.
       const existing = coreSnapshot.data() as any
       const patch: any = {}
-      if (typeof existing?.id !== 'string') patch.id = uid
       if (typeof existing?.title !== 'string') patch.title = ''
       if (typeof existing?.subtitle !== 'string') patch.subtitle = ''
       if (typeof existing?.tagline !== 'string') patch.tagline = ''
@@ -62,15 +60,13 @@ export function useProfileEnsure(config: ProfileConfig) {
       const appSnapshot = await getDoc(appRef)
       if (!appSnapshot.exists()) {
         await setDocument(appCollection, uid, {
-          id: uid,
           created_at: serverTimestamp(),
           updated_at: serverTimestamp(),
-        } as any, { mode: 'time' })
+        } as any, { mode: 'time' } as any)
         createdApp = true
       } else {
         const existing = appSnapshot.data() as any
         const patch: any = {}
-        if (typeof existing?.id !== 'string') patch.id = uid
         if (!existing?.created_at) patch.created_at = serverTimestamp()
         if (!existing?.updated_at) patch.updated_at = serverTimestamp()
         if (Object.keys(patch).length) {

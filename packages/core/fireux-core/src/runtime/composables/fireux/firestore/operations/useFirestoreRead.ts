@@ -53,7 +53,9 @@ export function useFirestoreRead() {
     const { data } = useDocument(ref, {
       ssrKey: `${collectionPath}-${docId}`,
       transform: (docSnap: DocumentSnapshot<T>) => {
-        return docSnap.data() as T | undefined
+        const raw = docSnap.data()
+        if (!raw) return undefined
+        return { ...(raw as any), id: docSnap.id } as T
       },
     } as any)
     return data as Ref<T | undefined>

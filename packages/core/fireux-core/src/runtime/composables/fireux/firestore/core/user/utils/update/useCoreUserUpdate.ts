@@ -1,4 +1,4 @@
-import { addDoc, arrayRemove, arrayUnion, collection, setDoc } from 'firebase/firestore'
+import { addDoc, arrayRemove, arrayUnion, collection } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import type {
     User,
@@ -26,8 +26,8 @@ export function useCoreUserUpdate(user: UserRefs) {
     return id
   }
 
-  const updateCore = (data: Partial<User>) =>
-    updateDocument<User>('users', requireCoreId(), data, { legacyFlat: false })
+  const updateCore = (data: Record<string, unknown>) =>
+    updateDocument<User>('users', requireCoreId(), data as Partial<User>)
 
   const formatAndValidate = <T>(
     formatter: {
@@ -111,8 +111,7 @@ export function useCoreUserUpdate(user: UserRefs) {
         scope: 'ecosystem',
       })
 
-      const docRef = await addDoc(collection(db, 'users', id, 'notifications'), notification)
-      await setDoc(docRef, { id: docRef.id }, { merge: true })
+      await addDoc(collection(db, 'users', id, 'notifications'), notification)
       return notification
     },
   }
