@@ -10,6 +10,6 @@
 </template>
 
 <script setup lang="ts">
-const title = 'Bring Bling to'
-const accent = 'your operations'
+const title = 'Bring Bling'
+const accent = 'to your operations'
 </script>

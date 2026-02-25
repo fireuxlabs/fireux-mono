@@ -4,7 +4,7 @@
       "source": ".output/server",
       "codebase": "cleanbox-ssr",
       "runtime": "nodejs22",
-      "entryPoint": "cleanboxServer"
+      "entryPoint": "cleanboxApp"
     }
   ],
   "hosting": {
@@ -16,9 +16,9 @@
       {
         "source": "**",
         "function": {
-          "functionId": "cleanboxServer",
+          "functionId": "cleanboxApp",
           "codebase": "cleanbox-ssr",
-          "region": "europe-west1"
+          "region": "us-central1"
         }
       }
     ]

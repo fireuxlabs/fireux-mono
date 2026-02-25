@@ -36,9 +36,9 @@ type DirectoryError = {
 }
 
 const ECOSYSTEM_SOURCES: SourceEcosystem[] = [
-  { key: 'fireux', name: 'FireUX', baseUrl: 'https://fireux.app' },
+  { key: 'fireux', name: 'FireUX', baseUrl: 'https://fireux.web.app' },
   { key: 'misebox', name: 'Misebox', baseUrl: 'https://misebox.app' },
-  { key: 'cleanbox', name: 'Cleanbox', baseUrl: 'https://cleanbox.app' },
+  { key: 'cleanbox', name: 'Cleanbox', baseUrl: 'https://cleanbox.web.app' },
 ]
 
 function initials(name: string) {

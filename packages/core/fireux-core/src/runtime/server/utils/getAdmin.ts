@@ -1,4 +1,12 @@
 import * as admin from 'firebase-admin'
+import {
+  applicationDefault,
+  cert,
+  type App,
+  getApp,
+  getApps,
+  initializeApp,
+} from 'firebase-admin/app'
 
 function readEnv(k: string) {
   const v = process.env[k]
@@ -45,17 +53,39 @@ function getServiceAccountFromEnv():
     return { projectId, clientEmail, privateKey }
 }
 
+function hasInitializedAdminApp(): boolean {
+  try {
+    return getApps().length > 0
+  } catch {
+    return false
+  }
+}
+
+function getInitializedAdminApp(): App | undefined {
+  try {
+    // Prefer the default app when it exists.
+    return getApp()
+  } catch {
+    // Some runtimes may initialize a named admin app first.
+    // In that case, any initialized app instance is sufficient.
+    const apps = getApps()
+    return apps[0]
+  }
+}
+
 // Guarded singleton accessor for firebase-admin
-export function getAdmin() {
-  if (!admin.apps.length) {
+export function getAdminApp() {
+  let app = getInitializedAdminApp()
+
+  if (!app) {
     try {
       const sa = getServiceAccountFromEnv()
       const storageBucket = normalizeStorageBucket(
         readEnv('FIREBASE_STORAGE_BUCKET')
       )
       if (sa) {
-        admin.initializeApp({
-          credential: admin.credential.cert({
+        initializeApp({
+          credential: cert({
             projectId: sa.projectId,
             clientEmail: sa.clientEmail,
             privateKey: sa.privateKey,
@@ -63,14 +93,29 @@ export function getAdmin() {
           ...(storageBucket ? { storageBucket } : {}),
         })
       } else {
-        admin.initializeApp({
-          credential: admin.credential.applicationDefault(),
+        initializeApp({
+          credential: applicationDefault(),
           ...(storageBucket ? { storageBucket } : {}),
         })
       }
-    } catch {
-      // In case of race during dev HMR, ignore
+    } catch (error) {
+      // Ignore duplicate init races, but do not hide real initialization failures.
+      if (!hasInitializedAdminApp()) throw error
     }
+    app = getInitializedAdminApp()
   }
+
+  if (!app) {
+    throw new Error(
+      '[getAdminApp] firebase-admin initialization did not produce an app instance'
+    )
+  }
+
+  return app
+}
+
+// Guarded singleton accessor for firebase-admin compat namespace
+export function getAdmin() {
+  getAdminApp()
   return admin
 }

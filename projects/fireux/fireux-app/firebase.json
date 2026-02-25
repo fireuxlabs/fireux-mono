@@ -4,7 +4,7 @@
       "source": ".output/server",
       "codebase": "fireux-ssr",
       "runtime": "nodejs22",
-      "entryPoint": "fireuxServer"
+      "entryPoint": "fireuxApp"
     }
   ],
   "hosting": {
@@ -16,9 +16,9 @@
       {
         "source": "**",
         "function": {
-          "functionId": "fireuxServer",
+          "functionId": "fireuxApp",
           "codebase": "fireux-ssr",
-          "region": "europe-west1"
+          "region": "us-central1"
         }
       }
     ]
