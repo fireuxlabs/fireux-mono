@@ -1,16 +1,21 @@
 <template>
   <EffectsBubbles />
   <LandingHeroSection />
-  <USeparator
-    :avatar="{
-      src: '/img/app/logo.png',
-    }"
-    color="primary"
-  />
+  <div class="landing-index-divider">
+    <USeparator
+      :avatar="{
+        src: '/img/app/logo.png',
+        alt: 'Cleanbox',
+      }"
+      color="primary"
+    />
+  </div>
 
-  <LandingGetStarted />
-  <LandingProducts />
-  <LandingApps />
+  <div class="landing-index-flow">
+    <LandingGetStarted />
+    <LandingProducts />
+    <LandingApps />
+  </div>
 </template>
 
 <script setup lang="ts">

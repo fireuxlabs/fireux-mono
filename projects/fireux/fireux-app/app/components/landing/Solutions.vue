@@ -1,5 +1,5 @@
 <template>
-  <UPageSection class="py-12 lg:py-16 space-y-10">
+  <div class="landing-index-section space-y-8 lg:space-y-10">
     <div class="mx-auto max-w-2xl space-y-3 text-center">
       <h2 class="text-3xl font-black">{{ title }}</h2>
       <p
@@ -49,7 +49,7 @@
         </template>
       </UCard>
     </div>
-  </UPageSection>
+  </div>
 </template>
 
 <script setup lang="ts">

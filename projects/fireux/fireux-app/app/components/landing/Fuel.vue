@@ -1,7 +1,7 @@
 <template>
   <ClientOnly>
-    <UPageSection class="py-12 lg:py-16">
-      <div class="flex items-center gap-3 mb-6">
+    <div class="landing-index-section">
+      <div class="mb-6 flex items-center justify-center gap-3 text-center">
         <LogoFlame size="small" />
         <h2 class="text-2xl lg:text-3xl font-bold">Fuel</h2>
       </div>
@@ -17,7 +17,7 @@
           <img :src="stripeSrc" alt="Stripe logo" />
         </div>
       </div>
-    </UPageSection>
+    </div>
   </ClientOnly>
 </template>
 

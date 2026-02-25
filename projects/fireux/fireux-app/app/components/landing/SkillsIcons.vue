@@ -1,12 +1,14 @@
 <!-- COMMENT: app/components/landing/SkillsIcons.vue -->
 <template>
-  <div class="skills-icons">
-    <Icon
-      v-for="skill in skills"
-      :key="skill.name"
-      :name="skill.icon"
-      class="icon"
-    />
+  <div class="landing-index-section">
+    <div class="skills-icons">
+      <Icon
+        v-for="skill in skills"
+        :key="skill.name"
+        :name="skill.icon"
+        class="icon"
+      />
+    </div>
   </div>
 </template>
 
@@ -33,7 +35,6 @@ const skills = [
   flex-wrap: wrap;
   justify-content: center;
   gap: 1rem;
-  padding: 2rem 0;
 }
 
 .icon {

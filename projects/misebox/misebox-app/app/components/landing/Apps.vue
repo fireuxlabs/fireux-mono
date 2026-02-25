@@ -1,11 +1,10 @@
 <template>
-  <UPageSection class="py-12 lg:py-16">
-    <div class="flex items-end justify-between mb-6">
+  <div class="landing-index-section">
+    <div class="mb-6 text-center">
       <h2 class="text-2xl lg:text-3xl font-bold">Our Apps</h2>
-      <UBadge variant="soft" color="primary">{{ apps.length }}</UBadge>
     </div>
 
-    <div class="flex flex-wrap gap-2">
+    <div class="flex flex-wrap justify-center gap-2">
       <UTooltip
         v-for="app in apps"
         :key="app.key"
@@ -33,7 +32,7 @@
         />
       </UTooltip>
     </div>
-  </UPageSection>
+  </div>
 </template>
 
 <script setup lang="ts">

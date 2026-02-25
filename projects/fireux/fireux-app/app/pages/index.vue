@@ -1,21 +1,26 @@
 <template>
   <EffectsStars />
   <LandingHeroSection />
-  <USeparator
-    :avatar="{
-      src: '/img/app/logo.png',
-    }"
-    color="primary"
-  />
+  <div class="landing-index-divider">
+    <USeparator
+      :avatar="{
+        src: '/img/app/logo.png',
+        alt: 'FireUX',
+      }"
+      color="primary"
+    />
+  </div>
 
-  <LandingGetStarted />
-  <LandingProducts :items="products" />
-  <LandingEcosystems />
-  <LandingApps />
+  <div class="landing-index-flow">
+    <LandingGetStarted />
+    <LandingProducts :items="products" />
+    <LandingEcosystems />
+    <LandingApps />
 
-  <LandingFuel />
-  <LandingFeatures first />
-  <LandingSkillsIcons />
+    <LandingFuel />
+    <LandingFeatures first />
+    <LandingSkillsIcons />
+  </div>
 </template>
 
 <script setup lang="ts">

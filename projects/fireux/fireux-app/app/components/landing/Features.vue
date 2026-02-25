@@ -1,12 +1,10 @@
 <template>
-  <UPageSection class="py-12 lg:py-16">
-    <div class="flex items-end justify-between mb-6">
-      <div>
-        <h2 class="text-2xl lg:text-3xl font-bold">FireUX Features</h2>
-        <p class="text-[color:var(--ui-text-muted)] mt-1">
-          Opinionated tooling that ships real products.
-        </p>
-      </div>
+  <div class="landing-index-section">
+    <div class="mb-6 space-y-2 text-center">
+      <h2 class="text-2xl lg:text-3xl font-bold">FireUX Features</h2>
+      <p class="mx-auto max-w-2xl text-[color:var(--ui-text-muted)]">
+        Opinionated tooling that ships real products.
+      </p>
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -22,7 +20,7 @@
         </p>
       </UCard>
     </div>
-  </UPageSection>
+  </div>
 </template>
 
 <script setup lang="ts">

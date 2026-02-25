@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="landing-index-section">
     <div class="section-header">
       <h2>Why Choose CleanBox?</h2>
       <p>

@@ -114,3 +114,39 @@ Onboarding / action CTAs keep default UPageCTA spacing.
 		font-size: 1.25rem;
 	}
 }
+
+/* Consistent post-hero flow for ecosystem app landing index pages. */
+.landing-index-flow {
+	display: flex;
+	flex-direction: column;
+}
+
+.landing-index-flow > * + * {
+	border-top: 1px solid var(--ui-border);
+}
+
+.landing-index-flow > * {
+	scroll-margin-top: 6rem;
+}
+
+.landing-index-divider {
+	padding-block: 1.25rem;
+}
+
+.landing-index-section {
+	padding-block: 9rem;
+}
+
+@media (min-width: 640px) {
+	.landing-index-divider {
+		padding-block: 1.5rem;
+	}
+
+}
+
+@media (min-width: 1024px) {
+	.landing-index-divider {
+		padding-block: 1.75rem;
+	}
+
+}

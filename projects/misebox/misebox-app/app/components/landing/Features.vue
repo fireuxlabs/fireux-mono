@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="landing-index-section">
     <div class="section-header">
       <h2>Why Culinary Professionals Choose Misebox?</h2>
       <p>Built by chefs, for chefs who demand precision and efficiency</p>

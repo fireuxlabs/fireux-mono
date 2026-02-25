@@ -1,13 +1,13 @@
 <template>
-  <UPageSection id="products" class="py-12 lg:py-16">
-    <div class="flex items-end justify-between mb-6">
-      <div>
+  <div id="products" class="landing-index-section">
+    <div class="mb-6 space-y-2 text-center">
+      <div class="flex items-center justify-center gap-2">
         <h2 class="text-2xl lg:text-3xl font-bold">Our Products</h2>
-        <p class="text-[color:var(--ui-text-muted)] mt-1">
-          Ecosystem apps you can use and resell.
-        </p>
+        <div v-if="$slots.action"><slot name="action" /></div>
       </div>
-      <div v-if="$slots.action"><slot name="action" /></div>
+      <p class="mx-auto max-w-2xl text-[color:var(--ui-text-muted)]">
+        Ecosystem apps you can use and resell.
+      </p>
     </div>
 
     <!-- Coming soon state (swap to grid when ready) -->
@@ -53,7 +53,7 @@
         </template>
       </UCard>
     </div>
-  </UPageSection>
+  </div>
 </template>
 
 <script setup lang="ts">

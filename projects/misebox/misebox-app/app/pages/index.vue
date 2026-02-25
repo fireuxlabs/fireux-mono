@@ -1,24 +1,21 @@
 <template>
   <EffectsSteam />
   <LandingHeroSection />
-  <USeparator
-    :avatar="{
-      src: '/img/app/logo.png',
-    }"
-    color="primary"
-  />
+  <div class="landing-index-divider">
+    <USeparator
+      :avatar="{
+        src: '/img/app/logo.png',
+        alt: 'Misebox',
+      }"
+      color="primary"
+    />
+  </div>
 
-  <LandingGetStarted />
-
-  <USeparator
-    :avatar="{
-      src: '/img/app/logo.png',
-    }"
-    color="primary"
-  />
-
-  <LandingProducts />
-  <LandingApps />
+  <div class="landing-index-flow">
+    <LandingGetStarted />
+    <LandingProducts />
+    <LandingApps />
+  </div>
 </template>
 
 <script setup lang="ts">
