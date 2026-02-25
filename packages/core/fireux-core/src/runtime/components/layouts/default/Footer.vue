@@ -29,6 +29,13 @@
               />
             </a>
             <span>FIReUX &copy; {{ new Date().getFullYear() }}</span>
+            <a
+              v-if="contactEmail"
+              :href="`mailto:${contactEmail}`"
+              class="text-[color:var(--ui-primary)] hover:underline"
+            >
+              {{ contactEmail }}
+            </a>
             <span>All rights reserved.</span>
           </div>
         </div>
@@ -38,5 +45,8 @@
 </template>
 
 <script setup lang="ts">
+import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+
 // Footer uses UFooter + UContainer from Nuxt UI 4
+const { contactEmail } = useFireUXConfig()
 </script>

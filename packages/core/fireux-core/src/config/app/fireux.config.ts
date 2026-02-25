@@ -15,6 +15,8 @@ export type FireuxAppConfig = {
   appThumbnail?: string
   /** Optional app logo path/URL (preferred). Defaults to /img/app/logo.png. */
   appLogo?: string
+  /** Optional public contact/support email shown in shared UI (e.g. footer). */
+  contactEmail?: string
   role: 'global' | 'tenant'
   modules?: NonNullable<NuxtConfig['modules']>
 }
@@ -170,6 +172,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       shortName: app.shortName,
       appThumbnail: app.appThumbnail || '/img/app/thumbnail.png',
       appLogo: app.appLogo || '/img/app/logo.png',
+      ...(app.contactEmail ? { contactEmail: app.contactEmail } : {}),
       domain: envDomain,
       role: app.role,
       ecosystem: app.ecosystem,

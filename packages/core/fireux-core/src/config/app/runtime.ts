@@ -9,6 +9,8 @@ export type RuntimeApp = {
   appThumbnail?: string
   /** Optional app logo path/URL (preferred over appThumbnail for listings). */
   appLogo?: string
+  /** Optional public contact/support email shown in shared UI (e.g. footer). */
+  contactEmail?: string
   domain: string
   role: 'global' | 'tenant'
   ecosystem: string

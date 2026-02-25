@@ -6,6 +6,7 @@ const fireuxConfig = defineFireuxConfig({
   id: 'misebox-app',
   name: 'Misebox',
   shortName: 'Misebox',
+  contactEmail: 'misebox@misebox.app',
   role: 'global', 
   modules: [
     'fireux-places',

@@ -16,6 +16,7 @@ export interface FireUXConfig {
 
   appThumbnail?: string
   appLogo?: string
+  contactEmail?: string
 
   primaryColor?: string
   neutralColor?: string
@@ -91,6 +92,7 @@ function buildConfig(): Readonly<FireUXConfig> {
 
     appThumbnail: optString(fireux, 'appThumbnail'),
     appLogo: optString(fireux, 'appLogo'),
+    contactEmail: optString(fireux, 'contactEmail'),
 
     primaryColor: optString(fireux, 'primaryColor'),
     neutralColor: optString(fireux, 'neutralColor'),
