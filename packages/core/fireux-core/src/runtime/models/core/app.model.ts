@@ -11,7 +11,7 @@ import type { FireuxStamped } from './meta.model'
  * Canon rules:
  * - Empty string means unset
  * - Arrays always exist
- * - Stamping is FireuxStamped (creator_id optional)
+ * - Stamping uses nested FireuxStamped fields (`created.by` optional)
  *
  * NOTE: This file is runtime-canon (used by drift tooling AND app code).
  */
@@ -30,7 +30,7 @@ export type AppDerived = {
 
 // 🔑 Runtime + canonical shape (source of truth)
 export const App = {
-  // Identity
+  // Identity (runtime-resolved; do NOT persist duplicate id in Firestore)
   id: '',
 
   // Display
@@ -44,7 +44,7 @@ export const App = {
   // Governance
   join_requests: [] as string[],
   admin_ids: [] as string[],
-  // (removed legacy `created_by` — use `creator_id` instead)
+  // (legacy flat creator fields removed; use `created.by`)
 
   // Content
   tagline: '',
@@ -76,12 +76,24 @@ export const App = {
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
+    by: undefined as FireuxStamped['updated']['by'],
   },
 }
 
 export type AppModel = typeof App
 
+/**
+ * Firestore storage shape (doc):
+ * - Canon: Firestore doc id is the source of truth.
+ * - Do not persist duplicate `id` field in the stored document.
+ */
+export type AppDoc = Omit<AppModel, 'id'>
+
+/**
+ * Runtime shape (resolved/hydrated):
+ * - Always includes `id` (doc id) for routing/UI.
+ */
+export type AppResolved = AppModel
+
 export { createEmptyAppSocialLinks } from './app.supporting'
 export type { AppSocialLinks } from './app.supporting'
-

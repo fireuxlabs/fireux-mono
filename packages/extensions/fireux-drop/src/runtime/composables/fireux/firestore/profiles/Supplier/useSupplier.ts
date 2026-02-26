@@ -6,7 +6,7 @@ import {
     type SupplierCore,
 } from '../../../../../models/profiles/Supplier/Supplier.model'
 import { useSupplierComputed } from './main/useSupplierComputed'
-import { useSupplierCreate } from './main/useSupplierCreate'
+import { useSupplierCreate } from '../../Supplier/main/useSupplierCreate'
 import { useSupplierUpdate } from './main/useSupplierUpdate'
 import type { SupplierCard } from './utils/view/useSupplierInterface'
 import { useSupplierInterface } from './utils/view/useSupplierInterface'

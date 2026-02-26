@@ -53,7 +53,9 @@ export function useFirestoreCreate() {
 
   async function createDocument<T>(collectionPath: string, data: T, opts: StampOpts = {}): Promise<string> {
     const ref = collection(db, collectionPath)
-    const stamped = await stampDoc(data, opts)
+    const next = { ...(data as any) } as Record<string, unknown>
+    if ('id' in next) delete next.id
+    const stamped = await stampDoc(next as T, opts)
     const docRef = await addDoc(ref, stamped as any)
     return docRef.id
   }
@@ -61,8 +63,9 @@ export function useFirestoreCreate() {
   async function setDocument<T>(collectionPath: string, id: string, data: T, opts: StampOpts = {}): Promise<void> {
     const ref = doc(db, collectionPath, id)
     // Canon: never persist id field; Firestore doc id is source of truth.
-    const next = { ...(data as any) } as T
-    const stamped = await stampDoc(next, opts)
+    const next = { ...(data as any) } as Record<string, unknown>
+    if ('id' in next) delete next.id
+    const stamped = await stampDoc(next as T, opts)
     await setDoc(ref, stamped as any)
   }
 

@@ -9,7 +9,7 @@
 
     <div class="space-y-4">
       <div class="flex flex-wrap gap-2">
-        <OrganismsProfilesProfessionalCardsPill
+        <ProfilesProfessionalCardsPill
           v-for="(pillItem, index) in pillList"
           :key="pillItem.displayName"
           v-bind="pillItem"
@@ -18,9 +18,9 @@
         />
       </div>
 
-      <OrganismsProfilesProfessionalCardsPill v-bind="current.pill" />
-      <OrganismsProfilesProfessionalCardsCell v-bind="current.cell" />
-      <OrganismsProfilesProfessionalCardsPreview v-bind="current.preview" />
+      <ProfilesProfessionalCardsPill v-bind="current.pill" />
+      <ProfilesProfessionalCardsCell v-bind="current.cell" />
+      <ProfilesProfessionalCardsPreview v-bind="current.preview" />
     </div>
   </UCard>
 </template>

@@ -8,10 +8,11 @@ export function useAppComputed(
 ) {
   const isPending = computed(() => Boolean(pending?.value))
   const isLoading = computed(() => isPending.value || app.value === undefined)
+  const hasAppDoc = computed(() => app.value !== undefined && app.value !== null)
 
   const isResolved = computed(() => {
     if (isPending.value) return false
-    return app.value !== undefined
+    return hasAppDoc.value
   })
 
   const adminIds = computed(() => {

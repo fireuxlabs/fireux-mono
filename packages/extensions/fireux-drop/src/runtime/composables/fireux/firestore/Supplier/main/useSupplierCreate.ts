@@ -8,8 +8,8 @@ import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useFirestore } from 'vuefire'
-import type { SupplierApp, SupplierCore } from '../../../../../../models/profiles/Supplier/Supplier.model'
-import { supplierConfig } from '../../../../../../models/profiles/Supplier/Supplier.model'
+import type { SupplierApp, SupplierCore } from '../../../../../models/profiles/Supplier/Supplier.model'
+import { supplierConfig } from '../../../../../models/profiles/Supplier/Supplier.model'
 
 export function useSupplierCreate() {
   const db = useFirestore()
@@ -32,27 +32,32 @@ export function useSupplierCreate() {
     const coreSnap = await getDoc(coreRef)
     if (!coreSnap.exists()) {
       const payload = {
-        id: uid,
+        supplier_headline: '',
+        supplier_bio: '',
+        supplier_image: '',
+        supplier_product_categories: [] as string[],
+        supplier_delivery_areas: [] as string[],
+        supplier_organization_name: '',
         title: '',
         subtitle: '',
         tagline: '',
-        tags: [],
+        tags: [] as string[],
         summary: '',
         bio_long: '',
-        specialties: [],
-        categories: [],
+        specialties: [] as string[],
+        categories: [] as string[],
         organization_name: '',
         business_type: '',
-        locations: [],
+        locations: [] as Array<{ city: string; country: string }>,
         years_in_business: 0,
-        products_offered: [],
+        products_offered: [] as string[],
         employee_count: 0,
-        certifications: [],
+        certifications: [] as string[],
         delivery_range: 0,
-      } satisfies Omit<SupplierCore, 'created' | 'updated'>
+      } satisfies Omit<SupplierCore, 'created' | 'updated' | 'id'>
 
       await setDocument<SupplierCore>(supplierConfig.collectionName, uid, payload as SupplierCore, {
-        creator: 'require',
+        creator: true,
       })
       createdCore = true
     }
@@ -62,12 +67,10 @@ export function useSupplierCreate() {
       const appRef = doc(db, 'apps', appId, supplierConfig.collectionName, uid)
       const appSnap = await getDoc(appRef)
       if (!appSnap.exists()) {
-        const payload = {
-          id: uid,
-        } satisfies Omit<SupplierApp, 'created' | 'updated'>
+        const payload = {} satisfies Omit<SupplierApp, 'created' | 'updated' | 'id'>
 
         await setDocument<SupplierApp>(appCollection, uid, payload as SupplierApp, {
-          creator: 'require',
+          creator: true,
         })
         createdApp = true
       }

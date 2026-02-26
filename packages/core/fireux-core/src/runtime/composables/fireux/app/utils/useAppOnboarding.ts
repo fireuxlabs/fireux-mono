@@ -3,6 +3,7 @@ import type { Ref } from 'vue'
 import { useFireUXConfig } from '../FireUXConfig'
 import { useUser } from '../../firestore/core/user/useUser'
 import { useAppEnsure } from '../../firestore/core/app/mutations/useAppEnsure'
+import { ensureUserAppMembership } from '../../firestore/core/user/utils/ensureHelpers'
 import type { EnvCheckResponse } from '../../../../../types/app/onboarding'
 import { useAppEnvCheck } from './useAppEnvCheck'
 import { useImageStorage } from '../../firebase/useImageStorage'
@@ -33,6 +34,7 @@ export interface AppOnboardingState {
 
 export function useAppOnboarding(): AppOnboardingState {
   const { developerPin, devMode } = useFireUXConfig()
+  const { appId } = useFireUXConfig()
   const isDev = import.meta.dev
 
   const expectedPin = computed(() => {
@@ -141,6 +143,13 @@ export function useAppOnboarding(): AppOnboardingState {
     try {
       const ensured = await ensureApp()
       console.log('[proceed] ensureApp result', ensured)
+
+      // Self-heal existing apps stuck in "not initialized" when admin mirrors are empty.
+      // After PIN, the current signed-in user becomes the app admin for onboarding.
+      const currentUid = String(coreUser.value?.id ?? '').trim()
+      if (currentUid && appId) {
+        await ensureUserAppMembership(appId, currentUid, 'admin')
+      }
 
       // For newly-created apps, push the canonical local brand assets to Storage
       // and persist the corresponding URLs in Firestore.

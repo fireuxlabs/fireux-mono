@@ -16,6 +16,8 @@ import type {
   User,
 } from '../../../../../../models/core/user.model'
 import type { NotificationScope, UserNotification } from '../../../../../../models/core/user.supporting'
+import { useFireUXConfig } from '../../../../app/FireUXConfig'
+import { useImageStorage } from '../../../../firebase/useImageStorage'
 import { useRequireUser } from '../../../../firebase/useRequireUser'
 import { useFirestoreManager } from '../../../operations/useFirestoreManager'
 
@@ -40,6 +42,32 @@ function normalizePublicDisplayNameSeed(value: string): string {
     : trimmed
 }
 
+async function resolveCoreUserAvatar(
+  uid: string,
+  avatar?: string | null
+): Promise<string> {
+  const explicit = typeof avatar === 'string' ? avatar.trim() : ''
+  if (explicit) return explicit
+
+  const cfg = useFireUXConfig()
+  const { uploadImage, getDefaultImageUrl } = useImageStorage()
+  const source = (cfg.appLogo || '').trim() || '/img/app/logo.png'
+  const fallback = getDefaultImageUrl(source)
+
+  try {
+    return await uploadImage(`users/${uid}/avatar/current`, source)
+  } catch (error) {
+    if (import.meta.dev) {
+      console.warn('[ensureCoreUserDocument] failed to upload default avatar', {
+        uid,
+        source,
+        error,
+      })
+    }
+    return fallback
+  }
+}
+
 export async function ensureCoreUserDocument(
   uid: string,
   options: EnsureCoreOptions = {}
@@ -57,16 +85,22 @@ export async function ensureCoreUserDocument(
 
     // Backfill canon-required fields for older documents.
     const patch: Record<string, unknown> = {}
-    if (typeof (data as any)?.avatar !== 'string') patch.avatar = ''
-    if (typeof (data as any)?.handle !== 'string') patch.handle = makeHandle(existingName, uid)
+    const existingAvatar = (data as any)?.avatar
+    if (typeof existingAvatar !== 'string' || !existingAvatar.trim()) {
+      patch.avatar = await resolveCoreUserAvatar(uid, options.avatar)
+    }
+    if (typeof (data as any)?.handle !== 'string' || !(data as any)?.handle?.trim()) {
+      patch.handle = makeHandle(existingName, uid)
+    }
     if (typeof (data as any)?.email !== 'string') patch.email = options.email ?? ''
     if (typeof (data as any)?.bio !== 'string') patch.bio = ''
     if (!Array.isArray((data as any)?.profiles)) patch.profiles = []
     if (!Array.isArray((data as any)?.userOf)) patch.userOf = []
     if (!Array.isArray((data as any)?.adminOf)) patch.adminOf = []
     if (!Array.isArray((data as any)?.notifications)) patch.notifications = []
-    if (!(data as any)?.created_at) (patch as any).created_at = serverTimestamp()
-    if (!(data as any)?.updated_at) (patch as any).updated_at = serverTimestamp()
+    if (!((data as any)?.created && (data as any)?.created.at)) {
+      (patch as any)['created.at'] = (data as any)?.created_at ?? serverTimestamp()
+    }
 
     if (Object.keys(patch).length) {
       const { updateDocument } = useFirestoreManager()
@@ -88,11 +122,12 @@ export async function ensureCoreUserDocument(
   if (!email) {
     throw new Error('[ensureCoreUserDocument] Missing email')
   }
+  const resolvedAvatar = await resolveCoreUserAvatar(uid, options.avatar)
   // EnsureCore is responsible for creating the core document, but should not
   // create membership side effects (like notifications) by default.
   const payload = {
     display_name: displayName,
-    avatar: options.avatar ?? '',
+    avatar: resolvedAvatar,
     handle: makeHandle(displayName, uid),
     email,
     bio: '',
@@ -100,14 +135,10 @@ export async function ensureCoreUserDocument(
     userOf: [],
     adminOf: [],
     notifications: [],
-    created_at: serverTimestamp() as unknown as FirebaseTimestamp,
-    updated_at: serverTimestamp() as unknown as FirebaseTimestamp,
   }
 
   const { setDocument } = useFirestoreManager()
-  await setDocument<User>('users', uid, payload as unknown as User, {
-    mode: 'date',
-  } as any)
+  await setDocument<User>('users', uid, payload as unknown as User)
 
   return { created: true, displayName }
 }
@@ -119,7 +150,7 @@ export async function ensureUserAppMembership(
   uid: string,
   membershipRole: 'admin' | 'user'
 ): Promise<EnsureMembershipResult> {
-  await useRequireUser()
+  const actor = await useRequireUser()
   const db = useFirestore()
 
   const appUserRef = doc(db, 'apps', appId, 'users', uid)
@@ -146,7 +177,10 @@ export async function ensureUserAppMembership(
     if (current?.role !== membershipRole) {
       batch.update(appUserRef, {
         role: membershipRole,
-        updated_at: serverTimestamp(),
+        updated: {
+          at: serverTimestamp(),
+          by: actor.uid,
+        },
       })
     }
   } else {
@@ -155,8 +189,15 @@ export async function ensureUserAppMembership(
       {
         role: membershipRole,
         notifications: [],
-        created_at: serverTimestamp(),
-        updated_at: serverTimestamp(),
+        created: {
+          at: serverTimestamp(),
+          by: actor.uid,
+          app_id: appId,
+        },
+        updated: {
+          at: serverTimestamp(),
+          by: actor.uid,
+        },
       } as any,
       { merge: false }
     )
@@ -166,7 +207,10 @@ export async function ensureUserAppMembership(
   if (created) {
     batch.update(appRef, {
       'derived.user_count': increment(1),
-      updated_at: serverTimestamp(),
+      updated: {
+        at: serverTimestamp(),
+        by: actor.uid,
+      },
     })
   }
 
@@ -177,7 +221,10 @@ export async function ensureUserAppMembership(
     admin_ids: (membershipRole === 'admin'
       ? arrayUnion(uid)
       : arrayRemove(uid)) as unknown as string[],
-    updated_at: serverTimestamp(),
+    updated: {
+      at: serverTimestamp(),
+      by: actor.uid,
+    },
   })
 
   // 3) Core user mirrors (and ensure core user exists)
@@ -186,7 +233,10 @@ export async function ensureUserAppMembership(
     adminOf: (membershipRole === 'admin'
       ? arrayUnion(appId)
       : arrayRemove(appId)) as unknown as string[],
-    updated_at: serverTimestamp(),
+    updated: {
+      at: serverTimestamp(),
+      by: actor.uid,
+    },
   }
 
   batch.update(userRef, membershipUpdates as any)
@@ -201,7 +251,7 @@ export async function removeUserAppMembership(
   appId: string,
   uid: string
 ): Promise<RemoveMembershipResult> {
-  await useRequireUser()
+  const actor = await useRequireUser()
   const db = useFirestore()
 
   const appUserRef = doc(db, 'apps', appId, 'users', uid)
@@ -220,20 +270,29 @@ export async function removeUserAppMembership(
   if (existed) {
     batch.update(appRef, {
       'derived.user_count': increment(-1),
-      updated_at: serverTimestamp(),
+      updated: {
+        at: serverTimestamp(),
+        by: actor.uid,
+      },
     })
   }
 
   batch.update(appRef, {
     admin_ids: arrayRemove(uid) as unknown as string[],
-    updated_at: serverTimestamp(),
+    updated: {
+      at: serverTimestamp(),
+      by: actor.uid,
+    },
   })
 
   if (userSnap.exists()) {
     batch.update(userRef, {
       userOf: arrayRemove(appId) as unknown as string[],
       adminOf: arrayRemove(appId) as unknown as string[],
-      updated_at: serverTimestamp(),
+      updated: {
+        at: serverTimestamp(),
+        by: actor.uid,
+      },
     } as any)
   }
 

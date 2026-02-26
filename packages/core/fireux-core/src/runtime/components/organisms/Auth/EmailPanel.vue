@@ -1,56 +1,47 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/Auth/EmailPanel.vue -->
 <template>
-  <div class="email-panel">
-    <p class="status">Sign in or create an account.</p>
+  <div class="w-full space-y-3">
+    <p class="font-medium">Sign in or create an account.</p>
 
-    <UForm :state="formState" class="email-form" @submit="handleEmailSubmit">
-      <UInput
-        v-model="formState.email"
-        type="email"
-        label="Email"
-        placeholder="name@example.com"
-        block
-      />
-      <UInput
-        v-model="formState.password"
-        type="password"
-        :label="passwordLabel"
-        :placeholder="passwordPlaceholder"
-        :autocomplete="passwordAutocomplete"
-        block
-      />
-      <div class="switch-row">
-        <USwitch
-          v-model="isSignUp"
-          :label="emailModeLabel"
-          :disabled="formLoading"
-        />
-      </div>
-      <UButton type="submit" block :loading="formLoading">
-        {{ submitLabel }}
-      </UButton>
-    </UForm>
+    <UAuthForm
+      class="w-full"
+      :fields="fields"
+      :submit="{ label: submitLabel }"
+      :loading="formLoading"
+      @submit="handleEmailSubmit"
+    >
+      <template #footer>
+        <div class="space-y-3">
+          <USwitch
+            v-model="isSignUp"
+            :label="emailModeLabel"
+            :disabled="formLoading"
+          />
 
-    <UAlert
-      v-if="error"
-      class="mt-3"
-      color="warning"
-      variant="subtle"
-      :title="error.title"
-      :description="error.description"
-    />
-    <p v-if="error?.hint" class="hint">{{ error.hint }}</p>
-    <p class="legal">
-      By signing in, you agree to our
-      <NuxtLink to="/legal/terms">Terms of Service</NuxtLink>
-      and
-      <NuxtLink to="/legal/privacy">Privacy Policy</NuxtLink>.
-    </p>
+          <UAlert
+            v-if="error"
+            color="error"
+            variant="subtle"
+            :title="error.title"
+            :description="error.description"
+          />
+          <p v-if="error?.hint" class="text-sm text-muted">
+            {{ error.hint }}
+          </p>
+          <p class="text-sm text-muted">
+            By signing in, you agree to our
+            <NuxtLink to="/legal/terms">Terms of Service</NuxtLink>
+            and
+            <NuxtLink to="/legal/privacy">Privacy Policy</NuxtLink>.
+          </p>
+        </div>
+      </template>
+    </UAuthForm>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 
 type AuthMode = 'sign-in' | 'sign-up'
@@ -67,10 +58,6 @@ const { signInWithEmailPassword, signUpWithEmailPassword } = useAuth()
 
 const isSignUp = ref(false)
 const formLoading = ref(false)
-const formState = reactive({
-  email: '',
-  password: '',
-})
 const error = ref<AuthError>(null)
 
 const submitLabel = computed(() =>
@@ -88,6 +75,30 @@ const passwordAutocomplete = computed(() =>
 const emailModeLabel = computed(() =>
   isSignUp.value ? 'Creating a new account' : 'Using an existing account'
 )
+const fields = computed(() => [
+  {
+    name: 'email',
+    type: 'email' as const,
+    color: 'neutral' as const,
+    variant: 'outline' as const,
+    label: 'Email',
+    placeholder: 'name@example.com',
+    required: true,
+    autocomplete: 'email',
+    defaultValue: '',
+  },
+  {
+    name: 'password',
+    type: 'password' as const,
+    color: 'neutral' as const,
+    variant: 'outline' as const,
+    label: passwordLabel.value,
+    placeholder: passwordPlaceholder.value,
+    required: true,
+    autocomplete: passwordAutocomplete.value,
+    defaultValue: '',
+  },
+])
 
 const setEmailError = (mode: AuthMode) => {
   const brand = props.brandLabel
@@ -105,12 +116,18 @@ const setEmailError = (mode: AuthMode) => {
         }
 }
 
-const handleEmailSubmit = async (event?: Event) => {
-  event?.preventDefault()
+type AuthFormSubmitLike = {
+  data?: {
+    email?: string
+    password?: string
+  }
+}
+
+const handleEmailSubmit = async (event?: AuthFormSubmitLike) => {
   if (formLoading.value) return
 
-  const email = formState.email.trim()
-  const password = formState.password
+  const email = String(event?.data?.email ?? '').trim()
+  const password = String(event?.data?.password ?? '')
 
   if (!email || !password) {
     error.value = {
@@ -137,48 +154,3 @@ const handleEmailSubmit = async (event?: Event) => {
   setEmailError(mode)
 }
 </script>
-
-<style scoped>
-.email-panel {
-  margin-top: 1.5rem;
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  width: 100%;
-}
-
-.email-form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.status {
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-}
-
-.switch-row {
-  margin: 0.75rem 0 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.hint {
-  margin-top: 0.25rem;
-  font-size: 0.85rem;
-  color: #905000;
-}
-
-.legal {
-  margin-top: 0.25rem;
-  font-size: 0.85rem;
-  color: #475569;
-}
-
-.legal a {
-  text-decoration: underline;
-}
-</style>

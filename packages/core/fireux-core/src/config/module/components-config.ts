@@ -16,6 +16,9 @@ export function configureComponents(resolver: Resolver) {
   registerComponentAliases(resolver, './runtime/components/organisms/App', 'App', {
     global: true,
   })
+  registerComponentAliases(resolver, './runtime/components/organisms/Auth', 'Auth', {
+    global: true,
+  })
   registerComponentAliases(resolver, './runtime/components/organisms/User', 'User', {
     global: true,
   })

@@ -51,7 +51,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useSupplierCreate } from '../../../../../composables/fireux/firestore/profiles/Supplier/main/useSupplierCreate';
+import { useSupplierCreate } from '../../../../../composables/fireux/firestore/Supplier/main/useSupplierCreate';
 
 const props = defineProps<{ create?: () => Promise<unknown> }>()
 

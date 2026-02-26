@@ -1,10 +1,10 @@
 // Action: ENSURE · Phases: 1–4
-import { doc, getDoc } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
-import type { AppUser, User } from '../../../../../../models/core/user.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
-import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { requireUid } from '../../../utils/useEnsureCommon'
+import {
+  ensureCoreUserDocument,
+  ensureUserAppMembership,
+} from '../utils/ensureHelpers'
 
 function looksLikeEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+$/.test(value)
@@ -25,9 +25,6 @@ function toPublicDisplayNameSeed(
 }
 
 export function useUserEnsure() {
-  const db = useFirestore()
-  const { setDocument } = useFirestoreCreate()
-
   async function ensureUser(): Promise<{
     createdCore: boolean
     createdApp: boolean
@@ -35,47 +32,15 @@ export function useUserEnsure() {
   }> {
     const { uid, auth } = await requireUid()
     const { appId } = useFireUXConfig()
+    const core = await ensureCoreUserDocument(uid, {
+      displayName: toPublicDisplayNameSeed(auth.displayName, auth.email),
+      email: auth.email ?? '',
+      avatar: auth.photoURL ?? '',
+    })
 
-    let createdCore = false
-    let createdApp = false
+    const membership = await ensureUserAppMembership(appId, uid, 'user')
 
-    const coreRef = doc(db, 'users', uid)
-    const coreSnap = await getDoc(coreRef)
-    if (!coreSnap.exists()) {
-      const payload = {
-        display_name: toPublicDisplayNameSeed(auth.displayName, auth.email),
-        email: auth.email ?? '',
-        avatar: auth.photoURL ?? '',
-        handle: '',
-        bio: '',
-        profiles: [],
-        userOf: [],
-        adminOf: [],
-        notifications: [],
-      } as Omit<User, 'created' | 'updated' | 'id'>
-
-      await setDocument<User>('users', uid, payload as User, {
-        creator: true,
-      } as any)
-      createdCore = true
-    }
-
-    const appCollection = `apps/${appId}/users`
-    const appRef = doc(db, 'apps', appId, 'users', uid)
-    const appSnap = await getDoc(appRef)
-    if (!appSnap.exists()) {
-      const payload = {
-        role: 'user',
-        notifications: [],
-      } as Omit<AppUser, 'created' | 'updated' | 'id'>
-
-      await setDocument<AppUser>(appCollection, uid, payload as AppUser, {
-        creator: true,
-      } as any)
-      createdApp = true
-    }
-
-    return { createdCore, createdApp, id: uid }
+    return { createdCore: core.created, createdApp: membership.created, id: uid }
   }
 
   return { ensureUser }
