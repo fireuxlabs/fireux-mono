@@ -18,7 +18,14 @@
     <UPageBody class="pagebody">
       <UserCardsProfile v-if="userCard" v-bind="userCard" :user="currentUser" />
       <UAlert
-        v-else
+        v-else-if="isLoadingProfile"
+        color="neutral"
+        variant="subtle"
+        title="Loading profile"
+        description="Searching for this user..."
+      />
+      <UAlert
+        v-else-if="missing"
         color="amber"
         title="User not found"
         description="This handle does not exist or is not linked yet."
@@ -51,7 +58,16 @@ const handle = computed(() => {
   return String(raw ?? '').trim() || null
 })
 
-const { user: currentUser, uid, handle: normalizedHandle } = useUserByHandleFetch(handle)
+const {
+  user: currentUser,
+  uid,
+  canonicalUid,
+  shouldSuggestCanonicalUid,
+  handle: normalizedHandle,
+  pending,
+  resolving,
+  missing,
+} = useUserByHandleFetch(handle)
 const { user: sessionUser } = useUser()
 
 watch(
@@ -66,8 +82,18 @@ watch(
   { immediate: true }
 )
 
+watch(
+  () => canonicalUid.value,
+  async (next) => {
+    if (!next) return
+    await navigateTo(`/users/${next}`, { replace: true })
+  },
+  { immediate: true }
+)
+
 const { card } = useUserInterface(currentUser)
 const userCard = computed(() => (currentUser.value ? card(currentUser.value) : null))
+const isLoadingProfile = computed(() => Boolean(resolving.value || pending.value))
 const isSelf = computed(() =>
   Boolean(uid.value && sessionUser.value?.id === uid.value)
 )
@@ -79,7 +105,9 @@ const pageTitle = computed(() =>
 const pageDescription = computed(() =>
   displayName.value
     ? `Public profile for ${displayName.value}.`
-    : 'Public user profile.'
+    : shouldSuggestCanonicalUid.value
+      ? 'Redirecting to canonical user id...'
+      : 'Public user profile.'
 )
 const isDev = import.meta.dev
 

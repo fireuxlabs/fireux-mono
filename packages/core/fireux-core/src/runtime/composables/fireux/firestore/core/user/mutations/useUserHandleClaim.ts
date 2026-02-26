@@ -1,6 +1,15 @@
-import { doc, runTransaction, serverTimestamp } from 'firebase/firestore'
+import {
+  collection,
+  doc,
+  limit as fslimit,
+  query as fsq,
+  runTransaction,
+  serverTimestamp,
+  where,
+} from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { validateUserHandleForPublicRoute } from '../utils/identity/useUserHandleIdentity'
+import { isVetoedHandle } from '../utils/identity/handleVeto'
 
 type ClaimHandleResult = {
   uid: string
@@ -21,6 +30,9 @@ export function useUserHandleClaim() {
     const validation = validateUserHandleForPublicRoute(desiredHandle)
     if (!validation.isValid) throw new Error(validation.message || 'Invalid handle')
     const nextHandle = validation.handle
+    if (isVetoedHandle(nextHandle)) {
+      throw new Error('This handle is reserved.')
+    }
 
     const result = await runTransaction(db, async (transaction) => {
       const userRef = doc(db, 'users', normalizedUid)
@@ -36,38 +48,24 @@ export function useUserHandleClaim() {
         return { uid: normalizedUid, handle: nextHandle, changed: false }
       }
 
-      const nextHandleRef = doc(db, 'handles', nextHandle)
-      const nextHandleSnap = await transaction.get(nextHandleRef)
-
-      if (nextHandleSnap.exists()) {
-        const existingUid = String(nextHandleSnap.data()?.uid || '').trim()
-        if (existingUid !== normalizedUid) {
-          throw new Error('Handle already taken.')
-        }
-      }
-
-      const previousHandleRef =
-        currentHandle && currentHandle !== nextHandle
-          ? doc(db, 'handles', currentHandle)
-          : null
-      const previousHandleSnap = previousHandleRef
-        ? await transaction.get(previousHandleRef)
+      const duplicateQuery = fsq(
+        collection(db, 'users'),
+        where('handle', '==', nextHandle),
+        fslimit(2)
+      )
+      const duplicateSnap = (await (transaction as any).get(
+        duplicateQuery as any
+      )) as any
+      const conflict = Array.isArray(duplicateSnap?.docs)
+        ? duplicateSnap.docs.find(
+            (row: any) => String(row?.id || '').trim() !== normalizedUid
+          )
         : null
+      if (conflict) {
+        throw new Error('Handle already taken.')
+      }
 
       const now = serverTimestamp()
-      if (!nextHandleSnap.exists()) {
-        transaction.set(nextHandleRef, {
-          uid: normalizedUid,
-          created_at: now,
-          updated_at: now,
-        })
-      } else {
-        transaction.update(nextHandleRef, {
-          uid: normalizedUid,
-          updated_at: now,
-        })
-      }
-
       transaction.update(userRef, {
         handle: nextHandle,
         updated: {
@@ -75,13 +73,6 @@ export function useUserHandleClaim() {
           by: normalizedUid,
         },
       })
-
-      if (previousHandleRef && previousHandleSnap?.exists()) {
-        const previousUid = String(previousHandleSnap.data()?.uid || '').trim()
-        if (previousUid === normalizedUid) {
-          transaction.delete(previousHandleRef)
-        }
-      }
 
       return { uid: normalizedUid, handle: nextHandle, changed: true }
     })

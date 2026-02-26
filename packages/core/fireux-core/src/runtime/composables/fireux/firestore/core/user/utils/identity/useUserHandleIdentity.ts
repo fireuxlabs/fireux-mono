@@ -1,22 +1,4 @@
-const RESERVED_HANDLES = new Set([
-  'admin',
-  'api',
-  'apps',
-  'auth',
-  'blog',
-  'dashboard',
-  'dev',
-  'id',
-  'jobs',
-  'kitchens',
-  'modules',
-  'orders',
-  'products',
-  'settings',
-  'solutions',
-  'u',
-  'users',
-])
+import { isVetoedHandle } from './handleVeto'
 
 const MIN_HANDLE_LENGTH = 3
 const MAX_HANDLE_LENGTH = 30
@@ -35,7 +17,7 @@ export const normalizeUserHandle = (raw: string) => {
 }
 
 export const isReservedUserHandle = (handle: string) =>
-  RESERVED_HANDLES.has(String(handle || '').trim().toLowerCase())
+  isVetoedHandle(handle)
 
 export const validateUserHandleForPublicRoute = (rawHandle: string) => {
   const handle = normalizeUserHandle(rawHandle)

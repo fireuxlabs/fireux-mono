@@ -2,6 +2,7 @@ import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { defaultFireuxJobsConfig } from './config/jobs.config'
 import { configureRuntime } from './config/module/runtime-config'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
+import { registerReservedRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
 import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
 import { configureComponents } from './config/module/components-config'
@@ -33,6 +34,7 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: { prefix: 'Fire' },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
+    registerReservedRouteKeys(['jobs', 'agents', 'professionals'])
     const workplaces = Array.isArray(options?.workplaces)
       ? options.workplaces
       : defaultFireuxJobsConfig.workplaces

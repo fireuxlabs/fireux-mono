@@ -40,19 +40,35 @@ export function useUserEnsure() {
       avatar: auth.photoURL ?? '',
     })
 
-    // Auth ensure must not demote existing admins to "user".
-    // Preserve admin role if any current mirror already indicates admin.
+    // Sign-in should not mutate existing membership/admin roles.
+    // Only ensure app membership when the app-scoped overlay is missing.
     let membershipRole: 'admin' | 'user' = 'user'
+    let shouldEnsureMembership = true
     try {
       const db = useFirestore()
-      const appUserSnap = await getDoc(doc(db, 'apps', appId, 'users', uid))
-      const appRole = String((appUserSnap.data() as any)?.role ?? '').trim()
+      const [appUserSnap, appSnap] = await Promise.all([
+        getDoc(doc(db, 'apps', appId, 'users', uid)),
+        getDoc(doc(db, 'apps', appId)),
+      ])
+
+      if (appUserSnap.exists()) {
+        shouldEnsureMembership = false
+      }
+
       const coreAdminOf = Array.isArray((core.snapshot?.data() as any)?.adminOf)
         ? ((core.snapshot?.data() as any)?.adminOf as Array<unknown>)
             .map((id) => String(id ?? '').trim())
             .filter(Boolean)
         : []
-      if (appRole === 'admin' || coreAdminOf.includes(appId)) {
+      const appAdminIds = Array.isArray((appSnap.data() as any)?.admin_ids)
+        ? ((appSnap.data() as any)?.admin_ids as Array<unknown>)
+            .map((id) => String(id ?? '').trim())
+            .filter(Boolean)
+        : []
+
+      // If we do need to create the overlay, preserve admin role only when
+      // existing admin mirrors already say this user is an admin.
+      if (coreAdminOf.includes(appId) || appAdminIds.includes(uid)) {
         membershipRole = 'admin'
       }
     } catch (error) {
@@ -65,7 +81,9 @@ export function useUserEnsure() {
       }
     }
 
-    const membership = await ensureUserAppMembership(appId, uid, membershipRole)
+    const membership = shouldEnsureMembership
+      ? await ensureUserAppMembership(appId, uid, membershipRole)
+      : { created: false }
 
     return { createdCore: core.created, createdApp: membership.created, id: uid }
   }

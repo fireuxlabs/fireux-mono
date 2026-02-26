@@ -34,7 +34,7 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
 
     return {
       id,
-      to: handle ? `/users/${handle}` : '',
+      to: handle ? `/users/${encodeURIComponent(handle)}` : '',
 
       avatarUrl: safeString(user.avatar).trim(),
       displayName: safeString(user.display_name).trim(),
