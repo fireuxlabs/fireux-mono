@@ -3,7 +3,7 @@ title: Package Documentation Map
 status: active
 authority: Tier2
 created: 2025-10-15
-updated: 2026-02-20
+updated: 2026-02-26
 ---
 
 # Package Documentation Map
@@ -31,6 +31,11 @@ Operational docs (Tier2) live across:
 
 Tooling/history docs (Tier3, non-authoritative) include:
 - `AI/**`
+- `temp/**`
 - `.specify/**`
 - `.github/prompts/**`
 - `docs/copilot-documentation/imported/**`
+- `docs/git-tree.md`
+
+Routing note:
+- Use `docs/dev/_manifest.md` as the repo-level tier placement index when classifying docs outside package folders.

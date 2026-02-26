@@ -16,7 +16,7 @@ Authority: Tier2 (Operational index)
 - `docs/**` (except explicitly Tier3-marked folders/files)
 - `packages/**/docs/**`
 - `projects/**/docs/**`
-- Root operational docs such as `fulfillment.md`
+- Root docs when used as operational guidance (for example `README.md`, `AGENTS.md`)
 
 ## Tier3 locations (non-authoritative)
 - `AI/**`
@@ -24,7 +24,9 @@ Authority: Tier2 (Operational index)
 - `.specify/**`
 - `temp/**`
 - `docs/copilot-documentation/imported/**`
+- `docs/copilot-documentation/temporary-reports/**`
 - `docs/git-tree.md`
+- `.vscode/**` (editor/tooling support docs)
 
 ## Notes
 - `.github/prompts` and `.specify` are workflow/tooling inputs, not architecture canon.
