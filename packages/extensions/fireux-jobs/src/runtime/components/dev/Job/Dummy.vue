@@ -21,6 +21,7 @@
       </div>
 
       <JobCardsPreview
+        v-if="current?.preview"
         :image-url="current.preview.imageUrl"
         :title="current.preview.title"
         :subtitle="current.preview.subtitle"
@@ -28,9 +29,9 @@
         :prop="current.preview.prop"
       />
 
-      <JobCardsCell v-bind="current.cell" />
+      <JobCardsCell v-if="current?.cell" v-bind="current.cell" />
 
-      <JobCardsProfile :card="current.profile" />
+      <JobCardsProfile v-if="current?.profile" :card="current.profile" />
     </div>
   </UCard>
 </template>

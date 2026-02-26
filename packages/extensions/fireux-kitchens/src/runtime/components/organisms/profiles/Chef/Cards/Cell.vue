@@ -16,8 +16,8 @@
         <div class="card__header">
           <div class="min-w-0">
             <div class="card__title">{{ displayName }}</div>
-            <div v-if="showSubtitle && tagline" class="card__subtitle">
-              {{ tagline }}
+            <div v-if="showSubtitle && chef_headline" class="card__subtitle">
+              {{ chef_headline }}
             </div>
           </div>
 
@@ -44,18 +44,14 @@
 </template>
 
 <script setup lang="ts">
-import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
-
-type Props = Pick<
-  ChefCard.Card,
-  'to'
-  | 'avatarUrl'
-  | 'secondaryAvatarUrl'
-  | 'displayName'
-  | 'tagline'
-  | 'badges'
-  | 'summary'
-> & {
+type Props = {
+  to: string
+  avatarUrl: string
+  displayName: string
+  chef_headline: string
+  secondaryAvatarUrl?: string
+  badges?: string[]
+  summary?: string
   prop?: string
   showSubtitle?: boolean
   showBadges?: boolean
@@ -69,6 +65,10 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<Props>(), {
+  chef_headline: '',
+  secondaryAvatarUrl: undefined,
+  badges: () => [],
+  summary: '',
   prop: '',
   showSubtitle: true,
   showBadges: true,

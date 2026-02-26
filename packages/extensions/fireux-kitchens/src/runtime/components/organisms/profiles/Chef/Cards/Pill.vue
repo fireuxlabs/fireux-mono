@@ -7,7 +7,7 @@
   >
     <UUser
       :name="displayName"
-      :description="showSubtitle ? (tagline || undefined) : undefined"
+      :description="showSubtitle ? (chef_headline || undefined) : undefined"
       size="sm"
     >
       <template #avatar>
@@ -43,15 +43,21 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(
-  defineProps<
-    Pick<ChefCard.Card, 'to' | 'avatarUrl' | 'secondaryAvatarUrl' | 'displayName' | 'tagline' | 'badges'> & {
-      showSubtitle?: boolean
-      showBadges?: boolean
-      link?: boolean
-      action?: boolean
-    }
-  >(),
+  defineProps<{
+    to: string
+    avatarUrl: string
+    displayName: string
+    chef_headline: string
+    secondaryAvatarUrl?: string
+    badges?: string[]
+    showSubtitle?: boolean
+    showBadges?: boolean
+    link?: boolean
+    action?: boolean
+  }>(),
   {
+    secondaryAvatarUrl: undefined,
+    badges: () => [],
     showSubtitle: true,
     showBadges: true,
     link: false,

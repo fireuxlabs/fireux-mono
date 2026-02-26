@@ -43,7 +43,10 @@ export function useAgentInterface(
   }
 
   function map(p: AgentCore, u?: UserLike | null): AgentCard.Card {
-    const id = safeString(p.id).trim()
+    const id =
+      safeString((p as any).id).trim() ||
+      safeString((p as any).owner_uid).trim() ||
+      safeString(u?.id).trim()
     const headline = safeString(p.agent_headline) || safeString(p.title)
     const summary = safeString(p.summary)
     const placementTypes =
@@ -58,7 +61,7 @@ export function useAgentInterface(
 
     return {
       id,
-      to: id ? `/${agentConfig.collectionName}/${id}` : '',
+      to: id ? `/${agentConfig.collectionName}/${encodeURIComponent(id)}` : '',
 
       avatarUrl: profileImage || userAvatar,
       secondaryAvatarUrl,

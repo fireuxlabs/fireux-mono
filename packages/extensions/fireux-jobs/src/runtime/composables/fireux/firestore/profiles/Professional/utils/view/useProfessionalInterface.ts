@@ -33,10 +33,12 @@ export function useProfessionalInterface(
     const p = target ?? profile?.coreProfile.value ?? null
     if (!p) return null
 
-    const id = safeString(p.id).trim()
-    if (!id) return null
-
     const user = target?.user ?? userOverride ?? userRef?.value ?? null
+    const id =
+      safeString((p as any).id).trim() ||
+      safeString((p as any).owner_uid).trim() ||
+      safeString(user?.id).trim()
+    if (!id) return null
 
     const image = safeString(p.image)
     const avatar = safeString(user?.avatar)

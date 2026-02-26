@@ -18,9 +18,9 @@
         />
       </div>
 
-      <ProfilesProfessionalCardsPill v-bind="current.pill" />
-      <ProfilesProfessionalCardsCell v-bind="current.cell" />
-      <ProfilesProfessionalCardsPreview v-bind="current.preview" />
+      <ProfilesProfessionalCardsPill v-if="current.pill" v-bind="current.pill" />
+      <ProfilesProfessionalCardsCell v-if="current.cell" v-bind="current.cell" />
+      <ProfilesProfessionalCardsPreview v-if="current.preview" v-bind="current.preview" />
     </div>
   </UCard>
 </template>
