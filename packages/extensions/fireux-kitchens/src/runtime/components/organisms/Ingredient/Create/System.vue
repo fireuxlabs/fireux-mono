@@ -64,6 +64,8 @@ const { uploadImage } = useImageStorage()
 const submitting = ref(false)
 const imageUploading = ref(false)
 const form = ref<IngredientCreateForm>(createDefaultIngredientForm())
+const INGREDIENT_IMAGE_MAX_DIMENSION = 1600
+const INGREDIENT_IMAGE_QUALITY = 0.86
 
 const clearDraft = () => {
   form.value = createDefaultIngredientForm()
@@ -84,6 +86,62 @@ const imageInitials = computed(() => {
   return `${parts[0][0] || ''}${parts[1][0] || ''}`.toUpperCase()
 })
 
+const loadImage = (file: File) =>
+  new Promise<HTMLImageElement>((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file)
+    const image = new Image()
+    image.onload = () => {
+      URL.revokeObjectURL(objectUrl)
+      resolve(image)
+    }
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl)
+      reject(new Error('Unable to read image file'))
+    }
+    image.src = objectUrl
+  })
+
+const toBlob = (
+  canvas: HTMLCanvasElement,
+  type: string,
+  quality?: number
+) =>
+  new Promise<Blob | null>((resolve) => {
+    canvas.toBlob((blob) => resolve(blob), type, quality)
+  })
+
+const resizeIngredientImage = async (file: File): Promise<Blob | File> => {
+  if (!file.type.startsWith('image/')) return file
+  if (file.type === 'image/svg+xml') return file
+
+  const image = await loadImage(file)
+  const sourceWidth = image.naturalWidth || image.width
+  const sourceHeight = image.naturalHeight || image.height
+  const maxSide = Math.max(sourceWidth, sourceHeight)
+  if (!maxSide) return file
+
+  const scale = Math.min(1, INGREDIENT_IMAGE_MAX_DIMENSION / maxSide)
+  const width = Math.max(1, Math.round(sourceWidth * scale))
+  const height = Math.max(1, Math.round(sourceHeight * scale))
+
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return file
+
+  ctx.drawImage(image, 0, 0, width, height)
+
+  const webp = await toBlob(canvas, 'image/webp', INGREDIENT_IMAGE_QUALITY)
+  if (webp) return webp
+
+  const fallbackType =
+    file.type === 'image/png' ? 'image/png' : file.type || 'image/jpeg'
+  const fallback = await toBlob(canvas, fallbackType, INGREDIENT_IMAGE_QUALITY)
+  return fallback ?? file
+}
+
 const handleImageUpload = async (file: File) => {
   if (imageUploading.value || submitting.value) return
 
@@ -97,7 +155,8 @@ const handleImageUpload = async (file: File) => {
   imageUploading.value = true
   try {
     const path = `ingredients/${ingredientId}/image_url`
-    form.value.image_url = await uploadImage(path, file)
+    const resized = await resizeIngredientImage(file)
+    form.value.image_url = await uploadImage(path, resized)
     toast.success('Image uploaded')
   } catch (error: any) {
     toast.error(String(error?.message || 'Failed to upload image'))
