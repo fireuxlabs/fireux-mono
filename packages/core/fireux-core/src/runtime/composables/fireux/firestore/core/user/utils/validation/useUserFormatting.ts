@@ -43,7 +43,7 @@ function validateHandle(raw: string) {
     }
   }
   if (isReservedUserHandle(normalized)) {
-    return { isValid: false, message: 'This handle is reserved.' }
+    return { isValid: false, message: 'This handle is already in use.' }
   }
   return { isValid: true }
 }

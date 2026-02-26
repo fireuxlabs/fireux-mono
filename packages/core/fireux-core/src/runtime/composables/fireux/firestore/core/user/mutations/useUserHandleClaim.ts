@@ -1,6 +1,7 @@
 import {
   collection,
   doc,
+  getDocs,
   limit as fslimit,
   query as fsq,
   runTransaction,
@@ -31,7 +32,20 @@ export function useUserHandleClaim() {
     if (!validation.isValid) throw new Error(validation.message || 'Invalid handle')
     const nextHandle = validation.handle
     if (isVetoedHandle(nextHandle)) {
-      throw new Error('This handle is reserved.')
+      throw new Error('This handle is already in use.')
+    }
+
+    const duplicateQuery = fsq(
+      collection(db, 'users'),
+      where('handle', '==', nextHandle),
+      fslimit(2)
+    )
+    const duplicateSnap = await getDocs(duplicateQuery)
+    const conflict = duplicateSnap.docs.find(
+      (row) => String(row.id || '').trim() !== normalizedUid
+    )
+    if (conflict) {
+      throw new Error('This handle is already in use.')
     }
 
     const result = await runTransaction(db, async (transaction) => {
@@ -46,23 +60,6 @@ export function useUserHandleClaim() {
       const currentHandle = String(userData.handle || '').trim().toLowerCase()
       if (currentHandle === nextHandle) {
         return { uid: normalizedUid, handle: nextHandle, changed: false }
-      }
-
-      const duplicateQuery = fsq(
-        collection(db, 'users'),
-        where('handle', '==', nextHandle),
-        fslimit(2)
-      )
-      const duplicateSnap = (await (transaction as any).get(
-        duplicateQuery as any
-      )) as any
-      const conflict = Array.isArray(duplicateSnap?.docs)
-        ? duplicateSnap.docs.find(
-            (row: any) => String(row?.id || '').trim() !== normalizedUid
-          )
-        : null
-      if (conflict) {
-        throw new Error('Handle already taken.')
       }
 
       const now = serverTimestamp()

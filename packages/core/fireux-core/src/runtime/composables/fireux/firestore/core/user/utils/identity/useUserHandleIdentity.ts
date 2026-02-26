@@ -36,7 +36,7 @@ export const validateUserHandleForPublicRoute = (rawHandle: string) => {
     }
   }
   if (isReservedUserHandle(handle)) {
-    return { isValid: false, message: 'This handle is reserved.', handle }
+    return { isValid: false, message: 'This handle is already in use.', handle }
   }
   return { isValid: true, handle }
 }
