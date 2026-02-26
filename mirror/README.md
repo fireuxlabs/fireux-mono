@@ -8,6 +8,7 @@ Copilot instructions
 Purpose
 - Mirror is a curated, symlinked workspace for quick cross-entity comparison.
 - mirror/mirror.txt is the source list (one repo-relative path per line).
+- Note: Mirror is also a time-saver for sharing file dumps. It is like a git report for quick copy/paste, so you can ignore "mirror" beyond that purpose.
 
 Standard flow
 1) Clear mirror: remove symlinks in mirror/ and empty mirror/mirror.txt.

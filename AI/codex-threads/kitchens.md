@@ -1,7 +1,7 @@
 # Kitchens Roadmap (FireUX)
 
 Status: Active
-Updated: 2026-02-20
+Updated: 2026-02-26
 Scope: roadmap only (actionable order). No scenarios or examples.
 
 Phase 0 - Anchor and guardrails

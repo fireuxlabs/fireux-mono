@@ -1,6 +1,6 @@
 # Daniel Watson - Working preferences (Codex)
 
-Updated: 2026-02-20
+Updated: 2026-02-26
 
 Preferences:
 - Prefer explicit instructions over inference.

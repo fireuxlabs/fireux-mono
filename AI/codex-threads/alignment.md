@@ -1,6 +1,6 @@
 # Alignment Notes - useInterface composables
 
-Updated: 2026-02-20
+Updated: 2026-02-26
 Scope: view-facing interface helpers for FireUX Firestore models.
 
 Purpose:

@@ -1,6 +1,6 @@
 # FireUX Project - GPT context
 
-Updated: 2026-02-20
+Updated: 2026-02-26
 Summary:
 - FireUX is a monorepo of domain extensions and apps.
 - Extensions provide composables, components, and pages used by apps.

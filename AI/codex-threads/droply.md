@@ -1,6 +1,6 @@
 # FireUX - Droply module thread (Codex)
 
-Updated: 2026-02-20
+Updated: 2026-02-26
 Scope: supplier domain ownership and module migration.
 
 Decisions:

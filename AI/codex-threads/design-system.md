@@ -1,6 +1,6 @@
 # FireUX Design System - Codex Thread
 
-Updated: 2026-02-20
+Updated: 2026-02-26
 Scope: tokens, component naming, and UI conventions.
 
 Priorities:

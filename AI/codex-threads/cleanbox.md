@@ -1,7 +1,7 @@
 # FireUX - Cleanbox ecosystem (Codex)
 
 Status: Active
-Updated: 2026-02-20
+Updated: 2026-02-26
 Scope: implementation-level decisions for Cleanbox apps and extensions.
 
 Primary surfaces:

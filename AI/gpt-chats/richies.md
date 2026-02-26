@@ -1,6 +1,6 @@
 # Richies Reinigung
 
-Updated: 2026-02-20
+Updated: 2026-02-26
 Summary:
 - Richies Reinigung is a Cleanbox ecosystem app.
 - It should rely on shared FireUX extensions and onboarding.

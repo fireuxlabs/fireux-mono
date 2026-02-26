@@ -1,6 +1,6 @@
 # FireUX - Packages Map (Codex)
 
-Updated: 2026-02-20
+Updated: 2026-02-26
 Scope: high-level package map for implementation work.
 
 Core extension packages (packages/extensions):

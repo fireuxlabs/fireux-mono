@@ -1,6 +1,6 @@
 # Fallback Policy
 
-Updated: 2026-02-20
+Updated: 2026-02-26
 Fallbacks are prohibited unless explicitly requested by a human.
 
 Why:

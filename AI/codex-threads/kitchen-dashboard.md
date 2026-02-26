@@ -1,7 +1,7 @@
 # Kitchen Dashboard Contract (FireUX Kitchens)
 
 Status: Active
-Updated: 2026-02-20
+Updated: 2026-02-26
 Scope: runtime behavior and page responsibilities for kitchen dashboard surfaces.
 
 Why this exists:
