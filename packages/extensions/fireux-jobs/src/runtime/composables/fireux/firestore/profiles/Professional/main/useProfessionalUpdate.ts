@@ -171,8 +171,8 @@ export function useProfessionalUpdate(profile?: ProfileRefs<ProfessionalCore> | 
     await commitUpdate({ other_experience: sorted }, options)
   }
 
-  const updateJobTitle = (value: string, options: UpdateOptions = {}) =>
-    updateStringField('job_title', value, options)
+  const updateTitle = (value: string, options: UpdateOptions = {}) =>
+    updateStringField('title', value, options)
 
   const updateSummary = (value: string, options: UpdateOptions = {}) =>
     updateStringField('summary', value, options)
@@ -240,7 +240,7 @@ export function useProfessionalUpdate(profile?: ProfileRefs<ProfessionalCore> | 
     setRelevantExperience,
     setOtherExperience,
 
-    updateJobTitle,
+    updateTitle,
     updateSummary,
     updateBio,
     updateImage,

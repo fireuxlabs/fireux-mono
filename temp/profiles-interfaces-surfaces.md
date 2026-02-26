@@ -30,6 +30,12 @@ Observed characteristics from `professionals` (Misebox):
 
 This makes `Professional` the best first target for a slim-but-robust surface system.
 
+Cross-ecosystem scope note (current reality):
+
+- `misebox-app` = primary profile UX/dataset benchmark
+- `fireux-app` = core platform baseline (no meaningful profile datasets attached to users)
+- `cleanbox-app` = schema/path sanity only until real profile data exists
+
 ## Goals
 
 - Make `use*Interface` files small and boring.
@@ -140,7 +146,7 @@ type ProfessionalPillCard = {
   to: string
   avatarUrl: string
   displayName: string
-  job_title: string
+  title: string
 }
 ```
 
@@ -154,7 +160,7 @@ type ChefPillCard = {
   to: string
   avatarUrl: string
   displayName: string
-  chef_headline: string
+  title: string
 }
 ```
 
@@ -179,7 +185,7 @@ type ChefPillCard = {
   to: string
   avatarUrl: string
   displayName: string
-  chef_headline: string
+  title: string
 }
 ```
 
@@ -298,15 +304,33 @@ Rule:
 
 ## Naming Strategy (Important)
 
+Stored Firestore fields stay domain-native in this phase (no migration):
+
+- `job_title`
+- `chef_headline`
+- `agent_headline`
+
+Interface/surface layer normalizes these to a shared surface field:
+
+- `title`
+
+Mapping examples:
+
+- `Professional.title <- professional.job_title`
+- `Chef.title <- chef.chef_headline`
+- `Agent.title <- agent.agent_headline`
+
+This keeps storage stable while simplifying pill/cell/preview components.
+
 Two valid options:
 
-### Option A: Domain-native fields (recommended for now)
+### Option A: Domain-native fields (legacy/simple per-domain)
 
 Keep surface output aligned to the model:
 
 - `chef_headline`
 - `agent_headline`
-- `professional_headline`
+- `job_title`
 
 Pros:
 
@@ -317,11 +341,11 @@ Cons:
 
 - harder to share a single generic `ProfilePill` component later
 
-### Option B: Surface-normalized field names (future)
+### Option B: Surface-normalized field names (recommended now)
 
-Map to a shared surface language:
+Map interface output to a shared surface language:
 
-- `headline`
+- `title`
 
 Pros:
 
@@ -331,7 +355,7 @@ Cons:
 
 - extra mapping layer
 
-Recommendation now: use **Option A** (domain-native) until all three domains are stable.
+Recommendation now: use **Option B** at the interface layer only (shared `title`), while keeping stored Firestore fields unchanged.
 
 ## Proposed Refactor Sequence (Minimal Risk)
 

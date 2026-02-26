@@ -49,7 +49,7 @@ export function useProfessionalInterface(
       avatarUrl: avatar,
       image,
       displayName: safeString(user?.display_name),
-      title: safeString(p.job_title),
+      title: safeString(p.title),
       summary: safeString(p.summary),
     }
   }

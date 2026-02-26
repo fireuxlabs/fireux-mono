@@ -32,7 +32,35 @@
         </div>
       </template>
 
-      <ProfilesAgentCollectionManager :collection="filteredAgents" />
+      <div class="space-y-6">
+        <ProfilesAgentCollectionManager :collection="filteredAgents" />
+
+        <div v-if="agentPreviewCards.length" class="space-y-3">
+          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            Preview cards
+          </p>
+          <div class="space-y-3">
+            <ProfilesAgentCardsPreview
+              v-for="card in agentPreviewCards"
+              :key="`agent-preview-${card.id}`"
+              v-bind="card"
+            />
+          </div>
+        </div>
+
+        <div v-if="agentProfileCards.length" class="space-y-3">
+          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            Profile cards
+          </p>
+          <div class="space-y-4">
+            <ProfilesAgentCardsProfile
+              v-for="card in agentProfileCards"
+              :key="`agent-profile-${card.id}`"
+              :card="card"
+            />
+          </div>
+        </div>
+      </div>
     </UCard>
   </section>
 </template>
@@ -97,5 +125,25 @@ const agentsDriftCopyPayload = buildAgentsCopyPayload({
   itemsKey: 'agents',
   items: filteredAgentsDriftPayload,
   total: computed(() => agentsCollection.value.length),
+})
+
+const agentPreviewCards = computed(() => {
+  const out: Array<NonNullable<ReturnType<typeof makeAgentCard>>> = []
+  for (const item of filteredAgents.value ?? []) {
+    const card = makeAgentCard(item as any)
+    if (!card) continue
+    out.push(card)
+  }
+  return out
+})
+
+const agentProfileCards = computed(() => {
+  const out: Array<NonNullable<ReturnType<typeof makeAgentCard>>> = []
+  for (const item of filteredAgents.value ?? []) {
+    const card = makeAgentCard(item as any)
+    if (!card) continue
+    out.push(card)
+  }
+  return out
 })
 </script>

@@ -47,7 +47,7 @@ export function useAgentInterface(
       safeString((p as any).id).trim() ||
       safeString((p as any).owner_uid).trim() ||
       safeString(u?.id).trim()
-    const headline = safeString(p.agent_headline) || safeString(p.title)
+    const headline = safeString(p.title)
     const summary = safeString(p.summary)
     const placementTypes =
       safeStringArray(p.agent_placement_types).length
@@ -69,7 +69,7 @@ export function useAgentInterface(
       // Canonical: agent pills are user-hydrated; no profile-title fallback for display name.
       displayName: safeString(u?.display_name),
 
-      // Prefer tagline; fall back to title/subtitle so pills stay useful.
+      // Canonical profile title shown as pill/cell tagline.
       tagline: headline,
       badges: placementTypes,
 

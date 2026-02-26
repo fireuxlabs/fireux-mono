@@ -24,7 +24,7 @@ export const ProfessionalCore = {
   id: '' as string,
 
   // Identity 
-  job_title: '' as string,
+  title: '' as string,
   summary: '' as string,
   bio: '' as string,
   image: '' as string,

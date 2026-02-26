@@ -4,11 +4,11 @@
       <UCard>
         <div class="space-y-4">
           <MoleculesFormsFirestoreSimpleField
-            label="Headline"
-            :firebase-value="headline"
+            label="Title"
+            :firebase-value="title"
             placeholder="Ex: Head Chef"
             :maxlength="60"
-            :update-function="handleHeadline"
+            :update-function="handleTitle"
           />
 
           <MoleculesFormsFirestoreSimpleField
@@ -63,12 +63,12 @@ import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model';
 const props = defineProps<{ chef: ChefCore | null }>()
 
 const chef = computed(() => props.chef ?? null)
-const { updateHeadline, updateSummary, updateBio, updateImage, updateSignatureDishes } =
+const { updateTitle, updateSummary, updateBio, updateImage, updateSignatureDishes } =
   useChefUpdate()
 
 const toast = useToastify()
 
-const headline = computed(() => chef.value?.chef_headline ?? chef.value?.title ?? '')
+const title = computed(() => chef.value?.title ?? '')
 const summary = computed(() => chef.value?.summary ?? '')
 const bio = computed(() => chef.value?.chef_bio ?? chef.value?.bio_long ?? '')
 const imageUrl = computed(() => chef.value?.chef_image ?? '')
@@ -98,8 +98,8 @@ const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string)
   }
 }
 
-const handleHeadline = async (value: string) =>
-  wrap(() => updateHeadline(value), 'Headline updated', 'Failed to update headline')
+const handleTitle = async (value: string) =>
+  wrap(() => updateTitle(value), 'Title updated', 'Failed to update title')
 
 const handleSummary = async (value: string) =>
   wrap(() => updateSummary(value), 'Summary updated', 'Failed to update summary')

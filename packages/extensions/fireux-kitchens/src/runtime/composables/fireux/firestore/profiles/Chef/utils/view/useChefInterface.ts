@@ -31,7 +31,7 @@ export function useChefInterface(
       to: id ? `/${chefConfig.collectionName}/${encodeURIComponent(id)}` : '',
       avatarUrl: safeString(u?.avatar).trim(),
       displayName: safeString(u?.display_name).trim(),
-      chef_headline: safeString((p as any).chef_headline).trim(),
+      chef_headline: safeString((p as any).title).trim(),
     }
   }
 

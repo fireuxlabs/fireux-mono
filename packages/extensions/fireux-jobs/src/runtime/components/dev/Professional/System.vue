@@ -32,7 +32,36 @@
         </div>
       </template>
 
-      <ProfilesProfessionalCollectionManager :collection="filteredProfessionals" />
+      <div class="space-y-6">
+        <ProfilesProfessionalCollectionManager :collection="filteredProfessionals" />
+
+        <div v-if="professionalPreviewCards.length" class="space-y-3">
+          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            Preview cards
+          </p>
+          <div class="space-y-3">
+            <ProfilesProfessionalCardsPreview
+              v-for="card in professionalPreviewCards"
+              :key="`professional-preview-${card.id}`"
+              v-bind="card"
+            />
+          </div>
+        </div>
+
+        <div v-if="professionalProfileEntries.length" class="space-y-3">
+          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            Profile cards
+          </p>
+          <div class="space-y-4">
+            <ProfilesProfessionalCardsProfile
+              v-for="entry in professionalProfileEntries"
+              :key="`professional-profile-${entry.card.id}`"
+              :card="entry.card"
+              :profile="entry.profile"
+            />
+          </div>
+        </div>
+      </div>
     </UCard>
   </section>
 </template>
@@ -42,6 +71,7 @@ import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDri
 import { computed } from 'vue'
 import { useProfessionalCollection } from '../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection'
 import { useProfessionalFetch } from '../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalFetch'
+import { useProfessionalInterface } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import { ProfessionalCore as ProfessionalCoreRuntime } from '../../../models/profiles/Professional/Professional.model'
 
 defineOptions({ name: 'DevProfessionalSystem' })
@@ -53,6 +83,7 @@ const professionalModelRuntime = {
 
 const { coreProfessionals, appProfessionals } = useProfessionalFetch()
 const { coreProfessionals: rawCoreProfessionals, appProfessionals: rawAppProfessionals } = useProfessionalCollection()
+const { card: makeProfessionalCard } = useProfessionalInterface()
 
 const professionalsCollection = computed(() => [
   ...(appProfessionals?.value ?? []),
@@ -131,5 +162,29 @@ const professionalsDriftCopyPayload = buildProfessionalsCopyPayload({
   itemsKey: 'professionals',
   items: filteredProfessionalsDriftPayload,
   total: computed(() => professionalsCollection.value.length),
+})
+
+const professionalPreviewCards = computed(() => {
+  const out: Array<NonNullable<ReturnType<typeof makeProfessionalCard>>> = []
+  for (const item of filteredProfessionals.value ?? []) {
+    const card = makeProfessionalCard(item as any)
+    if (!card) continue
+    out.push(card)
+  }
+  return out
+})
+
+const professionalProfileEntries = computed(() => {
+  const out: Array<{
+    card: NonNullable<ReturnType<typeof makeProfessionalCard>>
+    profile: unknown
+  }> = []
+  for (const item of filteredProfessionals.value ?? []) {
+    const profile = item as any
+    const card = makeProfessionalCard(profile)
+    if (!card) continue
+    out.push({ card, profile })
+  }
+  return out
 })
 </script>

@@ -15,7 +15,7 @@ export const AgentCore = {
   id: '',
 
   // Agent (scoped, v1)
-  agent_headline: '',
+  title: '',
   summary: '',
   agent_bio: '',
   agent_image: '',
@@ -30,7 +30,6 @@ export const AgentCore = {
   agent_website_url: '',
 
   // Legacy (deprecated) — kept temporarily for non-breaking migration
-  title: '',
   subtitle: '',
   tagline: '',
   tags: [] as string[],

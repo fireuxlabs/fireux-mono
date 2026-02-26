@@ -41,9 +41,9 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
     return 'success'
   }
 
-  const updateHeadline = async (value: string) => {
+  const updateTitle = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ agent_headline: normalized ?? undefined })
+    await updateCoreProfile({ title: normalized ?? undefined })
   }
 
   const updateSummary = async (value: string) => {
@@ -84,9 +84,9 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
     await updateCoreProfile({ agent_website_url: normalized ?? undefined })
   }
 
-  const updateAgencyName = async (value: string) => updateHeadline(value)
+  const updateAgencyName = async (value: string) => updateTitle(value)
 
-  const updateTagline = async (value: string) => updateHeadline(value)
+  const updateTagline = async (value: string) => updateTitle(value)
 
   const updateBioShort = async (value: string) => updateSummary(value)
 
@@ -99,7 +99,7 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
     updateCore,
     updateApp,
     updateAgencyName,
-    updateHeadline,
+    updateTitle,
     updateSummary,
     updateBio,
     updateImage,

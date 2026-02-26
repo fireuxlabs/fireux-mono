@@ -14,7 +14,7 @@ export const ChefCore = {
   id: '' as string,
 
   // Chef (scoped, v1)
-  chef_headline: '' as string,
+  title: '' as string,
   summary: '' as string,
   chef_bio: '' as string,
   chef_image: '' as string,
@@ -27,7 +27,6 @@ export const ChefCore = {
   chef_organization_name: '' as string,
 
   // Legacy (deprecated) — kept temporarily for non-breaking migration
-  title: '' as string,
   subtitle: '' as string,
   tagline: '' as string,
   tags: [] as string[],

@@ -129,7 +129,7 @@ const props = defineProps<{ professional: ProfessionalCore | null }>()
 const toast = useToastify()
 
 const {
-  updateJobTitle,
+  updateTitle,
   updateSummary,
   updateBio,
   uploadProfileImage,
@@ -149,7 +149,7 @@ const relevantExperienceLabel = computed(() => 'Relevant Experience')
 
 const professional = computed(() => props.professional ?? null)
 
-const headline = computed(() => professional.value?.job_title ?? '')
+const headline = computed(() => professional.value?.title ?? '')
 const summary = computed(() => professional.value?.summary ?? '')
 const bio = computed(() => professional.value?.bio ?? '')
 const imageUrl = computed(() => professional.value?.image ?? '')
@@ -185,9 +185,9 @@ const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string)
 
 const handleHeadline = async (value: string) =>
   wrap(
-    () => updateJobTitle(value, { id: professional.value?.id ?? null }),
-    'Job title updated',
-    'Failed to update job title'
+    () => updateTitle(value, { id: professional.value?.id ?? null }),
+    'Title updated',
+    'Failed to update title'
   )
 
 const handleSummary = async (value: string) =>

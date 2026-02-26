@@ -32,7 +32,7 @@ export function useProfessionalCreate() {
     const coreSnap = await getDoc(coreRef)
     if (!coreSnap.exists()) {
       const payload = {
-        job_title: '',
+        title: '',
         summary: '',
         bio: '',
         image: '',

@@ -32,7 +32,6 @@ export function useAgentCreate() {
     const coreSnap = await getDoc(coreRef)
     if (!coreSnap.exists()) {
       const payload = {
-        agent_headline: '',
         title: '',
         subtitle: '',
         tagline: '',

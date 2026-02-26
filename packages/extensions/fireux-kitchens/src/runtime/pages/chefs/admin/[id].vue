@@ -41,8 +41,8 @@
         <ClientOnly v-else>
           <div v-if="view === 'profile'" class="dashboard-profile__section">
             <ProfilesChefCardsProfile
-              v-if="chefCard"
-              :card="chefCard"
+              v-if="resolvedCoreProfile"
+              :chef="resolvedCoreProfile"
             />
           </div>
 

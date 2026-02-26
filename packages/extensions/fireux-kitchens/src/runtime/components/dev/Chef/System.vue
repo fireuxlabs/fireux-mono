@@ -36,10 +36,42 @@
         <p class="text-sm text-dimmed">Loading chefs...</p>
       </UCard>
 
-      <ProfilesChefCollectionManager
-        v-else
-        :collection="filteredCollection"
-      />
+      <div v-else class="space-y-6">
+        <ProfilesChefCollectionManager
+          :collection="filteredCollection"
+        />
+
+        <div v-if="chefPreviewCards.length" class="space-y-3">
+          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            Preview cards
+          </p>
+          <div class="space-y-3">
+            <ProfilesChefCardsPreview
+              v-for="entry in chefPreviewCards"
+              :key="`chef-preview-${entry.card.id}`"
+              :avatar-url="entry.card.avatarUrl"
+              :display-name="entry.card.displayName"
+              :tagline="entry.card.chef_headline"
+              :badges="[]"
+              :summary="String((entry.profile as any)?.summary ?? '')"
+              :specialties-csv="chefSpecialtiesCsv(entry.profile)"
+            />
+          </div>
+        </div>
+
+        <div v-if="filteredCollection.length" class="space-y-3">
+          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+            Profile cards
+          </p>
+          <div class="space-y-4">
+            <ProfilesChefCardsProfile
+              v-for="entry in filteredCollection"
+              :key="`chef-profile-${String((entry as any)?.user?.id ?? (entry as any)?.id ?? '')}`"
+              :chef="entry as any"
+            />
+          </div>
+        </div>
+      </div>
     </UCard>
   </section>
 </template>
@@ -47,6 +79,7 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
+import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
 import { useChefFetch } from '../../../composables/fireux/firestore/profiles/Chef/main/useChefFetch'
 import { ChefCore as ChefCoreModelRuntime } from '../../../models/profiles/Chef/Chef.model'
 
@@ -55,6 +88,7 @@ defineOptions({ name: 'DevChefSystem' })
 const chefCoreModelRuntime = ChefCoreModelRuntime
 
 const { coreChefs, appChefs, pending } = useChefFetch()
+const { card: makeChefCard } = useChefInterface()
 
 const collection = computed(() => [
   ...(appChefs?.value ?? []),
@@ -88,7 +122,7 @@ const filteredDriftPayload = buildDriftPayload({
       (doc as any)?.user?.display_name ??
       (doc as any)?.user?.handle ??
       id,
-    chefHeadline: (doc as any)?.chef_headline ?? '',
+    chefHeadline: (doc as any)?.title ?? '',
     drift,
   }),
 })
@@ -98,5 +132,36 @@ const driftCopyPayload = buildCopyPayload({
   itemsKey: 'chefs',
   items: filteredDriftPayload,
   total: computed(() => collection.value.length),
+})
+
+const toCsv = (value: unknown) =>
+  Array.isArray(value)
+    ? value
+        .map((item) => String(item ?? '').trim())
+        .filter(Boolean)
+        .join(', ')
+    : ''
+
+const chefSpecialtiesCsv = (entry: unknown) => {
+  const chef = (entry as Record<string, unknown>) ?? {}
+  const primary = chef.chef_signature_dishes
+  const legacy = chef.specialties
+  return toCsv(Array.isArray(primary) && primary.length ? primary : legacy)
+}
+
+const chefPreviewCards = computed(() => {
+  const out: Array<{
+    card: NonNullable<ReturnType<typeof makeChefCard>>
+    profile: unknown
+  }> = []
+
+  for (const item of filteredCollection.value ?? []) {
+    const profile = item as any
+    const card = makeChefCard(profile, profile?.user ?? null)
+    if (!card) continue
+    out.push({ card, profile })
+  }
+
+  return out
 })
 </script>

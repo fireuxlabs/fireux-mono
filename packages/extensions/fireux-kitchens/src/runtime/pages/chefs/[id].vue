@@ -71,10 +71,12 @@
 
 <script setup lang="ts">
 import { navigateTo, useHead, useRoute, useSeoMeta } from '#imports'
+import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
+import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, ref } from 'vue'
+import type { ChefApp, ChefCore } from '../../models/profiles/Chef/Chef.model.ts'
 import { chefConfig } from '../../models/profiles/Chef/Chef.model.ts'
 
 useSeoMeta({
@@ -83,15 +85,21 @@ useSeoMeta({
 })
 
 const route = useRoute()
-const raw = route.params.id
-const docId = Array.isArray(raw) ? raw[0] : String(raw || '')
+const docId = computed(() => {
+  const raw = route.params.id
+  const value = Array.isArray(raw) ? raw[0] : raw
+  return String(value ?? '').trim() || null
+})
 
 const { user, coreUser, appUser } = useUser()
+const userRefs = useUserFetch(docId)
 
-const { firestoreFetchDoc } = useFirestoreRead()
-const rawDoc = docId ? await firestoreFetchDoc(chefConfig.collectionName, docId) : null
-const profile = computed<any>(() => (rawDoc as any)?.value ?? rawDoc ?? null)
-const loading = computed(() => !rawDoc && !!docId)
+const { profile: profileRefs, pending } = useProfileFetch<ChefCore, ChefApp>(
+  docId,
+  chefConfig
+)
+const profile = computed<ChefCore | null>(() => profileRefs.coreProfile.value ?? null)
+const loading = computed(() => pending.value)
 
 const resolveName = (p: any) =>
   p?.display_name ||
@@ -104,7 +112,7 @@ const resolveName = (p: any) =>
   'Profile'
 
 const displayName = computed(() =>
-  profile.value ? resolveName(profile.value) : null
+  userRefs.user.value?.display_name || (profile.value ? resolveName(profile.value) : null)
 )
 const pageTitle = computed(() => displayName.value ?? 'Chef Profile')
 const pageDescription = computed(() =>
@@ -121,7 +129,7 @@ useHead({
 })
 
 const isSelf = computed(() =>
-  Boolean(docId && user.value?.id === docId)
+  Boolean(docId.value && user.value?.id === docId.value)
 )
 
 const isAdminUser = computed(() =>
@@ -134,12 +142,12 @@ const isCreating = ref(false)
 const createError = ref<string | null>(null)
 
 const createProfile = async () => {
-  if (isCreating.value || !docId) return
+  if (isCreating.value || !docId.value) return
   isCreating.value = true
   createError.value = null
 
   try {
-    await ensure(docId)
+    await ensure(docId.value)
   } catch (error) {
     createError.value = (error as Error)?.message || 'Failed to create profile.'
   } finally {

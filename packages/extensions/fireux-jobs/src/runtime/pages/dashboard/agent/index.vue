@@ -135,7 +135,7 @@ const profileComplete = computed<number | null>(() => {
     Array.isArray(value) && value.length > 0
 
   const checks: boolean[] = [
-    isFilledString(profile.agent_headline ?? profile.title ?? null),
+    isFilledString(profile.title ?? null),
     isFilledString(profile.summary ?? null),
     isFilledString(profile.agent_bio ?? null),
     isFilledString(profile.agent_contact_email ?? profile.contact_email ?? null),

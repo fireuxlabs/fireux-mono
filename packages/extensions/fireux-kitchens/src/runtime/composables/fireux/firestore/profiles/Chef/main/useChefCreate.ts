@@ -32,7 +32,6 @@ export function useChefCreate() {
     const coreSnap = await getDoc(coreRef)
     if (!coreSnap.exists()) {
       const payload = {
-        chef_headline: '',
         chef_bio: '',
         chef_image: '',
         chef_signature_dishes: [] as string[],

@@ -4,11 +4,11 @@
       <UCard>
         <div class="space-y-4">
           <MoleculesFormsFirestoreSimpleField
-            label="Headline"
-            :firebase-value="headline"
+            label="Title"
+            :firebase-value="title"
             placeholder="Ex: Hospitality Agent"
             :maxlength="60"
-            :update-function="handleHeadline"
+            :update-function="handleTitle"
             :validation-function="DisplayName.validate"
             :formatting-function="DisplayName.format"
           />
@@ -100,7 +100,7 @@ const props = defineProps<{ agent: AgentCore | null }>()
 const agent = computed(() => props.agent ?? null)
 
 const {
-  updateHeadline,
+  updateTitle,
   updateSummary,
   updateBio,
   updateImage,
@@ -114,7 +114,7 @@ const {
 const { DisplayName } = useUserFormattingAndValidation()
 const toast = useToastify()
 
-const headline = computed(() => agent.value?.agent_headline ?? agent.value?.title ?? '')
+const title = computed(() => agent.value?.title ?? '')
 const summary = computed(() => agent.value?.summary ?? '')
 const bio = computed(() => agent.value?.agent_bio ?? '')
 const imageUrl = computed(() => agent.value?.agent_image ?? '')
@@ -160,8 +160,8 @@ const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string)
   }
 }
 
-const handleHeadline = async (value: string) =>
-  wrap(() => updateHeadline(value), 'Headline updated', 'Failed to update headline')
+const handleTitle = async (value: string) =>
+  wrap(() => updateTitle(value), 'Title updated', 'Failed to update title')
 
 const handleSummary = async (value: string) =>
   wrap(() => updateSummary(value), 'Summary updated', 'Failed to update summary')

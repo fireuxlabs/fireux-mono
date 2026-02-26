@@ -64,6 +64,7 @@
 import { navigateTo, useHead, useRoute } from '#imports'
 import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
+import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { computed, ref } from 'vue'
 import { useAgentInterface } from '../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
@@ -79,9 +80,10 @@ const agentId = computed(() => {
 const { profile, pending } = useProfileFetch<AgentCore>(agentId, agentConfig)
 const agentProfile = computed(() => profile.coreProfile.value ?? null)
 
+const userRefs = useUserFetch(agentId)
 const { coreUser, appUser, user: sessionUser } = useUser()
-const { card } = useAgentInterface(profile, coreUser)
-const agentCard = computed(() => card())
+const { card } = useAgentInterface(profile, userRefs.user)
+const agentCard = computed(() => card(agentProfile.value))
 
 const resolveName = (p: any) =>
   p?.display_name ||
@@ -101,7 +103,9 @@ useHead({
   ),
 })
 
-const displayName = computed(() => (agentProfile.value ? resolveName(agentProfile.value) : null))
+const displayName = computed(() =>
+  userRefs.user.value?.display_name || (agentProfile.value ? resolveName(agentProfile.value) : null)
+)
 const pageTitle = computed(() => displayName.value ?? 'Agent Profile')
 const pageDescription = computed(() =>
   displayName.value

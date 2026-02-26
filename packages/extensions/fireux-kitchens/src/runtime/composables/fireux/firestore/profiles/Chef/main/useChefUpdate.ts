@@ -25,9 +25,9 @@ export function useChefUpdate(profile?: ProfileRefs<ChefCore> | null) {
    */
   const updateAppProfile = base.updateAppProfile
 
-  const updateHeadline = async (value: string) => {
+  const updateTitle = async (value: string) => {
     const normalized = base.cleanString(value)
-    await updateCoreProfile({ chef_headline: normalized ?? undefined })
+    await updateCoreProfile({ title: normalized ?? undefined })
   }
 
   const updateSummary = async (value: string) => {
@@ -54,7 +54,7 @@ export function useChefUpdate(profile?: ProfileRefs<ChefCore> | null) {
     await updateCoreProfile({ chef_organization_name: normalized ?? undefined })
   }
 
-  const updateTagline = async (value: string) => updateHeadline(value)
+  const updateTagline = async (value: string) => updateTitle(value)
 
   const updateBioShort = async (value: string) => updateSummary(value)
 
@@ -62,7 +62,7 @@ export function useChefUpdate(profile?: ProfileRefs<ChefCore> | null) {
     commitUpdate: base.commitUpdate,
     updateCoreProfile,
     updateAppProfile,
-    updateHeadline,
+    updateTitle,
     updateSummary,
     updateBio,
     updateImage,
