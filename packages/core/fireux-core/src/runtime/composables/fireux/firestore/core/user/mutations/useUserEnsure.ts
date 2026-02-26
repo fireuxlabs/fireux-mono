@@ -1,4 +1,6 @@
 // Action: ENSURE · Phases: 1–4
+import { doc, getDoc } from 'firebase/firestore'
+import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { requireUid } from '../../../utils/useEnsureCommon'
 import {
@@ -38,7 +40,32 @@ export function useUserEnsure() {
       avatar: auth.photoURL ?? '',
     })
 
-    const membership = await ensureUserAppMembership(appId, uid, 'user')
+    // Auth ensure must not demote existing admins to "user".
+    // Preserve admin role if any current mirror already indicates admin.
+    let membershipRole: 'admin' | 'user' = 'user'
+    try {
+      const db = useFirestore()
+      const appUserSnap = await getDoc(doc(db, 'apps', appId, 'users', uid))
+      const appRole = String((appUserSnap.data() as any)?.role ?? '').trim()
+      const coreAdminOf = Array.isArray((core.snapshot?.data() as any)?.adminOf)
+        ? ((core.snapshot?.data() as any)?.adminOf as Array<unknown>)
+            .map((id) => String(id ?? '').trim())
+            .filter(Boolean)
+        : []
+      if (appRole === 'admin' || coreAdminOf.includes(appId)) {
+        membershipRole = 'admin'
+      }
+    } catch (error) {
+      if (import.meta.dev) {
+        console.warn('[useUserEnsure] failed to inspect existing membership role', {
+          uid,
+          appId,
+          error,
+        })
+      }
+    }
+
+    const membership = await ensureUserAppMembership(appId, uid, membershipRole)
 
     return { createdCore: core.created, createdApp: membership.created, id: uid }
   }
