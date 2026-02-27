@@ -47,7 +47,7 @@ Define shared schema, feature flags, and naming.
 
 ## Wave 3 — Apps
 
-- [ ] Cleanbox routes `/dashboard,/qa,/billing,/clients,/reports`
+- [ ] Cleanbox routes `/console,/qa,/billing,/clients,/reports`
 - [ ] Misebox routes `/professional,/jobs,/recipes,/suppliers,/prep-plans`
 - [ ] FireUX app pages `/get-started,/developers,/projects,/pricing,/contact`
 

@@ -12,12 +12,12 @@ Comparison between the promises in `liturature.md` and the current Niederhorn co
 - [❌] Supplier database with ingredient tracking — no supplier models, storage, or UI beyond a placeholder CTA.
 - [❌] Team training modules for onboarding — no pages or components for training content or progress tracking.
 - [❌] Internal notes/feedback system — no messaging or comment storage implemented.
-- [❌] Analytics on ingredient usage/prep efficiency — no analytics dashboards or data collection utilities.
+- [❌] Analytics on ingredient usage/prep efficiency — no analytics consoles or data collection utilities.
 - [❌] Link to Misebox Pro profiles — no navigation or integration referencing Misebox-wide professional profiles.
 
 ## 2. Routes / Pages
 
-- [✅] `/` — implemented as the landing/dashboard (`pages/index.vue`).
+- [✅] `/` — implemented as the landing/console (`pages/index.vue`).
 - [❌] `/recipes` — not present.
 - [❌] `/prep-plans` — not present.
 - [❌] `/suppliers` — not present.

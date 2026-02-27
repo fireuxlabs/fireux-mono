@@ -1,0 +1,65 @@
+import type { Portfolio } from '../../../../../../models/portfolio.model'
+
+const safeString = (value: unknown) => String(value ?? '').trim()
+
+export namespace PortfolioCard {
+  export type Card = {
+    id: string
+    to: string
+    title: string
+    subtitle: string
+    badges: string[]
+    ownerLabel: string
+    status: string
+    regionLabel: string
+  }
+}
+
+export function usePortfolioInterface() {
+  function map(portfolio: Portfolio): PortfolioCard.Card {
+    const id = safeString(portfolio.id)
+    const name = safeString(portfolio.name)
+    const ownerLabel = safeString(portfolio.owner_label)
+    const status = safeString(portfolio.status)
+    const regionLabel = safeString(portfolio.region_label)
+
+    return {
+      id,
+      to: id ? `/console/portfolio` : '',
+      title: name,
+      subtitle: regionLabel,
+      badges: [],
+      ownerLabel,
+      status,
+      regionLabel,
+    }
+  }
+
+  function card(target?: Portfolio | null | undefined): PortfolioCard.Card | null {
+    if (!target) return null
+    const mapped = map(target)
+    return mapped.id ? mapped : null
+  }
+
+  function pill(target?: Portfolio | null | undefined): PortfolioCard.Card | null {
+    return card(target)
+  }
+
+  function searchText(target: Portfolio): string {
+    return [
+      safeString(target.name),
+      safeString(target.owner_label),
+      safeString(target.region_label),
+      safeString(target.id),
+    ]
+      .join(' ')
+      .trim()
+      .toLowerCase()
+  }
+
+  return {
+    card,
+    pill,
+    searchText,
+  }
+}

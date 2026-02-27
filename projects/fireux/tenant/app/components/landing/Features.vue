@@ -38,7 +38,7 @@ const featureList = [
   {
     icon: 'i-lucide-shield-check',
     title: 'Secure onboarding',
-    copy: 'Gate dashboards behind developer pins and env validation.',
+    copy: 'Gate consoles behind developer pins and env validation.',
   },
   {
     icon: 'i-lucide-layers',

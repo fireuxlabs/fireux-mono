@@ -4,7 +4,7 @@ Authority: Tier2 (Operational reference; canonical runtime policy is in `docs/ru
 Generated: 2026-02-18
 
 ## Objective
-Document the full current state of kitchen creation and define a consistent Kitchen↔Place relationship contract before wiring the full real-dashboard flow.
+Document the full current state of kitchen creation and define a consistent Kitchen↔Place relationship contract before wiring the full real-console flow.
 
 ## Executive Summary
 - `/kitchens/create` is now wired to the real creation flow (`KitchenCreateSystem`).
@@ -85,7 +85,7 @@ Document the full current state of kitchen creation and define a consistent Kitc
 - `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenUpdate.ts`
   - Kitchen patch mutation.
 
-### 7) Runtime Selection/Data Context (Dashboard Side)
+### 7) Runtime Selection/Data Context (Console Side)
 - `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/runtime-kitchen/useRuntimeKitchen.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/runtime-kitchen/state.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/runtime-kitchen/useRuntimeKitchenDocument.ts`
@@ -156,10 +156,10 @@ For live kitchens, a kitchen must always be place-backed.
 - Current mutation can persist unexpected keys unless payload is explicitly narrowed.
 
 5. UX gap after success
-- Current creation system shows success/existing state but does not auto-redirect to detail/dashboard.
+- Current creation system shows success/existing state but does not auto-redirect to detail/console.
 
 ## Next Wiring Steps (Recommended)
-1. Redirect on success (`/kitchens/{id}` or runtime-select + `/dashboard/kitchen`).
+1. Redirect on success (`/kitchens/{id}` or runtime-select + `/console/kitchen`).
 2. Update chef `kitchen_ids` when kitchen is successfully created/confirmed.
 3. Add explicit payload allow-list in `useKitchenCreate` to prevent schema drift from cross-extension callers.
 4. Decide single place-ensure owner for UI flow (component vs mutation), keeping mutation-level guard as safety.

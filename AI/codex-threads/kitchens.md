@@ -12,7 +12,7 @@ Phase 0 - Anchor and guardrails
 - Define the kitchen UI language (cards, lists, status chips).
 
 Phase 0.5 - Test kitchen environment
-- Treat test kitchens as the primary safe sandbox for dashboard prototyping.
+- Treat test kitchens as the primary safe sandbox for console prototyping.
 - Require explicit kitchen selection; no automatic fallback between real and test kitchens.
 - Keep test-kitchens collection separate from kitchens; never merge silently.
 - Surface clear UI labels when a test kitchen is active.
@@ -78,6 +78,6 @@ Implications:
 - Supplier SKUs map to ingredients; ingredients do not derive from SKUs.
 
 Recent scan (2026-02-20):
-- Commit 20b2754f updated kitchen dashboard menu and dishes pages plus runtime kitchen helpers.
+- Commit 20b2754f updated kitchen console menu and dishes pages plus runtime kitchen helpers.
 
 #end

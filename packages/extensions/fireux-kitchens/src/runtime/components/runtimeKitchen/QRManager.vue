@@ -85,13 +85,13 @@ const sizePx = computed(() => {
   return Math.max(64, Math.min(160, Math.round(n)))
 })
 
-const dashboardKitchenId = computed(() =>
+const consoleKitchenId = computed(() =>
   String(runtime.id.value || '').trim()
 )
 
 const serviceMenuBaseUrl = computed(() => {
-  if (!dashboardKitchenId.value) return ''
-  return `/kitchens/${encodeURIComponent(dashboardKitchenId.value)}/menu`
+  if (!consoleKitchenId.value) return ''
+  return `/kitchens/${encodeURIComponent(consoleKitchenId.value)}/menu`
 })
 
 const withQuery = (base: string, query: Record<string, string>) => {

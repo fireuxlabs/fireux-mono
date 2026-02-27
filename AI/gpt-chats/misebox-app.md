@@ -6,7 +6,7 @@ Summary:
 - It should mirror core FireUX kitchen runtime decisions.
 
 Current focus:
-- Keep kitchen dashboard behavior consistent.
+- Keep kitchen console behavior consistent.
 - Align supplier ownership with fireux-drop.
 
 #end

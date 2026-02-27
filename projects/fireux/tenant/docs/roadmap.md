@@ -15,7 +15,7 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 
 - Multi-tenant configuration layer (Firestore schema, composables, admin UI) for theme, domain, and copy overrides
 - Authentication and session flows (`/auth` routes, Firebase providers, cross-tenant cookies)
-- Default dashboard/settings/about/legal pages with shared layout wiring and tenant-aware data
+- Default console/settings/about/legal pages with shared layout wiring and tenant-aware data
 - Stripe subscription and billing integration (customers, plans, webhooks, UI)
 - Deployment automation (CLI to bootstrap tenants, Firebase presets, CI/CD templates)
 - Theme/logos asset management plus PWA setup (manifest, icons, offline strategies)
@@ -32,7 +32,7 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 
 - [ ] Design tenant configuration schema and composables; expose management UI under `/settings`
 - [ ] Implement auth routes (login/register/reset) using cross-tenant session helpers
-- [ ] Scaffold dashboard, settings, about, and legal pages with placeholder content linked to config
+- [ ] Scaffold console, settings, about, and legal pages with placeholder content linked to config
 - [ ] Integrate Stripe billing (subscription creation, webhook handling, invoice display)
 - [ ] Create CLI or scripts to generate tenant shells and prepopulate Firebase environments
 - [ ] Add theme/logo asset pipelines and PWA manifest/icon support

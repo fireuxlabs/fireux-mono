@@ -257,6 +257,37 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
 
+  packages/ecosystem/fireux-granite:
+    dependencies:
+      fireux-compliance:
+        specifier: workspace:*
+        version: link:../../extensions/fireux-compliance
+      fireux-core:
+        specifier: workspace:*
+        version: link:../../core/fireux-core
+      fireux-documents:
+        specifier: workspace:*
+        version: link:../../extensions/fireux-documents
+      fireux-properties:
+        specifier: workspace:*
+        version: link:../../extensions/fireux-properties
+      fireux-tasks:
+        specifier: workspace:*
+        version: link:../../extensions/fireux-tasks
+    devDependencies:
+      '@nuxt/module-builder':
+        specifier: ^0.5.5
+        version: 0.5.5(@nuxt/kit@4.1.2(magicast@0.3.5))(sass@1.96.0)(typescript@5.9.2)
+      glob:
+        specifier: ^11.0.3
+        version: 11.0.3
+      mkdist:
+        specifier: ^1.5.3
+        version: 1.6.0(sass@1.96.0)(typescript@5.9.2)
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+
   packages/ecosystem/fireux-misebox:
     dependencies:
       fireux-core:
@@ -315,6 +346,56 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+    devDependencies:
+      '@nuxt/module-builder':
+        specifier: ^0.5.5
+        version: 0.5.5(@nuxt/kit@4.1.2(magicast@0.3.5))(sass@1.96.0)(typescript@5.9.2)
+      glob:
+        specifier: ^11.0.3
+        version: 11.0.3
+      mkdist:
+        specifier: ^1.5.3
+        version: 1.6.0(sass@1.96.0)(typescript@5.9.2)
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+
+  packages/extensions/fireux-compliance:
+    dependencies:
+      fireux-core:
+        specifier: workspace:*
+        version: link:../../core/fireux-core
+      fireux-properties:
+        specifier: workspace:*
+        version: link:../fireux-properties
+      fireux-tasks:
+        specifier: workspace:*
+        version: link:../fireux-tasks
+    devDependencies:
+      '@nuxt/module-builder':
+        specifier: ^0.5.5
+        version: 0.5.5(@nuxt/kit@4.1.2(magicast@0.3.5))(sass@1.96.0)(typescript@5.9.2)
+      glob:
+        specifier: ^11.0.3
+        version: 11.0.3
+      mkdist:
+        specifier: ^1.5.3
+        version: 1.6.0(sass@1.96.0)(typescript@5.9.2)
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+
+  packages/extensions/fireux-documents:
+    dependencies:
+      fireux-core:
+        specifier: workspace:*
+        version: link:../../core/fireux-core
+      fireux-properties:
+        specifier: workspace:*
+        version: link:../fireux-properties
+      fireux-tasks:
+        specifier: workspace:*
+        version: link:../fireux-tasks
     devDependencies:
       '@nuxt/module-builder':
         specifier: ^0.5.5
@@ -444,6 +525,47 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+    devDependencies:
+      '@nuxt/module-builder':
+        specifier: ^0.5.5
+        version: 0.5.5(@nuxt/kit@4.1.2(magicast@0.3.5))(sass@1.96.0)(typescript@5.9.2)
+      glob:
+        specifier: ^11.0.3
+        version: 11.0.3
+      mkdist:
+        specifier: ^1.5.3
+        version: 1.6.0(sass@1.96.0)(typescript@5.9.2)
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+
+  packages/extensions/fireux-properties:
+    dependencies:
+      fireux-core:
+        specifier: workspace:*
+        version: link:../../core/fireux-core
+    devDependencies:
+      '@nuxt/module-builder':
+        specifier: ^0.5.5
+        version: 0.5.5(@nuxt/kit@4.1.2(magicast@0.3.5))(sass@1.96.0)(typescript@5.9.2)
+      glob:
+        specifier: ^11.0.3
+        version: 11.0.3
+      mkdist:
+        specifier: ^1.5.3
+        version: 1.6.0(sass@1.96.0)(typescript@5.9.2)
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+
+  packages/extensions/fireux-tasks:
+    dependencies:
+      fireux-core:
+        specifier: workspace:*
+        version: link:../../core/fireux-core
+      fireux-properties:
+        specifier: workspace:*
+        version: link:../fireux-properties
     devDependencies:
       '@nuxt/module-builder':
         specifier: ^0.5.5
@@ -662,6 +784,49 @@ importers:
       fireux-fireux:
         specifier: workspace:*
         version: link:../../../packages/ecosystem/fireux-fireux
+      nuxt:
+        specifier: 4.1.2
+        version: 4.1.2(@parcel/watcher@2.5.1)(@types/node@22.18.1)(@vue/compiler-sfc@3.5.21)(better-sqlite3@12.6.0)(db0@0.3.2(better-sqlite3@12.6.0))(eslint@9.35.0(jiti@2.6.1))(ioredis@5.7.0)(lightningcss@1.30.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.50.1)(sass@1.96.0)(terser@5.44.0)(typescript@5.9.2)(vite@7.1.5(@types/node@22.18.1)(jiti@2.6.1)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.1))(yaml@2.8.1)
+      vue:
+        specifier: 3.5.20
+        version: 3.5.20(typescript@5.9.2)
+      vue-router:
+        specifier: 4.5.1
+        version: 4.5.1(vue@3.5.20(typescript@5.9.2))
+    devDependencies:
+      '@vite-pwa/nuxt':
+        specifier: ^1.0.4
+        version: 1.0.4(magicast@0.3.5)(vite@7.1.5(@types/node@22.18.1)(jiti@2.6.1)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.1))
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+
+  projects/granite/granite-app:
+    dependencies:
+      '@nuxt/icon':
+        specifier: 2.x
+        version: 2.0.0(magicast@0.3.5)(vite@7.1.5(@types/node@22.18.1)(jiti@2.6.1)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.1))(vue@3.5.20(typescript@5.9.2))
+      '@nuxt/ui':
+        specifier: ^4.0.0-alpha.2
+        version: 4.0.0-alpha.2(@babel/parser@7.28.4)(change-case@5.4.4)(db0@0.3.2(better-sqlite3@12.6.0))(embla-carousel@8.6.0)(ioredis@5.7.0)(magicast@0.3.5)(qrcode@1.5.4)(typescript@5.9.2)(vite@7.1.5(@types/node@22.18.1)(jiti@2.6.1)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.1))(vue-router@4.5.1(vue@3.5.20(typescript@5.9.2)))(vue@3.5.20(typescript@5.9.2))(zod@3.25.76)
+      fireux-compliance:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-compliance
+      fireux-core:
+        specifier: workspace:*
+        version: link:../../../packages/core/fireux-core
+      fireux-documents:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-documents
+      fireux-granite:
+        specifier: workspace:*
+        version: link:../../../packages/ecosystem/fireux-granite
+      fireux-properties:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-properties
+      fireux-tasks:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-tasks
       nuxt:
         specifier: 4.1.2
         version: 4.1.2(@parcel/watcher@2.5.1)(@types/node@22.18.1)(@vue/compiler-sfc@3.5.21)(better-sqlite3@12.6.0)(db0@0.3.2(better-sqlite3@12.6.0))(eslint@9.35.0(jiti@2.6.1))(ioredis@5.7.0)(lightningcss@1.30.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.50.1)(sass@1.96.0)(terser@5.44.0)(typescript@5.9.2)(vite@7.1.5(@types/node@22.18.1)(jiti@2.6.1)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.1))(yaml@2.8.1)
@@ -8040,6 +8205,7 @@ packages:
 
   unplugin-vue-router@0.15.0:
     resolution: {integrity: sha512-PyGehCjd9Ny9h+Uer4McbBjjib3lHihcyUEILa7pHKl6+rh8N7sFyw4ZkV+N30Oq2zmIUG7iKs3qpL0r+gXAaQ==}
+    deprecated: 'Merged into vuejs/router. Migrate: https://router.vuejs.org/guide/migration/v4-to-v5.html'
     peerDependencies:
       '@vue/compiler-sfc': ^3.5.17
       vue-router: ^4.5.1

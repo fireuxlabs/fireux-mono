@@ -13,13 +13,13 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 
 ## ❌ Missing
 
-- Dashboard experience for managers covering shift assignments, attendance, and daily operations
+- Console experience for managers covering shift assignments, attendance, and daily operations
 - Crew directory with scheduling tools and mobile-friendly check-in flows
 - QA verification module with photo uploads, timestamps, and checklist management
 - Client database with job history, reports, and visual proof exports
 - Billing workspace powered by Stripe (products, invoices, payment status)
 - Compliance knowledge base for Swiss safety standards, including exportable forms
-- Analytics dashboards tracking hours worked, job completion rates, and cost per site
+- Analytics consoles tracking hours worked, job completion rates, and cost per site
 - Localization/bilingual interface support (DE/EN) across routes and content
 
 ## 🧩 Planned / Cross-Package Dependencies
@@ -31,11 +31,11 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 
 ## Next Actions
 
-- [ ] Design navigation and scaffold the promised routes (`/dashboard`, `/crews`, `/qa`, `/clients`, `/billing`) with placeholder layouts
+- [ ] Design navigation and scaffold the promised routes (`/console`, `/crews`, `/qa`, `/clients`, `/billing`) with placeholder layouts
 - [ ] Implement crew scheduling and attendance tracking atop Cleanbox workforce data
 - [ ] Build QA module supporting photo capture, checklist completion, and audit trails
 - [ ] Ship client reporting views with job summaries, media galleries, and export options
 - [ ] Integrate Stripe for billing (customer sync, invoices, payment reconciliation)
 - [ ] Create compliance section with configurable Swiss safety checklists and downloadable reports
-- [ ] Add analytics dashboards aggregating hours worked, completion rates, and cost metrics
+- [ ] Add analytics consoles aggregating hours worked, completion rates, and cost metrics
 - [ ] Introduce bilingual content strategy (i18n tooling, locale switcher, translated copy)

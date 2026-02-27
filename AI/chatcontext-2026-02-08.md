@@ -679,11 +679,11 @@ Apps share Core and ecosystem rules. Global apps carry modules; tenant apps stay
 #end
 
 
-we need to make a ktichen dashboard really soon wher should it live inside the users app dashboard?
-also we need 2 kitchen dashboards. one for people who have purchased a misebox tennant.
+we need to make a ktichen console really soon wher should it live inside the users app console?
+also we need 2 kitchen consoles. one for people who have purchased a misebox tennant.
 super streamline, and those who are using misebox/kitchens/[id] wher they have permissions
 
-or misbox/kichens/dashboard we need a full brain storm here 
+or misbox/kichens/console we need a full brain storm here 
 
 # AI/codex-threads/kitchens.md
 
@@ -720,7 +720,7 @@ Date: 2026-02-06
 - Scenario: Multi-brand ghost kitchens with delivery across a city.
 - Kitchen module: Station management, cook times, quality checks.
 - Default modules: `fireux-products`, `fireux-blogs` (baseline), optional `fireux-places`.
-- Tie-ins: Orders route to stations; kitchen updates ETA; inventory decrements per recipe; ops dashboard monitors throughput.
+- Tie-ins: Orders route to stations; kitchen updates ETA; inventory decrements per recipe; ops console monitors throughput.
 
 ### 5. MarketMade — Grocery + Prepared Foods
 - Scenario: A grocery chain with daily hot/cold prepared foods.
@@ -797,7 +797,7 @@ Chef profiles
 - Chef profile should be a first‑class part of Kitchens.
 
 Product messaging direction
-- “Kitchen operations pages and dashboards.”
+- “Kitchen operations pages and consoles.”
 - “Menus, ingredients, mise, team, costs.”
 - Emphasize operational control and consistency (not just branding).
 
@@ -984,7 +984,7 @@ Primary context docs:
 
 ## 4. FireUX App Role (Do Not Overbuild)
 - FireUX app is a credibility surface, not the product.
-- No pricing pages or dashboards unless a sale forces it.
+- No pricing pages or consoles unless a sale forces it.
 - Repo truth: `projects/fireux/fireux-app/nuxt.config.ts` uses `fireux-products` + `fireux-blogs`.
 
 ## 5. Product Module Reality (Current Code)
@@ -1509,7 +1509,7 @@ No styling bikeshedding.
 - Company profiles
 - Admins & claims
 - Ownership vs management
-- Dashboards
+- Consoles
 - Links to places & jobs
 
 ---
@@ -1522,11 +1522,11 @@ No styling bikeshedding.
 
 ---
 
-#### 09 — Dashboards & Navigation
+#### 09 — Consoles & Navigation
 - Entry points
 - CTAs
 - Empty states
-- Ecosystem vs app dashboards
+- Ecosystem vs app consoles
 
 ---
 

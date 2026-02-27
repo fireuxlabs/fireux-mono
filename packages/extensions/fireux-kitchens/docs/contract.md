@@ -3,7 +3,7 @@ Authority: Tier1 (Authoritative)
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
-- Own kitchen runtime domain, kitchen operations entities, and kitchen dashboard behavior.
+- Own kitchen runtime domain, kitchen operations entities, and kitchen console behavior.
 
 ## 2) Core entities
 - `Kitchen`
@@ -14,7 +14,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `Chef`
 
 ## 3) Identity rule
-- Live kitchen identity is place-backed and id-based; dashboard runtime selection is state-based.
+- Live kitchen identity is place-backed and id-based; console runtime selection is state-based.
 
 ## 4) Collections + paths
 - Live: `kitchens/{kitchenId}`
@@ -27,9 +27,9 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `/kitchens/[id]`
   - `/kitchens/[id]/menu/[[menuId]]`
   - `/ingredients/[id]`
-- Dashboard/internal:
-  - `/dashboard/kitchen/*`
-- Dashboard selection is runtime-state based, not query-param selection.
+- Console/internal:
+  - `/console/kitchen/*`
+- Console selection is runtime-state based, not query-param selection.
 
 ## 6) Surfaces supported
 - `Pill`, `Cell`, `Preview`, `Profile` supported across kitchen operation entities.
@@ -54,4 +54,4 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 
 ## 10) Non-goals / prohibited fallbacks
 - No silent fallback switching between live/test/dummy/read-only.
-- No silent fallback selection of active kitchen inside dashboard flows.
+- No silent fallback selection of active kitchen inside console flows.

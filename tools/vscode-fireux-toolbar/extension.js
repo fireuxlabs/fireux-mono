@@ -646,6 +646,18 @@ function activate(context) {
       priority: 96,
     },
     {
+      key: 'granite',
+      name: 'Granite',
+      icon: '$(database)',
+      commandId: 'fireuxToolbar.startGranite',
+      taskLabel: 'dev:granite (3007)',
+      terminalName: 'Granite (3007)',
+      pnpmCommand: 'pnpm dev:granite --host',
+      tooltip: 'Start Granite dev (port 3007)',
+      url: 'http://localhost:3007',
+      priority: 94,
+    },
+    {
       key: 'tenant',
       name: 'Tenant',
       icon: '$(home)',

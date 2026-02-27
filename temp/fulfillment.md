@@ -26,11 +26,11 @@
    - `lines`
    - `totals: { subtotal_minor, currency_code }`
 
-### 4) Kitchen dashboard Orders In read flow
-1. Dashboard page is `packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/orders.vue`.
+### 4) Kitchen console Orders In read flow
+1. Console page is `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/orders.vue`.
 2. It uses `useOrdersForKitchenFetch(kitchenId)` from `fireux-orders`.
 3. `useOrdersForKitchenFetch` queries top-level `orders` with `where('kitchen_id', '==', kitchenId)` in `packages/extensions/fireux-orders/src/runtime/composables/useOrdersForKitchenFetch.ts`.
-4. Tickets are transformed for kitchen display (table/service label, scheduled label, aggregated lines) in that dashboard page.
+4. Tickets are transformed for kitchen display (table/service label, scheduled label, aggregated lines) in that console page.
 
 ### Query params currently expected
 1. Public menu builds checkout link query in `/kitchens/[id]/menu/[[menuId]].vue`:
@@ -54,7 +54,7 @@
    - `places` collection indirectly via kitchen hydration in `useKitchenFetch`.
    - `kitchens/{kitchenId}/menus` for menu rendering.
 2. Checkout page (`fireux-orders`) currently fetches no kitchen/place docs.
-3. Kitchen dashboard Orders page fetches top-level `orders` filtered by `kitchen_id`.
+3. Kitchen console Orders page fetches top-level `orders` filtered by `kitchen_id`.
 4. Legacy note: `useKitchenOrderCreate` writes `kitchens/{kitchenId}/orders`, but it is currently unused.
 
 ## B) Domain leak report
@@ -157,9 +157,9 @@
    - table, cover, slot, postcode.
 3. Keep `service.mode` as string code, validated by domain adapter.
 
-### Step 5: Dashboard read alignment
+### Step 5: Console read alignment
 1. Update kitchen orders page to read by scope wrapper composable.
-2. Keep existing ticket rendering in `packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/orders.vue`.
+2. Keep existing ticket rendering in `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/orders.vue`.
 
 ## E) Optional: fireux-products compatibility
 

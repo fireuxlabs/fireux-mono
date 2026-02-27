@@ -1,6 +1,6 @@
 <template>
   <UPageCTA
-    title="Kitchen dashboard"
+    title="Kitchen console"
     orientation="horizontal"
   >
     <template #links>
@@ -233,7 +233,7 @@ const { setRuntimeKitchen } = useRuntimeKitchenSelection()
 const goToKitchen = async (mode: RuntimeKitchenMode, kitchenId?: string) => {
   const resolvedId = String(kitchenId ?? '').trim()
   setRuntimeKitchen({ mode, kitchenId: resolvedId })
-  await router.push('/dashboard/kitchen')
+  await router.push('/console/kitchen')
 }
 
 </script>

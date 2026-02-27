@@ -26,7 +26,7 @@ It brings together professional profiles, kitchen tools, and job systems to mode
 - Supplier integration for inventory and re-ordering
 - Job search and temporary placement system
 - QR-code portfolio sharing for quick access
-- Analytics dashboard for kitchens and professionals
+- Analytics console for kitchens and professionals
 
 ---
 
@@ -36,7 +36,7 @@ It brings together professional profiles, kitchen tools, and job systems to mode
 - `/get-started` – onboard as chef or recruiter
 - `/professional` – manage your career profile
 - `/jobs` – browse or post open positions
-- `/kitchens` – kitchen dashboards and tools
+- `/kitchens` – kitchen consoles and tools
 - `/recipes` – create and manage recipes
 - `/suppliers` – connect to and manage ingredient sources
 - `/prep-plans` – organize daily production schedules

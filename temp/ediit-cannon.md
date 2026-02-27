@@ -39,5 +39,5 @@ Paths under each section are **relative to that directory**.
 - Sections/Surfaces.vue
 - Sections/TenantOverrides.vue
 
-## packages/core/fireux-core/src/runtime/components/organisms/Dashboard/Profile/Edit/
+## packages/core/fireux-core/src/runtime/components/organisms/Console/Profile/Edit/
 - Profile.vue

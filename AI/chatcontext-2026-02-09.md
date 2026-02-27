@@ -203,7 +203,7 @@ Drop/Supplier ownership migration:
   - `packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Supplier/*`
   - `packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Supplier/*`
   - `packages/ecosystem/fireux-misebox/src/runtime/pages/suppliers/*`
-  - `packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/*`
+  - `packages/ecosystem/fireux-misebox/src/runtime/pages/console/supplier/*`
 - Leave temporary compatibility wrappers in Misebox for one release cycle.
 
 Bringli verification:
@@ -576,7 +576,7 @@ Supplier domain currently spans:
 - Composables: `packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Supplier/*`
 - Components: `packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Supplier/*`
 - Pages/routes: `packages/ecosystem/fireux-misebox/src/runtime/pages/suppliers/*`
-- Dashboard: `packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/*`
+- Console: `packages/ecosystem/fireux-misebox/src/runtime/pages/console/supplier/*`
 
 Target owner:
 - `packages/extensions/fireux-drop` (Supplier domain should live here)
@@ -908,7 +908,7 @@ Date: 2026-02-06
 - Scenario: Multi-brand ghost kitchens with delivery across a city.
 - Kitchen module: Station management, cook times, quality checks.
 - Default modules: `fireux-products`, `fireux-blogs` (baseline), optional `fireux-places`.
-- Tie-ins: Orders route to stations; kitchen updates ETA; inventory decrements per recipe; ops dashboard monitors throughput.
+- Tie-ins: Orders route to stations; kitchen updates ETA; inventory decrements per recipe; ops console monitors throughput.
 
 ### 5. MarketMade — Grocery + Prepared Foods
 - Scenario: A grocery chain with daily hot/cold prepared foods.
@@ -985,7 +985,7 @@ Chef profiles
 - Chef profile should be a first‑class part of Kitchens.
 
 Product messaging direction
-- “Kitchen operations pages and dashboards.”
+- “Kitchen operations pages and consoles.”
 - “Menus, ingredients, mise, team, costs.”
 - Emphasize operational control and consistency (not just branding).
 
@@ -1250,7 +1250,7 @@ Primary context docs:
 
 ## 4. FireUX App Role (Do Not Overbuild)
 - FireUX app is a credibility surface, not the product.
-- No pricing pages or dashboards unless a sale forces it.
+- No pricing pages or consoles unless a sale forces it.
 - Repo truth: `projects/fireux/fireux-app/nuxt.config.ts` uses `fireux-products` + `fireux-blogs`.
 
 ## 5. Product Module Reality (Current Code)
@@ -1781,7 +1781,7 @@ No styling bikeshedding.
 - Company profiles
 - Admins & claims
 - Ownership vs management
-- Dashboards
+- Consoles
 - Links to places & jobs
 
 ---
@@ -1794,11 +1794,11 @@ No styling bikeshedding.
 
 ---
 
-#### 09 — Dashboards & Navigation
+#### 09 — Consoles & Navigation
 - Entry points
 - CTAs
 - Empty states
-- Ecosystem vs app dashboards
+- Ecosystem vs app consoles
 
 ---
 

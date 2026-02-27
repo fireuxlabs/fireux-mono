@@ -84,7 +84,7 @@ Scope: `use*Interface` siblings across core + extensions, with emphasis on `useP
 - Dev drift is extras-only everywhere; no missing-field scans.
 - Dev dummy surfaces are mandatory: pill, cell, preview, profile. Dummy copy is consistent and surfaces stack vertically after pill toggles.
 - Collection managers must wrap cards in links; no fallback routes. Sorting and hidden filtering are non-canonical unless explicitly approved.
-- Admin access moved to `/dashboard/admin` (no `/admin` redirect). Update dashboard nav targets accordingly.
+- Admin access moved to `/console/admin` (no `/admin` redirect). Update console nav targets accordingly.
 - Ingredients use inline admin edit/delete on `[id]` (explicit exception). Other entities should keep `[id]` read-only with an Edit CTA to `/edit/[id]`.
 - Profile `[id]` pages should show `MoleculesProfilesAdminCreateCard` when the target profile is missing and offer admin creation.
 
@@ -177,7 +177,7 @@ Scope reviewed:
 
 ### Action backlog (kitchen create)
 - Document the id source rules: Place-bound kitchens use Place id; test kitchens use User id; generic callers must supply their own id.
-- Add a shared “exists check” helper for kitchens and use it from CTA/dashboard flows.
+- Add a shared “exists check” helper for kitchens and use it from CTA/console flows.
 - Decide whether `useKitchenCreate` should accept a tiny payload and build the stored record internally (like Jobs) or remain pass-through (like Companies).
 
 #end
@@ -268,7 +268,7 @@ Drop/Supplier ownership migration:
   - `packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Supplier/*`
   - `packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Supplier/*`
   - `packages/ecosystem/fireux-misebox/src/runtime/pages/suppliers/*`
-  - `packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/*`
+  - `packages/ecosystem/fireux-misebox/src/runtime/pages/console/supplier/*`
 - Leave temporary compatibility wrappers in Misebox for one release cycle.
 
 Bringli verification:
@@ -662,7 +662,7 @@ Supplier domain currently spans:
 - Composables: `packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Supplier/*`
 - Components: `packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Supplier/*`
 - Pages/routes: `packages/ecosystem/fireux-misebox/src/runtime/pages/suppliers/*`
-- Dashboard: `packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/*`
+- Console: `packages/ecosystem/fireux-misebox/src/runtime/pages/console/supplier/*`
 
 Target owner:
 - `packages/extensions/fireux-drop` (Supplier domain should live here)
@@ -1000,7 +1000,7 @@ Scope: Roadmap only (actionable order). No scenarios or examples.
 - Define the kitchen UI language (cards, lists, status chips).
 
 ## Phase 0.5 — Test Kitchen Environment
-- Treat test kitchens as the primary safe sandbox for dashboard prototyping.
+- Treat test kitchens as the primary safe sandbox for console prototyping.
 - Require explicit kitchen selection; no automatic fallback between real and test kitchens.
 - Keep test-kitchens collection separate from kitchens; never merge silently.
 - Surface clear UI labels when a test kitchen is active.
@@ -1350,7 +1350,7 @@ Primary context docs:
 
 ## 4. FireUX App Role (Do Not Overbuild)
 - FireUX app is a credibility surface, not the product.
-- No pricing pages or dashboards unless a sale forces it.
+- No pricing pages or consoles unless a sale forces it.
 - Repo truth: `projects/fireux/fireux-app/nuxt.config.ts` uses `fireux-products` + `fireux-blogs`.
 
 ## 5. Product Module Reality (Current Code)
@@ -1957,7 +1957,7 @@ No styling bikeshedding.
 - Company profiles
 - Admins & claims
 - Ownership vs management
-- Dashboards
+- Consoles
 - Links to places & jobs
 
 ---
@@ -1970,11 +1970,11 @@ No styling bikeshedding.
 
 ---
 
-#### 09 — Dashboards & Navigation
+#### 09 — Consoles & Navigation
 - Entry points
 - CTAs
 - Empty states
-- Ecosystem vs app dashboards
+- Ecosystem vs app consoles
 
 ---
 

@@ -10,7 +10,7 @@ Touched modules and files:
 - fireux-blogs: useBlogCreateSubmit, useBlogDraftState
 - fireux-companies: useCompanyInterface
 - fireux-jobs: Job/Collection/Provider.vue
-- fireux-kitchens: pages-config, read-only scenario broth-bloom, runtime kitchen document, kitchen fetch, dashboard dishes/menu pages, kitchens/[id]/menu
+- fireux-kitchens: pages-config, read-only scenario broth-bloom, runtime kitchen document, kitchen fetch, console dishes/menu pages, kitchens/[id]/menu
 - fireux-places: usePlacesInterface
 - fireux-products: Product CTA component, admin licenses page
 - scripts: migrate-tapberne-menu-items-to-dishes.mjs, migrate-tapberne-menus.mjs

@@ -57,7 +57,7 @@
           <!-- Signed in => account menu -->
           <UDropdown v-else :items="accountMenuItems">
             <UButton
-              to="/dashboard"
+              to="/console"
               variant="ghost"
               color="neutral"
               aria-label="Account menu"
@@ -225,7 +225,7 @@ const accountMenuItems = computed(() => [
       to: '/users',
     },
   ],
-  [{ label: 'Dashboard', icon: 'i-lucide-layout-dashboard', to: '/dashboard' }],
+  [{ label: 'Console', icon: 'i-lucide-terminal', to: '/console' }],
   [
     {
       label: 'Sign out',

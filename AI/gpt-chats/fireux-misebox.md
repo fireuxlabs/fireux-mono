@@ -7,6 +7,6 @@ Summary:
 
 Current focus:
 - Align supplier ownership with fireux-drop.
-- Keep kitchen dashboard flows consistent with core runtime state.
+- Keep kitchen console flows consistent with core runtime state.
 
 #end

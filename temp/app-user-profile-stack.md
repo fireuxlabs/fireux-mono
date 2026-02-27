@@ -23,9 +23,9 @@
 ## Components (app/user/profile-related)
 
 - Core app/profile UI
-  - `packages/core/fireux-core/src/runtime/components/layouts/dashboard/ProfilesMenu.vue`
-  - `packages/core/fireux-core/src/runtime/components/layouts/dashboard/ProfileEdit.vue`
-  - `packages/core/fireux-core/src/runtime/components/organisms/Dashboard/Profile/Edit/Profile.vue`
+  - `packages/core/fireux-core/src/runtime/components/layouts/console/ProfilesMenu.vue`
+  - `packages/core/fireux-core/src/runtime/components/layouts/console/ProfileEdit.vue`
+  - `packages/core/fireux-core/src/runtime/components/organisms/Console/Profile/Edit/Profile.vue`
   - `packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Profile.vue`
   - `packages/core/fireux-core/src/runtime/components/organisms/User/Cards/Profile.vue`
   - Dev aid: `packages/core/fireux-core/src/runtime/components/dev/ProfileDiffList.vue`

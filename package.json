@@ -19,6 +19,7 @@
     "dev:richies": "node scripts/free-port.mjs 3004 && pnpm --filter ./projects/cleanbox/richies-reinigung dev",
     "dev:tenant": "node scripts/free-port.mjs 3005 && pnpm --filter ./projects/fireux/tenant dev",
     "dev:bringli": "node scripts/free-port.mjs 3006 && pnpm --filter ./projects/bringli/bringli-app dev",
+    "dev:granite": "node scripts/free-port.mjs 3007 && pnpm --filter ./projects/granite/granite-app dev",
     "dev:all": "concurrently \"pnpm dev:fireux\" \"pnpm dev:misebox\" \"pnpm dev:cleanbox\"",
     "dev:all-extended": "concurrently \"pnpm dev:fireux\" \"pnpm dev:misebox\" \"pnpm dev:cleanbox\" \"pnpm dev:niederhorn\" \"pnpm dev:richies\" \"pnpm dev:tenant\"",
     "create:ecosystem": "node scripts/create-ecosystem.mjs",

@@ -1,6 +1,6 @@
 <template>
   <template v-if="app">
-    <div class="panels-masonry__item dashboard-item mb-10">
+    <div class="panels-masonry__item console-item mb-10">
       <AppEditSectionsLockedConfig
         :app="app"
         :is-dev="isDev"
@@ -9,7 +9,7 @@
       />
     </div>
 
-    <div class="panels-masonry__item dashboard-item mb-10">
+    <div class="panels-masonry__item console-item mb-10">
       <AppEditSectionsAbout
         :app="app"
         :handle-tagline-update="handleTaglineUpdate"
@@ -19,18 +19,18 @@
       />
     </div>
 
-    <div class="panels-masonry__item dashboard-item mb-10">
+    <div class="panels-masonry__item console-item mb-10">
       <AppEditSectionsSurfaces :app-card="appCard" />
     </div>
 
-    <div class="panels-masonry__item dashboard-item mb-10">
+    <div class="panels-masonry__item console-item mb-10">
       <AppEditSectionsSocial
         :app="app"
         :handle-update-social-links="handleUpdateSocialLinks"
       />
     </div>
 
-    <div class="panels-masonry__item dashboard-item mb-10">
+    <div class="panels-masonry__item console-item mb-10">
       <AppEditSectionsJoinRequests
         :items="joinRequestItems"
         :on-approve="onApprove"
@@ -38,7 +38,7 @@
       />
     </div>
 
-    <div class="panels-masonry__item dashboard-item mb-10">
+    <div class="panels-masonry__item console-item mb-10">
       <AppEditSectionsAdmins
         :rows="adminRows"
         :action-uid="adminActionUid"
@@ -47,7 +47,7 @@
       />
     </div>
 
-    <div class="panels-masonry__item dashboard-item mb-10">
+    <div class="panels-masonry__item console-item mb-10">
       <AppEditSectionsTenantOverrides />
     </div>
   </template>

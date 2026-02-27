@@ -21,11 +21,11 @@ It transforms field operations into a structured system with clear accountabilit
 
 - Real-time job scheduling and crew assignments
 - QA checklists with photo uploads and timestamps
-- Client dashboards showing proof of work
+- Client consoles showing proof of work
 - Stripe-powered invoicing and payment tracking
 - Certification and compliance tracking per crew member
 - Chat and feedback tools between management and staff
-- Analytics dashboard for productivity and client satisfaction
+- Analytics console for productivity and client satisfaction
 - PWA-ready mobile access for crews on the go
 
 ---
@@ -34,7 +34,7 @@ It transforms field operations into a structured system with clear accountabilit
 
 - `/` – marketing homepage
 - `/get-started` – onboarding for new companies
-- `/dashboard` – operational overview for managers
+- `/console` – operational overview for managers
 - `/crews` – list of team members and shift assignments
 - `/qa` – quality assurance and proof uploads
 - `/billing` – invoices, payments, and exports

@@ -77,7 +77,7 @@ export function useDishInterface() {
 
     return {
       id,
-      to: id ? `/dashboard/kitchen/dishes?dish=${encodeURIComponent(id)}` : '/dashboard/kitchen/dishes',
+      to: id ? `/console/kitchen/dishes?dish=${encodeURIComponent(id)}` : '/console/kitchen/dishes',
       imageUrl: safeString(dish.image_url).trim(),
       title: displayName,
       subtitle: joinSubtitle(active),
@@ -128,13 +128,13 @@ export function useDishInterface() {
       imageUrl: base.imageUrl,
       ingredientPills: base.ingredientIds.map((id) => ({
         id,
-        to: id ? `/dashboard/kitchen/ingredients?ingredient=${encodeURIComponent(id)}` : '/dashboard/kitchen/ingredients',
+        to: id ? `/console/kitchen/ingredients?ingredient=${encodeURIComponent(id)}` : '/console/kitchen/ingredients',
         title: toPillTitle(id),
         imageUrl: '',
       })),
       misePills: base.miseIds.map((id) => ({
         id,
-        to: id ? `/dashboard/kitchen/mise?mise=${encodeURIComponent(id)}` : '/dashboard/kitchen/mise',
+        to: id ? `/console/kitchen/mise?mise=${encodeURIComponent(id)}` : '/console/kitchen/mise',
         title: toPillTitle(id),
         imageUrl: '',
       })),

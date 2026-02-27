@@ -83,7 +83,7 @@ Scope: `use*Interface` siblings across core + extensions, with emphasis on `useP
 - Dev drift is extras-only everywhere; no missing-field scans.
 - Dev dummy surfaces are mandatory: pill, cell, preview, profile. Dummy copy is consistent and surfaces stack vertically after pill toggles.
 - Collection managers must wrap cards in links; no fallback routes. Sorting and hidden filtering are non-canonical unless explicitly approved.
-- Admin access moved to `/dashboard/admin` (no `/admin` redirect). Update dashboard nav targets accordingly.
+- Admin access moved to `/console/admin` (no `/admin` redirect). Update console nav targets accordingly.
 - Ingredients use inline admin edit/delete on `[id]` (explicit exception). Other entities should keep `[id]` read-only with an Edit CTA to `/edit/[id]`.
 - Profile `[id]` pages should show `MoleculesProfilesAdminCreateCard` when the target profile is missing and offer admin creation.
 
@@ -176,7 +176,7 @@ Scope reviewed:
 
 ### Action backlog (kitchen create)
 - Document the id source rules: Place-bound kitchens use Place id; test kitchens use User id; generic callers must supply their own id.
-- Add a shared “exists check” helper for kitchens and use it from CTA/dashboard flows.
+- Add a shared “exists check” helper for kitchens and use it from CTA/console flows.
 - Decide whether `useKitchenCreate` should accept a tiny payload and build the stored record internally (like Jobs) or remain pass-through (like Companies).
 
 #end
@@ -264,7 +264,7 @@ Drop/Supplier ownership migration:
   - `packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Supplier/*`
   - `packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Supplier/*`
   - `packages/ecosystem/fireux-misebox/src/runtime/pages/suppliers/*`
-  - `packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/*`
+  - `packages/ecosystem/fireux-misebox/src/runtime/pages/console/supplier/*`
 - Leave temporary compatibility wrappers in Misebox for one release cycle.
 
 Bringli verification:
@@ -652,7 +652,7 @@ Supplier domain currently spans:
 - Composables: `packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Supplier/*`
 - Components: `packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Supplier/*`
 - Pages/routes: `packages/ecosystem/fireux-misebox/src/runtime/pages/suppliers/*`
-- Dashboard: `packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/*`
+- Console: `packages/ecosystem/fireux-misebox/src/runtime/pages/console/supplier/*`
 
 Target owner:
 - `packages/extensions/fireux-drop` (Supplier domain should live here)
@@ -967,22 +967,22 @@ Apps share Core and ecosystem rules. Global apps carry modules; tenant apps stay
 
 #end
 
-# AI/codex-threads/kitchen-dashboard.md
+# AI/codex-threads/kitchen-console.md
 
-# Kitchen Dashboard Contract (FireUX Kitchens)
+# Kitchen Console Contract (FireUX Kitchens)
 
 Status: Active
 Updated: 2026-02-17
-Scope: Runtime behavior + page responsibilities for `kitchen-dashboard`
+Scope: Runtime behavior + page responsibilities for `kitchen-console`
 
 ## Why this exists
-This file defines exactly what each kitchen dashboard page does, why it exists, and which entities it may read or write.
+This file defines exactly what each kitchen console page does, why it exists, and which entities it may read or write.
 
 Primary goal:
 - Keep one coherent kitchen system instead of many ad-hoc flows.
 
 ## Runtime model (single source)
-Kitchen dashboard pages must resolve the active kitchen through runtime state, not URL query params.
+Kitchen console pages must resolve the active kitchen through runtime state, not URL query params.
 
 Core runtime composables:
 - `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/runtime-kitchen/useRuntimeKitchen.ts`
@@ -1004,8 +1004,8 @@ Collection path rule:
 
 Selection rule:
 - `/kitchens` CTA sets `runtimeKitchenId` and `runtimeKitchenMode` in state.
-- `/dashboard/kitchen/*` pages consume that state.
-- Do not rely on `?mode=` / `?id=` in dashboard URLs.
+- `/console/kitchen/*` pages consume that state.
+- Do not rely on `?mode=` / `?id=` in console URLs.
 
 ## Canonical entity graph
 
@@ -1045,32 +1045,32 @@ Ingredient identity canon:
 - `Ingredient` is benign identity metadata and does not carry lifecycle status.
 - Packaging/format variants (`block`, `sliced`, `grated`, `kg`, `case`, etc.) belong to supplier catalog/offering records, not ingredient identity.
 
-## Dashboard route map
+## Console route map
 
 Base route:
-- `/dashboard/kitchen`
+- `/console/kitchen`
 
 Main pages:
-- `/dashboard/kitchen` (Kitchen)
-- `/dashboard/kitchen/ingredients`
-- `/dashboard/kitchen/mise`
-- `/dashboard/kitchen/recipes`
-- `/dashboard/kitchen/dishes`
-- `/dashboard/kitchen/menu`
-- `/dashboard/kitchen/team`
-- `/dashboard/kitchen/stations`
-- `/dashboard/kitchen/training`
-- `/dashboard/kitchen/haccaaap`
-- `/dashboard/kitchen/suppliers`
-- `/dashboard/kitchen/orders` (Orders In)
-- `/dashboard/kitchen/purchase-orders` (Orders Out)
+- `/console/kitchen` (Kitchen)
+- `/console/kitchen/ingredients`
+- `/console/kitchen/mise`
+- `/console/kitchen/recipes`
+- `/console/kitchen/dishes`
+- `/console/kitchen/menu`
+- `/console/kitchen/team`
+- `/console/kitchen/stations`
+- `/console/kitchen/training`
+- `/console/kitchen/haccaaap`
+- `/console/kitchen/suppliers`
+- `/console/kitchen/orders` (Orders In)
+- `/console/kitchen/purchase-orders` (Orders Out)
 
 Supplier detail page:
-- `/dashboard/kitchen/supplier/[id]`
+- `/console/kitchen/supplier/[id]`
 
 ## Page contracts
 
-### 1) Kitchen (`/dashboard/kitchen`)
+### 1) Kitchen (`/console/kitchen`)
 Purpose:
 - Show runtime kitchen identity and debug surface.
 
@@ -1084,7 +1084,7 @@ Entities:
 Notes:
 - This page is identity/status, not operational editing.
 
-### 2) Ingredients (`/dashboard/kitchen/ingredients`)
+### 2) Ingredients (`/console/kitchen/ingredients`)
 Purpose:
 - Manage kitchen ingredient attachment and visibility.
 
@@ -1109,7 +1109,7 @@ UI rule:
 - Pill view warning: icon only
 - Cell view warning: descriptive text
 
-### 3) Mise en Place (`/dashboard/kitchen/mise`)
+### 3) Mise en Place (`/console/kitchen/mise`)
 Purpose:
 - Show mise/prep tasks for the active kitchen.
 
@@ -1125,7 +1125,7 @@ Notes:
 - Uses `getReadOnlyKitchenScenario()` in `read-only` mode.
 - Dummy stack is still sourced from `dummy/scenario.ts`.
 
-### 4) Recipes (`/dashboard/kitchen/recipes`)
+### 4) Recipes (`/console/kitchen/recipes`)
 Purpose:
 - Read-only recipe stack view.
 
@@ -1139,7 +1139,7 @@ Entities:
 Notes:
 - Marked read-only for now.
 
-### 5) Dishes (`/dashboard/kitchen/dishes`)
+### 5) Dishes (`/console/kitchen/dishes`)
 Purpose:
 - Show operational dish lineup.
 
@@ -1153,7 +1153,7 @@ Entities:
 Notes:
 - Dish spec belongs on dish object.
 
-### 6) Menus (`/dashboard/kitchen/menu`)
+### 6) Menus (`/console/kitchen/menu`)
 Purpose:
 - Organize menus as a collection output (`[menu]`).
 
@@ -1168,7 +1168,7 @@ Notes:
 - `menu.model.ts` includes Google projection-compatible shape.
 - Multiple menus are supported (brunch, mains, etc.).
 
-### 7) Team (`/dashboard/kitchen/team`)
+### 7) Team (`/console/kitchen/team`)
 Purpose:
 - Show team roster for current kitchen.
 
@@ -1179,7 +1179,7 @@ Entities:
 - Read: `KitchenTeamMember`/`Chef` (currently dummy team surface)
 - Write: none (currently)
 
-### 8) Stations (`/dashboard/kitchen/stations`)
+### 8) Stations (`/console/kitchen/stations`)
 Purpose:
 - Show station activity derived from active menus.
 
@@ -1194,7 +1194,7 @@ Behavior:
 - Computes station list from menu `stations[]`
 - Uses menu active window (`starts_at`/`ends_at`) and `active` flag
 
-### 9) Training (`/dashboard/kitchen/training`)
+### 9) Training (`/console/kitchen/training`)
 Purpose:
 - Track training modules and progression placeholders.
 
@@ -1205,7 +1205,7 @@ Entities:
 - Read: kitchen context + local module list
 - Write: none
 
-### 10) HACCAAAP (`/dashboard/kitchen/haccaaap`)
+### 10) HACCAAAP (`/console/kitchen/haccaaap`)
 Purpose:
 - Show safety/compliance check placeholders.
 
@@ -1216,7 +1216,7 @@ Entities:
 - Read: kitchen context + local check list
 - Write: none
 
-### 11) Suppliers (`/dashboard/kitchen/suppliers`)
+### 11) Suppliers (`/console/kitchen/suppliers`)
 Purpose:
 - Manage supplier entities at kitchen level and route into supplier-ingredient linking.
 
@@ -1233,9 +1233,9 @@ Entities:
 
 Behavior:
 - Supplier card click navigates to kitchen supplier detail page:
-  - `/dashboard/kitchen/supplier/[id]`
+  - `/console/kitchen/supplier/[id]`
 
-### 12) Kitchen Supplier Detail (`/dashboard/kitchen/supplier/[id]`)
+### 12) Kitchen Supplier Detail (`/console/kitchen/supplier/[id]`)
 Purpose:
 - Manage ingredient linkage for one kitchen supplier.
 
@@ -1252,7 +1252,7 @@ Behavior:
   - `All ingredients`
   - `Unlinked ingredients`
 
-### 13) Orders In (`/dashboard/kitchen/orders`)
+### 13) Orders In (`/console/kitchen/orders`)
 Purpose:
 - Incoming customer/service orders.
 
@@ -1266,7 +1266,7 @@ Entities:
 Target entity direction:
 - `KitchenIncomingOrder` under kitchen context
 
-### 14) Orders Out (`/dashboard/kitchen/purchase-orders`)
+### 14) Orders Out (`/console/kitchen/purchase-orders`)
 Purpose:
 - Outgoing supplier purchase orders (stock replenishment).
 
@@ -1345,7 +1345,7 @@ Scope: Roadmap only (actionable order). No scenarios or examples.
 - Define the kitchen UI language (cards, lists, status chips).
 
 ## Phase 0.5 — Test Kitchen Environment
-- Treat test kitchens as the primary safe sandbox for dashboard prototyping.
+- Treat test kitchens as the primary safe sandbox for console prototyping.
 - Require explicit kitchen selection; no automatic fallback between real and test kitchens.
 - Keep test-kitchens collection separate from kitchens; never merge silently.
 - Surface clear UI labels when a test kitchen is active.
@@ -1449,7 +1449,7 @@ UX and safety requirements
 ## Recent Scan — 2026-02-17
 - Commit `672b3d3e` added shared read-only scenario builders (suppliers, stations, training modules, supplier ingredients) and reshaped scenario data for Broth Bloom, Stack Sizzle, and Takumi Ramen.
 - Legacy `runtime/dev/read-only-kitchens.ts` was removed; runtime kitchen resolution now leans on the scenario builders + updated `useRuntimeKitchen` wiring.
-- Dashboard and index surfaces were tuned for read-only compatibility (ingredients, menu, stations, kitchens, recipes), alongside new supplier fetch + interface updates for kitchen menus/suppliers.
+- Console and index surfaces were tuned for read-only compatibility (ingredients, menu, stations, kitchens, recipes), alongside new supplier fetch + interface updates for kitchen menus/suppliers.
 
 #end
 
@@ -1691,7 +1691,7 @@ Primary context docs:
 
 ## 4. FireUX App Role (Do Not Overbuild)
 - FireUX app is a credibility surface, not the product.
-- No pricing pages or dashboards unless a sale forces it.
+- No pricing pages or consoles unless a sale forces it.
 - Repo truth: `projects/fireux/fireux-app/nuxt.config.ts` uses `fireux-products` + `fireux-blogs`.
 
 ## 5. Product Module Reality (Current Code)
@@ -2283,7 +2283,7 @@ No styling bikeshedding.
 - Company profiles
 - Admins & claims
 - Ownership vs management
-- Dashboards
+- Consoles
 - Links to places & jobs
 
 ---
@@ -2296,11 +2296,11 @@ No styling bikeshedding.
 
 ---
 
-#### 09 — Dashboards & Navigation
+#### 09 — Consoles & Navigation
 - Entry points
 - CTAs
 - Empty states
-- Ecosystem vs app dashboards
+- Ecosystem vs app consoles
 
 ---
 

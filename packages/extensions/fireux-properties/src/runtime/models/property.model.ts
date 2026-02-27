@@ -1,0 +1,29 @@
+import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+
+export const Property = {
+  id: '' as string,
+  portfolio_id: '' as string,
+  name: '' as string,
+  address_line: '' as string,
+  city: '' as string,
+  postcode: '' as string,
+  country: '' as string,
+  place_id: '' as string,
+  property_type: 'residential' as 'residential' | 'commercial' | 'mixed',
+  unit_count: 0 as number,
+  status: 'active' as 'active' | 'inactive',
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['updated']['by'],
+  },
+} as const
+
+export type Property = {
+  [K in keyof typeof Property]: (typeof Property)[K]
+}

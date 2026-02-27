@@ -76,7 +76,7 @@ export function useMenuInterface() {
 
     return {
       id,
-      to: '/dashboard/kitchen/menu',
+      to: '/console/kitchen/menu',
       imageUrl: '',
       title: name,
       subtitle: '',

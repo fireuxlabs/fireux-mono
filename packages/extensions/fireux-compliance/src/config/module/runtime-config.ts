@@ -1,0 +1,12 @@
+import { configureRuntimeDefaults } from 'fireux-core/config/module/runtime-config'
+
+export function configureRuntime(
+  nuxt: any,
+  key: string,
+  defaults: Record<string, any> = {
+    enabled: true,
+    dueSoonDays: 30,
+  }
+) {
+  configureRuntimeDefaults(nuxt, key, defaults, { merge: true })
+}

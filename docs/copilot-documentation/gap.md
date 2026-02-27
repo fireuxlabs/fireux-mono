@@ -9,7 +9,7 @@
 | **fireux-misebox**                 | ⚙️ Tenant shell           | ❌ Recipes, suppliers, prep plans, costing, branding          |
 | **fireux-fireux**                  | ✅ Module wiring          | ❌ Auth, billing, tenant config UI, PWA assets                |
 | **Apps (Cleanbox/Misebox/FireUX)** | Marketing-only            | ❌ Functional routes, binding to tenant composables           |
-| **Examples (Richie’s/Niederhorn)** | Landing-only              | ❌ Operational dashboards, training, compliance               |
+| **Examples (Richie’s/Niederhorn)** | Landing-only              | ❌ Operational consoles, training, compliance               |
 
 ### Cross-Cutting Gaps
 

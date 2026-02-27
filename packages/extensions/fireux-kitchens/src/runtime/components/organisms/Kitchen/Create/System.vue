@@ -5,7 +5,7 @@
         <div class="space-y-1">
           <div class="font-medium">Search for your venue</div>
           <div class="text-sm text-dimmed">
-            We’ll link this location to your dashboard. Nothing is duplicated.
+            We’ll link this location to your console. Nothing is duplicated.
           </div>
         </div>
       </template>
@@ -25,11 +25,11 @@
           Location ID: {{ successId }}
         </div>
         <div class="flex flex-wrap gap-2">
-          <UButton size="xs" color="neutral" variant="soft" to="/dashboard/chef/profile">
+          <UButton size="xs" color="neutral" variant="soft" to="/console/chef/profile">
             Go to profile
           </UButton>
-          <UButton size="xs" color="primary" to="/dashboard/kitchen">
-            Go to dashboard
+          <UButton size="xs" color="primary" to="/console/kitchen">
+            Go to console
           </UButton>
           <UButton size="xs" color="neutral" variant="ghost" @click="createAnotherKitchen">
             Activate another kitchen

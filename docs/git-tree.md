@@ -92,7 +92,7 @@ Total files: 1277
         - docs/copilot-documentation/imported/root/deployment-config.md
         - docs/copilot-documentation/imported/root/ecosystem-change.md
         - docs/copilot-documentation/imported/root/profiles-stack.md
-        - docs/copilot-documentation/imported/root/proposed-editable.dashboard-pages.md
+        - docs/copilot-documentation/imported/root/proposed-editable.console-pages.md
         - docs/copilot-documentation/imported/root/server.md
         - docs/copilot-documentation/imported/root/stack-proposal.md
         - docs/copilot-documentation/imported/root/user-tree.md
@@ -177,11 +177,11 @@ Total files: 1277
               - packages/core/fireux-core/src/runtime/components/App/Debug.vue
               - packages/core/fireux-core/src/runtime/components/App/ErrorPage.vue
               - packages/core/fireux-core/src/runtime/components/App/Shell.vue
-            - packages/core/fireux-core/src/runtime/components/dashboard/
-              - packages/core/fireux-core/src/runtime/components/dashboard/overview/
-                - packages/core/fireux-core/src/runtime/components/dashboard/overview/App.vue
-                - packages/core/fireux-core/src/runtime/components/dashboard/overview/Core.vue
-                - packages/core/fireux-core/src/runtime/components/dashboard/overview/Ecosystem.vue
+            - packages/core/fireux-core/src/runtime/components/console/
+              - packages/core/fireux-core/src/runtime/components/console/overview/
+                - packages/core/fireux-core/src/runtime/components/console/overview/App.vue
+                - packages/core/fireux-core/src/runtime/components/console/overview/Core.vue
+                - packages/core/fireux-core/src/runtime/components/console/overview/Ecosystem.vue
             - packages/core/fireux-core/src/runtime/components/dev/
               - packages/core/fireux-core/src/runtime/components/dev/Binding.vue
               - packages/core/fireux-core/src/runtime/components/dev/DriftToolbar.vue
@@ -192,14 +192,14 @@ Total files: 1277
             - packages/core/fireux-core/src/runtime/components/landing/
               - packages/core/fireux-core/src/runtime/components/landing/Shell.vue
             - packages/core/fireux-core/src/runtime/components/layouts/
-              - packages/core/fireux-core/src/runtime/components/layouts/dashboard/
-                - packages/core/fireux-core/src/runtime/components/layouts/dashboard/BaseSection.vue
-                - packages/core/fireux-core/src/runtime/components/layouts/dashboard/EditStructure.vue
-                - packages/core/fireux-core/src/runtime/components/layouts/dashboard/Navbar.vue
-                - packages/core/fireux-core/src/runtime/components/layouts/dashboard/NotificationsSlideover.vue
-                - packages/core/fireux-core/src/runtime/components/layouts/dashboard/ProfileEdit.vue
-                - packages/core/fireux-core/src/runtime/components/layouts/dashboard/ProfilesMenu.vue
-                - packages/core/fireux-core/src/runtime/components/layouts/dashboard/SidebarFooterActions.vue
+              - packages/core/fireux-core/src/runtime/components/layouts/console/
+                - packages/core/fireux-core/src/runtime/components/layouts/console/BaseSection.vue
+                - packages/core/fireux-core/src/runtime/components/layouts/console/EditStructure.vue
+                - packages/core/fireux-core/src/runtime/components/layouts/console/Navbar.vue
+                - packages/core/fireux-core/src/runtime/components/layouts/console/NotificationsSlideover.vue
+                - packages/core/fireux-core/src/runtime/components/layouts/console/ProfileEdit.vue
+                - packages/core/fireux-core/src/runtime/components/layouts/console/ProfilesMenu.vue
+                - packages/core/fireux-core/src/runtime/components/layouts/console/SidebarFooterActions.vue
               - packages/core/fireux-core/src/runtime/components/layouts/default/
                 - packages/core/fireux-core/src/runtime/components/layouts/default/Footer.vue
                 - packages/core/fireux-core/src/runtime/components/layouts/default/FooterAdmins.vue
@@ -263,10 +263,10 @@ Total files: 1277
                 - packages/core/fireux-core/src/runtime/components/organisms/Auth/EmailPanel.vue
                 - packages/core/fireux-core/src/runtime/components/organisms/Auth/Google.vue
                 - packages/core/fireux-core/src/runtime/components/organisms/Auth/System.vue
-              - packages/core/fireux-core/src/runtime/components/organisms/Dashboard/
-                - packages/core/fireux-core/src/runtime/components/organisms/Dashboard/Profile/
-                  - packages/core/fireux-core/src/runtime/components/organisms/Dashboard/Profile/Edit/
-                    - packages/core/fireux-core/src/runtime/components/organisms/Dashboard/Profile/Edit/Profile.vue
+              - packages/core/fireux-core/src/runtime/components/organisms/Console/
+                - packages/core/fireux-core/src/runtime/components/organisms/Console/Profile/
+                  - packages/core/fireux-core/src/runtime/components/organisms/Console/Profile/Edit/
+                    - packages/core/fireux-core/src/runtime/components/organisms/Console/Profile/Edit/Profile.vue
               - packages/core/fireux-core/src/runtime/components/organisms/User/
                 - packages/core/fireux-core/src/runtime/components/organisms/User/CTA.vue
                 - packages/core/fireux-core/src/runtime/components/organisms/User/Cards/
@@ -304,7 +304,7 @@ Total files: 1277
                     - packages/core/fireux-core/src/runtime/composables/fireux/app/ui/nav/useNav.ts
                   - packages/core/fireux-core/src/runtime/composables/fireux/app/ui/useAvatarProxy.ts
                   - packages/core/fireux-core/src/runtime/composables/fireux/app/ui/useBreadcrumbs.ts
-                  - packages/core/fireux-core/src/runtime/composables/fireux/app/ui/useDashboardNotifications.ts
+                  - packages/core/fireux-core/src/runtime/composables/fireux/app/ui/useConsoleNotifications.ts
                   - packages/core/fireux-core/src/runtime/composables/fireux/app/ui/useEditHandler.ts
                   - packages/core/fireux-core/src/runtime/composables/fireux/app/ui/useSocialLinks.ts
                   - packages/core/fireux-core/src/runtime/composables/fireux/app/ui/useToastify.ts
@@ -389,7 +389,7 @@ Total files: 1277
             - packages/core/fireux-core/src/runtime/layouts/auth.vue
             - packages/core/fireux-core/src/runtime/layouts/changelog.vue
             - packages/core/fireux-core/src/runtime/layouts/chat.vue
-            - packages/core/fireux-core/src/runtime/layouts/dashboard.vue
+            - packages/core/fireux-core/src/runtime/layouts/console.vue
             - packages/core/fireux-core/src/runtime/layouts/default.vue
             - packages/core/fireux-core/src/runtime/layouts/design.vue
             - packages/core/fireux-core/src/runtime/layouts/dev.vue
@@ -419,16 +419,16 @@ Total files: 1277
               - packages/core/fireux-core/src/runtime/pages/apps/index.vue
               - packages/core/fireux-core/src/runtime/pages/apps/learn-more.vue
             - packages/core/fireux-core/src/runtime/pages/auth.vue
-            - packages/core/fireux-core/src/runtime/pages/dashboard/
-              - packages/core/fireux-core/src/runtime/pages/dashboard/app.vue
-              - packages/core/fireux-core/src/runtime/pages/dashboard/developer.vue
-              - packages/core/fireux-core/src/runtime/pages/dashboard/favorites.vue
-              - packages/core/fireux-core/src/runtime/pages/dashboard/followers.vue
-              - packages/core/fireux-core/src/runtime/pages/dashboard/index.vue
-              - packages/core/fireux-core/src/runtime/pages/dashboard/purchases.vue
-              - packages/core/fireux-core/src/runtime/pages/dashboard/settings.vue
-              - packages/core/fireux-core/src/runtime/pages/dashboard/subscriptions.vue
-              - packages/core/fireux-core/src/runtime/pages/dashboard/user-profile.vue
+            - packages/core/fireux-core/src/runtime/pages/console/
+              - packages/core/fireux-core/src/runtime/pages/console/app.vue
+              - packages/core/fireux-core/src/runtime/pages/console/developer.vue
+              - packages/core/fireux-core/src/runtime/pages/console/favorites.vue
+              - packages/core/fireux-core/src/runtime/pages/console/followers.vue
+              - packages/core/fireux-core/src/runtime/pages/console/index.vue
+              - packages/core/fireux-core/src/runtime/pages/console/purchases.vue
+              - packages/core/fireux-core/src/runtime/pages/console/settings.vue
+              - packages/core/fireux-core/src/runtime/pages/console/subscriptions.vue
+              - packages/core/fireux-core/src/runtime/pages/console/user-profile.vue
             - packages/core/fireux-core/src/runtime/pages/dev/
               - packages/core/fireux-core/src/runtime/pages/dev/apps.vue
               - packages/core/fireux-core/src/runtime/pages/dev/avatars.vue
@@ -544,10 +544,10 @@ Total files: 1277
         - packages/ecosystem/fireux-cleanbox/src/module.ts
         - packages/ecosystem/fireux-cleanbox/src/runtime/
           - packages/ecosystem/fireux-cleanbox/src/runtime/components/
-            - packages/ecosystem/fireux-cleanbox/src/runtime/components/dashboard/
-              - packages/ecosystem/fireux-cleanbox/src/runtime/components/dashboard/overview/
-                - packages/ecosystem/fireux-cleanbox/src/runtime/components/dashboard/overview/domain/
-                  - packages/ecosystem/fireux-cleanbox/src/runtime/components/dashboard/overview/domain/Ecosystem.vue
+            - packages/ecosystem/fireux-cleanbox/src/runtime/components/console/
+              - packages/ecosystem/fireux-cleanbox/src/runtime/components/console/overview/
+                - packages/ecosystem/fireux-cleanbox/src/runtime/components/console/overview/domain/
+                  - packages/ecosystem/fireux-cleanbox/src/runtime/components/console/overview/domain/Ecosystem.vue
           - packages/ecosystem/fireux-cleanbox/src/runtime/composables/
             - packages/ecosystem/fireux-cleanbox/src/runtime/composables/fireux/
               - packages/ecosystem/fireux-cleanbox/src/runtime/composables/fireux/app/
@@ -624,7 +624,7 @@ Total files: 1277
           - packages/ecosystem/fireux-fireux/docs/examples/create-job.md
           - packages/ecosystem/fireux-fireux/docs/examples/create-profile.md
           - packages/ecosystem/fireux-fireux/docs/examples/custom-module-example.md
-          - packages/ecosystem/fireux-fireux/docs/examples/dashboard-page.md
+          - packages/ecosystem/fireux-fireux/docs/examples/console-page.md
           - packages/ecosystem/fireux-fireux/docs/examples/index.md
         - packages/ecosystem/fireux-fireux/docs/introduction/
           - packages/ecosystem/fireux-fireux/docs/introduction/index.md
@@ -639,7 +639,7 @@ Total files: 1277
           - packages/ecosystem/fireux-fireux/docs/modules-and-capabilities/products.md
         - packages/ecosystem/fireux-fireux/docs/ui-and-design/
           - packages/ecosystem/fireux-fireux/docs/ui-and-design/cards-lists.md
-          - packages/ecosystem/fireux-fireux/docs/ui-and-design/dashboard-patterns.md
+          - packages/ecosystem/fireux-fireux/docs/ui-and-design/console-patterns.md
           - packages/ecosystem/fireux-fireux/docs/ui-and-design/index.md
           - packages/ecosystem/fireux-fireux/docs/ui-and-design/theming.md
           - packages/ecosystem/fireux-fireux/docs/ui-and-design/ui-basics.md
@@ -654,10 +654,10 @@ Total files: 1277
         - packages/ecosystem/fireux-fireux/src/module.ts
         - packages/ecosystem/fireux-fireux/src/runtime/
           - packages/ecosystem/fireux-fireux/src/runtime/components/
-            - packages/ecosystem/fireux-fireux/src/runtime/components/dashboard/
-              - packages/ecosystem/fireux-fireux/src/runtime/components/dashboard/overview/
-                - packages/ecosystem/fireux-fireux/src/runtime/components/dashboard/overview/domain/
-                  - packages/ecosystem/fireux-fireux/src/runtime/components/dashboard/overview/domain/Ecosystem.vue
+            - packages/ecosystem/fireux-fireux/src/runtime/components/console/
+              - packages/ecosystem/fireux-fireux/src/runtime/components/console/overview/
+                - packages/ecosystem/fireux-fireux/src/runtime/components/console/overview/domain/
+                  - packages/ecosystem/fireux-fireux/src/runtime/components/console/overview/domain/Ecosystem.vue
           - packages/ecosystem/fireux-fireux/src/runtime/composables/
             - packages/ecosystem/fireux-fireux/src/runtime/composables/fireux/
               - packages/ecosystem/fireux-fireux/src/runtime/composables/fireux/app/
@@ -691,13 +691,13 @@ Total files: 1277
         - packages/ecosystem/fireux-misebox/src/module.ts
         - packages/ecosystem/fireux-misebox/src/runtime/
           - packages/ecosystem/fireux-misebox/src/runtime/components/
-            - packages/ecosystem/fireux-misebox/src/runtime/components/dashboard/
-              - packages/ecosystem/fireux-misebox/src/runtime/components/dashboard/overview/
-                - packages/ecosystem/fireux-misebox/src/runtime/components/dashboard/overview/domain/
-                  - packages/ecosystem/fireux-misebox/src/runtime/components/dashboard/overview/domain/Ecosystem.vue
-                - packages/ecosystem/fireux-misebox/src/runtime/components/dashboard/overview/x/
-                  - packages/ecosystem/fireux-misebox/src/runtime/components/dashboard/overview/x/ping/
-                    - packages/ecosystem/fireux-misebox/src/runtime/components/dashboard/overview/x/ping/Ecosystem.vue
+            - packages/ecosystem/fireux-misebox/src/runtime/components/console/
+              - packages/ecosystem/fireux-misebox/src/runtime/components/console/overview/
+                - packages/ecosystem/fireux-misebox/src/runtime/components/console/overview/domain/
+                  - packages/ecosystem/fireux-misebox/src/runtime/components/console/overview/domain/Ecosystem.vue
+                - packages/ecosystem/fireux-misebox/src/runtime/components/console/overview/x/
+                  - packages/ecosystem/fireux-misebox/src/runtime/components/console/overview/x/ping/
+                    - packages/ecosystem/fireux-misebox/src/runtime/components/console/overview/x/ping/Ecosystem.vue
             - packages/ecosystem/fireux-misebox/src/runtime/components/molecules/
               - packages/ecosystem/fireux-misebox/src/runtime/components/molecules/Places/
                 - packages/ecosystem/fireux-misebox/src/runtime/components/molecules/Places/PlacesSearch.vue
@@ -771,7 +771,7 @@ Total files: 1277
             - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/
               - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/app/
                 - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/app/routes/
-                  - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/app/routes/useMiseboxDashboardRoutes.ts
+                  - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/app/routes/useMiseboxConsoleRoutes.ts
                   - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/app/routes/useMiseboxDefaultRoutes.ts
                   - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/app/routes/useMiseboxDevRoutes.ts
                   - packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/app/routes/useMiseboxRoutes.ts
@@ -847,15 +847,15 @@ Total files: 1277
               - packages/ecosystem/fireux-misebox/src/runtime/pages/chefs/learn-more.vue
             - packages/ecosystem/fireux-misebox/src/runtime/pages/companies/
               - packages/ecosystem/fireux-misebox/src/runtime/pages/companies/index.vue
-            - packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/
-              - packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef/
-                - packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef/index.vue
-                - packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef/my-recipes.vue
-                - packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef/profile.vue
-              - packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/
-                - packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/index.vue
-                - packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/my-stock.vue
-                - packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/profile.vue
+            - packages/ecosystem/fireux-misebox/src/runtime/pages/console/
+              - packages/ecosystem/fireux-misebox/src/runtime/pages/console/chef/
+                - packages/ecosystem/fireux-misebox/src/runtime/pages/console/chef/index.vue
+                - packages/ecosystem/fireux-misebox/src/runtime/pages/console/chef/my-recipes.vue
+                - packages/ecosystem/fireux-misebox/src/runtime/pages/console/chef/profile.vue
+              - packages/ecosystem/fireux-misebox/src/runtime/pages/console/supplier/
+                - packages/ecosystem/fireux-misebox/src/runtime/pages/console/supplier/index.vue
+                - packages/ecosystem/fireux-misebox/src/runtime/pages/console/supplier/my-stock.vue
+                - packages/ecosystem/fireux-misebox/src/runtime/pages/console/supplier/profile.vue
             - packages/ecosystem/fireux-misebox/src/runtime/pages/dev/
               - packages/ecosystem/fireux-misebox/src/runtime/pages/dev/fireux-misebox.vue
             - packages/ecosystem/fireux-misebox/src/runtime/pages/ingredients/
@@ -1117,7 +1117,7 @@ Total files: 1277
             - packages/extensions/fireux-jobs/src/runtime/composables/fireux/
               - packages/extensions/fireux-jobs/src/runtime/composables/fireux/app/
                 - packages/extensions/fireux-jobs/src/runtime/composables/fireux/app/routes/
-                  - packages/extensions/fireux-jobs/src/runtime/composables/fireux/app/routes/useJobDashboardRoutes.ts
+                  - packages/extensions/fireux-jobs/src/runtime/composables/fireux/app/routes/useJobConsoleRoutes.ts
                   - packages/extensions/fireux-jobs/src/runtime/composables/fireux/app/routes/useJobRoutes.ts
               - packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/
                 - packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/
@@ -1177,15 +1177,15 @@ Total files: 1277
               - packages/extensions/fireux-jobs/src/runtime/pages/agents/[id].vue
               - packages/extensions/fireux-jobs/src/runtime/pages/agents/index.vue
               - packages/extensions/fireux-jobs/src/runtime/pages/agents/learn-more.vue
-            - packages/extensions/fireux-jobs/src/runtime/pages/dashboard/
-              - packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent/
-                - packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent/index.vue
-                - packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent/my-gigs.vue
-                - packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent/profile.vue
-              - packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/
-                - packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/index.vue
-                - packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/my-jobs.vue
-                - packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/profile.vue
+            - packages/extensions/fireux-jobs/src/runtime/pages/console/
+              - packages/extensions/fireux-jobs/src/runtime/pages/console/agent/
+                - packages/extensions/fireux-jobs/src/runtime/pages/console/agent/index.vue
+                - packages/extensions/fireux-jobs/src/runtime/pages/console/agent/my-gigs.vue
+                - packages/extensions/fireux-jobs/src/runtime/pages/console/agent/profile.vue
+              - packages/extensions/fireux-jobs/src/runtime/pages/console/professional/
+                - packages/extensions/fireux-jobs/src/runtime/pages/console/professional/index.vue
+                - packages/extensions/fireux-jobs/src/runtime/pages/console/professional/my-jobs.vue
+                - packages/extensions/fireux-jobs/src/runtime/pages/console/professional/profile.vue
             - packages/extensions/fireux-jobs/src/runtime/pages/dev/
               - packages/extensions/fireux-jobs/src/runtime/pages/dev/fireux-jobs.vue
             - packages/extensions/fireux-jobs/src/runtime/pages/jobs/
@@ -1444,11 +1444,11 @@ Total files: 1277
         - projects/cleanbox/cleanbox-app/app/app.config.ts
         - projects/cleanbox/cleanbox-app/app/app.vue
         - projects/cleanbox/cleanbox-app/app/components/
-          - projects/cleanbox/cleanbox-app/app/components/Dashboard/
-            - projects/cleanbox/cleanbox-app/app/components/Dashboard/overview/
-              - projects/cleanbox/cleanbox-app/app/components/Dashboard/overview/domain/
-                - projects/cleanbox/cleanbox-app/app/components/Dashboard/overview/domain/App.vue
-          - projects/cleanbox/cleanbox-app/app/components/DashboardApp.vue
+          - projects/cleanbox/cleanbox-app/app/components/Console/
+            - projects/cleanbox/cleanbox-app/app/components/Console/overview/
+              - projects/cleanbox/cleanbox-app/app/components/Console/overview/domain/
+                - projects/cleanbox/cleanbox-app/app/components/Console/overview/domain/App.vue
+          - projects/cleanbox/cleanbox-app/app/components/ConsoleApp.vue
           - projects/cleanbox/cleanbox-app/app/components/effects/
             - projects/cleanbox/cleanbox-app/app/components/effects/Bubbles.vue
           - projects/cleanbox/cleanbox-app/app/components/landing/
@@ -1497,10 +1497,10 @@ Total files: 1277
         - projects/cleanbox/richies-reinigung/app/app.config.ts
         - projects/cleanbox/richies-reinigung/app/app.vue
         - projects/cleanbox/richies-reinigung/app/components/
-          - projects/cleanbox/richies-reinigung/app/components/Dashboard/
-            - projects/cleanbox/richies-reinigung/app/components/Dashboard/overview/
-              - projects/cleanbox/richies-reinigung/app/components/Dashboard/overview/domain/
-                - projects/cleanbox/richies-reinigung/app/components/Dashboard/overview/domain/App.vue
+          - projects/cleanbox/richies-reinigung/app/components/Console/
+            - projects/cleanbox/richies-reinigung/app/components/Console/overview/
+              - projects/cleanbox/richies-reinigung/app/components/Console/overview/domain/
+                - projects/cleanbox/richies-reinigung/app/components/Console/overview/domain/App.vue
           - projects/cleanbox/richies-reinigung/app/components/effects/
             - projects/cleanbox/richies-reinigung/app/components/effects/Bubbles.vue
           - projects/cleanbox/richies-reinigung/app/components/landing/
@@ -1555,11 +1555,11 @@ Total files: 1277
         - projects/fireux/fireux-app/app/app.config.ts
         - projects/fireux/fireux-app/app/app.vue
         - projects/fireux/fireux-app/app/components/
-          - projects/fireux/fireux-app/app/components/Dashboard/
-            - projects/fireux/fireux-app/app/components/Dashboard/overview/
-              - projects/fireux/fireux-app/app/components/Dashboard/overview/domain/
-                - projects/fireux/fireux-app/app/components/Dashboard/overview/domain/App.vue
-          - projects/fireux/fireux-app/app/components/DashboardApp.vue
+          - projects/fireux/fireux-app/app/components/Console/
+            - projects/fireux/fireux-app/app/components/Console/overview/
+              - projects/fireux/fireux-app/app/components/Console/overview/domain/
+                - projects/fireux/fireux-app/app/components/Console/overview/domain/App.vue
+          - projects/fireux/fireux-app/app/components/ConsoleApp.vue
           - projects/fireux/fireux-app/app/components/effects/
             - projects/fireux/fireux-app/app/components/effects/Stars.vue
           - projects/fireux/fireux-app/app/components/landing/
@@ -1644,10 +1644,10 @@ Total files: 1277
         - projects/fireux/tenant/app/app.config.ts
         - projects/fireux/tenant/app/app.vue
         - projects/fireux/tenant/app/components/
-          - projects/fireux/tenant/app/components/Dashboard/
-            - projects/fireux/tenant/app/components/Dashboard/overview/
-              - projects/fireux/tenant/app/components/Dashboard/overview/domain/
-                - projects/fireux/tenant/app/components/Dashboard/overview/domain/App.vue
+          - projects/fireux/tenant/app/components/Console/
+            - projects/fireux/tenant/app/components/Console/overview/
+              - projects/fireux/tenant/app/components/Console/overview/domain/
+                - projects/fireux/tenant/app/components/Console/overview/domain/App.vue
           - projects/fireux/tenant/app/components/effects/
             - projects/fireux/tenant/app/components/effects/Stars.vue
           - projects/fireux/tenant/app/components/landing/
@@ -1701,13 +1701,13 @@ Total files: 1277
           - projects/misebox/misebox-app/app/assets/styles/
             - projects/misebox/misebox-app/app/assets/styles/main.css
         - projects/misebox/misebox-app/app/components/
-          - projects/misebox/misebox-app/app/components/Dashboard/
-            - projects/misebox/misebox-app/app/components/Dashboard/overview/
-              - projects/misebox/misebox-app/app/components/Dashboard/overview/domain/
-                - projects/misebox/misebox-app/app/components/Dashboard/overview/domain/App.vue
-              - projects/misebox/misebox-app/app/components/Dashboard/overview/x/
-                - projects/misebox/misebox-app/app/components/Dashboard/overview/x/pong/
-                  - projects/misebox/misebox-app/app/components/Dashboard/overview/x/pong/App.vue
+          - projects/misebox/misebox-app/app/components/Console/
+            - projects/misebox/misebox-app/app/components/Console/overview/
+              - projects/misebox/misebox-app/app/components/Console/overview/domain/
+                - projects/misebox/misebox-app/app/components/Console/overview/domain/App.vue
+              - projects/misebox/misebox-app/app/components/Console/overview/x/
+                - projects/misebox/misebox-app/app/components/Console/overview/x/pong/
+                  - projects/misebox/misebox-app/app/components/Console/overview/x/pong/App.vue
           - projects/misebox/misebox-app/app/components/effects/
             - projects/misebox/misebox-app/app/components/effects/Steam.vue
           - projects/misebox/misebox-app/app/components/landing/
@@ -1757,10 +1757,10 @@ Total files: 1277
         - projects/misebox/niederhorn/app/app.config.ts
         - projects/misebox/niederhorn/app/app.vue
         - projects/misebox/niederhorn/app/components/
-          - projects/misebox/niederhorn/app/components/Dashboard/
-            - projects/misebox/niederhorn/app/components/Dashboard/overview/
-              - projects/misebox/niederhorn/app/components/Dashboard/overview/domain/
-                - projects/misebox/niederhorn/app/components/Dashboard/overview/domain/App.vue
+          - projects/misebox/niederhorn/app/components/Console/
+            - projects/misebox/niederhorn/app/components/Console/overview/
+              - projects/misebox/niederhorn/app/components/Console/overview/domain/
+                - projects/misebox/niederhorn/app/components/Console/overview/domain/App.vue
           - projects/misebox/niederhorn/app/components/effects/
             - projects/misebox/niederhorn/app/components/effects/Stars.vue
           - projects/misebox/niederhorn/app/components/landing/
@@ -1855,9 +1855,9 @@ Total files: 1277
   - temp/checklist.md
   - temp/config.md
   - temp/create-system-inventory.md
-  - temp/dashboard/
-    - temp/dashboard/overview.md
-    - temp/dashboard/users.md
+  - temp/console/
+    - temp/console/overview.md
+    - temp/console/users.md
   - temp/drift-blogs-payload.json
   - temp/drift-payload.json
   - temp/drift-places-payload.json
@@ -2817,7 +2817,7 @@ Given that feature description, do this:
    - Examples:
      - "I want to add user authentication" → "user-auth"
      - "Implement OAuth2 integration for the API" → "oauth2-api-integration"
-     - "Create a dashboard for analytics" → "analytics-dashboard"
+     - "Create a console for analytics" → "analytics-console"
      - "Fix payment processing timeout bug" → "fix-payment-timeout"
 
 2. **Check for existing branches before creating new one**:
@@ -4176,11 +4176,11 @@ These are long‑lived workspaces with frequent edits and multiple tools.
 - Owned or co‑owned
 - Multi‑section UX
 - Inline edits acceptable
-- Dashboard‑first
+- Console‑first
 
 **Routing**
 
-- `/dashboard/<entity>/*`
+- `/console/<entity>/*`
 
 **Examples**
 
@@ -4217,7 +4217,7 @@ These are created often, edited occasionally, and typically belong to a workspac
 - Product
 - Blog post
 - Dish
-- Menu (managed inside a workspace, not a dashboard)
+- Menu (managed inside a workspace, not a console)
 
 ### 3) Reference / system objects
 
@@ -4249,7 +4249,7 @@ These are shared, lightly edited system entities used by other objects.
 
 - `/<entity>/[id]` is read‑only, safe to view.
 - `/<entity>/edit/[id]` is the only mutation surface for operational objects.
-- Inline editing is reserved for workspace dashboards.
+- Inline editing is reserved for workspace consoles.
 
 ## Docs conventions
 
@@ -4505,7 +4505,7 @@ async function onCreateCore() {
 2. Simple standalone use (auto-redirect):
 
 ```vue
-<OrganismsAuthSystem redirect-on-success redirect-target="/dashboard" />
+<OrganismsAuthSystem redirect-on-success redirect-target="/console" />
 ```
 
 ---
@@ -4611,7 +4611,7 @@ created: 2025-10-15
 
 # Orientation & Mission
 
-FireUX is an opinionated layer on top of Nuxt 4 + Firebase. Drop in a few env vars, add your branding assets, and you have a working web app with profiles, dashboards, and common objects ready to extend.
+FireUX is an opinionated layer on top of Nuxt 4 + Firebase. Drop in a few env vars, add your branding assets, and you have a working web app with profiles, consoles, and common objects ready to extend.
 
 We are indie and unknown by default, so this chapter explains what FireUX is, why it exists, and how the repo is laid out so you can get moving fast.
 
@@ -4859,7 +4859,7 @@ import { useFirebaseApp, useFirestore, useCurrentUser } from 'vuefire'
 
 - Logging: prefer Nitro `logger` for server-side messages and `consola` for client-side debug logs. Maintain consistent prefixes (`[fireux-core]`, `[fireux-places]`, etc.).
 - Dev tools: `fireux-core` provides dev pages (e.g. `/dev/app` (alias `/dev/apps`), `/dev/users`) to inspect runtime state. When extending diagnostics, add new dev pages under the owning package and tag them with `layout: 'dev'` and appropriate `nav` metadata.
-- Future appendices will collect alert destinations and monitoring dashboards once they are standardised.
+- Future appendices will collect alert destinations and monitoring consoles once they are standardised.
 
 Continue to [Development Workflow](./copilot-05-development-workflow.md) for day-to-day practices.
 
@@ -5108,7 +5108,7 @@ This chapter captures operational procedures, debugging tips, and the baseline i
 - **Automation**: Remediation scripts live under `scripts/` (maintenance, migrations, guards). Stick to dry runs first (when supported), then rerun with `--apply` or similar flags once reviewed.
 - **Guards**: `pnpm guard` runs repo checks (backed by `scripts/guard.mjs` and `scripts/guards/*.mjs`).
 - **Logging**: Use consistent prefixes in server/client logs to trace issues (`[fireux-core]`, `[fireux-places]`, etc.).
-- **Analytics**: Pending integration. When added, document dashboards and alert policies here.
+- **Analytics**: Pending integration. When added, document consoles and alert policies here.
 
 ## Operational Checklists (to be expanded)
 
@@ -6067,7 +6067,7 @@ Purpose: keep layout naming consistent and avoid app-local overrides. Layouts li
 
 ## Use existing layouts
 
-- Reference by name (file stem), e.g. `layout: 'dashboard'`, `layout: 'auth'`, `layout: 'docs'`.
+- Reference by name (file stem), e.g. `layout: 'console'`, `layout: 'auth'`, `layout: 'docs'`.
 - Do not copy layouts into apps/tenants; rely on the core exports.
 - If you must wrap/override for an ecosystem, do it in the ecosystem package and keep the name unique.
 
@@ -6086,7 +6086,7 @@ Purpose: keep layout naming consistent and avoid app-local overrides. Layouts li
 ## Ecosystem/app-specific layouts
 
 - Prefer reusing core layouts. Only add ecosystem-specific layouts when UI diverges meaningfully.
-- If you reuse an existing name, you will shadow the core layout. Avoid collisions; prefer a prefix tied to your ecosystem (e.g. `cleanbox-dashboard`).
+- If you reuse an existing name, you will shadow the core layout. Avoid collisions; prefer a prefix tied to your ecosystem (e.g. `cleanbox-console`).
 - TODO: add a guard to detect name collisions and app-local layout directories.
 
 ```
@@ -6105,7 +6105,7 @@ Purpose: keep layout naming consistent and avoid app-local overrides. Layouts li
 | **fireux-misebox**                 | ⚙️ Tenant shell           | ❌ Recipes, suppliers, prep plans, costing, branding          |
 | **fireux-fireux**                  | ✅ Module wiring          | ❌ Auth, billing, tenant config UI, PWA assets                |
 | **Apps (Cleanbox/Misebox/FireUX)** | Marketing-only            | ❌ Functional routes, binding to tenant composables           |
-| **Examples (Richie’s/Niederhorn)** | Landing-only              | ❌ Operational dashboards, training, compliance               |
+| **Examples (Richie’s/Niederhorn)** | Landing-only              | ❌ Operational consoles, training, compliance               |
 
 ### Cross-Cutting Gaps
 
@@ -6338,7 +6338,7 @@ A shared creation + registration workflow keeps every FireUX asset (apps, module
 
 - One command to scaffold a new **app**, **module**, or **ecosystem** with repo templates, CI hooks, and runtime wiring.
 - Automatic registration that writes a canonical record in Firestore immediately after creation (or when promoted from draft → active).
-- Consistent metadata schemas so tooling, dashboards, and guards can reason about every asset without local heuristics.
+- Consistent metadata schemas so tooling, consoles, and guards can reason about every asset without local heuristics.
 - Guardrails that prevent deploying unregistered assets and that surface drift (e.g., deleted repo folder but orphaned registry entry).
 
 ## Registry terminology
@@ -6346,7 +6346,7 @@ A shared creation + registration workflow keeps every FireUX asset (apps, module
 We intentionally use the word “registry” for two layers of the workflow:
 
 1. **Local registry file** — A `registry.json` (kept next to the asset folder) that contains the full metadata payload. This file is versioned with the codebase and acts as the single source of truth for reviews.
-2. **Remote registry database** — The `fireux-fireux` Firestore project, specifically the `<entityType>/<id>` collections (`modules/fireux-core`, `apps/fireux-app`, etc.), where the CLI publishes the same metadata so runtime tooling, dashboards, and guards can read it centrally.
+2. **Remote registry database** — The `fireux-fireux` Firestore project, specifically the `<entityType>/<id>` collections (`modules/fireux-core`, `apps/fireux-app`, etc.), where the CLI publishes the same metadata so runtime tooling, consoles, and guards can read it centrally.
 
 The `pnpm registry:*` commands always read from the local file first and then sync to the remote database so the repo history and the database never drift silently.
 
@@ -6404,7 +6404,7 @@ Type-specific additions:
 - The registry entry now includes that `ecosystem` slug. When `/api/registry` receives an app payload, it:
   1.  Stores `name`, `team`, and the required `ecosystem` slug at `apps/<appId>`.
   2.  Appends the app id to `ecosystems/<ecosystemId>.apps` via `arrayUnion`, so the ecosystem knows every linked app.
-- Future app or ecosystem tooling (dashboards, guards, FireUX app directory) can read those lean documents to show "which apps belong to which ecosystem" without crawling the repo.
+- Future app or ecosystem tooling (consoles, guards, FireUX app directory) can read those lean documents to show "which apps belong to which ecosystem" without crawling the repo.
 - If an app later changes ecosystems, update `registry.json` and re-run `pnpm registry:register` so both documents stay in sync (removal logic can run once we track historical memberships).
 
 ## Backfilling existing assets
@@ -6726,18 +6726,18 @@ note: moved from repo root during doc cleanup
 
 ```
 
-### docs/copilot-documentation/imported/root/proposed-editable.dashboard-pages.md
+### docs/copilot-documentation/imported/root/proposed-editable.console-pages.md
 
 ```md
 <!--
-source: proposed-editable.dashboard-pages.md (repo root)
+source: proposed-editable.console-pages.md (repo root)
 imported: 2025-12-08
 note: moved from repo root during doc cleanup
 -->
 
-# Proposed Editable Dashboard Pages
+# Proposed Editable Console Pages
 
-Reference snapshots for every dashboard parent involved in core/app edit surfaces. Each snippet reflects the canonical structure every domain should mirror.
+Reference snapshots for every console parent involved in core/app edit surfaces. Each snippet reflects the canonical structure every domain should mirror.
 
 ## Component Stack Reference
 
@@ -6751,9 +6751,9 @@ Reference snapshots for every dashboard parent involved in core/app edit surface
 ## Generic Profile Template
 
 ```vue
-<!-- TEMPLATE: packages/ECOSYSTEM_OR_EXTENSION_PATH/src/runtime/pages/dashboard/x/profile.vue -->
+<!-- TEMPLATE: packages/ECOSYSTEM_OR_EXTENSION_PATH/src/runtime/pages/console/x/profile.vue -->
 <template>
-  <UDashboardPanel id="dashboard-x-profile">
+  <UDashboardPanel id="console-x-profile">
     <template #header>
       <UDashboardNavbar title="X Profile">
         <template #leading>
@@ -6793,13 +6793,13 @@ const profileLabel = 'X'
 const navTitle = `${profileLabel} Profile`
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-x-profile',
+    key: 'console-x-profile',
     label: navTitle,
     icon: 'i-lucide-user',
     desktop: true,
-    layouts: ['dashboard'],
+    layouts: ['console'],
     group: 'profiles',
     profileId: profileKey,
   },
@@ -6833,10 +6833,10 @@ const hasXProfile = computed(() => {
 </style>
 ```
 
-## User Profile — `packages/core/fireux-core/src/runtime/pages/dashboard/user-profile.vue`
+## User Profile — `packages/core/fireux-core/src/runtime/pages/console/user-profile.vue`
 
 ```vue
-<!-- packages/core/fireux-core/src/runtime/pages/dashboard/user-profile.vue -->
+<!-- packages/core/fireux-core/src/runtime/pages/console/user-profile.vue -->
 <template>
   <UDashboardPanel id="user-profile">
     <template #header>
@@ -6877,14 +6877,14 @@ const hasXProfile = computed(() => {
           </Transition>
 
           <Transition name="fade-toggle">
-            <LayoutsDashboardProfileEdit v-show="showEditor">
+            <LayoutsConsoleProfileEdit v-show="showEditor">
               <template #core>
                 <OrganismsUserEditCore :user="currentUser" />
               </template>
               <template #app>
                 <OrganismsUserEditApp :user="currentUser" />
               </template>
-            </LayoutsDashboardProfileEdit>
+            </LayoutsConsoleProfileEdit>
           </Transition>
         </div>
       </div>
@@ -6913,14 +6913,14 @@ import type {
 } from 'fireux-core/runtime/models/core/user.model.ts'
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-user-profile',
+    key: 'console-user-profile',
     label: 'User Profile',
     icon: 'i-lucide-user',
     order: 30,
     desktop: true,
-    layouts: ['dashboard'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })
@@ -7232,7 +7232,7 @@ This guide consolidates the current FireUX data models that power app users, sha
 
 ### `UserCard` namespace
 
-- UI projections used by dashboard components.
+- UI projections used by console components.
 - `UserCard.Card` is the canonical UI payload produced by `useUserInterface().card()`.
 - Cards are presentational-only; business logic (CTA, badge decoration, permissions) lives in callers.
 
@@ -7477,7 +7477,7 @@ Define shared schema, feature flags, and naming.
 
 ## Wave 3 — Apps
 
-- [ ] Cleanbox routes `/dashboard,/qa,/billing,/clients,/reports`
+- [ ] Cleanbox routes `/console,/qa,/billing,/clients,/reports`
 - [ ] Misebox routes `/professional,/jobs,/recipes,/suppliers,/prep-plans`
 - [ ] FireUX app pages `/get-started,/developers,/projects,/pricing,/contact`
 
@@ -8504,7 +8504,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
 
   // Ensure responsive breakpoints behave correctly on mobile.
   // Without an explicit viewport meta tag, browsers may render using a
-  // desktop-sized viewport (making the dashboard sidebar appear "always on").
+  // desktop-sized viewport (making the console sidebar appear "always on").
   const head: any = ((nuxt as any).app ||= {}).head ||= {}
   const meta: any[] = (head.meta ||= [])
   const hasViewport = meta.some((m) => m?.name === 'viewport')
@@ -9899,7 +9899,7 @@ function goToDev() {
 
 ```
 
-### packages/core/fireux-core/src/runtime/components/dashboard/overview/App.vue
+### packages/core/fireux-core/src/runtime/components/console/overview/App.vue
 
 ```vue
 <template>
@@ -9959,7 +9959,7 @@ const roleLabel = computed(() => {
 
 ```
 
-### packages/core/fireux-core/src/runtime/components/dashboard/overview/Core.vue
+### packages/core/fireux-core/src/runtime/components/console/overview/Core.vue
 
 ```vue
 <template>
@@ -10001,7 +10001,7 @@ const roleLabel = computed(() => {
 
         <div class="flex">
           <UButton
-            to="/dashboard/user-profile"
+            to="/console/user-profile"
             label="Edit profile"
             color="neutral"
             size="sm"
@@ -10058,7 +10058,7 @@ const wrapperPropsFor = (pill: { to?: string | null } | null) => (pill?.to ? { t
 
 ```
 
-### packages/core/fireux-core/src/runtime/components/dashboard/overview/Ecosystem.vue
+### packages/core/fireux-core/src/runtime/components/console/overview/Ecosystem.vue
 
 ```vue
 <template>
@@ -11021,7 +11021,7 @@ onMounted(() => {
 
 ```
 
-### packages/core/fireux-core/src/runtime/components/layouts/dashboard/BaseSection.vue
+### packages/core/fireux-core/src/runtime/components/layouts/console/BaseSection.vue
 
 ```vue
 <template>
@@ -11046,13 +11046,13 @@ defineProps<{
 
 ```
 
-### packages/core/fireux-core/src/runtime/components/layouts/dashboard/EditStructure.vue
+### packages/core/fireux-core/src/runtime/components/layouts/console/EditStructure.vue
 
 ```vue
-<!-- packages/core/fireux-core/src/runtime/components/layouts/dashboard/EditStructure.vue -->
+<!-- packages/core/fireux-core/src/runtime/components/layouts/console/EditStructure.vue -->
 <template>
   <client-only>
-    <LayoutsDashboardBaseSection :title="title" :description="description">
+    <LayoutsConsoleBaseSection :title="title" :description="description">
       <template #guard>
         <UPageCard v-if="guardMessage" variant="subtle">
           <p class="text-sm text-gray-500">{{ guardMessage }}</p>
@@ -11086,7 +11086,7 @@ defineProps<{
       <template #dev>
         <pre v-if="shouldShowDevPanel && devData" class="text-xs text-muted">{{ devData }}</pre>
       </template>
-    </LayoutsDashboardBaseSection>
+    </LayoutsConsoleBaseSection>
   </client-only>
 </template>
 
@@ -11114,7 +11114,7 @@ const shouldShowDevPanel = computed(() => route.path.includes('/dev/'))
 
 ```
 
-### packages/core/fireux-core/src/runtime/components/layouts/dashboard/Navbar.vue
+### packages/core/fireux-core/src/runtime/components/layouts/console/Navbar.vue
 
 ```vue
 <template>
@@ -11143,19 +11143,19 @@ const shouldShowDevPanel = computed(() => route.path.includes('/dev/'))
 </template>
 
 <script setup lang="ts">
-import { useDashboardNotifications } from '../../../composables/fireux/app/ui/useDashboardNotifications'
+import { useConsoleNotifications } from '../../../composables/fireux/app/ui/useConsoleNotifications'
 
 defineProps<{
   title: string
   ui?: any
 }>()
 
-const { open: openNotifications } = useDashboardNotifications()
+const { open: openNotifications } = useConsoleNotifications()
 </script>
 
 ```
 
-### packages/core/fireux-core/src/runtime/components/layouts/dashboard/NotificationsSlideover.vue
+### packages/core/fireux-core/src/runtime/components/layouts/console/NotificationsSlideover.vue
 
 ```vue
 <script setup lang="ts">
@@ -11166,7 +11166,7 @@ import { useCollection, useFirestore } from 'vuefire'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import type { UserNotification } from '../../../models/core/user.model'
 
-// Use v-model:open from parent instead of a global dashboard store
+// Use v-model:open from parent instead of a global console store
 const open = defineModel<boolean>('open', { default: false })
 
 const db = useFirestore()
@@ -11217,10 +11217,10 @@ const { data: notifications } = useCollection<UserNotification>(
 
 ```
 
-### packages/core/fireux-core/src/runtime/components/layouts/dashboard/ProfileEdit.vue
+### packages/core/fireux-core/src/runtime/components/layouts/console/ProfileEdit.vue
 
 ```vue
-<!-- packages/core/fireux-core/src/runtime/components/layouts/dashboard/ProfileEdit.vue -->
+<!-- packages/core/fireux-core/src/runtime/components/layouts/console/ProfileEdit.vue -->
 <template>
   <section class="min-w-0">
     <div class="min-w-0 fx-panels-masonry__item mb-10">
@@ -11243,10 +11243,10 @@ const { isTenant } = useFireUXConfig()
 
 ```
 
-### packages/core/fireux-core/src/runtime/components/layouts/dashboard/ProfilesMenu.vue
+### packages/core/fireux-core/src/runtime/components/layouts/console/ProfilesMenu.vue
 
 ```vue
-<!-- packages/core/fireux-core/src/runtime/components/layouts/dashboard/ProfilesMenu.vue -->
+<!-- packages/core/fireux-core/src/runtime/components/layouts/console/ProfilesMenu.vue -->
 <template>
   <UDropdownMenu
     v-if="menu.length"
@@ -11277,17 +11277,17 @@ import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useState } from '#imports'
 import type { DropdownMenuItem } from '@nuxt/ui'
-import { useDashboardNav } from '../../../composables/fireux/app/routing/presets'
+import { useConsoleNav } from '../../../composables/fireux/app/routing/presets'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
-defineOptions({ name: 'LayoutsDashboardProfilesMenu' })
+defineOptions({ name: 'LayoutsConsoleProfilesMenu' })
 defineProps<{ collapsed?: boolean }>()
 
-const { desktop } = useDashboardNav()
+const { desktop } = useConsoleNav()
 const { user } = useUser()
 const router = useRouter()
 const activeProfileState = useState<string | null>(
-  'fireux-dashboard-profile',
+  'fireux-console-profile',
   () => null
 )
 
@@ -11348,7 +11348,7 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
 
 ```
 
-### packages/core/fireux-core/src/runtime/components/layouts/dashboard/SidebarFooterActions.vue
+### packages/core/fireux-core/src/runtime/components/layouts/console/SidebarFooterActions.vue
 
 ```vue
 <template>
@@ -11361,7 +11361,7 @@ const dropdownItems = computed<DropdownMenuItem[][]>(() => [
 
     <NuxtLink
       v-if="compactProfile && collapsed && pillUser"
-      to="/dashboard/user-profile"
+      to="/console/user-profile"
       class="w-full flex justify-center"
       aria-label="View profile"
     >
@@ -11694,7 +11694,7 @@ const wrapperPropsFor = (card: UserCard.Card) => (card.to ? { to: card.to } : {}
           <!-- Signed in => account menu -->
           <UDropdown v-else :items="accountMenuItems">
             <UButton
-              to="/dashboard"
+              to="/console"
               variant="ghost"
               color="neutral"
               aria-label="Account menu"
@@ -11796,7 +11796,7 @@ const accountMenuItems = computed(() => [
       to: '/users',
     },
   ],
-  [{ label: 'Dashboard', icon: 'i-lucide-layout-dashboard', to: '/dashboard' }],
+  [{ label: 'Console', icon: 'i-lucide-terminal', to: '/console' }],
   [
     {
       label: 'Sign out',
@@ -15708,7 +15708,7 @@ const {
 ```vue
 <template>
   <template v-if="app">
-    <div class="fx-panels-masonry__item dashboard-item mb-10">
+    <div class="fx-panels-masonry__item console-item mb-10">
       <OrganismsAppEditSectionsLockedConfig
         :app="app"
         :is-dev="isDev"
@@ -15717,7 +15717,7 @@ const {
       />
     </div>
 
-    <div class="fx-panels-masonry__item dashboard-item mb-10">
+    <div class="fx-panels-masonry__item console-item mb-10">
       <OrganismsAppEditSectionsAbout
         :app="app"
         :handle-tagline-update="handleTaglineUpdate"
@@ -15727,18 +15727,18 @@ const {
       />
     </div>
 
-    <div class="fx-panels-masonry__item dashboard-item mb-10">
+    <div class="fx-panels-masonry__item console-item mb-10">
       <OrganismsAppEditSectionsSurfaces :app-card="appCard" />
     </div>
 
-    <div class="fx-panels-masonry__item dashboard-item mb-10">
+    <div class="fx-panels-masonry__item console-item mb-10">
       <OrganismsAppEditSectionsSocial
         :app="app"
         :handle-update-social-links="handleUpdateSocialLinks"
       />
     </div>
 
-    <div class="fx-panels-masonry__item dashboard-item mb-10">
+    <div class="fx-panels-masonry__item console-item mb-10">
       <OrganismsAppEditSectionsJoinRequests
         :items="joinRequestItems"
         :on-approve="onApprove"
@@ -15746,7 +15746,7 @@ const {
       />
     </div>
 
-    <div class="fx-panels-masonry__item dashboard-item mb-10">
+    <div class="fx-panels-masonry__item console-item mb-10">
       <OrganismsAppEditSectionsAdmins
         :rows="adminRows"
         :action-uid="adminActionUid"
@@ -15755,7 +15755,7 @@ const {
       />
     </div>
 
-    <div class="fx-panels-masonry__item dashboard-item mb-10">
+    <div class="fx-panels-masonry__item console-item mb-10">
       <OrganismsAppEditSectionsTenantOverrides />
     </div>
   </template>
@@ -16320,7 +16320,7 @@ defineProps<{
 
         <div v-if="isDev" class="shrink-0">
           <UButton
-            to="/dashboard/developer"
+            to="/console/developer"
             size="xs"
             variant="soft"
             icon="i-lucide-arrow-up-right"
@@ -16520,7 +16520,7 @@ const wrapperPropsFor = (card: AppCard.Card | null) => (card?.to ? { to: card.to
 ```vue
 <template>
   <div class="auth-authenticated">
-    <UButton block @click="goDashboard">Go to Dashboard</UButton>
+    <UButton block @click="goConsole">Go to Console</UButton>
     <UButton block variant="ghost" @click="handleSignOut">Sign Out</UButton>
   </div>
 </template>
@@ -16532,8 +16532,8 @@ import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 const router = useRouter()
 const { signOutUser } = useAuth()
 
-const goDashboard = () => {
-  router.push('/dashboard').catch(() => {})
+const goConsole = () => {
+  router.push('/console').catch(() => {})
 }
 
 const handleSignOut = async () => {
@@ -16935,8 +16935,8 @@ const handleGoogleSignIn = async () => {
           <OrganismsUserCardsPill v-bind="currentUserPill" />
         </component>
         <div class="auth-actions">
-          <UButton block color="primary" @click="goToDashboard">
-            Go to dashboard
+          <UButton block color="primary" @click="goToConsole">
+            Go to console
           </UButton>
           <UButton
             block
@@ -17003,8 +17003,8 @@ const currentUserPill = computed(() =>
 const wrapperFor = (card: ReturnType<typeof card> | null) => (card?.to ? 'NuxtLink' : 'div')
 const wrapperPropsFor = (card: ReturnType<typeof card> | null) => (card?.to ? { to: card.to } : {})
 
-const goToDashboard = async () => {
-  await router.push('/dashboard').catch(() => {})
+const goToConsole = async () => {
+  await router.push('/console').catch(() => {})
 }
 
 const handleSignOut = async () => {
@@ -17040,7 +17040,7 @@ const handleGoogle = async () => {
       })
     }
     if (user?.uid) {
-      await router.push('/dashboard').catch(() => {})
+      await router.push('/console').catch(() => {})
     }
   } finally {
     providerLoading.value = false
@@ -17114,7 +17114,7 @@ const handleGoogle = async () => {
   cursor: pointer;
 ```
 
-### packages/core/fireux-core/src/runtime/components/organisms/Dashboard/Profile/Edit/Profile.vue
+### packages/core/fireux-core/src/runtime/components/organisms/Console/Profile/Edit/Profile.vue
 
 ```vue
 <template>
@@ -19258,7 +19258,7 @@ import { useNav } from '../ui/nav/useNav'
 
 export const useDefaultNav = () => useNav(['default'])
 export const useLandingNav = () => useNav(['landing'])
-export const useDashboardNav = () => useNav(['dashboard'])
+export const useConsoleNav = () => useNav(['console'])
 export const useDevNav = () => useNav(['dev'])
 
 ```
@@ -19503,13 +19503,13 @@ export function useBreadcrumbs() {
 
 ```
 
-### packages/core/fireux-core/src/runtime/composables/fireux/app/ui/useDashboardNotifications.ts
+### packages/core/fireux-core/src/runtime/composables/fireux/app/ui/useConsoleNotifications.ts
 
 ```ts
 import { useState } from '#imports'
 
-export const useDashboardNotifications = () => {
-  const isOpen = useState<boolean>('fireux-core:dashboard:notifs-open', () => false)
+export const useConsoleNotifications = () => {
+  const isOpen = useState<boolean>('fireux-core:console:notifs-open', () => false)
 
   const open = () => {
     isOpen.value = true
@@ -24363,14 +24363,14 @@ defineOptions({ name: 'chat' })
 
 ```
 
-### packages/core/fireux-core/src/runtime/layouts/dashboard.vue
+### packages/core/fireux-core/src/runtime/layouts/console.vue
 
 ```vue
-<!-- packages/core/fireux-core/src/runtime/layouts/dashboard.vue -->
+<!-- packages/core/fireux-core/src/runtime/layouts/console.vue -->
 <template>
   <UDashboardGroup unit="rem">
     <UDashboardSidebar
-      id="core-dashboard"
+      id="core-console"
       v-model:open="open"
       collapsible
       resizable
@@ -24378,7 +24378,7 @@ defineOptions({ name: 'chat' })
     >
       <!-- Top: profile switcher (self-hides when unnecessary) -->
       <template #header>
-        <LayoutsDashboardProfilesMenu />
+        <LayoutsConsoleProfilesMenu />
       </template>
 
       <!-- Main nav -->
@@ -24418,7 +24418,7 @@ defineOptions({ name: 'chat' })
             />
 
             <div class="pt-3">
-              <LayoutsDashboardSidebarFooterActions
+              <LayoutsConsoleSidebarFooterActions
                 :collapsed="collapsed ?? false"
               />
             </div>
@@ -24429,7 +24429,7 @@ defineOptions({ name: 'chat' })
       <!-- Bottom: user menu -->
       <template #footer="{ collapsed }">
         <div class="hidden lg:flex">
-          <LayoutsDashboardSidebarFooterActions
+          <LayoutsConsoleSidebarFooterActions
             :collapsed="collapsed ?? false"
             compact-profile
           />
@@ -24444,7 +24444,7 @@ defineOptions({ name: 'chat' })
   </UDashboardGroup>
 
   <!-- Notifications slideover controlled by shared state -->
-  <LayoutsDashboardNotificationsSlideover
+  <LayoutsConsoleNotificationsSlideover
     v-model:open="isNotificationsSlideoverOpen"
   />
 </template>
@@ -24453,24 +24453,24 @@ defineOptions({ name: 'chat' })
 import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useState } from '#imports'
-import { useDashboardNav } from '../composables/fireux/app/routing/presets'
-import { useDashboardNotifications } from '../composables/fireux/app/ui/useDashboardNotifications'
+import { useConsoleNav } from '../composables/fireux/app/routing/presets'
+import { useConsoleNotifications } from '../composables/fireux/app/ui/useConsoleNotifications'
 import { useAuth } from '../composables/fireux/firebase/useAuth'
 import { useUser } from '../composables/fireux/firestore/core/user/useUser'
 import type { NavItem } from '../../types/nav'
 
-defineOptions({ name: 'dashboard' })
+defineOptions({ name: 'console' })
 
 const open = ref(false)
 const route = useRoute()
 const router = useRouter()
 const activeProfileState = useState<string | null>(
-  'fireux-dashboard-profile',
+  'fireux-console-profile',
   () => null
 )
 
-const { isOpen: isNotificationsSlideoverOpen } = useDashboardNotifications()
-const { desktop } = useDashboardNav()
+const { isOpen: isNotificationsSlideoverOpen } = useConsoleNotifications()
+const { desktop } = useConsoleNav()
 const { isAdmin } = useUser()
 
 const isDev = computed(() => import.meta.dev)
@@ -24501,10 +24501,10 @@ const sortNavItems = (items: NavItem[]) =>
   })
 
 const TOP_PRIORITY = [
-  { key: 'dashboard-developer', to: '/dashboard/developer' },
-  { key: 'dashboard-app', to: '/dashboard/app' },
-  { key: 'dashboard-home', to: '/dashboard' },
-  { key: 'dashboard-user-profile', to: '/dashboard/user-profile' },
+  { key: 'console-developer', to: '/console/developer' },
+  { key: 'console-app', to: '/console/app' },
+  { key: 'console-home', to: '/console' },
+  { key: 'console-user-profile', to: '/console/user-profile' },
 ]
 
 const isTopNavItem = (item: NavItem) =>
@@ -24518,11 +24518,11 @@ const topPosition = (item: NavItem) =>
   )
 
 const canShowNavItem = (item: NavItem) => {
-  if (item.key === 'dashboard-app' || item.to === '/dashboard/app') {
+  if (item.key === 'console-app' || item.to === '/console/app') {
     return isAdmin.value
   }
 
-  if (item.key === 'dashboard-developer' || item.to === '/dashboard/developer') {
+  if (item.key === 'console-developer' || item.to === '/console/developer') {
     return isDev.value
   }
 
@@ -25630,7 +25630,7 @@ const collection = computed(() => apps.value ?? [])
       <div>
         <h2 class="font-semibold">On this page you can expect:</h2>
         <ul class="mt-2 list-disc space-y-1 pl-6">
-          <li>Stable links to app profiles and dashboards.</li>
+          <li>Stable links to app profiles and consoles.</li>
           <li>Brand media (avatar/wordmark) that adapts to light/dark mode.</li>
           <li>High-level metadata like tagline and ecosystem membership.</li>
         </ul>
@@ -25764,14 +25764,14 @@ const tenantIcon = '/img/app/logo.png'
 
 ```
 
-### packages/core/fireux-core/src/runtime/pages/dashboard/app.vue
+### packages/core/fireux-core/src/runtime/pages/console/app.vue
 
 ```vue
-<!-- FILE: packages/core/fireux-core/src/runtime/pages/dashboard/app.vue -->
+<!-- FILE: packages/core/fireux-core/src/runtime/pages/console/app.vue -->
 <template>
-  <UDashboardPanel id="dashboard-app">
+  <UDashboardPanel id="console-app">
     <template #header>
-      <LayoutsDashboardNavbar title="Admin" />
+      <LayoutsConsoleNavbar title="Admin" />
     </template>
 
     <template #body>
@@ -25845,14 +25845,14 @@ const wrapperFor = (card: { to?: string | null } | null) => (card?.to ? 'NuxtLin
 const wrapperPropsFor = (card: { to?: string | null } | null) => (card?.to ? { to: card.to } : {})
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-app',
+    key: 'console-app',
     label: 'Admin',
     icon: 'i-lucide-badge-check',
     order: 10,
     desktop: true,
-    layouts: ['dashboard'],
+    layouts: ['console'],
   },
   requiresAuth: true,
   roles: ['admin'],
@@ -25860,13 +25860,13 @@ definePageMeta({
 </script>
 ```
 
-### packages/core/fireux-core/src/runtime/pages/dashboard/developer.vue
+### packages/core/fireux-core/src/runtime/pages/console/developer.vue
 
 ```vue
 <template>
-  <UDashboardPanel id="dashboard-developer">
+  <UDashboardPanel id="console-developer">
     <template #header>
-      <LayoutsDashboardNavbar title="Developer Settings" />
+      <LayoutsConsoleNavbar title="Developer Settings" />
     </template>
 
     <template #body>
@@ -25918,14 +25918,14 @@ const wrapperFor = (card: { to?: string | null } | null) => (card?.to ? 'NuxtLin
 const wrapperPropsFor = (card: { to?: string | null } | null) => (card?.to ? { to: card.to } : {})
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-developer',
+    key: 'console-developer',
     label: 'Developer',
     icon: 'i-lucide-code',
     order: 11,
     desktop: true,
-    layouts: ['dashboard'],
+    layouts: ['console'],
   },
   requiresAuth: true,
   roles: ['admin'],
@@ -25934,13 +25934,13 @@ definePageMeta({
 
 ```
 
-### packages/core/fireux-core/src/runtime/pages/dashboard/favorites.vue
+### packages/core/fireux-core/src/runtime/pages/console/favorites.vue
 
 ```vue
 <template>
-  <UDashboardPanel id="dashboard-favorites">
+  <UDashboardPanel id="console-favorites">
     <template #header>
-      <LayoutsDashboardNavbar title="Favorites" />
+      <LayoutsConsoleNavbar title="Favorites" />
     </template>
 
     <template #body>
@@ -25960,13 +25960,13 @@ definePageMeta({
 import { definePageMeta } from '#imports'
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-favorites',
+    key: 'console-favorites',
     label: 'Favorites',
     icon: 'i-lucide-heart',
     desktop: true,
-    layouts: ['dashboard'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })
@@ -25974,7 +25974,7 @@ definePageMeta({
 
 ```
 
-### packages/core/fireux-core/src/runtime/pages/dashboard/followers.vue
+### packages/core/fireux-core/src/runtime/pages/console/followers.vue
 
 ```vue
 <script setup lang="ts">
@@ -25982,13 +25982,13 @@ import { definePageMeta } from '#imports'
 
 // Note: This page can expand with invite/manage actions; see archived members mechanics for list + search patterns.
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-followers',
+    key: 'console-followers',
     label: 'Followers',
     icon: 'i-lucide-users',
     desktop: true,
-    layouts: ['dashboard'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })
@@ -25996,9 +25996,9 @@ definePageMeta({
 </script>
 
 <template>
-  <UDashboardPanel id="dashboard-followers">
+  <UDashboardPanel id="console-followers">
     <template #header>
-      <LayoutsDashboardNavbar title="Followers" />
+      <LayoutsConsoleNavbar title="Followers" />
     </template>
 
     <template #body>
@@ -26015,7 +26015,7 @@ definePageMeta({
           >
             <div class="flex flex-wrap gap-2">
               <UButton
-                to="/dashboard/user-profile"
+                to="/console/user-profile"
                 label="Update your profile"
                 color="neutral"
                 class="w-fit"
@@ -26030,26 +26030,26 @@ definePageMeta({
 
 ```
 
-### packages/core/fireux-core/src/runtime/pages/dashboard/index.vue
+### packages/core/fireux-core/src/runtime/pages/console/index.vue
 
 ```vue
 <template>
   <UDashboardPanel id="home">
     <template #header>
-      <LayoutsDashboardNavbar title="Overview" :ui="{ right: 'gap-3' }" />
+      <LayoutsConsoleNavbar title="Overview" :ui="{ right: 'gap-3' }" />
     </template>
 
     <template #body>
       <div class="fx-panels-stack">
         <div class="fx-panels-grid-3">
-          <DashboardOverviewCore class="dashboard-item" />
-          <DashboardOverviewEcosystem class="dashboard-item" />
-          <DashboardOverviewApp class="dashboard-item" />
+          <ConsoleOverviewCore class="console-item" />
+          <ConsoleOverviewEcosystem class="console-item" />
+          <ConsoleOverviewApp class="console-item" />
         </div>
 
         <div class="fx-panels-grid-2">
-          <DashboardOverviewDomainEcosystem class="dashboard-item" />
-          <DashboardOverviewDomainApp class="dashboard-item" />
+          <ConsoleOverviewDomainEcosystem class="console-item" />
+          <ConsoleOverviewDomainApp class="console-item" />
         </div>
       </div>
     </template>
@@ -26061,46 +26061,46 @@ import { definePageMeta } from '#imports'
 
 definePageMeta({
   nav: {
-    key: 'dashboard-home',
+    key: 'console-home',
     label: 'Overview',
-    icon: 'i-lucide-layout-dashboard',
+    icon: 'i-lucide-terminal',
     order: 20,
     desktop: true,
     mobile: true,
-    layouts: ['dashboard'],
+    layouts: ['console'],
   },
   requiresAuth: true,
-  layout: 'dashboard',
+  layout: 'console',
 })
 
 </script>
 
 ```
 
-### packages/core/fireux-core/src/runtime/pages/dashboard/purchases.vue
+### packages/core/fireux-core/src/runtime/pages/console/purchases.vue
 
 ```vue
 <script setup lang="ts">
 import { definePageMeta } from '#imports'
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-purchases',
+    key: 'console-purchases',
     label: 'Purchases',
     icon: 'i-lucide-shopping-cart',
     desktop: true,
-    layouts: ['dashboard'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })
 </script>
 
 <template>
-  <!-- Note: If billing/subscription details are reintroduced, mirror archived cards from dash-old/dashboard/subscriptions.vue. -->
-  <UDashboardPanel id="dashboard-purchases">
+  <!-- Note: If billing/subscription details are reintroduced, mirror archived cards from dash-old/console/subscriptions.vue. -->
+  <UDashboardPanel id="console-purchases">
     <template #header>
-      <LayoutsDashboardNavbar title="Purchases" />
+      <LayoutsConsoleNavbar title="Purchases" />
     </template>
 
     <template #body>
@@ -26122,7 +26122,7 @@ definePageMeta({
 
 ```
 
-### packages/core/fireux-core/src/runtime/pages/dashboard/settings.vue
+### packages/core/fireux-core/src/runtime/pages/console/settings.vue
 
 ```vue
 <script setup lang="ts">
@@ -26131,14 +26131,14 @@ import { useToastify } from '../../composables/fireux/app/ui/useToastify'
 import { useColorMode } from '../../composables/fireux/app/useColorMode'
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-settings',
+    key: 'console-settings',
     label: 'Settings',
     icon: 'i-lucide-settings',
     order: 1000,
     desktop: true,
-    layouts: ['dashboard'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })
@@ -26147,7 +26147,7 @@ const toast = useToastify()
 const colorMode = useColorMode()
 
 // Preferences (client-only persistence later)
-const preferences = useState('fireux-core:dashboard-settings:preferences', () => ({
+const preferences = useState('fireux-core:console-settings:preferences', () => ({
   language: 'en',
   theme: (colorMode.value || 'system') as 'system' | 'light' | 'dark',
   emailSecurityAlerts: true,
@@ -26173,9 +26173,9 @@ const savePreferences = async () => {
 </script>
 
 <template>
-  <UDashboardPanel id="dashboard-settings">
+  <UDashboardPanel id="console-settings">
     <template #header>
-      <LayoutsDashboardNavbar title="Settings" />
+      <LayoutsConsoleNavbar title="Settings" />
     </template>
 
     <template #body>
@@ -26241,13 +26241,13 @@ const savePreferences = async () => {
 
 ```
 
-### packages/core/fireux-core/src/runtime/pages/dashboard/subscriptions.vue
+### packages/core/fireux-core/src/runtime/pages/console/subscriptions.vue
 
 ```vue
 <template>
-  <UDashboardPanel id="dashboard-subscriptions">
+  <UDashboardPanel id="console-subscriptions">
     <template #header>
-      <LayoutsDashboardNavbar title="Subscriptions" />
+      <LayoutsConsoleNavbar title="Subscriptions" />
     </template>
 
     <template #body>
@@ -26274,13 +26274,13 @@ const savePreferences = async () => {
 import { definePageMeta } from '#imports'
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-subscriptions',
+    key: 'console-subscriptions',
     label: 'Subscriptions',
     icon: 'i-lucide-credit-card',
     desktop: true,
-    layouts: ['dashboard'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })
@@ -26288,14 +26288,14 @@ definePageMeta({
 
 ```
 
-### packages/core/fireux-core/src/runtime/pages/dashboard/user-profile.vue
+### packages/core/fireux-core/src/runtime/pages/console/user-profile.vue
 
 ```vue
-<!-- packages/core/fireux-core/src/runtime/pages/dashboard/user-profile.vue -->
+<!-- packages/core/fireux-core/src/runtime/pages/console/user-profile.vue -->
 <template>
   <UDashboardPanel id="user-profile">
     <template #header>
-      <LayoutsDashboardNavbar title="Profile" />
+      <LayoutsConsoleNavbar title="Profile" />
     </template>
 
     <template #body>
@@ -26338,7 +26338,7 @@ definePageMeta({
 
         <!-- Main panels -->
         <ClientOnly v-else>
-          <LayoutsDashboardProfileEdit class="fx-panels-masonry">
+          <LayoutsConsoleProfileEdit class="fx-panels-masonry">
             <template #preview>
               <OrganismsUserCardsProfile
                 v-if="resolvedUser"
@@ -26354,7 +26354,7 @@ definePageMeta({
             <template #app>
               <OrganismsUserEditApp :user="resolvedUser" />
             </template>
-          </LayoutsDashboardProfileEdit>
+          </LayoutsConsoleProfileEdit>
         </ClientOnly>
       </div>
     </template>
@@ -26367,14 +26367,14 @@ import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-user-profile',
+    key: 'console-user-profile',
     label: 'Profile',
     icon: 'i-lucide-user',
     order: 30,
     desktop: true,
-    layouts: ['dashboard'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })
@@ -30235,7 +30235,7 @@ export default module
 
 ```
 
-### packages/ecosystem/fireux-cleanbox/src/runtime/components/dashboard/overview/domain/Ecosystem.vue
+### packages/ecosystem/fireux-cleanbox/src/runtime/components/console/overview/domain/Ecosystem.vue
 
 ```vue
 <template>
@@ -31155,15 +31155,15 @@ Short description placeholder — content will be filled later.
 
 ```
 
-### packages/ecosystem/fireux-fireux/docs/examples/dashboard-page.md
+### packages/ecosystem/fireux-fireux/docs/examples/console-page.md
 
 ```md
 ---
-title: Dashboard Page
+title: Console Page
 description: Placeholder description
 ---
 
-# Dashboard Page
+# Console Page
 
 Short description placeholder — content will be filled later.
 
@@ -31329,15 +31329,15 @@ Short description placeholder — content will be filled later.
 
 ```
 
-### packages/ecosystem/fireux-fireux/docs/ui-and-design/dashboard-patterns.md
+### packages/ecosystem/fireux-fireux/docs/ui-and-design/console-patterns.md
 
 ```md
 ---
-title: Dashboard Patterns
+title: Console Patterns
 description: Placeholder description
 ---
 
-# Dashboard Patterns
+# Console Patterns
 
 Short description placeholder — content will be filled later.
 
@@ -31737,7 +31737,7 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
 export default module
 ```
 
-### packages/ecosystem/fireux-fireux/src/runtime/components/dashboard/overview/domain/Ecosystem.vue
+### packages/ecosystem/fireux-fireux/src/runtime/components/console/overview/domain/Ecosystem.vue
 
 ```vue
 <template>
@@ -32338,7 +32338,7 @@ export default module
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/dashboard/overview/domain/Ecosystem.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/console/overview/domain/Ecosystem.vue
 
 ```vue
 <template>
@@ -32354,12 +32354,12 @@ export default module
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/components/dashboard/overview/x/ping/Ecosystem.vue
+### packages/ecosystem/fireux-misebox/src/runtime/components/console/overview/x/ping/Ecosystem.vue
 
 ```vue
 <template>
   <UPageCard variant="subtle">
-    <p class="text-xs text-dimmed">Component: DashboardOverviewXPingEcosystem (misebox test)</p>
+    <p class="text-xs text-dimmed">Component: ConsoleOverviewXPingEcosystem (misebox test)</p>
     <p class="text-sm text-dimmed mt-2">Ping ecosystem specifics</p>
   </UPageCard>
 </template>
@@ -35368,7 +35368,7 @@ const wrapperPropsFor = (card: ReturnType<typeof card> | null) => (card?.to ? { 
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/app/routes/useMiseboxDashboardRoutes.ts
+### packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/app/routes/useMiseboxConsoleRoutes.ts
 
 ```ts
 interface RouteLink {
@@ -35381,18 +35381,18 @@ interface RouteLink {
 
 type HasProfileFn = (profileType: string) => boolean
 
-type JobDashboardRoutesBundle = {
+type JobConsoleRoutesBundle = {
   jobProfileRoutes: RouteLink[]
 }
 
-const EMPTY_JOB_DASHBOARD_ROUTES: JobDashboardRoutesBundle = {
+const EMPTY_JOB_CONSOLE_ROUTES: JobConsoleRoutesBundle = {
   jobProfileRoutes: [],
 }
 
 async function tryImportJobs() {
   try {
     return await import(
-      /* @vite-ignore */ 'fireux-jobs/runtime/composables/fireux/app/routes/useJobDashboardRoutes'
+      /* @vite-ignore */ 'fireux-jobs/runtime/composables/fireux/app/routes/useJobConsoleRoutes'
     )
   } catch {
     return null
@@ -35400,18 +35400,18 @@ async function tryImportJobs() {
 }
 
 const jobsModule = await tryImportJobs()
-const getJobDashboardRoutesOptional:
+const getJobConsoleRoutesOptional:
   | null
-  | ((hasProfile: HasProfileFn) => JobDashboardRoutesBundle) =
-  (jobsModule as any)?.getJobDashboardRoutes ?? null
+  | ((hasProfile: HasProfileFn) => JobConsoleRoutesBundle) =
+  (jobsModule as any)?.getJobConsoleRoutes ?? null
 
-export function getMiseboxDashboardRoutes(
+export function getMiseboxConsoleRoutes(
   hasProfile: (profileType: string) => boolean
 ) {
-  // Get dashboard profile routes from jobs extension
-  const jobRoutes = getJobDashboardRoutesOptional
-    ? getJobDashboardRoutesOptional(hasProfile)
-    : EMPTY_JOB_DASHBOARD_ROUTES
+  // Get console profile routes from jobs extension
+  const jobRoutes = getJobConsoleRoutesOptional
+    ? getJobConsoleRoutesOptional(hasProfile)
+    : EMPTY_JOB_CONSOLE_ROUTES
 
   const miseboxProfileRoutes: RouteLink[] = []
 
@@ -35420,7 +35420,7 @@ export function getMiseboxDashboardRoutes(
       id: 'chef-profile',
       label: 'Chef Profile',
       icon: 'i-lucide-chef-hat',
-      to: '/dashboard/chef-profile',
+      to: '/console/chef-profile',
     })
   }
 
@@ -35429,12 +35429,12 @@ export function getMiseboxDashboardRoutes(
       id: 'supplier-profile',
       label: 'Supplier Profile',
       icon: 'i-lucide-package',
-      to: '/dashboard/supplier-profile',
+      to: '/console/supplier-profile',
     })
   }
 
   return {
-    // Sidebar/dashboard menu: profiles only
+    // Sidebar/console menu: profiles only
     menuBarLinks: [...miseboxProfileRoutes, ...jobRoutes.jobProfileRoutes],
     // Mobile menu: same set (no public discovery links here)
     mobileLinks: [...miseboxProfileRoutes, ...jobRoutes.jobProfileRoutes],
@@ -35514,13 +35514,13 @@ export function getMiseboxDefaultRoutes(
 
   const miseboxProfileRoutes: RouteLink[] = []
 
-  // Dashboard shortcuts (only if user has those profiles)
+  // Console shortcuts (only if user has those profiles)
   if (hasProfile('chef')) {
     miseboxProfileRoutes.push({
       id: 'chef-profile',
       label: 'Chef Profile',
       icon: 'i-lucide-chef-hat',
-      to: '/dashboard/chef-profile',
+      to: '/console/chef-profile',
     })
   }
 
@@ -35529,14 +35529,14 @@ export function getMiseboxDefaultRoutes(
       id: 'supplier-profile',
       label: 'Supplier Profile',
       icon: 'i-lucide-package',
-      to: '/dashboard/supplier-profile',
+      to: '/console/supplier-profile',
     })
   }
 
   return {
     // Desktop header: public discovery + jobs public
     menuBarLinks: [...miseboxRoutes, ...jobRoutes.jobRoutes],
-    // Mobile menu: dashboard shortcuts (if any) + filtered public + jobs mobile
+    // Mobile menu: console shortcuts (if any) + filtered public + jobs mobile
     mobileLinks: [
       ...miseboxProfileRoutes,
       ...jobRoutes.jobProfileRoutes,
@@ -35680,14 +35680,14 @@ export function useMiseboxRoutes() {
   ]
 
   const links = computed<RouteLink[]>(() => {
-    // Profile shortcuts (dashboard) conditional
+    // Profile shortcuts (console) conditional
     const profileShortcuts: RouteLink[] = []
     if (hasProfile('chef')) {
       profileShortcuts.push({
         id: 'chef-profile',
         label: 'Chef Profile',
         icon: 'i-lucide-chef-hat',
-        to: '/dashboard/chef-profile',
+        to: '/console/chef-profile',
       })
     }
     if (hasProfile('supplier')) {
@@ -35695,11 +35695,11 @@ export function useMiseboxRoutes() {
         id: 'supplier-profile',
         label: 'Supplier Profile',
         icon: 'i-lucide-package',
-        to: '/dashboard/supplier-profile',
+        to: '/console/supplier-profile',
       })
     }
 
-    // Jobs extension routes (public + profile/dashboard flavor)
+    // Jobs extension routes (public + profile/console flavor)
     const jobs = getJobRoutesOptional
       ? getJobRoutesOptional(hasProfile)
       : EMPTY_JOB_ROUTES
@@ -38082,7 +38082,7 @@ export { supplierConfig };
 
 /**
  * Supplier profile metadata holder. Mirrors Professional/Chef structure
- * and gives dashboard surfaces a single config import path.
+ * and gives console surfaces a single config import path.
  */
 
 import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model'
@@ -38119,7 +38119,7 @@ export const supplierConfig: ProfileConfig = {
             size="md"
             color="primary"
             variant="solid"
-            @click="navigateTo('/dashboard/chef/profile')"
+            @click="navigateTo('/console/chef/profile')"
           >
             Edit Profile
           </UButton>
@@ -38334,12 +38334,12 @@ const collection = computed(() => companies.value ?? [])
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef/index.vue
+### packages/ecosystem/fireux-misebox/src/runtime/pages/console/chef/index.vue
 
 ```vue
-<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef/index.vue -->
+<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/console/chef/index.vue -->
 <template>
-  <UDashboardPanel id="dashboard-chef-home">
+  <UDashboardPanel id="console-chef-home">
     <template #header>
       <UDashboardNavbar title="Chef">
         <template #leading>
@@ -38352,7 +38352,7 @@ const collection = computed(() => companies.value ?? [])
       <div class="p-6">
         <p class="text-lg font-semibold">Hello World</p>
         <p class="text-muted mt-2 text-sm">
-          Quick placeholder for the Chef dashboard overview.
+          Quick placeholder for the Chef console overview.
         </p>
       </div>
     </template>
@@ -38361,9 +38361,9 @@ const collection = computed(() => companies.value ?? [])
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-chef-home',
+    key: 'console-chef-home',
     label: 'Chef',
     icon: 'i-lucide-chef-hat',
     desktop: false,
@@ -38377,12 +38377,12 @@ definePageMeta({
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef/my-recipes.vue
+### packages/ecosystem/fireux-misebox/src/runtime/pages/console/chef/my-recipes.vue
 
 ```vue
-<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef/my-recipes.vue -->
+<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/console/chef/my-recipes.vue -->
 <template>
-  <UDashboardPanel id="dashboard-chef-my-recipes">
+  <UDashboardPanel id="console-chef-my-recipes">
     <template #header>
       <UDashboardNavbar title="My Recipes">
         <template #leading>
@@ -38412,9 +38412,9 @@ definePageMeta({
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-chef-recipes',
+    key: 'console-chef-recipes',
     label: 'My Recipes',
     icon: 'i-lucide-book-open',
     desktop: false,
@@ -38428,12 +38428,12 @@ definePageMeta({
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef/profile.vue
+### packages/ecosystem/fireux-misebox/src/runtime/pages/console/chef/profile.vue
 
 ```vue
-<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef/profile.vue -->
+<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/console/chef/profile.vue -->
 <template>
-  <UDashboardPanel id="dashboard-chef-profile">
+  <UDashboardPanel id="console-chef-profile">
     <template #header>
       <UDashboardNavbar title="Chef Profile">
         <template #leading>
@@ -38466,7 +38466,7 @@ definePageMeta({
         </UCard>
 
         <ClientOnly v-else>
-          <LayoutsDashboardProfileEdit class="grid gap-6 lg:grid-cols-2">
+          <LayoutsConsoleProfileEdit class="grid gap-6 lg:grid-cols-2">
             <template #preview>
               <OrganismsProfilesChefEditPreviewPanel />
             </template>
@@ -38478,7 +38478,7 @@ definePageMeta({
             <template v-if="resolvedAppProfile" #app>
               <OrganismsProfilesChefEditApp :chef="resolvedAppProfile" />
             </template>
-          </LayoutsDashboardProfileEdit>
+          </LayoutsConsoleProfileEdit>
         </ClientOnly>
       </div>
     </template>
@@ -38487,19 +38487,19 @@ definePageMeta({
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
+import LayoutsConsoleProfileEdit from 'fireux-core/runtime/components/layouts/console/ProfileEdit.vue'
 import { useChef } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { chefConfig } from '../../../models/profiles/Chef/Chef.model'
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-chef-profile',
+    key: 'console-chef-profile',
     label: 'Chef Profile',
     icon: 'i-lucide-chef-hat',
     desktop: true,
-    layouts: ['dashboard'],
+    layouts: ['console'],
     group: 'profiles',
     profileId: 'chef',
   },
@@ -38550,12 +38550,12 @@ const resolvedAppProfile = computed(() => appProfile.value ?? null)
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/index.vue
+### packages/ecosystem/fireux-misebox/src/runtime/pages/console/supplier/index.vue
 
 ```vue
-<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/index.vue -->
+<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/console/supplier/index.vue -->
 <template>
-  <UDashboardPanel id="dashboard-supplier-home">
+  <UDashboardPanel id="console-supplier-home">
     <template #header>
       <UDashboardNavbar title="Supplier">
         <template #leading>
@@ -38568,7 +38568,7 @@ const resolvedAppProfile = computed(() => appProfile.value ?? null)
       <div class="p-6">
         <p class="text-lg font-semibold">Hello World</p>
         <p class="text-muted mt-2 text-sm">
-          Placeholder content for the Supplier dashboard landing.
+          Placeholder content for the Supplier console landing.
         </p>
       </div>
     </template>
@@ -38577,9 +38577,9 @@ const resolvedAppProfile = computed(() => appProfile.value ?? null)
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-supplier-home',
+    key: 'console-supplier-home',
     label: 'Supplier',
     icon: 'i-lucide-package',
     desktop: false,
@@ -38593,12 +38593,12 @@ definePageMeta({
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/my-stock.vue
+### packages/ecosystem/fireux-misebox/src/runtime/pages/console/supplier/my-stock.vue
 
 ```vue
-<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/my-stock.vue -->
+<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/console/supplier/my-stock.vue -->
 <template>
-  <UDashboardPanel id="dashboard-supplier-my-stock">
+  <UDashboardPanel id="console-supplier-my-stock">
     <template #header>
       <UDashboardNavbar title="My Stock">
         <template #leading>
@@ -38628,9 +38628,9 @@ definePageMeta({
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-supplier-stock',
+    key: 'console-supplier-stock',
     label: 'My Stock',
     icon: 'i-lucide-box',
     desktop: false,
@@ -38644,12 +38644,12 @@ definePageMeta({
 
 ```
 
-### packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/profile.vue
+### packages/ecosystem/fireux-misebox/src/runtime/pages/console/supplier/profile.vue
 
 ```vue
-<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/profile.vue -->
+<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/console/supplier/profile.vue -->
 <template>
-  <UDashboardPanel id="dashboard-supplier-profile">
+  <UDashboardPanel id="console-supplier-profile">
     <template #header>
       <UDashboardNavbar title="Supplier Profile">
         <template #leading>
@@ -38682,7 +38682,7 @@ definePageMeta({
         </UCard>
 
         <ClientOnly v-else>
-          <LayoutsDashboardProfileEdit class="grid gap-6 lg:grid-cols-2">
+          <LayoutsConsoleProfileEdit class="grid gap-6 lg:grid-cols-2">
             <template #preview>
               <OrganismsProfilesSupplierEditPreviewPanel />
             </template>
@@ -38698,7 +38698,7 @@ definePageMeta({
                 :supplier="resolvedAppProfile"
               />
             </template>
-          </LayoutsDashboardProfileEdit>
+          </LayoutsConsoleProfileEdit>
         </ClientOnly>
       </div>
     </template>
@@ -38707,19 +38707,19 @@ definePageMeta({
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
+import LayoutsConsoleProfileEdit from 'fireux-core/runtime/components/layouts/console/ProfileEdit.vue'
 import { useSupplier } from '../../../composables/fireux/firestore/profiles/Supplier/useSupplier'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { supplierConfig } from '../../../models/profiles/Supplier/Supplier.model'
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-supplier-profile',
+    key: 'console-supplier-profile',
     label: 'Supplier Profile',
     icon: 'i-lucide-package',
     desktop: true,
-    layouts: ['dashboard'],
+    layouts: ['console'],
     group: 'profiles',
     profileId: 'supplier',
   },
@@ -39530,7 +39530,7 @@ const searchRecipes = (query: string) => {
             size="md"
             color="primary"
             variant="solid"
-            @click="navigateTo('/dashboard/supplier/profile')"
+            @click="navigateTo('/console/supplier/profile')"
           >
             Edit Profile
           </UButton>
@@ -43648,7 +43648,7 @@ useHead({ title: `${appName} | Create Company` })
         description="We could not find this company. Return to the companies list and try again."
       />
 
-      <LayoutsDashboardProfileEdit v-else class="fx-panels-masonry">
+      <LayoutsConsoleProfileEdit v-else class="fx-panels-masonry">
         <template #preview>
           <CompanyCardsPreview
             :avatar-url="company.place_image ?? ''"
@@ -43662,14 +43662,14 @@ useHead({ title: `${appName} | Create Company` })
         <template #core>
           <CompanyEdit :company="company" />
         </template>
-      </LayoutsDashboardProfileEdit>
+      </LayoutsConsoleProfileEdit>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { useHead, useRoute } from '#imports'
-import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
+import LayoutsConsoleProfileEdit from 'fireux-core/runtime/components/layouts/console/ProfileEdit.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
 import { useCompanyFetch } from '../../../composables/fireux/firestore/company/fetch/useCompanyFetch'
@@ -47612,14 +47612,14 @@ defineProps<{ items: VolunteerItem[] }>()
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/composables/fireux/app/routes/useJobDashboardRoutes.ts
+### packages/extensions/fireux-jobs/src/runtime/composables/fireux/app/routes/useJobConsoleRoutes.ts
 
 ```ts
 import type { RouteLink } from './useJobRoutes'
 
-// Dashboard-only job profile routes (no public discovery links)
+// Console-only job profile routes (no public discovery links)
 
-export function getJobDashboardRoutes(
+export function getJobConsoleRoutes(
   hasProfile: (profileType: string) => boolean
 ) {
   const jobProfileRoutes: RouteLink[] = []
@@ -47629,7 +47629,7 @@ export function getJobDashboardRoutes(
       id: 'agent-profile',
       label: 'Agent Profile',
       icon: 'i-lucide-building-2',
-      to: '/dashboard/agent/profile',
+      to: '/console/agent/profile',
     })
   }
 
@@ -47638,12 +47638,12 @@ export function getJobDashboardRoutes(
       id: 'professional-profile',
       label: 'Professional Profile',
       icon: 'i-lucide-users',
-      to: '/dashboard/professional/profile',
+      to: '/console/professional/profile',
     })
   }
 
   return {
-    // Sidebar/mobile within dashboard should only show profile editors
+    // Sidebar/mobile within console should only show profile editors
     jobProfileRoutes,
     jobMobileRoutes: jobProfileRoutes,
   }
@@ -47696,7 +47696,7 @@ export function getJobRoutes(hasProfile: (profileType: string) => boolean) {
       id: 'agent-profile',
       label: 'Agent Profile',
       icon: 'i-lucide-building-2',
-      to: '/dashboard/agent/profile',
+      to: '/console/agent/profile',
     })
   }
 
@@ -47705,7 +47705,7 @@ export function getJobRoutes(hasProfile: (profileType: string) => boolean) {
       id: 'professional-profile',
       label: 'Professional Profile',
       icon: 'i-lucide-users',
-      to: '/dashboard/professional/profile',
+      to: '/console/professional/profile',
     })
   }
 
@@ -49927,7 +49927,7 @@ export const professionalConfig: ProfileConfig = {
             size="md"
             color="primary"
             variant="solid"
-            @click="navigateTo('/dashboard/agent/profile')"
+            @click="navigateTo('/console/agent/profile')"
           >
             Edit Profile
           </UButton>
@@ -50097,12 +50097,12 @@ useHead({ title: 'Agent Profile · Learn More' })
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent/index.vue
+### packages/extensions/fireux-jobs/src/runtime/pages/console/agent/index.vue
 
 ```vue
-<!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent/index.vue -->
+<!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/console/agent/index.vue -->
 <template>
-  <UDashboardPanel id="dashboard-agent-home">
+  <UDashboardPanel id="console-agent-home">
     <template #header>
       <UDashboardNavbar title="Agent">
         <template #leading>
@@ -50124,7 +50124,7 @@ useHead({ title: 'Agent Profile · Learn More' })
               </div>
 
               <UButton
-                to="/dashboard/agent/profile"
+                to="/console/agent/profile"
                 label="Build agent profile"
                 color="neutral"
                 size="sm"
@@ -50173,9 +50173,9 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-agent-home',
+    key: 'console-agent-home',
     label: 'Agent',
     icon: 'i-lucide-shield-user',
     desktop: false,
@@ -50229,12 +50229,12 @@ const profileLabel = computed(() => {
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent/my-gigs.vue
+### packages/extensions/fireux-jobs/src/runtime/pages/console/agent/my-gigs.vue
 
 ```vue
-<!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent/my-gigs.vue -->
+<!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/console/agent/my-gigs.vue -->
 <template>
-  <UDashboardPanel id="dashboard-agent-my-gigs">
+  <UDashboardPanel id="console-agent-my-gigs">
     <template #header>
       <UDashboardNavbar title="My Gigs">
         <template #leading>
@@ -50265,9 +50265,9 @@ const profileLabel = computed(() => {
 <script setup lang="ts">
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-agent-my-gigs',
+    key: 'console-agent-my-gigs',
     label: 'My Gigs',
     icon: 'i-lucide-radio-tower',
     desktop: true,
@@ -50281,14 +50281,14 @@ definePageMeta({
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent/profile.vue
+### packages/extensions/fireux-jobs/src/runtime/pages/console/agent/profile.vue
 
 ```vue
-<!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent/profile.vue -->
+<!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/console/agent/profile.vue -->
 <template>
-  <UDashboardPanel id="dashboard-agent-profile">
+  <UDashboardPanel id="console-agent-profile">
     <template #header>
-      <LayoutsDashboardNavbar :title="navTitle" />
+      <LayoutsConsoleNavbar :title="navTitle" />
     </template>
 
     <template #body>
@@ -50340,7 +50340,7 @@ definePageMeta({
 
         <!-- Main panels -->
         <ClientOnly v-else>
-          <LayoutsDashboardProfileEdit class="fx-panels-masonry">
+          <LayoutsConsoleProfileEdit class="fx-panels-masonry">
             <template #preview>
               <OrganismsProfilesAgentEditPreviewPanel />
             </template>
@@ -50352,7 +50352,7 @@ definePageMeta({
             <template v-if="resolvedAppProfile" #app>
               <OrganismsProfilesAgentEditApp :agent="resolvedAppProfile" />
             </template>
-          </LayoutsDashboardProfileEdit>
+          </LayoutsConsoleProfileEdit>
         </ClientOnly>
       </div>
     </template>
@@ -50360,7 +50360,7 @@ definePageMeta({
 </template>
 
 <script setup lang="ts">
-import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
+import LayoutsConsoleProfileEdit from 'fireux-core/runtime/components/layouts/console/ProfileEdit.vue'
 import { useApp } from 'fireux-core/runtime/composables/fireux/firestore/core/app/useApp'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
@@ -50373,13 +50373,13 @@ const navIcon = agentConfig.navIcon ?? 'i-lucide-user'
 const navTitle = navLabel
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-agent-profile',
+    key: 'console-agent-profile',
     label: navLabel,
     icon: navIcon,
     desktop: true,
-    layouts: ['dashboard'],
+    layouts: ['console'],
     group: 'profiles',
     profileId: 'agent',
   },
@@ -50421,12 +50421,12 @@ const wrapperPropsFor = (card: { to?: string | null } | null) => (card?.to ? { t
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/index.vue
+### packages/extensions/fireux-jobs/src/runtime/pages/console/professional/index.vue
 
 ```vue
-<!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/index.vue -->
+<!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/console/professional/index.vue -->
 <template>
-  <UDashboardPanel id="dashboard-professional-home">
+  <UDashboardPanel id="console-professional-home">
     <template #header>
       <UDashboardNavbar title="Professional">
         <template #leading>
@@ -50446,9 +50446,9 @@ const wrapperPropsFor = (card: { to?: string | null } | null) => (card?.to ? { t
 <script setup lang="ts">
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-professional-home',
+    key: 'console-professional-home',
     label: 'Professional',
     icon: 'i-lucide-user-star',
     desktop: false,
@@ -50462,12 +50462,12 @@ definePageMeta({
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/my-jobs.vue
+### packages/extensions/fireux-jobs/src/runtime/pages/console/professional/my-jobs.vue
 
 ```vue
-<!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/my-jobs.vue -->
+<!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/console/professional/my-jobs.vue -->
 <template>
-  <UDashboardPanel id="dashboard-professional-my-jobs">
+  <UDashboardPanel id="console-professional-my-jobs">
     <template #header>
       <UDashboardNavbar title="My Jobs">
         <template #leading>
@@ -50522,9 +50522,9 @@ definePageMeta({
 <script setup lang="ts">
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-professional-extra-2',
+    key: 'console-professional-extra-2',
     label: 'My Jobs',
     icon: 'i-lucide-briefcase-business',
     desktop: false,
@@ -50538,12 +50538,12 @@ definePageMeta({
 
 ```
 
-### packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/profile.vue
+### packages/extensions/fireux-jobs/src/runtime/pages/console/professional/profile.vue
 
 ```vue
-<!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/profile.vue -->
+<!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/console/professional/profile.vue -->
 <template>
-  <UDashboardPanel id="dashboard-professional-profile">
+  <UDashboardPanel id="console-professional-profile">
     <template #header>
       <UDashboardNavbar :title="navTitle">
         <template #leading>
@@ -50578,7 +50578,7 @@ definePageMeta({
         </UCard>
 
         <ClientOnly v-else>
-          <LayoutsDashboardProfileEdit class="grid gap-6 lg:grid-cols-2">
+          <LayoutsConsoleProfileEdit class="grid gap-6 lg:grid-cols-2">
             <template #preview>
               <OrganismsProfilesProfessionalEditPreviewPanel />
             </template>
@@ -50594,7 +50594,7 @@ definePageMeta({
                 :professional="resolvedAppProfile"
               />
             </template>
-          </LayoutsDashboardProfileEdit>
+          </LayoutsConsoleProfileEdit>
         </ClientOnly>
       </div>
     </template>
@@ -50603,7 +50603,7 @@ definePageMeta({
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
+import LayoutsConsoleProfileEdit from 'fireux-core/runtime/components/layouts/console/ProfileEdit.vue'
 import { useProfessional } from '../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { professionalConfig } from '../../../models/profiles/Professional/supporting'
@@ -50615,13 +50615,13 @@ const navIcon = professionalConfig.navIcon ?? 'i-lucide-user'
 const navTitle = navLabel
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   nav: {
-    key: 'dashboard-professional-profile',
+    key: 'console-professional-profile',
     label: navLabel,
     icon: navIcon,
     desktop: true,
-    layouts: ['dashboard'],
+    layouts: ['console'],
     group: 'profiles',
     profileId: profileKey,
   },
@@ -51390,7 +51390,7 @@ const collection = computed(() => appJobs.value ?? [])
       <section class="space-y-3">
         <h3 class="text-base font-semibold">Get involved</h3>
         <p class="text-sm text-gray-600">
-          Agents can start by creating a draft job from the Jobs dashboard.
+          Agents can start by creating a draft job from the Jobs console.
           Professionals should keep their profiles complete so they appear in
           recommendations when jobs go live.
         </p>
@@ -51436,7 +51436,7 @@ useHead({ title: 'Learn more about FireUX Jobs' })
             size="md"
             color="primary"
             variant="solid"
-            @click="navigateTo('/dashboard/professional/profile')"
+            @click="navigateTo('/console/professional/profile')"
           >
             Edit Profile
           </UButton>
@@ -53101,7 +53101,7 @@ useHead({ title: `${appName} | Create Kitchen` })
         description="We could not find this kitchen. Return to the kitchens list and try again."
       />
 
-      <LayoutsDashboardProfileEdit v-else class="fx-panels-masonry">
+      <LayoutsConsoleProfileEdit v-else class="fx-panels-masonry">
         <template #preview>
           <KitchenCardsPreview
             :avatar-url="kitchen.place_image ?? ''"
@@ -53115,14 +53115,14 @@ useHead({ title: `${appName} | Create Kitchen` })
         <template #core>
           <KitchenEdit :kitchen="kitchen" />
         </template>
-      </LayoutsDashboardProfileEdit>
+      </LayoutsConsoleProfileEdit>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { useHead, useRoute } from '#imports'
-import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
+import LayoutsConsoleProfileEdit from 'fireux-core/runtime/components/layouts/console/ProfileEdit.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
@@ -55940,7 +55940,7 @@ async function onConfirmed(payload: { placeId: string }) {
           description="We could not find this place. Return to the places list and try again."
         />
 
-        <LayoutsDashboardProfileEdit v-else class="fx-panels-masonry">
+        <LayoutsConsoleProfileEdit v-else class="fx-panels-masonry">
           <template #preview>
             <PlaceCardsPreview
               :image-url="place.place_image ?? ''"
@@ -55954,7 +55954,7 @@ async function onConfirmed(payload: { placeId: string }) {
           <template #core>
             <PlaceEdit :place="place" />
           </template>
-        </LayoutsDashboardProfileEdit>
+        </LayoutsConsoleProfileEdit>
 
         <UCard v-if="showDebug && place">
           <template #header>
@@ -55977,7 +55977,7 @@ async function onConfirmed(payload: { placeId: string }) {
 
 <script setup lang="ts">
 import { useHead, useRoute } from '#imports'
-import LayoutsDashboardProfileEdit from 'fireux-core/runtime/components/layouts/dashboard/ProfileEdit.vue'
+import LayoutsConsoleProfileEdit from 'fireux-core/runtime/components/layouts/console/ProfileEdit.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
@@ -59975,7 +59975,7 @@ export default defineAppConfig({
 
 ```
 
-### projects/cleanbox/cleanbox-app/app/components/Dashboard/overview/domain/App.vue
+### projects/cleanbox/cleanbox-app/app/components/Console/overview/domain/App.vue
 
 ```vue
 <template>
@@ -59991,13 +59991,13 @@ export default defineAppConfig({
 
 ```
 
-### projects/cleanbox/cleanbox-app/app/components/DashboardApp.vue
+### projects/cleanbox/cleanbox-app/app/components/ConsoleApp.vue
 
 ```vue
 <template>
   <div class="grid grid-cols-1 gap-4">
     <UPageCard variant="subtle">
-      <p class="text-xs text-dimmed mb-2">Component: DashboardApp (cleanbox-app)</p>
+      <p class="text-xs text-dimmed mb-2">Component: ConsoleApp (cleanbox-app)</p>
       <h1 class="text-xl font-semibold">Cleanbox App Stuff</h1>
       <p class="text-sm text-dimmed mt-2">hello cleanbox app</p>
     </UPageCard>
@@ -60957,7 +60957,7 @@ const hero = {
   title: 'Bling with',
   accent: 'Operational Clarity',
   paragraph:
-    'Coordinate crews, quality checks, and billing from one dashboard. Cleanbox keeps every service <span class="text-primary">scheduled</span>, <span class="text-primary">verified</span>, and <span class="text-primary">client-ready</span>.',
+    'Coordinate crews, quality checks, and billing from one console. Cleanbox keeps every service <span class="text-primary">scheduled</span>, <span class="text-primary">verified</span>, and <span class="text-primary">client-ready</span>.',
   badges: [
     { src: '/img/app/wordmark-light.png', alt: 'Cleanbox wordmark' },
     { src: '/img/app/logo.png', alt: 'Cleanbox emblem' },
@@ -60989,9 +60989,9 @@ const quickPeek = {
   title: 'Ops at a Glance',
   subtitle: 'Dispatch, QA, and billing updates for crews across properties',
   cta: {
-    label: 'Explore the Dashboard',
-    to: '/dashboard',
-    icon: 'i-lucide-layout-dashboard',
+    label: 'Explore the Console',
+    to: '/console',
+    icon: 'i-lucide-terminal',
   },
   items: [
     {
@@ -61094,19 +61094,19 @@ This file is generated by Copilot comparing `liturature.md` to the actual code.
 
 ## 1. Missing Features
 
-- Real-time scheduling and crew assignment tools are absent; the runtime only exposes the marketing landing page (`app/pages/index.vue`) with no operational dashboards or scheduling composables.
+- Real-time scheduling and crew assignment tools are absent; the runtime only exposes the marketing landing page (`app/pages/index.vue`) with no operational consoles or scheduling composables.
 - QA checklist, photo upload, and timestamp workflows promised in the literature do not exist; there are no QA components or storage integrations under `app/components` or `app/composables`.
-- Client dashboards and proof-of-work sharing are missing; no client data models or routes are implemented.
+- Client consoles and proof-of-work sharing are missing; no client data models or routes are implemented.
 - Stripe invoicing and payment tracking are not configured; there are no billing pages, server routes, or Stripe composables in the app.
 - Certification/compliance tracking per crew member is not implemented; no components or data structures address training/incident records.
 - Chat and feedback tools between management and staff are absent; no messaging UI or realtime services are present.
-- Analytics dashboards for productivity and satisfaction are missing; no reporting pages or data pipelines exist.
+- Analytics consoles for productivity and satisfaction are missing; no reporting pages or data pipelines exist.
 - PWA/mobile crew experience is not set up; there is no manifest, offline support, or mobile-specific UI beyond the landing page.
 
 ## 2. Missing Routes or Components
 
-- Promised routes `/get-started`, `/dashboard`, `/crews`, `/qa`, `/billing`, `/clients`, `/reports` are not implemented; `app/pages/` contains only `index.vue`.
-- Landing CTAs reference `/get-started`, `/crews`, `/dashboard`, `/sales`, `/scheduling`, `/qa`, `/compliance`, `/billing`, `/clients`, and `/reports`, none of which exist.
+- Promised routes `/get-started`, `/console`, `/crews`, `/qa`, `/billing`, `/clients`, `/reports` are not implemented; `app/pages/` contains only `index.vue`.
+- Landing CTAs reference `/get-started`, `/crews`, `/console`, `/sales`, `/scheduling`, `/qa`, `/compliance`, `/billing`, `/clients`, and `/reports`, none of which exist.
 
 ## 3. Mismatched or Renamed Items
 
@@ -61144,11 +61144,11 @@ It transforms field operations into a structured system with clear accountabilit
 
 - Real-time job scheduling and crew assignments
 - QA checklists with photo uploads and timestamps
-- Client dashboards showing proof of work
+- Client consoles showing proof of work
 - Stripe-powered invoicing and payment tracking
 - Certification and compliance tracking per crew member
 - Chat and feedback tools between management and staff
-- Analytics dashboard for productivity and client satisfaction
+- Analytics console for productivity and client satisfaction
 - PWA-ready mobile access for crews on the go
 
 ---
@@ -61157,7 +61157,7 @@ It transforms field operations into a structured system with clear accountabilit
 
 - `/` – marketing homepage
 - `/get-started` – onboarding for new companies
-- `/dashboard` – operational overview for managers
+- `/console` – operational overview for managers
 - `/crews` – list of team members and shift assignments
 - `/qa` – quality assurance and proof uploads
 - `/billing` – invoices, payments, and exports
@@ -61220,10 +61220,10 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 
 ## ❌ Missing
 
-- Operational dashboard with real-time crew scheduling, coverage alerts, and daily metrics
+- Operational console with real-time crew scheduling, coverage alerts, and daily metrics
 - Crew workspace for assignments, attendance, and mobile-ready check-ins
 - QA workflow: checklist builder, photo uploads, approvals, and audit trails
-- Client portal/dashboards exposing proof of work, reports, and feedback channels
+- Client portal/consoles exposing proof of work, reports, and feedback channels
 - Stripe-integrated billing engine (plans, invoices, payments, exports)
 - Certification/compliance management for staff (training records, incident logging)
 - In-app chat/feedback or notifications between management and field teams
@@ -61236,18 +61236,18 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 - QA photo capture will depend on Firestore/Storage patterns and possibly `fireux-cleanbox` extensions—coordinate to avoid duplicate upload logic
 - Billing requires Stripe integration conventions from FireUX core; reuse shared services for customer and invoice management
 - Chat/notifications may leverage a future messaging extension; align on transport (Firestore, Pub/Sub) before implementation
-- Analytics dashboards likely need a shared reporting pipeline; coordinate with platform analytics ADRs before building tenant views
+- Analytics consoles likely need a shared reporting pipeline; coordinate with platform analytics ADRs before building tenant views
 
 ## Next Actions
 
-- [ ] Scaffold promised routes (`/get-started`, `/dashboard`, `/crews`, `/qa`, `/billing`, `/clients`, `/reports`) with placeholder layouts
+- [ ] Scaffold promised routes (`/get-started`, `/console`, `/crews`, `/qa`, `/billing`, `/clients`, `/reports`) with placeholder layouts
 - [ ] Implement scheduling data layer and UI (shifts, crews, coverage alerts)
 - [ ] Build QA module supporting checklist creation, photo uploads, and supervisor approvals
 - [ ] Deliver client portal pages with report summaries, media galleries, and feedback capture
 - [ ] Integrate Stripe billing (products, invoices, payment sync) following core patterns
 - [ ] Add compliance tooling for certifications and incident tracking tied to crew profiles
 - [ ] Introduce chat/notification channels or integrate with planned messaging extension
-- [ ] Stand up analytics dashboards and connect to FireUX analytics services
+- [ ] Stand up analytics consoles and connect to FireUX analytics services
 - [ ] Configure PWA support (manifest, offline caching, push notifications) for field crews
 
 ```
@@ -61412,7 +61412,7 @@ export default defineAppConfig({
 
 ```
 
-### projects/cleanbox/richies-reinigung/app/components/Dashboard/overview/domain/App.vue
+### projects/cleanbox/richies-reinigung/app/components/Console/overview/domain/App.vue
 
 ```vue
 <template>
@@ -61420,7 +61420,7 @@ export default defineAppConfig({
     <div class="space-y-3">
       <p class="text-sm text-dimmed font-medium">richies-reinigung — app overview (notes)</p>
       <p class="text-sm text-dimmed leading-relaxed">
-        Tenant-specific app overviews should feel local and practical. This is where users see what matters inside this business, not across the ecosystem. The focus is on immediate relevance: today’s activity, local priorities, and the single most useful action they can take next. Over time, these views become tailored dashboards that reflect how that business actually operates, while still fitting into the same structural bucket as every other app.
+        Tenant-specific app overviews should feel local and practical. This is where users see what matters inside this business, not across the ecosystem. The focus is on immediate relevance: today’s activity, local priorities, and the single most useful action they can take next. Over time, these views become tailored consoles that reflect how that business actually operates, while still fitting into the same structural bucket as every other app.
       </p>
     </div>
   </UPageCard>
@@ -62893,16 +62893,16 @@ This file is generated by Copilot comparing `liturature.md` to the actual code.
 
 ## 1. Missing Features
 
-- Crew dashboard, shift assignment tooling, and attendance tracking are absent; the app exposes only a marketing-style landing page (`app/pages/index.vue`) with no operational views.
+- Crew console, shift assignment tooling, and attendance tracking are absent; the app exposes only a marketing-style landing page (`app/pages/index.vue`) with no operational views.
 - QA/photo verification flows with uploads and timestamped proof do not exist; there are no components or composables handling inspections or media capture under `app/components` or `app/composables`.
 - Client reporting, job summaries, and visual verification features are missing; there is no data layer or UI for client/job records.
 - Stripe billing integration is not configured; no Stripe composables, server routes, or billing pages are present.
 - Compliance resources for Swiss safety standards are not implemented; no dedicated content or routes exist.
-- Analytics overviews for hours worked or completion rates are missing; there are no dashboards or metrics modules.
+- Analytics overviews for hours worked or completion rates are missing; there are no consoles or metrics modules.
 
 ## 2. Missing Routes or Components
 
-- Promised routes `/dashboard`, `/crews`, `/qa`, `/clients`, `/billing` are not implemented; the `app/pages/` directory only contains `index.vue`.
+- Promised routes `/console`, `/crews`, `/qa`, `/clients`, `/billing` are not implemented; the `app/pages/` directory only contains `index.vue`.
 - Landing CTAs link to `/cleaners` and `/services`, but these routes and supporting components are absent.
 
 ## 3. Mismatched or Renamed Items
@@ -62940,7 +62940,7 @@ It keeps the power of Cleanbox but adapts the visuals, copy, and data structure 
 ## Key Features
 
 - Branded UI with Richie’s Reinigung colors and logo
-- Crew dashboard for shift assignments and attendance
+- Crew console for shift assignments and attendance
 - QA module with photo uploads and timestamped proof
 - Client reports with job summaries and visual verification
 - Integrated Stripe billing under Richie’s own account
@@ -62952,7 +62952,7 @@ It keeps the power of Cleanbox but adapts the visuals, copy, and data structure 
 ## Main Pages / Routes
 
 - `/` – company homepage
-- `/dashboard` – manager view of daily operations
+- `/console` – manager view of daily operations
 - `/crews` – active staff list and shift schedules
 - `/qa` – photo verification and checklists
 - `/clients` – client database and job reports
@@ -62964,7 +62964,7 @@ It keeps the power of Cleanbox but adapts the visuals, copy, and data structure 
 
 - Automate recurring client schedules (weekly/monthly jobs)
 - Add bilingual interface (German/English)
-- Expand analytics dashboard for cost per site
+- Expand analytics console for cost per site
 - Integrate custom report exports for Swiss compliance forms
 - Connect with Cleanbox central analytics via FireUX Core
 
@@ -63013,13 +63013,13 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 
 ## ❌ Missing
 
-- Dashboard experience for managers covering shift assignments, attendance, and daily operations
+- Console experience for managers covering shift assignments, attendance, and daily operations
 - Crew directory with scheduling tools and mobile-friendly check-in flows
 - QA verification module with photo uploads, timestamps, and checklist management
 - Client database with job history, reports, and visual proof exports
 - Billing workspace powered by Stripe (products, invoices, payment status)
 - Compliance knowledge base for Swiss safety standards, including exportable forms
-- Analytics dashboards tracking hours worked, job completion rates, and cost per site
+- Analytics consoles tracking hours worked, job completion rates, and cost per site
 - Localization/bilingual interface support (DE/EN) across routes and content
 
 ## 🧩 Planned / Cross-Package Dependencies
@@ -63031,13 +63031,13 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 
 ## Next Actions
 
-- [ ] Design navigation and scaffold the promised routes (`/dashboard`, `/crews`, `/qa`, `/clients`, `/billing`) with placeholder layouts
+- [ ] Design navigation and scaffold the promised routes (`/console`, `/crews`, `/qa`, `/clients`, `/billing`) with placeholder layouts
 - [ ] Implement crew scheduling and attendance tracking atop Cleanbox workforce data
 - [ ] Build QA module supporting photo capture, checklist completion, and audit trails
 - [ ] Ship client reporting views with job summaries, media galleries, and export options
 - [ ] Integrate Stripe for billing (customer sync, invoices, payment reconciliation)
 - [ ] Create compliance section with configurable Swiss safety checklists and downloadable reports
-- [ ] Add analytics dashboards aggregating hours worked, completion rates, and cost metrics
+- [ ] Add analytics consoles aggregating hours worked, completion rates, and cost metrics
 - [ ] Introduce bilingual content strategy (i18n tooling, locale switcher, translated copy)
 
 ```
@@ -63207,7 +63207,7 @@ export default defineAppConfig({
 </template>
 ```
 
-### projects/fireux/fireux-app/app/components/Dashboard/overview/domain/App.vue
+### projects/fireux/fireux-app/app/components/Console/overview/domain/App.vue
 
 ```vue
 <template>
@@ -63223,13 +63223,13 @@ export default defineAppConfig({
 
 ```
 
-### projects/fireux/fireux-app/app/components/DashboardApp.vue
+### projects/fireux/fireux-app/app/components/ConsoleApp.vue
 
 ```vue
 <template>
   <div class="grid grid-cols-1 gap-4">
     <UPageCard variant="subtle">
-      <p class="text-xs text-dimmed mb-2">Component: DashboardApp (fireux-app)</p>
+      <p class="text-xs text-dimmed mb-2">Component: ConsoleApp (fireux-app)</p>
       <h1 class="text-xl font-semibold">FireUX App Stuff</h1>
       <p class="text-sm text-dimmed mt-2">hello fireux app</p>
     </UPageCard>
@@ -63392,9 +63392,9 @@ const defaults: FeatureItem[] = [
     description: 'Composable modules for speed and safety.',
   },
   {
-    key: 'dashboard',
-    icon: 'i-lucide-layout-dashboard',
-    title: 'Dashboard-Driven',
+    key: 'console',
+    icon: 'i-lucide-terminal',
+    title: 'Console-Driven',
     description: 'Clear, data-first layouts and controls.',
   },
   {
@@ -63511,9 +63511,9 @@ const allFeatures = [
       'FIReUX enables rapid development with reusable components and automation.',
   },
   {
-    key: 'dashboard',
-    icon: 'i-lucide-layout-dashboard',
-    title: 'Dashboard Driven',
+    key: 'console',
+    icon: 'i-lucide-terminal',
+    title: 'Console Driven',
     description:
       'Structured, data-driven layouts optimized for control and clarity.',
   },
@@ -65523,7 +65523,7 @@ definePageMeta({
           <code>pnpm registry:register</code>.
         </li>
         <li>Visit <code>/dev/registry</code> and copy the payload.</li>
-        <li>Use that JSON for seed scripts, dashboards, or parity checks.</li>
+        <li>Use that JSON for seed scripts, consoles, or parity checks.</li>
       </ol>
     </section>
   </main>
@@ -66567,7 +66567,7 @@ This file is generated by Copilot comparing `liturature.md` to the actual code.
 - Account system linked across tenants is missing; there is no authentication, session management, or profile UI.
 - Subscription management and billing do not exist; no Stripe integrations, pricing flows, or backend endpoints are present.
 - News/updates and partner contact workflows are not wired; no CMS, blog, or contact form logic appears in the codebase.
-- Partner inquiry forms and ecosystem analytics dashboards are not implemented anywhere in the app.
+- Partner inquiry forms and ecosystem analytics consoles are not implemented anywhere in the app.
 
 ## 2. Missing Routes or Components
 
@@ -66636,7 +66636,7 @@ It introduces the core framework, showcases active tenant apps (like Misebox and
 - Add automated signup flow for managed subscriptions
 - Launch the FireUX Partner Program for agencies and builders
 - Integrate GitHub sign-in for developer onboarding
-- Implement analytics dashboard showing ecosystem growth
+- Implement analytics console showing ecosystem growth
 - Build "FireUX Shop" for templates and extensions
 
 ---
@@ -66662,7 +66662,7 @@ Serve as the canonical global shell that boots the shared FIReUX UI, auth, and m
 - Validate global authentication flows.
 - Showcase tenant switching and base navigation.
 - Provide the "hello world" SaaS example for the platform.
-- Offer a safe place to inspect shared dashboards, layouts, and runtime config.
+- Offer a safe place to inspect shared consoles, layouts, and runtime config.
 
 ```
 
@@ -66691,7 +66691,7 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 - Developer documentation section with navigation, search, and markdown rendering (`/developers`)
 - Contact and partner inquiry forms with backend handling and CRM integration
 - News/updates or blog engine to broadcast ecosystem announcements
-- Analytics/dashboard views highlighting ecosystem metrics and growth
+- Analytics/console views highlighting ecosystem metrics and growth
 - “FireUX Shop” marketplace for templates and extensions
 
 ## 🧩 Planned / Cross-Package Dependencies
@@ -66707,7 +66707,7 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 - [ ] Implement auth flows leveraging FireUX core composables and connect accounts across tenants
 - [ ] Design pricing and subscription flows, integrating with Stripe for payments and plan management
 - [ ] Create contact/partner form endpoints and UI, wiring to CRM or email automation
-- [ ] Stand up news/updates feed and analytics dashboard to surface ecosystem metrics
+- [ ] Stand up news/updates feed and analytics console to surface ecosystem metrics
 - [ ] Plan and prototype the FireUX Shop marketplace for templates and extensions
 
 ```
@@ -67201,7 +67201,7 @@ export default defineAppConfig({
 
 ```
 
-### projects/fireux/tenant/app/components/Dashboard/overview/domain/App.vue
+### projects/fireux/tenant/app/components/Console/overview/domain/App.vue
 
 ```vue
 <template>
@@ -67209,7 +67209,7 @@ export default defineAppConfig({
     <div class="space-y-3">
       <p class="text-sm text-dimmed font-medium">tenant — app overview (notes)</p>
       <p class="text-sm text-dimmed leading-relaxed">
-        Tenant-specific app overviews should feel local and practical. This is where users see what matters inside this business, not across the ecosystem. The focus is on immediate relevance: today’s activity, local priorities, and the single most useful action they can take next. Over time, these views become tailored dashboards that reflect how that business actually operates, while still fitting into the same structural bucket as every other app.
+        Tenant-specific app overviews should feel local and practical. This is where users see what matters inside this business, not across the ecosystem. The focus is on immediate relevance: today’s activity, local priorities, and the single most useful action they can take next. Over time, these views become tailored consoles that reflect how that business actually operates, while still fitting into the same structural bucket as every other app.
       </p>
     </div>
   </UPageCard>
@@ -67317,7 +67317,7 @@ const featureList = [
   {
     icon: 'i-lucide-shield-check',
     title: 'Secure onboarding',
-    copy: 'Gate dashboards behind developer pins and env validation.',
+    copy: 'Gate consoles behind developer pins and env validation.',
   },
   {
     icon: 'i-lucide-layers',
@@ -68105,7 +68105,7 @@ const solutions = {
         runtime controls or use the onboarding modal to create admin membership.
       </p>
       <p>
-        Already a member? Navigate back to the dashboard once the runtime user
+        Already a member? Navigate back to the console once the runtime user
         resolves.
       </p>
     </div>
@@ -68158,7 +68158,7 @@ This file is generated by Copilot comparing `liturature.md` to the actual code.
 
 ## 2. Missing Routes or Components
 
-- Promised routes `/auth`, `/dashboard`, `/settings`, `/about`, `/legal` are not implemented; `app/pages/` only contains `index.vue`.
+- Promised routes `/auth`, `/console`, `/settings`, `/about`, `/legal` are not implemented; `app/pages/` only contains `index.vue`.
 - Landing components such as `LandingHero`/`LandingSolutions` are imported but no tenant-specific variants exist; there is no evidence of legal, settings, or auth components in `app/components`.
 
 ## 3. Mismatched or Renamed Items
@@ -68210,7 +68210,7 @@ It handles user sessions, tenant configuration, and environment variables while 
 ## Main Pages / Routes
 
 - `/auth` – login, register, reset password
-- `/dashboard` – default tenant home page
+- `/console` – default tenant home page
 - `/settings` – account and subscription management
 - `/about` – tenant-specific info page
 - `/legal` – privacy, terms, and cookie policy
@@ -68272,7 +68272,7 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 
 - Multi-tenant configuration layer (Firestore schema, composables, admin UI) for theme, domain, and copy overrides
 - Authentication and session flows (`/auth` routes, Firebase providers, cross-tenant cookies)
-- Default dashboard/settings/about/legal pages with shared layout wiring and tenant-aware data
+- Default console/settings/about/legal pages with shared layout wiring and tenant-aware data
 - Stripe subscription and billing integration (customers, plans, webhooks, UI)
 - Deployment automation (CLI to bootstrap tenants, Firebase presets, CI/CD templates)
 - Theme/logos asset management plus PWA setup (manifest, icons, offline strategies)
@@ -68289,7 +68289,7 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 
 - [ ] Design tenant configuration schema and composables; expose management UI under `/settings`
 - [ ] Implement auth routes (login/register/reset) using cross-tenant session helpers
-- [ ] Scaffold dashboard, settings, about, and legal pages with placeholder content linked to config
+- [ ] Scaffold console, settings, about, and legal pages with placeholder content linked to config
 - [ ] Integrate Stripe billing (subscription creation, webhook handling, invoice display)
 - [ ] Create CLI or scripts to generate tenant shells and prepopulate Firebase environments
 - [ ] Add theme/logo asset pipelines and PWA manifest/icon support
@@ -68471,7 +68471,7 @@ export default defineAppConfig({
 
 ```
 
-### projects/misebox/misebox-app/app/components/Dashboard/overview/domain/App.vue
+### projects/misebox/misebox-app/app/components/Console/overview/domain/App.vue
 
 ```vue
 <template>
@@ -68487,12 +68487,12 @@ export default defineAppConfig({
 
 ```
 
-### projects/misebox/misebox-app/app/components/Dashboard/overview/x/pong/App.vue
+### projects/misebox/misebox-app/app/components/Console/overview/x/pong/App.vue
 
 ```vue
 <template>
   <UPageCard variant="subtle">
-    <p class="text-xs text-dimmed">Component: DashboardOverviewXPongApp (misebox-app test)</p>
+    <p class="text-xs text-dimmed">Component: ConsoleOverviewXPongApp (misebox-app test)</p>
     <p class="text-sm text-dimmed mt-2">Pong app specifics</p>
   </UPageCard>
 </template>
@@ -69322,7 +69322,7 @@ const reload = () => {
             </li>
             <li class="flex items-start gap-3">
               <UIcon name="i-lucide-check" class="mt-0.5 text-primary-500" />
-              <span>Ops dashboards tailored to each kitchen</span>
+              <span>Ops consoles tailored to each kitchen</span>
             </li>
           </ul>
         </div>
@@ -69560,7 +69560,7 @@ const solutions = {
     },
     {
       title: 'Insights',
-      description: 'POS ties, trends, and forecast dashboards.',
+      description: 'POS ties, trends, and forecast consoles.',
       to: '/insights',
       cta: 'View KPIs',
       icon: 'i-lucide-chart-line',
@@ -69621,7 +69621,7 @@ Comparison between the promises in `liturature.md` and the current Misebox app c
 - [❌] Supplier integration / inventory re-ordering — no supplier or inventory management implementation.
 - [❌] Job search / temporary placement system — no jobs modules, routes, or API usage.
 - [❌] QR portfolio sharing — no QR generation or profile sharing utilities.
-- [❌] Analytics dashboards for kitchens/professionals — no analytics collection or display.
+- [❌] Analytics consoles for kitchens/professionals — no analytics collection or display.
 
 ## 2. Routes / Pages
 
@@ -69637,7 +69637,7 @@ Comparison between the promises in `liturature.md` and the current Misebox app c
 ## 3. Components
 
 - [✅] Landing components (`LandingHero`, `LandingQuickPeek`, `LandingSolutions`, etc.) — exist and render marketing copy only.
-- [❌] Profile forms / dashboards — absent.
+- [❌] Profile forms / consoles — absent.
 - [❌] Recipe editors, ingredient tables, costing widgets — absent.
 - [❌] Prep-plan boards or scheduler components — absent.
 - [❌] Supplier management UIs — absent.
@@ -69682,7 +69682,7 @@ It brings together professional profiles, kitchen tools, and job systems to mode
 - Supplier integration for inventory and re-ordering
 - Job search and temporary placement system
 - QR-code portfolio sharing for quick access
-- Analytics dashboard for kitchens and professionals
+- Analytics console for kitchens and professionals
 
 ---
 
@@ -69692,7 +69692,7 @@ It brings together professional profiles, kitchen tools, and job systems to mode
 - `/get-started` – onboard as chef or recruiter
 - `/professional` – manage your career profile
 - `/jobs` – browse or post open positions
-- `/kitchens` – kitchen dashboards and tools
+- `/kitchens` – kitchen consoles and tools
 - `/recipes` – create and manage recipes
 - `/suppliers` – connect to and manage ingredient sources
 - `/prep-plans` – organize daily production schedules
@@ -69760,14 +69760,14 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 -- Kitchen prep planning tools and station scheduling
 -- Supplier and inventory integration with reorder tracking
 -- Job search and temporary placement system
--- Analytics dashboards for kitchens and professionals
+-- Analytics consoles for kitchens and professionals
 -- Dedicated pages/routes: `/get-started`, `/professional`, `/jobs`, `/kitchens`, `/recipes`, `/suppliers`, `/prep-plans`
 
 ## 🧩 Planned / Cross-Package Dependencies
 
 -- Shared Misebox data models (profiles, recipes, suppliers, prep plans) should originate in `packages/ecosystem/fireux-misebox` or `fireux-core` to support multiple tenants.
 -- Job workflows may depend on `packages/extensions/fireux-jobs` once built out.
--- Analytics foundation likely belongs in `fireux-core` (events, summaries) before tenant dashboards can consume it.
+-- Analytics foundation likely belongs in `fireux-core` (events, summaries) before tenant consoles can consume it.
 
 ## Next Actions
 
@@ -69775,7 +69775,7 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 - [ ] Scaffold placeholder routes and navigation for the promised pages to unblock incremental development.
 - [ ] Implement MVP flows for profile creation, recipe management, supplier lists, and prep planning.
 - [ ] Integrate job features (posting, search) using shared extension work once available.
-- [ ] Add analytics event capture and dashboards for kitchens and professionals.
+- [ ] Add analytics event capture and consoles for kitchens and professionals.
 - [ ] Reconcile `liturature.md` once key modules ship to ensure marketing copy matches functionality.
 
 ```
@@ -69965,7 +69965,7 @@ export default defineAppConfig({
 
 ```
 
-### projects/misebox/niederhorn/app/components/Dashboard/overview/domain/App.vue
+### projects/misebox/niederhorn/app/components/Console/overview/domain/App.vue
 
 ```vue
 <template>
@@ -69973,7 +69973,7 @@ export default defineAppConfig({
     <div class="space-y-3">
       <p class="text-sm text-dimmed font-medium">niederhorn — app overview (notes)</p>
       <p class="text-sm text-dimmed leading-relaxed">
-        Tenant-specific app overviews should feel local and practical. This is where users see what matters inside this business, not across the ecosystem. The focus is on immediate relevance: today’s activity, local priorities, and the single most useful action they can take next. Over time, these views become tailored dashboards that reflect how that business actually operates, while still fitting into the same structural bucket as every other app.
+        Tenant-specific app overviews should feel local and practical. This is where users see what matters inside this business, not across the ecosystem. The focus is on immediate relevance: today’s activity, local priorities, and the single most useful action they can take next. Over time, these views become tailored consoles that reflect how that business actually operates, while still fitting into the same structural bucket as every other app.
       </p>
     </div>
   </UPageCard>
@@ -70904,7 +70904,7 @@ const featureList = [
   },
   {
     title: 'Prep-to-pass sync',
-    copy: 'Line dashboards align mise en place with pass tickets in real time.',
+    copy: 'Line consoles align mise en place with pass tickets in real time.',
   },
   {
     title: 'Supplier cadence',
@@ -70964,12 +70964,12 @@ Comparison between the promises in `liturature.md` and the current Niederhorn co
 - [❌] Supplier database with ingredient tracking — no supplier models, storage, or UI beyond a placeholder CTA.
 - [❌] Team training modules for onboarding — no pages or components for training content or progress tracking.
 - [❌] Internal notes/feedback system — no messaging or comment storage implemented.
-- [❌] Analytics on ingredient usage/prep efficiency — no analytics dashboards or data collection utilities.
+- [❌] Analytics on ingredient usage/prep efficiency — no analytics consoles or data collection utilities.
 - [❌] Link to Misebox Pro profiles — no navigation or integration referencing Misebox-wide professional profiles.
 
 ## 2. Routes / Pages
 
-- [✅] `/` — implemented as the landing/dashboard (`pages/index.vue`).
+- [✅] `/` — implemented as the landing/console (`pages/index.vue`).
 - [❌] `/recipes` — not present.
 - [❌] `/prep-plans` — not present.
 - [❌] `/suppliers` — not present.
@@ -71009,7 +71009,7 @@ Head chefs, sous chefs, and kitchen managers at Restaurant Niederhorn.
 ## Purpose
 
 This project demonstrates how Misebox can be customized for a real kitchen environment.
-It combines recipe management, supplier coordination, and team training in one connected dashboard — tailored specifically to Niederhorn’s daily operations.
+It combines recipe management, supplier coordination, and team training in one connected console — tailored specifically to Niederhorn’s daily operations.
 
 ---
 
@@ -71028,7 +71028,7 @@ It combines recipe management, supplier coordination, and team training in one c
 
 ## Main Pages / Routes
 
-- `/` – kitchen home dashboard
+- `/` – kitchen home console
 - `/recipes` – list and manage restaurant recipes
 - `/prep-plans` – schedule mise en place and daily production
 - `/suppliers` – manage ingredient providers and stock levels
@@ -71096,14 +71096,14 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 -- Supplier management views with ingredient linking
 -- Team training modules (content, progress, and media support)
 -- Internal notes/feedback workflow across chefs
--- Analytics dashboards for ingredient usage, prep efficiency, and waste
+-- Analytics consoles for ingredient usage, prep efficiency, and waste
 -- Dedicated routes/pages for `/recipes`, `/prep-plans`, `/suppliers`, `/team`, `/analytics`
 -- Integrations with Misebox Pro profiles and broader ecosystem features
 
 ## 🧩 Planned / Cross-Package Dependencies
 
 -- Core recipe, supplier, and prep-plan data models should originate in `packages/ecosystem/fireux-misebox` (or `fireux-core`) so multiple Misebox tenants can share logic.
--- Shared analytics/composable layers likely belong in `fireux-core` before tenant-specific dashboards can be built here.
+-- Shared analytics/composable layers likely belong in `fireux-core` before tenant-specific consoles can be built here.
 
 ## Next Actions
 
@@ -71111,7 +71111,7 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 - [ ] Scaffold placeholder routes and navigation for the promised sections to unblock UI work.
 - [ ] Define Firestore schemas (recipes, suppliers, prep runs, training modules) and seed data for tenant environments.
 - [ ] Implement MVP UIs for recipes, prep plans, suppliers, and team training.
-- [ ] Add analytics collection hooks (events or Firestore aggregations) to support dashboards.
+- [ ] Add analytics collection hooks (events or Firestore aggregations) to support consoles.
 - [ ] Revisit literature after MVP to ensure wording matches shipped functionality.
 
 ```
@@ -76528,7 +76528,7 @@ Date: 2025-12-27
 - Keep a clean separation between:
   - **membership/role** (AppUser overlay)
   - **domain profiles** (global truth + optional tenant deltas)
-- Ensure the Agent can be created/edited by the user via `/dashboard/agent/profile`, and used as a browseable “directory entity” (pill/cell/profile view models).
+- Ensure the Agent can be created/edited by the user via `/console/agent/profile`, and used as a browseable “directory entity” (pill/cell/profile view models).
 
 Agent is a **posting identity**, so “richness” should support:
 - trust (“who is this agent?”)
@@ -76628,11 +76628,11 @@ Guardrail: one job per composable.
 
 ## UI routes
 
-- `/dashboard/agent`
+- `/console/agent`
   - overview and entry point
   - shows status + CTA link to profile builder
 
-- `/dashboard/agent/profile`
+- `/console/agent/profile`
   - profile builder / editor
   - supports create-when-missing via ensure flow
 
@@ -77267,9 +77267,9 @@ You are editing FireUX. Follow canon strictly:
 ## Components (app/user/profile-related)
 
 - Core app/profile UI
-  - `packages/core/fireux-core/src/runtime/components/layouts/dashboard/ProfilesMenu.vue`
-  - `packages/core/fireux-core/src/runtime/components/layouts/dashboard/ProfileEdit.vue`
-  - `packages/core/fireux-core/src/runtime/components/organisms/Dashboard/Profile/Edit/Profile.vue`
+  - `packages/core/fireux-core/src/runtime/components/layouts/console/ProfilesMenu.vue`
+  - `packages/core/fireux-core/src/runtime/components/layouts/console/ProfileEdit.vue`
+  - `packages/core/fireux-core/src/runtime/components/organisms/Console/Profile/Edit/Profile.vue`
   - `packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Profile.vue`
   - `packages/core/fireux-core/src/runtime/components/organisms/User/Cards/Profile.vue`
   - Dev aid: `packages/core/fireux-core/src/runtime/components/dev/ProfileDiffList.vue`
@@ -77458,8 +77458,8 @@ We work **chunk by chunk**. No jobs/roles until core is green.
 ## Chunk 2 — Navigation Reliability + Escape Hatches
 
 ### Status (so far)
-- ✅ Sign out reliability improved (canonical sign out + dashboard guard)
-- ✅ Dashboard has a visible Home escape hatch (one click → `/`)
+- ✅ Sign out reliability improved (canonical sign out + console guard)
+- ✅ Console has a visible Home escape hatch (one click → `/`)
 - ✅ Menu button wiring corrected (avoid duplicate burgers on mobile)
 - ✅ Menu reliability validated (tests #1–#6 PASS)
 
@@ -77482,20 +77482,20 @@ For every test below:
      - first load or after navigation
 
 3. **Home escape hatch**
-   - Visible from all `/dashboard/**` pages
+   - Visible from all `/console/**` pages
    - Works on desktop and mobile
    - One click → `/`
 
    Done:
-   - Implemented Home button in dashboard layout using `router.replace('/')`
+   - Implemented Home button in console layout using `router.replace('/')`
 
 4. **Escape hatch verification**
-   - Click Home from dashboard → arrives at `/`
-   - Browser Back does not trap user in dashboard
+   - Click Home from console → arrives at `/`
+   - Browser Back does not trap user in console
 
    To verify:
-   - Confirm Home is visible on all `/dashboard/**` pages
-   - Confirm Back does not bounce back into dashboard after clicking Home
+   - Confirm Home is visible on all `/console/**` pages
+   - Confirm Back does not bounce back into console after clicking Home
 
 5. **Re-test sign out after navigation changes**
    - Desktop sign out
@@ -77503,10 +77503,10 @@ For every test below:
    - Refresh after sign out
 
    Done:
-   - Sign out now redirects deterministically (dashboard → `/`, auth surfaces → `/auth`)
+   - Sign out now redirects deterministically (console → `/`, auth surfaces → `/auth`)
 
    To verify:
-   - Sign in → navigate around dashboard → sign out → refresh → still signed out
+   - Sign in → navigate around console → sign out → refresh → still signed out
 
 6. **Menu reliability after first route change (common failure)**
    - Fresh load → open menu → navigate once → open menu again → navigate again
@@ -77525,7 +77525,7 @@ Do not proceed until:
 ### Plan (Chunk 2)
 1. Run tests in #1 on fresh load
 2. Record any failures for #2
-3. Validate #3 is present on all dashboard pages
+3. Validate #3 is present on all console pages
 4. Validate #4 back-button behavior
 5. Re-run #5 sign out checks
 6. Run #6 (after first route change)
@@ -77552,7 +77552,7 @@ Clear separation between:
 
 ---
 
-## Chunk 4 — Dashboard Core Hygiene
+## Chunk 4 — Console Core Hygiene
 
 ### Tasks
 1. Remove dev language from user-facing UI (e.g. “production mode”)
@@ -77561,11 +77561,11 @@ Clear separation between:
    - Else → “Hello”
 3. Replace dead buttons:
    - Working link OR disabled with “Coming soon”
-4. Dashboard must not assume profiles exist
+4. Console must not assume profiles exist
 
 ### Stop Condition (Chunk 4)
 - No dev messaging on end-user surfaces
-- No dead clicks on dashboard home
+- No dead clicks on console home
 
 ---
 
@@ -77611,14 +77611,14 @@ Found: 8
 
 ```
 
-### temp/dashboard/overview.md
+### temp/console/overview.md
 
 ```md
-# Dashboard Overview (temp)
+# Console Overview (temp)
 
-Scope: http://localhost:3000/dashboard
+Scope: http://localhost:3000/console
 
-This doc is for the *dashboard overview page* (the “Overview” tab).
+This doc is for the *console overview page* (the “Overview” tab).
 It is intentionally separate from user-profile editing.
 
 ---
@@ -77626,7 +77626,7 @@ It is intentionally separate from user-profile editing.
 ## 1) Page + composition
 
 Page:
-- packages/core/fireux-core/src/runtime/pages/dashboard/index.vue
+- packages/core/fireux-core/src/runtime/pages/console/index.vue
 
 The page renders three layers in order:
 1) Core overview (FireUX-wide)
@@ -77640,18 +77640,18 @@ As of the restructuring, each layer is future-proofed under an `overview/` path 
 ## 2) Component resolution (what should render)
 
 Core (always from fireux-core):
-- packages/core/fireux-core/src/runtime/components/dashboard/overview/Core.vue
+- packages/core/fireux-core/src/runtime/components/console/overview/Core.vue
 
 Ecosystem (overridden by the active ecosystem package when available):
-- packages/core/fireux-core/src/runtime/components/dashboard/overview/Ecosystem.vue (fallback)
-- packages/ecosystem/<ecosystem>/src/runtime/components/dashboard/overview/Ecosystem.vue (override)
+- packages/core/fireux-core/src/runtime/components/console/overview/Ecosystem.vue (fallback)
+- packages/ecosystem/<ecosystem>/src/runtime/components/console/overview/Ecosystem.vue (override)
 
 App (overridden by the active app when available):
-- packages/core/fireux-core/src/runtime/components/dashboard/overview/App.vue (fallback)
-- projects/<ecosystem>/<app>/app/components/Dashboard/overview/App.vue (override)
+- packages/core/fireux-core/src/runtime/components/console/overview/App.vue (fallback)
+- projects/<ecosystem>/<app>/app/components/Console/overview/App.vue (override)
 
 We currently keep a visible marker in each component like:
-- "Component: DashboardOverview…" 
+- "Component: ConsoleOverview…" 
 so it’s obvious which component is being used.
 
 ---
@@ -77680,7 +77680,7 @@ App membership overlay:
 Apps list:
 - /apps collection
 
-Logo priority used by dashboard ecosystem lists:
+Logo priority used by console ecosystem lists:
 1) per-user overrides in user.apps (untyped override bucket)
 2) branding URLs on /apps/{appId}
 
@@ -77695,12 +77695,12 @@ Near-term (overview):
 
 ```
 
-### temp/dashboard/users.md
+### temp/console/users.md
 
 ```md
-# Dashboard User Profile (temp)
+# Console User Profile (temp)
 
-Scope: http://localhost:3000/dashboard/user-profile
+Scope: http://localhost:3000/console/user-profile
 
 This doc is for the *user profile editing* experience.
 We are parking this for now while we build the Overview first.
@@ -77714,7 +77714,7 @@ User-profile should cover:
 - Editing bio/about
 - Potentially managing user-level preferences
 
-It should NOT try to become the dashboard overview (no “cards”, no app lists).
+It should NOT try to become the console overview (no “cards”, no app lists).
 
 ---
 
@@ -77756,7 +77756,7 @@ This should generally be edited by admin flows, not user-profile.
 ## 4) Notes
 
 We previously had a broader user model write-up in temp/user.md.
-That file is now considered “source notes”, and this `temp/dashboard/users.md` is the dashboard-specific view.
+That file is now considered “source notes”, and this `temp/console/users.md` is the console-specific view.
 
 ```
 
@@ -78092,7 +78092,7 @@ Paths under each section are **relative to that directory**.
 - Sections/Surfaces.vue
 - Sections/TenantOverrides.vue
 
-## packages/core/fireux-core/src/runtime/components/organisms/Dashboard/Profile/Edit/
+## packages/core/fireux-core/src/runtime/components/organisms/Console/Profile/Edit/
 - Profile.vue
 
 ```
@@ -79121,7 +79121,7 @@ After each domain is migrated and stable, candidates to remove:
   - Agent: `useAgent.ts`, `utils.ts`, `main/useAgentCollection.ts`, `main/useAgentComputed.ts`, `main/useAgentCreate.ts`, `main/useAgentDelete.ts`, `main/useAgentInterface.ts`, `main/useAgentUpdate.ts`
   - Professional: `useProfessional.ts`, `utils.ts`, `main/useProfessionalCollection.ts`, `main/useProfessionalComputed.ts`, `main/useProfessionalCreate.ts`, `main/useProfessionalDelete.ts`, `main/useProfessionalInterface.ts`, `main/useProfessionalUpdate.ts`
 - App routes
-  - `packages/extensions/fireux-jobs/src/runtime/composables/fireux/app/routes/useJobDashboardRoutes.ts`
+  - `packages/extensions/fireux-jobs/src/runtime/composables/fireux/app/routes/useJobConsoleRoutes.ts`
   - `packages/extensions/fireux-jobs/src/runtime/composables/fireux/app/routes/useJobRoutes.ts`
 
 ```
@@ -79844,11 +79844,11 @@ Path: `packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profil
 ```md
 # FireUX User — field map + relationships (temp)
 
-Dashboard-specific notes now live in:
-- temp/dashboard/overview.md (for /dashboard)
-- temp/dashboard/users.md (for /dashboard/user-profile)
+Console-specific notes now live in:
+- temp/console/overview.md (for /console)
+- temp/console/users.md (for /console/user-profile)
 
-Goal: give a practical rundown of what a **User** is in this repo, which Firestore docs it touches, and how it relates to Apps / AppUsers / Profiles so you can ideate a richer dashboard.
+Goal: give a practical rundown of what a **User** is in this repo, which Firestore docs it touches, and how it relates to Apps / AppUsers / Profiles so you can ideate a richer console.
 
 This is based on:
 - [packages/core/fireux-core/src/runtime/models/core/user.model.ts](packages/core/fireux-core/src/runtime/models/core/user.model.ts)
@@ -79932,7 +79932,7 @@ Write paths:
   - Implemented in `useCoreUserUpdate().notifications.push(...)`.
 - Membership ensure flows also push notifications when joining apps.
 
-Dashboard ideas this enables:
+Console ideas this enables:
 - “What changed since last visit?” stream
 - “You joined X”, “You were promoted to admin”, “New onboarding step”
 - scoped filtering (ecosystem vs app)
@@ -79953,7 +79953,7 @@ How user resolution works:
   1) the enriched user collection for the active app (`useUserCollection`) and
   2) falls back to direct core lookups in `/users/{uid}`.
 
-Dashboard ideas this enables:
+Console ideas this enables:
 - show “your profiles” across domains (jobs, places, products, etc.)
 - show “profiles missing info” or “profiles you own/admin”
 
@@ -79997,15 +79997,15 @@ The UI helpers resolve admin status roughly like:
 - If global runtime: user is admin if `user.role === 'admin'` OR `adminOf` is non-empty
 - If tenant runtime: user is admin if `appUser.role === 'admin'` OR user is in `adminOf` for active `appId`
 
-Dashboard ideas this enables:
+Console ideas this enables:
 - show admin-only modules/CTA
 - show “you are admin of X apps” badge
 
 ---
 
-## 7) The “user.apps” branding overrides (dashboard logos)
+## 7) The “user.apps” branding overrides (console logos)
 
-Some dashboard components treat `user.apps` as an *optional* per-user override bucket.
+Some console components treat `user.apps` as an *optional* per-user override bucket.
 
 Important: `user.apps` is **not typed in the `User` interface** right now; it’s accessed as an untyped field.
 
@@ -80017,7 +80017,7 @@ Usage:
 - used to override app branding for the current user (e.g. custom avatar/logo)
 - falls back to `apps/{appId}.avatar_url/logo_url/wordmark_url` if not present
 
-Dashboard ideas:
+Console ideas:
 - per-user “favorite app icon” / “pin” / “hide”
 - per-user “custom label” or “grouping” for apps
 

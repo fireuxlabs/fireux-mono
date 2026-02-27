@@ -5,24 +5,24 @@ import { useNav } from '../ui/nav/useNav'
 
 export const useDefaultNav = () => useNav(['default'])
 export const useLandingNav = () => useNav(['landing'])
-export const useDashboardNav = () => {
-	const nav = useNav(['dashboard'])
+export const useConsoleNav = () => {
+	const nav = useNav(['console'])
 	const { isAdmin } = useUser()
 	const isDev = computed(() => import.meta.dev)
 
 	const topPriority = [
-		{ key: 'dashboard-developer', to: '/dashboard/developer' },
-		{ key: 'admin', to: '/dashboard/admin' },
-		{ key: 'dashboard-home', to: '/dashboard' },
-		{ key: 'dashboard-user-profile', to: '/dashboard/user-profile' },
+		{ key: 'console-developer', to: '/console/developer' },
+		{ key: 'admin', to: '/console/admin' },
+		{ key: 'console-home', to: '/console' },
+		{ key: 'console-user-profile', to: '/console/user-profile' },
 	]
 
 	const canShowNavItem = (item: NavItem) => {
-		if (item.key === 'admin' || item.to === '/dashboard/admin') {
+		if (item.key === 'admin' || item.to === '/console/admin') {
 			return isAdmin.value
 		}
 
-		if (item.key === 'dashboard-developer' || item.to === '/dashboard/developer') {
+		if (item.key === 'console-developer' || item.to === '/console/developer') {
 			return isDev.value
 		}
 

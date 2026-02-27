@@ -38,11 +38,11 @@ These are long‑lived workspaces with frequent edits and multiple tools.
 - Owned or co‑owned
 - Multi‑section UX
 - Inline edits acceptable
-- Dashboard‑first
+- Console‑first
 
 **Routing**
 
-- `/dashboard/<entity>/*`
+- `/console/<entity>/*`
 
 **Examples**
 
@@ -79,7 +79,7 @@ These are created often, edited occasionally, and typically belong to a workspac
 - Product
 - Blog post
 - Dish
-- Menu (managed inside a workspace, not a dashboard)
+- Menu (managed inside a workspace, not a console)
 
 ### 3) Reference / system objects
 
@@ -111,7 +111,7 @@ These are shared, lightly edited system entities used by other objects.
 
 - `/<entity>/[id-or-slug]` read-only route identity follows `docs/runtime-contract.md`.
 - `/<entity>/edit/[id]` is the mutation surface for operational objects.
-- Inline editing is reserved for workspace dashboards.
+- Inline editing is reserved for workspace consoles.
 
 ## Docs conventions
 

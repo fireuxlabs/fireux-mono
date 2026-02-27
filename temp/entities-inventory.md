@@ -5,7 +5,7 @@
 - Pages:
   - packages/core/fireux-core/src/runtime/pages/apps/index.vue
   - packages/core/fireux-core/src/runtime/pages/apps/[id].vue
-  - packages/core/fireux-core/src/runtime/pages/dashboard/app.vue
+  - packages/core/fireux-core/src/runtime/pages/console/app.vue
   - packages/core/fireux-ecosystem-controller/src/runtime/pages/apps/index.vue
 - Organisms:
   - packages/core/fireux-core/src/runtime/components/organisms/App/Collection.vue
@@ -37,7 +37,7 @@
 - Pages:
   - packages/core/fireux-core/src/runtime/pages/users/index.vue
   - packages/core/fireux-core/src/runtime/pages/users/[id].vue
-  - packages/core/fireux-core/src/runtime/pages/dashboard/user-profile.vue
+  - packages/core/fireux-core/src/runtime/pages/console/user-profile.vue
 - Organisms:
   - packages/core/fireux-core/src/runtime/components/organisms/User/Collection.vue
   - packages/core/fireux-core/src/runtime/components/organisms/User/CTA.vue
@@ -74,9 +74,9 @@
   - packages/extensions/fireux-jobs/src/runtime/pages/agents/index.vue
   - packages/extensions/fireux-jobs/src/runtime/pages/agents/[id].vue
   - packages/extensions/fireux-jobs/src/runtime/pages/agents/learn-more.vue
-  - packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent/index.vue
-  - packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent/profile.vue
-  - packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent/my-gigs.vue
+  - packages/extensions/fireux-jobs/src/runtime/pages/console/agent/index.vue
+  - packages/extensions/fireux-jobs/src/runtime/pages/console/agent/profile.vue
+  - packages/extensions/fireux-jobs/src/runtime/pages/console/agent/my-gigs.vue
 - Organisms:
   - packages/extensions/fireux-jobs/src/runtime/components/organisms/profiles/Agent/CTA.vue
   - packages/extensions/fireux-jobs/src/runtime/components/organisms/profiles/Agent/Profile.vue
@@ -109,9 +109,9 @@
   - packages/ecosystem/fireux-misebox/src/runtime/pages/chefs/index.vue
   - packages/ecosystem/fireux-misebox/src/runtime/pages/chefs/[id].vue
   - packages/ecosystem/fireux-misebox/src/runtime/pages/chefs/learn-more.vue
-  - packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef/index.vue
-  - packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef/profile.vue
-  - packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef/my-recipes.vue
+  - packages/ecosystem/fireux-misebox/src/runtime/pages/console/chef/index.vue
+  - packages/ecosystem/fireux-misebox/src/runtime/pages/console/chef/profile.vue
+  - packages/ecosystem/fireux-misebox/src/runtime/pages/console/chef/my-recipes.vue
 - Organisms:
   - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Chef/CTA.vue
   - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Chef/Profile.vue
@@ -144,9 +144,9 @@
   - packages/extensions/fireux-jobs/src/runtime/pages/professionals/index.vue
   - packages/extensions/fireux-jobs/src/runtime/pages/professionals/[id].vue
   - packages/extensions/fireux-jobs/src/runtime/pages/professionals/learn-more.vue
-  - packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/index.vue
-  - packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/profile.vue
-  - packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/my-jobs.vue
+  - packages/extensions/fireux-jobs/src/runtime/pages/console/professional/index.vue
+  - packages/extensions/fireux-jobs/src/runtime/pages/console/professional/profile.vue
+  - packages/extensions/fireux-jobs/src/runtime/pages/console/professional/my-jobs.vue
 - Organisms:
   - packages/extensions/fireux-jobs/src/runtime/components/organisms/profiles/Professional/CTA.vue
   - packages/extensions/fireux-jobs/src/runtime/components/organisms/profiles/Professional/Profile.vue
@@ -205,9 +205,9 @@
   - packages/ecosystem/fireux-misebox/src/runtime/pages/suppliers/index.vue
   - packages/ecosystem/fireux-misebox/src/runtime/pages/suppliers/[id].vue
   - packages/ecosystem/fireux-misebox/src/runtime/pages/suppliers/learn-more.vue
-  - packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/index.vue
-  - packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/profile.vue
-  - packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/supplier/my-stock.vue
+  - packages/ecosystem/fireux-misebox/src/runtime/pages/console/supplier/index.vue
+  - packages/ecosystem/fireux-misebox/src/runtime/pages/console/supplier/profile.vue
+  - packages/ecosystem/fireux-misebox/src/runtime/pages/console/supplier/my-stock.vue
 - Organisms:
   - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Supplier/CTA.vue
   - packages/ecosystem/fireux-misebox/src/runtime/components/organisms/profiles/Supplier/Profile.vue
@@ -336,7 +336,7 @@
 - Composables:
   - packages/extensions/fireux-jobs/src/runtime/composables/useJobPermissions.ts
   - packages/extensions/fireux-jobs/src/runtime/composables/fireux/app/routes/useJobRoutes.ts
-  - packages/extensions/fireux-jobs/src/runtime/composables/fireux/app/routes/useJobDashboardRoutes.ts
+  - packages/extensions/fireux-jobs/src/runtime/composables/fireux/app/routes/useJobConsoleRoutes.ts
   - packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/useJob.ts
   - packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/fetch/useJobFetch.ts
   - packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/fetch/useJobCollection.ts

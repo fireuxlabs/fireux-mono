@@ -7,8 +7,8 @@ We work **chunk by chunk**. No jobs/roles until core is green.
 ## Chunk 2 — Navigation Reliability + Escape Hatches
 
 ### Status (so far)
-- ✅ Sign out reliability improved (canonical sign out + dashboard guard)
-- ✅ Dashboard has a visible Home escape hatch (one click → `/`)
+- ✅ Sign out reliability improved (canonical sign out + console guard)
+- ✅ Console has a visible Home escape hatch (one click → `/`)
 - ✅ Menu button wiring corrected (avoid duplicate burgers on mobile)
 - ✅ Menu reliability validated (tests #1–#6 PASS)
 
@@ -31,20 +31,20 @@ For every test below:
      - first load or after navigation
 
 3. **Home escape hatch**
-   - Visible from all `/dashboard/**` pages
+   - Visible from all `/console/**` pages
    - Works on desktop and mobile
    - One click → `/`
 
    Done:
-   - Implemented Home button in dashboard layout using `router.replace('/')`
+   - Implemented Home button in console layout using `router.replace('/')`
 
 4. **Escape hatch verification**
-   - Click Home from dashboard → arrives at `/`
-   - Browser Back does not trap user in dashboard
+   - Click Home from console → arrives at `/`
+   - Browser Back does not trap user in console
 
    To verify:
-   - Confirm Home is visible on all `/dashboard/**` pages
-   - Confirm Back does not bounce back into dashboard after clicking Home
+   - Confirm Home is visible on all `/console/**` pages
+   - Confirm Back does not bounce back into console after clicking Home
 
 5. **Re-test sign out after navigation changes**
    - Desktop sign out
@@ -52,10 +52,10 @@ For every test below:
    - Refresh after sign out
 
    Done:
-   - Sign out now redirects deterministically (dashboard → `/`, auth surfaces → `/auth`)
+   - Sign out now redirects deterministically (console → `/`, auth surfaces → `/auth`)
 
    To verify:
-   - Sign in → navigate around dashboard → sign out → refresh → still signed out
+   - Sign in → navigate around console → sign out → refresh → still signed out
 
 6. **Menu reliability after first route change (common failure)**
    - Fresh load → open menu → navigate once → open menu again → navigate again
@@ -74,7 +74,7 @@ Do not proceed until:
 ### Plan (Chunk 2)
 1. Run tests in #1 on fresh load
 2. Record any failures for #2
-3. Validate #3 is present on all dashboard pages
+3. Validate #3 is present on all console pages
 4. Validate #4 back-button behavior
 5. Re-run #5 sign out checks
 6. Run #6 (after first route change)
@@ -101,7 +101,7 @@ Clear separation between:
 
 ---
 
-## Chunk 4 — Dashboard Core Hygiene
+## Chunk 4 — Console Core Hygiene
 
 ### Tasks
 1. Remove dev language from user-facing UI (e.g. “production mode”)
@@ -110,11 +110,11 @@ Clear separation between:
    - Else → “Hello”
 3. Replace dead buttons:
    - Working link OR disabled with “Coming soon”
-4. Dashboard must not assume profiles exist
+4. Console must not assume profiles exist
 
 ### Stop Condition (Chunk 4)
 - No dev messaging on end-user surfaces
-- No dead clicks on dashboard home
+- No dead clicks on console home
 
 ---
 

@@ -7,6 +7,6 @@ Summary:
 
 Current focus:
 - Consolidate runtime contracts across extensions.
-- Keep kitchen dashboard and product licensing flows stable.
+- Keep kitchen console and product licensing flows stable.
 
 #end

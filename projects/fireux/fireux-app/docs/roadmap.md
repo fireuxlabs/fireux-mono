@@ -20,7 +20,7 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 - Developer documentation section with navigation, search, and markdown rendering (`/developers`)
 - Contact and partner inquiry forms with backend handling and CRM integration
 - News/updates or blog engine to broadcast ecosystem announcements
-- Analytics/dashboard views highlighting ecosystem metrics and growth
+- Analytics/console views highlighting ecosystem metrics and growth
 - “FireUX Shop” marketplace for templates and extensions
 
 ## 🧩 Planned / Cross-Package Dependencies
@@ -36,5 +36,5 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 - [ ] Implement auth flows leveraging FireUX core composables and connect accounts across tenants
 - [ ] Design pricing and subscription flows, integrating with Stripe for payments and plan management
 - [ ] Create contact/partner form endpoints and UI, wiring to CRM or email automation
-- [ ] Stand up news/updates feed and analytics dashboard to surface ecosystem metrics
+- [ ] Stand up news/updates feed and analytics console to surface ecosystem metrics
 - [ ] Plan and prototype the FireUX Shop marketplace for templates and extensions

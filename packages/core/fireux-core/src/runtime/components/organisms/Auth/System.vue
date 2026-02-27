@@ -21,8 +21,8 @@
           />
 
           <div class="flex w-full flex-col gap-3">
-            <UButton block color="primary" @click="goToDashboard">
-              Go to dashboard
+            <UButton block color="primary" @click="goToConsole">
+              Go to console
             </UButton>
             <UButton
               block
@@ -79,8 +79,8 @@ const currentUserPill = computed(() =>
   currentUser.value ? card(currentUser.value) : null
 )
 
-const goToDashboard = async () => {
-  await router.push('/dashboard').catch(() => {})
+const goToConsole = async () => {
+  await router.push('/console').catch(() => {})
 }
 
 const handleSignOut = async () => {
@@ -116,7 +116,7 @@ const handleGoogle = async () => {
       })
     }
     if (user?.uid) {
-      await router.push('/dashboard').catch(() => {})
+      await router.push('/console').catch(() => {})
     }
   } finally {
     providerLoading.value = false

@@ -1,0 +1,26 @@
+{
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "granite-ssr",
+      "runtime": "nodejs22",
+      "entryPoint": "graniteApp"
+    }
+  ],
+  "hosting": {
+    "site": "granite-os",
+    "public": ".output/public",
+    "cleanUrls": true,
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "function": {
+          "functionId": "graniteApp",
+          "codebase": "granite-ssr",
+          "region": "europe-west1"
+        }
+      }
+    ]
+  }
+}

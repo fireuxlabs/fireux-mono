@@ -3,7 +3,7 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
-      <div class="dashboard-profile">
+      <div class="console-profile">
         <div class="flex justify-end">
           <UButton
             :icon="viewIcon"
@@ -15,7 +15,7 @@
           />
         </div>
 
-        <div class="dashboard-profile__pills">
+        <div class="console-profile__pills">
           <ProfilesAgentCardsPill
             v-if="agentCard"
             v-bind="agentCard"
@@ -39,14 +39,14 @@
         />
 
         <ClientOnly v-else>
-          <div v-if="view === 'profile'" class="dashboard-profile__section">
+          <div v-if="view === 'profile'" class="console-profile__section">
             <ProfilesAgentCardsProfile
               v-if="agentCard"
               :card="agentCard"
             />
           </div>
 
-          <div v-else class="dashboard-profile__section">
+          <div v-else class="console-profile__section">
             <ProfilesAgentEditCore :agent="resolvedCoreProfile" />
 
             <ProfilesAgentEditApp
@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { useDashboardProfileView } from 'fireux-core/runtime/composables/fireux/app/ui/useDashboardProfileView'
+import { useConsoleProfileView } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleProfileView'
 import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
@@ -125,5 +125,5 @@ const createProfile = async () => {
   }
 }
 
-const { view, viewIcon, toggleView } = useDashboardProfileView()
+const { view, viewIcon, toggleView } = useConsoleProfileView()
 </script>

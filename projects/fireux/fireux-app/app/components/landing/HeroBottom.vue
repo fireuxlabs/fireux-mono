@@ -18,7 +18,7 @@ const bullets = [
     text: 'Nuxt 4 + Firebase orchestration out of the box',
   },
   {
-    icon: 'i-lucide-layout-dashboard',
+    icon: 'i-lucide-terminal',
     text: 'Reusable design system &amp; shared components',
   },
   {

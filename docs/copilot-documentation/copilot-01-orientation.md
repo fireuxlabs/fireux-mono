@@ -6,7 +6,7 @@ created: 2025-10-15
 
 # Orientation & Mission
 
-FireUX is an opinionated layer on top of Nuxt 4 + Firebase. Drop in a few env vars, add your branding assets, and you have a working app with profiles, dashboards, and shared objects ready to extend.
+FireUX is an opinionated layer on top of Nuxt 4 + Firebase. Drop in a few env vars, add your branding assets, and you have a working app with profiles, consoles, and shared objects ready to extend.
 
 FireUX is positioned as a multi-tenant modular SaaS platform. The goal is to launch and operate multiple branded apps per ecosystem from one shared platform core.
 

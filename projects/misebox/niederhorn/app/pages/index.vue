@@ -134,7 +134,7 @@ const featureList = [
   },
   {
     title: 'Prep-to-pass sync',
-    copy: 'Line dashboards align mise en place with pass tickets in real time.',
+    copy: 'Line consoles align mise en place with pass tickets in real time.',
   },
   {
     title: 'Supplier cadence',

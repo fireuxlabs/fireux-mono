@@ -47,7 +47,7 @@
             </li>
             <li class="flex items-start gap-3">
               <UIcon name="i-lucide-check" class="mt-0.5 text-primary-500" />
-              <span>Ops dashboards tailored to each kitchen</span>
+              <span>Ops consoles tailored to each kitchen</span>
             </li>
           </ul>
         </div>
@@ -198,7 +198,7 @@ const steps = [
     items: [
       'Brand + theme setup',
       'Core collections seeded',
-      'Ops dashboards reviewed',
+      'Ops consoles reviewed',
     ],
   },
   {

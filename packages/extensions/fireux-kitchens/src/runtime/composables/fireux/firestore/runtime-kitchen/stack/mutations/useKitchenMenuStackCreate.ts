@@ -127,7 +127,7 @@ export function useKitchenMenuStackCreate() {
       id: menuId,
       kitchen_id: resolvedKitchenId,
       name: 'Starter Service Menu',
-      description: 'Generated from global ingredient records for kitchen dashboard prototyping.',
+      description: 'Generated from global ingredient records for kitchen console prototyping.',
       active: true,
       sections: [
         {

@@ -70,9 +70,9 @@ const defaults: FeatureItem[] = [
     description: 'Composable modules for speed and safety.',
   },
   {
-    key: 'dashboard',
-    icon: 'i-lucide-layout-dashboard',
-    title: 'Dashboard-Driven',
+    key: 'console',
+    icon: 'i-lucide-terminal',
+    title: 'Console-Driven',
     description: 'Clear, data-first layouts and controls.',
   },
   {

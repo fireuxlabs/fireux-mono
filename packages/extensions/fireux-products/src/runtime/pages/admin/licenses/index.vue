@@ -64,7 +64,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { computed } from 'vue'
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   title: 'Template Licenses',
   requiresAuth: true,
   roles: ['admin'],

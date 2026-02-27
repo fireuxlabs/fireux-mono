@@ -206,7 +206,7 @@ A multi-tenant workforce platform for profiles, job matching, and future on-dema
 - Automated payroll rules
 - Identity verification partners
 - EOR integrations
-- Supervisor dashboard ("patrol system")
+- Supervisor console ("patrol system")
 
 ---
 
@@ -219,7 +219,7 @@ Each tenant (Misebox, Cleanbox, future tenants) can:
 - Add tenant traits (cuisines, equipment, tasks)
 - Extend the matching algorithm
 - Add role-specific checklists
-- Add custom dashboards
+- Add custom consoles
 
 Tenants collectively benefit from:
 

@@ -20,7 +20,7 @@ It keeps the power of Cleanbox but adapts the visuals, copy, and data structure 
 ## Key Features
 
 - Branded UI with Richie’s Reinigung colors and logo
-- Crew dashboard for shift assignments and attendance
+- Crew console for shift assignments and attendance
 - QA module with photo uploads and timestamped proof
 - Client reports with job summaries and visual verification
 - Integrated Stripe billing under Richie’s own account
@@ -32,7 +32,7 @@ It keeps the power of Cleanbox but adapts the visuals, copy, and data structure 
 ## Main Pages / Routes
 
 - `/` – company homepage
-- `/dashboard` – manager view of daily operations
+- `/console` – manager view of daily operations
 - `/crews` – active staff list and shift schedules
 - `/qa` – photo verification and checklists
 - `/clients` – client database and job reports
@@ -44,7 +44,7 @@ It keeps the power of Cleanbox but adapts the visuals, copy, and data structure 
 
 - Automate recurring client schedules (weekly/monthly jobs)
 - Add bilingual interface (German/English)
-- Expand analytics dashboard for cost per site
+- Expand analytics console for cost per site
 - Integrate custom report exports for Swiss compliance forms
 - Connect with Cleanbox central analytics via FireUX Core
 

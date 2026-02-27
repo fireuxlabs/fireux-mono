@@ -46,7 +46,7 @@ It introduces the core framework, showcases active tenant apps (like Misebox and
 - Add automated signup flow for managed subscriptions
 - Launch the FireUX Partner Program for agencies and builders
 - Integrate GitHub sign-in for developer onboarding
-- Implement analytics dashboard showing ecosystem growth
+- Implement analytics console showing ecosystem growth
 - Build "FireUX Shop" for templates and extensions
 
 ---

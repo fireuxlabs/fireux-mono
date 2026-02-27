@@ -18,7 +18,7 @@
           size="xs"
           color="neutral"
           variant="soft"
-          @click="navigateTo('/dashboard/agent/profile')"
+          @click="navigateTo('/console/agent/profile')"
         >
           Edit
         </UButton>

@@ -269,7 +269,7 @@ const permissionMessage = computed(() => {
     return 'You can edit this kitchen.'
   }
   if (!claimedBy.value) {
-    return 'This kitchen is not claimed yet. Claim it to unlock dashboard tools, edit access, and team features.'
+    return 'This kitchen is not claimed yet. Claim it to unlock console tools, edit access, and team features.'
   }
   return 'This kitchen is claimed by another user. You can view details but cannot edit.'
 })

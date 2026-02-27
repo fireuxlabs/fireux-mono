@@ -26,7 +26,7 @@ const RESERVED_HANDLES = new Set([
   'apps',
   'auth',
   'blog',
-  'dashboard',
+  'console',
   'dev',
   'jobs',
   'kitchens',

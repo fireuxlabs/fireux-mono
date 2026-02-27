@@ -38,7 +38,7 @@
           <code>pnpm registry:register</code>.
         </li>
         <li>Visit <code>/dev/registry</code> and copy the payload.</li>
-        <li>Use that JSON for seed scripts, dashboards, or parity checks.</li>
+        <li>Use that JSON for seed scripts, consoles, or parity checks.</li>
       </ol>
     </section>
   </main>

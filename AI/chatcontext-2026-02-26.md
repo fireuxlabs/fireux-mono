@@ -152,7 +152,7 @@ Touched modules and files:
 - fireux-blogs: useBlogCreateSubmit, useBlogDraftState
 - fireux-companies: useCompanyInterface
 - fireux-jobs: Job/Collection/Provider.vue
-- fireux-kitchens: pages-config, read-only scenario broth-bloom, runtime kitchen document, kitchen fetch, dashboard dishes/menu pages, kitchens/[id]/menu
+- fireux-kitchens: pages-config, read-only scenario broth-bloom, runtime kitchen document, kitchen fetch, console dishes/menu pages, kitchens/[id]/menu
 - fireux-places: usePlacesInterface
 - fireux-products: Product CTA component, admin licenses page
 - scripts: migrate-tapberne-menu-items-to-dishes.mjs, migrate-tapberne-menus.mjs
@@ -209,13 +209,13 @@ Recent scan (2026-02-20):
 
 #end
 
-# AI/codex-threads/kitchen-dashboard.md
+# AI/codex-threads/kitchen-console.md
 
-# Kitchen Dashboard Contract (FireUX Kitchens)
+# Kitchen Console Contract (FireUX Kitchens)
 
 Status: Active
 Updated: 2026-02-26
-Scope: runtime behavior and page responsibilities for kitchen dashboard surfaces.
+Scope: runtime behavior and page responsibilities for kitchen console surfaces.
 
 Why this exists:
 - Keep one coherent kitchen system instead of ad-hoc flows.
@@ -244,8 +244,8 @@ Collection path rule:
 
 Selection rule:
 - /kitchens CTA sets runtimeKitchenId and runtimeKitchenMode in state.
-- /dashboard/kitchen/* pages consume that state.
-- Do not rely on ?mode= or ?id= in dashboard URLs.
+- /console/kitchen/* pages consume that state.
+- Do not rely on ?mode= or ?id= in console URLs.
 
 Canonical entity graph:
 - Kitchen (kitchens/{id} or test-kitchens/{id})
@@ -255,90 +255,90 @@ Canonical entity graph:
 - Supplier, KitchenSupplier
 - IncomingOrder, PurchaseOrder (prototypes)
 
-Dashboard route map:
-- /dashboard/kitchen
-- /dashboard/kitchen/ingredients
-- /dashboard/kitchen/mise
-- /dashboard/kitchen/recipes
-- /dashboard/kitchen/dishes
-- /dashboard/kitchen/menu
-- /dashboard/kitchen/team
-- /dashboard/kitchen/stations
-- /dashboard/kitchen/training
-- /dashboard/kitchen/haccaaap
-- /dashboard/kitchen/suppliers
-- /dashboard/kitchen/orders
-- /dashboard/kitchen/purchase-orders
-- /dashboard/kitchen/supplier/[id]
+Console route map:
+- /console/kitchen
+- /console/kitchen/ingredients
+- /console/kitchen/mise
+- /console/kitchen/recipes
+- /console/kitchen/dishes
+- /console/kitchen/menu
+- /console/kitchen/team
+- /console/kitchen/stations
+- /console/kitchen/training
+- /console/kitchen/haccaaap
+- /console/kitchen/suppliers
+- /console/kitchen/orders
+- /console/kitchen/purchase-orders
+- /console/kitchen/supplier/[id]
 
 Page contracts:
 
-Kitchen (/dashboard/kitchen)
+Kitchen (/console/kitchen)
 Purpose: show runtime kitchen identity and debug surface.
 Reads: Kitchen.
 Writes: none.
 
-Ingredients (/dashboard/kitchen/ingredients)
+Ingredients (/console/kitchen/ingredients)
 Purpose: manage kitchen ingredient attachment and visibility.
 Reads: Ingredient, KitchenIngredient.
 Writes: KitchenIngredient.
 
-Mise (/dashboard/kitchen/mise)
+Mise (/console/kitchen/mise)
 Purpose: manage prep tasks and mise lists.
 Reads: KitchenMiseTask, KitchenRecipe.
 Writes: KitchenMiseTask.
 
-Recipes (/dashboard/kitchen/recipes)
+Recipes (/console/kitchen/recipes)
 Purpose: manage recipes and ingredient lines.
 Reads: KitchenRecipe, KitchenIngredient.
 Writes: KitchenRecipe.
 
-Dishes (/dashboard/kitchen/dishes)
+Dishes (/console/kitchen/dishes)
 Purpose: manage dish definitions and recipe links.
 Reads: KitchenDish, KitchenRecipe.
 Writes: KitchenDish.
 
-Menu (/dashboard/kitchen/menu)
+Menu (/console/kitchen/menu)
 Purpose: manage menu groupings and active dishes.
 Reads: KitchenMenu, KitchenDish.
 Writes: KitchenMenu.
 
-Team (/dashboard/kitchen/team)
+Team (/console/kitchen/team)
 Purpose: manage kitchen team assignments.
 Reads: Chef, KitchenTeamMember.
 Writes: KitchenTeamMember.
 
-Stations (/dashboard/kitchen/stations)
+Stations (/console/kitchen/stations)
 Purpose: track station/service flow status.
 Reads: KitchenStation, KitchenMiseTask.
 Writes: KitchenStation.
 
-Training (/dashboard/kitchen/training)
+Training (/console/kitchen/training)
 Purpose: surface training/checklists.
 Reads: KitchenTraining.
 Writes: KitchenTraining.
 
-Haccaaap (/dashboard/kitchen/haccaaap)
+Haccaaap (/console/kitchen/haccaaap)
 Purpose: compliance and safety logs.
 Reads: KitchenCompliance.
 Writes: KitchenCompliance.
 
-Suppliers (/dashboard/kitchen/suppliers)
+Suppliers (/console/kitchen/suppliers)
 Purpose: manage supplier links and metadata.
 Reads: Supplier, KitchenSupplier.
 Writes: KitchenSupplier.
 
-Orders (/dashboard/kitchen/orders)
+Orders (/console/kitchen/orders)
 Purpose: view incoming orders (prototype).
 Reads: IncomingOrder.
 Writes: none.
 
-Purchase Orders (/dashboard/kitchen/purchase-orders)
+Purchase Orders (/console/kitchen/purchase-orders)
 Purpose: manage outgoing supplier orders (prototype).
 Reads: PurchaseOrder.
 Writes: PurchaseOrder.
 
-Supplier detail (/dashboard/kitchen/supplier/[id])
+Supplier detail (/console/kitchen/supplier/[id])
 Purpose: detail supplier profile and linked ingredients.
 Reads: Supplier, KitchenSupplier, KitchenIngredient.
 Writes: KitchenSupplier.
@@ -364,7 +364,7 @@ Phase 0 - Anchor and guardrails
 - Define the kitchen UI language (cards, lists, status chips).
 
 Phase 0.5 - Test kitchen environment
-- Treat test kitchens as the primary safe sandbox for dashboard prototyping.
+- Treat test kitchens as the primary safe sandbox for console prototyping.
 - Require explicit kitchen selection; no automatic fallback between real and test kitchens.
 - Keep test-kitchens collection separate from kitchens; never merge silently.
 - Surface clear UI labels when a test kitchen is active.
@@ -430,7 +430,7 @@ Implications:
 - Supplier SKUs map to ingredients; ingredients do not derive from SKUs.
 
 Recent scan (2026-02-20):
-- Commit 20b2754f updated kitchen dashboard menu and dishes pages plus runtime kitchen helpers.
+- Commit 20b2754f updated kitchen console menu and dishes pages plus runtime kitchen helpers.
 
 #end
 
@@ -665,7 +665,7 @@ Summary:
 
 Current focus:
 - Consolidate runtime contracts across extensions.
-- Keep kitchen dashboard and product licensing flows stable.
+- Keep kitchen console and product licensing flows stable.
 
 #end
 
@@ -680,7 +680,7 @@ Summary:
 
 Current focus:
 - Align supplier ownership with fireux-drop.
-- Keep kitchen dashboard flows consistent with core runtime state.
+- Keep kitchen console flows consistent with core runtime state.
 
 #end
 
@@ -712,7 +712,7 @@ Primary domains:
 - products, places, jobs, kitchens, blogs, companies
 
 Current focus:
-- Kitchen dashboard runtime consistency.
+- Kitchen console runtime consistency.
 - Product licensing and CTA surfaces.
 - Consistent interface helpers for companies and places.
 
@@ -742,7 +742,7 @@ Summary:
 - It should mirror core FireUX kitchen runtime decisions.
 
 Current focus:
-- Keep kitchen dashboard behavior consistent.
+- Keep kitchen console behavior consistent.
 - Align supplier ownership with fireux-drop.
 
 #end

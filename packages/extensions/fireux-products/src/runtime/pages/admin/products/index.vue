@@ -27,7 +27,7 @@ const pageTitle = 'Products'
 const pageDescription = 'Manage products for this runtime.'
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   title: 'Admin Products',
   requiresAuth: true,
   roles: ['admin'],

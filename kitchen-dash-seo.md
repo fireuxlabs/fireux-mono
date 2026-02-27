@@ -1,10 +1,10 @@
-# Kitchen Dashboard Current-State Snapshot (FireUX Kitchens)
+# Kitchen Console Current-State Snapshot (FireUX Kitchens)
 
-Purpose: current-state contract snapshot for Kitchen Dashboard so design/build can proceed without routing/runtime-state drift.
+Purpose: current-state contract snapshot for Kitchen Console so design/build can proceed without routing/runtime-state drift.
 
-Scope: `fireux-kitchens` runtime layer (pages, runtime kitchen selection, kitchen dashboard data surfaces), plus implementation guidance for a Covin WhatsApp purchase-order composer.
+Scope: `fireux-kitchens` runtime layer (pages, runtime kitchen selection, kitchen console data surfaces), plus implementation guidance for a Covin WhatsApp purchase-order composer.
 
-## A) Kitchen Dashboard Contract (current behavior)
+## A) Kitchen Console Contract (current behavior)
 
 ### A1. How runtime kitchen is selected today (exact sources of truth)
 
@@ -44,7 +44,7 @@ Scope: `fireux-kitchens` runtime layer (pages, runtime kitchen selection, kitche
   - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-runtime/shared.ts`
 
 #### Read-only mode behavior
-- Kitchen doc and dashboard data come from `getReadOnlyKitchenScenario(...)`
+- Kitchen doc and console data come from `getReadOnlyKitchenScenario(...)`
 - Files:
   - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-runtime/useRuntimeKitchenDocument.ts`
   - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-runtime/useRuntimeKitchenData.ts:40`
@@ -65,98 +65,98 @@ Scope: `fireux-kitchens` runtime layer (pages, runtime kitchen selection, kitche
   - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/index.vue:5`
 
 #### Current user flow
-- `/kitchens` -> user clicks kitchen/test/read-only in `KitchenCTA` -> runtime selection updated -> redirect to `/dashboard/kitchen`
+- `/kitchens` -> user clicks kitchen/test/read-only in `KitchenCTA` -> runtime selection updated -> redirect to `/console/kitchen`
 
-### A3. Which dashboard pages consume runtime kitchen state (exact composables + usage)
+### A3. Which console pages consume runtime kitchen state (exact composables + usage)
 
-#### Shared kitchen dashboard layout
+#### Shared kitchen console layout
 - File:
-  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/layouts/kitchen-dashboard.vue`
+  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/layouts/kitchen-console.vue`
 - Uses:
   - `useRuntimeKitchenComputed()`:
-    - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/layouts/kitchen-dashboard.vue:83`
+    - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/layouts/kitchen-console.vue:83`
   - `useKitchenInterface().pill(...)` to render the runtime kitchen pill in sidebar:
-    - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/layouts/kitchen-dashboard.vue:92`
+    - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/layouts/kitchen-console.vue:92`
 
-#### Dashboard pages using `useRuntimeKitchen()`
-- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/index.vue`
+#### Console pages using `useRuntimeKitchen()`
+- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/index.vue`
   - reads `runtime.mode`
   - reads counts from `runtime.data.*` (ingredients, mise, recipes, dishes, menus, suppliers, purchases, orders, etc.)
 
-- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/ingredients.vue`
+- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/ingredients.vue`
   - reads `runtime.mode`
   - reads `runtime.data.kitchenIngredients`
 
-- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/recipes.vue`
+- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/recipes.vue`
   - reads `runtime.mode`
   - reads `runtime.data.recipes`
 
-- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/dishes.vue`
+- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/dishes.vue`
   - reads `runtime.mode`, `runtime.id`
   - reads `runtime.data.dishes`, `runtime.data.menus`
 
-- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/menu.vue`
+- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/menu.vue`
   - reads `runtime.data.menus`, `runtime.data.dishes`
   - uses `runtime.id` as kitchen fallback for menu context
 
-- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/suppliers.vue`
+- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/suppliers.vue`
   - reads `runtime.mode`, `runtime.kitchen`
   - reads `runtime.data.suppliers`, `runtime.data.supplierIngredients`, `runtime.data.kitchenIngredients`
   - builds “My Suppliers / All Suppliers” and “Buy Lists / Catalogue” UI locally on the page
 
-- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/purchase-orders.vue`
+- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/purchase-orders.vue`
   - reads `runtime.mode`
   - reads `runtime.data.purchases`
 
-- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/orders.vue`
+- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/orders.vue`
   - reads `runtime.id` to derive kitchen id
   - then uses `useKitchenOrdersFetch(kitchenId)` (incoming orders via `fireux-orders`)
 
-- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/mise.vue`
+- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/mise.vue`
   - reads `runtime.mode`, `runtime.data.miseTasks`
 
-- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/stations.vue`
+- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/stations.vue`
   - reads `runtime.mode`, `runtime.data.stations`
 
-- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/team.vue`
+- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/team.vue`
   - reads `runtime.mode`, `runtime.data.teamMembers`
 
-- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/training.vue`
+- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/training.vue`
   - reads `runtime.mode`, `runtime.data.trainingModules`
 
-- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/haccp.vue`
+- `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/haccp.vue`
   - reads `runtime.mode`, `runtime.data.haccpChecks`
 
-## B) Route inventory (kitchen dashboard)
+## B) Route inventory (kitchen console)
 
 ### Requested routes -> current route files
 
 - `/kitchens`
   - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/index.vue`
 
-- `/dashboard/kitchen`
-  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/index.vue`
+- `/console/kitchen`
+  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/index.vue`
 
-- `/dashboard/kitchen/ingredients`
-  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/ingredients.vue`
+- `/console/kitchen/ingredients`
+  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/ingredients.vue`
 
-- `/dashboard/kitchen/recipes`
-  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/recipes.vue`
+- `/console/kitchen/recipes`
+  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/recipes.vue`
 
-- `/dashboard/kitchen/dishes`
-  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/dishes.vue`
+- `/console/kitchen/dishes`
+  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/dishes.vue`
 
-- `/dashboard/kitchen/menu`
-  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/menu.vue`
+- `/console/kitchen/menu`
+  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/menu.vue`
 
-- `/dashboard/kitchen/suppliers`
-  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/suppliers.vue`
+- `/console/kitchen/suppliers`
+  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/suppliers.vue`
 
-- `/dashboard/kitchen/purchase-orders`
-  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/purchase-orders.vue`
+- `/console/kitchen/purchase-orders`
+  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/purchase-orders.vue`
 
-- `/dashboard/kitchen/supplier/[id]`
-  - **No route file exists currently** (no `supplier/[id].vue` or `suppliers/[id].vue` under `dashboard/kitchen`)
+- `/console/kitchen/supplier/[id]`
+  - **No route file exists currently** (no `supplier/[id].vue` or `suppliers/[id].vue` under `console/kitchen`)
 
 ## C) Data model inventory (kitchen entities)
 
@@ -253,8 +253,8 @@ Note: not all requested entities currently have dedicated typed models in `fireu
 
 ### PurchaseOrder
 - **No dedicated `PurchaseOrder` model file currently**
-- Current `/dashboard/kitchen/purchase-orders` page renders `runtime.data.purchases` as untyped records:
-  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/purchase-orders.vue:64`
+- Current `/console/kitchen/purchase-orders` page renders `runtime.data.purchases` as untyped records:
+  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/purchase-orders.vue:64`
 - Runtime kitchen data contract currently returns:
   - read-only mode: `scenario.procurementStack.purchases`
   - live mode: `purchases: []` (no Firestore fetch wired yet)
@@ -271,15 +271,15 @@ Target tool requirements:
 
 ### D1. Which existing page surface it belongs to (current contract)
 
-#### Primary surface: `/dashboard/kitchen/purchase-orders`
+#### Primary surface: `/console/kitchen/purchase-orders`
 - This is the correct home for the composer because it is already the “Orders Out” page:
-  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/purchase-orders.vue`
+  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/purchase-orders.vue`
 - It already consumes `runtime.data.purchases`, which is the intended slot for outgoing procurement orders:
-  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/purchase-orders.vue:64`
+  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/purchase-orders.vue:64`
 
-#### Supporting surface (selection context): `/dashboard/kitchen/suppliers`
+#### Supporting surface (selection context): `/console/kitchen/suppliers`
 - Existing supplier + buy-list UX is already there:
-  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/suppliers.vue`
+  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/suppliers.vue`
 - This page already builds:
   - supplier selection (`My Suppliers` / `All Suppliers`)
   - supplier item collections (`Buy Lists` / `Catalogue`)
@@ -376,20 +376,20 @@ type KitchenPurchaseOrder = {
 - V1 can generate message text at runtime (no need to persist rendered text)
 - Use `order_number` + `id` as stable references
 - Reference link can initially target:
-  - `/dashboard/kitchen/purchase-orders`
+  - `/console/kitchen/purchase-orders`
   - plus query/hash later (no route invention required in this phase)
 
 ## Conventions / drift guard (current kitchens extension)
 
 - Do not invent new runtime kitchen selection fallback paths.
 - Keep `useRuntimeKitchenSelection()` as the sole persisted runtime selector.
-- Keep kitchen dashboard pages file-routed via runtime layer (no custom pages config routing).
+- Keep kitchen console pages file-routed via runtime layer (no custom pages config routing).
   - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/extensions/fireux-kitchens/src/config/module/pages-config.ts`
 - Keep collection managers generic (pill/cell only) and place large surface previews in dev pages, not manager components.
 
 ## Current gaps (explicit, so design can account for them)
 
-- No `/dashboard/kitchen/supplier/[id]` page exists today.
+- No `/console/kitchen/supplier/[id]` page exists today.
 - No typed `KitchenSupplier` model exists in `fireux-kitchens` (supplier links are currently untyped merged records).
 - No typed `PurchaseOrder` model or fetch/mutation composables exist yet in `fireux-kitchens`.
 - `runtime.data.purchases` is only populated in read-only scenarios; live mode returns `[]` today.

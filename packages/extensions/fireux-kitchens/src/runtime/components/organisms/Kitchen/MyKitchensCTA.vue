@@ -1,7 +1,7 @@
 <template>
   <KitchenCardsPill
     link
-    to="/dashboard/kitchen"
+    to="/console/kitchen"
     :title="chefLabel"
     subtitle="Test kitchen"
     :image-url="chefAvatarUrl"

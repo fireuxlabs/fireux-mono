@@ -2,10 +2,23 @@
 {
   "files": [],
   "references": [
-    { "path": "fireux-misebox" },
-    { "path": "fireux-bringli" },
-    { "path": "fireux-cleanbox" },
-    { "path": "fireux-fireux" }
+    {
+      "path": "fireux-misebox"
+    },
+    {
+      "path": "fireux-bringli"
+    },
+    {
+      "path": "fireux-cleanbox"
+    },
+    {
+      "path": "fireux-fireux"
+    },
+    {
+      "path": "fireux-granite"
+    }
   ],
-  "compilerOptions": { "skipLibCheck": true }
+  "compilerOptions": {
+    "skipLibCheck": true
+  }
 }

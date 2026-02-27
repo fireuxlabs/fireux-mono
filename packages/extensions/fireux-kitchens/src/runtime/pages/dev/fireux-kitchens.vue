@@ -20,7 +20,7 @@
             </UButton>
           </div>
           <div v-show="openSections['dash-dev']" class="mt-4">
-            <DevDashboardSystem />
+            <DevConsoleSystem />
           </div>
         </UCard>
 

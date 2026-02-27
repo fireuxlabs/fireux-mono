@@ -19,14 +19,14 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 -- Kitchen prep planning tools and station scheduling
 -- Supplier and inventory integration with reorder tracking
 -- Job search and temporary placement system
--- Analytics dashboards for kitchens and professionals
+-- Analytics consoles for kitchens and professionals
 -- Dedicated pages/routes: `/get-started`, `/professional`, `/jobs`, `/kitchens`, `/recipes`, `/suppliers`, `/prep-plans`
 
 ## 🧩 Planned / Cross-Package Dependencies
 
 -- Shared Misebox data models (profiles, recipes, suppliers, prep plans) should originate in `packages/ecosystem/fireux-misebox` or `fireux-core` to support multiple tenants.
 -- Job workflows may depend on `packages/extensions/fireux-jobs` once built out.
--- Analytics foundation likely belongs in `fireux-core` (events, summaries) before tenant dashboards can consume it.
+-- Analytics foundation likely belongs in `fireux-core` (events, summaries) before tenant consoles can consume it.
 
 ## Next Actions
 
@@ -34,5 +34,5 @@ Status legend: ✅ completed · ⚙️ in progress · ❌ missing · 🧩 planne
 - [ ] Scaffold placeholder routes and navigation for the promised pages to unblock incremental development.
 - [ ] Implement MVP flows for profile creation, recipe management, supplier lists, and prep planning.
 - [ ] Integrate job features (posting, search) using shared extension work once available.
-- [ ] Add analytics event capture and dashboards for kitchens and professionals.
+- [ ] Add analytics event capture and consoles for kitchens and professionals.
 - [ ] Reconcile `liturature.md` once key modules ship to ensure marketing copy matches functionality.

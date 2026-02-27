@@ -18,7 +18,7 @@
           size="xs"
           color="neutral"
           variant="soft"
-          @click="navigateTo('/dashboard/chef/profile')"
+          @click="navigateTo('/console/chef/profile')"
         >
           Edit
         </UButton>

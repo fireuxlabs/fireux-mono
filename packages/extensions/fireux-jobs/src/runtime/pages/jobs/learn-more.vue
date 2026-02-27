@@ -53,7 +53,7 @@
       <section class="space-y-3">
         <h3 class="text-base font-semibold">Get involved</h3>
         <p class="text-sm text-gray-600">
-          Agents can start by creating a draft job from the Jobs dashboard.
+          Agents can start by creating a draft job from the Jobs console.
           Professionals should keep their profiles complete so they appear in
           recommendations when jobs go live.
         </p>

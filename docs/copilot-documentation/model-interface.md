@@ -19,7 +19,7 @@ This guide consolidates the current FireUX data models that power app users, sha
 
 ### `UserCard` namespace
 
-- UI projections used by dashboard components.
+- UI projections used by console components.
 - `UserCard.Card` is the canonical UI payload produced by `useUserInterface().card()`.
 - Cards are presentational-only; business logic (CTA, badge decoration, permissions) lives in callers.
 

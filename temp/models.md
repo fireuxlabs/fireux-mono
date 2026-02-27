@@ -1437,7 +1437,7 @@ export { supplierConfig }
 
 /**
  * Supplier profile metadata holder. Mirrors Professional/Chef structure
- * and gives dashboard surfaces a single config import path.
+ * and gives console surfaces a single config import path.
  */
 
 import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model'

@@ -25,5 +25,5 @@
 
 <script setup lang="ts">
 const paragraph =
-  'Run your <a href="/kitchens"><strong>kitchen</strong></a> from one dashboard - ops, team, and service essentials. When you need staff, publish <a href="/jobs"><strong>roles</strong></a> and connect with <a href="/professionals"><strong>professionals</strong></a> already in the ecosystem.'
+  'Run your <a href="/kitchens"><strong>kitchen</strong></a> from one console - ops, team, and service essentials. When you need staff, publish <a href="/jobs"><strong>roles</strong></a> and connect with <a href="/professionals"><strong>professionals</strong></a> already in the ecosystem.'
 </script>

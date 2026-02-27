@@ -4,12 +4,16 @@
   "references": [
     { "path": "fireux-blogs" },
     { "path": "fireux-companies" },
+    { "path": "fireux-compliance" },
+    { "path": "fireux-documents" },
     { "path": "fireux-kitchens" },
     { "path": "fireux-orders" },
     { "path": "fireux-drop" },
     { "path": "fireux-jobs" },
     { "path": "fireux-places" },
-    { "path": "fireux-products" }
+    { "path": "fireux-products" },
+    { "path": "fireux-properties" },
+    { "path": "fireux-tasks" }
   ],
   "compilerOptions": { "skipLibCheck": true }
 }

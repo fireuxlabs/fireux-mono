@@ -658,7 +658,7 @@ Role:
 Constraints (keep it boring on purpose):
 - No pricing page (yet) unless a real sale forces it.
 - No customer onboarding flows unless a real sale forces it.
-- No customer dashboards unless demanded by real usage.
+- No customer consoles unless demanded by real usage.
 - No “platform” features unless forced by real sales.
 
 Repo truth:
@@ -1520,7 +1520,7 @@ No styling bikeshedding.
 - Company profiles
 - Admins & claims
 - Ownership vs management
-- Dashboards
+- Consoles
 - Links to places & jobs
 
 ---
@@ -1533,11 +1533,11 @@ No styling bikeshedding.
 
 ---
 
-#### 09 — Dashboards & Navigation
+#### 09 — Consoles & Navigation
 - Entry points
 - CTAs
 - Empty states
-- Ecosystem vs app dashboards
+- Ecosystem vs app consoles
 
 ---
 

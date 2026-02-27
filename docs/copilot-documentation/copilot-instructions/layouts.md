@@ -4,7 +4,7 @@ Purpose: keep layout naming consistent and avoid app-local overrides. Layouts li
 
 ## Use existing layouts
 
-- Reference by name (file stem), e.g. `layout: 'dashboard'`, `layout: 'auth'`, `layout: 'docs'`.
+- Reference by name (file stem), e.g. `layout: 'console'`, `layout: 'auth'`, `layout: 'docs'`.
 - Do not copy layouts into apps/tenants; rely on the core exports.
 - If you must wrap/override for an ecosystem, do it in the ecosystem package and keep the name unique.
 
@@ -23,5 +23,5 @@ Purpose: keep layout naming consistent and avoid app-local overrides. Layouts li
 ## Ecosystem/app-specific layouts
 
 - Prefer reusing core layouts. Only add ecosystem-specific layouts when UI diverges meaningfully.
-- If you reuse an existing name, you will shadow the core layout. Avoid collisions; prefer a prefix tied to your ecosystem (e.g. `cleanbox-dashboard`).
+- If you reuse an existing name, you will shadow the core layout. Avoid collisions; prefer a prefix tied to your ecosystem (e.g. `cleanbox-console`).
 - TODO: add a guard to detect name collisions and app-local layout directories.

@@ -12,7 +12,7 @@ A shared creation + registration workflow keeps every FireUX asset (apps, module
 
 - One command to scaffold a new **app**, **module**, or **ecosystem** with repo templates, CI hooks, and runtime wiring.
 - Automatic registration that writes a canonical record in Firestore immediately after creation (or when promoted from draft → active).
-- Consistent metadata schemas so tooling, dashboards, and guards can reason about every asset without local heuristics.
+- Consistent metadata schemas so tooling, consoles, and guards can reason about every asset without local heuristics.
 - Guardrails that prevent deploying unregistered assets and that surface drift (e.g., deleted repo folder but orphaned registry entry).
 
 ## Registry terminology
@@ -20,7 +20,7 @@ A shared creation + registration workflow keeps every FireUX asset (apps, module
 We intentionally use the word “registry” for two layers of the workflow:
 
 1. **Local registry file** — A `registry.json` (kept next to the asset folder) that contains the full metadata payload. This file is versioned with the codebase and acts as the single source of truth for reviews.
-2. **Remote registry database** — The `fireux-fireux` Firestore project, specifically the `<entityType>/<id>` collections (`modules/fireux-core`, `apps/fireux-app`, etc.), where the CLI publishes the same metadata so runtime tooling, dashboards, and guards can read it centrally.
+2. **Remote registry database** — The `fireux-fireux` Firestore project, specifically the `<entityType>/<id>` collections (`modules/fireux-core`, `apps/fireux-app`, etc.), where the CLI publishes the same metadata so runtime tooling, consoles, and guards can read it centrally.
 
 The `pnpm registry:*` commands always read from the local file first and then sync to the remote database so the repo history and the database never drift silently.
 
@@ -78,7 +78,7 @@ Type-specific additions:
 - The registry entry now includes that `ecosystem` slug. When `/api/registry` receives an app payload, it:
   1.  Stores `name`, `team`, and the required `ecosystem` slug at `apps/<appId>`.
   2.  Appends the app id to `ecosystems/<ecosystemId>.apps` via `arrayUnion`, so the ecosystem knows every linked app.
-- Future app or ecosystem tooling (dashboards, guards, FireUX app directory) can read those lean documents to show "which apps belong to which ecosystem" without crawling the repo.
+- Future app or ecosystem tooling (consoles, guards, FireUX app directory) can read those lean documents to show "which apps belong to which ecosystem" without crawling the repo.
 - If an app later changes ecosystems, update `registry.json` and re-run `pnpm registry:register` so both documents stay in sync (removal logic can run once we track historical memberships).
 
 ## Backfilling existing assets

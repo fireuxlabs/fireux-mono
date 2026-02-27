@@ -9,7 +9,7 @@ Primary domains:
 - products, places, jobs, kitchens, blogs, companies
 
 Current focus:
-- Kitchen dashboard runtime consistency.
+- Kitchen console runtime consistency.
 - Product licensing and CTA surfaces.
 - Consistent interface helpers for companies and places.
 

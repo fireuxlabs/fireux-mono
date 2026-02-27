@@ -27,7 +27,7 @@ const pageTitle = 'Blog'
 const pageDescription = 'Manage blog posts for this runtime.'
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   title: 'Admin Blog',
   requiresAuth: true,
   roles: ['admin'],

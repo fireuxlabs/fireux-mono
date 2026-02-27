@@ -5,9 +5,9 @@ Authority: Tier1 (Authoritative)
 - Define runtime selection, mode, collection path, and route policy across FireUX domains.
 
 ## Runtime Selection Rules
-- Dashboard/runtime entity selection is state-based.
-- Dashboard pages must resolve active context from runtime state, not route query selection.
-- Query params may carry view/context options for public pages, but not canonical dashboard entity selection.
+- Console/runtime entity selection is state-based.
+- Console pages must resolve active context from runtime state, not route query selection.
+- Query params may carry view/context options for public pages, but not canonical console entity selection.
 - No silent selection fallbacks:
   - Do not auto-switch entities/modes when required state is missing.
   - Surface missing selection explicitly.
@@ -37,14 +37,14 @@ Authority: Tier1 (Authoritative)
   - Blogs public detail route: slug-based.
   - Products public detail route: slug-based.
   - Users public profile route: handle-based (`/u/[handle]`) resolved via handle index.
-  - Dashboard/admin/internal routes: id-based.
+  - Console/admin/internal routes: id-based.
   - Entities without a published slug contract remain id-based until their extension contract defines slug rollout.
 
 ## Route Identity Policy Addendum (Slug vs ID)
 - Every public/indexable entity must declare exactly one strategy in its extension contract:
   - `slug == doc id` (public slug is the Firestore doc id at publish time)
   - `slug -> id` (public slug resolves to stable doc id via indexed lookup)
-- Internal/admin/dashboard routes remain id-based.
+- Internal/admin/console routes remain id-based.
 - Public link generators must follow the declared strategy; id-based public links are invalid when strategy is slug.
 
 ### Compact Entity Strategy Map
@@ -77,14 +77,14 @@ Authority: Tier1 (Authoritative)
 ## Conflicts Resolved
 - Previous broad “[id] for all object pages” guidance is replaced by the mixed route policy above (public slug, internal id).
 - Kitchen live/test split is canonicalized here and supersedes ambiguous one-collection summaries.
-- Runtime selection canon is state-based for dashboards; query-selection statements in Tier3 AI/history docs are non-authoritative.
+- Runtime selection canon is state-based for consoles; query-selection statements in Tier3 AI/history docs are non-authoritative.
 
 ## TBD Decisions (Deano)
 - Slug rollout scope for currently id-based public entities (jobs/places/companies/kitchens):
   - Default: phase by extension
   - Note: products/blog already slug-first
 - SEO enforcement timing:
-  - Default: after Kitchen MVP polish (next sprint after dashboard stability)
+  - Default: after Kitchen MVP polish (next sprint after console stability)
   - Includes: robots/meta noindex, sitemap, JSON-LD helpers, canonical URLs
 - AI/** tracking policy:
   - Default: keep AI/** ignored

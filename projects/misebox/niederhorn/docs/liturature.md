@@ -13,7 +13,7 @@ Head chefs, sous chefs, and kitchen managers at Restaurant Niederhorn.
 ## Purpose
 
 This project demonstrates how Misebox can be customized for a real kitchen environment.
-It combines recipe management, supplier coordination, and team training in one connected dashboard — tailored specifically to Niederhorn’s daily operations.
+It combines recipe management, supplier coordination, and team training in one connected console — tailored specifically to Niederhorn’s daily operations.
 
 ---
 
@@ -32,7 +32,7 @@ It combines recipe management, supplier coordination, and team training in one c
 
 ## Main Pages / Routes
 
-- `/` – kitchen home dashboard
+- `/` – kitchen home console
 - `/recipes` – list and manage restaurant recipes
 - `/prep-plans` – schedule mise en place and daily production
 - `/suppliers` – manage ingredient providers and stock levels

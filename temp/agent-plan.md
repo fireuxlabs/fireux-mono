@@ -8,7 +8,7 @@ Date: 2025-12-27
 - Keep a clean separation between:
   - **membership/role** (AppUser overlay)
   - **domain profiles** (global truth + optional tenant deltas)
-- Ensure the Agent can be created/edited by the user via `/dashboard/agent/profile`, and used as a browseable “directory entity” (pill/cell/profile view models).
+- Ensure the Agent can be created/edited by the user via `/console/agent/profile`, and used as a browseable “directory entity” (pill/cell/profile view models).
 
 Agent is a **posting identity**, so “richness” should support:
 - trust (“who is this agent?”)
@@ -108,11 +108,11 @@ Guardrail: one job per composable.
 
 ## UI routes
 
-- `/dashboard/agent`
+- `/console/agent`
   - overview and entry point
   - shows status + CTA link to profile builder
 
-- `/dashboard/agent/profile`
+- `/console/agent/profile`
   - profile builder / editor
   - supports create-when-missing via ensure flow
 

@@ -61,7 +61,7 @@ import {
 import type { StripePriceInput } from '../../../models/product.model'
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   title: 'Create Product',
   requiresAuth: true,
   roles: ['admin'],

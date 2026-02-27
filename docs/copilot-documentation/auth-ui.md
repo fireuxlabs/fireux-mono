@@ -105,7 +105,7 @@ async function onCreateCore() {
 2. Simple standalone use (auto-redirect):
 
 ```vue
-<OrganismsAuthSystem redirect-on-success redirect-target="/dashboard" />
+<OrganismsAuthSystem redirect-on-success redirect-target="/console" />
 ```
 
 ---

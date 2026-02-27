@@ -1,0 +1,59 @@
+import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import type { Task } from '../../../../../models/task.model'
+
+const normalize = (value: unknown) => String(value || '').trim()
+
+export type TaskCreateInput = Pick<
+  Task,
+  | 'title'
+  | 'description'
+  | 'status'
+  | 'source'
+  | 'due_date'
+  | 'linked_entity_type'
+  | 'linked_entity_id'
+>
+
+export function useTaskCreate(runtimePortfolio = useRuntimePortfolio()) {
+  const { createDocument } = useFirestoreCreate()
+
+  async function createTask(input: TaskCreateInput): Promise<string> {
+    const portfolioId = normalize(runtimePortfolio.id.value)
+    if (!portfolioId) {
+      throw new Error('[fireux-tasks] runtimePortfolioId is required.')
+    }
+
+    if (runtimePortfolio.isReadOnly.value) {
+      throw new Error('[fireux-tasks] read-only runtime does not allow writes.')
+    }
+
+    const title = normalize(input.title)
+    if (!title) {
+      throw new Error('[fireux-tasks] title is required.')
+    }
+
+    const payload: Omit<Task, 'id'> = {
+      portfolio_id: portfolioId,
+      title,
+      description: normalize(input.description),
+      status: input.status || 'open',
+      source: input.source || 'manual',
+      due_date: normalize(input.due_date),
+      linked_entity_type: normalize(input.linked_entity_type),
+      linked_entity_id: normalize(input.linked_entity_id),
+      created: { at: {} as any, by: undefined, app_id: undefined },
+      updated: { at: {} as any, by: undefined },
+    }
+
+    return createDocument<Omit<Task, 'id'>>(`portfolios/${portfolioId}/tasks`, payload, {
+      stamp: true,
+      creator: true,
+      app: true,
+    })
+  }
+
+  return {
+    createTask,
+  }
+}

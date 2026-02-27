@@ -1,10 +1,10 @@
 # FireUX User — field map + relationships (temp)
 
-Dashboard-specific notes now live in:
-- temp/dashboard/overview.md (for /dashboard)
-- temp/dashboard/users.md (for /dashboard/user-profile)
+Console-specific notes now live in:
+- temp/console/overview.md (for /console)
+- temp/console/users.md (for /console/user-profile)
 
-Goal: give a practical rundown of what a **User** is in this repo, which Firestore docs it touches, and how it relates to Apps / AppUsers / Profiles so you can ideate a richer dashboard.
+Goal: give a practical rundown of what a **User** is in this repo, which Firestore docs it touches, and how it relates to Apps / AppUsers / Profiles so you can ideate a richer console.
 
 This is based on:
 - [packages/core/fireux-core/src/runtime/models/core/user.model.ts](packages/core/fireux-core/src/runtime/models/core/user.model.ts)
@@ -88,7 +88,7 @@ Write paths:
   - Implemented in `useCoreUserUpdate().notifications.push(...)`.
 - Membership ensure flows also push notifications when joining apps.
 
-Dashboard ideas this enables:
+Console ideas this enables:
 - “What changed since last visit?” stream
 - “You joined X”, “You were promoted to admin”, “New onboarding step”
 - scoped filtering (ecosystem vs app)
@@ -109,7 +109,7 @@ How user resolution works:
   1) the enriched user collection for the active app (`useUserCollection`) and
   2) falls back to direct core lookups in `/users/{uid}`.
 
-Dashboard ideas this enables:
+Console ideas this enables:
 - show “your profiles” across domains (jobs, places, products, etc.)
 - show “profiles missing info” or “profiles you own/admin”
 
@@ -153,15 +153,15 @@ The UI helpers resolve admin status roughly like:
 - If global runtime: user is admin if `user.role === 'admin'` OR `adminOf` is non-empty
 - If tenant runtime: user is admin if `appUser.role === 'admin'` OR user is in `adminOf` for active `appId`
 
-Dashboard ideas this enables:
+Console ideas this enables:
 - show admin-only modules/CTA
 - show “you are admin of X apps” badge
 
 ---
 
-## 7) The “user.apps” branding overrides (dashboard logos)
+## 7) The “user.apps” branding overrides (console logos)
 
-Some dashboard components treat `user.apps` as an *optional* per-user override bucket.
+Some console components treat `user.apps` as an *optional* per-user override bucket.
 
 Important: `user.apps` is **not typed in the `User` interface** right now; it’s accessed as an untyped field.
 
@@ -173,7 +173,7 @@ Usage:
 - used to override app branding for the current user (e.g. custom avatar/logo)
 - falls back to `apps/{appId}.avatar_url/logo_url/wordmark_url` if not present
 
-Dashboard ideas:
+Console ideas:
 - per-user “favorite app icon” / “pin” / “hide”
 - per-user “custom label” or “grouping” for apps
 

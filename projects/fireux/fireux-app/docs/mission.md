@@ -9,4 +9,4 @@ Serve as the canonical global shell that boots the shared FIReUX UI, auth, and m
 - Validate global authentication flows.
 - Showcase tenant switching and base navigation.
 - Provide the "hello world" SaaS example for the platform.
-- Offer a safe place to inspect shared dashboards, layouts, and runtime config.
+- Offer a safe place to inspect shared consoles, layouts, and runtime config.

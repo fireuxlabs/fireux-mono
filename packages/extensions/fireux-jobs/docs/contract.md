@@ -22,7 +22,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Current routes are id-based:
   - `/jobs/[id]`, `/jobs/create`, `/jobs/edit/[id]`
   - `/agents/[id]`, `/professionals/[id]`
-  - `/dashboard/agent/*`, `/dashboard/professional/*`
+  - `/console/agent/*`, `/console/professional/*`
 - Public slug routes for jobs are not canonical yet.
 
 ## 6) Surfaces supported

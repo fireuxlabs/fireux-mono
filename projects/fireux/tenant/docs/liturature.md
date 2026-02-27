@@ -33,7 +33,7 @@ It handles user sessions, tenant configuration, and environment variables while 
 ## Main Pages / Routes
 
 - `/auth` – login, register, reset password
-- `/dashboard` – default tenant home page
+- `/console` – default tenant home page
 - `/settings` – account and subscription management
 - `/about` – tenant-specific info page
 - `/legal` – privacy, terms, and cookie policy

@@ -12,7 +12,7 @@ This report is intentionally route-first and does not propose redirects, aliases
 |---|---|---|
 | `/users` | `fireux-core` | Public user directory / collection |
 | `/users/:handle` | `fireux-core` | Public user profile (handle-first) |
-| `/dashboard/user-profile` | `fireux-core` (dashboard) | Private self-edit surface |
+| `/console/user-profile` | `fireux-core` (console) | Private self-edit surface |
 | `/dev/users` | `fireux-core` | Dev inspection / drift / collection tools |
 
 Canon principle:
@@ -25,13 +25,13 @@ Canon principle:
 - `/u/:handle` (removed alias; do not reintroduce)
 - `/users/:uid` public UID route (ambiguous and leaks internal identity)
 - `/users/id/:uid` fallback/internal route (removed by canon decision)
-- `/users/admin/:id` (admin namespace must live under dashboard when/if added)
+- `/users/admin/:id` (admin namespace must live under console when/if added)
 - redirect-only shims (none)
 
 ### Operational Truths (Locked From Now On)
 
 - `fireux-core` owns `/users` and `/users/:handle`.
-- Editing your own profile happens in dashboard only (`/dashboard/user-profile`).
+- Editing your own profile happens in console only (`/console/user-profile`).
 - Dev tooling lives under `/dev/*` only (`/dev/users`, `/dev` overview).
 - Public user UI surfaces never expose private fields (notably `email`).
 - Components do not guess public UID routes:
@@ -94,10 +94,10 @@ If you want a handle-first creation UX, do this instead:
   - Resolves handle -> uid -> user doc via `useUserByHandleFetch(...)`: `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/core/fireux-core/src/runtime/pages/users/[handle].vue:54`
   - Shows `User not found` alert if handle is missing/unlinked: `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/core/fireux-core/src/runtime/pages/users/[handle].vue:20`
 
-### Dashboard / self-edit
+### Console / self-edit
 
-- `/dashboard/user-profile`
-  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/core/fireux-core/src/runtime/pages/dashboard/user-profile.vue:1`
+- `/console/user-profile`
+  - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/core/fireux-core/src/runtime/pages/console/user-profile.vue:1`
   - Self profile edit UI (not a public route)
 
 ### Dev
@@ -143,7 +143,7 @@ Rule:
 
 ### Reserved handles + normalization (centralized)
 
-- Reserved handle set includes route-sensitive values (`users`, `u`, `apps`, `dev`, `dashboard`, `id`, etc.):
+- Reserved handle set includes route-sensitive values (`users`, `u`, `apps`, `dev`, `console`, `id`, etc.):
   - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/utils/identity/useUserHandleIdentity.ts:1`
 - Normalization (`@` strip, lowercase, spaces -> dashes, `[a-z0-9-]` only):
   - `/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/utils/identity/useUserHandleIdentity.ts:25`
@@ -292,7 +292,7 @@ Expected results under this canon:
 - Storage identity is uid-first: `/users/{uid}`
 - Public links are handle-only (no UID public fallback routes)
 - Handle uniqueness is enforced via transactional claim on `handles/{handle}`
-- Editing stays private (`/dashboard/user-profile`)
+- Editing stays private (`/console/user-profile`)
 - Dev stays in dev (`/dev/users`)
 
 Quick answer to the core question:

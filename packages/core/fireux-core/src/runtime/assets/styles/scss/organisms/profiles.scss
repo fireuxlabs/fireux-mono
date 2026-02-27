@@ -1,21 +1,21 @@
-.dashboard-profile {
+.console-profile {
 	display: grid;
 	gap: var(--space-6);
 	min-width: 0;
 }
 
-.dashboard-profile > * {
+.console-profile > * {
 	min-width: 0;
 }
 
-.dashboard-profile__pills {
+.console-profile__pills {
 	display: flex;
 	flex-wrap: wrap;
 	align-items: center;
 	gap: var(--space-2);
 }
 
-.dashboard-profile__section {
+.console-profile__section {
 	display: grid;
 	gap: var(--space-6);
 }

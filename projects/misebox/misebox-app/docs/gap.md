@@ -13,7 +13,7 @@ Comparison between the promises in `liturature.md` and the current Misebox app c
 - [❌] Supplier integration / inventory re-ordering — no supplier or inventory management implementation.
 - [❌] Job search / temporary placement system — no jobs modules, routes, or API usage.
 - [❌] QR portfolio sharing — no QR generation or profile sharing utilities.
-- [❌] Analytics dashboards for kitchens/professionals — no analytics collection or display.
+- [❌] Analytics consoles for kitchens/professionals — no analytics collection or display.
 
 ## 2. Routes / Pages
 
@@ -29,7 +29,7 @@ Comparison between the promises in `liturature.md` and the current Misebox app c
 ## 3. Components
 
 - [✅] Landing components (`LandingHero`, `LandingQuickPeek`, `LandingSolutions`, etc.) — exist and render marketing copy only.
-- [❌] Profile forms / dashboards — absent.
+- [❌] Profile forms / consoles — absent.
 - [❌] Recipe editors, ingredient tables, costing widgets — absent.
 - [❌] Prep-plan boards or scheduler components — absent.
 - [❌] Supplier management UIs — absent.

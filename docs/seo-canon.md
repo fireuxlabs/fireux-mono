@@ -32,12 +32,12 @@ Authority: Tier1 (Authoritative)
 
 ## Indexing Policy
 - Public published pages: indexable.
-- Dashboard/admin/auth-only pages: `noindex, nofollow`.
+- Console/admin/auth-only pages: `noindex, nofollow`.
 - Draft/unpublished public candidates: `noindex`.
 
 ## Sitemap Policy
 - Sitemap is generated from published canonical public entities only.
-- Exclude admin, dashboard, auth-only, and draft routes.
+- Exclude admin, console, auth-only, and draft routes.
 - Public URLs in sitemap must use canonical slug routes where defined.
 
 ## Extension Responsibility Pattern
@@ -48,14 +48,14 @@ Authority: Tier1 (Authoritative)
 
 ## Conflicts Resolved
 - Current permissive robots files do not define canon; this file defines intended indexing rules.
-- Dashboard/admin indexing policy is canonicalized here and must be enforced in runtime/config changes in follow-up work.
+- Console/admin indexing policy is canonicalized here and must be enforced in runtime/config changes in follow-up work.
 
 ## TBD Decisions (Deano)
 - Slug rollout scope for currently id-based public entities (jobs/places/companies/kitchens):
   - Default: phase by extension
   - Note: products/blog already slug-first
 - SEO enforcement timing:
-  - Default: after Kitchen MVP polish (next sprint after dashboard stability)
+  - Default: after Kitchen MVP polish (next sprint after console stability)
   - Includes: robots/meta noindex, sitemap, JSON-LD helpers, canonical URLs
 - AI/** tracking policy:
   - Default: keep AI/** ignored

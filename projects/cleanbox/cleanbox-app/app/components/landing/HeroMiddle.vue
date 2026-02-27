@@ -25,5 +25,5 @@
 
 <script setup lang="ts">
 const paragraph =
-  'Coordinate crews, quality checks, and billing from one dashboard. Cleanbox keeps every service <span class="text-primary">scheduled</span>, <span class="text-primary">verified</span>, and <span class="text-primary">client-ready</span>.'
+  'Coordinate crews, quality checks, and billing from one console. Cleanbox keeps every service <span class="text-primary">scheduled</span>, <span class="text-primary">verified</span>, and <span class="text-primary">client-ready</span>.'
 </script>

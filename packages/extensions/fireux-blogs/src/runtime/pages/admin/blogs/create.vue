@@ -43,7 +43,7 @@ import { useBlogDraftState } from '../../../composables/fireux/firestore/blogs/p
 import { useBlogCreateSubmit } from '../../../composables/fireux/firestore/blogs/post/state/useBlogCreateSubmit'
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'console',
   title: 'Create Blog Post',
   requiresAuth: true,
   roles: ['admin'],

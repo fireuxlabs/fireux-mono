@@ -29,5 +29,5 @@
   - Agent: `useAgent.ts`, `utils.ts`, `main/useAgentCollection.ts`, `main/useAgentComputed.ts`, `main/useAgentCreate.ts`, `main/useAgentDelete.ts`, `main/useAgentInterface.ts`, `main/useAgentUpdate.ts`
   - Professional: `useProfessional.ts`, `utils.ts`, `main/useProfessionalCollection.ts`, `main/useProfessionalComputed.ts`, `main/useProfessionalCreate.ts`, `main/useProfessionalDelete.ts`, `main/useProfessionalInterface.ts`, `main/useProfessionalUpdate.ts`
 - App routes
-  - `packages/extensions/fireux-jobs/src/runtime/composables/fireux/app/routes/useJobDashboardRoutes.ts`
+  - `packages/extensions/fireux-jobs/src/runtime/composables/fireux/app/routes/useJobConsoleRoutes.ts`
   - `packages/extensions/fireux-jobs/src/runtime/composables/fireux/app/routes/useJobRoutes.ts`
