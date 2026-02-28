@@ -23,6 +23,7 @@ Legacy documentation has been retired after migration into this handbook. The se
 
 - [Appendices index](./copilot-appendices/README.md)
 - [Migrations runbook](./copilot-appendices/migrations.md)
+- [SEO + indexing playbook](./copilot-appendices/seo-indexing-playbook.md)
 
 ## Instructions
 

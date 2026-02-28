@@ -14,3 +14,9 @@ This package is the reference implementation for FireUX conventions:
 ## Notes
 - Do not commit build output
 - FireUX is a listings and matching platform, not the legal employer
+
+## SEO baseline
+- Monorepo SEO defaults are centralized here through `defineFireuxConfig({ seo })`.
+- `fireux-core` provides shared `/robots.txt` and `/sitemap.xml` runtime endpoints.
+- Private app surfaces are tagged with `X-Robots-Tag: noindex, nofollow` by default.
+- SEO route discovery is extension-driven via `nuxt.hook('fireux:seo:extend', ...)`.

@@ -14,6 +14,7 @@ The appendices collect reference material that supports the main handbook chapte
 - [Migrations runbook](./migrations.md)
 - [FireUX alignment](./fireux-alignment.md)
 - [Scripts & commands cheatsheet](./scripts-cheatsheet.md)
+- [SEO + indexing playbook](./seo-indexing-playbook.md)
 - Troubleshooting playbooks
 - Layout and navigation taxonomy
 - Avatar/media system notes
