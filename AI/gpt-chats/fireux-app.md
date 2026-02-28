@@ -1,6 +1,6 @@
 # fireux-app
 
-Updated: 2026-02-26
+Updated: 2026-02-28
 Summary:
 - FireUX app is the flagship admin and runtime experience.
 - It consumes FireUX extensions (products, places, jobs, kitchens).

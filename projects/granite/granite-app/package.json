@@ -2,16 +2,26 @@
   "name": "granite-app",
   "private": true,
   "type": "module",
+  "imports": {
+    "#internal/nuxt/paths": "./app/internal/nuxt-paths.mjs"
+  },
   "scripts": {
     "dev": "nuxi prepare && nuxi dev --port 3007",
     "build": "nuxi build",
     "generate": "nuxi generate",
     "preview": "nuxi preview",
+    "prepare:firebase-output": "node scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace",
+    "deploy": "pnpm build && pnpm prepare:firebase-output && npx firebase-tools@15.8.0 deploy --project granite-ecosystem --config firebase.json",
     "check:env": "node ../../../scripts/check-env.mjs",
     "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
     "clean": "rimraf .nuxt dist"
   },
   "dependencies": {
+    "@iconify-json/heroicons": "^1.2.2",
+    "@iconify-json/logos": "^1.2.10",
+    "@iconify-json/lucide": "^1.2.82",
+    "@iconify-json/skill-icons": "^1.2.3",
+    "@iconify-json/vscode-icons": "^1.2.37",
     "@nuxt/icon": "2.x",
     "@nuxt/ui": "^4.0.0-alpha.2",
     "fireux-core": "workspace:*",

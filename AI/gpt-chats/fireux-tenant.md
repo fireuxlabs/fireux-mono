@@ -1,6 +1,6 @@
 # fireux-tenant
 
-Updated: 2026-02-26
+Updated: 2026-02-28
 Summary:
 - fireux-tenant is the tenant-facing experience for FireUX deployments.
 - It should rely on shared extensions and onboarding flows.

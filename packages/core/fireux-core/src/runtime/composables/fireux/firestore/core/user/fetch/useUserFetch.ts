@@ -29,6 +29,29 @@ function normalizeCoreUser(raw: User, fallbackId: string): User {
   }
 }
 
+function isOfflineFirestoreError(error: unknown): boolean {
+  const code = typeof (error as any)?.code === 'string' ? (error as any).code : ''
+  const message = String((error as any)?.message ?? '').toLowerCase()
+  return code === 'unavailable' || message.includes('client is offline')
+}
+
+function guardDocumentPromise(
+  state: { promise?: Ref<Promise<unknown>> },
+  context: string
+) {
+  const promise = state.promise?.value
+  if (!promise || typeof promise.catch !== 'function') return
+
+  promise.catch((error) => {
+    if (!import.meta.dev) return
+    if (isOfflineFirestoreError(error)) {
+      console.warn(`[useUserFetch] offline read ignored (${context})`, error)
+      return
+    }
+    console.error(`[useUserFetch] read failed (${context})`, error)
+  })
+}
+
 export function useUserFetch(
   id: string | null | undefined | Ref<string | null | undefined>
 ) {
@@ -66,13 +89,17 @@ export function useUserFetch(
       : null
   )
 
-  const { data: coreUserRef, pending: corePending } = useDocument<
-    User | undefined
-  >(coreDoc as any)
-
-  const { data: appUserRef, pending: appPending } = useDocument<
-    AppUser | undefined
-  >(appDoc as any)
+  const coreState = useDocument<User | undefined>(coreDoc as any)
+  const appState = useDocument<AppUser | undefined>(appDoc as any)
+  const coreUserRef = coreState.data
+  const corePending = coreState.pending
+  const appUserRef = appState.data
+  const appPending = appState.pending
+  guardDocumentPromise(coreState as any, `users/${uid.value ?? ''}`)
+  guardDocumentPromise(
+    appState as any,
+    `apps/${appId}/users/${uid.value ?? ''}`
+  )
 
   const coreUser = computed<User | null | undefined>(() => {
     if (corePending.value) return undefined

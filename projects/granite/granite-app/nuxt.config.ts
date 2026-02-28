@@ -19,4 +19,12 @@ const fireuxConfig = defineFireuxConfig({
   ],
 })
 
-export default defineNuxtConfig(fireuxConfig)
+export default defineNuxtConfig({
+  ...fireuxConfig,
+  icon: {
+    ...(fireuxConfig.icon || {}),
+    // Avoid runtime package resolution failures for local icon JSON collections
+    // in Firebase/Cloud Run deployments.
+    serverBundle: 'remote',
+  },
+})

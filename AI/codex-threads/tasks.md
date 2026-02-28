@@ -1,6 +1,6 @@
 # Tasks
 
-Updated: 2026-02-26
+Updated: 2026-02-28
 
 Product stack alignment (fireux-products):
 - [ ] Standardize toast access in Product Create System (replace runtime fallback with canonical composable).

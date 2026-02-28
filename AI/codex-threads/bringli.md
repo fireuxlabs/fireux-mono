@@ -1,6 +1,6 @@
 # FireUX - Bringli ecosystem (Codex)
 
-Updated: 2026-02-26
+Updated: 2026-02-28
 Scope: implementation notes for Bringli domain.
 
 Summary:

@@ -1,6 +1,6 @@
 # FireUX - FireUX ecosystem
 
-Updated: 2026-02-26
+Updated: 2026-02-28
 Summary:
 - FireUX ecosystem includes the flagship app and core extensions.
 - Domains include products, places, jobs, kitchens, blogs, and companies.

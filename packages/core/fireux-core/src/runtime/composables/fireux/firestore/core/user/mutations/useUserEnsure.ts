@@ -44,15 +44,27 @@ export function useUserEnsure() {
     // Only ensure app membership when the app-scoped overlay is missing.
     let membershipRole: 'admin' | 'user' = 'user'
     let shouldEnsureMembership = true
+    let appExists = false
     try {
       const db = useFirestore()
       const [appUserSnap, appSnap] = await Promise.all([
         getDoc(doc(db, 'apps', appId, 'users', uid)),
         getDoc(doc(db, 'apps', appId)),
       ])
+      appExists = appSnap.exists()
 
       if (appUserSnap.exists()) {
         shouldEnsureMembership = false
+      }
+
+      if (!appExists) {
+        shouldEnsureMembership = false
+        if (import.meta.dev) {
+          console.warn('[useUserEnsure] app doc missing; skipping membership ensure', {
+            uid,
+            appId,
+          })
+        }
       }
 
       const coreAdminOf = Array.isArray((core.snapshot?.data() as any)?.adminOf)
@@ -68,7 +80,7 @@ export function useUserEnsure() {
 
       // If we do need to create the overlay, preserve admin role only when
       // existing admin mirrors already say this user is an admin.
-      if (coreAdminOf.includes(appId) || appAdminIds.includes(uid)) {
+      if (appExists && (coreAdminOf.includes(appId) || appAdminIds.includes(uid))) {
         membershipRole = 'admin'
       }
     } catch (error) {

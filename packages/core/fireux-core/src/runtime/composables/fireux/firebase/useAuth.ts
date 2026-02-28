@@ -7,6 +7,7 @@ import {
     onAuthStateChanged,
     signInWithEmailAndPassword,
     signInWithPopup,
+    signInWithRedirect,
     signOut,
     type Auth,
     type User,
@@ -15,6 +16,8 @@ import { computed, onMounted, ref, watch, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCurrentUser, useFirebaseAuth } from 'vuefire'
 import { useUserEnsure } from '../firestore/core/user/mutations/useUserEnsure'
+
+let googleSignInInFlight: Promise<User | null> | null = null
 
 export type AuthUser = {
   uid?: string | null
@@ -200,39 +203,68 @@ export function useAuth() {
   // Auth actions (no-op safely until ready)
   // ─────────────────────────────────────────────
   const signInWithGoogle = async () => {
-    if (!auth.value) {
+    if (googleSignInInFlight) {
+      return googleSignInInFlight
+    }
+
+    const run = async () => {
+      if (!auth.value) {
+        if (shouldDebug()) {
+          // eslint-disable-next-line no-console
+          console.warn('[fireux][auth] signInWithGoogle: no firebase auth instance', {
+            isReady: isReady.value,
+            hasBindError: !!lastBindError.value,
+            bindError:
+              lastBindError.value instanceof Error
+                ? {
+                    name: lastBindError.value.name,
+                    message: lastBindError.value.message,
+                    stack: lastBindError.value.stack,
+                  }
+                : lastBindError.value,
+          })
+        }
+        return null
+      }
+
       if (shouldDebug()) {
         // eslint-disable-next-line no-console
-        console.warn('[fireux][auth] signInWithGoogle: no firebase auth instance', {
-          isReady: isReady.value,
-          hasBindError: !!lastBindError.value,
-          bindError:
-            lastBindError.value instanceof Error
-              ? {
-                  name: lastBindError.value.name,
-                  message: lastBindError.value.message,
-                  stack: lastBindError.value.stack,
-                }
-              : lastBindError.value,
-        })
+        console.log('[fireux][auth] signInWithGoogle: opening popup')
       }
-      return null
+
+      const provider = new GoogleAuthProvider()
+
+      try {
+        const result = await signInWithPopup(auth.value, provider)
+        return result?.user ?? null
+      } catch (e) {
+        const code =
+          typeof e === 'object' && e !== null && 'code' in e
+            ? String((e as { code?: unknown }).code ?? '')
+            : ''
+
+        if (
+          code === 'auth/popup-blocked' ||
+          code === 'auth/cancelled-popup-request'
+        ) {
+          try {
+            await signInWithRedirect(auth.value, provider)
+          } catch {}
+        }
+
+        if (shouldDebug()) {
+          // eslint-disable-next-line no-console
+          console.warn('[fireux][auth] signInWithGoogle failed', e)
+        }
+        return null
+      }
     }
 
-    if (shouldDebug()) {
-      // eslint-disable-next-line no-console
-      console.log('[fireux][auth] signInWithGoogle: opening popup')
-    }
-
+    googleSignInInFlight = run()
     try {
-      const result = await signInWithPopup(auth.value, new GoogleAuthProvider())
-      return result?.user ?? null
-    } catch (e) {
-      if (shouldDebug()) {
-        // eslint-disable-next-line no-console
-        console.warn('[fireux][auth] signInWithGoogle failed', e)
-      }
-      return null
+      return await googleSignInInFlight
+    } finally {
+      googleSignInInFlight = null
     }
   }
 

@@ -1,6 +1,6 @@
 # FireUX Extensions - Recent Scan (Codex)
 
-Updated: 2026-02-26
+Updated: 2026-02-28
 Scope: extension module changes and guardrails.
 
 Latest commit:

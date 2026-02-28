@@ -96,8 +96,15 @@ while IFS= read -r rel; do
     continue
   fi
 
-  entity="$(infer_entity "${rel}")"
-  name="${entity}-cell.mirror.vue"
+  ext="${rel##*.}"
+
+  if [[ "${rel}" == */pages/index.vue ]]; then
+    entity="$(kebab "$(infer_pkg "${rel}")")"
+    name="${entity}-index.mirror.${ext}"
+  else
+    entity="$(infer_entity "${rel}")"
+    name="${entity}-cell.mirror.${ext}"
+  fi
 
   if [[ -e "${MIRROR_DIR}/${name}" ]]; then
     pkg="$(kebab "$(infer_pkg "${rel}")")"

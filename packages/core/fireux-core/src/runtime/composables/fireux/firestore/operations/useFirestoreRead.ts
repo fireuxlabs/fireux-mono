@@ -11,8 +11,32 @@ import {
   type Query,
   type QueryDocumentSnapshot,
 } from 'firebase/firestore'
-import type { Ref } from 'vue'
+import { ref, type Ref } from 'vue'
 import { useCollection, useDocument, useFirestore } from 'vuefire'
+
+function isOfflineFirestoreError(error: unknown): boolean {
+  const code = typeof (error as any)?.code === 'string' ? (error as any).code : ''
+  const message = String((error as any)?.message ?? '').toLowerCase()
+  return code === 'unavailable' || message.includes('client is offline')
+}
+
+function guardFirestorePromise(
+  binding: { promise?: Ref<Promise<unknown>> },
+  context: string
+) {
+  const promise = binding.promise?.value
+  if (!promise || typeof promise.catch !== 'function') return
+
+  promise.catch((error) => {
+    if (import.meta.dev) {
+      if (isOfflineFirestoreError(error)) {
+        console.warn(`[useFirestoreRead] offline read ignored (${context})`, error)
+        return
+      }
+      console.error(`[useFirestoreRead] read failed (${context})`, error)
+    }
+  })
+}
 
 /**
  * Unified Firestore read composable for FireUX.
@@ -26,14 +50,19 @@ export function useFirestoreRead() {
     q: Query<T>,
     ssrKey?: string
   ): Ref<T[] | undefined> => {
+    if (import.meta.server) {
+      return ref(undefined) as Ref<T[] | undefined>
+    }
+
     const options = ssrKey ? { ssrKey } : undefined
-    const { data } = useCollection<T>(q, {
+    const binding = useCollection<T>(q, {
       ...options,
       transform: (docSnap: QueryDocumentSnapshot<T>) => {
         return { ...(docSnap.data() as T), id: docSnap.id } as T
       },
     } as any)
-    return data as Ref<T[] | undefined>
+    guardFirestorePromise(binding as any, ssrKey || 'query')
+    return (binding as any).data as Ref<T[] | undefined>
   }
 
   /** Fetch an entire collection (reactive) */
@@ -49,8 +78,12 @@ export function useFirestoreRead() {
     collectionPath: string,
     docId: string
   ): Ref<T | undefined> => {
-    const ref = doc(db, collectionPath, docId)
-    const { data } = useDocument(ref, {
+    if (import.meta.server) {
+      return ref(undefined) as Ref<T | undefined>
+    }
+
+    const docRef = doc(db, collectionPath, docId)
+    const binding = useDocument(docRef, {
       ssrKey: `${collectionPath}-${docId}`,
       transform: (docSnap: DocumentSnapshot<T>) => {
         const raw = docSnap.data()
@@ -58,7 +91,11 @@ export function useFirestoreRead() {
         return { ...(raw as any), id: docSnap.id } as T
       },
     } as any)
-    return data as Ref<T | undefined>
+    guardFirestorePromise(
+      binding as any,
+      `${collectionPath}/${docId}`
+    )
+    return (binding as any).data as Ref<T | undefined>
   }
 
   /**

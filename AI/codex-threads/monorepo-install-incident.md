@@ -1,6 +1,6 @@
 # Monorepo Install Incident (2026-02-06)
 
-Updated: 2026-02-26
+Updated: 2026-02-28
 Summary:
 - pnpm dev:* commands failed with sh: nuxi: command not found.
 - pnpm install left partial installs and failed in workspace postinstall.

@@ -1,6 +1,6 @@
 # FireUX Jobs - GPT context
 
-Updated: 2026-02-26
+Updated: 2026-02-28
 Summary:
 - FireUX Jobs provides job collection and listing surfaces.
 - It is consumed by FireUX apps as an extension.

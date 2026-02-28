@@ -1,7 +1,7 @@
 # Kitchen Console Contract (FireUX Kitchens)
 
 Status: Active
-Updated: 2026-02-26
+Updated: 2026-02-28
 Scope: runtime behavior and page responsibilities for kitchen console surfaces.
 
 Why this exists:

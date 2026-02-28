@@ -1,46 +1,40 @@
 <template>
-  <UPage>
-    <UPageHeader
-      title="Granite"
-      description="Rock Solid OS for portfolio landlords."
-      class="border-b-0"
+  <EffectsStars />
+  <LandingHeroSection />
+
+  <div class="landing-index-divider">
+    <USeparator
+      :avatar="{
+        src: '/img/app/logo.png',
+        alt: 'Granite',
+      }"
+      color="primary"
     />
+  </div>
 
-    <UPageBody class="pagebody space-y-6">
-      <UCard>
-        <div class="space-y-3">
-          <p class="text-sm text-dimmed">
-            Granite console is portfolio-runtime based. Start by selecting a portfolio context.
-          </p>
-
-          <div class="flex flex-wrap gap-2">
-            <UButton to="/portfolios" icon="i-lucide-building">Select portfolio</UButton>
-            <UButton to="/console/portfolio" variant="soft" icon="i-lucide-terminal">
-              Open console
-            </UButton>
-          </div>
-        </div>
-      </UCard>
-    </UPageBody>
-  </UPage>
+  <div class="landing-index-flow">
+    <LandingGetStarted />
+    <LandingProducts />
+    <LandingApps />
+  </div>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'default',
+  layout: 'landing',
   nav: {
     key: 'home',
     label: 'Home',
     icon: 'i-lucide-home',
     desktop: true,
     mobile: true,
-    layouts: ['default'],
+    layouts: ['landing'],
   },
 })
 
 useSeoMeta({
-  title: 'Granite | Portfolio landlord OS',
+  title: 'Granite — Rock solid property portfolio control',
   description:
-    'Granite provides one control surface for properties, compliance, documents, tasks, and operations.',
+    'A branch console for structured oversight across client portfolios, properties, compliance, documents, and finance signals.',
 })
 </script>

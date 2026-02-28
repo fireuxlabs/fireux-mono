@@ -1,6 +1,6 @@
 # FireUX - Misebox ecosystem (Codex)
 
-Updated: 2026-02-26
+Updated: 2026-02-28
 Scope: Misebox app and related extensions.
 
 Primary surfaces:

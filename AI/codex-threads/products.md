@@ -1,6 +1,6 @@
 # FireUX - Products and Revenue (Codex)
 
-Updated: 2026-02-26
+Updated: 2026-02-28
 Scope: implementation details for products, pricing, and licensing.
 
 Key surfaces:

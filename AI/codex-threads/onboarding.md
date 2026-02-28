@@ -1,6 +1,6 @@
 # Onboarding Thread
 
-Updated: 2026-02-26
+Updated: 2026-02-28
 Goal: simplify onboarding so it works the same locally and in the browser.
 
 Key decisions:

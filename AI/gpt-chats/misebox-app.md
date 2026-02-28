@@ -1,6 +1,6 @@
 # misebox-app
 
-Updated: 2026-02-26
+Updated: 2026-02-28
 Summary:
 - Misebox app focuses on kitchen and prep workflows.
 - It should mirror core FireUX kitchen runtime decisions.

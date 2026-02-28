@@ -58,13 +58,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useRouter } from '#imports'
+import { computed, ref, useRoute, useRouter } from '#imports'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 const router = useRouter()
+const route = useRoute()
 const { authState, signOutUser, signInWithGoogle, isReady } = useAuth()
 const isAuthenticated = computed(() => authState.value === 'AUTHENTICATED')
 const signOutLoading = ref(false)
@@ -79,8 +80,21 @@ const currentUserPill = computed(() =>
   currentUser.value ? card(currentUser.value) : null
 )
 
+function sanitizeRedirect(value: unknown): string | null {
+  const raw = Array.isArray(value) ? value[0] : value
+  if (typeof raw !== 'string') return null
+  const trimmed = raw.trim()
+  if (!trimmed.startsWith('/')) return null
+  if (trimmed.startsWith('//')) return null
+  return trimmed
+}
+
+const postAuthPath = computed(
+  () => sanitizeRedirect(route.query.redirect) ?? '/console'
+)
+
 const goToConsole = async () => {
-  await router.push('/console').catch(() => {})
+  await router.push(postAuthPath.value).catch(() => {})
 }
 
 const handleSignOut = async () => {
@@ -116,7 +130,7 @@ const handleGoogle = async () => {
       })
     }
     if (user?.uid) {
-      await router.push('/console').catch(() => {})
+      await router.push(postAuthPath.value).catch(() => {})
     }
   } finally {
     providerLoading.value = false

@@ -1,12 +1,9 @@
 {
-  "functions": [
-    {
-      "source": ".output/server",
-      "codebase": "granite-ssr",
-      "runtime": "nodejs22",
-      "entryPoint": "graniteApp"
-    }
-  ],
+  "functions": {
+    "source": ".output/server",
+    "codebase": "granite-ssr",
+    "runtime": "nodejs22"
+  },
   "hosting": {
     "site": "granite-os",
     "public": ".output/public",
@@ -17,8 +14,7 @@
         "source": "**",
         "function": {
           "functionId": "graniteApp",
-          "codebase": "granite-ssr",
-          "region": "europe-west1"
+          "region": "us-central1"
         }
       }
     ]

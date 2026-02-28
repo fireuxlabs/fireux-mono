@@ -1,6 +1,6 @@
 # Asset Monitoring - Sizes and Transparency
 
-Updated: 2026-02-26
+Updated: 2026-02-28
 Scope: visual asset quality for apps and marketing.
 
 Focus:
