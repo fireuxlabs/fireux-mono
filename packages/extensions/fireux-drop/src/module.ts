@@ -1,6 +1,7 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerReservedRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
+import type { FireuxSeoExtendContext } from 'fireux-core/config/app/seo'
 import { configureRuntime } from './config/module/runtime-config'
 import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
@@ -20,6 +21,9 @@ export default defineNuxtModule({
   setup(_options, nuxt) {
     const resolver = createResolver(import.meta.url)
     registerReservedRouteKeys(['suppliers'])
+    nuxt.hook('fireux:seo:extend', (ctx: FireuxSeoExtendContext) => {
+      ctx.addHub('/suppliers')
+    })
 
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) => configureRuntime(nuxt, 'drop'),

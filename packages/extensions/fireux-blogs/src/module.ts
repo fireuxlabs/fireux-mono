@@ -1,5 +1,6 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
+import type { FireuxSeoExtendContext } from 'fireux-core/config/app/seo'
 import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
 import { configureComponents } from './config/module/components-config'
@@ -32,6 +33,9 @@ export default defineNuxtModule({
   },
   setup(options: FireuxBlogsModuleOptions = {}, nuxt) {
     const resolver = createResolver(import.meta.url)
+    nuxt.hook('fireux:seo:extend', (ctx: FireuxSeoExtendContext) => {
+      ctx.addHub('/blog')
+    })
 
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) =>

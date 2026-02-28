@@ -16,6 +16,8 @@ export function configPwa(nuxt: NuxtConfig, c: FireUXPwaConfig) {
     {
       registerType: 'autoUpdate',
       injectRegister: 'auto',
+      // Keep service worker disabled during local development by default.
+      devOptions: { enabled: false },
       workbox: { navigateFallback: '/' },
       manifest: {
         name: c.name,

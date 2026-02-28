@@ -1,6 +1,6 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
-import { setRuntimeFirebaseEcosystem } from 'fireux-core/config/app/runtime'
+import { configureFireuxEcosystemModule } from 'fireux-core/config/module/ecosystem-wiring'
 import { ecosystemConfig } from './config/firebase/ecosystem.config'
 import { configureComponents } from './config/module/components-config'
 import { configureImports } from './config/module/imports-config'
@@ -16,32 +16,14 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
   },
   async setup(_options: Record<string, never>, nuxt: Nuxt) {
     const resolver = createResolver(import.meta.url)
-
-    // Core and any extensions are provided by the app via createFireuxConfig
-
-    setRuntimeFirebaseEcosystem(nuxt as any, {
-      id: ecosystemConfig.id,
-      name: ecosystemConfig.name,
-      description: ecosystemConfig.description,
-      firebase: ecosystemConfig.firebase,
+    configureFireuxEcosystemModule(resolver, nuxt, {
+      ecosystem: ecosystemConfig,
+      configureRuntimeConfig,
+      configurePages: configureModulePages,
+      configureComponents,
+      configureImports,
+      configurePublicAssets,
     })
-
-    configureRuntimeConfig(nuxt)
-
-    // Layer runtime pages/layouts/middleware
-    configureModulePages(resolver, nuxt)
-
-    configureComponents(resolver, nuxt)
-
-    // Auto-import composables if present
-    configureImports(resolver, nuxt)
-
-    // NOTE: Do NOT auto-import models.
-    // - It creates collisions for common type names (e.g. Pill/Cell/Profile)
-    // - Models should be imported explicitly by consumers
-
-    // Serve runtime public assets via Nitro
-    configurePublicAssets(resolver, nuxt)
 
     nuxt.hook('ready', () => {
       if (process.env.FIREUX_DEBUG_LAYERS) {

@@ -10,8 +10,7 @@ export interface FireUXConfig {
   appId: string
   appName: string
   appShortName: string
-
-  // TODO: make `siteUrl` available via runtime config (final deploy target/domain).
+  siteUrl?: string
   modules: string[]
 
   appThumbnail?: string
@@ -87,6 +86,7 @@ function buildConfig(): Readonly<FireUXConfig> {
     appId: reqString(fireux, 'id'),
     appName: reqString(fireux, 'name'),
     appShortName: reqString(fireux, 'shortName'),
+    siteUrl: optString(fireux, 'siteUrl'),
 
     modules: toStringArray(fireux.modules),
 

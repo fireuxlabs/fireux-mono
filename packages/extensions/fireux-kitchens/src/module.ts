@@ -2,6 +2,7 @@ import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureRuntime } from './config/module/runtime-config'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerReservedRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
+import type { FireuxSeoExtendContext } from 'fireux-core/config/app/seo'
 import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
 import { configureComponents } from './config/module/components-config'
@@ -40,6 +41,9 @@ export default defineNuxtModule<ModuleOptions>({
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
     registerReservedRouteKeys(['kitchens', 'chefs', 'ingredients'])
+    nuxt.hook('fireux:seo:extend', (ctx: FireuxSeoExtendContext) => {
+      ctx.addHub('/kitchens')
+    })
 
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) =>

@@ -3,6 +3,7 @@ import type { NuxtConfig } from '@nuxt/schema'
 
 import { configNitroFirebase } from './nitro'
 import { configPwa } from './pwa'
+import type { FireuxSeoConfig } from './seo'
 import { setRuntime } from './runtime'
 import { configViteWorkspace } from './vite'
 
@@ -19,6 +20,7 @@ export type FireuxAppConfig = {
   contactEmail?: string
   role: 'global' | 'tenant'
   modules?: NonNullable<NuxtConfig['modules']>
+  seo?: FireuxSeoConfig
 }
 
 function moduleName(entry: unknown): string | undefined {
@@ -115,6 +117,11 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     ...((nuxt.nitro as any) || {}),
     compatibilityDate: '2025-12-22',
   }
+  nuxt.experimental = {
+    ...(nuxt.experimental || {}),
+    // Avoid stale dev client requests to /_nuxt/builds/meta/dev.json.
+    appManifest: process.env.NODE_ENV === 'production',
+  }
 
   nuxt.srcDir = 'app'
   // Keep Nuxt build output inside the allowed app tree.
@@ -158,6 +165,9 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     optEnv('GOOGLE_PLACES_API_KEY') ||
     optEnv('NUXT_GOOGLE_PLACES_API_KEY') ||
     optEnv('NUXT_PUBLIC_GOOGLE_PLACES_API_KEY')
+  const moduleNames = (nuxt.modules || [])
+    .map(moduleName)
+    .filter(Boolean) as string[]
 
   if (envPlacesApiKey) {
     const rc = ((nuxt as any).runtimeConfig ||= {}) as Record<string, any>
@@ -174,9 +184,10 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       appLogo: app.appLogo || '/img/app/logo.png',
       ...(app.contactEmail ? { contactEmail: app.contactEmail } : {}),
       domain: envDomain,
+      ...(app.seo?.siteUrl ? { siteUrl: app.seo.siteUrl } : {}),
       role: app.role,
       ecosystem: app.ecosystem,
-      modules: (nuxt.modules || []).map(moduleName).filter(Boolean) as readonly string[],
+      modules: moduleNames,
     },
 
     firebaseApp: {
@@ -186,6 +197,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
 
     private: {
       developerPin: envPin,
+      ...(app.seo ? { seo: app.seo } : {}),
     },
   })
 

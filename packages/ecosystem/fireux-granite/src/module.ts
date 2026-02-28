@@ -1,6 +1,6 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
-import { setRuntimeFirebaseEcosystem } from 'fireux-core/config/app/runtime'
+import { configureFireuxEcosystemModule } from 'fireux-core/config/module/ecosystem-wiring'
 import { ecosystemConfig } from './config/firebase/ecosystem.config'
 import { configureComponents } from './config/module/components-config'
 import { configureImports } from './config/module/imports-config'
@@ -16,19 +16,14 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
   },
   async setup(_options: Record<string, never>, nuxt: Nuxt) {
     const resolver = createResolver(import.meta.url)
-
-    setRuntimeFirebaseEcosystem(nuxt as any, {
-      id: ecosystemConfig.id,
-      name: ecosystemConfig.name,
-      description: ecosystemConfig.description,
-      firebase: ecosystemConfig.firebase,
+    configureFireuxEcosystemModule(resolver, nuxt, {
+      ecosystem: ecosystemConfig,
+      configureRuntimeConfig,
+      configurePages: configureModulePages,
+      configureComponents,
+      configureImports,
+      configurePublicAssets,
     })
-
-    configureRuntimeConfig(nuxt)
-    configureModulePages(resolver, nuxt)
-    configureComponents(resolver, nuxt)
-    configureImports(resolver, nuxt)
-    configurePublicAssets(resolver, nuxt)
 
     nuxt.hook('ready', () => {
       if (process.env.FIREUX_DEBUG_LAYERS) {

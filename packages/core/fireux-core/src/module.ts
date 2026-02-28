@@ -1,5 +1,6 @@
 // FILE: packages/core/fireux-core/src/module.ts
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
+import { configureSeoDefaults, type FireuxSeoConfig } from './config/app/seo'
 import { configureFireuxModule } from './config/module/module-wiring'
 import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
@@ -7,6 +8,11 @@ import { configureComponents } from './config/module/components-config'
 import { configureLayouts } from './config/module/layouts-config'
 import { configurePages } from './config/module/pages-config'
 import { configureAssets } from './config/module/assets-config'
+
+function asSeoConfig(value: unknown): FireuxSeoConfig | undefined {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined
+  return value as FireuxSeoConfig
+}
 
 export default defineNuxtModule({
   meta: {
@@ -16,6 +22,30 @@ export default defineNuxtModule({
 
   setup(_options, nuxt) {
     const resolver = createResolver(import.meta.url)
+
+    nuxt.hook('modules:done', async () => {
+      const runtimeConfig = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
+      const pub = (runtimeConfig.public ||= {}) as Record<string, any>
+      const fireux = (pub.fireux ||= {}) as Record<string, any>
+      const privateFireux = ((runtimeConfig.fireux ||= {}) as Record<string, any>)
+
+      const appName =
+        typeof fireux.name === 'string' && fireux.name.trim()
+          ? fireux.name.trim()
+          : 'FireUX'
+      const domain =
+        typeof fireux.domain === 'string' ? fireux.domain.trim() : ''
+
+      const resolved = await configureSeoDefaults(nuxt, {
+        appName,
+        domain,
+        seo: asSeoConfig(privateFireux.seo),
+      })
+
+      if (!fireux.siteUrl && resolved.siteUrl) {
+        fireux.siteUrl = resolved.siteUrl
+      }
+    })
 
     configureFireuxModule(resolver, nuxt, {
       plugins: configurePlugins,

@@ -1,5 +1,6 @@
 // FILE: packages/core/fireux-core/config/app/runtime.ts
 import type { NuxtConfig } from '@nuxt/schema'
+import type { FireuxSeoConfig } from './seo'
 
 export type RuntimeApp = {
   id: string
@@ -12,6 +13,8 @@ export type RuntimeApp = {
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
   domain: string
+  /** Optional canonical origin used for SEO surfaces (e.g. https://fireux.app). */
+  siteUrl?: string
   role: 'global' | 'tenant'
   ecosystem: string
   modules: readonly string[]
@@ -37,6 +40,7 @@ export type RuntimeFirebaseApp = {
 
 export type RuntimePrivate = {
   developerPin?: string
+  seo?: FireuxSeoConfig
 }
 
 export type RuntimeShape = {

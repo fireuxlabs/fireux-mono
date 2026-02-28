@@ -1,5 +1,6 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
+import type { FireuxSeoExtendContext } from 'fireux-core/config/app/seo'
 import { configureRuntime } from './config/module/runtime-config'
 import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
@@ -32,6 +33,9 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: { prefix: 'Fire' },
   async setup(_options, nuxt) {
     const resolver = createResolver(import.meta.url)
+    nuxt.hook('fireux:seo:extend', (ctx: FireuxSeoExtendContext) => {
+      ctx.addHub('/companies')
+    })
 
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) => configureRuntime(nuxt, 'companies'),
