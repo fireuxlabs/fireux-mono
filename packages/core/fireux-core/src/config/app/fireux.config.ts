@@ -7,6 +7,17 @@ import type { FireuxSeoConfig } from './seo'
 import { setRuntime } from './runtime'
 import { configViteWorkspace } from './vite'
 
+declare module '@nuxt/schema' {
+  interface NuxtConfig {
+    pwa?: Record<string, any>
+    icon?: Record<string, any>
+  }
+  interface NuxtOptions {
+    pwa?: Record<string, any>
+    icon?: Record<string, any>
+  }
+}
+
 export type FireuxAppConfig = {
   ecosystem: string
   id: string
@@ -121,6 +132,8 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     ...(nuxt.experimental || {}),
     // Avoid stale dev client requests to /_nuxt/builds/meta/dev.json.
     appManifest: process.env.NODE_ENV === 'production',
+    // Enables compile-time route meta extraction from definePageMeta.
+    scanPageMeta: true,
   }
 
   nuxt.srcDir = 'app'
@@ -138,12 +151,13 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     'fireux-nuxtfire',
     'fireux-core',
     ...(app.role === 'global' ? ['fireux-ecosystem-controller'] : []),
+    '@vite-pwa/nuxt',
     ...(app.modules || []),
   ]
 
   // Keep icon resolution consistent across all Firebase/Cloud Run deployments.
   // This avoids app-level drift where only some apps force remote icon bundles.
-  nuxt.icon = {
+  ;(nuxt as any).icon = {
     ...((nuxt as any).icon || {}),
     serverBundle: 'remote',
   }

@@ -23,6 +23,7 @@ export default defineNuxtModule({
     registerReservedRouteKeys(['suppliers'])
     nuxt.hook('fireux:seo:extend', (ctx: FireuxSeoExtendContext) => {
       ctx.addHub('/suppliers')
+      ctx.addStaticPath('/suppliers/learn-more')
     })
 
     configureFireuxModule(resolver, nuxt, {

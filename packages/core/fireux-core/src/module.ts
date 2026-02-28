@@ -1,6 +1,11 @@
 // FILE: packages/core/fireux-core/src/module.ts
 import { addServerHandler, createResolver, defineNuxtModule } from '@nuxt/kit'
-import { configureSeoDefaults, type FireuxSeoConfig } from './config/app/seo'
+import {
+  collectAutoSitemapPaths,
+  configureSeoDefaults,
+  mergeSitemapPaths,
+  type FireuxSeoConfig,
+} from './config/app/seo'
 import { configureFireuxModule } from './config/module/module-wiring'
 import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
@@ -12,6 +17,13 @@ import { configureAssets } from './config/module/assets-config'
 function asSeoConfig(value: unknown): FireuxSeoConfig | undefined {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined
   return value as FireuxSeoConfig
+}
+
+function toStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+  return value
+    .map((entry) => String(entry ?? '').trim())
+    .filter(Boolean)
 }
 
 export default defineNuxtModule({
@@ -55,6 +67,20 @@ export default defineNuxtModule({
       if (!fireux.siteUrl && resolved.siteUrl) {
         fireux.siteUrl = resolved.siteUrl
       }
+    })
+
+    nuxt.hook('pages:resolved', (pages: any[]) => {
+      const runtimeConfig = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
+      const pub = (runtimeConfig.public ||= {}) as Record<string, any>
+      const fireux = (pub.fireux ||= {}) as Record<string, any>
+      const seo = ((fireux.seo ||= {}) as Record<string, any>)
+
+      const autoPaths = collectAutoSitemapPaths(pages, {
+        disallowPaths: toStringArray(seo.disallow),
+        noindexPaths: toStringArray(seo.noindexPaths),
+      })
+
+      seo.sitemapPaths = mergeSitemapPaths(seo.sitemapPaths, autoPaths)
     })
 
     configureFireuxModule(resolver, nuxt, {

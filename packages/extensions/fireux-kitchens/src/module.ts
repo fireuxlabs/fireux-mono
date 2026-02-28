@@ -43,6 +43,10 @@ export default defineNuxtModule<ModuleOptions>({
     registerReservedRouteKeys(['kitchens', 'chefs', 'ingredients'])
     nuxt.hook('fireux:seo:extend', (ctx: FireuxSeoExtendContext) => {
       ctx.addHub('/kitchens')
+      ctx.addHub('/chefs')
+      ctx.addHub('/ingredients')
+      ctx.addStaticPath('/kitchens/learn-more')
+      ctx.addStaticPath('/chefs/learn-more')
     })
 
     configureFireuxModule(resolver, nuxt, {

@@ -38,6 +38,11 @@ export default defineNuxtModule<ModuleOptions>({
     registerReservedRouteKeys(['jobs', 'agents', 'professionals'])
     nuxt.hook('fireux:seo:extend', (ctx: FireuxSeoExtendContext) => {
       ctx.addHub('/jobs')
+      ctx.addHub('/agents')
+      ctx.addHub('/professionals')
+      ctx.addStaticPath('/jobs/learn-more')
+      ctx.addStaticPath('/agents/learn-more')
+      ctx.addStaticPath('/professionals/learn-more')
     })
     const workplaces = Array.isArray(options?.workplaces)
       ? options.workplaces

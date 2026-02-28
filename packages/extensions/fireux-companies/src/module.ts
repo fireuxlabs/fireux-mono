@@ -35,6 +35,7 @@ export default defineNuxtModule<ModuleOptions>({
     const resolver = createResolver(import.meta.url)
     nuxt.hook('fireux:seo:extend', (ctx: FireuxSeoExtendContext) => {
       ctx.addHub('/companies')
+      ctx.addStaticPath('/companies/learn-more')
     })
 
     configureFireuxModule(resolver, nuxt, {

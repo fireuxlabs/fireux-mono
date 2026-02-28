@@ -8,6 +8,10 @@ const fireuxConfig = defineFireuxConfig({
   shortName: 'Misebox',
   contactEmail: 'misebox@misebox.app',
   role: 'global', 
+  seo: {
+    siteUrl: 'https://misebox.app',
+    staticPaths: ['/get-started', '/programme'],
+  },
   modules: [
     'fireux-places',
     'fireux-companies',
