@@ -18,7 +18,7 @@
         "function": {
           "functionId": "cleanboxApp",
           "codebase": "cleanbox-ssr",
-          "region": "us-central1"
+          "region": "europe-west1"
         }
       }
     ]

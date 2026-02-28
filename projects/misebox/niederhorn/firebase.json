@@ -4,7 +4,7 @@
       "source": ".output/server",
       "codebase": "niederhorn-ssr",
       "runtime": "nodejs22",
-      "entryPoint": "niederhornServer"
+      "entryPoint": "niederhorn"
     }
   ],
   "hosting": {
@@ -16,7 +16,7 @@
       {
         "source": "**",
         "function": {
-          "functionId": "niederhornServer",
+          "functionId": "niederhorn",
           "codebase": "niederhorn-ssr",
           "region": "europe-west6"
         }

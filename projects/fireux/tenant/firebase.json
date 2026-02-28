@@ -2,9 +2,9 @@
   "functions": [
     {
       "source": ".output/server",
-      "codebase": "tenant-ssr",
+      "codebase": "fireux-tenant-ssr",
       "runtime": "nodejs22",
-      "entryPoint": "tenantServer"
+      "entryPoint": "fireuxTenant"
     }
   ],
   "hosting": {
@@ -16,8 +16,8 @@
       {
         "source": "**",
         "function": {
-          "functionId": "tenantServer",
-          "codebase": "tenant-ssr",
+          "functionId": "fireuxTenant",
+          "codebase": "fireux-tenant-ssr",
           "region": "europe-west1"
         }
       }

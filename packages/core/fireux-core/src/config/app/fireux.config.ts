@@ -138,9 +138,15 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     'fireux-nuxtfire',
     'fireux-core',
     ...(app.role === 'global' ? ['fireux-ecosystem-controller'] : []),
-    '@vite-pwa/nuxt',
     ...(app.modules || []),
   ]
+
+  // Keep icon resolution consistent across all Firebase/Cloud Run deployments.
+  // This avoids app-level drift where only some apps force remote icon bundles.
+  nuxt.icon = {
+    ...((nuxt as any).icon || {}),
+    serverBundle: 'remote',
+  }
 
   // FireUX baseline for console page body spacing.
   // App-level app.config.ts can still override this when needed.

@@ -1,9 +1,12 @@
 {
-  "functions": {
-    "source": ".output/server",
-    "codebase": "richies-reinigung-ssr",
-    "runtime": "nodejs22"
-  },
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "richies-reinigung-ssr",
+      "runtime": "nodejs22",
+      "entryPoint": "richiesReinigung"
+    }
+  ],
   "hosting": {
     "site": "richies-reinigung",
     "public": ".output/public",
@@ -14,7 +17,8 @@
         "source": "**",
         "function": {
           "functionId": "richiesReinigung",
-          "region": "us-central1"
+          "codebase": "richies-reinigung-ssr",
+          "region": "europe-west1"
         }
       }
     ]

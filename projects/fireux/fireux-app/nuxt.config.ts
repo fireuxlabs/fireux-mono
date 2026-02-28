@@ -26,6 +26,4 @@ const fireuxConfig = defineFireuxConfig({
   ],
 })
 
-export default defineNuxtConfig({
-  ...fireuxConfig,
-})
+export default defineNuxtConfig(fireuxConfig)

@@ -1,13 +1,13 @@
 import { defineNuxtConfig } from 'nuxt/config'
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 
-export default defineNuxtConfig(
-  defineFireuxConfig({
-    ecosystem: 'fireux',
-    id: 'fireux-tenant',
-    name: 'FireUX Tenant',
-    shortName: 'Tenant',
-    role: 'tenant',
-    modules: [],
-  })
-)
+const fireuxConfig = defineFireuxConfig({
+  ecosystem: 'fireux',
+  id: 'fireux-tenant',
+  name: 'FireUX Tenant',
+  shortName: 'Tenant',
+  role: 'tenant',
+  modules: [],
+})
+
+export default defineNuxtConfig(fireuxConfig)

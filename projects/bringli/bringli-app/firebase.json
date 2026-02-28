@@ -18,7 +18,7 @@
         "function": {
           "functionId": "bringliApp",
           "codebase": "bringli-ssr",
-          "region": "us-central1"
+          "region": "europe-west1"
         }
       }
     ]

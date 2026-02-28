@@ -1,5 +1,5 @@
 // FILE: packages/core/fireux-core/src/module.ts
-import { createResolver, defineNuxtModule } from '@nuxt/kit'
+import { addServerHandler, createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureSeoDefaults, type FireuxSeoConfig } from './config/app/seo'
 import { configureFireuxModule } from './config/module/module-wiring'
 import { configurePlugins } from './config/module/plugins-config'
@@ -22,6 +22,16 @@ export default defineNuxtModule({
 
   setup(_options, nuxt) {
     const resolver = createResolver(import.meta.url)
+
+    // Register SEO endpoints explicitly (works locally + deployed)
+    addServerHandler({
+      route: '/robots.txt',
+      handler: resolver.resolve('./runtime/server/robots.txt.get'),
+    })
+    addServerHandler({
+      route: '/sitemap.xml',
+      handler: resolver.resolve('./runtime/server/sitemap.xml.get'),
+    })
 
     nuxt.hook('modules:done', async () => {
       const runtimeConfig = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
