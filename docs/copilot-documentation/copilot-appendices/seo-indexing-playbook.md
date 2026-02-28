@@ -17,7 +17,7 @@ Baseline provided by core:
 
 - `/robots.txt` generated from shared runtime config.
 - `/sitemap.xml` generated from shared runtime config.
-- Private surfaces (`/dashboard/**`, `/console/**`, `/admin/**`) receive `X-Robots-Tag: noindex, nofollow`.
+- Private surfaces (`/console/**`, `/admin/**`) receive `X-Robots-Tag: noindex, nofollow`.
 - Core stays route-agnostic; extensions/apps contribute hubs and sitemap paths.
 
 ## App API (Nuxt Config)
@@ -36,8 +36,8 @@ defineFireuxConfig({
     siteUrl: 'https://misebox.app',
     hubs: ['/jobs', '/kitchens', '/blog'],
     staticPaths: ['/about', '/get-started'],
-    disallowPaths: ['/dashboard', '/console', '/admin'],
-    noindexPaths: ['/dashboard/**', '/console/**', '/admin/**'],
+    disallowPaths: ['/console', '/admin'],
+    noindexPaths: ['/console/**', '/admin/**'],
   },
 })
 ```
