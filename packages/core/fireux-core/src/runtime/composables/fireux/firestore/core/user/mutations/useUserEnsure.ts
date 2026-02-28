@@ -2,6 +2,7 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
+import { useSeoIndexWrite } from '../../../../seo/useSeoIndexWrite'
 import { requireUid } from '../../../utils/useEnsureCommon'
 import {
   ensureCoreUserDocument,
@@ -27,6 +28,8 @@ function toPublicDisplayNameSeed(
 }
 
 export function useUserEnsure() {
+  const { upsertSeoIndexDoc } = useSeoIndexWrite()
+
   async function ensureUser(): Promise<{
     createdCore: boolean
     createdApp: boolean
@@ -96,6 +99,11 @@ export function useUserEnsure() {
     const membership = shouldEnsureMembership
       ? await ensureUserAppMembership(appId, uid, membershipRole)
       : { created: false }
+
+    await upsertSeoIndexDoc('seo_index_users', uid, {
+      path: `/users/${core.handle || uid}`,
+      isPublic: true,
+    })
 
     return { createdCore: core.created, createdApp: membership.created, id: uid }
   }

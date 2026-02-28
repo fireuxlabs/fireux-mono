@@ -1,4 +1,5 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import type { Company, CompanyCreateInput } from '../../../../../../models/company.model'
 
@@ -12,6 +13,7 @@ export const CompanyStampOptions = {
 
 export function useCompanyCreate() {
   const { setDocument } = useFirestoreCreate()
+  const { upsertSeoIndexDoc } = useSeoIndexWrite()
 
   async function createCompany(
     input: CompanyCreateInput & { place?: PlaceUpsertInput }
@@ -25,6 +27,10 @@ export function useCompanyCreate() {
 
     await setDocument<Company>('companies', payload.id, payload as Company, {
       creator: false,
+    })
+    await upsertSeoIndexDoc('seo_index_companies', payload.id, {
+      path: `/companies/${payload.id}`,
+      isPublic: true,
     })
 
     return payload.id

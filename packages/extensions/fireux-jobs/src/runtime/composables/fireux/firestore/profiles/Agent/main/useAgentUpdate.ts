@@ -1,5 +1,6 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
+import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import type { AgentCore } from '../../../../../../models/profiles/Agent/Agent.model'
 
 /**
@@ -12,18 +13,43 @@ import type { AgentCore } from '../../../../../../models/profiles/Agent/Agent.mo
  */
 export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
   const base = useProfileUpdateBase<AgentCore>('agents', profile)
+  const { upsertSeoIndexDoc } = useSeoIndexWrite()
+  type UpdateOptions = { id?: string | null; scope?: 'core' | 'app' }
 
   /**
    * Update the CORE Agent profile
    * - global document (e.g. agents/{uid})
    */
-  const updateCoreProfile = base.updateCoreProfile
+  const touchSeoIndex = async (id?: string | null) => {
+    const resolvedId = await base.resolveUid(id)
+    await upsertSeoIndexDoc('seo_index_agents', resolvedId, {
+      path: `/agents/${resolvedId}`,
+      isPublic: true,
+    })
+  }
+
+  const updateCoreProfile = async (
+    patch: Partial<AgentCore>,
+    options: { id?: string | null } = {}
+  ) => {
+    await base.updateCoreProfile(patch, options)
+    await touchSeoIndex(options.id)
+  }
 
   /**
    * Update the APP (tenant) Agent profile
    * - app-specific document (e.g. apps/{appId}/agents/{uid})
    */
   const updateAppProfile = base.updateAppProfile
+  const commitUpdate = async (
+    patch: Partial<AgentCore>,
+    options: UpdateOptions = {}
+  ) => {
+    await base.commitUpdate(patch, options)
+    if (options.scope !== 'app') {
+      await touchSeoIndex(options.id)
+    }
+  }
 
   const updateCore = async (
     patch: Partial<AgentCore>,
@@ -95,7 +121,7 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
   return {
     updateCoreProfile,
     updateAppProfile,
-    commitUpdate: base.commitUpdate,
+    commitUpdate,
     updateCore,
     updateApp,
     updateAgencyName,

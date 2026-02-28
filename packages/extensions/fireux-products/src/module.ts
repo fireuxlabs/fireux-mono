@@ -1,6 +1,7 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import type { FireuxSeoExtendContext } from 'fireux-core/config/app/seo'
+import type { FireuxSeoSitemapsExtendContext } from 'fireux-core/config/app/seo'
 import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
 import { configureComponents } from './config/module/components-config'
@@ -34,8 +35,14 @@ export default defineNuxtModule({
   },
   setup(options: FireuxProductsModuleOptions = {}, nuxt) {
     const resolver = createResolver(import.meta.url)
-    nuxt.hook('fireux:seo:extend', (ctx: FireuxSeoExtendContext) => {
+    nuxt.hook('fireux:seo:extend' as any, (ctx: FireuxSeoExtendContext) => {
       ctx.addHub('/products')
+    })
+    nuxt.hook('fireux:seo:sitemaps:extend' as any, (ctx: FireuxSeoSitemapsExtendContext) => {
+      ctx.addEntity({
+        entityKey: 'products',
+        indexCollectionPath: 'seo_index_products',
+      })
     })
 
     configureFireuxModule(resolver, nuxt, {

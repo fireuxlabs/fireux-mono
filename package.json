@@ -52,7 +52,8 @@
     "git-tree:full": "cross-env INCLUDE_CONTENT=1 node scripts/git-tree.mjs",
     "mirror:clear": "node scripts/mirror-clear.mjs",
     "mirror:sync": "node scripts/mirror-sync.mjs",
-    "mirror:gitq": "node scripts/mirror-from-gitq.mjs"
+    "mirror:gitq": "node scripts/mirror-from-gitq.mjs",
+    "seo:sitemap-counts": "node scripts/seo-sitemap-counts.mjs"
   },
   "engines": {
     "node": ">=20.11 <23",

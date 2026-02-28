@@ -1,6 +1,7 @@
 import { deleteDoc, doc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useFirestore } from 'vuefire'
 import type { ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
@@ -11,6 +12,7 @@ export function useProfessionalDelete(
   _profile: ProfileRefs<ProfessionalCore>
 ) {
   const db = useFirestore()
+  const { deleteSeoIndexDoc } = useSeoIndexWrite()
   const { role, appId } = useFireUXConfig()
   const isTenant = role === 'tenant' && !!appId
 
@@ -38,6 +40,7 @@ export function useProfessionalDelete(
       (!isTenant && scope === 'auto')
     ) {
       await deleteAtPath('professionals', id)
+      await deleteSeoIndexDoc('seo_index_professionals', id)
     }
 
     const deleteAppScope =

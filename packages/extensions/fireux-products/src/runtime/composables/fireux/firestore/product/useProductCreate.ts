@@ -1,6 +1,7 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
+import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import { useFirestore } from 'vuefire'
 import type {
   FirebaseProduct,
@@ -42,6 +43,7 @@ export const ProductStampOptions = {
 export function useProductCreate() {
   const db = useFirestore()
   const { setDocument, getCollectionPath } = useFirestoreManager()
+  const { upsertSeoIndexDoc } = useSeoIndexWrite()
   const { getProductPayload } = useCreateProductState()
   const { pricesPayload } = useCreatePricesState()
   const fireux = useFireUXConfig()
@@ -196,6 +198,10 @@ export function useProductCreate() {
             })
           )
       )
+      await upsertSeoIndexDoc('seo_index_products', slug, {
+        path: `/products/${slug}`,
+        isPublic: data.active !== false,
+      })
 
       return { success: true, id: slug }
     } catch (error) {

@@ -2,6 +2,7 @@ import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configurePlaces } from './config/module/places-config'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import type { FireuxSeoExtendContext } from 'fireux-core/config/app/seo'
+import type { FireuxSeoSitemapsExtendContext } from 'fireux-core/config/app/seo'
 import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
 import { configureComponents } from './config/module/components-config'
@@ -42,9 +43,15 @@ export default defineNuxtModule<ModuleOptions>({
   },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
-    nuxt.hook('fireux:seo:extend', (ctx: FireuxSeoExtendContext) => {
+    nuxt.hook('fireux:seo:extend' as any, (ctx: FireuxSeoExtendContext) => {
       ctx.addHub('/places')
       ctx.addStaticPath('/places/learn-more')
+    })
+    nuxt.hook('fireux:seo:sitemaps:extend' as any, (ctx: FireuxSeoSitemapsExtendContext) => {
+      ctx.addEntity({
+        entityKey: 'places',
+        indexCollectionPath: 'seo_index_places',
+      })
     })
 
     configureFireuxModule(resolver, nuxt, {

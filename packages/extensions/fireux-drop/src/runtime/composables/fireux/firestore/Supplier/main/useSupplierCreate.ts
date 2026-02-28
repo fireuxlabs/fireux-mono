@@ -4,6 +4,7 @@
 
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserEnsure'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
@@ -15,6 +16,7 @@ export function useSupplierCreate() {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
   const { ensureUser } = useUserEnsure()
+  const { upsertSeoIndexDoc } = useSeoIndexWrite()
 
   async function ensureSupplier(): Promise<{
     createdCore: boolean
@@ -75,6 +77,11 @@ export function useSupplierCreate() {
         createdApp = true
       }
     }
+
+    await upsertSeoIndexDoc('seo_index_suppliers', uid, {
+      path: `/suppliers/${uid}`,
+      isPublic: true,
+    })
 
     return { createdCore, createdApp, id: uid }
   }

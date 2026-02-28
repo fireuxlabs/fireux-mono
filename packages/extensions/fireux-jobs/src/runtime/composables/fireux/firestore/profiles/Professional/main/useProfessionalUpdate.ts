@@ -4,6 +4,7 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
+import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import type { ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
 import type {
   CertificationItem,
@@ -35,10 +36,33 @@ const normalizePlaceId = (value?: unknown) => {
 export function useProfessionalUpdate(profile?: ProfileRefs<ProfessionalCore> | null) {
   const base = useProfileUpdateBase<ProfessionalCore>('professionals', profile)
   const { uploadImage } = useImageStorage()
+  const { upsertSeoIndexDoc } = useSeoIndexWrite()
 
-  const updateCoreProfile = base.updateCoreProfile
+  const touchSeoIndex = async (id?: string | null) => {
+    const resolvedId = await base.resolveUid(id)
+    await upsertSeoIndexDoc('seo_index_professionals', resolvedId, {
+      path: `/professionals/${resolvedId}`,
+      isPublic: true,
+    })
+  }
+
+  const updateCoreProfile = async (
+    patch: Partial<ProfessionalCore>,
+    options: { id?: string | null } = {}
+  ) => {
+    await base.updateCoreProfile(patch, options)
+    await touchSeoIndex(options.id)
+  }
   const updateAppProfile = base.updateAppProfile
-  const commitUpdate = base.commitUpdate
+  const commitUpdate = async (
+    patch: Partial<ProfessionalCore>,
+    options: UpdateOptions = {}
+  ) => {
+    await base.commitUpdate(patch, options)
+    if (options.scope !== 'app') {
+      await touchSeoIndex(options.id)
+    }
+  }
 
   const updateStringField = async <K extends keyof ProfessionalCore>(
     key: K,

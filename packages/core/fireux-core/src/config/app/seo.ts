@@ -27,6 +27,7 @@ export type FireuxSeoResolved = {
   defaultDescription: string
   hubs: string[]
   sitemapPaths: string[]
+  sitemapEntities: FireuxSitemapEntityRuntime[]
   disallowPaths: string[]
   noindexPaths: string[]
 }
@@ -61,6 +62,26 @@ export type FireuxSeoExtendContext = {
   addNoindex: (pattern: string) => void
 }
 
+export type FireuxSitemapEntity = {
+  entityKey: string
+  indexCollectionPath: string
+  pageSize?: number
+  updatedAtField?: string
+  // Optional builder for write-on-CRUD helpers in module code.
+  buildPath?: (doc: Record<string, any>) => string | null
+}
+
+export type FireuxSitemapEntityRuntime = {
+  entityKey: string
+  indexCollectionPath: string
+  pageSize: number
+  updatedAtField: string
+}
+
+export type FireuxSeoSitemapsExtendContext = {
+  addEntity: (entity: FireuxSitemapEntity) => void
+}
+
 const DEFAULT_DISALLOW = ['/console', '/admin']
 const DEFAULT_NOINDEX = [
   '/console',
@@ -68,11 +89,10 @@ const DEFAULT_NOINDEX = [
   '/admin',
   '/admin/**',
 ]
-const AUTO_EXCLUDED_PREFIXES = ['/api', '/_nuxt', '/dev', '/admin', '/console', '/dashboard', '/auth']
+const AUTO_EXCLUDED_PREFIXES = ['/api', '/_nuxt', '/dev', '/admin', '/console', '/auth']
 const AUTO_EXCLUDED_SEGMENTS = new Set([
   'admin',
   'console',
-  'dashboard',
   'dev',
   'auth',
   'create',
@@ -288,6 +308,49 @@ export function collectAutoSitemapPaths(
   return normalizePaths(out).sort((a, b) => a.localeCompare(b))
 }
 
+function normalizePageSize(value: unknown): number {
+  const n = typeof value === 'number' ? value : Number(value)
+  if (!Number.isFinite(n)) return 5000
+  const rounded = Math.max(100, Math.trunc(n))
+  return Math.min(10000, rounded)
+}
+
+function normalizeSitemapEntity(input: FireuxSitemapEntity): FireuxSitemapEntityRuntime | null {
+  const entityKey = String(input?.entityKey ?? '').trim()
+  const indexCollectionPath = String(input?.indexCollectionPath ?? '').trim()
+  if (!entityKey || !indexCollectionPath) return null
+
+  return {
+    entityKey,
+    indexCollectionPath,
+    pageSize: normalizePageSize(input.pageSize),
+    updatedAtField: String(input.updatedAtField || 'updatedAt').trim() || 'updatedAt',
+  }
+}
+
+async function collectSitemapEntities(nuxt: NuxtConfig | any): Promise<FireuxSitemapEntityRuntime[]> {
+  if (!nuxt || typeof nuxt.callHook !== 'function') return []
+  const entities: FireuxSitemapEntity[] = []
+  const ctx: FireuxSeoSitemapsExtendContext = {
+    addEntity: (entity: FireuxSitemapEntity) => {
+      entities.push(entity)
+    },
+  }
+
+  await nuxt.callHook('fireux:seo:sitemaps:extend', ctx)
+
+  const byKey = new Map<string, FireuxSitemapEntityRuntime>()
+  for (const entity of entities) {
+    const normalized = normalizeSitemapEntity(entity)
+    if (!normalized) continue
+    byKey.set(normalized.entityKey, normalized)
+  }
+
+  return Array.from(byKey.values()).sort((a, b) =>
+    a.entityKey.localeCompare(b.entityKey)
+  )
+}
+
 function setNoindexRouteRules(nuxt: NuxtConfig | any, patterns: readonly string[]) {
   const root = (nuxt?.options ?? nuxt) as AnyRecord
   const routeRules = ((root.routeRules ||= {}) as AnyRecord)
@@ -347,6 +410,7 @@ export async function configureSeoDefaults(
 ): Promise<FireuxSeoResolved> {
   const siteUrl = normalizeSiteUrl(options.seo?.siteUrl || options.domain)
   const ext = await collectSeoExtensions(nuxt)
+  const sitemapEntities = await collectSitemapEntities(nuxt)
 
   const hubs = normalizePaths([
     ...(options.seo?.hubs || []),
@@ -377,6 +441,7 @@ export async function configureSeoDefaults(
       options.seo?.defaultDescription?.trim() || `${options.appName} on FireUX`,
     hubs,
     sitemapPaths,
+    sitemapEntities,
     disallowPaths,
     noindexPaths,
   }
@@ -401,6 +466,7 @@ export async function configureSeoDefaults(
     defaultDescription: resolved.defaultDescription,
     hubs: resolved.hubs,
     sitemapPaths: resolved.sitemapPaths,
+    sitemapEntities: resolved.sitemapEntities,
     disallow: resolved.disallowPaths,
     noindexPaths: resolved.noindexPaths,
   }

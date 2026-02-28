@@ -32,6 +32,7 @@ export type EnsureCoreResult = {
   created: boolean
   snapshot?: DocumentSnapshot<User>
   displayName: string
+  handle: string
 }
 
 function normalizePublicDisplayNameSeed(value: string): string {
@@ -85,12 +86,16 @@ export async function ensureCoreUserDocument(
 
     // Backfill canon-required fields for older documents.
     const patch: Record<string, unknown> = {}
+    const resolvedHandle =
+      typeof data?.handle === 'string' && data.handle.trim()
+        ? data.handle.trim()
+        : makeHandle(existingName, uid)
     const existingAvatar = (data as any)?.avatar
     if (typeof existingAvatar !== 'string' || !existingAvatar.trim()) {
       patch.avatar = await resolveCoreUserAvatar(uid, options.avatar)
     }
     if (typeof (data as any)?.handle !== 'string' || !(data as any)?.handle?.trim()) {
-      patch.handle = makeHandle(existingName, uid)
+      patch.handle = resolvedHandle
     }
     if (typeof (data as any)?.email !== 'string') patch.email = options.email ?? ''
     if (typeof (data as any)?.bio !== 'string') patch.bio = ''
@@ -111,6 +116,7 @@ export async function ensureCoreUserDocument(
       created: false,
       snapshot: snapshot as DocumentSnapshot<User>,
       displayName: existingName,
+      handle: resolvedHandle,
     }
   }
 
@@ -125,10 +131,11 @@ export async function ensureCoreUserDocument(
   const resolvedAvatar = await resolveCoreUserAvatar(uid, options.avatar)
   // EnsureCore is responsible for creating the core document, but should not
   // create membership side effects (like notifications) by default.
+  const handle = makeHandle(displayName, uid)
   const payload = {
     display_name: displayName,
     avatar: resolvedAvatar,
-    handle: makeHandle(displayName, uid),
+    handle,
     email,
     bio: '',
     profiles: [],
@@ -140,7 +147,7 @@ export async function ensureCoreUserDocument(
   const { setDocument } = useFirestoreManager()
   await setDocument<User>('users', uid, payload as unknown as User)
 
-  return { created: true, displayName }
+  return { created: true, displayName, handle }
 }
 
 export type EnsureMembershipResult = { created: boolean }

@@ -1,7 +1,9 @@
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager.ts'
+import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 
 export function useBlogDelete() {
   const { deleteDocument } = useFirestoreManager()
+  const { deleteSeoIndexDoc } = useSeoIndexWrite()
 
   async function deleteBlogPost(slug: string): Promise<boolean> {
     if (!slug) {
@@ -10,6 +12,7 @@ export function useBlogDelete() {
 
     try {
       await deleteDocument('blogs', slug)
+      await deleteSeoIndexDoc('seo_index_blogs', slug)
       if (import.meta.dev) {
         console.log('✅ Blog post deleted successfully')
       }

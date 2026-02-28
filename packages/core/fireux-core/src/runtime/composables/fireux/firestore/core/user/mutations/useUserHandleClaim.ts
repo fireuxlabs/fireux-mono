@@ -9,6 +9,7 @@ import {
   where,
 } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
+import { useSeoIndexWrite } from '../../../../seo/useSeoIndexWrite'
 import { validateUserHandleForPublicRoute } from '../utils/identity/useUserHandleIdentity'
 import { isVetoedHandle } from '../utils/identity/handleVeto'
 
@@ -20,6 +21,7 @@ type ClaimHandleResult = {
 
 export function useUserHandleClaim() {
   const db = useFirestore()
+  const { upsertSeoIndexDoc } = useSeoIndexWrite()
 
   const claimHandle = async (
     uid: string,
@@ -72,6 +74,11 @@ export function useUserHandleClaim() {
       })
 
       return { uid: normalizedUid, handle: nextHandle, changed: true }
+    })
+
+    await upsertSeoIndexDoc('seo_index_users', result.uid, {
+      path: `/users/${result.handle}`,
+      isPublic: true,
     })
 
     return result

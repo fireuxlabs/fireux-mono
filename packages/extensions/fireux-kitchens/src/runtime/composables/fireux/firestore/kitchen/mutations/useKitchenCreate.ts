@@ -1,5 +1,6 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceSave'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { useFirestore } from 'vuefire'
@@ -21,6 +22,7 @@ export type KitchenCreateOptions = {
 
 export function useKitchenCreate(options: KitchenCreateOptions = {}) {
   const { setDocument } = useFirestoreCreate()
+  const { upsertSeoIndexDoc } = useSeoIndexWrite()
   const { ensurePlaceExists } = usePlaceSave()
   const db = useFirestore()
   const collectionPath =
@@ -65,7 +67,13 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
 
     const ref = doc(db, collectionPath, resolvedId)
     const snap = await getDoc(ref)
-    if (snap.exists()) return resolvedId
+    if (snap.exists()) {
+      await upsertSeoIndexDoc('seo_index_kitchens', resolvedId, {
+        path: `/kitchens/${resolvedId}`,
+        isPublic: true,
+      })
+      return resolvedId
+    }
 
     await setDocument<KitchenCollection>(
       collectionPath,
@@ -75,6 +83,10 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
         creator: false,
       }
     )
+    await upsertSeoIndexDoc('seo_index_kitchens', resolvedId, {
+      path: `/kitchens/${resolvedId}`,
+      isPublic: true,
+    })
 
     return resolvedId
   }

@@ -1,5 +1,6 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
+import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import type { ChefCore } from '../../../../../../models/profiles/Chef/Chef.model'
 
 /**
@@ -12,18 +13,43 @@ import type { ChefCore } from '../../../../../../models/profiles/Chef/Chef.model
  */
 export function useChefUpdate(profile?: ProfileRefs<ChefCore> | null) {
   const base = useProfileUpdateBase<ChefCore>('chefs', profile)
+  const { upsertSeoIndexDoc } = useSeoIndexWrite()
+  type UpdateOptions = { id?: string | null; scope?: 'core' | 'app' }
 
   /**
    * Update the CORE Chef profile
    * - global document (e.g. chefs/{uid})
    */
-  const updateCoreProfile = base.updateCoreProfile
+  const touchSeoIndex = async (id?: string | null) => {
+    const resolvedId = await base.resolveUid(id)
+    await upsertSeoIndexDoc('seo_index_chefs', resolvedId, {
+      path: `/chefs/${resolvedId}`,
+      isPublic: true,
+    })
+  }
+
+  const updateCoreProfile = async (
+    patch: Partial<ChefCore>,
+    options: { id?: string | null } = {}
+  ) => {
+    await base.updateCoreProfile(patch, options)
+    await touchSeoIndex(options.id)
+  }
 
   /**
    * Update the APP (tenant) Chef profile
    * - app-specific document (e.g. apps/{appId}/chefs/{uid})
    */
   const updateAppProfile = base.updateAppProfile
+  const commitUpdate = async (
+    patch: Partial<ChefCore>,
+    options: UpdateOptions = {}
+  ) => {
+    await base.commitUpdate(patch, options)
+    if (options.scope !== 'app') {
+      await touchSeoIndex(options.id)
+    }
+  }
 
   const updateTitle = async (value: string) => {
     const normalized = base.cleanString(value)
@@ -59,7 +85,7 @@ export function useChefUpdate(profile?: ProfileRefs<ChefCore> | null) {
   const updateBioShort = async (value: string) => updateSummary(value)
 
   return {
-    commitUpdate: base.commitUpdate,
+    commitUpdate,
     updateCoreProfile,
     updateAppProfile,
     updateTitle,

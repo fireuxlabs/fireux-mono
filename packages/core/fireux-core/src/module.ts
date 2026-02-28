@@ -44,6 +44,27 @@ export default defineNuxtModule({
       route: '/sitemap.xml',
       handler: resolver.resolve('./runtime/server/sitemap.xml.get'),
     })
+    addServerHandler({
+      route: '/sitemaps/index.xml',
+      handler: resolver.resolve('./runtime/server/sitemaps/index.xml.get'),
+    })
+    addServerHandler({
+      route: '/sitemaps/static.xml',
+      handler: resolver.resolve('./runtime/server/sitemaps/static.xml.get'),
+    })
+    addServerHandler({
+      route: '/sitemaps/:entityPage.xml',
+      handler: resolver.resolve('./runtime/server/sitemaps/[entity]-[page].xml.get'),
+    })
+
+    nuxt.hook('fireux:seo:sitemaps:extend' as any, (ctx: any) => {
+      ctx?.addEntity?.({
+        entityKey: 'users',
+        indexCollectionPath: 'seo_index_users',
+        pageSize: 5000,
+        updatedAtField: 'updatedAt',
+      })
+    })
 
     nuxt.hook('modules:done', async () => {
       const runtimeConfig = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>

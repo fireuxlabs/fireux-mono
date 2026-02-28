@@ -1,6 +1,7 @@
 import { deleteDoc, doc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useFirestore } from 'vuefire'
 import type { ChefCore } from '../../../../../../models/profiles/Chef/Chef.model'
@@ -9,6 +10,7 @@ type DeleteScope = 'auto' | 'core' | 'app' | 'both'
 
 export function useChefDelete(_profile: ProfileRefs<ChefCore>) {
   const db = useFirestore()
+  const { deleteSeoIndexDoc } = useSeoIndexWrite()
   const { role, appId } = useFireUXConfig()
   const isTenant = role === 'tenant' && !!appId
 
@@ -31,6 +33,7 @@ export function useChefDelete(_profile: ProfileRefs<ChefCore>) {
       scope === 'core' || scope === 'both' || (!isTenant && scope === 'auto')
     if (shouldDeleteCore) {
       await deleteAtPath('chefs', id)
+      await deleteSeoIndexDoc('seo_index_chefs', id)
     }
 
     const deleteAppScope =
