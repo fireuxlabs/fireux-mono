@@ -89,6 +89,7 @@
 definePageMeta({
   layout: 'console',
   nav: {
+    visibility: { modules: ['fireux-drop'] },
     key: 'console-supplier-home',
     label: 'Supplier',
     icon: 'i-lucide-package',

@@ -102,6 +102,7 @@ const navTitle = navLabel
 definePageMeta({
   layout: 'console',
   nav: {
+    visibility: { modules: ['fireux-jobs'] },
     key: 'console-professional-profile',
     label: navLabel,
     icon: navIcon,

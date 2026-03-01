@@ -25,6 +25,10 @@ export function configNitroFirebase(nuxt: NuxtConfig, c: FireUXNitroConfig) {
       nodeVersion: '22',
       serverFunctionName: c.serverFunctionName,
       region: c.region,
+      // The Firebase preset reads deployment region from httpsOptions at runtime.
+      httpsOptions: {
+        region: c.region,
+      },
     }
   }
 

@@ -50,6 +50,7 @@ import { useKitchenOrdersFetch } from '../../../composables/fireux/firestore/run
 definePageMeta({
   layout: 'kitchen-console',
   nav: {
+    visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-orders-in',
     label: 'Orders In',
     icon: 'i-lucide-receipt',

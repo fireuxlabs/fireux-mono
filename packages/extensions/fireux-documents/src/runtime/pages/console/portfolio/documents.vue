@@ -166,6 +166,7 @@ import { documentLinkTargetTypes } from '../../../composables/fireux/firestore/d
 definePageMeta({
   layout: 'granite-console',
   nav: {
+    visibility: { ecosystems: ['granite'], modules: ['fireux-documents'] },
     key: 'console-portfolio-documents',
     label: 'Documents',
     icon: 'i-lucide-file-text',

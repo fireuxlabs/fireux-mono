@@ -2,6 +2,10 @@ import { computed } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
 import { useFireUXConfig } from '../../FireUXConfig'
 import type { NavItem, NavMeta } from '../../../../../../types/nav'
+import {
+  isNavVisibleForScope,
+  normaliseNavVisibility,
+} from './visibility'
 
 const DEFAULT_LAYOUT = 'default'
 const DEFAULT_ORDER = 999
@@ -104,6 +108,7 @@ function buildNavItem(
       typeof (route.meta as RouteMetaLike).tenant === 'string'
         ? ((route.meta as RouteMetaLike).tenant as string)
         : undefined,
+    visibility: normaliseNavVisibility(nav.visibility),
   }
 }
 
@@ -144,6 +149,7 @@ export function useNav(targetLayouts: TargetLayouts = [DEFAULT_LAYOUT]) {
 
     return result
       .filter((item) => includeTenant(item, fireux))
+      .filter((item) => isNavVisibleForScope(item.visibility, fireux))
       .sort((a, b) => {
         if (a.order !== b.order) return a.order - b.order
         return a.label.localeCompare(b.label)

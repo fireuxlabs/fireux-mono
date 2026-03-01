@@ -63,6 +63,7 @@
 definePageMeta({
   layout: 'console',
   nav: {
+    visibility: { modules: ['fireux-kitchens'] },
     key: 'console-chef-recipes',
     label: 'My Recipes',
     icon: 'i-lucide-book-open',

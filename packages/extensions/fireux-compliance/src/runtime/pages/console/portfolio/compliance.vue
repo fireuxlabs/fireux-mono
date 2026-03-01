@@ -109,6 +109,7 @@ import { useComplianceInterface } from '../../../composables/fireux/firestore/co
 definePageMeta({
   layout: 'granite-console',
   nav: {
+    visibility: { ecosystems: ['granite'], modules: ['fireux-compliance'] },
     key: 'console-portfolio-compliance',
     label: 'Compliance',
     icon: 'i-lucide-shield-check',

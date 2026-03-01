@@ -44,6 +44,7 @@ import { useKitchenIngredientRemove } from '../../../composables/fireux/firestor
 definePageMeta({
   layout: 'kitchen-console',
   nav: {
+    visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-ingredients',
     label: 'Ingredients',
     icon: 'i-lucide-carrot',

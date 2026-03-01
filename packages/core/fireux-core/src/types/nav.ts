@@ -1,3 +1,10 @@
+export interface NavVisibility {
+  apps?: string[]
+  ecosystems?: string[]
+  modules?: string[]
+  modulesAny?: string[]
+}
+
 export interface NavMeta {
   key?: string
   label?: string
@@ -8,6 +15,7 @@ export interface NavMeta {
   desktop?: boolean
   mobile?: boolean
   layouts?: string[]
+  visibility?: NavVisibility
 }
 
 export interface NavItem {
@@ -24,4 +32,5 @@ export interface NavItem {
   requiresAuth?: boolean
   roles?: string[]
   tenant?: string
+  visibility?: NavVisibility
 }

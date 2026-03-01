@@ -91,6 +91,7 @@ import { useTaskCollection } from 'fireux-tasks/runtime/composables/fireux/fires
 definePageMeta({
   layout: 'granite-console',
   nav: {
+    visibility: { ecosystems: ['granite'] },
     key: 'console-portfolio-home',
     label: 'Overview',
     icon: 'i-lucide-terminal',

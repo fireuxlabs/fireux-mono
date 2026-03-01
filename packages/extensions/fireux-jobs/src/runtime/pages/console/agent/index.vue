@@ -106,6 +106,7 @@ import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/u
 definePageMeta({
   layout: 'console',
   nav: {
+    visibility: { modules: ['fireux-jobs'] },
     key: 'console-agent-home',
     label: 'Agent',
     icon: 'i-lucide-shield-user',

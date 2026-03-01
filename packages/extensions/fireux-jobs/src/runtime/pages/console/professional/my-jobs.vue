@@ -81,6 +81,7 @@
 definePageMeta({
   layout: 'console',
   nav: {
+    visibility: { modules: ['fireux-jobs'] },
     key: 'console-professional-extra-2',
     label: 'My Jobs',
     icon: 'i-lucide-briefcase-business',

@@ -1,0 +1,26 @@
+{
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "la-tap-berne-ssr",
+      "runtime": "nodejs22",
+      "entryPoint": "laTapBerne"
+    }
+  ],
+  "hosting": {
+    "site": "la-tap-berne",
+    "public": ".output/public",
+    "cleanUrls": true,
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "function": {
+          "functionId": "laTapBerne",
+          "codebase": "la-tap-berne-ssr",
+          "region": "europe-west6"
+        }
+      }
+    ]
+  }
+}

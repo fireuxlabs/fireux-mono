@@ -87,6 +87,7 @@ const navTitle = navLabel
 definePageMeta({
   layout: 'console',
   nav: {
+    visibility: { modules: ['fireux-drop'] },
     key: 'console-supplier-profile',
     label: navLabel,
     icon: navIcon,

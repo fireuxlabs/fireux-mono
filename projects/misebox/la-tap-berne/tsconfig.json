@@ -1,0 +1,21 @@
+{
+  // tsconfig for La Tap Berne app — do not override Nuxt aliases (~, @, ~~)
+  "extends": "../tsconfig.app.base.json",
+  "compilerOptions": {
+    "composite": false,
+    "baseUrl": ".",
+    "moduleResolution": "Bundler",
+    "paths": {
+      "#pwa": ["@vite-pwa/nuxt/dist/runtime/composables/index"],
+      "#imports": [".nuxt/imports.d.ts"],
+      "#build/*": [".nuxt/*"]
+      // Do NOT override ~/*, @/*, ~~/* here; Nuxt sets them to srcDir (app/)
+    },
+    "skipLibCheck": true
+  },
+  "include": ["./.nuxt/nuxt.d.ts", "./**/*", "../../../types/**/*.d.ts"],
+  "exclude": [
+    "node_modules",
+    "**/node_modules/**/@vite-pwa/nuxt/dist/runtime/components/*.vue"
+  ]
+}

@@ -110,6 +110,7 @@ import { usePortfolioInterface } from '../../../composables/fireux/firestore/por
 definePageMeta({
   layout: 'granite-console',
   nav: {
+    visibility: { ecosystems: ['granite'], modules: ['fireux-properties'] },
     key: 'console-portfolio-properties',
     label: 'Properties',
     icon: 'i-lucide-building',

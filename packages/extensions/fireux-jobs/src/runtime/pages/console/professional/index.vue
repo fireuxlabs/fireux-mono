@@ -90,6 +90,7 @@
 definePageMeta({
   layout: 'console',
   nav: {
+    visibility: { modules: ['fireux-jobs'] },
     key: 'console-professional-home',
     label: 'Professional',
     icon: 'i-lucide-user-star',

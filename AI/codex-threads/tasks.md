@@ -1,43 +1,38 @@
 # Tasks
 
-Updated: 2026-02-28
+Updated: 2026-03-01
+Audience: Codex implementation thread
+Focus: tasks
 
-Product stack alignment (fireux-products):
-- [ ] Standardize toast access in Product Create System (replace runtime fallback with canonical composable).
-- [ ] Wrap createProduct() in try/catch/finally so isCreating always resets.
-- [ ] Replace browser confirm(...) with shared modal/confirm UX pattern.
-- [ ] Decide on Product Create shipping stage (remove or gate via feature/runtime config).
-- [ ] Consolidate products index description so page header and meta share one source.
-- [ ] Re-validate entity collection managers for new fallback chains.
+Implementation context:
+- Use this file for concrete execution notes, constraints, and expected file-level touch points.
+- Prefer small diffs, spec-aligned edits, and deterministic commands.
+- Capture runtime or tooling caveats that can affect patch quality.
 
-Asset monitoring:
-- [ ] Export FireUX wordmark with true transparency.
-- [ ] Add per-app asset findings (Misebox, Cleanbox, Richies, FireUX) to the asset monitoring thread.
+Commit window scanned: 2026-02-28 11:47:05 UTC
+Commits found: 7
 
-Bringli and Drop supplier ownership:
-- [ ] Promote fireux-drop from scaffold to Supplier domain owner.
-- [ ] Move Supplier models/composables/components/pages from Misebox to Drop.
-- [ ] Add temporary compatibility wrappers in Misebox for one release cycle.
-- [ ] Verify Bringli routes render without collisions after Supplier migration.
-- [ ] Confirm Bringli runtime defaults for runtimeConfig.public.fireux.drop.
+Recent commit signals:
+- 2026-02-28 15:59 UTC | 875f82df | chore: update package.json (+50 more)
+- 2026-02-28 14:38 UTC | b70cbdd9 | chore: update packages/core/fireux-core/src/config/app/fireux.config.ts (+9 more)
+- 2026-02-28 12:53 UTC | 6fae4520 | chore: update docs/copilot-documentation/copilot-03-configuration.md (+3 more)
+- 2026-02-28 12:39 UTC | c4ef2f94 | chore: update packages/core/fireux-core/src/config/app/fireux.config.ts (+31 more)
+- 2026-02-28 12:17 UTC | 93dd7581 | chore: update packages/core/fireux-core/src/config/app/fireux.config.ts (+29 more)
+- 2026-02-28 12:14 UTC | 5d2b3fb0 | docs: update markdown files
+- 2026-02-28 11:55 UTC | cde113fa | chore: update projects/granite/granite-app/app/internal/prepare-firebase-output.mjs (+2 more)
+- 2026-02-28 11:55 UTC | 6492dd62 | chore: update AI/chatcontext-2026-02-27.md (+62 more)
 
-Extension system cleanup:
-- [ ] Update fireux-products/package.json description (remove TODO).
-- [ ] Replace template README in fireux-products with real ownership guardrails.
-- [ ] Choose a single module configKey style (domain keys vs fireuxX) and align docs.
-- [ ] Document Stripe support and server surface in fireux-products runtime contract.
-- [ ] Decide server route registration policy and wire Stripe endpoints if explicit registration wins.
-- [ ] Decide product routes injection policy (inject all vs rely on runtime layer).
-- [ ] Standardize Nuxt kit import style across extensions (@nuxt/kit vs nuxt/kit).
-- [ ] Align fireux-jobs package version with module meta version.
-- [ ] Align extension compatibility.nuxt with peerDependency ranges.
-- [ ] Remove redundant addImportsDir calls where configureComposables already registers.
-- [ ] Resolve route naming inconsistency (fireux-blog-* vs plural package naming).
-- [ ] Add missing TypeScript reference for fireux-companies in packages/extensions/tsconfig.json.
-- [ ] Replace template READMEs/TODO descriptions in fireux-blogs and fireux-drop.
-- [ ] Review peerDependencies for thin modules (for example fireux-drop) and tighten if needed.
+Most-touched repo areas:
+- packages/extensions
+- packages/core
+- AI
+- projects/granite
+- packages/ecosystem
+- projects/misebox
 
-Design system:
-- [ ] Formalize token naming (colors, spacing, radii).
+Execution guidance:
+- Prioritize package/runtime consistency before broad refactors.
+- Keep updates aligned with current mono-repo conventions and active specs.
+- Re-check this thread before editing related modules to avoid drift.
 
 #end

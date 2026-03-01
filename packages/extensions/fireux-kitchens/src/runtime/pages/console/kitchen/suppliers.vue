@@ -86,6 +86,7 @@ import SupplierCollectionManager from '../../../components/organisms/Supplier/Co
 definePageMeta({
   layout: 'kitchen-console',
   nav: {
+    visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-suppliers',
     label: 'Suppliers',
     icon: 'i-lucide-store',

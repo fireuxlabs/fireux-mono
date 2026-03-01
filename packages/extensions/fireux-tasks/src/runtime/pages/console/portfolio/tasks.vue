@@ -129,6 +129,7 @@ import type { Task } from '../../../models/task.model'
 definePageMeta({
   layout: 'granite-console',
   nav: {
+    visibility: { ecosystems: ['granite'], modules: ['fireux-tasks'] },
     key: 'console-portfolio-tasks',
     label: 'Tasks',
     icon: 'i-lucide-list-checks',

@@ -49,6 +49,7 @@ import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runti
 definePageMeta({
   layout: 'kitchen-console',
   nav: {
+    visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-haccp',
     label: 'HACCP',
     icon: 'i-lucide-shield-check',

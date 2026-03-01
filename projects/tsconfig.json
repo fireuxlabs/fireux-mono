@@ -8,6 +8,7 @@
     { "path": "fireux/fireux-app" },
     { "path": "fireux/tenant" },
     { "path": "granite/granite-app" },
+    { "path": "misebox/la-tap-berne" },
     { "path": "misebox/misebox-app" },
     { "path": "misebox/niederhorn" }
   ],

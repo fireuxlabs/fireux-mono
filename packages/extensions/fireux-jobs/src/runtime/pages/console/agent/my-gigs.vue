@@ -64,6 +64,7 @@
 definePageMeta({
   layout: 'console',
   nav: {
+    visibility: { modules: ['fireux-jobs'] },
     key: 'console-agent-my-gigs',
     label: 'My Gigs',
     icon: 'i-lucide-radio-tower',

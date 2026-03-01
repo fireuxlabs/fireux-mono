@@ -86,6 +86,7 @@ const navTitle = navLabel
 definePageMeta({
   layout: 'console',
   nav: {
+    visibility: { modules: ['fireux-kitchens'] },
     key: 'console-chef-profile',
     label: navLabel,
     icon: navIcon,

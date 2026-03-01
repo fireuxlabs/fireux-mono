@@ -118,6 +118,7 @@ import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runti
 definePageMeta({
   layout: 'kitchen-console',
   nav: {
+    visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-dishes',
     label: 'Dishes',
     icon: 'i-lucide-utensils',

@@ -103,6 +103,7 @@ import type { MenuSection } from '../../../models/menu.model'
 definePageMeta({
   layout: 'kitchen-console',
   nav: {
+    visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-menu',
     label: 'Menus',
     icon: 'i-lucide-book-open-check',
