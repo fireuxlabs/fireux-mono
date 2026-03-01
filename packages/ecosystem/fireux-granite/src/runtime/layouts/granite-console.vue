@@ -55,7 +55,24 @@
     </UDashboardSidebar>
 
     <div class="w-full h-screen overflow-y-auto p-0 lg:p-4 bg-elevated/50">
-      <NuxtPage />
+      <NuxtPage v-if="hasRuntimePortfolio" />
+      <UPage v-else>
+        <UPageBody class="pagebody">
+          <UPageCard
+            title="No active portfolio selected"
+            description="Select a portfolio from Dashboard before using Granite runtime operations."
+            variant="subtle"
+          >
+            <UButton
+              to="/dashboard/portfolios"
+              color="neutral"
+              icon="i-lucide-arrow-right"
+            >
+              Select a portfolio
+            </UButton>
+          </UPageCard>
+        </UPageBody>
+      </UPage>
     </div>
   </UDashboardGroup>
 
@@ -84,4 +101,5 @@ const navItems = computed(() =>
 
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
+const hasRuntimePortfolio = computed(() => Boolean(String(runtimeId.value || '').trim()))
 </script>

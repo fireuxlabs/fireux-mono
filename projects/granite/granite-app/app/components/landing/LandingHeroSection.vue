@@ -19,21 +19,21 @@
 
         <div class="landing-hero__actions">
           <UButton
-            to="/portfolios"
+            to="/dashboard/portfolios"
             size="lg"
             color="primary"
             icon="i-lucide-building"
           >
-            View portfolios
+            Select portfolio
           </UButton>
 
           <UButton
-            to="/console"
+            to="/dashboard/portfolios"
             size="lg"
             variant="outline"
             icon="i-lucide-terminal"
           >
-            Open console
+            Enter via selector
           </UButton>
 
           <ClientOnly>

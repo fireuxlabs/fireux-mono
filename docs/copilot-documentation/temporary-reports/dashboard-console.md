@@ -1,218 +1,251 @@
-# Dashboard vs Console Route Audit + Migration Plan
+# Dashboard vs Console + Named Runtime Canon
+Path: /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/docs/copilot-documentation/temporary-reports/dashboard-console.md
+Date: 2026-03-01
+Owner: Daniel Watson
+Status: Draft (canon candidate)
 
-Date: 2026-02-28
-Author: Codex report (requested by Daniel)
+## Why this exists
 
-## Summary
+FireUX needs a repo-wide distinction between:
+- **Dashboard**: human/account/workspace surfaces
+- **Console**: operational surfaces bound to a **named runtime** (one per ecosystem)
 
-The repo-wide rename from `dashboard` to `console` was done in commit:
+This doc defines the contract so we can migrate routes safely and keep behavior consistent across ecosystems.
 
-- `c5b6ee1bd6f45601ba3a492eb9dfd14693d6d8e0` (2026-02-27)
+---
 
-That commit moved all existing dashboard pages (core + profile/domain pages) under `/console/*`, and also introduced Granite runtime console routes.
+## Definitions
 
-Your target direction is sound:
+### Dashboard (human surface)
+Dashboard is “my stuff”.
+It is identity-scoped, cross-entity, and often multi-role.
 
-- Keep `console` for runtime operations (`/console/kitchen/*`, `/console/portfolio/*`)
-- Restore `dashboard` for account and control surfaces (`user/profile/settings/subscriptions/followers/admin/dev`)
+Dashboard includes:
+- account + profile
+- settings, purchases, subscriptions
+- admin/dev surfaces
+- role workspaces (agent/professional/chef/supplier)
+- **selectors** that set the named runtime
 
-## Evidence (what changed)
+Canonical paths:
+- `/dashboard`
+- `/dashboard/user-profile`
+- `/dashboard/settings`
+- `/dashboard/subscriptions`
+- `/dashboard/purchases`
+- `/dashboard/favorites`
+- `/dashboard/followers`
+- `/dashboard/admin`
+- `/dashboard/developer`
+- `/dashboard/chef/*`
+- `/dashboard/supplier/*`
+- `/dashboard/agent/*`
+- `/dashboard/professional/*`
 
-### Layout changes
+Dashboard can *choose* runtime scope, but should not contain deep operational CRUD for that scope.
 
-From `c5b6ee1^` (before) to `HEAD` (after):
+---
 
-- `packages/core/fireux-core/src/runtime/layouts/dashboard.vue` -> `packages/core/fireux-core/src/runtime/layouts/console.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/layouts/kitchen-dashboard.vue` -> `packages/extensions/fireux-kitchens/src/runtime/layouts/kitchen-console.vue`
-- Added `packages/ecosystem/fireux-granite/src/runtime/layouts/granite-console.vue`
+### Console (operational surface)
+Console is “this operation”.
+It is entity-scoped through a **named runtime** and is used to run an operation (kitchen, portfolio, supplier, etc).
 
-### Route namespace changes
+Canonical paths:
+- `/console` (runtime hub)
+- `/console/<runtimeKey>/*` (runtime operations)
 
-Before (`c5b6ee1^`):
+Console **does not** use `:id` in routes for selecting the operation.
+Console **only** operates on the *currently selected runtime*.
 
-- Dashboard pages existed
-- Console pages did not exist under `packages/*/src/runtime/pages/console/*`
+---
 
-After (`HEAD`):
+## The Named Runtime Rule (hard rule)
 
-- Dashboard pages no longer exist
-- Console pages now contain both account surfaces and runtime surfaces
+Each ecosystem has exactly one **named runtime**.
 
-## Route inventory: before vs after
+Examples (v1 mapping):
+- Misebox: `kitchen`
+- Granite: `portfolio`
+- Bringli: `supplier` (owned by fireux-drop)
+- FireUX (flagship): `app`
+- Cleanbox: UI “team” (implement as `company` runtime unless/until `team` is a real model)
 
-### Before (snapshot at `c5b6ee1^`)
+**No primary/secondary runtime language.**
+There is only “THE runtime” per ecosystem.
 
-| Route path | File path |
-|---|---|
-| `/dashboard` | `packages/core/fireux-core/src/runtime/pages/dashboard/index.vue` |
-| `/dashboard/admin` | `packages/core/fireux-core/src/runtime/pages/dashboard/admin.vue` |
-| `/dashboard/developer` | `packages/core/fireux-core/src/runtime/pages/dashboard/developer.vue` |
-| `/dashboard/favorites` | `packages/core/fireux-core/src/runtime/pages/dashboard/favorites.vue` |
-| `/dashboard/followers` | `packages/core/fireux-core/src/runtime/pages/dashboard/followers.vue` |
-| `/dashboard/purchases` | `packages/core/fireux-core/src/runtime/pages/dashboard/purchases.vue` |
-| `/dashboard/settings` | `packages/core/fireux-core/src/runtime/pages/dashboard/settings.vue` |
-| `/dashboard/subscriptions` | `packages/core/fireux-core/src/runtime/pages/dashboard/subscriptions.vue` |
-| `/dashboard/user-profile` | `packages/core/fireux-core/src/runtime/pages/dashboard/user-profile.vue` |
-| `/dashboard/agent` | `packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent/index.vue` |
-| `/dashboard/agent/my-gigs` | `packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent/my-gigs.vue` |
-| `/dashboard/agent/profile` | `packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent/profile.vue` |
-| `/dashboard/professional` | `packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/index.vue` |
-| `/dashboard/professional/my-jobs` | `packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/my-jobs.vue` |
-| `/dashboard/professional/profile` | `packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/profile.vue` |
-| `/dashboard/supplier` | `packages/extensions/fireux-drop/src/runtime/pages/dashboard/supplier/index.vue` |
-| `/dashboard/supplier/my-stock` | `packages/extensions/fireux-drop/src/runtime/pages/dashboard/supplier/my-stock.vue` |
-| `/dashboard/supplier/profile` | `packages/extensions/fireux-drop/src/runtime/pages/dashboard/supplier/profile.vue` |
-| `/dashboard/chef` | `packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/chef/index.vue` |
-| `/dashboard/chef/my-recipes` | `packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/chef/my-recipes.vue` |
-| `/dashboard/chef/profile` | `packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/chef/profile.vue` |
-| `/dashboard/kitchen` | `packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/index.vue` |
-| `/dashboard/kitchen/dishes` | `packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/dishes.vue` |
-| `/dashboard/kitchen/haccp` | `packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/haccp.vue` |
-| `/dashboard/kitchen/ingredients` | `packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/ingredients.vue` |
-| `/dashboard/kitchen/menu` | `packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/menu.vue` |
-| `/dashboard/kitchen/mise` | `packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/mise.vue` |
-| `/dashboard/kitchen/orders` | `packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/orders.vue` |
-| `/dashboard/kitchen/purchase-orders` | `packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/purchase-orders.vue` |
-| `/dashboard/kitchen/recipes` | `packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/recipes.vue` |
-| `/dashboard/kitchen/stations` | `packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/stations.vue` |
-| `/dashboard/kitchen/suppliers` | `packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/suppliers.vue` |
-| `/dashboard/kitchen/team` | `packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/team.vue` |
-| `/dashboard/kitchen/training` | `packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/training.vue` |
+---
 
-### After (current `HEAD`)
+## No fallbacks (hard rule)
 
-| Route path | File path |
-|---|---|
-| `/console` | `packages/core/fireux-core/src/runtime/pages/console/index.vue` |
-| `/console/admin` | `packages/core/fireux-core/src/runtime/pages/console/admin.vue` |
-| `/console/developer` | `packages/core/fireux-core/src/runtime/pages/console/developer.vue` |
-| `/console/favorites` | `packages/core/fireux-core/src/runtime/pages/console/favorites.vue` |
-| `/console/followers` | `packages/core/fireux-core/src/runtime/pages/console/followers.vue` |
-| `/console/purchases` | `packages/core/fireux-core/src/runtime/pages/console/purchases.vue` |
-| `/console/settings` | `packages/core/fireux-core/src/runtime/pages/console/settings.vue` |
-| `/console/subscriptions` | `packages/core/fireux-core/src/runtime/pages/console/subscriptions.vue` |
-| `/console/user-profile` | `packages/core/fireux-core/src/runtime/pages/console/user-profile.vue` |
-| `/console/agent` | `packages/extensions/fireux-jobs/src/runtime/pages/console/agent/index.vue` |
-| `/console/agent/my-gigs` | `packages/extensions/fireux-jobs/src/runtime/pages/console/agent/my-gigs.vue` |
-| `/console/agent/profile` | `packages/extensions/fireux-jobs/src/runtime/pages/console/agent/profile.vue` |
-| `/console/professional` | `packages/extensions/fireux-jobs/src/runtime/pages/console/professional/index.vue` |
-| `/console/professional/my-jobs` | `packages/extensions/fireux-jobs/src/runtime/pages/console/professional/my-jobs.vue` |
-| `/console/professional/profile` | `packages/extensions/fireux-jobs/src/runtime/pages/console/professional/profile.vue` |
-| `/console/supplier` | `packages/extensions/fireux-drop/src/runtime/pages/console/supplier/index.vue` |
-| `/console/supplier/my-stock` | `packages/extensions/fireux-drop/src/runtime/pages/console/supplier/my-stock.vue` |
-| `/console/supplier/profile` | `packages/extensions/fireux-drop/src/runtime/pages/console/supplier/profile.vue` |
-| `/console/chef` | `packages/extensions/fireux-kitchens/src/runtime/pages/console/chef/index.vue` |
-| `/console/chef/my-recipes` | `packages/extensions/fireux-kitchens/src/runtime/pages/console/chef/my-recipes.vue` |
-| `/console/chef/profile` | `packages/extensions/fireux-kitchens/src/runtime/pages/console/chef/profile.vue` |
-| `/console/kitchen` | `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/index.vue` |
-| `/console/kitchen/dishes` | `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/dishes.vue` |
-| `/console/kitchen/haccp` | `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/haccp.vue` |
-| `/console/kitchen/ingredients` | `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/ingredients.vue` |
-| `/console/kitchen/menu` | `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/menu.vue` |
-| `/console/kitchen/mise` | `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/mise.vue` |
-| `/console/kitchen/orders` | `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/orders.vue` |
-| `/console/kitchen/purchase-orders` | `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/purchase-orders.vue` |
-| `/console/kitchen/recipes` | `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/recipes.vue` |
-| `/console/kitchen/stations` | `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/stations.vue` |
-| `/console/kitchen/suppliers` | `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/suppliers.vue` |
-| `/console/kitchen/team` | `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/team.vue` |
-| `/console/kitchen/training` | `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/training.vue` |
-| `/console/portfolio` | `packages/ecosystem/fireux-granite/src/runtime/pages/console/portfolio/index.vue` |
-| `/console/portfolio/properties` | `packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/properties.vue` |
-| `/console/portfolio/compliance` | `packages/extensions/fireux-compliance/src/runtime/pages/console/portfolio/compliance.vue` |
-| `/console/portfolio/documents` | `packages/extensions/fireux-documents/src/runtime/pages/console/portfolio/documents.vue` |
-| `/console/portfolio/tasks` | `packages/extensions/fireux-tasks/src/runtime/pages/console/portfolio/tasks.vue` |
+Console pages must never guess or auto-select a runtime.
+If runtime is missing, the page must show an explicit empty-state + link to the dashboard selector.
 
-## Proposed target split (recommended)
+Fallback policy: prohibited unless a human explicitly asks for it.  [oai_citation:0‡chatcontext-2026-02-25.md](sediment://file_0000000002847243948c75f56c5889d7)
 
-### Keep on `/console/*` (runtime operations)
+---
 
+## Composable Contract (repo-wide)
+
+Every named runtime must expose a consistent API:
+
+### 1) `useRuntimeX()`
+Responsible for:
+- runtime id
+- runtime mode (only if the domain uses modes)
+- setting/clearing runtime selection
+
+Must provide:
+- `runtimeXId` (ref)
+- `setRuntimeXId(id: string)`
+- `clearRuntimeX()`
+- (optional) `runtimeXMode`, `setRuntimeXMode(mode)`
+
+### 2) `useRuntimeXData()`
+Responsible for:
+- prefetched doc/model for active runtime
+- loading/error state
+
+Must provide:
+- `x` (ref | computed)
+- `isLoading`
+- `error`
+- `isReady` (derived; true only when id + doc are present)
+
+### 3) Optional `useRuntimeXGuard()` helper
+Responsible for:
+- computed guard flags used by layouts/pages
+- target selector link
+
+Suggested outputs:
+- `hasScope`
+- `selectScopeHref` (dashboard selector route)
+- `emptyStateTitle`
+- `emptyStateBody`
+
+---
+
+## Route Contract (repo-wide)
+
+### Dashboard pages
+- may list/select operations
+- may call `setRuntimeXId(...)`
+- may provide “switch” UX
+
+### Console pages
+- must read runtime via `useRuntimeX()` / `useRuntimeXData()`
+- must not accept `:id` for selecting the operation
+- must not perform implicit selection
+- if missing scope, must render empty-state + link to selector
+
+### Resource routes inside console
+Resource detail routes are allowed when the resource is owned by the runtime:
+
+✅ Allowed:
+- `/console/kitchen/recipes/[id]` (recipe belongs to active kitchen)
+- `/console/portfolio/properties/[id]` (property belongs to active portfolio)
+
+🚫 Not allowed:
+- `/console/kitchen/:kitchenId/...` (runtime selection in URL)
+
+---
+
+## Entry Point Contract (important)
+
+We need to define how a user enters “operations”.
+
+### Recommended behavior (matches how kitchens currently feel)
+1) **Dashboard is the default landing for authenticated users**
+   - `/dashboard`
+2) Dashboard offers “Select kitchen / portfolio / supplier / app”
+   - selection sets runtime state via `useRuntimeX()`
+3) Console becomes the operational surface
+   - `/console` shows “Active operation” + quick links
+   - `/console/<runtimeKey>/*` operates on active runtime
+
+### `/console` (runtime hub) behavior
+- If runtime is set: show summary + links to common console sections
+- If runtime missing: show empty-state + link to dashboard selector
+- Do not auto-select the first available operation
+
+### Why kitchens felt good even before this doc
+Kitchen dashboard already effectively behaved like:
+- “choose kitchen on list/CTA”
+- “operate kitchen in subpages”
+This doc formalizes that into a reusable runtime contract across ecosystems.
+
+---
+
+## Migration Plan (low risk)
+
+### Phase A — Reintroduce dashboard routes (copy + redirect)
+1) Re-add `layouts/dashboard.vue` (can wrap current shell initially)
+2) Create `/dashboard/*` pages by copying current `/console/*` account + profile pages
+3) Add redirects from old console account/profile paths:
+   - `/console/settings` -> `/dashboard/settings`
+   - `/console/user-profile` -> `/dashboard/user-profile`
+   - `/console/chef/*` -> `/dashboard/chef/*`
+   - `/console/supplier/*` -> `/dashboard/supplier/*`
+   - `/console/agent/*` -> `/dashboard/agent/*`
+   - `/console/professional/*` -> `/dashboard/professional/*`
+
+Keep runtime operations unchanged:
 - `/console/kitchen/*`
 - `/console/portfolio/*`
 
-### Move to `/dashboard/*` (account/control surfaces)
+### Phase B — Navigation split
+- Introduce `useDashboardNav()` vs `useConsoleNav()`
+- Dashboard nav: account + workspace
+- Console nav: runtime operations only
 
-- Core account/control:
-  - `/console` -> `/dashboard`
-  - `/console/user-profile` -> `/dashboard/user-profile`
+### Phase C — Compatibility redirects (one release cycle)
+- Pre-rename compatibility:
+  - `/dashboard/kitchen/*` -> `/console/kitchen/*`
+- Post-rename compatibility:
   - `/console/settings` -> `/dashboard/settings`
-  - `/console/subscriptions` -> `/dashboard/subscriptions`
-  - `/console/followers` -> `/dashboard/followers`
-  - `/console/favorites` -> `/dashboard/favorites`
-  - `/console/purchases` -> `/dashboard/purchases`
-  - `/console/admin` -> `/dashboard/admin`
-  - `/console/developer` -> `/dashboard/developer`
-- Profile-workspace pages (non-runtime shell):
-  - `/console/agent*` -> `/dashboard/agent*`
-  - `/console/professional*` -> `/dashboard/professional*`
-  - `/console/supplier*` -> `/dashboard/supplier*`
-  - `/console/chef*` -> `/dashboard/chef*`
 
-## Migration plan (phased)
+### Phase D — Cleanup
+- Remove duplicates after redirects are stable
+- Update internal links (auth redirects, header links, onboarding deep links)
 
-### Phase 1: Reintroduce dashboard shell safely
+---
 
-1. Re-add `packages/core/fireux-core/src/runtime/layouts/dashboard.vue` as a thin wrapper around the current console shell components (no UX divergence yet).
-2. Re-add `packages/extensions/fireux-kitchens/src/runtime/layouts/kitchen-dashboard.vue` only if chef pages remain kitchen-owned and move under dashboard.
-3. Keep `console` layouts untouched during this phase.
+## Shared Middleware Policy (added 2026-03-01)
 
-### Phase 2: Route restoration by copy+redirect (not destructive rename first)
+Route auth middleware is **core behavior**, not app-local behavior.
 
-1. Create new `/dashboard/*` page files for all target dashboard routes.
-2. For each new dashboard page, reuse existing page component logic initially (copy/import), then gradually specialize.
-3. Add temporary redirects:
-   - `/console/(core+profile)` -> `/dashboard/...`
-   - Keep `/console/kitchen/*` and `/console/portfolio/*` unchanged.
+Decision:
+- Keep auth/admin route guarding in core middleware:
+  - `packages/core/fireux-core/src/runtime/middleware/fireux-auth.global.ts`
+- Do not keep duplicate per-app copies when behavior is identical.
+- App-local middleware is only allowed for app-unique logic.
 
-### Phase 3: Navigation split
+Current state after this update:
+- `packages/ecosystem/fireux-fireux/apps/stitch/app/middleware/stitch-auth.global.ts` was removed.
+- No other app-level Nuxt route auth middleware exists in repo runtime sources.
 
-1. Introduce explicit nav presets:
-   - `useDashboardNav()` for dashboard pages.
-   - `useConsoleNav()` for runtime consoles.
-2. Ensure dashboard menu excludes runtime-scoped operations.
-3. Ensure console menu excludes account/admin/dev pages.
+---
 
-### Phase 4: Compatibility redirects (both directions where needed)
+## Open decisions (must be explicit)
 
-1. Legacy pre-rename compatibility:
-   - `/dashboard/kitchen/*` -> `/console/kitchen/*`
-2. Post-rename compatibility:
-   - `/console/user-profile` etc. -> `/dashboard/...`
-3. Keep redirects for at least one release cycle.
+### Cleanbox runtime naming
+Option A (recommended now): implement runtime as `company`, label UI as “team”
+- composable: `useRuntimeCompany()`
+- routes: either `/console/company/*` (literal) or `/console/team/*` (friendly)
 
-### Phase 5: Cleanup
+Option B (later): introduce a first-class Team model and runtime
 
-1. Remove duplicate page implementations once traffic confirms redirects are stable.
-2. Update docs and internal links:
-   - auth redirect targets
-   - header quick links
-   - onboarding deep links
-   - SEO noindex/disallow policies for both namespaces
-3. Add regression tests for route guards and nav visibility.
+### FireUX flagship runtime
+Do we call it `app` or `tenant`?
+- Prefer `app` in routes and composables for clarity (aligns with existing appId usage).
 
-## Risks and controls
+---
 
-- Risk: Broken deep links from bookmarks.
-  - Control: bidirectional redirect table + release-note callout.
-- Risk: Mixed nav state (dashboard items visible in console and vice versa).
-  - Control: split nav presets and enforce by layout key.
-- Risk: Auth/role drift on moved routes.
-  - Control: preserve `requiresAuth`, role checks, and route meta during copy phase.
+## Success criteria
 
-## Suggested execution order (low risk)
+- Users never land in a console page with an implicit/guessed operation.
+- Console never needs `:id` to function.
+- Dashboard and Console are cleanly separated in nav and layout.
+- Runtime composables are consistent across domains and ecosystems.
+- Auth/admin route guarding is centralized in core middleware (no per-app duplication).
 
-1. Core dashboard restoration first (`/dashboard` + user/settings/subscriptions/admin/dev/followers/favorites/purchases).
-2. Profile routes next (`agent/professional/supplier/chef`).
-3. Keep runtime operations under `/console/kitchen/*` and `/console/portfolio/*` throughout.
-4. Remove old `/console` account/profile routes only after redirects are live and verified.
-
-## Appendix: key rename set in `c5b6ee1`
-
-Examples (all in same commit):
-
-- `packages/core/fireux-core/src/runtime/pages/dashboard/index.vue` -> `packages/core/fireux-core/src/runtime/pages/console/index.vue`
-- `packages/core/fireux-core/src/runtime/layouts/dashboard.vue` -> `packages/core/fireux-core/src/runtime/layouts/console.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/pages/dashboard/kitchen/index.vue` -> `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/index.vue`
-- `packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent/index.vue` -> `packages/extensions/fireux-jobs/src/runtime/pages/console/agent/index.vue`
-- `packages/extensions/fireux-drop/src/runtime/pages/dashboard/supplier/index.vue` -> `packages/extensions/fireux-drop/src/runtime/pages/console/supplier/index.vue`
-
+And on your “entry point” note (business-wise): kitchens worked because the selection step was naturally separate from the operational pages, even if we didn’t call it “runtime responsibility” yet. This doc makes that separation explicit so Granite/Bringli/Cleanbox can feel just as solid without reinventing the pattern.

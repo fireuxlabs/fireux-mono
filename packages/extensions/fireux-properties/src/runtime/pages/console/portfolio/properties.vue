@@ -11,11 +11,11 @@
           color="warning"
           variant="soft"
           title="No portfolio selected"
-          description="Select a portfolio on /portfolios before using console properties."
+          description="Select a portfolio on /dashboard/portfolios before using console properties."
           :actions="[
             {
               label: 'Go to portfolios',
-              to: '/portfolios',
+              to: '/dashboard/portfolios',
               icon: 'i-lucide-arrow-right'
             }
           ]"
@@ -34,7 +34,7 @@
               </div>
 
               <UButton
-                to="/portfolios"
+                to="/dashboard/portfolios"
                 size="sm"
                 variant="soft"
                 icon="i-lucide-repeat"

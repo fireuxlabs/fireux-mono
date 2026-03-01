@@ -66,7 +66,24 @@
 
     <!-- Page content -->
     <div class="w-full h-screen overflow-y-auto p-0 lg:p-4 bg-elevated/50">
-      <NuxtPage />
+      <NuxtPage v-if="hasRuntimeKitchen" />
+      <UPage v-else>
+        <UPageBody class="pagebody">
+          <UPageCard
+            title="No active kitchen selected"
+            description="Select a kitchen from Dashboard before using kitchen runtime operations."
+            variant="subtle"
+          >
+            <UButton
+              to="/dashboard/kitchens"
+              color="neutral"
+              icon="i-lucide-arrow-right"
+            >
+              Select a kitchen
+            </UButton>
+          </UPageCard>
+        </UPageBody>
+      </UPage>
     </div>
   </UDashboardGroup>
 
@@ -93,6 +110,7 @@ const { runtimeKitchen, hasActiveMenu, menuStatusLabel } = useRuntimeKitchenComp
 const { pill } = useKitchenInterface()
 
 const pillCard = computed(() => pill(runtimeKitchen.kitchen.value))
+const hasRuntimeKitchen = computed(() => Boolean(String(runtimeKitchen.id.value || '').trim()))
 useAuthRedirect()
 const navItems = computed(() =>
   desktop.value.filter(

@@ -8,9 +8,17 @@
       resizable
       class="bg-elevated/25"
     >
-      <!-- Top: profile switcher (self-hides when unnecessary) -->
       <template #header>
-        <LayoutsConsoleProfilesMenu />
+        <div class="px-2 py-2">
+          <UButton
+            to="/dashboard"
+            icon="i-lucide-layout-dashboard"
+            label="Dashboard"
+            color="neutral"
+            variant="ghost"
+            block
+          />
+        </div>
       </template>
 
       <!-- Main nav -->
@@ -82,9 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import { useState } from '#imports'
-import { computed, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref } from 'vue'
 import { useConsoleNav } from '../composables/fireux/app/routing/presets'
 import { useNavGrouping } from '../composables/fireux/app/ui/nav/useNavGrouping'
 import { useAuthRedirect } from '../composables/fireux/app/ui/useAuthRedirect'
@@ -93,44 +99,14 @@ import { useConsoleNotifications } from '../composables/fireux/app/ui/useConsole
 defineOptions({ name: 'console' })
 
 const open = ref(false)
-const route = useRoute()
-const activeProfileState = useState<string | null>(
-  'fireux-console-profile',
-  () => null
-)
 
 const { isOpen: isNotificationsSlideoverOpen } = useConsoleNotifications()
 const { desktop, topPriority, baseNavFilter } = useConsoleNav()
 
 useAuthRedirect()
 
-const routeProfileId = computed(
-  () => (route.meta as { nav?: { profileId?: string } }).nav?.profileId ?? null
-)
-
-watch(
-  routeProfileId,
-  (value: string | null) => {
-    if (value && activeProfileState.value !== value) {
-      activeProfileState.value = value
-    }
-  },
-  { immediate: true }
-)
-
-const activeProfileId = computed(() => activeProfileState.value)
-
-const profileExtras = computed(() => {
-  const profileId = activeProfileId.value
-  if (!profileId) return []
-  return desktop.value
-    .filter((item) => item.group !== 'profiles')
-    .filter((item) => item.profileId === profileId)
-})
-
 const { topNav, middleNav, bottomNav } = useNavGrouping(desktop, {
   topPriority,
   filter: baseNavFilter,
-  extras: profileExtras,
 })
 </script>

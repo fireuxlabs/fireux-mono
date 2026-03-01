@@ -25,7 +25,7 @@
           Location ID: {{ successId }}
         </div>
         <div class="flex flex-wrap gap-2">
-          <UButton size="xs" color="neutral" variant="soft" to="/console/chef/profile">
+          <UButton size="xs" color="neutral" variant="soft" to="/dashboard/chef/profile">
             Go to profile
           </UButton>
           <UButton size="xs" color="primary" to="/console/kitchen">

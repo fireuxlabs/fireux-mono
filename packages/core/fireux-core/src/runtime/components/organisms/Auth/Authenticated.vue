@@ -1,6 +1,6 @@
 <template>
   <div class="auth-authenticated">
-    <UButton block @click="goConsole">Go to Console</UButton>
+    <UButton block @click="goDashboard">Go to Dashboard</UButton>
     <UButton block variant="ghost" @click="handleSignOut">Sign Out</UButton>
   </div>
 </template>
@@ -12,8 +12,8 @@ import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 const router = useRouter()
 const { signOutUser } = useAuth()
 
-const goConsole = () => {
-  router.push('/console').catch(() => {})
+const goDashboard = () => {
+  router.push('/dashboard').catch(() => {})
 }
 
 const handleSignOut = async () => {

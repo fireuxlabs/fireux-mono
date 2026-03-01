@@ -18,7 +18,7 @@
           size="xs"
           color="neutral"
           variant="soft"
-          @click="navigateTo('/console/supplier/profile')"
+          @click="navigateTo('/dashboard/supplier/profile')"
         >
           Edit
         </UButton>

@@ -1,34 +1,5 @@
-<template>
-  <UDashboardPanel id="console-favorites">
-    <template #header>
-      <LayoutsConsoleNavbar title="Favorites" />
-    </template>
-
-    <template #body>
-      <UPage>
-        <UPageBody class="pagebody">
-          <UPageHeader description="Saved items appear as you use the app." />
-          <UPageCard variant="subtle" title="No favorites yet">
-            <p class="text-sm text-dimmed">You haven’t saved anything yet.</p>
-          </UPageCard>
-        </UPageBody>
-      </UPage>
-    </template>
-  </UDashboardPanel>
-</template>
-
 <script setup lang="ts">
-import { definePageMeta } from '#imports'
+import { navigateTo } from '#imports'
 
-definePageMeta({
-  layout: 'console',
-  nav: {
-    key: 'console-favorites',
-    label: 'Favorites',
-    icon: 'i-lucide-heart',
-    desktop: true,
-    layouts: ['console'],
-  },
-  requiresAuth: true,
-})
+await navigateTo('/dashboard/favorites', { redirectCode: 301 })
 </script>

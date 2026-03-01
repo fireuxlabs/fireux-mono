@@ -8,7 +8,7 @@
 
     <NuxtLink
       v-if="compactProfile && collapsed && pillUser"
-      to="/console/user-profile"
+      to="/dashboard/user-profile"
       class="w-full flex justify-center mt-auto"
       aria-label="View profile"
     >

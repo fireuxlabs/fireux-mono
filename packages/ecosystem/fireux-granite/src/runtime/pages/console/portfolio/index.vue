@@ -11,8 +11,8 @@
           color="warning"
           variant="soft"
           title="No portfolio selected"
-          description="Select a portfolio on /portfolios before entering Granite console tools."
-          :actions="[{ label: 'Go to portfolios', to: '/portfolios', icon: 'i-lucide-arrow-right' }]"
+          description="Select a portfolio on /dashboard/portfolios before entering Granite console tools."
+          :actions="[{ label: 'Go to portfolios', to: '/dashboard/portfolios', icon: 'i-lucide-arrow-right' }]"
         />
 
         <template v-else>
@@ -26,7 +26,7 @@
                 </div>
               </div>
 
-              <UButton to="/portfolios" size="sm" variant="soft" icon="i-lucide-repeat">
+              <UButton to="/dashboard/portfolios" size="sm" variant="soft" icon="i-lucide-repeat">
                 Change selection
               </UButton>
             </div>

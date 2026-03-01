@@ -34,7 +34,7 @@ const ctaDescription = computed(() =>
 )
 
 const handleCreated = () => {
-	router.push('/console/professional/profile')
+	router.push('/dashboard/professional/profile')
 }
 </script>
 

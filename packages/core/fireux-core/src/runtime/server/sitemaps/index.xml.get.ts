@@ -13,7 +13,9 @@ export default defineEventHandler(async (event) => {
 
   for (const entity of entities) {
     const count = await countPublicEntityIndexDocs(entity)
-    const pages = Math.max(1, Math.ceil(count / entity.pageSize))
+    if (count <= 0) continue
+
+    const pages = Math.ceil(count / entity.pageSize)
     for (let page = 1; page <= pages; page += 1) {
       sitemapEntries.push(
         absoluteUrl(siteUrl, `/sitemaps/${entity.entityKey}-${page}.xml`)

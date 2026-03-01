@@ -9,7 +9,7 @@
           variant="soft"
           color="neutral"
           icon="i-lucide-pencil"
-          to="/console/user-profile"
+          to="/dashboard/user-profile"
         >
           Edit
         </UButton>

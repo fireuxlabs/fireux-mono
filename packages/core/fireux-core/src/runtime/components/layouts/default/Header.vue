@@ -54,21 +54,17 @@
             Sign in
           </UButton>
 
-          <!-- Signed in => account menu -->
-          <UDropdown v-else :items="accountMenuItems">
-            <UButton
-              to="/console"
-              variant="ghost"
-              color="neutral"
-              aria-label="Account menu"
-              data-fireux-header-avatar
-            >
-              <UAvatar :src="avatarSrc" :text="initials" size="sm" />
-            </UButton>
-            <template #item-leading="{ item }">
-              <UIcon v-if="item.icon" :name="item.icon" />
-            </template>
-          </UDropdown>
+          <!-- Signed in => dashboard -->
+          <UButton
+            v-else
+            to="/dashboard"
+            variant="ghost"
+            color="neutral"
+            aria-label="Go to dashboard"
+            data-fireux-header-avatar
+          >
+            <UAvatar :src="avatarSrc" :text="initials" size="sm" />
+          </UButton>
         </div>
       </template>
 
@@ -136,11 +132,7 @@ onErrorCaptured((error: unknown) => {
 const auth = import.meta.client ? useAuth() : null
 
 const isAuthenticated = computed(() => auth?.isAuthenticated?.value ?? false)
-
-const signOut = async () => {
-  if (!auth?.signOutUser) return
-  await auth.signOutUser()
-}
+const authUserRef = auth?.currentUser ?? computed(() => null)
 
 const { getProxiedAvatarUrl } = useAvatarProxy()
 
@@ -197,16 +189,20 @@ const handleBusinessCardPress = async () => {
 }
 
 const avatarSrc = computed(() => {
-  const raw = userRef.value?.avatar
+  const raw = userRef.value?.avatar || authUserRef.value?.photoURL
   const normalized = typeof raw === 'string' ? raw.trim() : ''
   const proxied = getProxiedAvatarUrl(normalized || undefined)
   return proxied || undefined
 })
 
 const initials = computed(() => {
-  const displayName = (userRef.value?.display_name ?? '').trim()
+  const displayName =
+    (userRef.value?.display_name ?? authUserRef.value?.displayName ?? '').trim()
   const handle = (userRef.value?.handle ?? '').trim()
-  const base = displayName || handle
+  const emailLocal = String(authUserRef.value?.email || '')
+    .split('@')[0]
+    ?.trim()
+  const base = displayName || handle || emailLocal
   if (!base) return 'A'
 
   const parts = base.split(/\s+/).filter(Boolean)
@@ -217,21 +213,4 @@ const initials = computed(() => {
   return base.slice(0, 2).toUpperCase() || 'A'
 })
 
-const accountMenuItems = computed(() => [
-  [
-    {
-      label: 'Account',
-      icon: 'i-lucide-user',
-      to: '/users',
-    },
-  ],
-  [{ label: 'Console', icon: 'i-lucide-terminal', to: '/console' }],
-  [
-    {
-      label: 'Sign out',
-      icon: 'i-lucide-log-out',
-      onSelect: async () => await signOut(),
-    },
-  ],
-])
 </script>

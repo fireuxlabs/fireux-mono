@@ -29,17 +29,17 @@ import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useState } from '#imports'
 import type { DropdownMenuItem } from '@nuxt/ui'
-import { useConsoleNav } from '../../../composables/fireux/app/routing/presets'
+import { useDashboardNav } from '../../../composables/fireux/app/routing/presets'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
 defineOptions({ name: 'LayoutsConsoleProfilesMenu' })
 defineProps<{ collapsed?: boolean }>()
 
-const { desktop } = useConsoleNav()
+const { desktop } = useDashboardNav()
 const { user } = useUser()
 const router = useRouter()
 const activeProfileState = useState<string | null>(
-  'fireux-console-profile',
+  'fireux-dashboard-profile',
   () => null
 )
 

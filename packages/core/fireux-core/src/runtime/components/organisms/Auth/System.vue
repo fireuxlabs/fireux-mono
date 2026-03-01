@@ -15,14 +15,22 @@
         <div class="w-full space-y-4">
           <p class="font-medium">You're signed in.</p>
           <UserCardsPill
+            v-if="currentUserPill"
             v-bind="currentUserPill"
             :link="Boolean(currentUserPill && currentUserPill.to)"
             :show-badges="false"
           />
+          <UAlert
+            v-else
+            color="neutral"
+            variant="soft"
+            title="Account sync in progress"
+            :description="`Signed in as ${authIdentityLabel}.`"
+          />
 
           <div class="flex w-full flex-col gap-3">
-            <UButton block color="primary" @click="goToConsole">
-              Go to console
+            <UButton block color="primary" @click="goToDashboard">
+              Go to dashboard
             </UButton>
             <UButton
               block
@@ -66,7 +74,13 @@ import { useUserInterface } from '../../../composables/fireux/firestore/core/use
 
 const router = useRouter()
 const route = useRoute()
-const { authState, signOutUser, signInWithGoogle, isReady } = useAuth()
+const {
+  authState,
+  signOutUser,
+  signInWithGoogle,
+  isReady,
+  currentUser: authUser,
+} = useAuth()
 const isAuthenticated = computed(() => authState.value === 'AUTHENTICATED')
 const signOutLoading = ref(false)
 const providerLoading = ref(false)
@@ -79,6 +93,9 @@ const { card } = useUserInterface()
 const currentUserPill = computed(() =>
   currentUser.value ? card(currentUser.value) : null
 )
+const authIdentityLabel = computed(() =>
+  String(authUser.value?.displayName || authUser.value?.email || authUser.value?.uid || 'unknown')
+)
 
 function sanitizeRedirect(value: unknown): string | null {
   const raw = Array.isArray(value) ? value[0] : value
@@ -90,10 +107,10 @@ function sanitizeRedirect(value: unknown): string | null {
 }
 
 const postAuthPath = computed(
-  () => sanitizeRedirect(route.query.redirect) ?? '/console'
+  () => sanitizeRedirect(route.query.redirect) ?? '/dashboard'
 )
 
-const goToConsole = async () => {
+const goToDashboard = async () => {
   await router.push(postAuthPath.value).catch(() => {})
 }
 
@@ -110,7 +127,6 @@ const handleSignOut = async () => {
 const handleGoogle = async () => {
   if (import.meta.dev) {
     const href = typeof window !== 'undefined' ? window.location.href : undefined
-    // eslint-disable-next-line no-console
     console.log('[fireux][auth] google click', {
       providerLoading: providerLoading.value,
       isReady: isReady.value,
@@ -123,7 +139,6 @@ const handleGoogle = async () => {
   try {
     const user = await signInWithGoogle()
     if (import.meta.dev) {
-      // eslint-disable-next-line no-console
       console.log('[fireux][auth] google result', {
         uid: user?.uid ?? null,
         hasUser: !!user,

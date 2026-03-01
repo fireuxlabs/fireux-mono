@@ -36,6 +36,13 @@ export default defineEventHandler(async (event) => {
   }
 
   const entries = await fetchEntitySitemapPage(entity, Math.trunc(page))
+  if (!entries.length) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: `No sitemap entries for entity: ${entityKey}, page: ${page}`,
+    })
+  }
+
   const xmlRows = entries.map((entry) => {
     const loc = escapeXml(absoluteUrl(siteUrl, entry.path))
     const lastmod = entry.lastmod

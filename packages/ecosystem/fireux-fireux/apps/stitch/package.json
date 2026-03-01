@@ -1,0 +1,31 @@
+{
+  "name": "stitch-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxi prepare && nuxi dev --port 3011",
+    "build": "nuxi build",
+    "generate": "nuxi generate",
+    "preview": "nuxi preview",
+    "prepare:firebase-output": "node ../../../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace",
+    "check:env": "node ../../../../../scripts/check-env.mjs",
+    "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
+    "clean": "rimraf .nuxt dist"
+  },
+  "dependencies": {
+    "@nuxt/icon": "2.x",
+    "@nuxt/ui": "^4.0.0-alpha.2",
+    "firebase": "11.10.0",
+    "fireux-core": "workspace:*",
+    "fireux-fireux": "workspace:*",
+    "nuxt": "4.1.2",
+    "vue": "3.5.20",
+    "vue-router": "4.5.1",
+    "vuefire": "3.2.2"
+  },
+  "devDependencies": {
+    "@iconify-json/lucide": "^1.2.82",
+    "@vite-pwa/nuxt": "^1.0.4",
+    "rimraf": "^6.0.1"
+  }
+}

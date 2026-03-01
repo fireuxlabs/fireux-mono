@@ -26,7 +26,7 @@
           size="xs"
           color="neutral"
           variant="soft"
-          @click="navigateTo('/console/professional/profile')"
+          @click="navigateTo('/dashboard/professional/profile')"
         >
           Edit
         </UButton>

@@ -35,7 +35,7 @@
 
         <div class="flex">
           <UButton
-            to="/console/user-profile"
+            to="/dashboard/user-profile"
             label="Edit profile"
             color="neutral"
             size="sm"

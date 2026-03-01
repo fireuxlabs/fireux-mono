@@ -53,7 +53,7 @@ const isAuthenticated = computed(() => auth?.isAuthenticated?.value ?? false)
 
 const footerAction = computed(() =>
   isAuthenticated.value
-    ? { label: 'Go to console', to: '/console' }
+    ? { label: 'Select a kitchen', to: '/dashboard/kitchens' }
     : { label: 'Get started', to: '/get-started' }
 )
 

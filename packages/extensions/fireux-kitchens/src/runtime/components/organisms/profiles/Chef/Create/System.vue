@@ -76,7 +76,7 @@ const handleCreate = async () => {
   try {
     const result = await create()
     emit('created', result)
-    await router.push('/console/chef/profile')
+    await router.push('/dashboard/chef/profile')
   } catch (error) {
     const message =
       error instanceof Error

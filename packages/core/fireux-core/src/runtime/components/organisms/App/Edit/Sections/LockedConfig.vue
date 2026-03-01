@@ -8,7 +8,7 @@
 
         <div v-if="isDev" class="shrink-0">
           <UButton
-            to="/console/developer"
+            to="/dashboard/developer"
             size="xs"
             variant="soft"
             icon="i-lucide-arrow-up-right"

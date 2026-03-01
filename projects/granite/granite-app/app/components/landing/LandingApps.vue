@@ -20,11 +20,11 @@
           </div>
 
           <div class="flex flex-wrap gap-3">
-            <UButton to="/portfolios" color="primary" icon="i-lucide-building">
-              View portfolios
+            <UButton to="/dashboard/portfolios" color="primary" icon="i-lucide-building">
+              Select portfolio
             </UButton>
-            <UButton to="/console" variant="outline" icon="i-lucide-terminal">
-              Open console
+            <UButton to="/dashboard/portfolios" variant="outline" icon="i-lucide-terminal">
+              Enter via selector
             </UButton>
           </div>
         </div>
