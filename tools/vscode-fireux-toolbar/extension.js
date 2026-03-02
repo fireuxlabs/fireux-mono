@@ -584,119 +584,242 @@ function activate(context) {
     await vscode.window.showTextDocument(doc, { preview: false })
   })
 
+  register('fireuxToolbar.gitTree', async () => {
+    const ranTask = await runTaskIfPresent('Git Tree (full)')
+    if (!ranTask) {
+      ensureTerminal('Git Tree', 'pnpm git-tree:full')
+    }
+  })
+
+  register('fireuxToolbar.mirrorSync', async () => {
+    ensureTerminal('Mirror Sync', 'pnpm mirror:sync')
+  })
+
+  register('fireuxToolbar.mirrorFromGitQ', async () => {
+    ensureTerminal('Mirror (Git Q)', 'pnpm mirror:gitq')
+  })
+
   const apps = [
     {
       key: 'fireux',
       name: 'FireUX',
       icon: '$(flame)',
+      port: 3000,
       commandId: 'fireuxToolbar.startFireux',
       taskLabel: 'dev:fireux (3000)',
       terminalName: 'FireUX (3000)',
       pnpmCommand: 'pnpm dev:fireux --host',
       tooltip: 'Start FireUX dev (port 3000)',
       url: 'http://localhost:3000',
-      priority: 100,
     },
     {
       key: 'misebox',
       name: 'MiseBox',
       icon: '$(book)',
+      port: 3001,
       commandId: 'fireuxToolbar.startMisebox',
       taskLabel: 'dev:misebox (3001)',
       terminalName: 'MiseBox (3001)',
       pnpmCommand: 'pnpm dev:misebox --host',
       tooltip: 'Start MiseBox dev (port 3001)',
       url: 'http://localhost:3001',
-      priority: 99,
     },
     {
       key: 'cleanbox',
       name: 'CleanBox',
       icon: '$(beaker)',
+      port: 3002,
       commandId: 'fireuxToolbar.startCleanbox',
       taskLabel: 'dev:cleanbox (3002)',
       terminalName: 'CleanBox (3002)',
       pnpmCommand: 'pnpm dev:cleanbox --host',
       tooltip: 'Start CleanBox dev (port 3002)',
       url: 'http://localhost:3002',
-      priority: 98,
     },
     {
       key: 'niederhorn',
       name: 'Niederhorn',
       icon: '$(mountain)',
+      port: 3003,
       commandId: 'fireuxToolbar.startNiederhorn',
       taskLabel: 'dev:niederhorn (3003)',
       terminalName: 'Niederhorn (3003)',
       pnpmCommand: 'pnpm dev:niederhorn --host',
       tooltip: 'Start Niederhorn dev (port 3003)',
       url: 'http://localhost:3003',
-      priority: 97,
     },
     {
       key: 'richies',
       name: 'Richies',
       icon: '$(tools)',
+      port: 3004,
       commandId: 'fireuxToolbar.startRichies',
       taskLabel: 'dev:richies (3004)',
       terminalName: 'Richies (3004)',
       pnpmCommand: 'pnpm dev:richies --host',
       tooltip: 'Start Richies dev (port 3004)',
       url: 'http://localhost:3004',
-      priority: 96,
-    },
-    {
-      key: 'granite',
-      name: 'Granite',
-      icon: '$(database)',
-      commandId: 'fireuxToolbar.startGranite',
-      taskLabel: 'dev:granite (3007)',
-      terminalName: 'Granite (3007)',
-      pnpmCommand: 'pnpm dev:granite --host',
-      tooltip: 'Start Granite dev (port 3007)',
-      url: 'http://localhost:3007',
-      priority: 94,
     },
     {
       key: 'tenant',
       name: 'Tenant',
       icon: '$(home)',
+      port: 3005,
       commandId: 'fireuxToolbar.startTenant',
       taskLabel: 'dev:tenant (3005)',
       terminalName: 'Tenant (3005)',
       pnpmCommand: 'pnpm dev:tenant --host',
       tooltip: 'Start Tenant dev (port 3005)',
       url: 'http://localhost:3005',
-      priority: 95,
+    },
+    {
+      key: 'bringli',
+      name: 'Bringli',
+      icon: '$(symbol-namespace)',
+      port: 3006,
+      commandId: 'fireuxToolbar.startBringli',
+      taskLabel: 'dev:bringli (3006)',
+      terminalName: 'Bringli (3006)',
+      pnpmCommand: 'pnpm dev:bringli --host',
+      tooltip: 'Start Bringli dev (port 3006)',
+      url: 'http://localhost:3006',
+    },
+    {
+      key: 'granite',
+      name: 'Granite',
+      icon: '$(database)',
+      port: 3007,
+      commandId: 'fireuxToolbar.startGranite',
+      taskLabel: 'dev:granite (3007)',
+      terminalName: 'Granite (3007)',
+      pnpmCommand: 'pnpm dev:granite --host',
+      tooltip: 'Start Granite dev (port 3007)',
+      url: 'http://localhost:3007',
     },
   ]
 
+  const appByKey = new Map(apps.map((app) => [app.key, app]))
+
+  const isTerminalRunning = (terminalName) => {
+    const term = vscode.window.terminals.find((t) => t.name === terminalName)
+    return !!term && !term.exitStatus
+  }
+
+  const isAppRunning = (app) => {
+    return isTaskRunning(app.taskLabel) || isTerminalRunning(app.terminalName)
+  }
+
+  const startApp = async (app, { openUrl = true } = {}) => {
+    if (!app) return
+
+    // If the VS Code task is already running, don't start another.
+    if (isTaskRunning(app.taskLabel)) {
+      if (openUrl) await openAppUrl(app.url)
+      return
+    }
+
+    const ranTask = await runTaskIfPresent(app.taskLabel)
+    if (ranTask) {
+      if (openUrl) await openAppUrl(app.url)
+      return
+    }
+
+    // Fallback: dedicated terminal per app (never reuse another app's terminal).
+    const existingTerminal = vscode.window.terminals.find(
+      (t) => t.name === app.terminalName
+    )
+    if (existingTerminal) {
+      existingTerminal.show()
+      if (openUrl) await openAppUrl(app.url)
+      return
+    }
+
+    ensureTerminal(app.terminalName, app.pnpmCommand)
+    if (openUrl) await openAppUrl(app.url)
+  }
+
+  const resolveAppFromArg = (arg) => {
+    if (typeof arg === 'string') return appByKey.get(arg)
+    if (arg && typeof arg === 'object' && typeof arg.key === 'string') {
+      return appByKey.get(arg.key)
+    }
+    return undefined
+  }
+
+  const serverTreeChanged = new vscode.EventEmitter()
+  context.subscriptions.push(serverTreeChanged)
+
+  const refreshServersView = () => {
+    serverTreeChanged.fire(undefined)
+  }
+
+  const serverTreeProvider = {
+    onDidChangeTreeData: serverTreeChanged.event,
+    getTreeItem: (app) => {
+      const running = isAppRunning(app)
+      const item = new vscode.TreeItem(
+        `${app.name} (${app.port})`,
+        vscode.TreeItemCollapsibleState.None
+      )
+      item.id = `fireuxToolbar.${app.key}`
+      item.contextValue = 'fireuxServer'
+      item.description = running ? 'running' : 'stopped'
+      item.tooltip = `${app.name}\n${app.url}\n${running ? 'Running' : 'Stopped'}`
+      item.iconPath = running
+        ? new vscode.ThemeIcon(
+          'circle-filled',
+          new vscode.ThemeColor('testing.iconPassed')
+        )
+        : new vscode.ThemeIcon('circle-large-outline')
+      item.command = {
+        command: 'fireuxToolbar.startAppByKey',
+        title: `Start ${app.name}`,
+        arguments: [app.key],
+      }
+      return item
+    },
+    getChildren: () => apps,
+  }
+
+  const serverTreeView = vscode.window.createTreeView('fireuxToolbar.serversView', {
+    treeDataProvider: serverTreeProvider,
+    showCollapseAll: false,
+  })
+  context.subscriptions.push(serverTreeView)
+
+  register('fireuxToolbar.openServersView', async () => {
+    await vscode.commands.executeCommand('workbench.view.explorer')
+    await vscode.commands.executeCommand('fireuxToolbar.serversView.focus')
+  })
+
+  register('fireuxToolbar.refreshServers', async () => {
+    refreshServersView()
+  })
+
+  register('fireuxToolbar.startAllServers', async () => {
+    for (const app of apps) {
+      await startApp(app, { openUrl: false })
+    }
+    refreshServersView()
+  })
+
+  register('fireuxToolbar.startAppByKey', async (arg) => {
+    const app = resolveAppFromArg(arg)
+    if (!app) return
+    await startApp(app, { openUrl: true })
+    refreshServersView()
+  })
+
+  register('fireuxToolbar.openAppByKey', async (arg) => {
+    const app = resolveAppFromArg(arg)
+    if (!app) return
+    await openAppUrl(app.url)
+  })
+
   for (const app of apps) {
     register(app.commandId, async () => {
-      // If the VS Code task is already running, don't start another.
-      if (isTaskRunning(app.taskLabel)) {
-        await openAppUrl(app.url)
-        return
-      }
-
-      const ranTask = await runTaskIfPresent(app.taskLabel)
-      if (ranTask) {
-        await openAppUrl(app.url)
-        return
-      }
-
-      // Fallback: dedicated terminal per app (never reuse another app's terminal).
-      const existingTerminal = vscode.window.terminals.find(
-        (t) => t.name === app.terminalName
-      )
-      if (existingTerminal) {
-        existingTerminal.show()
-        await openAppUrl(app.url)
-        return
-      }
-
-      ensureTerminal(app.terminalName, app.pnpmCommand)
-      await openAppUrl(app.url)
+      await startApp(app, { openUrl: true })
+      refreshServersView()
     })
   }
 
@@ -712,22 +835,20 @@ function activate(context) {
     context.subscriptions.push(item)
   }
 
-  // Status bar buttons
-  for (const app of apps) {
-    makeBtn(
-      `${app.icon} ${app.name}`,
-      app.tooltip,
-      app.commandId,
-      app.priority
-    )
-  }
+  // Compact toolbar button for server management.
+  makeBtn(
+    '$(server-process) Servers',
+    'Open FireUX Servers panel',
+    'fireuxToolbar.openServersView',
+    100
+  )
 
   // Single Git button (preview contents of files waiting to be confirmed)
   makeBtn(
     '$(git-commit) Git Q',
     'Show files waiting to be confirmed',
     'fireuxToolbar.gitQPreview',
-    91
+    99
   )
 
   // When the Git Tree task finishes, open the generated docs/git-tree.md
@@ -754,6 +875,16 @@ function activate(context) {
     }
   })
   context.subscriptions.push(taskWatcher)
+
+  context.subscriptions.push(
+    vscode.tasks.onDidStartTask(refreshServersView),
+    vscode.tasks.onDidEndTask(refreshServersView),
+    vscode.tasks.onDidEndTaskProcess(refreshServersView),
+    vscode.window.onDidOpenTerminal(refreshServersView),
+    vscode.window.onDidCloseTerminal(refreshServersView)
+  )
+
+  refreshServersView()
 }
 
 function deactivate() {}

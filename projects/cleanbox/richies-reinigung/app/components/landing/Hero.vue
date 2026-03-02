@@ -20,6 +20,16 @@
       <UButton variant="outline" size="lg" :to="secondary.to">
         {{ secondary.label }}
       </UButton>
+      <UButton
+        v-if="hasConsoleEntry"
+        variant="soft"
+        color="neutral"
+        size="lg"
+        to="/console"
+        icon="i-lucide-terminal"
+      >
+        Go to console
+      </UButton>
     </div>
 
     <ul class="hero__bullets">
@@ -32,6 +42,8 @@
 </template>
 
 <script setup lang="ts">
+import { useConsoleEntryCta } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleEntryCta'
+
 export interface HeroBadge {
   src: string
   alt: string
@@ -56,6 +68,8 @@ defineProps<{
   secondary: HeroLink
   bullets: HeroBullet[]
 }>()
+
+const { hasConsoleEntry } = useConsoleEntryCta()
 
 defineOptions({ name: 'RichiesLandingHero' })
 </script>

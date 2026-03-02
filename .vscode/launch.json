@@ -73,6 +73,22 @@
       "command": "pnpm dev:tenant",
       "cwd": "${workspaceFolder}",
       "presentation": { "group": "Dev Servers", "order": 6 }
+    },
+    {
+      "name": "🛍️ Bringli dev (3006)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:bringli",
+      "cwd": "${workspaceFolder}",
+      "presentation": { "group": "Dev Servers", "order": 7 }
+    },
+    {
+      "name": "🪨 Granite dev (3007)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:granite",
+      "cwd": "${workspaceFolder}",
+      "presentation": { "group": "Dev Servers", "order": 8 }
     }
   ],
   "compounds": [
@@ -93,6 +109,19 @@
         "🦌 Niederhorn dev (3003)",
         "🧽 Richies dev (3004)",
         "🏢 Tenant dev (3005)"
+      ]
+    },
+    {
+      "name": "All dev servers full (3000-3007)",
+      "configurations": [
+        "🔥 FireUX dev (3000)",
+        "🥘 MiseBox dev (3001)",
+        "🧼 CleanBox dev (3002)",
+        "🦌 Niederhorn dev (3003)",
+        "🧽 Richies dev (3004)",
+        "🏢 Tenant dev (3005)",
+        "🛍️ Bringli dev (3006)",
+        "🪨 Granite dev (3007)"
       ]
     }
   ]

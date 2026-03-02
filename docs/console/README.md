@@ -15,15 +15,32 @@ Dashboard canon is intentionally out of scope.
 3. No implicit or fallback runtime selection.
 4. Legacy compatibility redirects are not used.
 
+## Ownership Contract
+
+1. FireUX app runtime console is app-owned and only available in `fireux-app`.
+2. Misebox kitchen runtime console index is app-owned (per app), with shared kitchen subpages in extensions.
+3. Granite portfolio runtime console index is ecosystem-owned and shared across all Granite apps.
+
+## Enforcement (Current Code)
+
+1. FireUX ecosystem does not ship `/console/app`; the route is owned by `fireux-app`.
+2. Granite ecosystem owns `/console/portfolio`; app-level Granite overrides are not used.
+3. Misebox apps currently owning `/console/kitchen` are:
+   - `misebox-app`
+   - `niederhorn`
+   - `la-tap-berne`
+4. Misebox apps exposing kitchen console must include `fireux-kitchens` in app modules.
+
 ## Canonical Console Routes
 
-### Hub
+### Console Index
 
 - `/console` -> `packages/core/fireux-core/src/runtime/pages/console/index.vue`
 
 ### FireUX App Runtime
 
-- `/console/app` -> `packages/ecosystem/fireux-fireux/src/runtime/pages/console/app/index.vue`
+- `/console/app` -> `projects/fireux/fireux-app/app/pages/console/app/index.vue`
+- Availability rule: only `fireux-app` should expose this route.
 
 ### Granite Portfolio Runtime
 
@@ -32,10 +49,14 @@ Dashboard canon is intentionally out of scope.
 - `/console/portfolio/compliance` -> `packages/extensions/fireux-compliance/src/runtime/pages/console/portfolio/compliance.vue`
 - `/console/portfolio/documents` -> `packages/extensions/fireux-documents/src/runtime/pages/console/portfolio/documents.vue`
 - `/console/portfolio/tasks` -> `packages/extensions/fireux-tasks/src/runtime/pages/console/portfolio/tasks.vue`
+- App count note: currently only `granite-app` exists in the Granite ecosystem.
 
 ### Misebox Kitchen Runtime
 
-- `/console/kitchen` -> `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/index.vue`
+- `/console/kitchen` -> app-owned index (current apps):
+  - `projects/misebox/misebox-app/app/pages/console/kitchen/index.vue`
+  - `projects/misebox/niederhorn/app/pages/console/kitchen/index.vue`
+  - `projects/misebox/la-tap-berne/app/pages/console/kitchen/index.vue`
 - `/console/kitchen/team` -> `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/team.vue`
 - `/console/kitchen/stations` -> `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/stations.vue`
 - `/console/kitchen/recipes` -> `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/recipes.vue`
@@ -92,3 +113,5 @@ Dashboard canon is intentionally out of scope.
 
 - 2026-03-02: Canon switched to console-only scope (dashboard content removed from this file).
 - 2026-03-02: Added route and function path index for all console surfaces.
+- 2026-03-02: Moved console runtime index ownership to app-level routes for FireUX and Misebox.
+- 2026-03-02: Ownership contract clarified: FireUX app-only, Misebox app-owned indexes, Granite ecosystem-owned index.

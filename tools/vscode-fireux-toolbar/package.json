@@ -16,6 +16,36 @@
   "contributes": {
     "commands": [
       {
+        "command": "fireuxToolbar.openServersView",
+        "title": "Open FireUX Servers",
+        "icon": "$(server-process)",
+        "category": "FireUX"
+      },
+      {
+        "command": "fireuxToolbar.startAllServers",
+        "title": "Start All FireUX Servers",
+        "icon": "$(run-all)",
+        "category": "FireUX"
+      },
+      {
+        "command": "fireuxToolbar.refreshServers",
+        "title": "Refresh FireUX Servers",
+        "icon": "$(refresh)",
+        "category": "FireUX"
+      },
+      {
+        "command": "fireuxToolbar.startAppByKey",
+        "title": "Start FireUX App",
+        "icon": "$(debug-start)",
+        "category": "FireUX"
+      },
+      {
+        "command": "fireuxToolbar.openAppByKey",
+        "title": "Open FireUX App URL",
+        "icon": "$(globe)",
+        "category": "FireUX"
+      },
+      {
         "command": "fireuxToolbar.catTree",
         "title": "Cat Tree (Terminal)",
         "icon": "$(list-tree)"
@@ -59,29 +89,50 @@
         "command": "fireuxToolbar.startTenant",
         "title": "Dev: Tenant",
         "icon": "$(home)"
-      }
-      ,
+      },
+      {
+        "command": "fireuxToolbar.startBringli",
+        "title": "Dev: Bringli",
+        "icon": "$(symbol-namespace)"
+      },
+      {
+        "command": "fireuxToolbar.startGranite",
+        "title": "Dev: Granite",
+        "icon": "$(database)"
+      },
       {
         "command": "fireuxToolbar.mirrorSync",
         "title": "Mirror Sync",
         "icon": "$(files)",
         "category": "FireUX"
-      }
-      ,
+      },
       {
         "command": "fireuxToolbar.mirrorFromGitQ",
         "title": "Mirror (Git Q)",
         "icon": "$(files)",
         "category": "FireUX"
-      }
-      ,
+      },
       {
         "command": "fireuxToolbar.gitTree",
         "title": "Git Tree",
         "icon": "$(list-tree)",
         "category": "FireUX"
+      },
+      {
+        "command": "fireuxToolbar.gitQPreview",
+        "title": "Git Q Preview",
+        "icon": "$(git-commit)",
+        "category": "FireUX"
       }
     ],
+    "views": {
+      "explorer": [
+        {
+          "id": "fireuxToolbar.serversView",
+          "name": "FireUX Servers"
+        }
+      ]
+    },
     "menus": {
       "explorer/context": [
         {
@@ -102,98 +153,40 @@
       ],
       "commandCenter": [
         {
-          "command": "fireuxToolbar.startFireux",
+          "command": "fireuxToolbar.openServersView",
           "group": "navigation@1",
-          "when": "true"
-        },
-        {
-          "command": "fireuxToolbar.startMisebox",
-          "group": "navigation@2",
-          "when": "true"
-        },
-        {
-          "command": "fireuxToolbar.startCleanbox",
-          "group": "navigation@3",
-          "when": "true"
-        },
-        {
-          "command": "fireuxToolbar.startNiederhorn",
-          "group": "navigation@4",
-          "when": "true"
-        },
-        {
-          "command": "fireuxToolbar.startRichies",
-          "group": "navigation@5",
-          "when": "true"
-        },
-        {
-          "command": "fireuxToolbar.startTenant",
-          "group": "navigation@6",
           "when": "true"
         }
       ],
       "editor/title": [
         {
-          "command": "fireuxToolbar.startFireux",
+          "command": "fireuxToolbar.openServersView",
           "group": "navigation@1",
-          "when": "true"
-        },
-        {
-          "command": "fireuxToolbar.startMisebox",
-          "group": "navigation@2",
-          "when": "true"
-        },
-        {
-          "command": "fireuxToolbar.startCleanbox",
-          "group": "navigation@3",
-          "when": "true"
-        },
-        {
-          "command": "fireuxToolbar.startNiederhorn",
-          "group": "navigation@4",
-          "when": "true"
-        },
-        {
-          "command": "fireuxToolbar.startRichies",
-          "group": "navigation@5",
-          "when": "true"
-        },
-        {
-          "command": "fireuxToolbar.startTenant",
-          "group": "navigation@6",
           "when": "true"
         }
       ],
-      "statusBar": [
+      "view/title": [
         {
-          "command": "fireuxToolbar.startFireux",
+          "command": "fireuxToolbar.startAllServers",
           "group": "navigation@1",
-          "when": "true"
+          "when": "view == fireuxToolbar.serversView"
         },
         {
-          "command": "fireuxToolbar.startMisebox",
+          "command": "fireuxToolbar.refreshServers",
           "group": "navigation@2",
-          "when": "true"
+          "when": "view == fireuxToolbar.serversView"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "fireuxToolbar.startAppByKey",
+          "group": "inline@1",
+          "when": "view == fireuxToolbar.serversView && viewItem == fireuxServer"
         },
         {
-          "command": "fireuxToolbar.startCleanbox",
-          "group": "navigation@3",
-          "when": "true"
-        },
-        {
-          "command": "fireuxToolbar.startNiederhorn",
-          "group": "navigation@4",
-          "when": "true"
-        },
-        {
-          "command": "fireuxToolbar.startRichies",
-          "group": "navigation@5",
-          "when": "true"
-        },
-        {
-          "command": "fireuxToolbar.startTenant",
-          "group": "navigation@6",
-          "when": "true"
+          "command": "fireuxToolbar.openAppByKey",
+          "group": "inline@2",
+          "when": "view == fireuxToolbar.serversView && viewItem == fireuxServer"
         }
       ]
     },
@@ -227,13 +220,20 @@
         },
         "fireuxToolbar.reuseBrowser": {
           "type": "string",
-          "enum": ["chrome", "safari", "default"],
+          "enum": [
+            "chrome",
+            "safari",
+            "default"
+          ],
           "default": "chrome",
           "description": "Which browser to target for tab reuse on macOS. 'default' disables the special reuse logic and uses VS Code openExternal."
         },
         "fireuxToolbar.reuseMatch": {
           "type": "string",
-          "enum": ["origin", "exact"],
+          "enum": [
+            "origin",
+            "exact"
+          ],
           "default": "origin",
           "description": "How to match an existing tab: 'origin' matches host+port (recommended), 'exact' matches the full URL string."
         }

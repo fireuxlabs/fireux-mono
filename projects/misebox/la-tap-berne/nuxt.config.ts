@@ -8,8 +8,7 @@ const fireuxConfig = defineFireuxConfig({
   shortName: 'La Tap Berne',
   role: 'tenant',
   modules: [
-    // tenants are intentionally slim
-    // domain-specific modules live on the global app
+    'fireux-kitchens',
   ],
 })
 

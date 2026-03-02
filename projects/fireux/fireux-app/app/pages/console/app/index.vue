@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="console-app-home">
     <template #header>
-      <LayoutsConsoleNavbar title="App Console" />
+      <LayoutsConsoleNavbar title="FireUX App Console" />
     </template>
 
     <template #body>

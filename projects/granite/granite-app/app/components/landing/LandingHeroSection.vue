@@ -36,6 +36,17 @@
             Enter via selector
           </UButton>
 
+          <UButton
+            v-if="hasConsoleEntry"
+            to="/console"
+            size="lg"
+            variant="soft"
+            color="neutral"
+            icon="i-lucide-terminal"
+          >
+            Go to console
+          </UButton>
+
           <ClientOnly>
             <UButton
               v-if="!isAuthenticated"
@@ -75,8 +86,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useConsoleEntryCta } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleEntryCta'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 
 const auth = import.meta.client ? useAuth() : null
 const isAuthenticated = computed(() => auth?.isAuthenticated?.value ?? false)
+const { hasConsoleEntry } = useConsoleEntryCta()
 </script>
