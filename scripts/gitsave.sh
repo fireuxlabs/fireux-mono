@@ -110,6 +110,15 @@ if ! git commit -m "$commit_message"; then
   exit 1
 fi
 
+# Run repository cleanup to satisfy guard shape rules (non-fatal)
+if [ -x "$(pwd)/scripts/gitsave-cleanup.sh" ] || [ -f "scripts/gitsave-cleanup.sh" ]; then
+  echo "Running repository cleanup script..."
+  bash scripts/gitsave-cleanup.sh || true
+fi
+
+# Stage any changes produced by cleanup
+git add -A || true
+
 # Push to the matching branch on origin.
 git push origin "$current_branch"
 
