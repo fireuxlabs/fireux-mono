@@ -16,25 +16,29 @@
       </template>
     </UPageHeader>
     <UPageBody class="pagebody">
-      <UserCardsProfile v-if="userCard" v-bind="userCard" :user="currentUser" />
+      <UserCardsProfile
+        v-if="userCard"
+        v-bind="userCard"
+        :user="{ id: profile?.id || '' }"
+        :show-details="false"
+      />
       <UAlert
-        v-else-if="isLoadingProfile"
-        color="neutral"
-        variant="subtle"
-        title="Loading profile"
-        description="Searching for this user..."
+        v-else-if="fetchFailed"
+        color="warning"
+        title="Profile unavailable"
+        description="This public profile could not be loaded right now."
       />
       <UAlert
         v-else-if="missing"
         color="amber"
         title="User not found"
-        description="This handle does not exist or is not linked yet."
+        description="This handle does not exist or is not public."
       />
       <DevJson
-        v-if="isDev && currentUser"
-        :title="'User (Doc)'"
-        context="User public page · users/[handle] · handle -> uid -> user doc"
-        :data="currentUser"
+        v-if="isDev && profile"
+        :title="'Public User DTO'"
+        context="User public page · users/[handle] · endpoint-first SSR"
+        :data="profile"
         :default-open="false"
       />
     </UPageBody>
@@ -42,78 +46,138 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo, useHead } from '#imports'
-import { computed, watch } from 'vue'
+import { useAsyncData, useHead, useRuntimeConfig, useSeoMeta } from '#imports'
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { useUserByHandleFetch } from '../../composables/fireux/firestore/core/user/fetch/useUserByHandleFetch'
+import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
-import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 const route = useRoute()
+const runtime = useRuntimeConfig()
+const { appName } = useFireUXConfig()
 
 const handle = computed(() => {
   const raw = Array.isArray(route.params.handle)
     ? route.params.handle[0]
     : route.params.handle
-  return String(raw ?? '').trim() || null
+  return String(raw ?? '').trim().toLowerCase()
 })
 
-const {
-  user: currentUser,
-  uid,
-  canonicalUid,
-  shouldSuggestCanonicalUid,
-  handle: normalizedHandle,
-  pending,
-  resolving,
-  missing,
-} = useUserByHandleFetch(handle)
+type PublicUserDto = {
+  id: string
+  handle: string
+  displayName: string
+  avatar?: string
+  bio?: string
+  profiles?: string[]
+  title: string
+  description: string
+  path: string
+  image?: string
+  updatedAt: string
+  isPublic: boolean
+}
+
+const { data, pending, error } = await useAsyncData(
+  () => `public-user-${handle.value || 'unknown'}`,
+  async () => {
+    if (!handle.value) return { user: null as PublicUserDto | null }
+    return $fetch<{ user?: PublicUserDto; item?: PublicUserDto }>(
+      `/api/public/users/${encodeURIComponent(handle.value)}`
+    )
+  },
+  {
+    server: true,
+    watch: [handle],
+    default: () => ({ user: null }),
+  }
+)
+
+const profile = computed<PublicUserDto | null>(() => {
+  const payload = data.value
+  if (payload?.user) return payload.user
+  if (payload?.item) return payload.item
+  return null
+})
+
 const { user: sessionUser } = useUser()
+const userCard = computed(() => {
+  const value = profile.value
+  if (!value) return null
+  const profiles = Array.isArray(value.profiles) ? value.profiles : []
 
-watch(
-  () => normalizedHandle.value,
-  async (next) => {
-    if (!next) return
-    const current = String(handle.value || '')
-    if (current && current !== next) {
-      await navigateTo(`/users/${next}`, { replace: true })
-    }
-  },
-  { immediate: true }
+  return {
+    avatarUrl: String(value.avatar || value.image || '').trim(),
+    displayName: String(value.displayName || value.title || '').trim(),
+    handle: value.handle ? `@${value.handle}` : '',
+    badges: profiles,
+    bio: String(value.bio || value.description || '').trim(),
+    profiles,
+    appsLabel: '',
+  }
+})
+
+const statusCode = computed(() =>
+  Number((error.value as any)?.statusCode || (error.value as any)?.status || 0)
 )
-
-watch(
-  () => canonicalUid.value,
-  async (next) => {
-    if (!next) return
-    await navigateTo(`/users/${next}`, { replace: true })
-  },
-  { immediate: true }
-)
-
-const { card } = useUserInterface(currentUser)
-const userCard = computed(() => (currentUser.value ? card(currentUser.value) : null))
-const isLoadingProfile = computed(() => Boolean(resolving.value || pending.value))
+const missing = computed(() => statusCode.value === 404 || (!pending.value && !profile.value))
+const fetchFailed = computed(() => statusCode.value >= 500)
 const isSelf = computed(() =>
-  Boolean(uid.value && sessionUser.value?.id === uid.value)
+  Boolean(profile.value?.handle && sessionUser.value?.handle === profile.value.handle)
 )
 
-const displayName = computed(() => currentUser.value?.display_name ?? null)
+const displayName = computed(() => profile.value?.displayName || profile.value?.title || null)
 const pageTitle = computed(() =>
-  displayName.value ?? (normalizedHandle.value ? `@${normalizedHandle.value}` : 'User')
+  displayName.value ?? (handle.value ? `@${handle.value}` : 'User')
 )
 const pageDescription = computed(() =>
-  displayName.value
+  profile.value?.description ||
+  (displayName.value
     ? `Public profile for ${displayName.value}.`
-    : shouldSuggestCanonicalUid.value
-      ? 'Redirecting to canonical user id...'
-      : 'Public user profile.'
+    : 'Public user profile.')
 )
 const isDev = import.meta.dev
 
 const headTitle = computed(() =>
-  displayName.value ? `${displayName.value} · User` : 'User'
+  displayName.value ? `${displayName.value} | ${appName}` : `User | ${appName}`
 )
 
-useHead({ title: headTitle })
+function normalizeSiteUrl(input: unknown): string {
+  const value = typeof input === 'string' ? input.trim() : ''
+  if (!value) return ''
+  const withProtocol = /^https?:\/\//i.test(value) ? value : `https://${value}`
+  try {
+    return new URL(withProtocol).origin
+  } catch {
+    return ''
+  }
+}
+
+const siteUrl = computed(() => {
+  const fireux = (runtime.public as any)?.fireux || {}
+  return (
+    normalizeSiteUrl(fireux?.seo?.siteUrl) ||
+    normalizeSiteUrl(fireux?.siteUrl) ||
+    normalizeSiteUrl(fireux?.domain)
+  )
+})
+const canonicalPath = computed(() =>
+  String(profile.value?.path || `/users/${encodeURIComponent(handle.value || '')}`).trim()
+)
+const canonicalUrl = computed(() =>
+  siteUrl.value ? `${siteUrl.value}${canonicalPath.value.startsWith('/') ? canonicalPath.value : `/${canonicalPath.value}`}` : canonicalPath.value
+)
+
+useSeoMeta({
+  title: () => headTitle.value,
+  description: () => pageDescription.value,
+  ogTitle: () => headTitle.value,
+  ogDescription: () => pageDescription.value,
+  robots: () => (missing.value ? 'noindex, nofollow' : 'index, follow'),
+})
+
+useHead(() => ({
+  title: headTitle.value,
+  link: [{ rel: 'canonical', href: canonicalUrl.value }],
+}))
 </script>

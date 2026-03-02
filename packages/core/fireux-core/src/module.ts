@@ -56,11 +56,23 @@ export default defineNuxtModule({
       route: '/sitemaps/:entityPage.xml',
       handler: resolver.resolve('./runtime/server/sitemaps/[entity]-[page].xml.get'),
     })
+    addServerHandler({
+      route: '/api/public/users',
+      handler: resolver.resolve('./runtime/server/api/public/users.get'),
+    })
+    addServerHandler({
+      route: '/api/public/users/:handle',
+      handler: resolver.resolve('./runtime/server/api/public/users/[handle].get'),
+    })
 
     nuxt.hook('fireux:seo:sitemaps:extend' as any, (ctx: any) => {
       ctx?.addEntity?.({
         entityKey: 'users',
         indexCollectionPath: 'seo_index_users',
+        canonicalCollectionPath: 'users',
+        routePrefix: '/users',
+        slugField: 'handle',
+        publicField: '',
         pageSize: 5000,
         updatedAtField: 'updatedAt',
       })

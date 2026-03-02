@@ -1,0 +1,157 @@
+import {
+  defineEventHandler,
+  getQuery,
+  setResponseHeaders,
+  type H3Event,
+} from 'h3'
+import {
+  asStringArray,
+  asTrimmedString,
+  buildPublicPath,
+  fallbackDescription,
+  toIsoUpdatedAt,
+} from '../../utils/public-projection/public-dto.helpers'
+import type {
+  PublicCollectionResponse,
+  PublicUserDto,
+} from '../../utils/public-projection/public-dto.types'
+import {
+  readPublicCollectionPage,
+  readPublicDocById,
+} from '../../utils/public-projection/public-firestore'
+
+const CACHE_CONTROL = 'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
+
+function normalizeLimit(value: unknown): number {
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed)) return 200
+  return Math.max(1, Math.min(1000, Math.trunc(parsed)))
+}
+
+function normalizeHandle(value: unknown): string {
+  return asTrimmedString(value).toLowerCase()
+}
+
+function userIsPublic(data: Record<string, unknown>, handle: string): boolean {
+  const explicitPublic = data.isPublic
+  if (typeof explicitPublic === 'boolean') return explicitPublic
+
+  const explicitVisibility = asTrimmedString(data.visibility).toLowerCase()
+  if (explicitVisibility === 'public') return true
+  if (explicitVisibility === 'private') return false
+
+  const explicitFlag = data.public
+  if (typeof explicitFlag === 'boolean') return explicitFlag
+
+  return Boolean(handle)
+}
+
+function mapUserDocToDto(
+  doc: FirebaseFirestore.QueryDocumentSnapshot,
+  options: { fallbackHandle?: string; fallbackPublic?: boolean } = {}
+): PublicUserDto | null {
+  const data = (doc.data() || {}) as Record<string, unknown>
+  const handle = normalizeHandle(data.handle || options.fallbackHandle || '')
+  if (!handle) return null
+
+  const displayName =
+    asTrimmedString(data.display_name) ||
+    asTrimmedString(data.displayName) ||
+    `@${handle}`
+  const bio = asTrimmedString(data.bio)
+  const avatar = asTrimmedString(data.avatar)
+  const isPublic =
+    typeof options.fallbackPublic === 'boolean'
+      ? options.fallbackPublic
+      : userIsPublic(data, handle)
+
+  const title = displayName
+  const description = fallbackDescription(bio, `Public profile for ${displayName}.`)
+  const path = buildPublicPath('/users', handle)
+  const updatedAt = toIsoUpdatedAt(
+    data.updatedAt || (data.updated as any)?.at || data.updated_at || data.createdAt
+  )
+
+  return {
+    id: doc.id,
+    handle,
+    displayName,
+    avatar,
+    bio,
+    profiles: asStringArray(data.profiles),
+    title,
+    description,
+    path,
+    image: avatar || undefined,
+    updatedAt,
+    isPublic,
+  }
+}
+
+async function readCanonicalUsers(limit: number): Promise<PublicUserDto[]> {
+  const docs = await readPublicCollectionPage('users', {
+    orderByField: 'handle',
+    limit,
+  })
+
+  const out: PublicUserDto[] = []
+  for (const doc of docs) {
+    const dto = mapUserDocToDto(doc)
+    if (!dto?.isPublic) continue
+    out.push(dto)
+  }
+
+  return out
+}
+
+async function readLegacyProjectedUsers(limit: number): Promise<PublicUserDto[]> {
+  const idxDocs = await readPublicCollectionPage('seo_index_users', {
+    where: [{ field: 'isPublic', value: true }],
+    orderByField: '__name__',
+    limit,
+  })
+
+  const out: PublicUserDto[] = []
+
+  for (const idxDoc of idxDocs) {
+    const idx = (idxDoc.data() || {}) as Record<string, unknown>
+    const path = asTrimmedString(idx.path)
+    const match = path.match(/^\/users\/([^/?#]+)$/i)
+    const fallbackHandle = match?.[1] ? decodeURIComponent(match[1]) : ''
+    const userDoc = await readPublicDocById('users', idxDoc.id)
+    if (!userDoc) continue
+
+    const dto = mapUserDocToDto(userDoc, {
+      fallbackHandle,
+      fallbackPublic: true,
+    })
+    if (!dto?.isPublic) continue
+    out.push(dto)
+  }
+
+  return out
+}
+
+export default defineEventHandler(async (event: H3Event) => {
+  setResponseHeaders(event, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Cache-Control': CACHE_CONTROL,
+  })
+
+  const query = getQuery(event)
+  const limit = normalizeLimit(query.limit)
+
+  const canonicalUsers = await readCanonicalUsers(limit)
+  const users =
+    canonicalUsers.length > 0 ? canonicalUsers : await readLegacyProjectedUsers(limit)
+
+  const response: PublicCollectionResponse<PublicUserDto> & { users: PublicUserDto[] } = {
+    ok: true,
+    count: users.length,
+    generatedAt: new Date().toISOString(),
+    items: users,
+    users,
+  }
+
+  return response
+})

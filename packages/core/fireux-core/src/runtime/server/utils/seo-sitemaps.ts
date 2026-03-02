@@ -8,6 +8,10 @@ type AnyRecord = Record<string, unknown>
 export type RuntimeSitemapEntity = {
   entityKey: string
   indexCollectionPath: string
+  canonicalCollectionPath: string
+  routePrefix: string
+  slugField: string
+  publicField: string
   pageSize: number
   updatedAtField: string
 }
@@ -36,14 +40,31 @@ function toEntityList(value: unknown): RuntimeSitemapEntity[] {
     const entry = raw as Record<string, unknown>
     const entityKey = String(entry.entityKey ?? '').trim()
     const indexCollectionPath = String(entry.indexCollectionPath ?? '').trim()
-    if (!entityKey || !indexCollectionPath) continue
+    const canonicalCollectionPath = String(entry.canonicalCollectionPath ?? '').trim()
+    if (!entityKey || (!indexCollectionPath && !canonicalCollectionPath)) continue
     const pageSizeRaw = Number(entry.pageSize ?? 5000)
     const pageSize = Number.isFinite(pageSizeRaw)
       ? Math.max(100, Math.min(10000, Math.trunc(pageSizeRaw)))
       : 5000
     const updatedAtField =
       String(entry.updatedAtField ?? 'updatedAt').trim() || 'updatedAt'
-    out.push({ entityKey, indexCollectionPath, pageSize, updatedAtField })
+    const routePrefix =
+      normalizePath(String(entry.routePrefix ?? `/${entityKey}`)) || `/${entityKey}`
+    const slugField = String(entry.slugField ?? 'slug').trim() || 'slug'
+    const publicField =
+      entry.publicField === ''
+        ? ''
+        : String(entry.publicField ?? 'isPublic').trim() || 'isPublic'
+    out.push({
+      entityKey,
+      indexCollectionPath,
+      canonicalCollectionPath,
+      routePrefix,
+      slugField,
+      publicField,
+      pageSize,
+      updatedAtField,
+    })
   }
   return out.sort((a, b) => a.entityKey.localeCompare(b.entityKey))
 }
@@ -145,15 +166,25 @@ export function setSitemapResponseHeaders(
 }
 
 export async function countPublicEntityIndexDocs(entity: RuntimeSitemapEntity): Promise<number> {
-  const db = getFirestore(getAdminApp())
-  const snap = await db
-    .collection(entity.indexCollectionPath)
-    .where('isPublic', '==', true)
-    .count()
-    .get()
+  const canonicalCount = await countPublicCanonicalDocs(entity)
+  if (canonicalCount > 0) return canonicalCount
 
-  const count = Number((snap.data() as any)?.count ?? 0)
-  return Number.isFinite(count) ? Math.max(0, Math.trunc(count)) : 0
+  // Transitional fallback: use legacy seo_index_* projections until each entity
+  // is fully migrated to canonical collection reads.
+  if (!entity.indexCollectionPath) return 0
+  try {
+    const db = getFirestore(getAdminApp())
+    const snap = await db
+      .collection(entity.indexCollectionPath)
+      .where('isPublic', '==', true)
+      .count()
+      .get()
+
+    const count = Number((snap.data() as any)?.count ?? 0)
+    return Number.isFinite(count) ? Math.max(0, Math.trunc(count)) : 0
+  } catch {
+    return 0
+  }
 }
 
 export type SitemapIndexEntry = {
@@ -178,10 +209,122 @@ function toIsoString(value: unknown): string | undefined {
   return undefined
 }
 
-export async function fetchEntitySitemapPage(
+function toSlug(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : ''
+}
+
+function resolveCanonicalDocPath(
+  entity: RuntimeSitemapEntity,
+  docId: string,
+  data: Record<string, unknown>
+): string | null {
+  const rawPath = typeof data.path === 'string' ? data.path : ''
+  const normalizedPath = normalizePath(rawPath)
+  if (normalizedPath) return normalizedPath
+
+  const slug = toSlug(data[entity.slugField]) || docId
+  if (!slug) return null
+  const encodedSlug = encodeURIComponent(slug)
+  const routePrefix = normalizePath(entity.routePrefix || `/${entity.entityKey}`)
+  if (!routePrefix) return null
+  return routePrefix === '/' ? `/${encodedSlug}` : `${routePrefix}/${encodedSlug}`
+}
+
+function isCanonicalDocPublic(
+  entity: RuntimeSitemapEntity,
+  data: Record<string, unknown>,
+  slug: string
+): boolean {
+  if (entity.publicField) {
+    const explicit = data[entity.publicField]
+    if (typeof explicit === 'boolean') return explicit
+  }
+
+  const isPublic = data.isPublic
+  if (typeof isPublic === 'boolean') return isPublic
+
+  const visibility = toSlug(data.visibility).toLowerCase()
+  if (visibility === 'public') return true
+  if (visibility === 'private') return false
+
+  // Users migration canon: handle presence is enough to publish a stable route.
+  if (entity.entityKey === 'users') return Boolean(slug)
+  return Boolean(slug)
+}
+
+async function countPublicCanonicalDocs(entity: RuntimeSitemapEntity): Promise<number> {
+  if (!entity.canonicalCollectionPath) return 0
+  try {
+    const db = getFirestore(getAdminApp())
+    let query: FirebaseFirestore.Query = db.collection(entity.canonicalCollectionPath)
+
+    if (entity.publicField) {
+      query = query.where(entity.publicField, '==', true)
+    }
+    if (entity.slugField) {
+      query = query.where(entity.slugField, '>', '')
+    }
+
+    const snap = await query.count().get()
+    const count = Number((snap.data() as any)?.count ?? 0)
+    if (!Number.isFinite(count)) return 0
+    return Math.max(0, Math.trunc(count))
+  } catch {
+    return 0
+  }
+}
+
+async function fetchCanonicalEntitySitemapPage(
   entity: RuntimeSitemapEntity,
   page: number
 ): Promise<SitemapIndexEntry[]> {
+  if (!entity.canonicalCollectionPath) return []
+
+  const pageSize = entity.pageSize || 5000
+  const offset = Math.max(0, (page - 1) * pageSize)
+  const db = getFirestore(getAdminApp())
+
+  let query: FirebaseFirestore.Query = db.collection(entity.canonicalCollectionPath)
+  if (entity.publicField) {
+    query = query.where(entity.publicField, '==', true)
+  }
+  if (entity.slugField) {
+    query = query
+      .where(entity.slugField, '>', '')
+      .orderBy(entity.slugField)
+  } else {
+    query = query.orderBy('__name__')
+  }
+
+  const snap = await query
+    .offset(offset)
+    .limit(pageSize)
+    .get()
+
+  const out: SitemapIndexEntry[] = []
+  for (const doc of snap.docs) {
+    const data = (doc.data() || {}) as Record<string, unknown>
+    const slug = toSlug(data[entity.slugField])
+    if (!isCanonicalDocPublic(entity, data, slug)) continue
+
+    const path = resolveCanonicalDocPath(entity, doc.id, data)
+    if (!path) continue
+
+    const lastmod =
+      toIsoString(data[entity.updatedAtField]) ||
+      toIsoString((data.updated as any)?.at)
+
+    out.push(lastmod ? { path, lastmod } : { path })
+  }
+
+  return out
+}
+
+async function fetchLegacyEntitySitemapPage(
+  entity: RuntimeSitemapEntity,
+  page: number
+): Promise<SitemapIndexEntry[]> {
+  if (!entity.indexCollectionPath) return []
   const pageSize = entity.pageSize || 5000
   const offset = Math.max(0, (page - 1) * pageSize)
   const db = getFirestore(getAdminApp())
@@ -205,4 +348,17 @@ export async function fetchEntitySitemapPage(
   }
 
   return out
+}
+
+export async function fetchEntitySitemapPage(
+  entity: RuntimeSitemapEntity,
+  page: number
+): Promise<SitemapIndexEntry[]> {
+  try {
+    const canonicalEntries = await fetchCanonicalEntitySitemapPage(entity, page)
+    if (canonicalEntries.length) return canonicalEntries
+  } catch {
+    // Transitional fallback path below.
+  }
+  return fetchLegacyEntitySitemapPage(entity, page)
 }

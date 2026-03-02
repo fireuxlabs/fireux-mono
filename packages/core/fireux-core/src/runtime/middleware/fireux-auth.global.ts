@@ -1,3 +1,7 @@
+import { defineNuxtRouteMiddleware, navigateTo } from '#imports'
+import { useAuth } from '../composables/fireux/firebase/useAuth'
+import { useUser } from '../composables/fireux/firestore/core/user/useUser'
+
 const AUTH_WAIT_TIMEOUT_MS = 2500
 const ADMIN_WAIT_TIMEOUT_MS = 1500
 

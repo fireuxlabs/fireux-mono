@@ -54,7 +54,9 @@
     "mirror:clear": "node scripts/mirror-clear.mjs",
     "mirror:sync": "node scripts/mirror-sync.mjs",
     "mirror:gitq": "node scripts/mirror-from-gitq.mjs",
-    "seo:sitemap-counts": "node scripts/seo-sitemap-counts.mjs"
+    "seo:sitemap-counts": "node scripts/seo-sitemap-counts.mjs",
+    "meta:report": "node scripts/page-meta-report.mjs",
+    "reports:regenerate": "node scripts/reports/regenerate-reports.mjs"
   },
   "engines": {
     "node": ">=20.11 <23",

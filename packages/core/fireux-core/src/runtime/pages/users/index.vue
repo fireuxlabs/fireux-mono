@@ -4,27 +4,42 @@
     <UPageHeader class="border-b-0" :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
+      <UAlert
+        v-if="fetchError"
+        color="warning"
+        variant="subtle"
+        title="Users service unavailable"
+        description="Public users could not be loaded from the server endpoint."
+      />
+
       <UCard v-if="isDev">
         <DevJson
-          title="Current User (dev)"
-          context="Users index · current user and kitchens runtime summary"
-          :data="currentUserDevPayload"
+          title="Public Users (dev)"
+          context="Users index · endpoint-first SSR payload"
+          :data="usersDto"
           :default-open="false"
         />
       </UCard>
 
       <UserCTA />
       <UserCollectionManager :collection="collection" />
+
+      <UAlert
+        v-if="!collection.length"
+        color="neutral"
+        variant="subtle"
+        title="No public users yet"
+        description="Public profiles will appear here when users publish a handle."
+      />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { useHead } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useGlobalUserCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useGlobalUserCollection'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { computed } from 'vue'
+import { useAsyncData, useHead, useRuntimeConfig, useSeoMeta } from '#imports'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import type { User } from '../../models/core/user.model'
 
 definePageMeta({
   nav: {
@@ -43,47 +58,102 @@ definePageMeta({
 })
 
 const { appName } = useFireUXConfig()
+const runtime = useRuntimeConfig()
 
 const pageTitle = 'Users'
 const pageDescription =
-  'View your profile and browse users.'
+  'Browse public user profiles.'
 
-useHead({ title: `${appName} | ${pageTitle}` })
+type PublicUserDto = {
+  id: string
+  handle: string
+  displayName: string
+  avatar?: string
+  bio?: string
+  profiles?: string[]
+  title: string
+  description: string
+  path: string
+  image?: string
+  updatedAt: string
+  isPublic: boolean
+}
 
-const { users } = useGlobalUserCollection()
-const collection = computed(() => users.value ?? [])
+const { data, error } = await useAsyncData(
+  'public-users-index',
+  () => $fetch<{ users?: PublicUserDto[]; items?: PublicUserDto[] }>('/api/public/users'),
+  {
+    server: true,
+    default: () => ({ users: [] }),
+  }
+)
 
+const usersDto = computed<PublicUserDto[]>(() => {
+  const payload = data.value
+  if (Array.isArray(payload?.users)) return payload.users
+  if (Array.isArray(payload?.items)) return payload.items
+  return []
+})
+
+function asUser(dto: PublicUserDto): User {
+  return {
+    id: dto.id,
+    display_name: dto.displayName || dto.title,
+    avatar: String(dto.avatar || dto.image || '').trim(),
+    handle: dto.handle,
+    email: '',
+    bio: String(dto.bio || dto.description || '').trim(),
+    profiles: Array.isArray(dto.profiles) ? dto.profiles : [],
+    userOf: [],
+    adminOf: [],
+    notifications: [],
+    created: {
+      at: null as any,
+      by: undefined,
+    },
+    updated: {
+      at: dto.updatedAt as any,
+      by: undefined,
+    },
+  }
+}
+
+const collection = computed<User[]>(() => usersDto.value.map(asUser))
+const fetchError = computed(() => Boolean(error.value))
 const isDev = import.meta.dev
 
-const { user: currentUser } = useUser()
-const myKitchenIds = computed<string[]>(() => [])
-const hasTestKitchen = computed(() => false)
-const myPrimaryKitchenId = computed(() => null)
+const headTitle = `${appName} | ${pageTitle}`
 
-const currentUserId = computed(() => String(currentUser.value?.id || '').trim())
+function normalizeSiteUrl(input: unknown): string {
+  const value = typeof input === 'string' ? input.trim() : ''
+  if (!value) return ''
+  const withProtocol = /^https?:\/\//i.test(value) ? value : `https://${value}`
+  try {
+    return new URL(withProtocol).origin
+  } catch {
+    return ''
+  }
+}
 
-const currentUserSummary = computed(() => ({
-  id: currentUserId.value || null,
-  displayName: currentUser.value?.display_name || null,
-  handle: currentUser.value?.handle || null,
-  email: currentUser.value?.email || null,
-  profiles: currentUser.value?.profiles ?? [],
-  adminOf: currentUser.value?.adminOf ?? [],
-  userOf: currentUser.value?.userOf ?? [],
-}))
+const canonicalUrl = computed(() => {
+  const fireux = (runtime.public as any)?.fireux || {}
+  const siteUrl =
+    normalizeSiteUrl(fireux?.seo?.siteUrl) ||
+    normalizeSiteUrl(fireux?.siteUrl) ||
+    normalizeSiteUrl(fireux?.domain)
+  return siteUrl ? `${siteUrl}/users` : '/users'
+})
 
-const kitchensSummary = computed(() => ({
-  claimed: {
-    ids: myKitchenIds.value,
-    count: myKitchenIds.value.length,
-  },
-  hasTestKitchen: hasTestKitchen.value,
-  primaryKitchenId: myPrimaryKitchenId.value || null,
-}))
+useSeoMeta({
+  title: headTitle,
+  description: pageDescription,
+  ogTitle: headTitle,
+  ogDescription: pageDescription,
+  robots: 'index, follow',
+})
 
-const currentUserDevPayload = computed(() => ({
-  userId: currentUserId.value || null,
-  currentUser: currentUserSummary.value,
-  kitchens: kitchensSummary.value,
-}))
+useHead({
+  title: headTitle,
+  link: [{ rel: 'canonical', href: canonicalUrl.value }],
+})
 </script>

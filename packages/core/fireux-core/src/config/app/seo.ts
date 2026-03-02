@@ -64,7 +64,11 @@ export type FireuxSeoExtendContext = {
 
 export type FireuxSitemapEntity = {
   entityKey: string
-  indexCollectionPath: string
+  indexCollectionPath?: string
+  canonicalCollectionPath?: string
+  routePrefix?: string
+  slugField?: string
+  publicField?: string
   pageSize?: number
   updatedAtField?: string
   // Optional builder for write-on-CRUD helpers in module code.
@@ -74,6 +78,10 @@ export type FireuxSitemapEntity = {
 export type FireuxSitemapEntityRuntime = {
   entityKey: string
   indexCollectionPath: string
+  canonicalCollectionPath: string
+  routePrefix: string
+  slugField: string
+  publicField: string
   pageSize: number
   updatedAtField: string
 }
@@ -318,11 +326,20 @@ function normalizePageSize(value: unknown): number {
 function normalizeSitemapEntity(input: FireuxSitemapEntity): FireuxSitemapEntityRuntime | null {
   const entityKey = String(input?.entityKey ?? '').trim()
   const indexCollectionPath = String(input?.indexCollectionPath ?? '').trim()
-  if (!entityKey || !indexCollectionPath) return null
+  const canonicalCollectionPath = String(input?.canonicalCollectionPath ?? '').trim()
+  if (!entityKey || (!indexCollectionPath && !canonicalCollectionPath)) return null
+  const publicField =
+    input?.publicField === ''
+      ? ''
+      : String(input?.publicField ?? 'isPublic').trim() || 'isPublic'
 
   return {
     entityKey,
     indexCollectionPath,
+    canonicalCollectionPath,
+    routePrefix: String(input?.routePrefix ?? `/${entityKey}`).trim() || `/${entityKey}`,
+    slugField: String(input?.slugField ?? 'slug').trim() || 'slug',
+    publicField,
     pageSize: normalizePageSize(input.pageSize),
     updatedAtField: String(input.updatedAtField || 'updatedAt').trim() || 'updatedAt',
   }
