@@ -35,3 +35,10 @@ Start the dev server (see commands above) and open the target port (default 3000
 
 - Review profiles model: `profiles.md`
 - Learn architecture basics: `../architecture/`
+
+## 7) App Identity Rule
+
+- App identity is `app.id` from `defineFireuxConfig(...)`.
+- Firestore path is `apps/{appId}` and app id should be stable kebab-case.
+- Treat app renames as display-field changes (`app_name`, `app_short_name`), not id changes.
+- Canon source: `../runtime-contract.md`.

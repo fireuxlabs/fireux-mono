@@ -9,6 +9,36 @@
         <UCard>
           <template #header>
             <div class="space-y-1">
+              <div class="text-sm font-semibold">App Console</div>
+              <div class="text-xs text-dimmed">
+                Runtime operation scope for the active FireUX app.
+              </div>
+            </div>
+          </template>
+
+          <div v-if="!hasAppConsole" class="text-sm text-dimmed">
+            App runtime console is not available in this app.
+          </div>
+
+          <div v-else class="space-y-3">
+            <div class="text-sm text-dimmed">
+              App runtime is bound to the current app context.
+            </div>
+
+            <UButton
+              to="/console/app"
+              size="sm"
+              color="neutral"
+              icon="i-lucide-app-window"
+            >
+              Open app console
+            </UButton>
+          </div>
+        </UCard>
+
+        <UCard>
+          <template #header>
+            <div class="space-y-1">
               <div class="text-sm font-semibold">Kitchen Console</div>
               <div class="text-xs text-dimmed">
                 Runtime operation scope for kitchen workflows.
@@ -199,6 +229,7 @@ const runtimePortfolioMode = computed(
 )
 
 const hasKitchenConsole = computed(() => hasRoutePath('/console/kitchen'))
+const hasAppConsole = computed(() => hasRoutePath('/console/app'))
 const hasKitchenIngredients = computed(() =>
   hasRoutePath('/console/kitchen/ingredients')
 )

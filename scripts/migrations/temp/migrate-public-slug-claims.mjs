@@ -31,8 +31,6 @@ const TARGETS = [
     collectionPathTemplate: 'users',
     slugField: 'handle',
     normalizedField: 'handle',
-    legacyClaimCollection: 'handles',
-    legacyClaimOwnerField: 'uid',
     stacks: ['fireux', 'misebox', 'cleanbox'],
   },
   {
@@ -116,7 +114,6 @@ const help = Boolean(args.help || args.h)
 const projectId = args.project || process.env.FIREBASE_PROJECT_ID || process.env.GCLOUD_PROJECT
 const stack = typeof args.stack === 'string' ? String(args.stack).trim().toLowerCase() : ''
 const commit = Boolean(args.commit)
-const syncLegacyHandles = Boolean(args['sync-legacy-handles'])
 const pageSize = Math.min(Math.max(Number(args.pageSize || 250), 1), 500)
 const limit = args.limit ? Math.max(Number(args.limit), 1) : null
 const entityKeys =
@@ -134,7 +131,6 @@ if (help) {
   console.log('\nFlags:')
   console.log('  --commit               Apply writes (default dry-run)')
   console.log('  --entity <csv>         Filter entities (user,place,ingredient,blog,product)')
-  console.log('  --sync-legacy-handles  Also backfill users -> handles/{handle}')
   console.log('  --pageSize <n>         Page size (default 250, max 500)')
   console.log('  --limit <n>            Stop after N owner docs')
   process.exit(0)
@@ -177,7 +173,6 @@ console.log('[migrate-temp] public-slug-claims start', {
   projectId,
   stack,
   commit,
-  syncLegacyHandles,
   pageSize,
   limit,
   targets: targets.map((t) => ({
@@ -262,8 +257,7 @@ for (const target of targets) {
 
       const shouldWrite =
         Object.keys(ownerPatch).length > 0 ||
-        !claimSnap.exists ||
-        (syncLegacyHandles && target.legacyClaimCollection)
+        !claimSnap.exists
 
       if (!shouldWrite) {
         skipped += 1
@@ -293,7 +287,6 @@ for (const target of targets) {
           slug,
           claim: claimRef.path,
           ownerPatch,
-          syncLegacyHandle: Boolean(syncLegacyHandles && target.legacyClaimCollection),
         })
         updated += 1
         totalUpdated += 1
@@ -305,17 +298,6 @@ for (const target of targets) {
 
       if (Object.keys(ownerPatch).length > 0) {
         batch.set(docSnap.ref, ownerPatch, { merge: true })
-        batchOps += 1
-      }
-
-      if (syncLegacyHandles && target.legacyClaimCollection) {
-        const legacyRef = db.collection(target.legacyClaimCollection).doc(slug)
-        const legacyPatch = {
-          [target.legacyClaimOwnerField || 'owner_id']: docSnap.id,
-          updated_at: FieldValue.serverTimestamp(),
-        }
-        if (!claimSnap.exists) legacyPatch.created_at = FieldValue.serverTimestamp()
-        batch.set(legacyRef, legacyPatch, { merge: true })
         batchOps += 1
       }
 

@@ -17,8 +17,6 @@ import type {
 } from '../../../utils/public-projection/public-dto.types'
 import {
   readFirstPublicDocByField,
-  readPublicCollectionPage,
-  readPublicDocById,
 } from '../../../utils/public-projection/public-firestore'
 
 const CACHE_CONTROL = 'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
@@ -88,31 +86,6 @@ async function readCanonicalUserByHandle(
   return dto
 }
 
-async function readLegacyProjectedUserByHandle(
-  handle: string
-): Promise<PublicUserDto | null> {
-  const path = `/users/${handle}`
-  const idxDocs = await readPublicCollectionPage('seo_index_users', {
-    where: [
-      { field: 'isPublic', value: true },
-      { field: 'path', value: path },
-    ],
-    limit: 1,
-  })
-  const idx = idxDocs[0]
-  if (!idx) return null
-
-  const userDoc = await readPublicDocById('users', idx.id)
-  if (!userDoc) return null
-
-  const dto = mapUserDocToDto(userDoc, {
-    fallbackHandle: handle,
-    fallbackPublic: true,
-  })
-  if (!dto?.isPublic) return null
-  return dto
-}
-
 export default defineEventHandler(async (event: H3Event) => {
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
@@ -129,8 +102,7 @@ export default defineEventHandler(async (event: H3Event) => {
     })
   }
 
-  const canonicalUser = await readCanonicalUserByHandle(handle)
-  const user = canonicalUser || (await readLegacyProjectedUserByHandle(handle))
+  const user = await readCanonicalUserByHandle(handle)
 
   if (!user) {
     throw createError({

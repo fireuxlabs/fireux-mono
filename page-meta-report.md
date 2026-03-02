@@ -1,6 +1,6 @@
 # Page Meta Report
 
-Generated: 2026-03-02T09:05:13.297Z
+Generated: 2026-03-02T11:57:37.372Z
 Canon version: `server-projection-v1`
 Scan scope:
 - Included: files under any `pages/` directory across `apps/**`, `packages/**`, `projects/**`.
@@ -53,7 +53,7 @@ Scan scope:
 | packages/core/fireux-ecosystem-controller | packages/core/fireux-ecosystem-controller/src/runtime/pages/apps/[id].vue | /apps/:id | useHead | yes | no | no | no | med | client/auth gating heuristic |
 | packages/ecosystem/fireux-bringli | packages/ecosystem/fireux-bringli/src/runtime/pages/dev/fireux-bringli.vue | /dev/fireux-bringli | definePageMeta | no | no | no | no | low |  |
 | packages/ecosystem/fireux-cleanbox | packages/ecosystem/fireux-cleanbox/src/runtime/pages/dev/fireux-cleanbox.vue | /dev/fireux-cleanbox | definePageMeta | no | no | no | no | low |  |
-| packages/ecosystem/fireux-fireux | packages/ecosystem/fireux-fireux/apps/stitch/app/pages/index.vue | / | useSeoMeta | yes | yes | no | no | low | definePageMeta with additional head/meta helpers |
+| packages/ecosystem/fireux-fireux | packages/ecosystem/fireux-fireux/src/apps/stitch/app/pages/index.vue | / | useSeoMeta | yes | yes | no | no | low | definePageMeta with additional head/meta helpers |
 | packages/ecosystem/fireux-granite | packages/ecosystem/fireux-granite/src/runtime/pages/console/portfolio/index.vue | /console/portfolio | definePageMeta | no | no | no | no | low |  |
 | packages/ecosystem/fireux-granite | packages/ecosystem/fireux-granite/src/runtime/pages/dashboard/portfolio/index.vue | /dashboard/portfolio | none | no | no | no | no | low |  |
 | packages/ecosystem/fireux-granite | packages/ecosystem/fireux-granite/src/runtime/pages/dashboard/portfolio/[...slug].vue | /dashboard/portfolio/:slug(.*)* | none | no | no | no | no | low |  |

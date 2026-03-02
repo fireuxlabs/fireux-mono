@@ -36,7 +36,7 @@ Updated: 2026-03-02
 - Current canonical mapping:
   - Blogs public detail route: slug-based.
   - Products public detail route: slug-based.
-  - Users public profile route: handle-based (`/u/[handle]`) resolved via handle index.
+  - Users public profile route: handle-based (`/users/[handle]`) resolved from `users.handle`.
   - Console/admin/internal routes: id-based.
   - Entities without a published slug contract remain id-based until their extension contract defines slug rollout.
 
@@ -52,7 +52,7 @@ Updated: 2026-03-02
 | --- | --- | --- | --- |
 | fireux-blogs | BlogPost | slug | slug == doc id |
 | fireux-products | Product | slug | slug == doc id |
-| fireux-core | User | handle | handle -> uid via `handles/{handle}` |
+| fireux-core | User | handle | handle -> uid via canonical `users.handle` |
 | fireux-places | Place | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
 | fireux-companies | Company | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
 | fireux-kitchens | Kitchen | slug (target) | slug -> id (TBD (Deano decision): migration not started) |

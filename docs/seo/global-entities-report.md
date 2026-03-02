@@ -1,7 +1,6 @@
 # Global Entities Report
-Authority: Tier2 (Operational report)
-Updated: 2026-03-02
-Generated: 2026-03-02T09:05:13.297Z
+
+Generated: 2026-03-02T11:57:37.372Z
 Canon version: `server-projection-v1`
 Scan scope:
 - Included: `packages/**`, `projects/**`, `apps/**`, `scripts/**` source files.
@@ -9,9 +8,9 @@ Scan scope:
 - Excluded: nested subcollections and app overlays are not treated as canonical global entities.
 
 ## Summary
-- Root collection candidates detected: 26
+- Root collection candidates detected: 24
 - Candidate indexable collections: 8
-- SEO projection collections detected: 12
+- SEO projection collections detected: 11
 
 ## Detected Collections
 
@@ -21,7 +20,6 @@ Scan scope:
 | `chefs` | index | scripts/migrate-chef-kitchen-ids.mjs |
 | `companies` | index | packages/extensions/fireux-companies/src/runtime/models/company.model.ts<br/>scripts/migrate-company-thin-overlay.mjs |
 | `dishes` | noindex (default) | scripts/migrate-kitchen-dish-short-names.mjs<br/>scripts/migrate-tapberne-menu-items-to-dishes.mjs |
-| `handles` | noindex (default) | scripts/backfill-user-handles-index.mjs |
 | `ingredients` | noindex (default) | packages/extensions/fireux-kitchens/src/runtime/models/ingredient.model.ts<br/>scripts/delete-duplicate-ingredients.mjs<br/>scripts/migrate.mjs |
 | `jobs` | index | packages/extensions/fireux-jobs/src/runtime/models/job.model.ts<br/>scripts/fill-job-missing-fields.mjs<br/>scripts/migrate.mjs |
 | `kitchens` | index | packages/extensions/fireux-kitchens/src/runtime/models/dish.model.ts<br/>packages/extensions/fireux-kitchens/src/runtime/models/ingredient.model.ts<br/>packages/extensions/fireux-kitchens/src/runtime/models/kitchen-cost.model.ts |
@@ -40,7 +38,6 @@ Scan scope:
 | `seo_index_professionals` | noindex (projection) | packages/extensions/fireux-jobs/src/module.ts<br/>packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/main/useProfessionalCreate.ts<br/>packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/main/useProfessionalDelete.ts |
 | `seo_index_recipes` | noindex (projection) | packages/ecosystem/fireux-misebox/src/module.ts<br/>packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/recipe/useRecipeCreate.ts<br/>packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/recipe/useRecipeDelete.ts |
 | `seo_index_suppliers` | noindex (projection) | packages/extensions/fireux-drop/src/module.ts<br/>packages/extensions/fireux-drop/src/runtime/composables/fireux/firestore/Supplier/main/useSupplierCreate.ts<br/>packages/extensions/fireux-drop/src/runtime/composables/fireux/firestore/profiles/Supplier/main/useSupplierDelete.ts |
-| `seo_index_users` | noindex (projection) | packages/core/fireux-core/src/module.ts<br/>packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/mutations/useUserEnsure.ts<br/>packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/mutations/useUserHandleClaim.ts |
 | `test-kitchens` | noindex (default) | scripts/migrate-test-kitchens.ts |
 | `users` | index | packages/core/fireux-core/src/runtime/components/layouts/console/NotificationsSlideover.vue<br/>packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/fetch/useUserByHandleFetch.ts<br/>packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/mutations/useUserHandleClaim.ts |
 
@@ -66,4 +63,4 @@ Scan scope:
 
 ## Transitional State
 - Keep `seo_index_*` collections until each entity migrates to canonical-doc sitemap reads.
-- Keep legacy `handles/{handle}` scripts until handle migration is closed.
+- `handles` legacy collection is retired; runtime handle resolution is canonical `users.handle`.

@@ -20,7 +20,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `/suppliers`
   - `/suppliers/[id]`
   - `/suppliers/admin/[id]`
-  - `/console/supplier/*`
+  - `/dashboard/supplier/*`
 
 ## 6) Surfaces supported
 - `Pill`, `Cell`, `Preview`, `Profile` supported for supplier cards/profile views.

@@ -8,19 +8,11 @@ export const useDefaultNav = () => useNav(['default'])
 export const useLandingNav = () => useNav(['landing'])
 
 const canShowDashboardItem = (item: NavItem, isAdmin: boolean, isDev: boolean) => {
-  if (
-    item.key === 'admin' ||
-    item.to === '/dashboard/admin' ||
-    item.to === '/console/admin'
-  ) {
+  if (item.key === 'admin' || item.to === '/dashboard/admin') {
     return isAdmin
   }
 
-  if (
-    item.key === 'console-developer' ||
-    item.to === '/dashboard/developer' ||
-    item.to === '/console/developer'
-  ) {
+  if (item.key === 'console-developer' || item.to === '/dashboard/developer') {
     return isDev
   }
 
@@ -71,6 +63,19 @@ export const useConsoleNav = () => {
       },
     ]
 
+    if (hasRoutePath('/console/app')) {
+      runtimeNav.push({
+        key: 'console-runtime-app',
+        label: 'App',
+        icon: 'i-lucide-app-window',
+        to: '/console/app',
+        order: 15,
+        desktop: true,
+        mobile: true,
+        layouts: ['console'],
+      })
+    }
+
     if (hasRoutePath('/console/kitchen')) {
       runtimeNav.push({
         key: 'console-runtime-kitchen',
@@ -104,6 +109,7 @@ export const useConsoleNav = () => {
   const mobile = computed(() => items.value.filter((item) => item.mobile))
   const topPriority = [
     { key: 'console-home', to: '/console' },
+    { key: 'console-runtime-app', to: '/console/app' },
     { key: 'console-runtime-kitchen', to: '/console/kitchen' },
     { key: 'console-runtime-portfolio', to: '/console/portfolio' },
   ]

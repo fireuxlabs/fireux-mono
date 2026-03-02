@@ -10,20 +10,20 @@ Scope: FireUX mono-repo public SEO surfaces and sitemap generation
 - Public SEO read paths move to server projection endpoints (`/api/public/**`).
 - Public page SSR (`/users`, `/users/:handle` first) reads endpoint payloads with `useAsyncData`.
 - Public meta (`title`, `description`, canonical) is generated from server DTOs, not client-only Firestore reads.
-- Sitemap generation starts moving from `seo_index_*` to canonical root docs (`users` first), with transitional fallback support.
+- Sitemap generation moves from `seo_index_*` to canonical root docs (`users` migrated first).
 
 ## What Stays
 
 - Console/Dashboard/Admin CRUD and Collection Manager patterns stay unchanged.
 - Existing client CRUD composables stay in place for private/operator surfaces.
-- Existing `seo_index_*` and `handles/{handle}` data is kept during rollout (no hard delete in this phase).
+- Existing `seo_index_*` collections for non-migrated entities stay during rollout.
 
 ## Phased Migration
 
 1. Users
 - Add `/api/public/users` and `/api/public/users/:handle`.
 - Switch `/users` and `/users/:handle` to endpoint-first SSR.
-- Make users sitemap canonical-doc-first with transitional `seo_index_users` fallback.
+- Make users sitemap canonical-doc-first.
 
 2. Jobs
 - Add public DTO endpoints for jobs list/detail.
@@ -57,9 +57,9 @@ Scope: FireUX mono-repo public SEO surfaces and sitemap generation
 
 ## Transitional State Notes
 
-- `seo_index_users` remains available as fallback during migration.
-- Legacy `handles/{handle}` scripts remain for now; runtime profile routing resolves from `users.handle`.
-- New server projection endpoints supersede projection collections gradually as each entity migrates.
+- `handles` legacy collection is retired; runtime profile routing resolves from `users.handle`.
+- `seo_index_users` is retired; users pages and sitemap resolve from canonical users docs.
+- Other `seo_index_*` collections remain until each entity migrates.
 
 ## Reports Must Stay Fresh
 

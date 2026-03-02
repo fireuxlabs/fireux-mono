@@ -4,7 +4,6 @@ import { initializeApp, getApps } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 
 const DEFAULT_COLLECTIONS = [
-  'seo_index_users',
   'seo_index_jobs',
   'seo_index_agents',
   'seo_index_professionals',

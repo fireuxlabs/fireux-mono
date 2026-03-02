@@ -206,6 +206,7 @@ function generateGlobalEntitiesReport(files) {
 
   for (const file of files) {
     const relative = rel(file)
+    if (relative === 'scripts/reports/regenerate-reports.mjs') continue
     const text = readFileSafe(file)
     if (!text) continue
     for (const match of text.matchAll(/\bseo_index_[a-z0-9_-]+\b/gi)) {
@@ -284,7 +285,7 @@ function generateGlobalEntitiesReport(files) {
   lines.push('')
   lines.push('## Transitional State')
   lines.push('- Keep `seo_index_*` collections until each entity migrates to canonical-doc sitemap reads.')
-  lines.push('- Keep legacy `handles/{handle}` scripts until handle migration is closed.')
+  lines.push('- `handles` legacy collection is retired; runtime handle resolution is canonical `users.handle`.')
 
   const report = `${lines.join('\n')}\n`
   writeFile('global-entities-report.md', report)
@@ -300,6 +301,7 @@ function generateHandleSystemReport(files) {
 
   for (const file of files) {
     const relative = rel(file)
+    if (relative === 'scripts/reports/regenerate-reports.mjs') continue
     const text = readFileSafe(file)
     if (!text) continue
 
@@ -334,8 +336,8 @@ function generateHandleSystemReport(files) {
   lines.push('## Current Architecture')
   lines.push('- Runtime public routing resolves user handles from `users.handle`.')
   lines.push('- Public user pages now use endpoint-first SSR (`/api/public/users`, `/api/public/users/:handle`).')
-  lines.push('- `seo_index_users` remains transitional fallback for sitemap/API migration safety.')
-  lines.push('- `handles/{handle}` usage is script-level legacy unless runtime references are listed below.')
+  lines.push('- User SEO now resolves from canonical docs (`users`) for pages and sitemap generation.')
+  lines.push('- `handles/{handle}` should be absent from runtime and cleanup scripts after migration.')
   lines.push('')
   lines.push('## Runtime Handle Reads')
   if (!refsUserHandleReads.length) {
@@ -374,7 +376,7 @@ function generateHandleSystemReport(files) {
   lines.push('')
   lines.push('## Recommendation')
   lines.push('- Canonical runtime routing should remain `users.handle`.')
-  lines.push('- Keep `seo_index_users` and legacy `handles` scripts during migration; remove only after parity checks.')
+  lines.push('- Keep `seo_index_*` only where entities are not yet migrated; `seo_index_users` is retired.')
 
   const report = `${lines.join('\n')}\n`
   writeFile('handle-system-report.md', report)
@@ -470,8 +472,8 @@ function generateCollectionManagerReport(files) {
   lines.push('- Required changes are page/public API read-path changes and sitemap source migration only.')
   lines.push('')
   lines.push('## Transitional State')
-  lines.push('- Keep `seo_index_users` and related projection collections during rollout.')
-  lines.push('- Keep `handles/{handle}` scripts during rollout.')
+  lines.push('- Keep `seo_index_*` for entities still projection-backed during rollout.')
+  lines.push('- `handles/{handle}` legacy path is retired in runtime and migration scripts.')
   lines.push('- New `/api/public/users` endpoints supersede projection-first public reads incrementally.')
 
   const report = `${lines.join('\n')}\n`

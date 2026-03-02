@@ -17,7 +17,6 @@ import type {
 } from '../../utils/public-projection/public-dto.types'
 import {
   readPublicCollectionPage,
-  readPublicDocById,
 } from '../../utils/public-projection/public-firestore'
 
 const CACHE_CONTROL = 'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
@@ -104,34 +103,6 @@ async function readCanonicalUsers(limit: number): Promise<PublicUserDto[]> {
   return out
 }
 
-async function readLegacyProjectedUsers(limit: number): Promise<PublicUserDto[]> {
-  const idxDocs = await readPublicCollectionPage('seo_index_users', {
-    where: [{ field: 'isPublic', value: true }],
-    orderByField: '__name__',
-    limit,
-  })
-
-  const out: PublicUserDto[] = []
-
-  for (const idxDoc of idxDocs) {
-    const idx = (idxDoc.data() || {}) as Record<string, unknown>
-    const path = asTrimmedString(idx.path)
-    const match = path.match(/^\/users\/([^/?#]+)$/i)
-    const fallbackHandle = match?.[1] ? decodeURIComponent(match[1]) : ''
-    const userDoc = await readPublicDocById('users', idxDoc.id)
-    if (!userDoc) continue
-
-    const dto = mapUserDocToDto(userDoc, {
-      fallbackHandle,
-      fallbackPublic: true,
-    })
-    if (!dto?.isPublic) continue
-    out.push(dto)
-  }
-
-  return out
-}
-
 export default defineEventHandler(async (event: H3Event) => {
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
@@ -141,9 +112,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const query = getQuery(event)
   const limit = normalizeLimit(query.limit)
 
-  const canonicalUsers = await readCanonicalUsers(limit)
-  const users =
-    canonicalUsers.length > 0 ? canonicalUsers : await readLegacyProjectedUsers(limit)
+  const users = await readCanonicalUsers(limit)
 
   const response: PublicCollectionResponse<PublicUserDto> & { users: PublicUserDto[] } = {
     ok: true,

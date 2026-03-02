@@ -2,7 +2,6 @@
   <UPageCard variant="subtle">
     <div class="space-y-4">
       <div class="flex items-center justify-between gap-3">
-        if profiles pick profiles
         <div class="flex items-center gap-3 min-w-0">
           <UAvatar
             :src="appLogo"
@@ -33,7 +32,13 @@
       </div>
 
       <div class="flex">
-        <UButton to="/" label="Open app" color="neutral" size="sm" />
+        <UButton
+          :to="primaryCtaTo"
+          :label="primaryCtaLabel"
+          :icon="primaryCtaIcon"
+          color="neutral"
+          size="sm"
+        />
       </div>
     </div>
   </UPageCard>
@@ -41,11 +46,25 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 
 const cfg = useFireUXConfig()
+const router = useRouter()
 
 const appLogo = computed(() => cfg.appLogo || cfg.appThumbnail || '')
+const hasAppConsole = computed(() =>
+  router.getRoutes().some((route) => route.path === '/console/app')
+)
+const primaryCtaTo = computed(() =>
+  hasAppConsole.value ? '/console/app' : '/'
+)
+const primaryCtaLabel = computed(() =>
+  hasAppConsole.value ? 'Open app console' : 'Open app'
+)
+const primaryCtaIcon = computed(() =>
+  hasAppConsole.value ? 'i-lucide-app-window' : 'i-lucide-arrow-right'
+)
 
 const roleLabel = computed(() => {
   // Note: this is runtime “app role” (global/tenant), not app membership role.

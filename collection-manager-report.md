@@ -1,6 +1,6 @@
 # Collection Manager Report
 
-Generated: 2026-03-02T09:05:13.297Z
+Generated: 2026-03-02T11:57:37.372Z
 Canon version: `server-projection-v1`
 Scan scope:
 - Included: collection manager components, public route pages, runtime server API files.
@@ -51,6 +51,6 @@ Scan scope:
 - Required changes are page/public API read-path changes and sitemap source migration only.
 
 ## Transitional State
-- Keep `seo_index_users` and related projection collections during rollout.
-- Keep `handles/{handle}` scripts during rollout.
+- Keep `seo_index_*` for entities still projection-backed during rollout.
+- `handles/{handle}` legacy path is retired in runtime and migration scripts.
 - New `/api/public/users` endpoints supersede projection-first public reads incrementally.
