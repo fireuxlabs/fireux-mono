@@ -1,12 +1,14 @@
 ---
 title: ADR-0001 — Nuxt Config Simplification
 status: draft
-updated: 2025-09-01
+updated: 2026-03-02
 ---
 
 [← Back to ToC](../copilot-00-toc.md)
 
 # ADR-0001 — Nuxt Config Simplification
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 **Decision**: Apps use `createFireuxConfig` directly; `createBaseNuxtConfig` has been removed from core.
 

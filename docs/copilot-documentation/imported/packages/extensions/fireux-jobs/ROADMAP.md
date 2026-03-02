@@ -4,6 +4,8 @@ imported: 2025-11-18
 -->
 
 # FireUX Jobs — Roadmap
+Authority: Tier3 (Tooling/history)
+Updated: 2026-03-02
 
 A multi-tenant workforce platform for profiles, job matching, and future on-demand staffing.
 

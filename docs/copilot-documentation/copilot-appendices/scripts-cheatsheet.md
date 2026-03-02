@@ -1,10 +1,12 @@
 ---
 title: Scripts & Commands Cheatsheet
 status: working
-updated: 2026-01-11
+updated: 2026-03-02
 ---
 
 # Scripts & Commands Cheatsheet
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 This appendix is the quick map from `pnpm` commands → underlying files in `scripts/`.
 

@@ -4,6 +4,7 @@ description: How FireUX is put together—identity, data shapes, and composables
 navigation:
   order: 2
 authority: Tier2
+updated: 2026-03-02
 ---
 
 # Architecture

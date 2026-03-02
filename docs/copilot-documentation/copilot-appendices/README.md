@@ -2,9 +2,11 @@
 title: Appendices (Placeholder)
 status: draft
 created: 2025-10-15
+updated: 2026-03-02
 ---
 
 # Appendices
+Authority: Tier2 (Operational)
 
 The appendices collect reference material that supports the main handbook chapters. Populate each topic as the new documentation set stabilises.
 

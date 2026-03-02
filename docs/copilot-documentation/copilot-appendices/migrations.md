@@ -1,4 +1,6 @@
 # FireUX migrations (agent runbook)
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 Purpose: Provide a repeatable workflow for migrating Firestore data when runtime models change (drift reconciliation).
 

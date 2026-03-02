@@ -2,9 +2,11 @@
 title: Instructions (Placeholder)
 status: draft
 created: 2025-10-15
+updated: 2026-03-02
 ---
 
 # Instructions
+Authority: Tier2 (Operational)
 
 This folder stores task-specific playbooks for AI agents (for example, how to triage navigation issues or run a particular migration). Create a new file per instruction set and keep each guide short and action-oriented.
 

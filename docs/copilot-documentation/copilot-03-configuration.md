@@ -2,9 +2,12 @@
 title: Configuration & Tooling
 status: draft
 created: 2025-10-15
+updated: 2026-03-02
 ---
 
 # Configuration & Tooling
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 This chapter documents the canonical way to configure Nuxt apps, TypeScript, environment variables, and supporting tooling across the mono-repo.
 

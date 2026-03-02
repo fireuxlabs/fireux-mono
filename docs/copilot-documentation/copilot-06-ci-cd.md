@@ -2,9 +2,12 @@
 title: CI/CD & Releases
 status: draft
 created: 2025-10-15
+updated: 2026-03-02
 ---
 
 # CI/CD & Releases
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 This chapter outlines the expected checks, pipeline stages, and release practices for the FireUX mono-repo.
 

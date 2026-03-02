@@ -1,4 +1,6 @@
 # Auth UI — Reference
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 This document summarizes the authentication UI used across the FireUX mono-repo, its pages and key child components, and how they integrate with the underlying composables and profile/tenant flows. Use this doc for dissemination and as a quick integration reference for tenant projects.
 

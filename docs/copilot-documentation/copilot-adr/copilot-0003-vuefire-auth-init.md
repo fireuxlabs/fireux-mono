@@ -1,12 +1,14 @@
 ---
 title: ADR-0003 — VueFire Owns Client Auth Init
 status: draft
-updated: 2025-09-01
+updated: 2026-03-02
 ---
 
 [← Back to ToC](../copilot-00-toc.md)
 
 # ADR-0003 — VueFire Owns Client Auth Init
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 **Decision**: VueFire (nuxt-vuefire) initializes Firebase client Auth (with SSR). Custom plugins must not initialize again.
 

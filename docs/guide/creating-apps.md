@@ -1,9 +1,11 @@
 ---
 title: Creating Apps
 description: Scaffold, configure, and run a FireUX app.
+updated: 2026-03-02
 ---
 
 # Creating Apps
+Authority: Tier2 (Operational)
 
 ## 1) Prerequisites
 

@@ -5,6 +5,8 @@ note: moved from repo root during doc cleanup
 -->
 
 # FireUX Config Report
+Authority: Tier3 (Tooling/history)
+Updated: 2026-03-02
 
 ## packages/core/fireux-core/src/config/fireux/fireux-config.ts
 

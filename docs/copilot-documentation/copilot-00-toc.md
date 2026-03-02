@@ -1,15 +1,20 @@
 ---
 title: FireUX Handbook ToC
 status: active
-updated: 2025-10-26
+updated: 2026-03-02
 ---
 
 # FireUX Handbook
+Updated: 2026-03-02
+Authority: Tier2 (Operational index)
 
-Legacy documentation has been retired after migration into this handbook. The sections below describe the rebuilt structure.
+## 1. Canon Layer (Tier1)
+- `../fireux-canon.md`
+- `../runtime-contract.md`
+- `../seo-canon.md`
+- `../../packages/extensions/fireux-*/docs/contract.md`
 
-## Handbook Chapters
-
+## 2. Handbook Chapters
 1. [Orientation & Mission](./copilot-01-orientation.md)
 2. [Architecture Snapshot](./copilot-02-architecture.md)
 3. [Configuration & Tooling](./copilot-03-configuration.md)
@@ -19,36 +24,24 @@ Legacy documentation has been retired after migration into this handbook. The se
 7. [UX & Component Conventions](./copilot-07-ux-conventions.md)
 8. [Operations & Troubleshooting](./copilot-08-operations.md)
 
-## Appendices
-
+## 3. Operational Runbooks
 - [Appendices index](./copilot-appendices/README.md)
-- [Migrations runbook](./copilot-appendices/migrations.md)
+- [Migrations runbook](../migrations/README.md)
 - [SEO + indexing playbook](./copilot-appendices/seo-indexing-playbook.md)
+- [Documentation manifest](../dev/_manifest.md)
 
-## Instructions
-
-- [Agent instructions index](./copilot-instructions/README.md)
-
-## Temporary Reports
-
-- [Temporary reports index](./temporary-reports/README.md)
-
-## Package Documentation
-
+## 4. Reports and Weekly Hygiene
+- [Reports index](../reports/README.md)
 - [Package documentation map](./package-docs-index.md)
+- Weekly cadence: Monday docs hygiene update (freshness, links, authority placement, ToC drift)
 
-## Spec Kit Workspace
+## 5. Supporting Inputs (Tier3)
+- `.specify/` for active specs and tasks
+- `.github/prompts/` for spec workflow prompts
+- `AI/` for context bundles and working memory
 
-- `.specify/` — live specs, plans, and task flows managed by GitHub Spec Kit.
-- `.github/prompts/` — slash-command prompts that drive Spec Kit workflows inside VS Code.
-- Use these alongside the handbook to keep planning artifacts and conventions aligned.
-
-## ADRs
-
+## 6. ADRs
+- [ADR index](./copilot-adr/README.md)
 - [0001 — Nuxt config simplification](./copilot-adr/copilot-0001-nuxt-config-simplification.md)
 - [0002 — Src-first packaging (no dist)](./copilot-adr/copilot-0002-src-first-no-dist.md)
 - [0003 — VueFire owns Auth init](./copilot-adr/copilot-0003-vuefire-auth-init.md)
-
-## Meta
-
-- This handbook and the Spec Kit workspace are complementary sources. Use the handbook for enduring conventions and Spec Kit for active specs and implementations.

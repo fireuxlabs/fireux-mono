@@ -1,4 +1,6 @@
 # Granite Bootstrap Checklist
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 Scope: Phase 0 wiring for Granite ecosystem and app shell.
 

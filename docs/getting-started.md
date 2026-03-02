@@ -3,9 +3,11 @@ title: Getting Started
 description: Install, run, and browse FireUX locally.
 navigation:
   order: 1
+updated: 2026-03-02
 ---
 
 # Getting Started
+Authority: Tier2 (Operational)
 
 Follow these steps to run FireUX locally and browse docs at `/docs`.
 

@@ -1,4 +1,5 @@
 # Imported Historical Docs
+Updated: 2026-03-02
 Authority: Tier3 (Non-authoritative)
 
 - Purpose: archived/mirrored human-authored docs preserved for context.

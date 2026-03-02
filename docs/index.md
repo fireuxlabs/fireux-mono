@@ -1,29 +1,26 @@
 ---
 title: FireUX Docs
-description: One map for building and running FireUX.
+description: Canon + handbook + operational runbooks.
 navigation: false
+updated: 2026-03-02
 ---
 
 # FireUX Docs
+Authority: Tier2 (Operational index)
+Updated: 2026-03-02
+## Start Here
+- Canon: `fireux-canon.md`, `runtime-contract.md`, `seo-canon.md`
+- Handbook ToC: `copilot-documentation/copilot-00-toc.md`
+- Package contracts: `copilot-documentation/package-docs-index.md`
+- Weekly reports: `reports/README.md`
 
-> Build, ship, and operate FireUX products with one concise map.
-
-## Fast paths
-
-- Start now: `getting-started.md`
-- Build apps: `guide/creating-apps.md`
-- Work with profiles: `guide/profiles.md`
+## Fast Paths
+- Build/run: `getting-started.md`
+- App creation guides: `guide/`
 - Architecture: `architecture/`
-- Dev notes and manifests: `dev/`
+- Migrations: `migrations/README.md`
 
-## Run locally
-
-- `pnpm install`
-- `pnpm dev:fireux`
-- Visit `http://localhost:3000/docs` (Nuxt Content, `fireuxDocs` source)
-
-## What’s inside
-
-- Core pillars: identity, composables canon, data shapes.
-- Task-based guides for building ecosystems, branded apps, and experiences.
-- Auto-generated navigation from the markdown files in `/docs`.
+## Documentation Policy
+- Tier1 documents are source-of-truth.
+- Tier2 documents explain execution and operations.
+- Tier3 documents provide context/tooling memory and never override Tier1.

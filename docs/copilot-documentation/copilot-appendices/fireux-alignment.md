@@ -2,9 +2,11 @@
 title: FireUX Alignment
 status: active
 created: 2026-01-13
+updated: 2026-03-02
 ---
 
 # FireUX Alignment
+Authority: Tier2 (Operational)
 
 Alignment means every layer agrees on responsibility and shape.
 

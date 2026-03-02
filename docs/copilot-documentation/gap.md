@@ -1,4 +1,6 @@
 # FIReUX Ecosystem — Gap Analysis
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 | Area                               | Current Status            | Key Missing Elements                                          |
 | ---------------------------------- | ------------------------- | ------------------------------------------------------------- |

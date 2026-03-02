@@ -3,18 +3,19 @@ title: Package Documentation Map
 status: active
 authority: Tier2
 created: 2025-10-15
-updated: 2026-02-26
+updated: 2026-03-02
 ---
 
 # Package Documentation Map
+Updated: 2026-03-02
 Authority: Tier2 (Index/reference)
 
-Tier1 canon sources:
+## Canon Sources (Tier1)
 - `docs/fireux-canon.md`
 - `docs/runtime-contract.md`
 - `docs/seo-canon.md`
 
-Per-extension Tier1 contracts:
+## Extension Contracts (Tier1)
 - `packages/extensions/fireux-blogs/docs/contract.md`
 - `packages/extensions/fireux-companies/docs/contract.md`
 - `packages/extensions/fireux-drop/docs/contract.md`
@@ -24,18 +25,21 @@ Per-extension Tier1 contracts:
 - `packages/extensions/fireux-places/docs/contract.md`
 - `packages/extensions/fireux-products/docs/contract.md`
 
-Operational docs (Tier2) live across:
-- `docs/`
-- `packages/**/docs/`
-- `projects/**/docs/`
+## Package Doc Areas (Tier2)
+- Core: `packages/core/**/docs/`
+- Extensions: `packages/extensions/**/docs/`
+- Ecosystems: `packages/ecosystem/**/docs/`
+- Apps: `projects/**/docs/`
 
-Tooling/history docs (Tier3, non-authoritative) include:
+## Reporting and Ops
+- Weekly docs report index: `docs/reports/README.md`
+- Manifest and authority placement: `docs/dev/_manifest.md`
+- Handbook chapter map: `docs/copilot-documentation/copilot-00-toc.md`
+
+## Tier3 (Non-authoritative Inputs)
 - `AI/**`
-- `temp/**`
 - `.specify/**`
 - `.github/prompts/**`
+- `temp/**`
 - `docs/copilot-documentation/imported/**`
 - `docs/git-tree.md`
-
-Routing note:
-- Use `docs/dev/_manifest.md` as the repo-level tier placement index when classifying docs outside package folders.

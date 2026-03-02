@@ -1,6 +1,6 @@
 # SEO Canon
 Authority: Tier1 (Authoritative)
-
+Updated: 2026-03-02
 ## Purpose
 - Define repo-wide SEO requirements for public FireUX entities and pages.
 

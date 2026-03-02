@@ -1,10 +1,12 @@
 ---
 title: Backfill App Memberships
 status: working
-updated: 2026-01-11
+updated: 2026-03-02
 ---
 
 # Backfill App Memberships
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 This playbook describes the intended backfill flow to sync `apps/{appId}/admin_ids` with matching `apps/{appId}/users/{uid}` membership documents.
 

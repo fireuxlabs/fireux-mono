@@ -1,10 +1,12 @@
 ---
 title: Extensions (Nuxt Modules)
 status: active
-updated: 2026-02-05
+updated: 2026-03-02
 ---
 
 # Extensions (Nuxt Modules)
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 Conventions for `packages/extensions/*` Nuxt modules so they stay predictable and easy to compose.
 

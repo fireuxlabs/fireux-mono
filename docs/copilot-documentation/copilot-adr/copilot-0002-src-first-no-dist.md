@@ -1,12 +1,14 @@
 ---
 title: ADR-0002 — Src-first Packaging
 status: draft
-updated: 2025-09-01
+updated: 2026-03-02
 ---
 
 [← Back to ToC](../copilot-00-toc.md)
 
 # ADR-0002 — Src-first Packaging
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 **Decision**: Packages export from `src/` via `package.json#exports`. No `dist/` committed.
 

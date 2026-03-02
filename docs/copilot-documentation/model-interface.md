@@ -1,4 +1,6 @@
 # Model & Interface Reference
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 This guide consolidates the current FireUX data models that power app users, shared profiles, and the Jobs/Agent domain. Use it as a quick map when wiring composables or UI helpers.
 

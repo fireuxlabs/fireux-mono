@@ -1,4 +1,6 @@
 # FIReUX Ecosystem — Literature
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 FIReUX is a modular SaaS framework that powers multi-tenant apps such as **Misebox** (hospitality professionals) and **Cleanbox** (cleaning workforce).
 The system is composed of:

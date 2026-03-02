@@ -1,4 +1,5 @@
 # Object / Entity Canon (Firestore)
+Updated: 2026-03-02
 Authority: Tier2 (Reference; authoritative rules live in `docs/fireux-canon.md` and extension contracts)
 
 This doc records Firestore object/entity conventions used across FireUX and should be read with Tier1 canon docs.

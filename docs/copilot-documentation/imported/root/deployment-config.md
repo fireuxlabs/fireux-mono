@@ -5,6 +5,8 @@ note: moved from repo root during doc cleanup
 -->
 
 # Deployment Config Snapshot
+Authority: Tier3 (Tooling/history)
+Updated: 2026-03-02
 
 Generated: 2025-11-18
 

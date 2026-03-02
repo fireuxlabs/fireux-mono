@@ -1,10 +1,11 @@
 ---
 title: Documentation Style (Nuxt UI inspired)
 status: active
-updated: 2025-12-08
+updated: 2026-03-02
 ---
 
 # Documentation Style — Nuxt UI Pattern
+Authority: Tier2 (Operational)
 
 Adopt the Nuxt UI Docs style: concise frontmatter, short intro, task-first sections, and one or two code examples. Keep tone practical and avoid over-engineering.
 

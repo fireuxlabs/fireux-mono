@@ -1,4 +1,6 @@
 # Migration guide
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 Purpose: quick reference for one-off migrations and scripts in FireUX-Mono.
 

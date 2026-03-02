@@ -5,6 +5,8 @@ note: moved from repo root during doc cleanup
 -->
 
 # Firestore Core User Stack
+Authority: Tier3 (Tooling/history)
+Updated: 2026-03-02
 
 `````
 packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/

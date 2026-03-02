@@ -5,6 +5,8 @@ note: moved from repo root during doc cleanup
 -->
 
 # Ecosystem Folder Rename — Before/After Snapshot
+Authority: Tier3 (Tooling/history)
+Updated: 2026-03-02
 
 ## Context
 

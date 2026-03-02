@@ -2,9 +2,12 @@
 title: Platform Services
 status: draft
 created: 2025-10-15
+updated: 2026-03-02
 ---
 
 # Platform Services
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 FireUX integrates Firebase, Google Places, and shared media services. This chapter records the canonical usage patterns so features remain consistent across packages.
 

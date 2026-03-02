@@ -1,4 +1,6 @@
 # Theming FireUX Apps
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 **Status:** Stable  
 **Audience:** App developers & designers  

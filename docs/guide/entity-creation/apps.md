@@ -1,9 +1,11 @@
 ---
 title: App Entity Creation (Report)
 description: File-by-file report of how FireUX app entities are identified and created, with focus on app id/slug behavior.
+updated: 2026-03-02
 ---
 
 # App Entity Creation (Report)
+Authority: Tier2 (Operational)
 
 This report documents how FireUX app entities are created today, with a focus on the app `id` (which currently acts as the canonical app slug).
 

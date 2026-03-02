@@ -1,4 +1,6 @@
 # Dashboard vs Console + Named Runtime Canon
+Authority: Tier3 (Tooling/history)
+Updated: 2026-03-02
 Path: /Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/docs/copilot-documentation/temporary-reports/dashboard-console.md
 Date: 2026-03-01
 Owner: Daniel Watson
@@ -80,7 +82,7 @@ There is only “THE runtime” per ecosystem.
 Console pages must never guess or auto-select a runtime.
 If runtime is missing, the page must show an explicit empty-state + link to the dashboard selector.
 
-Fallback policy: prohibited unless a human explicitly asks for it.  [oai_citation:0‡chatcontext-2026-02-25.md](sediment://file_0000000002847243948c75f56c5889d7)
+Fallback policy: prohibited unless a human explicitly asks for it.
 
 ---
 

@@ -5,6 +5,8 @@ note: moved from repo root during doc cleanup
 -->
 
 # Profiles Stack
+Authority: Tier3 (Tooling/history)
+Updated: 2026-03-02
 
 -## Core profile composables (`packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/`)
 

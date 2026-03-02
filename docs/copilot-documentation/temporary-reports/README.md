@@ -1,10 +1,12 @@
 ---
 title: Temporary Reports
 status: working
-updated: 2026-01-11
+updated: 2026-03-02
 ---
 
 # Temporary Reports
+Authority: Tier3 (Tooling/history)
+Updated: 2026-03-02
 
 This folder is for short-lived notes, investigations, and drafts that are useful during active work but should not become permanent canon.
 

@@ -1,6 +1,6 @@
 # fireux-tenant
 
-Updated: 2026-03-01
+Updated: 2026-03-02
 Audience: GPT product context
 Focus: fireux-tenant
 
@@ -9,26 +9,20 @@ Product context:
 - Summarize customer-facing impact before implementation detail.
 - Keep language broad enough for planning, prioritization, and discovery.
 
-Commit window scanned: 2026-02-28 11:47:05 UTC
-Commits found: 7
+Commit window scanned: 2026-03-01 09:40:55 UTC
+Commits found: 2
 
 Recent repo momentum:
-- 2026-02-28 15:59 UTC | 875f82df | chore: update package.json (+50 more)
-- 2026-02-28 14:38 UTC | b70cbdd9 | chore: update packages/core/fireux-core/src/config/app/fireux.config.ts (+9 more)
-- 2026-02-28 12:53 UTC | 6fae4520 | chore: update docs/copilot-documentation/copilot-03-configuration.md (+3 more)
-- 2026-02-28 12:39 UTC | c4ef2f94 | chore: update packages/core/fireux-core/src/config/app/fireux.config.ts (+31 more)
-- 2026-02-28 12:17 UTC | 93dd7581 | chore: update packages/core/fireux-core/src/config/app/fireux.config.ts (+29 more)
-- 2026-02-28 12:14 UTC | 5d2b3fb0 | docs: update markdown files
-- 2026-02-28 11:55 UTC | cde113fa | chore: update projects/granite/granite-app/app/internal/prepare-firebase-output.mjs (+2 more)
-- 2026-02-28 11:55 UTC | 6492dd62 | chore: update AI/chatcontext-2026-02-27.md (+62 more)
+- 2026-03-01 22:41 UTC | 50a658d6 | chore: update docs/copilot-documentation/temporary-reports/dashboard-console.md (+101 more)
+- 2026-03-01 10:29 UTC | c3819558 | chore: update AI/chatcontext-2026-03-01.md (+87 more)
 
 Areas with active change:
 - packages/extensions
 - packages/core
-- AI
-- projects/granite
-- packages/ecosystem
 - projects/misebox
+- packages/ecosystem
+- AI/codex-threads
+- AI/gpt-chats
 
 Planning cues:
 - Treat package-level config shifts as potential product-surface behavior changes.

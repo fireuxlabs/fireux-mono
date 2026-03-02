@@ -2,9 +2,12 @@
 title: Orientation & Mission
 status: draft
 created: 2025-10-15
+updated: 2026-03-02
 ---
 
 # Orientation & Mission
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 FireUX is an opinionated layer on top of Nuxt 4 + Firebase. Drop in a few env vars, add your branding assets, and you have a working app with profiles, consoles, and shared objects ready to extend.
 

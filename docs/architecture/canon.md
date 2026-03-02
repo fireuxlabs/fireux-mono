@@ -2,6 +2,7 @@
 title: FireUX Canon
 description: Canonical patterns—identity, stacks, and module conventions.
 authority: Tier2
+updated: 2026-03-02
 ---
 
 # FireUX Canon

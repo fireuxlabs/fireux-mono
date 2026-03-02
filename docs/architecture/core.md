@@ -2,6 +2,7 @@
 title: Core Architecture
 description: The pillars of FireUX—identity, composables, data, and runtime boundaries.
 authority: Tier2
+updated: 2026-03-02
 ---
 
 # Core Architecture

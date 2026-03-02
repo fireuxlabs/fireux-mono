@@ -1,6 +1,6 @@
 # Runtime Contract
 Authority: Tier1 (Authoritative)
-
+Updated: 2026-03-02
 ## Purpose
 - Define runtime selection, mode, collection path, and route policy across FireUX domains.
 

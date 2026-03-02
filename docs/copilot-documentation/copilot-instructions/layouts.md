@@ -1,4 +1,6 @@
 # Layouts: usage and authoring
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 Purpose: keep layout naming consistent and avoid app-local overrides. Layouts live in `packages/core/fireux-core/src/runtime/layouts/`.
 

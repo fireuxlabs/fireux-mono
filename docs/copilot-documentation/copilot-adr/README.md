@@ -1,12 +1,14 @@
 ---
 title: Architecture Decision Records
 status: draft
-updated: 2025-09-01
+updated: 2026-03-02
 ---
 
 [← Back to ToC](../copilot-00-toc.md)
 
 # Architecture Decision Records (ADRs)
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 Short, focused records for key decisions.
 

@@ -5,6 +5,8 @@ note: moved from repo root during doc cleanup
 -->
 
 # FireUX Server System
+Authority: Tier3 (Tooling/history)
+Updated: 2026-03-02
 
 ## Overview
 

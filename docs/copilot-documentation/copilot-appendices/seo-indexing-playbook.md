@@ -1,11 +1,11 @@
 ---
 title: SEO + Indexing Playbook
 status: draft
-updated: 2026-02-28
-owner: FireUX Core
----
+updated: 2026-03-02
+owner: FireUX Core---
 
 # FireUX Mono SEO + Indexing Playbook
+Authority: Tier2 (Operational)
 
 This is the mono-repo SEO baseline for all FireUX apps (`fireux.app`, `misebox.app`, and future ecosystems).
 

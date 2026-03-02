@@ -2,9 +2,12 @@
 title: Architecture Snapshot
 status: draft
 created: 2025-10-15
+updated: 2026-03-02
 ---
 
 # Architecture Snapshot
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 This chapter summarizes the runtime layers, data flow, and ownership boundaries that define the FireUX platform. Understanding these relationships is essential before modifying modules, ecosystems, or Nuxt apps.
 

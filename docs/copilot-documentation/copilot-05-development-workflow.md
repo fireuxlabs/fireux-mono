@@ -2,9 +2,12 @@
 title: Development Workflow
 status: draft
 created: 2025-10-15
+updated: 2026-03-02
 ---
 
 # Development Workflow
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 This chapter describes the standard local workflow, branching expectations, and automation available to FireUX contributors.
 

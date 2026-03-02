@@ -1,9 +1,11 @@
 ---
 title: Profiles
 description: How profiles work across identity, data contracts, and UI.
+updated: 2026-03-02
 ---
 
 # Profiles Guide
+Authority: Tier2 (Operational)
 
 ## Model
 

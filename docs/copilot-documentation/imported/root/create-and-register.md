@@ -5,6 +5,8 @@ note: moved from repo root during doc cleanup
 -->
 
 # Create & Register System
+Authority: Tier3 (Tooling/history)
+Updated: 2026-03-02
 
 A shared creation + registration workflow keeps every FireUX asset (apps, modules, ecosystems) consistent, observable, and auditable. This note captures the desired outcomes plus an initial plan for scaffolding, metadata, and storage inside the `fireux-fireux` Firestore database.
 

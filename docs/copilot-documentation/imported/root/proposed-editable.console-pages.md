@@ -5,6 +5,8 @@ note: moved from repo root during doc cleanup
 -->
 
 # Proposed Editable Console Pages
+Authority: Tier3 (Tooling/history)
+Updated: 2026-03-02
 
 Reference snapshots for every console parent involved in core/app edit surfaces. Each snippet reflects the canonical structure every domain should mirror.
 

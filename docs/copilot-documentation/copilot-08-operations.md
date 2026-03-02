@@ -2,9 +2,12 @@
 title: Operations & Troubleshooting
 status: draft
 created: 2025-10-15
+updated: 2026-03-02
 ---
 
 # Operations & Troubleshooting
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 This chapter captures operational procedures, debugging tips, and the baseline incident response flow. Expand it as new playbooks emerge.
 

@@ -1,4 +1,6 @@
 # Granite Module Map
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 ## Ecosystem shell
 ### `fireux-granite`

@@ -1,11 +1,13 @@
 # Migrations
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 Purpose: keep Firestore/data migrations repeatable across all FireUX ecosystems.
 
 ## Scope
 
 - This folder is the **operating guide** for migrations.
-- Migration scripts currently live in [scripts/](../scripts/) and should follow the conventions below.
+- Migration scripts currently live in [scripts/](../../scripts/) and should follow the conventions below.
 - Every migration must support **dry-run first**, then explicit apply.
 
 ## Ecosystem matrix

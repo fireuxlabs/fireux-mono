@@ -2,9 +2,11 @@
 title: Misebox Profile Model Summary
 created: 2025-10-28
 source: AI-generated from overlay/composable refactor discussion
+updated: 2026-03-02
 ---
 
 # Misebox Profile Model Summary
+Authority: Tier2 (Operational)
 
 ## Core Idea
 

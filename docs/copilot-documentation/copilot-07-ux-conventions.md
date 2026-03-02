@@ -2,9 +2,12 @@
 title: UX & Component Conventions
 status: draft
 created: 2025-10-15
+updated: 2026-03-02
 ---
 
 # UX & Component Conventions
+Authority: Tier2 (Operational)
+Updated: 2026-03-02
 
 Consistency across tenants depends on shared patterns for components, copy, and navigation. Use this chapter as the design contract when building or reviewing UI.
 
