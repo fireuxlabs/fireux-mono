@@ -9,6 +9,7 @@ updated: 2026-03-02
 Authority: Tier2 (Operational index)
 Updated: 2026-03-02
 ## Start Here
+- Documentation system: `system.md`
 - Canon: `fireux-canon.md`, `runtime-contract.md`, `seo-canon.md`
 - Handbook ToC: `copilot-documentation/copilot-00-toc.md`
 - Package contracts: `copilot-documentation/package-docs-index.md`

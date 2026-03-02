@@ -7,7 +7,6 @@ const ALLOWED_ROOT_DIRS = new Set([
   '.git',
   '.github',
   '.vscode',
-  '.specify', // Specify is a DIRECTORY, not a dotfile
 
   // Documentation & external assets
   'docs',
@@ -28,7 +27,6 @@ const ALLOWED_ROOT_DIRS = new Set([
   // Local-only (ignored, but tolerated)
   'node_modules',
   'dummy',
-  'AI',
 ])
 
 const ALLOWED_ROOT_FILES = new Set([

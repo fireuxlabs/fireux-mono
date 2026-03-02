@@ -57,6 +57,6 @@ Updated: 2026-03-02
 - SEO enforcement timing:
   - Default: after Kitchen MVP polish (next sprint after console stability)
   - Includes: robots/meta noindex, sitemap, JSON-LD helpers, canonical URLs
-- AI/** tracking policy:
-  - Default: keep AI/** ignored
-  - Optional later: track `AI/README.md` + `AI/codex-threads/index.md` only
+- Tier3 AI memory location:
+  - Default: keep Tier3 memory under `docs/ai/**`
+  - Tier3 memory is tracked for auditability but is non-authoritative

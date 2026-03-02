@@ -2,12 +2,15 @@
 Authority: Tier2 (Operational index)
 Updated: 2026-03-02
 This is the docs landing map for weekly maintenance and day-to-day navigation.
+System definition: `docs/system.md`.
 
 ## Tier 1 (Authoritative Canon)
 - `docs/fireux-canon.md`
 - `docs/runtime-contract.md`
 - `docs/seo-canon.md`
 - `packages/extensions/fireux-*/docs/contract.md`
+
+Only the Tier1 files above are authoritative canon. Folder names like `docs/canon/` are report namespaces, not additional canon sources.
 
 ## Tier 2 (Operational)
 - `docs/copilot-documentation/` handbook chapters and appendices
@@ -17,13 +20,8 @@ This is the docs landing map for weekly maintenance and day-to-day navigation.
 - package/project docs under `packages/**/docs/` and `projects/**/docs/`
 
 ## Tier 3 (Tooling/History, non-authoritative)
-- `AI/**`
-- `.github/prompts/**`
-- `.specify/**`
-- `temp/**`
-- `docs/copilot-documentation/imported/**`
-- `docs/copilot-documentation/temporary-reports/**`
-- `docs/git-tree.md`
+- `docs/ai/**`
+- `.vscode/**`
 
 ## Chapter Map
 1. `docs/copilot-documentation/copilot-01-orientation.md`
@@ -39,4 +37,4 @@ This is the docs landing map for weekly maintenance and day-to-day navigation.
 - Refresh Tier1/Tier2 indexes and chapter ToC.
 - Run docs freshness scan (updated headers, authority headers, local link health).
 - Publish one weekly report in `docs/reports/`.
-- Keep Tier3 docs available but non-authoritative.
+- Keep Tier3 docs available but non-authoritative and minimal.

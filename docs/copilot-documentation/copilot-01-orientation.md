@@ -15,7 +15,7 @@ FireUX is positioned as a multi-tenant modular SaaS platform. The goal is to lau
 
 We are indie and unknown by default, so this chapter explains what FireUX is, why it exists, and how the repo is laid out so you can get moving fast.
 
-This handbook pairs with the GitHub Spec Kit workspace (`.specify/`, `.github/prompts/`). Spec Kit holds live specs and plans; the handbook keeps the durable rules and architecture. When one changes, update the other.
+This handbook works with the repo documentation system (`AGENTS.md` + `docs/system.md`). The handbook keeps durable rules and architecture; weekly reports track operational drift.
 
 ## Mission & Pillars
 
@@ -45,11 +45,11 @@ For historical context, refer to the migration notes in repo history; the previo
 3. Put package-specific details beside the code under `packages/**/docs/`; the [package documentation map](./package-docs-index.md) links to each location.
 4. When behaviour changes, update the matching chapter and link any ADR or package doc so decisions stay traceable.
 
-## Working with GitHub Spec Kit
+## Working with the Documentation System
 
-- Run Spec Kit commands (for example `/speckit.constitution`, `/speckit.specify`) to capture live requirements inside `.specify/`.
-- Cross-link Spec Kit artifacts and handbook chapters when a spec becomes a lasting convention.
-- Update `.github/prompts/` if command workflows change so agents get the right guidance in-editor.
+- Use `AGENTS.md` as the process entry point.
+- Use `docs/system.md` for structure and weekly hygiene workflow.
+- Keep Tier1 canon and Tier2 handbook/report docs synchronized when behavior changes.
 
 ## Definition of “Done” for Changes
 

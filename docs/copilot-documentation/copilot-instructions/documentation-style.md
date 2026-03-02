@@ -1,76 +1,45 @@
 ---
-title: Documentation Style (Nuxt UI inspired)
+title: Documentation Style
 status: active
 updated: 2026-03-02
 ---
 
-# Documentation Style — Nuxt UI Pattern
+# Documentation Style
 Authority: Tier2 (Operational)
-
-Adopt the Nuxt UI Docs style: concise frontmatter, short intro, task-first sections, and one or two code examples. Keep tone practical and avoid over-engineering.
+Updated: 2026-03-02
 
 ## Principles
-
-- Mirror Nuxt UI docs: frontmatter with `title` + `description`, clear H1, and a short “why/what/how” flow.
-- Prefer one primary path; avoid branching instructions unless tenant differences require it.
-- Keep examples minimal (happy path + one edge); link deeper ADRs instead of inlining.
-- Cross-link: handbook chapters for canon, package docs for specifics, Spec Kit for live specs.
+- Keep docs reusable and generic.
+- Prefer one clear guide over many near-duplicate guides.
+- Keep sections short, task-first, and skimmable.
+- Use code examples only when they add direct implementation value.
 
 ## Template
-
-````markdown
+```markdown
 ---
 title: <Title>
-description: <One-sentence summary>
-status: canonical|concept|working
-updated: 2025-12-08
+status: active
+updated: <YYYY-MM-DD>
 ---
 
 # <Title>
+Authority: Tier2 (Operational)
+Updated: <YYYY-MM-DD>
 
-## Overview
+## Purpose
 
-What it is, who uses it, when to choose it.
-
-## Installation
-
-```bash
-pnpm add <package>
-# or enable in nuxt.config
-```
-````
-
-## Usage
-
-```ts
-// minimal working example
-```
-
-## Configuration
-
-Bullet the key options with defaults. Keep to one screenful.
-
-## Examples
-
-- Example 1: core happy path
-- Example 2: tenant-specific tweak (if needed)
+## Steps
 
 ## References
-
-- Link to related composables/components
-- Link to ADRs or Spec Kit items
-
 ```
 
-## Writing Rules
-- Use present tense, active voice, and short sentences.
-- Prefer bullets over paragraphs; keep sections under ~8 lines.
-- Use fenced code blocks with language hints; keep inline code for identifiers only.
-- If behaviour changes canon, update the handbook chapter and add/extend an ADR.
-- If content is temporary, mark `status: working` and park it under `copilot-documentation/temporary-reports/`.
+## Placement Rules
+- Canon and system docs: `docs/**`
+- Package docs: `packages/**/docs/**`
+- App docs: `projects/**/docs/**` (only if app-specific and non-duplicative)
+- AI memory/context: `docs/ai/**` (Tier3)
 
-## Where to place docs
-- Canonical/shared: `copilot-documentation/` and `docs/**`.
-- Package- or tenant-specific: `packages/<scope>/<name>/docs/` or `projects/<ecosystem>/<app>/docs/`.
-- Working notes: `copilot-documentation/temporary-reports/` or `copilot-documentation/imported/` when migrating old files.
-```
+## Hygiene Rules
+- Every markdown file must include `Authority` and `Updated`.
+- If behavior changes canon, update Tier1 docs in the same change.
+- Delete stale/duplicate docs instead of archiving inside the repo.

@@ -36,9 +36,8 @@ Authority: Tier2 (Operational index)
 - Weekly cadence: Monday docs hygiene update (freshness, links, authority placement, ToC drift)
 
 ## 5. Supporting Inputs (Tier3)
-- `.specify/` for active specs and tasks
-- `.github/prompts/` for spec workflow prompts
-- `AI/` for context bundles and working memory
+- `docs/ai/` for context bundles and working memory
+- `AGENTS.md` is the single process entry point for agents
 
 ## 6. ADRs
 - [ADR index](./copilot-adr/README.md)

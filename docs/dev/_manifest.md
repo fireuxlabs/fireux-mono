@@ -19,13 +19,7 @@ Updated: 2026-03-02
 - root operational docs (`README.md`, `AGENTS.md`)
 
 ## Tier3 Locations
-- `AI/**`
-- `.github/prompts/**`
-- `.specify/**`
-- `temp/**`
-- `docs/copilot-documentation/imported/**`
-- `docs/copilot-documentation/temporary-reports/**`
-- `docs/git-tree.md`
+- `docs/ai/**`
 - `.vscode/**`
 
 ## Weekly Hygiene Standard (Monday)

@@ -13,7 +13,7 @@ Updated: 2026-03-02
 - `docs/**` with explicit `Authority` header: `74`
 - `docs/**` stale over 30 days (dated files): `1`
 - `docs/**` stale over 90 days (dated files): `1`
-- Local markdown link issues in `docs/**` (excluding Tier3 archive `docs/git-tree.md`): `0`
+- Local markdown link issues in `docs/**`: `0`
 
 ## Hygiene Changes Applied This Week
 - Rebuilt top-level docs navigation and chaptering:
@@ -31,20 +31,10 @@ Updated: 2026-03-02
 - Normalized `Updated` + `Authority` metadata across all `docs/**` files.
 - Fixed a real broken local link:
   - `docs/migrations/README.md` (`../scripts/` -> `../../scripts/`)
-- Removed one invalid temporary report citation link (`sediment://...`) in:
-  - `docs/copilot-documentation/temporary-reports/dashboard-console.md`
+- Removed stale legacy report references as part of cleanup.
 
 ## Freshness Risks (Open)
-- `docs/git-tree.md` remains intentionally stale as Tier3 historical archive.
-- Newly created report/index docs are currently untracked and should be explicitly included or excluded before publish:
-  - `docs/canon/README.md`
-  - `docs/canon/server-projection-v1.md`
-  - `docs/seo/README.md`
-  - `docs/seo/global-entities-report.md`
-  - `docs/reports/README.md`
-  - `docs/reports/collection-manager-report.md`
-  - `docs/reports/weekly-docs-hygiene-2026-03-02.md`
-  - `docs/handle.md`
+- Remaining risk: ensure future weekly runs preserve the reduced-file policy (no legacy backfill folders).
 
 ## Monday Baseline Going Forward
 1. Update weekly report in `docs/reports/`.

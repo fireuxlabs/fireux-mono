@@ -1,16 +1,19 @@
 ---
-title: FireUX Canon
-description: Canonical patterns—identity, stacks, and module conventions.
+title: Architecture Patterns Reference
+description: Tier2 reference patterns for entity classes, page modes, and organism structure.
 authority: Tier2
 updated: 2026-03-02
 ---
 
-# FireUX Canon
-Authority: Tier2 (Reference; superseded by root Tier1 canon docs)
+# Architecture Patterns Reference
+Authority: Tier2 (Reference; non-authoritative)
 
-Tier1 sources: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`.
+Authoritative canon is only:
+- `docs/fireux-canon.md`
+- `docs/runtime-contract.md`
+- `docs/seo-canon.md`
 
-This doc is a Tier2 reference for FireUX runtime folder shapes and “entity organism” UI structure.
+This document is a Tier2 reference for runtime folder shapes and “entity organism” UI structure. It cannot override Tier1 canon.
 
 Related (more specific) canons:
 
@@ -227,7 +230,7 @@ Note: the current repo canon is to **avoid** `List.vue` and standardize on `Coll
 
 ## Current state (snapshot)
 
-This is a lightweight “what matches today” note based on the **CTA parent tree snapshot** in `temp/temp-cta.md` (not a full inventory).
+This is a lightweight “what matches today” note from recent runtime inventory checks (not a full inventory).
 
 - Core `User` and `App` already follow the `Cards/` + `Edit/` organism pattern.
 - Profile organisms (Chef/Supplier/Agent/Professional) already align closely with the canon tree.

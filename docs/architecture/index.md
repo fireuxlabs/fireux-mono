@@ -13,4 +13,4 @@ Authority: Tier2 (Reference index)
 How FireUX is structured: identity, composables canon, stacks, and data shapes. Start here, then dive deeper.
 
 - Core overview: `core.md`
-- Canon patterns: `canon.md`
+- Architecture patterns reference (Tier2): `canon.md`

@@ -1,4 +1,4 @@
-# Canon Reports
+# Canon Support Reports
 Authority: Tier2 (Operational index)
 Updated: 2026-03-02
 This folder contains canon-adjacent technical reports used to support decisions.
@@ -7,5 +7,5 @@ This folder contains canon-adjacent technical reports used to support decisions.
 - `server-projection-v1.md`
 
 ## Notes
-- These reports support Tier1 canon docs, but are not Tier1 themselves.
+- These reports support Tier1 canon docs, but are not canon sources themselves.
 - If conflicts appear, `docs/fireux-canon.md`, `docs/runtime-contract.md`, and `docs/seo-canon.md` win.

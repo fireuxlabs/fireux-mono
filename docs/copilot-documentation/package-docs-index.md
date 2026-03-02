@@ -37,9 +37,5 @@ Authority: Tier2 (Index/reference)
 - Handbook chapter map: `docs/copilot-documentation/copilot-00-toc.md`
 
 ## Tier3 (Non-authoritative Inputs)
-- `AI/**`
-- `.specify/**`
-- `.github/prompts/**`
-- `temp/**`
-- `docs/copilot-documentation/imported/**`
-- `docs/git-tree.md`
+- `docs/ai/**`
+- `.vscode/**`

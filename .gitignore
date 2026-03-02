@@ -106,7 +106,7 @@ migrations/backups/*.json
 # Documentation artifacts
 artifacts/
 
-# AI docs are versioned (canon/ops/history audits depend on diffs)
+# AI memory docs are versioned under docs/ai (canon/ops/history audits depend on diffs)
 # If we need to exclude generated artifacts later, ignore them selectively by pattern.
 
 # Mirror (disposable snapshots; safe to delete/recreate)

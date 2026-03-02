@@ -77,7 +77,7 @@ Updated: 2026-03-02
 ## Conflicts Resolved
 - Previous broad “[id] for all object pages” guidance is replaced by the mixed route policy above (public slug, internal id).
 - Kitchen live/test split is canonicalized here and supersedes ambiguous one-collection summaries.
-- Runtime selection canon is state-based for consoles; query-selection statements in Tier3 AI/history docs are non-authoritative.
+- Runtime selection canon is state-based for consoles; query-selection statements in Tier3 history docs are non-authoritative.
 
 ## TBD Decisions (Deano)
 - Slug rollout scope for currently id-based public entities (jobs/places/companies/kitchens):
@@ -86,6 +86,6 @@ Updated: 2026-03-02
 - SEO enforcement timing:
   - Default: after Kitchen MVP polish (next sprint after console stability)
   - Includes: robots/meta noindex, sitemap, JSON-LD helpers, canonical URLs
-- AI/** tracking policy:
-  - Default: keep AI/** ignored
-  - Optional later: track `AI/README.md` + `AI/codex-threads/index.md` only
+- Tier3 AI memory location:
+  - Default: keep Tier3 memory under `docs/ai/**`
+  - Tier3 memory is tracked for auditability but is non-authoritative
