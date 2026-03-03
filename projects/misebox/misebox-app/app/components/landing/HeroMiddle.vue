@@ -6,9 +6,10 @@
       <UButton
         size="lg"
         color="primary"
-        to="/kitchens"
+        to="/get-started"
+        icon="i-lucide-rocket"
       >
-        Open kitchens
+        Get started
       </UButton>
 
       <UButton

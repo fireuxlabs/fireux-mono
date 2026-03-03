@@ -7,6 +7,7 @@
         size="lg"
         color="primary"
         to="/get-started"
+        icon="i-lucide-rocket"
       >
         Get started
       </UButton>
@@ -17,7 +18,7 @@
         to="/crews"
         trailing-icon="i-lucide-arrow-right"
       >
-        Explore crews
+        Browse crews
       </UButton>
     </div>
   </div>

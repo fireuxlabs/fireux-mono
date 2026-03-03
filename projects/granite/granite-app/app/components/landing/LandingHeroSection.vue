@@ -19,46 +19,22 @@
 
         <div class="landing-hero__actions">
           <UButton
-            to="/dashboard/portfolios"
+            to="/get-started"
             size="lg"
             color="primary"
-            icon="i-lucide-building"
+            icon="i-lucide-rocket"
           >
-            Select portfolio
+            Get started
           </UButton>
 
           <UButton
             to="/dashboard/portfolios"
             size="lg"
             variant="outline"
-            icon="i-lucide-terminal"
+            trailing-icon="i-lucide-arrow-right"
           >
-            Enter via selector
+            Browse portfolios
           </UButton>
-
-          <UButton
-            v-if="hasConsoleEntry"
-            to="/console"
-            size="lg"
-            variant="soft"
-            color="neutral"
-            icon="i-lucide-terminal"
-          >
-            Go to console
-          </UButton>
-
-          <ClientOnly>
-            <UButton
-              v-if="!isAuthenticated"
-              to="/get-started"
-              size="lg"
-              variant="soft"
-              color="neutral"
-              icon="i-lucide-arrow-right"
-            >
-              Get started
-            </UButton>
-          </ClientOnly>
         </div>
       </div>
 
@@ -83,13 +59,3 @@
     </div>
   </section>
 </template>
-
-<script setup lang="ts">
-import { computed } from 'vue'
-import { useConsoleEntryCta } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleEntryCta'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-
-const auth = import.meta.client ? useAuth() : null
-const isAuthenticated = computed(() => auth?.isAuthenticated?.value ?? false)
-const { hasConsoleEntry } = useConsoleEntryCta()
-</script>

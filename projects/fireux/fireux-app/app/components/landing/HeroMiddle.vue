@@ -3,7 +3,7 @@
     <p class="landing-hero__paragraph" v-html="paragraph" />
 
     <div class="landing-hero__actions">
-      <UButton size="lg" color="primary" to="/get-started">
+      <UButton size="lg" color="primary" to="/get-started" icon="i-lucide-rocket">
         Get started
       </UButton>
 
@@ -13,7 +13,7 @@
         to="/projects"
         trailing-icon="i-lucide-arrow-right"
       >
-        Explore projects
+        Browse projects
       </UButton>
     </div>
   </div>

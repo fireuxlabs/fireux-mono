@@ -74,6 +74,20 @@ export function useConsoleEntryCta(options: UseConsoleEntryCtaOptions = {}) {
   })
 
   const consoleEntryLabel = computed(() => `${runtimeScopeLabel.value} Console`)
+  const toScopeLabel = (key: string) =>
+    String(key || '')
+      .split(/[-_]+/)
+      .filter(Boolean)
+      .map((part) => part[0]?.toUpperCase() + part.slice(1))
+      .join(' ')
+
+  const consoleEntries = computed(() =>
+    runtimeScopes.value.map((scope) => ({
+      key: scope.key,
+      path: scope.path,
+      label: `${toScopeLabel(scope.key) || 'Runtime'} Console`,
+    }))
+  )
 
   const hasConsoleEntry = computed(() =>
     requireRuntimeScope
@@ -101,6 +115,7 @@ export function useConsoleEntryCta(options: UseConsoleEntryCtaOptions = {}) {
     runtimeScopeLabel,
     consoleEntryLabel,
     consoleEntryPath,
+    consoleEntries,
     runtimeScopes,
     preferredRuntimeKey,
     consolePath,
