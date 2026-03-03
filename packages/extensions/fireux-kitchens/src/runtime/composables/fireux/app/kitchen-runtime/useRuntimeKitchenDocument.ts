@@ -12,7 +12,7 @@ export function useRuntimeKitchenDocument(params: {
     hydrate: true,
   })
 
-  return computed(() => {
+  const doc = computed(() => {
     if (params.isReadOnly.value) {
       if (!params.id.value) return null
       return getReadOnlyKitchenScenario(params.id.value).kitchen ?? null
@@ -21,4 +21,15 @@ export function useRuntimeKitchenDocument(params: {
 
     return liveKitchen.value ?? null
   })
+
+  const pending = computed(() => {
+    if (!params.id.value) return false
+    if (params.isReadOnly.value) return false
+    return liveKitchen.value === undefined
+  })
+
+  return {
+    doc,
+    pending,
+  }
 }

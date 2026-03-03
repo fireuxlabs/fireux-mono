@@ -1,14 +1,14 @@
 <!-- packages/core/fireux-core/src/runtime/components/layouts/default/Header.vue -->
 <template>
   <ClientOnly>
-    <!-- Single-source mobile toggle via UHeader -->
     <UHeader
       mode="slideover"
+      class="fx-header"
+      :ui="headerUi"
       data-fireux-header-root
     >
-      <!-- Brand -->
       <template #title>
-        <NuxtLink to="/" aria-label="Home">
+        <NuxtLink to="/" aria-label="Home" class="fx-header__brand-link">
           <AppBrandWordmark
             size="large"
             light-src="/img/app/wordmark-light.svg"
@@ -17,93 +17,80 @@
         </NuxtLink>
       </template>
 
-      <!-- Desktop nav (hidden on mobile by Nuxt UI) -->
       <div data-fireux-header-center>
         <UNavigationMenu
           v-if="!navDisabled && desktopItems.length"
           orientation="horizontal"
           :items="desktopItems"
+          variant="pill"
+          highlight
+          color="neutral"
+          :ui="desktopNavUi"
         />
       </div>
 
-      <!-- Right side: auth funnel -->
       <template #right>
         <div
           data-fireux-header-right
           class="flex items-center justify-end gap-1.5"
         >
           <UButton
-            v-if="canShowQr"
-            size="sm"
-            variant="ghost"
-            color="neutral"
-            icon="i-lucide-qr-code"
-            aria-label="Show professional card"
-            class="sm:hidden"
-            @click="showBusinessCard = !showBusinessCard"
-          />
-          <!-- Signed out => Sign in -->
-          <UButton
             v-if="!isAuthenticated"
             to="/auth"
             size="sm"
             color="primary"
             variant="solid"
+            class="fx-header__auth-cta"
             data-fireux-header-cta
           >
             Sign in
           </UButton>
 
-          <!-- Signed in => dashboard -->
           <UButton
             v-else
             to="/dashboard"
-            variant="ghost"
-            color="neutral"
+            variant="soft"
+            color="primary"
             aria-label="Go to dashboard"
+            class="fx-header__avatar-button"
             data-fireux-header-avatar
           >
-            <UAvatar :src="avatarSrc" :text="initials" size="sm" />
+            <UAvatar :src="avatarSrc" text="A" size="sm" class="fx-header__avatar" />
           </UButton>
         </div>
       </template>
 
-      <!-- Mobile panel content -->
       <template #body>
-        <UNavigationMenu
-          v-if="!navDisabled && mobileItems.length"
-          orientation="vertical"
-          :items="mobileItems"
-        />
+        <div class="fx-header__mobile-body">
+          <UButton
+            :to="mobileAction.to"
+            :icon="mobileAction.icon"
+            color="neutral"
+            variant="soft"
+            block
+            class="fx-header__mobile-action"
+          >
+            {{ mobileAction.label }}
+          </UButton>
+
+          <UNavigationMenu
+            v-if="!navDisabled && mobileItems.length"
+            orientation="vertical"
+            :items="mobileItems"
+            :ui="mobileNavUi"
+            class="w-full"
+          />
+        </div>
       </template>
     </UHeader>
-
-    <UModal
-      v-if="canShowQr && showBusinessCard"
-      v-model="showBusinessCard"
-      :ui="{ overlay: 'bg-black/80' }"
-    >
-      <div class="h-[calc(100vh-4rem)] w-full max-w-none p-4">
-        <ProfilesProfessionalCardsBusiness
-          :card="professionalCard"
-          :profile-url="professionalUrl"
-          @press="handleBusinessCardPress"
-        />
-      </div>
-    </UModal>
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
-import { computed, navigateTo, onErrorCaptured, ref, useRequestURL, watch } from '#imports'
-import { useProfessionalInterface } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
-import type { ProfessionalApp, ProfessionalCore } from 'fireux-jobs/runtime/models/profiles/Professional/Professional.model'
-import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
-import { onMounted } from 'vue'
+import { computed, onErrorCaptured, ref } from '#imports'
 import { useDefaultNav } from '../../../composables/fireux/app/routing/presets'
 import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
-import { useProfileFetch } from '../../../composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
 defineOptions({ name: 'LayoutsDefaultHeader' })
@@ -117,6 +104,30 @@ const desktopItems = computed(() =>
 const mobileItems = computed(() =>
   Array.isArray(mobile.value) ? mobile.value.filter(Boolean) : []
 )
+
+const headerUi = {
+  root: 'border-b border-default/80 bg-default/75 backdrop-blur-xl supports-[backdrop-filter]:bg-default/65',
+  container: 'h-(--ui-header-height)',
+  center: 'hidden lg:flex lg:min-w-0 lg:flex-1 lg:justify-center',
+  left: 'flex items-center gap-2 lg:flex-1',
+  right: 'flex items-center justify-end gap-2 lg:flex-1',
+  toggle: 'lg:hidden',
+  body: 'space-y-4 p-4 sm:p-5',
+}
+
+const desktopNavUi = {
+  root: 'rounded-full border border-default/80 bg-elevated/70 px-1.5 py-1 shadow-sm backdrop-blur',
+  list: 'gap-0.5',
+  item: 'py-0',
+  link: 'rounded-full px-3 py-1.5 text-sm text-toned hover:text-highlighted',
+}
+
+const mobileNavUi = {
+  root: 'rounded-2xl border border-default/80 bg-elevated/40 p-1.5',
+  list: 'gap-1',
+  item: 'py-0',
+  link: 'rounded-xl px-3 py-2 text-sm font-medium text-toned hover:text-highlighted',
+}
 
 const navDisabled = ref(false)
 
@@ -140,53 +151,6 @@ const { getProxiedAvatarUrl } = useAvatarProxy()
 // Guard user access to client only to avoid pulling Firebase on SSR.
 const userApi = import.meta.client ? useUser() : null
 const userRef = userApi?.user ?? computed(() => null)
-const showBusinessCard = ref(false)
-const requestUrl = useRequestURL()
-
-onMounted(() => {
-  showBusinessCard.value = false
-})
-
-const professionalId = computed(() => userRef.value?.id ?? null)
-const professionalFetch = import.meta.client
-  ? useProfileFetch<ProfessionalCore, ProfessionalApp>(
-      professionalId,
-      professionalConfig
-    )
-  : null
-const professionalProfile = computed(
-  () => professionalFetch?.profile.coreProfile.value ?? null
-)
-const professionalInterface = professionalFetch
-  ? useProfessionalInterface(professionalFetch.profile)
-  : null
-const professionalCard = computed(() => {
-  if (!professionalInterface || !professionalProfile.value) return null
-  const resolved = {
-    ...professionalProfile.value,
-    user: userRef.value ?? undefined,
-  }
-  return professionalInterface.card(resolved)
-})
-const professionalUrl = computed(() => {
-  const to = professionalCard.value?.to
-  if (!to) return ''
-  const origin = requestUrl?.origin ?? ''
-  if (!origin) return to
-  return new URL(to, origin).toString()
-})
-const canShowQr = computed(() => Boolean(professionalCard.value && professionalUrl.value))
-
-watch(canShowQr, (enabled: boolean) => {
-  if (!enabled) showBusinessCard.value = false
-})
-
-const handleBusinessCardPress = async () => {
-  showBusinessCard.value = false
-  const id = professionalId.value
-  if (!id) return
-  await navigateTo(`/professionals/${id}`)
-}
 
 const avatarSrc = computed(() => {
   const raw = userRef.value?.avatar || authUserRef.value?.photoURL
@@ -195,22 +159,64 @@ const avatarSrc = computed(() => {
   return proxied || undefined
 })
 
-const initials = computed(() => {
-  const displayName =
-    (userRef.value?.display_name ?? authUserRef.value?.displayName ?? '').trim()
-  const handle = (userRef.value?.handle ?? '').trim()
-  const emailLocal = String(authUserRef.value?.email || '')
-    .split('@')[0]
-    ?.trim()
-  const base = displayName || handle || emailLocal
-  if (!base) return 'A'
-
-  const parts = base.split(/\s+/).filter(Boolean)
-  if (parts.length >= 2) {
-    return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase() || 'A'
+const mobileAction = computed(() => {
+  if (isAuthenticated.value) {
+    return {
+      label: 'Open Dashboard',
+      to: '/dashboard',
+      icon: 'i-lucide-layout-dashboard',
+    }
   }
 
-  return base.slice(0, 2).toUpperCase() || 'A'
+  return {
+    label: 'Sign in to continue',
+    to: '/auth',
+    icon: 'i-lucide-log-in',
+  }
 })
 
 </script>
+
+<style scoped>
+.fx-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.fx-header::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--ui-primary) 50%, transparent 100%);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.fx-header__brand-link {
+  display: inline-flex;
+  align-items: center;
+}
+
+.fx-header__auth-cta {
+  box-shadow: 0 8px 26px color-mix(in srgb, var(--ui-primary) 30%, transparent);
+}
+
+.fx-header__avatar-button {
+  border: 1px solid color-mix(in srgb, var(--ui-primary) 35%, var(--ui-border));
+}
+
+.fx-header__avatar {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ui-primary) 24%, transparent);
+}
+
+.fx-header__mobile-body {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.fx-header__mobile-action {
+  justify-content: center;
+}
+</style>

@@ -20,24 +20,32 @@ export function useRuntimeKitchen(params?: UseRuntimeKitchenParams) {
   const selection = useRuntimeKitchenSelection()
 
   const { id, mode, isReadOnly } = useRuntimeKitchenContext(params, selection)
-  const kitchenCollectionPath = computed(() => resolveRuntimeKitchenCollectionPath(mode.value))
+  const collectionPath = computed(() => resolveRuntimeKitchenCollectionPath(mode.value))
 
-  const kitchen = useRuntimeKitchenDocument({
+  const { doc, pending } = useRuntimeKitchenDocument({
     id,
     isReadOnly,
-    kitchenCollectionPath,
+    kitchenCollectionPath: collectionPath,
   })
   const data = useRuntimeKitchenData({
     id,
     isReadOnly,
-    kitchenCollectionPath,
+    kitchenCollectionPath: collectionPath,
   })
 
   return {
     id,
     mode,
-    kitchen,
-    kitchenCollectionPath,
+    isReadOnly,
+    collectionPath,
+
+    // Canon runtime contract
+    doc,
+    pending,
     data,
+
+    // Backward-compatible aliases for existing kitchen usage
+    kitchen: doc,
+    kitchenCollectionPath: collectionPath,
   }
 }

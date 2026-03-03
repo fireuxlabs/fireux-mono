@@ -3,8 +3,8 @@ import { normalizeMode, normalizeString, type RuntimeKitchenMode } from './share
 import type { useRuntimeKitchenSelection } from './state'
 
 export type UseRuntimeKitchenParams = {
-  kitchenId: string | Ref<string | null | undefined>
-  mode: RuntimeKitchenMode | Ref<RuntimeKitchenMode | null | undefined>
+  kitchenId?: string | Ref<string | null | undefined>
+  mode?: RuntimeKitchenMode | Ref<RuntimeKitchenMode | null | undefined>
 }
 
 export function useRuntimeKitchenContext(

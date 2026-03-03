@@ -18,3 +18,7 @@ export const normalizeMode = (value: unknown): RuntimePortfolioMode | null => {
   if (normalized === 'live' || normalized === 'read-only') return normalized
   return null
 }
+
+export const resolveRuntimePortfolioCollectionPath = (
+  _mode: RuntimePortfolioMode
+): 'portfolios' => 'portfolios'

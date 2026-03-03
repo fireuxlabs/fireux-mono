@@ -6,6 +6,7 @@ import {
   type ReadOnlyPortfolioScenario,
 } from './read-only-scenarios'
 import { useRuntimePortfolioSelection } from './state'
+import { resolveRuntimePortfolioCollectionPath } from './shared'
 import {
   useRuntimePortfolioContext,
   type UseRuntimePortfolioParams,
@@ -18,8 +19,9 @@ export function useRuntimePortfolio(params?: UseRuntimePortfolioParams) {
   const selection = useRuntimePortfolioSelection()
   const { id, mode, isReadOnly } = useRuntimePortfolioContext(params, selection)
   const { firestoreFetchCollection } = useFirestoreRead()
+  const collectionPath = computed(() => resolveRuntimePortfolioCollectionPath(mode.value))
 
-  const livePortfolios = firestoreFetchCollection<Portfolio>('portfolios')
+  const livePortfolios = firestoreFetchCollection<Portfolio>(collectionPath.value)
 
   const scenario = computed<ReadOnlyPortfolioScenario | null>(() => {
     if (!isReadOnly.value || !id.value) return null
@@ -37,11 +39,30 @@ export function useRuntimePortfolio(params?: UseRuntimePortfolioParams) {
     )
   })
 
+  const pending = computed(() => {
+    if (!id.value) return false
+    if (isReadOnly.value) return false
+    return livePortfolios.value === undefined
+  })
+
+  const doc = computed<Portfolio | null>(() => portfolio.value)
+  const data = computed(() => ({
+    scenario: scenario.value,
+  }))
+
   return {
     id,
     mode,
     isReadOnly,
-    portfolio,
+    collectionPath,
+
+    // Canon runtime contract
+    doc,
+    pending,
+    data,
+
+    // Backward-compatible aliases
+    portfolio: doc,
     scenario,
   }
 }
