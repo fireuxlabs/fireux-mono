@@ -11,8 +11,6 @@
     console-bridge-line="One connected console to run service, grow your team, and keep <strong>execution tight</strong>."
     :hero-bullets="heroBullets"
     :right-panel-items="rightPanelItems"
-    right-panel-long-button-label="Get started"
-    right-panel-long-button-to="/get-started"
   >
     <template #get-started>
       <LandingGetStarted />

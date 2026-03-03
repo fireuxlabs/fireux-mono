@@ -11,8 +11,6 @@
     console-bridge-line="The operating system for building and running domain applications from one shared, <strong>extensible core</strong>."
     :hero-bullets="heroBullets"
     :right-panel-items="rightPanelItems"
-    right-panel-long-button-label="Get started"
-    right-panel-long-button-to="/get-started"
   >
     <template #get-started>
       <LandingGetStarted />

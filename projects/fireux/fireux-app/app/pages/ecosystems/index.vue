@@ -174,6 +174,7 @@ useSeoMeta({
 })
 
 definePageMeta({
+  keyEntitiesTag: 'ecosystems',
   nav: {
     key: 'ecosystems',
     label: 'Ecosystems',

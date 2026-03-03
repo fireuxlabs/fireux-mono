@@ -11,8 +11,6 @@
     console-bridge-line="The operating system for local supply and <strong>delivery execution</strong> from one connected console."
     :hero-bullets="heroBullets"
     :right-panel-items="rightPanelItems"
-    right-panel-long-button-label="Open supplier workspace"
-    right-panel-long-button-to="/suppliers"
   >
     <template #get-started>
       <LandingGetStarted />

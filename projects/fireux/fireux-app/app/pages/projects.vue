@@ -27,6 +27,7 @@
 <script setup lang="ts">
 definePageMeta({
   title: 'Projects',
+  keyEntitiesTag: 'apps',
 })
 
 useSeoMeta({

@@ -26,6 +26,7 @@ definePageMeta({
   layout: 'default',
   title: 'Jobs',
   description: 'Browse jobs.',
+  keyEntitiesTag: 'jobs',
   nav: {
     key: 'jobs',
     label: 'Jobs',
@@ -43,4 +44,3 @@ useHead({ title: `${appName} | ${pageTitle}` })
 const { appJobs } = useJobCollection()
 const collection = computed(() => appJobs.value ?? [])
 </script>
-

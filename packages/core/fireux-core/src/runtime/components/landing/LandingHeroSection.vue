@@ -53,7 +53,7 @@
                 variant="subtle"
                 color="primary"
                 :to="entry.path"
-                icon="i-lucide-terminal"
+                icon="i-lucide-circle-play"
               >
                 {{ entry.label }}
               </UButton>
@@ -119,15 +119,24 @@
             </ul>
 
             <template #footer>
-              <div class="flex justify-end">
+              <div class="space-y-3">
                 <UButton
-                  v-if="rightPanelLongButtonLabel && rightPanelLongButtonTo"
-                  :to="rightPanelLongButtonTo"
-                  variant="outline"
-                  trailing-icon="i-lucide-arrow-right"
+                  :to="longButtonToResolved"
+                  block
+                  color="primary"
                 >
-                  {{ rightPanelLongButtonLabel }}
+                  {{ longButtonLabelResolved }}
                 </UButton>
+                <div v-if="rightPanelTagsResolved.length" class="flex flex-wrap gap-2">
+                  <UBadge
+                    v-for="tag in rightPanelTagsResolved"
+                    :key="tag"
+                    variant="soft"
+                    color="primary"
+                  >
+                    {{ tag }}
+                  </UBadge>
+                </div>
               </div>
             </template>
           </UCard>
@@ -156,7 +165,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useConsoleEntryCta } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleEntryCta'
+import { useKeyEntityTags } from 'fireux-core/runtime/composables/fireux/app/routing/useKeyEntityTags'
 
 type RightPanelItem = {
   title: string
@@ -175,6 +186,7 @@ const props = defineProps<{
   consoleBridgeLine?: string
   heroBullets?: string[]
   rightPanelItems?: RightPanelItem[]
+  rightPanelTags?: string[]
   rightPanelLongButtonLabel?: string
   rightPanelLongButtonTo?: string
 }>()
@@ -186,8 +198,22 @@ const appAlt = computed(() => {
 
 const heroBulletsResolved = computed(() => props.heroBullets ?? [])
 const rightPanelItemsResolved = computed(() => props.rightPanelItems ?? [])
+const { keyEntityTags } = useKeyEntityTags()
+const rightPanelTagsResolved = computed(() =>
+  props.rightPanelTags?.length ? props.rightPanelTags : keyEntityTags.value
+)
 
 const { hasConsoleEntry, consoleEntries } = useConsoleEntryCta()
+const auth = import.meta.client ? useAuth() : null
+const isAuthenticated = computed(() => auth?.isAuthenticated?.value ?? false)
+
+const longButtonLabelResolved = computed(
+  () => props.rightPanelLongButtonLabel || (isAuthenticated.value ? 'Go to dashboard' : 'Sign up')
+)
+
+const longButtonToResolved = computed(
+  () => props.rightPanelLongButtonTo || (isAuthenticated.value ? '/dashboard' : '/auth')
+)
 </script>
 
 <style scoped>

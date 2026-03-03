@@ -11,8 +11,6 @@
     console-bridge-line="The operating system for repeatable cleaning operations with <strong>proof</strong>, quality control, and billing discipline."
     :hero-bullets="heroBullets"
     :right-panel-items="rightPanelItems"
-    right-panel-long-button-label="Get started"
-    right-panel-long-button-to="/get-started"
   >
     <template #get-started>
       <LandingGetStarted />

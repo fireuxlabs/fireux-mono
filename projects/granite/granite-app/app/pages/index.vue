@@ -11,8 +11,6 @@
     console-bridge-line="<strong>Branch-grade</strong> portfolio oversight with <strong>audit-ready</strong> records and clear accountability."
     :hero-bullets="heroBullets"
     :right-panel-items="rightPanelItems"
-    right-panel-long-button-label="Open portfolio workspace"
-    right-panel-long-button-to="/dashboard/portfolios"
   >
     <template #get-started>
       <LandingGetStarted />

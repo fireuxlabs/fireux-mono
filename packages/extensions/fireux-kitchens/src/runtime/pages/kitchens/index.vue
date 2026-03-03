@@ -19,6 +19,7 @@ import { computed } from 'vue'
 import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 
 definePageMeta({
+  keyEntitiesTag: 'kitchens',
   nav: {
     key: 'kitchens',
     label: 'Kitchens',
