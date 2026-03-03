@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
 import { useFireUXConfig } from '../../FireUXConfig'
 import type { NavItem, NavMeta } from '../../../../../../types/nav'
@@ -122,9 +122,11 @@ function includeTenant(
   return true
 }
 
-export function useNav(targetLayouts: TargetLayouts = [DEFAULT_LAYOUT]) {
+export function useNav(
+  targetLayouts: MaybeRefOrGetter<TargetLayouts> = [DEFAULT_LAYOUT]
+) {
   const router = useRouter()
-  const wanted = ensureLayouts(targetLayouts)
+  const wanted = computed(() => ensureLayouts(toValue(targetLayouts)))
   const fireux = useFireUXConfig()
 
   const items = computed<NavItem[]>(() => {
@@ -137,7 +139,7 @@ export function useNav(targetLayouts: TargetLayouts = [DEFAULT_LAYOUT]) {
       const meta = route.meta as RouteMetaLike
       if (!isNavMeta(meta.nav)) continue
 
-      const item = buildNavItem(route, meta.nav, wanted)
+      const item = buildNavItem(route, meta.nav, wanted.value)
       if (!item) continue
 
       const dedupeKey = item.key ?? item.to ?? item.label

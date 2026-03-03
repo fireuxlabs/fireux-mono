@@ -4,6 +4,7 @@ import type {
   User,
 } from '../../../../../../../models/core/user.model'
 import { useFireUXConfig } from '../../../../../app/FireUXConfig'
+import { useAvatarProxy } from '../../../../../app/ui/useAvatarProxy'
 import { useAuth } from '../../../../../firebase/useAuth'
 import type { UserRefs } from '../../fetch/useUserFetch'
 
@@ -28,8 +29,9 @@ export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
   const coreUser = user.coreUser as { value: User | null | undefined }
   const appUser = user.appUser as { value: AppUser | null | undefined }
 
-  const { uid, isAuthenticated } = useAuth()
+  const { uid, isAuthenticated, currentUser: authUserRef } = useAuth()
   const { isTenant, appId } = useFireUXConfig()
+  const { getProxiedAvatarUrl } = useAvatarProxy()
 
   const isPending = computed(() => Boolean(pending?.value))
   const isLoading = computed(
@@ -84,8 +86,16 @@ export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
     return profiles.includes(key)
   }
 
+  const avatarSrc = computed<string | undefined>(() => {
+    const raw = coreUser.value?.avatar || authUserRef.value?.photoURL
+    const normalized = typeof raw === 'string' ? raw.trim() : ''
+    const proxied = getProxiedAvatarUrl(normalized || undefined)
+    return proxied || undefined
+  })
+
   return {
     currentUser,
+    avatarSrc,
     isLoading,
     isResolved,
     isInitialized,
