@@ -8,7 +8,8 @@
 
 <script setup lang="ts">
 const title = 'Get started'
-const subtitle = 'Kitchen profiles, professionals, and roles - in one workspace.'
+const subtitle =
+  'Kitchen operations, professionals, and roles - in one connected workspace.'
 
 const items = [
   {

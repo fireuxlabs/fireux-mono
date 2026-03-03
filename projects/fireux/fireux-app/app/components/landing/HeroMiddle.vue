@@ -16,10 +16,15 @@
         Browse projects
       </UButton>
     </div>
+
+    <p class="landing-hero__paragraph" v-html="systemLine" />
   </div>
 </template>
 
 <script setup lang="ts">
 const paragraph =
-  'A low-code ecosystem for responsive, scalable, and data-driven applications built upon <span class="text-primary">Nuxt4</span> &amp; <span class="text-primary">Firebase</span>.'
+  'FireUX is the console architecture for builders and operators. A low-code ecosystem for responsive, scalable, and data-driven applications built upon <a href="/developer/technologies"><strong>Nuxt 4</strong></a> &amp; <a href="/developer/technologies"><strong>Firebase</strong></a>.'
+
+const systemLine =
+  'The operating system for building and running domain applications from one shared, extensible core.'
 </script>

@@ -21,10 +21,15 @@
         Browse crews
       </UButton>
     </div>
+
+    <p class="landing-hero__paragraph" v-html="systemLine" />
   </div>
 </template>
 
 <script setup lang="ts">
 const paragraph =
-  'Coordinate crews, quality checks, and billing from one console. Cleanbox keeps every service <span class="text-primary">scheduled</span>, <span class="text-primary">verified</span>, and <span class="text-primary">client-ready</span>.'
+  'Cleanbox is the operating system for cleaning companies and crews. Coordinate schedules, quality checks, and billing from one streamlined console. Keep every service <span class="text-primary">verified</span>, recurring, and client-ready.'
+
+const systemLine =
+  'The operating system for repeatable cleaning operations with proof, quality control, and billing discipline.'
 </script>

@@ -10,6 +10,6 @@
 </template>
 
 <script setup lang="ts">
-const title = 'Kitchen operations,'
-const accent = 'made simple'
+const title = 'Service-Ready'
+const accent = 'Kitchen Control'
 </script>
