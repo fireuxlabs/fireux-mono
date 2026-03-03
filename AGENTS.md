@@ -34,6 +34,8 @@ If any Tier2/Tier3 doc conflicts with Tier1, Tier1 wins.
 4. `docs/runtime-contract.md`
 5. `docs/seo-canon.md`
 
+Note: The repository `AI/` folder was moved to `docs/ai/`. See `docs/ai/` for AI-related notes, chat transcripts, and codex threads.
+
 ## Authoring rules
 - Keep docs reusable and generic; avoid app-specific duplication unless truly unique.
 - Prefer one operational guide over many near-duplicate guides.
