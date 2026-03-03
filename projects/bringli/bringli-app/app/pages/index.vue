@@ -1,166 +1,24 @@
 <template>
   <EffectsLandingEffect />
+  <LandingHeroSection />
+  <div class="landing-index-divider">
+    <USeparator
+      :avatar="{
+        src: '/img/app/logo.png',
+        alt: 'Bringli',
+      }"
+      color="primary"
+    />
+  </div>
 
-  <LandingShell>
-    <template #left>
-      <div class="landing-hero">
-        <div class="landing-hero__heading">
-          <h1 class="hero-title">
-            <strong>{{ heroTitle }}</strong>
-          </h1>
-          <h1 v-if="heroAccent" class="hero-title hero-title--accent">
-            {{ heroAccent }}
-          </h1>
-        </div>
-
-        <div class="landing-hero__body">
-          <p class="landing-hero__paragraph" v-html="heroParagraph" />
-
-          <div class="landing-hero__actions">
-            <UButton
-              to="/suppliers"
-              size="lg"
-              color="primary"
-              icon="i-lucide-rocket"
-            >
-              Get started
-            </UButton>
-            <UButton
-              to="/suppliers"
-              size="lg"
-              variant="outline"
-              trailing-icon="i-lucide-arrow-right"
-            >
-              Browse producers
-            </UButton>
-          </div>
-
-          <p class="landing-hero__paragraph" v-html="systemLine" />
-        </div>
-
-        <div
-          v-if="hasConsoleEntry && consoleEntries.length"
-          class="landing-hero__actions"
-        >
-          <UButton
-            v-for="entry in consoleEntries"
-            :key="entry.key"
-            size="lg"
-            variant="subtle"
-            color="primary"
-            :to="entry.path"
-            icon="i-lucide-terminal"
-          >
-            {{ entry.label }}
-          </UButton>
-        </div>
-
-        <ul class="grid gap-3 pt-2 sm:grid-cols-2">
-          <li
-            v-for="item in heroBullets"
-            :key="item.text"
-            class="flex items-center gap-2 text-sm"
-          >
-            <UIcon :name="item.icon" class="shrink-0 text-primary" />
-            <span>{{ item.text }}</span>
-          </li>
-        </ul>
-      </div>
-    </template>
-
-    <template #right>
-      <UCard>
-        <template #header>
-          <div class="space-y-1">
-            <h2 class="text-2xl font-semibold">{{ quickPeek.title }}</h2>
-            <p class="text-sm text-[color:var(--ui-text-muted)]">
-              {{ quickPeek.subtitle }}
-            </p>
-          </div>
-        </template>
-
-        <ul class="space-y-4">
-          <li
-            v-for="item in quickPeek.items"
-            :key="item.title"
-            class="flex gap-3"
-          >
-            <div
-              class="grid h-10 w-10 place-items-center rounded-lg bg-primary/15 text-primary"
-            >
-              <UIcon :name="item.icon" />
-            </div>
-            <div class="space-y-1">
-              <h3 class="font-medium">{{ item.title }}</h3>
-              <p class="text-sm text-[color:var(--ui-text-muted)]">
-                {{ item.description }}
-              </p>
-            </div>
-          </li>
-        </ul>
-
-        <template #footer>
-          <div
-            class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <p class="text-sm text-[color:var(--ui-text-muted)]">
-              Start in Interlaken. Scale market by market.
-            </p>
-            <UButton
-              to="/suppliers"
-              variant="outline"
-              trailing-icon="i-lucide-arrow-right"
-            >
-              Open supplier workspace
-            </UButton>
-          </div>
-        </template>
-      </UCard>
-    </template>
-  </LandingShell>
-
-  <UPageSection class="space-y-10 py-12 lg:py-16">
-    <div class="mx-auto max-w-2xl space-y-3 text-center">
-      <h2 class="text-3xl font-black">Bringli workflows</h2>
-      <p class="text-base text-[color:var(--ui-text-muted)] lg:text-lg">
-        The first pipe is supplier operations. Then we widen into full
-        marketplace flows.
-      </p>
-    </div>
-
-    <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-      <UCard v-for="item in solutionCards" :key="item.title" :to="item.to">
-        <template #header>
-          <div class="flex items-start gap-3">
-            <div
-              class="grid h-10 w-10 place-items-center rounded-full bg-primary/10 text-primary"
-            >
-              <UIcon :name="item.icon" />
-            </div>
-            <div class="space-y-1">
-              <UBadge variant="soft" color="primary">{{ item.badge }}</UBadge>
-              <h3 class="text-lg font-semibold">{{ item.title }}</h3>
-            </div>
-          </div>
-        </template>
-
-        <p class="text-sm text-[color:var(--ui-text-muted)]">
-          {{ item.description }}
-        </p>
-
-        <template #footer>
-          <UButton variant="ghost" size="sm" trailing-icon="i-lucide-arrow-right">
-            {{ item.cta }}
-          </UButton>
-        </template>
-      </UCard>
-    </div>
-  </UPageSection>
+  <div class="landing-index-flow">
+    <LandingGetStarted />
+    <LandingProducts />
+    <LandingApps />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { useConsoleEntryCta } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleEntryCta'
-
 definePageMeta({
   layout: 'landing',
   nav: {
@@ -178,114 +36,4 @@ useSeoMeta({
   description:
     'Bringli is a local delivery marketplace for homes and businesses, starting with supplier operations powered by Drop.',
 })
-
-const heroParagraph =
-  'Bringli is the operating system for producers and customers. Connect local producers, suppliers, and households in one simple order and drop flow powered by <a href="/suppliers"><strong>Drop</strong></a>.'
-const systemLine =
-  'The operating system for local supply and delivery execution from one connected console.'
-const heroTitle = 'Local Producers,'
-const heroAccent = 'Delivered'
-
-const { hasConsoleEntry, consoleEntries } = useConsoleEntryCta()
-
-const heroBullets = [
-  {
-    icon: 'i-lucide-leaf',
-    text: 'Fresh local producers and suppliers in one directory',
-  },
-  {
-    icon: 'i-lucide-truck',
-    text: 'Home and business dropoff flows built for reliability',
-  },
-  {
-    icon: 'i-lucide-store',
-    text: 'Supplier onboarding and profile management through Drop',
-  },
-  {
-    icon: 'i-lucide-map-pinned',
-    text: 'Launched in Interlaken with market-by-market expansion',
-  },
-]
-
-const quickPeek = {
-  title: 'Operations at a glance',
-  subtitle: 'Supplier-first execution for the first Bringli release',
-  items: [
-    {
-      icon: 'i-lucide-users',
-      title: 'Supplier management',
-      description:
-        'Keep supplier records clean with one workspace for profiles, readiness, and contact details.',
-    },
-    {
-      icon: 'i-lucide-package-check',
-      title: 'Dropoff readiness',
-      description:
-        'Track who can deliver, where they deliver, and what service level they can commit to.',
-    },
-    {
-      icon: 'i-lucide-shield-check',
-      title: 'Operational confidence',
-      description:
-        'Run a tighter first pipe before widening into orders, payments, and broader marketplace tooling.',
-    },
-  ],
-}
-
-const solutionCards = [
-  {
-    title: 'Supplier Directory',
-    description:
-      'Centralize producer and supplier profiles with simple filtering for quality and fit.',
-    icon: 'i-lucide-search',
-    badge: 'Now',
-    cta: 'Open suppliers',
-    to: '/suppliers',
-  },
-  {
-    title: 'Delivery Coverage',
-    description:
-      'Map service areas and dropoff expectations for homes and business locations.',
-    icon: 'i-lucide-map',
-    badge: 'Now',
-    cta: 'Review coverage',
-    to: '/suppliers',
-  },
-  {
-    title: 'Supplier Readiness',
-    description:
-      'Capture onboarding status and move each supplier to ready-to-serve faster.',
-    icon: 'i-lucide-list-checks',
-    badge: 'Now',
-    cta: 'Manage readiness',
-    to: '/suppliers',
-  },
-  {
-    title: 'Order Pipeline',
-    description:
-      'Prepare the next phase for order capture, handoff tracking, and fulfillment visibility.',
-    icon: 'i-lucide-package-open',
-    badge: 'Next',
-    cta: 'Plan pipeline',
-    to: '/dev',
-  },
-  {
-    title: 'Business Accounts',
-    description:
-      'Support office, hospitality, and retail buyers with repeatable delivery setups.',
-    icon: 'i-lucide-building-2',
-    badge: 'Next',
-    cta: 'Define accounts',
-    to: '/dev',
-  },
-  {
-    title: 'Market Expansion',
-    description:
-      'Replicate the Interlaken operating model into the next city with low drift.',
-    icon: 'i-lucide-globe',
-    badge: 'Next',
-    cta: 'Prepare rollout',
-    to: '/dev',
-  },
-]
 </script>

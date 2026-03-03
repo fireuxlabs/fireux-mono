@@ -14,12 +14,7 @@
   <div class="landing-index-flow">
     <LandingGetStarted />
     <LandingProducts :items="products" />
-    <LandingEcosystems />
     <LandingApps />
-
-    <LandingFuel />
-    <LandingFeatures first />
-    <LandingSkillsIcons />
   </div>
 </template>
 
