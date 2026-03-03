@@ -7,7 +7,7 @@ const fireuxConfig = defineFireuxConfig({
   name: 'Bringli',
   shortName: 'Bringli',
   role: 'global',
-  modules: ['fireux-drop'],
+  modules: ['fireux-suppliers'],
 })
 
 export default defineNuxtConfig(fireuxConfig)

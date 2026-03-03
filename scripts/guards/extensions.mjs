@@ -32,7 +32,7 @@ const ALLOWED_NOISE = ['node_modules', 'tsconfig.tsbuildinfo', '.DS_Store']
 const ALLOWED_EXTRA_BY_PACKAGE = {
   'fireux-blogs': ['docs'],
   'fireux-companies': ['docs'],
-  'fireux-drop': ['docs'],
+  'fireux-suppliers': ['docs'],
   'fireux-jobs': ['docs'],
   'fireux-kitchens': ['docs'],
   'fireux-orders': ['docs'],

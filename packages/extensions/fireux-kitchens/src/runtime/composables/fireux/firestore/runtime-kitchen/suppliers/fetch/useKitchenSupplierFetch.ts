@@ -25,12 +25,14 @@ const firstNonEmpty = (...values: unknown[]): string => {
 }
 
 const resolveSupplierReferenceId = (supplierLink: SupplierRecord): string =>
+  // Canon key for Kitchen<->Supplier links is supplier_id.
+  // Migration alias only — do not use aliases in new writes.
   firstNonEmpty(
     (supplierLink as any).supplier_id,
     (supplierLink as any).source_supplier_id,
     (supplierLink as any).supplier_profile_id,
-    (supplierLink as any).profile_id,
     (supplierLink as any).drop_supplier_id,
+    (supplierLink as any).profile_id,
     (supplierLink as any).id
   )
 

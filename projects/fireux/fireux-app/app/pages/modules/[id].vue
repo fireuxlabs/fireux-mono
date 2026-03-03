@@ -296,7 +296,7 @@ const roadmapBySlug: Record<
       color: 'neutral',
     },
   ],
-  'fireux-drop': [
+  'fireux-suppliers': [
     {
       title: 'Now',
       description: 'Module scaffold only (no UI yet).',

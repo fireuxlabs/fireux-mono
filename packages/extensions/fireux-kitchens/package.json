@@ -25,7 +25,8 @@
   },
   "dependencies": {
     "fireux-core": "workspace:*",
-    "fireux-orders": "workspace:*"
+    "fireux-orders": "workspace:*",
+    "fireux-suppliers": "workspace:*"
   },
   "peerDependencies": {
     "nuxt": "^4.1.0",

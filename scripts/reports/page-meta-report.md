@@ -75,17 +75,17 @@ Scan scope:
 | packages/extensions/fireux-companies | packages/extensions/fireux-companies/src/runtime/pages/dev/fireux-companies.vue | /dev/fireux-companies | definePageMeta | no | no | no | no | low |  |
 | packages/extensions/fireux-compliance | packages/extensions/fireux-compliance/src/runtime/pages/console/portfolio/compliance.vue | /console/portfolio/compliance | definePageMeta | no | no | no | no | low |  |
 | packages/extensions/fireux-documents | packages/extensions/fireux-documents/src/runtime/pages/console/portfolio/documents.vue | /console/portfolio/documents | definePageMeta | no | no | no | no | low |  |
-| packages/extensions/fireux-drop | packages/extensions/fireux-drop/src/runtime/pages/console/supplier/index.vue | /console/supplier | none | no | no | no | no | low |  |
-| packages/extensions/fireux-drop | packages/extensions/fireux-drop/src/runtime/pages/console/supplier/my-stock.vue | /console/supplier/my-stock | none | no | no | no | no | low |  |
-| packages/extensions/fireux-drop | packages/extensions/fireux-drop/src/runtime/pages/console/supplier/profile.vue | /console/supplier/profile | none | no | no | no | no | low |  |
-| packages/extensions/fireux-drop | packages/extensions/fireux-drop/src/runtime/pages/dashboard/supplier/index.vue | /dashboard/supplier | definePageMeta | no | no | no | no | low |  |
-| packages/extensions/fireux-drop | packages/extensions/fireux-drop/src/runtime/pages/dashboard/supplier/my-stock.vue | /dashboard/supplier/my-stock | definePageMeta | no | no | no | no | low |  |
-| packages/extensions/fireux-drop | packages/extensions/fireux-drop/src/runtime/pages/dashboard/supplier/profile.vue | /dashboard/supplier/profile | definePageMeta | no | no | no | no | med | client/auth gating heuristic |
-| packages/extensions/fireux-drop | packages/extensions/fireux-drop/src/runtime/pages/dev/fireux-drop.vue | /dev/fireux-drop | definePageMeta | no | no | no | no | low |  |
-| packages/extensions/fireux-drop | packages/extensions/fireux-drop/src/runtime/pages/suppliers/index.vue | /suppliers | useHead | yes | yes | no | no | low | definePageMeta with additional head/meta helpers |
-| packages/extensions/fireux-drop | packages/extensions/fireux-drop/src/runtime/pages/suppliers/[id].vue | /suppliers/:id | useSeoMeta | yes | yes | no | no | high | uses useSeoMeta + useHead; placeholder text heuristic; client/auth gating heuristic |
-| packages/extensions/fireux-drop | packages/extensions/fireux-drop/src/runtime/pages/suppliers/admin/[id].vue | /suppliers/admin/:id | definePageMeta | no | no | no | no | med | client/auth gating heuristic |
-| packages/extensions/fireux-drop | packages/extensions/fireux-drop/src/runtime/pages/suppliers/learn-more.vue | /suppliers/learn-more | useHead | yes | no | no | no | low |  |
+| packages/extensions/fireux-suppliers | packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier/index.vue | /console/supplier | none | no | no | no | no | low |  |
+| packages/extensions/fireux-suppliers | packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier/my-stock.vue | /console/supplier/my-stock | none | no | no | no | no | low |  |
+| packages/extensions/fireux-suppliers | packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier/profile.vue | /console/supplier/profile | none | no | no | no | no | low |  |
+| packages/extensions/fireux-suppliers | packages/extensions/fireux-suppliers/src/runtime/pages/dashboard/supplier/index.vue | /dashboard/supplier | definePageMeta | no | no | no | no | low |  |
+| packages/extensions/fireux-suppliers | packages/extensions/fireux-suppliers/src/runtime/pages/dashboard/supplier/my-stock.vue | /dashboard/supplier/my-stock | definePageMeta | no | no | no | no | low |  |
+| packages/extensions/fireux-suppliers | packages/extensions/fireux-suppliers/src/runtime/pages/dashboard/supplier/profile.vue | /dashboard/supplier/profile | definePageMeta | no | no | no | no | med | client/auth gating heuristic |
+| packages/extensions/fireux-suppliers | packages/extensions/fireux-suppliers/src/runtime/pages/dev/fireux-suppliers.vue | /dev/fireux-suppliers | definePageMeta | no | no | no | no | low |  |
+| packages/extensions/fireux-suppliers | packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/index.vue | /suppliers | useHead | yes | yes | no | no | low | definePageMeta with additional head/meta helpers |
+| packages/extensions/fireux-suppliers | packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/[id].vue | /suppliers/:id | useSeoMeta | yes | yes | no | no | high | uses useSeoMeta + useHead; placeholder text heuristic; client/auth gating heuristic |
+| packages/extensions/fireux-suppliers | packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/admin/[id].vue | /suppliers/admin/:id | definePageMeta | no | no | no | no | med | client/auth gating heuristic |
+| packages/extensions/fireux-suppliers | packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/learn-more.vue | /suppliers/learn-more | useHead | yes | no | no | no | low |  |
 | packages/extensions/fireux-jobs | packages/extensions/fireux-jobs/src/runtime/pages/agents/index.vue | /agents | useHead | yes | yes | no | no | low | definePageMeta with additional head/meta helpers |
 | packages/extensions/fireux-jobs | packages/extensions/fireux-jobs/src/runtime/pages/agents/[id].vue | /agents/:id | useHead | yes | no | no | no | med | client/auth gating heuristic |
 | packages/extensions/fireux-jobs | packages/extensions/fireux-jobs/src/runtime/pages/agents/admin/[id].vue | /agents/admin/:id | definePageMeta | no | no | no | no | med | client/auth gating heuristic |

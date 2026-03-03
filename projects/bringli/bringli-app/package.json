@@ -19,7 +19,7 @@
     "@nuxt/ui": "^4.0.0-alpha.2",
     "fireux-bringli": "workspace:*",
     "fireux-core": "workspace:*",
-    "fireux-drop": "workspace:*",
+    "fireux-suppliers": "workspace:*",
     "nuxt": "4.1.2",
     "vue": "3.5.20",
     "vue-router": "4.5.1"

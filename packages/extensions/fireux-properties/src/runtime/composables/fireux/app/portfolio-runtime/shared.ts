@@ -1,4 +1,4 @@
-export type RuntimePortfolioMode = 'live' | 'read-only'
+export type RuntimePortfolioMode = 'live' | 'test' | 'read-only'
 
 export type RuntimePortfolioSelection = {
   portfolioId?: string | null | undefined
@@ -15,10 +15,13 @@ export const normalizeString = (value: unknown): string =>
 
 export const normalizeMode = (value: unknown): RuntimePortfolioMode | null => {
   const normalized = normalizeString(value).toLowerCase()
-  if (normalized === 'live' || normalized === 'read-only') return normalized
+  if (normalized === 'dummy') return 'read-only'
+  if (normalized === 'live' || normalized === 'test' || normalized === 'read-only') {
+    return normalized
+  }
   return null
 }
 
 export const resolveRuntimePortfolioCollectionPath = (
-  _mode: RuntimePortfolioMode
-): 'portfolios' => 'portfolios'
+  mode: RuntimePortfolioMode
+): 'portfolios' | 'test-portfolios' => (mode === 'live' ? 'portfolios' : 'test-portfolios')

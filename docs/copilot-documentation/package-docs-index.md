@@ -18,7 +18,7 @@ Authority: Tier2 (Index/reference)
 ## Extension Contracts (Tier1)
 - `packages/extensions/fireux-blogs/docs/contract.md`
 - `packages/extensions/fireux-companies/docs/contract.md`
-- `packages/extensions/fireux-drop/docs/contract.md`
+- `packages/extensions/fireux-suppliers/docs/contract.md`
 - `packages/extensions/fireux-jobs/docs/contract.md`
 - `packages/extensions/fireux-kitchens/docs/contract.md`
 - `packages/extensions/fireux-orders/docs/contract.md`

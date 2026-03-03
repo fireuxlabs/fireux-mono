@@ -257,7 +257,7 @@ const profileConfigFiles = [
   'packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/supporting.ts',
   'packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/supporting.ts',
   'packages/extensions/fireux-kitchens/src/runtime/models/profiles/Chef/supporting.ts',
-  'packages/extensions/fireux-drop/src/runtime/models/profiles/Supplier/supporting.ts',
+  'packages/extensions/fireux-suppliers/src/runtime/models/profiles/Supplier/supporting.ts',
   'packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef/supporting.ts',
   'packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier/supporting.ts',
 ].filter((p) => fs.existsSync(path.join(repoRoot, p)))

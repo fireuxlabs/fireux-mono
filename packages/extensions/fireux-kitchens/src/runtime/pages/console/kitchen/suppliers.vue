@@ -79,6 +79,8 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useKitchenBuyListSelection } from 'fireux-suppliers/runtime/composables/supplier/view/useKitchenBuyListSelection'
+import { useSupplierCatalogueForKitchen } from 'fireux-suppliers/runtime/composables/supplier/view/useSupplierCatalogueForKitchen'
 import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
 import { useIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
 import SupplierCollectionManager from '../../../components/organisms/Supplier/Collection/Manager.vue'
@@ -106,27 +108,30 @@ const suppliers = computed(() => runtime.data.value.suppliers ?? [])
 const supplierIngredients = computed(() => runtime.data.value.supplierIngredients ?? [])
 const kitchenIngredients = computed(() => runtime.data.value.kitchenIngredients ?? [])
 const { ingredients: firestoreGlobalIngredients } = useIngredientFetch()
+const globalIngredients = computed(() => firestoreGlobalIngredients.value ?? [])
 
 const selectedSupplierId = ref('')
 const supplierLayer = ref<'my' | 'all'>('my')
 const layer = ref<'my' | 'catalogue'>('my')
 
-const normalizeSupplierId = (row: unknown) =>
-  String((row as Record<string, unknown>)?.id || '').trim()
-
-const mySupplierIdSet = computed(() => {
-  const set = new Set<string>()
-  for (const row of supplierIngredients.value) {
-    const supplierId = String((row as Record<string, unknown>)?.supplier_id || '').trim()
-    if (!supplierId) continue
-    set.add(supplierId)
-  }
-  return set
+const {
+  mySuppliers,
+  normalizeSupplierId,
+  supplierNameById,
+  supplierIngredientCollectionAll,
+  catalogueCollection,
+  filteredBySupplier,
+} = useSupplierCatalogueForKitchen({
+  suppliers,
+  supplierIngredients,
+  kitchenIngredients,
+  globalIngredients,
+  selectedSupplierId,
 })
 
-const mySuppliers = computed(() =>
-  suppliers.value.filter((row) => mySupplierIdSet.value.has(normalizeSupplierId(row)))
-)
+const { myItemsCollection } = useKitchenBuyListSelection({
+  filteredRows: filteredBySupplier,
+})
 
 const supplierCollection = computed(() =>
   supplierLayer.value === 'my' ? mySuppliers.value : suppliers.value
@@ -141,210 +146,6 @@ const supplierCollectionDescription = computed(() =>
     ? 'Suppliers currently used in your buy lists.'
     : 'All suppliers available to this kitchen context.'
 )
-
-const supplierNameById = computed(() => {
-  const map = new Map<string, string>()
-  for (const supplier of suppliers.value) {
-    const row = supplier as Record<string, unknown>
-    const id = String(row.id || '').trim()
-    if (!id) continue
-    const name = String(row.name || row.short_name || '').trim()
-    if (!name) continue
-    map.set(id, name)
-  }
-  return map
-})
-
-const ingredientNameById = computed(() => {
-  const map = new Map<string, string>()
-  for (const ingredient of kitchenIngredients.value) {
-    const row = ingredient as Record<string, unknown>
-    const ingredientId = String(row.ingredient_id || row.id || '').trim()
-    if (!ingredientId) continue
-    const name = String(row.name || '').trim()
-    if (!name) continue
-    map.set(ingredientId, name)
-  }
-  return map
-})
-
-const globalIngredients = computed(() => firestoreGlobalIngredients.value ?? [])
-
-const globalIngredientImageById = computed(() => {
-  const map = new Map<string, string>()
-  for (const ingredient of globalIngredients.value) {
-    const row = ingredient as Record<string, unknown>
-    const ingredientId = String(row.id || '').trim()
-    if (!ingredientId) continue
-    map.set(ingredientId, String(row.image_url || '').trim())
-  }
-  return map
-})
-
-const resolveGlobalIngredientImage = (ingredientIdRaw: unknown) => {
-  const ingredientId = String(ingredientIdRaw || '').trim()
-  if (!ingredientId) return ''
-
-  const direct = globalIngredientImageById.value.get(ingredientId) || ''
-  if (direct) return direct
-
-  if (ingredientId.startsWith('ingredient-')) {
-    const stripped = String(ingredientId.slice('ingredient-'.length) || '').trim()
-    if (!stripped) return ''
-    return globalIngredientImageById.value.get(stripped) || ''
-  }
-
-  return globalIngredientImageById.value.get(`ingredient-${ingredientId}`) || ''
-}
-
-type SupplierItemRow = {
-  id: string
-  supplier_id: string
-  ingredient_id: string
-  name: string
-  slug: string
-  image_url: string
-  subtitle: string
-  pack_label: string
-  supplier_name_full: string
-  supplier_name_compact: string
-  supplier_name: string
-  status: string
-  source_kind: 'catalogue' | 'my-item'
-  cost_per_unit_minor: number
-  pack_cost_minor: number
-  currency_code: string
-  unit: string
-}
-
-const supplierIngredientCollectionAll = computed<SupplierItemRow[]>(() =>
-  supplierIngredients.value
-    .map((entry, index) => {
-      const row = entry as Record<string, unknown>
-
-      const id = String(row.id || '').trim() || `supplier-ingredient-${index + 1}`
-      const supplierId = String(row.supplier_id || '').trim()
-      const ingredientId = String(row.ingredient_id || '').trim()
-      const supplierName = String(supplierNameById.value.get(supplierId) || '').trim()
-      const ingredientName = String(ingredientNameById.value.get(ingredientId) || '').trim()
-      const supplierNameStrict = supplierName || `[Missing supplier name: ${supplierId || 'unknown'}]`
-      const ingredientNameStrict = ingredientName || `[Missing ingredient name: ${ingredientId || 'unknown'}]`
-
-      const unit = String(row.unit || '').trim() || 'unit'
-      const packSizeLabel = String(row.pack_size_label || '').trim() || 'Pack'
-      const currencyCode = String(row.currency_code || 'CHF').trim() || 'CHF'
-
-      const packCostMinor = Number(row.pack_cost_minor || 0)
-      const unitCostMinor = Number(row.cost_per_unit_minor || 0)
-
-      const supplierIngredientImage = String(row.image_url || row.ingredient_image_url || '').trim()
-      const globalImage = resolveGlobalIngredientImage(ingredientId)
-      const packLabelStrict = packSizeLabel || '[Missing pack size]'
-      const supplierNameCompact = supplierNameStrict
-      const supplierNameFull = supplierNameStrict
-
-      return {
-        id,
-        supplier_id: supplierId,
-        ingredient_id: ingredientId,
-        name: ingredientNameStrict,
-        slug: ingredientId || id,
-        image_url: supplierIngredientImage || globalImage,
-        subtitle: supplierNameStrict,
-        pack_label: packLabelStrict,
-        supplier_name_full: supplierNameFull,
-        supplier_name_compact: supplierNameCompact,
-        supplier_name: supplierNameFull,
-        status: '',
-        source_kind: 'catalogue',
-        cost_per_unit_minor: unitCostMinor,
-        pack_cost_minor: packCostMinor,
-        currency_code: currencyCode,
-        unit,
-      }
-    })
-    .sort((a, b) =>
-      String(a.supplier_name_full || '').localeCompare(String(b.supplier_name_full || '')) ||
-      String(a.name || '').localeCompare(String(b.name || ''))
-    )
-)
-
-const catalogueCollection = computed(() => {
-  const filtered = !selectedSupplierId.value
-    ? supplierIngredientCollectionAll.value
-    : supplierIngredientCollectionAll.value.filter((entry) => {
-      const supplierId = String(entry.supplier_id || '').trim()
-      return supplierId === selectedSupplierId.value
-    })
-
-  const optionCountByIngredient = new Map<string, number>()
-  for (const row of filtered) {
-    const ingredientId = String(row.ingredient_id || '').trim()
-    if (!ingredientId) continue
-    optionCountByIngredient.set(ingredientId, (optionCountByIngredient.get(ingredientId) || 0) + 1)
-  }
-
-  return filtered.map((entry) => {
-    const optionCount = optionCountByIngredient.get(String(entry.ingredient_id || '').trim()) || 1
-
-    return {
-      ...entry,
-      source_kind: 'catalogue',
-      subtitle: `Catalogue · ${entry.supplier_name_full}`,
-      supplier_name: entry.supplier_name_full,
-      status: `${optionCount} ${optionCount === 1 ? 'price' : 'prices'}`,
-    }
-  })
-})
-
-/**
- * My Items = 1 chosen option per ingredient.
- * For now: choose cheapest cost_per_unit_minor for each ingredient.
- */
-const myItemsCollection = computed(() => {
-  const sourceRows = !selectedSupplierId.value
-    ? supplierIngredientCollectionAll.value
-    : supplierIngredientCollectionAll.value.filter((entry) => {
-      const supplierId = String(entry.supplier_id || '').trim()
-      return supplierId === selectedSupplierId.value
-    })
-
-  const grouped = new Map<string, SupplierItemRow[]>()
-
-  for (const row of sourceRows) {
-    const ingredientId = String(row.ingredient_id || '').trim()
-    if (!ingredientId) continue
-
-    const list = grouped.get(ingredientId) || []
-    list.push(row)
-    grouped.set(ingredientId, list)
-  }
-
-  const chosen: SupplierItemRow[] = []
-
-  for (const options of grouped.values()) {
-    const sorted = [...options].sort((a, b) => {
-      return (
-        Number(a.cost_per_unit_minor || 0) - Number(b.cost_per_unit_minor || 0) ||
-        Number(a.pack_cost_minor || 0) - Number(b.pack_cost_minor || 0)
-      )
-    })
-
-    const pick = sorted[0]
-    if (!pick) continue
-    chosen.push(pick)
-  }
-
-  return chosen
-    .map((entry) => ({
-      ...entry,
-      source_kind: 'my-item',
-      subtitle: `My item · ${entry.supplier_name_full}`,
-      supplier_name: entry.supplier_name_full,
-      status: '',
-    }))
-    .sort((a, b) => String(a.name || '').localeCompare(String(b.name || '')))
-})
 
 const supplierItemsCollection = computed(() =>
   layer.value === 'my' ? myItemsCollection.value : catalogueCollection.value

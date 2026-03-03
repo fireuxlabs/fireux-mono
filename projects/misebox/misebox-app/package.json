@@ -28,7 +28,7 @@
     "firebase-functions": "^6.3.2",
     "fireux-companies": "workspace:*",
     "fireux-core": "workspace:*",
-    "fireux-drop": "workspace:*",
+    "fireux-suppliers": "workspace:*",
     "fireux-jobs": "workspace:*",
     "fireux-kitchens": "workspace:*",
     "fireux-orders": "workspace:*",

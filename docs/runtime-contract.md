@@ -60,7 +60,7 @@ Updated: 2026-03-02
 | fireux-jobs | Agent | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
 | fireux-jobs | Professional | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
 | fireux-kitchens | Chef | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
-| fireux-drop | Supplier | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
+| fireux-suppliers | Supplier | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
 | fireux-kitchens | Ingredient | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
 | fireux-orders | Order | n/a (internal) | id-only internal |
 

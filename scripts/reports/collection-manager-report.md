@@ -19,7 +19,7 @@ Scan scope:
 - `packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/Collection/Manager.vue`
 - `packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Collection/Manager.vue`
 - `packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Collection/Manager.vue`
-- `packages/extensions/fireux-drop/src/runtime/components/organisms/profiles/Supplier/Collection/Manager.vue`
+- `packages/extensions/fireux-suppliers/src/runtime/components/organisms/profiles/Supplier/Collection/Manager.vue`
 - `packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Collection/Manager.vue`
 - `packages/extensions/fireux-jobs/src/runtime/components/organisms/profiles/Agent/Collection/Manager.vue`
 - `packages/extensions/fireux-jobs/src/runtime/components/organisms/profiles/Professional/Collection/Manager.vue`
@@ -42,7 +42,7 @@ Scan scope:
 - `packages/core/fireux-core/src/runtime/pages/users/index.vue`
 
 ### Still Client Firestore
-- `packages/extensions/fireux-drop/src/runtime/pages/suppliers/[id].vue`
+- `packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/[id].vue`
 - `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[id].vue`
 - `packages/extensions/fireux-places/src/runtime/pages/places/[id].vue`
 
