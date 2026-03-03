@@ -55,7 +55,7 @@ import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runti
 
 definePageMeta({
   layout: 'kitchen-console',
-  keyEntitiesTag: 'recipes',
+  tag: 'recipes',
   nav: {
     visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-recipes',

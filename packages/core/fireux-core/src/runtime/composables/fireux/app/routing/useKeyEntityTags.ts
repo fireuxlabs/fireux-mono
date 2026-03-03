@@ -22,7 +22,7 @@ export function useKeyEntityTags() {
 
     for (const route of router.getRoutes()) {
       const meta = route.meta as Record<string, unknown>
-      const raw = meta?.keyEntitiesTag
+      const raw = meta?.tag
       const values = Array.isArray(raw) ? raw : [raw]
 
       for (const value of values) {

@@ -19,7 +19,7 @@ import { computed } from 'vue'
 import { useProfessionalFetch } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalFetch'
 
 definePageMeta({
-  keyEntitiesTag: 'professionals',
+  tag: 'professionals',
   nav: {
     key: 'professionals',
     label: 'Professionals',

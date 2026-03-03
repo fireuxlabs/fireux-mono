@@ -16,7 +16,7 @@ import { computed } from 'vue'
 import { useAgentFetch } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentFetch'
 
 definePageMeta({
-  keyEntitiesTag: 'agents',
+  tag: 'agents',
   nav: {
     key: 'agents',
     label: 'Agents',

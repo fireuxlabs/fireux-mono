@@ -17,7 +17,7 @@ import { computed } from 'vue'
 import { useChefFetch } from '../../composables/fireux/firestore/profiles/Chef/main/useChefFetch'
 
 definePageMeta({
-  keyEntitiesTag: 'chefs',
+  tag: 'chefs',
   nav: {
     key: 'chefs',
     label: 'Chefs',

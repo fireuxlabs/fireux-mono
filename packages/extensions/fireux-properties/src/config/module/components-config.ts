@@ -1,10 +1,21 @@
 import type { Resolver } from '@nuxt/kit'
-import { registerComponentsDir } from 'fireux-core/config/module/module-helpers'
+import {
+  registerComponentAliases,
+  registerComponentsDir,
+} from 'fireux-core/config/module/module-helpers'
 
 export function configureComponents(resolver: Resolver) {
-  registerComponentsDir(resolver, './runtime/components', {
-    global: false,
+  registerComponentsDir(resolver, './runtime/components/organisms/Portfolio', {
+    global: true,
     pathPrefix: true,
+    prefix: 'Portfolio',
     priority: 1,
   })
+
+  registerComponentAliases(
+    resolver,
+    './runtime/components/organisms/Portfolio',
+    'Portfolio',
+    { global: true }
+  )
 }

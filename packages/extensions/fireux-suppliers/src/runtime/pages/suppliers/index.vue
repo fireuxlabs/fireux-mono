@@ -17,7 +17,7 @@ import { computed } from 'vue'
 import { useSupplierFetch } from '../../composables/supplier/useSupplierFetch'
 
 definePageMeta({
-  keyEntitiesTag: 'suppliers',
+  tag: 'suppliers',
   nav: {
     key: 'suppliers',
     label: 'Suppliers',

@@ -32,7 +32,7 @@ definePageMeta({
   layout: 'default',
   title: 'Ingredients',
   description: 'Browse global ingredients.',
-  keyEntitiesTag: 'ingredients',
+  tag: 'ingredients',
   nav: {
     key: 'ingredients',
     label: 'Ingredients',

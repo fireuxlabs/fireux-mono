@@ -26,7 +26,7 @@ definePageMeta({
   layout: 'default',
   title: 'Jobs',
   description: 'Browse jobs.',
-  keyEntitiesTag: 'jobs',
+  tag: 'jobs',
   nav: {
     key: 'jobs',
     label: 'Jobs',

@@ -16,7 +16,7 @@ import { computed } from 'vue'
 import { useProductFetch } from 'fireux-products/runtime/composables/fireux/firestore/product/fetch/useProductFetch'
 
 definePageMeta({
-  keyEntitiesTag: 'modules',
+  tag: 'modules',
   nav: {
     key: 'modules',
     label: 'Modules',
