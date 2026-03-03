@@ -1,38 +1,50 @@
+// packages/core/fireux-core/src/runtime/composables/fireux/app/runtime-app/useRuntimeApp.ts
+
 import { computed } from 'vue'
-import { useFireUXConfig } from '../FireUXConfig'
-import { useAppFetch } from '../../firestore/core/app/fetch/useAppFetch'
+import { resolveRuntimeAppCollectionPath } from './shared'
+import { useRuntimeAppSelection } from './state'
+import { useRuntimeAppContext, type UseRuntimeAppParams } from './useRuntimeAppContext'
+import { useRuntimeAppData } from './useRuntimeAppData'
+import { useRuntimeAppDocument } from './useRuntimeAppDocument'
 
-export function useRuntimeApp() {
-  const cfg = useFireUXConfig()
+export type { RuntimeAppMode } from './shared'
+export { useRuntimeAppSelection } from './state'
 
-  const id = computed(() => String(cfg.appId || '').trim())
-  const ecosystem = computed(() => String(cfg.ecosystem || '').trim())
-  const role = computed(() => cfg.role)
-  const modules = computed(() => cfg.modules ?? [])
+export function useRuntimeApp(params?: UseRuntimeAppParams) {
+  const selection = useRuntimeAppSelection()
 
-  const { app, pending } = useAppFetch(id)
+  const { id, mode, isReadOnly } = useRuntimeAppContext(params, selection)
 
-  const isLoading = computed(() => Boolean(pending.value))
-  const isReady = computed(
-    () => Boolean(id.value) && Boolean(app.value) && !isLoading.value
-  )
+  const collectionPath = computed(() => resolveRuntimeAppCollectionPath(mode.value))
 
-  const name = computed(() =>
-    String(app.value?.app_name || cfg.appName || '').trim()
-  )
-  const shortName = computed(() =>
-    String(app.value?.app_short_name || cfg.appShortName || '').trim()
-  )
+  const { doc, pending, publicDoc, privateDoc } = useRuntimeAppDocument({
+    id,
+    isReadOnly,
+    collectionPath,
+  })
+
+  const data = useRuntimeAppData({
+    id,
+    isReadOnly,
+    collectionPath,
+    doc,
+    pending,
+  })
 
   return {
     id,
-    ecosystem,
-    role,
-    modules,
-    app,
-    isLoading,
-    isReady,
-    name,
-    shortName,
+    mode,
+    isReadOnly,
+    collectionPath,
+
+    // canon
+    doc,
+    pending,
+
+    // app extras (optional but harmless)
+    publicDoc,
+    privateDoc,
+
+    data,
   }
 }

@@ -2,6 +2,7 @@ packages:
   - 'packages/core/*'
   - 'packages/extensions/*'
   - 'packages/ecosystem/*'
+  - 'packages/ecosystem/*/apps/*'
   - 'projects/*/*'
   - 'tools/*'
   - 'test-*'
