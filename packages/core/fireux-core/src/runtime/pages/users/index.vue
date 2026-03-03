@@ -1,7 +1,7 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/pages/users/index.vue -->
 <template>
   <UPage>
-    <UPageHeader class="border-b-0" :title="pageTitle" :description="pageDescription" />
+    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
       <UAlert

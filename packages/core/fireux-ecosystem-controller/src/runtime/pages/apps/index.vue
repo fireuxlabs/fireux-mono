@@ -1,6 +1,6 @@
 <template>
   <UPage>
-    <UPageHeader class="border-b-0" :title="pageTitle" />
+    <UPageHeader class="pageheader" :title="pageTitle" />
     <UPageBody class="pagebody">
       <AppCTA />
       <AppCollectionManager :collection="collection" />

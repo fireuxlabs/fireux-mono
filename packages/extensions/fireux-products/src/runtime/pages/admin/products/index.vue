@@ -1,7 +1,7 @@
 <!-- FILE: packages/extensions/fireux-products/src/runtime/pages/admin/products/index.vue -->
 <template>
   <UPage>
-    <UPageHeader class="border-b-0" :title="pageTitle" :description="pageDescription">
+    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription">
       <template #actions>
         <UButton to="/admin/products/create" color="primary">
           Create product

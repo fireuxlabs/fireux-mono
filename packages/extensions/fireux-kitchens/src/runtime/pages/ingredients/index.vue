@@ -1,6 +1,6 @@
 <template>
   <UPage>
-    <UPageHeader class="border-b-0" :title="pageTitle" :description="pageDescription">
+    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription">
       <template #ctas>
         <UButton
           size="xs"

@@ -1,6 +1,6 @@
 <template>
   <UPage>
-    <UPageHeader class="border-b-0" :title="pageTitle" />
+    <UPageHeader class="pageheader" :title="pageTitle" />
     <UPageBody class="pagebody">
       <PortfolioCTA />
       <PortfolioCollectionManager
@@ -15,27 +15,29 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { usePortfolioCollection } from '../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
+import { computed } from 'vue'
+import { usePortfolioFetch } from '../../composables/fireux/firestore/portfolio/fetch/usePortfolioFetch'
 
 definePageMeta({
   tag: 'portfolios',
-  layout: 'default',
-  title: 'Portfolios',
-  description: 'Browse portfolios.',
   nav: {
     key: 'portfolios',
     label: 'Portfolios',
     icon: 'i-lucide-building',
-    order: 35,
+    order: 55,
     desktop: true,
     mobile: true,
     layouts: ['default'],
   },
-  name: 'GranitePortfoliosIndexPage',
+  title: 'Portfolios',
+  description: 'Browse portfolios.',
+  layout: 'default',
+  name: 'PortfoliosIndexPage',
 })
 
 const pageTitle = 'Portfolios'
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
-const { collection } = usePortfolioCollection()
+const { portfolios } = usePortfolioFetch()
+const collection = computed(() => portfolios.value ?? [])
 </script>

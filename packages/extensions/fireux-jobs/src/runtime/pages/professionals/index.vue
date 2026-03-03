@@ -1,7 +1,7 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/professionals/index.vue -->
 <template>
   <UPage>
-    <UPageHeader class="border-b-0" :title="pageTitle" :description="pageDescription" />
+    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
       <ProfessionalCTA />

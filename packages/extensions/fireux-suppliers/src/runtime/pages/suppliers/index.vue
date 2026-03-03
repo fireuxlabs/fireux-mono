@@ -1,7 +1,7 @@
 <!-- FILE: packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/index.vue -->
 <template>
   <UPage>
-    <UPageHeader class="border-b-0" :title="pageTitle" :description="pageDescription" />
+    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
       <SupplierCTA />
