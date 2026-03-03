@@ -8,12 +8,17 @@ const toLabel = (value: string) =>
     .map((part) => part[0]?.toUpperCase() + part.slice(1))
     .join(' ')
 
+type KeyEntityTagItem = {
+  key: string
+  label: string
+  to: string
+}
+
 export function useKeyEntityTags() {
   const router = useRouter()
 
   const keyEntityTags = computed(() => {
-    const seen = new Set<string>()
-    const tags: string[] = []
+    const byKey = new Map<string, KeyEntityTagItem>()
 
     for (const route of router.getRoutes()) {
       const meta = route.meta as Record<string, unknown>
@@ -22,13 +27,19 @@ export function useKeyEntityTags() {
 
       for (const value of values) {
         const normalized = String(value ?? '').trim().toLowerCase()
-        if (!normalized || seen.has(normalized)) continue
-        seen.add(normalized)
-        tags.push(toLabel(normalized))
+        if (!normalized) continue
+        if (!String(route.path || '').startsWith('/')) continue
+        if (byKey.has(normalized)) continue
+
+        byKey.set(normalized, {
+          key: normalized,
+          label: toLabel(normalized),
+          to: String(route.path),
+        })
       }
     }
 
-    return tags
+    return Array.from(byKey.values())
   })
 
   return {

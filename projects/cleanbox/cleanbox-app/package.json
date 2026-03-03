@@ -8,8 +8,8 @@
     "generate": "nuxi generate",
     "preview": "nuxi preview",
     "prepare:firebase-output": "node ../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace",
-    "deploy": "pnpm build && pnpm prepare:firebase-output && npx firebase-tools@15.8.0 deploy --project cleanbox-f15bc --config firebase.json",
-    "deploy:hosting": "pnpm build && npx firebase-tools@15.8.0 deploy --only hosting --project cleanbox-f15bc --config firebase.json",
+    "deploy": "pnpm build && pnpm prepare:firebase-output && pnpm dlx firebase-tools@15.8.0 deploy --project cleanbox-f15bc --config firebase.json",
+    "deploy:hosting": "pnpm build && pnpm dlx firebase-tools@15.8.0 deploy --only hosting --project cleanbox-f15bc --config firebase.json",
     "check:env": "node ../../../scripts/check-env.mjs",
     "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
     "clean": "rimraf .nuxt dist"

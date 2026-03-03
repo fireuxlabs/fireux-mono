@@ -7,7 +7,11 @@
   >
     <UUser
       :name="displayName"
-      :avatar="avatarUrl ? { src: avatarUrl || undefined, alt: displayName || '' } : undefined"
+      :avatar="
+        proxiedAvatarUrl
+          ? { src: proxiedAvatarUrl || undefined, alt: displayName || '' }
+          : undefined
+      "
       size="md"
     >
       <template #description>
@@ -32,6 +36,7 @@
 
 <script setup lang="ts">
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface';
+import { useAvatarProxy } from '../../../../composables/fireux/app/ui/useAvatarProxy'
 
 type PillProps = Pick<
   UserCard.Card,
@@ -59,5 +64,8 @@ const props = withDefaults(defineProps<PillProps>(), {
 const onClick = () => {
   if (props.action) emit('action')
 }
+
+const { useProxiedAvatar } = useAvatarProxy()
+const proxiedAvatarUrl = useProxiedAvatar(() => props.avatarUrl)
 
 </script>

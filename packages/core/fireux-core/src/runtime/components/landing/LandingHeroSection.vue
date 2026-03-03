@@ -128,14 +128,15 @@
                   {{ longButtonLabelResolved }}
                 </UButton>
                 <div v-if="rightPanelTagsResolved.length" class="flex flex-wrap gap-2">
-                  <UBadge
+                  <NuxtLink
                     v-for="tag in rightPanelTagsResolved"
-                    :key="tag"
-                    variant="soft"
-                    color="primary"
+                    :key="`${tag.label}-${tag.to || 'static'}`"
+                    :to="tag.to || '#'"
                   >
-                    {{ tag }}
-                  </UBadge>
+                    <UBadge variant="soft" color="primary">
+                      {{ tag.label }}
+                    </UBadge>
+                  </NuxtLink>
                 </div>
               </div>
             </template>
@@ -175,6 +176,11 @@ type RightPanelItem = {
   icon: string
 }
 
+type RightPanelTagItem = {
+  label: string
+  to?: string
+}
+
 const props = defineProps<{
   appName: string
   bigPersonality: string
@@ -199,8 +205,14 @@ const appAlt = computed(() => {
 const heroBulletsResolved = computed(() => props.heroBullets ?? [])
 const rightPanelItemsResolved = computed(() => props.rightPanelItems ?? [])
 const { keyEntityTags } = useKeyEntityTags()
-const rightPanelTagsResolved = computed(() =>
-  props.rightPanelTags?.length ? props.rightPanelTags : keyEntityTags.value
+const rightPanelTagsResolved = computed<RightPanelTagItem[]>(() =>
+  props.rightPanelTags?.length
+    ? props.rightPanelTags
+        .map((value) => String(value || '').trim())
+        .filter(Boolean)
+        .filter((value) => value.toLowerCase() !== 'users')
+        .map((label) => ({ label }))
+    : keyEntityTags.value.filter((item) => item.key !== 'users')
 )
 
 const { hasConsoleEntry, consoleEntries } = useConsoleEntryCta()

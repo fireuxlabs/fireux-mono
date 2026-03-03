@@ -3,7 +3,7 @@ import type { FireuxEcosystemConfig } from 'fireux-core/types/ecosystem'
 
 export const ecosystemConfig = {
   id: 'fireux-fireux',
-  name: 'FireUX',
+  name: 'fireux',
   description: 'Core FireUX ecosystem and Firebase project.',
   firebase: {
     apiKey: 'AIzaSyBXQzbWwcOCMyBEVn1plDVJAofmalenLM4',
