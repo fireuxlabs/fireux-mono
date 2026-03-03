@@ -65,8 +65,8 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify';
 import { computed } from 'vue';
-import { useSupplierUpdate } from 'fireux-suppliers/runtime/composables/supplier/useSupplierUpdate';
-import type { SupplierCore } from 'fireux-suppliers/runtime/models/supplier/Supplier.model';
+import { useSupplierUpdate } from '../../../../composables/supplier/useSupplierUpdate';
+import type { SupplierCore } from '../../../../models/supplier/Supplier.model';
 
 const props = defineProps<{ supplier: SupplierCore | null }>()
 

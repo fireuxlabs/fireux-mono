@@ -56,8 +56,8 @@
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
-import { useSupplier } from 'fireux-suppliers/runtime/composables/supplier/ops/useSupplier';
-import type { SupplierCore } from 'fireux-suppliers/runtime/models/supplier/Supplier.model';
+import { useSupplier } from '../../../composables/supplier/ops/useSupplier';
+import type { SupplierCore } from '../../../models/supplier/Supplier.model';
 
 type SupplierEntry = SupplierCore & { user?: unknown }
 

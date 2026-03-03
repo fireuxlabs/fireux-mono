@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useSupplierQuickCreate } from 'fireux-suppliers/runtime/composables/supplier/useSupplierQuickCreate'
+import { useSupplierQuickCreate } from '../../../../composables/supplier/useSupplierQuickCreate'
 
 const emit = defineEmits<{
   cancel: []

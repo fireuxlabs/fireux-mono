@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useSupplier } from 'fireux-suppliers/runtime/composables/supplier/ops/useSupplier'
+import { useSupplier } from '../../../../composables/supplier/ops/useSupplier'
 
 const { coreProfile, pending, card } = useSupplier()
 

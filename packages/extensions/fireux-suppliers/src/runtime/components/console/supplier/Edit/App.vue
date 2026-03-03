@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SupplierCore } from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
+import type { SupplierCore } from '../../../../models/supplier/Supplier.model'
 
 defineProps<{
   supplier: Partial<SupplierCore> | null | undefined

@@ -1,6 +1,6 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import { ref } from 'vue'
-import type { SupplierCore } from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
+import type { SupplierCore } from '../../models/supplier/Supplier.model'
 
 export function useSupplierQuickCreate() {
   const creating = ref(false)

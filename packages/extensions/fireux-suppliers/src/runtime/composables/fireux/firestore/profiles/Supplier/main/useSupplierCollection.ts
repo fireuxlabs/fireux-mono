@@ -1,1 +1,1 @@
-export * from 'fireux-suppliers/runtime/composables/supplier/useSupplierCollection'
+export * from '../../../../../supplier/useSupplierCollection'

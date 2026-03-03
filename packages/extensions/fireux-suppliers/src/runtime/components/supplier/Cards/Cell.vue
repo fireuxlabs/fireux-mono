@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SupplierCard } from 'fireux-suppliers/runtime/composables/supplier/view/useSupplierInterface'
+import type { SupplierCard } from '../../../composables/supplier/view/useSupplierInterface'
 
 type Props = Pick<
   SupplierCard.Card,

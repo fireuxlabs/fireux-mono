@@ -71,8 +71,8 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed, reactive } from 'vue'
-import { useSupplierCollection } from 'fireux-suppliers/runtime/composables/supplier/useSupplierCollection'
-import { SupplierCore as SupplierCoreRuntime } from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
+import { useSupplierCollection } from '../../composables/supplier/useSupplierCollection'
+import { SupplierCore as SupplierCoreRuntime } from '../../models/supplier/Supplier.model'
 
 definePageMeta({
   layout: 'dev',

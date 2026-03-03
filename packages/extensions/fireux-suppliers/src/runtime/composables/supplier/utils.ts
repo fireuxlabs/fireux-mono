@@ -1,4 +1,4 @@
-import type { SupplierCore } from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
+import type { SupplierCore } from '../../models/supplier/Supplier.model'
 
 export function useSupplierValidation() {
   /** Validate supplier data */

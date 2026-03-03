@@ -51,7 +51,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useSupplierCreate } from 'fireux-suppliers/runtime/composables/supplier/useSupplierCreate';
+import { useSupplierCreate } from '../../../../composables/supplier/useSupplierCreate';
 
 const props = defineProps<{ create?: () => Promise<unknown> }>()
 

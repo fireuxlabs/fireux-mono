@@ -1,1 +1,1 @@
-export * from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
+export * from '../../supplier/Supplier.model'

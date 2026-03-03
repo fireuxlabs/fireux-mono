@@ -66,8 +66,8 @@ import { computed } from 'vue';
 import type {
     SupplierCard,
     SupplierProfile,
-} from 'fireux-suppliers/runtime/composables/supplier/ops/useSupplier';
-import { useSupplier } from 'fireux-suppliers/runtime/composables/supplier/ops/useSupplier';
+} from '../../../composables/supplier/ops/useSupplier';
+import { useSupplier } from '../../../composables/supplier/ops/useSupplier';
 
 const props = defineProps<{
   title?: string

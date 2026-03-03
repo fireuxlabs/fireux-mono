@@ -9,7 +9,7 @@ import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useFirestore } from 'vuefire'
-import type { SupplierApp, SupplierCore } from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
+import type { SupplierApp, SupplierCore } from '../../models/supplier/Supplier.model'
 import { supplierConfig } from './supplierConfig'
 
 export function useSupplierCreate() {

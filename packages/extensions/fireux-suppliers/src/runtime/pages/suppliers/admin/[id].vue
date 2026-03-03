@@ -67,9 +67,9 @@ import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firesto
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { useSupplierInterface } from 'fireux-suppliers/runtime/composables/supplier/view/useSupplierInterface'
-import type { SupplierApp, SupplierCore } from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
-import { supplierConfig } from 'fireux-suppliers/runtime/composables/supplier/supplierConfig'
+import { useSupplierInterface } from '../../../composables/supplier/view/useSupplierInterface'
+import type { SupplierApp, SupplierCore } from '../../../models/supplier/Supplier.model'
+import { supplierConfig } from '../../../composables/supplier/supplierConfig'
 
 definePageMeta({
   layout: 'default',

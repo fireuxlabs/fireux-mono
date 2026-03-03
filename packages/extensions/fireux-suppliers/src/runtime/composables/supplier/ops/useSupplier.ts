@@ -2,7 +2,7 @@
 
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
 import { supplierConfig } from '../supplierConfig'
-import type { SupplierCore } from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
+import type { SupplierCore } from '../../../models/supplier/Supplier.model'
 import { useSupplierComputed } from './useSupplierComputed'
 import { useSupplierCreate } from '../useSupplierCreate'
 import { useSupplierUpdate } from '../useSupplierUpdate'

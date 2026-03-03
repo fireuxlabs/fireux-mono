@@ -2,7 +2,7 @@ import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firesto
 import { csv, locationLabel, safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import { supplierConfig } from '../supplierConfig'
-import type { SupplierCore } from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
+import type { SupplierCore } from '../../../models/supplier/Supplier.model'
 import type { Ref } from 'vue'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &

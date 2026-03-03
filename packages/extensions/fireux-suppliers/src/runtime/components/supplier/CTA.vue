@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { useSupplier } from 'fireux-suppliers/runtime/composables/supplier/ops/useSupplier';
+import { useSupplier } from '../../composables/supplier/ops/useSupplier';
 
 const { card } = useSupplier()
 

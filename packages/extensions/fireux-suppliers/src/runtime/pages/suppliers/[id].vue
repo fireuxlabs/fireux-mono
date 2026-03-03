@@ -75,7 +75,7 @@ import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firesto
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, ref } from 'vue'
-import { supplierConfig } from 'fireux-suppliers/runtime/composables/supplier/supplierConfig'
+import { supplierConfig } from '../../composables/supplier/supplierConfig'
 
 useSeoMeta({
   title: 'Supplier Profile',

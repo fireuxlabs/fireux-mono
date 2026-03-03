@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SupplierCard } from 'fireux-suppliers/runtime/composables/supplier/ops/useSupplier';
+import type { SupplierCard } from '../../../composables/supplier/ops/useSupplier';
 
 const emit = defineEmits<{
   (event: 'action'): void
