@@ -12,6 +12,7 @@ type BlogPostPayload = BlogPostEntry & {
 }
 
 const defaultBlogPost: BlogPostEntry = {
+  id: '',
   title: '',
   content: '',
   metaDescription: '',
@@ -31,6 +32,9 @@ const defaultBlogPost: BlogPostEntry = {
   cta_text: '',
   type: 'article',
   product_id: undefined,
+  appId: '',
+  created_at: '',
+  updated_at: '',
 }
 
 /**
@@ -75,6 +79,7 @@ export function useBlogDraftState() {
     const defaults = getDefaultImages()
 
     blogPost.value = {
+      id: '',
       title: '',
       content: '',
       metaDescription: '',
@@ -90,6 +95,9 @@ export function useBlogDraftState() {
       cta_text: '',
       type: 'article',
       product_id: undefined,
+      appId: tenantId,
+      created_at: '',
+      updated_at: '',
     }
 
     featuredImageData.value = ''

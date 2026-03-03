@@ -76,7 +76,11 @@ export function useOrdersForKitchenFetch(kitchenId: Ref<string> | string) {
       if (!deduped.has(id)) deduped.set(id, order)
     }
 
-    return [...deduped.values()].sort((a, b) => toMillis(b.updated_at) - toMillis(a.updated_at))
+    return [...deduped.values()].sort(
+      (a, b) =>
+        toMillis((b as any).updated?.at ?? (b as any).updated_at) -
+        toMillis((a as any).updated?.at ?? (a as any).updated_at)
+    )
   })
 
   return {

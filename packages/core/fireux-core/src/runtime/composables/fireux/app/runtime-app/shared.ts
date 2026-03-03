@@ -1,4 +1,4 @@
-import type { RuntimeMode } from '../runtime/runtime.types'
+import type { RuntimeMode } from '../../runtime/runtime.types'
 
 export type RuntimeAppMode = RuntimeMode
 

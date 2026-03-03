@@ -22,90 +22,110 @@ import type { FireuxStamped } from './meta.model'
  * - Firestore doc id is the source of truth; do not persist duplicate `id` in *Doc* types
  */
 
-/** Core (root scope): /apps/<appId> */
-export const AppCore = {
-  // Identity (runtime-resolved)
-  id: '',
+export interface AppCore {
+  id: string
+  app_name: string
+  app_short_name: string
+  role: AppRole
+  ecosystem: string
+  tagline: string
+  description: string
+  short_bio: string
+  long_bio: string
+  social_links: AppSocialLinks
+  derived: AppDerived
+  media: AppMedia
+  // Existing runtime still reads these from /apps/<id>.
+  join_requests: string[]
+  admin_ids: string[]
+  moderation_state: '' | 'ok' | 'limited' | 'banned'
+  ban_reasons: string[]
+  console_enabled: boolean
+  created: {
+    at: FirebaseTimestamp
+    by?: FireuxStamped['created']['by']
+  }
+  updated: {
+    at: FirebaseTimestamp
+    by?: FireuxStamped['updated']['by']
+  }
+}
 
-  // Display (seo-safe)
+/** Core (root scope): /apps/<appId> */
+export const AppCore: AppCore = {
+  id: '',
   app_name: '',
   app_short_name: '',
-
-  // Lineage / scope
   role: '' as AppRole,
   ecosystem: '',
-
-  // Content (seo-safe)
   tagline: '',
   description: '',
   short_bio: '',
   long_bio: '',
-
-  // Social (seo-safe)
   social_links: {} as AppSocialLinks,
-
-  // Derived (safe to show; optional)
   derived: {
     user_count: 0,
-  } as AppDerived,
-
-  // Brand / media (safe to show; optional)
+  },
   media: {
     thumbnail_url: '',
     logo_url: '',
     wordmark_light_url: '',
     wordmark_dark_url: '',
     cover_url: '',
-  } as AppMedia,
-
-  // Stamps
+  },
+  join_requests: [],
+  admin_ids: [],
+  moderation_state: '',
+  ban_reasons: [],
+  console_enabled: true,
   created: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
+    by: undefined,
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
+    by: undefined,
   },
-} as const
-
-export type AppCore = {
-  [K in keyof typeof AppCore]: (typeof AppCore)[K]
 }
 
 /** App overlay (tenancy/private): /apps/<appId>/apps/<appId> */
-export const AppApp = {
-  // Identity (same id as core app id)
+export interface AppApp {
+  id: string
+  join_requests: string[]
+  admin_ids: string[]
+  moderation_state: '' | 'ok' | 'limited' | 'banned'
+  ban_reasons: string[]
+  console_enabled: boolean
+  created: {
+    at: FirebaseTimestamp
+    by?: FireuxStamped['created']['by']
+    app_id?: FireuxStamped['created']['app_id']
+  }
+  updated: {
+    at: FirebaseTimestamp
+    by?: FireuxStamped['updated']['by']
+  }
+}
+
+export const AppApp: AppApp = {
   id: '',
-
-  // Governance (private)
-  join_requests: [] as string[],
-  admin_ids: [] as string[],
-
-  // Optional moderation/policy (private) — keep minimal for now
-  moderation_state: '' as '' | 'ok' | 'limited' | 'banned',
-  ban_reasons: [] as string[],
-
-  // Console / ops (private)
-  console_enabled: true as boolean,
-
-  // Stamps
+  join_requests: [],
+  admin_ids: [],
+  moderation_state: '',
+  ban_reasons: [],
+  console_enabled: true,
   created: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-    app_id: undefined as FireuxStamped['created']['app_id'],
+    by: undefined,
+    app_id: undefined,
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
+    by: undefined,
   },
-} as const
-
-export type AppApp = {
-  [K in keyof typeof AppApp]: (typeof AppApp)[K]
 }
 
-export type AppModel = typeof AppCore
+export type AppModel = AppCore
 
 /** Firestore storage shape (core doc): do not persist duplicate `id`. */
 export type AppCoreDoc = Omit<AppCore, 'id'>

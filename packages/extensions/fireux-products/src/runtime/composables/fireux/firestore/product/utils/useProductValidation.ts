@@ -1,5 +1,5 @@
 import { useRuntimeConfig } from '#imports'
-import type { FirebaseProduct } from 'fireux-products/runtime/models/product.model'
+import type { FirebaseProduct } from '../../../../../models/product.model'
 
 export function useProductValidation() {
   function validateProduct(product: Partial<FirebaseProduct>) {

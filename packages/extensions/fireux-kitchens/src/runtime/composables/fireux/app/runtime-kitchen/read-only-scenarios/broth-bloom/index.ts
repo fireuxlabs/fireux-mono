@@ -6,9 +6,9 @@ import {
     buildReadOnlySuppliers,
     buildReadOnlyTrainingModules,
     normalizeKitchenIngredient,
-} from '../_shared/builders'
+} from '../../../kitchen-runtime/read-only-scenarios/_shared/builders'
 import type { DummyScenario } from '../_shared/types'
-import { takumiRamenScenario } from '../takumi-ramen'
+import { takumiRamenScenario } from '../../../kitchen-runtime/read-only-scenarios/takumi-ramen'
 
 const dishIdMap = {
   'shio-ramen': 'tonkotsu-shoyu',

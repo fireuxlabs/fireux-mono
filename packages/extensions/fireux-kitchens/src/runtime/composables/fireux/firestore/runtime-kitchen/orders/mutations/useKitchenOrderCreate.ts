@@ -66,6 +66,15 @@ export function useKitchenOrderCreate() {
 			creator_id: (input.creator_id || '') as any,
 			created_at: serverTimestamp() as any,
 			updated_at: serverTimestamp() as any,
+			created: {
+				at: serverTimestamp() as any,
+				by: (input.creator_id || '') as any,
+				app_id: (input.app_id || '') as any,
+			},
+			updated: {
+				at: serverTimestamp() as any,
+				by: (input.creator_id || '') as any,
+			},
 		}
 
 		const ordersCol = collection(db, `${kitchenCollectionPath}/${kitchenId}/orders`)
@@ -78,4 +87,3 @@ export function useKitchenOrderCreate() {
 
 	return { createOrder }
 }
-

@@ -1,7 +1,7 @@
 import type {
   FirebaseProduct,
   Price,
-} from '../../../../../models/product.model'
+} from '../../../../models/product.model'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useProductCreate } from './useProductCreate.ts'
 import { useProductUpdate } from './useProductUpdate.ts'

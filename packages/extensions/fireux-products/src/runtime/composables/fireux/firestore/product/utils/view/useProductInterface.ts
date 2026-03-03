@@ -1,5 +1,5 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { FirebaseProduct } from '../../../../../../../models/product.model'
+import type { FirebaseProduct } from '../../../../../../models/product.model'
 
 export namespace ProductCard {
   export type Card = {

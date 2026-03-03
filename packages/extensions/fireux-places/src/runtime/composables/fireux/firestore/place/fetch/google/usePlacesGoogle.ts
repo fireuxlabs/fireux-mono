@@ -145,6 +145,7 @@ export async function fetchGoogle(
           image_shade: 'none',
           claimed_by: '',
           source: 'google',
+          slug: '',
         }
       })
 
@@ -240,6 +241,7 @@ export function mapDetailsToGooglePlace(
     image_url: '',
     image_shade: 'none',
     claimed_by: '',
+    slug: '',
     website: typeof result?.website === 'string' ? result.website : '',
     phone,
     rating: typeof result?.rating === 'number' ? result.rating : 0,

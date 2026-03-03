@@ -1,6 +1,6 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
-import type { BlogPost } from '../../../../../../models/blogPost.model'
+import type { BlogPost } from '../../../../../models/blogPost.model'
 
 export function useBlogCollection() {
   const { firestoreFetchCollection } = useFirestoreRead()

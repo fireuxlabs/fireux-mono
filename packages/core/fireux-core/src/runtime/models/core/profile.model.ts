@@ -1,6 +1,6 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/profile.model.ts
 
-import type { FireuxStamped, FireuxTimestamps } from './meta.model'
+import type { FireuxStamped } from './meta.model'
 
 /**
  * Core profile doc base shape (global truth)
@@ -11,7 +11,7 @@ import type { FireuxStamped, FireuxTimestamps } from './meta.model'
  * - `tagline` is now universal (remove duplication from each profile)
  * - `tags` are stored (UI derives badges)
  */
-export interface CoreProfileBase extends FireuxTimestamps {
+export interface CoreProfileBase extends FireuxStamped {
   id: string
 
   title?: string

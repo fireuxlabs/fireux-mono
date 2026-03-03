@@ -14,7 +14,7 @@ import type {
   ProjectItem,
   RelevantExperienceItem,
   VolunteeringItem,
-} from '../../../../../../models/profiles/Professional/Professional.model'
+} from '../../../../../../models/profiles/Professional/supporting'
 
 type UpdateOptions = { id?: string | null; scope?: 'core' | 'app' }
 

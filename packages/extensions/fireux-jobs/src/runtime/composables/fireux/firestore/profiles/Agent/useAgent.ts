@@ -3,10 +3,8 @@
 import { computed } from 'vue'
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import {
-  agentConfig,
-  type AgentCore,
-} from '../../../../../models/profiles/Agent/Agent.model'
+import { agentConfig } from './config/agentConfig'
+import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model'
 import { useAgentComputed } from './main/useAgentComputed'
 import { useAgentInterface, type AgentCard } from './utils/view/useAgentInterface'
 import { useAgentUpdate } from './main/useAgentUpdate'

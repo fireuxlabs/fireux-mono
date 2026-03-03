@@ -15,22 +15,25 @@ import type { Place } from 'fireux-places/runtime/models/place.model'
  * - Drift is detected by comparing data ↔ model shape
  */
 
-// 🔑 Runtime + canonical shape for stored collection records (source of truth)
-export const Company = {
-  /** Canonical Place ID (also the Firestore document ID). */
-  id: '',
+export interface Company {
+  id: string
+  created?: {
+    at: FirebaseTimestamp
+  }
+  updated?: {
+    at: FirebaseTimestamp
+  }
+}
 
-  // Authored (timestamps only; no creator_id on thin record)
+// Runtime + canonical shape for stored collection records (source of truth)
+export const Company: Company = {
+  id: '',
   created: {
     at: {} as FirebaseTimestamp,
   },
   updated: {
     at: {} as FirebaseTimestamp,
   },
-} as const
-
-export type Company = {
-  [K in keyof typeof Company]: (typeof Company)[K]
 }
 
 /**

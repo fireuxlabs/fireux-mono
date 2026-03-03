@@ -1,7 +1,7 @@
 import { serverTimestamp } from 'firebase/firestore'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate.ts'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
-import type { BlogPost } from '../../../../../../models/blogPost.model'
+import type { BlogPost } from '../../../../../models/blogPost.model'
 
 export function useBlogUpdate() {
   const { updateDocument } = useFirestoreUpdate()

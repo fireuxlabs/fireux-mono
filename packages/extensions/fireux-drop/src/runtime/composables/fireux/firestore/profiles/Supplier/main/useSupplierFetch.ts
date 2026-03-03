@@ -1,9 +1,7 @@
 import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection'
 import { computed } from 'vue'
-import {
-    supplierConfig,
-    type SupplierCore,
-} from '../../../../../../models/profiles/Supplier/Supplier.model'
+import { supplierConfig } from '../config/supplierConfig'
+import type { SupplierCore } from '../../../../../../models/profiles/Supplier/Supplier.model'
 
 // Hydrated (user-attached) supplier profiles for UI use.
 export function useSupplierFetch() {

@@ -1,7 +1,7 @@
 // packages/core/fireux-core/src/runtime/composables/fireux/app/runtime-app/useRuntimeAppData.ts
 
 import { computed, type ComputedRef, type Ref } from 'vue'
-import { useFireUXConfig } from '../../../FireUXConfig'
+import { useFireUXConfig } from '../FireUXConfig'
 
 export function useRuntimeAppData(params: {
   id: Ref<string>

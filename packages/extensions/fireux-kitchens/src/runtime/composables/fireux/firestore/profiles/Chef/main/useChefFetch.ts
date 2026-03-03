@@ -1,9 +1,7 @@
 import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection'
 import { computed } from 'vue'
-import {
-    chefConfig,
-    type ChefCore,
-} from '../../../../../../models/profiles/Chef/Chef.model'
+import { chefConfig } from '../config/chefConfig'
+import type { ChefCore } from '../../../../../../models/profiles/Chef/Chef.model'
 
 // Hydrated (user-attached) chef profiles for UI use.
 export function useChefFetch() {

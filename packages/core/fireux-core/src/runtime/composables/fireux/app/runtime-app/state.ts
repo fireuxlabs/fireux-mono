@@ -1,7 +1,7 @@
 import { useCookie, useState } from '#imports'
 import { computed } from 'vue'
-import { normalizeRuntimeMode, normalizeString } from '../runtime/runtime.normalize'
-import type { RuntimeMode } from '../runtime/runtime.types'
+import { normalizeRuntimeMode, normalizeString } from '../../runtime/runtime.normalize'
+import type { RuntimeMode } from '../../runtime/runtime.types'
 
 export type RuntimeAppSelectionState = {
   appId: string

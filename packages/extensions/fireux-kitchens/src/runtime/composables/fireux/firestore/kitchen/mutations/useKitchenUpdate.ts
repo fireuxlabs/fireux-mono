@@ -1,6 +1,6 @@
 import { useDocumentUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/operations/useDocumentUpdateBase'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
-import type { KitchenCollection, KitchenUpdateInput } from '../../../../../../models/kitchen.model'
+import type { KitchenCollection, KitchenUpdateInput } from '../../../../../models/kitchen.model'
 
 const COLLECTION_PATH = 'kitchens'
 

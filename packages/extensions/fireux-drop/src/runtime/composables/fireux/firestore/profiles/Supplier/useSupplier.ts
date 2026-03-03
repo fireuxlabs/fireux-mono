@@ -1,10 +1,8 @@
 // FILE: packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Supplier/useSupplier.ts
 
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
-import {
-    supplierConfig,
-    type SupplierCore,
-} from '../../../../../models/profiles/Supplier/Supplier.model'
+import { supplierConfig } from './config/supplierConfig'
+import type { SupplierCore } from '../../../../../models/profiles/Supplier/Supplier.model'
 import { useSupplierComputed } from './main/useSupplierComputed'
 import { useSupplierCreate } from '../../Supplier/main/useSupplierCreate'
 import { useSupplierUpdate } from './main/useSupplierUpdate'

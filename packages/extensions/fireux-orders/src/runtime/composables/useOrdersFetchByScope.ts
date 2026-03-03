@@ -77,7 +77,11 @@ export function useOrdersFetchByScope(scope: Ref<OrderScopeRef | null> | OrderSc
 
   const orders = computed<Order[]>(() => {
     const base = sourceRef.value?.value ?? []
-    return [...base].sort((a, b) => toMillis(b.updated_at) - toMillis(a.updated_at))
+    return [...base].sort(
+      (a, b) =>
+        toMillis((b as any).updated?.at ?? (b as any).updated_at) -
+        toMillis((a as any).updated?.at ?? (a as any).updated_at)
+    )
   })
 
   return {

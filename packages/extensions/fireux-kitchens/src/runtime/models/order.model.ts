@@ -19,6 +19,12 @@ export const KitchenOrder = {
 
   items: [] as KitchenOrderItem[],
 
+  // Legacy flat fields still written by some order mutations.
+  app_id: '' as string,
+  creator_id: '' as string,
+  created_at: {} as FirebaseTimestamp,
+  updated_at: {} as FirebaseTimestamp,
+
   created: {
     at: {} as FirebaseTimestamp,
     by: '' as FireuxStamped['created']['by'],

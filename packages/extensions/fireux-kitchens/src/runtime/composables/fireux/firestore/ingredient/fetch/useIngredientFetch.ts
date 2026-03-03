@@ -1,6 +1,6 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
-import type { Ingredient } from '../../../../../../models/ingredient.model'
+import type { Ingredient } from '../../../../../models/ingredient.model'
 
 const GLOBAL_COLLECTION_PATH = 'ingredients'
 

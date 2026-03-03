@@ -53,8 +53,8 @@ export function useAppUpdate(appRef: Ref<AppModel | null | undefined>) {
     await updateApp({
       admin_ids:
         membershipRole === 'admin'
-          ? (arrayUnion(userId) as unknown as App['admin_ids'])
-          : (arrayRemove(userId) as unknown as App['admin_ids']),
+          ? (arrayUnion(userId) as unknown as AppModel['admin_ids'])
+          : (arrayRemove(userId) as unknown as AppModel['admin_ids']),
     })
   }
 

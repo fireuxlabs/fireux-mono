@@ -8,7 +8,7 @@ import type {
   PlaceSocialLinks,
   PlaceSource,
 } from 'fireux-places/runtime/models/place.model'
-import type { CompanyView } from '../../../../../../../models/company.model'
+import type { CompanyView } from 'fireux-companies/runtime/models/company.model'
 
 export namespace CompanyCard {
   export type Card = {

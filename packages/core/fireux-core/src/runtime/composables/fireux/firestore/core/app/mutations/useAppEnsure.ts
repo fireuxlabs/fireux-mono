@@ -79,6 +79,9 @@ export function useAppEnsure() {
 
       join_requests: [],
       admin_ids: [],
+      moderation_state: '',
+      ban_reasons: [],
+      console_enabled: true,
 
       tagline: '',
       description: '',

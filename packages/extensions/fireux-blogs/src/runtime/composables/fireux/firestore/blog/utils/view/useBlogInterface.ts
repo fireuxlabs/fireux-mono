@@ -1,5 +1,5 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { BlogPost } from '../../../../../../../models/blogPost.model'
+import type { BlogPost } from '../../../../../../models/blogPost.model'
 
 export namespace BlogCard {
   export type Card = {

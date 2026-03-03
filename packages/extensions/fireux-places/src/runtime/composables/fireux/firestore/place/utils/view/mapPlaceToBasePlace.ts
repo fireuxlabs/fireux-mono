@@ -32,6 +32,7 @@ export const mapPlaceToBasePlace = (): MapToBasePlace => {
       id,
       name: toString(p?.name).trim(),
       short_name: toString(p?.short_name).trim(),
+      place_type: (toString(p?.place_type).trim() || 'physical') as BasePlace['place_type'],
       formatted_address: toString(p?.formatted_address).trim(),
       short_address: toString(p?.short_address).trim(),
       lat: toNumber(p?.lat),
@@ -40,6 +41,7 @@ export const mapPlaceToBasePlace = (): MapToBasePlace => {
       claimed_by: toString(p?.claimed_by).trim(),
       image_shade: toShade(p?.image_shade),
       source,
+      slug: toString(p?.slug).trim(),
     }
 
     return {

@@ -98,3 +98,6 @@ export type KitchenCreateInput = Omit<KitchenCore, 'created' | 'updated'> & {
 }
 
 export type KitchenUpdateInput = Partial<Pick<KitchenCore, 'is_test_kitchen'>>
+
+export const KitchenCollection = KitchenCore
+export type KitchenCollection = KitchenCore

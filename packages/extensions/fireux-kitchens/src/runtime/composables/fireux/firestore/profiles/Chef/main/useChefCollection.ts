@@ -1,8 +1,6 @@
 import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection'
-import {
-  chefConfig,
-  type ChefCore,
-} from '../../../../../../models/profiles/Chef/Chef.model'
+import { chefConfig } from '../config/chefConfig'
+import type { ChefCore } from '../../../../../../models/profiles/Chef/Chef.model'
 
 export function useChefCollection() {
   const {

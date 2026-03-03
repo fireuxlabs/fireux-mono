@@ -10,9 +10,7 @@ export interface UsePlacesOptions {
   types?: string[]
 }
 
-export function usePlaces<T extends Record<string, any> = Record<string, any>>(
-  options: UsePlacesOptions = {}
-) {
+export function usePlaces(options: UsePlacesOptions = {}) {
   return {
     ...usePlacesCollection(),
     ...usePlacesSearch(),

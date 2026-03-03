@@ -17,11 +17,14 @@ export function useSupplierQuickCreate() {
       // Simulate create and return minimal supplier object
       const supplier: SupplierCore = {
         id: 'supplier-mock-id',
+        supplier_headline: name,
+        supplier_bio: '',
+        supplier_image: '',
+        supplier_product_categories: [],
+        supplier_delivery_areas: [],
+        supplier_organization_name: name,
         title: name,
         subtitle: '',
-        creator_id: 'supplier-mock-id',
-        created_at: emptyTimestamp,
-        updated_at: emptyTimestamp,
         tags: [],
         tagline: '',
         summary: '',
@@ -33,8 +36,11 @@ export function useSupplierQuickCreate() {
         locations: [],
         years_in_business: 0,
         products_offered: [],
+        employee_count: 0,
         certifications: [],
         delivery_range: 0,
+        created: { at: emptyTimestamp, by: undefined },
+        updated: { at: emptyTimestamp, by: undefined },
       }
       createdSupplier.value = supplier
       return supplier

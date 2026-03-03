@@ -3,71 +3,74 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import {  type CertificationItem,
-  type EducationItem,
-  type LanguageProficiency,
-  type OtherExperienceItem,
-  type ProjectItem,
-  type RelevantExperienceItem,
-  type VolunteeringItem,
+import type {
+  CertificationItem,
+  EducationItem,
+  LanguageProficiency,
+  OtherExperienceItem,
+  ProjectItem,
+  RelevantExperienceItem,
+  VolunteeringItem,
 } from './supporting'
 
-/**
- * Core doc: professionals/{uid}
- * App doc:  apps/{appId}/professionals/{uid}
- *
- */
-
-export const ProfessionalCore = {
-  id: '' as string,
-
-  // Identity 
-  title: '' as string,
-  summary: '' as string,
-  bio: '' as string,
-  image: '' as string,
-
-  // Experience 
-  relevant_experience: [] as RelevantExperienceItem[],
-  other_experience: [] as OtherExperienceItem[],
-
-  // Detail sections (real deal)
-  languages: [] as LanguageProficiency[],
-  certifications: [] as CertificationItem[],
-  education: [] as EducationItem[],
-  volunteering: [] as VolunteeringItem[],
-  projects: [] as ProjectItem[],
-
-  // Stamps
+export interface ProfessionalCore {
+  id: string
+  title: string
+  summary: string
+  bio: string
+  image: string
+  positions: string[]
+  relevant_experience: RelevantExperienceItem[]
+  other_experience: OtherExperienceItem[]
+  languages: LanguageProficiency[]
+  certifications: CertificationItem[]
+  education: EducationItem[]
+  volunteering: VolunteeringItem[]
+  projects: ProjectItem[]
   created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-  },
+    at: FirebaseTimestamp
+    by?: FireuxStamped['created']['by']
+  }
   updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-  },
-} as const
-
-export type ProfessionalCore = {
-  [K in keyof typeof ProfessionalCore]: (typeof ProfessionalCore)[K]
+    at: FirebaseTimestamp
+    by?: FireuxStamped['created']['by']
+  }
 }
 
-export const ProfessionalApp = {
+export const ProfessionalCore: ProfessionalCore = {
   id: '',
+  title: '',
+  summary: '',
+  bio: '',
+  image: '',
+  positions: [],
+  relevant_experience: [],
+  other_experience: [],
+  languages: [],
+  certifications: [],
+  education: [],
+  volunteering: [],
+  projects: [],
+  created: { at: {} as FirebaseTimestamp, by: undefined },
+  updated: { at: {} as FirebaseTimestamp, by: undefined },
+}
 
+export interface ProfessionalApp {
+  id: string
   created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-  },
+    at: FirebaseTimestamp
+    by?: FireuxStamped['created']['by']
+  }
   updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-  },
-} as const
+    at: FirebaseTimestamp
+    by?: FireuxStamped['created']['by']
+  }
+}
 
-export type ProfessionalApp = {
-  [K in keyof typeof ProfessionalApp]: (typeof ProfessionalApp)[K]
+export const ProfessionalApp: ProfessionalApp = {
+  id: '',
+  created: { at: {} as FirebaseTimestamp, by: undefined },
+  updated: { at: {} as FirebaseTimestamp, by: undefined },
 }
 
 export type ProfessionalUserSummary = Pick<User, 'id' | 'display_name' | 'avatar'> &

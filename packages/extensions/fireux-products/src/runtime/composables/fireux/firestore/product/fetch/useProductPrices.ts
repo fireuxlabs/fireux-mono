@@ -1,4 +1,4 @@
-import type { Price } from 'fireux-products/runtime/models/product.model'
+import type { Price } from '../../../../../models/product.model'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
 /** Fetch subcollection prices for a given product. */

@@ -42,8 +42,6 @@
 </template>
 
 <script setup lang="ts">
-import { useConsoleEntryCta } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleEntryCta'
-
 export interface HeroBadge {
   src: string
   alt: string
@@ -69,7 +67,7 @@ defineProps<{
   bullets: HeroBullet[]
 }>()
 
-const { hasConsoleEntry } = useConsoleEntryCta()
+const hasConsoleEntry = false
 
 defineOptions({ name: 'RichiesLandingHero' })
 </script>

@@ -19,6 +19,8 @@ export const Ingredient = {
   name: '' as string,
   slug: '' as string,
   image_url: '' as string,
+  // Legacy top-level scope field still used by demo scenarios.
+  app_id: '' as string,
 
   created: {
     at: {} as FirebaseTimestamp,

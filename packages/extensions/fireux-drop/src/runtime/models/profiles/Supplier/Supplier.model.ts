@@ -29,6 +29,23 @@ export const SupplierCore = {
   supplier_delivery_areas: [] as string[],
 
   supplier_organization_name: '' as string,
+  // Legacy fields still consumed by existing supplier surfaces.
+  title: '' as string,
+  subtitle: '' as string,
+  tagline: '' as string,
+  summary: '' as string,
+  bio_long: '' as string,
+  tags: [] as string[],
+  specialties: [] as string[],
+  categories: [] as string[],
+  organization_name: '' as string,
+  business_type: '' as string,
+  locations: [] as Array<{ city: string; country: string }>,
+  years_in_business: 0 as number,
+  products_offered: [] as string[],
+  employee_count: 0 as number,
+  certifications: [] as string[],
+  delivery_range: 0 as number,
 
   // Stamps
   created: {

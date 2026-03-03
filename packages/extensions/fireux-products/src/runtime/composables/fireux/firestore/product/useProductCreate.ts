@@ -7,7 +7,7 @@ import type {
   FirebaseProduct,
   Price,
   StripePriceInput,
-} from '../../../../../models/product.model'
+} from '../../../../models/product.model'
 import { useCreatePricesState } from './Prices/useCreatePricesState'
 import { useCreateProductState } from './state/useCreateProductState'
 

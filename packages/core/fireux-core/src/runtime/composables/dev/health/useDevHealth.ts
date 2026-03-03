@@ -1,7 +1,7 @@
 import type { ComputedRef } from 'vue'
 import { computed } from 'vue'
 import type { AppModel as AppType } from '../../../models/core/app.model'
-import { App as AppModel } from '../../../models/core/app.model'
+import { AppCore as AppModel } from '../../../models/core/app.model'
 import type { AppUser, User } from '../../../models/core/user.model'
 import { useFireUXConfig } from '../../fireux/app/FireUXConfig'
 import { useAppUsers } from '../../fireux/firestore/core/app/fetch/useAppUsers'

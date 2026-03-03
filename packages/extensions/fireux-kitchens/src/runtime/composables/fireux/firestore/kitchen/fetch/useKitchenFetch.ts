@@ -112,7 +112,7 @@ export function useKitchenFetch(options: UseKitchenFetchOptions = {}) {
 
     const { data } = useDocument(docRef, {
       ssrKey,
-      transform: (docSnap) => docSnap.data() as T | undefined,
+      transform: (docSnap: any) => docSnap.data() as T | undefined,
     } as any)
 
     return data as Ref<T | undefined>

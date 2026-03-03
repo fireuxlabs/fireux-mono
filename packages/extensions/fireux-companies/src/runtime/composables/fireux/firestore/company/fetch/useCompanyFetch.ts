@@ -1,8 +1,8 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { hydratePlaceCollection, hydratePlaceDoc } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceHydration'
 import type { Place } from 'fireux-places/runtime/models/place.model'
+import type { Company, CompanyView } from 'fireux-companies/runtime/models/company.model'
 import { computed } from 'vue'
-import type { Company, CompanyView } from '../../../../../../models/company.model'
 
 const COLLECTION_PATH = 'companies'
 

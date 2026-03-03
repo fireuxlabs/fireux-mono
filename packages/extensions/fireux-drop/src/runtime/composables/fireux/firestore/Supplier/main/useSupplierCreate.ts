@@ -10,7 +10,7 @@ import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/fires
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useFirestore } from 'vuefire'
 import type { SupplierApp, SupplierCore } from '../../../../../models/profiles/Supplier/Supplier.model'
-import { supplierConfig } from 'fireux-drop/runtime/composables/fireux/firestore/profiles/Supplier/config/supplierConfig'
+import { supplierConfig } from '../../profiles/Supplier/config/supplierConfig'
 
 export function useSupplierCreate() {
   const db = useFirestore()
@@ -58,7 +58,7 @@ export function useSupplierCreate() {
         delivery_range: 0,
       } satisfies Omit<SupplierCore, 'created' | 'updated' | 'id'>
 
-      await setDocument<SupplierCore>(supplierConfig.collectionName, uid, payload as SupplierCore, {
+      await setDocument<SupplierCore>(supplierConfig.collectionName, uid, payload as unknown as SupplierCore, {
         creator: true,
       })
       createdCore = true
@@ -69,7 +69,11 @@ export function useSupplierCreate() {
       const appRef = doc(db, 'apps', appId, supplierConfig.collectionName, uid)
       const appSnap = await getDoc(appRef)
       if (!appSnap.exists()) {
-        const payload = {} satisfies Omit<SupplierApp, 'created' | 'updated' | 'id'>
+        const payload = {
+          admin_ids: [] as string[],
+          join_requests: [] as string[],
+          console_enabled: true,
+        } satisfies Omit<SupplierApp, 'created' | 'updated' | 'id'>
 
         await setDocument<SupplierApp>(appCollection, uid, payload as SupplierApp, {
           creator: true,

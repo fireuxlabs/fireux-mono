@@ -1,9 +1,7 @@
 import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection'
 import { computed } from 'vue'
-import {
-    professionalConfig,
-    type ProfessionalCore,
-} from '../../../../../../models/profiles/Professional/Professional.model'
+import { professionalConfig } from '../config/professionalConfig'
+import type { ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
 
 // Hydrated (user-attached) professional profiles for UI use.
 export function useProfessionalFetch() {

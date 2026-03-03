@@ -3,78 +3,76 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
-/**
- * FireUX Canon (Consoleable, 2-layer)
- *
- * Core (root scope)
- * - Path: /portfolios/<portfolioId>
- * - Purpose: identity + portfolio facts (may still be private by rules; root != public)
- *
- * App (tenancy scope / private overlay)
- * - Path: /apps/<appId>/portfolios/<portfolioId>
- * - Purpose: governance + console/private switches + app-only controls
- *
- * Canon rules:
- * - Empty string means unset
- * - Arrays always exist
- * - Stamps use FireuxStamped nesting
- */
+export interface PortfolioCore {
+  id: string
+  name: string
+  slug?: string
+  owner_label: string
+  status: 'active' | 'archived'
+  strategy_label: string
+  region_label: string
+  notes: string
+  created: {
+    at: FirebaseTimestamp
+    by?: FireuxStamped['created']['by']
+    app_id?: FireuxStamped['created']['app_id']
+  }
+  updated: {
+    at: FirebaseTimestamp
+    by?: FireuxStamped['updated']['by']
+  }
+}
 
-export const PortfolioCore = {
-  id: '' as string,
-
-  // Identity / display
-  name: '' as string,
-
-  // Optional human key (if you later add slugs, keep it here)
-  slug: '' as string,
-
-  // Portfolio facts (core)
-  owner_label: '' as string,
-  status: 'active' as 'active' | 'archived',
-  strategy_label: '' as string,
-  region_label: '' as string,
-  notes: '' as string,
-
-  // Stamps
+export const PortfolioCore: PortfolioCore = {
+  id: '',
+  name: '',
+  slug: '',
+  owner_label: '',
+  status: 'active',
+  strategy_label: '',
+  region_label: '',
+  notes: '',
   created: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
+    by: undefined,
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
+    by: undefined,
   },
-} as const
-
-export type PortfolioCore = {
-  [K in keyof typeof PortfolioCore]: (typeof PortfolioCore)[K]
 }
 
-export const PortfolioApp = {
-  id: '' as string,
+export interface PortfolioApp {
+  id: string
+  admin_ids: string[]
+  join_requests: string[]
+  console_enabled: boolean
+  created: {
+    at: FirebaseTimestamp
+    by?: FireuxStamped['created']['by']
+    app_id?: FireuxStamped['created']['app_id']
+  }
+  updated: {
+    at: FirebaseTimestamp
+    by?: FireuxStamped['updated']['by']
+  }
+}
 
-  // Governance (private)
-  admin_ids: [] as string[],
-  join_requests: [] as string[],
-
-  // Console / ops (private)
-  console_enabled: true as boolean,
-
-  // Stamps
+export const PortfolioApp: PortfolioApp = {
+  id: '',
+  admin_ids: [],
+  join_requests: [],
+  console_enabled: true,
   created: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-    app_id: undefined as FireuxStamped['created']['app_id'],
+    by: undefined,
+    app_id: undefined,
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
+    by: undefined,
   },
-} as const
-
-export type PortfolioApp = {
-  [K in keyof typeof PortfolioApp]: (typeof PortfolioApp)[K]
 }
 
+export type Portfolio = PortfolioCore
 export type PortfolioModel = PortfolioCore

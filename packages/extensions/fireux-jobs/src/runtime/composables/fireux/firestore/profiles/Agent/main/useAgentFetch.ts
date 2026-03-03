@@ -1,9 +1,7 @@
 import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection'
 import { computed } from 'vue'
-import {
-    agentConfig,
-    type AgentCore,
-} from '../../../../../../models/profiles/Agent/Agent.model'
+import { agentConfig } from '../config/agentConfig'
+import type { AgentCore } from '../../../../../../models/profiles/Agent/Agent.model'
 
 // Hydrated (user-attached) agent profiles for UI use.
 export function useAgentFetch() {

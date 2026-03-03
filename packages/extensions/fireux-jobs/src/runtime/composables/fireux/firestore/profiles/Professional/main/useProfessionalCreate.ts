@@ -38,6 +38,7 @@ export function useProfessionalCreate() {
         summary: '',
         bio: '',
         image: '',
+        positions: [],
         relevant_experience: [],
         other_experience: [],
         languages: [],

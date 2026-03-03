@@ -3,7 +3,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import { useFirestore } from 'vuefire'
-import type { BlogPost, BlogPostEntry } from '../../../../../../models/blogPost.model'
+import type { BlogPost, BlogPostEntry } from '../../../../../models/blogPost.model'
 
 export const BlogPayload = {
   id: '',

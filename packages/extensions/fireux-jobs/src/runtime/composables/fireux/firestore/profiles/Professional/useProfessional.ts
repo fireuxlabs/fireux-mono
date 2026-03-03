@@ -4,10 +4,8 @@ import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/cor
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { computed } from 'vue'
 
-import {
-    professionalConfig,
-    type ProfessionalCore,
-} from '../../../../../models/profiles/Professional/Professional.model'
+import { professionalConfig } from './config/professionalConfig'
+import type { ProfessionalCore } from '../../../../../models/profiles/Professional/Professional.model'
 
 import { useProfessionalComputed } from './main/useProfessionalComputed'
 import { useProfessionalCreate } from './main/useProfessionalCreate'

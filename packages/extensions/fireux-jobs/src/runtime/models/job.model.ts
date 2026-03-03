@@ -47,6 +47,8 @@ export type WorkplaceType = string
 export const Job = {
   /** Firestore document ID */
   id: '' as string,
+  // Legacy top-level app scope still read by existing filters.
+  app_id: '' as string,
 
   /**
    * Employer reference (billing / ownership)

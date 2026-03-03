@@ -14,57 +14,77 @@ import type { UserNotification } from './supporting/user'
  * - Runtime object is the single source of truth
  */
 
-// Runtime canonical shape
-export const User = {
-  id: '',
+export interface User {
+  id: string
+  display_name: string
+  avatar: string
+  handle: string
+  email: string
+  bio: string
+  profiles: string[]
+  userOf: string[]
+  adminOf: string[]
+  notifications: UserNotification[]
+  created: {
+    at: FirebaseTimestamp
+    by?: FireuxStamped['created']['by']
+  }
+  updated: {
+    at: FirebaseTimestamp
+    by?: FireuxStamped['created']['by']
+  }
+}
 
+// Runtime canonical shape
+export const User: User = {
+  id: '',
   display_name: '',
   avatar: '',
-
   handle: '',
   email: '',
   bio: '',
-
-  profiles: [] as string[],
-
-  userOf: [] as string[],
-  adminOf: [] as string[],
-
-  notifications: [] as UserNotification[],
-
-  // Authored (FireuxStamped)
+  profiles: [],
+  userOf: [],
+  adminOf: [],
+  notifications: [],
   created: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
+    by: undefined,
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
+    by: undefined,
   },
-} as const
-
-export type User = {
-  [K in keyof typeof User]: (typeof User)[K]
 }
 
 /**
  * App-specific user overlay
  * Path: /apps/<appId>/users/<userId>
  */
-export const AppUser = {
+export interface AppUser {
+  id: string
+  role: 'user' | 'admin'
+  notifications: UserNotification[]
+  created: {
+    at: FirebaseTimestamp
+    by?: FireuxStamped['created']['by']
+  }
+  updated: {
+    at: FirebaseTimestamp
+    by?: FireuxStamped['created']['by']
+  }
+}
+
+export const AppUser: AppUser = {
   id: '',
-  role: 'user' as 'user' | 'admin',
-  notifications: [] as UserNotification[],
+  role: 'user',
+  notifications: [],
   created: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
+    by: undefined,
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
+    by: undefined,
   },
-} as const
-
-export type AppUser = {
-  [K in keyof typeof AppUser]: (typeof AppUser)[K]
 }
