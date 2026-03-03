@@ -301,7 +301,12 @@ end run
 function activate(context) {
   const ws =
     vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0]
-  const cwd = ws ? ws.uri.fsPath : undefined
+  const workspaceCwd = ws ? ws.uri.fsPath : undefined
+  const fallbackRepoCwd = path.resolve(__dirname, '..', '..')
+  const cwd =
+    (workspaceCwd && fs.existsSync(workspaceCwd) && workspaceCwd) ||
+    (fs.existsSync(fallbackRepoCwd) && fallbackRepoCwd) ||
+    undefined
 
   const ensureTerminal = (name, command) => {
     const existing = vscode.window.terminals.find((t) => t.name === name)
@@ -327,6 +332,9 @@ function activate(context) {
   }
 
   const runTaskIfPresent = async (label) => {
+    // Tasks here rely on `${workspaceFolder}`. Skip task launching when that folder is stale.
+    if (!workspaceCwd || !fs.existsSync(workspaceCwd)) return false
+
     try {
       const tasks = await vscode.tasks.fetchTasks()
       const hasTask = tasks.some((t) => t.name === label)

@@ -19,26 +19,11 @@
       >
         Browse professionals
       </UButton>
-
-      <UButton
-        v-if="hasConsoleEntry"
-        size="lg"
-        variant="soft"
-        color="neutral"
-        to="/console"
-        icon="i-lucide-terminal"
-      >
-        Go to console
-      </UButton>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useConsoleEntryCta } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleEntryCta'
-
 const paragraph =
   'Run your <a href="/kitchens"><strong>kitchen</strong></a> from one console - ops, team, and service essentials. When you need staff, publish <a href="/jobs"><strong>roles</strong></a> and connect with <a href="/professionals"><strong>professionals</strong></a> already in the ecosystem.'
-
-const { hasConsoleEntry } = useConsoleEntryCta()
 </script>
