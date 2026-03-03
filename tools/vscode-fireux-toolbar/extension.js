@@ -789,7 +789,17 @@ function activate(context) {
 
   register('fireuxToolbar.openServersView', async () => {
     await vscode.commands.executeCommand('workbench.view.explorer')
-    await vscode.commands.executeCommand('fireuxToolbar.serversView.focus')
+    try {
+      if (apps.length > 0) {
+        await serverTreeView.reveal(apps[0], {
+          focus: true,
+          select: false,
+          expand: false,
+        })
+      }
+    } catch {
+      // noop
+    }
   })
 
   register('fireuxToolbar.refreshServers', async () => {
@@ -835,7 +845,21 @@ function activate(context) {
     context.subscriptions.push(item)
   }
 
-  // Compact toolbar button for server management.
+  // Keep top two apps pinned in the status bar.
+  makeBtn(
+    '$(flame) FireUX',
+    'Start FireUX dev (port 3000)',
+    'fireuxToolbar.startFireux',
+    102
+  )
+  makeBtn(
+    '$(book) MiseBox',
+    'Start MiseBox dev (port 3001)',
+    'fireuxToolbar.startMisebox',
+    101
+  )
+
+  // Compact server management button.
   makeBtn(
     '$(server-process) Servers',
     'Open FireUX Servers panel',

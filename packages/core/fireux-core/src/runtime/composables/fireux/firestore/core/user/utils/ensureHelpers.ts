@@ -15,7 +15,7 @@ import type {
   AppUser,
   User,
 } from '../../../../../../models/core/user.model'
-import type { NotificationScope, UserNotification } from '../../../../../../models/core/user.supporting'
+import type { NotificationScope, UserNotification } from '../../../../../../models/core/supporting/user'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
 import { useRequireUser } from '../../../../firebase/useRequireUser'

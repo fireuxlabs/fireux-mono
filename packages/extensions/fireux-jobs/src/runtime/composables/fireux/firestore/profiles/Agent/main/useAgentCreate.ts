@@ -10,7 +10,7 @@ import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/fires
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useFirestore } from 'vuefire'
 import type { AgentApp, AgentCore } from '../../../../../../models/profiles/Agent/Agent.model'
-import { agentConfig } from '../../../../../../models/profiles/Agent/Agent.model'
+import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
 
 export function useAgentCreate() {
   const db = useFirestore()

@@ -2,8 +2,6 @@
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import { chefConfig } from './supporting'
-
 /**
  * Runtime canonical shapes (core + app overlay)
  * Core doc:  chefs/{uid}
@@ -67,5 +65,3 @@ export const ChefApp = {
 export type ChefApp = {
   [K in keyof typeof ChefApp]: (typeof ChefApp)[K]
 }
-
-export { chefConfig }

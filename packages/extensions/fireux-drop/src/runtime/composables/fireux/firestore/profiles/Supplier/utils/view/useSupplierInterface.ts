@@ -1,8 +1,9 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { csv, locationLabel, safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
+import { supplierConfig } from 'fireux-drop/runtime/composables/fireux/firestore/profiles/Supplier/config/supplierConfig'
+import type { SupplierCore } from 'fireux-drop/runtime/models/profiles/Supplier/Supplier.model'
 import type { Ref } from 'vue'
-import { supplierConfig, type SupplierCore } from '../../../../../../../models/profiles/Supplier/Supplier.model'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &
   Partial<Pick<User, 'id' | 'handle' | 'email'>>

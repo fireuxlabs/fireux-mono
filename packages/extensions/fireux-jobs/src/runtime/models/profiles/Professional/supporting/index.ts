@@ -1,4 +1,4 @@
-// FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/supporting.ts
+// FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/supporting/index.ts
 
 /**
  * Domain-level supporting structures for Professional profiles.
@@ -86,22 +86,3 @@ export interface ProjectItem {
   ongoing: boolean
   responsibilities: string
 }
-
-/* ---------------------------------- *
- * Professional Profile Config
- * ---------------------------------- */
-
-import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model'
-
-/**
- * Runtime config consumed by useProfile()
- * Profiles live under: professionals/{uid}
- */
-export const professionalConfig: ProfileConfig = {
-  id: 'professional',
-  collectionName: 'professionals',
-  profileType: 'Professional',
-  cta: 'Create your Professional profile to appear in listings.',
-  navLabel: 'Professional',
-  navIcon: 'i-lucide-user-star',
-} as const

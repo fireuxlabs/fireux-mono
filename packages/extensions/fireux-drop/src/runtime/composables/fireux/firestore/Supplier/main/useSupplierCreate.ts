@@ -10,7 +10,7 @@ import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/fires
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useFirestore } from 'vuefire'
 import type { SupplierApp, SupplierCore } from '../../../../../models/profiles/Supplier/Supplier.model'
-import { supplierConfig } from '../../../../../models/profiles/Supplier/Supplier.model'
+import { supplierConfig } from 'fireux-drop/runtime/composables/fireux/firestore/profiles/Supplier/config/supplierConfig'
 
 export function useSupplierCreate() {
   const db = useFirestore()

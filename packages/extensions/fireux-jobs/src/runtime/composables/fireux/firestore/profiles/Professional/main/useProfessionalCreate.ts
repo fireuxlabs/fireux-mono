@@ -10,7 +10,7 @@ import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/fires
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useFirestore } from 'vuefire'
 import type { ProfessionalApp, ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
-import { professionalConfig } from '../../../../../../models/profiles/Professional/Professional.model'
+import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
 
 export function useProfessionalCreate() {
   const db = useFirestore()

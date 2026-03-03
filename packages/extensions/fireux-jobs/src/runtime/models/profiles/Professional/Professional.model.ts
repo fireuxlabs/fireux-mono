@@ -3,9 +3,7 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import {
-  professionalConfig,
-  type CertificationItem,
+import {  type CertificationItem,
   type EducationItem,
   type LanguageProficiency,
   type OtherExperienceItem,
@@ -78,5 +76,3 @@ export type ProfessionalUserSummary = Pick<User, 'id' | 'display_name' | 'avatar
 export type ProfessionalResolved = ProfessionalCore & {
   user?: User | ProfessionalUserSummary
 }
-
-export { professionalConfig }

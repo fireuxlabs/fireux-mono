@@ -3,8 +3,6 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import { agentConfig } from './supporting'
-
 /**
  * Runtime canonical shapes (core + app overlay)
  * Core doc:  agents/{uid}
@@ -76,5 +74,3 @@ export type AgentUserSummary = Pick<User, 'id' | 'display_name' | 'avatar'> &
 export type AgentResolved = AgentCore & {
   user?: User | AgentUserSummary
 }
-
-export { agentConfig }

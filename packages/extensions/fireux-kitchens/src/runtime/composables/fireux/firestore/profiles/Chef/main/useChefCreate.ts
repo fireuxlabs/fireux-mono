@@ -10,7 +10,7 @@ import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/fires
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useFirestore } from 'vuefire'
 import type { ChefApp, ChefCore } from '../../../../../../models/profiles/Chef/Chef.model'
-import { chefConfig } from '../../../../../../models/profiles/Chef/Chef.model'
+import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 
 export function useChefCreate() {
   const db = useFirestore()

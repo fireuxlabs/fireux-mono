@@ -69,7 +69,7 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { computed, ref } from 'vue'
 import { useAgentInterface } from '../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
 import type { AgentCore } from '../../models/profiles/Agent/Agent.model'
-import { agentConfig } from '../../models/profiles/Agent/Agent.model'
+import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
 
 const route = useRoute()
 const agentId = computed(() => {

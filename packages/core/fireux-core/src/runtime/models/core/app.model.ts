@@ -1,66 +1,55 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/app.model.ts
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
-import type { AppRole, AppSocialLinks } from './app.supporting'
+import type { AppDerived, AppMedia, AppRole, AppSocialLinks } from './supporting/app'
 import type { FireuxStamped } from './meta.model'
 
 /**
- * Core Firestore App document
- * Path: /apps/<appId>
+ * FireUX Canon (Consoleable, 2-layer)
+ *
+ * Core (root scope)
+ * - Path: /apps/<appId>
+ * - Purpose: identity + public/seo-safe content + brand
+ *
+ * App (tenancy scope / private overlay)
+ * - Path: /apps/<appId>/apps/<appId>
+ * - Purpose: governance + console/private switches + app-only policy
  *
  * Canon rules:
  * - Empty string means unset
  * - Arrays always exist
- * - Stamping uses nested FireuxStamped fields (`created.by` optional)
- *
- * NOTE: This file is runtime-canon (used by drift tooling AND app code).
+ * - Stamps use FireuxStamped nesting
+ * - Firestore doc id is the source of truth; do not persist duplicate `id` in *Doc* types
  */
 
-export type AppMedia = {
-  thumbnail_url: string
-  logo_url: string
-  wordmark_light_url: string
-  wordmark_dark_url: string
-  cover_url: string
-}
-
-export type AppDerived = {
-  user_count: number
-}
-
-// 🔑 Runtime + canonical shape (source of truth)
-export const App = {
-  // Identity (runtime-resolved; do NOT persist duplicate id in Firestore)
+/** Core (root scope): /apps/<appId> */
+export const AppCore = {
+  // Identity (runtime-resolved)
   id: '',
 
-  // Display
+  // Display (seo-safe)
   app_name: '',
   app_short_name: '',
 
-  // Scope + lineage
+  // Lineage / scope
   role: '' as AppRole,
   ecosystem: '',
 
-  // Governance
-  join_requests: [] as string[],
-  admin_ids: [] as string[],
-  // (legacy flat creator fields removed; use `created.by`)
-
-  // Content
+  // Content (seo-safe)
   tagline: '',
   description: '',
   short_bio: '',
   long_bio: '',
 
-  // Social
+  // Social (seo-safe)
   social_links: {} as AppSocialLinks,
 
-  // Derived (keep grouped for future expansion)
+  // Derived (safe to show; optional)
   derived: {
     user_count: 0,
   } as AppDerived,
 
-  // Brand / media (keep grouped for future expansion)
+  // Brand / media (safe to show; optional)
   media: {
     thumbnail_url: '',
     logo_url: '',
@@ -78,22 +67,52 @@ export const App = {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['updated']['by'],
   },
+} as const
+
+export type AppCore = {
+  [K in keyof typeof AppCore]: (typeof AppCore)[K]
 }
 
-export type AppModel = typeof App
+/** App overlay (tenancy/private): /apps/<appId>/apps/<appId> */
+export const AppApp = {
+  // Identity (same id as core app id)
+  id: '',
 
-/**
- * Firestore storage shape (doc):
- * - Canon: Firestore doc id is the source of truth.
- * - Do not persist duplicate `id` field in the stored document.
- */
-export type AppDoc = Omit<AppModel, 'id'>
+  // Governance (private)
+  join_requests: [] as string[],
+  admin_ids: [] as string[],
 
-/**
- * Runtime shape (resolved/hydrated):
- * - Always includes `id` (doc id) for routing/UI.
- */
-export type AppResolved = AppModel
+  // Optional moderation/policy (private) — keep minimal for now
+  moderation_state: '' as '' | 'ok' | 'limited' | 'banned',
+  ban_reasons: [] as string[],
 
-export { createEmptyAppSocialLinks } from './app.supporting'
-export type { AppSocialLinks } from './app.supporting'
+  // Console / ops (private)
+  console_enabled: true as boolean,
+
+  // Stamps
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['updated']['by'],
+  },
+} as const
+
+export type AppApp = {
+  [K in keyof typeof AppApp]: (typeof AppApp)[K]
+}
+
+export type AppModel = typeof AppCore
+
+/** Firestore storage shape (core doc): do not persist duplicate `id`. */
+export type AppCoreDoc = Omit<AppCore, 'id'>
+/** Runtime-resolved (core): always includes `id`. */
+export type AppCoreResolved = AppCore
+
+/** Firestore storage shape (app overlay): do not persist duplicate `id`. */
+export type AppAppDoc = Omit<AppApp, 'id'>
+/** Runtime-resolved (app overlay): always includes `id`. */
+export type AppAppResolved = AppApp

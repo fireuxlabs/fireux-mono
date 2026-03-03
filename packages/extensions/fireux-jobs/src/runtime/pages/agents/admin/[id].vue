@@ -69,7 +69,7 @@ import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAgentInterface } from '../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
 import type { AgentApp, AgentCore } from '../../../models/profiles/Agent/Agent.model'
-import { agentConfig } from '../../../models/profiles/Agent/Agent.model'
+import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
 
 definePageMeta({
   layout: 'default',

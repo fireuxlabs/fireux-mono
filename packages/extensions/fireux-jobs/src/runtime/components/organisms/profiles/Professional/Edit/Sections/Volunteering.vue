@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import type { VolunteeringItem } from '../../../../../../models/profiles/Professional/supporting';
+import type { VolunteeringItem } from '../../../../../../models/profiles/Professional/Professional.model';
 
 const props = defineProps<{
   items: VolunteeringItem[]

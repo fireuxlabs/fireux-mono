@@ -1,7 +1,7 @@
 import {
   createEmptyAppSocialLinks,
-  type AppSocialLinks,
-} from '../../../../../../../models/core/app.supporting'
+} from '../factories/createEmptyAppSocialLinks'
+import type { AppSocialLinks } from '../../../../../../../models/core/supporting/app'
 
 const HTTPS_PROTOCOL_REGEX = /^https?:\/\//
 

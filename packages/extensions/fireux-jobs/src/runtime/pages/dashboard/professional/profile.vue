@@ -91,7 +91,7 @@ import { useConsoleProfileView } from 'fireux-core/runtime/composables/fireux/ap
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { computed, ref } from 'vue'
 import { useProfessional } from '../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
-import { professionalConfig } from '../../../models/profiles/Professional/supporting'
+import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
 
 const profileKey = professionalConfig.id ?? 'professional'
 const navLabel =

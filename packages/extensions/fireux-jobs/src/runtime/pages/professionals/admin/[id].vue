@@ -83,7 +83,7 @@ import { useRoute } from 'vue-router'
 import { useProfessionalComputed } from '../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalComputed'
 import { useProfessionalInterface } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import type { ProfessionalApp, ProfessionalCore } from '../../../models/profiles/Professional/Professional.model'
-import { professionalConfig } from '../../../models/profiles/Professional/supporting'
+import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
 
 definePageMeta({
   layout: 'default',

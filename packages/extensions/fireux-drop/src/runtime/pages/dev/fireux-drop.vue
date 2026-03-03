@@ -131,7 +131,7 @@ const filteredSuppliersDriftPayload = computed(() =>
 )
 
 const suppliersDriftCopyPayload = computed(() => ({
-  modelPath: 'packages/extensions/fireux-drop/src/runtime/models/profiles/Supplier/Supplier.model.ts',
+  modelPath: 'packages/extensions/fireux-drop/src/runtime/models/profiles/Supplier/Supplier.model',
   driftKind: suppliersDriftKind.value,
   selectedField: suppliersSelectedField.value || null,
   totalSuppliers: suppliersCollection.value.length,

@@ -2,9 +2,9 @@
 
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import type { AppModel } from 'fireux-core/runtime/models/core/app.model'
 import { useFirestore } from 'vuefire'
-import type { AppModel } from '../../../../../../models/core/app.model'
-import { createEmptyAppSocialLinks } from '../../../../../../models/core/app.supporting'
+import { createEmptyAppSocialLinks } from '../utils/factories/createEmptyAppSocialLinks'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'

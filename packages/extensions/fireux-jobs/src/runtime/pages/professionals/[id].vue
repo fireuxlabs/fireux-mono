@@ -94,8 +94,8 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { computed, ref } from 'vue'
 import { useProfessionalComputed } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalComputed'
 import { useProfessionalInterface } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
-import type { ProfessionalApp, ProfessionalCore } from '../../models/profiles/Professional/Professional.model.ts'
-import { professionalConfig } from '../../models/profiles/Professional/Professional.model.ts'
+import type { ProfessionalApp, ProfessionalCore } from '../../models/profiles/Professional/Professional.model'
+import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
 
 const route = useRoute()
 const professionalId = computed(() => {

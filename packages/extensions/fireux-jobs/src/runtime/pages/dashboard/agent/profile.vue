@@ -78,7 +78,7 @@ import { useConsoleProfileView } from 'fireux-core/runtime/composables/fireux/ap
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { computed, ref } from 'vue'
 import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent'
-import { agentConfig } from '../../../models/profiles/Agent/Agent.model'
+import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
 
 const navLabel = agentConfig.navLabel ?? `${agentConfig.profileType} Profile`
 const navIcon = agentConfig.navIcon ?? 'i-lucide-user'

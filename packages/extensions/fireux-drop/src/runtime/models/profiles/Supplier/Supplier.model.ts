@@ -1,47 +1,34 @@
-// FILE: packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Supplier/Supplier.model.ts
+// FILE: packages/extensions/fireux-drop/src/runtime/models/profiles/Supplier/Supplier.model.ts
 
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model';
-import type { FirebaseTimestamp } from 'fireux-core/types/firebase';
-import { supplierConfig } from './supporting';
-
+import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 /**
- * Runtime canonical shapes (core + app overlay)
- * Core doc:  suppliers/{uid}
- * App doc:   apps/{appId}/suppliers/{uid}
+ * FireUX Canon (Consoleable, 2-layer)
+ *
+ * Core (root scope)
+ * - Path: /suppliers/<supplierId>
+ * - Purpose: identity + supplier profile content (can be private by rules; root != public)
+ *
+ * App (tenancy scope / private overlay)
+ * - Path: /apps/<appId>/suppliers/<supplierId>
+ * - Purpose: governance + console/private switches + app-only controls
+ *
+ * NOTE:
+ * Supplier is placeholder right now — keep it simple + canon-shaped.
  */
 
 export const SupplierCore = {
-  id: '',
+  id: '' as string,
 
-  // Supplier (scoped, v1)
-  supplier_headline: '',
-  summary: '',
-  supplier_bio: '',
-  supplier_image: '',
+  // Display/content (minimal placeholder)
+  supplier_headline: '' as string,
+  supplier_bio: '' as string,
+  supplier_image: '' as string,
 
-  // Supplier descriptors (scoped)
   supplier_product_categories: [] as string[],
   supplier_delivery_areas: [] as string[],
 
-  // Optional org label (scoped)
-  supplier_organization_name: '',
-
-  // Legacy (deprecated) — kept temporarily for non-breaking migration
-  title: '',
-  subtitle: '',
-  tagline: '',
-  tags: [] as string[],
-  bio_long: '',
-  specialties: [] as string[],
-  categories: [] as string[],
-  organization_name: '',
-  business_type: '',
-  locations: [] as Array<{ city: string; country: string }>,
-  years_in_business: 0,
-  products_offered: [] as string[],
-  employee_count: 0,
-  certifications: [] as string[],
-  delivery_range: 0,
+  supplier_organization_name: '' as string,
 
   // Stamps
   created: {
@@ -50,7 +37,7 @@ export const SupplierCore = {
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
+    by: undefined as FireuxStamped['updated']['by'],
   },
 } as const
 
@@ -59,21 +46,27 @@ export type SupplierCore = {
 }
 
 export const SupplierApp = {
-  id: '',
+  id: '' as string,
+
+  // Governance (private)
+  admin_ids: [] as string[],
+  join_requests: [] as string[],
+
+  // Console / ops (private)
+  console_enabled: true as boolean,
 
   // Stamps
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
+    by: undefined as FireuxStamped['updated']['by'],
   },
 } as const
 
 export type SupplierApp = {
   [K in keyof typeof SupplierApp]: (typeof SupplierApp)[K]
 }
-
-export { supplierConfig };

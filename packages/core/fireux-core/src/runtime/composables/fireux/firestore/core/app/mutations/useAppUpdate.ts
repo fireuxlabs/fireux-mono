@@ -1,7 +1,7 @@
 import { arrayRemove, arrayUnion, deleteField } from 'firebase/firestore'
 import type { Ref } from 'vue'
 import type { AppModel } from '../../../../../../models/core/app.model'
-import type { AppSocialLinks } from '../../../../../../models/core/app.supporting'
+import type { AppSocialLinks } from '../../../../../../models/core/supporting/app'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'

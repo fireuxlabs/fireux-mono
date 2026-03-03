@@ -122,7 +122,7 @@ import type {
   ProjectItem,
   RelevantExperienceItem,
   VolunteeringItem,
-} from '../../../../../models/profiles/Professional/supporting'
+} from '../../../../../models/profiles/Professional/Professional.model'
 
 const props = defineProps<{ professional: ProfessionalCore | null }>()
 

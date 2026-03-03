@@ -158,7 +158,7 @@ const filteredProfessionalsDriftPayload = buildProfessionalsDriftPayload({
 })
 
 const professionalsDriftCopyPayload = buildProfessionalsCopyPayload({
-  modelPath: 'packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts',
+  modelPath: 'packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model',
   itemsKey: 'professionals',
   items: filteredProfessionalsDriftPayload,
   total: computed(() => professionalsCollection.value.length),

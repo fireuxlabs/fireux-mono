@@ -121,7 +121,7 @@ const filteredAgentsDriftPayload = buildAgentsDriftPayload({
 })
 
 const agentsDriftCopyPayload = buildAgentsCopyPayload({
-  modelPath: 'packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts',
+  modelPath: 'packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model',
   itemsKey: 'agents',
   items: filteredAgentsDriftPayload,
   total: computed(() => agentsCollection.value.length),

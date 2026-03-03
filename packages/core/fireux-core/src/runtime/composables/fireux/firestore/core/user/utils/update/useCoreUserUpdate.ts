@@ -3,7 +3,7 @@ import { useFirestore } from 'vuefire'
 import type {
     User,
 } from '../../../../../../../models/core/user.model'
-import type { UserNotification } from '../../../../../../../models/core/user.supporting'
+import type { UserNotification } from '../../../../../../../models/core/supporting/user'
 import { useImageStorage } from '../../../../../firebase/useImageStorage'
 import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
 import type { UserRefs } from '../../fetch/useUserFetch'

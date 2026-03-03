@@ -153,15 +153,35 @@
       ],
       "commandCenter": [
         {
-          "command": "fireuxToolbar.openServersView",
+          "command": "fireuxToolbar.startFireux",
           "group": "navigation@1",
+          "when": "true"
+        },
+        {
+          "command": "fireuxToolbar.startMisebox",
+          "group": "navigation@2",
+          "when": "true"
+        },
+        {
+          "command": "fireuxToolbar.openServersView",
+          "group": "navigation@3",
           "when": "true"
         }
       ],
       "editor/title": [
         {
-          "command": "fireuxToolbar.openServersView",
+          "command": "fireuxToolbar.startFireux",
           "group": "navigation@1",
+          "when": "true"
+        },
+        {
+          "command": "fireuxToolbar.startMisebox",
+          "group": "navigation@2",
+          "when": "true"
+        },
+        {
+          "command": "fireuxToolbar.openServersView",
+          "group": "navigation@3",
           "when": "true"
         }
       ],

@@ -69,7 +69,7 @@ import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useSupplierInterface } from '../../../composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
 import type { SupplierApp, SupplierCore } from '../../../models/profiles/Supplier/Supplier.model'
-import { supplierConfig } from '../../../models/profiles/Supplier/Supplier.model'
+import { supplierConfig } from 'fireux-drop/runtime/composables/fireux/firestore/profiles/Supplier/config/supplierConfig'
 
 definePageMeta({
   layout: 'default',

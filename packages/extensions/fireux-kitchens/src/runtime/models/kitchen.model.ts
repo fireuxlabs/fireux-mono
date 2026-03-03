@@ -1,46 +1,81 @@
 // FILE: packages/extensions/fireux-kitchens/src/runtime/models/kitchen.model.ts
 
+import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { Place } from 'fireux-places/runtime/models/place.model'
 
 /**
- * Kitchen collection record (Place-bound)
- * Firestore: kitchens/{placeId}
- * - Document ID is the canonical Place ID.
- * - This is a thin record on top of an existing Place.
+ * FireUX Canon (Consoleable, 2-layer)
  *
- * Canon strategy:
+ * Core (root scope)
+ * - Path: /kitchens/<placeId>
+ * - Purpose: thin record on top of Place (root != public; Place still hydrates display/seo)
+ *
+ * App (tenancy scope / private overlay)
+ * - Path: /apps/<appId>/kitchens/<placeId>
+ * - Purpose: governance + console/private switches + app-only controls
+ *
+ * Canon rules:
  * - Runtime object is the single source of truth
- * - TypeScript derives types from it
- * - Drift is detected by comparing data ↔ model shape
+ * - Arrays always exist
+ * - Stamps use FireuxStamped nesting (aligned with other consoleables)
  */
 
-// 🔑 Runtime + canonical shape for stored collection records (source of truth)
-export const KitchenCollection = {
+/** Core (root scope): kitchens/<placeId> */
+export const KitchenCore = {
   /** Canonical Place ID (also the Firestore document ID). */
   id: '' as string,
 
-  // Optional flag for test kitchens
+  // Optional flag for test kitchens (core)
   is_test_kitchen: false as boolean,
 
-  // Timestamps only
+  // Stamps (core)
   created: {
     at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['updated']['by'],
   },
 } as const
 
-export type KitchenCollection = {
-  [K in keyof typeof KitchenCollection]: (typeof KitchenCollection)[K]
+export type KitchenCore = {
+  [K in keyof typeof KitchenCore]: (typeof KitchenCore)[K]
+}
+
+/** App overlay (tenancy/private): apps/<appId>/kitchens/<placeId> */
+export const KitchenApp = {
+  id: '' as string,
+
+  // Governance (private)
+  admin_ids: [] as string[],
+  join_requests: [] as string[],
+
+  // Console / ops (private)
+  console_enabled: true as boolean,
+
+  // Stamps
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['updated']['by'],
+  },
+} as const
+
+export type KitchenApp = {
+  [K in keyof typeof KitchenApp]: (typeof KitchenApp)[K]
 }
 
 /**
- * Read-time enrichment only (never stored)
+ * Read-time enrichment only (never stored):
  * Kitchen is a thin record that can be hydrated from Place.
  */
-export type Kitchen = KitchenCollection &
+export type Kitchen = KitchenCore &
   Partial<
     Pick<
       Place,
@@ -58,10 +93,8 @@ export type Kitchen = KitchenCollection &
     >
   >
 
-export type KitchenCreateInput = Omit<
-  KitchenCollection,
-  'created' | 'updated' | 'is_test_kitchen'
-> & {
+export type KitchenCreateInput = Omit<KitchenCore, 'created' | 'updated'> & {
   is_test_kitchen?: boolean
 }
-export type KitchenUpdateInput = Partial<Pick<KitchenCollection, 'is_test_kitchen'>>
+
+export type KitchenUpdateInput = Partial<Pick<KitchenCore, 'is_test_kitchen'>>

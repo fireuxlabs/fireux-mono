@@ -2,7 +2,7 @@
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import type { FireuxStamped } from './meta.model'
-import type { UserNotification } from './user.supporting'
+import type { UserNotification } from './supporting/user'
 
 /**
  * Core Firestore user document

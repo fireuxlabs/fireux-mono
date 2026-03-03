@@ -76,7 +76,7 @@ import { useConsoleProfileView } from 'fireux-core/runtime/composables/fireux/ap
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { computed, ref } from 'vue'
 import { useChef } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
-import { chefConfig } from '../../../models/profiles/Chef/Chef.model'
+import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 
 const profileKey = chefConfig.id ?? 'chef'
 const navLabel = chefConfig.navLabel ?? `${chefConfig.profileType} Profile`

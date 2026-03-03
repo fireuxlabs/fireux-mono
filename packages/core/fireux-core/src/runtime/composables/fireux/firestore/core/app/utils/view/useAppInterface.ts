@@ -1,7 +1,7 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
 import type { AppModel } from '../../../../../../../models/core/app.model'
-import type { AppSocialLinks } from '../../../../../../../models/core/app.supporting'
+import type { AppSocialLinks } from '../../../../../../../models/core/supporting/app'
 import { useResolvedColorMode } from '../../../../../app/useColorMode'
 
 export namespace AppCard {

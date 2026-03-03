@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model.ts'
+import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model'
 
 defineProps<{
   chef: Partial<ChefCore> | null | undefined

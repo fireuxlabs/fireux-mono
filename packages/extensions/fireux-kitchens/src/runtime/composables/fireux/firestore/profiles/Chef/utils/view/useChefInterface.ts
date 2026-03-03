@@ -1,8 +1,9 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
+import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
+import type { ChefCore } from 'fireux-kitchens/runtime/models/profiles/Chef/Chef.model'
 import type { Ref } from 'vue'
-import { chefConfig, type ChefCore } from '../../../../../../../models/profiles/Chef/Chef.model'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> & Partial<Pick<User, 'id'>>
 

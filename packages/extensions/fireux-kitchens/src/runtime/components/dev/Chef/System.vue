@@ -128,7 +128,7 @@ const filteredDriftPayload = buildDriftPayload({
 })
 
 const driftCopyPayload = buildCopyPayload({
-  modelPath: 'packages/extensions/fireux-kitchens/src/runtime/models/profiles/Chef/Chef.model.ts',
+  modelPath: 'packages/extensions/fireux-kitchens/src/runtime/models/profiles/Chef/Chef.model',
   itemsKey: 'chefs',
   items: filteredDriftPayload,
   total: computed(() => collection.value.length),

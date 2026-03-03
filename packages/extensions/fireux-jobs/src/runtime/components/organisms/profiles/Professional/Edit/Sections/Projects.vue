@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ProjectItem } from '../../../../../../models/profiles/Professional/supporting';
+import type { ProjectItem } from '../../../../../../models/profiles/Professional/Professional.model';
 
 const props = defineProps<{
   items: ProjectItem[]

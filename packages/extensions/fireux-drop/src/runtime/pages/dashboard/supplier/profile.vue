@@ -78,7 +78,7 @@ import { useConsoleProfileView } from 'fireux-core/runtime/composables/fireux/ap
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { computed, ref } from 'vue'
 import { useSupplier } from '../../../composables/fireux/firestore/profiles/Supplier/useSupplier'
-import { supplierConfig } from '../../../models/profiles/Supplier/Supplier.model'
+import { supplierConfig } from 'fireux-drop/runtime/composables/fireux/firestore/profiles/Supplier/config/supplierConfig'
 
 const navLabel = supplierConfig.navLabel ?? `${supplierConfig.profileType} Profile`
 const navIcon = supplierConfig.navIcon ?? 'i-lucide-package'

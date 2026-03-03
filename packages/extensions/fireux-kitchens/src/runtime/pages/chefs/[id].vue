@@ -76,8 +76,8 @@ import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firesto
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { computed, ref } from 'vue'
-import type { ChefApp, ChefCore } from '../../models/profiles/Chef/Chef.model.ts'
-import { chefConfig } from '../../models/profiles/Chef/Chef.model.ts'
+import type { ChefApp, ChefCore } from '../../models/profiles/Chef/Chef.model'
+import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 
 useSeoMeta({
   title: 'Chef Profile',

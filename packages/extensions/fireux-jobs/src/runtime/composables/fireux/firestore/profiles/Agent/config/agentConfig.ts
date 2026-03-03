@@ -1,11 +1,3 @@
-// FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/supporting.ts
-
-/**
- * Domain-level supporting structures for Agent profiles.
- * Keep runtime metadata separate from UI view models
- * so model imports stay Firestore-shape-only.
- */
-
 import type { ProfileConfig } from 'fireux-core/runtime/models/core/profile.model'
 
 export const agentConfig: ProfileConfig = {

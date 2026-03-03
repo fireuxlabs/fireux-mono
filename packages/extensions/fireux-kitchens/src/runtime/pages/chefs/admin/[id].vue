@@ -69,7 +69,7 @@ import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
 import type { ChefApp, ChefCore } from '../../../models/profiles/Chef/Chef.model'
-import { chefConfig } from '../../../models/profiles/Chef/Chef.model'
+import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 
 definePageMeta({
   layout: 'default',

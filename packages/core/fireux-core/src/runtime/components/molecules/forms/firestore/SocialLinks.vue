@@ -83,7 +83,8 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import type { PropType } from 'vue'
-import { createEmptyAppSocialLinks, type AppSocialLinks } from '../../../../models/core/app.model'
+import type { AppSocialLinks } from '../../../../models/core/supporting/app'
+import { createEmptyAppSocialLinks } from '../../../../composables/fireux/firestore/core/app/utils/factories/createEmptyAppSocialLinks'
 
 type SocialLinks = AppSocialLinks
 

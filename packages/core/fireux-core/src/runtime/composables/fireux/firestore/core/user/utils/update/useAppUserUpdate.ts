@@ -8,7 +8,7 @@ import {
     increment,
 } from 'firebase/firestore'
 import { useFirestore } from 'vuefire'
-import type { UserNotification } from '../../../../../../../models/core/user.supporting'
+import type { UserNotification } from '../../../../../../../models/core/supporting/user'
 import { useFireUXConfig } from '../../../../../app/FireUXConfig'
 import { useFirestoreDelete } from '../../../../operations/useFirestoreDelete'
 import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
