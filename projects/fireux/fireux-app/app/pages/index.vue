@@ -1,33 +1,37 @@
 <template>
   <EffectsStars />
-  <LandingHeroSection />
-  <div class="landing-index-divider">
-    <USeparator
-      :avatar="{
-        src: '/img/app/logo.png',
-        alt: 'FireUX',
-      }"
-      color="primary"
-    />
-  </div>
+  <LandingHeroSection
+    app-name="fireux"
+    big-personality="Ignite With"
+    headline="Powerful Applications"
+    hero-primary-line="FireUX is the <strong>console architecture</strong> for builders and operators. A low-code ecosystem for <strong>responsive</strong>, <strong>scalable</strong>, and <strong>data-driven</strong> applications built upon <strong>Nuxt 4</strong> and <strong>Firebase</strong>."
+    primary-cta-label="Get started"
+    secondary-cta-label="Browse projects"
+    secondary-cta-to="/projects"
+    console-bridge-line="The operating system for building and running domain applications from one shared, <strong>extensible core</strong>."
+    :hero-bullets="heroBullets"
+    :right-panel-items="rightPanelItems"
+    right-panel-long-button-label="Get started"
+    right-panel-long-button-to="/get-started"
+  >
+    <template #get-started>
+      <LandingGetStarted />
+    </template>
 
-  <div class="landing-index-flow">
-    <LandingGetStarted />
-    <LandingProducts :items="products" />
-    <LandingApps />
-  </div>
+    <template #apps>
+      <LandingApps />
+    </template>
+
+    <template #after-products>
+      <LandingFuel />
+      <LandingFeatures first />
+      <LandingSkillsIcons />
+      <LandingEcosystems />
+    </template>
+  </LandingHeroSection>
 </template>
 
 <script setup lang="ts">
-type LandingProductItem = {
-  title: string
-  description: string
-  to: string
-  logo?: string
-  tag?: string
-  tagColor?: 'primary' | 'neutral' | 'sky' | 'violet' | 'amber'
-}
-
 definePageMeta({
   layout: 'landing',
   nav: {
@@ -46,30 +50,28 @@ useSeoMeta({
     'Build faster with FireUX Core and deploy streamlined, data-driven applications.',
 })
 
-const products = [
+const heroBullets = [
+  'Nuxt 4 + Firebase orchestration out of the box',
+  'Reusable design system and shared components',
+  'Tenant-aware and white-label runtime',
+  'Automations, PWA, and CI presets',
+]
+
+const rightPanelItems = [
   {
-    title: 'Cleanbox',
-    description: 'Scheduling, QA, billing for crews.',
-    to: '/cleanbox',
-    logo: '/img/app/logo.png',
-    tag: 'Ops',
-    tagColor: 'sky',
+    title: 'Modules',
+    description: 'Wire Nuxt + Firebase with ready composables.',
+    icon: 'i-lucide-puzzle',
   },
   {
-    title: 'Misebox',
-    description: 'Recipes, inventory, suppliers.',
-    to: '/misebox',
-    logo: '/img/app/logo.png',
-    tag: 'Kitchen',
-    tagColor: 'violet',
+    title: 'Tenant theming',
+    description: 'White-label overrides from one config.',
+    icon: 'i-lucide-palette',
   },
   {
-    title: 'FireUX',
-    description: 'Nuxt + Firebase + Stripe core.',
-    to: '/core',
-    logo: '/img/app/logo.png',
-    tag: 'Core',
-    tagColor: 'primary',
+    title: 'Automation',
+    description: 'PWA, CI presets, and deploy pipelines.',
+    icon: 'i-lucide-rocket',
   },
-] satisfies LandingProductItem[]
+]
 </script>

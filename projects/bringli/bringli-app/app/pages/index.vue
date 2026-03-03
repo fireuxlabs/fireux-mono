@@ -1,21 +1,28 @@
 <template>
   <EffectsLandingEffect />
-  <LandingHeroSection />
-  <div class="landing-index-divider">
-    <USeparator
-      :avatar="{
-        src: '/img/app/logo.png',
-        alt: 'Bringli',
-      }"
-      color="primary"
-    />
-  </div>
+  <LandingHeroSection
+    app-name="bringli"
+    big-personality="Local Producers,"
+    headline="Delivered"
+    hero-primary-line="Bringli is the <strong>operating system</strong> for producers and customers. Connect local producers, suppliers, and households in one <strong>simple order and drop flow</strong> powered by <strong>Drop</strong>."
+    primary-cta-label="Get started"
+    secondary-cta-label="Browse producers"
+    secondary-cta-to="/suppliers"
+    console-bridge-line="The operating system for local supply and <strong>delivery execution</strong> from one connected console."
+    :hero-bullets="heroBullets"
+    :right-panel-items="rightPanelItems"
+    right-panel-long-button-label="Open supplier workspace"
+    right-panel-long-button-to="/suppliers"
+  >
+    <template #get-started>
+      <LandingGetStarted />
+    </template>
 
-  <div class="landing-index-flow">
-    <LandingGetStarted />
-    <LandingProducts />
-    <LandingApps />
-  </div>
+    <template #apps>
+      <LandingApps />
+    </template>
+
+  </LandingHeroSection>
 </template>
 
 <script setup lang="ts">
@@ -36,4 +43,29 @@ useSeoMeta({
   description:
     'Bringli is a local delivery marketplace for homes and businesses, starting with supplier operations powered by Drop.',
 })
+
+const heroBullets = [
+  'Fresh local producers and suppliers in one directory',
+  'Home and business dropoff flows built for reliability',
+  'Supplier onboarding and profile management through Drop',
+  'Launched in Interlaken with market-by-market expansion',
+]
+
+const rightPanelItems = [
+  {
+    title: 'Supplier management',
+    description: 'Profiles, readiness, and contact details.',
+    icon: 'i-lucide-users',
+  },
+  {
+    title: 'Dropoff readiness',
+    description: 'Delivery area and service-level capability.',
+    icon: 'i-lucide-package-check',
+  },
+  {
+    title: 'Operational confidence',
+    description: 'Tighter first pipe before order expansion.',
+    icon: 'i-lucide-shield-check',
+  },
+]
 </script>

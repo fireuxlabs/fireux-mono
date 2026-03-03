@@ -1,22 +1,28 @@
 <template>
   <EffectsStars />
-  <LandingHeroSection />
+  <LandingHeroSection
+    app-name="granite"
+    big-personality="Rock Solid"
+    headline="Portfolio Control"
+    hero-primary-line="Granite is the <strong>operating system</strong> for landlords and agencies. Oversee properties, compliance exposure, documents, incidents, and financial signals from one <strong>structured portfolio console</strong>."
+    primary-cta-label="Get started"
+    secondary-cta-label="Browse portfolios"
+    secondary-cta-to="/dashboard/portfolios"
+    console-bridge-line="<strong>Branch-grade</strong> portfolio oversight with <strong>audit-ready</strong> records and clear accountability."
+    :hero-bullets="heroBullets"
+    :right-panel-items="rightPanelItems"
+    right-panel-long-button-label="Open portfolio workspace"
+    right-panel-long-button-to="/dashboard/portfolios"
+  >
+    <template #get-started>
+      <LandingGetStarted />
+    </template>
 
-  <div class="landing-index-divider">
-    <USeparator
-      :avatar="{
-        src: '/img/app/logo.png',
-        alt: 'Granite',
-      }"
-      color="primary"
-    />
-  </div>
+    <template #apps>
+      <LandingApps />
+    </template>
 
-  <div class="landing-index-flow">
-    <LandingGetStarted />
-    <LandingProducts />
-    <LandingApps />
-  </div>
+  </LandingHeroSection>
 </template>
 
 <script setup lang="ts">
@@ -37,4 +43,29 @@ useSeoMeta({
   description:
     'A branch console for structured oversight across client portfolios, properties, compliance, documents, and finance signals.',
 })
+
+const heroBullets = [
+  'Compliance oversight across every managed property',
+  'Documents organised by client portfolio and asset',
+  'Incidents and follow-ups tracked with clear ownership',
+  'Finance and advisory signals surfaced at portfolio level',
+]
+
+const rightPanelItems = [
+  {
+    title: 'Portfolios',
+    description: 'One client portfolio with many properties.',
+    icon: 'i-lucide-layers',
+  },
+  {
+    title: 'Compliance',
+    description: 'Obligations, evidence, and exposure signals.',
+    icon: 'i-lucide-shield-check',
+  },
+  {
+    title: 'Incidents',
+    description: 'Repairs, issues, and follow-ups with ownership.',
+    icon: 'i-lucide-alert-triangle',
+  },
+]
 </script>
