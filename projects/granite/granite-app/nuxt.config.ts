@@ -9,6 +9,7 @@ const fireuxConfig = defineFireuxConfig({
   role: 'global',
   modules: [
     'fireux-properties',
+    'fireux-jobs',
     'fireux-compliance',
     'fireux-documents',
     'fireux-tasks',

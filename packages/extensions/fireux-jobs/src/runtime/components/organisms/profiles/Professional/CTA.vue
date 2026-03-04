@@ -5,10 +5,16 @@
 		:description="ctaDescription"
 		variant="subtle"
 		orientation="horizontal"
-	>
-		<div v-if="hasProfile" class="cta__body space-y-4">
-			<ProfilesProfessionalCardsPreview v-bind="card()" :link="true" />
-		</div>
+		>
+			<div v-if="hasProfile" class="cta__body space-y-4">
+				<ProfilesProfessionalCardsPreview
+					v-if="professionalCard"
+					v-bind="professionalCard"
+					:link="false"
+					:action="true"
+					@action="openProfessionalProfile"
+				/>
+			</div>
 
 		<div v-else class="cta__body space-y-2">
 			<ProfilesProfessionalCreateSystem @created="handleCreated" />
@@ -26,15 +32,21 @@ const router = useRouter()
 const { card } = useProfessional()
 const { appName } = useFireUXConfig()
 
-const hasProfile = computed(() => Boolean(card()))
+const professionalCard = computed(() => card())
+const hasProfile = computed(() => Boolean(professionalCard.value?.id))
 const ctaDescription = computed(() =>
-  hasProfile.value
-    ? `Your professional profile is live on ${appName}.`
-    : 'Create your profile so agents can find and invite you.'
+	hasProfile.value
+	    ? `Your professional profile is live on ${appName}.`
+	    : 'Create your profile so agents can find and invite you.'
 )
+
+const openProfessionalProfile = () => {
+	const to = String(professionalCard.value?.to || '').trim()
+	if (!to) return
+	router.push(to)
+}
 
 const handleCreated = () => {
 	router.push('/dashboard/professional/profile')
 }
 </script>
-
