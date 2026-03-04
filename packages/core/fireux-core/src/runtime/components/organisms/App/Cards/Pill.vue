@@ -6,31 +6,33 @@
     @click="onClick"
     class="pill"
   >
-    <UUser
-      :name="displayName"
-      :description="showSubtitle ? (ecosystem || undefined) : undefined"
-      :avatar="thumbnailUrl ? { src: thumbnailUrl || undefined, alt: displayName || '' } : undefined"
-      size="sm"
-    >
-      <template #default>
+    <div class="flex min-w-0 items-start gap-2">
+      <UAvatar
+        v-if="thumbnailUrl"
+        :src="thumbnailUrl || undefined"
+        :alt="displayName || ''"
+        size="sm"
+      />
+
+      <div class="min-w-0 flex-1 space-y-1">
+        <p class="truncate text-sm font-medium text-highlighted">
+          {{ displayName }}
+        </p>
+        <p v-if="showSubtitle && ecosystem" class="truncate text-xs text-toned">
+          {{ ecosystem }}
+        </p>
         <div v-if="showBadges && (badges?.length ?? 0)" class="flex flex-wrap items-center gap-1">
-          <UBadge
-            v-for="badge in badges"
-            :key="badge"
-            variant="soft"
-            color="neutral"
-            size="xs"
-          >
+          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
             {{ badge }}
           </UBadge>
         </div>
-      </template>
-    </UUser>
+      </div>
+    </div>
   </component>
 </template>
 
 <script setup lang="ts">
-import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface';
+import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 
 defineOptions({ inheritAttrs: false })
 

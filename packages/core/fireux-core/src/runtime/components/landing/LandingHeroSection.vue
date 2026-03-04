@@ -130,8 +130,8 @@
                 <div v-if="rightPanelTagsResolved.length" class="flex flex-wrap gap-2">
                   <NuxtLink
                     v-for="tag in rightPanelTagsResolved"
-                    :key="`${tag.label}-${tag.to || 'static'}`"
-                    :to="tag.to || '#'"
+                    :key="`${tag.label}-${tag.to}`"
+                    :to="tag.to"
                   >
                     <UBadge variant="soft" color="primary">
                       {{ tag.label }}
@@ -178,7 +178,7 @@ type RightPanelItem = {
 
 type RightPanelTagItem = {
   label: string
-  to?: string
+  to: string
 }
 
 const props = defineProps<{
@@ -205,14 +205,43 @@ const appAlt = computed(() => {
 const heroBulletsResolved = computed(() => props.heroBullets ?? [])
 const rightPanelItemsResolved = computed(() => props.rightPanelItems ?? [])
 const { keyEntityTags } = useKeyEntityTags()
+
+const normalizeTagKey = (value: unknown) =>
+  String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+
+const toTagLabel = (key: string) =>
+  key
+    .split(/[-_]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+
+const tagIndex = computed(() => new Map(keyEntityTags.value.map((item) => [item.key, item])))
+
 const rightPanelTagsResolved = computed<RightPanelTagItem[]>(() =>
   props.rightPanelTags?.length
     ? props.rightPanelTags
         .map((value) => String(value || '').trim())
         .filter(Boolean)
-        .filter((value) => value.toLowerCase() !== 'users')
-        .map((label) => ({ label }))
-    : keyEntityTags.value.filter((item) => item.key !== 'users')
+        .map((value) => normalizeTagKey(value))
+        .filter(Boolean)
+        .filter((value) => value !== 'users')
+        .map((key) => {
+          const resolved = tagIndex.value.get(key)
+          return {
+            label: resolved?.label || toTagLabel(key),
+            to: resolved?.to || `/${key}`,
+          }
+        })
+    : keyEntityTags.value
+        .filter((item) => item.key !== 'users')
+        .map((item) => ({
+          label: item.label,
+          to: item.to,
+        }))
 )
 
 const { hasConsoleEntry, consoleEntries } = useConsoleEntryCta()

@@ -2,6 +2,7 @@
 
 import { computed, type Ref } from 'vue'
 import { useAppFetch } from '../../firestore/core/app/fetch/useAppFetch'
+import { getReadOnlyAppScenario } from './read-only-scenarios'
 
 /**
  * App runtime document resolver.
@@ -25,24 +26,32 @@ export function useRuntimeAppDocument(params: {
   // When you introduce separate public vs private docs, keep this API stable.
   const { app, pending } = useAppFetch(params.id)
 
+  const readOnlyScenario = computed(() => {
+    if (!params.isReadOnly.value || !params.id.value) return null
+    return getReadOnlyAppScenario(params.id.value)
+  })
+
   const privateDoc = computed(() => {
     if (!params.id.value) return null
+    if (params.isReadOnly.value) return readOnlyScenario.value?.app ?? null
     return app.value ?? null
   })
 
   const publicDoc = computed(() => {
     if (!params.id.value) return null
+    if (params.isReadOnly.value) return readOnlyScenario.value?.app ?? null
     // placeholder: same as private until public collection exists
     return app.value ?? null
   })
 
   // Default resolved doc used by runtime console surfaces
   const doc = computed(() => privateDoc.value)
+  const pendingState = computed(() => (params.isReadOnly.value ? false : pending.value))
 
   return {
     doc,
     publicDoc,
     privateDoc,
-    pending,
+    pending: pendingState,
   }
 }

@@ -101,7 +101,14 @@
             <div class="flex items-start justify-between gap-3">
               <div class="space-y-1">
                 <div class="text-sm font-semibold">{{ scenario.name }}</div>
+                <div class="text-xs text-dimmed">
+                  Managed by {{ scenario.manager_display_name || 'Unknown manager' }}
+                </div>
                 <div class="text-xs text-dimmed">{{ scenario.label }}</div>
+                <div class="text-xs text-dimmed">
+                  {{ scenario.property_count }} properties · {{ scenario.unit_count }} units ·
+                  {{ scenario.task_count }} tasks
+                </div>
               </div>
 
               <UButton

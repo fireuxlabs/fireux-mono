@@ -14,6 +14,17 @@ type KeyEntityTagItem = {
   to: string
 }
 
+const normalizeTagKey = (value: unknown) =>
+  String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+
+const isStaticPath = (value: string) =>
+  value.startsWith('/') && !value.includes('/:') && !value.includes('/[')
+
+const isPreferredPath = (tag: string, value: string) => value === `/${tag}`
+
 export function useKeyEntityTags() {
   const router = useRouter()
 
@@ -24,18 +35,24 @@ export function useKeyEntityTags() {
       const meta = route.meta as Record<string, unknown>
       const raw = meta?.tag
       const values = Array.isArray(raw) ? raw : [raw]
+      const path = String(route.path || '')
+      if (!isStaticPath(path)) continue
 
       for (const value of values) {
-        const normalized = String(value ?? '').trim().toLowerCase()
-        if (!normalized) continue
-        if (!String(route.path || '').startsWith('/')) continue
-        if (byKey.has(normalized)) continue
+        const key = normalizeTagKey(value)
+        if (!key) continue
 
-        byKey.set(normalized, {
-          key: normalized,
-          label: toLabel(normalized),
-          to: String(route.path),
-        })
+        const current = byKey.get(key)
+        const next: KeyEntityTagItem = {
+          key,
+          label: toLabel(key),
+          to: path,
+        }
+
+        // Prefer canonical /<tag> paths when present.
+        if (!current || isPreferredPath(key, path) || current.to !== `/${key}`) {
+          byKey.set(key, next)
+        }
       }
     }
 
