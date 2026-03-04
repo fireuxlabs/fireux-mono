@@ -8,7 +8,7 @@ import { getReadOnlyKitchenScenario } from './read-only-scenarios'
 export function useRuntimeKitchenData(params: {
   id: Ref<string>
   isReadOnly: Ref<boolean>
-  kitchenCollectionPath: Ref<string>
+  collectionPath: Ref<string>
 }) {
   // Prevent Firestore queries in read-only mode.
   const firestoreKitchenId = computed(() => (params.isReadOnly.value ? '' : params.id.value))
@@ -16,7 +16,7 @@ export function useRuntimeKitchenData(params: {
 
   const { ingredients: firestoreKitchenIngredients } = useKitchenIngredientFetch(
     firestoreKitchenId,
-    { kitchenCollectionPath: params.kitchenCollectionPath }
+    { kitchenCollectionPath: params.collectionPath }
   )
 
   const {
@@ -25,16 +25,16 @@ export function useRuntimeKitchenData(params: {
     recipes: firestoreRecipes,
     miseTasks: firestoreMiseTasks,
   } = useKitchenMenuStackFetch(firestoreKitchenId, {
-    kitchenCollectionPath: params.kitchenCollectionPath,
+    kitchenCollectionPath: params.collectionPath,
   })
 
   const { suppliers: firestoreSuppliers } = useKitchenSupplierFetch(firestoreKitchenId, {
-    kitchenCollectionPath: params.kitchenCollectionPath,
+    kitchenCollectionPath: params.collectionPath,
     enabled,
   })
 
   const { orders: firestoreKitchenOrders } = useKitchenOrderFetch(firestoreKitchenId, {
-    kitchenCollectionPath: params.kitchenCollectionPath,
+    kitchenCollectionPath: params.collectionPath,
   })
 
   return computed(() => {
@@ -59,6 +59,24 @@ export function useRuntimeKitchenData(params: {
       }
 
       const scenario = getReadOnlyKitchenScenario(params.id.value)
+      if (!scenario) {
+        return {
+          kitchenIngredients: [],
+          stations: [],
+          menus: [],
+          dishes: [],
+          recipes: [],
+          miseTasks: [],
+          teamMembers: [],
+          suppliers: [],
+          supplierIngredients: [],
+          purchases: [],
+          kitchenOrders: [],
+          incomingOrders: [],
+          trainingModules: [],
+          haccpChecks: [],
+        }
+      }
       return {
         kitchenIngredients: scenario.kitchenIngredients,
         stations: scenario.menuStack.stations,

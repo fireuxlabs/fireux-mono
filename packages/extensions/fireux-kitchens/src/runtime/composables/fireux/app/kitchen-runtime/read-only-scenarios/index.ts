@@ -37,27 +37,22 @@ const SCENARIOS_BY_KEY = new Map<ScenarioKey, ReadOnlyKitchenScenario>(
 const isScenarioKey = (value: string): value is ScenarioKey =>
   scenarioKeys.includes(value as ScenarioKey)
 
-export const resolveReadOnlyScenarioKey = (kitchenId?: string): ScenarioKey => {
+export const resolveReadOnlyScenarioKey = (kitchenId?: string): ScenarioKey | null => {
   const id = normalize(kitchenId)
-  if (!id) return defaultScenarioKey
-  return isScenarioKey(id) ? id : defaultScenarioKey
+  if (!id) return null
+  return isScenarioKey(id) ? id : null
 }
 
-export const getReadOnlyKitchenScenario = (kitchenId?: string): ReadOnlyKitchenScenario => {
+export const getReadOnlyKitchenScenario = (
+  kitchenId?: string
+): ReadOnlyKitchenScenario | null => {
   const scenarioKey = resolveReadOnlyScenarioKey(kitchenId)
-  const scenario = SCENARIOS_BY_KEY.get(scenarioKey)
-  if (scenario) return scenario
-
-  const defaultResolvedScenario = SCENARIOS_BY_KEY.get(defaultScenarioKey)
-  if (defaultResolvedScenario) return defaultResolvedScenario
-
-  throw new Error(
-    `[read-only-scenarios] Missing default scenario "${defaultScenarioKey}".`
-  )
+  if (!scenarioKey) return null
+  return SCENARIOS_BY_KEY.get(scenarioKey) ?? null
 }
 
 export const getDefaultReadOnlyKitchenScenario = (): ReadOnlyKitchenScenario =>
-  getReadOnlyKitchenScenario(defaultScenarioKey)
+  SCENARIOS_BY_KEY.get(defaultScenarioKey) ?? defaultScenario()
 
 const toScenarioListItem = (
   scenario: ReadOnlyKitchenScenario,
@@ -79,6 +74,10 @@ const toScenarioListItem = (
 }
 
 export const getReadOnlyKitchenScenarioList = () =>
-  scenarioKeys.map((scenarioKey) =>
-    toScenarioListItem(getReadOnlyKitchenScenario(scenarioKey), scenarioKey)
-  )
+  scenarioKeys
+    .map((scenarioKey) => {
+      const scenario = SCENARIOS_BY_KEY.get(scenarioKey)
+      if (!scenario) return null
+      return toScenarioListItem(scenario, scenarioKey)
+    })
+    .filter((entry): entry is ReadOnlyKitchenScenarioListItem => Boolean(entry))

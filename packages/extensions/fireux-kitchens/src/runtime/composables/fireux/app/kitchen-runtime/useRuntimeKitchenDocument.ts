@@ -5,18 +5,19 @@ import { getReadOnlyKitchenScenario } from './read-only-scenarios'
 export function useRuntimeKitchenDocument(params: {
   id: Ref<string>
   isReadOnly: Ref<boolean>
-  kitchenCollectionPath: Ref<string>
+  collectionPath: Ref<string>
 }) {
   const { kitchen: fetchKitchen } = useKitchenFetch()
-  const liveKitchen = fetchKitchen(params.id, params.kitchenCollectionPath, {
+  const liveKitchen = fetchKitchen(params.id, params.collectionPath, {
     hydrate: true,
+  })
+  const readOnlyScenario = computed(() => {
+    if (!params.isReadOnly.value || !params.id.value) return null
+    return getReadOnlyKitchenScenario(params.id.value)
   })
 
   const doc = computed(() => {
-    if (params.isReadOnly.value) {
-      if (!params.id.value) return null
-      return getReadOnlyKitchenScenario(params.id.value).kitchen ?? null
-    }
+    if (params.isReadOnly.value) return readOnlyScenario.value?.kitchen ?? null
     if (!params.id.value) return null
 
     return liveKitchen.value ?? null

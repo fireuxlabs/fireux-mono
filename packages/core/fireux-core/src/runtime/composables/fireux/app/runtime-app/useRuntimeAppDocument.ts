@@ -22,9 +22,10 @@ export function useRuntimeAppDocument(params: {
   isReadOnly: Ref<boolean>
   collectionPath: Ref<string>
 }) {
-  // For now, use the existing fetch (likely apps/{id}).
-  // When you introduce separate public vs private docs, keep this API stable.
-  const { app, pending } = useAppFetch(params.id)
+  // Live/test path comes from runtime mode via collectionPath.
+  const { app, pending } = useAppFetch(params.id, {
+    collectionPath: params.collectionPath,
+  })
 
   const readOnlyScenario = computed(() => {
     if (!params.isReadOnly.value || !params.id.value) return null

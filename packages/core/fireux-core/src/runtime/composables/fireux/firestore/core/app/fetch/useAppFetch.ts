@@ -31,7 +31,10 @@ function guardDocumentPromise(
  * Returns { app, pending } so callers can debounce UI while refetching.
  */
 export function useAppFetch(
-  appId: string | null | undefined | Ref<string | null | undefined>
+  appId: string | null | undefined | Ref<string | null | undefined>,
+  options: {
+    collectionPath?: string | Ref<string | null | undefined>
+  } = {}
 ) {
   if (import.meta.server) {
     return {
@@ -46,9 +49,16 @@ export function useAppFetch(
     const value = isRef(appId) ? appId.value : appId
     return value ?? null
   })
+  const collectionPath = computed(() => {
+    const raw = isRef(options.collectionPath)
+      ? options.collectionPath.value
+      : options.collectionPath
+    const normalized = String(raw || '').trim()
+    return normalized || 'apps'
+  })
 
   const docRef = computed(() =>
-    targetId.value ? (doc(db, 'apps', targetId.value) as any) : null
+    targetId.value ? (doc(db, collectionPath.value, targetId.value) as any) : null
   )
 
   const docState =
@@ -65,7 +75,10 @@ export function useAppFetch(
 
   const app = docState.data ?? ref<AppModel | undefined>(undefined)
   const pending = docState.pending ?? ref(false)
-  guardDocumentPromise(docState as any, `apps/${targetId.value ?? ''}`)
+  guardDocumentPromise(
+    docState as any,
+    `${collectionPath.value}/${targetId.value ?? ''}`
+  )
 
   return { app, pending }
 }
