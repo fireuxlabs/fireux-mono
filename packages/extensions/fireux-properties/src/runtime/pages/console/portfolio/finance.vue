@@ -161,6 +161,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRuntimePortfolio } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import { usePropertyCollection } from '../../../composables/fireux/firestore/property/fetch/usePropertyCollection'
 
 definePageMeta({
   layout: 'granite-console',
@@ -178,6 +179,7 @@ definePageMeta({
 })
 
 const runtimePortfolio = useRuntimePortfolio()
+const { collection: propertyCollection } = usePropertyCollection(runtimePortfolio)
 const isDev = import.meta.dev
 
 const runtimeId = computed(() => String(runtimePortfolio.id.value || '').trim())
@@ -185,7 +187,7 @@ const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const isReadOnly = computed(() => runtimePortfolio.isReadOnly.value)
 const scenario = computed(() => runtimePortfolio.scenario.value)
 
-const properties = computed(() => scenario.value?.properties ?? [])
+const properties = computed(() => propertyCollection.value)
 const tenants = computed(() => scenario.value?.tenants ?? [])
 const leases = computed(() => scenario.value?.leases ?? [])
 const financials = computed(() => scenario.value?.financials ?? null)

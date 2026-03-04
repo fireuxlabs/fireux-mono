@@ -78,3 +78,8 @@ export const getReadOnlyPortfolioScenarioList = (): ReadOnlyPortfolioScenarioLis
     .map((scenarioKey) => SCENARIOS_BY_KEY.get(scenarioKey))
     .filter((scenario): scenario is ReadOnlyPortfolioScenario => Boolean(scenario))
     .map((scenario) => toScenarioListItem(scenario))
+
+export const getReadOnlyPortfolioScenarios = (): ReadOnlyPortfolioScenario[] =>
+  scenarioKeys
+    .map((scenarioKey) => SCENARIOS_BY_KEY.get(scenarioKey))
+    .filter((scenario): scenario is ReadOnlyPortfolioScenario => Boolean(scenario))

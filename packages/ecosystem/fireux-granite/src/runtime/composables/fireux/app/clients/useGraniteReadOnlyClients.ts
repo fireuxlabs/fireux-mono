@@ -1,7 +1,6 @@
 import { computed } from 'vue'
 import {
-  getReadOnlyPortfolioScenario,
-  getReadOnlyPortfolioScenarioList,
+  getReadOnlyPortfolioScenarios,
 } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/read-only-scenarios/index'
 
 type ClientPortfolio = {
@@ -28,11 +27,7 @@ const normalizeKey = (value: string) =>
     .replace(/[^a-z0-9-]/g, '')
 
 export const useGraniteReadOnlyClients = () => {
-  const scenarios = computed(() =>
-    getReadOnlyPortfolioScenarioList()
-      .map((item) => getReadOnlyPortfolioScenario(item.id))
-      .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
-  )
+  const scenarios = computed(() => getReadOnlyPortfolioScenarios())
 
   const clients = computed<ClientCard[]>(() => {
     const byClient = new Map<string, ClientCard>()
