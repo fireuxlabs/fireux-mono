@@ -10,8 +10,11 @@ export const Property = {
   postcode: '' as string,
   country: '' as string,
   place_id: '' as string,
+  image_url: '' as string,
   property_type: 'residential' as 'residential' | 'commercial' | 'mixed',
   unit_count: 0 as number,
+  estimated_value: 0 as number,
+  estimated_value_currency: '' as string,
   status: 'active' as 'active' | 'inactive',
   created: {
     at: {} as FirebaseTimestamp,

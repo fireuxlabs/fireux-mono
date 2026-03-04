@@ -6,14 +6,7 @@
 
     <template #body>
       <section class="space-y-6">
-        <UAlert
-          v-if="!runtimeId"
-          color="warning"
-          variant="soft"
-          title="No portfolio selected"
-          description="Select a portfolio on /dashboard/portfolios before entering Granite console tools."
-          :actions="[{ label: 'Go to portfolios', to: '/dashboard/portfolios', icon: 'i-lucide-arrow-right' }]"
-        />
+        <PortfolioCTA v-if="!runtimeId" />
 
         <template v-else>
           <UCard>

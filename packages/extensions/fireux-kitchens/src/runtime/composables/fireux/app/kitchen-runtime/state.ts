@@ -24,6 +24,7 @@ const normalizeSelectionState = (value: unknown): RuntimeKitchenSelectionState =
 export function useRuntimeKitchenSelection() {
   const cookie = useCookie<RuntimeKitchenSelectionState>(COOKIE_KEY, {
     default: () => ({ kitchenId: '', mode: 'live' }),
+    path: '/',
     sameSite: 'lax',
   })
 

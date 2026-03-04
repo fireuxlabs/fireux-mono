@@ -6,6 +6,18 @@
 
     <template #body>
       <section class="space-y-8">
+        <UAlert
+          v-if="isDev"
+          color="primary"
+          variant="soft"
+          title="Hello world"
+        >
+          <template #description>
+            Misebox kitchen console dev panel is active on this page. Scope:
+            <strong>{{ devScopeLabel }}</strong>.
+          </template>
+        </UAlert>
+
         <div class="text-xs text-dimmed">
           Mode: <span class="font-medium">{{ mode }}</span>
         </div>
@@ -22,6 +34,14 @@
             </div>
           </div>
         </UCard>
+
+        <DevJson
+          v-if="isDev"
+          title="Kitchen Runtime (JSON)"
+          context="projects/misebox/misebox-app · /console/kitchen"
+          :data="runtimeSnapshot"
+          :default-open="true"
+        />
       </section>
     </template>
   </UDashboardPanel>
@@ -48,6 +68,13 @@ definePageMeta({
 
 const runtime = useRuntimeKitchen()
 const mode = runtime.mode
+const isDev = import.meta.dev
+const devScopeLabel = computed(() => {
+  const normalized = String(mode.value || '').trim().toLowerCase()
+  if (normalized === 'read-only') return 'READ-ONLY'
+  if (normalized === 'test') return 'TEST'
+  return 'YOUR KITCHEN'
+})
 const overview = computed(() => {
   const data = runtime.data.value
   return [
@@ -65,5 +92,20 @@ const overview = computed(() => {
     { key: 'trainingModules', label: 'Training Modules', count: data.trainingModules?.length ?? 0 },
     { key: 'haccpChecks', label: 'HACCP Checks', count: data.haccpChecks?.length ?? 0 },
   ]
+})
+
+const runtimeSnapshot = computed(() => {
+  const data = runtime.data.value
+  return {
+    id: runtime.id.value,
+    mode: runtime.mode.value,
+    isReadOnly: runtime.isReadOnly.value,
+    collectionPath: runtime.collectionPath.value,
+    pending: runtime.pending.value,
+    isLoading: runtime.isLoading.value,
+    isReady: runtime.isReady.value,
+    doc: runtime.doc.value,
+    data,
+  }
 })
 </script>

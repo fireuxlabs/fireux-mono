@@ -22,6 +22,7 @@ const normalizeSelectionState = (value: unknown): RuntimeAppSelectionState => {
 export function useRuntimeAppSelection() {
   const cookie = useCookie<RuntimeAppSelectionState>(COOKIE_KEY, {
     default: () => ({ appId: '', mode: 'live' }),
+    path: '/',
     sameSite: 'lax',
   })
 

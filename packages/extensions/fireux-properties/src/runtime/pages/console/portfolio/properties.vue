@@ -44,57 +44,11 @@
             </div>
           </UCard>
 
-          <UCard>
-            <template #header>
-              <div class="space-y-1">
-                <div class="text-sm font-semibold">Property workspace</div>
-                <div class="text-xs text-dimmed">
-                  Portfolio-scoped properties from
-                  <code>portfolios/{{ runtimeId }}/properties</code>.
-                </div>
-              </div>
-            </template>
-
-            <div v-if="properties.length" class="space-y-3">
-              <div
-                v-for="property in properties"
-                :key="property.id"
-                class="rounded border border-default p-3"
-              >
-                <div class="flex items-start justify-between gap-3">
-                  <div class="space-y-1">
-                    <div class="text-sm font-semibold">{{ property.name || property.id }}</div>
-                    <div class="text-xs text-dimmed">
-                      {{ property.address_line || 'No address' }}
-                      <template v-if="property.city"> · {{ property.city }}</template>
-                      <template v-if="property.postcode"> · {{ property.postcode }}</template>
-                    </div>
-                    <div class="text-xs text-dimmed">
-                      Units: {{ property.unit_count ?? 0 }} · Type: {{ property.property_type || 'unset' }}
-                    </div>
-                  </div>
-
-                  <UButton
-                    size="xs"
-                    variant="ghost"
-                    :to="`/properties/${encodeURIComponent(property.id || '')}`"
-                    :disabled="!property.id"
-                    icon="i-lucide-external-link"
-                  >
-                    Open
-                  </UButton>
-                </div>
-              </div>
-            </div>
-
-            <UAlert
-              v-else
-              color="neutral"
-              variant="soft"
-              title="No properties found"
-              description="Add property records to this portfolio to unlock compliance, documents, and tasks context."
-            />
-          </UCard>
+          <PropertyCollectionManager
+            :collection="properties"
+            title="Property workspace"
+            :description="workspaceDescription"
+          />
         </template>
       </section>
     </template>
@@ -106,6 +60,7 @@ import { computed } from 'vue'
 import { useRuntimePortfolio } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import { usePropertyCollection } from '../../../composables/fireux/firestore/property/fetch/usePropertyCollection'
 import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
+import PropertyCollectionManager from '../../../components/organisms/Property/Collection/Manager.vue'
 
 definePageMeta({
   layout: 'granite-console',
@@ -131,4 +86,7 @@ const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const properties = computed(() => collection.value)
 const portfolioPill = computed(() => pill(runtimePortfolio.portfolio.value))
+const workspaceDescription = computed(
+  () => `Portfolio-scoped properties from portfolios/${runtimeId.value}/properties.`
+)
 </script>

@@ -22,6 +22,14 @@
             </div>
           </div>
         </UCard>
+
+        <DevJson
+          v-if="isDev"
+          title="Kitchen Runtime (JSON)"
+          context="console/kitchen/index · runtime snapshot"
+          :data="runtimeSnapshot"
+          :default-open="false"
+        />
       </section>
     </template>
   </UDashboardPanel>
@@ -48,6 +56,7 @@ definePageMeta({
 
 const runtime = useRuntimeKitchen()
 const mode = runtime.mode
+const isDev = import.meta.dev
 const overview = computed(() => {
   const data = runtime.data.value
   return [
@@ -65,5 +74,20 @@ const overview = computed(() => {
     { key: 'trainingModules', label: 'Training Modules', count: data.trainingModules?.length ?? 0 },
     { key: 'haccpChecks', label: 'HACCP Checks', count: data.haccpChecks?.length ?? 0 },
   ]
+})
+
+const runtimeSnapshot = computed(() => {
+  const data = runtime.data.value
+  return {
+    id: runtime.id.value,
+    mode: runtime.mode.value,
+    isReadOnly: runtime.isReadOnly.value,
+    collectionPath: runtime.collectionPath.value,
+    pending: runtime.pending.value,
+    isLoading: runtime.isLoading.value,
+    isReady: runtime.isReady.value,
+    doc: runtime.doc.value,
+    data,
+  }
 })
 </script>

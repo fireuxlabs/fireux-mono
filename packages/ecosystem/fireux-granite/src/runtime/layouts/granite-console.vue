@@ -55,7 +55,7 @@
     </UDashboardSidebar>
 
     <div class="w-full h-screen overflow-y-auto p-0 lg:p-4 bg-elevated/50">
-      <NuxtPage v-if="hasRuntimePortfolio" />
+      <NuxtPage v-if="hasRuntimePortfolio || isScopeEntryRoute" />
       <UPage v-else>
         <UPageBody class="pagebody">
           <UPageCard
@@ -81,6 +81,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRoute } from '#imports'
 import { useAuthRedirect } from 'fireux-core/runtime/composables/fireux/app/ui/useAuthRedirect'
 import { useConsoleNotifications } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleNotifications'
 import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
@@ -92,6 +93,7 @@ const open = ref(false)
 const { desktop } = useGraniteConsoleNav()
 const { isOpen: isNotificationsSlideoverOpen } = useConsoleNotifications()
 const runtimePortfolio = useRuntimePortfolio()
+const route = useRoute()
 
 useAuthRedirect()
 
@@ -102,4 +104,14 @@ const navItems = computed(() =>
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const hasRuntimePortfolio = computed(() => Boolean(String(runtimeId.value || '').trim()))
+const normalizedRoutePath = computed(() =>
+  String(route.path || '')
+    .trim()
+    .replace(/\/+$/, '')
+)
+const isScopeEntryRoute = computed(
+  () =>
+    normalizedRoutePath.value === '/console/portfolio' ||
+    normalizedRoutePath.value === '/console/portfolio/demo'
+)
 </script>

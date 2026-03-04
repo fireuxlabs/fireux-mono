@@ -45,6 +45,56 @@ export type ReadOnlyTask = {
   linked_entity_id: string
 }
 
+export type ReadOnlyTenant = {
+  id: string
+  portfolio_id: string
+  property_id: string
+  unit_id: string
+  display_name: string
+  lease_id: string
+  status: 'active' | 'ending' | 'arrears' | 'prospect'
+  monthly_rent: number
+  currency: string
+}
+
+export type ReadOnlyLease = {
+  id: string
+  portfolio_id: string
+  property_id: string
+  unit_id: string
+  tenant_id: string
+  start_date: string
+  end_date: string
+  deposit_amount: number
+  currency: string
+  status: 'active' | 'expiring' | 'ended'
+  clauses_summary: string
+}
+
+export type ReadOnlyMaintenanceTicket = {
+  id: string
+  portfolio_id: string
+  property_id: string
+  unit_id: string
+  title: string
+  category: 'plumbing' | 'electrical' | 'heating' | 'security' | 'general'
+  status: 'open' | 'scheduled' | 'done'
+  priority: 'low' | 'medium' | 'high'
+  reported_at: string
+  scheduled_for: string
+}
+
+export type ReadOnlyFinancialSignals = {
+  period_label: string
+  currency: string
+  gross_rent_monthly: number
+  arrears_total: number
+  opex_monthly: number
+  net_cashflow_monthly: number
+  occupancy_rate: number
+  upcoming_invoices_total: number
+}
+
 export type ReadOnlyPortfolioManager = {
   id: string
   display_name: string
@@ -63,6 +113,10 @@ export type ReadOnlyPortfolioScenario = {
   documents: ReadOnlyDocument[]
   documentLinks: ReadOnlyDocumentLink[]
   tasks: ReadOnlyTask[]
+  tenants?: ReadOnlyTenant[]
+  leases?: ReadOnlyLease[]
+  maintenance?: ReadOnlyMaintenanceTicket[]
+  financials?: ReadOnlyFinancialSignals
 }
 
 export type ReadOnlyPortfolioScenarioListItem = {

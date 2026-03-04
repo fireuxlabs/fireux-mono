@@ -20,6 +20,7 @@ const normalizeSelectionState = (value: unknown): RuntimePortfolioSelectionState
 export function useRuntimePortfolioSelection() {
   const cookie = useCookie<RuntimePortfolioSelectionState>(COOKIE_KEY, {
     default: () => ({ portfolioId: '', mode: 'live' }),
+    path: '/',
     sameSite: 'lax',
   })
 

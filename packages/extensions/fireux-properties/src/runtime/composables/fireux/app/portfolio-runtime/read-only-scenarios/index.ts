@@ -10,7 +10,11 @@ export type {
   ReadOnlyComplianceRecord,
   ReadOnlyDocument,
   ReadOnlyDocumentLink,
+  ReadOnlyFinancialSignals,
+  ReadOnlyLease,
+  ReadOnlyMaintenanceTicket,
   ReadOnlyTask,
+  ReadOnlyTenant,
   ReadOnlyPortfolioScenario,
   ReadOnlyPortfolioScenarioListItem,
 } from './_shared/types'
