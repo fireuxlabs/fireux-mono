@@ -95,6 +95,20 @@ export type ReadOnlyFinancialSignals = {
   upcoming_invoices_total: number
 }
 
+export type ReadOnlyFinancialTransaction = {
+  id: string
+  portfolio_id: string
+  property_id: string
+  unit_id: string
+  tenant_id: string
+  type: 'rent_expected' | 'rent_received' | 'opex' | 'capex'
+  category: string
+  amount: number
+  currency: string
+  occurred_on: string
+  note: string
+}
+
 export type ReadOnlyPortfolioManager = {
   id: string
   display_name: string
@@ -117,6 +131,7 @@ export type ReadOnlyPortfolioScenario = {
   leases?: ReadOnlyLease[]
   maintenance?: ReadOnlyMaintenanceTicket[]
   financials?: ReadOnlyFinancialSignals
+  transactions?: ReadOnlyFinancialTransaction[]
 }
 
 export type ReadOnlyPortfolioScenarioListItem = {

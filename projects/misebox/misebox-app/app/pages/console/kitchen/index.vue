@@ -6,18 +6,6 @@
 
     <template #body>
       <section class="space-y-8">
-        <UAlert
-          v-if="isDev"
-          color="primary"
-          variant="soft"
-          title="Hello world"
-        >
-          <template #description>
-            Misebox kitchen console dev panel is active on this page. Scope:
-            <strong>{{ devScopeLabel }}</strong>.
-          </template>
-        </UAlert>
-
         <div class="text-xs text-dimmed">
           Mode: <span class="font-medium">{{ mode }}</span>
         </div>
@@ -69,12 +57,6 @@ definePageMeta({
 const runtime = useRuntimeKitchen()
 const mode = runtime.mode
 const isDev = import.meta.dev
-const devScopeLabel = computed(() => {
-  const normalized = String(mode.value || '').trim().toLowerCase()
-  if (normalized === 'read-only') return 'READ-ONLY'
-  if (normalized === 'test') return 'TEST'
-  return 'YOUR KITCHEN'
-})
 const overview = computed(() => {
   const data = runtime.data.value
   return [

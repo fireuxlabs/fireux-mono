@@ -15,54 +15,44 @@
               size="xs"
               :placeholder="searchPlaceholder"
             />
+            <UButton
+              v-if="showVariantToggle"
+              size="xs"
+              variant="ghost"
+              :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
+              :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+              @click="toggleVariant"
+            />
             <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
           </div>
         </div>
       </div>
     </template>
 
-    <div v-if="cards.length" class="space-y-3">
-      <div
-        v-for="item in cards"
-        :key="item.id"
-        class="rounded border border-default p-3"
-      >
-        <div class="flex items-start justify-between gap-3">
-          <div class="flex min-w-0 items-start gap-3">
-            <UAvatar
-              :src="item.imageUrl"
-              :alt="item.title"
-              size="lg"
-              class="shrink-0 rounded"
-            />
+    <PropertyCollectionList
+      v-if="cardsFiltered.length"
+      :cards="cardsFiltered"
+      :variant="variant"
+    >
+      <template #pill="{ card }">
+        <PropertyCardsPill
+          v-bind="card"
+          :link="linkEnabled"
+          :show-meta="true"
+        />
+      </template>
+      <template #cell="{ card }">
+        <PropertyCardsCell
+          :card="card"
+          :link="linkEnabled"
+          :show-meta="true"
+        />
+      </template>
+    </PropertyCollectionList>
 
-            <div class="min-w-0 space-y-1">
-              <div class="truncate text-sm font-semibold">{{ item.title }}</div>
-              <div class="truncate text-xs text-dimmed">{{ item.subtitle }}</div>
-              <div class="truncate text-xs text-dimmed">{{ item.meta }}</div>
-            </div>
-          </div>
-
-          <UButton
-            v-if="linkEnabled"
-            size="xs"
-            variant="ghost"
-            :to="item.to"
-            icon="i-lucide-external-link"
-          >
-            Open
-          </UButton>
-        </div>
-      </div>
-    </div>
-
-    <UAlert
-      v-else
-      color="neutral"
-      variant="soft"
-      :title="query ? 'No properties match your search' : 'No properties found'"
-      description="Add property records to this portfolio to unlock compliance, documents, and tasks context."
-    />
+    <p v-else>
+      {{ query ? 'No properties match your search.' : 'No properties found.' }}
+    </p>
 
     <div v-if="isDev">
       <DevJson
@@ -80,6 +70,9 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 import { computed } from 'vue'
 import { usePropertyInterface } from '../../../../composables/fireux/firestore/property/utils/view/usePropertyInterface'
 import type { Property } from '../../../../models/property.model'
+import PropertyCardsCell from '../Cards/Cell.vue'
+import PropertyCardsPill from '../Cards/Pill.vue'
+import PropertyCollectionList from './List.vue'
 
 const props = withDefaults(
   defineProps<{
@@ -88,7 +81,9 @@ const props = withDefaults(
     description?: string
     searchPlaceholder?: string
     showSearch?: boolean
+    showVariantToggle?: boolean
     showCount?: boolean
+    initialVariant?: 'pill' | 'cell'
     link?: boolean
   }>(),
   {
@@ -96,7 +91,9 @@ const props = withDefaults(
     description: 'Portfolio-scoped properties.',
     searchPlaceholder: 'Search properties...',
     showSearch: true,
+    showVariantToggle: true,
     showCount: true,
+    initialVariant: 'pill',
     link: true,
   }
 )
@@ -104,20 +101,28 @@ const props = withDefaults(
 const { card: makeCard, searchText } = usePropertyInterface()
 
 const collection = computed(() => props.collection ?? [])
+const title = computed(() => String(props.title || 'Properties'))
+const description = computed(() => String(props.description || '').trim())
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search properties...'))
 const showSearch = computed(() => props.showSearch !== false)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
 
-const { query, cards, visibleCount } = useCollectionSearch<Property, ReturnType<typeof makeCard>>({
+const {
+  query,
+  variant,
+  toggleVariant,
+  cards: cardsFiltered,
+  visibleCount,
+} = useCollectionSearch<Property, ReturnType<typeof makeCard>>({
   items: collection,
   searchText: (property: Property) => searchText(property),
   makeCard: (property: Property) => makeCard(property),
+  initialVariant: props.initialVariant,
 })
 
-const title = computed(() => String(props.title || 'Properties'))
-const description = computed(() => String(props.description || '').trim())
 const isDev = import.meta.dev
 </script>

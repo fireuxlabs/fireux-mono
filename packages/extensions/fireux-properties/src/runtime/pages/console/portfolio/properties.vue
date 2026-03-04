@@ -11,11 +11,11 @@
           color="warning"
           variant="soft"
           title="No portfolio selected"
-          description="Select a portfolio on /dashboard/portfolios before using console properties."
+          description="Select a portfolio on /console/portfolio before using console properties."
           :actions="[
             {
               label: 'Go to portfolios',
-              to: '/dashboard/portfolios',
+              to: '/console/portfolio',
               icon: 'i-lucide-arrow-right'
             }
           ]"
@@ -23,7 +23,7 @@
 
         <template v-else>
           <UCard>
-            <div class="flex items-start justify-between gap-3">
+            <div class="flex items-start gap-3">
               <div class="space-y-1">
                 <div class="text-sm font-semibold">
                   {{ portfolioPill?.title || runtimeId }}
@@ -32,15 +32,6 @@
                   {{ portfolioPill?.subtitle || 'No region label' }} · mode {{ runtimeMode }}
                 </div>
               </div>
-
-              <UButton
-                to="/dashboard/portfolios"
-                size="sm"
-                variant="soft"
-                icon="i-lucide-repeat"
-              >
-                Change selection
-              </UButton>
             </div>
           </UCard>
 
@@ -65,7 +56,7 @@ import PropertyCollectionManager from '../../../components/organisms/Property/Co
 definePageMeta({
   layout: 'granite-console',
   nav: {
-    visibility: { ecosystems: ['granite'], modules: ['fireux-properties'] },
+    visibility: { modules: ['fireux-properties'] },
     key: 'console-portfolio-properties',
     label: 'Properties',
     icon: 'i-lucide-building',
@@ -73,7 +64,6 @@ definePageMeta({
     desktop: true,
     mobile: true,
     layouts: ['granite-console'],
-    group: 'granite',
   },
   requiresAuth: true,
 })

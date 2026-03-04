@@ -1,6 +1,7 @@
 import { graniteDemoCoreScenario } from './granite-demo-core'
 import { lakesideStabilityScenario } from './lakeside-stability'
 import { citylineMomentumScenario } from './cityline-momentum'
+import { rivergateRecoveryScenario } from './rivergate-recovery'
 import type {
   ReadOnlyPortfolioScenario,
   ReadOnlyPortfolioScenarioListItem,
@@ -11,6 +12,7 @@ export type {
   ReadOnlyDocument,
   ReadOnlyDocumentLink,
   ReadOnlyFinancialSignals,
+  ReadOnlyFinancialTransaction,
   ReadOnlyLease,
   ReadOnlyMaintenanceTicket,
   ReadOnlyTask,
@@ -19,18 +21,24 @@ export type {
   ReadOnlyPortfolioScenarioListItem,
 } from './_shared/types'
 
-export type ScenarioKey = 'granite-demo-core' | 'lakeside-stability' | 'cityline-momentum'
+export type ScenarioKey =
+  | 'granite-demo-core'
+  | 'lakeside-stability'
+  | 'cityline-momentum'
+  | 'rivergate-recovery'
 
 export const scenarioKeys: ScenarioKey[] = [
   'granite-demo-core',
   'lakeside-stability',
   'cityline-momentum',
+  'rivergate-recovery',
 ]
 
 const scenarioBuilders: Record<ScenarioKey, () => ReadOnlyPortfolioScenario> = {
   'granite-demo-core': graniteDemoCoreScenario,
   'lakeside-stability': lakesideStabilityScenario,
   'cityline-momentum': citylineMomentumScenario,
+  'rivergate-recovery': rivergateRecoveryScenario,
 }
 
 const normalize = (value: unknown) => String(value || '').trim()

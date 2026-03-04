@@ -11,13 +11,13 @@
           color="warning"
           variant="soft"
           title="No portfolio selected"
-          description="Select a portfolio on /dashboard/portfolios before using tasks."
-          :actions="[{ label: 'Go to portfolios', to: '/dashboard/portfolios', icon: 'i-lucide-arrow-right' }]"
+          description="Select a portfolio on /console/portfolio before using tasks."
+          :actions="[{ label: 'Go to portfolios', to: '/console/portfolio', icon: 'i-lucide-arrow-right' }]"
         />
 
         <template v-else>
           <UCard>
-            <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-4">
               <div class="space-y-1">
                 <div class="text-sm font-semibold">Task tracker</div>
                 <div class="text-xs text-dimmed">
@@ -25,8 +25,6 @@
                   · Source: <code>portfolios/{{ runtimeId }}/tasks</code>
                 </div>
               </div>
-
-              <UButton to="/dashboard/portfolios" size="sm" variant="soft" icon="i-lucide-repeat">Change selection</UButton>
             </div>
           </UCard>
 
@@ -47,22 +45,22 @@
             </div>
           </UCard>
 
-          <UCard>
+          <UCard v-if="!isReadOnly">
             <template #header>
               <div class="text-sm font-semibold">Create task</div>
             </template>
 
             <div class="grid gap-3 sm:grid-cols-2">
-              <UInput v-model="newTaskTitle" :disabled="runtimeMode !== 'live'" placeholder="Task title" />
-              <UInput v-model="newTaskDueDate" :disabled="runtimeMode !== 'live'" placeholder="Due date (YYYY-MM-DD)" />
-              <UInput v-model="newTaskDescription" :disabled="runtimeMode !== 'live'" placeholder="Description" class="sm:col-span-2" />
+              <UInput v-model="newTaskTitle" :disabled="isReadOnly" placeholder="Task title" />
+              <UInput v-model="newTaskDueDate" :disabled="isReadOnly" placeholder="Due date (YYYY-MM-DD)" />
+              <UInput v-model="newTaskDescription" :disabled="isReadOnly" placeholder="Description" class="sm:col-span-2" />
             </div>
 
             <div class="mt-3">
               <UButton
                 size="sm"
                 icon="i-lucide-plus"
-                :disabled="runtimeMode !== 'live' || !newTaskTitle.trim() || createBusy"
+                :disabled="isReadOnly || !newTaskTitle.trim() || createBusy"
                 :loading="createBusy"
                 @click="createManualTask"
               >
@@ -93,10 +91,10 @@
                       {{ item.status }}
                     </UBadge>
 
-                    <div class="flex gap-1">
-                      <UButton size="xs" variant="ghost" :disabled="runtimeMode !== 'live'" @click="setStatus(item.id, 'open')">Open</UButton>
-                      <UButton size="xs" variant="ghost" :disabled="runtimeMode !== 'live'" @click="setStatus(item.id, 'in_progress')">In progress</UButton>
-                      <UButton size="xs" variant="ghost" :disabled="runtimeMode !== 'live'" @click="setStatus(item.id, 'done')">Done</UButton>
+                    <div v-if="!isReadOnly" class="flex gap-1">
+                      <UButton size="xs" variant="ghost" :disabled="isReadOnly" @click="setStatus(item.id, 'open')">Open</UButton>
+                      <UButton size="xs" variant="ghost" :disabled="isReadOnly" @click="setStatus(item.id, 'in_progress')">In progress</UButton>
+                      <UButton size="xs" variant="ghost" :disabled="isReadOnly" @click="setStatus(item.id, 'done')">Done</UButton>
                     </div>
                   </div>
                 </div>
@@ -129,7 +127,7 @@ import type { Task } from '../../../models/task.model'
 definePageMeta({
   layout: 'granite-console',
   nav: {
-    visibility: { ecosystems: ['granite'], modules: ['fireux-tasks'] },
+    visibility: { modules: ['fireux-tasks'] },
     key: 'console-portfolio-tasks',
     label: 'Tasks',
     icon: 'i-lucide-list-checks',
@@ -137,7 +135,6 @@ definePageMeta({
     desktop: true,
     mobile: true,
     layouts: ['granite-console'],
-    group: 'granite',
   },
   requiresAuth: true,
 })
@@ -145,6 +142,7 @@ definePageMeta({
 const runtimePortfolio = useRuntimePortfolio()
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
+const isReadOnly = computed(() => runtimePortfolio.isReadOnly.value)
 
 const { collection } = useTaskCollection(runtimePortfolio)
 const { createTask } = useTaskCreate(runtimePortfolio)
@@ -185,7 +183,7 @@ const statusColor = (status: Task['status']) => {
 }
 
 const createManualTask = async () => {
-  if (runtimeMode.value !== 'live') return
+  if (isReadOnly.value) return
 
   createBusy.value = true
   try {
@@ -208,7 +206,7 @@ const createManualTask = async () => {
 }
 
 const setStatus = async (taskId: string, status: Task['status']) => {
-  if (runtimeMode.value !== 'live') return
+  if (isReadOnly.value) return
   await updateTask(taskId, { status })
 }
 </script>

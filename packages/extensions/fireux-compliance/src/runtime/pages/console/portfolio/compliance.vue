@@ -11,13 +11,13 @@
           color="warning"
           variant="soft"
           title="No portfolio selected"
-          description="Select a portfolio on /dashboard/portfolios before using compliance monitoring."
-          :actions="[{ label: 'Go to portfolios', to: '/dashboard/portfolios', icon: 'i-lucide-arrow-right' }]"
+          description="Select a portfolio on /console/portfolio before using compliance monitoring."
+          :actions="[{ label: 'Go to portfolios', to: '/console/portfolio', icon: 'i-lucide-arrow-right' }]"
         />
 
         <template v-else>
           <UCard>
-            <div class="flex items-center justify-between gap-4">
+            <div class="flex items-center gap-4">
               <div class="space-y-1">
                 <div class="text-sm font-semibold">Compliance monitor</div>
                 <div class="text-xs text-dimmed">
@@ -25,7 +25,6 @@
                   · Source: <code>portfolios/{{ runtimeId }}/compliance-records</code>
                 </div>
               </div>
-              <UButton to="/dashboard/portfolios" size="sm" variant="soft" icon="i-lucide-repeat">Change selection</UButton>
             </div>
           </UCard>
 
@@ -71,10 +70,11 @@
                       {{ statusLabel(item.status) }}
                     </UBadge>
                     <UButton
+                      v-if="!isReadOnly"
                       size="xs"
                       variant="ghost"
                       icon="i-lucide-list-checks"
-                      :disabled="runtimeMode !== 'live'"
+                      :disabled="isReadOnly"
                       @click="createTaskFromCompliance(item.id)"
                     >
                       Create task
@@ -109,7 +109,7 @@ import { useComplianceInterface } from '../../../composables/fireux/firestore/co
 definePageMeta({
   layout: 'granite-console',
   nav: {
-    visibility: { ecosystems: ['granite'], modules: ['fireux-compliance'] },
+    visibility: { modules: ['fireux-compliance'] },
     key: 'console-portfolio-compliance',
     label: 'Compliance',
     icon: 'i-lucide-shield-check',
@@ -117,7 +117,6 @@ definePageMeta({
     desktop: true,
     mobile: true,
     layouts: ['granite-console'],
-    group: 'granite',
   },
   requiresAuth: true,
 })
@@ -130,6 +129,7 @@ const { fromComplianceRecord } = useTaskProjection(runtimePortfolio)
 
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
+const isReadOnly = computed(() => runtimePortfolio.isReadOnly.value)
 
 const cards = computed(() =>
   collection.value
@@ -167,6 +167,8 @@ const statusColor = (status: 'ok' | 'dueSoon' | 'overdue' | null) => {
 }
 
 const createTaskFromCompliance = async (complianceId: string) => {
+  if (isReadOnly.value) return
+
   const record = collection.value.find((entry) => String(entry.id || '').trim() === String(complianceId || '').trim())
   if (!record) return
 

@@ -14,7 +14,7 @@
             financial signals so agencies and landlords can operate with clarity.
           </p>
           <div class="flex flex-wrap gap-3">
-            <UButton to="/dashboard/portfolios" color="primary" size="lg">
+            <UButton to="/console/portfolio" color="primary" size="lg">
               Open portfolios
             </UButton>
             <UButton to="/get-started" color="neutral" variant="ghost" size="lg">

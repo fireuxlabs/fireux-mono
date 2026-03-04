@@ -64,7 +64,7 @@
             variant="subtle"
           >
             <UButton
-              to="/dashboard/portfolios"
+              to="/console/portfolio"
               color="neutral"
               icon="i-lucide-arrow-right"
             >
@@ -98,7 +98,11 @@ const route = useRoute()
 useAuthRedirect()
 
 const navItems = computed(() =>
-  desktop.value.filter((item) => item.group === 'granite' || item.to === '/console/portfolio')
+  desktop.value.filter(
+    (item) =>
+      item.group !== 'profiles' &&
+      !item.profileId
+  )
 )
 
 const runtimeId = computed(() => runtimePortfolio.id.value)
@@ -109,9 +113,11 @@ const normalizedRoutePath = computed(() =>
     .trim()
     .replace(/\/+$/, '')
 )
+const scopeEntryRoutes = new Set<string>([
+  '/console/portfolio',
+  '/console/clients',
+])
 const isScopeEntryRoute = computed(
-  () =>
-    normalizedRoutePath.value === '/console/portfolio' ||
-    normalizedRoutePath.value === '/console/portfolio/demo'
+  () => scopeEntryRoutes.has(normalizedRoutePath.value)
 )
 </script>

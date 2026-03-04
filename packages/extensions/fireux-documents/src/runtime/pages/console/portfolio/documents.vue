@@ -11,13 +11,13 @@
           color="warning"
           variant="soft"
           title="No portfolio selected"
-          description="Select a portfolio on /dashboard/portfolios before using the document vault."
-          :actions="[{ label: 'Go to portfolios', to: '/dashboard/portfolios', icon: 'i-lucide-arrow-right' }]"
+          description="Select a portfolio on /console/portfolio before using the document vault."
+          :actions="[{ label: 'Go to portfolios', to: '/console/portfolio', icon: 'i-lucide-arrow-right' }]"
         />
 
         <template v-else>
           <UCard>
-            <div class="flex items-start justify-between gap-4">
+            <div class="flex items-start gap-4">
               <div class="space-y-1">
                 <div class="text-sm font-semibold">Document vault</div>
                 <div class="text-xs text-dimmed">
@@ -25,7 +25,6 @@
                   · Source: <code>portfolios/{{ runtimeId }}/documents</code>
                 </div>
               </div>
-              <UButton to="/dashboard/portfolios" size="sm" variant="soft" icon="i-lucide-repeat">Change selection</UButton>
             </div>
           </UCard>
 
@@ -42,7 +41,7 @@
             </div>
           </UCard>
 
-          <UCard>
+          <UCard v-if="!isReadOnly">
             <template #header>
               <div class="text-sm font-semibold">Upload document</div>
             </template>
@@ -51,16 +50,16 @@
               <input
                 type="file"
                 class="block w-full rounded border border-default p-2 text-sm"
-                :disabled="runtimeMode !== 'live'"
+                :disabled="isReadOnly"
                 @change="handleFileInput"
               />
 
-              <UInput v-model="uploadNotes" :disabled="runtimeMode !== 'live'" placeholder="Optional notes" />
+              <UInput v-model="uploadNotes" :disabled="isReadOnly" placeholder="Optional notes" />
 
               <UButton
                 size="sm"
                 icon="i-lucide-upload"
-                :disabled="!selectedFile || runtimeMode !== 'live' || uploadBusy"
+                :disabled="!selectedFile || isReadOnly || uploadBusy"
                 :loading="uploadBusy"
                 @click="uploadSelectedFile"
               >
@@ -73,23 +72,23 @@
             </div>
           </UCard>
 
-          <UCard>
+          <UCard v-if="!isReadOnly">
             <template #header>
               <div class="text-sm font-semibold">Link document to entity</div>
             </template>
 
             <div class="grid gap-3 sm:grid-cols-2">
-              <UInput v-model="linkDocumentId" :disabled="runtimeMode !== 'live'" placeholder="Document id" />
-              <UInput v-model="linkTargetType" :disabled="runtimeMode !== 'live'" placeholder="Target type (property, compliance-record, tenancy, ...)" />
-              <UInput v-model="linkTargetId" :disabled="runtimeMode !== 'live'" placeholder="Target id" />
-              <UInput v-model="linkTargetLabel" :disabled="runtimeMode !== 'live'" placeholder="Target label (optional)" />
+              <UInput v-model="linkDocumentId" :disabled="isReadOnly" placeholder="Document id" />
+              <UInput v-model="linkTargetType" :disabled="isReadOnly" placeholder="Target type (property, compliance-record, tenancy, ...)" />
+              <UInput v-model="linkTargetId" :disabled="isReadOnly" placeholder="Target id" />
+              <UInput v-model="linkTargetLabel" :disabled="isReadOnly" placeholder="Target label (optional)" />
             </div>
 
             <div class="mt-3 flex items-center gap-2">
               <UButton
                 size="sm"
                 icon="i-lucide-link"
-                :disabled="runtimeMode !== 'live' || linkBusy"
+                :disabled="isReadOnly || linkBusy"
                 :loading="linkBusy"
                 @click="createLink"
               >
@@ -100,7 +99,7 @@
                 size="sm"
                 variant="soft"
                 icon="i-lucide-list-checks"
-                :disabled="runtimeMode !== 'live' || linkBusy"
+                :disabled="isReadOnly || linkBusy"
                 @click="createLink(true)"
               >
                 Link + create task
@@ -166,7 +165,7 @@ import { documentLinkTargetTypes } from '../../../composables/fireux/firestore/d
 definePageMeta({
   layout: 'granite-console',
   nav: {
-    visibility: { ecosystems: ['granite'], modules: ['fireux-documents'] },
+    visibility: { modules: ['fireux-documents'] },
     key: 'console-portfolio-documents',
     label: 'Documents',
     icon: 'i-lucide-file-text',
@@ -174,7 +173,6 @@ definePageMeta({
     desktop: true,
     mobile: true,
     layouts: ['granite-console'],
-    group: 'granite',
   },
   requiresAuth: true,
 })
@@ -182,6 +180,7 @@ definePageMeta({
 const runtimePortfolio = useRuntimePortfolio()
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
+const isReadOnly = computed(() => runtimePortfolio.isReadOnly.value)
 
 const { collection: documentCollection } = useDocumentCollection(runtimePortfolio)
 const { collection: linkCollection } = useDocumentLinkCollection(runtimePortfolio)
@@ -226,7 +225,7 @@ const handleFileInput = (event: Event) => {
 }
 
 const uploadSelectedFile = async () => {
-  if (!selectedFile.value || runtimeMode.value !== 'live' || !runtimeId.value) return
+  if (!selectedFile.value || isReadOnly.value || !runtimeId.value) return
 
   uploadBusy.value = true
   try {
@@ -255,7 +254,7 @@ const uploadSelectedFile = async () => {
 }
 
 const createLink = async (createTask = false) => {
-  if (runtimeMode.value !== 'live') return
+  if (isReadOnly.value) return
 
   linkBusy.value = true
   try {
