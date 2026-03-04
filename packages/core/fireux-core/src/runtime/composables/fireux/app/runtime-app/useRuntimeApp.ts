@@ -30,6 +30,8 @@ export function useRuntimeApp(params?: UseRuntimeAppParams) {
     doc,
     pending,
   })
+  const isLoading = computed(() => data.isLoading.value)
+  const isReady = computed(() => data.isReady.value)
 
   return {
     id,
@@ -40,10 +42,22 @@ export function useRuntimeApp(params?: UseRuntimeAppParams) {
     // canon
     doc,
     pending,
+    isLoading,
+    isReady,
 
     // app extras (optional but harmless)
     publicDoc,
     privateDoc,
+
+    // flattened data fields for direct runtime usage
+    ecosystem: data.ecosystem,
+    role: data.role,
+    modules: data.modules,
+    name: data.name,
+    shortName: data.shortName,
+
+    // app alias used by existing pages
+    app: doc,
 
     data,
   }

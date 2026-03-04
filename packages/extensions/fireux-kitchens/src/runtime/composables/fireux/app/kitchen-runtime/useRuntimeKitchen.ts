@@ -25,12 +25,18 @@ export function useRuntimeKitchen(params?: UseRuntimeKitchenParams) {
   const { doc, pending } = useRuntimeKitchenDocument({
     id,
     isReadOnly,
-    kitchenCollectionPath: collectionPath,
+    collectionPath,
   })
   const data = useRuntimeKitchenData({
     id,
     isReadOnly,
-    kitchenCollectionPath: collectionPath,
+    collectionPath,
+  })
+  const isLoading = computed(() => Boolean(pending.value))
+  const isReady = computed(() => {
+    if (!id.value) return false
+    if (isLoading.value) return false
+    return Boolean(doc.value)
   })
 
   return {
@@ -42,6 +48,8 @@ export function useRuntimeKitchen(params?: UseRuntimeKitchenParams) {
     // Canon runtime contract
     doc,
     pending,
+    isLoading,
+    isReady,
     data,
 
     // Backward-compatible aliases for existing kitchen usage

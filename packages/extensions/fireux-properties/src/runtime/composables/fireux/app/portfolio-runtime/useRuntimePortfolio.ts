@@ -1,16 +1,12 @@
 import { computed, type Ref } from 'vue'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import type { Portfolio } from '../../../../models/portfolio.model'
-import {
-  getReadOnlyPortfolioScenario,
-  type ReadOnlyPortfolioScenario,
-} from './read-only-scenarios'
 import { useRuntimePortfolioSelection } from './state'
 import { resolveRuntimePortfolioCollectionPath } from './shared'
 import {
   useRuntimePortfolioContext,
   type UseRuntimePortfolioParams,
 } from './useRuntimePortfolioContext'
+import { useRuntimePortfolioDocument } from './useRuntimePortfolioDocument'
+import { useRuntimePortfolioData } from './useRuntimePortfolioData'
 
 export { useRuntimePortfolioSelection } from './state'
 export type { RuntimePortfolioMode } from './shared'
@@ -18,37 +14,20 @@ export type { RuntimePortfolioMode } from './shared'
 export function useRuntimePortfolio(params?: UseRuntimePortfolioParams) {
   const selection = useRuntimePortfolioSelection()
   const { id, mode, isReadOnly } = useRuntimePortfolioContext(params, selection)
-  const { firestoreFetchCollection } = useFirestoreRead()
   const collectionPath = computed(() => resolveRuntimePortfolioCollectionPath(mode.value))
-
-  const livePortfolios = firestoreFetchCollection<Portfolio>(collectionPath.value)
-
-  const scenario = computed<ReadOnlyPortfolioScenario | null>(() => {
-    if (!isReadOnly.value || !id.value) return null
-    return getReadOnlyPortfolioScenario(id.value)
+  const { doc, pending, scenario } = useRuntimePortfolioDocument({
+    id,
+    isReadOnly,
+    collectionPath,
   })
-
-  const portfolio = computed<Portfolio | null>(() => {
-    if (!id.value) return null
-    if (isReadOnly.value) return scenario.value?.portfolio ?? null
-
-    return (
-      (livePortfolios.value ?? []).find(
-        (entry) => String(entry.id || '').trim() === id.value
-      ) ?? null
-    )
+  const data = useRuntimePortfolioData({
+    id,
+    pending,
+    doc,
+    scenario,
   })
-
-  const pending = computed(() => {
-    if (!id.value) return false
-    if (isReadOnly.value) return false
-    return livePortfolios.value === undefined
-  })
-
-  const doc = computed<Portfolio | null>(() => portfolio.value)
-  const data = computed(() => ({
-    scenario: scenario.value,
-  }))
+  const isLoading = computed(() => data.isLoading.value)
+  const isReady = computed(() => data.isReady.value)
 
   return {
     id,
@@ -59,6 +38,8 @@ export function useRuntimePortfolio(params?: UseRuntimePortfolioParams) {
     // Canon runtime contract
     doc,
     pending,
+    isLoading,
+    isReady,
     data,
 
     // Backward-compatible aliases
