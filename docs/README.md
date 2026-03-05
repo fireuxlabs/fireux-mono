@@ -1,8 +1,19 @@
 # FireUX Documentation Hub
 Authority: Tier2 (Operational index)
-Updated: 2026-03-02
+Updated: 2026-03-05
+
 This is the docs landing map for weekly maintenance and day-to-day navigation.
 System definition: `docs/system.md`.
+
+## Product Source of Truth (Public Pages)
+App-specific product narrative lives in each ecosystem app, not in shared docs.
+
+Target page trio per ecosystem app:
+- `/` = current product snapshot (what we offer now)
+- `/about` = system definition (concepts, entities, relationships)
+- `/road-map` = development direction (what is next, when present)
+
+Shared docs under `docs/**` should stay app-agnostic unless a Tier1 canon file explicitly requires app-specific references.
 
 ## Tier 1 (Authoritative Canon)
 - `docs/fireux-canon.md`
@@ -15,6 +26,7 @@ Only the Tier1 files above are authoritative canon. Folder names like `docs/cano
 ## Tier 2 (Operational)
 - `docs/copilot-documentation/` handbook chapters and appendices
 - `docs/guide/` implementation guides
+- `docs/entity-layer-canon.md` layer strategy rules
 - `docs/migrations/README.md` migration runbook
 - `docs/reports/` weekly and generated audit reports
 - package/project docs under `packages/**/docs/` and `projects/**/docs/`

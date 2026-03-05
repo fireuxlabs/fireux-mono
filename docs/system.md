@@ -1,6 +1,6 @@
 # Documentation System
 Authority: Tier2 (Operational)
-Updated: 2026-03-02
+Updated: 2026-03-05
 
 ## Entry Point
 1. `AGENTS.md`
@@ -24,6 +24,15 @@ Updated: 2026-03-02
 ### Tier3 (non-authoritative)
 - `docs/ai/**`
 - `.vscode/**`
+
+## Product Documentation Rule
+Public app pages are the product source of truth:
+- `/` for current offer
+- `/about` for system definition
+- `/road-map` for direction (when present)
+
+Shared docs should remain app-agnostic and operational.
+If content reads like app marketing, app concepts, or app brief material, move it to that app's `/about` (or `/road-map`).
 
 ## File Reduction Policy
 - Prefer consolidated indexes/maps over per-app duplicates.
