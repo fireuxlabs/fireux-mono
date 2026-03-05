@@ -2,19 +2,16 @@
   <div class="space-y-16 pb-20">
     <section class="py-16">
       <UContainer class="space-y-6">
-        <UBadge color="primary" variant="soft">FireUX Users</UBadge>
+        <UBadge color="primary" variant="soft">User Access</UBadge>
 
-        <h1 class="text-4xl font-semibold text-gray-900 dark:text-white">
-          Join FireUX
-        </h1>
-
-        <p class="text-lg text-gray-600 dark:text-gray-300">
-          Creating an account on FireUX is free.
-        </p>
-
-        <p class="text-gray-600 dark:text-gray-300">
-          Accounts let people build profiles, explore ecosystems, use templates, and interact with apps.
-        </p>
+        <div class="space-y-2">
+          <AppBrandWordmark
+            size="large"
+            class="h-9 w-auto max-w-full object-contain"
+            light-src="/img/app/wordmark-light.svg"
+            dark-src="/img/app/wordmark-dark.png"
+          />
+        </div>
       </UContainer>
     </section>
 
@@ -31,24 +28,32 @@
             <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Browse ecosystems and apps</span></li>
             <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Access free templates and resources</span></li>
           </ul>
+
+          <UButton to="/auth" variant="soft" trailing-icon="i-lucide-arrow-right" class="mt-4">
+            Join now
+          </UButton>
         </UCard>
 
         <UCard class="border-primary/30 bg-primary/5">
           <template #header>
-            <h2 class="text-lg font-semibold">Console seats</h2>
+            <div class="flex items-center justify-between gap-3">
+              <h2 class="text-lg font-semibold">Upgrade</h2>
+              <div class="text-3xl font-semibold text-primary">
+                $10 / month
+              </div>
+            </div>
           </template>
 
-          <p class="text-sm text-gray-600 dark:text-gray-300">
-            A console seat is required only when someone needs private operational access.
-          </p>
+          <ul class="mt-4 space-y-2 text-sm text-gray-600 dark:text-gray-300">
+            <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Access all FireUX templates and paid resources</span></li>
+            <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Use the FireUX console</span></li>
+            <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Launch support via FireUX blog</span></li>
+            <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Backlink from FireUX</span></li>
+          </ul>
 
-          <div class="mt-4 text-3xl font-semibold text-primary">
-            $10 / month
-          </div>
-
-          <p class="mt-2 text-xs text-gray-500">
-            FireUX recommended retail price (RRP)
-          </p>
+          <UButton to="/product/upgrade" color="primary" trailing-icon="i-lucide-arrow-right" class="mt-4">
+            Upgrade
+          </UButton>
         </UCard>
       </UContainer>
     </section>

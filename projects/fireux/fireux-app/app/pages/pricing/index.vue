@@ -5,21 +5,8 @@
         <UBadge color="primary" variant="soft">FireUX Pricing</UBadge>
 
         <h1 class="text-4xl font-semibold text-gray-900 dark:text-white">
-          Pricing paths
+          Pricing
         </h1>
-
-        <p class="text-lg text-gray-600 dark:text-gray-300">
-          Start with users, then choose your app model, and move to ecosystem ownership when needed.
-        </p>
-
-        <div class="flex flex-wrap gap-3">
-          <UButton to="/get-started" color="primary" size="lg">
-            Get started
-          </UButton>
-          <UButton to="/about" color="neutral" variant="ghost" size="lg">
-            About FireUX
-          </UButton>
-        </div>
       </UContainer>
     </section>
 
@@ -30,15 +17,15 @@
             <div class="space-y-2">
               <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Users</h2>
               <p class="text-sm text-gray-600 dark:text-gray-300">
-                Accounts and profiles stay free. Seats apply only for console operators.
+                Join for free or upgrade.
               </p>
             </div>
           </template>
 
           <div class="space-y-3">
-            <p class="text-sm text-gray-600 dark:text-gray-300">Seat RRP: $10/month per console user</p>
-            <UButton to="/pricing/users" variant="soft" icon="i-lucide-arrow-right">
-              View user pricing
+            <p class="text-sm text-gray-600 dark:text-gray-300">Upgrade: $10/month per user</p>
+            <UButton to="/pricing/users" variant="soft" trailing-icon="i-lucide-arrow-right">
+              Details
             </UButton>
           </div>
         </UCard>
@@ -83,16 +70,6 @@
       </UContainer>
     </section>
 
-    <section>
-      <UContainer>
-        <UAlert
-          color="neutral"
-          variant="soft"
-          title="Simple progression"
-          description="Users join free, teams launch apps, then mature into ecosystem ownership when required."
-        />
-      </UContainer>
-    </section>
   </div>
 </template>
 
