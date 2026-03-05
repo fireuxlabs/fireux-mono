@@ -6,7 +6,7 @@
       <UContainer class="grid gap-10 md:grid-cols-2">
         <div class="space-y-4">
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-            About Bringli
+            {{ appMeta.aboutLabel }}
           </p>
           <h1 class="text-4xl font-semibold text-gray-900 dark:text-white">
             {{ appSpec.tagline }}
@@ -15,15 +15,14 @@
             {{ appSpec.description }}
           </p>
           <p class="text-sm text-gray-600 dark:text-gray-300">
-            We connect local producers and customers in one structured flow for supply readiness,
-            discovery, and delivery execution.
+            {{ appMeta.aboutSupportingCopy }}
           </p>
           <div class="flex flex-wrap gap-3">
-            <UButton to="/suppliers" color="primary" size="lg">
-              Browse producers
+            <UButton :to="appMeta.aboutPrimaryAction.to" color="primary" size="lg">
+              {{ appMeta.aboutPrimaryAction.label }}
             </UButton>
-            <UButton to="/get-started" color="neutral" variant="ghost" size="lg">
-              Open rollout
+            <UButton :to="appMeta.aboutSecondaryAction.to" color="neutral" variant="ghost" size="lg">
+              {{ appMeta.aboutSecondaryAction.label }}
             </UButton>
           </div>
         </div>
@@ -32,24 +31,16 @@
           class="rounded-2xl border border-primary/20 bg-primary/10 p-6 text-sm text-primary shadow-sm dark:border-primary/25 dark:bg-primary/10 dark:text-primary"
         >
           <p class="mb-4 text-xs font-semibold uppercase tracking-[0.2em]">
-            What this page covers
+            {{ appMeta.aboutPanelTitle }}
           </p>
           <ul class="space-y-3">
-            <li class="flex items-start gap-3">
+            <li
+              v-for="tick in appMeta.aboutPanelTicks"
+              :key="tick"
+              class="flex items-start gap-3"
+            >
               <UIcon name="i-lucide-check" class="mt-0.5 text-primary" />
-              <span>How Bringli modules fit together for local supply operations</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <UIcon name="i-lucide-check" class="mt-0.5 text-primary" />
-              <span>The core records and how they connect</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <UIcon name="i-lucide-check" class="mt-0.5 text-primary" />
-              <span>Small realistic sample objects for context</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <UIcon name="i-lucide-check" class="mt-0.5 text-primary" />
-              <span>Direct links to public and console surfaces</span>
+              <span>{{ tick }}</span>
             </li>
           </ul>
         </div>
@@ -61,48 +52,12 @@
         <UCard>
           <div class="space-y-4">
             <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
-              Bringli - Key Concepts (Priority Order)
+              {{ appMeta.aboutSections.keyConceptsTitle }}
             </h2>
             <ol class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">1. Ecosystem</span><br>
-                An ecosystem app for local producer supply and delivery operations.
-              </li>
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">2. Producers</span><br>
-                Producers are represented as supplier records with readiness and coverage details.
-              </li>
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">3. Buyers</span><br>
-                Bringli serves households and businesses buying from local producers.
-              </li>
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">4. Catalog Discovery</span><br>
-                Supplier surfaces make local inventory and capabilities discoverable.
-              </li>
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">5. Operational Readiness</span><br>
-                Producer onboarding focuses on quality, coverage, and delivery discipline.
-              </li>
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">6. Drop Execution</span><br>
-                Delivery handoff is structured for reliable local fulfillment.
-              </li>
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">7. Coverage</span><br>
-                Place and area identity records define where supply can be delivered.
-              </li>
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">8. Trust</span><br>
-                Stable profiles and verified contact surfaces build buyer confidence.
-              </li>
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">9. Network Growth</span><br>
-                More producers and buyers strengthen the local marketplace system.
-              </li>
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">10. Console</span><br>
-                One console anchors operational control as Bringli scales market-by-market.
+              <li v-for="(concept, index) in appMeta.keyConcepts" :key="concept.title">
+                <span class="font-semibold text-gray-900 dark:text-white">{{ index + 1 }}. {{ concept.title }}</span><br>
+                {{ concept.description }}
               </li>
             </ol>
           </div>
@@ -114,13 +69,13 @@
       <UContainer>
         <div class="mb-10 space-y-2 text-center">
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-            Modules
+            {{ appMeta.aboutSections.modulesEyebrow }}
           </p>
           <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
-            How we organize the app
+            {{ appMeta.aboutSections.modulesTitle }}
           </h2>
           <p class="text-gray-600 dark:text-gray-300">
-            Bringli starts simple with supplier, company, and place identity to support local delivery operations.
+            {{ appMeta.aboutSections.modulesDescription }}
           </p>
         </div>
 
@@ -157,10 +112,10 @@
       <UContainer>
         <div class="mb-10 space-y-2 text-center">
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-            Entities
+            {{ appMeta.aboutSections.entitiesEyebrow }}
           </p>
           <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
-            The records we work with every day
+            {{ appMeta.aboutSections.entitiesTitle }}
           </h2>
         </div>
 
@@ -193,10 +148,10 @@
       <UContainer class="space-y-8">
         <div class="space-y-2 text-center">
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-            Structure
+            {{ appMeta.aboutSections.structureEyebrow }}
           </p>
           <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
-            Relationship map
+            {{ appMeta.aboutSections.structureTitle }}
           </h2>
         </div>
 
@@ -206,10 +161,10 @@
 
         <div class="space-y-2 text-center">
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-            Examples
+            {{ appMeta.aboutSections.examplesEyebrow }}
           </p>
           <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
-            Sample objects
+            {{ appMeta.aboutSections.examplesTitle }}
           </h2>
         </div>
 
@@ -230,7 +185,7 @@
 
         <UCard>
           <template #header>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Key routes</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ appMeta.aboutSections.routesTitle }}</h3>
           </template>
           <div class="flex flex-wrap gap-2">
             <UButton
@@ -251,6 +206,8 @@
 </template>
 
 <script setup lang="ts">
+import { appMeta } from '../content/meta'
+
 type AppSpec = {
   name: string
   tagline: string
@@ -279,121 +236,20 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'About Bringli',
-  description:
-    'How Bringli organizes local producer records, delivery readiness, and public supply routes.',
+  title: appMeta.seoAbout.title,
+  description: appMeta.seoAbout.description,
 })
 
 const appSpec: AppSpec = {
-  name: 'Bringli',
-  tagline: 'Operating System for Local Producer Delivery',
-  description:
-    'Bringli is the operating system for local producer and customer supply flow. We coordinate supplier readiness, local discovery, and delivery execution from one structured system.',
-  modules: [
-    {
-      name: 'fireux-suppliers',
-      summary: 'Supplier profile records used as producer identity and readiness surfaces.',
-      entities: ['Supplier'],
-    },
-    {
-      name: 'fireux-companies',
-      summary: 'Company identity records for producer organizations.',
-      entities: ['Company'],
-    },
-    {
-      name: 'fireux-places',
-      summary: 'Canonical place identity used for coverage and location discovery.',
-      entities: ['Place'],
-    },
-    {
-      name: 'fireux-core users',
-      summary: 'Cross-app user identity for operators and producer owners.',
-      entities: ['User'],
-    },
-  ],
-  entities: [
-    {
-      name: 'Supplier',
-      purpose: 'Producer profile record with categories, delivery areas, and readiness details.',
-      keyFields: ['id', 'supplier_headline', 'supplier_product_categories', 'supplier_delivery_areas'],
-      linksTo: ['Company', 'Place', 'User'],
-    },
-    {
-      name: 'Company',
-      purpose: 'Organization identity record for producer businesses.',
-      keyFields: ['id', 'name', 'short_name', 'place_id'],
-      linksTo: ['Place', 'Supplier'],
-    },
-    {
-      name: 'Place',
-      purpose: 'Canonical location record for producer presence and delivery area context.',
-      keyFields: ['id', 'name', 'formatted_address', 'lat', 'lng'],
-      linksTo: ['Company', 'Supplier'],
-    },
-    {
-      name: 'User',
-      purpose: 'Cross-app member identity for producer owners and operators.',
-      keyFields: ['id', 'display_name', 'profiles', 'userOf', 'adminOf'],
-      linksTo: ['Supplier', 'Company'],
-    },
-  ],
-  samples: [
-    {
-      entity: 'Supplier',
-      example: {
-        id: 'supplier_demo_alpine_farm',
-        supplier_headline: 'Alpine Farm Produce (Demo)',
-        supplier_product_categories: ['vegetables', 'dairy'],
-        supplier_delivery_areas: ['Interlaken', 'Matten'],
-      },
-    },
-    {
-      entity: 'Company',
-      example: {
-        id: 'company_demo_alpine_farm',
-        name: 'Alpine Farm Co.',
-        short_name: 'Alpine Farm',
-        place_id: 'place_demo_interlaken_market',
-      },
-    },
-    {
-      entity: 'Place',
-      example: {
-        id: 'place_demo_interlaken_market',
-        name: 'Interlaken Market Zone',
-        formatted_address: 'Interlaken, Switzerland',
-        lat: 46.6863,
-        lng: 7.8632,
-      },
-    },
-    {
-      entity: 'User',
-      example: {
-        id: 'user_demo_producer_01',
-        display_name: 'Demo Producer Operator',
-        handle: 'demo-producer-ops',
-        userOf: ['bringli-app'],
-      },
-    },
-  ],
-  routes: [
-    { label: 'Home', path: '/', kind: 'public' },
-    { label: 'Get Started', path: '/get-started', kind: 'public' },
-    { label: 'About', path: '/about', kind: 'public' },
-    { label: 'Suppliers', path: '/suppliers', kind: 'public' },
-    { label: 'Console Entry', path: '/console', kind: 'console' },
-  ],
+  name: appMeta.name,
+  tagline: appMeta.tagline,
+  description: appMeta.description,
+  modules: appMeta.modules,
+  entities: appMeta.entities,
+  samples: appMeta.samples,
+  routes: appMeta.routes,
 }
-
-const relationshipMap = `
-Place
-  -> Company
-       -> Supplier
-
-User
-  -> Supplier
-  -> Company
-`
+const relationshipMap = appMeta.relationshipMap
 
 const jsonOf = (value: Record<string, any>) => JSON.stringify(value, null, 2)
 </script>

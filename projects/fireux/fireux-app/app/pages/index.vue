@@ -1,16 +1,16 @@
 <template>
   <EffectsStars />
   <LandingHeroSection
-    app-name="fireux"
-    big-personality="Ignite With"
-    headline="Powerful Applications"
-    hero-primary-line="FireUX is the <strong>console architecture</strong> for builders and operators. A low-code ecosystem for <strong>responsive</strong>, <strong>scalable</strong>, and <strong>data-driven</strong> applications built upon <strong>Nuxt 4</strong> and <strong>Firebase</strong>."
-    primary-cta-label="Get started"
-    secondary-cta-label="Browse projects"
-    secondary-cta-to="/projects"
-    console-bridge-line="The operating system for building and running domain applications from one shared, <strong>extensible core</strong>."
-    :hero-bullets="heroBullets"
-    :right-panel-items="rightPanelItems"
+    :app-name="appMeta.brand.appName"
+    :big-personality="appMeta.brand.bigPersonality"
+    :headline="appMeta.brand.headline"
+    :hero-primary-line="appMeta.heroPrimaryHtml"
+    :primary-cta-label="appMeta.landingPrimaryCtaLabel"
+    :secondary-cta-label="appMeta.landingSecondaryCtaLabel"
+    :secondary-cta-to="appMeta.landingSecondaryCtaTo"
+    :console-bridge-line="appMeta.consoleBridgeHtml"
+    :hero-bullets="appMeta.heroBullets"
+    :right-panel-items="appMeta.heroPanelItems"
   >
     <template #get-started>
       <LandingGetStarted />
@@ -30,6 +30,8 @@
 </template>
 
 <script setup lang="ts">
+import { appMeta } from '../content/meta'
+
 definePageMeta({
   layout: 'landing',
   nav: {
@@ -43,33 +45,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'FireUX — Vue.js Development Ecosystem',
-  description:
-    'Build faster with FireUX Core and deploy streamlined, data-driven applications.',
+  title: appMeta.seoHome.title,
+  description: appMeta.seoHome.description,
 })
-
-const heroBullets = [
-  'Nuxt 4 + Firebase orchestration out of the box',
-  'Reusable design system and shared components',
-  'Tenant-aware and white-label runtime',
-  'Automations, PWA, and CI presets',
-]
-
-const rightPanelItems = [
-  {
-    title: 'Modules',
-    description: 'Wire Nuxt + Firebase with ready composables.',
-    icon: 'i-lucide-puzzle',
-  },
-  {
-    title: 'Tenant theming',
-    description: 'White-label overrides from one config.',
-    icon: 'i-lucide-palette',
-  },
-  {
-    title: 'Automation',
-    description: 'PWA, CI presets, and deploy pipelines.',
-    icon: 'i-lucide-rocket',
-  },
-]
 </script>

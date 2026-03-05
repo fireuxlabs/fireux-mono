@@ -6,7 +6,7 @@
       <UContainer class="grid gap-10 md:grid-cols-2">
         <div class="space-y-4">
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-            About Misebox
+            {{ appMeta.aboutLabel }}
           </p>
           <h1 class="text-4xl font-semibold text-gray-900 dark:text-white">
             {{ appSpec.tagline }}
@@ -15,15 +15,14 @@
             {{ appSpec.description }}
           </p>
           <p class="text-sm text-gray-600 dark:text-gray-300">
-            We run menus, recipes, dishes, prep tasks, team coordination, and hiring in one
-            operating flow so service teams can move faster with less friction.
+            {{ appMeta.aboutSupportingCopy }}
           </p>
           <div class="flex flex-wrap gap-3">
-            <UButton to="/kitchens" color="primary" size="lg">
-              Open kitchens
+            <UButton :to="appMeta.aboutPrimaryAction.to" color="primary" size="lg">
+              {{ appMeta.aboutPrimaryAction.label }}
             </UButton>
-            <UButton to="/jobs" color="neutral" variant="ghost" size="lg">
-              Publish roles
+            <UButton :to="appMeta.aboutSecondaryAction.to" color="neutral" variant="ghost" size="lg">
+              {{ appMeta.aboutSecondaryAction.label }}
             </UButton>
           </div>
         </div>
@@ -32,24 +31,16 @@
           class="rounded-2xl border border-primary/20 bg-primary/10 p-6 text-sm text-primary shadow-sm dark:border-primary/25 dark:bg-primary/10 dark:text-primary"
         >
           <p class="mb-4 text-xs font-semibold uppercase tracking-[0.2em]">
-            What this page covers
+            {{ appMeta.aboutPanelTitle }}
           </p>
           <ul class="space-y-3">
-            <li class="flex items-start gap-3">
+            <li
+              v-for="tick in appMeta.aboutPanelTicks"
+              :key="tick"
+              class="flex items-start gap-3"
+            >
               <UIcon name="i-lucide-check" class="mt-0.5 text-primary" />
-              <span>How the core Misebox modules fit together</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <UIcon name="i-lucide-check" class="mt-0.5 text-primary" />
-              <span>The key entities and how they connect</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <UIcon name="i-lucide-check" class="mt-0.5 text-primary" />
-              <span>Small realistic sample objects for context</span>
-            </li>
-            <li class="flex items-start gap-3">
-              <UIcon name="i-lucide-check" class="mt-0.5 text-primary" />
-              <span>Quick links to public and console routes</span>
+              <span>{{ tick }}</span>
             </li>
           </ul>
         </div>
@@ -61,48 +52,12 @@
         <UCard>
           <div class="space-y-4">
             <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">
-              Misebox - Key Concepts (Priority Order)
+              {{ appMeta.aboutSections.keyConceptsTitle }}
             </h2>
             <ol class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">1. Ecosystem</span><br>
-                An ecosystem of apps for kitchen operations and recruitment.
-              </li>
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">2. Kitchen Operations</span><br>
-                The systems kitchens use to organise menus, prep, service, and team.
-              </li>
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">3. Kitchens</span><br>
-                Each kitchen has its own workspace to run operations and organise its team.
-              </li>
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">4. Professionals</span><br>
-                Hospitality professionals create profiles that showcase experience instead of CVs.
-              </li>
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">5. Jobs</span><br>
-                Kitchens publish roles and connect directly with professionals.
-              </li>
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">6. Menus &amp; Dishes</span><br>
-                Menus, dishes, and recipes live in one structured system.
-              </li>
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">7. Prep &amp; Service</span><br>
-                Prep tasks and service coordination keep the kitchen organised.
-              </li>
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">8. Team</span><br>
-                Kitchens organise and manage the people running service.
-              </li>
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">9. Suppliers</span><br>
-                Suppliers connect kitchens with the ingredients and products they need.
-              </li>
-              <li>
-                <span class="font-semibold text-gray-900 dark:text-white">10. Apps</span><br>
-                Specialised apps extend the Misebox ecosystem over time.
+              <li v-for="(concept, index) in appMeta.keyConcepts" :key="concept.title">
+                <span class="font-semibold text-gray-900 dark:text-white">{{ index + 1 }}. {{ concept.title }}</span><br>
+                {{ concept.description }}
               </li>
             </ol>
           </div>
@@ -114,13 +69,13 @@
       <UContainer>
         <div class="mb-10 space-y-2 text-center">
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-            Modules
+            {{ appMeta.aboutSections.modulesEyebrow }}
           </p>
           <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
-            How we organize the app
+            {{ appMeta.aboutSections.modulesTitle }}
           </h2>
           <p class="text-gray-600 dark:text-gray-300">
-            Each module owns a clear part of operations, and together they power one kitchen workflow.
+            {{ appMeta.aboutSections.modulesDescription }}
           </p>
         </div>
 
@@ -157,10 +112,10 @@
       <UContainer>
         <div class="mb-10 space-y-2 text-center">
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-            Entities
+            {{ appMeta.aboutSections.entitiesEyebrow }}
           </p>
           <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
-            The records we work with every day
+            {{ appMeta.aboutSections.entitiesTitle }}
           </h2>
         </div>
 
@@ -193,10 +148,10 @@
       <UContainer class="space-y-8">
         <div class="space-y-2 text-center">
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-            Structure
+            {{ appMeta.aboutSections.structureEyebrow }}
           </p>
           <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
-            Relationship map
+            {{ appMeta.aboutSections.structureTitle }}
           </h2>
         </div>
 
@@ -206,10 +161,10 @@
 
         <div class="space-y-2 text-center">
           <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
-            Examples
+            {{ appMeta.aboutSections.examplesEyebrow }}
           </p>
           <h2 class="text-3xl font-semibold text-gray-900 dark:text-white">
-            Sample objects
+            {{ appMeta.aboutSections.examplesTitle }}
           </h2>
         </div>
 
@@ -230,7 +185,9 @@
 
         <UCard>
           <template #header>
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Key routes</h3>
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+              {{ appMeta.aboutSections.routesTitle }}
+            </h3>
           </template>
           <div class="flex flex-wrap gap-2">
             <UButton
@@ -251,6 +208,8 @@
 </template>
 
 <script setup lang="ts">
+import { appMeta } from '../content/meta'
+
 type AppSpec = {
   name: string
   tagline: string
@@ -279,216 +238,20 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'About Misebox',
-  description:
-    'We run kitchen operations and hiring from one platform with a consistent operating workflow.',
+  title: appMeta.seoAbout.title,
+  description: appMeta.seoAbout.description,
 })
 
 const appSpec: AppSpec = {
-  name: 'Misebox',
-  tagline: 'Operating System for Kitchen Teams',
-  description:
-    'We run kitchen operations and hiring from one platform, with one consistent flow from prep to service and staffing.',
-  modules: [
-    {
-      name: 'fireux-kitchens',
-      summary: 'Kitchen operations module for day-to-day execution.',
-      entities: ['Kitchen', 'Menu', 'Dish', 'Ingredient', 'KitchenRecipe', 'KitchenMiseTask', 'KitchenTeamMember'],
-    },
-    {
-      name: 'fireux-orders',
-      summary: 'Order flow model for customer and service orders.',
-      entities: ['Order'],
-    },
-    {
-      name: 'fireux-jobs',
-      summary: 'Hiring and profile module for talent matching.',
-      entities: ['Job', 'Professional', 'Agent'],
-    },
-    {
-      name: 'fireux-suppliers',
-      summary: 'Supplier profile module for sourcing and catalog coordination.',
-      entities: ['Supplier', 'Company'],
-    },
-    {
-      name: 'fireux-places',
-      summary: 'Location identity used across kitchens and companies.',
-      entities: ['Place'],
-    },
-    {
-      name: 'Chef profile',
-      summary: 'Kitchen-side professional profile used in Misebox operations.',
-      entities: ['Chef'],
-    },
-  ],
-  entities: [
-    {
-      name: 'Place',
-      purpose: 'Canonical location identity used by multiple domain records.',
-      keyFields: ['id', 'name', 'formatted_address', 'lat', 'lng'],
-      linksTo: ['Kitchen', 'Company'],
-    },
-    {
-      name: 'Kitchen',
-      purpose: 'Operational kitchen identity and runtime context.',
-      keyFields: ['id', 'name', 'short_address', 'image_url', 'is_test_kitchen'],
-      linksTo: ['Menu', 'Dish', 'Ingredient', 'KitchenRecipe', 'KitchenMiseTask', 'KitchenTeamMember', 'Order', 'Job'],
-    },
-    {
-      name: 'Menu',
-      purpose: 'Service-ready menu with sections and sellable items.',
-      keyFields: ['id', 'kitchen_id', 'name', 'sections', 'active'],
-      linksTo: ['Dish'],
-    },
-    {
-      name: 'Dish',
-      purpose: 'Individual food item with recipe and ingredient links.',
-      keyFields: ['id', 'kitchen_id', 'name', 'ingredient_ids', 'recipe_ids'],
-      linksTo: ['Ingredient', 'KitchenRecipe'],
-    },
-    {
-      name: 'Ingredient',
-      purpose: 'Stock and costing ingredient identity for dishes and purchasing.',
-      keyFields: ['id', 'name', 'default_unit', 'allergens', 'active'],
-      linksTo: ['Dish', 'KitchenRecipe', 'Supplier'],
-    },
-    {
-      name: 'KitchenRecipe',
-      purpose: 'Standardized prep/cook instructions for consistent output.',
-      keyFields: ['id', 'name', 'yield_qty', 'ingredient_lines', 'steps'],
-      linksTo: ['Dish', 'Ingredient'],
-    },
-    {
-      name: 'KitchenMiseTask',
-      purpose: 'Prep and service task tracking for kitchen operations.',
-      keyFields: ['id', 'kitchen_id', 'title', 'station', 'status'],
-      linksTo: ['KitchenTeamMember', 'Menu', 'KitchenRecipe'],
-    },
-    {
-      name: 'KitchenTeamMember',
-      purpose: 'Team assignment record for stations, roles, and capability tags.',
-      keyFields: ['id', 'kitchen_id', 'name', 'role', 'station'],
-      linksTo: ['KitchenMiseTask'],
-    },
-    {
-      name: 'Order',
-      purpose: 'Customer/service order with scope, lines, totals, and status.',
-      keyFields: ['id', 'scope_type', 'scope_id', 'status', 'totals'],
-      linksTo: ['Kitchen', 'Menu'],
-    },
-    {
-      name: 'Job',
-      purpose: 'Open role advertised to professionals in the ecosystem.',
-      keyFields: ['id', 'title', 'status', 'type', 'place_id'],
-      linksTo: ['Kitchen', 'Professional', 'Agent'],
-    },
-    {
-      name: 'Chef',
-      purpose: 'Chef profile overlay used in Misebox workflow.',
-      keyFields: ['id', 'title', 'summary', 'positions', 'user.id'],
-      linksTo: ['User', 'Kitchen', 'Job'],
-    },
-    {
-      name: 'Professional',
-      purpose: 'Cross-role profile with experience and contact surfaces.',
-      keyFields: ['id', 'title', 'summary', 'positions', 'user.id'],
-      linksTo: ['Job', 'Agent'],
-    },
-    {
-      name: 'Agent',
-      purpose: 'Recruiting/operator profile for staffing and outreach.',
-      keyFields: ['id', 'title', 'summary', 'user.id', 'coverage'],
-      linksTo: ['Professional', 'Job'],
-    },
-    {
-      name: 'Supplier',
-      purpose: 'Supplier profile and sourcing identity for kitchens.',
-      keyFields: ['id', 'name', 'email', 'phone', 'place_id'],
-      linksTo: ['Company', 'Ingredient', 'Kitchen'],
-    },
-    {
-      name: 'Company',
-      purpose: 'Business identity tied to places and supplier/client structures.',
-      keyFields: ['id', 'name', 'place_id', 'short_name'],
-      linksTo: ['Place', 'Supplier'],
-    },
-  ],
-  samples: [
-    {
-      entity: 'Kitchen',
-      example: {
-        id: 'k_demo_grill_yard',
-        name: 'Grill Yard Demo Kitchen',
-        short_address: 'Market Street 12',
-        is_test_kitchen: false,
-        image_url: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=640&q=80',
-      },
-    },
-    {
-      entity: 'Menu',
-      example: {
-        id: 'menu_lunch_core',
-        kitchen_id: 'k_demo_grill_yard',
-        name: 'Lunch Core',
-        active: true,
-        sections: [{ id: 'sec_main', label: 'Main', items: [{ dish_id: 'dish_smash_burger' }] }],
-      },
-    },
-    {
-      entity: 'Order',
-      example: {
-        id: 'ord_demo_1024',
-        scope_type: 'kitchen',
-        scope_id: 'k_demo_grill_yard',
-        status: 'open',
-        totals: { subtotal_minor: 2450, total_minor: 2646, currency_code: 'CHF' },
-      },
-    },
-    {
-      entity: 'Job',
-      example: {
-        id: 'job_demo_cdpline',
-        title: 'Chef de Partie - Grill',
-        status: 'open',
-        type: 'fixed',
-        place_id: 'place_demo_interlaken',
-      },
-    },
-    {
-      entity: 'Professional',
-      example: {
-        id: 'prof_demo_ivy_lane',
-        title: 'Sous Chef',
-        summary: 'Experienced in alpine hotel and event kitchens.',
-        positions: ['Sous Chef', 'Chef de Partie'],
-        user: { id: 'user_demo_ivy', display_name: 'Ivy Lane' },
-      },
-    },
-  ],
-  routes: [
-    { label: 'Home', path: '/', kind: 'public' },
-    { label: 'Get Started', path: '/get-started', kind: 'public' },
-    { label: 'Kitchens', path: '/kitchens', kind: 'public' },
-    { label: 'Jobs', path: '/jobs', kind: 'public' },
-    { label: 'Professionals', path: '/professionals', kind: 'public' },
-    { label: 'Console Entry', path: '/console', kind: 'console' },
-    { label: 'Kitchen Console', path: '/console/kitchen', kind: 'console' },
-  ],
+  name: appMeta.name,
+  tagline: appMeta.tagline,
+  description: appMeta.description,
+  modules: appMeta.modules,
+  entities: appMeta.entities,
+  samples: appMeta.samples,
+  routes: appMeta.routes,
 }
-
-const relationshipMap = `
-Place
-  -> Kitchen
-       -> Menu -> Dish -> Ingredient
-       -> KitchenRecipe
-       -> KitchenMiseTask -> KitchenTeamMember
-       -> Order
-       -> Job -> Professional
-                       -> Agent
-Company
-  -> Supplier
-       -> Ingredient
-`
+const relationshipMap = appMeta.relationshipMap
 
 const jsonOf = (value: Record<string, any>) => JSON.stringify(value, null, 2)
 </script>

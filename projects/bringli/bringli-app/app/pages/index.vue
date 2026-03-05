@@ -1,16 +1,16 @@
 <template>
   <EffectsLandingEffect />
   <LandingHeroSection
-    app-name="bringli"
-    big-personality="Local Producers,"
-    headline="Delivered"
-    hero-primary-line="Bringli is the <strong>operating system</strong> for producers and customers. Connect local producers, suppliers, and households in one <strong>simple order and drop flow</strong> powered by <strong>Drop</strong>."
-    primary-cta-label="Get started"
-    secondary-cta-label="Browse producers"
-    secondary-cta-to="/suppliers"
-    console-bridge-line="The operating system for local supply and <strong>delivery execution</strong> from one connected console."
-    :hero-bullets="heroBullets"
-    :right-panel-items="rightPanelItems"
+    :app-name="appMeta.brand.appName"
+    :big-personality="appMeta.brand.bigPersonality"
+    :headline="appMeta.brand.headline"
+    :hero-primary-line="appMeta.heroPrimaryHtml"
+    :primary-cta-label="appMeta.landingPrimaryCtaLabel"
+    :secondary-cta-label="appMeta.landingSecondaryCtaLabel"
+    :secondary-cta-to="appMeta.landingSecondaryCtaTo"
+    :console-bridge-line="appMeta.consoleBridgeHtml"
+    :hero-bullets="appMeta.heroBullets"
+    :right-panel-items="appMeta.heroPanelItems"
   >
     <template #get-started>
       <LandingGetStarted />
@@ -24,6 +24,8 @@
 </template>
 
 <script setup lang="ts">
+import { appMeta } from '../content/meta'
+
 definePageMeta({
   layout: 'landing',
   nav: {
@@ -37,33 +39,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Bringli | Local producer delivery',
-  description:
-    'Bringli is a local delivery marketplace for homes and businesses, starting with supplier operations powered by Drop.',
+  title: appMeta.seoHome.title,
+  description: appMeta.seoHome.description,
 })
-
-const heroBullets = [
-  'Fresh local producers and suppliers in one directory',
-  'Home and business dropoff flows built for reliability',
-  'Supplier onboarding and profile management through Drop',
-  'Launched in Interlaken with market-by-market expansion',
-]
-
-const rightPanelItems = [
-  {
-    title: 'Supplier management',
-    description: 'Profiles, readiness, and contact details.',
-    icon: 'i-lucide-users',
-  },
-  {
-    title: 'Dropoff readiness',
-    description: 'Delivery area and service-level capability.',
-    icon: 'i-lucide-package-check',
-  },
-  {
-    title: 'Operational confidence',
-    description: 'Tighter first pipe before order expansion.',
-    icon: 'i-lucide-shield-check',
-  },
-]
 </script>
