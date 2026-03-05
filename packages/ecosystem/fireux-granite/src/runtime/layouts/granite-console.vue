@@ -115,7 +115,6 @@ const normalizedRoutePath = computed(() =>
 )
 const scopeEntryRoutes = new Set<string>([
   '/console/portfolio',
-  '/console/clients',
 ])
 const isScopeEntryRoute = computed(
   () => scopeEntryRoutes.has(normalizedRoutePath.value)

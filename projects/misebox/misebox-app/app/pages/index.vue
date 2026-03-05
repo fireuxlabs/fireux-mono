@@ -2,13 +2,13 @@
   <EffectsSteam />
   <LandingHeroSection
     app-name="misebox"
-    big-personality="Service-Ready"
-    headline="Kitchen Control"
-    hero-primary-line="Misebox is the <strong>operating system</strong> for kitchens and professionals. Run your kitchen from one <strong>connected console</strong> for ops, team, and service essentials. When you need staff, publish roles and connect with professionals already in the ecosystem."
+    big-personality="Command <br> the Line"
+    headline="Operating System for Kitchens"
+    hero-primary-line="Misebox is the <strong>operating system</strong> for <a href='/kitchens'><strong>kitchens</strong></a> and <a href='/professionals'><strong>professionals</strong></a>.<br>Run your kitchen with connected <strong>ops</strong>, <strong>team</strong>, and <strong>service</strong>.<br>Publish <a href='/jobs'><strong>roles</strong></a> and connect with professionals across the <strong>Misebox ecosystem</strong>."
     primary-cta-label="Get started"
     secondary-cta-label="Browse professionals"
     secondary-cta-to="/professionals"
-    console-bridge-line="One connected console to run service, grow your team, and keep <strong>execution tight</strong>."
+    console-bridge-line="One <strong>connected console</strong> to run service, grow your team, and keep execution tight."
     :hero-bullets="heroBullets"
     :right-panel-items="rightPanelItems"
   >
@@ -39,7 +39,7 @@ definePageMeta({
 useSeoMeta({
   title: 'Misebox — Kitchen operations workspace',
   description:
-    'A workspace for kitchens to manage daily operations, connect with professionals, and publish roles when you need to grow your team.',
+    'Run your kitchen from one platform - managing menus, recipes, dishes, prep tasks, team coordination, and recruitment.',
 })
 
 const heroBullets = [

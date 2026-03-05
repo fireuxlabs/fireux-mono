@@ -127,6 +127,9 @@
               <UButton to="/console/portfolio/properties" variant="soft" icon="i-lucide-building" block>
                 Properties
               </UButton>
+              <UButton to="/console/portfolio/clients" variant="soft" icon="i-lucide-users" block>
+                Clients
+              </UButton>
               <UButton to="/console/portfolio/finance" variant="soft" icon="i-lucide-chart-line" block>
                 Financial Signals
               </UButton>

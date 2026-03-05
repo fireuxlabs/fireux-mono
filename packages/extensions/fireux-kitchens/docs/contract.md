@@ -37,7 +37,8 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 
 ## 7) Runtime dependencies
 - Runtime kitchen selection state (`runtimeKitchenId`, `runtimeKitchenMode`).
-- Mode-aware data loading (`live`, `test`, `dummy`, `read-only`).
+- Mode-aware data loading (`live`, `test`, `read-only`).
+- Legacy input alias `dummy` may be accepted by normalizers and maps to `read-only`.
 
 ## 8) SEO hooks
 - Public kitchen/menu pages should provide:
@@ -53,5 +54,5 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `useChefCreate`, `useChefUpdate`, `useChefDelete`
 
 ## 10) Non-goals / prohibited fallbacks
-- No silent fallback switching between live/test/dummy/read-only.
+- No silent fallback switching between live/test/read-only.
 - No silent fallback selection of active kitchen inside console flows.

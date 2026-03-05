@@ -15,7 +15,7 @@ export const normalizeString = (value: unknown): string =>
 
 export const normalizeMode = (value: unknown): RuntimePortfolioMode | null => {
   const normalized = normalizeString(value).toLowerCase()
-  if (normalized === 'dummy') return 'read-only'
+  if (normalized === 'dummy' || normalized === 'readonly') return 'read-only'
   if (normalized === 'live' || normalized === 'test' || normalized === 'read-only') {
     return normalized
   }

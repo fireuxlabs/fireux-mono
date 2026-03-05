@@ -4,11 +4,9 @@
     app-name="granite"
     big-personality="Rock Solid"
     headline="Portfolio Control"
-    hero-primary-line="Granite is the <a href='/get-started'><strong>operating system</strong></a> for landlords, agencies and portfolio managers. Oversee properties, compliance exposure, documents, incidents, and financial signals from one <a href='/console/portfolio'><strong>structured portfolio console</strong></a>."
+    hero-primary-line="Granite is the <strong>operating system</strong> for landlords, agencies, and portfolio managers. Oversee properties, compliance exposure, documents, incidents, and financial signals from one structured system."
     primary-cta-label="Get started"
-    secondary-cta-label="Browse portfolios"
-    secondary-cta-to="/portfolios"
-    console-bridge-line="<strong>Branch-grade</strong> portfolio oversight with <strong>audit-ready</strong> records and clear accountability."
+    console-bridge-line="Branch-grade portfolio oversight with audit-ready records and clear accountability."
     :hero-bullets="heroBullets"
     :right-panel-items="rightPanelItems"
   >

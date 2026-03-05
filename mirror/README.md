@@ -7,6 +7,10 @@ Standard flow
 2) Populate mirror/mirror.txt with the desired file set.
 3) Regenerate symlinks using scripts/mirror-links.sh.
 
+Quick alignment command (models)
+- `pnpm mirror:models`
+- Rebuilds `mirror/mirror.txt` from `packages/**/**/*.model.ts` and runs mirror sync.
+
 Naming convention for symlinks
 - Prefer descriptive names based on the search scope.
 - Use the pattern: <entity>-<scope>.mirror.<ext>

@@ -1,6 +1,6 @@
 # Runtime Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-03-02
+Updated: 2026-03-04
 ## Purpose
 - Define runtime selection, mode, collection path, and route policy across FireUX domains.
 
@@ -12,22 +12,29 @@ Updated: 2026-03-02
   - Do not auto-switch entities/modes when required state is missing.
   - Surface missing selection explicitly.
 
-## Runtime Mode Rules (Kitchen Runtime)
+## Runtime Mode Rules (Console Runtimes)
 - Supported modes:
   - `live`
   - `test`
-  - `dummy`
   - `read-only`
 - Mode behavior:
-  - `live`: Firestore-backed production collection.
-  - `test`: Firestore-backed sandbox collection.
-  - `dummy`: local fixture-like behavior mapped to test-safe collection strategy.
-  - `read-only`: scenario/data pack mode with no Firestore writes.
+  - `live`: Firestore-backed production collections.
+  - `test`: Firestore-backed sandbox/test collections.
+  - `read-only`: scenario/data-pack mode with no Firestore writes.
+
+### Legacy Input Alias
+- `dummy` is not a canonical runtime mode.
+- Runtime normalizers may accept `dummy` as backward-compatible input and map it to `read-only`.
+- New state, routes, and UI labels must only use `live`, `test`, `read-only`.
+
+## Read-only Data Policy
+- Runtime read-only data must come from domain `read-only-scenarios/` registries.
+- Dev fixture files under repo `dummy/**` are optional developer tooling only.
+- Console/runtime behavior must never depend on `dummy/**`.
 
 ## Collection Path Policy (Kitchen Runtime)
 - `live` -> `kitchens/{kitchenId}`
 - `test` -> `test-kitchens/{kitchenId}`
-- `dummy` -> `test-kitchens/{kitchenId}` (or equivalent test-safe path)
 - `read-only` -> no Firestore collection path (scenario-backed)
 
 ## Route Policy (ID vs Slug)

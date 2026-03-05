@@ -5,7 +5,7 @@
         <div class="landing-hero">
           <div class="landing-hero__heading">
             <h1 class="hero-title">
-              <strong>{{ bigPersonality }}</strong>
+              <strong v-html="bigPersonality" />
             </h1>
             <h1 v-if="headline" class="hero-title hero-title--accent">
               {{ headline }}

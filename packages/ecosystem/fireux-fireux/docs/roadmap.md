@@ -22,7 +22,7 @@ Updated: 2026-03-02
 - Track for each app:
   - `id`, `name`, `ecosystem`, `status`, `owner`
   - `kind` (`internal`, `public`, `tenant`, `external`)
-  - `runtime` (`live`, `test`, `dummy`, `read-only`)
+  - `runtime` (`live`, `test`, `read-only`)
   - `seo` (`indexable`, `noindex`)
 - Add CI check that fails when an app exists but is missing from the ecosystem index.
 
@@ -48,7 +48,7 @@ Updated: 2026-03-02
   - test extension wiring
   - test theme/system variants
   - run safe workflow experiments before promotion
-- Default sandbox runtime to `test`/`dummy` strategies until explicitly promoted.
+- Default sandbox runtime to `test`/`read-only` strategies until explicitly promoted.
 
 ## Wave 5 — `stitch` / `hive` SEO Directory
 - Product direction: directory of SEO professionals.

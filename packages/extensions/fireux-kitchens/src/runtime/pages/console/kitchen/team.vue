@@ -19,6 +19,12 @@
               class="rounded border border-default p-3"
             >
               <div class="flex flex-wrap items-center gap-2">
+                <UAvatar
+                  :src="member.avatarUrl || undefined"
+                  :alt="member.name"
+                  size="sm"
+                  icon="i-lucide-user"
+                />
                 <div class="font-medium">{{ member.name }}</div>
                 <UBadge v-if="member.isLead" size="xs" variant="soft" color="success">
                   Lead
@@ -81,18 +87,26 @@ definePageMeta({
 
 const runtime = useRuntimeKitchen()
 const mode = runtime.mode
+const teamAvatarPlaceholder = (seed: string) =>
+  `https://i.pravatar.cc/256?u=${encodeURIComponent(`fireux-kitchen-team-${seed || 'member'}`)}`
 const teamMembers = computed(() =>
-  (runtime.data.value.teamMembers ?? []).map((member: any) => ({
-    id: String(member?.id || '').trim(),
-    kitchenId: String(member?.kitchen_id || '').trim(),
-    name: String(member?.name || 'Unnamed').trim(),
-    role: String(member?.role || '').trim(),
-    station: String(member?.station || '').trim(),
-    isLead: Boolean(member?.is_lead),
-    phone: String(member?.contact?.phone || '').trim(),
-    tags: Array.isArray(member?.tags)
-      ? member.tags.map((tag: unknown) => String(tag || '').trim()).filter(Boolean)
-      : [],
-  }))
+  (runtime.data.value.teamMembers ?? []).map((member: any) => {
+    const id = String(member?.id || '').trim()
+    const name = String(member?.name || 'Unnamed').trim()
+    return {
+      id,
+      kitchenId: String(member?.kitchen_id || '').trim(),
+      name,
+      avatarUrl:
+        String(member?.avatar_url || '').trim() || teamAvatarPlaceholder(id || name),
+      role: String(member?.role || '').trim(),
+      station: String(member?.station || '').trim(),
+      isLead: Boolean(member?.is_lead),
+      phone: String(member?.contact?.phone || '').trim(),
+      tags: Array.isArray(member?.tags)
+        ? member.tags.map((tag: unknown) => String(tag || '').trim()).filter(Boolean)
+        : [],
+    }
+  })
 )
 </script>
