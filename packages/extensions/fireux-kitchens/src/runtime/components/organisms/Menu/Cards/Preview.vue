@@ -38,7 +38,7 @@
         </div>
       </div>
 
-      <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
+      <div v-if="showBadges && (badges?.length ?? 0)" class="flex flex-wrap items-center gap-1">
         <UBadge
           v-for="badge in badges"
           :key="badge"

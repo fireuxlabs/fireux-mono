@@ -11,62 +11,8 @@
     </section>
 
     <section>
-      <UContainer class="grid gap-6 lg:grid-cols-3">
-        <UCard>
-          <template #header>
-            <div class="space-y-2">
-              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Users</h2>
-              <p class="text-sm text-gray-600 dark:text-gray-300">
-                Join for free or upgrade.
-              </p>
-            </div>
-          </template>
-
-          <div class="space-y-3">
-            <p class="text-sm text-gray-600 dark:text-gray-300">Upgrade: $10/month per user</p>
-            <UButton to="/pricing/users" variant="soft" trailing-icon="i-lucide-arrow-right">
-              Details
-            </UButton>
-          </div>
-        </UCard>
-
-        <UCard class="border-primary/30 ring-1 ring-primary/15">
-          <template #header>
-            <div class="space-y-2">
-              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Apps</h2>
-              <p class="text-sm text-gray-600 dark:text-gray-300">
-                Apps are the lead product. Pick ecosystem-hosted, FireUX-hosted, or self-hosted.
-              </p>
-            </div>
-          </template>
-
-          <div class="space-y-3">
-            <p class="text-sm text-gray-600 dark:text-gray-300">From $400 setup + $30/month maintenance</p>
-            <UButton to="/pricing/apps" color="primary" icon="i-lucide-arrow-right">
-              View app pricing
-            </UButton>
-          </div>
-        </UCard>
-
-        <UCard>
-          <template #header>
-            <div class="space-y-2">
-              <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Ecosystems</h2>
-              <p class="text-sm text-gray-600 dark:text-gray-300">
-                Own your ecosystem layer when you want full platform ownership.
-              </p>
-            </div>
-          </template>
-
-          <div class="space-y-3">
-            <p class="text-sm text-gray-600 dark:text-gray-300">
-              $1,000 setup + $50/month ecosystem maintenance
-            </p>
-            <UButton to="/pricing/ecosystems" variant="soft" icon="i-lucide-arrow-right">
-              View ecosystem pricing
-            </UButton>
-          </div>
-        </UCard>
+      <UContainer>
+        <UPricingPlans :plans="hubPlans" />
       </UContainer>
     </section>
 
@@ -74,6 +20,56 @@
 </template>
 
 <script setup lang="ts">
+const detailButton = {
+  color: 'neutral' as const,
+  variant: 'soft' as const,
+  trailingIcon: 'i-lucide-arrow-right',
+}
+
+const hubPlans = [
+  {
+    id: 'users',
+    title: 'Users',
+    description: 'Join for free or upgrade.',
+    price: '$10',
+    billingCycle: '/month',
+    features: ['Upgrade access'],
+    button: {
+      ...detailButton,
+      label: 'Details',
+      to: '/pricing/users',
+    },
+  },
+  {
+    id: 'apps',
+    title: 'Apps',
+    description: 'Launch your app.',
+    price: 'From $400',
+    billingPeriod: 'setup',
+    features: ['Maintenance from $30/month'],
+    highlight: true,
+    scale: true,
+    button: {
+      ...detailButton,
+      label: 'Details',
+      to: '/pricing/apps',
+    },
+  },
+  {
+    id: 'ecosystems',
+    title: 'Ecosystems',
+    description: 'Run your own ecosystem.',
+    price: '$1,000',
+    billingPeriod: 'setup',
+    features: ['Maintenance: $50/month'],
+    button: {
+      ...detailButton,
+      label: 'Details',
+      to: '/pricing/ecosystems',
+    },
+  },
+] as const
+
 definePageMeta({
   layout: 'landing',
   nav: {

@@ -21,7 +21,7 @@
             </div>
           </div>
 
-          <div v-if="showBadges && badges.length" class="card__badges">
+          <div v-if="showBadges && (badges?.length ?? 0)" class="card__badges">
             <UBadge
               v-for="badge in badges"
               :key="badge"

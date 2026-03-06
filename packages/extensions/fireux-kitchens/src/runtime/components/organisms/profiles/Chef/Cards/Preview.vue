@@ -11,7 +11,7 @@
         <div class="preview__top">
           <div class="preview__title">{{ displayName }}</div>
 
-          <div v-if="showBadges && badges.length" class="preview__badges">
+          <div v-if="showBadges && (badges?.length ?? 0)" class="preview__badges">
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -50,7 +50,7 @@ type Props = {
   secondaryAvatarUrl?: string
   displayName: string
   tagline: string
-  badges: string[]
+  badges?: string[]
   summary: string
   specialtiesCsv: string
 
@@ -61,6 +61,7 @@ type Props = {
 }
 
 withDefaults(defineProps<Props>(), {
+  badges: () => [],
   showSubtitle: true,
   showBadges: true,
   showBody: true,

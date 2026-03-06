@@ -1,0 +1,60 @@
+<template>
+  <UPage>
+    <UPageHeader
+      class="pageheader"
+      title="Ecosystems: Learn More (Dev)"
+      description="Technical reference for ecosystem directory data and integration points."
+    />
+
+    <UPageBody class="pagebody space-y-6">
+      <UCard>
+        <template #header>
+          <h2 class="text-lg font-semibold">Entity fields</h2>
+        </template>
+
+        <p class="text-sm text-dimmed">
+          Directory rows are normalized to this shape: <code>{ key, name, src, text, href }</code>.
+        </p>
+      </UCard>
+
+      <UCard>
+        <template #header>
+          <h2 class="text-lg font-semibold">Primary endpoints</h2>
+        </template>
+
+        <div class="space-y-2 text-sm">
+          <div class="rounded border border-default p-3">
+            <p class="font-mono">GET /api/internal/landing/directory</p>
+            <p class="text-dimmed">Primary source for ecosystem and app directory collection managers.</p>
+          </div>
+          <div class="rounded border border-default p-3">
+            <p class="font-mono">GET /api/public/apps</p>
+            <p class="text-dimmed">Remote source queried per ecosystem by the landing directory endpoint.</p>
+          </div>
+          <div class="rounded border border-default p-3">
+            <p class="font-mono">GET /api/registry</p>
+            <p class="text-dimmed">Registry fallback for canonical ecosystem records.</p>
+          </div>
+        </div>
+      </UCard>
+
+      <div class="flex flex-wrap gap-2">
+        <UButton to="/ecosystems" color="primary" icon="i-lucide-orbit">Open ecosystems</UButton>
+        <UButton to="/ecosystems/learn-more" color="neutral" variant="soft" icon="i-lucide-book-open">Public guide</UButton>
+      </div>
+    </UPageBody>
+  </UPage>
+</template>
+
+<script setup lang="ts">
+definePageMeta({
+  tag: 'ecosystems',
+  layout: 'default',
+  name: 'EcosystemsLearnMoreDevPage',
+})
+
+useSeoMeta({
+  title: 'Ecosystems: Learn More (Dev) · FireUX',
+  description: 'Technical reference for FireUX ecosystem directory routes and data endpoints.',
+})
+</script>

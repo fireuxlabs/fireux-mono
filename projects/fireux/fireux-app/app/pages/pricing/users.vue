@@ -17,44 +17,46 @@
 
     <section>
       <UContainer class="grid gap-6 lg:grid-cols-2">
-        <UCard>
-          <template #header>
-            <h2 class="text-lg font-semibold">Free access</h2>
-          </template>
+        <UPricingPlan
+          title="Free access"
+          description="Create your FireUX account and start exploring."
+          price="Free"
+          :features="[
+            'Create a FireUX account',
+            'Create profiles',
+            'Browse FireUX apps',
+            'Access free templates and resources',
+          ]"
+          :button="{
+            label: 'Join now',
+            to: '/auth',
+            color: 'neutral',
+            variant: 'soft',
+            trailingIcon: 'i-lucide-arrow-right',
+          }"
+        />
 
-          <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
-            <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Create a FireUX account</span></li>
-            <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Create profiles</span></li>
-            <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Browse ecosystems and apps</span></li>
-            <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Access free templates and resources</span></li>
-          </ul>
-
-          <UButton to="/auth" variant="soft" trailing-icon="i-lucide-arrow-right" class="mt-4">
-            Join now
-          </UButton>
-        </UCard>
-
-        <UCard class="border-primary/30 bg-primary/5">
-          <template #header>
-            <div class="flex items-center justify-between gap-3">
-              <h2 class="text-lg font-semibold">Upgrade</h2>
-              <div class="text-3xl font-semibold text-primary">
-                $10 / month
-              </div>
-            </div>
-          </template>
-
-          <ul class="mt-4 space-y-2 text-sm text-gray-600 dark:text-gray-300">
-            <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Access all FireUX templates and paid resources</span></li>
-            <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Use the FireUX console</span></li>
-            <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Launch support via FireUX blog</span></li>
-            <li class="flex gap-2"><UIcon name="i-lucide-check" /><span>Backlink from FireUX</span></li>
-          </ul>
-
-          <UButton to="/product/upgrade" color="primary" trailing-icon="i-lucide-arrow-right" class="mt-4">
-            Upgrade
-          </UButton>
-        </UCard>
+        <UPricingPlan
+          title="Upgrade"
+          description="Operator-level access for private workflow and paid assets."
+          price="$10"
+          billing-cycle="/month"
+          highlight
+          scale
+          :features="[
+            'Access all FireUX templates and paid resources',
+            'Use the FireUX console',
+            'Launch support via FireUX blog',
+            'Backlink from FireUX',
+          ]"
+          :button="{
+            label: 'Upgrade',
+            to: '/product/upgrade',
+            color: 'primary',
+            variant: 'soft',
+            trailingIcon: 'i-lucide-arrow-right',
+          }"
+        />
       </UContainer>
     </section>
   </div>

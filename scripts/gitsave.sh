@@ -1,6 +1,51 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+trim() {
+  # shellcheck disable=SC2001
+  echo "$1" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//'
+}
+
+has_upstream() {
+  git rev-parse --abbrev-ref --symbolic-full-name "@{u}" >/dev/null 2>&1
+}
+
+ahead_behind_counts() {
+  if has_upstream; then
+    local counts
+    counts="$(git rev-list --left-right --count HEAD...@{u} 2>/dev/null || echo '0 0')"
+    # Output format: "<ahead> <behind>"
+    echo "$counts"
+  else
+    echo "0 0"
+  fi
+}
+
+working_tree_count() {
+  local count
+  count="$(git status --porcelain | wc -l)"
+  trim "$count"
+}
+
+print_repo_state() {
+  local label="$1"
+  local dirty
+  local counts
+  local ahead
+  local behind
+
+  dirty="$(working_tree_count)"
+  counts="$(ahead_behind_counts)"
+  ahead="$(echo "$counts" | awk '{print $1}')"
+  behind="$(echo "$counts" | awk '{print $2}')"
+
+  if [[ "$dirty" == "0" ]]; then
+    echo "[gitsave] ${label}: working tree clean | ahead ${ahead} | behind ${behind}"
+  else
+    echo "[gitsave] ${label}: ${dirty} changed file(s) | ahead ${ahead} | behind ${behind}"
+  fi
+}
+
 usage() {
   echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean]" >&2
   echo "Example: gitsave \"fix: wire places quick add\"" >&2
@@ -38,6 +83,8 @@ if [[ "$current_branch" != "main" ]]; then
   echo "Switch to 'main' if you intend to keep a single-branch workflow." >&2
 fi
 
+print_repo_state "start"
+
 # Optional clean
 if $run_clean; then
   pnpm -s clean || true
@@ -67,17 +114,20 @@ git add -A
 
 if git diff --cached --quiet; then
   # If nothing new to commit, still push if we're ahead of upstream.
-  if git rev-parse --abbrev-ref --symbolic-full-name "@{u}" >/dev/null 2>&1; then
+  if has_upstream; then
     ahead_count=$(git rev-list --count "@{u}..HEAD" 2>/dev/null || echo "0")
     if [[ "${ahead_count}" != "0" ]]; then
       echo "No changes to commit, but branch is ahead by ${ahead_count}; pushing..." >&2
       git push origin "$current_branch"
       echo "Saved: pushed $current_branch to origin." >&2
+      print_repo_state "end"
     else
       echo "No changes to commit." >&2
+      print_repo_state "end"
     fi
   else
     echo "No changes to commit (no upstream configured)." >&2
+    print_repo_state "end"
   fi
   exit 0
 fi
@@ -123,3 +173,4 @@ git add -A || true
 git push origin "$current_branch"
 
 echo "Saved: committed to $current_branch and pushed to origin."
+print_repo_state "end"
