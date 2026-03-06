@@ -3,17 +3,11 @@ import { useRouter } from 'vue-router'
 
 type UseConsoleEntryCtaOptions = {
   consolePath?: string
-  requireRuntimeScope?: boolean
-  preferredRuntimeKey?: string
 }
 
 export function useConsoleEntryCta(options: UseConsoleEntryCtaOptions = {}) {
   const router = useRouter()
   const consolePath = String(options.consolePath || '/console').trim() || '/console'
-  const requireRuntimeScope = options.requireRuntimeScope !== false
-  const preferredRuntimeKey = String(options.preferredRuntimeKey || '')
-    .trim()
-    .toLowerCase()
   const normalizedConsolePath = consolePath.endsWith('/')
     ? consolePath.slice(0, -1)
     : consolePath
@@ -22,15 +16,7 @@ export function useConsoleEntryCta(options: UseConsoleEntryCtaOptions = {}) {
     router.getRoutes().some((route) => route.path === consolePath)
   )
 
-  // A console is considered "offered" only when it has at least one runtime scope route
-  // like /console/project, /console/app, /console/kitchen, /console/portfolio, etc.
-  const hasRuntimeScopeRoute = computed(() =>
-    router
-      .getRoutes()
-      .some((route) => route.path.startsWith(`${consolePath}/`))
-  )
-
-  const runtimeScopes = computed(() => {
+  const consoleChildren = computed(() => {
     const byKey = new Map<string, string[]>()
 
     for (const route of router.getRoutes()) {
@@ -49,75 +35,29 @@ export function useConsoleEntryCta(options: UseConsoleEntryCtaOptions = {}) {
     return Array.from(byKey.entries())
       .map(([key, paths]) => {
         const explicit = `${normalizedConsolePath}/${key}`
+        const overview = `${normalizedConsolePath}/${key}/overview`
+        const hasOverview = paths.some((path) => path === overview)
         const exact = paths.some((path) => path === explicit)
-        const path = exact ? explicit : paths.sort()[0] || explicit
+        const path = hasOverview
+          ? overview
+          : exact
+            ? explicit
+            : paths.sort()[0] || explicit
         return { key, path }
       })
       .sort((a, b) => a.key.localeCompare(b.key))
   })
 
-  const runtimeScopeKey = computed(() => {
-    if (preferredRuntimeKey) {
-      const match = runtimeScopes.value.find((scope) => scope.key === preferredRuntimeKey)
-      if (match) return match.key
-    }
-    return runtimeScopes.value[0]?.key ?? ''
-  })
-
-  const runtimeScopeLabel = computed(() => {
-    if (!runtimeScopeKey.value) return 'Runtime'
-    return runtimeScopeKey.value
-      .split(/[-_]+/)
-      .filter(Boolean)
-      .map((part) => part[0]?.toUpperCase() + part.slice(1))
-      .join(' ')
-  })
-
-  const consoleEntryLabel = computed(() => `${runtimeScopeLabel.value} Console`)
-  const toScopeLabel = (key: string) =>
-    String(key || '')
-      .split(/[-_]+/)
-      .filter(Boolean)
-      .map((part) => part[0]?.toUpperCase() + part.slice(1))
-      .join(' ')
-
-  const consoleEntries = computed(() =>
-    runtimeScopes.value.map((scope) => ({
-      key: scope.key,
-      path: scope.path,
-      label: `${toScopeLabel(scope.key) || 'Runtime'} Console`,
-    }))
-  )
-
-  const hasConsoleEntry = computed(() =>
-    requireRuntimeScope
-      ? hasConsoleRoute.value && hasRuntimeScopeRoute.value
-      : hasConsoleRoute.value
-  )
-
-  const consoleEntryPath = computed(() => {
-    if (!hasConsoleEntry.value) return consolePath
-    if (runtimeScopes.value.length === 1) return runtimeScopes.value[0]?.path || consolePath
-
-    if (preferredRuntimeKey) {
-      const match = runtimeScopes.value.find((scope) => scope.key === preferredRuntimeKey)
-      if (match) return match.path
-    }
-
-    return consolePath
-  })
+  const hasConsoleChildren = computed(() => consoleChildren.value.length > 0)
+  const hasConsoleEntry = computed(() => hasConsoleRoute.value)
+  const consoleEntryPath = computed(() => (hasConsoleRoute.value ? consolePath : '/'))
 
   return {
     hasConsoleRoute,
-    hasRuntimeScopeRoute,
+    hasConsoleChildren,
     hasConsoleEntry,
-    runtimeScopeKey,
-    runtimeScopeLabel,
-    consoleEntryLabel,
     consoleEntryPath,
-    consoleEntries,
-    runtimeScopes,
-    preferredRuntimeKey,
-    consolePath,
+    consolePath: normalizedConsolePath,
+    consoleChildren,
   }
 }

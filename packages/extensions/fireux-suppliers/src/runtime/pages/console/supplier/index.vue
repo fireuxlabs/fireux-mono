@@ -1,20 +1,14 @@
 <template>
-  <UDashboardPanel id="console-supplier-home">
-    <template #header>
-      <LayoutsConsoleNavbar title="Supplier Console" />
-    </template>
-
-    <template #body>
-      <UCard>
-        <p class="text-sm text-dimmed">Supplier console scaffold ready.</p>
-      </UCard>
-    </template>
-  </UDashboardPanel>
+  <div />
 </template>
 
 <script setup lang="ts">
+import { navigateTo } from '#imports'
+
 definePageMeta({
   layout: 'console',
   requiresAuth: true,
 })
+
+await navigateTo('/console/supplier/overview', { replace: true })
 </script>

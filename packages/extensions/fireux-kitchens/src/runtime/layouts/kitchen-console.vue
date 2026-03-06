@@ -117,7 +117,8 @@ const navItems = computed(() =>
     (item) =>
       item.group !== 'profiles' &&
       !item.profileId &&
-      item.to !== '/console/kitchen'
+      item.to !== '/console/kitchen' &&
+      item.to !== '/console/kitchen/overview'
   )
 )
 </script>

@@ -238,7 +238,7 @@ const sourceMeta = {
         { label: 'Ecosystems', path: '/ecosystems', kind: 'public' },
         { label: 'Projects', path: '/projects', kind: 'public' },
         { label: 'Console Entry', path: '/console', kind: 'console' },
-        { label: 'Project Console', path: '/console/project', kind: 'console' },
+        { label: 'Project Console', path: '/console', kind: 'console' },
       ],
     },
     relationshipMap: `

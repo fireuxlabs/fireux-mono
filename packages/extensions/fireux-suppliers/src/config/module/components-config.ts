@@ -13,12 +13,6 @@ export function configureComponents(resolver: Resolver) {
   registerComponentAliases(
     resolver,
     './runtime/components/supplier',
-    'Supplier',
-    { global: true }
-  )
-  registerComponentAliases(
-    resolver,
-    './runtime/components/supplier',
     'ProfilesSupplier',
     { global: true }
   )

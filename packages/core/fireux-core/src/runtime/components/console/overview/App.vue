@@ -53,32 +53,17 @@ const cfg = useFireUXConfig()
 const router = useRouter()
 
 const appLogo = computed(() => cfg.appLogo || cfg.appThumbnail || '')
-const hasProjectConsole = computed(() =>
-  router.getRoutes().some((route) => route.path === '/console/project')
-)
-const hasAppConsole = computed(() =>
-  router.getRoutes().some((route) => route.path === '/console/app')
+const hasConsole = computed(() =>
+  router.getRoutes().some((route) => route.path === '/console')
 )
 const primaryCtaTo = computed(() =>
-  hasProjectConsole.value
-    ? '/console/project'
-    : hasAppConsole.value
-      ? '/console/app'
-      : '/'
+  hasConsole.value ? '/console' : '/'
 )
 const primaryCtaLabel = computed(() =>
-  hasProjectConsole.value
-    ? 'Open project console'
-    : hasAppConsole.value
-      ? 'Open app console'
-      : 'Open app'
+  hasConsole.value ? 'Open console' : 'Open app'
 )
 const primaryCtaIcon = computed(() =>
-  hasProjectConsole.value
-    ? 'i-lucide-folder-open'
-    : hasAppConsole.value
-      ? 'i-lucide-app-window'
-      : 'i-lucide-arrow-right'
+  hasConsole.value ? 'i-lucide-terminal' : 'i-lucide-arrow-right'
 )
 
 const roleLabel = computed(() => {

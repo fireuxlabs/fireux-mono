@@ -97,9 +97,9 @@ const readOnlyPills = computed(() =>
 )
 
 const runtimeConsolePath = computed(() =>
-  router.getRoutes().some((route) => route.path === '/console/project')
-    ? '/console/project'
-    : '/console/app'
+  router.getRoutes().some((route) => route.path === '/console')
+    ? '/console'
+    : '/'
 )
 
 const goToApp = async (mode: RuntimeAppMode, appId?: string) => {

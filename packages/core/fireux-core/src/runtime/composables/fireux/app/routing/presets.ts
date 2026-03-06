@@ -1,8 +1,6 @@
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
 import type { NavItem } from '../../../../../types/nav'
 import { useUser } from '../../firestore/core/user/useUser'
-import { useFireUXConfig } from '../FireUXConfig'
 import { useNav } from '../ui/nav/useNav'
 
 export const useDefaultNav = () => useNav(['default'])
@@ -45,125 +43,13 @@ export const useDashboardNav = () => {
 }
 
 export const useConsoleNav = () => {
-  const router = useRouter()
-  const cfg = useFireUXConfig()
-  const isFireuxProjectConsole = computed(() => cfg.ecosystem === 'fireux')
-  const runtimeScopeLabel = computed(() =>
-    isFireuxProjectConsole.value ? 'Project' : 'App'
-  )
-  const runtimeScopePath = computed(() =>
-    isFireuxProjectConsole.value ? '/console/project' : '/console/app'
-  )
-  const runtimeScopeKey = computed(() =>
-    isFireuxProjectConsole.value ? 'console-project-runtime' : 'console-runtime-app'
-  )
-  const runtimeScopeIcon = computed(() =>
-    isFireuxProjectConsole.value ? 'i-lucide-folder-open' : 'i-lucide-app-window'
-  )
-
-  const hasRoutePath = (path: string) =>
-    router.getRoutes().some((route) => route.path === path)
-
-  const items = computed<NavItem[]>(() => {
-    const runtimeNav: NavItem[] = [
-      {
-        key: 'console-home',
-        label: isFireuxProjectConsole.value ? 'Overview' : 'Console Home',
-        icon: isFireuxProjectConsole.value
-          ? 'i-lucide-layout-dashboard'
-          : 'i-lucide-terminal',
-        to: '/console',
-        order: 10,
-        desktop: true,
-        mobile: true,
-        layouts: ['console'],
-      },
-    ]
-
-    if (hasRoutePath(runtimeScopePath.value)) {
-      runtimeNav.push({
-        key: runtimeScopeKey.value,
-        label: runtimeScopeLabel.value,
-        icon: runtimeScopeIcon.value,
-        to: runtimeScopePath.value,
-        order: 15,
-        desktop: true,
-        mobile: true,
-        layouts: ['console'],
-      })
-    }
-
-    if (hasRoutePath('/console/ecosystems')) {
-      runtimeNav.push({
-        key: 'console-project-ecosystems',
-        label: 'Ecosystems',
-        icon: 'i-lucide-orbit',
-        to: '/console/ecosystems',
-        order: 20,
-        desktop: true,
-        mobile: true,
-        layouts: ['console'],
-      })
-    }
-
-    if (hasRoutePath('/console/apps')) {
-      runtimeNav.push({
-        key: 'console-project-apps',
-        label: 'Apps',
-        icon: 'i-lucide-app-window',
-        to: '/console/apps',
-        order: 30,
-        desktop: true,
-        mobile: true,
-        layouts: ['console'],
-      })
-    }
-
-    if (hasRoutePath('/console/kitchen')) {
-      runtimeNav.push({
-        key: 'console-runtime-kitchen',
-        label: 'Kitchen',
-        icon: 'i-lucide-chef-hat',
-        to: '/console/kitchen',
-        order: 20,
-        desktop: true,
-        mobile: true,
-        layouts: ['console'],
-      })
-    }
-
-    if (hasRoutePath('/console/portfolio')) {
-      runtimeNav.push({
-        key: 'console-runtime-portfolio',
-        label: 'Portfolio',
-        icon: 'i-lucide-building-2',
-        to: '/console/portfolio',
-        order: 30,
-        desktop: true,
-        mobile: true,
-        layouts: ['console'],
-      })
-    }
-
-    return runtimeNav
-  })
-
-  const desktop = computed(() => items.value.filter((item) => item.desktop))
-  const mobile = computed(() => items.value.filter((item) => item.mobile))
+  const nav = useNav(['console'])
   const topPriority = [
-    { key: 'console-home', to: '/console' },
-    { key: 'console-project-runtime', to: '/console/project' },
-    { key: 'console-project-ecosystems', to: '/console/ecosystems' },
-    { key: 'console-project-apps', to: '/console/apps' },
-    { key: 'console-runtime-app', to: '/console/app' },
-    { key: 'console-runtime-kitchen', to: '/console/kitchen' },
-    { key: 'console-runtime-portfolio', to: '/console/portfolio' },
+    { to: '/console' },
   ]
 
   return {
-    items,
-    desktop,
-    mobile,
+    ...nav,
     topPriority,
     baseNavFilter: (_item: NavItem) => true,
   }

@@ -43,11 +43,11 @@
             />
 
             <div
-              v-if="hasConsoleEntry && consoleEntries.length"
+              v-if="consoleCtas.length"
               class="landing-hero__actions landing-hero__actions--primary"
             >
               <UButton
-                v-for="entry in consoleEntries"
+                v-for="entry in consoleCtas"
                 :key="entry.key"
                 size="lg"
                 variant="subtle"
@@ -244,7 +244,34 @@ const rightPanelTagsResolved = computed<RightPanelTagItem[]>(() =>
         }))
 )
 
-const { hasConsoleEntry, consoleEntries } = useConsoleEntryCta()
+const { hasConsoleRoute, consolePath, consoleChildren } = useConsoleEntryCta()
+
+const toScopeLabel = (key: string) =>
+  String(key || '')
+    .split(/[-_]+/)
+    .filter(Boolean)
+    .map((part) => part[0]?.toUpperCase() + part.slice(1))
+    .join(' ')
+
+const consoleCtas = computed(() => {
+  if (!hasConsoleRoute.value) return []
+
+  if (!consoleChildren.value.length) {
+    return [
+      {
+        key: 'console',
+        path: consolePath,
+        label: 'Open Console',
+      },
+    ]
+  }
+
+  return consoleChildren.value.map((entry) => ({
+    key: entry.key,
+    path: entry.path,
+    label: `${toScopeLabel(entry.key) || 'Console'} Console`,
+  }))
+})
 const auth = import.meta.client ? useAuth() : null
 const isAuthenticated = computed(() => auth?.isAuthenticated?.value ?? false)
 
