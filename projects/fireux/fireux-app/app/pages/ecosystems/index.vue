@@ -10,16 +10,15 @@
       <EcosystemCTA />
 
       <UAlert
-        v-if="errors.length"
-        color="warning"
+        color="neutral"
         variant="soft"
-        title="Some ecosystem sources are unavailable"
-        :description="`Directory errors: ${errors.length}`"
+        :title="`Collection source: db.collections.ecosystems`"
+        :description="`Current records: ${count}`"
       />
 
       <EcosystemCollectionManager
         :collection="collection"
-        :pending="appsPending"
+        :pending="false"
       />
     </UPageBody>
   </UPage>
@@ -27,6 +26,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useEcosystemCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/ecosystem/fetch/useEcosystemCollection'
 
 definePageMeta({
   tag: 'ecosystems',
@@ -47,9 +47,34 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Ecosystems · FireUX',
-  description: 'Directory of active FireUX ecosystems and their global app surfaces.',
+  description: 'Entity index for FireUX ecosystems stored in db.collections.ecosystems.',
 })
 
-const { appsPending, errors, displayedEcosystems } = useLandingDirectory()
-const collection = computed(() => displayedEcosystems.value ?? [])
+const { ecosystems, count } = useEcosystemCollection()
+
+const initials = (value: string) =>
+  String(value || '')
+    .trim()
+    .split(/\s+/g)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('')
+
+const collection = computed(() =>
+  (ecosystems.value ?? []).map((item) => {
+    const key = String(item.id || '').trim()
+    const name = String(item.name || key || 'Untitled ecosystem').trim()
+
+    return {
+      key,
+      name,
+      text: initials(name || key),
+      src: '',
+      href: '',
+      apps: Array.isArray(item.apps) ? item.apps.length : 0,
+      team: String(item.team || '').trim(),
+    }
+  })
+)
 </script>

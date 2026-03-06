@@ -13,7 +13,8 @@
         </template>
 
         <p class="text-sm text-dimmed">
-          Directory rows are normalized to this shape: <code>{ key, name, src, text, href }</code>.
+          Ecosystem documents are read from <code>db.collections.ecosystems</code> and normalized for cards:
+          <code>{ key, name, team, apps, src, text, href }</code>.
         </p>
       </UCard>
 
@@ -24,16 +25,16 @@
 
         <div class="space-y-2 text-sm">
           <div class="rounded border border-default p-3">
-            <p class="font-mono">GET /api/internal/landing/directory</p>
-            <p class="text-dimmed">Primary source for ecosystem and app directory collection managers.</p>
-          </div>
-          <div class="rounded border border-default p-3">
-            <p class="font-mono">GET /api/public/apps</p>
-            <p class="text-dimmed">Remote source queried per ecosystem by the landing directory endpoint.</p>
+            <p class="font-mono">Firestore collection: ecosystems</p>
+            <p class="text-dimmed">Primary source for <code>/ecosystems</code> entity index.</p>
           </div>
           <div class="rounded border border-default p-3">
             <p class="font-mono">GET /api/registry</p>
-            <p class="text-dimmed">Registry fallback for canonical ecosystem records.</p>
+            <p class="text-dimmed">Reads registry docs (modules, apps, ecosystems) for audit/debug flows.</p>
+          </div>
+          <div class="rounded border border-default p-3">
+            <p class="font-mono">POST /api/registry</p>
+            <p class="text-dimmed">Creates/updates ecosystem registry rows in controlled setup flows.</p>
           </div>
         </div>
       </UCard>

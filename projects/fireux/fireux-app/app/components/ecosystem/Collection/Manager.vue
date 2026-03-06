@@ -55,6 +55,9 @@
             <div class="min-w-0 space-y-1">
               <p class="truncate text-sm font-medium">{{ entry.name }}</p>
               <p class="truncate text-xs text-dimmed">{{ entry.key }}</p>
+              <p class="truncate text-xs text-dimmed">
+                team: {{ entry.team || 'unset' }} · apps: {{ entry.apps }}
+              </p>
             </div>
           </div>
 
@@ -99,6 +102,9 @@
             <div class="min-w-0">
               <p class="truncate text-sm font-medium">{{ entry.name }}</p>
               <p class="truncate text-xs text-dimmed">{{ entry.key }}</p>
+              <p class="truncate text-xs text-dimmed">
+                team: {{ entry.team || 'unset' }} · apps: {{ entry.apps }}
+              </p>
             </div>
           </div>
 
@@ -117,9 +123,19 @@
       </div>
     </template>
 
-    <p v-else>
-      {{ query ? 'No ecosystems match your search.' : 'No ecosystems found.' }}
-    </p>
+    <UAlert
+      v-else
+      color="neutral"
+      variant="soft"
+      :title="query ? 'No ecosystems match your search' : 'No ecosystems found yet'"
+      description="Create ecosystems from the FireUX console when you are ready."
+    >
+      <template #actions>
+        <UButton to="/console" size="xs" color="neutral" variant="soft" icon="i-lucide-terminal">
+          Open console
+        </UButton>
+      </template>
+    </UAlert>
   </UCard>
 </template>
 
@@ -132,6 +148,8 @@ type EcosystemRow = {
   src?: string
   text?: string
   href?: string
+  apps?: number
+  team?: string
 }
 
 const props = withDefaults(defineProps<{
@@ -153,6 +171,8 @@ const normalized = computed(() =>
       src: String(row.src || '').trim(),
       text: String(row.text || '').trim(),
       href: String(row.href || '').trim(),
+      apps: Number.isFinite(Number(row.apps)) ? Number(row.apps) : 0,
+      team: String(row.team || '').trim(),
     }))
     .filter((row) => Boolean(row.key || row.name))
 )

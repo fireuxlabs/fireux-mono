@@ -2,6 +2,9 @@
   "name": "fireux-app",
   "private": true,
   "type": "module",
+  "imports": {
+    "#internal/nuxt/paths": "./nuxt-internal-paths.mjs"
+  },
   "scripts": {
     "dev": "nuxi prepare && nuxi dev --port 3000",
     "build": "nuxi build",

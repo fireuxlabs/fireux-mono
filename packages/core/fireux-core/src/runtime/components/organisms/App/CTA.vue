@@ -96,10 +96,16 @@ const readOnlyPills = computed(() =>
   }))
 )
 
+const runtimeConsolePath = computed(() =>
+  router.getRoutes().some((route) => route.path === '/console/project')
+    ? '/console/project'
+    : '/console/app'
+)
+
 const goToApp = async (mode: RuntimeAppMode, appId?: string) => {
   const fallback = String(runtimeAppId.value || '').trim()
   const resolvedId = String(appId || fallback).trim()
   setRuntimeApp({ appId: resolvedId, mode })
-  await router.push('/console/app')
+  await router.push(runtimeConsolePath.value)
 }
 </script>

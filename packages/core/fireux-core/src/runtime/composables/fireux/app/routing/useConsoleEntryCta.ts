@@ -23,7 +23,7 @@ export function useConsoleEntryCta(options: UseConsoleEntryCtaOptions = {}) {
   )
 
   // A console is considered "offered" only when it has at least one runtime scope route
-  // like /console/app, /console/kitchen, /console/portfolio, etc.
+  // like /console/project, /console/app, /console/kitchen, /console/portfolio, etc.
   const hasRuntimeScopeRoute = computed(() =>
     router
       .getRoutes()

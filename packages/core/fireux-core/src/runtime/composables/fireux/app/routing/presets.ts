@@ -2,6 +2,7 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import type { NavItem } from '../../../../../types/nav'
 import { useUser } from '../../firestore/core/user/useUser'
+import { useFireUXConfig } from '../FireUXConfig'
 import { useNav } from '../ui/nav/useNav'
 
 export const useDefaultNav = () => useNav(['default'])
@@ -45,6 +46,20 @@ export const useDashboardNav = () => {
 
 export const useConsoleNav = () => {
   const router = useRouter()
+  const cfg = useFireUXConfig()
+  const isFireuxProjectConsole = computed(() => cfg.ecosystem === 'fireux')
+  const runtimeScopeLabel = computed(() =>
+    isFireuxProjectConsole.value ? 'Project' : 'App'
+  )
+  const runtimeScopePath = computed(() =>
+    isFireuxProjectConsole.value ? '/console/project' : '/console/app'
+  )
+  const runtimeScopeKey = computed(() =>
+    isFireuxProjectConsole.value ? 'console-project-runtime' : 'console-runtime-app'
+  )
+  const runtimeScopeIcon = computed(() =>
+    isFireuxProjectConsole.value ? 'i-lucide-folder-open' : 'i-lucide-app-window'
+  )
 
   const hasRoutePath = (path: string) =>
     router.getRoutes().some((route) => route.path === path)
@@ -53,8 +68,10 @@ export const useConsoleNav = () => {
     const runtimeNav: NavItem[] = [
       {
         key: 'console-home',
-        label: 'Console Home',
-        icon: 'i-lucide-terminal',
+        label: isFireuxProjectConsole.value ? 'Overview' : 'Console Home',
+        icon: isFireuxProjectConsole.value
+          ? 'i-lucide-layout-dashboard'
+          : 'i-lucide-terminal',
         to: '/console',
         order: 10,
         desktop: true,
@@ -63,13 +80,39 @@ export const useConsoleNav = () => {
       },
     ]
 
-    if (hasRoutePath('/console/app')) {
+    if (hasRoutePath(runtimeScopePath.value)) {
       runtimeNav.push({
-        key: 'console-runtime-app',
-        label: 'App',
-        icon: 'i-lucide-app-window',
-        to: '/console/app',
+        key: runtimeScopeKey.value,
+        label: runtimeScopeLabel.value,
+        icon: runtimeScopeIcon.value,
+        to: runtimeScopePath.value,
         order: 15,
+        desktop: true,
+        mobile: true,
+        layouts: ['console'],
+      })
+    }
+
+    if (hasRoutePath('/console/ecosystems')) {
+      runtimeNav.push({
+        key: 'console-project-ecosystems',
+        label: 'Ecosystems',
+        icon: 'i-lucide-orbit',
+        to: '/console/ecosystems',
+        order: 20,
+        desktop: true,
+        mobile: true,
+        layouts: ['console'],
+      })
+    }
+
+    if (hasRoutePath('/console/apps')) {
+      runtimeNav.push({
+        key: 'console-project-apps',
+        label: 'Apps',
+        icon: 'i-lucide-app-window',
+        to: '/console/apps',
+        order: 30,
         desktop: true,
         mobile: true,
         layouts: ['console'],
@@ -109,6 +152,9 @@ export const useConsoleNav = () => {
   const mobile = computed(() => items.value.filter((item) => item.mobile))
   const topPriority = [
     { key: 'console-home', to: '/console' },
+    { key: 'console-project-runtime', to: '/console/project' },
+    { key: 'console-project-ecosystems', to: '/console/ecosystems' },
+    { key: 'console-project-apps', to: '/console/apps' },
     { key: 'console-runtime-app', to: '/console/app' },
     { key: 'console-runtime-kitchen', to: '/console/kitchen' },
     { key: 'console-runtime-portfolio', to: '/console/portfolio' },

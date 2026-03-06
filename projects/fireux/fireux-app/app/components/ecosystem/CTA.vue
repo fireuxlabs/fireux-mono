@@ -1,13 +1,13 @@
 <template>
   <UPageCTA
-    title="Ecosystem directory"
-    description="Use one index to browse ecosystems, compare live surfaces, and jump into setup guidance."
+    title="Ecosystem collection"
+    description="This index reads directly from db.collections.ecosystems. If none exist yet, the list should stay at zero."
     orientation="horizontal"
   >
     <template #links>
       <div class="grid gap-3 sm:grid-cols-3">
         <section class="space-y-2">
-          <p class="text-sm font-semibold">Ecosystems</p>
+          <p class="text-sm font-semibold">Collection index</p>
           <UButton
             block
             color="primary"
@@ -15,20 +15,20 @@
             icon="i-lucide-orbit"
             to="/ecosystems"
           >
-            Open directory
+            Open collection
           </UButton>
         </section>
 
         <section class="space-y-2">
-          <p class="text-sm font-semibold">Apps</p>
+          <p class="text-sm font-semibold">Console</p>
           <UButton
             block
             color="primary"
             variant="soft"
-            icon="i-lucide-app-window"
-            to="/apps"
+            icon="i-lucide-terminal"
+            to="/console"
           >
-            Open apps
+            Open console
           </UButton>
         </section>
 
