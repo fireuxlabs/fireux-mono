@@ -7,6 +7,32 @@ function requireNonEmpty(value: unknown, label: string): string {
   throw new Error(`[fireux] Missing required Firebase runtime config: ${label}`)
 }
 
+function isIpHost(host: string): boolean {
+  return (
+    /^(?:\d{1,3}\.){3}\d{1,3}$/.test(host) ||
+    /^\[[a-f0-9:]+\]$/i.test(host)
+  )
+}
+
+function isLocalDevHost(host: string): boolean {
+  return (
+    host === 'localhost' ||
+    host.endsWith('.localhost') ||
+    host.endsWith('.local') ||
+    host.endsWith('.internal') ||
+    isIpHost(host)
+  )
+}
+
+function resolveClientAuthDomain(configuredAuthDomain: string): string {
+  if (!import.meta.client) return configuredAuthDomain
+
+  const currentHost = globalThis.window?.location?.hostname?.trim().toLowerCase() || ''
+  if (!currentHost || isLocalDevHost(currentHost)) return configuredAuthDomain
+
+  return currentHost
+}
+
 export default defineNuxtPlugin(() => {
   const rc = useRuntimeConfig() as any
 
@@ -37,13 +63,14 @@ export default defineNuxtPlugin(() => {
     firebaseApp?.appId,
     'public.firebaseApp.appId (env: NUXT_FIREBASE_APP_ID)'
   )
+  const resolvedAuthDomain = resolveClientAuthDomain(authDomain)
 
   // Already initialised
   if (getApps().length) return
 
   initializeApp({
     apiKey,
-    authDomain,
+    authDomain: resolvedAuthDomain,
     projectId,
     storageBucket,
     messagingSenderId,
@@ -54,6 +81,9 @@ export default defineNuxtPlugin(() => {
   // Optional: confirm it ran (dev only)
   if (import.meta.dev) {
     // eslint-disable-next-line no-console
-    console.log('[fireux] firebase web app initialised', { appId })
+    console.log('[fireux] firebase web app initialised', {
+      appId,
+      authDomain: resolvedAuthDomain,
+    })
   }
 })

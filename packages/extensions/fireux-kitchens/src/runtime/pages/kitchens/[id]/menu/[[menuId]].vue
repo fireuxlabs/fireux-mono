@@ -239,7 +239,8 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute, useBasket } from '#imports'
+import { useRoute } from '#imports'
+import { useBasket } from 'fireux-orders/runtime/composables/useBasket'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
