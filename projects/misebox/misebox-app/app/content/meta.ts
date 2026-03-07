@@ -330,7 +330,7 @@ const sourceMeta = {
         { label: 'Jobs', path: '/jobs', kind: 'public' },
         { label: 'Professionals', path: '/professionals', kind: 'public' },
         { label: 'Console Entry', path: '/console', kind: 'console' },
-        { label: 'Kitchen Console', path: '/console/kitchen', kind: 'console' },
+        { label: 'Kitchen Console', path: '/console/kitchen/overview', kind: 'console' },
       ],
     },
     relationshipMap: `

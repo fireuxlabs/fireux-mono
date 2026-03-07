@@ -28,7 +28,7 @@
           <UButton size="xs" color="neutral" variant="soft" to="/dashboard/chef/profile">
             Go to profile
           </UButton>
-          <UButton size="xs" color="primary" to="/console/kitchen">
+          <UButton size="xs" color="primary" to="/console/kitchen/overview">
             Go to console
           </UButton>
           <UButton size="xs" color="neutral" variant="ghost" @click="createAnotherKitchen">

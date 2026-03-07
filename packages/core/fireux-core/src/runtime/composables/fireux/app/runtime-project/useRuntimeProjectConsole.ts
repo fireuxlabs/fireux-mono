@@ -63,27 +63,27 @@ export function useRuntimeProjectConsole() {
       key: 'overview',
       label: 'Overview',
       icon: 'i-lucide-layout-dashboard',
-      to: '/console',
+      to: '/console/project/overview',
     },
     {
       key: 'ecosystems',
       label: 'Ecosystems',
       icon: 'i-lucide-orbit',
-      to: '/console/ecosystems',
+      to: '/console/project/ecosystems',
     },
     {
       key: 'apps',
       label: 'Apps',
       icon: 'i-lucide-app-window',
-      to: '/console/apps',
+      to: '/console/project/apps',
     },
   ] as const)
 
   const actions = {
     createEcosystemTo: '/developer/registry',
     createAppTo: '/developer/registry',
-    openEcosystemsTo: '/console/ecosystems',
-    openAppsTo: '/console/apps',
+    openEcosystemsTo: '/console/project/ecosystems',
+    openAppsTo: '/console/project/apps',
   } as const
 
   return {

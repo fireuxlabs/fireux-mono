@@ -52,7 +52,7 @@ const sourceMeta = {
         'We run portfolio oversight in one branch operating flow, so teams can manage properties, compliance, incidents, documents, and financial signals with clear accountability.',
       primaryAction: {
         label: 'Open portfolio hub',
-        to: '/console/portfolio',
+        to: '/console/portfolio/overview',
       },
       secondaryAction: {
         label: 'Review rollout',
@@ -304,7 +304,7 @@ const sourceMeta = {
         { label: 'Get Started', path: '/get-started', kind: 'public' },
         { label: 'Portfolios', path: '/portfolios', kind: 'public' },
         { label: 'Console Entry', path: '/console', kind: 'console' },
-        { label: 'Portfolio Hub', path: '/console/portfolio', kind: 'console' },
+        { label: 'Portfolio Hub', path: '/console/portfolio/overview', kind: 'console' },
         { label: 'Properties', path: '/console/portfolio/properties', kind: 'console' },
         { label: 'Clients', path: '/console/portfolio/clients', kind: 'console' },
         { label: 'Compliance', path: '/console/portfolio/compliance', kind: 'console' },
@@ -344,7 +344,7 @@ Place
         'Granite structures properties, compliance, documents, incidents, and financial signals so agencies and landlords can operate with clarity.',
       primaryAction: {
         label: 'Open portfolios',
-        to: '/console/portfolio',
+        to: '/console/portfolio/overview',
       },
       secondaryAction: {
         label: 'Review rollout',

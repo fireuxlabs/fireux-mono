@@ -21,11 +21,11 @@
         {{ secondary.label }}
       </UButton>
       <UButton
-        v-if="hasConsoleRoute"
+        v-if="hasConsoleEntry"
         variant="soft"
         color="neutral"
         size="lg"
-        to="/console"
+        :to="consoleEntryPath"
         icon="i-lucide-terminal"
       >
         Go to console
@@ -69,7 +69,7 @@ defineProps<{
   bullets: HeroBullet[]
 }>()
 
-const { hasConsoleRoute } = useConsoleEntryCta()
+const { hasConsoleEntry, consoleEntryPath } = useConsoleEntryCta()
 
 defineOptions({ name: 'TenantLandingHero' })
 </script>

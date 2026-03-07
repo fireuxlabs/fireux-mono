@@ -168,6 +168,7 @@
 import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useConsoleEntryCta } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleEntryCta'
+import { toConsoleScopeLabel } from 'fireux-core/runtime/composables/fireux/app/routing/consoleRoutes'
 import { useKeyEntityTags } from 'fireux-core/runtime/composables/fireux/app/routing/useKeyEntityTags'
 
 type RightPanelItem = {
@@ -244,17 +245,10 @@ const rightPanelTagsResolved = computed<RightPanelTagItem[]>(() =>
         }))
 )
 
-const { hasConsoleRoute, consolePath, consoleChildren } = useConsoleEntryCta()
-
-const toScopeLabel = (key: string) =>
-  String(key || '')
-    .split(/[-_]+/)
-    .filter(Boolean)
-    .map((part) => part[0]?.toUpperCase() + part.slice(1))
-    .join(' ')
+const { hasConsoleEntry, consolePath, consoleChildren } = useConsoleEntryCta()
 
 const consoleCtas = computed(() => {
-  if (!hasConsoleRoute.value) return []
+  if (!hasConsoleEntry.value) return []
 
   if (!consoleChildren.value.length) {
     return [
@@ -269,7 +263,7 @@ const consoleCtas = computed(() => {
   return consoleChildren.value.map((entry) => ({
     key: entry.key,
     path: entry.path,
-    label: `${toScopeLabel(entry.key) || 'Console'} Console`,
+    label: `${toConsoleScopeLabel(entry.key) || 'Console'} Console`,
   }))
 })
 const auth = import.meta.client ? useAuth() : null

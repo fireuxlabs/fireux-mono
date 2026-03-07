@@ -1,6 +1,8 @@
 import { computed } from 'vue'
 import type { NavItem } from '../../../../../types/nav'
 import { useUser } from '../../firestore/core/user/useUser'
+import { getConsoleScopeFromPath } from './consoleRoutes'
+import { useConsoleAccess } from './useConsoleAccess'
 import { useNav } from '../ui/nav/useNav'
 
 export const useDefaultNav = () => useNav(['default'])
@@ -44,6 +46,7 @@ export const useDashboardNav = () => {
 
 export const useConsoleNav = () => {
   const nav = useNav(['console'])
+  const { canAccessScope, consoleEnabled } = useConsoleAccess()
   const topPriority = [
     { to: '/console' },
   ]
@@ -51,7 +54,13 @@ export const useConsoleNav = () => {
   return {
     ...nav,
     topPriority,
-    baseNavFilter: (_item: NavItem) => true,
+    baseNavFilter: (item: NavItem) => {
+      if (!item.to?.startsWith('/console')) return true
+
+      const scope = getConsoleScopeFromPath(item.to)
+      if (!scope) return consoleEnabled.value
+      return canAccessScope(scope)
+    },
   }
 }
 

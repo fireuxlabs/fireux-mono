@@ -64,6 +64,8 @@ export const User: User = {
 export interface AppUser {
   id: string
   role: 'user' | 'admin'
+  console_enabled: boolean
+  console_scopes: string[]
   notifications: UserNotification[]
   created: {
     at: FirebaseTimestamp
@@ -78,6 +80,8 @@ export interface AppUser {
 export const AppUser: AppUser = {
   id: '',
   role: 'user',
+  console_enabled: false,
+  console_scopes: [],
   notifications: [],
   created: {
     at: {} as FirebaseTimestamp,

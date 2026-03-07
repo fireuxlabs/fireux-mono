@@ -29,6 +29,23 @@ function normalizeCoreUser(raw: User, fallbackId: string): User {
   }
 }
 
+function normalizeAppUser(raw: AppUser, fallbackId: string): AppUser {
+  const anyRaw = raw as any
+  return {
+    ...raw,
+    id: raw.id ?? fallbackId,
+    role: raw.role === 'admin' ? 'admin' : 'user',
+    console_enabled:
+      typeof anyRaw.console_enabled === 'boolean'
+        ? anyRaw.console_enabled
+        : false,
+    console_scopes: asStringArray(anyRaw.console_scopes),
+    notifications: Array.isArray(anyRaw.notifications)
+      ? anyRaw.notifications
+      : [],
+  }
+}
+
 function isOfflineFirestoreError(error: unknown): boolean {
   const code = typeof (error as any)?.code === 'string' ? (error as any).code : ''
   const message = String((error as any)?.message ?? '').toLowerCase()
@@ -114,7 +131,9 @@ export function useUserFetch(
   const appUser = computed<AppUser | null | undefined>(() => {
     if (!appDoc.value) return null
     if (appPending.value) return undefined
-    return appUserRef.value ?? null
+    const raw = appUserRef.value
+    if (!raw) return null
+    return normalizeAppUser(raw as AppUser, uid.value ?? '')
   })
 
   const user = computed<User | null>(() => coreUser.value ?? null)

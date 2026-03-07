@@ -181,9 +181,21 @@ export async function ensureUserAppMembership(
   // 1) Canonical membership overlay
   if (appUserSnap.exists()) {
     const current = appUserSnap.data() as AppUser | undefined
+    const patch: Record<string, unknown> = {}
+
     if (current?.role !== membershipRole) {
+      patch.role = membershipRole
+    }
+    if (typeof (current as any)?.console_enabled !== 'boolean') {
+      patch.console_enabled = membershipRole === 'admin'
+    }
+    if (!Array.isArray((current as any)?.console_scopes)) {
+      patch.console_scopes = []
+    }
+
+    if (Object.keys(patch).length) {
       batch.update(appUserRef, {
-        role: membershipRole,
+        ...patch,
         updated: {
           at: serverTimestamp(),
           by: actor.uid,
@@ -195,6 +207,8 @@ export async function ensureUserAppMembership(
       appUserRef,
       {
         role: membershipRole,
+        console_enabled: membershipRole === 'admin',
+        console_scopes: [],
         notifications: [],
         created: {
           at: serverTimestamp(),

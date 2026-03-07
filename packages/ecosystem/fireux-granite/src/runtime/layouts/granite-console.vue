@@ -64,7 +64,7 @@
             variant="subtle"
           >
             <UButton
-              to="/console/portfolio"
+              to="/console/portfolio/overview"
               color="neutral"
               icon="i-lucide-arrow-right"
             >
@@ -115,6 +115,7 @@ const normalizedRoutePath = computed(() =>
 )
 const scopeEntryRoutes = new Set<string>([
   '/console/portfolio',
+  '/console/portfolio/overview',
 ])
 const isScopeEntryRoute = computed(
   () => scopeEntryRoutes.has(normalizedRoutePath.value)

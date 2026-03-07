@@ -1,38 +1,266 @@
 <template>
-  <UApp>
-    <div class="min-h-screen flex items-center justify-center p-6">
-      <UCard class="max-w-xl w-full">
-        <template #header>
-          <div class="flex items-center gap-2">
-            <UIcon
-              name="i-heroicons-exclamation-triangle"
-              class="text-red-500"
+  <main class="min-h-screen overflow-hidden bg-white text-gray-900 dark:bg-gray-950 dark:text-white">
+    <div
+      class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(250,204,21,0.18),transparent_42%),radial-gradient(circle_at_bottom_right,rgba(251,191,36,0.12),transparent_36%)]"
+    />
+
+    <UContainer class="relative py-16 lg:py-24">
+      <div class="grid gap-8 lg:grid-cols-[1.35fr,0.85fr]">
+        <section class="space-y-6">
+          <div class="space-y-4">
+            <UBadge color="primary" variant="soft">
+              {{ appName }}
+            </UBadge>
+
+            <div class="space-y-3">
+              <p class="text-sm font-semibold uppercase tracking-[0.32em] text-primary">
+                Error Surface
+              </p>
+              <h1 class="max-w-3xl text-4xl font-semibold tracking-tight sm:text-5xl">
+                {{ title }}
+              </h1>
+              <p class="max-w-2xl text-lg text-gray-600 dark:text-gray-300">
+                {{ description }}
+              </p>
+              <p class="max-w-2xl text-sm text-gray-500 dark:text-gray-400">
+                {{ supportCopy }}
+              </p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-3">
+            <UButton to="/" color="primary" size="lg">
+              Back to Home
+            </UButton>
+            <UButton
+              v-if="authAction"
+              :to="authAction.to"
+              color="neutral"
+              variant="soft"
+              size="lg"
+            >
+              {{ authAction.label }}
+            </UButton>
+            <UButton
+              v-if="showGetStarted"
+              to="/get-started"
+              color="neutral"
+              variant="soft"
+              size="lg"
+            >
+              Get Started
+            </UButton>
+            <UButton color="neutral" variant="outline" size="lg" @click="reload">
+              Reload
+            </UButton>
+            <UButton color="neutral" variant="ghost" size="lg" @click="clearError({ redirect: '/' })">
+              Dismiss
+            </UButton>
+          </div>
+        </section>
+
+        <UCard class="border-primary/20 bg-white/90 shadow-xl shadow-primary/5 backdrop-blur dark:bg-gray-900/75">
+          <div class="space-y-5">
+            <div class="space-y-2">
+              <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+                Status
+              </p>
+              <div class="flex flex-wrap items-center gap-2">
+                <UBadge color="primary" variant="soft">
+                  {{ statusLabel }}
+                </UBadge>
+                <UBadge v-if="resolvedError?.statusCode" color="neutral" variant="soft">
+                  {{ resolvedError.statusCode }}
+                </UBadge>
+              </div>
+            </div>
+
+            <UDivider />
+
+            <div v-if="isFirebaseAdminCredentialError" class="space-y-3">
+              <p class="text-sm font-medium text-gray-900 dark:text-white">
+                Firebase admin credentials are misconfigured.
+              </p>
+              <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                <li class="flex gap-2">
+                  <span class="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />
+                  <span>Point <code>GOOGLE_APPLICATION_CREDENTIALS</code> at a valid Firebase service-account JSON file.</span>
+                </li>
+                <li class="flex gap-2">
+                  <span class="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />
+                  <span>Or set <code>FIREBASE_PROJECT_ID</code>, <code>FIREBASE_CLIENT_EMAIL</code>, and <code>FIREBASE_PRIVATE_KEY</code>.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div v-else class="space-y-3">
+              <p class="text-sm font-medium text-gray-900 dark:text-white">
+                What you can do now
+              </p>
+              <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                <li
+                  v-for="step in recoverySteps"
+                  :key="step"
+                  class="flex gap-2"
+                >
+                  <span class="mt-1 h-1.5 w-1.5 rounded-full bg-primary" />
+                  <span>{{ step }}</span>
+                </li>
+              </ul>
+            </div>
+
+            <UAlert
+              v-if="contactEmail"
+              color="neutral"
+              variant="soft"
+              title="Support"
+              :description="`If this keeps happening, contact ${contactEmail}.`"
             />
-            <h1 class="text-lg font-semibold">{{ title }}</h1>
           </div>
-        </template>
+        </UCard>
+      </div>
 
-        <p class="text-sm text-gray-600 whitespace-pre-wrap">{{ message }}</p>
-
-        <template #footer>
-          <div class="flex gap-2">
-            <UButton color="primary" @click="handleError()">Try again</UButton>
-            <UButton color="neutral" variant="ghost" to="/">Go home</UButton>
+      <section
+        v-if="resolvedError?.message"
+        class="mt-8 rounded-3xl border border-gray-200/70 bg-white/80 p-6 shadow-sm dark:border-gray-800/70 dark:bg-gray-900/70"
+      >
+        <div class="space-y-3">
+          <div class="space-y-1">
+            <p class="text-xs font-semibold uppercase tracking-[0.3em] text-primary">
+              Technical details
+            </p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">
+              Raw error output for debugging and support.
+            </p>
           </div>
-        </template>
-      </UCard>
-    </div>
-  </UApp>
+
+          <pre class="max-h-[28rem] overflow-auto rounded-2xl bg-gray-950 px-4 py-4 text-xs text-gray-100">{{ resolvedError.message }}</pre>
+        </div>
+      </section>
+    </UContainer>
+  </main>
 </template>
 
 <script setup lang="ts">
+import { clearError, useRouter, type NuxtError } from 'nuxt/app'
+import { useRuntimeConfig } from '#imports'
 import { computed } from 'vue'
 
-const error = useError()
-const title = computed(() => error?.value?.statusMessage || 'Unexpected error')
-const message = computed(
-  () => error?.value?.message || 'An unexpected error occurred.'
+const props = defineProps<{
+  error?: NuxtError
+}>()
+
+const router = useRouter()
+const runtimeConfig = useRuntimeConfig()
+
+type AnyRecord = Record<string, unknown>
+
+const publicConfig = computed<AnyRecord>(() => {
+  const pub = (runtimeConfig.public ?? {}) as AnyRecord
+  return (pub.fireux ?? {}) as AnyRecord
+})
+
+const appName = computed(() => {
+  const value = publicConfig.value.name
+  return typeof value === 'string' && value.trim() ? value.trim() : 'FireUX'
+})
+
+const contactEmail = computed(() => {
+  const value = publicConfig.value.contactEmail
+  return typeof value === 'string' && value.trim() ? value.trim() : ''
+})
+
+const resolvedError = computed<NuxtError | null>(() => props.error ?? useError().value ?? null)
+
+const hasRoutePath = (path: string) =>
+  router.getRoutes().some((route) => route.path === path)
+
+const statusCode = computed(() => Number(resolvedError.value?.statusCode || 0))
+
+const title = computed(() => {
+  if (statusCode.value === 401) return 'Sign in required'
+  if (statusCode.value === 403) return 'Access denied'
+  if (statusCode.value === 404) return 'Page not found'
+  return 'Something went wrong'
+})
+
+const description = computed(() => {
+  if (statusCode.value === 401) return `You need to sign in before ${appName.value} can open this page.`
+  if (statusCode.value === 403) return `${appName.value} rejected this request because your account does not have access to this surface.`
+  if (statusCode.value === 404) return `The page you requested does not exist in ${appName.value}.`
+  return `A server error occurred while rendering ${appName.value}.`
+})
+
+const statusLabel = computed(() => {
+  if (statusCode.value === 401) return 'Auth Required'
+  if (statusCode.value === 403) return 'Forbidden'
+  if (statusCode.value === 404) return 'Not Found'
+  if (statusCode.value >= 500) return 'Server Error'
+  if (statusCode.value >= 400) return 'Request Error'
+  return 'Render Failure'
+})
+
+const isFirebaseAdminCredentialError = computed(() => {
+  const message = String(resolvedError.value?.message ?? '')
+  return (
+    message.includes('Service account object must contain a string "private_key"') ||
+    message.includes('private_key is missing in GOOGLE_APPLICATION_CREDENTIALS') ||
+    message.includes('Failed to parse service account')
+  )
+})
+
+const showGetStarted = computed(() =>
+  isFirebaseAdminCredentialError.value && hasRoutePath('/get-started')
 )
 
-const handleError = () => clearError({ redirect: '/' })
+const authAction = computed(() => {
+  if ((statusCode.value === 401 || statusCode.value === 403) && hasRoutePath('/auth')) {
+    return {
+      label: statusCode.value === 401 ? 'Sign In' : 'Go to Auth',
+      to: '/auth',
+    }
+  }
+
+  return null
+})
+
+const supportCopy = computed(() => {
+  if (isFirebaseAdminCredentialError.value) {
+    return 'The app is running, but the server-side Firebase credentials are incomplete.'
+  }
+
+  if (statusCode.value === 401 || statusCode.value === 403) {
+    return 'Authentication and console permissions are enforced separately, so this page is showing the access boundary instead of failing silently.'
+  }
+
+  return 'This is the shared FireUX fallback surface. It keeps the app readable, gives the next action, and preserves the raw error when you need it.'
+})
+
+const recoverySteps = computed(() => {
+  if (statusCode.value === 401) {
+    return [
+      'Sign in with the account that owns or operates this app surface.',
+      'Retry the route after authentication has completed.',
+      'If access still fails, confirm the account has the required console scope.',
+    ]
+  }
+
+  if (statusCode.value === 403) {
+    return [
+      'Return to a surface your account can access.',
+      'Check whether this account has the right console scope or membership.',
+      'Open the technical details below if you need the raw message for debugging.',
+    ]
+  }
+
+  return [
+    'Try the request again in case this was a transient render failure.',
+    'Return to the public landing page and re-enter the route from a clean state.',
+    'Open the technical details below if you need the raw message for debugging.',
+  ]
+})
+
+const reload = () => {
+  if (import.meta.client) window.location.reload()
+}
 </script>
