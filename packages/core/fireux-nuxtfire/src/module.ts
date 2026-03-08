@@ -310,10 +310,5 @@ export default defineNuxtModule({
       })
     }
 
-    // Canonical Firebase Web SDK init (client only).
-    addPlugin({
-      src: resolver.resolve('./runtime/plugins/firebase.client.ts'),
-      mode: 'client',
-    })
   },
 })

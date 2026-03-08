@@ -3,6 +3,7 @@ import { getApps } from 'firebase/app'
 import {
     createUserWithEmailAndPassword,
     getAuth,
+    getRedirectResult,
     GoogleAuthProvider,
     onAuthStateChanged,
     signInWithEmailAndPassword,
@@ -18,6 +19,7 @@ import { useCurrentUser, useFirebaseAuth } from 'vuefire'
 import { useUserEnsure } from '../firestore/core/user/mutations/useUserEnsure'
 
 let googleSignInInFlight: Promise<User | null> | null = null
+let googleRedirectResultInFlight: Promise<User | null> | null = null
 
 export type AuthUser = {
   uid?: string | null
@@ -33,6 +35,12 @@ function tryBindVueFire() {
   const auth = useFirebaseAuth()
   const currentUser = useCurrentUser() as Ref<User | null>
   return { auth, currentUser }
+}
+
+function shouldPreferRedirectGoogleAuth(): boolean {
+  // Keep one auth path across environments:
+  // popup first everywhere, redirect only as an explicit fallback when popup fails.
+  return false
 }
 
 export function useAuth() {
@@ -81,15 +89,6 @@ export function useAuth() {
     )
   }
 
-  const shouldDebug = () => {
-    if (!import.meta.dev || !import.meta.client) return false
-    try {
-      return window.location.pathname.startsWith('/auth')
-    } catch {
-      return false
-    }
-  }
-
   const bind = () => {
     try {
       const bound = tryBindVueFire()
@@ -105,13 +104,7 @@ export function useAuth() {
       armAuthStateResolution()
       lastBindError.value = null
 
-      if (shouldDebug()) {
-        // eslint-disable-next-line no-console
-        console.log('[fireux][auth] vuefire bound', {
-          hasAuth: !!auth.value,
-          uid: currentUser.value?.uid ?? null,
-        })
-      }
+      void resolveGoogleRedirectResult()
 
       return true
     } catch (e) {
@@ -120,11 +113,6 @@ export function useAuth() {
       isReady.value = false
       hasAuthState.value = false
       lastBindError.value = e
-
-      if (shouldDebug()) {
-        // eslint-disable-next-line no-console
-        console.warn('[fireux][auth] vuefire bind failed', e)
-      }
 
       return false
     }
@@ -138,6 +126,7 @@ export function useAuth() {
     onMounted(() => {
       if (!isReady.value) bind()
       armAuthStateResolution()
+      void resolveGoogleRedirectResult()
     })
   }
 
@@ -148,22 +137,6 @@ export function useAuth() {
       ? 'AUTHENTICATED'
       : 'NOT_AUTHENTICATED'
   )
-
-  if (import.meta.client) {
-    watch(
-      authState,
-      (next: string) => {
-        if (!shouldDebug()) return
-        // eslint-disable-next-line no-console
-        console.log('[fireux][auth] state', {
-          state: next,
-          uid: uid.value,
-          isReady: isReady.value,
-        })
-      },
-      { immediate: true }
-    )
-  }
 
   // ─────────────────────────────────────────────
   // Ensure FireUX user document exists (client-only)
@@ -199,6 +172,37 @@ export function useAuth() {
     })
   }
 
+  async function resolveGoogleRedirectResult() {
+    if (!import.meta.client) return null
+
+    const authInstance: Auth | null =
+      auth.value || (getApps().length ? getAuth() : null)
+
+    if (!authInstance) return null
+
+    if (googleRedirectResultInFlight) {
+      return googleRedirectResultInFlight
+    }
+
+    googleRedirectResultInFlight = getRedirectResult(authInstance)
+      .then((result) => {
+        const nextUser = result?.user ?? authInstance.currentUser ?? null
+        if (nextUser) {
+          currentUser.value = nextUser
+        }
+        return nextUser
+      })
+      .catch(() => {
+        return authInstance.currentUser ?? null
+      })
+
+    try {
+      return await googleRedirectResultInFlight
+    } finally {
+      googleRedirectResultInFlight = null
+    }
+  }
+
   // ─────────────────────────────────────────────
   // Auth actions (no-op safely until ready)
   // ─────────────────────────────────────────────
@@ -209,30 +213,19 @@ export function useAuth() {
 
     const run = async () => {
       if (!auth.value) {
-        if (shouldDebug()) {
-          // eslint-disable-next-line no-console
-          console.warn('[fireux][auth] signInWithGoogle: no firebase auth instance', {
-            isReady: isReady.value,
-            hasBindError: !!lastBindError.value,
-            bindError:
-              lastBindError.value instanceof Error
-                ? {
-                    name: lastBindError.value.name,
-                    message: lastBindError.value.message,
-                    stack: lastBindError.value.stack,
-                  }
-                : lastBindError.value,
-          })
-        }
         return null
       }
 
-      if (shouldDebug()) {
-        // eslint-disable-next-line no-console
-        console.log('[fireux][auth] signInWithGoogle: opening popup')
-      }
-
       const provider = new GoogleAuthProvider()
+      const preferRedirect = shouldPreferRedirectGoogleAuth()
+
+      if (preferRedirect) {
+        try {
+          await signInWithRedirect(auth.value, provider)
+        } catch {
+        }
+        return null
+      }
 
       try {
         const result = await signInWithPopup(auth.value, provider)
@@ -250,11 +243,6 @@ export function useAuth() {
           try {
             await signInWithRedirect(auth.value, provider)
           } catch {}
-        }
-
-        if (shouldDebug()) {
-          // eslint-disable-next-line no-console
-          console.warn('[fireux][auth] signInWithGoogle failed', e)
         }
         return null
       }

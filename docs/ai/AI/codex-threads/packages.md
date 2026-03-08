@@ -1,33 +1,28 @@
 # FireUX - Packages Map (Codex)
 Authority: Automation context (Codex implementation handoff)
-Updated: 2026-03-07
+Updated: 2026-03-08
 
 ## Scope
 - Thread key: packages.
 - Audience: Codex agents implementing code and runtime changes.
-- Priority: preserve routing integrity, shared runtime contracts, and cross-app console behavior.
+- Priority: enforce Tier1 canon and preserve runtime contracts.
 
 ## Commit Window
-- Start: 2026-03-06T06:56:29.430Z
-- End: 2026-03-07T06:56:08Z
-- Source: automation last successful run timestamp
+- Start: 2026-03-07T06:57:01Z
+- End: 2026-03-08T14:46:19Z
+- Source: memory_last_successful_run
 
 ## Implementation Signals
-- 31c9bbb5 feat: align console routing and shared error handling (2026-03-07)
-- a6af5112 chore: update packages/core/fireux-core/src/runtime/components/console/overview/App.vue (+20 more) (2026-03-06)
-- ef4360eb chore: update projects/fireux/fireux-app/app/nuxt-internal-paths.mjs (+1 more) (2026-03-06)
-- 40ca17d3 chore: update packages/core/fireux-core/src/runtime/components/console/overview/App.vue (+22 more) (2026-03-06)
-- 60b14719 chore: update packages/extensions/fireux-kitchens/src/runtime/components/organisms/Ingredient/Cards/Preview.vue (+33 more) (2026-03-06)
+- 5eef0225 chore: save shared auth fixes and thread updates (2026-03-07)
 
 ## Working Guidance
-- Verify changes against Tier1 canon first: docs/fireux-canon.md, docs/runtime-contract.md, docs/seo-canon.md.
-- Favor fixes in shared runtime/composables before app-local patches.
-- When touching console paths, validate middleware, route presets, and project-level entry pages together.
-- Keep extension updates contract-safe across kitchens/suppliers and downstream project apps.
+- Validate against Tier1 first: docs/fireux-canon.md, docs/runtime-contract.md, docs/seo-canon.md.
+- Prefer shared runtime/composable fixes before project-local divergence.
+- Keep extension contract behavior stable when touching route, runtime, or plugin paths.
 
 ## Next Run Checklist
-- Re-scan commits since the next successful run timestamp.
-- Refresh this file in-place and keep exactly one terminal marker.
-- Rebuild the consolidated daily chatcontext bundle.
+- Re-scan from the next successful timestamp.
+- Rewrite this file in-place, trim post-marker content, and keep one terminal marker.
+- Rebuild the daily consolidated chatcontext file.
 
 #end

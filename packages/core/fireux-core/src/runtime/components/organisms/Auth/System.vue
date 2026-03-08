@@ -1,72 +1,74 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/Auth/System.vue -->
 <template>
-  <UCard class="w-full">
-    <div class="space-y-4">
-      <div class="flex w-full justify-center" aria-label="Brand wordmark">
-        <AppBrandWordmark
-          size="large"
-          class="h-16 w-auto max-w-full object-contain"
-          light-src="/img/app/wordmark-light.svg"
-          dark-src="/img/app/wordmark-dark.png"
-        />
-      </div>
-
-      <template v-if="isAuthenticated">
-        <div class="w-full space-y-4">
-          <p class="font-medium">You're signed in.</p>
-          <UserCardsPill
-            v-if="currentUserPill"
-            v-bind="currentUserPill"
-            :link="Boolean(currentUserPill && currentUserPill.to)"
-            :show-badges="false"
+  <div class="w-full">
+    <UCard class="w-full">
+      <div class="space-y-4">
+        <div class="flex w-full justify-center" aria-label="Brand wordmark">
+          <AppBrandWordmark
+            size="large"
+            class="h-16 w-auto max-w-full object-contain"
+            light-src="/img/app/wordmark-light.svg"
+            dark-src="/img/app/wordmark-dark.png"
           />
-          <UAlert
-            v-else
-            color="neutral"
-            variant="soft"
-            title="Account sync in progress"
-            :description="`Signed in as ${authIdentityLabel}.`"
-          />
-
-          <div class="flex w-full flex-col gap-3">
-            <UButton block color="primary" @click="goToDashboard">
-              Go to dashboard
-            </UButton>
-            <UButton
-              block
-              variant="ghost"
-              :loading="signOutLoading"
-              @click="handleSignOut"
-            >
-              Sign out
-            </UButton>
-          </div>
         </div>
-      </template>
 
-      <template v-else>
-        <UButton
-          block
-          color="neutral"
-          variant="subtle"
-          :loading="providerLoading"
-          :disabled="providerLoading"
-          icon="i-logos-google-icon"
-          @click="handleGoogle"
-        >
-          Continue with Google
-        </UButton>
+        <template v-if="isAuthenticated">
+          <div class="w-full space-y-4">
+            <p class="font-medium">You're signed in.</p>
+            <UserCardsPill
+              v-if="currentUserPill"
+              v-bind="currentUserPill"
+              :link="Boolean(currentUserPill && currentUserPill.to)"
+              :show-badges="false"
+            />
+            <UAlert
+              v-else
+              color="neutral"
+              variant="soft"
+              title="Account sync in progress"
+              :description="`Signed in as ${authIdentityLabel}.`"
+            />
 
-        <USeparator label="or continue with email" />
+            <div class="flex w-full flex-col gap-3">
+              <UButton block color="primary" @click="goToDashboard">
+                Go to dashboard
+              </UButton>
+              <UButton
+                block
+                variant="ghost"
+                :loading="signOutLoading"
+                @click="handleSignOut"
+              >
+                Sign out
+              </UButton>
+            </div>
+          </div>
+        </template>
 
-        <AuthEmailPanel :brand-label="ecosystemLabel" />
-      </template>
-    </div>
-  </UCard>
+        <template v-else>
+          <UButton
+            block
+            color="neutral"
+            variant="subtle"
+            :loading="providerLoading"
+            :disabled="providerLoading"
+            icon="i-logos-google-icon"
+            @click="handleGoogle"
+          >
+            Continue with Google
+          </UButton>
+
+          <USeparator label="or continue with email" />
+
+          <AuthEmailPanel :brand-label="ecosystemLabel" />
+        </template>
+      </div>
+    </UCard>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useRoute, useRouter } from '#imports'
+import { computed, ref, useRoute, useRouter, watch } from '#imports'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
@@ -76,9 +78,9 @@ const router = useRouter()
 const route = useRoute()
 const {
   authState,
+  hasAuthState,
   signOutUser,
   signInWithGoogle,
-  isReady,
   currentUser: authUser,
 } = useAuth()
 const isAuthenticated = computed(() => authState.value === 'AUTHENTICATED')
@@ -110,6 +112,16 @@ const postAuthPath = computed(
   () => sanitizeRedirect(route.query.redirect) ?? '/dashboard'
 )
 
+watch(
+  () => [route.path, hasAuthState.value, isAuthenticated.value, postAuthPath.value] as const,
+  async ([path, authReady, authenticated, target]) => {
+    if (path !== '/auth') return
+    if (!authReady || !authenticated) return
+    await router.replace(target).catch(() => {})
+  },
+  { immediate: true }
+)
+
 const goToDashboard = async () => {
   await router.push(postAuthPath.value).catch(() => {})
 }
@@ -125,25 +137,10 @@ const handleSignOut = async () => {
 }
 
 const handleGoogle = async () => {
-  if (import.meta.dev) {
-    const href = typeof window !== 'undefined' ? window.location.href : undefined
-    console.log('[fireux][auth] google click', {
-      providerLoading: providerLoading.value,
-      isReady: isReady.value,
-      authState: authState.value,
-      href,
-    })
-  }
   if (providerLoading.value) return
   providerLoading.value = true
   try {
     const user = await signInWithGoogle()
-    if (import.meta.dev) {
-      console.log('[fireux][auth] google result', {
-        uid: user?.uid ?? null,
-        hasUser: !!user,
-      })
-    }
     if (user?.uid) {
       await router.push(postAuthPath.value).catch(() => {})
     }
