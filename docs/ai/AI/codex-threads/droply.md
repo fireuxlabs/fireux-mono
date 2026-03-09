@@ -1,6 +1,7 @@
 # FireUX - Droply module thread (Codex)
 Authority: Automation context (Codex implementation handoff)
-Updated: 2026-03-08
+Updated: 2026-03-09
+Audience: Implementation context for coding agents and maintainers.
 
 ## Scope
 - Thread key: droply.

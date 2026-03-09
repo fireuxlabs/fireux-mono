@@ -1,6 +1,6 @@
 # Documentation Manifest
 Authority: Tier2 (Operational index)
-Updated: 2026-03-02
+Updated: 2026-03-09
 ## Authority Model
 - Tier1 (authoritative): canon + contracts.
 - Tier2 (operational): runbooks, guides, migration notes, weekly reports.
@@ -24,7 +24,7 @@ Updated: 2026-03-02
 
 ## Weekly Hygiene Standard (Monday)
 - Refresh `Updated:` fields for changed Tier1/Tier2 index docs.
-- Validate local markdown links in `docs/**`.
+- Validate local markdown links in `docs/**` (excluding Tier3 generated archives).
 - Confirm ToC and package map still match real file layout.
 - Generate one weekly report under `docs/reports/`.
 - Record unresolved conflicts/unknowns explicitly in the report.

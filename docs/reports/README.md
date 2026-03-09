@@ -1,11 +1,12 @@
 # Documentation Reports
 Authority: Tier2 (Operational reports)
-Updated: 2026-03-02
+Updated: 2026-03-09
 ## Purpose
 - Keep weekly evidence of docs freshness, authority alignment, and navigation quality.
 - Store generated scans that support canon decisions.
 
 ## Weekly Reports
+- `weekly-docs-hygiene-2026-03-09.md`
 - `weekly-docs-hygiene-2026-03-02.md`
 
 ## Generated/Domain Reports

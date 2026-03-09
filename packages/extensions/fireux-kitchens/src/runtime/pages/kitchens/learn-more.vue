@@ -1,45 +1,42 @@
 <template>
   <UPage>
     <UPageHeader
-      title="FireUX Kitchens"
-      description="How Kitchen records attach to Places."
+      class="pageheader"
+      title="Kitchens: Learn More"
+      description="How kitchen records connect runtime operations, place identity, and service execution."
     />
 
-    <UPageBody class="pagebody">
-      <section class="space-y-3">
-        <h2 class="text-lg font-semibold">Why Kitchens exists</h2>
-        <p class="text-sm text-gray-600">
-          Kitchens are records bound to canonical Places. This keeps location data
-          consistent while allowing kitchen-specific metadata (name, website)
-          to live in its own document.
-        </p>
-      </section>
+    <UPageBody class="pagebody space-y-6">
+      <UCard>
+        <template #header>
+          <h2 class="text-lg font-semibold">What kitchens are</h2>
+        </template>
 
-      <section class="space-y-3">
-        <h3 class="text-base font-semibold">Core capabilities today</h3>
-        <ul class="space-y-2 text-sm text-gray-600">
-          <li>
-            <strong class="font-medium text-gray-900">Place-bound records</strong>
-            &nbsp;— create a kitchen from a confirmed place.
-          </li>
-          <li>
-            <strong class="font-medium text-gray-900">Tenant-friendly</strong>
-            &nbsp;— consistent kitchen documents across tenants.
-          </li>
-          <li>
-            <strong class="font-medium text-gray-900">Editable metadata</strong>
-            &nbsp;— update the kitchen name and website as needed.
-          </li>
+        <ul class="list-disc space-y-2 pl-5 text-sm">
+          <li>Kitchens are the runtime records used to manage service operations.</li>
+          <li>They stay linked to place identity while carrying kitchen-specific operational state.</li>
+          <li>The kitchen console is where menus, recipes, mise, orders, and team surfaces come together.</li>
         </ul>
-      </section>
+      </UCard>
 
-      <section class="space-y-3">
-        <h3 class="text-base font-semibold">Get started</h3>
-        <div class="flex flex-wrap gap-2">
-          <UButton to="/kitchens/create" color="primary">Create a kitchen</UButton>
-          <UButton to="/kitchens" variant="ghost">Browse kitchens</UButton>
-        </div>
-      </section>
+      <UCard>
+        <template #header>
+          <h2 class="text-lg font-semibold">How to use kitchens</h2>
+        </template>
+
+        <ol class="list-decimal space-y-2 pl-5 text-sm">
+          <li>Create or claim a kitchen record inside the active runtime.</li>
+          <li>Use the kitchen console to move from overview into menus, ingredients, dishes, and service workflows.</li>
+          <li>Keep public identity and private operational flow aligned through the same kitchen record.</li>
+        </ol>
+      </UCard>
+
+      <div class="flex flex-wrap gap-2">
+        <UButton to="/kitchens" color="primary" icon="i-lucide-chef-hat">Open kitchens</UButton>
+        <UButton to="/kitchens/learn-more/dev" color="neutral" variant="soft" icon="i-lucide-code-2">Dev details</UButton>
+        <UButton to="/console/kitchen/overview" color="neutral" variant="soft" icon="i-lucide-layout-dashboard">Kitchen console</UButton>
+        <UButton to="/kitchens/create" color="neutral" variant="ghost" icon="i-lucide-plus">Create kitchen</UButton>
+      </div>
     </UPageBody>
   </UPage>
 </template>
@@ -50,12 +47,14 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 
 definePageMeta({
   layout: 'default',
-  title: 'Kitchens · Learn more',
-  description: 'About FireUX Kitchens.',
-  head: { title: 'Kitchens · Learn more' },
   name: 'KitchensLearnMorePage',
 })
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | Kitchens · Learn more` })
+
+useSeoMeta({
+  title: `${appName} | Kitchens · Learn more`,
+  description: 'How kitchen records connect runtime operations, place identity, and service execution.',
+})
 </script>

@@ -1,6 +1,7 @@
 # Monorepo Install Incident (2026-02-06)
 Authority: Automation context (Codex implementation handoff)
-Updated: 2026-03-08
+Updated: 2026-03-09
+Audience: Implementation context for coding agents and maintainers.
 
 ## Scope
 - Thread key: monorepo-install-incident.

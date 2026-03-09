@@ -2,12 +2,12 @@
 title: FireUX Docs
 description: Canon + handbook + operational runbooks.
 navigation: false
-updated: 2026-03-05
+updated: 2026-03-09
 ---
 
 # FireUX Docs
 Authority: Tier2 (Operational index)
-Updated: 2026-03-05
+Updated: 2026-03-09
 
 ## Start Here
 - Documentation system: `system.md`

@@ -46,6 +46,13 @@ print_repo_state() {
   fi
 }
 
+run_repo_cleanup() {
+  if [ -x "$(pwd)/scripts/gitsave-cleanup.sh" ] || [ -f "scripts/gitsave-cleanup.sh" ]; then
+    echo "Running repository cleanup script..."
+    bash scripts/gitsave-cleanup.sh || true
+  fi
+}
+
 usage() {
   echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean]" >&2
   echo "Example: gitsave \"fix: wire places quick add\"" >&2
@@ -109,6 +116,9 @@ if $run_guard; then
   fi
 fi
 
+# Always run repository cleanup before staging so cleanup changes are saved
+run_repo_cleanup
+
 # Stage everything, including deletions.
 git add -A
 
@@ -159,15 +169,6 @@ if ! git commit -m "$commit_message"; then
   echo "Commit failed. Resolve the error above and try again." >&2
   exit 1
 fi
-
-# Run repository cleanup to satisfy guard shape rules (non-fatal)
-if [ -x "$(pwd)/scripts/gitsave-cleanup.sh" ] || [ -f "scripts/gitsave-cleanup.sh" ]; then
-  echo "Running repository cleanup script..."
-  bash scripts/gitsave-cleanup.sh || true
-fi
-
-# Stage any changes produced by cleanup
-git add -A || true
 
 # Push to the matching branch on origin.
 git push origin "$current_branch"

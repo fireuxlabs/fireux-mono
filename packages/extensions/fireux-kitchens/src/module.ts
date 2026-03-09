@@ -47,6 +47,7 @@ export default defineNuxtModule<ModuleOptions>({
       ctx.addHub('/chefs')
       ctx.addHub('/ingredients')
       ctx.addStaticPath('/kitchens/learn-more')
+      ctx.addStaticPath('/kitchens/learn-more/dev')
       ctx.addStaticPath('/chefs/learn-more')
     })
     nuxt.hook('fireux:seo:sitemaps:extend' as any, (ctx: FireuxSeoSitemapsExtendContext) => {

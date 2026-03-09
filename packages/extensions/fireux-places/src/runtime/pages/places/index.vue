@@ -1,7 +1,14 @@
 <template>
   <UPage>
     <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
-    <UPageBody class="pagebody">
+    <UPageBody class="pagebody space-y-6">
+      <EntityIndexCta
+        title="Places index"
+        description="Browse canonical place records for this runtime and use the place creation flow when a new location needs to be captured."
+        source="places collection"
+        :count-label="`${collection.length} place${collection.length === 1 ? '' : 's'}`"
+        :actions="actions"
+      />
       <PlaceCTA />
       <PlaceCollectionManager :collection="collection" />
     </UPageBody>
@@ -32,9 +39,29 @@ definePageMeta({
 const { appName } = useFireUXConfig()
 
 const pageTitle = 'Places'
-const pageDescription = ''
+const pageDescription = 'Canonical place index for the current runtime.'
 
 useHead({ title: `${appName} | ${pageTitle}` })
 
 const { collection } = usePlaces<Record<string, any>>()
+const actions = [
+  {
+    label: 'Create',
+    cta: 'Create place',
+    to: '/places/create',
+    icon: 'i-lucide-plus',
+  },
+  {
+    label: 'Related',
+    cta: 'Browse kitchens',
+    to: '/kitchens',
+    icon: 'i-lucide-chef-hat',
+  },
+  {
+    label: 'Guide',
+    cta: 'Learn more',
+    to: '/places/learn-more',
+    icon: 'i-lucide-book-open',
+  },
+] as const
 </script>

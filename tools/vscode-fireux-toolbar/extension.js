@@ -98,6 +98,48 @@ async function collectFilesRecursive(fsApi, rootDir, opts) {
   return results
 }
 
+async function expandGitQEntries(cwd, entries) {
+  const expanded = []
+
+  for (const entry of entries) {
+    if (entry.status.includes('D')) {
+      expanded.push(entry)
+      continue
+    }
+
+    const abs = path.join(cwd, entry.relPath)
+    let stat
+    try {
+      stat = await vscode.workspace.fs.stat(vscode.Uri.file(abs))
+    } catch {
+      expanded.push(entry)
+      continue
+    }
+
+    const isDir = (stat.type & vscode.FileType.Directory) === vscode.FileType.Directory
+    if (!isDir) {
+      expanded.push(entry)
+      continue
+    }
+
+    const files = await collectFilesRecursive(vscode.workspace.fs, abs, { maxFiles: 200 })
+    if (!files.length) {
+      expanded.push(entry)
+      continue
+    }
+
+    files.sort((a, b) => a.localeCompare(b))
+    for (const fileAbs of files) {
+      expanded.push({
+        ...entry,
+        relPath: normalizeRelPath(path.relative(cwd, fileAbs)),
+      })
+    }
+  }
+
+  return expanded
+}
+
 async function buildCatTreeText(rootDir, { maxFiles, maxFileBytes, maxTotalBytes }) {
   const files = await collectFilesRecursive(vscode.workspace.fs, rootDir, { maxFiles })
   files.sort((a, b) => a.localeCompare(b))
@@ -522,7 +564,8 @@ function activate(context) {
       return { status, relPath: rest }
     }
 
-    const entries = lines.map(parseStatusLine).filter(Boolean)
+    const parsedEntries = lines.map(parseStatusLine).filter(Boolean)
+    const entries = await expandGitQEntries(cwd, parsedEntries)
 
     const maxFileBytes = 512 * 1024
     const maxTotalBytes = 12 * 1024 * 1024
