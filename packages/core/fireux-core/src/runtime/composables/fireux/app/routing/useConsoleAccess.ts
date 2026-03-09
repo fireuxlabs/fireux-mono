@@ -3,6 +3,7 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '../../firebase/useAuth'
 import { useUser } from '../../firestore/core/user/useUser'
 import {
+  type ConsoleChildRoute,
   discoverConsoleChildren,
   getConsoleScopeFromPath,
   isConsoleRoutePath,
@@ -14,6 +15,12 @@ type UseConsoleAccessOptions = {
   consolePath?: string
   targetPath?: MaybeRefOrGetter<string | null | undefined>
 }
+
+export type ConsoleAccessStatus =
+  | 'unauthenticated'
+  | 'disabled'
+  | 'forbidden'
+  | 'granted'
 
 function asScopeList(value: unknown) {
   if (!Array.isArray(value)) return []
@@ -43,6 +50,52 @@ export function resolveAllowedConsoleScopes(
   if (explicitScopes.length) return explicitScopes
   if (isAdmin) return discoveredScopes
   return []
+}
+
+type ResolveConsoleAccessDecisionParams = {
+  isAuthenticated: boolean
+  appUser: { console_enabled?: unknown; console_scopes?: unknown } | null | undefined
+  isAdmin: boolean
+  discoveredChildren: ConsoleChildRoute[]
+  requestedScope?: string | null | undefined
+}
+
+export function resolveConsoleAccessDecision(
+  params: ResolveConsoleAccessDecisionParams
+) {
+  const requestedScope = normalizeConsoleScope(params.requestedScope)
+  const discoveredScopes = params.discoveredChildren.map((entry) => entry.key)
+  const consoleEnabled = resolveConsoleEnabled(
+    params.isAuthenticated,
+    params.appUser,
+    params.isAdmin
+  )
+  const allowedScopes = consoleEnabled
+    ? resolveAllowedConsoleScopes(params.appUser, params.isAdmin, discoveredScopes)
+    : []
+  const hasScopeAccess = requestedScope
+    ? allowedScopes.includes(requestedScope)
+    : consoleEnabled
+
+  const status: ConsoleAccessStatus = !params.isAuthenticated
+    ? 'unauthenticated'
+    : !consoleEnabled
+      ? 'disabled'
+      : requestedScope && !hasScopeAccess
+        ? 'forbidden'
+        : 'granted'
+
+  const firstAllowedChild =
+    params.discoveredChildren.find((entry) => allowedScopes.includes(entry.key)) || null
+
+  return {
+    status,
+    requestedScope,
+    consoleEnabled,
+    allowedScopes,
+    hasScopeAccess,
+    firstAllowedChild,
+  }
 }
 
 export function useConsoleAccess(options: UseConsoleAccessOptions = {}) {
@@ -75,31 +128,27 @@ export function useConsoleAccess(options: UseConsoleAccessOptions = {}) {
   )
 
   const explicitScopes = computed(() => asScopeList(appUser.value?.console_scopes))
+  const decision = computed(() =>
+    resolveConsoleAccessDecision({
+      isAuthenticated: auth.isAuthenticated.value,
+      appUser: {
+        console_enabled: explicitConsoleEnabled.value ?? appUser.value?.console_enabled,
+        console_scopes: explicitScopes.value,
+      },
+      isAdmin: isAdmin.value,
+      discoveredChildren: discoveredChildren.value,
+      requestedScope: requestedScope.value,
+    })
+  )
 
-  const consoleEnabled = computed(() => {
-    return resolveConsoleEnabled(
-      auth.isAuthenticated.value,
-      appUser.value,
-      isAdmin.value
-    )
-  })
-
-  const allowedScopes = computed(() => {
-    if (!consoleEnabled.value) return []
-    return resolveAllowedConsoleScopes(
-      { console_scopes: explicitScopes.value },
-      isAdmin.value,
-      discoveredScopes.value
-    )
-  })
-
+  const consoleEnabled = computed(() => decision.value.consoleEnabled)
+  const allowedScopes = computed(() => decision.value.allowedScopes)
+  const hasScopeAccess = computed(() => decision.value.hasScopeAccess)
   const canAccessScope = (scope: string | null | undefined) => {
     const normalizedScope = normalizeConsoleScope(scope)
     if (!normalizedScope) return consoleEnabled.value
-    return consoleEnabled.value && allowedScopes.value.includes(normalizedScope)
+    return allowedScopes.value.includes(normalizedScope)
   }
-
-  const hasScopeAccess = computed(() => canAccessScope(requestedScope.value))
 
   const visibleConsoleChildren = computed(() => {
     if (!auth.isAuthenticated.value) return discoveredChildren.value
@@ -116,7 +165,9 @@ export function useConsoleAccess(options: UseConsoleAccessOptions = {}) {
     explicitConsoleEnabled,
     consoleEnabled,
     allowedScopes,
+    status: computed(() => decision.value.status),
     hasScopeAccess,
     canAccessScope,
+    firstAllowedChild: computed(() => decision.value.firstAllowedChild),
   }
 }

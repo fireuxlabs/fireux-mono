@@ -7,8 +7,7 @@ import {
   isConsoleRoutePath,
 } from '../composables/fireux/app/routing/consoleRoutes'
 import {
-  resolveAllowedConsoleScopes,
-  resolveConsoleEnabled,
+  resolveConsoleAccessDecision,
 } from '../composables/fireux/app/routing/useConsoleAccess'
 
 const AUTH_WAIT_TIMEOUT_MS = 2500
@@ -59,33 +58,25 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   if (isConsoleRoute) {
     const consoleChildren = discoverConsoleChildren(router.getRoutes())
-    const consoleEnabled = resolveConsoleEnabled(
-      isAuthenticated.value,
-      appUser.value,
-      isAdmin.value
-    )
+    const decision = resolveConsoleAccessDecision({
+      isAuthenticated: isAuthenticated.value,
+      appUser: appUser.value,
+      isAdmin: isAdmin.value,
+      discoveredChildren: consoleChildren,
+      requestedScope: getConsoleScopeFromPath(to.path),
+    })
 
-    if (!consoleEnabled) {
+    if (decision.status === 'disabled') {
       const hasPricingUsers = router.getRoutes().some((route) => route.path === '/pricing/users')
       const hasPricing = router.getRoutes().some((route) => route.path === '/pricing')
       return navigateTo(hasPricingUsers ? '/pricing/users' : hasPricing ? '/pricing' : '/dashboard')
     }
 
-    const allowedScopes = resolveAllowedConsoleScopes(
-      appUser.value,
-      isAdmin.value,
-      consoleChildren.map((entry) => entry.key)
-    )
-    const requestedScope = getConsoleScopeFromPath(to.path)
-
-    if (requestedScope && !allowedScopes.includes(requestedScope)) {
+    if (decision.status === 'forbidden') {
       const hasConsoleRoot = router.getRoutes().some((route) => route.path === '/console')
-      const firstAllowedScope = consoleChildren.find((entry) =>
-        allowedScopes.includes(entry.key)
-      )
       const fallbackPath = hasConsoleRoot
         ? '/console'
-        : firstAllowedScope?.path || '/dashboard'
+        : decision.firstAllowedChild?.path || '/dashboard'
       return navigateTo(fallbackPath)
     }
   }
