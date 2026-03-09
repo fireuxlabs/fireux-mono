@@ -8,5 +8,5 @@ definePageMeta({
   requiresAuth: true,
 })
 
-await navigateTo('/console/project/overview', { replace: true })
+await navigateTo('/console/projects/overview', { replace: true })
 </script>

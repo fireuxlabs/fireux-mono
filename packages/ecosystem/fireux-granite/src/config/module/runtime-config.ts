@@ -13,7 +13,7 @@ export const configureRuntimeConfig = (nuxt: Nuxt) => {
       runtimeAnchor: 'portfolio',
       defaultMode: 'live',
       allowedModes: ['live', 'read-only'],
-      selectorRoute: '/console/portfolio',
+      selectorRoute: '/console/portfolio/overview',
     },
     branding: {
       label: 'Granite',

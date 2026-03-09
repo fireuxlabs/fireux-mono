@@ -99,6 +99,6 @@ const goToPortfolio = async (mode: RuntimePortfolioMode, portfolioId?: string) =
   const fallback = String(runtimePortfolioId.value || '').trim()
   const resolvedId = String(portfolioId || fallback).trim()
   setRuntimePortfolio({ portfolioId: resolvedId, mode })
-  await router.push('/console/portfolio')
+  await router.push('/console/portfolio/overview')
 }
 </script>

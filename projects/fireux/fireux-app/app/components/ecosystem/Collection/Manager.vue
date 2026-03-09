@@ -131,7 +131,13 @@
       description="Create ecosystems from the FireUX console when you are ready."
     >
       <template #actions>
-        <UButton to="/console" size="xs" color="neutral" variant="soft" icon="i-lucide-terminal">
+        <UButton
+          to="/console/projects/ecosystems"
+          size="xs"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-terminal"
+        >
           Open console
         </UButton>
       </template>

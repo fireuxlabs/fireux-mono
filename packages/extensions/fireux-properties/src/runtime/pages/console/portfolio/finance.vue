@@ -11,11 +11,11 @@
           color="warning"
           variant="soft"
           title="No portfolio selected"
-          description="Select a portfolio on /console/portfolio before using financial signals."
+          description="Select a portfolio on /console/portfolio/overview before using financial signals."
           :actions="[
             {
               label: 'Go to portfolios',
-              to: '/console/portfolio',
+              to: '/console/portfolio/overview',
               icon: 'i-lucide-arrow-right'
             }
           ]"

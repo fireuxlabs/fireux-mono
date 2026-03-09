@@ -19,28 +19,15 @@
           description="This build does not expose any /console/* routes."
         />
 
-        <UCard v-else-if="hubCount > 1">
+        <UCard v-else>
           <template #header>
             <div class="space-y-1">
-              <div class="text-sm font-semibold">Choose a console</div>
+              <div class="text-sm font-semibold">Opening console</div>
               <div class="text-xs text-dimmed">
-                Multiple console hubs are available for this app.
+                Redirecting to the default console scope for this app.
               </div>
             </div>
           </template>
-
-          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <UButton
-              v-for="hub in hubs"
-              :key="hub.path"
-              :to="hub.path"
-              variant="soft"
-              icon="i-lucide-terminal"
-              block
-            >
-              {{ hub.label }}
-            </UButton>
-          </div>
         </UCard>
       </section>
     </template>
@@ -52,20 +39,10 @@ import { computed, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import { useRuntimeApp } from '../../composables/fireux/app/runtime-app/useRuntimeApp'
 import { discoverConsoleChildren } from '../../composables/fireux/app/routing/consoleRoutes'
-import { toConsoleScopeLabel } from '../../composables/fireux/app/routing/consoleRoutes'
 import { useConsoleAccess } from '../../composables/fireux/app/routing/useConsoleAccess'
 
 definePageMeta({
   layout: 'console',
-  nav: {
-    key: 'console-home',
-    label: 'Console',
-    icon: 'i-lucide-terminal',
-    order: 1,
-    desktop: true,
-    mobile: true,
-    layouts: ['console'],
-  },
   requiresAuth: true,
 })
 
@@ -73,28 +50,14 @@ const runtime = useRuntimeApp()
 const router = useRouter()
 const { visibleConsoleChildren } = useConsoleAccess({ targetPath: '/console' })
 
-type Hub = {
-  key: string
-  path: string
-  label: string
-}
-
-const hubs = computed<Hub[]>(() => {
-  return discoverConsoleChildren(router.getRoutes()).map((entry) => ({
-    key: entry.key,
-    path: entry.path,
-    label: toConsoleScopeLabel(entry.key) || 'Console',
-  }))
-})
-
-const hubCount = computed(() => hubs.value.length)
+const hubCount = computed(() => discoverConsoleChildren(router.getRoutes()).length)
 const accessibleHubCount = computed(() => visibleConsoleChildren.value.length)
 
 /**
- * Auto-redirect if exactly one hub exists.
+ * Root /console is entry-only. Redirect to the first accessible scope.
  */
 watchEffect(() => {
-  if (accessibleHubCount.value !== 1) return
+  if (accessibleHubCount.value < 1) return
   if (router.currentRoute.value.path !== '/console') return
 
   const target = visibleConsoleChildren.value[0]?.path || ''

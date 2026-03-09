@@ -23,9 +23,8 @@ export function useConsoleEntryCta(options: UseConsoleEntryCtaOptions = {}) {
     hasConsoleRoute.value || hasConsoleChildren.value
   )
   const consoleEntryPath = computed(() =>
-    hasConsoleRoute.value
-      ? normalizedConsolePath
-      : consoleChildren.value[0]?.path || '/'
+    consoleChildren.value[0]?.path ||
+    (hasConsoleRoute.value ? normalizedConsolePath : '/')
   )
 
   return {

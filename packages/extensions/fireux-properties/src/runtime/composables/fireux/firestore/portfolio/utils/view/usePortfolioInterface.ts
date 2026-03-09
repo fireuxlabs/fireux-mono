@@ -25,7 +25,7 @@ export function usePortfolioInterface() {
 
     return {
       id,
-      to: id ? `/console/portfolio` : '',
+      to: id ? `/console/portfolio/overview` : '',
       title: name,
       subtitle: regionLabel,
       badges: [],

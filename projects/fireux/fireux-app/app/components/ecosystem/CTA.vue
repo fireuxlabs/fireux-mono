@@ -26,7 +26,7 @@
             color="primary"
             variant="soft"
             icon="i-lucide-terminal"
-            to="/console"
+            to="/console/projects/overview"
           >
             Open console
           </UButton>

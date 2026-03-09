@@ -124,26 +124,15 @@
             </template>
 
             <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              <UButton to="/console/portfolio/properties" variant="soft" icon="i-lucide-building" block>
-                Properties
-              </UButton>
-              <UButton to="/console/portfolio/clients" variant="soft" icon="i-lucide-users" block>
-                Clients
-              </UButton>
-              <UButton to="/console/portfolio/finance" variant="soft" icon="i-lucide-chart-line" block>
-                Financial Signals
-              </UButton>
-              <UButton to="/console/portfolio/compliance" variant="soft" icon="i-lucide-shield-alert" block>
-                Compliance Exposure
-              </UButton>
-              <UButton to="/console/portfolio/incidents" variant="soft" icon="i-lucide-triangle-alert" block>
-                Incidents
-              </UButton>
-              <UButton to="/console/portfolio/documents" variant="soft" icon="i-lucide-file-text" block>
-                Documents
-              </UButton>
-              <UButton to="/console/portfolio/tasks" variant="soft" icon="i-lucide-list-checks" block>
-                Tasks
+              <UButton
+                v-for="link in surfaceLinks"
+                :key="link.key"
+                :to="link.to"
+                variant="soft"
+                :icon="link.icon"
+                block
+              >
+                {{ link.label }}
               </UButton>
             </div>
           </UCard>
@@ -163,7 +152,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import { useRuntimePortfolioConsole } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolioConsole'
 import { usePropertyCollection } from 'fireux-properties/runtime/composables/fireux/firestore/property/fetch/usePropertyCollection'
 import { useComplianceRecordCollection } from 'fireux-compliance/runtime/composables/fireux/firestore/compliance/fetch/useComplianceRecordCollection'
 import { deriveComplianceStatus } from 'fireux-compliance/runtime/composables/fireux/firestore/compliance/utils/status/useComplianceStatus'
@@ -202,7 +191,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const runtimePortfolio = useRuntimePortfolio()
+const { runtime: runtimePortfolio, surfaceLinks } = useRuntimePortfolioConsole()
 const isDev = import.meta.dev
 const runtimeId = computed(() => String(runtimePortfolio.id.value || '').trim())
 const runtimeMode = computed(() => runtimePortfolio.mode.value)

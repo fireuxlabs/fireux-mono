@@ -71,6 +71,6 @@ const cards = computed(() =>
 const select = async (portfolioId: string) => {
   const resolvedId = String(portfolioId || '').trim()
   setRuntimePortfolio({ portfolioId: resolvedId, mode: 'live' })
-  await router.push('/console/portfolio')
+  await router.push('/console/portfolio/overview')
 }
 </script>

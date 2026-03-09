@@ -1,5 +1,5 @@
 <template>
-  <UDashboardPanel id="console-project-home">
+  <UDashboardPanel id="console-projects-home">
     <template #header>
       <LayoutsConsoleNavbar title="FireUX Project Console" />
     </template>
@@ -65,7 +65,7 @@ import { useRuntimeProjectConsole } from 'fireux-core/runtime/composables/fireux
 definePageMeta({
   layout: 'console',
   nav: {
-    key: 'console-project-overview',
+    key: 'console-projects-overview',
     label: 'Overview',
     icon: 'i-lucide-layout-dashboard',
     order: 10,
@@ -76,5 +76,5 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { project: runtime, navItems, stats } = useRuntimeProjectConsole()
+const { runtime, navItems, stats } = useRuntimeProjectConsole()
 </script>

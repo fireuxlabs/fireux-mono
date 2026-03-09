@@ -1,5 +1,5 @@
 <template>
-  <UDashboardPanel id="console-project-apps">
+  <UDashboardPanel id="console-projects-apps">
     <template #header>
       <LayoutsConsoleNavbar title="Project Apps" />
     </template>
@@ -104,7 +104,7 @@ definePageMeta({
   layout: 'console',
   nav: {
     visibility: { ecosystems: ['fireux'] },
-    key: 'console-project-apps',
+    key: 'console-projects-apps',
     label: 'Apps',
     icon: 'i-lucide-app-window',
     order: 30,

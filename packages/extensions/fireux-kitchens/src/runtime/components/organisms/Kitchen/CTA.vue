@@ -98,7 +98,7 @@ const goToKitchen = async (mode: RuntimeKitchenMode, kitchenId?: string) => {
   const fallback = String(runtimeKitchenId.value || '').trim()
   const resolvedId = String(kitchenId || fallback).trim()
   setRuntimeKitchen({ mode, kitchenId: resolvedId })
-  await router.push('/console/kitchen')
+  await router.push('/console/kitchen/overview')
 }
 
 </script>

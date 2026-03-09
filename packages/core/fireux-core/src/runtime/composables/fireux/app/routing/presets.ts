@@ -47,13 +47,9 @@ export const useDashboardNav = () => {
 export const useConsoleNav = () => {
   const nav = useNav(['console'])
   const { canAccessScope, consoleEnabled } = useConsoleAccess()
-  const topPriority = [
-    { to: '/console' },
-  ]
 
   return {
     ...nav,
-    topPriority,
     baseNavFilter: (item: NavItem) => {
       if (!item.to?.startsWith('/console')) return true
 
