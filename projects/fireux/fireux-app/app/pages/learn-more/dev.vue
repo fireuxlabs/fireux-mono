@@ -17,6 +17,7 @@
           <UButton to="/ecosystems/learn-more" color="neutral" variant="soft">/ecosystems/learn-more</UButton>
           <UButton to="/apps/learn-more" color="neutral" variant="soft">/apps/learn-more</UButton>
           <UButton to="/modules/learn-more" color="neutral" variant="soft">/modules/learn-more</UButton>
+          <UButton to="/users/learn-more" color="neutral" variant="soft">/users/learn-more</UButton>
         </div>
       </UCard>
 
@@ -63,6 +64,6 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Learn More: Dev · FireUX',
-  description: 'Operator reference for FireUX learn-more routes and core API endpoints.',
+  description: 'Operator reference for FireUX learn-more routes and core API endpoints, including users.',
 })
 </script>

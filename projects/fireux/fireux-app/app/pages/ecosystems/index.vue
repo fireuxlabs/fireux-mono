@@ -3,17 +3,16 @@
     <UPageHeader
       class="pageheader"
       title="Ecosystems"
-      description="Browse active FireUX ecosystems and jump to their live surfaces."
+      description="Platform ecosystem index for the current FireUX project."
     />
 
     <UPageBody class="pagebody">
-      <EcosystemCTA />
-
-      <UAlert
-        color="neutral"
-        variant="soft"
-        :title="`Collection source: db.collections.ecosystems`"
-        :description="`Current records: ${count}`"
+      <EntityIndexCta
+        title="Ecosystems index"
+        description="Browse ecosystem records from the FireUX project and move into the project console when you need to manage them."
+        source="db.collections.ecosystems"
+        :count-label="`${count} ecosystem${count === 1 ? '' : 's'}`"
+        :actions="actions"
       />
 
       <EcosystemCollectionManager
@@ -77,4 +76,25 @@ const collection = computed(() =>
     }
   })
 )
+
+const actions = [
+  {
+    label: 'Project Console',
+    cta: 'Open overview',
+    to: '/console/projects/overview',
+    icon: 'i-lucide-layout-dashboard',
+  },
+  {
+    label: 'Ecosystems Console',
+    cta: 'Manage ecosystems',
+    to: '/console/projects/ecosystems',
+    icon: 'i-lucide-orbit',
+  },
+  {
+    label: 'Guide',
+    cta: 'Learn more',
+    to: '/ecosystems/learn-more',
+    icon: 'i-lucide-book-open',
+  },
+] as const
 </script>

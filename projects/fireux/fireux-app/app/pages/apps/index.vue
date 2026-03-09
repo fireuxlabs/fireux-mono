@@ -1,8 +1,18 @@
 <template>
   <UPage>
-    <UPageHeader class="pageheader" :title="pageTitle" />
+    <UPageHeader
+      class="pageheader"
+      :title="pageTitle"
+      description="Platform app index for the current FireUX project."
+    />
     <UPageBody class="pagebody">
-      <AppCTA />
+      <EntityIndexCta
+        title="Apps index"
+        description="Browse app records from the FireUX project and jump into the project console when you need to manage them."
+        source="db.collections.apps"
+        :count-label="`${collection.length} app${collection.length === 1 ? '' : 's'}`"
+        :actions="actions"
+      />
       <AppCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
@@ -39,4 +49,24 @@ useHead({ title: `${appName} | ${pageTitle}` })
 
 const { apps } = useAppCollection()
 const collection = computed(() => apps.value ?? [])
+const actions = [
+  {
+    label: 'Project Console',
+    cta: 'Open overview',
+    to: '/console/projects/overview',
+    icon: 'i-lucide-layout-dashboard',
+  },
+  {
+    label: 'Apps Console',
+    cta: 'Manage apps',
+    to: '/console/projects/apps',
+    icon: 'i-lucide-app-window',
+  },
+  {
+    label: 'Guide',
+    cta: 'Learn more',
+    to: '/apps/learn-more',
+    icon: 'i-lucide-book-open',
+  },
+] as const
 </script>

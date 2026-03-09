@@ -3,7 +3,7 @@
     <UPageHeader
       class="pageheader"
       title="Learn More"
-      description="FireUX guides for ecosystems, apps, modules, and platform operations."
+      description="FireUX guides for ecosystems, apps, modules, users, and platform operations."
     />
 
     <UPageBody class="pagebody space-y-6">
@@ -47,6 +47,9 @@
           <UButton to="/modules/learn-more" color="primary" variant="soft" icon="i-lucide-puzzle">
             Modules
           </UButton>
+          <UButton to="/users/learn-more" color="primary" variant="soft" icon="i-lucide-users">
+            Users
+          </UButton>
         </div>
       </UCard>
 
@@ -68,6 +71,6 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Learn More · FireUX',
-  description: 'Guides for FireUX ecosystems, apps, modules, and platform operations.',
+  description: 'Guides for FireUX ecosystems, apps, modules, users, and platform operations.',
 })
 </script>
