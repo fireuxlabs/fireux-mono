@@ -1,9 +1,12 @@
 <template>
-  <UPageCTA title="Kitchen console" orientation="horizontal">
-    <template #links>
-      <div class="grid gap-3 sm:grid-cols-3">
-        <section class="space-y-2">
-          <p class="text-sm font-semibold">My Kitchens</p>
+  <ConsoleEntityCTA
+    title="Kitchen console"
+    my-label="My Kitchens"
+    test-label="Test Kitchen"
+    read-only-label="Read-only Kitchens"
+    learn-more-to="/kitchens/learn-more"
+  >
+    <template #my>
           <UButton
             block
             variant="subtle"
@@ -11,12 +14,11 @@
             icon="i-lucide-chef-hat"
             @click="goToKitchen('live')"
           >
-            Open my kitchen
+            Open my kitchens
           </UButton>
-        </section>
+    </template>
 
-        <section class="space-y-2">
-          <p class="text-sm font-semibold">Test Kitchens</p>
+    <template #test>
           <UButton
             block
             variant="subtle"
@@ -26,10 +28,9 @@
           >
             Open test kitchen
           </UButton>
-        </section>
+    </template>
 
-        <section class="space-y-2">
-          <p class="text-sm font-semibold">Read-only Kitchens</p>
+    <template #readOnly>
           <div v-if="readOnlyPills.length" class="space-y-2">
             <KitchenCardsPill
               v-for="item in readOnlyPills"
@@ -45,9 +46,8 @@
           <p v-else class="text-sm text-dimmed">
             No read-only kitchens.
           </p>
-        </section>
-      </div>
     </template>
+
     <template #default>
       <img
         src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=640&h=520&q=80"
@@ -58,12 +58,13 @@
         loading="lazy"
       />
     </template>
-  </UPageCTA>
+  </ConsoleEntityCTA>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from '#imports'
 import { computed } from 'vue'
+import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
 import { getReadOnlyKitchenScenarioList } from '../../../composables/fireux/app/kitchen-runtime/read-only-scenarios'
 import type { RuntimeKitchenMode } from '../../../composables/fireux/app/kitchen-runtime/shared'
 import { useRuntimeKitchenSelection } from '../../../composables/fireux/app/kitchen-runtime/state'
@@ -87,7 +88,6 @@ const readOnlyPills = computed(() =>
     title: entry.name,
     subtitle: entry.subtitle,
     imageUrl: entry.imageUrl,
-    badges: ['Read-only'],
   }))
 )
 

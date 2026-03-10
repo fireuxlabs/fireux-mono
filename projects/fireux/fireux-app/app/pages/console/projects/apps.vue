@@ -13,6 +13,7 @@
 
           <div class="flex flex-wrap gap-2">
             <UButton
+              v-if="isWritableMode"
               :to="actions.createAppTo"
               icon="i-lucide-plus"
               variant="soft"
@@ -82,7 +83,7 @@
               color="primary"
               icon="i-lucide-save"
               :loading="Boolean(savePending[app.id])"
-              :disabled="!isDirty(app.id, app.ecosystemId)"
+              :disabled="!isWritableMode || !isDirty(app.id, app.ecosystemId)"
               @click="assignEcosystem(app.id)"
             >
               Save
@@ -115,9 +116,10 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { appRows, ecosystemRows, actions } = useRuntimeProjectConsole()
+const { runtime, appRows, ecosystemRows, actions } = useRuntimeProjectConsole()
 const { updateDocument } = useFirestoreUpdate()
 const toast = useToastify()
+const isWritableMode = computed(() => runtime.mode.value === 'live')
 
 const assignmentDraft = reactive<Record<string, string>>({})
 const savePending = reactive<Record<string, boolean>>({})
@@ -143,6 +145,7 @@ const isDirty = (appId: string, currentEcosystemId: string) => {
 }
 
 const assignEcosystem = async (appId: string) => {
+  if (!isWritableMode.value) return
   const nextEcosystemId = String(assignmentDraft[appId] || '').trim()
   if (!appId) return
 

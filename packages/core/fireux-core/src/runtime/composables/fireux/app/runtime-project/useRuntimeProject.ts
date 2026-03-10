@@ -6,6 +6,8 @@ import type { FireuxProjectDoc } from '../../../../models/system/project.model'
 import { normalizeRuntimeMode, normalizeString } from '../../runtime/runtime.normalize'
 import type { RuntimeMode } from '../../runtime/runtime.types'
 import { useFireUXConfig } from '../FireUXConfig'
+import { getReadOnlyProjectScenario } from './read-only-scenarios'
+import { useRuntimeProjectSelection } from './state'
 
 export type RuntimeProjectMode = RuntimeMode
 
@@ -51,6 +53,7 @@ function guardDocumentPromise(
 export function useRuntimeProject(params?: UseRuntimeProjectParams) {
   const cfg = useFireUXConfig()
   const runtimeConfig = useRuntimeConfig() as any
+  const selection = useRuntimeProjectSelection()
 
   const runtimeProjectId = computed(() =>
     normalizeString(runtimeConfig.public?.firebaseEcosystem?.firebase?.projectId) ||
@@ -60,10 +63,10 @@ export function useRuntimeProject(params?: UseRuntimeProjectParams) {
   const idSource = computed(() =>
     params?.projectId !== undefined
       ? normalizeString(unref(params.projectId))
-      : runtimeProjectId.value
+      : normalizeString(selection.runtimeProjectId.value) || runtimeProjectId.value
   )
   const modeSource = computed(() =>
-    params?.mode !== undefined ? unref(params.mode) : 'live'
+    params?.mode !== undefined ? unref(params.mode) : selection.runtimeProjectMode.value
   )
 
   const id = computed(() => normalizeString(idSource.value))
@@ -103,9 +106,13 @@ export function useRuntimeProject(params?: UseRuntimeProjectParams) {
     `${collectionPath.value}/${id.value || ''}`
   )
 
+  const readOnlyScenario = computed(() =>
+    isReadOnly.value ? getReadOnlyProjectScenario(id.value) : null
+  )
+
   const project = computed<RuntimeProjectDoc | null>(() => {
     if (!id.value) return null
-    if (isReadOnly.value) return null
+    if (isReadOnly.value) return (readOnlyScenario.value?.project as RuntimeProjectDoc) ?? null
     return docState.data?.value ?? null
   })
 
@@ -113,7 +120,11 @@ export function useRuntimeProject(params?: UseRuntimeProjectParams) {
   const isLoading = computed(() => pending.value)
 
   // Project runtime should remain valid even before a /projects/<id> doc exists.
-  const isReady = computed(() => Boolean(id.value) && !isLoading.value)
+  const isReady = computed(() => {
+    if (!id.value) return false
+    if (isReadOnly.value) return true
+    return !isLoading.value
+  })
   const hasDoc = computed(() => Boolean(project.value))
 
   const name = computed(() =>
@@ -141,6 +152,7 @@ export function useRuntimeProject(params?: UseRuntimeProjectParams) {
     appId,
     appName,
     firebaseProjectId: runtimeProjectId,
+    readOnlyScenario,
 
     data: {
       name,
@@ -149,6 +161,7 @@ export function useRuntimeProject(params?: UseRuntimeProjectParams) {
       appName,
       firebaseProjectId: runtimeProjectId,
       hasDoc,
+      readOnlyScenario,
     },
   }
 }

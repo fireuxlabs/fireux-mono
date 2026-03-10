@@ -27,6 +27,7 @@
       <EntityIndexCta
         title="Users index"
         description="Browse public FireUX profiles, move into account surfaces, and use the learn-more guide as the canonical public explanation."
+        family="special"
         source="GET /api/public/users"
         :count-label="`${collection.length} public profile${collection.length === 1 ? '' : 's'}`"
         :actions="actions"

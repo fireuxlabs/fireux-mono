@@ -1,9 +1,12 @@
 <template>
-  <UPageCTA title="Portfolio console" orientation="horizontal">
-    <template #links>
-      <div class="grid gap-3 sm:grid-cols-3">
-        <section class="space-y-2">
-          <p class="text-sm font-semibold">My Portfolios</p>
+  <ConsoleEntityCTA
+    title="Portfolio console"
+    my-label="My Portfolios"
+    test-label="Test Portfolio"
+    read-only-label="Read-only Portfolios"
+    learn-more-to="/portfolios/learn-more"
+  >
+    <template #my>
           <UButton
             block
             variant="subtle"
@@ -11,12 +14,11 @@
             icon="i-lucide-building"
             @click="goToPortfolio('live')"
           >
-            Open my portfolio
+            Open my portfolios
           </UButton>
-        </section>
+    </template>
 
-        <section class="space-y-2">
-          <p class="text-sm font-semibold">Test Portfolios</p>
+    <template #test>
           <UButton
             block
             variant="subtle"
@@ -26,10 +28,9 @@
           >
             Open test portfolio
           </UButton>
-        </section>
+    </template>
 
-        <section class="space-y-2">
-          <p class="text-sm font-semibold">Read-only Portfolios</p>
+    <template #readOnly>
           <div v-if="readOnlyPills.length" class="space-y-2">
             <PortfolioCardsPill
               v-for="item in readOnlyPills"
@@ -45,8 +46,6 @@
           <p v-else class="text-sm text-dimmed">
             No read-only portfolios.
           </p>
-        </section>
-      </div>
     </template>
 
     <template #default>
@@ -59,12 +58,13 @@
         loading="lazy"
       />
     </template>
-  </UPageCTA>
+  </ConsoleEntityCTA>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from '#imports'
 import { computed } from 'vue'
+import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
 import { getReadOnlyPortfolioScenarioList } from '../../../composables/fireux/app/portfolio-runtime/read-only-scenarios'
 import type { RuntimePortfolioMode } from '../../../composables/fireux/app/portfolio-runtime/shared'
 import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
@@ -91,7 +91,6 @@ const readOnlyPills = computed(() =>
     title: entry.name,
     subtitle: entry.subtitle,
     imageUrl: entry.imageUrl,
-    badges: ['Read-only'],
   }))
 )
 

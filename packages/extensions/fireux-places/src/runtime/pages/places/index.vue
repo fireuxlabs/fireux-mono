@@ -5,6 +5,7 @@
       <EntityIndexCta
         title="Places index"
         description="Browse canonical place records for this runtime and use the place creation flow when a new location needs to be captured."
+        family="special"
         source="places collection"
         :count-label="`${collection.length} place${collection.length === 1 ? '' : 's'}`"
         :actions="actions"

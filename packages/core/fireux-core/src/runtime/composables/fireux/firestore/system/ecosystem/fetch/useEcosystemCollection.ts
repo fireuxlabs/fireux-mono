@@ -7,9 +7,13 @@ import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
 type EcosystemDoc = Partial<FireuxEcosystemModel> & FireuxEcosystemRegistryDoc & { id?: string }
 
-export function useEcosystemCollection() {
+export function useEcosystemCollection(collectionPath: string | { value?: string } = 'ecosystems') {
   const { firestoreFetchCollection } = useFirestoreRead()
-  const source = firestoreFetchCollection<EcosystemDoc>('ecosystems')
+  const path =
+    typeof collectionPath === 'string'
+      ? collectionPath
+      : String(collectionPath?.value || 'ecosystems').trim() || 'ecosystems'
+  const source = firestoreFetchCollection<EcosystemDoc>(path)
   const ecosystems = computed(() => source.value ?? [])
   const count = computed(() => ecosystems.value.length)
 

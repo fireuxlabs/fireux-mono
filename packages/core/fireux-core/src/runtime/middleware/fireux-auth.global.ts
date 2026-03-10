@@ -1,4 +1,5 @@
 import { defineNuxtRouteMiddleware, navigateTo, useRouter } from '#imports'
+import { useRuntimeProjectSelection } from '../composables/fireux/app/runtime-project'
 import { useAuth } from '../composables/fireux/firebase/useAuth'
 import { useUser } from '../composables/fireux/firestore/core/user/useUser'
 import {
@@ -33,13 +34,19 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (!requiresAuth) return
 
   const { isAuthenticated, hasAuthState } = useAuth()
+  const projectSelection = useRuntimeProjectSelection()
   const authDeadline = Date.now() + AUTH_WAIT_TIMEOUT_MS
 
   while (!hasAuthState.value && Date.now() < authDeadline) {
     await sleep(50)
   }
 
+  const allowsGuestProjectConsole =
+    String(to.path || '').startsWith('/console/projects') &&
+    projectSelection.runtimeProjectMode.value !== 'live'
+
   if (!isAuthenticated.value) {
+    if (allowsGuestProjectConsole) return
     return navigateTo(`/auth?redirect=${encodeURIComponent(to.fullPath)}`)
   }
 

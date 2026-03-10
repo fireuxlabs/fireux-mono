@@ -9,6 +9,7 @@
       <EntityIndexCta
         title="Kitchens index"
         description="Browse kitchen records for this runtime and jump into the kitchen console when you need to manage service operations."
+        family="console"
         source="runtime kitchens collection"
         :count-label="`${collection.length} kitchen${collection.length === 1 ? '' : 's'}`"
         :actions="actions"

@@ -92,7 +92,6 @@ const readOnlyPills = computed(() =>
     displayName: entry.name,
     ecosystem: entry.subtitle,
     thumbnailUrl: entry.imageUrl,
-    badges: ['Read-only'],
   }))
 )
 

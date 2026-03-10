@@ -1,37 +1,62 @@
 <template>
   <UPage>
     <UPageHeader
-      title="Projects"
-      description="Workspace for app builders and operators."
+      class="pageheader"
+      :title="pageTitle"
+      description="Platform project index for the current FireUX runtime."
     />
 
     <UPageBody class="pagebody">
-      <UCard class="space-y-3">
-        <p class="text-sm text-gray-600 dark:text-gray-300">
-          Projects are the human-facing grouping for work you do in FireUX. They
-          typically connect apps, environments, and the people operating them.
-        </p>
-
-        <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
-          <p>This is a stub route so navigation stays honest.</p>
-          <p>
-            Next: wire this page to the registry and show the current user's
-            projects (or the apps they can manage).
-          </p>
-        </div>
-      </UCard>
+      <ProjectCTA />
+      <ProjectCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
+import { useHead } from '#imports'
+import { computed } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
+
 definePageMeta({
   title: 'Projects',
   tag: 'projects',
+  nav: {
+    key: 'projects',
+    label: 'Projects',
+    icon: 'i-lucide-folders',
+    order: 20,
+    desktop: true,
+    mobile: true,
+    layouts: ['default'],
+  },
+  layout: 'default',
+  name: 'ProjectsIndexPage',
 })
+
+const { appName } = useFireUXConfig()
+const pageTitle = 'Projects'
+
+useHead({ title: `${appName} | ${pageTitle}` })
 
 useSeoMeta({
   title: 'Projects · FireUX',
-  description: 'Project workspace for builders and operators.',
+  description: 'Entity index for FireUX projects stored in db.collections.projects.',
 })
+
+const { projects } = useProjectCollection()
+const collection = computed(() =>
+  (projects.value ?? []).map((item) => {
+    const key = String(item.id || item.slug || '').trim()
+    const name = String(item.name || key || 'Untitled project').trim()
+    const status = String(item.status || 'active').trim()
+
+    return {
+      key,
+      name,
+      status,
+    }
+  })
+)
 </script>

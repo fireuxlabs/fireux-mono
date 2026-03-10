@@ -8,19 +8,26 @@ const normalizeString = (value: unknown): string => String(value || '').trim()
 
 export function useRuntimeProjectConsole() {
   const projectRuntime = useRuntimeProject()
-  const { apps } = useAppCollection()
-  const { ecosystems } = useEcosystemCollection()
+  const appCollectionPath = computed(() =>
+    projectRuntime.mode.value === 'live' ? 'apps' : 'test-apps'
+  )
+  const ecosystemCollectionPath = computed(() =>
+    projectRuntime.mode.value === 'live' ? 'ecosystems' : 'test-ecosystems'
+  )
+  const { apps } = useAppCollection(appCollectionPath)
+  const { ecosystems } = useEcosystemCollection(ecosystemCollectionPath)
   const projectId = computed(() => normalizeString(projectRuntime.id.value))
+  const readOnlyScenario = computed(() => projectRuntime.readOnlyScenario.value)
 
   const projectEcosystems = computed(() =>
-    (ecosystems.value ?? []).filter((entry) => {
+    readOnlyScenario.value?.ecosystems ?? (ecosystems.value ?? []).filter((entry) => {
       const entryProjectId = normalizeString((entry as any).project_id)
       return !entryProjectId || entryProjectId === projectId.value
     })
   )
 
   const projectApps = computed(() =>
-    (apps.value ?? []).filter((entry) => {
+    readOnlyScenario.value?.apps ?? (apps.value ?? []).filter((entry) => {
       const entryProjectId = normalizeString((entry as any).project_id)
       return !entryProjectId || entryProjectId === projectId.value
     })
@@ -31,7 +38,11 @@ export function useRuntimeProjectConsole() {
       const id = normalizeString((entry as any).id)
       const name = normalizeString((entry as any).name) || id || 'Untitled ecosystem'
       const team = normalizeString((entry as any).team)
-      const rawApps = Array.isArray((entry as any).apps) ? (entry as any).apps : []
+      const rawApps = Array.isArray((entry as any).apps)
+        ? (entry as any).apps
+        : Number.isFinite(Number((entry as any).appCount))
+          ? Array.from({ length: Number((entry as any).appCount) })
+          : []
 
       return {
         id,
@@ -100,6 +111,7 @@ export function useRuntimeProjectConsole() {
     createAppTo: '/developer/registry',
     openEcosystemsTo: '/console/projects/ecosystems',
     openAppsTo: '/console/projects/apps',
+    openOverviewTo: '/console/projects/overview',
   } as const
 
   return createScopeConsole({
@@ -115,6 +127,7 @@ export function useRuntimeProjectConsole() {
       projectApps,
       ecosystemRows,
       appRows,
+      readOnlyScenario,
     },
   })
 }

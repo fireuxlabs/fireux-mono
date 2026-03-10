@@ -10,6 +10,7 @@
       <EntityIndexCta
         title="Ecosystems index"
         description="Browse ecosystem records from the FireUX project and move into the project console when you need to manage them."
+        family="project"
         source="db.collections.ecosystems"
         :count-label="`${count} ecosystem${count === 1 ? '' : 's'}`"
         :actions="actions"
@@ -79,13 +80,13 @@ const collection = computed(() =>
 
 const actions = [
   {
-    label: 'Project Console',
-    cta: 'Open overview',
+    label: 'Project',
+    cta: 'Open Project Console',
     to: '/console/projects/overview',
     icon: 'i-lucide-layout-dashboard',
   },
   {
-    label: 'Ecosystems Console',
+    label: 'Manage',
     cta: 'Manage ecosystems',
     to: '/console/projects/ecosystems',
     icon: 'i-lucide-orbit',

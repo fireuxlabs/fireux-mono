@@ -9,6 +9,7 @@
       <EntityIndexCta
         title="Modules index"
         description="Browse the FireUX module catalogue available to this runtime and use learn-more pages as the public reference surface."
+        family="project"
         source="runtime module catalogue"
         :count-label="`${moduleCollection.length} module${moduleCollection.length === 1 ? '' : 's'}`"
         :actions="actions"
@@ -45,8 +46,8 @@ const moduleCollection = computed(() =>
 
 const actions = [
   {
-    label: 'Project Console',
-    cta: 'Open overview',
+    label: 'Project',
+    cta: 'Open Project Console',
     to: '/console/projects/overview',
     icon: 'i-lucide-layout-dashboard',
   },

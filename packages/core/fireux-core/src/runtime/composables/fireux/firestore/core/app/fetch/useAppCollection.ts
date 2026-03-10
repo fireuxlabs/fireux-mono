@@ -5,9 +5,13 @@ import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
 type AppCollectionDoc = Partial<AppModel> & Partial<FireuxSystemAppRegistryDoc> & { id?: string }
 
-export function useAppCollection() {
+export function useAppCollection(collectionPath: string | { value?: string } = 'apps') {
   const { firestoreFetchCollection } = useFirestoreRead()
-  const source = firestoreFetchCollection<AppCollectionDoc>('apps')
+  const path =
+    typeof collectionPath === 'string'
+      ? collectionPath
+      : String(collectionPath?.value || 'apps').trim() || 'apps'
+  const source = firestoreFetchCollection<AppCollectionDoc>(path)
   const apps = computed(() => source.value ?? [])
 
   const count = computed(() => apps.value?.length ?? 0)

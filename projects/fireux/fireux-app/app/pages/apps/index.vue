@@ -9,6 +9,7 @@
       <EntityIndexCta
         title="Apps index"
         description="Browse app records from the FireUX project and jump into the project console when you need to manage them."
+        family="project"
         source="db.collections.apps"
         :count-label="`${collection.length} app${collection.length === 1 ? '' : 's'}`"
         :actions="actions"
@@ -51,13 +52,13 @@ const { apps } = useAppCollection()
 const collection = computed(() => apps.value ?? [])
 const actions = [
   {
-    label: 'Project Console',
-    cta: 'Open overview',
+    label: 'Project',
+    cta: 'Open Project Console',
     to: '/console/projects/overview',
     icon: 'i-lucide-layout-dashboard',
   },
   {
-    label: 'Apps Console',
+    label: 'Manage',
     cta: 'Manage apps',
     to: '/console/projects/apps',
     icon: 'i-lucide-app-window',

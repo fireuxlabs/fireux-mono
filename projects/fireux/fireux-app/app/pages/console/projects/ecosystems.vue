@@ -13,6 +13,7 @@
 
           <div class="flex flex-wrap gap-2">
             <UButton
+              v-if="isWritableMode"
               :to="actions.createEcosystemTo"
               icon="i-lucide-plus"
               variant="soft"
@@ -56,7 +57,8 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { ecosystemRows, actions } = useRuntimeProjectConsole()
+const { runtime, ecosystemRows, actions } = useRuntimeProjectConsole()
+const isWritableMode = computed(() => runtime.mode.value === 'live')
 
 const initials = (value: string) =>
   String(value || '')
