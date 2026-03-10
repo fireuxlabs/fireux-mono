@@ -20,17 +20,25 @@ export function useRuntimeProjectConsole() {
   const readOnlyScenario = computed(() => projectRuntime.readOnlyScenario.value)
 
   const projectEcosystems = computed(() =>
-    readOnlyScenario.value?.ecosystems ?? (ecosystems.value ?? []).filter((entry) => {
-      const entryProjectId = normalizeString((entry as any).project_id)
-      return !entryProjectId || entryProjectId === projectId.value
-    })
+    readOnlyScenario.value?.ecosystems ?? (
+      projectId.value
+        ? (ecosystems.value ?? []).filter((entry) => {
+            const entryProjectId = normalizeString((entry as any).project_id)
+            return entryProjectId === projectId.value
+          })
+        : []
+    )
   )
 
   const projectApps = computed(() =>
-    readOnlyScenario.value?.apps ?? (apps.value ?? []).filter((entry) => {
-      const entryProjectId = normalizeString((entry as any).project_id)
-      return !entryProjectId || entryProjectId === projectId.value
-    })
+    readOnlyScenario.value?.apps ?? (
+      projectId.value
+        ? (apps.value ?? []).filter((entry) => {
+            const entryProjectId = normalizeString((entry as any).project_id)
+            return entryProjectId === projectId.value
+          })
+        : []
+    )
   )
 
   const ecosystemRows = computed(() =>

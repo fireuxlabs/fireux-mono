@@ -63,7 +63,7 @@ export function useRuntimeProject(params?: UseRuntimeProjectParams) {
   const idSource = computed(() =>
     params?.projectId !== undefined
       ? normalizeString(unref(params.projectId))
-      : normalizeString(selection.runtimeProjectId.value) || runtimeProjectId.value
+      : normalizeString(selection.runtimeProjectId.value)
   )
   const modeSource = computed(() =>
     params?.mode !== undefined ? unref(params.mode) : selection.runtimeProjectMode.value
@@ -128,7 +128,7 @@ export function useRuntimeProject(params?: UseRuntimeProjectParams) {
   const hasDoc = computed(() => Boolean(project.value))
 
   const name = computed(() =>
-    String(project.value?.name || project.value?.project_name || `${cfg.appName} Project`).trim()
+    String(project.value?.name || project.value?.project_name || '').trim()
   )
   const ecosystem = computed(() => String(cfg.ecosystem || '').trim())
   const appId = computed(() => String(cfg.appId || '').trim())

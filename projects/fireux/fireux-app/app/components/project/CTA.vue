@@ -22,7 +22,7 @@
             variant="subtle"
             color="primary"
             icon="i-lucide-plus"
-            @click="goToProject('live', liveProjectId)"
+            @click="createProject"
           >
             Create project
           </UButton>
@@ -36,7 +36,7 @@
             icon="i-lucide-flask-conical"
             @click="goToProject('test')"
           >
-            Open test project
+            Enter Test Project
           </UButton>
     </template>
 
@@ -80,27 +80,31 @@ import { getReadOnlyProjectScenarioList } from 'fireux-core/runtime/composables/
 import { useRuntimeProjectSelection } from 'fireux-core/runtime/composables/fireux/app/runtime-project/state'
 import { useRuntimeProject } from 'fireux-core/runtime/composables/fireux/app/runtime-project/useRuntimeProject'
 import type { RuntimeMode } from 'fireux-core/runtime/composables/fireux/runtime/runtime.types'
+import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import ProjectCardsPill from './Cards/Pill.vue'
 
 const router = useRouter()
 const runtimeProject = useRuntimeProject()
-const liveProject = useRuntimeProject({
-  mode: 'live',
-  projectId: runtimeProject.firebaseProjectId,
-})
 const { setRuntimeProject } = useRuntimeProjectSelection()
+const { projects } = useProjectCollection()
+const { currentUser } = useUser()
 
 const readOnlyScenarios = computed(() => getReadOnlyProjectScenarioList())
-const liveProjectId = computed(() =>
-  String(liveProject.id.value || liveProject.firebaseProjectId.value || '').trim()
+const ownedProjects = computed(() =>
+  (projects.value ?? []).filter((entry) =>
+    String((entry as any).owner_user_id || '').trim() === String(currentUser.value?.id || '').trim()
+  )
 )
+const liveProject = computed(() => ownedProjects.value[0] ?? null)
+const liveProjectId = computed(() => String((liveProject.value as any)?.id || '').trim())
 const liveProjectCard = computed(() => {
-  if (!liveProject.hasDoc.value) return null
+  if (!liveProject.value) return null
 
   return {
-    title: String(liveProject.name.value || 'Project').trim(),
+    title: String((liveProject.value as any)?.name || 'Project').trim(),
     subtitle: liveProjectId.value,
-    badges: [String((liveProject.doc.value as any)?.status || 'active').trim()],
+    badges: [String((liveProject.value as any)?.status || 'active').trim()],
   }
 })
 
@@ -109,11 +113,14 @@ const goToProject = async (mode: RuntimeMode, projectId?: string) => {
     projectId ||
     liveProjectId.value ||
     runtimeProject.id.value ||
-    runtimeProject.firebaseProjectId.value ||
     ''
   ).trim()
   const resolvedId = fallback
   setRuntimeProject({ projectId: resolvedId, mode })
   await router.push('/console/projects/overview')
+}
+
+const createProject = async () => {
+  await router.push('/developer/registry')
 }
 </script>

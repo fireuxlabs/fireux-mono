@@ -34,7 +34,7 @@
       <div class="flex flex-wrap gap-2">
         <UButton to="/kitchens" color="primary" icon="i-lucide-chef-hat">Open kitchens</UButton>
         <UButton to="/kitchens/learn-more/dev" color="neutral" variant="soft" icon="i-lucide-code-2">Dev details</UButton>
-        <UButton to="/console/kitchen/overview" color="neutral" variant="soft" icon="i-lucide-layout-dashboard">Kitchen console</UButton>
+        <UButton to="/console/kitchen/overview" color="neutral" variant="soft" icon="i-lucide-layout-dashboard">Enter Kitchen Console</UButton>
         <UButton to="/kitchens/create" color="neutral" variant="ghost" icon="i-lucide-plus">Create kitchen</UButton>
       </div>
     </UPageBody>

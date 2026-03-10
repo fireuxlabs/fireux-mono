@@ -64,13 +64,18 @@ export default defineNuxtRouteMiddleware(async (to) => {
   }
 
   if (isConsoleRoute) {
+    const requestedScope = getConsoleScopeFromPath(to.path)
+    if (requestedScope === 'projects') {
+      return
+    }
+
     const consoleChildren = discoverConsoleChildren(router.getRoutes())
     const decision = resolveConsoleAccessDecision({
       isAuthenticated: isAuthenticated.value,
       appUser: appUser.value,
       isAdmin: isAdmin.value,
       discoveredChildren: consoleChildren,
-      requestedScope: getConsoleScopeFromPath(to.path),
+      requestedScope,
     })
 
     if (decision.status === 'disabled') {

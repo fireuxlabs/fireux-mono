@@ -14,7 +14,7 @@
             icon="i-lucide-building"
             @click="goToPortfolio('live')"
           >
-            Open my portfolios
+            Enter Portfolio Console
           </UButton>
     </template>
 
@@ -26,7 +26,7 @@
             icon="i-lucide-flask-conical"
             @click="goToPortfolio('test')"
           >
-            Open test portfolio
+            Enter Test Portfolio
           </UButton>
     </template>
 

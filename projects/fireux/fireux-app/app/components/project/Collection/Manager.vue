@@ -54,7 +54,7 @@
           variant="soft"
           icon="i-lucide-layout-dashboard"
         >
-          Open Console
+          Enter Project Console
         </UButton>
       </template>
     </UAlert>

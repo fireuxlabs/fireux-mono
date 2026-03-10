@@ -36,7 +36,7 @@
           Open projects
         </UButton>
         <UButton to="/console/projects/overview" color="neutral" variant="soft" icon="i-lucide-layout-dashboard">
-          Project console
+          Enter Project Console
         </UButton>
         <UButton to="/projects/learn-more/dev" color="neutral" variant="soft" icon="i-lucide-code-2">
           Dev details
