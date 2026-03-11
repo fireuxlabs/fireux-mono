@@ -7,14 +7,26 @@
     learn-more-to="/portfolios/learn-more"
   >
     <template #my>
+          <div v-if="livePills.length" class="space-y-2">
+            <PortfolioCardsPill
+              v-for="item in livePills"
+              :key="item.id"
+              :to="''"
+              :title="item.title"
+              :subtitle="item.subtitle"
+              :badges="item.badges"
+              :action="true"
+              @action="goToPortfolio('live', item.id)"
+            />
+          </div>
           <UButton
             block
             variant="subtle"
             color="primary"
-            icon="i-lucide-building"
-            @click="goToPortfolio('live')"
+            icon="i-lucide-plus"
+            @click="createPortfolio"
           >
-            Enter Portfolio Console
+            Create portfolio
           </UButton>
     </template>
 
@@ -68,10 +80,30 @@ import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/Co
 import { getReadOnlyPortfolioScenarioList } from '../../../composables/fireux/app/portfolio-runtime/read-only-scenarios'
 import type { RuntimePortfolioMode } from '../../../composables/fireux/app/portfolio-runtime/shared'
 import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
+import { usePortfolioFetch } from '../../../composables/fireux/firestore/portfolio/fetch/usePortfolioFetch'
+import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
 import PortfolioCardsPill from './Cards/Pill.vue'
+
+const props = withDefaults(defineProps<{
+  createMode?: 'route' | 'inline'
+}>(), {
+  createMode: 'route',
+})
+
+const emit = defineEmits<{
+  (event: 'create'): void
+}>()
 
 const router = useRouter()
 const { runtimePortfolioId, setRuntimePortfolio } = useRuntimePortfolioSelection()
+const { portfolios } = usePortfolioFetch()
+const { pill } = usePortfolioInterface()
+
+const livePills = computed(() =>
+  (portfolios.value ?? [])
+    .map((entry) => pill(entry))
+    .filter((entry): entry is NonNullable<ReturnType<typeof pill>> => Boolean(entry))
+)
 
 const readOnlyScenarios = computed(() =>
   getReadOnlyPortfolioScenarioList()
@@ -99,5 +131,19 @@ const goToPortfolio = async (mode: RuntimePortfolioMode, portfolioId?: string) =
   const resolvedId = String(portfolioId || fallback).trim()
   setRuntimePortfolio({ portfolioId: resolvedId, mode })
   await router.push('/console/portfolio/overview')
+}
+
+const createPortfolio = async () => {
+  if (props.createMode === 'inline') {
+    emit('create')
+    return
+  }
+
+  await router.push({
+    path: '/portfolios/create',
+    query: {
+      returnTo: '/console/portfolio/overview',
+    },
+  })
 }
 </script>

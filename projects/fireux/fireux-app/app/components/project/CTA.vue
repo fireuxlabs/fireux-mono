@@ -121,6 +121,11 @@ const goToProject = async (mode: RuntimeMode, projectId?: string) => {
 }
 
 const createProject = async () => {
-  await router.push('/developer/registry')
+  await router.push({
+    path: '/projects/create',
+    query: {
+      returnTo: '/console/projects/overview',
+    },
+  })
 }
 </script>

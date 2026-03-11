@@ -96,6 +96,7 @@
 </template>
 
 <script setup lang="ts">
+import { navigateTo } from '#imports'
 import { computed, reactive, watchEffect } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useRuntimeProjectConsole } from 'fireux-core/runtime/composables/fireux/app/runtime-project/useRuntimeProjectConsole'
@@ -117,6 +118,9 @@ definePageMeta({
 })
 
 const { runtime, appRows, ecosystemRows, actions } = useRuntimeProjectConsole()
+if (!runtime.id.value) {
+  await navigateTo('/console/projects/create', { replace: true })
+}
 const { updateDocument } = useFirestoreUpdate()
 const toast = useToastify()
 const isWritableMode = computed(() => runtime.mode.value === 'live')

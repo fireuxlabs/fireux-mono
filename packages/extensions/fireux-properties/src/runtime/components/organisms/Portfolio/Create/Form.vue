@@ -1,0 +1,133 @@
+<template>
+  <div class="space-y-4">
+    <UFormGroup label="Portfolio name" required>
+      <UInput
+        v-model="name"
+        placeholder="Bern Residential Portfolio"
+        autofocus
+      />
+    </UFormGroup>
+
+    <UFormGroup label="Owner label">
+      <UInput
+        v-model="ownerLabel"
+        placeholder="Daniel Watson"
+      />
+    </UFormGroup>
+
+    <UFormGroup label="Region label">
+      <UInput
+        v-model="regionLabel"
+        placeholder="Bern"
+      />
+    </UFormGroup>
+
+    <UFormGroup label="Strategy label">
+      <UInput
+        v-model="strategyLabel"
+        placeholder="Income"
+      />
+    </UFormGroup>
+
+    <UFormGroup label="Notes">
+      <UTextarea
+        v-model="notes"
+        :rows="4"
+        placeholder="Short operating note for this portfolio."
+      />
+    </UFormGroup>
+
+    <div v-if="error" class="text-sm text-red-600">
+      {{ error }}
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      <UButton
+        color="primary"
+        icon="i-lucide-plus"
+        :loading="submitting"
+        @click="submit"
+      >
+        Create portfolio
+      </UButton>
+
+      <UButton
+        v-if="cancelTo"
+        :to="cancelTo"
+        color="neutral"
+        variant="soft"
+        icon="i-lucide-arrow-left"
+      >
+        Cancel
+      </UButton>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import { useRoute, useRouter } from '#imports'
+import { useRuntimePortfolioSelection } from '../../../../composables/fireux/app/portfolio-runtime/state'
+import { usePortfolioCreate } from '../../../../composables/fireux/firestore/portfolio/mutations/usePortfolioCreate'
+
+const props = withDefaults(defineProps<{
+  returnTo?: string
+  cancelTo?: string
+}>(), {
+  returnTo: '',
+  cancelTo: '',
+})
+
+const emit = defineEmits<{
+  (event: 'created', portfolioId: string): void
+}>()
+
+const route = useRoute()
+const router = useRouter()
+const { setRuntimePortfolio } = useRuntimePortfolioSelection()
+const { createPortfolio } = usePortfolioCreate()
+
+const name = ref('')
+const ownerLabel = ref('')
+const regionLabel = ref('')
+const strategyLabel = ref('')
+const notes = ref('')
+const submitting = ref(false)
+const error = ref('')
+
+const resolvedReturnTo = computed(() => {
+  const explicit = String(props.returnTo || '').trim()
+  if (explicit.startsWith('/')) return explicit
+  const queryValue = String(route.query.returnTo || '').trim()
+  if (queryValue.startsWith('/')) return queryValue
+  return '/console/portfolio/overview'
+})
+
+const submit = async () => {
+  if (submitting.value) return
+
+  error.value = ''
+  submitting.value = true
+
+  try {
+    const portfolioId = await createPortfolio({
+      name: name.value,
+      owner_label: ownerLabel.value,
+      region_label: regionLabel.value,
+      strategy_label: strategyLabel.value,
+      notes: notes.value,
+    })
+
+    setRuntimePortfolio({ portfolioId, mode: 'live' })
+    emit('created', portfolioId)
+
+    if (route.path !== resolvedReturnTo.value) {
+      await router.push(resolvedReturnTo.value)
+    }
+  } catch (err) {
+    error.value = err instanceof Error ? err.message : 'Unable to create portfolio'
+  } finally {
+    submitting.value = false
+  }
+}
+</script>

@@ -8,6 +8,7 @@ const normalizeString = (value: unknown): string => String(value || '').trim()
 
 export function useRuntimeProjectConsole() {
   const projectRuntime = useRuntimeProject()
+  const hasProjectSelection = computed(() => Boolean(projectRuntime.id.value))
   const appCollectionPath = computed(() =>
     projectRuntime.mode.value === 'live' ? 'apps' : 'test-apps'
   )
@@ -93,28 +94,46 @@ export function useRuntimeProjectConsole() {
     apps: projectApps.value.length,
   }))
 
-  const navItems = computed(() => [
-    {
-      key: 'overview',
-      label: 'Overview',
-      icon: 'i-lucide-layout-dashboard',
-      to: '/console/projects/overview',
-    },
-    {
-      key: 'ecosystems',
-      label: 'Ecosystems',
-      icon: 'i-lucide-orbit',
-      to: '/console/projects/ecosystems',
-    },
-    {
-      key: 'apps',
-      label: 'Apps',
-      icon: 'i-lucide-app-window',
-      to: '/console/projects/apps',
-    },
-  ] as const)
+  const navItems = computed(() =>
+    hasProjectSelection.value
+      ? [
+          {
+            key: 'overview',
+            label: 'Overview',
+            icon: 'i-lucide-layout-dashboard',
+            to: '/console/projects/overview',
+          },
+          {
+            key: 'ecosystems',
+            label: 'Ecosystems',
+            icon: 'i-lucide-orbit',
+            to: '/console/projects/ecosystems',
+          },
+          {
+            key: 'apps',
+            label: 'Apps',
+            icon: 'i-lucide-app-window',
+            to: '/console/projects/apps',
+          },
+        ]
+      : [
+          {
+            key: 'overview',
+            label: 'Overview',
+            icon: 'i-lucide-layout-dashboard',
+            to: '/console/projects/overview',
+          },
+          {
+            key: 'create',
+            label: 'Create',
+            icon: 'i-lucide-plus',
+            to: '/console/projects/create',
+          },
+        ]
+  )
 
   const actions = {
+    openCreateTo: '/console/projects/create',
     createEcosystemTo: '/developer/registry',
     createAppTo: '/developer/registry',
     openEcosystemsTo: '/console/projects/ecosystems',

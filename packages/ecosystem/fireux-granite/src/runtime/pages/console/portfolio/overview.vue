@@ -6,7 +6,18 @@
 
     <template #body>
       <section class="space-y-8">
-        <PortfolioCTA v-if="!runtimeId" />
+        <template v-if="!runtimeId">
+          <PortfolioCTA create-mode="inline" @create="isCreateOpen = true" />
+
+          <USlideover v-model:open="isCreateOpen" title="Create Portfolio">
+            <template #body>
+              <PortfolioCreateForm
+                return-to="/console/portfolio/overview"
+                @created="isCreateOpen = false"
+              />
+            </template>
+          </USlideover>
+        </template>
 
         <template v-else>
           <div class="text-xs text-dimmed">
@@ -151,8 +162,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRuntimePortfolioConsole } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolioConsole'
+import PortfolioCreateForm from 'fireux-properties/runtime/components/organisms/Portfolio/Create/Form.vue'
 import { usePropertyCollection } from 'fireux-properties/runtime/composables/fireux/firestore/property/fetch/usePropertyCollection'
 import { useComplianceRecordCollection } from 'fireux-compliance/runtime/composables/fireux/firestore/compliance/fetch/useComplianceRecordCollection'
 import { deriveComplianceStatus } from 'fireux-compliance/runtime/composables/fireux/firestore/compliance/utils/status/useComplianceStatus'
@@ -192,6 +204,7 @@ definePageMeta({
 })
 
 const { runtime: runtimePortfolio, surfaceLinks } = useRuntimePortfolioConsole()
+const isCreateOpen = ref(false)
 const isDev = import.meta.dev
 const runtimeId = computed(() => String(runtimePortfolio.id.value || '').trim())
 const runtimeMode = computed(() => runtimePortfolio.mode.value)

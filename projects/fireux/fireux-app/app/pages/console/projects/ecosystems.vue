@@ -39,6 +39,7 @@
 </template>
 
 <script setup lang="ts">
+import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import { useRuntimeProjectConsole } from 'fireux-core/runtime/composables/fireux/app/runtime-project/useRuntimeProjectConsole'
 
@@ -58,6 +59,9 @@ definePageMeta({
 })
 
 const { runtime, ecosystemRows, actions } = useRuntimeProjectConsole()
+if (!runtime.id.value) {
+  await navigateTo('/console/projects/create', { replace: true })
+}
 const isWritableMode = computed(() => runtime.mode.value === 'live')
 
 const initials = (value: string) =>

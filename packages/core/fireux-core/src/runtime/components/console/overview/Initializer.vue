@@ -9,26 +9,28 @@
       </div>
     </template>
 
-    <div class="flex flex-wrap gap-3">
-      <UButton
-        v-if="primaryLabel && primaryTo"
-        :to="primaryTo"
-        color="primary"
-        :icon="primaryIcon"
-      >
-        {{ primaryLabel }}
-      </UButton>
+    <slot name="actions">
+      <div class="flex flex-wrap gap-3">
+        <UButton
+          v-if="primaryLabel && primaryTo"
+          :to="primaryTo"
+          color="primary"
+          :icon="primaryIcon"
+        >
+          {{ primaryLabel }}
+        </UButton>
 
-      <UButton
-        v-if="secondaryLabel && secondaryTo"
-        :to="secondaryTo"
-        variant="soft"
-        color="neutral"
-        :icon="secondaryIcon"
-      >
-        {{ secondaryLabel }}
-      </UButton>
-    </div>
+        <UButton
+          v-if="secondaryLabel && secondaryTo"
+          :to="secondaryTo"
+          variant="soft"
+          color="neutral"
+          :icon="secondaryIcon"
+        >
+          {{ secondaryLabel }}
+        </UButton>
+      </div>
+    </slot>
   </UCard>
 </template>
 
