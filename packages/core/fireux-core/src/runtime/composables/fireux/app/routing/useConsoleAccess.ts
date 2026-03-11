@@ -3,16 +3,14 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '../../firebase/useAuth'
 import { useUser } from '../../firestore/core/user/useUser'
 import {
+  CONSOLE_ROOT,
   type ConsoleChildRoute,
   discoverConsoleChildren,
   getConsoleScopeFromPath,
   isConsoleRoutePath,
-  normalizeConsolePath,
-  normalizeConsoleScope,
 } from './consoleRoutes'
 
 type UseConsoleAccessOptions = {
-  consolePath?: string
   targetPath?: MaybeRefOrGetter<string | null | undefined>
 }
 
@@ -25,8 +23,12 @@ export type ConsoleAccessStatus =
 function asScopeList(value: unknown) {
   if (!Array.isArray(value)) return []
   return value
-    .map((entry) => normalizeConsoleScope(entry))
+    .map((entry) => String(entry || '').trim().toLowerCase())
     .filter(Boolean)
+}
+
+function normalizeScope(value: unknown) {
+  return String(value || '').trim().toLowerCase()
 }
 
 export function resolveConsoleEnabled(
@@ -63,7 +65,7 @@ type ResolveConsoleAccessDecisionParams = {
 export function resolveConsoleAccessDecision(
   params: ResolveConsoleAccessDecisionParams
 ) {
-  const requestedScope = normalizeConsoleScope(params.requestedScope)
+  const requestedScope = normalizeScope(params.requestedScope)
   const discoveredScopes = params.discoveredChildren.map((entry) => entry.key)
   const consoleEnabled = resolveConsoleEnabled(
     params.isAuthenticated,
@@ -103,10 +105,8 @@ export function useConsoleAccess(options: UseConsoleAccessOptions = {}) {
   const auth = useAuth()
   const { appUser, isAdmin } = useUser()
 
-  const consolePath = normalizeConsolePath(options.consolePath)
-
   const discoveredChildren = computed(() =>
-    discoverConsoleChildren(router.getRoutes(), consolePath)
+    discoverConsoleChildren(router.getRoutes())
   )
 
   const discoveredScopes = computed(() =>
@@ -115,10 +115,10 @@ export function useConsoleAccess(options: UseConsoleAccessOptions = {}) {
 
   const requestedPath = computed(() => String(toValue(options.targetPath) || '').trim())
   const isConsoleRoute = computed(() =>
-    isConsoleRoutePath(requestedPath.value, consolePath)
+    isConsoleRoutePath(requestedPath.value)
   )
   const requestedScope = computed(() =>
-    getConsoleScopeFromPath(requestedPath.value, consolePath)
+    getConsoleScopeFromPath(requestedPath.value)
   )
 
   const explicitConsoleEnabled = computed(() =>
@@ -145,7 +145,7 @@ export function useConsoleAccess(options: UseConsoleAccessOptions = {}) {
   const allowedScopes = computed(() => decision.value.allowedScopes)
   const hasScopeAccess = computed(() => decision.value.hasScopeAccess)
   const canAccessScope = (scope: string | null | undefined) => {
-    const normalizedScope = normalizeConsoleScope(scope)
+    const normalizedScope = normalizeScope(scope)
     if (!normalizedScope) return consoleEnabled.value
     return allowedScopes.value.includes(normalizedScope)
   }
@@ -156,7 +156,7 @@ export function useConsoleAccess(options: UseConsoleAccessOptions = {}) {
   })
 
   return {
-    consolePath,
+    consolePath: CONSOLE_ROOT,
     isConsoleRoute,
     requestedScope,
     discoveredChildren,

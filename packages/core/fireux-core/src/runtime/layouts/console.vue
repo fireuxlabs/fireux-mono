@@ -92,7 +92,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute } from '#imports'
-import { useConsoleNav } from '../composables/fireux/app/routing/presets'
+import { useConsoleNav } from '../composables/fireux/app/routing/useConsoleNav'
 import { useRuntimeProjectSelection } from '../composables/fireux/app/runtime-project'
 import { useNavGrouping } from '../composables/fireux/app/ui/nav/useNavGrouping'
 import { useAuthRedirect } from '../composables/fireux/app/ui/useAuthRedirect'

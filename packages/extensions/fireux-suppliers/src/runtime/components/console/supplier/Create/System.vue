@@ -31,16 +31,27 @@
         </ul>
 
         <div class="actions">
-          <UButton
-            color="primary"
-            size="lg"
-            class="create-button"
-            :loading="isCreating"
-            :disabled="isCreating"
-            @click="handleCreate"
-          >
-            {{ isCreating ? 'Creating…' : 'Create profile' }}
-          </UButton>
+          <div class="flex flex-wrap gap-2">
+            <UButton
+              color="primary"
+              size="lg"
+              class="create-button"
+              :loading="isCreating"
+              :disabled="isCreating"
+              @click="handleCreate"
+            >
+              {{ isCreating ? 'Creating…' : 'Create profile' }}
+            </UButton>
+            <UButton
+              v-if="cancelTo"
+              :to="cancelTo"
+              color="neutral"
+              variant="soft"
+              icon="i-lucide-arrow-left"
+            >
+              Cancel
+            </UButton>
+          </div>
           <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
         </div>
       </div>
@@ -49,11 +60,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useSupplierCreate } from '../../../../composables/supplier/useSupplierCreate';
 
-const props = defineProps<{ create?: () => Promise<unknown> }>()
+const props = defineProps<{
+  create?: () => Promise<unknown>
+  returnTo?: string
+  cancelTo?: string
+}>()
 
 const emit = defineEmits<{
   (e: 'created', payload: unknown): void
@@ -65,6 +80,7 @@ const { ensureSupplierProfile } = useSupplierCreate()
 
 const isCreating = ref(false)
 const errorMessage = ref<string | null>(null)
+const cancelTo = computed(() => String(props.cancelTo || '').trim())
 
 const handleCreate = async () => {
   if (isCreating.value) return
@@ -76,7 +92,7 @@ const handleCreate = async () => {
   try {
     const result = await create()
     emit('created', result)
-    await router.push('/dashboard/supplier/profile')
+    await router.push(props.returnTo || '/dashboard/supplier/profile')
   } catch (error) {
     const message =
       error instanceof Error

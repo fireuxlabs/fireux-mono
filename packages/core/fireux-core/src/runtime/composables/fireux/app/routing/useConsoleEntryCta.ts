@@ -1,21 +1,16 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { discoverConsoleChildren, normalizeConsolePath } from './consoleRoutes'
+import { CONSOLE_ROOT, discoverConsoleChildren } from './consoleRoutes'
 
-type UseConsoleEntryCtaOptions = {
-  consolePath?: string
-}
-
-export function useConsoleEntryCta(options: UseConsoleEntryCtaOptions = {}) {
+export function useConsoleEntryCta() {
   const router = useRouter()
-  const normalizedConsolePath = normalizeConsolePath(options.consolePath)
 
   const hasConsoleRoute = computed(() =>
-    router.getRoutes().some((route) => route.path === normalizedConsolePath)
+    router.getRoutes().some((route) => route.path === CONSOLE_ROOT)
   )
 
   const consoleChildren = computed(() =>
-    discoverConsoleChildren(router.getRoutes(), normalizedConsolePath)
+    discoverConsoleChildren(router.getRoutes())
   )
 
   const hasConsoleChildren = computed(() => consoleChildren.value.length > 0)
@@ -23,8 +18,7 @@ export function useConsoleEntryCta(options: UseConsoleEntryCtaOptions = {}) {
     hasConsoleRoute.value || hasConsoleChildren.value
   )
   const consoleEntryPath = computed(() =>
-    consoleChildren.value[0]?.path ||
-    (hasConsoleRoute.value ? normalizedConsolePath : '/')
+    consoleChildren.value[0]?.path || (hasConsoleRoute.value ? CONSOLE_ROOT : '/')
   )
 
   return {
@@ -32,7 +26,7 @@ export function useConsoleEntryCta(options: UseConsoleEntryCtaOptions = {}) {
     hasConsoleChildren,
     hasConsoleEntry,
     consoleEntryPath,
-    consolePath: normalizedConsolePath,
+    consolePath: CONSOLE_ROOT,
     consoleChildren,
   }
 }

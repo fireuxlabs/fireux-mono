@@ -21,8 +21,6 @@ Scan scope:
 - `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/mutations/useUserHandleClaim.ts`
 - `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/utils/ensureHelpers.ts`
 - `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/utils/update/useCoreUserUpdate.ts`
-- `packages/ecosystem/fireux-fireux/src/apps/stitch/app/composables/useStitchProviderCreate.ts`
-- `packages/ecosystem/fireux-fireux/src/apps/stitch/app/composables/useStitchProviderUpdate.ts`
 - `packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/mutations/useBlogCreate.ts`
 - `scripts/migrate.mjs`
 

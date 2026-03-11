@@ -1,13 +1,7 @@
 import { computed } from 'vue'
 import type { NavItem } from '../../../../../types/nav'
 import { useUser } from '../../firestore/core/user/useUser'
-import { getConsoleScopeFromPath } from './consoleRoutes'
-import { useConsoleAccess } from './useConsoleAccess'
-import { useRuntimeProjectSelection } from '../runtime-project/state'
 import { useNav } from '../ui/nav/useNav'
-
-export const useDefaultNav = () => useNav(['default'])
-export const useLandingNav = () => useNav(['landing'])
 
 const canShowDashboardItem = (item: NavItem, isAdmin: boolean, isDev: boolean) => {
   if (item.key === 'admin' || item.to === '/dashboard/admin') {
@@ -44,30 +38,3 @@ export const useDashboardNav = () => {
     baseNavFilter,
   }
 }
-
-export const useConsoleNav = () => {
-  const nav = useNav(['console'])
-  const { canAccessScope, consoleEnabled } = useConsoleAccess()
-  const { runtimeProjectId } = useRuntimeProjectSelection()
-
-  return {
-    ...nav,
-    baseNavFilter: (item: NavItem) => {
-      if (!item.to?.startsWith('/console')) return true
-
-      if (item.to.startsWith('/console/projects/')) {
-        const hasProject = Boolean(String(runtimeProjectId.value || '').trim())
-        if (!hasProject) {
-          return item.to === '/console/projects/create'
-        }
-        return item.to !== '/console/projects/create'
-      }
-
-      const scope = getConsoleScopeFromPath(item.to)
-      if (!scope) return consoleEnabled.value
-      return canAccessScope(scope)
-    },
-  }
-}
-
-export const useDevNav = () => useNav(['dev'])

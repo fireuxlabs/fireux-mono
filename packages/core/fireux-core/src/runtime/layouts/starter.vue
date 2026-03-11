@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useDefaultNav } from '../composables/fireux/app/routing/presets'
+import { useDefaultNav } from '../composables/fireux/app/routing/useDefaultNav'
 const nav = useDefaultNav()
 const menuBarLinks = computed(() => nav.desktop.value)
 const mobileLinks = computed(() => nav.mobile.value)

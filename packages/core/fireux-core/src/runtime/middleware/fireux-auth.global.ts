@@ -65,7 +65,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   if (isConsoleRoute) {
     const requestedScope = getConsoleScopeFromPath(to.path)
-    if (requestedScope === 'projects') {
+    const authOnlyConsoleScopes = new Set(['projects', 'kitchen', 'portfolio', 'supplier'])
+
+    if (requestedScope && authOnlyConsoleScopes.has(requestedScope)) {
       return
     }
 

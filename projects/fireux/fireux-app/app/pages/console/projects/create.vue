@@ -23,7 +23,7 @@
             </div>
           </template>
 
-          <ProjectCreateForm
+          <ProjectCreateSystem
             return-to="/console/projects/overview"
             cancel-to="/console/projects/overview"
           />
@@ -34,10 +34,8 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
 import ConsoleOverviewInitializer from 'fireux-core/runtime/components/console/overview/Initializer.vue'
-import { useRuntimeProject } from 'fireux-core/runtime/composables/fireux/app/runtime-project/useRuntimeProject'
-import ProjectCreateForm from '../../../components/project/Create/Form.vue'
+import ProjectCreateSystem from '../../../components/project/Create/System.vue'
 
 definePageMeta({
   layout: 'console',
@@ -53,9 +51,4 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const runtime = useRuntimeProject()
-
-if (runtime.id.value) {
-  await navigateTo('/console/projects/overview', { replace: true })
-}
 </script>

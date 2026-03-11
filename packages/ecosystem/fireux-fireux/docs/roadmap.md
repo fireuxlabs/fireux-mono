@@ -8,7 +8,6 @@ Updated: 2026-03-02
   - `fireux-app` (flagship control surface)
   - `aconsole` (operations console)
   - `fireux-tenant` (sandbox)
-  - `stitch` (possible rebrand: `hive`)
 
 ## North Star
 - FireUX becomes the operating system for app ecosystems:
@@ -50,18 +49,7 @@ Updated: 2026-03-02
   - run safe workflow experiments before promotion
 - Default sandbox runtime to `test`/`read-only` strategies until explicitly promoted.
 
-## Wave 5 — `stitch` / `hive` SEO Directory
-- Product direction: directory of SEO professionals.
-- Build on `fireux-jobs` professional models and contracts where possible.
-- Prepare for brand switch:
-  - keep app/domain naming alias-ready (`stitch` -> `hive`)
-  - avoid hardcoding brand strings in shared logic
-- Launch requirements:
-  - professional profile publish pipeline
-  - search/filter directory UX
-  - public route strategy aligned with runtime/SEO canon
-
-## Wave 6 — Central SEO Operations
+## Wave 5 — Central SEO Operations
 - Run SEO governance from the FireUX ecosystem layer:
   - canonical URL compliance checks
   - metadata coverage checks
@@ -74,10 +62,8 @@ Updated: 2026-03-02
 - Should app index automation run:
   - at scaffolding time only, or
   - continuously via CI discovery + autofix?
-- If `stitch` is rebranded to `hive`, decide whether package ID changes or only public-facing brand changes.
 
 ## Immediate Next Actions
 - Define app index schema in this package.
 - Implement app registration automation + CI guard.
 - Draft first `fireux-app` dashboard widgets against the app index.
-- Confirm `stitch`/`hive` naming strategy before public launch.

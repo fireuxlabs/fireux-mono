@@ -22,7 +22,6 @@
     "dev:bringli": "node scripts/free-port.mjs 3006 && pnpm --filter ./projects/bringli/bringli-app dev",
     "dev:granite": "node scripts/free-port.mjs 3007 && pnpm --filter ./projects/granite/granite-app dev",
     "dev:la-tap-berne": "node scripts/free-port.mjs 3008 && pnpm --filter ./projects/misebox/la-tap-berne dev",
-    "dev:stitch": "node scripts/free-port.mjs 3011 && pnpm --filter ./packages/ecosystem/fireux-fireux/apps/stitch dev",
     "dev:all": "concurrently \"pnpm dev:fireux\" \"pnpm dev:misebox\" \"pnpm dev:cleanbox\"",
     "dev:all-extended": "concurrently \"pnpm dev:fireux\" \"pnpm dev:misebox\" \"pnpm dev:cleanbox\" \"pnpm dev:niederhorn\" \"pnpm dev:richies\" \"pnpm dev:tenant\"",
     "create:ecosystem": "node scripts/create-ecosystem.mjs",

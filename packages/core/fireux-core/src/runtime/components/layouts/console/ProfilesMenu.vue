@@ -29,7 +29,7 @@ import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useState } from '#imports'
 import type { DropdownMenuItem } from '@nuxt/ui'
-import { useDashboardNav } from '../../../composables/fireux/app/routing/presets'
+import { useDashboardNav } from '../../../composables/fireux/app/routing/useDashboardNav'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
 defineOptions({ name: 'LayoutsConsoleProfilesMenu' })

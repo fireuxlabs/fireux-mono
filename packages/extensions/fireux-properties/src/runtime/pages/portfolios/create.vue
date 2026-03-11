@@ -17,7 +17,7 @@
           </div>
         </template>
 
-        <PortfolioCreateForm :cancel-to="cancelTo" :return-to="returnTo" />
+        <PortfolioCreateSystem :cancel-to="cancelTo" :return-to="returnTo" />
       </UCard>
     </UPageBody>
   </UPage>
@@ -27,7 +27,7 @@
 import { computed } from 'vue'
 import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import PortfolioCreateForm from '../../components/organisms/Portfolio/Create/Form.vue'
+import PortfolioCreateSystem from '../../components/organisms/Portfolio/Create/System.vue'
 
 definePageMeta({
   layout: 'default',
