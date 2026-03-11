@@ -18,7 +18,7 @@ export function useProfessionalCreate() {
   const { ensureUser } = useUserEnsure()
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
 
-  async function ensureProfessional(): Promise<{
+  async function ensureProfessionalProfile(): Promise<{
     createdCore: boolean
     createdApp: boolean
     id: string
@@ -76,5 +76,5 @@ export function useProfessionalCreate() {
     return { createdCore, createdApp, id: uid }
   }
 
-  return { ensureProfessional }
+  return { ensureProfessionalProfile }
 }

@@ -18,7 +18,7 @@ export function useSupplierCreate() {
   const { ensureUser } = useUserEnsure()
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
 
-  async function ensureSupplier(): Promise<{
+  async function ensureSupplierProfile(): Promise<{
     createdCore: boolean
     createdApp: boolean
     id: string
@@ -90,5 +90,5 @@ export function useSupplierCreate() {
     return { createdCore, createdApp, id: uid }
   }
 
-  return { ensureSupplier }
+  return { ensureSupplierProfile }
 }

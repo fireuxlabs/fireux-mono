@@ -18,7 +18,7 @@ export function useChefCreate() {
   const { ensureUser } = useUserEnsure()
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
 
-  async function ensureChef(): Promise<{
+  async function ensureChefProfile(): Promise<{
     createdCore: boolean
     createdApp: boolean
     id: string
@@ -78,5 +78,5 @@ export function useChefCreate() {
     return { createdCore, createdApp, id: uid }
   }
 
-  return { ensureChef }
+  return { ensureChefProfile }
 }

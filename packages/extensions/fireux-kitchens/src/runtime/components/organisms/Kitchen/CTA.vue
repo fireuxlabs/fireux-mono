@@ -137,7 +137,7 @@ const readOnlyPills = computed(() =>
 const router = useRouter()
 const route = useRoute()
 const { runtimeKitchenId, setRuntimeKitchen } = useRuntimeKitchenSelection()
-const { ensureChef } = useChefCreate()
+const { ensureChefProfile } = useChefCreate()
 const isEnsuringLiveKitchen = ref(false)
 
 const ensureLiveKitchenProfile = async () => {
@@ -145,7 +145,7 @@ const ensureLiveKitchenProfile = async () => {
   isEnsuringLiveKitchen.value = true
 
   try {
-    await ensureChef()
+    await ensureChefProfile()
     return true
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error ?? '')

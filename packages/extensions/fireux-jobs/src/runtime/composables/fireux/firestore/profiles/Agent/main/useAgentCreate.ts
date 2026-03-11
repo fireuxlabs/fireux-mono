@@ -18,7 +18,7 @@ export function useAgentCreate() {
   const { ensureUser } = useUserEnsure()
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
 
-  async function ensureAgent(): Promise<{
+  async function ensureAgentProfile(): Promise<{
     createdCore: boolean
     createdApp: boolean
     id: string
@@ -79,5 +79,5 @@ export function useAgentCreate() {
     return { createdCore, createdApp, id: uid }
   }
 
-  return { ensureAgent }
+  return { ensureAgentProfile }
 }
