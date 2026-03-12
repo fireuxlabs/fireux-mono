@@ -3,7 +3,7 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import type { AppModel } from 'fireux-core/runtime/models/core/app.model'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { createEmptyAppSocialLinks } from '../utils/factories/createEmptyAppSocialLinks'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'

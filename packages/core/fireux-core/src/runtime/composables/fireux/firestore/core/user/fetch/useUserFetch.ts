@@ -1,5 +1,5 @@
 import { doc } from 'firebase/firestore'
-import { useFirestore, useDocument } from 'vuefire'
+import { useFirestore, useDocument } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, isRef } from 'vue'
 import type { Ref } from 'vue'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'

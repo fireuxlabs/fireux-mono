@@ -1,5 +1,5 @@
 import { collection, doc, serverTimestamp, setDoc } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { KitchenOrder, KitchenOrderItem } from '../../../../../../models/order.model'
 
 const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'

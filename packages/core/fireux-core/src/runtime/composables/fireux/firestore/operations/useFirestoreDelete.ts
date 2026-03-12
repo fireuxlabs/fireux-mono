@@ -1,5 +1,5 @@
 import { deleteDoc, doc } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useRequireUser } from '../../firebase/useRequireUser'
 
 export function useFirestoreDelete() {

@@ -8,7 +8,7 @@ import {
   writeBatch,
   type DocumentSnapshot,
 } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 import type { FirebaseTimestamp } from '../../../../../../../types/firebase'
 import type {

@@ -1,6 +1,6 @@
 import { deleteDoc, doc } from 'firebase/firestore'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 export function useRecipeDelete() {
   const db = useFirestore()

@@ -7,7 +7,7 @@ import {
     getDoc,
     increment,
 } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { UserNotification } from '../../../../../../../models/core/supporting/user'
 import { useFireUXConfig } from '../../../../../app/FireUXConfig'
 import { useFirestoreDelete } from '../../../../operations/useFirestoreDelete'

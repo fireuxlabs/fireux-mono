@@ -12,7 +12,7 @@ import {
   type QueryDocumentSnapshot,
 } from 'firebase/firestore'
 import { ref, type Ref } from 'vue'
-import { useCollection, useDocument, useFirestore } from 'vuefire'
+import { useCollection, useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 function isOfflineFirestoreError(error: unknown): boolean {
   const code = typeof (error as any)?.code === 'string' ? (error as any).code : ''

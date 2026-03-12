@@ -1,5 +1,5 @@
 import { addDoc, arrayRemove, arrayUnion, collection } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type {
     User,
 } from '../../../../../../../models/core/user.model'

@@ -1,5 +1,4 @@
-import { getFirestore } from 'firebase-admin/firestore'
-import { getAdminApp } from '../getAdmin'
+import { getRuntimeFirestore } from '../getRuntimeFirestore'
 
 export type PublicCollectionQueryOptions = {
   where?: Array<{
@@ -33,7 +32,7 @@ function normalizeOffset(input: unknown): number {
 }
 
 export function getPublicFirestore() {
-  return getFirestore(getAdminApp())
+  return getRuntimeFirestore()
 }
 
 export async function readPublicDocById(

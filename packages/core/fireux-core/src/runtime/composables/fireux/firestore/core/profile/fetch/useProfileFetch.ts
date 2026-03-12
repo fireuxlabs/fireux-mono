@@ -1,6 +1,6 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts
 import { doc, type DocumentSnapshot } from 'firebase/firestore'
-import { useFirestore, useDocument } from 'vuefire'
+import { useFirestore, useDocument } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, isRef } from 'vue'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import type { Ref } from 'vue'

@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useFirestore, useCollection } from 'vuefire'
+import { useFirestore, useCollection } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { collection, query, orderBy } from 'firebase/firestore'
 import { useRecipeCreate } from './useRecipeCreate'
 import { useRecipeUpdate } from './useRecipeUpdate'

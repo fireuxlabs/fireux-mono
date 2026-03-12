@@ -1,5 +1,5 @@
 import { arrayUnion, doc, getDoc, serverTimestamp } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { ProfileConfig } from '../../../../../../models/core/profile.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useFirestoreManager } from '../../../operations/useFirestoreManager'

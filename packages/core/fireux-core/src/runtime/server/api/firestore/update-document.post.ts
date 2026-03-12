@@ -1,8 +1,8 @@
 import { defineEventHandler, readBody, createError, type H3Event } from 'h3'
 import { initializeApp, getApps, cert } from 'firebase-admin/app'
-import { getFirestore } from 'firebase-admin/firestore'
 import { promises as fs } from 'fs'
 import { join } from 'path'
+import { getRuntimeFirestore } from '../../utils/getRuntimeFirestore'
 
 // Function to initialize Firebase Admin with dynamic service account
 async function initializeFirebaseAdmin() {
@@ -162,8 +162,9 @@ export default defineEventHandler(async (event: H3Event) => {
 
     console.log(`📝 [update-document] Updating ${collection}/${documentId}`)
 
-    // Get Firestore instance from the initialized app
-    const db = getFirestore(app as any)
+    // Ensure admin app initialization happens before resolving the runtime database.
+    void app
+    const db = getRuntimeFirestore()
 
     // Update the document
     const docRef = db.collection(collection).doc(documentId)

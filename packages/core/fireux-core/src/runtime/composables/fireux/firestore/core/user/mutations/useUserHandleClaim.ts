@@ -8,7 +8,7 @@ import {
   serverTimestamp,
   where,
 } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { validateUserHandleForPublicRoute } from '../utils/identity/useUserHandleIdentity'
 import { isVetoedHandle } from '../utils/identity/handleVeto'
 

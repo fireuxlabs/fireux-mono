@@ -61,7 +61,7 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceSave'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { ref } from 'vue'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useKitchenCreate } from '../../../../composables/fireux/firestore/kitchen/mutations/useKitchenCreate'
 import { useChef } from '../../../../composables/fireux/firestore/profiles/Chef/useChef'
 

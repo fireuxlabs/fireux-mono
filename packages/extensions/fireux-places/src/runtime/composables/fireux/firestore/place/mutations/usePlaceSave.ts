@@ -3,7 +3,7 @@ import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { canonicalPlaceId, fetchPlaceDetails } from '../fetch/google/usePlacesGoogle'
 import { toShortAddress } from '../utils/view/formatPlaceAddress'
 import { toPlaceSlug, toPlaceSlugWithSuffix } from '../utils/view/toPlaceSlug'

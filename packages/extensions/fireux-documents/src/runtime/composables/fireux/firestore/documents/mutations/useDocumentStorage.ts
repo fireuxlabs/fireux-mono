@@ -6,7 +6,7 @@ import {
   uploadBytes,
 } from 'firebase/storage'
 import type { RuntimeConfig } from '@nuxt/schema'
-import { useFirebaseStorage } from 'vuefire'
+import { useFirebaseStorage } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 const normalize = (value: unknown) => String(value || '').trim()
 

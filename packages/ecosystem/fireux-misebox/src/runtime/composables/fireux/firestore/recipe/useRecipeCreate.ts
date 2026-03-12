@@ -1,7 +1,7 @@
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import { ref } from 'vue'
-import { useCurrentUser, useFirestore } from 'vuefire'
+import { useCurrentUser, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 function toSlug(value: string): string {
   const base = String(value || '')

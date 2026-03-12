@@ -30,6 +30,7 @@ export type RuntimeFirebaseEcosystem = {
     projectId: string
     storageBucket: string
     messagingSenderId: string
+    databaseId?: string
   }
 }
 

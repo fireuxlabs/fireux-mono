@@ -8,7 +8,7 @@ import {
 import { computed, isRef, watch } from 'vue'
 import type { Ref } from 'vue'
 import { useNuxtApp } from '#imports'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import { normalizeUserHandle } from '../utils/identity/useUserHandleIdentity'
 import { useUserFetch } from './useUserFetch'

@@ -1,5 +1,5 @@
 import { updateDoc, doc, serverTimestamp } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useRequireUser } from '../../firebase/useRequireUser'
 
 type UpdateOpts = Record<string, never>

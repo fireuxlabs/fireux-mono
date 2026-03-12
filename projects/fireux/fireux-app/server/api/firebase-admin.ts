@@ -6,6 +6,7 @@ import {
   type ServiceAccount,
 } from 'firebase-admin/app'
 import { getFirestore, type Firestore } from 'firebase-admin/firestore'
+import { useRuntimeConfig } from '#imports'
 import { promises as fs } from 'node:fs'
 import { isAbsolute, resolve } from 'node:path'
 
@@ -47,5 +48,10 @@ export async function getFirebaseAdminApp(): Promise<App> {
 
 export async function getFirestoreDb(databaseId?: string): Promise<Firestore> {
   const app = await getFirebaseAdminApp()
-  return databaseId ? getFirestore(app, databaseId) : getFirestore(app)
+  const runtime = useRuntimeConfig()
+  const configuredDatabaseId = String(
+    databaseId || runtime.public?.firebaseEcosystem?.firebase?.databaseId || ''
+  ).trim()
+
+  return configuredDatabaseId ? getFirestore(app, configuredDatabaseId) : getFirestore(app)
 }

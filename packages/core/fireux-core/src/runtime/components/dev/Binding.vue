@@ -83,7 +83,7 @@
 <script setup lang="ts">
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
 import { computed, ref, watch } from 'vue'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import type { AppModel } from '../../models/core/app.model'
 import type { AppUser, User } from '../../models/core/user.model'

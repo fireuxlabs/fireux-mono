@@ -1,7 +1,6 @@
 import { setResponseHeaders, type H3Event } from 'h3'
 import { useRuntimeConfig } from '#imports'
-import { getFirestore } from 'firebase-admin/firestore'
-import { getAdminApp } from './getAdmin'
+import { getRuntimeFirestore } from './getRuntimeFirestore'
 
 type AnyRecord = Record<string, unknown>
 
@@ -173,7 +172,7 @@ export async function countPublicEntityIndexDocs(entity: RuntimeSitemapEntity): 
   // is fully migrated to canonical collection reads.
   if (!entity.indexCollectionPath) return 0
   try {
-    const db = getFirestore(getAdminApp())
+    const db = getRuntimeFirestore()
     const snap = await db
       .collection(entity.indexCollectionPath)
       .where('isPublic', '==', true)
@@ -255,7 +254,7 @@ function isCanonicalDocPublic(
 async function countPublicCanonicalDocs(entity: RuntimeSitemapEntity): Promise<number> {
   if (!entity.canonicalCollectionPath) return 0
   try {
-    const db = getFirestore(getAdminApp())
+    const db = getRuntimeFirestore()
     let query: FirebaseFirestore.Query = db.collection(entity.canonicalCollectionPath)
 
     if (entity.publicField) {
@@ -282,7 +281,7 @@ async function fetchCanonicalEntitySitemapPage(
 
   const pageSize = entity.pageSize || 5000
   const offset = Math.max(0, (page - 1) * pageSize)
-  const db = getFirestore(getAdminApp())
+  const db = getRuntimeFirestore()
 
   let query: FirebaseFirestore.Query = db.collection(entity.canonicalCollectionPath)
   if (entity.publicField) {
@@ -327,7 +326,7 @@ async function fetchLegacyEntitySitemapPage(
   if (!entity.indexCollectionPath) return []
   const pageSize = entity.pageSize || 5000
   const offset = Math.max(0, (page - 1) * pageSize)
-  const db = getFirestore(getAdminApp())
+  const db = getRuntimeFirestore()
 
   const snap = await db
     .collection(entity.indexCollectionPath)

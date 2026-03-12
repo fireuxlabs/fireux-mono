@@ -1,6 +1,6 @@
 import { doc as firestoreDoc, type DocumentSnapshot } from 'firebase/firestore'
 import { computed, type Ref } from 'vue'
-import { useDocument, useFirestore } from 'vuefire'
+import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Portfolio } from '../../../../models/portfolio.model'
 import {
   getReadOnlyPortfolioScenario,

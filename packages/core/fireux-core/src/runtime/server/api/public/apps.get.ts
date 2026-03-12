@@ -1,7 +1,6 @@
 import { createError, defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
-import { getFirestore } from 'firebase-admin/firestore'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
-import { getAdminApp } from '../../utils/getAdmin'
+import { getRuntimeFirestore } from '../../utils/getRuntimeFirestore'
 
 function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' && !Array.isArray(value)
@@ -34,9 +33,7 @@ export default defineEventHandler(async (event: H3Event) => {
     })
   }
 
-  // Ensure firebase-admin is initialized, then use the modular Firestore API
-  // against the explicit app instance (avoids default-app lookup issues in Nitro).
-  const db = getFirestore(getAdminApp())
+  const db = getRuntimeFirestore()
   const snap = await db.collection('apps').where('ecosystem', '==', ecosystem).get()
 
   const apps = snap.docs

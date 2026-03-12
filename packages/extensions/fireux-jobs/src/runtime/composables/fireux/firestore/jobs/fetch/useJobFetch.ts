@@ -2,7 +2,7 @@ import { doc } from 'firebase/firestore'
 import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import type { Kitchen } from 'fireux-kitchens/runtime/models/kitchen.model'
 import { computed, isRef, type Ref } from 'vue'
-import { useDocument, useFirestore } from 'vuefire'
+import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Job } from '../../../../../models/job.model'
 
 type MiseboxJobResolved = Job & {

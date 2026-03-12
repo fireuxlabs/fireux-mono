@@ -38,7 +38,7 @@
 import { doc, getDoc } from 'firebase/firestore'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { ref } from 'vue'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useCompanyCreate } from '../../../../composables/fireux/firestore/company/mutations/useCompanyCreate'
 
 const { createCompany } = useCompanyCreate()

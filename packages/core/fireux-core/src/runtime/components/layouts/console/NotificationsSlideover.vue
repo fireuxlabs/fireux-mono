@@ -2,7 +2,7 @@
 import { computed } from '#imports'
 import { formatTimeAgo } from '@vueuse/core'
 import { collection, orderBy, query } from 'firebase/firestore'
-import { useCollection, useFirestore } from 'vuefire'
+import { useCollection, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import type { UserNotification } from '../../../models/core/user.model'
 

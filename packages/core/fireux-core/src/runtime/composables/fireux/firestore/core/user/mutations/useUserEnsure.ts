@@ -1,6 +1,6 @@
 // Action: ENSURE · Phases: 1–4
 import { doc, getDoc } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { requireUid } from '../../../utils/useEnsureCommon'
 import {

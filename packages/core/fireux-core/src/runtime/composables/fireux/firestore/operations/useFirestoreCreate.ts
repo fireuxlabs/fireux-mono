@@ -1,5 +1,5 @@
 import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from '../../app/FireUXConfig'
 import { useRequireUser } from '../../firebase/useRequireUser'
 

@@ -1,5 +1,5 @@
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
-import { useDocument, useFirestore } from 'vuefire'
+import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
   doc,
   type DocumentData,

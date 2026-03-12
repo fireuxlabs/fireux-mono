@@ -3,7 +3,7 @@ import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/fires
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceSave'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { KitchenCollection, KitchenCreateInput } from '../../../../../models/kitchen.model'
 
 export const KitchenPayload = {

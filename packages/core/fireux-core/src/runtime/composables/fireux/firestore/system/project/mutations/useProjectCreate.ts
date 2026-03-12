@@ -1,8 +1,9 @@
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type {
   FireuxProjectDoc,
   FireuxProjectStatus,
+  FireuxProjectType,
 } from '../../../../../../models/system/project.model'
 import { useRequireUser } from '../../../../firebase/useRequireUser'
 
@@ -13,6 +14,8 @@ const toSlug = (value: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
 
+const normalizeString = (value: unknown) => String(value || '').trim()
+
 export type ProjectCreateOptions = {
   collectionPath?: string
   test?: boolean
@@ -20,9 +23,15 @@ export type ProjectCreateOptions = {
 
 export type ProjectCreateInput = {
   name: string
-  slug?: string
+  slug: string
   description?: string
   status?: FireuxProjectStatus
+  project_type: FireuxProjectType
+  source_url: string
+  console_endpoint_url: string
+  app_id: string
+  ecosystem_id: string
+  firebase_project_id: string
 }
 
 export function useProjectCreate(options: ProjectCreateOptions = {}) {
@@ -32,10 +41,16 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
 
   async function createProject(input: ProjectCreateInput): Promise<string> {
     const user = await useRequireUser()
-    const name = String(input?.name || '').trim()
-    const slug = toSlug(String(input?.slug || '').trim() || name)
-    const description = String(input?.description || '').trim()
-    const status = (String(input?.status || 'active').trim() || 'active') as FireuxProjectStatus
+    const name = normalizeString(input?.name)
+    const slug = toSlug(normalizeString(input?.slug))
+    const description = normalizeString(input?.description)
+    const status = (normalizeString(input?.status) || 'active') as FireuxProjectStatus
+    const projectType = normalizeString(input?.project_type) as FireuxProjectType | ''
+    const sourceUrl = normalizeString(input?.source_url)
+    const consoleEndpointUrl = normalizeString(input?.console_endpoint_url)
+    const appId = normalizeString(input?.app_id)
+    const ecosystemId = normalizeString(input?.ecosystem_id)
+    const firebaseProjectId = normalizeString(input?.firebase_project_id)
 
     if (!name) {
       throw new Error('Project name is required')
@@ -43,6 +58,30 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
 
     if (!slug) {
       throw new Error('Project slug is required')
+    }
+
+    if (!projectType) {
+      throw new Error('Project type is required')
+    }
+
+    if (!sourceUrl) {
+      throw new Error('Project source URL is required')
+    }
+
+    if (!consoleEndpointUrl) {
+      throw new Error('Project console endpoint URL is required')
+    }
+
+    if (!appId) {
+      throw new Error('Project app id is required')
+    }
+
+    if (!ecosystemId) {
+      throw new Error('Project ecosystem id is required')
+    }
+
+    if (!firebaseProjectId) {
+      throw new Error('Project Firebase project id is required')
     }
 
     const ref = doc(db, collectionPath, slug)
@@ -54,6 +93,12 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
       slug,
       description,
       status,
+      project_type: projectType,
+      source_url: sourceUrl,
+      console_endpoint_url: consoleEndpointUrl,
+      app_id: appId,
+      ecosystem_id: ecosystemId,
+      firebase_project_id: firebaseProjectId,
       owner_user_id: user.uid,
       created_at: serverTimestamp() as any,
       updated_at: serverTimestamp() as any,

@@ -200,7 +200,7 @@
 import { computed, ref, watch } from '#imports'
 import { doc, getDoc } from 'firebase/firestore'
 import type { PropType } from 'vue'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useSocialLinks, type SocialLinks } from '../../../../composables/fireux/app/ui/useSocialLinks'
 import { useUserFetch } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'

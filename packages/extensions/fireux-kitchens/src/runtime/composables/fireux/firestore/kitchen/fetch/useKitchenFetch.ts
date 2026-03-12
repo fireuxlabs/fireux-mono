@@ -3,7 +3,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { hydratePlaceCollection, hydratePlaceDoc } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceHydration'
 import type { Place } from 'fireux-places/runtime/models/place.model'
 import { computed, isRef, unref, type Ref } from 'vue'
-import { useDocument, useFirestore } from 'vuefire'
+import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Kitchen, KitchenCollection } from '../../../../../models/kitchen.model'
 
 const DEFAULT_COLLECTION_PATH = 'kitchens'

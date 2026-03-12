@@ -1,5 +1,5 @@
 import { deleteDoc, doc, serverTimestamp, setDoc } from 'firebase/firestore'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 type SeoIndexUpsertInput = {
   path: string

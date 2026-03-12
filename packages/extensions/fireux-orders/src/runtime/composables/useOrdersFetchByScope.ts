@@ -1,7 +1,7 @@
 import { collection, query, where, type Query } from 'firebase/firestore'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, isRef, shallowRef, unref, watch, type Ref, type ShallowRef } from 'vue'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Order } from '../models/order.model'
 
 const ORDERS_COLLECTION = 'orders'

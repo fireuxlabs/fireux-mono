@@ -50,6 +50,7 @@ useHead({ title: `${appName} | ${pageTitle}` })
 
 const { apps } = useAppCollection()
 const collection = computed(() => apps.value ?? [])
+
 const actions = [
   {
     label: 'Project',

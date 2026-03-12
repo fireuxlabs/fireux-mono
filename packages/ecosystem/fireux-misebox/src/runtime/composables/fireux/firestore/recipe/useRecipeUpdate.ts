@@ -1,6 +1,6 @@
 import { doc, updateDoc, serverTimestamp } from 'firebase/firestore'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
-import { useFirestore } from 'vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 type RecipePatch = Record<string, unknown>
 
