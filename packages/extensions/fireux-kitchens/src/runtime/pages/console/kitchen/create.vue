@@ -5,20 +5,7 @@
     </template>
 
     <template #body>
-      <section class="space-y-8">
-        <UCard>
-          <template #header>
-            <div class="space-y-1">
-              <div class="text-sm font-semibold">Kitchen details</div>
-              <div class="text-xs text-dimmed">
-                Select a real location to manage in the kitchen console.
-              </div>
-            </div>
-          </template>
-
-          <KitchenCreateSystem />
-        </UCard>
-      </section>
+      <KitchenCreateSystem />
     </template>
   </UDashboardPanel>
 </template>
@@ -28,6 +15,16 @@ import KitchenCreateSystem from '../../../components/organisms/Kitchen/Create/Sy
 
 definePageMeta({
   layout: 'kitchen-console',
+  nav: {
+    visibility: { modules: ['fireux-kitchens'] },
+    key: 'console-kitchen-create',
+    label: 'Create',
+    icon: 'i-lucide-plus',
+    order: 5,
+    desktop: true,
+    mobile: true,
+    layouts: ['kitchen-console'],
+  },
   requiresAuth: true,
 })
 </script>

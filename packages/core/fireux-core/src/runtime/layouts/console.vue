@@ -90,35 +90,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useRoute } from '#imports'
+import { ref } from 'vue'
 import { useConsoleNav } from '../composables/fireux/app/routing/useConsoleNav'
-import { useRuntimeProjectSelection } from '../composables/fireux/app/runtime-project'
 import { useNavGrouping } from '../composables/fireux/app/ui/nav/useNavGrouping'
-import { useAuthRedirect } from '../composables/fireux/app/ui/useAuthRedirect'
 import { useConsoleNotifications } from '../composables/fireux/app/ui/useConsoleNotifications'
 
 defineOptions({ name: 'console' })
 
 const open = ref(false)
-const route = useRoute()
-const projectSelection = useRuntimeProjectSelection()
 
 const { isOpen: isNotificationsSlideoverOpen } = useConsoleNotifications()
-const { desktop, topPriority, baseNavFilter } = useConsoleNav()
+const { desktop } = useConsoleNav()
 
-const shouldRedirectToAuth = computed(() => {
-  const path = String(route.path || '')
-  if (path.startsWith('/console/projects') && projectSelection.runtimeProjectMode.value !== 'live') {
-    return false
-  }
-  return true
-})
-
-useAuthRedirect({ enabled: shouldRedirectToAuth })
-
-const { topNav, middleNav, bottomNav } = useNavGrouping(desktop, {
-  topPriority,
-  filter: baseNavFilter,
-})
+const { topNav, middleNav, bottomNav } = useNavGrouping(desktop)
 </script>

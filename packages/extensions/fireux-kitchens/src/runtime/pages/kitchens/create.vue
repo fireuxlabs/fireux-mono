@@ -1,7 +1,7 @@
 <template>
   <UPage>
     <UPageHeader
-      title="Claim or Activate a Kitchen"
+      title="Create Kitchen"
       description="Select a real location to manage in FireUX."
     />
 
@@ -18,21 +18,21 @@ import KitchenCreateSystem from '../../components/organisms/Kitchen/Create/Syste
 
 definePageMeta({
   layout: 'default',
-  title: 'Activate Kitchen',
+  title: 'Create Kitchen',
   description: 'Select a real location to manage in FireUX.',
   nav: {
     key: 'kitchens-create',
-    label: 'Activate kitchen',
+    label: 'Create kitchen',
     icon: 'i-lucide-plus',
     order: 56,
     desktop: false,
     mobile: false,
     layouts: ['default'],
   },
-  head: { title: 'Activate Kitchen' },
+  head: { title: 'Create Kitchen' },
   name: 'KitchensCreatePage',
 })
 
 const { appName } = useFireUXConfig()
-useHead({ title: `${appName} | Activate Kitchen` })
+useHead({ title: `${appName} | Create Kitchen` })
 </script>

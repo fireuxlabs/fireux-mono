@@ -7,18 +7,7 @@
     />
 
     <UPageBody class="pagebody">
-      <UCard>
-        <template #header>
-          <div class="space-y-1">
-            <div class="text-sm font-semibold">Project details</div>
-            <div class="text-xs text-dimmed">
-              Projects group apps, ecosystems, and project-level operations.
-            </div>
-          </div>
-        </template>
-
-        <ProjectCreateSystem :cancel-to="cancelTo" :return-to="returnTo" />
-      </UCard>
+      <ProjectCreateSystem :cancel-to="cancelTo" :return-to="returnTo" />
     </UPageBody>
   </UPage>
 </template>

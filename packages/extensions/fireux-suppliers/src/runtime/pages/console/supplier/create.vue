@@ -5,23 +5,10 @@
     </template>
 
     <template #body>
-      <section class="space-y-8">
-        <UCard>
-          <template #header>
-            <div class="space-y-1">
-              <div class="text-sm font-semibold">Supplier profile</div>
-              <div class="text-xs text-dimmed">
-                Create your supplier profile and continue into the supplier console.
-              </div>
-            </div>
-          </template>
-
-          <SupplierCreateSystem
-            return-to="/console/supplier/overview"
-            cancel-to="/console/supplier/overview"
-          />
-        </UCard>
-      </section>
+      <SupplierCreateSystem
+        return-to="/console/supplier/overview"
+        cancel-to="/console/supplier/overview"
+      />
     </template>
   </UDashboardPanel>
 </template>
@@ -31,6 +18,16 @@ import SupplierCreateSystem from '../../../components/console/supplier/Create/Sy
 
 definePageMeta({
   layout: 'console',
+  nav: {
+    visibility: { modules: ['fireux-suppliers'] },
+    key: 'console-supplier-create',
+    label: 'Create',
+    icon: 'i-lucide-plus',
+    order: 5,
+    desktop: true,
+    mobile: true,
+    layouts: ['console'],
+  },
   requiresAuth: true,
 })
 </script>

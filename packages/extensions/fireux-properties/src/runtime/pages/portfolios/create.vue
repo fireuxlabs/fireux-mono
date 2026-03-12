@@ -7,18 +7,7 @@
     />
 
     <UPageBody class="pagebody">
-      <UCard>
-        <template #header>
-          <div class="space-y-1">
-            <div class="text-sm font-semibold">Portfolio details</div>
-            <div class="text-xs text-dimmed">
-              Portfolios group property operations, finance, compliance, and documents.
-            </div>
-          </div>
-        </template>
-
-        <PortfolioCreateSystem :cancel-to="cancelTo" :return-to="returnTo" />
-      </UCard>
+      <PortfolioCreateSystem :cancel-to="cancelTo" :return-to="returnTo" />
     </UPageBody>
   </UPage>
 </template>

@@ -84,16 +84,6 @@ import { usePortfolioFetch } from '../../../composables/fireux/firestore/portfol
 import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
 import PortfolioCardsPill from './Cards/Pill.vue'
 
-const props = withDefaults(defineProps<{
-  createMode?: 'route' | 'inline'
-}>(), {
-  createMode: 'route',
-})
-
-const emit = defineEmits<{
-  (event: 'create'): void
-}>()
-
 const router = useRouter()
 const { runtimePortfolioId, setRuntimePortfolio } = useRuntimePortfolioSelection()
 const { portfolios } = usePortfolioFetch()
@@ -134,11 +124,6 @@ const goToPortfolio = async (mode: RuntimePortfolioMode, portfolioId?: string) =
 }
 
 const createPortfolio = async () => {
-  if (props.createMode === 'inline') {
-    emit('create')
-    return
-  }
-
   await router.push({
     path: '/portfolios/create',
     query: {

@@ -5,20 +5,10 @@
     </template>
 
     <template #body>
-      <section class="space-y-8">
-        <UCard>
-          <template #header>
-            <div class="space-y-1">
-              <div class="text-sm font-semibold">Portfolio details</div>
-              <div class="text-xs text-dimmed">
-                Create a portfolio and continue into the portfolio console.
-              </div>
-            </div>
-          </template>
-
-          <PortfolioCreateSystem return-to="/console/portfolio/overview" />
-        </UCard>
-      </section>
+      <PortfolioCreateSystem
+        return-to="/console/portfolio/overview"
+        cancel-to="/console/portfolio/overview"
+      />
     </template>
   </UDashboardPanel>
 </template>
@@ -28,6 +18,16 @@ import PortfolioCreateSystem from 'fireux-properties/runtime/components/organism
 
 definePageMeta({
   layout: 'granite-console',
+  nav: {
+    visibility: { modules: ['fireux-properties'] },
+    key: 'console-portfolio-create',
+    label: 'Create',
+    icon: 'i-lucide-plus',
+    order: 5,
+    desktop: true,
+    mobile: true,
+    layouts: ['granite-console'],
+  },
   requiresAuth: true,
 })
 </script>

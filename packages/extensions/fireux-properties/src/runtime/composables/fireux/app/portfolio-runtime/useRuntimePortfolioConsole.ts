@@ -1,11 +1,33 @@
 import { computed } from 'vue'
 import { createScopeConsole } from 'fireux-core/runtime/composables/fireux/app/console/createScopeConsole'
 import { useNav } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useNav'
+import { useComplianceRecordCollection } from 'fireux-compliance/runtime/composables/fireux/firestore/compliance/fetch/useComplianceRecordCollection'
+import { useDocumentLinkCollection } from 'fireux-documents/runtime/composables/fireux/firestore/documents/fetch/useDocumentLinkCollection'
+import { useTaskCollection } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/fetch/useTaskCollection'
+import { usePropertyCollection } from '../../firestore/property/fetch/usePropertyCollection'
 import { useRuntimePortfolio } from './useRuntimePortfolio'
 
 export function useRuntimePortfolioConsole() {
   const runtime = useRuntimePortfolio()
   const nav = useNav(['granite-console'])
+  const { collection: properties } = usePropertyCollection(runtime)
+  const { collection: complianceRecords } = useComplianceRecordCollection(runtime)
+  const { collection: documentLinks } = useDocumentLinkCollection(runtime)
+  const { collection: tasks } = useTaskCollection(runtime)
+
+  const stats = computed(() => ({
+    properties: properties.value.length,
+    complianceRecords: complianceRecords.value.length,
+    documentLinks: documentLinks.value.length,
+    openTasks: tasks.value.filter((task) => String(task.status || '') !== 'done').length,
+  }))
+
+  const overview = computed(() => [
+    { key: 'properties', label: 'Properties', count: stats.value.properties },
+    { key: 'compliance', label: 'Compliance records', count: stats.value.complianceRecords },
+    { key: 'documents', label: 'Document links', count: stats.value.documentLinks },
+    { key: 'tasks', label: 'Open tasks', count: stats.value.openTasks },
+  ])
 
   const surfaceLinks = computed(() => [
     { key: 'properties', label: 'Properties', icon: 'i-lucide-building', to: '/console/portfolio/properties' },
@@ -24,11 +46,6 @@ export function useRuntimePortfolioConsole() {
     openFinanceTo: '/console/portfolio/finance',
   } as const
 
-  const stats = computed(() => ({
-    hasRuntimeId: Boolean(String(runtime.id.value || '').trim()),
-    isReady: runtime.isReady.value,
-  }))
-
   return createScopeConsole({
     runtime,
     navItems: nav.items,
@@ -36,6 +53,7 @@ export function useRuntimePortfolioConsole() {
     actions,
     extra: {
       portfolio: runtime,
+      overview,
       surfaceLinks,
     },
   })
