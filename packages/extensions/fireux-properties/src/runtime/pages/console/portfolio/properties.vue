@@ -54,7 +54,7 @@ import { usePortfolioInterface } from '../../../composables/fireux/firestore/por
 import PropertyCollectionManager from '../../../components/organisms/Property/Collection/Manager.vue'
 
 definePageMeta({
-  layout: 'granite-console',
+  layout: 'console',
   nav: {
     visibility: { modules: ['fireux-properties'] },
     key: 'console-portfolio-properties',
@@ -63,7 +63,7 @@ definePageMeta({
     order: 20,
     desktop: true,
     mobile: true,
-    layouts: ['granite-console'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })

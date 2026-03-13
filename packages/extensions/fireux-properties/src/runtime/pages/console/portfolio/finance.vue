@@ -164,7 +164,7 @@ import { useRuntimePortfolio } from '../../../composables/fireux/app/portfolio-r
 import { usePropertyCollection } from '../../../composables/fireux/firestore/property/fetch/usePropertyCollection'
 
 definePageMeta({
-  layout: 'granite-console',
+  layout: 'console',
   nav: {
     visibility: { modules: ['fireux-properties'] },
     key: 'console-portfolio-finance',
@@ -173,7 +173,7 @@ definePageMeta({
     order: 25,
     desktop: true,
     mobile: true,
-    layouts: ['granite-console'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })

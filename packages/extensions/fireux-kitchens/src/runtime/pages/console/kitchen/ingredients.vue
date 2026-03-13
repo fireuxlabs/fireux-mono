@@ -42,7 +42,7 @@ import { useKitchenIngredientAdd } from '../../../composables/fireux/firestore/r
 import { useKitchenIngredientRemove } from '../../../composables/fireux/firestore/runtime-kitchen/ingredients/mutations/useKitchenIngredientRemove'
 
 definePageMeta({
-  layout: 'kitchen-console',
+  layout: 'console',
   nav: {
     visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-ingredients',
@@ -51,7 +51,7 @@ definePageMeta({
     order: 1,
     desktop: true,
     mobile: true,
-    layouts: ['kitchen-console'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })

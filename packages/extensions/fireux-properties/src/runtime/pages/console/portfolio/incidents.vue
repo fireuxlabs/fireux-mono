@@ -116,7 +116,7 @@ import { useRuntimePortfolio } from '../../../composables/fireux/app/portfolio-r
 import { usePropertyCollection } from '../../../composables/fireux/firestore/property/fetch/usePropertyCollection'
 
 definePageMeta({
-  layout: 'granite-console',
+  layout: 'console',
   nav: {
     visibility: { modules: ['fireux-properties'] },
     key: 'console-portfolio-incidents',
@@ -125,7 +125,7 @@ definePageMeta({
     order: 35,
     desktop: true,
     mobile: true,
-    layouts: ['granite-console'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })

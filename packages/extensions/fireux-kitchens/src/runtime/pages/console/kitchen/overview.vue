@@ -36,11 +36,12 @@
 </template>
 
 <script setup lang="ts">
+import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import { useRuntimeKitchenConsole } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchenConsole'
 
 definePageMeta({
-  layout: 'kitchen-console',
+  layout: 'console',
   nav: {
     visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-overview',
@@ -49,7 +50,7 @@ definePageMeta({
     order: 10,
     desktop: true,
     mobile: true,
-    layouts: ['kitchen-console'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })
@@ -57,6 +58,10 @@ definePageMeta({
 const { runtime, overview } = useRuntimeKitchenConsole()
 const mode = runtime.mode
 const isDev = import.meta.dev
+
+if (!runtime.id.value) {
+  await navigateTo('/console/kitchen/create', { replace: true })
+}
 
 const runtimeSnapshot = computed(() => {
   const data = runtime.data.value

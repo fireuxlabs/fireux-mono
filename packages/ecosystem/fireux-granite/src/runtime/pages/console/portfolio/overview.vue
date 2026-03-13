@@ -65,7 +65,7 @@ import { useRuntimePortfolioConsole } from 'fireux-properties/runtime/composable
 import { computed } from 'vue'
 
 definePageMeta({
-  layout: 'granite-console',
+  layout: 'console',
   nav: {
     visibility: { modules: ['fireux-properties'] },
     key: 'console-portfolio-overview',
@@ -74,7 +74,7 @@ definePageMeta({
     order: 10,
     desktop: true,
     mobile: true,
-    layouts: ['granite-console'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })

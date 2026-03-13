@@ -17,7 +17,7 @@
 import PortfolioCreateSystem from 'fireux-properties/runtime/components/organisms/Portfolio/Create/System.vue'
 
 definePageMeta({
-  layout: 'granite-console',
+  layout: 'console',
   nav: {
     visibility: { modules: ['fireux-properties'] },
     key: 'console-portfolio-create',
@@ -26,7 +26,7 @@ definePageMeta({
     order: 5,
     desktop: true,
     mobile: true,
-    layouts: ['granite-console'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })

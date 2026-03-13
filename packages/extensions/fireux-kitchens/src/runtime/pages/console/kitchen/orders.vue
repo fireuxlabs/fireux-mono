@@ -48,7 +48,7 @@ import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runti
 import { useKitchenOrdersFetch } from '../../../composables/fireux/firestore/runtime-kitchen/orders/fetch/useKitchenOrdersFetch'
 
 definePageMeta({
-  layout: 'kitchen-console',
+  layout: 'console',
   nav: {
     visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-orders-in',
@@ -57,7 +57,7 @@ definePageMeta({
     order: 12,
     desktop: true,
     mobile: true,
-    layouts: ['kitchen-console'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })

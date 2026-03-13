@@ -81,7 +81,7 @@ import { useClientCollection } from '../../../composables/fireux/firestore/clien
 import ClientCollectionManager from '../../../components/organisms/Client/Collection/Manager.vue'
 
 definePageMeta({
-  layout: 'granite-console',
+  layout: 'console',
   nav: {
     visibility: { modules: ['fireux-properties'] },
     key: 'console-portfolio-clients',
@@ -90,7 +90,7 @@ definePageMeta({
     order: 22,
     desktop: true,
     mobile: true,
-    layouts: ['granite-console'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })

@@ -21,7 +21,6 @@
         </div>
       </template>
 
-      <!-- Main nav -->
       <template #default="{ collapsed }">
         <div class="flex flex-col gap-3">
           <UNavigationMenu
@@ -51,7 +50,6 @@
             orientation="vertical"
           />
 
-          <!-- Mobile-only footer controls (shown inside the slideover) -->
           <div class="lg:hidden">
             <USeparator
               v-if="topNav.length || middleNav.length || bottomNav.length"
@@ -66,7 +64,6 @@
         </div>
       </template>
 
-      <!-- Bottom: user menu -->
       <template #footer="{ collapsed }">
         <div class="hidden lg:flex">
           <LayoutsConsoleSidebarFooterActions
@@ -77,30 +74,34 @@
       </template>
     </UDashboardSidebar>
 
-    <!-- Page content -->
     <div class="w-full h-screen overflow-y-auto p-0 lg:p-4 bg-elevated/50">
       <NuxtPage />
     </div>
   </UDashboardGroup>
 
-  <!-- Notifications slideover controlled by shared state -->
   <LayoutsConsoleNotificationsSlideover
     v-model:open="isNotificationsSlideoverOpen"
   />
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useRoute } from '#imports'
 import { useConsoleNav } from '../composables/fireux/app/routing/useConsoleNav'
+import { filterConsoleScopeNavItems } from '../composables/fireux/app/routing/filterConsoleScopeNavItems'
 import { useNavGrouping } from '../composables/fireux/app/ui/nav/useNavGrouping'
 import { useConsoleNotifications } from '../composables/fireux/app/ui/useConsoleNotifications'
 
 defineOptions({ name: 'console' })
 
 const open = ref(false)
-
+const route = useRoute()
 const { isOpen: isNotificationsSlideoverOpen } = useConsoleNotifications()
 const { desktop } = useConsoleNav()
 
-const { topNav, middleNav, bottomNav } = useNavGrouping(desktop)
+const filteredDesktop = computed(() =>
+  filterConsoleScopeNavItems(desktop.value, String(route.path || ''))
+)
+
+const { topNav, middleNav, bottomNav } = useNavGrouping(filteredDesktop)
 </script>

@@ -9,7 +9,7 @@ import { useRuntimePortfolio } from './useRuntimePortfolio'
 
 export function useRuntimePortfolioConsole() {
   const runtime = useRuntimePortfolio()
-  const nav = useNav(['granite-console'])
+  const nav = useNav(['console'])
   const { collection: properties } = usePropertyCollection(runtime)
   const { collection: complianceRecords } = useComplianceRecordCollection(runtime)
   const { collection: documentLinks } = useDocumentLinkCollection(runtime)

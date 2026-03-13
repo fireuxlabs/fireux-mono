@@ -8,7 +8,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { useRuntimePortfolioSelection } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/state'
 
 definePageMeta({
-  layout: 'granite-console',
+  layout: 'console',
   requiresAuth: true,
 })
 

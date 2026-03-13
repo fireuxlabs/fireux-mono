@@ -14,7 +14,7 @@
 import KitchenCreateSystem from '../../../components/organisms/Kitchen/Create/System.vue'
 
 definePageMeta({
-  layout: 'kitchen-console',
+  layout: 'console',
   nav: {
     visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-create',
@@ -23,7 +23,7 @@ definePageMeta({
     order: 5,
     desktop: true,
     mobile: true,
-    layouts: ['kitchen-console'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })

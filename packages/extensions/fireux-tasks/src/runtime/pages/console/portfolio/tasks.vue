@@ -125,7 +125,7 @@ import { useTaskInterface } from '../../../composables/fireux/firestore/tasks/ut
 import type { Task } from '../../../models/task.model'
 
 definePageMeta({
-  layout: 'granite-console',
+  layout: 'console',
   nav: {
     visibility: { modules: ['fireux-tasks'] },
     key: 'console-portfolio-tasks',
@@ -134,7 +134,7 @@ definePageMeta({
     order: 50,
     desktop: true,
     mobile: true,
-    layouts: ['granite-console'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })

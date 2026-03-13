@@ -46,7 +46,7 @@ import { computed } from 'vue'
 import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
 
 definePageMeta({
-  layout: 'kitchen-console',
+  layout: 'console',
   nav: {
     visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-orders-out',
@@ -55,7 +55,7 @@ definePageMeta({
     order: 13,
     desktop: true,
     mobile: true,
-    layouts: ['kitchen-console'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })

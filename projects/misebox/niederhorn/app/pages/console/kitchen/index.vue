@@ -9,7 +9,7 @@ import { useChefCreate } from 'fireux-kitchens/runtime/composables/fireux/firest
 import { useRuntimeKitchenSelection } from 'fireux-kitchens/runtime/composables/fireux/app/kitchen-runtime/state'
 
 definePageMeta({
-  layout: 'kitchen-console',
+  layout: 'console',
   requiresAuth: true,
 })
 

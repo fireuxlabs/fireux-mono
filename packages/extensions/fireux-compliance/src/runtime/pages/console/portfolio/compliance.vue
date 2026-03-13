@@ -107,7 +107,7 @@ import { useComplianceRecordCollection } from '../../../composables/fireux/fires
 import { useComplianceInterface } from '../../../composables/fireux/firestore/compliance/utils/view/useComplianceInterface'
 
 definePageMeta({
-  layout: 'granite-console',
+  layout: 'console',
   nav: {
     visibility: { modules: ['fireux-compliance'] },
     key: 'console-portfolio-compliance',
@@ -116,7 +116,7 @@ definePageMeta({
     order: 30,
     desktop: true,
     mobile: true,
-    layouts: ['granite-console'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })

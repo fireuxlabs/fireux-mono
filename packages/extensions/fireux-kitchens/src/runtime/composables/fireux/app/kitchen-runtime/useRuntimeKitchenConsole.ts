@@ -1,11 +1,11 @@
 import { computed } from 'vue'
 import { createScopeConsole } from 'fireux-core/runtime/composables/fireux/app/console/createScopeConsole'
-import { useKitchenConsoleNav } from '../routing/useKitchenConsoleNav'
+import { useNav } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useNav'
 import { useRuntimeKitchen } from './useRuntimeKitchen'
 
 export function useRuntimeKitchenConsole() {
   const runtime = useRuntimeKitchen()
-  const nav = useKitchenConsoleNav()
+  const nav = useNav(['console'])
 
   const overview = computed(() => {
     const data = runtime.data.value

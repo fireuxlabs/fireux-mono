@@ -163,7 +163,7 @@ import { useDocumentInterface } from '../../../composables/fireux/firestore/docu
 import { documentLinkTargetTypes } from '../../../composables/fireux/firestore/documents/utils/validation/validateDocumentLinkTarget'
 
 definePageMeta({
-  layout: 'granite-console',
+  layout: 'console',
   nav: {
     visibility: { modules: ['fireux-documents'] },
     key: 'console-portfolio-documents',
@@ -172,7 +172,7 @@ definePageMeta({
     order: 40,
     desktop: true,
     mobile: true,
-    layouts: ['granite-console'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })

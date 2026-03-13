@@ -50,7 +50,7 @@ import { useDocumentLinkCollection } from 'fireux-documents/runtime/composables/
 import { useTaskCollection } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/fetch/useTaskCollection'
 
 definePageMeta({
-  layout: 'granite-console',
+  layout: 'console',
   nav: {
     visibility: { modules: ['fireux-properties'] },
     key: 'console-portfolio-dev',
@@ -59,7 +59,7 @@ definePageMeta({
     order: 120,
     desktop: true,
     mobile: true,
-    layouts: ['granite-console'],
+    layouts: ['console'],
   },
   requiresAuth: true,
   name: 'ConsolePortfolioDevPage',

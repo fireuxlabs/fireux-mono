@@ -98,6 +98,12 @@ export function useRuntimeProjectConsole() {
     hasProjectSelection.value
       ? [
           {
+            key: 'create',
+            label: 'Create',
+            icon: 'i-lucide-plus',
+            to: '/console/projects/create',
+          },
+          {
             key: 'overview',
             label: 'Overview',
             icon: 'i-lucide-layout-dashboard',
@@ -117,12 +123,6 @@ export function useRuntimeProjectConsole() {
           },
         ]
       : [
-          {
-            key: 'overview',
-            label: 'Overview',
-            icon: 'i-lucide-layout-dashboard',
-            to: '/console/projects/overview',
-          },
           {
             key: 'create',
             label: 'Create',

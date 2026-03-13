@@ -86,7 +86,7 @@ import { useIngredientFetch } from '../../../composables/fireux/firestore/ingred
 import SupplierCollectionManager from '../../../components/organisms/Supplier/Collection/Manager.vue'
 
 definePageMeta({
-  layout: 'kitchen-console',
+  layout: 'console',
   nav: {
     visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-suppliers',
@@ -95,7 +95,7 @@ definePageMeta({
     order: 11,
     desktop: true,
     mobile: true,
-    layouts: ['kitchen-console'],
+    layouts: ['console'],
   },
   requiresAuth: true,
 })
