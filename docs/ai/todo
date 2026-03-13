@@ -1,21 +1,20 @@
-FireUX components handoff (2026-02-09)
-Updated: 2026-02-20
+FireUX AI context refresh
+Updated: 2026-03-13
 
 Goal:
-- Restore runtime page component rendering after entities/objects flattening.
+- Keep Tier3 AI context aligned with the latest repo changes without creating a second documentation authority.
 
 Status:
-- Component auto-registration for ./runtime/components enables Organisms* names.
-- Products index uses OrganismsProductSolutions and OrganismsProductCollectionManager.
+- Flattened duplicate AI tree so `docs/ai/**` is the only canonical AI-doc location.
+- Refreshed implementation thread notes for the March 10 to March 12 commit window.
+- Generated a new consolidated bundle for 2026-03-13.
 
 Next checks:
-- Confirm products index renders with Organisms prefix in dev runtime.
-- Verify component names in other index pages (places/jobs/kitchens) and align tags.
-- Scan module components-config files for mismatched pathPrefix or prefix values.
-- Re-check for stale import refs after refactor (products, places, kitchens).
+- Re-scan after the next successful save touching console routing, runtime-project state, or firestore database selection.
+- Keep `docs/ai/**` non-authoritative and defer rule changes to Tier1 canon docs.
+- Remove stale historical bundles later if we decide to keep only the latest rolling set.
 
 Notes:
-- packages/extensions/fireux-products/src/config/module/components-config.ts registers ./runtime/components and Product-prefixed components.
-- packages/extensions/fireux-products/src/runtime/pages/products/index.vue uses Organisms* tags.
+- Current repo signals are dominated by console/project flow alignment, named Firestore DB rollout, and console database discovery.
 
 #end

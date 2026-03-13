@@ -30,7 +30,7 @@ Updated: 2026-03-12
 
 ## Project Control Contract
 - Project control data lives in `(default)` at:
-  - `projects/<firebaseProjectId>`
+  - `project/<firebaseProjectId>`
 - Current minimal required fields:
   - `main_app_id`
   - `main_ecosystem_id`

@@ -11,7 +11,7 @@ Updated: 2026-03-12
 - Runtime state is the single source of truth for active selection context.
 - Canon docs override operational docs and tooling/history docs on conflict.
 - FireUX project control data must be minimal and explicit.
-- The canonical project control doc path is `projects/<firebaseProjectId>`.
+- The canonical project control doc path is `project/<firebaseProjectId>`.
 - Current required control fields are:
   - `main_app_id`
   - `main_ecosystem_id`

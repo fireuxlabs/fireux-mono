@@ -18,7 +18,7 @@ export function useFirestoreProjectEnsure() {
 
     if (!projectId) return
 
-    const ref = doc(db, 'projects', projectId)
+    const ref = doc(db, 'project', projectId)
     const snap = await getDoc(ref)
 
     const mainAppId = String(fireux.appId || '').trim()
