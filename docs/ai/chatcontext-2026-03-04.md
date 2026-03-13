@@ -2,8 +2,8 @@
 
 Updated: 2026-03-04
 Sources:
-- docs/ai/AI/codex-threads/*.md
-- docs/ai/AI/gpt-chats/*.md
+- docs/ai/codex-threads/*.md
+- docs/ai/*.md
 
 ---
 

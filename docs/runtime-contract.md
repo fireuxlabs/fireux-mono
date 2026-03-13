@@ -1,8 +1,42 @@
 # Runtime Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-03-04
+Updated: 2026-03-12
 ## Purpose
 - Define runtime selection, mode, collection path, and route policy across FireUX domains.
+
+## Firestore Database Contract
+- `1 Firebase project = 1 FireUX project`.
+- FireUX may use multiple Firestore databases inside one Firebase project.
+- Database meaning must be explicit and fixed by canon, not inferred from fallback behavior.
+- Current FireUX project split:
+  - `(default)` = project control data and standalone-app data
+  - `fireux` = FireUX ecosystem runtime data
+- Runtime database selection must come from ecosystem/runtime config, not per-entity overrides.
+- Entity fetch/write patterns stay the same; only the resolved Firestore database changes.
+
+## Entity Loading Contract
+- Entity index pages delivered through `Index.vue` + `CollectionManager` must use the normal client-side Firestore read path.
+- Canon path:
+  - `useFirestore()` / shared Firestore composables
+  - resolved database comes from ecosystem/runtime config
+- Non-canon for entity index pages:
+  - endpoint-first SSR collection loading
+  - per-entity server proxy replacements for normal Firestore reads
+- Server endpoints remain valid for:
+  - FireUX handshake (`/api/fireux-console`)
+  - payment/Stripe flows
+  - place lookup services
+  - notifications, proxies, and other true service seams
+
+## Project Control Contract
+- Project control data lives in `(default)` at:
+  - `projects/<firebaseProjectId>`
+- Current minimal required fields:
+  - `main_app_id`
+  - `main_ecosystem_id`
+- These fields define which app and ecosystem speak for the project.
+- A global/main app may ensure this doc exists during app initialization.
+- Tenant apps must not create or claim the project control doc.
 
 ## Runtime Selection Rules
 - Console/runtime entity selection is state-based.

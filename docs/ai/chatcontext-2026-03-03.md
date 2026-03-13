@@ -35,8 +35,8 @@ Most-touched repo areas:
 - packages/ecosystem
 - docs/copilot-documentation
 - packages/core
-- AI/gpt-chats
-- AI/codex-threads
+- docs/ai
+- docs/ai/codex-threads
 - docs/ai
 
 Execution guidance:
@@ -75,8 +75,8 @@ Most-touched repo areas:
 - packages/ecosystem
 - docs/copilot-documentation
 - packages/core
-- AI/gpt-chats
-- AI/codex-threads
+- docs/ai
+- docs/ai/codex-threads
 - docs/ai
 
 Execution guidance:
@@ -115,8 +115,8 @@ Most-touched repo areas:
 - packages/ecosystem
 - docs/copilot-documentation
 - packages/core
-- AI/gpt-chats
-- AI/codex-threads
+- docs/ai
+- docs/ai/codex-threads
 - docs/ai
 
 Execution guidance:
@@ -155,8 +155,8 @@ Most-touched repo areas:
 - packages/ecosystem
 - docs/copilot-documentation
 - packages/core
-- AI/gpt-chats
-- AI/codex-threads
+- docs/ai
+- docs/ai/codex-threads
 - docs/ai
 
 Execution guidance:
@@ -195,8 +195,8 @@ Most-touched repo areas:
 - packages/ecosystem
 - docs/copilot-documentation
 - packages/core
-- AI/gpt-chats
-- AI/codex-threads
+- docs/ai
+- docs/ai/codex-threads
 - docs/ai
 
 Execution guidance:
@@ -235,8 +235,8 @@ Most-touched repo areas:
 - packages/ecosystem
 - docs/copilot-documentation
 - packages/core
-- AI/gpt-chats
-- AI/codex-threads
+- docs/ai
+- docs/ai/codex-threads
 - docs/ai
 
 Execution guidance:
@@ -275,8 +275,8 @@ Most-touched repo areas:
 - packages/ecosystem
 - docs/copilot-documentation
 - packages/core
-- AI/gpt-chats
-- AI/codex-threads
+- docs/ai
+- docs/ai/codex-threads
 - docs/ai
 
 Execution guidance:
@@ -315,8 +315,8 @@ Most-touched repo areas:
 - packages/ecosystem
 - docs/copilot-documentation
 - packages/core
-- AI/gpt-chats
-- AI/codex-threads
+- docs/ai
+- docs/ai/codex-threads
 - docs/ai
 
 Execution guidance:
@@ -355,8 +355,8 @@ Most-touched repo areas:
 - packages/ecosystem
 - docs/copilot-documentation
 - packages/core
-- AI/gpt-chats
-- AI/codex-threads
+- docs/ai
+- docs/ai/codex-threads
 - docs/ai
 
 Execution guidance:
@@ -395,8 +395,8 @@ Most-touched repo areas:
 - packages/ecosystem
 - docs/copilot-documentation
 - packages/core
-- AI/gpt-chats
-- AI/codex-threads
+- docs/ai
+- docs/ai/codex-threads
 - docs/ai
 
 Execution guidance:
@@ -435,8 +435,8 @@ Most-touched repo areas:
 - packages/ecosystem
 - docs/copilot-documentation
 - packages/core
-- AI/gpt-chats
-- AI/codex-threads
+- docs/ai
+- docs/ai/codex-threads
 - docs/ai
 
 Execution guidance:
@@ -475,8 +475,8 @@ Most-touched repo areas:
 - packages/ecosystem
 - docs/copilot-documentation
 - packages/core
-- AI/gpt-chats
-- AI/codex-threads
+- docs/ai
+- docs/ai/codex-threads
 - docs/ai
 
 Execution guidance:
@@ -515,8 +515,8 @@ Most-touched repo areas:
 - packages/ecosystem
 - docs/copilot-documentation
 - packages/core
-- AI/gpt-chats
-- AI/codex-threads
+- docs/ai
+- docs/ai/codex-threads
 - docs/ai
 
 Execution guidance:
@@ -555,8 +555,8 @@ Most-touched repo areas:
 - packages/ecosystem
 - docs/copilot-documentation
 - packages/core
-- AI/gpt-chats
-- AI/codex-threads
+- docs/ai
+- docs/ai/codex-threads
 - docs/ai
 
 Execution guidance:
@@ -595,8 +595,8 @@ Most-touched repo areas:
 - packages/ecosystem
 - docs/copilot-documentation
 - packages/core
-- AI/gpt-chats
-- AI/codex-threads
+- docs/ai
+- docs/ai/codex-threads
 - docs/ai
 
 Execution guidance:

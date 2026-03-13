@@ -1,6 +1,6 @@
 # Documentation Reports
 Authority: Tier2 (Operational reports)
-Updated: 2026-03-09
+Updated: 2026-03-13
 ## Purpose
 - Keep weekly evidence of docs freshness, authority alignment, and navigation quality.
 - Store generated scans that support canon decisions.
@@ -10,6 +10,7 @@ Updated: 2026-03-09
 - `weekly-docs-hygiene-2026-03-02.md`
 
 ## Generated/Domain Reports
+- `context-refresh-2026-03-13.md`
 - `collection-manager-report.md`
 - `../seo/global-entities-report.md`
 - `../canon/server-projection-v1.md`

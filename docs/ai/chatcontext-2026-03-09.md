@@ -1,7 +1,7 @@
 # AI Chat Context Bundle (2026-03-09)
 Updated: 2026-03-09
 
-## docs/ai/AI/codex-threads/alignment.md
+## docs/ai/codex-threads/alignment.md
 
 # Alignment Notes - useInterface composables
 Authority: Automation context (Codex implementation handoff)
@@ -33,7 +33,7 @@ Audience: Implementation context for coding agents and maintainers.
 
 #end
 
-## docs/ai/AI/codex-threads/bringli.md
+## docs/ai/codex-threads/bringli.md
 
 # FireUX - Bringli ecosystem (Codex)
 Authority: Automation context (Codex implementation handoff)
@@ -65,7 +65,7 @@ Audience: Implementation context for coding agents and maintainers.
 
 #end
 
-## docs/ai/AI/codex-threads/cleanbox.md
+## docs/ai/codex-threads/cleanbox.md
 
 # FireUX - Cleanbox ecosystem (Codex)
 Authority: Automation context (Codex implementation handoff)
@@ -97,7 +97,7 @@ Audience: Implementation context for coding agents and maintainers.
 
 #end
 
-## docs/ai/AI/codex-threads/design-system.md
+## docs/ai/codex-threads/design-system.md
 
 # FireUX Design System - Codex Thread
 Authority: Automation context (Codex implementation handoff)
@@ -129,7 +129,7 @@ Audience: Implementation context for coding agents and maintainers.
 
 #end
 
-## docs/ai/AI/codex-threads/droply.md
+## docs/ai/codex-threads/droply.md
 
 # FireUX - Droply module thread (Codex)
 Authority: Automation context (Codex implementation handoff)
@@ -161,7 +161,7 @@ Audience: Implementation context for coding agents and maintainers.
 
 #end
 
-## docs/ai/AI/codex-threads/extensions.md
+## docs/ai/codex-threads/extensions.md
 
 # FireUX Extensions - Recent Scan (Codex)
 Authority: Automation context (Codex implementation handoff)
@@ -193,7 +193,7 @@ Audience: Implementation context for coding agents and maintainers.
 
 #end
 
-## docs/ai/AI/codex-threads/fallback.md
+## docs/ai/codex-threads/fallback.md
 
 # Fallback Policy
 Authority: Automation context (Codex implementation handoff)
@@ -225,7 +225,7 @@ Audience: Implementation context for coding agents and maintainers.
 
 #end
 
-## docs/ai/AI/codex-threads/fireux-misebox.md
+## docs/ai/codex-threads/fireux-misebox.md
 
 # FireUX - Misebox ecosystem (Codex)
 Authority: Automation context (Codex implementation handoff)
@@ -257,7 +257,7 @@ Audience: Implementation context for coding agents and maintainers.
 
 #end
 
-## docs/ai/AI/codex-threads/kitchens.md
+## docs/ai/codex-threads/kitchens.md
 
 # Kitchens Roadmap (FireUX)
 Authority: Automation context (Codex implementation handoff)
@@ -289,7 +289,7 @@ Audience: Implementation context for coding agents and maintainers.
 
 #end
 
-## docs/ai/AI/codex-threads/monorepo-install-incident.md
+## docs/ai/codex-threads/monorepo-install-incident.md
 
 # Monorepo Install Incident (2026-02-06)
 Authority: Automation context (Codex implementation handoff)
@@ -321,7 +321,7 @@ Audience: Implementation context for coding agents and maintainers.
 
 #end
 
-## docs/ai/AI/codex-threads/onboarding.md
+## docs/ai/codex-threads/onboarding.md
 
 # Onboarding Thread
 Authority: Automation context (Codex implementation handoff)
@@ -353,7 +353,7 @@ Audience: Implementation context for coding agents and maintainers.
 
 #end
 
-## docs/ai/AI/codex-threads/packages.md
+## docs/ai/codex-threads/packages.md
 
 # FireUX - Packages Map (Codex)
 Authority: Automation context (Codex implementation handoff)
@@ -385,7 +385,7 @@ Audience: Implementation context for coding agents and maintainers.
 
 #end
 
-## docs/ai/AI/codex-threads/product-fulfillment.md
+## docs/ai/codex-threads/product-fulfillment.md
 
 # Product Fulfillment Thread Handoff
 Authority: Automation context (Codex implementation handoff)
@@ -417,7 +417,7 @@ Audience: Implementation context for coding agents and maintainers.
 
 #end
 
-## docs/ai/AI/codex-threads/products.md
+## docs/ai/codex-threads/products.md
 
 # FireUX - Products and Revenue (Codex)
 Authority: Automation context (Codex implementation handoff)
@@ -449,7 +449,7 @@ Audience: Implementation context for coding agents and maintainers.
 
 #end
 
-## docs/ai/AI/codex-threads/tasks.md
+## docs/ai/codex-threads/tasks.md
 
 # Tasks
 Authority: Automation context (Codex implementation handoff)

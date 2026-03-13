@@ -1,32 +1,33 @@
 # FireUX - Products and Revenue (Codex)
+Authority: Automation context (Codex implementation handoff)
+Updated: 2026-03-13
+Audience: Implementation context for coding agents and maintainers.
 
-Updated: 2026-03-02
-Audience: Codex implementation thread
-Focus: products
+## Scope
+- Thread key: products.
+- Audience: Codex agents implementing code and runtime changes.
+- Priority: enforce Tier1 canon and preserve runtime contracts.
 
-Implementation context:
-- Use this file for concrete execution notes, constraints, and expected file-level touch points.
-- Prefer small diffs, spec-aligned edits, and deterministic commands.
-- Capture runtime or tooling caveats that can affect patch quality.
+## Commit Window
+- Start: 2026-03-09T13:13:43+01:00
+- End: 2026-03-13T10:05:44+01:00
+- Source: manual_refresh_2026-03-13
 
-Commit window scanned: 2026-03-01 09:40:55 UTC
-Commits found: 2
+## Implementation Signals
+- 542875481 feat: align consolable CTA family and project runtime entry (2026-03-10)
+- 60a8c1ec0 feat: align project console create flow (2026-03-11)
+- 95f6d18b1 refactor: delete stitch and simplify console routing (2026-03-11)
+- cf4b20dd8 feat: switch fireux ecosystem to named firestore db (2026-03-12)
+- 0017bb017 feat: add fireux console database discovery pipeline (2026-03-12)
 
-Recent commit signals:
-- 2026-03-01 22:41 UTC | 50a658d6 | chore: update docs/copilot-documentation/temporary-reports/dashboard-console.md (+101 more)
-- 2026-03-01 10:29 UTC | c3819558 | chore: update docs/ai/chatcontext-2026-03-01.md (+87 more)
+## Working Guidance
+- Validate against Tier1 first: docs/fireux-canon.md, docs/runtime-contract.md, docs/seo-canon.md.
+- Prefer shared runtime and composable fixes before project-local divergence.
+- Keep route, runtime-project, and firestore-db behavior aligned across core, ecosystems, and apps.
 
-Most-touched repo areas:
-- packages/extensions
-- packages/core
-- projects/misebox
-- packages/ecosystem
-- docs/ai/codex-threads
-- docs/ai
-
-Execution guidance:
-- Prioritize package/runtime consistency before broad refactors.
-- Keep updates aligned with current mono-repo conventions and active specs.
-- Re-check this thread before editing related modules to avoid drift.
+## Next Run Checklist
+- Re-scan from the next successful timestamp.
+- Rewrite this file in place, trim post-marker content, and keep one terminal marker.
+- Rebuild the daily consolidated chatcontext file.
 
 #end

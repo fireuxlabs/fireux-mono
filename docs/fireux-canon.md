@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-03-02
+Updated: 2026-03-12
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -10,12 +10,34 @@ Updated: 2026-03-02
 - Apps consume extension domains; apps do not fork extension canon behavior.
 - Runtime state is the single source of truth for active selection context.
 - Canon docs override operational docs and tooling/history docs on conflict.
+- FireUX project control data must be minimal and explicit.
+- The canonical project control doc path is `projects/<firebaseProjectId>`.
+- Current required control fields are:
+  - `main_app_id`
+  - `main_ecosystem_id`
+- A global/main app may ensure the project control doc exists.
+- Tenant apps must not claim or overwrite project control ownership.
 
 ## Behavioral Canon
 - No silent fallbacks for selection, routing, or identity decisions.
 - Interface composables are view-only (format/mapping for UI surfaces).
 - Writes must be explicit through mutation composables.
 - Missing required state/data must be surfaced explicitly, not inferred.
+
+## Endpoint Canon
+- Entity index pages that are rendered through `Index.vue` + `CollectionManager` are client-side Firestore surfaces.
+- Canon examples:
+  - `/apps`
+  - `/users`
+  - `/modules`
+  - `/ecosystems`
+- These entity index pages must not switch to endpoint-first loading unless the canon for that entity is explicitly changed in Tier1.
+- Public/server endpoints are reserved for real service seams, for example:
+  - `GET /api/fireux-console`
+  - Stripe/payment hooks
+  - place lookup services
+  - notifications/dev/proxy endpoints
+- Public projection endpoints such as `/api/public/*` are not the canonical loading path for entity index pages delivered by `CollectionManager`.
 
 ## Deterministic Field Precedence (Allowed Exception)
 - Deterministic field precedence is allowed when documented for one entity shape.
