@@ -11,6 +11,7 @@ export const ecosystemConfig = {
     projectId: 'cleanbox-f15bc',
     storageBucket: 'cleanbox-f15bc.firebasestorage.app',
     messagingSenderId: '1083929507377',
+    databaseId: 'cleanbox',
   },
   ssrRegion: 'europe-west1',
 } as const satisfies FireuxEcosystemConfig

@@ -11,6 +11,7 @@ export const ecosystemConfig = {
     projectId: 'granite-ecosystem',
     storageBucket: 'granite-ecosystem.firebasestorage.app',
     messagingSenderId: '614334323822',
+    databaseId: 'granite',
   },
   ssrRegion: 'europe-west1',
 } as const satisfies FireuxEcosystemConfig
