@@ -4,42 +4,26 @@
     <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
-      <UAlert
-        v-if="fetchError"
-        color="warning"
-        variant="subtle"
-        title="Users service unavailable"
-        description="Public users could not be loaded from the server endpoint."
-      />
-
       <UCard v-if="isDev">
         <DevJson
-          title="Public Users (dev)"
-          context="Users index · endpoint-first SSR payload"
-          :data="usersDto"
+          title="Users (dev)"
+          context="Users index · firestore collection"
+          :data="collection"
           :default-open="false"
         />
       </UCard>
 
       <UserCTA />
       <UserCollectionManager :collection="collection" />
-
-      <UAlert
-        v-if="!collection.length"
-        color="neutral"
-        variant="subtle"
-        title="No public users yet"
-        description="Public profiles will appear here when users publish a handle."
-      />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAsyncData, useHead, useRuntimeConfig, useSeoMeta } from '#imports'
+import { useHead, useRuntimeConfig, useSeoMeta } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import type { User } from '../../models/core/user.model'
+import { useGlobalUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useGlobalUserCollection'
 
 definePageMeta({
   nav: {
@@ -59,69 +43,12 @@ definePageMeta({
 
 const { appName } = useFireUXConfig()
 const runtime = useRuntimeConfig()
+const { users } = useGlobalUserCollection()
 
 const pageTitle = 'Users'
-const pageDescription =
-  'Browse public user profiles.'
-
-type PublicUserDto = {
-  id: string
-  handle: string
-  displayName: string
-  avatar?: string
-  bio?: string
-  profiles?: string[]
-  title: string
-  description: string
-  path: string
-  image?: string
-  updatedAt: string
-  isPublic: boolean
-}
-
-const { data, error } = await useAsyncData(
-  'public-users-index',
-  () => $fetch<{ users?: PublicUserDto[]; items?: PublicUserDto[] }>('/api/public/users'),
-  {
-    server: true,
-    default: () => ({ users: [] }),
-  }
-)
-
-const usersDto = computed<PublicUserDto[]>(() => {
-  const payload = data.value
-  if (Array.isArray(payload?.users)) return payload.users
-  if (Array.isArray(payload?.items)) return payload.items
-  return []
-})
-
-function asUser(dto: PublicUserDto): User {
-  return {
-    id: dto.id,
-    display_name: dto.displayName || dto.title,
-    avatar: String(dto.avatar || dto.image || '').trim(),
-    handle: dto.handle,
-    email: '',
-    bio: String(dto.bio || dto.description || '').trim(),
-    profiles: Array.isArray(dto.profiles) ? dto.profiles : [],
-    userOf: [],
-    adminOf: [],
-    notifications: [],
-    created: {
-      at: null as any,
-      by: undefined,
-    },
-    updated: {
-      at: dto.updatedAt as any,
-      by: undefined,
-    },
-  }
-}
-
-const collection = computed<User[]>(() => usersDto.value.map(asUser))
-const fetchError = computed(() => Boolean(error.value))
+const pageDescription = 'Browse users available to this runtime.'
+const collection = computed(() => users.value ?? [])
 const isDev = import.meta.dev
-
 const headTitle = `${appName} | ${pageTitle}`
 
 function normalizeSiteUrl(input: unknown): string {

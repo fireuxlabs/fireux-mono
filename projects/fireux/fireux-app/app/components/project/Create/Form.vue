@@ -3,13 +3,13 @@
     <UFormGroup
       label="FireUX console endpoint"
       required
-      description="Use the app URL or the full /api/fireux-console endpoint."
+      description="Add your URL."
     >
       <div class="flex flex-wrap gap-2">
         <UInput
           v-model="endpointUrl"
           class="flex-1 min-w-[18rem]"
-          placeholder="https://misebox.app or https://misebox.app/api/fireux-console"
+          placeholder="Add your URL"
         />
         <UButton
           color="neutral"
@@ -28,28 +28,20 @@
       color="primary"
       variant="soft"
       title="Project endpoint connected"
-      :description="`${projectMeta.project_type} · ${projectMeta.app_id} · ${projectMeta.ecosystem_id}`"
+      :description="`${projectMeta.firebase_project_id} · ${projectMeta.app_id} · ${projectMeta.ecosystem_id}`"
     />
-
-    <UFormGroup label="Project name" required>
-      <UInput
-        v-model="name"
-        placeholder="FireUX Platform"
-        autofocus
-      />
-    </UFormGroup>
-
-    <UFormGroup label="Description">
-      <UTextarea
-        v-model="description"
-        :rows="4"
-        placeholder="Short description of this FireUX project."
-      />
-    </UFormGroup>
 
     <div v-if="error" class="text-sm text-red-600">
       {{ error }}
     </div>
+
+    <DevJson
+      v-if="isDev"
+      title="Project Create Debug"
+      context="console/projects/create · endpoint fetch"
+      :data="debugState"
+      :default-open="true"
+    />
 
     <div class="flex flex-wrap gap-2">
       <UButton
@@ -60,16 +52,6 @@
         @click="submit"
       >
         Create project
-      </UButton>
-
-      <UButton
-        v-if="cancelTo"
-        :to="cancelTo"
-        color="neutral"
-        variant="soft"
-        icon="i-lucide-arrow-left"
-      >
-        Cancel
       </UButton>
     </div>
   </div>
@@ -99,26 +81,21 @@ const router = useRouter()
 const { setRuntimeProject } = useRuntimeProjectSelection()
 const { createProject } = useProjectCreate()
 
-type ProjectMetaPayload = {
+type FireuxConsoleApp = {
+  id: string
+  name: string
+  slug: string
+  ecosystem_id: string
+}
+
+type FireuxConsolePayload = {
   project: {
     id: string
+  }
+  databases: Array<{
     name: string
-    description: string
-    slug: string
-  }
-  app: {
-    id: string
-    name: string
-  }
-  ecosystem: {
-    id: string
-  }
-  runtime: {
-    project_type: FireuxProjectType
-    source_url: string
-    console_endpoint_url: string
-    firebase_project_id: string
-  }
+    apps: FireuxConsoleApp[]
+  }>
 }
 
 type ProjectMeta = {
@@ -136,10 +113,12 @@ type ProjectMeta = {
 const endpointUrl = ref('')
 const fetchingMeta = ref(false)
 const projectMeta = ref<ProjectMeta | null>(null)
-const name = ref('')
-const description = ref('')
 const submitting = ref(false)
 const error = ref('')
+const lastFetchUrl = ref('')
+const lastFetchStatus = ref<number | null>(null)
+const lastFetchPayload = ref<unknown>(null)
+const isDev = import.meta.dev
 
 const resolvedReturnTo = computed(() => {
   const explicit = String(props.returnTo || '').trim()
@@ -152,6 +131,23 @@ const resolvedReturnTo = computed(() => {
 watch(endpointUrl, () => {
   projectMeta.value = null
 })
+
+function toSlug(value: string) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+function toLabel(value: string) {
+  return String(value || '')
+    .trim()
+    .split(/[-_.]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
+}
 
 function normalizeFireuxConsoleEndpoint(value: string) {
   const raw = String(value || '').trim()
@@ -178,63 +174,104 @@ function normalizeFireuxConsoleEndpoint(value: string) {
   throw new Error('Use the app URL or the full /api/fireux-console endpoint')
 }
 
-function readProjectMeta(payload: unknown) {
-  const next = payload as ProjectMetaPayload | null
-  if (!next?.project || !next.app || !next.ecosystem || !next.runtime) {
+function pickMainApp(databases: Array<{ name: string; apps: FireuxConsoleApp[] }>) {
+  const nonSystem = databases.filter(
+    (entry) => entry.name !== '(default)' && entry.name !== 'registry'
+  )
+
+  for (const database of nonSystem) {
+    const main = database.apps.find((app) => app.id.endsWith('-app'))
+    if (main) return main
+    if (database.apps[0]) return database.apps[0]
+  }
+
+  for (const database of databases) {
+    const main = database.apps.find((app) => app.id.endsWith('-app'))
+    if (main) return main
+    if (database.apps[0]) return database.apps[0]
+  }
+
+  return null
+}
+
+function readProjectMeta(payload: unknown, normalizedUrl: string) {
+  const next = payload as FireuxConsolePayload | null
+  if (!next?.project || !Array.isArray(next.databases)) {
     throw new Error('Project endpoint did not return the required console data')
   }
 
-  const name = String(next.project.name || '').trim()
-  const description = String(next.project.description || '').trim()
-  const slug = String(next.project.slug || '').trim()
-  const projectType = String(next.runtime.project_type || '').trim() as FireuxProjectType
-  const sourceUrl = String(next.runtime.source_url || '').trim()
-  const consoleEndpointUrl = String(next.runtime.console_endpoint_url || '').trim()
-  const appId = String(next.app.id || '').trim()
-  const ecosystemId = String(next.ecosystem.id || '').trim()
-  const firebaseProjectId = String(next.runtime.firebase_project_id || '').trim()
+  const projectId = String(next.project.id || '').trim()
+  if (!projectId) throw new Error('Project endpoint did not return a project id')
 
-  if (!name || !slug || !projectType || !sourceUrl || !consoleEndpointUrl || !appId || !ecosystemId || !firebaseProjectId) {
-    throw new Error('Project endpoint returned incomplete project metadata')
-  }
+  const endpoint = new URL(normalizedUrl)
+  const sourceUrl = endpoint.origin
+  const nonSystemDatabase = next.databases.find(
+    (entry) => entry.name !== '(default)' && entry.name !== 'registry'
+  )
+  const ecosystemId = String(nonSystemDatabase?.name || 'standalone').trim()
+  const projectType = (
+    ecosystemId === 'standalone' ? 'standalone-app' : 'ecosystem-app'
+  ) as FireuxProjectType
+  const mainApp = pickMainApp(next.databases)
+  const appId = String(mainApp?.id || `${toSlug(projectId)}-app`).trim()
+  const hostLabel = toLabel(endpoint.hostname.split('.')[0] || projectId)
+  const appLabel = String(mainApp?.name || '').trim()
+  const name = appLabel || hostLabel || projectId
+  const slug = toSlug(projectId)
 
   return {
     name,
-    description,
+    description: '',
     slug,
     project_type: projectType,
     source_url: sourceUrl,
-    console_endpoint_url: consoleEndpointUrl,
+    console_endpoint_url: normalizedUrl,
     app_id: appId,
     ecosystem_id: ecosystemId,
-    firebase_project_id: firebaseProjectId,
+    firebase_project_id: projectId,
   }
 }
+
+const debugState = computed(() => ({
+  endpointUrl: endpointUrl.value,
+  lastFetchUrl: lastFetchUrl.value,
+  lastFetchStatus: lastFetchStatus.value,
+  projectMeta: projectMeta.value,
+  error: error.value,
+  payload: lastFetchPayload.value,
+}))
 
 const fetchProjectMeta = async () => {
   if (fetchingMeta.value) return
 
   fetchingMeta.value = true
   error.value = ''
+  lastFetchStatus.value = null
+  lastFetchPayload.value = null
 
   try {
     const normalizedUrl = normalizeFireuxConsoleEndpoint(endpointUrl.value)
+    lastFetchUrl.value = normalizedUrl
     const response = await fetch(normalizedUrl)
+    lastFetchStatus.value = response.status
     if (!response.ok) {
       throw new Error(`Project endpoint returned ${response.status}`)
     }
 
     const payload = await response.json()
-    const nextMeta = readProjectMeta(payload)
+    lastFetchPayload.value = payload
+    const nextMeta = readProjectMeta(payload, normalizedUrl)
 
     endpointUrl.value = normalizedUrl
     projectMeta.value = nextMeta
-    name.value = nextMeta.name
-    description.value = nextMeta.description
   } catch (err) {
     projectMeta.value = null
-    error.value =
-      err instanceof Error ? err.message : 'Unable to fetch project metadata'
+    if (err instanceof TypeError) {
+      error.value = `Unable to reach ${lastFetchUrl.value || 'the project endpoint'}. Check the URL, CORS, and that the app is live.`
+    } else {
+      error.value =
+        err instanceof Error ? err.message : 'Unable to fetch project metadata'
+    }
   } finally {
     fetchingMeta.value = false
   }
@@ -252,9 +289,9 @@ const submit = async () => {
     }
 
     const projectId = await createProject({
-      name: name.value,
+      name: projectMeta.value.name,
       slug: projectMeta.value.slug,
-      description: description.value,
+      description: projectMeta.value.description,
       project_type: projectMeta.value.project_type,
       source_url: projectMeta.value.source_url,
       console_endpoint_url: projectMeta.value.console_endpoint_url,
