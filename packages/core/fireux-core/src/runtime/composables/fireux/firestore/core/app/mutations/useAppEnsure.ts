@@ -8,6 +8,7 @@ import { createEmptyAppSocialLinks } from '../utils/factories/createEmptyAppSoci
 import { useImageStorage } from '../../../../firebase/useImageStorage'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
+import { useFirestoreProjectEnsure } from '../../../system/project/mutations/useFirestoreProjectEnsure'
 import {
     appImageFirestoreField,
     appImageStoragePath,
@@ -24,6 +25,7 @@ export function useAppEnsure() {
   const { setDocument } = useFirestoreCreate()
   const { updateDocument } = useFirestoreUpdate()
   const { uploadImage } = useImageStorage()
+  const { ensureFirestoreProjectDoc } = useFirestoreProjectEnsure()
 
   async function syncNewAppImages(appId: string) {
     const uploads: Array<{ kind: AppImageKind; localPath: string }> = [
@@ -59,6 +61,7 @@ export function useAppEnsure() {
 
   async function ensureApp(): Promise<EnsureAppResult> {
     const fireux = useFireUXConfig()
+    await ensureFirestoreProjectDoc()
 
     const ref = doc(db, 'apps', fireux.appId)
     const snap = await getDoc(ref)
