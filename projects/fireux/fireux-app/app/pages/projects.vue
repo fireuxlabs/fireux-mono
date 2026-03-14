@@ -8,14 +8,13 @@
 
     <UPageBody class="pagebody">
       <ProjectCTA />
-      <ProjectCollectionManager :collection="collection" />
+      <ProjectCollectionManager :collection="projects" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { useHead } from '#imports'
-import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
 
@@ -46,17 +45,4 @@ useSeoMeta({
 })
 
 const { projects } = useProjectCollection()
-const collection = computed(() =>
-  (projects.value ?? []).map((item) => {
-    const key = String(item.id || item.slug || '').trim()
-    const name = String(item.name || key || 'Untitled project').trim()
-    const status = String(item.status || 'active').trim()
-
-    return {
-      key,
-      name,
-      status,
-    }
-  })
-)
 </script>

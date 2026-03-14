@@ -32,7 +32,7 @@
           </div>
         </UCard>
 
-        <EcosystemCollectionManager :collection="collection" :pending="false" />
+        <EcosystemCollectionManager :collection="projectEcosystems" :pending="false" />
       </section>
     </template>
   </UDashboardPanel>
@@ -58,30 +58,9 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, ecosystemRows, actions } = useRuntimeProjectConsole()
+const { runtime, projectEcosystems, actions } = useRuntimeProjectConsole()
 if (!runtime.id.value) {
   await navigateTo('/console/projects/create', { replace: true })
 }
 const isWritableMode = computed(() => runtime.mode.value === 'live')
-
-const initials = (value: string) =>
-  String(value || '')
-    .trim()
-    .split(/\s+/g)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join('')
-
-const collection = computed(() =>
-  ecosystemRows.value.map((row) => ({
-    key: row.id,
-    name: row.name,
-    text: initials(row.name || row.id),
-    src: '',
-    href: '',
-    apps: row.appCount,
-    team: row.team,
-  }))
-)
 </script>

@@ -95,8 +95,8 @@
     <div v-if="isDev">
       <DevJson
         title="Ecosystems (JSON)"
-        context="collection manager · ecosystems · root: ecosystems"
-        :data="collection"
+        context="collection manager · ecosystems · raw collection"
+        :data="rawCollection"
         :default-open="false"
       />
     </div>
@@ -108,12 +108,15 @@ import { computed } from 'vue'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 
 type EcosystemRow = {
+  id?: string
   key?: string
+  slug?: string
   name?: string
   src?: string
   text?: string
   href?: string
-  apps?: number
+  apps?: number | unknown[]
+  appCount?: number
   team?: string
 }
 
@@ -135,15 +138,24 @@ const props = withDefaults(defineProps<{
   pending: false,
 })
 
+const rawCollection = computed(() => props.collection ?? [])
+
 const collection = computed(() =>
-  (props.collection ?? [])
+  rawCollection.value
     .map((row) => ({
-      key: String(row.key || '').trim(),
+      id: String(row.id || '').trim(),
+      key: String(row.key || row.id || row.slug || '').trim(),
       name: String(row.name || '').trim(),
       src: String(row.src || '').trim(),
       text: String(row.text || '').trim(),
       href: String(row.href || '').trim(),
-      apps: Number.isFinite(Number(row.apps)) ? Number(row.apps) : 0,
+      apps: Array.isArray(row.apps)
+        ? row.apps.length
+        : Number.isFinite(Number(row.appCount))
+          ? Number(row.appCount)
+          : Number.isFinite(Number(row.apps))
+            ? Number(row.apps)
+            : 0,
       team: String(row.team || '').trim(),
     }))
     .filter((row) => Boolean(row.key || row.name))
@@ -159,11 +171,11 @@ const {
   items: collection,
   searchText: (row) => `${row.key} ${row.name}`.trim().toLowerCase(),
   makeCard: (row) => ({
-    id: row.key || row.name || '',
+    id: row.id || row.key || row.name || '',
     key: row.key || '',
     name: row.name || row.key || 'Untitled ecosystem',
     src: row.src || '',
-    text: row.text || '',
+    text: row.text || row.name || row.key || '',
     apps: Number.isFinite(Number(row.apps)) ? Number(row.apps) : 0,
     team: row.team || '',
   }),

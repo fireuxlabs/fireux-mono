@@ -17,7 +17,7 @@
       />
 
       <EcosystemCollectionManager
-        :collection="collection"
+        :collection="ecosystems"
         :pending="false"
       />
     </UPageBody>
@@ -25,7 +25,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useEcosystemCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/ecosystem/fetch/useEcosystemCollection'
 
 definePageMeta({
@@ -51,32 +50,6 @@ useSeoMeta({
 })
 
 const { ecosystems, count } = useEcosystemCollection()
-
-const initials = (value: string) =>
-  String(value || '')
-    .trim()
-    .split(/\s+/g)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join('')
-
-const collection = computed(() =>
-  (ecosystems.value ?? []).map((item) => {
-    const key = String(item.id || '').trim()
-    const name = String(item.name || key || 'Untitled ecosystem').trim()
-
-    return {
-      key,
-      name,
-      text: initials(name || key),
-      src: '',
-      href: '',
-      apps: Array.isArray(item.apps) ? item.apps.length : 0,
-      team: String(item.team || '').trim(),
-    }
-  })
-)
 
 const actions = [
   {

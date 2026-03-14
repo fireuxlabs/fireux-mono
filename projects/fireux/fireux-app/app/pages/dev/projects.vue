@@ -11,13 +11,12 @@
         :model="projectModelRuntime"
       />
 
-      <ProjectCollectionManager :collection="collection" />
+      <ProjectCollectionManager :collection="projects" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
 import { FireuxProjectModel as ProjectModelRuntime } from 'fireux-core/runtime/models/system/project.model'
 
@@ -38,18 +37,4 @@ definePageMeta({
 const projectModelRuntime = ProjectModelRuntime
 
 const { projects } = useProjectCollection()
-
-const collection = computed(() =>
-  (projects.value ?? []).map((item) => {
-    const key = String(item.id || item.slug || '').trim()
-    const name = String(item.name || key || 'Untitled project').trim()
-    const status = String(item.status || 'active').trim()
-
-    return {
-      key,
-      name,
-      status,
-    }
-  })
-)
 </script>

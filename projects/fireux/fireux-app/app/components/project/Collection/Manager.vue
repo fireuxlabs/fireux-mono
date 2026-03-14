@@ -46,8 +46,8 @@
     <div v-if="isDev">
       <DevJson
         title="Projects (JSON)"
-        context="collection manager · projects · root: projects"
-        :data="collection"
+        context="collection manager · projects · raw collection"
+        :data="rawCollection"
         :default-open="false"
       />
     </div>
@@ -60,7 +60,9 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 import ProjectCardsPill from '../Cards/Pill.vue'
 
 type ProjectRow = {
+  id?: string
   key?: string
+  slug?: string
   name?: string
   status?: string
 }
@@ -80,10 +82,14 @@ const props = withDefaults(defineProps<{
   pending: false,
 })
 
+const rawCollection = computed(() => props.collection ?? [])
+
 const collection = computed(() =>
-  (props.collection ?? [])
+  rawCollection.value
     .map((row) => ({
-      key: String(row.key || '').trim(),
+      id: String(row.id || '').trim(),
+      key: String(row.key || row.id || row.slug || '').trim(),
+      slug: String(row.slug || '').trim(),
       name: String(row.name || '').trim(),
       status: String(row.status || '').trim(),
     }))
