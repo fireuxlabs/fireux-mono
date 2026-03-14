@@ -1,7 +1,7 @@
 # FireUX - Packages Map (Codex)
 Authority: Automation context (Codex implementation handoff)
-Updated: 2026-03-13
-Audience: Implementation context for coding agents and maintainers.
+Updated: 2026-03-14
+Audience: Implementation context for Codex agents.
 
 ## Scope
 - Thread key: packages.
