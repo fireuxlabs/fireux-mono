@@ -26,49 +26,50 @@
       />
     </div>
 
-    <template v-else-if="filtered.length">
+    <template v-else-if="cardsFiltered.length">
       <div class="space-y-2">
         <ProjectCardsPill
-          v-for="entry in filtered"
-          :key="entry.key"
+          v-for="entry in cardsFiltered"
+          :key="entry.id"
           :to="''"
-          :title="entry.name"
-          :subtitle="entry.key"
-          :badges="[entry.status || 'active']"
+          :title="entry.title"
+          :subtitle="entry.subtitle"
+          :badges="entry.badges"
         />
       </div>
     </template>
 
-    <UAlert
-      v-else
-      color="neutral"
-      variant="soft"
-      :title="query ? 'No projects match your search' : 'No projects found yet'"
-      description="Create and manage projects from the FireUX project console."
-    >
-      <template #actions>
-        <UButton
-          to="/console/projects/overview"
-          size="xs"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-layout-dashboard"
-        >
-          Enter Project Console
-        </UButton>
-      </template>
-    </UAlert>
+    <p v-else>
+      {{ query ? 'No projects match your search.' : 'No projects found.' }}
+    </p>
+
+    <div v-if="isDev">
+      <DevJson
+        title="Projects (JSON)"
+        context="collection manager · projects · root: projects"
+        :data="collection"
+        :default-open="false"
+      />
+    </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
+import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import ProjectCardsPill from '../Cards/Pill.vue'
 
 type ProjectRow = {
   key?: string
   name?: string
   status?: string
+}
+
+type ProjectCard = {
+  id: string
+  title: string
+  subtitle: string
+  badges: string[]
 }
 
 const props = withDefaults(defineProps<{
@@ -79,9 +80,7 @@ const props = withDefaults(defineProps<{
   pending: false,
 })
 
-const query = ref('')
-
-const normalized = computed(() =>
+const collection = computed(() =>
   (props.collection ?? [])
     .map((row) => ({
       key: String(row.key || '').trim(),
@@ -91,15 +90,22 @@ const normalized = computed(() =>
     .filter((row) => Boolean(row.key || row.name))
 )
 
-const filtered = computed(() => {
-  const needle = query.value.trim().toLowerCase()
-  if (!needle) return normalized.value
-
-  return normalized.value.filter((row) =>
-    `${row.key} ${row.name} ${row.status}`.toLowerCase().includes(needle)
-  )
+const {
+  query,
+  cards: cardsFiltered,
+  visibleCount,
+} = useCollectionSearch<ProjectRow, ProjectCard>({
+  items: collection,
+  searchText: (row) =>
+    `${row.key} ${row.name} ${row.status}`.trim().toLowerCase(),
+  makeCard: (row) => ({
+    id: row.key || row.name || '',
+    title: row.name || row.key || 'Untitled project',
+    subtitle: row.key || '',
+    badges: [row.status || 'active'],
+  }),
 })
 
-const totalCount = computed(() => normalized.value.length)
-const visibleCount = computed(() => filtered.value.length)
+const totalCount = computed(() => collection.value.length)
+const isDev = import.meta.dev
 </script>

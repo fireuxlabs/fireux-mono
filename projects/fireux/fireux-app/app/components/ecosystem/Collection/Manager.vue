@@ -34,14 +34,14 @@
       />
     </div>
 
-    <template v-else-if="filtered.length">
+    <template v-else-if="cardsFiltered.length">
       <div
         v-if="variant === 'cell'"
         class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
       >
         <article
-          v-for="entry in filtered"
-          :key="entry.key"
+          v-for="entry in cardsFiltered"
+          :key="entry.id"
           class="rounded-xl border border-default p-3"
         >
           <div class="flex items-start gap-3">
@@ -60,36 +60,13 @@
               </p>
             </div>
           </div>
-
-          <div class="mt-3 flex flex-wrap gap-2">
-            <UButton
-              v-if="entry.href"
-              size="xs"
-              variant="soft"
-              icon="i-lucide-arrow-up-right"
-              :to="entry.href"
-              external
-              target="_blank"
-            >
-              Open
-            </UButton>
-
-            <UButton
-              size="xs"
-              variant="ghost"
-              icon="i-lucide-book-open"
-              to="/ecosystems/learn-more"
-            >
-              Learn more
-            </UButton>
-          </div>
         </article>
       </div>
 
       <div v-else class="space-y-2">
         <div
-          v-for="entry in filtered"
-          :key="entry.key"
+          v-for="entry in cardsFiltered"
+          :key="entry.id"
           class="flex items-center justify-between gap-3 rounded-xl border border-default p-3"
         >
           <div class="flex min-w-0 items-center gap-3">
@@ -107,46 +84,28 @@
               </p>
             </div>
           </div>
-
-          <UButton
-            v-if="entry.href"
-            size="xs"
-            variant="soft"
-            icon="i-lucide-arrow-up-right"
-            :to="entry.href"
-            external
-            target="_blank"
-          >
-            Open
-          </UButton>
         </div>
       </div>
     </template>
 
-    <UAlert
-      v-else
-      color="neutral"
-      variant="soft"
-      :title="query ? 'No ecosystems match your search' : 'No ecosystems found yet'"
-      description="Create ecosystems from the FireUX console when you are ready."
-    >
-      <template #actions>
-        <UButton
-          to="/console/projects/ecosystems"
-          size="xs"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-terminal"
-        >
-          Open console
-        </UButton>
-      </template>
-    </UAlert>
+    <p v-else>
+      {{ query ? 'No ecosystems match your search.' : 'No ecosystems found.' }}
+    </p>
+
+    <div v-if="isDev">
+      <DevJson
+        title="Ecosystems (JSON)"
+        context="collection manager · ecosystems · root: ecosystems"
+        :data="collection"
+        :default-open="false"
+      />
+    </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
+import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 
 type EcosystemRow = {
   key?: string
@@ -158,6 +117,16 @@ type EcosystemRow = {
   team?: string
 }
 
+type EcosystemCard = {
+  id: string
+  key: string
+  name: string
+  src: string
+  text: string
+  apps: number
+  team: string
+}
+
 const props = withDefaults(defineProps<{
   collection?: EcosystemRow[]
   pending?: boolean
@@ -166,10 +135,7 @@ const props = withDefaults(defineProps<{
   pending: false,
 })
 
-const query = ref('')
-const variant = ref<'pill' | 'cell'>('cell')
-
-const normalized = computed(() =>
+const collection = computed(() =>
   (props.collection ?? [])
     .map((row) => ({
       key: String(row.key || '').trim(),
@@ -183,19 +149,27 @@ const normalized = computed(() =>
     .filter((row) => Boolean(row.key || row.name))
 )
 
-const filtered = computed(() => {
-  const needle = query.value.trim().toLowerCase()
-  if (!needle) return normalized.value
-
-  return normalized.value.filter((row) =>
-    `${row.key} ${row.name}`.toLowerCase().includes(needle)
-  )
+const {
+  query,
+  variant,
+  toggleVariant,
+  cards: cardsFiltered,
+  visibleCount,
+} = useCollectionSearch<EcosystemRow, EcosystemCard>({
+  items: collection,
+  searchText: (row) => `${row.key} ${row.name}`.trim().toLowerCase(),
+  makeCard: (row) => ({
+    id: row.key || row.name || '',
+    key: row.key || '',
+    name: row.name || row.key || 'Untitled ecosystem',
+    src: row.src || '',
+    text: row.text || '',
+    apps: Number.isFinite(Number(row.apps)) ? Number(row.apps) : 0,
+    team: row.team || '',
+  }),
+  initialVariant: 'cell',
 })
 
-const totalCount = computed(() => normalized.value.length)
-const visibleCount = computed(() => filtered.value.length)
-
-const toggleVariant = () => {
-  variant.value = variant.value === 'pill' ? 'cell' : 'pill'
-}
+const totalCount = computed(() => collection.value.length)
+const isDev = import.meta.dev
 </script>
