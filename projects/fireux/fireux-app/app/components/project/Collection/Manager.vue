@@ -67,6 +67,13 @@ type ProjectRow = {
   status?: string
 }
 
+type NormalizedProjectRow = {
+  id: string
+  key: string
+  name: string
+  status: string
+}
+
 type ProjectCard = {
   id: string
   title: string
@@ -84,31 +91,39 @@ const props = withDefaults(defineProps<{
 
 const rawCollection = computed(() => props.collection ?? [])
 
-const collection = computed(() =>
+const normalizeString = (value: unknown) => String(value || '').trim()
+
+const collection = computed<NormalizedProjectRow[]>(() =>
   rawCollection.value
-    .map((row) => ({
-      id: String(row.id || '').trim(),
-      key: String(row.key || row.id || row.slug || '').trim(),
-      slug: String(row.slug || '').trim(),
-      name: String(row.name || '').trim(),
-      status: String(row.status || '').trim(),
-    }))
-    .filter((row) => Boolean(row.key || row.name))
+    .map((row) => {
+      const id = normalizeString(row.id)
+      const key = normalizeString(row.key) || id || normalizeString(row.slug)
+      const name = normalizeString(row.name)
+      const status = normalizeString(row.status) || 'active'
+
+      return {
+        id: id || key || name,
+        key,
+        name,
+        status,
+      }
+    })
+    .filter((row) => Boolean(row.id && (row.key || row.name)))
 )
 
 const {
   query,
   cards: cardsFiltered,
   visibleCount,
-} = useCollectionSearch<ProjectRow, ProjectCard>({
+} = useCollectionSearch<NormalizedProjectRow, ProjectCard>({
   items: collection,
   searchText: (row) =>
     `${row.key} ${row.name} ${row.status}`.trim().toLowerCase(),
   makeCard: (row) => ({
-    id: row.key || row.name || '',
+    id: row.id,
     title: row.name || row.key || 'Untitled project',
     subtitle: row.key || '',
-    badges: [row.status || 'active'],
+    badges: [row.status],
   }),
 })
 

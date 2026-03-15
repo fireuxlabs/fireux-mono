@@ -88,10 +88,26 @@ type FireuxConsoleApp = {
   ecosystem_id: string
 }
 
+type FireuxConsoleProjectMeta = {
+  name: string
+  slug: string
+  description: string
+  image_url: string
+  project_type: FireuxProjectType
+  source_url: string
+  console_endpoint_url: string
+  app_id: string
+  ecosystem_id: string
+  firebase_project_id: string
+}
+
 type FireuxConsolePayload = {
   project: {
     id: string
+    main_app_id: string
+    main_ecosystem_id: string
   }
+  project_meta: FireuxConsoleProjectMeta
   databases: Array<{
     name: string
     apps: FireuxConsoleApp[]
@@ -102,6 +118,8 @@ type ProjectMeta = {
   name: string
   description: string
   slug: string
+  image_url: string
+  primary_project: boolean
   project_type: FireuxProjectType
   source_url: string
   console_endpoint_url: string
@@ -132,23 +150,6 @@ watch(endpointUrl, () => {
   projectMeta.value = null
 })
 
-function toSlug(value: string) {
-  return String(value || '')
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
-
-function toLabel(value: string) {
-  return String(value || '')
-    .trim()
-    .split(/[-_.]+/)
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(' ')
-}
-
 function normalizeFireuxConsoleEndpoint(value: string) {
   const raw = String(value || '').trim()
   if (!raw) {
@@ -174,61 +175,32 @@ function normalizeFireuxConsoleEndpoint(value: string) {
   throw new Error('Use the app URL or the full /api/fireux-console endpoint')
 }
 
-function pickMainApp(databases: Array<{ name: string; apps: FireuxConsoleApp[] }>) {
-  const nonSystem = databases.filter(
-    (entry) => entry.name !== '(default)' && entry.name !== 'registry'
-  )
-
-  for (const database of nonSystem) {
-    const main = database.apps.find((app) => app.id.endsWith('-app'))
-    if (main) return main
-    if (database.apps[0]) return database.apps[0]
-  }
-
-  for (const database of databases) {
-    const main = database.apps.find((app) => app.id.endsWith('-app'))
-    if (main) return main
-    if (database.apps[0]) return database.apps[0]
-  }
-
-  return null
-}
-
 function readProjectMeta(payload: unknown, normalizedUrl: string) {
   const next = payload as FireuxConsolePayload | null
-  if (!next?.project || !Array.isArray(next.databases)) {
+  if (!next?.project || !next?.project_meta || !Array.isArray(next.databases)) {
     throw new Error('Project endpoint did not return the required console data')
   }
 
-  const projectId = String(next.project.id || '').trim()
-  if (!projectId) throw new Error('Project endpoint did not return a project id')
+  const meta = next.project_meta
+  const firebaseProjectId = String(meta.firebase_project_id || next.project.id || '').trim()
+  if (!firebaseProjectId) {
+    throw new Error('Project endpoint did not return a project id')
+  }
 
-  const endpoint = new URL(normalizedUrl)
-  const sourceUrl = endpoint.origin
-  const nonSystemDatabase = next.databases.find(
-    (entry) => entry.name !== '(default)' && entry.name !== 'registry'
-  )
-  const ecosystemId = String(nonSystemDatabase?.name || 'standalone').trim()
-  const projectType = (
-    ecosystemId === 'standalone' ? 'standalone-app' : 'ecosystem-app'
-  ) as FireuxProjectType
-  const mainApp = pickMainApp(next.databases)
-  const appId = String(mainApp?.id || `${toSlug(projectId)}-app`).trim()
-  const hostLabel = toLabel(endpoint.hostname.split('.')[0] || projectId)
-  const appLabel = String(mainApp?.name || '').trim()
-  const name = appLabel || hostLabel || projectId
-  const slug = toSlug(projectId)
+  const normalizedEndpoint = normalizeFireuxConsoleEndpoint(normalizedUrl)
 
   return {
-    name,
-    description: '',
-    slug,
-    project_type: projectType,
-    source_url: sourceUrl,
-    console_endpoint_url: normalizedUrl,
-    app_id: appId,
-    ecosystem_id: ecosystemId,
-    firebase_project_id: projectId,
+    name: String(meta.name || '').trim(),
+    description: String(meta.description || '').trim(),
+    slug: String(meta.slug || firebaseProjectId).trim(),
+    image_url: String(meta.image_url || '').trim(),
+    primary_project: true,
+    project_type: String(meta.project_type || '').trim() as FireuxProjectType,
+    source_url: String(meta.source_url || new URL(normalizedEndpoint).origin).trim(),
+    console_endpoint_url: String(meta.console_endpoint_url || normalizedEndpoint).trim(),
+    app_id: String(meta.app_id || next.project.main_app_id || '').trim(),
+    ecosystem_id: String(meta.ecosystem_id || next.project.main_ecosystem_id || '').trim(),
+    firebase_project_id: firebaseProjectId,
   }
 }
 
@@ -251,7 +223,9 @@ const fetchProjectMeta = async () => {
 
   try {
     const normalizedUrl = normalizeFireuxConsoleEndpoint(endpointUrl.value)
+    endpointUrl.value = normalizedUrl
     lastFetchUrl.value = normalizedUrl
+
     const response = await fetch(normalizedUrl)
     lastFetchStatus.value = response.status
     if (!response.ok) {
@@ -260,10 +234,7 @@ const fetchProjectMeta = async () => {
 
     const payload = await response.json()
     lastFetchPayload.value = payload
-    const nextMeta = readProjectMeta(payload, normalizedUrl)
-
-    endpointUrl.value = normalizedUrl
-    projectMeta.value = nextMeta
+    projectMeta.value = readProjectMeta(payload, normalizedUrl)
   } catch (err) {
     projectMeta.value = null
     if (err instanceof TypeError) {
@@ -292,6 +263,8 @@ const submit = async () => {
       name: projectMeta.value.name,
       slug: projectMeta.value.slug,
       description: projectMeta.value.description,
+      image_url: projectMeta.value.image_url,
+      primary_project: projectMeta.value.primary_project,
       project_type: projectMeta.value.project_type,
       source_url: projectMeta.value.source_url,
       console_endpoint_url: projectMeta.value.console_endpoint_url,

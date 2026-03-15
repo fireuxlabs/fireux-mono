@@ -25,6 +25,8 @@ export type ProjectCreateInput = {
   name: string
   slug: string
   description?: string
+  image_url?: string
+  primary_project?: boolean
   status?: FireuxProjectStatus
   project_type: FireuxProjectType
   source_url: string
@@ -37,13 +39,18 @@ export type ProjectCreateInput = {
 export function useProjectCreate(options: ProjectCreateOptions = {}) {
   const db = useFirestore()
   const collectionPath =
-    options.test === true ? 'test-projects' : String(options.collectionPath || 'projects').trim() || 'projects'
+    options.test === true
+      ? 'test-projects'
+      : String(options.collectionPath || 'projects').trim() || 'projects'
 
   async function createProject(input: ProjectCreateInput): Promise<string> {
     const user = await useRequireUser()
+
     const name = normalizeString(input?.name)
     const slug = toSlug(normalizeString(input?.slug))
     const description = normalizeString(input?.description)
+    const imageUrl = normalizeString(input?.image_url)
+    const primaryProject = Boolean(input?.primary_project)
     const status = (normalizeString(input?.status) || 'active') as FireuxProjectStatus
     const projectType = normalizeString(input?.project_type) as FireuxProjectType | ''
     const sourceUrl = normalizeString(input?.source_url)
@@ -92,7 +99,9 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
       name,
       slug,
       description,
+      image_url: imageUrl,
       status,
+      primary_project: primaryProject,
       project_type: projectType,
       source_url: sourceUrl,
       console_endpoint_url: consoleEndpointUrl,

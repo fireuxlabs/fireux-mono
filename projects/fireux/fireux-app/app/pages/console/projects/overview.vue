@@ -79,7 +79,6 @@
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import { useRuntimeProjectConsole } from 'fireux-core/runtime/composables/fireux/app/runtime-project/useRuntimeProjectConsole'
-
 definePageMeta({
   layout: 'console',
   nav: {

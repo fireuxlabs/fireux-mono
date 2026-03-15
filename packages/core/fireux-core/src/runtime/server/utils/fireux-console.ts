@@ -26,8 +26,69 @@ type FireuxConsoleDatabase = {
   apps: FireuxConsoleApp[]
 }
 
+type FireuxConsoleProjectControl = {
+  main_app_id: string
+  main_ecosystem_id: string
+}
+
+type FireuxConsoleProjectMeta = {
+  name: string
+  slug: string
+  description: string
+  image_url: string
+  project_type: 'standalone-app' | 'ecosystem-app'
+  source_url: string
+  console_endpoint_url: string
+  app_id: string
+  ecosystem_id: string
+  firebase_project_id: string
+}
+
 function readEnv(name: string) {
   return String(process.env[name] || '').trim()
+}
+
+function normalizeString(value: unknown) {
+  return String(value || '').trim()
+}
+
+function firstString(record: Record<string, unknown>, keys: string[]) {
+  for (const key of keys) {
+    const value = normalizeString(record[key])
+    if (value) return value
+  }
+  return ''
+}
+
+function readNestedString(
+  record: Record<string, unknown>,
+  pathGroups: string[][]
+) {
+  for (const path of pathGroups) {
+    let current: unknown = record
+
+    for (const segment of path) {
+      if (!current || typeof current !== 'object' || Array.isArray(current)) {
+        current = ''
+        break
+      }
+
+      current = (current as Record<string, unknown>)[segment]
+    }
+
+    const value = normalizeString(current)
+    if (value) return value
+  }
+
+  return ''
+}
+
+function toSlug(value: string) {
+  return String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
 }
 
 function getServiceAccountFromEnv() {
@@ -36,8 +97,8 @@ function getServiceAccountFromEnv() {
 
   try {
     const parsed = JSON.parse(raw)
-    const projectId = String(parsed.project_id || parsed.projectId || '').trim()
-    const clientEmail = String(parsed.client_email || parsed.clientEmail || '').trim()
+    const projectId = normalizeString(parsed.project_id || parsed.projectId)
+    const clientEmail = normalizeString(parsed.client_email || parsed.clientEmail)
     const privateKey = String(parsed.private_key || parsed.privateKey || '')
       .replace(/\\n/g, '\n')
       .trim()
@@ -77,7 +138,7 @@ async function getAdminAccessToken() {
     | undefined
 
   const accessToken = await credential?.getAccessToken?.()
-  const token = String(accessToken?.access_token || '').trim()
+  const token = normalizeString(accessToken?.access_token)
 
   if (!token) {
     throw createError({
@@ -110,7 +171,7 @@ async function listFirestoreDatabaseNames(projectId: string) {
   const data = (await response.json()) as FirestoreDatabasesResponse
 
   return (data.databases ?? [])
-    .map((entry) => String(entry.name || '').split('/').pop() || '')
+    .map((entry) => normalizeString(entry.name).split('/').pop() || '')
     .filter(Boolean)
 }
 
@@ -121,18 +182,100 @@ async function listDatabaseApps(databaseId: string) {
   return snapshot.docs
     .map((doc) => {
       const data = doc.data() as Record<string, unknown>
+
       return {
         id: doc.id,
-        name: String(data.name || '').trim(),
-        slug: String(data.slug || '').trim(),
-        ecosystem_id: String(data.ecosystem_id || '').trim(),
+        name: firstString(data, ['app_name', 'name', 'app_short_name']),
+        slug: firstString(data, ['slug']),
+        ecosystem_id: firstString(data, ['ecosystem_id', 'ecosystem']),
       }
     })
     .sort((a, b) => a.id.localeCompare(b.id))
 }
 
+async function readProjectControl(projectId: string): Promise<FireuxConsoleProjectControl> {
+  const db = getFirestore(getAdminApp())
+  const snapshot = await db.collection('project').doc(projectId).get()
+
+  if (!snapshot.exists) {
+    return {
+      main_app_id: '',
+      main_ecosystem_id: '',
+    }
+  }
+
+  const data = snapshot.data() as Record<string, unknown>
+
+  return {
+    main_app_id: firstString(data, ['main_app_id']),
+    main_ecosystem_id: firstString(data, ['main_ecosystem_id']),
+  }
+}
+
+async function readAppDoc(databaseId: string, appId: string) {
+  const db = getFirestore(getAdminApp(), databaseId)
+  const snapshot = await db.collection('apps').doc(appId).get()
+
+  if (!snapshot.exists) return null
+
+  return snapshot.data() as Record<string, unknown>
+}
+
+function buildProjectMeta(
+  projectId: string,
+  control: FireuxConsoleProjectControl,
+  appData: Record<string, unknown> | null
+): FireuxConsoleProjectMeta {
+  const data = appData ?? {}
+
+  const sourceUrl =
+    firstString(data, ['source_url', 'site_url', 'app_url', 'url']) ||
+    readNestedString(data, [['social_links', 'website']])
+
+  const imageUrl =
+    firstString(data, ['image_url', 'logo_url', 'icon_url']) ||
+    readNestedString(data, [
+      ['media', 'logo_url'],
+      ['media', 'thumbnail_url'],
+      ['media', 'cover_url'],
+      ['media', 'wordmark_light_url'],
+      ['media', 'wordmark_dark_url'],
+    ])
+
+  const appId = control.main_app_id || firstString(data, ['id', 'app_id'])
+  const ecosystemId =
+    control.main_ecosystem_id || firstString(data, ['ecosystem_id', 'ecosystem'])
+
+  const projectType: 'standalone-app' | 'ecosystem-app' =
+    ecosystemId ? 'ecosystem-app' : 'standalone-app'
+
+  const name =
+    firstString(data, ['app_name', 'name', 'app_short_name']) ||
+    appId ||
+    projectId
+
+  const slug =
+    firstString(data, ['slug']) ||
+    toSlug(name) ||
+    projectId
+
+  return {
+    name,
+    slug,
+    description: firstString(data, ['description', 'summary', 'tagline']),
+    image_url: imageUrl,
+    project_type: projectType,
+    source_url: sourceUrl,
+    console_endpoint_url: sourceUrl ? `${sourceUrl.replace(/\/+$/, '')}/api/fireux-console` : '',
+    app_id: appId,
+    ecosystem_id: ecosystemId,
+    firebase_project_id: projectId,
+  }
+}
+
 export async function buildFireuxConsoleResponse(firebaseProjectId: string) {
-  const projectId = String(firebaseProjectId || '').trim()
+  const projectId = normalizeString(firebaseProjectId)
+
   if (!projectId) {
     throw createError({
       statusCode: 500,
@@ -140,6 +283,7 @@ export async function buildFireuxConsoleResponse(firebaseProjectId: string) {
     })
   }
 
+  const control = await readProjectControl(projectId)
   const databaseNames = await listFirestoreDatabaseNames(projectId)
   const databases: FireuxConsoleDatabase[] = []
 
@@ -150,11 +294,32 @@ export async function buildFireuxConsoleResponse(firebaseProjectId: string) {
     })
   }
 
+  let appData: Record<string, unknown> | null = null
+
+  if (control.main_app_id) {
+    if (control.main_ecosystem_id) {
+      appData = await readAppDoc(control.main_ecosystem_id, control.main_app_id)
+    }
+
+    if (!appData) {
+      appData = await readAppDoc('(default)', control.main_app_id)
+    }
+  }
+
+  const project_meta = buildProjectMeta(projectId, control, appData)
+
+  const ecosystem_apps =
+    databases.find((db) => db.name === control.main_ecosystem_id)?.apps ?? []
+
   return {
     ok: true,
     project: {
       id: projectId,
+      main_app_id: control.main_app_id,
+      main_ecosystem_id: control.main_ecosystem_id,
     },
+    project_meta,
+    ecosystem_apps,
     databases,
   }
 }

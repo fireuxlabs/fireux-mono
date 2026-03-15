@@ -18,7 +18,6 @@
 </template>
 
 <script setup lang="ts">
-import ProjectCreateForm from './Form.vue'
 
 defineProps<{
   returnTo?: string

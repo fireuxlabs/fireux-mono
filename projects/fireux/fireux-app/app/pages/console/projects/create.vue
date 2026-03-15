@@ -14,7 +14,6 @@
 </template>
 
 <script setup lang="ts">
-import ProjectCreateSystem from '../../../components/project/Create/System.vue'
 
 definePageMeta({
   layout: 'console',
