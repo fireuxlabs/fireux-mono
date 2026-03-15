@@ -67,7 +67,7 @@ import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firesto
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { useSupplierInterface } from '../../../composables/supplier/view/useSupplierInterface'
+import { useSupplierInterface } from '../../../composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
 import type { SupplierApp, SupplierCore } from '../../../models/supplier/Supplier.model'
 import { supplierConfig } from '../../../composables/supplier/supplierConfig'
 

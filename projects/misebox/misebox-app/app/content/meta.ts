@@ -543,8 +543,8 @@ export const metaContent = defineFireuxMeta({
     },
   },
   lists: {
-    hero_bullets: appMeta.heroBullets,
-    about_ticks: appMeta.aboutPanelTicks,
+    hero_bullets: [...appMeta.heroBullets],
+    about_ticks: [...appMeta.aboutPanelTicks],
   },
   entities: appMeta.entities.map((entity) => ({
     id: entity.name,
@@ -552,7 +552,7 @@ export const metaContent = defineFireuxMeta({
   })),
   relations_ascii: appMeta.relationshipMap,
   examples: {
-    samples: appMeta.samples,
+    samples: [...appMeta.samples],
   },
   routes: {
     public: publicRoutes,

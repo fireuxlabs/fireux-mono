@@ -12,7 +12,7 @@
     <div class="min-w-0 flex-1 space-y-1">
       <div class="flex items-start justify-between gap-2">
         <div class="min-w-0">
-          <div class="truncate text-sm font-semibold">{{ name }}</div>
+          <div class="truncate text-sm font-semibold">{{ title }}</div>
           <div v-if="subtitle" class="truncate text-xs text-dimmed">
             {{ subtitle }}
           </div>
@@ -27,7 +27,7 @@
 <script setup lang="ts">
 defineProps<{
   id: string
-  name: string
+  title: string
   subtitle: string
   avatarUrl: string
 }>()

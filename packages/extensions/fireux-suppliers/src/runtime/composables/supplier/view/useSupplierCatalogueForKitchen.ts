@@ -110,7 +110,7 @@ export function useSupplierCatalogueForKitchen(params: {
 
   const supplierIngredientCollectionAll = computed<SupplierItemRow[]>(() =>
     supplierIngredients.value
-      .map((entry, index) => {
+      .map((entry, index): SupplierItemRow => {
         const row = asRecord(entry)
 
         const id = asString(row.id) || `supplier-ingredient-${index + 1}`

@@ -1,4 +1,15 @@
-import type { AppModel } from '../../../../models/core/app.model'
+import type { AppModel } from '../../../../../models/core/app.model'
+
+const EMPTY_SOCIAL_LINKS = {
+  website: '',
+  twitter: '',
+  github: '',
+  linkedin: '',
+  instagram: '',
+  facebook: '',
+  youtube: '',
+  email: '',
+} as const
 
 export type ReadOnlyAppScenario = {
   id: string
@@ -47,7 +58,7 @@ const SCENARIOS_BY_KEY: Record<ScenarioKey, ReadOnlyAppScenario> = {
       description: 'Read-only app runtime scenario for control-room operations.',
       short_bio: 'Core operations runtime',
       long_bio: '',
-      social_links: {},
+      social_links: { ...EMPTY_SOCIAL_LINKS },
       derived: { user_count: 1240 },
       media: {
         thumbnail_url:
@@ -82,7 +93,7 @@ const SCENARIOS_BY_KEY: Record<ScenarioKey, ReadOnlyAppScenario> = {
       description: 'Read-only app runtime scenario for labs workflows.',
       short_bio: 'Experimentation runtime',
       long_bio: '',
-      social_links: {},
+      social_links: { ...EMPTY_SOCIAL_LINKS },
       derived: { user_count: 370 },
       media: {
         thumbnail_url:
@@ -117,7 +128,7 @@ const SCENARIOS_BY_KEY: Record<ScenarioKey, ReadOnlyAppScenario> = {
       description: 'Read-only app runtime scenario for observability workflows.',
       short_bio: 'Insights runtime',
       long_bio: '',
-      social_links: {},
+      social_links: { ...EMPTY_SOCIAL_LINKS },
       derived: { user_count: 810 },
       media: {
         thumbnail_url:

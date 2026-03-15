@@ -433,12 +433,12 @@ export const buildReadOnlyPortfolioScenario = (
   )
 
   const complianceTasks: ReadOnlyTask[] = complianceRecords
-    .map((record) => {
+    .flatMap((record): ReadOnlyTask[] => {
       const days = daysToDate(record.expiry_date)
-      if (days === null || days > 45) return null
+      if (days === null || days > 45) return []
 
       const status: ReadOnlyTask['status'] = days < 0 ? 'in_progress' : 'open'
-      return {
+      return [{
         id: `task-comp-${record.id}`,
         portfolio_id: input.id,
         title: `${record.type_label} action for ${record.property_id}`,
@@ -447,22 +447,25 @@ export const buildReadOnlyPortfolioScenario = (
         due_date: toIsoDate(shiftDays(referenceDate, Math.max(days, 2))),
         linked_entity_type: 'compliance-record',
         linked_entity_id: record.id,
-      }
+      }]
     })
-    .filter((entry): entry is ReadOnlyTask => Boolean(entry))
 
   const maintenanceTasks: ReadOnlyTask[] = maintenance
     .filter((ticket) => ticket.status !== 'done')
-    .map((ticket, index) => ({
-      id: `task-maint-${ticket.id}`,
-      portfolio_id: input.id,
-      title: `Resolve ${ticket.category} ticket at ${ticket.property_id}`,
-      status: ticket.status === 'open' ? 'open' : 'in_progress',
-      source: 'manual',
-      due_date: ticket.scheduled_for,
-      linked_entity_type: 'maintenance-ticket',
-      linked_entity_id: ticket.id,
-    }))
+    .map((ticket): ReadOnlyTask => {
+      const status: ReadOnlyTask['status'] = ticket.status === 'open' ? 'open' : 'in_progress'
+
+      return {
+        id: `task-maint-${ticket.id}`,
+        portfolio_id: input.id,
+        title: `Resolve ${ticket.category} ticket at ${ticket.property_id}`,
+        status,
+        source: 'manual',
+        due_date: ticket.scheduled_for,
+        linked_entity_type: 'maintenance-ticket',
+        linked_entity_id: ticket.id,
+      }
+    })
     .slice(0, input.pressure === 'stressed' ? 30 : 18)
 
   const documentTasks: ReadOnlyTask[] = documents

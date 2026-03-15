@@ -92,5 +92,23 @@ export function useAgentInterface(
     return mapped.id ? mapped : null
   }
 
-  return { card }
+  function searchText(target: AgentCore | AgentResolved): string {
+    const mapped = map(target, resolveUser(target))
+
+    return [
+      mapped.id,
+      mapped.displayName,
+      mapped.tagline,
+      mapped.summary,
+      mapped.contactEmail,
+      mapped.contactPhone,
+      mapped.websiteUrl,
+      ...mapped.badges,
+    ]
+      .join(' ')
+      .trim()
+      .toLowerCase()
+  }
+
+  return { card, searchText }
 }

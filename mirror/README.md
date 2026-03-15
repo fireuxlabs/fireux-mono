@@ -1,53 +1,59 @@
-Mirror files index
+Standard workflow
 
-This file is required by the FireUX guard.
-Do not delete.
-Standard flow
-1) Clear mirror: remove symlinks in mirror/ and empty mirror/mirror.txt.
-2) Populate mirror/mirror.txt with the desired file set.
-3) Regenerate symlinks using scripts/mirror-links.sh.
+1) Clear the mirror
+   - Delete any existing symlinks inside `mirror/`.
+   - Empty the file `mirror/mirror.txt`.
+
+2) Define the mirror scope
+   - Add one source file path per line inside `mirror/mirror.txt`.
+   - Paths should be relative to the repository root.
+   - Example:
+     packages/core/fireux-core/src/runtime/composables/.../useUserInterface.ts
+
+3) Generate the mirror
+   - Run the script:
+     pnpm mirror:sync
+   - This reads `mirror/mirror.txt` and creates symlinks inside `mirror/`.
+
+4) Inspect or share the mirrored files
+   - The symlinked files inside `mirror/` provide a flattened view of the selected sources.
+   - This makes it easier to review multiple related files together.
 
 Quick alignment command (models)
+
 - `pnpm mirror:models`
-- Rebuilds `mirror/mirror.txt` from `packages/**/**/*.model.ts` and runs mirror sync.
+- Automatically rebuilds `mirror/mirror.txt` using all files matching:
+  packages/**/**/*.model.ts
+- Then runs the mirror sync script.
 
-Naming convention for symlinks
-- Prefer descriptive names based on the search scope.
-- Use the pattern: <entity>-<scope>.mirror.<ext>
-	Examples:
-	- agent-usefetch.mirror.ts
-	- places-usecollection.mirror.ts
-	- company-edit-page.mirror.vue
-- Derive <entity> from the model/entity name in the path or filename.
-- Derive <scope> from the search pattern (usefetch, usecollection, edit, page, card, etc.).
-- If entity is unclear, fall back to <package>-<basename>.mirror.<ext>.
+Symlink naming convention
 
-Entities index (search targets)
+Use descriptive names so the mirrored files are easy to scan.
 
-Core
-- App
-- User
-- Profile
-- Meta
+Pattern:
 
-Profiles
-- Agent
-- Professional
-- Chef
-- Supplier
+<entity>-<scope>.mirror.<ext>
 
-Objects
-- Place
-- Company
-- Kitchen
-- Job
-- Product
-- BlogPost
-- Ingredient
-- Recipe
-- RecipeSimple
-- Dish
-- Menu
-- Task
-- MiseEnPlace
-- Location
+Examples:
+
+agent-usefetch.mirror.ts
+places-usecollection.mirror.ts
+company-edit-page.mirror.vue
+
+How to derive the parts
+
+Entity
+- Usually the model or domain name in the path.
+- Examples: agent, company, kitchen, job.
+
+Scope
+- The feature or pattern used to collect the files.
+- Examples: usefetch, usecollection, interface, card, edit, page.
+
+Fallback
+- If the entity is unclear, use:
+  <package>-<basename>.mirror.<ext>
+
+Example:
+
+fireux-core-useUserInterface.mirror.ts

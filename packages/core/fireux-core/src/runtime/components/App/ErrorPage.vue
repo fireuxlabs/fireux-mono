@@ -142,8 +142,7 @@
 </template>
 
 <script setup lang="ts">
-import { clearError, useRouter, type NuxtError } from 'nuxt/app'
-import { useRuntimeConfig } from '#imports'
+import { clearError, useError, useRouter, useRuntimeConfig, type NuxtError } from 'nuxt/app'
 import { computed } from 'vue'
 
 const props = defineProps<{

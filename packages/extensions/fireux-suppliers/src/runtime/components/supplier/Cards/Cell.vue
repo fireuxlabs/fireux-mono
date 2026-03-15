@@ -6,18 +6,14 @@
     @click="onClick"
   >
     <div class="card__media">
-      <UAvatarGroup v-if="secondaryAvatarUrl" size="sm">
-        <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
-        <UAvatar :src="secondaryAvatarUrl || undefined" :alt="displayName" size="2xs" />
-      </UAvatarGroup>
-      <UAvatar v-else :src="avatarUrl || undefined" :alt="displayName" size="sm" />
+      <UAvatar :src="avatarUrl || undefined" :alt="title" size="sm" />
 
       <div class="card__content card__stack">
         <div class="card__header">
           <div class="min-w-0">
-            <div class="card__title">{{ displayName }}</div>
-            <div v-if="showSubtitle && tagline" class="card__subtitle">
-              {{ tagline }}
+            <div class="card__title">{{ title }}</div>
+            <div v-if="showSubtitle && subtitle" class="card__subtitle">
+              {{ subtitle }}
             </div>
           </div>
 
@@ -44,15 +40,14 @@
 </template>
 
 <script setup lang="ts">
-import type { SupplierCard } from '../../../composables/supplier/view/useSupplierInterface'
+import type { SupplierCard } from '../../../composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
 
 type Props = Pick<
   SupplierCard.Card,
   'to'
   | 'avatarUrl'
-  | 'secondaryAvatarUrl'
-  | 'displayName'
-  | 'tagline'
+  | 'title'
+  | 'subtitle'
   | 'badges'
   | 'summary'
 > & {

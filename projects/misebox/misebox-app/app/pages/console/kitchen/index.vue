@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo, useRoute } from '#imports'
+import { navigateTo, useRoute } from 'nuxt/app'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useChefCreate } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/main/useChefCreate'
 import { useRuntimeKitchenSelection } from 'fireux-kitchens/runtime/composables/fireux/app/kitchen-runtime/state'
@@ -39,7 +39,7 @@ const liveKitchens = kitchens.value ?? []
 const selectedId = String(runtimeKitchenId.value || '').trim()
 const fallbackId = String(liveKitchens[0]?.id || '').trim()
 const resolvedId =
-  liveKitchens.some((entry) => String(entry?.id || '').trim() === selectedId)
+  liveKitchens.some((entry: { id?: string }) => String(entry?.id || '').trim() === selectedId)
     ? selectedId
     : fallbackId
 

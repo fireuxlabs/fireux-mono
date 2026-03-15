@@ -409,17 +409,22 @@ const aboutHero = sourceMeta.about.hero as {
   description?: string
 }
 
+const landing = sourceMeta.landing as typeof sourceMeta.landing & {
+  secondaryCtaLabel?: string
+  secondaryCtaTo?: string
+}
+
 export const appMeta = {
   name: sourceMeta.name,
 
-  brand: sourceMeta.landing.brand,
-  heroPrimaryHtml: sourceMeta.landing.heroPrimaryLine,
-  consoleBridgeHtml: sourceMeta.landing.consoleBridgeLine,
-  landingPrimaryCtaLabel: sourceMeta.landing.primaryCtaLabel,
-  landingSecondaryCtaLabel: sourceMeta.landing.secondaryCtaLabel ?? '',
-  landingSecondaryCtaTo: sourceMeta.landing.secondaryCtaTo ?? '',
-  heroBullets: sourceMeta.landing.heroBullets,
-  heroPanelItems: sourceMeta.landing.rightPanelItems,
+  brand: landing.brand,
+  heroPrimaryHtml: landing.heroPrimaryLine,
+  consoleBridgeHtml: landing.consoleBridgeLine,
+  landingPrimaryCtaLabel: landing.primaryCtaLabel,
+  landingSecondaryCtaLabel: landing.secondaryCtaLabel ?? '',
+  landingSecondaryCtaTo: landing.secondaryCtaTo ?? '',
+  heroBullets: landing.heroBullets,
+  heroPanelItems: landing.rightPanelItems,
 
   aboutLabel: aboutHero.label,
   tagline: aboutHero.tagline ?? sourceMeta.about.appSpec.tagline,
@@ -491,8 +496,8 @@ export const metaContent = defineFireuxMeta({
     },
   },
   lists: {
-    hero_bullets: appMeta.heroBullets,
-    about_ticks: appMeta.aboutPanelTicks,
+    hero_bullets: [...appMeta.heroBullets],
+    about_ticks: [...appMeta.aboutPanelTicks],
   },
   entities: appMeta.entities.map((entity) => ({
     id: entity.name,
@@ -500,7 +505,7 @@ export const metaContent = defineFireuxMeta({
   })),
   relations_ascii: appMeta.relationshipMap,
   examples: {
-    samples: appMeta.samples,
+    samples: [...appMeta.samples],
   },
   routes: {
     public: publicRoutes,

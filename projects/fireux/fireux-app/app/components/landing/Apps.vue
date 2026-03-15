@@ -45,5 +45,7 @@
 </template>
 
 <script setup lang="ts">
+import { useLandingDirectory } from '../../composables/useLandingDirectory'
+
 const { appsPending, displayedApps } = useLandingDirectory()
 </script>

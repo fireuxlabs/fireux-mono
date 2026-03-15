@@ -6,8 +6,8 @@ import type { SupplierCore } from '../../../models/supplier/Supplier.model'
 import { useSupplierComputed } from './useSupplierComputed'
 import { useSupplierCreate } from '../useSupplierCreate'
 import { useSupplierUpdate } from '../useSupplierUpdate'
-import type { SupplierCard } from '../view/useSupplierInterface'
-import { useSupplierInterface } from '../view/useSupplierInterface'
+import type { SupplierCard } from '../../fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
+import { useSupplierInterface } from '../../fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
 
 export type { SupplierCard, SupplierCore as SupplierProfile }
 

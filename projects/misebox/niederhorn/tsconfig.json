@@ -7,8 +7,26 @@
     "moduleResolution": "Bundler",
     "paths": {
       "#pwa": ["@vite-pwa/nuxt/dist/runtime/composables/index"],
-      "#imports": [".nuxt/imports.d.ts"],
-      "#build/*": [".nuxt/*"]
+      "#imports": [".nuxt/imports.d.ts", "../../../types/nuxt-shims.d.ts"],
+      "#build/*": [".nuxt/*"],
+      "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
+      "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
+      "fireux-core/runtime/*": ["../../../packages/core/fireux-core/src/runtime/*"],
+      "fireux-jobs": ["../../../packages/extensions/fireux-jobs/src/module.ts"],
+      "fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
+      "fireux-jobs/runtime/*": ["../../../packages/extensions/fireux-jobs/src/runtime/*"],
+      "fireux-kitchens": ["../../../packages/extensions/fireux-kitchens/src/module.ts"],
+      "fireux-kitchens/*": ["../../../packages/extensions/fireux-kitchens/src/*"],
+      "fireux-kitchens/runtime/*": ["../../../packages/extensions/fireux-kitchens/src/runtime/*"],
+      "fireux-orders": ["../../../packages/extensions/fireux-orders/src/module.ts"],
+      "fireux-orders/*": ["../../../packages/extensions/fireux-orders/src/*"],
+      "fireux-orders/runtime/*": ["../../../packages/extensions/fireux-orders/src/runtime/*"],
+      "fireux-places": ["../../../packages/extensions/fireux-places/src/module.ts"],
+      "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
+      "fireux-places/runtime/*": ["../../../packages/extensions/fireux-places/src/runtime/*"],
+      "fireux-suppliers": ["../../../packages/extensions/fireux-suppliers/src/module.ts"],
+      "fireux-suppliers/*": ["../../../packages/extensions/fireux-suppliers/src/*"],
+      "fireux-suppliers/runtime/*": ["../../../packages/extensions/fireux-suppliers/src/runtime/*"]
       // Do NOT override ~/*, @/*, ~~/* here; Nuxt sets them to srcDir (app/)
     },
     "skipLibCheck": true

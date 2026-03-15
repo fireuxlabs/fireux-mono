@@ -1,15 +1,11 @@
 <template>
   <UCard class="preview">
     <div class="preview__row">
-      <UAvatarGroup v-if="secondaryAvatarUrl" size="sm">
-        <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
-        <UAvatar :src="secondaryAvatarUrl || undefined" :alt="displayName" size="2xs" />
-      </UAvatarGroup>
-      <UAvatar v-else :src="avatarUrl || undefined" :alt="displayName" size="sm" />
+      <UAvatar :src="avatarUrl || undefined" :alt="title" size="sm" />
 
       <div class="preview__main">
         <div class="preview__top">
-          <div class="preview__title">{{ displayName }}</div>
+          <div class="preview__title">{{ title }}</div>
 
           <div v-if="showBadges && badges.length" class="preview__badges">
             <UBadge
@@ -24,8 +20,8 @@
           </div>
         </div>
 
-        <div v-if="showSubtitle && tagline" class="preview__subtitle">
-          {{ tagline }}
+        <div v-if="showSubtitle && subtitle" class="preview__subtitle">
+          {{ subtitle }}
         </div>
 
         <div v-if="showBody" class="preview__body">
@@ -35,7 +31,7 @@
           </div>
 
           <div class="preview__line text-dimmed">
-            <span v-if="categoriesCsv">{{ categoriesCsv }}</span>
+            <span v-if="categoriesCsv || locationsLabel">{{ categoriesCsv || locationsLabel }}</span>
             <span v-else class="italic">missing</span>
           </div>
         </div>
@@ -45,20 +41,17 @@
 </template>
 
 <script setup lang="ts">
-type Props = {
-  avatarUrl: string
-  secondaryAvatarUrl?: string
-  displayName: string
-  tagline: string
-  badges: string[]
-  summary: string
-  categoriesCsv: string
+import type { SupplierCard } from '../../../composables/supplier/ops/useSupplier'
 
+type Props = {
   prop?: string
   showSubtitle?: boolean
   showBadges?: boolean
   showBody?: boolean
-}
+} & Pick<
+  SupplierCard.Card,
+  'avatarUrl' | 'title' | 'subtitle' | 'badges' | 'summary' | 'categoriesCsv' | 'locationsLabel'
+>
 
 withDefaults(defineProps<Props>(), {
   showSubtitle: true,

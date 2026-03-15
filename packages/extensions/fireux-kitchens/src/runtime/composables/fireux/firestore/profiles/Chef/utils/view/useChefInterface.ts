@@ -44,5 +44,18 @@ export function useChefInterface(
     return mapped.id && mapped.displayName ? mapped : null
   }
 
-  return { card }
+  function searchText(target: ChefCore): string {
+    const mapped = map(target, userRef?.value ?? null)
+
+    return [
+      mapped.id,
+      mapped.displayName,
+      mapped.chef_headline,
+    ]
+      .join(' ')
+      .trim()
+      .toLowerCase()
+  }
+
+  return { card, searchText }
 }

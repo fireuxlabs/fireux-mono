@@ -28,8 +28,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useRuntimeKitchen } from 'fireux-kitchens/runtime/composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
+import { computed } from 'vue'
 
 definePageMeta({
   layout: 'console',

@@ -51,5 +51,19 @@ export function useProfessionalInterface(
     }
   }
 
-  return { card }
+  function searchText(target: ProfessionalTarget): string {
+    const mapped = card(target, target.user ?? userRef?.value ?? null)
+
+    return [
+      mapped?.id ?? '',
+      mapped?.displayName ?? '',
+      mapped?.title ?? '',
+      mapped?.summary ?? '',
+    ]
+      .join(' ')
+      .trim()
+      .toLowerCase()
+  }
+
+  return { card, searchText }
 }

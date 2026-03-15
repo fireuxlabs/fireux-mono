@@ -3,13 +3,20 @@ import {
   defineEventHandler,
   setResponseHeaders,
 } from 'h3'
-import { useRuntimeConfig } from '#imports'
+import { useRuntimeConfig } from 'nuxt/app'
 import { buildFireuxConsoleResponse } from 'fireux-core/runtime/server/utils/fireux-console.ts'
 
 export default defineEventHandler(async (event) => {
   const runtimeConfig = useRuntimeConfig()
+  const publicConfig = runtimeConfig.public as {
+    firebaseEcosystem?: {
+      firebase?: {
+        projectId?: string
+      }
+    }
+  }
   const firebaseProjectId = String(
-    runtimeConfig.public?.firebaseEcosystem?.firebase?.projectId || ''
+    publicConfig.firebaseEcosystem?.firebase?.projectId || ''
   ).trim()
 
   if (!firebaseProjectId) {

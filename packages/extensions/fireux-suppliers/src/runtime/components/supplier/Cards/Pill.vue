@@ -6,16 +6,12 @@
     class="pill"
   >
     <UUser
-      :name="displayName"
-      :description="showSubtitle ? (tagline || undefined) : undefined"
+      :name="title"
+      :description="showSubtitle ? (subtitle || undefined) : undefined"
       size="sm"
     >
       <template #avatar>
-        <UAvatarGroup v-if="avatarUrl && secondaryAvatarUrl" size="xs">
-          <UAvatar :src="avatarUrl || undefined" :alt="displayName || ''" size="xs" />
-          <UAvatar :src="secondaryAvatarUrl || undefined" :alt="displayName || ''" size="2xs" />
-        </UAvatarGroup>
-        <UAvatar v-else :src="avatarUrl || undefined" :alt="displayName || ''" size="xs" />
+        <UAvatar :src="avatarUrl || undefined" :alt="title || ''" size="xs" />
       </template>
 
       <template #default>
@@ -44,7 +40,7 @@ const emit = defineEmits<{
 
 const props = withDefaults(
   defineProps<
-    Pick<SupplierCard.Card, 'to' | 'avatarUrl' | 'secondaryAvatarUrl' | 'displayName' | 'tagline' | 'badges'> & {
+    Pick<SupplierCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
       showSubtitle?: boolean
       showBadges?: boolean
       link?: boolean

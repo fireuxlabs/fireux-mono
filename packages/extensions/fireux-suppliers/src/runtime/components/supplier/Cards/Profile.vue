@@ -1,11 +1,7 @@
 <template>
   <UCard class="space-y-6">
     <div class="flex items-start gap-4">
-      <UAvatarGroup v-if="vm.avatarSecondary" size="lg">
-        <UAvatar :src="vm.avatar || undefined" :alt="vm.title" size="lg" />
-        <UAvatar :src="vm.avatarSecondary || undefined" :alt="vm.title" size="sm" />
-      </UAvatarGroup>
-      <UAvatar v-else :src="vm.avatar || undefined" :alt="vm.title" size="lg" />
+      <UAvatar :src="vm.avatar || undefined" :alt="vm.title" size="lg" />
 
       <div class="min-w-0 flex-1 space-y-2">
         <div class="flex items-start justify-between gap-4">
@@ -35,9 +31,33 @@
 
     <div class="space-y-4">
       <div class="space-y-1">
-        <div class="text-xs font-medium text-dimmed">Bio</div>
+        <div class="text-xs font-medium text-dimmed">Summary</div>
         <div class="text-sm">
-          <span v-if="vm.line1">{{ vm.line1 }}</span>
+          <span v-if="vm.summary">{{ vm.summary }}</span>
+          <span v-else class="text-dimmed italic">missing</span>
+        </div>
+      </div>
+
+      <div class="space-y-1">
+        <div class="text-xs font-medium text-dimmed">Organization</div>
+        <div class="text-sm">
+          <span v-if="vm.organizationName">{{ vm.organizationName }}</span>
+          <span v-else class="text-dimmed italic">missing</span>
+        </div>
+      </div>
+
+      <div class="space-y-1">
+        <div class="text-xs font-medium text-dimmed">Coverage</div>
+        <div class="text-sm">
+          <span v-if="vm.locationsLabel">{{ vm.locationsLabel }}</span>
+          <span v-else class="text-dimmed italic">missing</span>
+        </div>
+      </div>
+
+      <div class="space-y-1">
+        <div class="text-xs font-medium text-dimmed">Categories</div>
+        <div class="text-sm">
+          <span v-if="vm.categoriesCsv">{{ vm.categoriesCsv }}</span>
           <span v-else class="text-dimmed italic">missing</span>
         </div>
       </div>
@@ -45,15 +65,7 @@
       <div class="space-y-1">
         <div class="text-xs font-medium text-dimmed">Specialties</div>
         <div class="text-sm">
-          <span v-if="vm.line2">{{ vm.line2 }}</span>
-          <span v-else class="text-dimmed italic">missing</span>
-        </div>
-      </div>
-
-      <div class="space-y-1">
-        <div class="text-xs font-medium text-dimmed">Locations</div>
-        <div class="text-sm">
-          <span v-if="vm.line3">{{ vm.line3 }}</span>
+          <span v-if="vm.specialtiesCsv">{{ vm.specialtiesCsv }}</span>
           <span v-else class="text-dimmed italic">missing</span>
         </div>
       </div>
@@ -83,7 +95,7 @@ const { coreProfile, card: toCard } = useSupplier()
 
 const isSupplierCard = (value: unknown): value is SupplierCard.Card => {
   if (!value || typeof value !== 'object') return false
-  return 'to' in value && 'title' in value && 'badges' in value && 'line1' in value
+  return 'to' in value && 'title' in value && 'badges' in value && 'organizationName' in value
 }
 
 const resolvedCard = computed<SupplierCard.Card | null>(() => {
@@ -103,15 +115,26 @@ const vm = computed(() => {
   const title = props.title ?? card?.title ?? 'Supplier'
   const subtitle = props.subtitle ?? (card?.subtitle || undefined)
   const avatar = props.avatar ?? (card?.avatarUrl || null)
-  const avatarSecondary = props.avatarSecondary ?? (card?.secondaryAvatarUrl || null)
   const badges = card?.badges ?? []
 
   const prop = typeof props.prop === 'string' ? props.prop : ''
+  const summary = String(card?.summary ?? '').trim()
+  const organizationName = String(card?.organizationName ?? '').trim()
+  const locationsLabel = String(card?.locationsLabel ?? '').trim()
+  const categoriesCsv = String(card?.categoriesCsv ?? '').trim()
+  const specialtiesCsv = String(card?.specialtiesCsv ?? '').trim()
 
-  const line1 = String(card?.line1 ?? '').trim()
-  const line2 = String(card?.line2 ?? '').trim()
-  const line3 = String(card?.line3 ?? '').trim()
-
-  return { title, subtitle, avatar, avatarSecondary, badges, prop, line1, line2, line3 }
+  return {
+    title,
+    subtitle,
+    avatar,
+    badges,
+    prop,
+    summary,
+    organizationName,
+    locationsLabel,
+    categoriesCsv,
+    specialtiesCsv,
+  }
 })
 </script>

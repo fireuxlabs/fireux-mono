@@ -36,6 +36,8 @@
 </template>
 
 <script setup lang="ts">
+import { useRuntimeConfig } from 'nuxt/app'
+
 type AppKey = 'misebox' | 'niederhorn'
 
 const apps = [

@@ -217,15 +217,15 @@ type AppSpec = {
   name: string
   tagline: string
   description: string
-  modules: Array<{ name: string; summary: string; entities: string[] }>
-  entities: Array<{
+  modules: ReadonlyArray<{ name: string; summary: string; entities: readonly string[] }>
+  entities: ReadonlyArray<{
     name: string
     purpose: string
-    keyFields: string[]
-    linksTo: string[]
+    keyFields: readonly string[]
+    linksTo: readonly string[]
   }>
-  samples: Array<{ entity: string; example: Record<string, any> }>
-  routes: Array<{ label: string; path: string; kind: 'public' | 'console' }>
+  samples: ReadonlyArray<{ entity: string; example: Record<string, any> }>
+  routes: ReadonlyArray<{ label: string; path: string; kind: 'public' | 'console' }>
 }
 
 definePageMeta({

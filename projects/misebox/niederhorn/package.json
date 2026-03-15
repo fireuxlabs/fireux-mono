@@ -20,6 +20,7 @@
     "dompurify": "^3.2.6",
     "firebase-functions": "^6.3.2",
     "fireux-core": "workspace:*",
+    "fireux-kitchens": "workspace:*",
     "fireux-places": "workspace:*",
     "fireux-jobs": "workspace:*",
     "fireux-misebox": "workspace:*",
