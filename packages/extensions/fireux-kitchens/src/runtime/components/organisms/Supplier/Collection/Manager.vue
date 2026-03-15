@@ -91,12 +91,12 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import {
-  useSupplierInterface,
-  type SupplierCard,
-  type SupplierSurface,
-} from 'fireux-suppliers/runtime/composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
+import {
+    useSupplierInterface,
+    type SupplierCard,
+    type SupplierSurface,
+} from 'fireux-suppliers/runtime/composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
 import { computed } from 'vue'
 import SupplierCardsCell from '../Cards/Cell.vue'
 import SupplierCardsPill from '../Cards/Pill.vue'

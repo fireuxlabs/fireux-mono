@@ -2,16 +2,16 @@ import type { Portfolio } from '../../../../../../models/portfolio.model'
 import type { Property } from '../../../../../../models/property.model'
 import type { Unit } from '../../../../../../models/unit.model'
 import type {
-  ReadOnlyComplianceRecord,
-  ReadOnlyDocument,
-  ReadOnlyDocumentLink,
-  ReadOnlyFinancialSignals,
-  ReadOnlyFinancialTransaction,
-  ReadOnlyLease,
-  ReadOnlyMaintenanceTicket,
-  ReadOnlyPortfolioScenario,
-  ReadOnlyTask,
-  ReadOnlyTenant,
+    ReadOnlyComplianceRecord,
+    ReadOnlyDocument,
+    ReadOnlyDocumentLink,
+    ReadOnlyFinancialSignals,
+    ReadOnlyFinancialTransaction,
+    ReadOnlyLease,
+    ReadOnlyMaintenanceTicket,
+    ReadOnlyPortfolioScenario,
+    ReadOnlyTask,
+    ReadOnlyTenant,
 } from './types'
 
 type ScenarioPressure = 'stable' | 'growth' | 'stressed'

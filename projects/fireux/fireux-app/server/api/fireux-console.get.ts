@@ -1,10 +1,10 @@
-import {
-  createError,
-  defineEventHandler,
-  setResponseHeaders,
-} from 'h3'
-import { useRuntimeConfig } from 'nuxt/app'
+import { useRuntimeConfig } from '#imports'
 import { buildFireuxConsoleResponse } from 'fireux-core/runtime/server/utils/fireux-console.ts'
+import {
+    createError,
+    defineEventHandler,
+    setResponseHeaders,
+} from 'h3'
 
 export default defineEventHandler(async (event) => {
   const runtimeConfig = useRuntimeConfig()

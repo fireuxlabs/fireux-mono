@@ -1,8 +1,8 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
-import { professionalConfig } from '../../config/professionalConfig'
 import type { ProfessionalCore, ProfessionalUserSummary } from '../../../../../../../models/profiles/Professional/Professional.model'
+import { professionalConfig } from '../../config/professionalConfig'
 
 type UserLike = ProfessionalUserSummary
 type ProfessionalTarget = ProfessionalCore & { user?: UserLike | null }

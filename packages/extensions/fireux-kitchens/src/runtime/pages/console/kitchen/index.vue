@@ -1,9 +1,17 @@
 <template>
-  <div />
+  <div class="flex min-h-[40vh] items-center justify-center px-4">
+    <div class="text-center">
+      <p class="text-sm text-dimmed">{{ statusMessage }}</p>
+      <p v-if="errorMessage" class="mt-2 text-xs text-red-500">
+        {{ errorMessage }}
+      </p>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { navigateTo, useRoute } from '#imports'
+import { computed, ref, watch } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useChefCreate } from '../../../composables/fireux/firestore/profiles/Chef/main/useChefCreate'
 import { useRuntimeKitchenSelection } from '../../../composables/fireux/app/kitchen-runtime/state'
@@ -18,35 +26,50 @@ const { firestoreFetchCollection } = useFirestoreRead()
 const { ensureChefProfile } = useChefCreate()
 const kitchens = firestoreFetchCollection<{ id?: string }>('kitchens')
 const { runtimeKitchenId, setRuntimeKitchen } = useRuntimeKitchenSelection()
+const isNavigating = ref(false)
+const errorMessage = ref('')
 
-const deadline = Date.now() + 1500
-while (kitchens.value === undefined && Date.now() < deadline) {
-  await new Promise((resolve) => setTimeout(resolve, 50))
-}
+const statusMessage = computed(() => {
+  if (errorMessage.value) return 'Unable to resolve kitchen console.'
+  if (kitchens.value === undefined) return 'Loading kitchens...'
+  return 'Opening kitchen console...'
+})
 
-try {
-  await ensureChefProfile()
-} catch (error) {
-  const message = error instanceof Error ? error.message : String(error ?? '')
-  if (message.includes('[ensure] Missing authenticated user')) {
-    await navigateTo(`/auth?redirect=${encodeURIComponent(route.fullPath)}`, { replace: true })
-  } else {
-    throw error
-  }
-}
+watch(
+  () => kitchens.value,
+  async (liveKitchens) => {
+    if (liveKitchens === undefined || isNavigating.value || errorMessage.value) return
 
-const liveKitchens = kitchens.value ?? []
-const selectedId = String(runtimeKitchenId.value || '').trim()
-const fallbackId = String(liveKitchens[0]?.id || '').trim()
-const resolvedId =
-  liveKitchens.some((entry) => String(entry?.id || '').trim() === selectedId)
-    ? selectedId
-    : fallbackId
+    isNavigating.value = true
 
-if (!resolvedId) {
-  await navigateTo('/console/kitchen/create', { replace: true })
-} else {
-  setRuntimeKitchen({ kitchenId: resolvedId, mode: 'live' })
-  await navigateTo('/console/kitchen/overview', { replace: true })
-}
+    try {
+      await ensureChefProfile()
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error ?? '')
+      if (message.includes('[ensure] Missing authenticated user')) {
+        await navigateTo(`/auth?redirect=${encodeURIComponent(route.fullPath)}`, { replace: true })
+        return
+      }
+
+      errorMessage.value = message || 'Failed to resolve chef profile.'
+      isNavigating.value = false
+      return
+    }
+
+    const selectedId = String(runtimeKitchenId.value || '').trim()
+    const fallbackId = String(liveKitchens[0]?.id || '').trim()
+    const resolvedId = liveKitchens.some((entry) => String(entry?.id || '').trim() === selectedId)
+      ? selectedId
+      : fallbackId
+
+    if (!resolvedId) {
+      await navigateTo('/console/kitchen/create', { replace: true })
+      return
+    }
+
+    setRuntimeKitchen({ kitchenId: resolvedId, mode: 'live' })
+    await navigateTo('/console/kitchen/overview', { replace: true })
+  },
+  { immediate: true }
+)
 </script>

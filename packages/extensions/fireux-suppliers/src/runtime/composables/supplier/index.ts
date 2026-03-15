@@ -5,6 +5,9 @@
  * - Suppliers must not depend on Kitchens.
  */
 
+export * from '../fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
+export * from './ops/useSupplier'
+export * from './ops/useSupplierComputed'
 export * from './supplierConfig'
 export * from './useSupplierCollection'
 export * from './useSupplierCreate'
@@ -14,8 +17,6 @@ export * from './useSupplierList'
 export * from './useSupplierQuickCreate'
 export * from './useSupplierUpdate'
 export * from './utils'
-export * from './ops/useSupplier'
-export * from './ops/useSupplierComputed'
-export * from '../fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
-export * from './view/useSupplierCatalogueForKitchen'
 export * from './view/useKitchenBuyListSelection'
+export * from './view/useSupplierCatalogueForKitchen'
+

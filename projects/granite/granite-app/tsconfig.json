@@ -6,13 +6,14 @@
     "moduleResolution": "Bundler",
     "paths": {
       "#pwa": ["@vite-pwa/nuxt/dist/runtime/composables/index"],
-      "#imports": [".nuxt/imports.d.ts"],
-      "#build/*": [".nuxt/*"],
+      "#imports": ["app/.nuxt/imports.d.ts", ".nuxt/imports.d.ts"],
+      "#build/*": ["app/.nuxt/*", ".nuxt/*"],
       "fireux-core/runtime/*": ["../../../packages/core/fireux-core/src/runtime/*"]
     },
     "skipLibCheck": true
   },
   "include": [
+    "./app/.nuxt/nuxt.d.ts",
     "./.nuxt/nuxt.d.ts",
     "./**/*",
     "../../../types/**/*.d.ts"

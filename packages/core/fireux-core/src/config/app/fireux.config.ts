@@ -3,8 +3,8 @@ import type { NuxtConfig } from '@nuxt/schema'
 
 import { configNitroFirebase } from './nitro'
 import { configPwa } from './pwa'
-import type { FireuxSeoConfig } from './seo'
 import { setRuntime } from './runtime'
+import type { FireuxSeoConfig } from './seo'
 import { configViteWorkspace } from './vite'
 
 declare module '@nuxt/schema' {

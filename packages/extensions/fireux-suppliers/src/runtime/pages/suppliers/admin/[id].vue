@@ -68,8 +68,8 @@ import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/c
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useSupplierInterface } from '../../../composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
-import type { SupplierApp, SupplierCore } from '../../../models/supplier/Supplier.model'
 import { supplierConfig } from '../../../composables/supplier/supplierConfig'
+import type { SupplierApp, SupplierCore } from '../../../models/supplier/Supplier.model'
 
 definePageMeta({
   layout: 'default',
