@@ -1,6 +1,6 @@
 import { computed, ref, type Ref } from 'vue'
-import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import type { UserApp } from '../../../../../../models/core/user.model'
+import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
 /**
  * Fetch `/apps/{appId}/users` for an explicit app id.

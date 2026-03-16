@@ -10,4 +10,5 @@ declare module 'fireux-core/runtime/models/core/user.model' {
   }
 }
 
-export {}
+export { }
+

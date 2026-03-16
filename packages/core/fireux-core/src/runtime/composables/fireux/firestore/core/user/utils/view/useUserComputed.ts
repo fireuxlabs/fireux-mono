@@ -1,7 +1,7 @@
 import { computed } from '#imports'
 import type {
-  UserApp,
-  UserCore,
+    UserApp,
+    UserCore,
 } from '../../../../../../../models/core/user.model'
 import { useFireUXConfig } from '../../../../../app/FireUXConfig'
 import { useAvatarProxy } from '../../../../../app/ui/useAvatarProxy'

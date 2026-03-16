@@ -1,12 +1,12 @@
-import { computed, watch } from 'vue'
-import type { Ref } from 'vue'
 import { useNuxtApp } from '#imports'
+import type { Ref } from 'vue'
+import { computed, watch } from 'vue'
+import type {
+    UserApp,
+    UserCore,
+} from '../../../../../../models/core/user.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import { useAppUsers } from '../../app/fetch/useAppUsers'
-import type {
-  UserCore,
-  UserApp,
-} from '../../../../../../models/core/user.model'
 
 type EnrichedUser = {
   id: string

@@ -1,10 +1,10 @@
-import { computed } from 'vue'
 import {
-  useRecipeCollection as useCanonicalRecipeCollection,
+    useRecipeCollection as useCanonicalRecipeCollection,
 } from 'fireux-kitchens/runtime/composables/fireux/firestore/runtime-kitchen/recipe/fetch/useRecipeCollection'
+import { computed } from 'vue'
 import { useRecipeCreate } from './useRecipeCreate'
-import { useRecipeUpdate } from './useRecipeUpdate'
 import { useRecipeDelete } from './useRecipeDelete'
+import { useRecipeUpdate } from './useRecipeUpdate'
 
 export function useRecipes() {
   const { recipes, count } = useCanonicalRecipeCollection()

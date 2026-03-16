@@ -1,50 +1,40 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
+import type { FireuxStamped } from '../core/meta.model'
 
-export type FireuxEcosystemStatus = 'draft' | 'active' | 'paused' | 'archived'
+export type EcosystemStatus = 'draft' | 'active' | 'paused' | 'archived'
 
 /**
- * Canon FireUX ecosystem model.
- * Path: `ecosystems/<ecosystemId>`
+ * Entity Class: Root
+ *
+ * Canonical Path: /ecosystems/<ecosystemId>
+ *
+ * Ecosystem is the logical platform boundary inside a project.
  */
-export interface FireuxEcosystemModel {
-  project_id: string
-  name: string
-  slug: string
-  description: string
-  status: FireuxEcosystemStatus
-  team: string
-  apps: string[]
-  created_at: FirebaseTimestamp
-  updated_at: FirebaseTimestamp
-}
+export const Ecosystem = {
+  id: '',
 
-export const FireuxEcosystemModel: FireuxEcosystemModel = {
   project_id: '',
   name: '',
   slug: '',
   description: '',
-  status: 'active',
+  status: 'active' as EcosystemStatus,
   team: '',
-  apps: [],
-  created_at: {} as FirebaseTimestamp,
-  updated_at: {} as FirebaseTimestamp,
+  apps: [] as string[],
+
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['updated']['by'],
+  },
+} as const
+
+export type Ecosystem = {
+  [K in keyof typeof Ecosystem]: (typeof Ecosystem)[K]
 }
 
-export type FireuxEcosystemDoc = Omit<FireuxEcosystemModel, 'id'>
-export type FireuxEcosystemResolved = FireuxEcosystemModel & { id: string }
-
-/**
- * Backward-compatible registry document shape used by existing registry sync.
- * Keep this while migrating old lightweight docs to the full model.
- */
-export interface FireuxEcosystemRegistryDoc {
-  name: string
-  team: string
-  apps?: string[]
-  project_id?: string
-  slug?: string
-  description?: string
-  status?: FireuxEcosystemStatus
-  created_at?: FirebaseTimestamp
-  updated_at?: FirebaseTimestamp
-}
+export type EcosystemDoc = Omit<Ecosystem, 'id'>
+export type EcosystemResolved = Ecosystem

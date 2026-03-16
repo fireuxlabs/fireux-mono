@@ -1,6 +1,6 @@
 import { doc, type DocumentSnapshot } from 'firebase/firestore'
-import { computed, isRef, ref, type Ref } from 'vue'
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { computed, isRef, ref, type Ref } from 'vue'
 import type { App } from '../../../../../../models/core/app.model'
 
 function isOfflineFirestoreError(error: unknown): boolean {

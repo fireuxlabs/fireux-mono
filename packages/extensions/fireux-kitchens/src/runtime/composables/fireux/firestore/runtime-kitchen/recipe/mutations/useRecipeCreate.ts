@@ -1,7 +1,6 @@
-import { useCurrentUser } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useCurrentUser } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, unref, type Ref } from 'vue'
-import { useRuntimeKitchenSelection } from '../../../../app/kitchen-runtime/state'
 import {
   Recipe,
   createDefaultRecipeAccessPolicy,
@@ -11,12 +10,13 @@ import {
   type DifficultyLevel,
   type ProtectionLevel,
   type PublicationStatus,
-  type Recipe as RecipeDoc,
   type RecipeCreateInput,
+  type Recipe as RecipeDoc,
   type RecipeType,
   type RecipeVisibility,
   type WorkflowStatus,
 } from '../../../../../../models/recipe.model'
+import { useRuntimeKitchenSelection } from '../../../../app/kitchen-runtime/state'
 
 const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
 

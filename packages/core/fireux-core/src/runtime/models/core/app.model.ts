@@ -1,8 +1,8 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/app.model.ts
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
-import type { AppDerived, AppMedia, AppRole, AppSocialLinks } from './supporting/app'
 import type { FireuxStamped } from './meta.model'
+import type { AppRole, AppSocialLinks } from './supporting/app'
 
 /**
  * Entity Class: Root

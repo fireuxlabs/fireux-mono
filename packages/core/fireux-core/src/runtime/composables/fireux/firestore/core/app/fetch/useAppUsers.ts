@@ -1,7 +1,7 @@
 import { computed, type Ref } from 'vue'
+import type { UserApp } from '../../../../../../models/core/user.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
-import type { UserApp } from '../../../../../../models/core/user.model'
 
 /**
  * Fetch /apps/{appId}/users and expose the raw users collection.

@@ -2,12 +2,12 @@ import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/fires
 import { Dish, type Dish as DishDoc } from '../../../../../../models/dish.model'
 import type { Ingredient } from '../../../../../../models/ingredient.model'
 import { KitchenMiseTask, type KitchenMiseTask as KitchenMiseTaskDoc } from '../../../../../../models/kitchen-mise.model'
-import {
-  Recipe,
-  type Recipe as RecipeDoc,
-  type RecipeIngredientLine,
-} from '../../../../../../models/recipe.model'
 import { Menu, type Menu as MenuDoc } from '../../../../../../models/menu.model'
+import {
+    Recipe,
+    type Recipe as RecipeDoc,
+    type RecipeIngredientLine,
+} from '../../../../../../models/recipe.model'
 
 const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
 const resolveCollectionPath = (

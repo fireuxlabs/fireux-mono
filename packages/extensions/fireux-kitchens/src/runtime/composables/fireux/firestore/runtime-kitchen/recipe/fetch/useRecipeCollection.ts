@@ -1,8 +1,8 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Ref, ShallowRef } from 'vue'
 import { computed, shallowRef, unref, watch } from 'vue'
-import { useRuntimeKitchenSelection } from '../../../../app/kitchen-runtime/state'
 import { normalizeRecipe, type Recipe } from '../../../../../../models/recipe.model'
+import { useRuntimeKitchenSelection } from '../../../../app/kitchen-runtime/state'
 
 const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
 

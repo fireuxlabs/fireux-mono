@@ -1,12 +1,12 @@
 import { doc } from 'firebase/firestore'
-import { useFirestore, useDocument } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { computed, isRef } from 'vue'
+import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Ref } from 'vue'
-import { useFireUXConfig } from '../../../../app/FireUXConfig'
+import { computed, isRef } from 'vue'
 import type {
-  UserCore,
-  UserApp,
+    UserApp,
+    UserCore,
 } from '../../../../../../models/core/user.model'
+import { useFireUXConfig } from '../../../../app/FireUXConfig'
 
 function asStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) return []
