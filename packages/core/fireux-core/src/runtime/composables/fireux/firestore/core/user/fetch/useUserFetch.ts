@@ -4,8 +4,8 @@ import { computed, isRef } from 'vue'
 import type { Ref } from 'vue'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import type {
-  User,
-  AppUser,
+  UserCore,
+  UserApp,
 } from '../../../../../../models/core/user.model'
 
 function asStringArray(value: unknown): string[] {
@@ -13,7 +13,7 @@ function asStringArray(value: unknown): string[] {
   return value.filter((v): v is string => typeof v === 'string' && v.length > 0)
 }
 
-function normalizeCoreUser(raw: User, fallbackId: string): User {
+function normalizeCoreUser(raw: UserCore, fallbackId: string): UserCore {
   const anyRaw = raw as any
   return {
     ...raw,
@@ -29,7 +29,7 @@ function normalizeCoreUser(raw: User, fallbackId: string): User {
   }
 }
 
-function normalizeAppUser(raw: AppUser, fallbackId: string): AppUser {
+function normalizeAppUser(raw: UserApp, fallbackId: string): UserApp {
   const anyRaw = raw as any
   return {
     ...raw,
@@ -79,9 +79,9 @@ export function useUserFetch(
   // Auth-bound user docs are not reliably available during SSR.
   // Avoid VueFire SSR warnings by only binding Firestore sources on the client.
   if (import.meta.server) {
-    const coreUser = computed<User | null | undefined>(() => null)
-    const appUser = computed<AppUser | null | undefined>(() => null)
-    const user = computed<User | null>(() => null)
+    const coreUser = computed<UserCore | null | undefined>(() => null)
+    const appUser = computed<UserApp | null | undefined>(() => null)
+    const user = computed<UserCore | null>(() => null)
     const pending = computed(() => false)
     return { user, coreUser, appUser, pending }
   }
@@ -106,8 +106,8 @@ export function useUserFetch(
       : null
   )
 
-  const coreState = useDocument<User | undefined>(coreDoc as any)
-  const appState = useDocument<AppUser | undefined>(appDoc as any)
+  const coreState = useDocument<UserCore | undefined>(coreDoc as any)
+  const appState = useDocument<UserApp | undefined>(appDoc as any)
   const coreUserRef = coreState.data
   const corePending = coreState.pending
   const appUserRef = appState.data
@@ -118,25 +118,25 @@ export function useUserFetch(
     `apps/${appId}/users/${uid.value ?? ''}`
   )
 
-  const coreUser = computed<User | null | undefined>(() => {
+  const coreUser = computed<UserCore | null | undefined>(() => {
     if (corePending.value) return undefined
 
     const raw = coreUserRef.value
     if (!raw) return null
 
     const fallbackId = uid.value ?? ''
-    return normalizeCoreUser(raw as User, fallbackId)
+    return normalizeCoreUser(raw as UserCore, fallbackId)
   })
 
-  const appUser = computed<AppUser | null | undefined>(() => {
+  const appUser = computed<UserApp | null | undefined>(() => {
     if (!appDoc.value) return null
     if (appPending.value) return undefined
     const raw = appUserRef.value
     if (!raw) return null
-    return normalizeAppUser(raw as AppUser, uid.value ?? '')
+    return normalizeAppUser(raw as UserApp, uid.value ?? '')
   })
 
-  const user = computed<User | null>(() => coreUser.value ?? null)
+  const user = computed<UserCore | null>(() => coreUser.value ?? null)
 
   const pending = computed(
     () => Boolean(corePending.value) || Boolean(appPending?.value)

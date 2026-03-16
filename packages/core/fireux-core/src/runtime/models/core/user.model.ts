@@ -5,8 +5,9 @@ import type { FireuxStamped } from './meta.model'
 import type { UserNotification } from './supporting/user'
 
 /**
- * Core Firestore user document
- * Path: /users/<userId>
+ * Entity Class: Dual-Layer
+ * Core Path: /users/<userId>
+ * App Path: /apps/<appId>/users/<userId>
  *
  * Canon rules:
  * - Empty string means unset
@@ -14,30 +15,12 @@ import type { UserNotification } from './supporting/user'
  * - Runtime object is the single source of truth
  */
 
-export interface User {
-  id: string
-  display_name: string
-  avatar: string
-  handle: string
-  email: string
-  bio: string
-  profiles: string[]
-  userOf: string[]
-  adminOf: string[]
-  notifications: UserNotification[]
-  created: {
-    at: FirebaseTimestamp
-    by?: FireuxStamped['created']['by']
-  }
-  updated: {
-    at: FirebaseTimestamp
-    by?: FireuxStamped['created']['by']
-  }
-}
+export interface UserCoreExtensions {}
+export interface UserAppExtensions {}
 
-// Runtime canonical shape
-export const User: User = {
+export const UserCore = {
   id: '',
+
   display_name: '',
   avatar: '',
   handle: '',
@@ -47,48 +30,51 @@ export const User: User = {
   userOf: [],
   adminOf: [],
   notifications: [],
+
   created: {
     at: {} as FirebaseTimestamp,
-    by: undefined,
+    by: undefined as FireuxStamped['created']['by'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined,
+    by: undefined as FireuxStamped['updated']['by'],
   },
-}
+} as const
+
+export type UserCore = {
+  [K in keyof typeof UserCore]: (typeof UserCore)[K]
+} & UserCoreExtensions
 
 /**
- * App-specific user overlay
- * Path: /apps/<appId>/users/<userId>
+ * App-specific user membership overlay.
  */
-export interface AppUser {
-  id: string
-  role: 'user' | 'admin'
-  console_enabled: boolean
-  console_scopes: string[]
-  notifications: UserNotification[]
-  created: {
-    at: FirebaseTimestamp
-    by?: FireuxStamped['created']['by']
-  }
-  updated: {
-    at: FirebaseTimestamp
-    by?: FireuxStamped['created']['by']
-  }
-}
-
-export const AppUser: AppUser = {
+export const UserApp = {
   id: '',
-  role: 'user',
+
+  role: 'user' as 'user' | 'admin',
   console_enabled: false,
   console_scopes: [],
-  notifications: [],
+  notifications: [] as UserNotification[],
+
   created: {
     at: {} as FirebaseTimestamp,
-    by: undefined,
+    by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined,
+    by: undefined as FireuxStamped['updated']['by'],
   },
+} as const
+
+export type UserApp = {
+  [K in keyof typeof UserApp]: (typeof UserApp)[K]
+} & UserAppExtensions
+
+export type User = UserCore
+export type AppUser = UserApp
+export type UserResolved = UserCore & {
+  appUser?: UserApp | null
 }
+export type UserCoreDoc = Omit<UserCore, 'id'>
+export type UserAppDoc = Omit<UserApp, 'id'>

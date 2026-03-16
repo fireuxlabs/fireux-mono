@@ -1,6 +1,6 @@
 import { safeArray, safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
-import type { User } from '../../../../../../../models/core/user.model'
+import type { UserCore } from '../../../../../../../models/core/user.model'
 import { normalizeUserHandle } from '../identity/useUserHandleIdentity'
 
 export namespace UserCard {
@@ -25,8 +25,8 @@ export namespace UserCard {
   }
 }
 
-export function useUserInterface(userRef?: Ref<User | null | undefined>) {
-  function map(user: User): UserCard.Card {
+export function useUserInterface(userRef?: Ref<UserCore | null | undefined>) {
+  function map(user: UserCore): UserCard.Card {
     const id = safeString(user.id).trim()
     const handle = normalizeUserHandle(safeString(user.handle))
     const appCount = safeArray(user.userOf).length
@@ -48,14 +48,14 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
     }
   }
 
-  function card(target?: User | null | undefined): UserCard.Card | null {
+  function card(target?: UserCore | null | undefined): UserCard.Card | null {
     const user = target ?? userRef?.value ?? null
     if (!user) return null
     const mapped = map(user)
     return mapped.id ? mapped : null
   }
 
-  function searchText(user: User): string {
+  function searchText(user: UserCore): string {
     const displayName = safeString(user.display_name)
     const handle = safeString(user.handle)
     const id = safeString(user.id)

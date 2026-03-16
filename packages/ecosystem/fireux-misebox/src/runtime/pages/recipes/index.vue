@@ -14,6 +14,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
+import { useRecipes } from '../../composables/fireux/firestore/recipe/useRecipes'
 
 const pageTitle = 'Recipes'
 const pageDescription = 'Browse recipes available to this runtime.'
@@ -37,5 +38,6 @@ definePageMeta({
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 
-const collection = computed(() => [])
+const { all } = useRecipes()
+const collection = computed(() => all.value ?? [])
 </script>

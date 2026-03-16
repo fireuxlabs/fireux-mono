@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { Recipe } from '../../../../../models/Recipe.model';
+import type { Recipe } from 'fireux-kitchens/runtime/models/recipe.model';
 import { useRecipeInterface } from '../../../../composables/fireux/firestore/recipe/utils/view/useRecipeInterface';
 
 const props = defineProps<{

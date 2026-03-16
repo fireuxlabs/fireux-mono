@@ -6,7 +6,7 @@ import { useUserUpdate } from './mutations/useUserUpdate'
 import { useUserDelete } from './mutations/useUserDelete'
 import { useUserInterface } from './utils/view/useUserInterface'
 
-export type { User } from '../../../../../models/core/user.model'
+export type { UserCore, UserApp, User } from '../../../../../models/core/user.model'
 
 /**
  * useUser

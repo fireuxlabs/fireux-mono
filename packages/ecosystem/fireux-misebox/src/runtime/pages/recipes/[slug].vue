@@ -18,9 +18,9 @@
           <div class="recipe-hero-content">
             <div class="recipe-hero-image">
               <img
-                v-if="recipe.featured_image"
-                :src="recipe.featured_image"
-                :alt="recipe.title"
+                v-if="recipeImage"
+                :src="recipeImage"
+                :alt="recipeTitle"
                 class="hero-image"
               />
               <div v-else class="hero-placeholder">
@@ -40,10 +40,10 @@
                 </UButton>
               </div>
 
-              <h1 class="recipe-title">{{ recipe.title }}</h1>
+              <h1 class="recipe-title">{{ recipeTitle }}</h1>
 
-              <p v-if="recipe.chef_name" class="recipe-chef">
-                by <span class="chef-name">{{ recipe.chef_name }}</span>
+              <p v-if="recipeChef" class="recipe-chef">
+                by <span class="chef-name">{{ recipeChef }}</span>
               </p>
 
               <p v-if="recipe.description" class="recipe-description">
@@ -53,15 +53,15 @@
               <div class="recipe-meta-bar">
                 <div class="meta-item">
                   <UIcon name="i-lucide-clock" />
-                  <span>{{ recipe.total_time_minutes }} min</span>
+                  <span>{{ recipeTotalMinutes }} min</span>
                 </div>
                 <div class="meta-item">
                   <UIcon name="i-lucide-trending-up" />
-                  <span>{{ recipe.difficulty_level }}</span>
+                  <span>{{ recipeDifficulty }}</span>
                 </div>
                 <div class="meta-item">
                   <UIcon name="i-lucide-users" />
-                  <span>{{ recipe.servings }} servings</span>
+                  <span>{{ recipeServings }} servings</span>
                 </div>
               </div>
 
@@ -87,16 +87,16 @@
               <h2 class="section-title">Ingredients</h2>
               <div class="ingredients-list">
                 <div
-                  v-for="ingredient in recipe.ingredients"
-                  :key="ingredient.name"
+                  v-for="ingredient in recipeIngredients"
+                  :key="ingredient.id"
                   class="ingredient-item"
                 >
                   <span class="ingredient-amount">
-                    {{ ingredient.amount }} {{ ingredient.unit }}
+                    {{ ingredient.quantity }} {{ ingredient.unit }}
                   </span>
-                  <span class="ingredient-name">{{ ingredient.name }}</span>
-                  <span v-if="ingredient.notes" class="ingredient-notes">
-                    ({{ ingredient.notes }})
+                  <span class="ingredient-name">{{ ingredient.ingredient_name }}</span>
+                  <span v-if="ingredient.prep_note" class="ingredient-notes">
+                    ({{ ingredient.prep_note }})
                   </span>
                 </div>
               </div>
@@ -107,23 +107,23 @@
               <h2 class="section-title">Instructions</h2>
               <div class="instructions-list">
                 <div
-                  v-for="instruction in recipe.instructions"
-                  :key="instruction.step_number"
+                  v-for="instruction in recipeInstructions"
+                  :key="instruction.id"
                   class="instruction-item"
                 >
                   <div class="instruction-number">
-                    {{ instruction.step_number }}
+                    {{ instruction.order }}
                   </div>
                   <div class="instruction-content">
                     <p class="instruction-text">
                       {{ instruction.instruction }}
                     </p>
                     <div
-                      v-if="instruction.time_minutes"
+                      v-if="instruction.minutes"
                       class="instruction-meta"
                     >
                       <UIcon name="i-lucide-clock" />
-                      <span>{{ instruction.time_minutes }} minutes</span>
+                      <span>{{ instruction.minutes }} minutes</span>
                     </div>
                   </div>
                 </div>
@@ -133,11 +133,11 @@
 
           <!-- Recipe Tags & Info -->
           <div class="recipe-footer">
-            <div v-if="recipe.cuisine_type?.length" class="cuisine-tags">
+            <div v-if="recipeCuisineTypes.length" class="cuisine-tags">
               <h3>Cuisine Types</h3>
               <div class="tag-list">
                 <span
-                  v-for="cuisine in recipe.cuisine_type"
+                  v-for="cuisine in recipeCuisineTypes"
                   :key="cuisine"
                   class="cuisine-tag"
                 >
@@ -147,13 +147,13 @@
             </div>
 
             <div
-              v-if="recipe.dietary_restrictions?.length"
+              v-if="recipeDietaryFlags.length"
               class="dietary-info"
             >
               <h3>Dietary Information</h3>
               <div class="tag-list">
                 <span
-                  v-for="restriction in recipe.dietary_restrictions"
+                  v-for="restriction in recipeDietaryFlags"
                   :key="restriction"
                   class="dietary-tag"
                 >
@@ -164,12 +164,8 @@
 
             <div class="recipe-source-info">
               <p class="source-label">Source:</p>
-              <span :class="['source-badge', `source-${recipe.source}`]">
-                {{
-                  recipe.source === 'global'
-                    ? 'MiseBox Global'
-                    : recipe.parent_app_id || 'Local'
-                }}
+              <span :class="['source-badge', `source-${recipeSourceClass}`]">
+                {{ recipeSourceLabel }}
               </span>
             </div>
           </div>
@@ -195,15 +191,35 @@ const { all: recipes, pending: loading, error } = useRecipes()
 
 // Find the specific recipe
 const recipe = computed(() => {
-  return recipes.value?.find((r) => r.slug === recipeSlug)
+  return recipes.value?.find((r) => r.slug === recipeSlug || r.id === recipeSlug)
 })
+
+const recipeTitle = computed(() => recipe.value?.published_summary?.title || recipe.value?.name || '')
+const recipeImage = computed(() => recipe.value?.published_summary?.hero_image_url || '')
+const recipeChef = computed(() => recipe.value?.author_chef_id || recipe.value?.author_user_id || '')
+const recipeTotalMinutes = computed(() => {
+  const prep = Number(recipe.value?.prep_minutes || 0)
+  const cook = Number(recipe.value?.cook_minutes || 0)
+  return prep + cook
+})
+const recipeServings = computed(() => Number(recipe.value?.yield_qty || 0))
+const recipeIngredients = computed(() => recipe.value?.ingredient_lines || [])
+const recipeInstructions = computed(() => recipe.value?.steps || [])
+const recipeCuisineTypes = computed(() => recipe.value?.cuisine_types || [])
+const recipeDietaryFlags = computed(() => recipe.value?.dietary_flags || [])
+const recipeSourceClass = computed(() => recipe.value?.publication_status === 'published' ? 'global' : 'app_specific')
+const recipeSourceLabel = computed(() => recipe.value?.publication_status === 'published' ? 'Published Recipe' : (recipe.value?.kitchen_id || 'Kitchen Local'))
+
+const pageDescriptionText = computed(() => recipe.value?.description || '')
+
+const recipeDifficulty = computed(() => recipe.value?.difficulty_level || 'moderate')
 
 // Update page meta when recipe loads
 watchEffect(() => {
   if (recipe.value) {
     useHead({
-      title: `${recipe.value.title} - Recipe`,
-      meta: [{ name: 'description', content: recipe.value.description }],
+      title: `${recipeTitle.value} - Recipe`,
+      meta: [{ name: 'description', content: pageDescriptionText.value }],
     })
   }
 })

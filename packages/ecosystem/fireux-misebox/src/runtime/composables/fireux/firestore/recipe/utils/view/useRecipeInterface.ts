@@ -1,5 +1,5 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { Recipe } from '../../../../../../../models/Recipe.model'
+import type { Recipe } from 'fireux-kitchens/runtime/models/recipe.model'
 
 export namespace RecipeCard {
   export type Card = {
@@ -22,21 +22,26 @@ export namespace RecipeCard {
 
 export function useRecipeInterface() {
   function map(recipe: Recipe): RecipeCard.Card {
-    const status = safeString(recipe.status ?? '')
-    const id = safeString(recipe.slug).trim()
-    const title = safeString(recipe.title)
+    const status = safeString(recipe.workflow_status).trim() || 'draft'
+    const id = safeString(recipe.slug || recipe.id).trim()
+    const title = safeString(recipe.published_summary?.title || recipe.name).trim() || 'Untitled Recipe'
+    const subtitle = safeString(recipe.recipe_type).trim()
+    const avatarUrl = safeString(recipe.published_summary?.hero_image_url).trim()
+    const badges = [safeString(recipe.visibility).trim(), safeString(recipe.protection_level).trim()]
+      .filter(Boolean)
+      .filter((badge) => badge !== 'team' && badge !== 'standard')
 
     return {
       id,
       to: id ? `/recipes/${id}` : '',
 
-      avatarUrl: '',
-      subtitle: status,
+      avatarUrl,
+      subtitle,
 
       title,
       status,
 
-      badges: [],
+      badges,
     }
   }
 
@@ -46,12 +51,24 @@ export function useRecipeInterface() {
     return mapped.id ? mapped : null
   }
 
+  function pillProps(target?: Recipe | null | undefined): RecipeCard.Card {
+    return target ? map(target) : {
+      id: '',
+      to: '',
+      avatarUrl: '',
+      subtitle: '',
+      title: '',
+      status: '',
+      badges: [],
+    }
+  }
+
   function searchText(recipe: Recipe): string {
-    const title = safeString(recipe.title)
-    const status = safeString(recipe.status ?? '')
+    const title = safeString(recipe.published_summary?.title || recipe.name)
+    const status = safeString(recipe.workflow_status || '')
     const slug = safeString(recipe.slug)
     return `${title} ${status} ${slug}`.trim().toLowerCase()
   }
 
-  return { card, searchText }
+  return { card, pillProps, searchText }
 }

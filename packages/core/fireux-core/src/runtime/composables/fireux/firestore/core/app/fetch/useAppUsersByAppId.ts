@@ -1,6 +1,6 @@
 import { computed, ref, type Ref } from 'vue'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
-import type { AppUser } from '../../../../../../models/core/user.model'
+import type { UserApp } from '../../../../../../models/core/user.model'
 
 /**
  * Fetch `/apps/{appId}/users` for an explicit app id.
@@ -18,16 +18,16 @@ export function useAppUsersByAppId(appId?: string | null | undefined) {
   const { firestoreFetchCollection } = useFirestoreRead()
 
   if (!appId) {
-    const users = ref<AppUser[] | undefined>(undefined) as Ref<AppUser[] | undefined>
+    const users = ref<UserApp[] | undefined>(undefined) as Ref<UserApp[] | undefined>
     const pending = computed(() => false)
     return { users, pending }
   }
 
-  const users = firestoreFetchCollection<AppUser>(`apps/${appId}/users`)
+  const users = firestoreFetchCollection<UserApp>(`apps/${appId}/users`)
   const pending = computed(() => users.value === undefined)
 
   return {
-    users: users as Ref<AppUser[] | undefined>,
+    users: users as Ref<UserApp[] | undefined>,
     pending,
   }
 }

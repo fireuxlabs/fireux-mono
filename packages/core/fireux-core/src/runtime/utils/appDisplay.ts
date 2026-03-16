@@ -1,10 +1,10 @@
-import type { AppModel } from '../models/core/app.model'
+import type { App } from '../models/core/app.model'
 
 /**
  * Resolve the avatar/thumbnail asset for an app record.
  * Canon: use media.thumbnail_url only (no cross-field fallbacks).
  */
-export function resolveAppAvatar(app: Partial<AppModel> | null | undefined) {
+export function resolveAppAvatar(app: Partial<App> | null | undefined) {
   if (!app) return null
   const value = (app as any)?.media?.thumbnail_url
   return typeof value === 'string' && value.trim() ? value : null

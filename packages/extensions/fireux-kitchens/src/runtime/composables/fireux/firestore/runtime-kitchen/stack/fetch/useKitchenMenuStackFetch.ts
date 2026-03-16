@@ -3,7 +3,7 @@ import type { Ref, ShallowRef } from 'vue'
 import { computed, shallowRef, unref, watch } from 'vue'
 import type { Dish } from '../../../../../../models/dish.model'
 import type { KitchenMiseTask } from '../../../../../../models/kitchen-mise.model'
-import type { KitchenRecipe } from '../../../../../../models/kitchen-recipe.model'
+import type { Recipe } from '../../../../../../models/recipe.model'
 import type { Menu } from '../../../../../../models/menu.model'
 
 const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
@@ -67,7 +67,7 @@ export function useKitchenMenuStackFetch(
 
   const menus = useKitchenSubcollection<Menu>(menusPath)
   const dishes = useKitchenSubcollection<Dish>(dishesPath)
-  const recipes = useKitchenSubcollection<KitchenRecipe>(recipesPath)
+  const recipes = useKitchenSubcollection<Recipe>(recipesPath)
   const miseTasks = useKitchenSubcollection<KitchenMiseTask>(misePath)
 
   const counts = computed(() => ({

@@ -3,7 +3,18 @@
 Authority: working canon audit
 Updated: 2026-03-16
 
+Containment note: this report contains pre-containment analysis. Current canonical recipe model is `packages/extensions/fireux-kitchens/src/runtime/models/recipe.model.ts`. The former `packages/extensions/fireux-kitchens/src/runtime/models/kitchen-recipe.model.ts` and `packages/ecosystem/fireux-misebox/src/runtime/models/Recipe.model.ts` files have been removed.
+
+Current status lock:
+- Recipe is aligned as a kitchen-owned runtime child entity.
+- Public Misebox recipe pages are projection surfaces over kitchen-owned recipe data.
+- True root-level or dual-residence recipe canon is deferred, not implied.
+- This is a deliberate containment compromise so wider model alignment can continue from a clean base.
+
 ## Executive Summary
+
+Superseded summary note:
+The historical analysis below captures why the repo was inconsistent before containment. The current operational answer is simpler: `Recipe` is canonical in kitchens only for now, and any future global recipe residence must be added later as an explicit design, not recovered from legacy wrapper drift.
 
 Recipe is currently split across two incompatible directions in the repo.
 

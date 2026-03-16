@@ -3,10 +3,10 @@ import { Dish, type Dish as DishDoc } from '../../../../../../models/dish.model'
 import type { Ingredient } from '../../../../../../models/ingredient.model'
 import { KitchenMiseTask, type KitchenMiseTask as KitchenMiseTaskDoc } from '../../../../../../models/kitchen-mise.model'
 import {
-    KitchenRecipe,
-    type KitchenRecipe as KitchenRecipeDoc,
-    type KitchenRecipeIngredientLine,
-} from '../../../../../../models/kitchen-recipe.model'
+  Recipe,
+  type Recipe as RecipeDoc,
+  type RecipeIngredientLine,
+} from '../../../../../../models/recipe.model'
 import { Menu, type Menu as MenuDoc } from '../../../../../../models/menu.model'
 
 const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
@@ -96,7 +96,8 @@ export function useKitchenMenuStackCreate() {
       quantity: number,
       unit: string,
       prep_note: string
-    ): KitchenRecipeIngredientLine => ({
+    ): RecipeIngredientLine => ({
+      id: `${ingredientId}-${quantity}-${unit}`,
       ingredient_id: ingredientId,
       ingredient_name: String(nameById.get(ingredientId) || ''),
       quantity,
@@ -154,6 +155,7 @@ export function useKitchenMenuStackCreate() {
         kitchen_id: resolvedKitchenId,
         name: 'Classic Cheeseburger',
         description: 'Burger bun, beef patty, cheese, lettuce, tomato, onion, ketchup.',
+        primary_recipe_id: recipeIds[0],
         recipe_ids: [recipeIds[0]],
         ingredient_ids: [
           resolved.burgerBuns,
@@ -178,6 +180,7 @@ export function useKitchenMenuStackCreate() {
         kitchen_id: resolvedKitchenId,
         name: 'Caprese Lemon Salad',
         description: 'Tomato and mozzarella finished with lemon.',
+        primary_recipe_id: recipeIds[1],
         recipe_ids: [recipeIds[1]],
         ingredient_ids: [
           resolved.tomato,
@@ -197,6 +200,7 @@ export function useKitchenMenuStackCreate() {
         kitchen_id: resolvedKitchenId,
         name: 'Cheddar Onion Melt',
         description: 'Beef patty, cheddar, onion, bun, and ketchup.',
+        primary_recipe_id: recipeIds[2],
         recipe_ids: [recipeIds[2]],
         ingredient_ids: [
           resolved.beefPatty,
@@ -214,15 +218,15 @@ export function useKitchenMenuStackCreate() {
       },
     ]
 
-    const recipes: KitchenRecipeDoc[] = [
+    const recipes: RecipeDoc[] = [
       {
-        ...KitchenRecipe,
+        ...Recipe,
         id: recipeIds[0],
         kitchen_id: resolvedKitchenId,
-        dish_id: dishIds[0],
+        primary_dish_id: dishIds[0],
         name: 'Classic Cheeseburger v1',
         description: 'Single burger assembly workflow.',
-        status: 'active',
+        workflow_status: 'active',
         yield_qty: 1,
         yield_unit: 'portion',
         prep_minutes: 8,
@@ -263,13 +267,13 @@ export function useKitchenMenuStackCreate() {
         tags: ['burger', 'service'],
       },
       {
-        ...KitchenRecipe,
+        ...Recipe,
         id: recipeIds[1],
         kitchen_id: resolvedKitchenId,
-        dish_id: dishIds[1],
+        primary_dish_id: dishIds[1],
         name: 'Caprese Lemon Salad v1',
         description: 'Cold station salad build.',
-        status: 'active',
+        workflow_status: 'active',
         yield_qty: 1,
         yield_unit: 'portion',
         prep_minutes: 6,
@@ -299,13 +303,13 @@ export function useKitchenMenuStackCreate() {
         tags: ['salad', 'cold'],
       },
       {
-        ...KitchenRecipe,
+        ...Recipe,
         id: recipeIds[2],
         kitchen_id: resolvedKitchenId,
-        dish_id: dishIds[2],
+        primary_dish_id: dishIds[2],
         name: 'Cheddar Onion Melt v1',
         description: 'Cheddar burger variation with onions.',
-        status: 'active',
+        workflow_status: 'active',
         yield_qty: 1,
         yield_unit: 'portion',
         prep_minutes: 6,
@@ -433,7 +437,7 @@ export function useKitchenMenuStackCreate() {
     }
 
     for (const recipe of recipes) {
-      await setDocument<KitchenRecipeDoc>(
+      await setDocument<RecipeDoc>(
         resolveCollectionPath(kitchenCollectionPath, resolvedKitchenId, 'recipes'),
         recipe.id,
         recipe,

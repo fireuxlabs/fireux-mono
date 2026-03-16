@@ -1,4 +1,4 @@
-import type { AppModel } from '../../../../../models/core/app.model'
+import type { App } from '../../../../../models/core/app.model'
 
 const EMPTY_SOCIAL_LINKS = {
   website: '',
@@ -17,7 +17,7 @@ export type ReadOnlyAppScenario = {
   label: string
   manager_display_name: string
   manager_avatar_url: string
-  app: AppModel
+  app: App
 }
 
 export type ReadOnlyAppScenarioListItem = {

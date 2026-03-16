@@ -1,9 +1,9 @@
 import { computed } from 'vue'
 import type { Ref } from 'vue'
-import type { AppModel } from '../../../../../../../models/core/app.model'
+import type { App } from '../../../../../../../models/core/app.model'
 
 export function useAppComputed(
-  app: Ref<AppModel | null | undefined>,
+  app: Ref<App | null | undefined>,
   pending?: Ref<boolean>
 ) {
   const isPending = computed(() => Boolean(pending?.value))

@@ -17,6 +17,7 @@ export const Dish = {
   description: '' as string,
   image_url: '' as string,
 
+  primary_recipe_id: '' as string,
   recipe_ids: [] as string[],
   ingredient_ids: [] as string[],
   mise_ids: [] as string[],

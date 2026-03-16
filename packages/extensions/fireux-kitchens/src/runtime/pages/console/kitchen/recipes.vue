@@ -84,7 +84,7 @@ const toNumber = (value: unknown) => {
   return Number.isFinite(numeric) ? numeric : 0
 }
 const recipeMeta = (recipe: Record<string, unknown>) => {
-  const status = normalize(recipe.status) || 'draft'
+  const status = normalize(recipe.workflow_status || recipe.status) || 'draft'
   const yieldQty = toNumber((recipe as { yield_qty?: unknown }).yield_qty)
   const yieldUnit = normalize((recipe as { yield_unit?: unknown }).yield_unit)
   const prepMinutes = toNumber((recipe as { prep_minutes?: unknown }).prep_minutes)

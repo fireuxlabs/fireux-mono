@@ -1,25 +1,17 @@
 import { computed } from 'vue'
-import { useFirestore, useCollection } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { collection, query, orderBy } from 'firebase/firestore'
+import {
+  useRecipeCollection as useCanonicalRecipeCollection,
+} from 'fireux-kitchens/runtime/composables/fireux/firestore/runtime-kitchen/recipe/fetch/useRecipeCollection'
 import { useRecipeCreate } from './useRecipeCreate'
 import { useRecipeUpdate } from './useRecipeUpdate'
 import { useRecipeDelete } from './useRecipeDelete'
 
 export function useRecipes() {
-  const db = useFirestore()
-  const colRef = collection(db, 'recipes')
-  const q = query(colRef, orderBy('name'))
-  const { data, pending, error } = useCollection(q, { ssrKey: 'recipes' })
+  const { recipes, count } = useCanonicalRecipeCollection()
 
-  // Transform raw firestore data to proper recipe format
-  const all = computed(() => {
-    if (!data.value || pending.value || error.value) return []
-    return data.value.map((raw: any) => ({
-      id: raw.id || 'unknown',
-      name: raw.name || 'Untitled Recipe',
-      ...raw,
-    }))
-  })
+  const all = computed(() => recipes.value ?? [])
+  const pending = computed(() => !count.value && recipes.value === undefined)
+  const error = computed(() => null)
 
   const create = useRecipeCreate()
   const update = useRecipeUpdate()

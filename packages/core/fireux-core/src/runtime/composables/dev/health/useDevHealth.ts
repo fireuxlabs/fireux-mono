@@ -1,7 +1,7 @@
 import type { ComputedRef } from 'vue'
 import { computed } from 'vue'
-import type { AppModel as AppType } from '../../../models/core/app.model'
-import { AppCore as AppModel } from '../../../models/core/app.model'
+import type { App as AppType } from '../../../models/core/app.model'
+import { App as AppTemplate } from '../../../models/core/app.model'
 import type { AppUser, User } from '../../../models/core/user.model'
 import { useFireUXConfig } from '../../fireux/app/FireUXConfig'
 import { useAppUsers } from '../../fireux/firestore/core/app/fetch/useAppUsers'
@@ -160,7 +160,7 @@ export function useDevHealth(): DevHealthApi {
           hint: 'Ensure FireUXConfig.appId resolves to a valid /apps/<id> document.',
         })
       } else {
-        const drift = driftCompare(AppModel, appValue)
+        const drift = driftCompare(AppTemplate, appValue)
 
         if (drift.length) {
           issues.push({

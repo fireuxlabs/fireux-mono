@@ -1,6 +1,6 @@
 import { arrayRemove, arrayUnion, deleteField } from 'firebase/firestore'
 import type { Ref } from 'vue'
-import type { AppModel } from '../../../../../../models/core/app.model'
+import type { App } from '../../../../../../models/core/app.model'
 import type { AppSocialLinks } from '../../../../../../models/core/supporting/app'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
@@ -12,7 +12,7 @@ import {
     type AppImageKind,
 } from '../utils/appMedia'
 
-export function useAppUpdate(appRef: Ref<AppModel | null | undefined>) {
+export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   const cfg = useFireUXConfig()
   const { updateDocument } = useFirestoreUpdate()
   const { uploadImage, getDownloadUrlForPath } = useImageStorage()
@@ -23,7 +23,7 @@ export function useAppUpdate(appRef: Ref<AppModel | null | undefined>) {
     return id
   }
 
-  const updateApp = (data: Partial<AppModel> | Record<string, any>) =>
+  const updateApp = (data: Partial<App> | Record<string, any>) =>
     updateDocument<any>('apps', ensureAppId(), data as any)
 
   const updateUserMembership = async (
@@ -53,8 +53,8 @@ export function useAppUpdate(appRef: Ref<AppModel | null | undefined>) {
     await updateApp({
       admin_ids:
         membershipRole === 'admin'
-          ? (arrayUnion(userId) as unknown as AppModel['admin_ids'])
-          : (arrayRemove(userId) as unknown as AppModel['admin_ids']),
+          ? (arrayUnion(userId) as unknown as App['admin_ids'])
+          : (arrayRemove(userId) as unknown as App['admin_ids']),
     })
   }
 
@@ -216,7 +216,7 @@ export function useAppUpdate(appRef: Ref<AppModel | null | undefined>) {
   async function handleJoinRequests(uid: string, approve: boolean) {
     await updateApp({
       // Firestore FieldValue cast is safe; updateDocument forwards as-is.
-      join_requests: arrayRemove(uid) as unknown as AppModel['join_requests'],
+      join_requests: arrayRemove(uid) as unknown as App['join_requests'],
     })
 
     if (approve) {

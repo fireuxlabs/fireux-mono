@@ -1,7 +1,7 @@
 import { doc, type DocumentSnapshot } from 'firebase/firestore'
 import { computed, isRef, ref, type Ref } from 'vue'
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { AppModel } from '../../../../../../models/core/app.model'
+import type { App } from '../../../../../../models/core/app.model'
 
 function isOfflineFirestoreError(error: unknown): boolean {
   const code = typeof (error as any)?.code === 'string' ? (error as any).code : ''
@@ -38,7 +38,7 @@ export function useAppFetch(
 ) {
   if (import.meta.server) {
     return {
-      app: ref<AppModel | undefined>(undefined),
+      app: ref<App | undefined>(undefined),
       pending: ref(false),
     }
   }
@@ -62,18 +62,18 @@ export function useAppFetch(
   )
 
   const docState =
-    useDocument<AppModel | undefined>(docRef as any, {
-      transform: (docSnap: DocumentSnapshot<AppModel>) => {
+    useDocument<App | undefined>(docRef as any, {
+      transform: (docSnap: DocumentSnapshot<App>) => {
         const raw = docSnap.data()
         if (!raw) return undefined
-        return { ...(raw as any), id: docSnap.id } as AppModel
+        return { ...(raw as any), id: docSnap.id } as App
       },
     } as any) || {
-      data: ref<AppModel | undefined>(undefined),
+      data: ref<App | undefined>(undefined),
       pending: ref(false),
     }
 
-  const app = docState.data ?? ref<AppModel | undefined>(undefined)
+  const app = docState.data ?? ref<App | undefined>(undefined)
   const pending = docState.pending ?? ref(false)
   guardDocumentPromise(
     docState as any,

@@ -2,7 +2,7 @@
 
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import type { AppModel } from 'fireux-core/runtime/models/core/app.model'
+import type { App } from 'fireux-core/runtime/models/core/app.model'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { createEmptyAppSocialLinks } from '../utils/factories/createEmptyAppSocialLinks'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
@@ -75,6 +75,12 @@ export function useAppEnsure() {
     // User ↔ App binding is handled explicitly elsewhere.
 
     const payload = {
+      project_id: '',
+      ecosystem_id: fireux.ecosystem,
+      slug: fireux.appId,
+      status: 'active',
+      team: '',
+
       app_name: fireux.appName,
       app_short_name: fireux.appShortName,
       role: fireux.role,
@@ -104,7 +110,7 @@ export function useAppEnsure() {
         wordmark_dark_url: '',
         cover_url: '',
       },
-    } as Omit<AppModel, 'created' | 'updated' | 'id'>
+    } as Omit<App, 'created' | 'updated' | 'id'>
 
     await setDocument('apps', fireux.appId, payload, {
       creator: true,
