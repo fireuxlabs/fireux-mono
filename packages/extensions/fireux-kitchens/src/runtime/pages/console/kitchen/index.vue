@@ -11,10 +11,10 @@
 
 <script setup lang="ts">
 import { navigateTo, useRoute } from '#imports'
-import { computed, ref, watch } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { useChefCreate } from '../../../composables/fireux/firestore/profiles/Chef/main/useChefCreate'
+import { computed, ref, watch } from 'vue'
 import { useRuntimeKitchenSelection } from '../../../composables/fireux/app/kitchen-runtime/state'
+import { useChefCreate } from '../../../composables/fireux/firestore/profiles/Chef/main/useChefCreate'
 
 definePageMeta({
   layout: 'console',

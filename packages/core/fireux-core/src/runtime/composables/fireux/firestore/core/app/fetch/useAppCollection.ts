@@ -13,7 +13,6 @@ export function useAppCollection(collectionPath: string | { value?: string } = '
       : String(collectionPath?.value || 'apps').trim() || 'apps'
   const source = firestoreFetchCollection<AppCollectionDoc>(path)
   const apps = computed(() => source.value ?? [])
-
   const count = computed(() => apps.value?.length ?? 0)
 
   return { apps, count }

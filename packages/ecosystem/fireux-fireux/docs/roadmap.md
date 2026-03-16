@@ -1,6 +1,12 @@
 # FireUX Ecosystem Roadmap
 Authority: Tier2 (Operational roadmap)
-Updated: 2026-03-02
+Updated: 2026-03-16
+
+## Urgent Security Follow-up
+- [ ] HIGH PRIORITY: make named-database Firestore rules a first-class part of ecosystem setup and deployment.
+- [ ] Ensure new ecosystem databases do not launch with missing rules or temporary `allow read, write: if true` fallbacks.
+- [ ] Define the canonical secure access model for ecosystem app records, user records, and app membership reads.
+- [ ] Add deployment automation and verification for rules on `fireux`, `misebox`, and future named databases.
 
 ## Scope
 - Focus this package on the FireUX ecosystem control plane, not `fireux-core`.

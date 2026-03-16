@@ -1,10 +1,18 @@
 # FIReUX Ecosystem — Roadmap
 Authority: Tier2 (Operational)
-Updated: 2026-03-02
+Updated: 2026-03-16
 
 Status legend: ✅ done · ⚙️ in progress · ❌ missing · 🧩 dependency
 
 ---
+
+## Urgent Security Follow-up
+
+- [ ] HIGH PRIORITY: define secure Firestore rules for the full system, including every named database (`fireux`, `misebox`, `cleanbox`, etc.), so new databases never default into broken or unsafe access.
+- [ ] Add a repeatable deployment path for Firestore rules per named database, not just `(default)`.
+- [ ] Replace temporary dev-open rules with proper auth-, role-, and membership-based read/write rules.
+- [ ] Document the minimum required rules for core collections such as `apps`, `users`, `project`, and app membership subcollections.
+- [ ] Add a setup check that fails when a new named database exists without aligned rules and indexes.
 
 ## Wave 0 — Foundations
 
@@ -12,7 +20,7 @@ Define shared schema, feature flags, and naming.
 
 - [ ] Create `/packages/config/feature-flags.json`
 - [ ] Standardize collection names & composable patterns
-- [ ] Document Firestore rules + indexes templates
+- [ ] Document Firestore rules + indexes templates for `(default)` and all named databases
 
 ---
 
