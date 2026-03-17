@@ -114,7 +114,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useRuntimePortfolio } from '../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import { usePropertyDocument } from '../../composables/fireux/firestore/property/fetch/usePropertyDocument'
-import { useUnitCollection } from '../../composables/fireux/firestore/unit/fetch/useUnitCollection'
+import { usePropertyUnitCollection } from '../../composables/fireux/firestore/unit/fetch/usePropertyUnitCollection'
 
 definePageMeta({
   layout: 'default',
@@ -130,7 +130,7 @@ const runtimeId = computed(() => runtimePortfolio.id.value)
 
 const { document } = usePropertyDocument(() => propertyId.value, runtimePortfolio)
 const property = computed(() => document.value)
-const { collection } = useUnitCollection(() => propertyId.value, runtimePortfolio)
+const { collection } = usePropertyUnitCollection(() => propertyId.value, runtimePortfolio)
 
 const units = computed(() => collection.value)
 const pageTitle = computed(() => property.value?.name || property.value?.id || 'Property')

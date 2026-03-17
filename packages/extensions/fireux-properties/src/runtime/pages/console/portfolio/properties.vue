@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRuntimePortfolio } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
-import { usePropertyCollection } from '../../../composables/fireux/firestore/property/fetch/usePropertyCollection'
+import { usePortfolioPropertyCollection } from '../../../composables/fireux/firestore/property/fetch/usePortfolioPropertyCollection'
 import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
 import PropertyCollectionManager from '../../../components/organisms/Property/Collection/Manager.vue'
 
@@ -69,7 +69,7 @@ definePageMeta({
 })
 
 const runtimePortfolio = useRuntimePortfolio()
-const { collection } = usePropertyCollection(runtimePortfolio)
+const { collection } = usePortfolioPropertyCollection(runtimePortfolio)
 const { pill } = usePortfolioInterface()
 
 const runtimeId = computed(() => runtimePortfolio.id.value)

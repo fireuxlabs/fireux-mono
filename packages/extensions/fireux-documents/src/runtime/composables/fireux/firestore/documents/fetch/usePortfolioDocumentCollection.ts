@@ -20,7 +20,7 @@ const toDocument = (entry: ReadOnlyDocument): Document => ({
   updated: { at: {} as any, by: undefined },
 })
 
-export function useDocumentCollection(runtimePortfolio = useRuntimePortfolio()) {
+export function usePortfolioDocumentCollection(runtimePortfolio = useRuntimePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<Document[] | undefined> | null>
 

@@ -154,8 +154,8 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
-import { useDocumentCollection } from '../../../composables/fireux/firestore/documents/fetch/useDocumentCollection'
-import { useDocumentLinkCollection } from '../../../composables/fireux/firestore/documents/fetch/useDocumentLinkCollection'
+import { usePortfolioDocumentCollection } from '../../../composables/fireux/firestore/documents/fetch/usePortfolioDocumentCollection'
+import { usePortfolioDocumentLinkCollection } from '../../../composables/fireux/firestore/documents/fetch/usePortfolioDocumentLinkCollection'
 import { useDocumentStorage } from '../../../composables/fireux/firestore/documents/mutations/useDocumentStorage'
 import { useDocumentCreate } from '../../../composables/fireux/firestore/documents/mutations/useDocumentCreate'
 import { linkDocumentToEntity } from '../../../composables/fireux/firestore/documents/mutations/linkDocumentToEntity'
@@ -182,8 +182,8 @@ const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const isReadOnly = computed(() => runtimePortfolio.isReadOnly.value)
 
-const { collection: documentCollection } = useDocumentCollection(runtimePortfolio)
-const { collection: linkCollection } = useDocumentLinkCollection(runtimePortfolio)
+const { collection: documentCollection } = usePortfolioDocumentCollection(runtimePortfolio)
+const { collection: linkCollection } = usePortfolioDocumentLinkCollection(runtimePortfolio)
 const { card } = useDocumentInterface()
 
 const documents = computed(() => documentCollection.value)

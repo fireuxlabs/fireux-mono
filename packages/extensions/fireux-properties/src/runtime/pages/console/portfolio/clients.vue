@@ -77,7 +77,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRuntimePortfolio } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
-import { useClientCollection } from '../../../composables/fireux/firestore/client/fetch/useClientCollection'
+import { usePortfolioClientCollection } from '../../../composables/fireux/firestore/client/fetch/usePortfolioClientCollection'
 import ClientCollectionManager from '../../../components/organisms/Client/Collection/Manager.vue'
 
 definePageMeta({
@@ -96,7 +96,7 @@ definePageMeta({
 })
 
 const runtimePortfolio = useRuntimePortfolio()
-const { collection: clientCollection } = useClientCollection(runtimePortfolio)
+const { collection: clientCollection } = usePortfolioClientCollection(runtimePortfolio)
 const isDev = import.meta.dev
 
 const runtimeId = computed(() => String(runtimePortfolio.id.value || '').trim())

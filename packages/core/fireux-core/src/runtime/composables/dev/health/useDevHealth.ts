@@ -4,10 +4,9 @@ import type { App as AppType } from '../../../models/core/app.model'
 import { App as AppTemplate } from '../../../models/core/app.model'
 import type { AppUser, User } from '../../../models/core/user.model'
 import { useFireUXConfig } from '../../fireux/app/FireUXConfig'
-import { useAppUsers } from '../../fireux/firestore/core/app/fetch/useAppUsers'
 import { useApp } from '../../fireux/firestore/core/app/useApp'
+import { useAppUserCollection } from '../../fireux/firestore/core/user/fetch/useAppUserCollection'
 import { useUserCollection } from '../../fireux/firestore/core/user/fetch/useUserCollection'
-import { useFirestoreRead } from '../../fireux/firestore/operations/useFirestoreRead'
 import type {
   DevHealthApi,
   DevHealthIssue,
@@ -127,10 +126,9 @@ export function useDevHealth(): DevHealthApi {
 
   // Core data sources reused across scopes
   const { app, pending: appPending } = useApp()
-  const { users: appUsers, pending: appUsersPending } = useAppUsers()
-  const { firestoreFetchCollection } = useFirestoreRead()
-  const rawUsers = firestoreFetchCollection<User>('users')
-  const { fulfilled: hydratedAppUsers } = useUserCollection()
+  const { memberships: appUsers, pending: appUsersPending, fulfilled: hydratedAppUsers } =
+    useAppUserCollection()
+  const { users: rawUsers } = useUserCollection()
 
   const checks = computed<DevHealthResult[]>(() => {
     const results: DevHealthResult[] = []

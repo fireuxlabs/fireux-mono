@@ -1,5 +1,5 @@
 import { createReadOnlyScenarioRegistry } from '../../../runtime/createReadOnlyScenarioRegistry'
-import type { FireuxProjectModel } from '../../../../../models/system/project.model'
+import type { Project } from '../../../../../models/system/project.model'
 
 type ProjectRow = {
   id: string
@@ -27,7 +27,7 @@ export type ReadOnlyProjectScenario = {
   name: string
   label: string
   image_url: string
-  project: Partial<FireuxProjectModel> & { id: string }
+  project: Partial<Project> & { id: string }
   projects: ProjectRow[]
   ecosystems: EcosystemRow[]
   apps: AppRow[]

@@ -7,13 +7,18 @@ import type {
   CoreProfileBase,
   ProfileConfig,
 } from '../../../../../../models/core/profile.model'
-import { useUserCollection } from '../../user/fetch/useUserCollection'
+import { useAppUserCollection } from '../../user/fetch/useAppUserCollection'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import type { Ref } from 'vue'
 import type { User } from '../../../../../../models/core/user.model'
 
-type UserSummary = Pick<User, 'id' | 'display_name' | 'avatar'> &
-  Partial<Pick<User, 'handle' | 'email'>>
+type UserSummary = {
+  id: string
+  display_name: string
+  avatar: string
+  handle?: string
+  email?: string
+}
 
 export function useProfileCollection<
   TProfile extends CoreProfileBase = CoreProfileBase
@@ -38,7 +43,7 @@ export function useProfileCollection<
         )
       : null
 
-  const { users } = useUserCollection()
+  const { users } = useAppUserCollection()
   const coreUserRefs = new Map<string, Ref<User | undefined>>()
 
   const ensureCoreUserRef = (id?: string | null) => {

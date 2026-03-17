@@ -52,7 +52,7 @@ import { definePageMeta } from '#imports'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
-import { useGlobalUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useGlobalUserCollection'
+import { useUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 import { User as UserModelRuntime } from '../../models/core/user.model'
 
 definePageMeta({
@@ -72,7 +72,7 @@ definePageMeta({
 
 const userModelRuntime = UserModelRuntime
 
-const { users } = useGlobalUserCollection()
+const { users } = useUserCollection()
 
 const { isTenant } = useFireUXConfig()
 

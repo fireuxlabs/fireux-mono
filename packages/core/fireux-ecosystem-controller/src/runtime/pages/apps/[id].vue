@@ -81,7 +81,7 @@ import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAppFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppFetch'
 import { useAppInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface'
-import { useUserCollectionByAppId } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserCollectionByAppId'
+import { useAppUserCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useAppUserCollection'
 import type { UserCard } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
@@ -100,7 +100,7 @@ const { card } = useAppInterface()
 
 const appProfile = computed(() => (currentApp.value ? card(currentApp.value) : null))
 
-const { users: appUsers, pending: usersPending } = useUserCollectionByAppId(appId)
+const { users: appUsers, pending: usersPending } = useAppUserCollection(appId)
 const { card: userToCardByValue } = useUserInterface()
 
 type UserFilter = 'all' | 'admins' | 'users'

@@ -118,7 +118,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
-import { useTaskCollection } from '../../../composables/fireux/firestore/tasks/fetch/useTaskCollection'
+import { usePortfolioTaskCollection } from '../../../composables/fireux/firestore/tasks/fetch/usePortfolioTaskCollection'
 import { useTaskCreate } from '../../../composables/fireux/firestore/tasks/mutations/useTaskCreate'
 import { useTaskUpdate } from '../../../composables/fireux/firestore/tasks/mutations/useTaskUpdate'
 import { useTaskInterface } from '../../../composables/fireux/firestore/tasks/utils/view/useTaskInterface'
@@ -144,7 +144,7 @@ const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const isReadOnly = computed(() => runtimePortfolio.isReadOnly.value)
 
-const { collection } = useTaskCollection(runtimePortfolio)
+const { collection } = usePortfolioTaskCollection(runtimePortfolio)
 const { createTask } = useTaskCreate(runtimePortfolio)
 const { updateTask } = useTaskUpdate(runtimePortfolio)
 const { card } = useTaskInterface()

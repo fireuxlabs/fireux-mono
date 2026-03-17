@@ -1,19 +1,19 @@
 import { computed } from 'vue'
 import { createScopeConsole } from 'fireux-core/runtime/composables/fireux/app/console/createScopeConsole'
 import { useNav } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useNav'
-import { useComplianceRecordCollection } from 'fireux-compliance/runtime/composables/fireux/firestore/compliance/fetch/useComplianceRecordCollection'
-import { useDocumentLinkCollection } from 'fireux-documents/runtime/composables/fireux/firestore/documents/fetch/useDocumentLinkCollection'
-import { useTaskCollection } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/fetch/useTaskCollection'
-import { usePropertyCollection } from '../../firestore/property/fetch/usePropertyCollection'
+import { usePortfolioComplianceRecordCollection } from 'fireux-compliance/runtime/composables/fireux/firestore/compliance/fetch/usePortfolioComplianceRecordCollection'
+import { usePortfolioDocumentLinkCollection } from 'fireux-documents/runtime/composables/fireux/firestore/documents/fetch/usePortfolioDocumentLinkCollection'
+import { usePortfolioTaskCollection } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/fetch/usePortfolioTaskCollection'
+import { usePortfolioPropertyCollection } from '../../firestore/property/fetch/usePortfolioPropertyCollection'
 import { useRuntimePortfolio } from './useRuntimePortfolio'
 
 export function useRuntimePortfolioConsole() {
   const runtime = useRuntimePortfolio()
   const nav = useNav(['console'])
-  const { collection: properties } = usePropertyCollection(runtime)
-  const { collection: complianceRecords } = useComplianceRecordCollection(runtime)
-  const { collection: documentLinks } = useDocumentLinkCollection(runtime)
-  const { collection: tasks } = useTaskCollection(runtime)
+  const { collection: properties } = usePortfolioPropertyCollection(runtime)
+  const { collection: complianceRecords } = usePortfolioComplianceRecordCollection(runtime)
+  const { collection: documentLinks } = usePortfolioDocumentLinkCollection(runtime)
+  const { collection: tasks } = usePortfolioTaskCollection(runtime)
 
   const stats = computed(() => ({
     properties: properties.value.length,

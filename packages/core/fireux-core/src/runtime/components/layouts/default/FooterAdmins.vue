@@ -29,12 +29,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAppUsers } from '../../../composables/fireux/firestore/core/app/fetch/useAppUsers'
-import { useUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useUserCollection'
+import { useAppUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
 import type { UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
-const { pending } = useAppUsers()
-const { fulfilled } = useUserCollection()
+const { pending, fulfilled } = useAppUserCollection()
 const { card } = useUserInterface()
 
 const adminEntries = computed(() =>

@@ -2,7 +2,7 @@ import { useRuntimeConfig } from '#imports'
 import { doc, type DocumentSnapshot } from 'firebase/firestore'
 import { computed, ref, unref, type Ref } from 'vue'
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { FireuxProjectDoc } from '../../../../models/system/project.model'
+import type { ProjectDoc } from '../../../../models/system/project.model'
 import { normalizeRuntimeMode, normalizeString } from '../../runtime/runtime.normalize'
 import type { RuntimeMode } from '../../runtime/runtime.types'
 import { useFireUXConfig } from '../FireUXConfig'
@@ -11,7 +11,7 @@ import { useRuntimeProjectSelection } from './state'
 
 export type RuntimeProjectMode = RuntimeMode
 
-export type RuntimeProjectDoc = Partial<FireuxProjectDoc> & Record<string, unknown> & {
+export type RuntimeProjectDoc = Partial<ProjectDoc> & Record<string, unknown> & {
   id?: string
   name?: string
   project_name?: string

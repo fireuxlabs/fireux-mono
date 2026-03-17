@@ -65,12 +65,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
-import { useAppUsers } from '../../../../composables/fireux/firestore/core/app/fetch/useAppUsers'
 import { useAppUpdate } from '../../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
 import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
 import { useAppJoinRequests } from '../../../../composables/fireux/firestore/core/app/utils/useAppJoinRequests'
 import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
-import { useUserCollection } from '../../../../composables/fireux/firestore/core/user/fetch/useUserCollection'
+import { useAppUserCollection } from '../../../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
 import { useUserFetch } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUserInterface, type UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import type { AppModel } from '../../../../models/core/app.model'
@@ -103,8 +102,7 @@ const {
   handleJoinRequests,
   setAppUserAdmin,
 } = useAppUpdate(appRef)
-const { users } = useAppUsers()
-const { fulfilled: hydratedUsers } = useUserCollection()
+const { memberships: users, fulfilled: hydratedUsers } = useAppUserCollection()
 const { card: userCard } = useUserInterface()
 
 const appInterface = useAppInterface(appRef)

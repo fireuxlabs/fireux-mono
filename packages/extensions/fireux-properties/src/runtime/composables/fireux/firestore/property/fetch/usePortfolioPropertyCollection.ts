@@ -3,7 +3,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { useRuntimePortfolio } from '../../../app/portfolio-runtime/useRuntimePortfolio'
 import type { Property } from '../../../../../models/property.model'
 
-export function usePropertyCollection(runtimePortfolio = useRuntimePortfolio()) {
+export function usePortfolioPropertyCollection(runtimePortfolio = useRuntimePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<Property[] | undefined> | null>
 

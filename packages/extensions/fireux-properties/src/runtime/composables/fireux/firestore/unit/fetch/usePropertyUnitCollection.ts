@@ -5,7 +5,7 @@ import type { Unit } from '../../../../../models/unit.model'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
 
-export function useUnitCollection(
+export function usePropertyUnitCollection(
   propertyId: string | (() => string),
   runtimePortfolio = useRuntimePortfolio()
 ) {

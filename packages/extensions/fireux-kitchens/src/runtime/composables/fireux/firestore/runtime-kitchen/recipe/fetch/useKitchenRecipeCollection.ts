@@ -9,13 +9,13 @@ const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
 const resolveRecipesPath = (kitchenCollectionPath: string, kitchenId: string) =>
   `${kitchenCollectionPath}/${kitchenId}/recipes`
 
-type UseRecipeCollectionOptions = {
+type UseKitchenRecipeCollectionOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
 }
 
-export function useRecipeCollection(
+export function useKitchenRecipeCollection(
   kitchenId?: string | Ref<string | null | undefined>,
-  options: UseRecipeCollectionOptions = {}
+  options: UseKitchenRecipeCollectionOptions = {}
 ) {
   const { runtimeKitchenId } = useRuntimeKitchenSelection()
   const { firestoreFetchCollection } = useFirestoreRead()

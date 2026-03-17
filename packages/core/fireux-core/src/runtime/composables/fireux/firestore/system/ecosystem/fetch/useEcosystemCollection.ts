@@ -1,11 +1,8 @@
 import { computed } from 'vue'
-import type {
-  FireuxEcosystemModel,
-  FireuxEcosystemRegistryDoc,
-} from '../../../../../../models/system/ecosystem.model'
+import type { Ecosystem } from '../../../../../../models/system/ecosystem.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
-type EcosystemDoc = Partial<FireuxEcosystemModel> & FireuxEcosystemRegistryDoc & { id?: string }
+type EcosystemCollectionDoc = Partial<Ecosystem> & { id?: string }
 
 export function useEcosystemCollection(collectionPath: string | { value?: string } = 'ecosystems') {
   const { firestoreFetchCollection } = useFirestoreRead()
@@ -13,7 +10,7 @@ export function useEcosystemCollection(collectionPath: string | { value?: string
     typeof collectionPath === 'string'
       ? collectionPath
       : String(collectionPath?.value || 'ecosystems').trim() || 'ecosystems'
-  const source = firestoreFetchCollection<EcosystemDoc>(path)
+  const source = firestoreFetchCollection<EcosystemCollectionDoc>(path)
   const ecosystems = computed(() => source.value ?? [])
   const count = computed(() => ecosystems.value.length)
 

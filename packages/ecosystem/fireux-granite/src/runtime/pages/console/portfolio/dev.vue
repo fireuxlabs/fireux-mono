@@ -44,10 +44,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
-import { usePropertyCollection } from 'fireux-properties/runtime/composables/fireux/firestore/property/fetch/usePropertyCollection'
-import { useComplianceRecordCollection } from 'fireux-compliance/runtime/composables/fireux/firestore/compliance/fetch/useComplianceRecordCollection'
-import { useDocumentLinkCollection } from 'fireux-documents/runtime/composables/fireux/firestore/documents/fetch/useDocumentLinkCollection'
-import { useTaskCollection } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/fetch/useTaskCollection'
+import { usePortfolioPropertyCollection } from 'fireux-properties/runtime/composables/fireux/firestore/property/fetch/usePortfolioPropertyCollection'
+import { usePortfolioComplianceRecordCollection } from 'fireux-compliance/runtime/composables/fireux/firestore/compliance/fetch/usePortfolioComplianceRecordCollection'
+import { usePortfolioDocumentLinkCollection } from 'fireux-documents/runtime/composables/fireux/firestore/documents/fetch/usePortfolioDocumentLinkCollection'
+import { usePortfolioTaskCollection } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/fetch/usePortfolioTaskCollection'
 
 definePageMeta({
   layout: 'console',
@@ -66,10 +66,10 @@ definePageMeta({
 })
 
 const runtimePortfolio = useRuntimePortfolio()
-const { collection: properties } = usePropertyCollection(runtimePortfolio)
-const { collection: complianceRecords } = useComplianceRecordCollection(runtimePortfolio)
-const { collection: documentLinks } = useDocumentLinkCollection(runtimePortfolio)
-const { collection: tasks } = useTaskCollection(runtimePortfolio)
+const { collection: properties } = usePortfolioPropertyCollection(runtimePortfolio)
+const { collection: complianceRecords } = usePortfolioComplianceRecordCollection(runtimePortfolio)
+const { collection: documentLinks } = usePortfolioDocumentLinkCollection(runtimePortfolio)
+const { collection: tasks } = usePortfolioTaskCollection(runtimePortfolio)
 
 const runtimeId = computed(() => String(runtimePortfolio.id.value || '').trim())
 const runtimeMode = computed(() => runtimePortfolio.mode.value)

@@ -22,7 +22,7 @@ const toComplianceRecord = (entry: ReadOnlyComplianceRecord): ComplianceRecord =
   updated: { at: {} as any, by: undefined },
 })
 
-export function useComplianceRecordCollection(runtimePortfolio = useRuntimePortfolio()) {
+export function usePortfolioComplianceRecordCollection(runtimePortfolio = useRuntimePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<ComplianceRecord[] | undefined> | null>
 

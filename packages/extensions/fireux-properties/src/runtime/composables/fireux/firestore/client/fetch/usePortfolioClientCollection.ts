@@ -289,7 +289,7 @@ const buildReadOnlyClients = (scenario: ReadOnlyPortfolioScenario): Client[] => 
 
 const roundToMoney = (value: number) => Math.round(Number(value || 0))
 
-export function useClientCollection(runtimePortfolio = useRuntimePortfolio()) {
+export function usePortfolioClientCollection(runtimePortfolio = useRuntimePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<Client[] | undefined> | null>
 

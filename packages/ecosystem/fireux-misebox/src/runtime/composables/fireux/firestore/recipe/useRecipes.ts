@@ -1,6 +1,6 @@
 import {
-    useRecipeCollection as useCanonicalRecipeCollection,
-} from 'fireux-kitchens/runtime/composables/fireux/firestore/runtime-kitchen/recipe/fetch/useRecipeCollection'
+  useKitchenRecipeCollection as useCanonicalRecipeCollection,
+} from 'fireux-kitchens/runtime/composables/fireux/firestore/runtime-kitchen/recipe/fetch/useKitchenRecipeCollection'
 import { computed } from 'vue'
 import { useRecipeCreate } from './useRecipeCreate'
 import { useRecipeDelete } from './useRecipeDelete'

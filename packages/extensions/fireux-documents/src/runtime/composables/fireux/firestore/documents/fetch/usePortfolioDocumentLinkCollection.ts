@@ -17,7 +17,7 @@ const toDocumentLink = (entry: ReadOnlyDocumentLink): DocumentLink => ({
   updated: { at: {} as any, by: undefined },
 })
 
-export function useDocumentLinkCollection(runtimePortfolio = useRuntimePortfolio()) {
+export function usePortfolioDocumentLinkCollection(runtimePortfolio = useRuntimePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<DocumentLink[] | undefined> | null>
 

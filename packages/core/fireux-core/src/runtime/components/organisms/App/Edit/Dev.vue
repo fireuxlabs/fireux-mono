@@ -157,7 +157,7 @@ import { doc, getDoc } from 'firebase/firestore'
 import { computed, ref, watch } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
-import { useAppUsers } from '../../../../composables/fireux/firestore/core/app/fetch/useAppUsers'
+import { useAppUserCollection } from '../../../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
 import type { AppModel } from '../../../../models/core/app.model'
 import type { User } from '../../../../models/core/user.model'
 
@@ -167,7 +167,7 @@ const app = computed(() => props.app)
 const { appId: configAppId } = useFireUXConfig()
 const driftAppId = computed(() => app.value?.id ?? configAppId ?? '')
 
-const { users: appUsers, pending: appUsersPending } = useAppUsers()
+const { memberships: appUsers, pending: appUsersPending } = useAppUserCollection()
 const db = useFirestore()
 const coreUsers = ref<Map<string, User | null>>(new Map())
 const driftPending = ref(false)

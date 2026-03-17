@@ -103,7 +103,7 @@ import { computed } from 'vue'
 import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import { useTaskCreate } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/mutations/useTaskCreate'
 import { useTaskProjection } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/utils/projection/useTaskProjection'
-import { useComplianceRecordCollection } from '../../../composables/fireux/firestore/compliance/fetch/useComplianceRecordCollection'
+import { usePortfolioComplianceRecordCollection } from '../../../composables/fireux/firestore/compliance/fetch/usePortfolioComplianceRecordCollection'
 import { useComplianceInterface } from '../../../composables/fireux/firestore/compliance/utils/view/useComplianceInterface'
 
 definePageMeta({
@@ -122,7 +122,7 @@ definePageMeta({
 })
 
 const runtimePortfolio = useRuntimePortfolio()
-const { collection } = useComplianceRecordCollection(runtimePortfolio)
+const { collection } = usePortfolioComplianceRecordCollection(runtimePortfolio)
 const { card } = useComplianceInterface()
 const { createTask } = useTaskCreate(runtimePortfolio)
 const { fromComplianceRecord } = useTaskProjection(runtimePortfolio)

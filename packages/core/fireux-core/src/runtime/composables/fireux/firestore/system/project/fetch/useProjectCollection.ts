@@ -1,12 +1,16 @@
 import { computed } from 'vue'
-import type { FireuxProjectModel } from '../../../../../../models/system/project.model'
+import type { Project } from '../../../../../../models/system/project.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
-type ProjectDoc = Partial<FireuxProjectModel> & { id?: string }
+type ProjectCollectionDoc = Partial<Project> & { id?: string }
 
-export function useProjectCollection() {
+export function useProjectCollection(collectionPath: string | { value?: string } = 'projects') {
   const { firestoreFetchCollection } = useFirestoreRead()
-  const source = firestoreFetchCollection<ProjectDoc>('projects')
+  const path =
+    typeof collectionPath === 'string'
+      ? collectionPath
+      : String(collectionPath?.value || 'projects').trim() || 'projects'
+  const source = firestoreFetchCollection<ProjectCollectionDoc>(path)
   const projects = computed(() => source.value ?? [])
   const count = computed(() => projects.value.length)
 

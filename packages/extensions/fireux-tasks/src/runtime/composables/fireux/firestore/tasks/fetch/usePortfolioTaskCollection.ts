@@ -20,7 +20,7 @@ const toTask = (entry: ReadOnlyTask): Task => ({
   updated: { at: {} as any, by: undefined },
 })
 
-export function useTaskCollection(runtimePortfolio = useRuntimePortfolio()) {
+export function usePortfolioTaskCollection(runtimePortfolio = useRuntimePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<Task[] | undefined> | null>
 

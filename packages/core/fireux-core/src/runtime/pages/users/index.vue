@@ -23,7 +23,7 @@
 import { computed } from 'vue'
 import { useHead, useRuntimeConfig, useSeoMeta } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useGlobalUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useGlobalUserCollection'
+import { useUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 
 definePageMeta({
   nav: {
@@ -43,7 +43,7 @@ definePageMeta({
 
 const { appName } = useFireUXConfig()
 const runtime = useRuntimeConfig()
-const { users } = useGlobalUserCollection()
+const { users } = useUserCollection()
 
 const pageTitle = 'Users'
 const pageDescription = 'Browse users available to this runtime.'
