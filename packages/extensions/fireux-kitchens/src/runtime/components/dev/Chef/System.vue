@@ -51,9 +51,9 @@
               :key="`chef-preview-${entry.card.id}`"
               :avatar-url="entry.card.avatarUrl"
               :display-name="entry.card.displayName"
-              :tagline="entry.card.chef_headline"
-              :badges="[]"
-              :summary="String((entry.profile as any)?.summary ?? '')"
+              :title="entry.card.title"
+              :badges="entry.card.badges"
+              :summary="entry.card.summary"
               :specialties-csv="chefSpecialtiesCsv(entry.profile)"
             />
           </div>

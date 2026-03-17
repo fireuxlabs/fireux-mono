@@ -1,5 +1,12 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import {
+  resolveProfileBadges,
+  resolveProfileDisplayName,
+  resolveProfileImage,
+  resolveProfileSummary,
+  resolveSecondaryAvatarUrl,
+  safeString,
+} from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 import type { ChefCore } from 'fireux-kitchens/runtime/models/profiles/Chef/Chef.model'
@@ -12,8 +19,11 @@ export namespace ChefCard {
     id: string
     to: string
     avatarUrl: string
+    secondaryAvatarUrl?: string
     displayName: string
-    chef_headline: string
+    title: string
+    summary: string
+    badges: string[]
   }
 }
 
@@ -26,18 +36,28 @@ export function useChefInterface(
       safeString((p as any).owner_uid).trim() ||
       safeString(u?.id).trim() ||
       safeString((p as any).id).trim()
-    const profileImage = safeString((p as ChefCore & { image?: string }).image).trim()
-    const chefImage = safeString((p as any).chef_image).trim()
-    const summary =
-      safeString((p as ChefCore & { summary?: string }).summary).trim() ||
-      safeString((p as any).chef_bio).trim()
+    const profileImage = resolveProfileImage([
+      (p as ChefCore & { image?: string }).image,
+      (p as any).chef_image,
+    ])
+    const summary = resolveProfileSummary([
+      (p as ChefCore & { summary?: string }).summary,
+      (p as any).chef_bio,
+    ])
+    const userAvatar = safeString(u?.avatar).trim()
+    const avatarUrl = profileImage || userAvatar
+    const badges = resolveProfileBadges([(p as ChefCore & { tags?: string[] }).tags])
+    const secondaryAvatarUrl = resolveSecondaryAvatarUrl(avatarUrl, userAvatar)
 
     return {
       id,
       to: id ? `/${chefConfig.collectionName}/${encodeURIComponent(id)}` : '',
-      avatarUrl: profileImage || chefImage || safeString(u?.avatar).trim(),
-      displayName: safeString(u?.display_name).trim(),
-      chef_headline: safeString((p as any).title).trim(),
+      avatarUrl,
+      secondaryAvatarUrl,
+      displayName: resolveProfileDisplayName([u?.display_name]),
+      title: safeString((p as any).title).trim(),
+      summary,
+      badges,
     }
   }
 
@@ -51,15 +71,17 @@ export function useChefInterface(
 
   function searchText(target: ChefCore): string {
     const mapped = map(target, userRef?.value ?? null)
-    const summary =
-      safeString((target as ChefCore & { summary?: string }).summary).trim() ||
-      safeString((target as any).chef_bio).trim()
+    const summary = resolveProfileSummary([
+      (target as ChefCore & { summary?: string }).summary,
+      (target as any).chef_bio,
+    ])
 
     return [
       mapped.id,
       mapped.displayName,
-      mapped.chef_headline,
+      mapped.title,
       summary,
+      ...mapped.badges,
     ]
       .join(' ')
       .trim()

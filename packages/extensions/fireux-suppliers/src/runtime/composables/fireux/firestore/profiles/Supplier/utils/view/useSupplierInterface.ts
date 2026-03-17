@@ -1,7 +1,11 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import {
   csv,
+  firstNonEmptyString,
   locationLabel,
+  resolveProfileBadges,
+  resolveProfileImage,
+  resolveProfileSummary,
   safeString,
   safeStringArray,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
@@ -22,9 +26,9 @@ export namespace SupplierCard {
     subtitle: string
     badges: string[]
     avatarUrl: string
+    summary: string
     organizationName: string
     locationsLabel: string
-    summary: string
     tagline?: string
     categoriesCsv?: string
     specialtiesCsv?: string
@@ -43,10 +47,8 @@ export type SupplierSurface = Partial<SupplierCore> & {
   avatar_url?: string
 }
 
-const firstNonEmpty = (values: unknown[]): string =>
-  values.map((value) => safeString(value).trim()).find(Boolean) || ''
-
-const firstArrayValue = (value: unknown): string => firstNonEmpty(Array.isArray(value) ? value : [])
+const firstArrayValue = (value: unknown): string =>
+  firstNonEmptyString(Array.isArray(value) ? value : [])
 
 export function useSupplierInterface(
 	profile?: ProfileRefs<SupplierCore> | null,
@@ -63,8 +65,8 @@ export function useSupplierInterface(
 
   function map(target: SupplierSurface, user?: UserLike | null): SupplierCard.Card {
     const source = target as SupplierCore
-    const id = firstNonEmpty([target.supplier_id, target.source_supplier_id, target.id])
-    const organizationName = firstNonEmpty([
+    const id = firstNonEmptyString([target.supplier_id, target.source_supplier_id, target.id])
+    const organizationName = firstNonEmptyString([
       target.supplier_organization_name,
       target.organization_name,
       target.name,
@@ -72,24 +74,24 @@ export function useSupplierInterface(
       target.title,
       id,
     ])
-    const badges = safeStringArray(target.supplier_product_categories).length
-      ? safeStringArray(target.supplier_product_categories)
-      : safeStringArray(target.categories).length
-        ? safeStringArray(target.categories)
-        : safeStringArray(target.tags)
+    const badges = resolveProfileBadges([
+      target.supplier_product_categories,
+      target.categories,
+      target.tags,
+    ])
     const specialties = safeStringArray(source.specialties)
     const deliveryAreas = safeStringArray(target.supplier_delivery_areas)
-    const tagline = firstNonEmpty([
+    const tagline = firstNonEmptyString([
       target.supplier_headline,
       target.tagline,
       target.title,
     ])
-    const summary = firstNonEmpty([
+    const summary = resolveProfileSummary([
       target.summary,
       source.supplier_bio,
       source.bio_long,
     ])
-    const primaryAvatar = firstNonEmpty([
+    const primaryAvatar = resolveProfileImage([
       target.image,
       source.supplier_image,
       target.image_url,
@@ -102,15 +104,15 @@ export function useSupplierInterface(
     const locationsLabel = deliveryAreas.length
       ? deliveryAreas.join(', ')
       : locationLabel(source.locations)
-    const categoryLabel = firstNonEmpty([
+    const categoryLabel = firstNonEmptyString([
       target.category,
       target.business_type,
       firstArrayValue(target.supplier_product_categories),
       firstArrayValue(target.categories),
       firstArrayValue(target.tags),
     ])
-    const title = firstNonEmpty([organizationName, target.title, target.name, target.short_name, id])
-    const subtitle = firstNonEmpty([tagline, locationsLabel, categoryLabel])
+    const title = firstNonEmptyString([organizationName, target.title, target.name, target.short_name, id])
+    const subtitle = firstNonEmptyString([tagline, locationsLabel, categoryLabel])
 
     return {
       id,

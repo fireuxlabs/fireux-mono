@@ -16,8 +16,8 @@
         <div class="card__header">
           <div class="min-w-0">
             <div class="card__title">{{ displayName }}</div>
-            <div v-if="showSubtitle && chef_headline" class="card__subtitle">
-              {{ chef_headline }}
+            <div v-if="showSubtitle && title" class="card__subtitle">
+              {{ title }}
             </div>
           </div>
 
@@ -48,7 +48,7 @@ type Props = {
   to: string
   avatarUrl: string
   displayName: string
-  chef_headline: string
+  title: string
   secondaryAvatarUrl?: string
   badges?: string[]
   summary?: string
@@ -65,7 +65,7 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<Props>(), {
-  chef_headline: '',
+  title: '',
   secondaryAvatarUrl: undefined,
   badges: () => [],
   summary: '',

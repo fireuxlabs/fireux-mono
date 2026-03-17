@@ -24,8 +24,8 @@
           </div>
         </div>
 
-        <div v-if="showSubtitle && tagline" class="preview__subtitle">
-          {{ tagline }}
+        <div v-if="showSubtitle && title" class="preview__subtitle">
+          {{ title }}
         </div>
 
         <div v-if="showBody" class="preview__body">
@@ -49,7 +49,7 @@ type Props = {
   avatarUrl: string
   secondaryAvatarUrl?: string
   displayName: string
-  tagline: string
+  title: string
   badges: string[]
   summary: string
   contactEmail: string

@@ -1,5 +1,12 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import { safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import {
+  resolveProfileBadges,
+  resolveProfileDisplayName,
+  resolveProfileImage,
+  resolveProfileSummary,
+  resolveSecondaryAvatarUrl,
+  safeString,
+} from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
 import type { AgentCore, AgentResolved } from 'fireux-jobs/runtime/models/profiles/Agent/Agent.model'
@@ -19,7 +26,7 @@ export namespace AgentCard {
 
     // Primary display fields
     displayName: string
-    tagline: string
+    title: string
 
     // Status/label chips
     badges: string[]
@@ -49,17 +56,14 @@ export function useAgentInterface(
       safeString((p as any).owner_uid).trim() ||
       safeString(u?.id).trim()
     const headline = safeString(p.title)
-    const summary = safeString(p.summary) || safeString(p.agent_bio)
-    const placementTypes =
-      safeStringArray(p.agent_placement_types).length
-        ? safeStringArray(p.agent_placement_types)
-        : safeStringArray(p.tags)
-    const universalImage = safeString((p as AgentCore & { image?: string }).image)
-    const profileImage = universalImage || safeString(p.agent_image)
+    const summary = resolveProfileSummary([p.summary, p.agent_bio])
+    const placementTypes = resolveProfileBadges([p.agent_placement_types, p.tags])
+    const profileImage = resolveProfileImage([
+      (p as AgentCore & { image?: string }).image,
+      p.agent_image,
+    ])
     const userAvatar = safeString(u?.avatar)
-    const secondaryAvatarUrl = profileImage && userAvatar && profileImage !== userAvatar
-      ? userAvatar
-      : ''
+    const secondaryAvatarUrl = resolveSecondaryAvatarUrl(profileImage, userAvatar) || ''
 
     return {
       id,
@@ -68,11 +72,8 @@ export function useAgentInterface(
       avatarUrl: profileImage || userAvatar,
       secondaryAvatarUrl,
 
-      // Canonical: agent pills are user-hydrated; no profile-title fallback for display name.
-      displayName: safeString(u?.display_name),
-
-      // Canonical profile title shown as pill/cell tagline.
-      tagline: headline,
+      displayName: resolveProfileDisplayName([u?.display_name]),
+      title: headline,
       badges: placementTypes,
 
       summary,
@@ -99,7 +100,7 @@ export function useAgentInterface(
     return [
       mapped.id,
       mapped.displayName,
-      mapped.tagline,
+      mapped.title,
       mapped.summary,
       mapped.contactEmail,
       mapped.contactPhone,

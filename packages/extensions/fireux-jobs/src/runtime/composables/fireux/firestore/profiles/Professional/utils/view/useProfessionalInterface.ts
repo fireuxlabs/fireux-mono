@@ -1,5 +1,12 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import {
+  resolveProfileBadges,
+  resolveProfileDisplayName,
+  resolveProfileImage,
+  resolveProfileSummary,
+  resolveSecondaryAvatarUrl,
+  safeString,
+} from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
 import type { ProfessionalCore, ProfessionalUserSummary } from '../../../../../../../models/profiles/Professional/Professional.model'
 import { professionalConfig } from '../../config/professionalConfig'
@@ -12,10 +19,12 @@ export namespace ProfessionalCard {
     id: string
     to: string
     avatarUrl: string
+    secondaryAvatarUrl?: string
     image: string
     displayName: string
     title: string
     summary: string
+    badges: string[]
   }
 }
 
@@ -37,18 +46,22 @@ export function useProfessionalInterface(
       safeString(user?.id).trim()
     if (!id) return null
 
-    const image = safeString(p.image)
+    const image = resolveProfileImage([p.image])
     const avatar = safeString(user?.avatar)
-    const summary = safeString(p.summary) || safeString(p.bio)
+    const summary = resolveProfileSummary([p.summary, p.bio])
+    const badges = resolveProfileBadges([p.tags])
+    const secondaryAvatarUrl = resolveSecondaryAvatarUrl(image, avatar)
 
     return {
       id,
       to: `/${professionalConfig.collectionName}/${encodeURIComponent(id)}`,
       avatarUrl: avatar,
+      secondaryAvatarUrl,
       image,
-      displayName: safeString(user?.display_name),
+      displayName: resolveProfileDisplayName([user?.display_name]),
       title: safeString(p.title),
       summary,
+      badges,
     }
   }
 
@@ -60,6 +73,7 @@ export function useProfessionalInterface(
       mapped?.displayName ?? '',
       mapped?.title ?? '',
       mapped?.summary ?? '',
+      ...(mapped?.badges ?? []),
     ]
       .join(' ')
       .trim()

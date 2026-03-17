@@ -78,7 +78,7 @@ const { coreProfile, card: toCard } = useChef()
 
 const isChefCard = (value: unknown): value is ChefCard.Card => {
   if (!value || typeof value !== 'object') return false
-  return 'displayName' in value && 'tagline' in value && 'badges' in value
+  return 'displayName' in value && 'title' in value && 'badges' in value
 }
 
 const resolvedCard = computed<ChefCard.Card | null>(() => {
@@ -106,7 +106,7 @@ const vm = computed(() => {
   }
 
   const title = props.title ?? cardAny?.displayName ?? cardAny?.title ?? 'Chef'
-  const subtitle = props.subtitle ?? (cardAny?.tagline || cardAny?.subtitle || undefined)
+  const subtitle = props.subtitle ?? (cardAny?.title || cardAny?.subtitle || undefined)
   const avatar = props.avatar ?? (cardAny?.avatarUrl || cardAny?.avatar || null)
   const avatarSecondary =
     props.avatarSecondary ?? (cardAny?.secondaryAvatarUrl || cardAny?.avatarSecondary || null)

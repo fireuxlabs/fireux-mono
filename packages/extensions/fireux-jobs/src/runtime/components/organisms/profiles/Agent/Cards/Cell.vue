@@ -31,8 +31,8 @@
           </div>
         </div>
 
-        <div v-if="showSubtitle && tagline" class="card__subtitle">
-          {{ tagline }}
+        <div v-if="showSubtitle && title" class="card__subtitle">
+          {{ title }}
         </div>
 
         <div class="card__tagline">
@@ -53,7 +53,7 @@ type Props = Pick<
   | 'avatarUrl'
   | 'secondaryAvatarUrl'
   | 'displayName'
-  | 'tagline'
+  | 'title'
   | 'badges'
   | 'summary'
 > & {

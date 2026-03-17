@@ -13,6 +13,44 @@ export function safeStringArray(input: unknown): string[] {
     .filter(Boolean)
 }
 
+export function firstNonEmptyString(values: unknown[]): string {
+  return values.map((value) => safeString(value).trim()).find(Boolean) || ''
+}
+
+export function firstNonEmptyStringArray(values: unknown[]): string[] {
+  for (const value of values) {
+    const items = safeStringArray(value)
+    if (items.length) return items
+  }
+
+  return []
+}
+
+export function resolveProfileImage(values: unknown[]): string {
+  return firstNonEmptyString(values)
+}
+
+export function resolveProfileSummary(values: unknown[]): string {
+  return firstNonEmptyString(values)
+}
+
+export function resolveProfileDisplayName(values: unknown[]): string {
+  return firstNonEmptyString(values)
+}
+
+export function resolveProfileBadges(values: unknown[]): string[] {
+  return firstNonEmptyStringArray(values)
+}
+
+export function resolveSecondaryAvatarUrl(primary: unknown, fallback: unknown): string | undefined {
+  const primaryValue = safeString(primary).trim()
+  const fallbackValue = safeString(fallback).trim()
+
+  if (!primaryValue || !fallbackValue || primaryValue === fallbackValue) return undefined
+
+  return fallbackValue
+}
+
 export function csv(list: unknown, separator = ', '): string {
   return safeStringArray(list).join(separator)
 }

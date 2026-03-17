@@ -11,7 +11,7 @@
           <div class="min-w-0">
             <div class="truncate text-base font-semibold">{{ card.displayName }}</div>
             <div class="text-sm text-dimmed">
-                <span v-if="showSubtitle && card.tagline">{{ card.tagline }}</span>
+                <span v-if="showSubtitle && card.title">{{ card.title }}</span>
                 <span v-else-if="showSubtitle" class="italic">missing</span>
             </div>
           </div>

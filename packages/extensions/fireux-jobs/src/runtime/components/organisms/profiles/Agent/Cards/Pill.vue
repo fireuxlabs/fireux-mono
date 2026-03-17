@@ -7,7 +7,7 @@
   >
     <UUser
       :name="displayName"
-      :description="showSubtitle ? (tagline || undefined) : undefined"
+      :description="showSubtitle ? (title || undefined) : undefined"
       size="sm"
     >
       <template #avatar>
@@ -44,7 +44,7 @@ const emit = defineEmits<{
 
 const props = withDefaults(
   defineProps<
-    Pick<AgentCard.Card, 'to' | 'avatarUrl' | 'secondaryAvatarUrl' | 'displayName' | 'tagline' | 'badges'> & {
+    Pick<AgentCard.Card, 'to' | 'avatarUrl' | 'secondaryAvatarUrl' | 'displayName' | 'title' | 'badges'> & {
       showSubtitle?: boolean
       showBadges?: boolean
       link?: boolean

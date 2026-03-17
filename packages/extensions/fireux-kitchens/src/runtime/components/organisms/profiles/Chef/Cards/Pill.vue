@@ -7,7 +7,7 @@
   >
     <UUser
       :name="displayName"
-      :description="showSubtitle ? (chef_headline || undefined) : undefined"
+      :description="showSubtitle ? (title || undefined) : undefined"
       size="sm"
     >
       <template #avatar>
@@ -47,7 +47,7 @@ const props = withDefaults(
     to: string
     avatarUrl: string
     displayName: string
-    chef_headline: string
+    title: string
     secondaryAvatarUrl?: string
     badges?: string[]
     showSubtitle?: boolean
