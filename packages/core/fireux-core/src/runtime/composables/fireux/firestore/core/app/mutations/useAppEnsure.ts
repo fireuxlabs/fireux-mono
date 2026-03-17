@@ -3,17 +3,16 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { App } from 'fireux-core/runtime/models/core/app.model'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
-import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import { useFirestoreProjectEnsure } from '../../../system/project/mutations/useFirestoreProjectEnsure'
 import {
-  appImageFirestoreField,
-  appImageStoragePath,
-  type AppImageKind,
+    appImageFirestoreField,
+    appImageStoragePath,
+    type AppImageKind,
 } from '../utils/appMedia'
 import { createEmptyAppSocialLinks } from '../utils/factories/createEmptyAppSocialLinks'
+import { useAppCreate, type CreateAppInput } from './useAppCreate'
 
 type EnsureAppResult = {
   created: boolean
@@ -22,7 +21,7 @@ type EnsureAppResult = {
 
 export function useAppEnsure() {
   const db = useFirestore()
-  const { setDocument } = useFirestoreCreate()
+  const { createApp } = useAppCreate()
   const { updateDocument } = useFirestoreUpdate()
   const { uploadImage } = useImageStorage()
   const { ensureFirestoreProjectDoc } = useFirestoreProjectEnsure()
@@ -74,7 +73,8 @@ export function useAppEnsure() {
     // NOTE: App creation does NOT imply user membership.
     // User ↔ App binding is handled explicitly elsewhere.
 
-    const payload = {
+    const input: CreateAppInput = {
+      id: fireux.appId,
       project_id: '',
       ecosystem_id: fireux.ecosystem,
       slug: fireux.appId,
@@ -110,11 +110,9 @@ export function useAppEnsure() {
         wordmark_dark_url: '',
         cover_url: '',
       },
-    } as Omit<App, 'created' | 'updated' | 'id'>
+    }
 
-    await setDocument('apps', fireux.appId, payload, {
-      creator: true,
-    })
+    await createApp(input)
 
     await syncNewAppImages(fireux.appId)
 
