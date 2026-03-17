@@ -13,6 +13,7 @@ import type { ChefCore } from 'fireux-kitchens/runtime/models/profiles/Chef/Chef
 import type { Ref } from 'vue'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> & Partial<Pick<User, 'id'>>
+type ChefTarget = ChefCore & { user?: UserLike | null }
 
 export namespace ChefCard {
   export type Card = {
@@ -61,16 +62,16 @@ export function useChefInterface(
     }
   }
 
-  function card(target?: ChefCore | null, userOverride?: UserLike | null): ChefCard.Card | null {
+  function card(target?: ChefTarget | null, userOverride?: UserLike | null): ChefCard.Card | null {
     const p = target ?? profile?.coreProfile.value ?? null
     if (!p) return null
 
-    const mapped = map(p, userOverride ?? userRef?.value ?? null)
+    const mapped = map(p, target?.user ?? userOverride ?? userRef?.value ?? null)
     return mapped.id && mapped.displayName ? mapped : null
   }
 
-  function searchText(target: ChefCore): string {
-    const mapped = map(target, userRef?.value ?? null)
+  function searchText(target: ChefTarget): string {
+    const mapped = map(target, target.user ?? userRef?.value ?? null)
     const summary = resolveProfileSummary([
       (target as ChefCore & { summary?: string }).summary,
       (target as any).chef_bio,

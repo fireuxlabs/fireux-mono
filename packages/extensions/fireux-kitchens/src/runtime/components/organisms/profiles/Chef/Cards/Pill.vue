@@ -36,25 +36,21 @@
 </template>
 
 <script setup lang="ts">
-import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef';
+import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface';
 
 const emit = defineEmits<{
   (event: 'action'): void
 }>()
 
 const props = withDefaults(
-  defineProps<{
-    to: string
-    avatarUrl: string
-    displayName: string
-    title: string
-    secondaryAvatarUrl?: string
-    badges?: string[]
-    showSubtitle?: boolean
-    showBadges?: boolean
-    link?: boolean
-    action?: boolean
-  }>(),
+  defineProps<
+    Pick<ChefCard.Card, 'to' | 'avatarUrl' | 'secondaryAvatarUrl' | 'displayName' | 'title' | 'badges'> & {
+      showSubtitle?: boolean
+      showBadges?: boolean
+      link?: boolean
+      action?: boolean
+    }
+  >(),
   {
     secondaryAvatarUrl: undefined,
     badges: () => [],

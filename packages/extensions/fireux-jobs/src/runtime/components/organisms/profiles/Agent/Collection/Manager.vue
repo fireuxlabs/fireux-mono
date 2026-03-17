@@ -3,22 +3,30 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <h2>Agents</h2>
-          <p>Browse {{ appName }} agents.</p>
+          <h2>{{ title }}</h2>
+          <p>{{ description }}</p>
         </div>
 
-        <div class="collection-manager__controls">
-          <UInput v-model="query" size="xs" placeholder="Search agents…" />
+        <div class="collection-manager__controls flex flex-1 items-center gap-2">
+          <div class="ml-auto flex items-center gap-2">
+            <UInput
+              v-if="showSearchInput"
+              v-model="query"
+              size="xs"
+              :placeholder="searchPlaceholder"
+            />
 
-          <UButton
-            size="xs"
-            variant="ghost"
-            :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
-            :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
-            @click="toggleVariant"
-          />
+            <UButton
+              v-if="showVariantToggle"
+              size="xs"
+              variant="ghost"
+              :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
+              :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+              @click="toggleVariant"
+            />
 
-          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+            <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+          </div>
         </div>
       </div>
     </template>
@@ -29,18 +37,26 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <NuxtLink :to="card.to">
+        <NuxtLink
+          :to="linkEnabled ? card.to : undefined"
+          class="block"
+          :class="linkEnabled ? '' : 'cursor-default'"
+        >
           <ProfilesAgentCardsPill v-bind="card" />
         </NuxtLink>
       </template>
       <template #cell="{ card }">
-        <NuxtLink :to="card.to">
+        <NuxtLink
+          :to="linkEnabled ? card.to : undefined"
+          class="block"
+          :class="linkEnabled ? '' : 'cursor-default'"
+        >
           <ProfilesAgentCardsCell v-bind="card" />
         </NuxtLink>
       </template>
     </ProfilesAgentCollectionList>
 
-    <p v-else>No agents found.</p>
+    <p v-else>{{ query ? 'No agents match your search.' : 'No agents found.' }}</p>
 
     <div v-if="isDev">
       <DevJson
@@ -54,7 +70,6 @@
 </template>
 
 <script setup lang="ts">
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig';
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
 import { useAgentInterface } from '../../../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface';
@@ -62,21 +77,50 @@ import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model
 
 type AgentEntry = AgentCore & { user?: unknown }
 
-const props = defineProps<{ collection?: AgentEntry[] }>()
-const { appName } = useFireUXConfig()
+const props = withDefaults(
+  defineProps<{
+    collection?: AgentEntry[]
+    title?: string
+    description?: string
+    link?: boolean
+    searchPlaceholder?: string
+    showSearch?: boolean
+    showVariantToggle?: boolean
+    showCount?: boolean
+    initialVariant?: 'pill' | 'cell'
+  }>(),
+  {
+    title: 'Agents',
+    description: 'Browse agents available to this runtime.',
+    link: true,
+    searchPlaceholder: 'Search agents…',
+    showSearch: true,
+    showVariantToggle: true,
+    showCount: true,
+    initialVariant: 'pill',
+  }
+)
 
 const collection = computed(() => props.collection ?? [])
-const { card: makeCard } = useAgentInterface()
+const title = computed(() => String(props.title || 'Agents'))
+const description = computed(
+  () => String(props.description || 'Browse agents available to this runtime.')
+)
+const linkEnabled = computed(() => props.link !== false)
+const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search agents…'))
+const showSearch = computed(() => props.showSearch !== false)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
+const showCount = computed(() => props.showCount !== false)
+const totalCount = computed(() => collection.value.length)
+const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
+const { card: makeCard, searchText } = useAgentInterface()
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
   useCollectionSearch<AgentEntry, ReturnType<typeof makeCard>>({
     items: collection,
-    searchText: (entry) => {
-      const card = makeCard(entry as any)
-      return card?.displayName.trim().toLowerCase() ?? ''
-    },
+    searchText: (entry) => searchText(entry as any),
     makeCard: (entry) => makeCard(entry as any),
+    initialVariant: props.initialVariant,
   })
 
-const totalCount = computed(() => collection.value.length)
 const isDev = import.meta.dev
 </script>

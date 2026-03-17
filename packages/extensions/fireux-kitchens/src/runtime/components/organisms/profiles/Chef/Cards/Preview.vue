@@ -45,13 +45,12 @@
 </template>
 
 <script setup lang="ts">
-type Props = {
-  avatarUrl: string
-  secondaryAvatarUrl?: string
-  displayName: string
-  title: string
-  badges?: string[]
-  summary: string
+import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface';
+
+type Props = Pick<
+  ChefCard.Card,
+  'avatarUrl' | 'secondaryAvatarUrl' | 'displayName' | 'title' | 'badges' | 'summary'
+> & {
   specialtiesCsv: string
 
   prop?: string

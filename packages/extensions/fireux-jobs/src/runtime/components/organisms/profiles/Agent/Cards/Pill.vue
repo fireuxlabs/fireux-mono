@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent';
+import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface';
 
 const emit = defineEmits<{
   (event: 'action'): void

@@ -45,14 +45,12 @@
 </template>
 
 <script setup lang="ts">
-type Props = {
-  avatarUrl: string
-  secondaryAvatarUrl?: string
-  displayName: string
-  title: string
-  badges: string[]
-  summary: string
-  contactEmail: string
+import type { AgentCard } from '../../../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface';
+
+type Props = Pick<
+  AgentCard.Card,
+  'avatarUrl' | 'secondaryAvatarUrl' | 'displayName' | 'title' | 'badges' | 'summary' | 'contactEmail'
+> & {
 
   prop?: string
   showSubtitle?: boolean

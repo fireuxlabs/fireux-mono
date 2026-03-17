@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional';
+import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface';
 
 withDefaults(
   defineProps<{

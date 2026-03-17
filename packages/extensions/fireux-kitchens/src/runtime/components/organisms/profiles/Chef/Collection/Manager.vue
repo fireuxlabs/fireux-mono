@@ -72,7 +72,7 @@
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
-import { useChef } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef';
+import { useChefInterface } from '../../../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface';
 import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model';
 
 type ChefEntry = ChefCore & { user?: unknown }
@@ -113,14 +113,11 @@ const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
-const { card: makeCard } = useChef()
+const { card: makeCard, searchText } = useChefInterface()
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
   useCollectionSearch<ChefEntry, ReturnType<typeof makeCard>>({
     items: collection,
-    searchText: (entry) => {
-      const card = makeCard(entry as ChefCore, (entry as any)?.user ?? null)
-      return card?.displayName.trim().toLowerCase() ?? ''
-    },
+    searchText: (entry) => searchText(entry as ChefEntry),
     makeCard: (entry) => makeCard(entry as ChefCore, (entry as any)?.user ?? null),
     initialVariant: props.initialVariant,
   })

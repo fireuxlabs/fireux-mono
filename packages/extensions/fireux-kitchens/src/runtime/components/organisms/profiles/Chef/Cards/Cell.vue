@@ -44,14 +44,12 @@
 </template>
 
 <script setup lang="ts">
-type Props = {
-  to: string
-  avatarUrl: string
-  displayName: string
-  title: string
-  secondaryAvatarUrl?: string
-  badges?: string[]
-  summary?: string
+import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface';
+
+type Props = Pick<
+  ChefCard.Card,
+  'to' | 'avatarUrl' | 'secondaryAvatarUrl' | 'displayName' | 'title' | 'badges' | 'summary'
+> & {
   prop?: string
   showSubtitle?: boolean
   showBadges?: boolean
