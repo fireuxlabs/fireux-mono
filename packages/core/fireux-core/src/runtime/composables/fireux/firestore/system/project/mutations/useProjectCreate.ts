@@ -1,18 +1,14 @@
-import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type {
-  FireuxProjectDoc,
-  FireuxProjectStatus,
-  FireuxProjectType,
+    Project,
+    ProjectStatus,
+    ProjectType,
 } from '../../../../../../models/system/project.model'
+import { normalizeSlug } from '../../../../../../utils/slug/normalizeSlug'
+import { validateSlugFormat } from '../../../../../../utils/slug/validateSlugFormat'
 import { useRequireUser } from '../../../../firebase/useRequireUser'
-
-const toSlug = (value: string) =>
-  String(value || '')
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 
 const normalizeString = (value: unknown) => String(value || '').trim()
 
@@ -22,13 +18,14 @@ export type ProjectCreateOptions = {
 }
 
 export type ProjectCreateInput = {
+  id: string
   name: string
   slug: string
   description?: string
   image_url?: string
   primary_project?: boolean
-  status?: FireuxProjectStatus
-  project_type: FireuxProjectType
+  status?: ProjectStatus
+  project_type: ProjectType
   source_url: string
   console_endpoint_url: string
   app_id: string
@@ -38,33 +35,45 @@ export type ProjectCreateInput = {
 
 export function useProjectCreate(options: ProjectCreateOptions = {}) {
   const db = useFirestore()
+  const { setDocument } = useFirestoreCreate()
   const collectionPath =
     options.test === true
       ? 'test-projects'
       : String(options.collectionPath || 'projects').trim() || 'projects'
 
-  async function createProject(input: ProjectCreateInput): Promise<string> {
+  async function createProject(input: ProjectCreateInput): Promise<{ id: string }> {
     const user = await useRequireUser()
 
+    const id = normalizeString(input?.id)
     const name = normalizeString(input?.name)
-    const slug = toSlug(normalizeString(input?.slug))
+    const slug = normalizeSlug(input?.slug)
     const description = normalizeString(input?.description)
     const imageUrl = normalizeString(input?.image_url)
     const primaryProject = Boolean(input?.primary_project)
-    const status = (normalizeString(input?.status) || 'active') as FireuxProjectStatus
-    const projectType = normalizeString(input?.project_type) as FireuxProjectType | ''
+    const status = (normalizeString(input?.status) || 'active') as ProjectStatus
+    const projectType = normalizeString(input?.project_type) as ProjectType | ''
     const sourceUrl = normalizeString(input?.source_url)
     const consoleEndpointUrl = normalizeString(input?.console_endpoint_url)
     const appId = normalizeString(input?.app_id)
     const ecosystemId = normalizeString(input?.ecosystem_id)
     const firebaseProjectId = normalizeString(input?.firebase_project_id)
+    const slugFormat = validateSlugFormat(slug, {
+      required: true,
+      minLength: 3,
+      maxLength: 80,
+      label: 'Project slug',
+    })
+
+    if (!id) {
+      throw new Error('Project id is required')
+    }
 
     if (!name) {
       throw new Error('Project name is required')
     }
 
-    if (!slug) {
-      throw new Error('Project slug is required')
+    if (!slugFormat.isValid) {
+      throw new Error(slugFormat.message || 'Invalid project slug')
     }
 
     if (!projectType) {
@@ -91,11 +100,11 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
       throw new Error('Project Firebase project id is required')
     }
 
-    const ref = doc(db, collectionPath, slug)
+    const ref = doc(db, collectionPath, id)
     const snap = await getDoc(ref)
-    if (snap.exists()) return slug
+    if (snap.exists()) return { id }
 
-    const payload: FireuxProjectDoc = {
+    const payload: Omit<Project, 'id' | 'created' | 'updated'> = {
       name,
       slug,
       description,
@@ -109,12 +118,13 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
       ecosystem_id: ecosystemId,
       firebase_project_id: firebaseProjectId,
       owner_user_id: user.uid,
-      created_at: serverTimestamp() as any,
-      updated_at: serverTimestamp() as any,
     }
 
-    await setDoc(ref, payload as any)
-    return slug
+    await setDocument(collectionPath, id, payload, {
+      creator: true,
+    })
+
+    return { id }
   }
 
   return { createProject }

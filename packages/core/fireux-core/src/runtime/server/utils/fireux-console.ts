@@ -1,12 +1,13 @@
-import { createError } from 'h3'
 import {
-  applicationDefault as firebaseApplicationDefault,
-  cert as firebaseCert,
-  getApps as getFirebaseApps,
-  initializeApp as initializeFirebaseApp,
-  type App as FirebaseApp,
+    applicationDefault as firebaseApplicationDefault,
+    cert as firebaseCert,
+    getApps as getFirebaseApps,
+    initializeApp as initializeFirebaseApp,
+    type App as FirebaseApp,
 } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
+import { createError } from 'h3'
+import { normalizeSlug } from '../../utils/slug/normalizeSlug'
 
 type FirestoreDatabasesResponse = {
   databases?: Array<{
@@ -81,14 +82,6 @@ function readNestedString(
   }
 
   return ''
-}
-
-function toSlug(value: string) {
-  return String(value || '')
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
 }
 
 function getServiceAccountFromEnv() {
@@ -256,7 +249,7 @@ function buildProjectMeta(
 
   const slug =
     firstString(data, ['slug']) ||
-    toSlug(name) ||
+    normalizeSlug(name) ||
     projectId
 
   return {

@@ -27,4 +27,3 @@ export function isVetoedHandle(handle: string): boolean {
 
   return merged.has(key)
 }
-

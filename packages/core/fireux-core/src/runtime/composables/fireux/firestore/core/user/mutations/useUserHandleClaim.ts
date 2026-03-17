@@ -10,7 +10,6 @@ import {
 } from 'firebase/firestore'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { validateUserHandleForPublicRoute } from '../utils/identity/useUserHandleIdentity'
-import { isVetoedHandle } from '../utils/identity/handleVeto'
 
 type ClaimHandleResult = {
   uid: string
@@ -31,9 +30,6 @@ export function useUserHandleClaim() {
     const validation = validateUserHandleForPublicRoute(desiredHandle)
     if (!validation.isValid) throw new Error(validation.message || 'Invalid handle')
     const nextHandle = validation.handle
-    if (isVetoedHandle(nextHandle)) {
-      throw new Error('This handle is already in use.')
-    }
 
     const duplicateQuery = fsq(
       collection(db, 'users'),
