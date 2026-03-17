@@ -13,38 +13,11 @@ export type BlogAuthor = {
   email?: string
 }
 
-export interface BlogPost {
-  id: string
-  title: string
-  content: string
-  metaDescription: string
-  slug: string
-  author: BlogAuthor
-  keywords: string[]
-  tags: string[]
-  canonicalUrl: string
-  featuredImage: string
-  socialImage: string
-  readingTime: string
-  cta_link: string
-  cta_text: string
-  type: BlogPostType
-  product_id?: string
-  appId: string
-  // Transitional flat stamps still consumed in blog composables.
-  created_at?: string
-  updated_at?: string
-  created: {
-    at: FirebaseTimestamp
-    by?: FireuxStamped['created']['by']
-  }
-  updated: {
-    at: FirebaseTimestamp
-    by?: FireuxStamped['created']['by']
-  }
-}
-
-export const BlogPost: BlogPost = {
+/**
+ * Entity Class: Root
+ * Canonical Path: /blogs/<slug>
+ */
+export const BlogPost = {
   id: '',
   title: '',
   content: '',
@@ -56,28 +29,35 @@ export const BlogPost: BlogPost = {
     avatar: '',
     handle: '',
     email: '',
-  },
-  keywords: [],
-  tags: [],
+  } as BlogAuthor,
+  keywords: [] as string[],
+  tags: [] as string[],
   canonicalUrl: '',
   featuredImage: '',
   socialImage: '',
   readingTime: '',
   cta_link: '',
   cta_text: '',
-  type: 'article',
+  type: 'article' as BlogPostType,
   product_id: '',
   appId: '',
+  // Legacy transitional fields still read/written by existing surfaces.
   created_at: '',
   updated_at: '',
   created: {
     at: {} as FirebaseTimestamp,
-    by: undefined,
+    by: undefined as FireuxStamped['created']['by'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined,
+    by: undefined as FireuxStamped['updated']['by'],
   },
+} as const
+
+export type BlogPost = {
+  [K in keyof typeof BlogPost]: (typeof BlogPost)[K]
 }
 
-export type BlogPostEntry = Omit<BlogPost, 'created' | 'updated'>
+export type BlogPostCreateInput = Omit<BlogPost, 'created' | 'updated'>
+export type BlogPostUpdateInput = Partial<Omit<BlogPostCreateInput, 'id' | 'slug'>>
+export type BlogPostEntry = BlogPostCreateInput

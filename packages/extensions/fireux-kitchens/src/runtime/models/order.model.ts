@@ -19,7 +19,7 @@ export const KitchenOrder = {
 
   items: [] as KitchenOrderItem[],
 
-  // Legacy flat fields still written by some order mutations.
+  // Legacy transitional fields still read/written by existing surfaces.
   app_id: '' as string,
   creator_id: '' as string,
   created_at: {} as FirebaseTimestamp,

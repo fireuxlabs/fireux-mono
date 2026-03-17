@@ -3,18 +3,9 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 /**
- * FireUX Canon (Consoleable, 2-layer)
- *
- * Core (root scope)
- * - Path: /suppliers/<supplierId>
- * - Purpose: identity + supplier profile content (can be private by rules; root != public)
- *
- * App (tenancy scope / private overlay)
- * - Path: /apps/<appId>/suppliers/<supplierId>
- * - Purpose: governance + console/private switches + app-only controls
- *
- * NOTE:
- * Supplier is placeholder right now — keep it simple + canon-shaped.
+ * Entity Class: Dual-Layer
+ * Core Path: /suppliers/<userId>
+ * App Path: /apps/<appId>/suppliers/<userId>
  */
 
 export const SupplierCore = {
@@ -29,7 +20,7 @@ export const SupplierCore = {
   supplier_delivery_areas: [] as string[],
 
   supplier_organization_name: '' as string,
-  // Legacy fields still consumed by existing supplier surfaces.
+  // Deprecated fields retained temporarily for migration compatibility.
   title: '' as string,
   subtitle: '' as string,
   tagline: '' as string,

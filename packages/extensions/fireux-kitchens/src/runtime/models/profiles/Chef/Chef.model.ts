@@ -3,9 +3,9 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 /**
- * Runtime canonical shapes (core + app overlay)
- * Core doc:  chefs/{uid}
- * App doc:   apps/{appId}/chefs/{uid}
+ * Entity Class: Dual-Layer
+ * Core Path: /chefs/<userId>
+ * App Path: /apps/<appId>/chefs/<userId>
  */
 
 export const ChefCore = {
@@ -24,7 +24,7 @@ export const ChefCore = {
   // Optional org label (scoped)
   chef_organization_name: '' as string,
 
-  // Legacy (deprecated) — kept temporarily for non-breaking migration
+  // Deprecated fields retained temporarily for migration compatibility.
   subtitle: '' as string,
   tagline: '' as string,
   tags: [] as string[],
@@ -40,7 +40,7 @@ export const ChefCore = {
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
+    by: undefined as FireuxStamped['updated']['by'],
   },
 } as const
 
@@ -58,7 +58,7 @@ export const ChefApp = {
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
+    by: undefined as FireuxStamped['updated']['by'],
   },
 } as const
 

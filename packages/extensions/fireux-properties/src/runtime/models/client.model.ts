@@ -47,61 +47,72 @@ export interface ClientContact {
   notes: string
 }
 
-export interface Client {
+/**
+ * Entity Class: Runtime Child
+ * Canonical Path: /portfolios/<portfolioId>/clients/<clientId>
+ */
+export const Client = {
   // Canon IDs
-  id: string
-  portfolio_id: string
-  portfolio_ids?: string[]
-  property_id: string
-  property_ids?: string[]
-  property_label: string
-  unit_id: string
-  unit_ids?: string[]
-  lease_id: string
-  lease_end_date: string
+  id: '' as string,
+  portfolio_id: '' as string,
+  portfolio_ids: [] as string[],
+  property_id: '' as string,
+  property_ids: [] as string[],
+  property_label: '' as string,
+  unit_id: '' as string,
+  unit_ids: [] as string[],
+  lease_id: '' as string,
+  lease_end_date: '' as string,
 
   // Entity identity
-  display_name: string
-  legal_name?: string
-  trading_name?: string
-  entity_kind?: ClientEntityKind
-  entity_type?: ClientEntityType
-  parent_client_id?: string
-  ultimate_parent_name?: string
-  registration_number?: string
-  tax_id?: string
-  jurisdiction?: string
+  display_name: '' as string,
+  legal_name: '' as string,
+  trading_name: '' as string,
+  entity_kind: 'organization' as ClientEntityKind,
+  entity_type: 'company' as ClientEntityType,
+  parent_client_id: '' as string,
+  ultimate_parent_name: '' as string,
+  registration_number: '' as string,
+  tax_id: '' as string,
+  jurisdiction: '' as string,
 
   // Runtime ops fields
-  status: ClientStatus
-  relationship_status?: ClientRelationshipStatus
-  relationship_since?: string
-  risk_level?: ClientRiskLevel
-  risk_notes?: string
-  monthly_rent: number
-  currency: string
+  status: 'active' as ClientStatus,
+  relationship_status: 'active' as ClientRelationshipStatus,
+  relationship_since: '' as string,
+  risk_level: 'low' as ClientRiskLevel,
+  risk_notes: '' as string,
+  monthly_rent: 0 as number,
+  currency: '' as string,
 
   // Presentation + communication
-  avatar_url: string
-  logo_url?: string
-  email: string
-  phone: string
-  website_url?: string
+  avatar_url: '' as string,
+  logo_url: '' as string,
+  email: '' as string,
+  phone: '' as string,
+  website_url: '' as string,
 
   // Relationship layer
-  contacts?: ClientContact[]
-  account_owner_user_id?: string
-  notes: string
-  tags?: string[]
+  contacts: [] as ClientContact[],
+  account_owner_user_id: '' as string,
+  notes: '' as string,
+  tags: [] as string[],
 
-  // Optional stamps when persisted to Firestore.
-  created?: {
-    at: FirebaseTimestamp
-    by?: FireuxStamped['created']['by']
-    app_id?: FireuxStamped['created']['app_id']
-  }
-  updated?: {
-    at: FirebaseTimestamp
-    by?: FireuxStamped['updated']['by']
-  }
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['updated']['by'],
+  },
+} as const
+
+export type Client = {
+  [K in keyof typeof Client]: (typeof Client)[K]
 }
+
+export type ClientDoc = Omit<Client, 'id'>
+export type ClientCreateInput = Omit<Client, 'id' | 'created' | 'updated'>
+export type ClientUpdateInput = Partial<Omit<ClientCreateInput, never>>

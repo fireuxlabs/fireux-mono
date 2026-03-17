@@ -47,7 +47,7 @@ export const Order = {
   scope_type: '' as OrderScopeType,
   scope_id: '' as string,
 
-  // Transitional legacy field. Prefer scope_type/scope_id for new writes.
+  // Deprecated fields retained temporarily for migration compatibility.
   kitchen_id: '' as string,
   place_id: '' as string,
 

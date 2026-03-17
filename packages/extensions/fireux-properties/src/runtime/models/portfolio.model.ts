@@ -3,76 +3,54 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
-export interface PortfolioCore {
-  id: string
-  name: string
-  slug?: string
-  owner_label: string
-  status: 'active' | 'archived'
-  strategy_label: string
-  region_label: string
-  notes: string
-  created: {
-    at: FirebaseTimestamp
-    by?: FireuxStamped['created']['by']
-    app_id?: FireuxStamped['created']['app_id']
-  }
-  updated: {
-    at: FirebaseTimestamp
-    by?: FireuxStamped['updated']['by']
-  }
-}
+export type PortfolioStatus = 'active' | 'archived'
 
-export const PortfolioCore: PortfolioCore = {
+/**
+ * Entity Class: Dual-Layer
+ * Core Path: /portfolios/<portfolioId>
+ * App Path: /apps/<appId>/portfolios/<portfolioId>
+ */
+export const PortfolioCore = {
   id: '',
   name: '',
   slug: '',
   owner_label: '',
-  status: 'active',
+  status: 'active' as PortfolioStatus,
   strategy_label: '',
   region_label: '',
   notes: '',
   created: {
     at: {} as FirebaseTimestamp,
-    by: undefined,
+    by: undefined as FireuxStamped['created']['by'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined,
+    by: undefined as FireuxStamped['updated']['by'],
   },
+} as const
+
+export type PortfolioCore = {
+  [K in keyof typeof PortfolioCore]: (typeof PortfolioCore)[K]
 }
 
-export interface PortfolioApp {
-  id: string
-  admin_ids: string[]
-  join_requests: string[]
-  console_enabled: boolean
-  created: {
-    at: FirebaseTimestamp
-    by?: FireuxStamped['created']['by']
-    app_id?: FireuxStamped['created']['app_id']
-  }
-  updated: {
-    at: FirebaseTimestamp
-    by?: FireuxStamped['updated']['by']
-  }
-}
-
-export const PortfolioApp: PortfolioApp = {
+export const PortfolioApp = {
   id: '',
-  admin_ids: [],
-  join_requests: [],
-  console_enabled: true,
+  admin_ids: [] as string[],
+  join_requests: [] as string[],
+  console_enabled: true as boolean,
   created: {
     at: {} as FirebaseTimestamp,
-    by: undefined,
-    app_id: undefined,
+    by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined,
+    by: undefined as FireuxStamped['updated']['by'],
   },
+} as const
+
+export type PortfolioApp = {
+  [K in keyof typeof PortfolioApp]: (typeof PortfolioApp)[K]
 }
 
 export type Portfolio = PortfolioCore
-export type PortfolioModel = PortfolioCore

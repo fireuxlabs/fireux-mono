@@ -48,41 +48,11 @@ export interface StripePriceInput {
 
 export type ProductType = string
 
-export interface FirebaseProduct {
-  id: string
-  name: string
-  tagline: string
-  Q: string
-  A: string
-  description: string
-  content: string
-  slug: string
-  active: boolean
-  main_image: string
-  images: ProductImage[]
-  features: ProductFeature[]
-  prices: Price[]
-  default_price: DefaultPrice
-  product_type: ProductType
-  track_stock: boolean
-  stock: number | null
-  appId: string
-  metadata: Record<string, any>
-  // Transitional draft fields still used by creation state.
-  creator_id?: string
-  created_at?: string
-  updated_at?: string
-  created: {
-    at: FirebaseTimestamp
-    by?: FireuxStamped['created']['by']
-  }
-  updated: {
-    at: FirebaseTimestamp
-    by?: FireuxStamped['created']['by']
-  }
-}
-
-export const FirebaseProduct: FirebaseProduct = {
+/**
+ * Entity Class: Root
+ * Canonical Path: /products/<productId>
+ */
+export const Product = {
   id: '',
   name: '',
   tagline: '',
@@ -91,36 +61,43 @@ export const FirebaseProduct: FirebaseProduct = {
   description: '',
   content: '',
   slug: '',
-  active: true,
+  active: true as boolean,
   main_image: '',
-  images: [],
-  features: [],
-  prices: [],
+  images: [] as ProductImage[],
+  features: [] as ProductFeature[],
+  prices: [] as Price[],
   default_price: {
     id: '',
     unit_amount: 0,
     interval: 'month',
-  },
-  product_type: 'service',
-  track_stock: false,
-  stock: null,
+  } as DefaultPrice,
+  product_type: 'service' as ProductType,
+  track_stock: false as boolean,
+  stock: null as number | null,
   appId: '',
-  metadata: {},
-  creator_id: '',
-  created_at: '',
-  updated_at: '',
+  metadata: {} as Record<string, any>,
+  // Legacy transitional fields still read/written by existing surfaces.
+  creator_id: '' as string,
+  created_at: '' as string,
+  updated_at: '' as string,
   created: {
     at: {} as FirebaseTimestamp,
-    by: undefined,
+    by: undefined as FireuxStamped['created']['by'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined,
+    by: undefined as FireuxStamped['updated']['by'],
   },
+} as const
+
+export type Product = {
+  [K in keyof typeof Product]: (typeof Product)[K]
 }
 
-export type ProductCreationInput = Omit<FirebaseProduct, 'id' | 'created' | 'updated'>
-export type ProductUpdateInput = Partial<Omit<ProductCreationInput, 'appId'>>
+export type ProductCreateInput = Omit<Product, 'id' | 'created' | 'updated'>
+export type ProductUpdateInput = Partial<Omit<ProductCreateInput, 'appId'>>
 
-export const Product = FirebaseProduct
-export type Product = FirebaseProduct
+// Compatibility alias kept while product runtime migrates away from implementation-first naming.
+export const FirebaseProduct = Product
+export type FirebaseProduct = Product
+

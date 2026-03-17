@@ -1,6 +1,10 @@
 import { arrayUnion, doc, getDoc, serverTimestamp } from 'firebase/firestore'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { ProfileConfig } from '../../../../../../models/core/profile.model'
+import {
+  createProfileAppSeed,
+  createProfileCoreSeed,
+  type ProfileConfig,
+} from '../../../../../../models/core/profile.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useFirestoreManager } from '../../../operations/useFirestoreManager'
 import { requireUid } from '../../../utils/useEnsureCommon'
@@ -30,11 +34,12 @@ export function useProfileEnsure(config: ProfileConfig) {
     const coreRef = doc(db, config.collectionName, uid)
     const coreSnapshot = await getDoc(coreRef)
     if (!coreSnapshot.exists()) {
+      const seed = createProfileCoreSeed()
       await setDocument(config.collectionName, uid, {
-        title: '',
-        subtitle: '',
-        tagline: '',
-        tags: [],
+        title: seed.title,
+        subtitle: seed.subtitle,
+        tagline: seed.tagline,
+        tags: [...seed.tags],
       } as any)
       createdCore = true
     } else {
@@ -58,7 +63,11 @@ export function useProfileEnsure(config: ProfileConfig) {
       const appRef = doc(db, 'apps', appId, config.collectionName, uid)
       const appSnapshot = await getDoc(appRef)
       if (!appSnapshot.exists()) {
-        await setDocument(appCollection, uid, {} as any)
+        const seed = createProfileAppSeed()
+        await setDocument(appCollection, uid, {
+          created: seed.created,
+          updated: seed.updated,
+        } as any)
         createdApp = true
       } else {
         const existing = appSnapshot.data() as any

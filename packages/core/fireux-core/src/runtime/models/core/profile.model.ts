@@ -1,6 +1,57 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/profile.model.ts
 
 import type { FireuxStamped } from './meta.model'
+import type { FirebaseTimestamp } from '../../../types/firebase'
+
+export const ProfileCoreFields = {
+  title: '' as string,
+  subtitle: '' as string,
+  tagline: '' as string,
+  tags: [] as string[],
+} as const
+
+export const ProfileCoreStamps = {
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['updated']['by'],
+  },
+} as const
+
+export const ProfileAppStamps = {
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['updated']['by'],
+  },
+} as const
+
+export function createProfileCoreSeed() {
+  return {
+    id: '' as string,
+    title: ProfileCoreFields.title,
+    subtitle: ProfileCoreFields.subtitle,
+    tagline: ProfileCoreFields.tagline,
+    tags: [...ProfileCoreFields.tags],
+    created: { ...ProfileCoreStamps.created },
+    updated: { ...ProfileCoreStamps.updated },
+  }
+}
+
+export function createProfileAppSeed() {
+  return {
+    id: '' as string,
+    created: { ...ProfileAppStamps.created },
+    updated: { ...ProfileAppStamps.updated },
+  }
+}
 
 /**
  * Core profile doc base shape (global truth)
@@ -11,15 +62,13 @@ import type { FireuxStamped } from './meta.model'
  * - `tagline` is now universal (remove duplication from each profile)
  * - `tags` are stored (UI derives badges)
  */
-export interface CoreProfileBase extends FireuxStamped {
+export type CoreProfileBase = FireuxStamped & {
   id: string
 
-  title?: string
-  subtitle?: string
-
-  tagline?: string
-
-  tags?: string[]
+  title: string
+  subtitle: string
+  tagline: string
+  tags: string[]
 }
 
 /**
@@ -29,7 +78,7 @@ export interface CoreProfileBase extends FireuxStamped {
  * Delta-only by design.
  * Keep it minimal until you truly need overlay fields.
  */
-export interface AppProfileBase extends FireuxStamped {
+export type AppProfileBase = FireuxStamped & {
   id: string
 }
 

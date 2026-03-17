@@ -99,5 +99,6 @@ export type KitchenCreateInput = Omit<KitchenCore, 'created' | 'updated'> & {
 
 export type KitchenUpdateInput = Partial<Pick<KitchenCore, 'is_test_kitchen'>>
 
+// Compatibility alias kept while kitchen runtime still imports the older collection-centric name.
 export const KitchenCollection = KitchenCore
 export type KitchenCollection = KitchenCore
