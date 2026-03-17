@@ -1,12 +1,12 @@
 import {
-  collection,
-  doc,
-  getDocs,
-  limit as fslimit,
-  query as fsq,
-  runTransaction,
-  serverTimestamp,
-  where,
+    collection,
+    doc,
+    limit as fslimit,
+    query as fsq,
+    getDocs,
+    runTransaction,
+    serverTimestamp,
+    where,
 } from 'firebase/firestore'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { validateUserHandleForPublicRoute } from '../utils/identity/useUserHandleIdentity'
