@@ -1,7 +1,7 @@
 <template>
   <UPage>
     <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
-    <UPageBody class="pagebody space-y-6">
+    <UPageBody class="pagebody">
       <EntityIndexCta
         title="Apps index"
         description="Browse canonical app records for the current ecosystem. Apps are managed as core ecosystem records, not as their own console runtime."

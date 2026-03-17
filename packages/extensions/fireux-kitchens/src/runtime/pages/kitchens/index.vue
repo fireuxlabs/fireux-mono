@@ -3,15 +3,11 @@
     <UPageHeader
       class="pageheader"
       :title="pageTitle"
-      description="Kitchen index for the current runtime."
+      :description="pageDescription"
     />
-    <UPageBody class="pagebody space-y-6">
+    <UPageBody class="pagebody">
       <KitchenCTA />
-      <KitchenCollectionManager
-        :collection="collection"
-        title="Available Kitchens"
-        description=""
-      />
+      <KitchenCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
@@ -40,6 +36,7 @@ definePageMeta({
 })
 
 const pageTitle = 'Kitchens'
+const pageDescription = 'Browse kitchens.'
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })

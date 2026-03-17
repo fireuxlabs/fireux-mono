@@ -1,13 +1,9 @@
 <template>
   <UPage>
-    <UPageHeader class="pageheader" :title="pageTitle" />
+    <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <PortfolioCTA />
-      <PortfolioCollectionManager
-        :collection="collection"
-        title="Available Portfolios"
-        description=""
-      />
+      <PortfolioCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
@@ -36,6 +32,7 @@ definePageMeta({
 })
 
 const pageTitle = 'Portfolios'
+const pageDescription = 'Browse portfolios.'
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 const { portfolios } = usePortfolioFetch()

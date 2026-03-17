@@ -4,7 +4,7 @@
     <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
-      <ProductSolutions />
+      <ProductCTA />
       <ProductCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>

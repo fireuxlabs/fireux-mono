@@ -1,7 +1,7 @@
 <template>
   <UPage>
     <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
-    <UPageBody class="pagebody space-y-6">
+    <UPageBody class="pagebody">
       <EntityIndexCta
         title="Places index"
         description="Browse canonical place records for this runtime and use the place creation flow when a new location needs to be captured."
@@ -10,7 +10,6 @@
         :count-label="`${collection.length} place${collection.length === 1 ? '' : 's'}`"
         :actions="actions"
       />
-      <PlaceCTA />
       <PlaceCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
