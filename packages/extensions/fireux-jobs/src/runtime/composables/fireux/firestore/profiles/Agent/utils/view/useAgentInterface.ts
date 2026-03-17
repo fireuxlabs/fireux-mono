@@ -49,12 +49,13 @@ export function useAgentInterface(
       safeString((p as any).owner_uid).trim() ||
       safeString(u?.id).trim()
     const headline = safeString(p.title)
-    const summary = safeString(p.summary)
+    const summary = safeString(p.summary) || safeString(p.agent_bio)
     const placementTypes =
       safeStringArray(p.agent_placement_types).length
         ? safeStringArray(p.agent_placement_types)
         : safeStringArray(p.tags)
-    const profileImage = safeString(p.agent_image)
+    const universalImage = safeString((p as AgentCore & { image?: string }).image)
+    const profileImage = universalImage || safeString(p.agent_image)
     const userAvatar = safeString(u?.avatar)
     const secondaryAvatarUrl = profileImage && userAvatar && profileImage !== userAvatar
       ? userAvatar

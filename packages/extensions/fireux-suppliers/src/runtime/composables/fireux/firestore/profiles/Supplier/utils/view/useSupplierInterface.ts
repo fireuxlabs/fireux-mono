@@ -37,6 +37,7 @@ export type SupplierSurface = Partial<SupplierCore> & {
   name?: string
   short_name?: string
   category?: string
+  image?: string
   image_url?: string
   logo_url?: string
   avatar_url?: string
@@ -89,6 +90,7 @@ export function useSupplierInterface(
       source.bio_long,
     ])
     const primaryAvatar = firstNonEmpty([
+      target.image,
       source.supplier_image,
       target.image_url,
       target.logo_url,

@@ -26,11 +26,16 @@ export function useChefInterface(
       safeString((p as any).owner_uid).trim() ||
       safeString(u?.id).trim() ||
       safeString((p as any).id).trim()
+    const profileImage = safeString((p as ChefCore & { image?: string }).image).trim()
+    const chefImage = safeString((p as any).chef_image).trim()
+    const summary =
+      safeString((p as ChefCore & { summary?: string }).summary).trim() ||
+      safeString((p as any).chef_bio).trim()
 
     return {
       id,
       to: id ? `/${chefConfig.collectionName}/${encodeURIComponent(id)}` : '',
-      avatarUrl: safeString(u?.avatar).trim(),
+      avatarUrl: profileImage || chefImage || safeString(u?.avatar).trim(),
       displayName: safeString(u?.display_name).trim(),
       chef_headline: safeString((p as any).title).trim(),
     }
@@ -46,11 +51,15 @@ export function useChefInterface(
 
   function searchText(target: ChefCore): string {
     const mapped = map(target, userRef?.value ?? null)
+    const summary =
+      safeString((target as ChefCore & { summary?: string }).summary).trim() ||
+      safeString((target as any).chef_bio).trim()
 
     return [
       mapped.id,
       mapped.displayName,
       mapped.chef_headline,
+      summary,
     ]
       .join(' ')
       .trim()

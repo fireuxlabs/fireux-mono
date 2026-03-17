@@ -25,7 +25,7 @@ export function useProfessionalComputed(
       educationCount: p?.education?.length ?? 0,
       volunteeringCount: p?.volunteering?.length ?? 0,
       projectsCount: p?.projects?.length ?? 0,
-      hasBio: Boolean((p?.bio ?? '').trim()),
+      hasBio: Boolean(((p?.summary || p?.bio) ?? '').trim()),
     }
   })
 

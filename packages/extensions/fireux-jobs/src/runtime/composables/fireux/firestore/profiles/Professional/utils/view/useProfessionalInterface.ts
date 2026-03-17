@@ -39,6 +39,7 @@ export function useProfessionalInterface(
 
     const image = safeString(p.image)
     const avatar = safeString(user?.avatar)
+    const summary = safeString(p.summary) || safeString(p.bio)
 
     return {
       id,
@@ -47,7 +48,7 @@ export function useProfessionalInterface(
       image,
       displayName: safeString(user?.display_name),
       title: safeString(p.title),
-      summary: safeString(p.summary),
+      summary,
     }
   }
 
