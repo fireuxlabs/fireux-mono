@@ -54,14 +54,96 @@ run_repo_cleanup() {
 }
 
 usage() {
-  echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean]" >&2
+  echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean] [--allow-mixed] [--allow-large] [--allow-behind]" >&2
   echo "Example: gitsave \"fix: wire places quick add\"" >&2
   echo "Defaults: --no-guard --no-clean" >&2
+  echo "Safety defaults: block behind-state pushes, mixed-layer commits, and commits over 20 files unless explicitly allowed." >&2
+}
+
+classify_path() {
+  local file="$1"
+
+  case "$file" in
+    packages/*/src/runtime/models/*|packages/*/src/runtime/models/**/*)
+      echo "models"
+      ;;
+    packages/*/src/runtime/composables/*|packages/*/src/runtime/composables/**/* )
+      echo "composables"
+      ;;
+    packages/*/src/runtime/components/*|packages/*/src/runtime/components/**/*|projects/*/*/app/components/*|projects/*/*/app/components/**/*|packages/*/src/runtime/pages/*|packages/*/src/runtime/pages/**/*|projects/*/*/app/pages/*|projects/*/*/app/pages/**/*|packages/*/src/runtime/layouts/*|packages/*/src/runtime/layouts/**/*|projects/*/*/app/layouts/*|projects/*/*/app/layouts/**/* )
+      echo "ui"
+      ;;
+    docs/*|docs/**/*|README.md|AGENTS.md|packages/*/docs/*|packages/*/docs/**/* )
+      echo "docs"
+      ;;
+    scripts/*|scripts/**/*|tools/*|tools/**/*|package.json|pnpm-lock.yaml|pnpm-workspace.yaml|tsconfig.json|tsconfig.base.json|eslint.config.js|.vscode/*|.vscode/**/*|mirror/*|mirror/**/* )
+      echo "tooling"
+      ;;
+    *)
+      echo "other"
+      ;;
+  esac
+}
+
+print_staged_summary() {
+  local files=("$@")
+  local count="${#files[@]}"
+  local category
+  local seen=""
+  local categories=()
+
+  for file in "${files[@]}"; do
+    category="$(classify_path "$file")"
+    if [[ ",$seen," != *",$category,"* ]]; then
+      categories+=("$category")
+      seen+="${seen:+,}$category"
+    fi
+  done
+
+  echo "[gitsave] staged ${count} file(s) | categories: ${categories[*]}"
+}
+
+ensure_simple_scope() {
+  local allow_mixed="$1"
+  local allow_large="$2"
+  shift 2
+  local files=("$@")
+  local count="${#files[@]}"
+  local category
+  local seen=""
+  local categories=()
+
+  for file in "${files[@]}"; do
+    category="$(classify_path "$file")"
+    if [[ ",$seen," != *",$category,"* ]]; then
+      categories+=("$category")
+      seen+="${seen:+,}$category"
+    fi
+  done
+
+  if ! $allow_large && (( count > 20 )); then
+    echo "[gitsave] Refusing to save ${count} files in one go." >&2
+    echo "[gitsave] Keep saves phase-sized. Re-run with --allow-large if this is intentional." >&2
+    return 1
+  fi
+
+  if ! $allow_mixed && (( ${#categories[@]} > 1 )); then
+    echo "[gitsave] Refusing mixed-layer save across categories: ${categories[*]}" >&2
+    echo "[gitsave] Keep one phase per save. Re-run with --allow-mixed if this is intentional." >&2
+    printf '%s\n' "[gitsave] Staged files:" >&2
+    printf '  - %s\n' "${files[@]}" >&2
+    return 1
+  fi
+
+  return 0
 }
 
 commit_message=""
 run_guard=false
 run_clean=false
+allow_mixed=false
+allow_large=false
+allow_behind=false
 
 # Parse args
 args=()
@@ -71,6 +153,9 @@ for a in "$@"; do
     --no-guard) run_guard=false ;;
     --clean) run_clean=true ;;
     --no-clean) run_clean=false ;;
+    --allow-mixed) allow_mixed=true ;;
+    --allow-large) allow_large=true ;;
+    --allow-behind) allow_behind=true ;;
     -h|--help) usage; exit 0 ;;
     *) args+=("$a") ;;
   esac
@@ -91,6 +176,17 @@ if [[ "$current_branch" != "main" ]]; then
 fi
 
 print_repo_state "start"
+
+if has_upstream; then
+  counts="$(ahead_behind_counts)"
+  ahead_count="$(echo "$counts" | awk '{print $1}')"
+  behind_count="$(echo "$counts" | awk '{print $2}')"
+  if ! $allow_behind && [[ "$behind_count" != "0" ]]; then
+    echo "[gitsave] Refusing save because branch is behind upstream by ${behind_count}." >&2
+    echo "[gitsave] Pull/rebase first, or re-run with --allow-behind if you really want to continue." >&2
+    exit 1
+  fi
+fi
 
 # Optional clean
 if $run_clean; then
@@ -154,6 +250,9 @@ if [[ -z "$commit_message" ]]; then
     exit 1
   fi
 
+  print_staged_summary "${staged_changes[@]}"
+  ensure_simple_scope "$allow_mixed" "$allow_large" "${staged_changes[@]}" || exit 1
+
   primary_file="${staged_changes[0]}"
   extra_count=$(( ${#staged_changes[@]} - 1 ))
 
@@ -162,6 +261,19 @@ if [[ -z "$commit_message" ]]; then
   else
     commit_message="chore: update ${primary_file} (+${extra_count} more)"
   fi
+else
+  staged_changes=()
+  while IFS= read -r line; do
+    staged_changes+=("$line")
+  done < <(git diff --cached --name-only)
+
+  if [[ ${#staged_changes[@]} -eq 0 ]]; then
+    echo "No staged files detected after add." >&2
+    exit 1
+  fi
+
+  print_staged_summary "${staged_changes[@]}"
+  ensure_simple_scope "$allow_mixed" "$allow_large" "${staged_changes[@]}" || exit 1
 fi
 
 # Create the commit.
