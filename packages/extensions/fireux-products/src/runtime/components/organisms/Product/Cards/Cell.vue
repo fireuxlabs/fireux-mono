@@ -1,25 +1,27 @@
 <template>
   <component
-    :is="link && card.to ? 'NuxtLink' : 'div'"
-    :to="link && card.to ? card.to : undefined"
-    class="card card--cell transition-colors hover:bg-primary/5 hover:border-primary/30"
+    :is="link && record.to ? 'NuxtLink' : 'div'"
+    :to="link && record.to ? record.to : undefined"
+    class="block w-full"
     @click="onClick"
   >
-    <div class="card__media">
-      <UAvatar :src="card.imageUrl || undefined" :alt="card.title" size="md" />
+    <div
+      class="flex w-full items-start gap-3 rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800/60 dark:bg-gray-900/40"
+    >
+      <UAvatar :src="record.imageUrl || undefined" :alt="record.title" size="md" class="shrink-0" />
 
-      <div class="card__content card__stack space-y-2">
-        <div class="card__header flex items-start justify-between gap-3">
+      <div class="min-w-0 flex-1 space-y-1">
+        <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
-            <div class="card__title text-base font-semibold">{{ card.title }}</div>
-            <div v-if="showSubtitle && card.subtitle" class="card__subtitle text-sm text-muted-foreground">
-              {{ card.subtitle }}
+            <div class="truncate text-sm font-semibold">{{ record.title }}</div>
+            <div v-if="showSubtitle && record.subtitle" class="truncate text-xs text-dimmed">
+              {{ record.subtitle }}
             </div>
           </div>
 
-          <div v-if="showBadges && card.badges.length" class="card__badges flex flex-wrap items-center justify-end gap-1">
+          <div v-if="showBadges && record.badges?.length" class="flex shrink-0 flex-wrap items-center gap-1">
             <UBadge
-              v-for="badge in card.badges"
+              v-for="badge in record.badges"
               :key="badge"
               variant="soft"
               color="neutral"
@@ -30,11 +32,11 @@
           </div>
         </div>
 
-        <div v-if="showDescription && card.description" class="card__tagline text-sm text-muted-foreground">
-          {{ card.description }}
+        <div v-if="showMeta && record.description" class="truncate text-xs text-dimmed">
+          {{ record.description }}
         </div>
 
-        <div v-if="showMeta" class="card__tagline text-xs uppercase tracking-wide text-muted-foreground">
+        <div v-if="showTagline" class="truncate text-xs text-dimmed">
           <span v-if="prop">{{ prop }}</span>
           <span v-else class="italic">missing</span>
         </div>
@@ -44,15 +46,16 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { ProductCard } from '../../../../composables/fireux/firestore/product/utils/view/useProductInterface'
 
-type Props = {
-  card: ProductCard.Card
+type Props = Partial<ProductCard.Card> & {
+  card?: ProductCard.Card
   prop?: string
   showSubtitle?: boolean
   showBadges?: boolean
-  showDescription?: boolean
   showMeta?: boolean
+  showTagline?: boolean
   link?: boolean
   action?: boolean
 }
@@ -65,11 +68,13 @@ const props = withDefaults(defineProps<Props>(), {
   prop: '',
   showSubtitle: true,
   showBadges: true,
-  showDescription: true,
   showMeta: true,
+  showTagline: true,
   link: false,
   action: false,
 })
+
+const record = computed(() => props.card ?? props)
 
 const onClick = () => {
   if (props.action) emit('action')

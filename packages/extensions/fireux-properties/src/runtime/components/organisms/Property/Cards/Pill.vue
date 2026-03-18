@@ -20,9 +20,11 @@
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
         </p>
-        <p v-if="showMeta && meta" class="truncate text-xs text-dimmed">
-          {{ meta }}
-        </p>
+        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
+          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
+            {{ badge }}
+          </UBadge>
+        </div>
       </div>
     </div>
   </component>
@@ -34,6 +36,8 @@ import type { PropertyCard } from '../../../../composables/fireux/firestore/prop
 type PillProps = Pick<PropertyCard.Card, 'to' | 'imageUrl' | 'title' | 'subtitle' | 'meta'> & {
   showSubtitle?: boolean
   showMeta?: boolean
+  badges?: string[]
+  showBadges?: boolean
   link?: boolean
   action?: boolean
 }
@@ -43,8 +47,10 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<PillProps>(), {
+  badges: () => [],
   showSubtitle: true,
   showMeta: true,
+  showBadges: true,
   link: false,
   action: false,
 })

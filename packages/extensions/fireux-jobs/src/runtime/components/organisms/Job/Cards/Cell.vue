@@ -1,35 +1,34 @@
-<!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Cards/Cell.vue -->
-
 <template>
   <component
     :is="link && to ? 'NuxtLink' : 'div'"
     :to="link && to ? to : undefined"
-    class="card card--cell"
+    class="block w-full"
     @click="onClick"
   >
-    <div class="flex items-start gap-3">
+    <div
+      class="flex w-full items-start gap-3 rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800/60 dark:bg-gray-900/40"
+    >
       <UAvatar
         :src="imageUrl || undefined"
         :alt="title"
-        size="sm"
+        size="md"
         icon="i-lucide-briefcase"
         class="shrink-0"
       />
 
       <div class="min-w-0 flex-1 space-y-1">
-        <!-- Top row: title + status -->
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
-            <div class="card__title truncate">
+            <div class="truncate text-sm font-semibold">
               {{ title }}
             </div>
 
-            <div v-if="showSubtitle && subtitle" class="card__subtitle truncate">
+            <div v-if="showSubtitle && subtitle" class="truncate text-xs text-dimmed">
               {{ subtitle }}
             </div>
           </div>
 
-          <div class="shrink-0 flex items-center gap-2">
+          <div class="shrink-0 flex items-center gap-1">
             <UBadge
               v-if="showStatus && statusLabel"
               size="xs"
@@ -39,7 +38,7 @@
               {{ statusLabel }}
             </UBadge>
 
-            <div v-if="showBadges && badges.length" class="hidden sm:flex flex-wrap items-center justify-end gap-1">
+            <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
               <UBadge
                 v-for="badge in badges"
                 :key="badge"
@@ -53,8 +52,7 @@
           </div>
         </div>
 
-        <!-- Body: short description / prop -->
-        <div v-if="showTagline" class="text-sm text-dimmed">
+        <div v-if="showTagline" class="truncate text-xs text-dimmed">
           <span v-if="prop">{{ prop }}</span>
           <span v-else-if="description">{{ description }}</span>
           <span v-else class="italic">missing</span>

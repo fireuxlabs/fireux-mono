@@ -7,27 +7,25 @@
   >
     <UUser
       :name="displayName"
+      :description="showSubtitle ? (handle || undefined) : undefined"
       :avatar="
         proxiedAvatarUrl
           ? { src: proxiedAvatarUrl || undefined, alt: displayName || '' }
           : undefined
       "
-      size="md"
+      size="sm"
     >
-      <template #description>
-        <div class="flex flex-col gap-1">
-          <span v-if="showSubtitle">{{ handle }}</span>
-          <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
-            <UBadge
-              v-for="badge in badges"
-              :key="badge"
-              variant="subtle"
-              color="secondary"
-              size="xs"
-            >
-              {{ badge }}
-            </UBadge>
-          </div>
+      <template #default>
+        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
+          <UBadge
+            v-for="badge in badges"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
+            {{ badge }}
+          </UBadge>
         </div>
       </template>
     </UUser>
@@ -35,8 +33,8 @@
 </template>
 
 <script setup lang="ts">
+import { useAvatarProxy } from '../../../../composables/fireux/app/ui/useAvatarProxy';
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface';
-import { useAvatarProxy } from '../../../../composables/fireux/app/ui/useAvatarProxy'
 
 type PillProps = Pick<
   UserCard.Card,
@@ -54,7 +52,6 @@ const emit = defineEmits<{
 
 const props = withDefaults(defineProps<PillProps>(), {
   badges: () => [],
-  profiles: () => [],
   showSubtitle: true,
   showBadges: true,
   link: false,
@@ -67,5 +64,4 @@ const onClick = () => {
 
 const { useProxiedAvatar } = useAvatarProxy()
 const proxiedAvatarUrl = useProxiedAvatar(() => props.avatarUrl)
-
 </script>

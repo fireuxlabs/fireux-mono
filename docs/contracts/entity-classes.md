@@ -126,10 +126,13 @@ Examples:
 - `users/{userId}` + `apps/{appId}/users/{userId}`
 - `kitchens/{placeId}` + `apps/{appId}/kitchens/{placeId}`
 - `portfolios/{portfolioId}` + `apps/{appId}/portfolios/{portfolioId}`
-- `suppliers/{supplierId}` + `apps/{appId}/suppliers/{supplierId}`
 - `chefs/{uid}` + `apps/{appId}/chefs/{uid}`
 - `agents/{uid}` + `apps/{appId}/agents/{uid}`
 - `professionals/{uid}` + `apps/{appId}/professionals/{uid}`
+
+Current canon note:
+- Supplier is no longer treated as a dual-layer profile family for new alignment work.
+- Treat Supplier as a console/business entity family, not as a default example of app overlay canon.
 
 Model contract:
 

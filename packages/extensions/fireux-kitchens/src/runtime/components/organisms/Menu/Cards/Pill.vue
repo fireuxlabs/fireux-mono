@@ -5,15 +5,27 @@
     @click="onClick"
     class="pill"
   >
-    <div class="flex w-full items-center justify-between gap-3">
-      <UUser
-        :name="title"
-        :description="showSubtitle && subtitle ? subtitle : undefined"
-        :avatar="imageUrl ? { src: imageUrl, alt: title } : undefined"
+    <div class="flex min-w-0 items-start gap-2">
+      <UAvatar
+        v-if="imageUrl"
+        :src="imageUrl || undefined"
+        :alt="title || ''"
         size="sm"
-        class="min-w-0"
       />
-      <UChip :color="isActiveNow ? 'success' : 'error'" inset class="shrink-0" />
+
+      <div class="min-w-0 flex-1 space-y-1">
+        <p class="truncate text-sm font-medium text-highlighted">
+          {{ title }}
+        </p>
+        <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
+          {{ subtitle }}
+        </p>
+        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
+          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
+            {{ badge }}
+          </UBadge>
+        </div>
+      </div>
     </div>
   </component>
 </template>
@@ -23,6 +35,8 @@ import type { MenuCard } from '../../../../composables/fireux/firestore/runtime-
 
 type PillProps = Pick<MenuCard.Card, 'to' | 'title' | 'subtitle' | 'imageUrl' | 'isActiveNow'> & {
   showSubtitle?: boolean
+  badges?: string[]
+  showBadges?: boolean
   link?: boolean
   action?: boolean
 }
@@ -33,6 +47,8 @@ const emit = defineEmits<{
 
 const props = withDefaults(defineProps<PillProps>(), {
   showSubtitle: true,
+  badges: () => [],
+  showBadges: true,
   link: false,
   action: false,
 })

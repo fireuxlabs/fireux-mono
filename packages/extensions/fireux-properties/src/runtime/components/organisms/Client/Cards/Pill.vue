@@ -14,20 +14,17 @@
       />
 
       <div class="min-w-0 flex-1 space-y-1">
-        <div class="flex items-center gap-2">
-          <p class="truncate text-sm font-medium text-highlighted">
-            {{ title }}
-          </p>
-          <UBadge v-if="status" size="xs" variant="soft" :color="statusColor(status)">
-            {{ status }}
-          </UBadge>
-        </div>
+        <p class="truncate text-sm font-medium text-highlighted">
+          {{ title }}
+        </p>
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
         </p>
-        <p v-if="showMeta && meta" class="truncate text-xs text-dimmed">
-          {{ meta }}
-        </p>
+        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
+          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
+            {{ badge }}
+          </UBadge>
+        </div>
       </div>
     </div>
   </component>
@@ -39,6 +36,8 @@ import type { ClientCard } from '../../../../composables/fireux/firestore/client
 type PillProps = Pick<ClientCard.Card, 'to' | 'imageUrl' | 'title' | 'subtitle' | 'meta' | 'status'> & {
   showSubtitle?: boolean
   showMeta?: boolean
+  badges?: string[]
+  showBadges?: boolean
   link?: boolean
   action?: boolean
 }
@@ -48,20 +47,15 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<PillProps>(), {
+  badges: () => [],
   showSubtitle: true,
   showMeta: true,
+  showBadges: true,
   link: false,
   action: false,
 })
 
 const onClick = () => {
   if (props.action) emit('action')
-}
-
-const statusColor = (status: string) => {
-  if (status === 'arrears') return 'error'
-  if (status === 'ending') return 'warning'
-  if (status === 'active') return 'success'
-  return 'neutral'
 }
 </script>

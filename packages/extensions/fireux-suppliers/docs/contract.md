@@ -13,7 +13,8 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 
 ## 4) Collections + paths
 - `suppliers/{supplierId}`
-- App-specific overlays may be added by app scope where configured.
+- No app-overlay canon is assumed for suppliers in the current architecture pass.
+- Treat supplier as a console/business entity family; legacy profile-style paths are compatibility debt, not target design.
 
 ## 5) Routes (public vs internal; slug vs id)
 - Current id-based routes:

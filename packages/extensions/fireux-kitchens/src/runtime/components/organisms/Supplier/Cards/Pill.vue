@@ -5,19 +5,28 @@
     @click="onClick"
     class="pill"
   >
-    <UUser
-      :name="title"
-      :description="subtitle || undefined"
-      size="sm"
-    >
-      <template #avatar>
-        <UAvatar
-          :src="avatarUrl || undefined"
-          icon="i-lucide-store"
-          size="xs"
-        />
-      </template>
-    </UUser>
+    <div class="flex min-w-0 items-start gap-2">
+      <UAvatar
+        :src="avatarUrl || undefined"
+        :alt="title || ''"
+        size="sm"
+        icon="i-lucide-store"
+      />
+
+      <div class="min-w-0 flex-1 space-y-1">
+        <p class="truncate text-sm font-medium text-highlighted">
+          {{ title }}
+        </p>
+        <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
+          {{ subtitle }}
+        </p>
+        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
+          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
+            {{ badge }}
+          </UBadge>
+        </div>
+      </div>
+    </div>
   </component>
 </template>
 
@@ -27,6 +36,9 @@ type PillProps = {
   title: string
   subtitle: string
   avatarUrl: string
+  badges?: string[]
+  showSubtitle?: boolean
+  showBadges?: boolean
   link?: boolean
   action?: boolean
 }
@@ -36,6 +48,9 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<PillProps>(), {
+  badges: () => [],
+  showSubtitle: true,
+  showBadges: true,
   link: false,
   action: false,
 })

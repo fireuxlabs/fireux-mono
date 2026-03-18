@@ -6,19 +6,33 @@
     @click="onClick"
   >
     <div class="card__media">
-      <UUser
-        :name="displayName"
-        :description="showSubtitle ? (title || undefined) : undefined"
-        size="sm"
-      >
-        <template #avatar>
-          <UAvatar :src="image || avatarUrl || undefined" :alt="displayName" size="xs" />
-        </template>
-      </UUser>
+      <UAvatar :src="image || avatarUrl || undefined" :alt="displayName" size="sm" />
 
       <div class="card__content card__stack">
-        <div v-if="showTagline && (prop || summary)" class="text-xs text-muted">
-          {{ prop || summary }}
+        <div class="card__header">
+          <div class="min-w-0">
+            <div class="card__title">{{ displayName }}</div>
+            <div v-if="showSubtitle && title" class="card__subtitle">
+              {{ title }}
+            </div>
+          </div>
+
+          <div v-if="showBadges && badges.length" class="card__badges">
+            <UBadge
+              v-for="badge in badges"
+              :key="badge"
+              variant="soft"
+              color="neutral"
+              size="xs"
+            >
+              {{ badge }}
+            </UBadge>
+          </div>
+        </div>
+
+        <div v-if="showTagline" class="card__tagline">
+          <span v-if="prop || summary">{{ prop || summary }}</span>
+          <span v-else class="italic">missing</span>
         </div>
       </div>
     </div>
@@ -32,8 +46,10 @@ type Props = Pick<
   ProfessionalCard.Card,
   'to' | 'avatarUrl' | 'image' | 'displayName' | 'title' | 'summary'
 > & {
+  badges?: string[]
   prop?: string
   showSubtitle?: boolean
+  showBadges?: boolean
   showTagline?: boolean
   link?: boolean
   action?: boolean
@@ -44,8 +60,10 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<Props>(), {
+  badges: () => [],
   prop: '',
   showSubtitle: true,
+  showBadges: true,
   showTagline: true,
   link: false,
   action: false,

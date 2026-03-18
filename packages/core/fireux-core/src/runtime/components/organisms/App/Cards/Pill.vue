@@ -1,4 +1,3 @@
-<!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/App/Cards/Pill.vue -->
 <template>
   <component
     :is="link && to ? 'NuxtLink' : 'div'"
@@ -32,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface';
 
 defineOptions({ inheritAttrs: false })
 
@@ -62,5 +61,4 @@ const props = withDefaults(defineProps<Props>(), {
 const onClick = () => {
   if (props.action) emit('action')
 }
-
 </script>

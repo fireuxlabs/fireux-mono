@@ -5,18 +5,39 @@
     @click="onClick"
     class="pill"
   >
-    <UUser
-      :name="title"
-      :avatar="imageUrl ? { src: imageUrl, alt: title || '' } : { icon: 'i-lucide-clipboard-check', alt: title || '' }"
-      size="sm"
-    />
+    <div class="flex min-w-0 items-start gap-2">
+      <UAvatar
+        :src="imageUrl || undefined"
+        :alt="title || ''"
+        size="sm"
+        icon="i-lucide-clipboard-check"
+      />
+
+      <div class="min-w-0 flex-1 space-y-1">
+        <p class="truncate text-sm font-medium text-highlighted">
+          {{ title }}
+        </p>
+        <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
+          {{ subtitle }}
+        </p>
+        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
+          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
+            {{ badge }}
+          </UBadge>
+        </div>
+      </div>
+    </div>
   </component>
 </template>
 
 <script setup lang="ts">
-import type { MiseEnPlaceCard } from '../../../../composables/fireux/firestore/runtime-kitchen/mise/utils/view/useMiseEnPlaceInterface';
+import type { MiseEnPlaceCard } from '../../../../composables/fireux/firestore/runtime-kitchen/mise/utils/view/useMiseEnPlaceInterface'
 
 type PillProps = Pick<MiseEnPlaceCard.Card, 'to' | 'title' | 'imageUrl'> & {
+  subtitle?: string
+  badges?: string[]
+  showSubtitle?: boolean
+  showBadges?: boolean
   link?: boolean
   action?: boolean
 }
@@ -26,6 +47,10 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<PillProps>(), {
+  subtitle: '',
+  badges: () => [],
+  showSubtitle: true,
+  showBadges: true,
   link: false,
   action: false,
 })

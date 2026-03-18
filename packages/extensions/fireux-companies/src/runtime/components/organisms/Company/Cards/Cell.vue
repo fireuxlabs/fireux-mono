@@ -6,7 +6,7 @@
     @click="onClick"
   >
     <div
-      class="flex w-full items-center gap-3 rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800/60 dark:bg-gray-900/40"
+      class="flex w-full items-start gap-3 rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800/60 dark:bg-gray-900/40"
     >
       <UAvatar
         :src="resolvedImageUrl || undefined"
@@ -14,6 +14,7 @@
         size="md"
         icon="i-lucide-image"
         :class="avatarShadeClass"
+        class="shrink-0"
       />
 
       <div class="min-w-0 flex-1 space-y-1">
@@ -66,11 +67,10 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<Props>(), {
-  imageUrl: '',
   prop: '',
   showSubtitle: true,
   showSource: false,
-  showTagline: true,
+  showTagline: false,
   link: false,
   action: false,
 })

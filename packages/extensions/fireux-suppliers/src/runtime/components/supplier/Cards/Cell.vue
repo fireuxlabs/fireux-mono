@@ -2,22 +2,24 @@
   <component
     :is="link && to ? 'NuxtLink' : 'div'"
     :to="link && to ? to : undefined"
-    class="card card--cell"
+    class="block w-full"
     @click="onClick"
   >
-    <div class="card__media">
-      <UAvatar :src="avatarUrl || undefined" :alt="title" size="sm" />
+    <div
+      class="flex w-full items-start gap-3 rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800/60 dark:bg-gray-900/40"
+    >
+      <UAvatar :src="avatarUrl || undefined" :alt="title" size="md" class="shrink-0" />
 
-      <div class="card__content card__stack">
-        <div class="card__header">
+      <div class="min-w-0 flex-1 space-y-1">
+        <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
-            <div class="card__title">{{ title }}</div>
-            <div v-if="showSubtitle && subtitle" class="card__subtitle">
+            <div class="truncate text-sm font-semibold">{{ title }}</div>
+            <div v-if="showSubtitle && subtitle" class="truncate text-xs text-dimmed">
               {{ subtitle }}
             </div>
           </div>
 
-          <div v-if="showBadges && badges.length" class="card__badges">
+          <div v-if="showBadges && badges.length" class="flex shrink-0 flex-wrap items-center gap-1">
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -30,7 +32,7 @@
           </div>
         </div>
 
-        <div v-if="showTagline" class="card__tagline">
+        <div v-if="showTagline" class="truncate text-xs text-dimmed">
           <span v-if="prop || summary">{{ prop || summary }}</span>
           <span v-else class="italic">missing</span>
         </div>

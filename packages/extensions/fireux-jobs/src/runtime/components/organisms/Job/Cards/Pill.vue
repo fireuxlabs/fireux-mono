@@ -1,5 +1,3 @@
-<!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Cards/Pill.vue -->
-
 <template>
   <component
     :is="link && to ? 'NuxtLink' : 'div'"
@@ -7,12 +5,28 @@
     @click="onClick"
     class="pill"
   >
-    <UUser
-      :name="title"
-      :description="kitchenName || undefined"
-      :avatar="imageUrl ? { src: imageUrl, alt: title } : undefined"
-      size="sm"
-    />
+    <div class="flex min-w-0 items-start gap-2">
+      <UAvatar
+        v-if="imageUrl"
+        :src="imageUrl || undefined"
+        :alt="title || ''"
+        size="sm"
+      />
+
+      <div class="min-w-0 flex-1 space-y-1">
+        <p class="truncate text-sm font-medium text-highlighted">
+          {{ title }}
+        </p>
+        <p v-if="showSubtitle && kitchenName" class="truncate text-xs text-toned">
+          {{ kitchenName }}
+        </p>
+        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
+          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
+            {{ badge }}
+          </UBadge>
+        </div>
+      </div>
+    </div>
   </component>
 </template>
 
@@ -20,12 +34,11 @@
 import type { JobCard } from '../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 
 type Props = Pick<JobCard.Card, 'to' | 'title'> & {
-  /** Kitchen image (usually place image) */
   imageUrl?: string
-
-  /** Kitchen display name */
   kitchenName?: string
-
+  badges?: string[]
+  showSubtitle?: boolean
+  showBadges?: boolean
   link?: boolean
   action?: boolean
 }
@@ -35,6 +48,9 @@ const emit = defineEmits<{ (event: 'action'): void }>()
 const props = withDefaults(defineProps<Props>(), {
   imageUrl: '',
   kitchenName: '',
+  badges: () => [],
+  showSubtitle: true,
+  showBadges: true,
   link: false,
   action: false,
 })
