@@ -20,8 +20,8 @@
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
         </p>
-        <div v-if="showBadges && (badges?.length ?? 0)" class="flex flex-wrap items-center gap-1">
-          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
+        <div v-if="showBadges && badgeItems.length" class="flex flex-wrap items-center gap-1">
+          <UBadge v-for="badge in badgeItems" :key="badge" variant="soft" color="neutral" size="xs">
             {{ badge }}
           </UBadge>
         </div>
@@ -31,9 +31,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { PortfolioCard } from '../../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
 
-type PillProps = Pick<PortfolioCard.Card, 'to' | 'title' | 'subtitle' | 'badges'> & {
+type PillProps = Pick<PortfolioCard.Card, 'to' | 'title' | 'subtitle'> & {
+  badges?: PortfolioCard.Card['badges']
+  status?: PortfolioCard.Card['status']
   imageUrl?: string
   showSubtitle?: boolean
   showBadges?: boolean
@@ -46,11 +49,14 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<PillProps>(), {
+  badges: () => [],
   showSubtitle: true,
   showBadges: true,
   link: false,
   action: false,
 })
+
+const badgeItems = computed(() => [...(props.badges ?? []), props.status].filter(Boolean))
 
 const onClick = () => {
   if (props.action) emit('action')

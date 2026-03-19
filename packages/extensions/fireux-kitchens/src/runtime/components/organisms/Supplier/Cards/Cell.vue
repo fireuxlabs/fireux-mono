@@ -23,10 +23,22 @@
               {{ subtitle }}
             </div>
           </div>
+
+          <div v-if="showBadges && badges.length" class="flex shrink-0 flex-wrap items-center gap-1">
+            <UBadge
+              v-for="badge in badges"
+              :key="badge"
+              variant="soft"
+              color="neutral"
+              size="xs"
+            >
+              {{ badge }}
+            </UBadge>
+          </div>
         </div>
 
         <div v-if="showTagline" class="truncate text-xs text-dimmed">
-          <span v-if="prop">{{ prop }}</span>
+          <span v-if="prop || summary">{{ prop || summary }}</span>
           <span v-else>{{ id }}</span>
         </div>
       </div>
@@ -35,6 +47,8 @@
 </template>
 
 <script setup lang="ts">
+import type { SupplierCard } from 'fireux-suppliers/runtime/composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
+
 const emit = defineEmits<{
   (event: 'action'): void
 }>()
@@ -45,14 +59,20 @@ const props = withDefaults(defineProps<{
   title: string
   subtitle: string
   avatarUrl: string
+  badges?: SupplierCard.Card['badges']
+  summary?: SupplierCard.Card['summary']
   prop?: string
   showSubtitle?: boolean
+  showBadges?: boolean
   showTagline?: boolean
   link?: boolean
   action?: boolean
 }>(), {
+  badges: () => [],
+  summary: '',
   prop: '',
   showSubtitle: true,
+  showBadges: true,
   showTagline: true,
   link: false,
   action: false,

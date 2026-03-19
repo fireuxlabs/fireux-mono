@@ -39,8 +39,8 @@
           </template>
         </div>
 
-        <div v-if="showTagline && prop" class="truncate text-xs text-dimmed">
-          <span>{{ prop }}</span>
+        <div v-if="showTagline && (prop || description)" class="truncate text-xs text-dimmed">
+          <span>{{ prop || description }}</span>
         </div>
       </div>
     </div>
@@ -56,6 +56,7 @@ type Props = Pick<
   | 'name'
   | 'subtitle'
   | 'active'
+  | 'description'
   | 'dishCount'
   | 'imageUrl'
   | 'isActiveNow'

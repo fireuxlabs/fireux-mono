@@ -3,90 +3,46 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <div>Available Ecosystems</div>
+          <h2>{{ title }}</h2>
+          <p v-if="description">{{ description }}</p>
         </div>
 
-        <div class="collection-manager__controls">
-          <UInput
-            v-model="query"
-            size="xs"
-            placeholder="Search ecosystems…"
-          />
-
-          <UButton
-            size="xs"
-            variant="ghost"
-            :icon="variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'"
-            :aria-label="variant === 'pill' ? 'Switch to grid view' : 'Switch to list view'"
-            @click="toggleVariant"
-          />
-
-          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
-        </div>
-      </div>
-    </template>
-
-    <div v-if="pending" class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-      <USkeleton
-        v-for="n in 6"
-        :key="n"
-        class="h-28 rounded-xl"
-      />
-    </div>
-
-    <template v-else-if="cardsFiltered.length">
-      <div
-        v-if="variant === 'cell'"
-        class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
-      >
-        <article
-          v-for="entry in cardsFiltered"
-          :key="entry.id"
-          class="rounded-xl border border-default p-3"
-        >
-          <div class="flex items-start gap-3">
-            <UAvatar
-              :src="entry.src"
-              :alt="entry.name"
-              :text="entry.text"
-              class="shrink-0"
+        <div class="collection-manager__controls flex flex-1 items-center gap-2">
+          <div class="ml-auto flex items-center gap-2">
+            <UInput
+              v-if="showSearchInput"
+              v-model="query"
+              size="xs"
+              :placeholder="searchPlaceholder"
             />
 
-            <div class="min-w-0 space-y-1">
-              <p class="truncate text-sm font-medium">{{ entry.name }}</p>
-              <p class="truncate text-xs text-dimmed">{{ entry.key }}</p>
-              <p class="truncate text-xs text-dimmed">
-                team: {{ entry.team || 'unset' }} · apps: {{ entry.apps }}
-              </p>
-            </div>
-          </div>
-        </article>
-      </div>
-
-      <div v-else class="space-y-2">
-        <div
-          v-for="entry in cardsFiltered"
-          :key="entry.id"
-          class="flex items-center justify-between gap-3 rounded-xl border border-default p-3"
-        >
-          <div class="flex min-w-0 items-center gap-3">
-            <UAvatar
-              :src="entry.src"
-              :alt="entry.name"
-              :text="entry.text"
-              class="shrink-0"
+            <UButton
+              v-if="showVariantToggle"
+              size="xs"
+              variant="ghost"
+              :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
+              :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+              @click="toggleVariant"
             />
-            <div class="min-w-0">
-              <p class="truncate text-sm font-medium">{{ entry.name }}</p>
-              <p class="truncate text-xs text-dimmed">{{ entry.key }}</p>
-              <p class="truncate text-xs text-dimmed">
-                team: {{ entry.team || 'unset' }} · apps: {{ entry.apps }}
-              </p>
-            </div>
+
+            <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
           </div>
         </div>
       </div>
     </template>
+
+    <EcosystemCollectionList
+      v-if="cardsFiltered.length"
+      :cards="cardsFiltered"
+      :variant="variant"
+    >
+      <template #pill="{ card }">
+        <EcosystemCardsPill v-bind="card" :link="linkEnabled" />
+      </template>
+      <template #cell="{ card }">
+        <EcosystemCardsCell v-bind="card" :link="linkEnabled" />
+      </template>
+    </EcosystemCollectionList>
 
     <p v-else>
       {{ query ? 'No ecosystems match your search.' : 'No ecosystems found.' }}
@@ -104,61 +60,53 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-
-type EcosystemRow = {
-  id?: string
-  key?: string
-  slug?: string
-  name?: string
-  src?: string
-  text?: string
-  href?: string
-  apps?: number | unknown[]
-  appCount?: number
-  team?: string
-}
-
-type EcosystemCard = {
-  id: string
-  key: string
-  name: string
-  src: string
-  text: string
-  apps: number
-  team: string
-}
+import { computed } from 'vue'
+import {
+  useEcosystemInterface,
+  type EcosystemCard,
+  type EcosystemView,
+} from '../../../composables/useEcosystemInterface'
+import EcosystemCardsCell from '../Cards/Cell.vue'
+import EcosystemCardsPill from '../Cards/Pill.vue'
+import EcosystemCollectionList from './List.vue'
 
 const props = withDefaults(defineProps<{
-  collection?: EcosystemRow[]
-  pending?: boolean
+  collection?: EcosystemView.Row[]
+  title?: string
+  description?: string
+  link?: boolean
+  searchPlaceholder?: string
+  showSearch?: boolean
+  showVariantToggle?: boolean
+  showCount?: boolean
+  initialVariant?: 'pill' | 'cell'
 }>(), {
   collection: () => [],
-  pending: false,
+  title: 'Ecosystems',
+  description: 'Browse ecosystems available in this workspace.',
+  link: false,
+  searchPlaceholder: 'Search ecosystems…',
+  showSearch: true,
+  showVariantToggle: true,
+  showCount: true,
+  initialVariant: 'cell',
 })
 
 const rawCollection = computed(() => props.collection ?? [])
+const title = computed(() => String(props.title || 'Ecosystems'))
+const description = computed(() => String(props.description || '').trim())
+const linkEnabled = computed(() => props.link !== false)
+const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search ecosystems…'))
+const showSearch = computed(() => props.showSearch !== false)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
+const showCount = computed(() => props.showCount !== false)
+const { item, card: makeCard, searchText } = useEcosystemInterface()
 
-const collection = computed(() =>
+const collection = computed<EcosystemView.Item[]>(() =>
   rawCollection.value
-    .map((row) => ({
-      id: String(row.id || '').trim(),
-      key: String(row.key || row.id || row.slug || '').trim(),
-      name: String(row.name || '').trim(),
-      src: String(row.src || '').trim(),
-      text: String(row.text || '').trim(),
-      href: String(row.href || '').trim(),
-      apps: Array.isArray(row.apps)
-        ? row.apps.length
-        : Number.isFinite(Number(row.appCount))
-          ? Number(row.appCount)
-          : Number.isFinite(Number(row.apps))
-            ? Number(row.apps)
-            : 0,
-      team: String(row.team || '').trim(),
-    }))
-    .filter((row) => Boolean(row.key || row.name))
+    .map((row) => item(row))
+    .filter((row): row is EcosystemView.Item => Boolean(row))
 )
 
 const {
@@ -167,21 +115,14 @@ const {
   toggleVariant,
   cards: cardsFiltered,
   visibleCount,
-} = useCollectionSearch<EcosystemRow, EcosystemCard>({
+} = useCollectionSearch<EcosystemView.Item, EcosystemCard.Card>({
   items: collection,
-  searchText: (row) => `${row.key} ${row.name}`.trim().toLowerCase(),
-  makeCard: (row) => ({
-    id: row.id || row.key || row.name || '',
-    key: row.key || '',
-    name: row.name || row.key || 'Untitled ecosystem',
-    src: row.src || '',
-    text: row.text || row.name || row.key || '',
-    apps: Number.isFinite(Number(row.apps)) ? Number(row.apps) : 0,
-    team: row.team || '',
-  }),
-  initialVariant: 'cell',
+  searchText: (row) => searchText(row),
+  makeCard: (row) => makeCard(row),
+  initialVariant: props.initialVariant,
 })
 
 const totalCount = computed(() => collection.value.length)
+const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
 const isDev = import.meta.dev
 </script>

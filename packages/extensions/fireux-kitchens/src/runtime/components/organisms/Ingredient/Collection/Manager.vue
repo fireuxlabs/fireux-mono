@@ -3,14 +3,11 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <div>{{ title }}</div>
+          <h2>{{ title }}</h2>
           <p>{{ description }}</p>
         </div>
 
         <div class="collection-manager__controls flex flex-1 items-center gap-2">
-          <div class="flex items-center gap-2">
-            <slot name="controls" />
-          </div>
           <div class="ml-auto flex items-center gap-2">
             <UInput
               v-if="showSearchInput"
@@ -38,30 +35,10 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <NuxtLink
-          :to="linkEnabled ? card.to : undefined"
-          class="block cursor-pointer"
-          @click="linkEnabled ? undefined : handleSelect(card.id)"
-        >
-          <IngredientCardsPill
-            v-bind="card"
-            :show-slug="showSlug"
-            :warning="warningByIngredientId[card.id]"
-          />
-        </NuxtLink>
+        <IngredientCardsPill v-bind="card" :link="linkEnabled" />
       </template>
       <template #cell="{ card }">
-        <NuxtLink
-          :to="linkEnabled ? card.to : undefined"
-          class="block cursor-pointer"
-          @click="linkEnabled ? undefined : handleSelect(card.id)"
-        >
-          <IngredientCardsCell
-            v-bind="card"
-            :show-slug="showSlug"
-            :warning="warningByIngredientId[card.id]"
-          />
-        </NuxtLink>
+        <IngredientCardsCell v-bind="card" :link="linkEnabled" />
       </template>
     </IngredientCollectionList>
 
@@ -85,10 +62,9 @@
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
 import {
-  useIngredientInterface,
-  type IngredientInterfaceItem,
+    useIngredientInterface,
+    type IngredientInterfaceItem,
 } from '../../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface';
-import type { Ingredient } from '../../../../models/ingredient.model';
 
 const props = withDefaults(
   defineProps<{
@@ -101,8 +77,6 @@ const props = withDefaults(
     devJsonData?: unknown
     devJsonDefaultOpen?: boolean
     devJsonHideWhenEmpty?: boolean
-    warningByIngredientId?: Record<string, string>
-    showSlug?: boolean
     searchPlaceholder?: string
     showSearch?: boolean
     showVariantToggle?: boolean
@@ -113,7 +87,6 @@ const props = withDefaults(
     title: 'Ingredients',
     description: 'Browse global ingredients available to this runtime.',
     link: true,
-    showSlug: false,
     searchPlaceholder: 'Search ingredients...',
     showSearch: true,
     showVariantToggle: true,
@@ -122,15 +95,9 @@ const props = withDefaults(
   }
 )
 
-const emit = defineEmits<{
-  (event: 'select', ingredient: Ingredient): void
-}>()
-
 const { card: makeCard, searchText } = useIngredientInterface()
 
 const collection = computed(() => props.collection ?? [])
-const showSlug = computed(() => props.showSlug === true)
-const warningByIngredientId = computed(() => props.warningByIngredientId ?? {})
 const linkEnabled = computed(() => props.link !== false)
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search ingredients...'))
 const showSearch = computed(() => props.showSearch !== false)
@@ -138,16 +105,6 @@ const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
-
-const ingredientById = computed(() => {
-  const map = new Map<string, IngredientInterfaceItem>()
-  for (const ingredient of collection.value) {
-    const id = String(ingredient.id || '').trim()
-    if (!id) continue
-    map.set(id, ingredient)
-  }
-  return map
-})
 
 const {
   query,
@@ -171,9 +128,4 @@ const devJsonContext = computed(
 const devJsonData = computed(() => props.devJsonData ?? collection.value)
 const devJsonDefaultOpen = computed(() => props.devJsonDefaultOpen ?? false)
 const devJsonHideWhenEmpty = computed(() => props.devJsonHideWhenEmpty ?? true)
-
-const handleSelect = (id: string) => {
-  const ingredient = ingredientById.value.get(String(id || '').trim())
-  if (ingredient) emit('select', ingredient as Ingredient)
-}
 </script>

@@ -3,7 +3,7 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <div>{{ title }}</div>
+          <h2>{{ title }}</h2>
           <p v-if="description">{{ description }}</p>
         </div>
 
@@ -36,22 +36,10 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <NuxtLink
-          :to="linkEnabled ? card.to : undefined"
-          class="block"
-          :class="linkEnabled ? '' : 'cursor-default'"
-        >
-          <KitchenCardsPill v-bind="card" />
-        </NuxtLink>
+        <KitchenCardsPill v-bind="card" :link="linkEnabled" />
       </template>
       <template #cell="{ card }">
-        <NuxtLink
-          :to="linkEnabled ? card.to : undefined"
-          class="block"
-          :class="linkEnabled ? '' : 'cursor-default'"
-        >
-          <KitchenCardsCell v-bind="card" />
-        </NuxtLink>
+        <KitchenCardsCell v-bind="card" :link="linkEnabled" />
       </template>
     </KitchenCollectionList>
 
@@ -71,11 +59,10 @@
 </template>
 
 <script setup lang="ts">
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-import { computed } from 'vue'
-import { useKitchenInterface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import type { Kitchen } from '../../../../models/kitchen.model'
+import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
+import { computed } from 'vue';
+import { useKitchenInterface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface';
+import type { Kitchen } from '../../../../models/kitchen.model';
 
 const props = withDefaults(
   defineProps<{
@@ -91,6 +78,7 @@ const props = withDefaults(
   }>(),
   {
     title: 'Kitchens',
+    description: 'Browse kitchen records available to this runtime.',
     searchPlaceholder: 'Search kitchens…',
     showSearch: true,
     showVariantToggle: true,
@@ -99,14 +87,10 @@ const props = withDefaults(
     link: true,
   }
 )
-const { appName } = useFireUXConfig()
 
 const collection = computed(() => props.collection ?? [])
 const title = computed(() => String(props.title || 'Kitchens'))
-const description = computed(() => {
-  if (props.description !== undefined) return String(props.description || '').trim()
-  return `Browse ${appName} kitchens.`
-})
+const description = computed(() => String(props.description || 'Browse kitchen records available to this runtime.').trim())
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search kitchens…'))
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)

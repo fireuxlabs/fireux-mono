@@ -3,26 +3,30 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <div>Users</div>
-          <p>{{ scopeCopy }}</p>
+          <h2>{{ title }}</h2>
+          <p>{{ description }}</p>
         </div>
 
-        <div class="collection-manager__controls">
-          <UInput
-            v-model="query"
-            size="xs"
-            placeholder="Search users…"
-          />
+        <div class="collection-manager__controls flex flex-1 items-center gap-2">
+          <div class="ml-auto flex items-center gap-2">
+            <UInput
+              v-if="showSearchInput"
+              v-model="query"
+              size="xs"
+              :placeholder="searchPlaceholder"
+            />
 
-          <UButton
-            size="xs"
-            variant="ghost"
-            :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
-            :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
-            @click="toggleVariant"
-          />
+            <UButton
+              v-if="showVariantToggle"
+              size="xs"
+              variant="ghost"
+              :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
+              :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+              @click="toggleVariant"
+            />
 
-          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+            <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+          </div>
         </div>
       </div>
     </template>
@@ -33,14 +37,10 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <NuxtLink :to="card.to">
-          <UserCardsPill v-bind="card" />
-        </NuxtLink>
+        <UserCardsPill v-bind="card" :link="linkEnabled" />
       </template>
       <template #cell="{ card }">
-        <NuxtLink :to="card.to">
-          <UserCardsCell v-bind="card" />
-        </NuxtLink>
+        <UserCardsCell v-bind="card" :link="linkEnabled" />
       </template>
     </UserCollectionList>
 
@@ -65,11 +65,40 @@ import { useUserInterface } from '../../../../composables/fireux/firestore/core/
 import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch';
 import type { User } from '../../../../models/core/user.model';
 
-const props = defineProps<{ collection?: User[] }>()
-
-const scopeCopy = computed(() => 'Browse users available to this runtime.')
+const props = withDefaults(
+  defineProps<{
+    collection?: User[]
+    title?: string
+    description?: string
+    link?: boolean
+    searchPlaceholder?: string
+    showSearch?: boolean
+    showVariantToggle?: boolean
+    showCount?: boolean
+    initialVariant?: 'pill' | 'cell'
+  }>(),
+  {
+    title: 'Users',
+    description: 'Browse users available to this runtime.',
+    link: true,
+    searchPlaceholder: 'Search users…',
+    showSearch: true,
+    showVariantToggle: true,
+    showCount: true,
+    initialVariant: 'pill',
+  }
+)
 
 const collection = computed(() => props.collection ?? [])
+const title = computed(() => String(props.title || 'Users'))
+const description = computed(() => String(props.description || 'Browse users available to this runtime.'))
+const linkEnabled = computed(() => props.link !== false)
+const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search users…'))
+const showSearch = computed(() => props.showSearch !== false)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
+const showCount = computed(() => props.showCount !== false)
+const totalCount = computed(() => collection.value.length)
+const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
 const { card: makeCard, searchText } = useUserInterface()
 
 const {
@@ -82,9 +111,9 @@ const {
   items: collection,
   searchText: (user) => searchText(user),
   makeCard: (user) => makeCard(user),
+  initialVariant: props.initialVariant,
 })
 
-const totalCount = computed(() => collection.value.length)
 const isDev = import.meta.dev
 const devJsonContext = 'collection manager · users · root: users'
 </script>

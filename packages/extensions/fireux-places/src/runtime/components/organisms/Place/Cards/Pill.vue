@@ -9,14 +9,14 @@
       <UAvatar
         v-if="imageUrl"
         :src="imageUrl || undefined"
-        :alt="title || ''"
+        :alt="displayTitle || ''"
         size="sm"
         :class="avatarClass"
       />
 
       <div class="min-w-0 flex-1 space-y-1">
         <p class="truncate text-sm font-medium text-highlighted">
-          {{ title }}
+          {{ displayTitle }}
         </p>
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
@@ -40,7 +40,7 @@ defineOptions({ inheritAttrs: false })
 
 type PillProps = Pick<
   PlaceCard.Card,
-  'to' | 'imageUrl' | 'title' | 'subtitle' | 'badges'
+  'to' | 'imageUrl' | 'title' | 'subtitle' | 'badges' | 'shortName'
 > & {
   imageShade?: PlaceImageShade
   showSubtitle?: boolean
@@ -67,6 +67,8 @@ const avatarClass = computed(() => {
   if (shade === 'dark') return 'fx-avatar-shade--dark'
   return ''
 })
+
+const displayTitle = computed(() => props.shortName || props.title)
 
 const onClick = () => {
   if (props.action) emit('action')

@@ -37,22 +37,10 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <NuxtLink
-          :to="linkEnabled ? card.to : undefined"
-          class="block"
-          :class="linkEnabled ? '' : 'cursor-default'"
-        >
-          <ProfilesAgentCardsPill v-bind="card" />
-        </NuxtLink>
+        <ProfilesAgentCardsPill v-bind="card" :link="linkEnabled" />
       </template>
       <template #cell="{ card }">
-        <NuxtLink
-          :to="linkEnabled ? card.to : undefined"
-          class="block"
-          :class="linkEnabled ? '' : 'cursor-default'"
-        >
-          <ProfilesAgentCardsCell v-bind="card" />
-        </NuxtLink>
+        <ProfilesAgentCardsCell v-bind="card" :link="linkEnabled" />
       </template>
     </ProfilesAgentCollectionList>
 

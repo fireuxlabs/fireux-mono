@@ -3,28 +3,11 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <div>{{ title }}</div>
+          <h2>{{ title }}</h2>
           <p>{{ description }}</p>
         </div>
 
         <div class="collection-manager__controls flex flex-1 items-center gap-2">
-          <div class="flex items-center gap-1">
-            <UButton
-              size="xs"
-              :variant="menuScope === 'live' ? 'solid' : 'soft'"
-              @click="menuScope = 'live'"
-            >
-              Show live
-            </UButton>
-            <UButton
-              size="xs"
-              :variant="menuScope === 'all' ? 'solid' : 'soft'"
-              @click="menuScope = 'all'"
-            >
-              Show all
-            </UButton>
-          </div>
-
           <div class="ml-auto flex items-center gap-2">
             <UInput
               v-if="showSearchInput"
@@ -52,28 +35,11 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <MenuCardsPill
-          v-bind="card"
-          class="transition"
-          :class="[
-            linkEnabled ? 'cursor-pointer' : 'cursor-default',
-            selectedId === card.id ? 'ring-2 ring-primary/60' : '',
-          ]"
-          @click="openCard(card)"
-        />
+        <MenuCardsPill v-bind="card" :link="linkEnabled" />
       </template>
 
       <template #cell="{ card }">
-        <MenuCardsCell
-          v-bind="card"
-          :prop="card.description"
-          class="transition"
-          :class="[
-            linkEnabled ? 'cursor-pointer' : 'cursor-default',
-            selectedId === card.id ? 'ring-2 ring-primary/60' : '',
-          ]"
-          @click="openCard(card)"
-        />
+        <MenuCardsCell v-bind="card" :link="linkEnabled" />
       </template>
     </MenuCollectionList>
 
@@ -94,7 +60,7 @@
 
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed } from 'vue'
 import { useMenuInterface } from '../../../../composables/fireux/firestore/runtime-kitchen/menu/utils/view/useMenuInterface'
 import type { Menu } from '../../../../models/menu.model'
 import MenuCardsCell from '../Cards/Cell.vue'
@@ -112,7 +78,6 @@ const props = withDefaults(
     showCount?: boolean
     initialVariant?: 'pill' | 'cell'
     link?: boolean
-    selectedId?: string | null
   }>(),
   {
     title: 'Menus',
@@ -126,10 +91,6 @@ const props = withDefaults(
   }
 )
 
-const emit = defineEmits<{
-  (event: 'select', menuId: string): void
-}>()
-
 const { card: makeCard, searchText } = useMenuInterface()
 
 const collection = computed(() => props.collection ?? [])
@@ -138,38 +99,13 @@ const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
-const selectedId = computed(() => String(props.selectedId || '').trim())
-const menuScope = ref<'live' | 'all'>('all')
-const nowTick = ref(Date.now())
-let tickInterval: ReturnType<typeof setInterval> | null = null
-
-onMounted(() => {
-  tickInterval = setInterval(() => {
-    nowTick.value = Date.now()
-  }, 60000)
-})
-
-onBeforeUnmount(() => {
-  if (!tickInterval) return
-  clearInterval(tickInterval)
-  tickInterval = null
-})
 
 const collectionVisible = computed(() => {
-  // Recompute cards periodically so active/inactive menu chips follow time windows.
-  void nowTick.value
-
-  const sorted = [...collection.value].sort(
+  return [...collection.value].sort(
     (a, b) =>
       Number(a.sort_order || 0) - Number(b.sort_order || 0) ||
       String(a.name || '').localeCompare(String(b.name || ''))
   )
-
-  if (menuScope.value === 'live') {
-    return sorted.filter((menu) => Boolean(menu.active))
-  }
-
-  return sorted
 })
 
 const totalCount = computed(() => collectionVisible.value.length)
@@ -188,10 +124,4 @@ const {
   initialVariant: props.initialVariant,
 })
 const isDev = import.meta.dev
-
-const openCard = (card: ReturnType<typeof makeCard>) => {
-  const menuId = String(card?.id || '').trim()
-  if (!menuId) return
-  emit('select', selectedId.value === menuId ? '' : menuId)
-}
 </script>

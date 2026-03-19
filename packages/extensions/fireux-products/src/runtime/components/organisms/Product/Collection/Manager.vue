@@ -3,25 +3,29 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <div>Products</div>
-          <p>Browse products available to this runtime.</p>
+          <h2>{{ title }}</h2>
+          <p v-if="description">{{ description }}</p>
         </div>
 
-        <div class="collection-manager__controls">
-          <UInput
-            v-model="query"
-            size="xs"
-            placeholder="Search products…"
-          />
+        <div class="collection-manager__controls flex flex-1 items-center gap-2">
+          <div class="ml-auto flex items-center gap-2">
+            <UInput
+              v-if="showSearchInput"
+              v-model="query"
+              size="xs"
+              :placeholder="searchPlaceholder"
+            />
 
-          <UButton
-            size="xs"
-            variant="ghost"
-            :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
-            :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
-            @click="toggleVariant"
-          />
-          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+            <UButton
+              v-if="showVariantToggle"
+              size="xs"
+              variant="ghost"
+              :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
+              :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+              @click="toggleVariant"
+            />
+            <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+          </div>
         </div>
       </div>
     </template>
@@ -32,14 +36,10 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <NuxtLink :to="card.to">
-          <ProductCardsPill v-bind="card" />
-        </NuxtLink>
+        <ProductCardsPill v-bind="card" :link="linkEnabled" />
       </template>
       <template #cell="{ card }">
-        <NuxtLink :to="card.to">
-          <ProductCardsCell :card="card" />
-        </NuxtLink>
+        <ProductCardsCell v-bind="card" :link="linkEnabled" />
       </template>
     </ProductCollectionList>
 
@@ -59,17 +59,48 @@
 </template>
 
 <script setup lang="ts">
-import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager';
+import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
 import { useProductInterface } from '../../../../composables/fireux/firestore/product/utils/view/useProductInterface';
 import type { FirebaseProduct } from '../../../../models/product.model';
 
-const props = defineProps<{
-  collection?: FirebaseProduct[]
-}>()
+const props = withDefaults(
+  defineProps<{
+    collection?: FirebaseProduct[]
+    title?: string
+    description?: string
+    link?: boolean
+    searchPlaceholder?: string
+    showSearch?: boolean
+    showVariantToggle?: boolean
+    showCount?: boolean
+    initialVariant?: 'pill' | 'cell'
+  }>(),
+  {
+    title: 'Products',
+    description: 'Browse product records available to this runtime.',
+    link: true,
+    searchPlaceholder: 'Search products…',
+    showSearch: true,
+    showVariantToggle: true,
+    showCount: true,
+    initialVariant: 'pill',
+  }
+)
 
 const collection = computed(() => props.collection ?? [])
+const title = computed(() => String(props.title || 'Products'))
+const description = computed(
+  () => String(props.description || 'Browse product records available to this runtime.')
+)
+const linkEnabled = computed(() => props.link !== false)
+const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search products…'))
+const showSearch = computed(() => props.showSearch !== false)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
+const showCount = computed(() => props.showCount !== false)
+const totalCount = computed(() => collection.value.length)
+const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
 const { card: makeCard, searchText } = useProductInterface()
 
 const {
@@ -82,9 +113,9 @@ const {
   items: collection,
   searchText: (product: FirebaseProduct) => searchText(product),
   makeCard: (product: FirebaseProduct) => makeCard(product),
+  initialVariant: props.initialVariant,
 })
 
-const totalCount = computed(() => collection.value.length)
 const isDev = import.meta.dev
 const { getCollectionPath } = useFirestoreManager()
 const productCollectionRoot = getCollectionPath('products')

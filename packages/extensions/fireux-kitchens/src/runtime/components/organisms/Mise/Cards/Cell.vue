@@ -49,7 +49,7 @@
           v-if="showTagline"
           class="truncate text-xs text-dimmed"
         >
-          <span v-if="prop">{{ prop }}</span>
+          <span v-if="prop || description">{{ prop || description }}</span>
           <span v-else class="italic">missing</span>
         </div>
       </div>
@@ -62,7 +62,7 @@ import type { MiseEnPlaceCard } from '../../../../composables/fireux/firestore/r
 
 type Props = Pick<
   MiseEnPlaceCard.Card,
-  'to' | 'name' | 'subtitle' | 'status' | 'category' | 'unit' | 'imageUrl'
+  'to' | 'name' | 'subtitle' | 'status' | 'category' | 'unit' | 'imageUrl' | 'description'
 > & {
   prop?: string
   showSubtitle?: boolean

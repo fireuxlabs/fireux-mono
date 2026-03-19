@@ -3,7 +3,7 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <div>{{ title }}</div>
+          <h2>{{ title }}</h2>
           <p>{{ description }}</p>
         </div>
 
@@ -35,41 +35,11 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <UPopover :popper="{ placement: 'right-start' }">
-          <template #default>
-            <NuxtLink
-              :to="linkEnabled ? (card.to || undefined) : undefined"
-              class="block"
-              :class="linkEnabled && card.to ? '' : 'cursor-default'"
-            >
-              <MiseCardsPill v-bind="card" />
-            </NuxtLink>
-          </template>
-          <template #content>
-            <div class="w-[20rem] p-3">
-              <MiseCardsPreview v-if="previewById[card.id]" v-bind="previewById[card.id]" />
-            </div>
-          </template>
-        </UPopover>
+        <MiseCardsPill v-bind="card" :link="linkEnabled" />
       </template>
 
       <template #cell="{ card }">
-        <UPopover :popper="{ placement: 'right-start' }">
-          <template #default>
-            <NuxtLink
-              :to="linkEnabled ? (card.to || undefined) : undefined"
-              class="block"
-              :class="linkEnabled && card.to ? '' : 'cursor-default'"
-            >
-              <MiseCardsCell v-bind="card" :prop="card.description" />
-            </NuxtLink>
-          </template>
-          <template #content>
-            <div class="w-[20rem] p-3">
-              <MiseCardsPreview v-if="previewById[card.id]" v-bind="previewById[card.id]" />
-            </div>
-          </template>
-        </UPopover>
+        <MiseCardsCell v-bind="card" :link="linkEnabled" />
       </template>
     </MiseCollectionList>
 
@@ -95,7 +65,6 @@ import { useMiseEnPlaceInterface } from '../../../../composables/fireux/firestor
 import type { KitchenMiseTask } from '../../../../models/kitchen-mise.model'
 import MiseCardsCell from '../Cards/Cell.vue'
 import MiseCardsPill from '../Cards/Pill.vue'
-import MiseCardsPreview from '../Cards/Preview.vue'
 import MiseCollectionList from './List.vue'
 
 const props = withDefaults(
@@ -122,7 +91,7 @@ const props = withDefaults(
   }
 )
 
-const { card: makeCard, preview: makePreview, searchText } = useMiseEnPlaceInterface()
+const { card: makeCard, searchText } = useMiseEnPlaceInterface()
 
 const collection = computed(() => props.collection ?? [])
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search mise tasks...'))
@@ -132,16 +101,6 @@ const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
-
-const previewById = computed(() => {
-  const map: Record<string, ReturnType<typeof makePreview> | null> = {}
-  for (const task of collection.value) {
-    const card = makeCard(task)
-    if (!card?.id) continue
-    map[card.id] = makePreview(task)
-  }
-  return map
-})
 
 const {
   query,

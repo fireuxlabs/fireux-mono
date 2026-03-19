@@ -3,41 +3,46 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <div>Available Projects</div>
+          <h2>{{ title }}</h2>
+          <p v-if="description">{{ description }}</p>
         </div>
 
-        <div class="collection-manager__controls">
-          <UInput
-            v-model="query"
-            size="xs"
-            placeholder="Search projects…"
-          />
+        <div class="collection-manager__controls flex flex-1 items-center gap-2">
+          <div class="ml-auto flex items-center gap-2">
+            <UInput
+              v-if="showSearchInput"
+              v-model="query"
+              size="xs"
+              :placeholder="searchPlaceholder"
+            />
 
-          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+            <UButton
+              v-if="showVariantToggle"
+              size="xs"
+              variant="ghost"
+              :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
+              :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+              @click="toggleVariant"
+            />
+
+            <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+          </div>
         </div>
       </div>
     </template>
 
-    <div v-if="pending" class="space-y-2">
-      <USkeleton
-        v-for="n in 4"
-        :key="n"
-        class="h-20 rounded-xl"
-      />
-    </div>
-
-    <template v-else-if="cardsFiltered.length">
-      <div class="space-y-2">
-        <ProjectCardsPill
-          v-for="entry in cardsFiltered"
-          :key="entry.id"
-          :to="''"
-          :title="entry.title"
-          :subtitle="entry.subtitle"
-          :badges="entry.badges"
-        />
-      </div>
-    </template>
+    <ProjectCollectionList
+      v-if="cardsFiltered.length"
+      :cards="cardsFiltered"
+      :variant="variant"
+    >
+      <template #pill="{ card }">
+        <ProjectCardsPill v-bind="card" :link="linkEnabled" />
+      </template>
+      <template #cell="{ card }">
+        <ProjectCardsCell v-bind="card" :link="linkEnabled" />
+      </template>
+    </ProjectCollectionList>
 
     <p v-else>
       {{ query ? 'No projects match your search.' : 'No projects found.' }}
@@ -55,78 +60,65 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
+import { computed } from 'vue'
+import { useProjectInterface, type ProjectCard, type ProjectView } from '../../../composables/useProjectInterface'
+import ProjectCardsCell from '../Cards/Cell.vue'
 import ProjectCardsPill from '../Cards/Pill.vue'
-
-type ProjectRow = {
-  id?: string
-  key?: string
-  slug?: string
-  name?: string
-  status?: string
-}
-
-type NormalizedProjectRow = {
-  id: string
-  key: string
-  name: string
-  status: string
-}
-
-type ProjectCard = {
-  id: string
-  title: string
-  subtitle: string
-  badges: string[]
-}
+import ProjectCollectionList from './List.vue'
 
 const props = withDefaults(defineProps<{
-  collection?: ProjectRow[]
-  pending?: boolean
+  collection?: ProjectView.Row[]
+  title?: string
+  description?: string
+  link?: boolean
+  searchPlaceholder?: string
+  showSearch?: boolean
+  showVariantToggle?: boolean
+  showCount?: boolean
+  initialVariant?: 'pill' | 'cell'
 }>(), {
   collection: () => [],
-  pending: false,
+  title: 'Projects',
+  description: 'Browse project records available in this workspace.',
+  link: false,
+  searchPlaceholder: 'Search projects…',
+  showSearch: true,
+  showVariantToggle: true,
+  showCount: true,
+  initialVariant: 'pill',
 })
 
 const rawCollection = computed(() => props.collection ?? [])
+const title = computed(() => String(props.title || 'Projects'))
+const description = computed(() => String(props.description || '').trim())
+const linkEnabled = computed(() => props.link !== false)
+const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search projects…'))
+const showSearch = computed(() => props.showSearch !== false)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
+const showCount = computed(() => props.showCount !== false)
+const { item, card: makeCard, searchText } = useProjectInterface()
 
-const normalizeString = (value: unknown) => String(value || '').trim()
-
-const collection = computed<NormalizedProjectRow[]>(() =>
+const collection = computed<ProjectView.Item[]>(() =>
   rawCollection.value
-    .map((row) => {
-      const id = normalizeString(row.id)
-      const key = normalizeString(row.key) || id || normalizeString(row.slug)
-      const name = normalizeString(row.name)
-      const status = normalizeString(row.status) || 'active'
-
-      return {
-        id: id || key || name,
-        key,
-        name,
-        status,
-      }
-    })
-    .filter((row) => Boolean(row.id && (row.key || row.name)))
+    .map((row) => item(row))
+    .filter((row): row is ProjectView.Item => Boolean(row))
 )
 
 const {
   query,
+  variant,
+  toggleVariant,
   cards: cardsFiltered,
   visibleCount,
-} = useCollectionSearch<NormalizedProjectRow, ProjectCard>({
+} = useCollectionSearch<ProjectView.Item, ProjectCard.Card>({
   items: collection,
-  searchText: (row) =>
-    `${row.key} ${row.name} ${row.status}`.trim().toLowerCase(),
-  makeCard: (row) => ({
-    id: row.id,
-    title: row.name || row.key || 'Untitled project',
-    subtitle: row.key || '',
-    badges: [row.status],
-  }),
+  searchText: (row) => searchText(row),
+  makeCard: (row) => makeCard(row),
+  initialVariant: props.initialVariant,
 })
 
 const totalCount = computed(() => collection.value.length)
+const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
 const isDev = import.meta.dev
 </script>

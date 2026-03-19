@@ -3,7 +3,7 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <div>{{ title }}</div>
+          <h2>{{ title }}</h2>
           <p v-if="description">{{ description }}</p>
         </div>
 
@@ -43,7 +43,7 @@
       </template>
       <template #cell="{ card }">
         <PropertyCardsCell
-          :card="card"
+          v-bind="card"
           :link="linkEnabled"
           :show-meta="true"
         />

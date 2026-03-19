@@ -3,14 +3,11 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <div>{{ title }}</div>
-          <p>{{ description }}</p>
+          <h2>{{ title }}</h2>
+          <p v-if="description">{{ description }}</p>
         </div>
 
         <div class="collection-manager__controls flex flex-1 items-center gap-2">
-          <div class="flex items-center gap-2">
-            <slot name="controls" />
-          </div>
           <div class="ml-auto flex items-center gap-2">
             <UInput
               v-if="showSearchInput"
@@ -33,44 +30,15 @@
     </template>
 
     <SupplierCollectionList
-      v-if="cardsRenderable.length"
-      :cards="cardsRenderable"
+      v-if="cardsFiltered.length"
+      :cards="cardsFiltered"
       :variant="variant"
     >
       <template #pill="{ card }">
-        <div
-          class="block rounded-lg transition"
-          :class="[
-            linkEnabled && card.to ? 'cursor-pointer' : 'cursor-default',
-            selectedId === card.id ? 'ring-2 ring-primary/60 p-1' : '',
-          ]"
-          @click="openCard(card)"
-        >
-          <SupplierCardsPill
-            :to="card.to"
-            :title="card.title"
-            :subtitle="card.subtitle"
-            :avatar-url="card.avatarUrl"
-            :link="false"
-          />
-        </div>
+        <SupplierCardsPill v-bind="card" :link="linkEnabled" />
       </template>
       <template #cell="{ card }">
-        <div
-          class="block rounded-lg transition"
-          :class="[
-            linkEnabled && card.to ? 'cursor-pointer' : 'cursor-default',
-            selectedId === card.id ? 'ring-2 ring-primary/60 p-1' : '',
-          ]"
-          @click="openCard(card)"
-        >
-          <SupplierCardsCell
-            :id="card.id"
-            :title="card.title"
-            :subtitle="card.subtitle"
-            :avatar-url="card.avatarUrl"
-          />
-        </div>
+        <SupplierCardsCell v-bind="card" :link="linkEnabled" />
       </template>
     </SupplierCollectionList>
 
@@ -90,11 +58,9 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import {
     useSupplierInterface,
-    type SupplierCard,
     type SupplierSurface,
 } from 'fireux-suppliers/runtime/composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
 import { computed } from 'vue'
@@ -110,7 +76,6 @@ const props = withDefaults(
     title?: string
     description?: string
     link?: boolean
-    selectedId?: string | null
     searchPlaceholder?: string
     showSearch?: boolean
     showVariantToggle?: boolean
@@ -129,15 +94,10 @@ const props = withDefaults(
   }
 )
 
-const emit = defineEmits<{
-  (event: 'select', supplierId: string): void
-}>()
-
 const { card: makeCard, searchText } = useSupplierInterface()
 
 const collection = computed(() => props.collection ?? [])
 const linkEnabled = computed(() => props.link !== false)
-const selectedId = computed(() => String(props.selectedId || '').trim())
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search suppliers...'))
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
@@ -156,52 +116,5 @@ const {
   makeCard: (supplier: SupplierCollectionEntry) => makeCard(supplier),
   initialVariant: props.initialVariant,
 })
-
-const fallbackCards = computed<SupplierCard.Card[]>(() =>
-  (collection.value ?? [])
-    .map((supplier, index) => {
-      const row = supplier as Record<string, unknown>
-      const id = String(row.id || row.supplier_id || `supplier-${index + 1}`).trim()
-      if (!id) return null
-
-      const profileId = String(row.supplier_id || row.source_supplier_id || id).trim()
-      const name = String(row.name || row.short_name || profileId || id).trim()
-      const category = String(row.category || row.business_type || '').trim()
-      const avatarUrl = String(row.image_url || row.logo_url || row.avatar_url || '').trim()
-
-      return {
-        id: profileId || id,
-        to: profileId ? `/suppliers/${encodeURIComponent(profileId)}` : '',
-        title: name,
-        subtitle: category,
-        badges: [],
-        avatarUrl,
-        organizationName: name,
-        locationsLabel: '',
-        summary: '',
-        categoriesCsv: '',
-        specialtiesCsv: '',
-      } satisfies SupplierCard.Card
-    })
-    .filter((card): card is SupplierCard.Card => Boolean(card))
-)
-
-const cardsRenderable = computed<SupplierCard.Card[]>(() => {
-  if (cardsFiltered.value.length) return cardsFiltered.value as SupplierCard.Card[]
-  if (query.value.trim()) return []
-  return fallbackCards.value
-})
 const isDev = import.meta.dev
-
-const openCard = (card: SupplierCard.Card) => {
-  const supplierId = String(card?.id || '').trim()
-  if (supplierId) {
-    emit('select', selectedId.value === supplierId ? '' : supplierId)
-  }
-
-  if (!linkEnabled.value) return
-  const to = String(card?.to || '').trim()
-  if (!to) return
-  navigateTo(to)
-}
 </script>

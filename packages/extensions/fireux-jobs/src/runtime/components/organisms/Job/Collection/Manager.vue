@@ -3,25 +3,29 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <div>Jobs</div>
-          <p>Browse {{ appName }} jobs.</p>
+          <h2>{{ title }}</h2>
+          <p>{{ description }}</p>
         </div>
 
-        <div class="collection-manager__controls">
-          <UInput
-            v-model="query"
-            size="xs"
-            placeholder="Search jobs…"
-          />
+        <div class="collection-manager__controls flex flex-1 items-center gap-2">
+          <div class="ml-auto flex items-center gap-2">
+            <UInput
+              v-if="showSearchInput"
+              v-model="query"
+              size="xs"
+              :placeholder="searchPlaceholder"
+            />
 
-          <UButton
-            size="xs"
-            variant="ghost"
-            :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
-            :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
-            @click="toggleVariant"
-          />
-          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+            <UButton
+              v-if="showVariantToggle"
+              size="xs"
+              variant="ghost"
+              :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
+              :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+              @click="toggleVariant"
+            />
+            <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+          </div>
         </div>
       </div>
     </template>
@@ -32,14 +36,10 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <NuxtLink :to="card.to">
-          <JobCardsPill v-bind="card" :show-badges="false" />
-        </NuxtLink>
+        <JobCardsPill v-bind="card" :link="linkEnabled" :show-badges="false" />
       </template>
       <template #cell="{ card }">
-        <NuxtLink :to="card.to">
-          <JobCardsCell v-bind="card" />
-        </NuxtLink>
+        <JobCardsCell v-bind="card" :link="linkEnabled" />
       </template>
     </JobCollectionList>
 
@@ -60,15 +60,46 @@
 
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig';
 import { computed } from 'vue';
-import { useJobInterface } from '../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface';
 import type { Job } from '../../../../../models/job.model';
+import { useJobInterface } from '../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface';
 
-const props = defineProps<{ collection?: Job[] }>()
-const { appName } = useFireUXConfig()
+const props = withDefaults(
+  defineProps<{
+    collection?: Job[]
+    title?: string
+    description?: string
+    link?: boolean
+    searchPlaceholder?: string
+    showSearch?: boolean
+    showVariantToggle?: boolean
+    showCount?: boolean
+    initialVariant?: 'pill' | 'cell'
+  }>(),
+  {
+    title: 'Jobs',
+    description: 'Browse job records available to this runtime.',
+    link: true,
+    searchPlaceholder: 'Search jobs…',
+    showSearch: true,
+    showVariantToggle: true,
+    showCount: true,
+    initialVariant: 'pill',
+  }
+)
 
 const collection = computed(() => props.collection ?? [])
+const title = computed(() => String(props.title || 'Jobs'))
+const description = computed(
+  () => String(props.description || 'Browse job records available to this runtime.')
+)
+const linkEnabled = computed(() => props.link !== false)
+const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search jobs…'))
+const showSearch = computed(() => props.showSearch !== false)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
+const showCount = computed(() => props.showCount !== false)
+const totalCount = computed(() => collection.value.length)
+const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
 const { card: makeCard, searchText } = useJobInterface()
 
 const {
@@ -81,9 +112,9 @@ const {
   items: collection,
   searchText: (job: Job) => searchText(job),
   makeCard: (job: Job) => makeCard(job),
+  initialVariant: props.initialVariant,
 })
 
-const totalCount = computed(() => collection.value.length)
 const isDev = import.meta.dev
 
 </script>

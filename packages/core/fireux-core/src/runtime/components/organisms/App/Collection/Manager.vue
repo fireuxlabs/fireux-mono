@@ -3,25 +3,30 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <div>Available Apps</div>
+          <h2>{{ title }}</h2>
+          <p v-if="description">{{ description }}</p>
         </div>
 
-        <div class="collection-manager__controls">
-          <UInput
-            v-model="query"
-            size="xs"
-            placeholder="Search apps…"
-          />
+        <div class="collection-manager__controls flex flex-1 items-center gap-2">
+          <div class="ml-auto flex items-center gap-2">
+            <UInput
+              v-if="showSearchInput"
+              v-model="query"
+              size="xs"
+              :placeholder="searchPlaceholder"
+            />
 
-          <UButton
-            size="xs"
-            variant="ghost"
-            :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
-            :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
-            @click="toggleVariant"
-          />
+            <UButton
+              v-if="showVariantToggle"
+              size="xs"
+              variant="ghost"
+              :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
+              :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+              @click="toggleVariant"
+            />
 
-          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+            <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+          </div>
         </div>
       </div>
     </template>
@@ -32,27 +37,10 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <NuxtLink :to="card.to">
-          <AppCardsPill
-            :to="card.to"
-            :thumbnail-url="card.thumbnailUrl"
-            :display-name="card.displayName"
-            :ecosystem="card.ecosystem"
-            :badges="card.badges"
-          />
-        </NuxtLink>
+        <AppCardsPill v-bind="card" :link="linkEnabled" />
       </template>
       <template #cell="{ card }">
-        <NuxtLink :to="card.to">
-          <AppCardsCell
-            :to="card.to"
-            :thumbnail-url="card.thumbnailUrl"
-            :display-name="card.displayName"
-            :badges="card.badges"
-            :tagline="card.tagline"
-            :user-count="card.userCount"
-          />
-        </NuxtLink>
+        <AppCardsCell v-bind="card" :link="linkEnabled" />
       </template>
     </AppCollectionList>
 
@@ -72,14 +60,47 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
-import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch'
-import type { AppModel } from '../../../../models/core/app.model'
+import { computed } from 'vue';
+import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface';
+import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch';
+import type { AppModel } from '../../../../models/core/app.model';
 
-const props = defineProps<{ collection?: AppModel[] }>()
+const props = withDefaults(
+  defineProps<{
+    collection?: AppModel[]
+    title?: string
+    description?: string
+    link?: boolean
+    searchPlaceholder?: string
+    showSearch?: boolean
+    showVariantToggle?: boolean
+    showCount?: boolean
+    initialVariant?: 'pill' | 'cell'
+  }>(),
+  {
+    title: 'Apps',
+    description: 'Browse canonical app records for the current ecosystem.',
+    link: true,
+    searchPlaceholder: 'Search apps…',
+    showSearch: true,
+    showVariantToggle: true,
+    showCount: true,
+    initialVariant: 'pill',
+  }
+)
 
 const collection = computed(() => props.collection ?? [])
+const title = computed(() => String(props.title || 'Apps'))
+const description = computed(
+  () => String(props.description || 'Browse canonical app records for the current ecosystem.')
+)
+const linkEnabled = computed(() => props.link !== false)
+const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search apps…'))
+const showSearch = computed(() => props.showSearch !== false)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
+const showCount = computed(() => props.showCount !== false)
+const totalCount = computed(() => collection.value.length)
+const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
 const { card: makeCard, searchText } = useAppInterface()
 const {
   query,
@@ -91,9 +112,9 @@ const {
   items: collection,
   searchText: (app) => searchText(app),
   makeCard: (app) => makeCard(app),
+  initialVariant: props.initialVariant,
 })
 
-const totalCount = computed(() => collection.value.length)
 const isDev = import.meta.dev
 const devJsonContext = 'collection manager · apps · root: apps'
 </script>

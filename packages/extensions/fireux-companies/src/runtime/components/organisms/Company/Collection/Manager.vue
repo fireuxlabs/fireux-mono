@@ -3,25 +3,29 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <div>Companies</div>
-          <p>Browse {{ appName }} companies.</p>
+          <h2>{{ title }}</h2>
+          <p>{{ description }}</p>
         </div>
 
-        <div class="collection-manager__controls">
-          <UInput
-            v-model="query"
-            size="xs"
-            placeholder="Search companies…"
-          />
+        <div class="collection-manager__controls flex flex-1 items-center gap-2">
+          <div class="ml-auto flex items-center gap-2">
+            <UInput
+              v-if="showSearchInput"
+              v-model="query"
+              size="xs"
+              :placeholder="searchPlaceholder"
+            />
 
-          <UButton
-            size="xs"
-            variant="ghost"
-            :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
-            :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
-            @click="toggleVariant"
-          />
-          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+            <UButton
+              v-if="showVariantToggle"
+              size="xs"
+              variant="ghost"
+              :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
+              :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+              @click="toggleVariant"
+            />
+            <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+          </div>
         </div>
       </div>
     </template>
@@ -32,14 +36,10 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <NuxtLink :to="card.to">
-          <CompanyCardsPill v-bind="card" />
-        </NuxtLink>
+        <CompanyCardsPill v-bind="card" :link="linkEnabled" />
       </template>
       <template #cell="{ card }">
-        <NuxtLink :to="card.to">
-          <CompanyCardsCell v-bind="card" />
-        </NuxtLink>
+        <CompanyCardsCell v-bind="card" :link="linkEnabled" />
       </template>
     </CompanyCollectionList>
 
@@ -59,16 +59,47 @@
 </template>
 
 <script setup lang="ts">
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-import { computed } from 'vue'
-import { useCompanyInterface } from '../../../../composables/fireux/firestore/company/utils/view/useCompanyInterface'
-import type { CompanyView } from '../../../../models/company.model'
+import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
+import { computed } from 'vue';
+import { useCompanyInterface } from '../../../../composables/fireux/firestore/company/utils/view/useCompanyInterface';
+import type { CompanyView } from '../../../../models/company.model';
 
-const props = defineProps<{ collection?: CompanyView[] }>()
-const { appName } = useFireUXConfig()
+const props = withDefaults(
+  defineProps<{
+    collection?: CompanyView[]
+    title?: string
+    description?: string
+    link?: boolean
+    searchPlaceholder?: string
+    showSearch?: boolean
+    showVariantToggle?: boolean
+    showCount?: boolean
+    initialVariant?: 'pill' | 'cell'
+  }>(),
+  {
+    title: 'Companies',
+    description: 'Browse company records built on claimed places.',
+    link: true,
+    searchPlaceholder: 'Search companies…',
+    showSearch: true,
+    showVariantToggle: true,
+    showCount: true,
+    initialVariant: 'pill',
+  }
+)
 
 const collection = computed(() => props.collection ?? [])
+const title = computed(() => String(props.title || 'Companies'))
+const description = computed(
+  () => String(props.description || 'Browse company records built on claimed places.')
+)
+const linkEnabled = computed(() => props.link !== false)
+const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search companies…'))
+const showSearch = computed(() => props.showSearch !== false)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
+const showCount = computed(() => props.showCount !== false)
+const totalCount = computed(() => collection.value.length)
+const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
 const { card: makeCard, searchText } = useCompanyInterface()
 
 const {
@@ -81,7 +112,7 @@ const {
   items: collection,
   searchText: (company: CompanyView) => searchText(company),
   makeCard: (company: CompanyView) => makeCard(company),
+  initialVariant: props.initialVariant,
 })
-const totalCount = computed(() => collection.value.length)
 const isDev = import.meta.dev
 </script>

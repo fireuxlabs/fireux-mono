@@ -42,7 +42,7 @@
         </div>
 
         <div v-if="showTagline" class="truncate text-xs text-dimmed">
-          <span v-if="prop">{{ prop }}</span>
+          <span v-if="prop || description">{{ prop || description }}</span>
           <span v-else class="italic">missing</span>
         </div>
       </div>
@@ -55,7 +55,7 @@ import type { DishCard } from '../../../../composables/fireux/firestore/runtime-
 
 type Props = Pick<
   DishCard.Card,
-  'to' | 'name' | 'subtitle' | 'active' | 'imageUrl'
+  'to' | 'name' | 'subtitle' | 'active' | 'imageUrl' | 'description'
 > & {
   prop?: string
   showSubtitle?: boolean

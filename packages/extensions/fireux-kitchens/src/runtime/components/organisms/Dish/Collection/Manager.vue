@@ -3,7 +3,7 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <div>{{ title }}</div>
+          <h2>{{ title }}</h2>
           <p>{{ description }}</p>
         </div>
 
@@ -35,64 +35,10 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <div
-          v-if="selectionMode"
-          class="block rounded-lg transition"
-          :class="[
-            selectedId === card.id ? 'ring-2 ring-primary/60' : '',
-            'cursor-pointer',
-          ]"
-          @click="openCard(card)"
-        >
-          <DishCardsPill v-bind="card" />
-        </div>
-
-        <UPopover v-else :popper="{ placement: 'right-start' }">
-          <template #default>
-            <NuxtLink
-              :to="linkEnabled ? (card.to || undefined) : undefined"
-              class="block"
-              :class="linkEnabled && card.to ? '' : 'cursor-default'"
-            >
-              <DishCardsPill v-bind="card" />
-            </NuxtLink>
-          </template>
-          <template #content>
-            <div class="w-[20rem] p-3">
-              <DishCardsPreview v-if="previewById[card.id]" v-bind="previewById[card.id]" />
-            </div>
-          </template>
-        </UPopover>
+        <DishCardsPill v-bind="card" :link="linkEnabled" />
       </template>
       <template #cell="{ card }">
-        <div
-          v-if="selectionMode"
-          class="block rounded-lg transition"
-          :class="[
-            selectedId === card.id ? 'ring-2 ring-primary/60' : '',
-            'cursor-pointer',
-          ]"
-          @click="openCard(card)"
-        >
-          <DishCardsCell v-bind="card" :prop="card.description" />
-        </div>
-
-        <UPopover v-else :popper="{ placement: 'right-start' }">
-          <template #default>
-            <NuxtLink
-              :to="linkEnabled ? (card.to || undefined) : undefined"
-              class="block"
-              :class="linkEnabled && card.to ? '' : 'cursor-default'"
-            >
-              <DishCardsCell v-bind="card" :prop="card.description" />
-            </NuxtLink>
-          </template>
-          <template #content>
-            <div class="w-[20rem] p-3">
-              <DishCardsPreview v-if="previewById[card.id]" v-bind="previewById[card.id]" />
-            </div>
-          </template>
-        </UPopover>
+        <DishCardsCell v-bind="card" :link="linkEnabled" />
       </template>
     </DishCollectionList>
 
@@ -128,8 +74,6 @@ const props = withDefaults(
     showCount?: boolean
     initialVariant?: 'pill' | 'cell'
     link?: boolean
-    selectionMode?: boolean
-    selectedId?: string | null
   }>(),
   {
     title: 'Dishes',
@@ -140,15 +84,10 @@ const props = withDefaults(
     showCount: true,
     initialVariant: 'pill',
     link: true,
-    selectionMode: false,
   }
 )
 
-const emit = defineEmits<{
-  (event: 'select', dishId: string): void
-}>()
-
-const { card: makeCard, preview: makePreview, searchText } = useDishInterface()
+const { card: makeCard, searchText } = useDishInterface()
 
 const collection = computed(() => props.collection ?? [])
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search dishes...'))
@@ -156,20 +95,8 @@ const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
-const selectionMode = computed(() => props.selectionMode === true)
-const selectedId = computed(() => String(props.selectedId || '').trim())
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
-
-const previewById = computed(() => {
-  const map: Record<string, ReturnType<typeof makePreview> | null> = {}
-  for (const dish of collection.value) {
-    const card = makeCard(dish)
-    if (!card?.id) continue
-    map[card.id] = makePreview(dish)
-  }
-  return map
-})
 
 const {
   query,
@@ -184,10 +111,4 @@ const {
   initialVariant: props.initialVariant,
 })
 const isDev = import.meta.dev
-
-const openCard = (card: ReturnType<typeof makeCard>) => {
-  const dishId = String(card?.id || '').trim()
-  if (!dishId) return
-  emit('select', selectedId.value === dishId ? '' : dishId)
-}
 </script>

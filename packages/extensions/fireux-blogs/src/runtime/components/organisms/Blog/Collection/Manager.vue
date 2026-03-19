@@ -3,25 +3,29 @@
     <template #header>
       <div class="collection-manager__header">
         <div class="collection-manager__title">
-          <div>Blog</div>
-          <p>Browse {{ appName }} posts.</p>
+          <h2>{{ title }}</h2>
+          <p>{{ description }}</p>
         </div>
 
-        <div class="collection-manager__controls">
-          <UInput
-            v-model="query"
-            size="xs"
-            placeholder="Search posts…"
-          />
+        <div class="collection-manager__controls flex flex-1 items-center gap-2">
+          <div class="ml-auto flex items-center gap-2">
+            <UInput
+              v-if="showSearchInput"
+              v-model="query"
+              size="xs"
+              :placeholder="searchPlaceholder"
+            />
 
-          <UButton
-            size="xs"
-            variant="ghost"
-            :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
-            :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
-            @click="toggleVariant"
-          />
-          <UBadge variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+            <UButton
+              v-if="showVariantToggle"
+              size="xs"
+              variant="ghost"
+              :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
+              :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+              @click="toggleVariant"
+            />
+            <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+          </div>
         </div>
       </div>
     </template>
@@ -32,14 +36,10 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <NuxtLink :to="card.to">
-          <BlogCardsPill v-bind="card" />
-        </NuxtLink>
+        <BlogCardsPill v-bind="card" :link="linkEnabled" />
       </template>
       <template #cell="{ card }">
-        <NuxtLink :to="card.to">
-          <BlogCardsCell v-bind="card" />
-        </NuxtLink>
+        <BlogCardsCell v-bind="card" :link="linkEnabled" />
       </template>
     </BlogCollectionList>
 
@@ -59,16 +59,47 @@
 </template>
 
 <script setup lang="ts">
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig';
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
 import type { BlogPost } from '../../../../../models/blogPost.model';
 import { useBlogInterface } from '../../../../composables/fireux/firestore/blog/utils/view/useBlogInterface';
 
-const props = defineProps<{ collection?: BlogPost[] }>()
-const { appName } = useFireUXConfig()
+const props = withDefaults(
+  defineProps<{
+    collection?: BlogPost[]
+    title?: string
+    description?: string
+    link?: boolean
+    searchPlaceholder?: string
+    showSearch?: boolean
+    showVariantToggle?: boolean
+    showCount?: boolean
+    initialVariant?: 'pill' | 'cell'
+  }>(),
+  {
+    title: 'Blog',
+    description: 'Browse published blog posts for this runtime.',
+    link: true,
+    searchPlaceholder: 'Search posts…',
+    showSearch: true,
+    showVariantToggle: true,
+    showCount: true,
+    initialVariant: 'pill',
+  }
+)
 
 const collection = computed(() => props.collection ?? [])
+const title = computed(() => String(props.title || 'Blog'))
+const description = computed(
+  () => String(props.description || 'Browse published blog posts for this runtime.')
+)
+const linkEnabled = computed(() => props.link !== false)
+const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search posts…'))
+const showSearch = computed(() => props.showSearch !== false)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
+const showCount = computed(() => props.showCount !== false)
+const totalCount = computed(() => collection.value.length)
+const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
 const { card: makeCard, searchText } = useBlogInterface()
 
 const {
@@ -81,8 +112,8 @@ const {
   items: collection,
   searchText: (post: BlogPost) => searchText(post),
   makeCard: (post: BlogPost) => makeCard(post),
+  initialVariant: props.initialVariant,
 })
-const totalCount = computed(() => collection.value.length)
 const isDev = import.meta.dev
 const devJsonContext = 'collection manager · blogs · root: blogs'
 </script>
