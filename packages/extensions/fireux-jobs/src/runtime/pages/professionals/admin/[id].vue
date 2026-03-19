@@ -78,12 +78,12 @@ import { useConsoleProfileView } from 'fireux-core/runtime/composables/fireux/ap
 import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProfessionalComputed } from '../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalComputed'
 import { useProfessionalInterface } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import type { ProfessionalApp, ProfessionalCore } from '../../../models/profiles/Professional/Professional.model'
-import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
 
 definePageMeta({
   layout: 'default',
@@ -99,11 +99,6 @@ const userId = computed(() => {
     : route.params.id
   return String(raw ?? '').trim() || null
 })
-
-const pageTitle = computed(() =>
-  userId.value ? `Admin · Professional · ${userId.value}` : 'Admin · Professional'
-)
-const pageDescription = 'Admin edit professional profile.'
 
 const userRefs = useUserFetch(userId)
 const { profile, pending } = useProfileFetch<ProfessionalCore, ProfessionalApp>(
@@ -130,6 +125,16 @@ const professionalCard = computed(() => {
     : resolvedCoreProfile.value
   return makeCard(resolved)
 })
+const pageTitle = computed(() =>
+  professionalCard.value?.displayName
+    ? `Admin · ${professionalCard.value.displayName}`
+    : userId.value
+      ? `Admin · Professional · ${userId.value}`
+      : 'Admin · Professional Profile'
+)
+const pageDescription = computed(
+  () => 'Review the public profile and edit the underlying professional documents.'
+)
 const isDev = import.meta.dev
 const devPayload = computed(() => ({
   userId: userId.value,

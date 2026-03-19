@@ -116,8 +116,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
 import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import { computed, ref } from 'vue'
 import { usePortfolioTaskCollection } from '../../../composables/fireux/firestore/tasks/fetch/usePortfolioTaskCollection'
 import { useTaskCreate } from '../../../composables/fireux/firestore/tasks/mutations/useTaskCreate'
 import { useTaskUpdate } from '../../../composables/fireux/firestore/tasks/mutations/useTaskUpdate'

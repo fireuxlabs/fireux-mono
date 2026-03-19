@@ -42,12 +42,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
-import { usePortfolioPropertyCollection } from 'fireux-properties/runtime/composables/fireux/firestore/property/fetch/usePortfolioPropertyCollection'
 import { usePortfolioComplianceRecordCollection } from 'fireux-compliance/runtime/composables/fireux/firestore/compliance/fetch/usePortfolioComplianceRecordCollection'
 import { usePortfolioDocumentLinkCollection } from 'fireux-documents/runtime/composables/fireux/firestore/documents/fetch/usePortfolioDocumentLinkCollection'
+import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import { usePortfolioPropertyCollection } from 'fireux-properties/runtime/composables/fireux/firestore/property/fetch/usePortfolioPropertyCollection'
 import { usePortfolioTaskCollection } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/fetch/usePortfolioTaskCollection'
+import { computed } from 'vue'
 
 definePageMeta({
   layout: 'console',

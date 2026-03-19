@@ -3,7 +3,7 @@
     <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
-      <CompanyCTA />
+      <CompanyCTA :count="collection.length" />
       <CompanyCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
@@ -33,7 +33,7 @@ definePageMeta({
 
 const pageTitle = 'Companies'
 const pageDescription =
-  'Create and browse companies.'
+  'Canonical company index for the current runtime.'
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })

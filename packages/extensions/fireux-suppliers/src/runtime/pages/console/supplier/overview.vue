@@ -7,18 +7,14 @@
     <template #body>
       <section class="space-y-8">
         <UCard>
-          <div class="grid gap-3 sm:grid-cols-3">
+          <div class="grid gap-3 sm:grid-cols-2">
             <div class="rounded border border-default p-3">
-              <div class="text-xs text-dimmed">App suppliers</div>
-              <div class="text-lg font-semibold">{{ stats.appSuppliers }}</div>
+              <div class="text-xs text-dimmed">Suppliers</div>
+              <div class="text-lg font-semibold">{{ stats.suppliers }}</div>
             </div>
             <div class="rounded border border-default p-3">
-              <div class="text-xs text-dimmed">Core suppliers</div>
-              <div class="text-lg font-semibold">{{ stats.coreSuppliers }}</div>
-            </div>
-            <div class="rounded border border-default p-3">
-              <div class="text-xs text-dimmed">Total suppliers</div>
-              <div class="text-lg font-semibold">{{ stats.totalSuppliers }}</div>
+              <div class="text-xs text-dimmed">Status</div>
+              <div class="text-lg font-semibold">{{ stats.pending ? 'Loading' : 'Ready' }}</div>
             </div>
           </div>
         </UCard>
@@ -29,8 +25,8 @@
           </template>
 
           <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <UButton :to="actions.openProfileTo" variant="soft" icon="i-lucide-user-round" block>
-              Supplier profile
+            <UButton :to="actions.openWorkspaceTo" variant="soft" icon="i-lucide-layout-dashboard" block>
+              Supplier workspace
             </UButton>
             <UButton :to="actions.browseSuppliersTo" variant="soft" icon="i-lucide-truck" block>
               Browse suppliers
@@ -44,8 +40,8 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import { useSupplier } from '../../../composables/supplier/ops/useSupplier'
 import { useRuntimeSupplierConsole } from '../../../composables/fireux/app/supplier-console/useRuntimeSupplierConsole'
+import { useSupplier } from '../../../composables/supplier/ops/useSupplier'
 
 definePageMeta({
   layout: 'console',

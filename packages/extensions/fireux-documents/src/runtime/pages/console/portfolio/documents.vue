@@ -152,15 +152,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
 import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import { computed, ref } from 'vue'
 import { usePortfolioDocumentCollection } from '../../../composables/fireux/firestore/documents/fetch/usePortfolioDocumentCollection'
 import { usePortfolioDocumentLinkCollection } from '../../../composables/fireux/firestore/documents/fetch/usePortfolioDocumentLinkCollection'
-import { useDocumentStorage } from '../../../composables/fireux/firestore/documents/mutations/useDocumentStorage'
-import { useDocumentCreate } from '../../../composables/fireux/firestore/documents/mutations/useDocumentCreate'
 import { linkDocumentToEntity } from '../../../composables/fireux/firestore/documents/mutations/linkDocumentToEntity'
-import { useDocumentInterface } from '../../../composables/fireux/firestore/documents/utils/view/useDocumentInterface'
+import { useDocumentCreate } from '../../../composables/fireux/firestore/documents/mutations/useDocumentCreate'
+import { useDocumentStorage } from '../../../composables/fireux/firestore/documents/mutations/useDocumentStorage'
 import { documentLinkTargetTypes } from '../../../composables/fireux/firestore/documents/utils/validation/validateDocumentLinkTarget'
+import { useDocumentInterface } from '../../../composables/fireux/firestore/documents/utils/view/useDocumentInterface'
 
 definePageMeta({
   layout: 'console',

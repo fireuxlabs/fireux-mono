@@ -35,15 +35,12 @@ definePageMeta({
 
 const pageTitle = 'Suppliers'
 const pageDescription =
-  'View your profile and browse suppliers.'
+  'Browse supplier records for the current runtime.'
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 
-const { coreSuppliers, appSuppliers } = useSupplierFetch()
-const collection = computed(() => [
-  ...(appSuppliers?.value ?? []),
-  ...(coreSuppliers.value ?? []),
-])
+const { coreSuppliers } = useSupplierFetch()
+const collection = computed(() => coreSuppliers.value ?? [])
 
 </script>

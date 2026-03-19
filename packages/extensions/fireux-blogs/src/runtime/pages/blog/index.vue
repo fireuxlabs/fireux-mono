@@ -3,6 +3,14 @@
   <UPage>
     <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
+      <EntityIndexCta
+        title="Blog index"
+        description="Browse published articles for this runtime. Editorial authoring remains in the admin blog workspace."
+        family="special"
+        source="blogs collection"
+        :count-label="`${collection.length} post${collection.length === 1 ? '' : 's'}`"
+        :actions="actions"
+      />
       <BlogCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
@@ -17,12 +25,12 @@ import { useBlogFetch } from '../../composables/fireux/firestore/blog/fetch/useB
 const { appName } = useFireUXConfig()
 
 const pageTitle = 'Blog'
-const pageDescription = 'Latest articles.'
+const pageDescription = 'Canonical blog index for the current runtime.'
 
 definePageMeta({
   layout: 'default',
   title: 'Blog',
-  description: 'Latest articles.',
+  description: 'Canonical blog index for the current runtime.',
   nav: {
     key: 'blog',
     label: 'Blog',
@@ -39,4 +47,19 @@ useHead({ title: `${appName} | ${pageTitle}` })
 
 const { items } = useBlogFetch()
 const collection = computed(() => items.value ?? [])
+
+const actions = [
+  {
+    label: 'Create',
+    cta: 'Write post',
+    to: '/admin/blogs/create',
+    icon: 'i-lucide-plus',
+  },
+  {
+    label: 'Related',
+    cta: 'Browse products',
+    to: '/products',
+    icon: 'i-lucide-box',
+  },
+] as const
 </script>

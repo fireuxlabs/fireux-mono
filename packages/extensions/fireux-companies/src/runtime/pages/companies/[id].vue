@@ -19,7 +19,7 @@
           :disabled="!docId"
           :to="editTo"
         >
-          Edit
+          Manage company
         </UButton>
       </template>
     </UPageHeader>
@@ -63,7 +63,7 @@
                 :disabled="isClaiming"
                 @click="onClaim"
               >
-                Claim this business
+                Claim this company record
               </UButton>
             </div>
           </UCard>
@@ -151,7 +151,9 @@ const company = computed<CompanyView | null>(
 const loading = computed(() => !rawDoc && !!docId)
 
 const pageTitle = computed(() => company.value?.name || 'Company')
-const pageDescription = computed(() => company.value?.website || 'Company details.')
+const pageDescription = computed(() =>
+  company.value?.formatted_address || company.value?.website || 'Review the public company record and its underlying place ownership.'
+)
 const isDev = import.meta.dev
 
 const { profile } = useCompanyInterface()
@@ -226,10 +228,10 @@ const onClaim = async () => {
   isClaiming.value = true
   try {
     await claimPlace(docId)
-    toast.success('Place claimed')
+    toast.success('Company record claimed')
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Please try again.'
-    toast.error(`Failed to claim place: ${msg}`)
+    toast.error(`Failed to claim company record: ${msg}`)
   } finally {
     isClaiming.value = false
   }

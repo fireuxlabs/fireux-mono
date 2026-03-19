@@ -28,7 +28,7 @@
           variant="soft"
           @click="navigateTo('/dashboard/professional/profile')"
         >
-          Edit
+          Manage profile
         </UButton>
       </template>
     </UPageHeader>
@@ -91,11 +91,11 @@ import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestor
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
 import { computed, ref } from 'vue'
 import { useProfessionalComputed } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalComputed'
 import { useProfessionalInterface } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import type { ProfessionalApp, ProfessionalCore } from '../../models/profiles/Professional/Professional.model'
-import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
 
 const route = useRoute()
 const professionalId = computed(() => {

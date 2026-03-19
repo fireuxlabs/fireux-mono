@@ -32,7 +32,7 @@
           </div>
         </UCard>
 
-        <EcosystemCollectionManager :collection="projectEcosystems" :pending="false" />
+        <EcosystemCollectionManager :collection="projectEcosystems" />
       </section>
     </template>
   </UDashboardPanel>

@@ -43,6 +43,7 @@
             <ProfilesAgentCardsProfile
               v-if="agentCard"
               :card="agentCard"
+              :profile="resolvedCoreProfile"
             />
           </div>
 
@@ -65,11 +66,11 @@ import { useConsoleProfileView } from 'fireux-core/runtime/composables/fireux/ap
 import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAgentInterface } from '../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
 import type { AgentApp, AgentCore } from '../../../models/profiles/Agent/Agent.model'
-import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
 
 definePageMeta({
   layout: 'default',
@@ -86,11 +87,6 @@ const userId = computed(() => {
   return String(raw ?? '').trim() || null
 })
 
-const pageTitle = computed(() =>
-  userId.value ? `Admin · Agent · ${userId.value}` : 'Admin · Agent'
-)
-const pageDescription = 'Admin edit agent profile.'
-
 const userRefs = useUserFetch(userId)
 const { profile, pending } = useProfileFetch<AgentCore, AgentApp>(
   userId,
@@ -106,6 +102,16 @@ const isProfileLoading = computed(
 const resolvedCoreProfile = computed(() => coreProfile.value ?? null)
 const resolvedAppProfile = computed(() => appProfile.value ?? null)
 const agentCard = computed(() => makeCard(resolvedCoreProfile.value))
+const pageTitle = computed(() =>
+  agentCard.value?.displayName
+    ? `Admin · ${agentCard.value.displayName}`
+    : userId.value
+      ? `Admin · Agent · ${userId.value}`
+      : 'Admin · Agent Profile'
+)
+const pageDescription = computed(
+  () => 'Review the public profile and edit the underlying agent documents.'
+)
 
 const { ensure } = useProfileEnsure(agentConfig)
 const isCreating = ref(false)

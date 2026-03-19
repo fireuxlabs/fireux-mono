@@ -20,7 +20,7 @@
           variant="soft"
           @click="navigateTo('/dashboard/chef/profile')"
         >
-          Edit
+          Manage profile
         </UButton>
       </template>
     </UPageHeader>
@@ -49,7 +49,7 @@
           </div>
 
           <div v-else class="space-y-4">
-            <ProfilesChefCardsProfile :chef="profile" />
+            <ProfilesChefCardsProfile v-if="chefCard" :card="chefCard" :profile="profile" />
 
             <DevJson
               v-if="isDev && profile"
@@ -75,9 +75,10 @@ import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestor
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { computed, ref } from 'vue'
-import type { ChefApp, ChefCore } from '../../models/profiles/Chef/Chef.model'
 import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
+import { computed, ref } from 'vue'
+import { useChefInterface } from '../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
+import type { ChefApp, ChefCore } from '../../models/profiles/Chef/Chef.model'
 
 useSeoMeta({
   title: 'Chef Profile',
@@ -100,6 +101,10 @@ const { profile: profileRefs, pending } = useProfileFetch<ChefCore, ChefApp>(
 )
 const profile = computed<ChefCore | null>(() => profileRefs.coreProfile.value ?? null)
 const loading = computed(() => pending.value)
+const { card } = useChefInterface(profileRefs, userRefs.user)
+const chefCard = computed(() =>
+  profile.value ? card(profile.value, userRefs.user.value ?? null) : null
+)
 
 const resolveName = (p: any) =>
   p?.display_name ||

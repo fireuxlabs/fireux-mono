@@ -99,10 +99,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import { useTaskCreate } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/mutations/useTaskCreate'
 import { useTaskProjection } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/utils/projection/useTaskProjection'
+import { computed } from 'vue'
 import { usePortfolioComplianceRecordCollection } from '../../../composables/fireux/firestore/compliance/fetch/usePortfolioComplianceRecordCollection'
 import { useComplianceInterface } from '../../../composables/fireux/firestore/compliance/utils/view/useComplianceInterface'
 

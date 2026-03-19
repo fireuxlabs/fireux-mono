@@ -54,6 +54,7 @@
             <ProfilesChefCardsProfile
               v-if="chefCard"
               :card="chefCard"
+              :profile="resolvedCoreProfile"
             />
           </div>
 
@@ -74,9 +75,9 @@
 <script setup lang="ts">
 import { useConsoleProfileView } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleProfileView'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
+import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 import { computed, ref } from 'vue'
 import { useChef } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
-import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 
 const profileKey = chefConfig.id ?? 'chef'
 const navLabel = chefConfig.navLabel ?? `${chefConfig.profileType} Profile`

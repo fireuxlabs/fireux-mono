@@ -4,6 +4,9 @@
     <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
+      <UserCTA />
+      <UserCollectionManager :collection="collection" />
+
       <UCard v-if="isDev">
         <DevJson
           title="Users (dev)"
@@ -12,17 +15,14 @@
           :default-open="false"
         />
       </UCard>
-
-      <UserCTA />
-      <UserCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useHead, useRuntimeConfig, useSeoMeta } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { computed } from 'vue'
 import { useUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 
 definePageMeta({

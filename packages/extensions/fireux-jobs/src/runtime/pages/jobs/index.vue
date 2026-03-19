@@ -20,12 +20,12 @@ import { useJobCollection } from '../../composables/fireux/firestore/jobs/fetch/
 const { appName } = useFireUXConfig()
 
 const pageTitle = 'Jobs'
-const pageDescription = 'Browse jobs.'
+const pageDescription = 'Canonical job index for the current runtime.'
 
 definePageMeta({
   layout: 'default',
   title: 'Jobs',
-  description: 'Browse jobs.',
+  description: 'Canonical job index for the current runtime.',
   tag: 'jobs',
   nav: {
     key: 'jobs',

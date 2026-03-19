@@ -20,7 +20,7 @@
           variant="soft"
           @click="navigateTo('/dashboard/agent/profile')"
         >
-          Edit
+          Manage profile
         </UButton>
       </template>
     </UPageHeader>
@@ -46,7 +46,7 @@
       </div>
 
       <div v-else class="space-y-4">
-        <ProfilesAgentCardsProfile v-if="agentCard" :card="agentCard" />
+        <ProfilesAgentCardsProfile v-if="agentCard" :card="agentCard" :profile="agentProfile" />
 
         <DevJson
           v-if="isDev && agentProfile"
@@ -66,10 +66,10 @@ import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestor
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
 import { computed, ref } from 'vue'
 import { useAgentInterface } from '../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
 import type { AgentCore } from '../../models/profiles/Agent/Agent.model'
-import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
 
 const route = useRoute()
 const agentId = computed(() => {

@@ -41,8 +41,9 @@
         <ClientOnly v-else>
           <div v-if="view === 'profile'" class="console-profile__section">
             <ProfilesChefCardsProfile
-              v-if="resolvedCoreProfile"
-              :chef="resolvedCoreProfile"
+              v-if="chefCard"
+              :card="chefCard"
+              :profile="resolvedCoreProfile"
             />
           </div>
 
@@ -65,11 +66,11 @@ import { useConsoleProfileView } from 'fireux-core/runtime/composables/fireux/ap
 import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
 import type { ChefApp, ChefCore } from '../../../models/profiles/Chef/Chef.model'
-import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 
 definePageMeta({
   layout: 'default',
@@ -86,11 +87,6 @@ const userId = computed(() => {
   return String(raw ?? '').trim() || null
 })
 
-const pageTitle = computed(() =>
-  userId.value ? `Admin · Chef · ${userId.value}` : 'Admin · Chef'
-)
-const pageDescription = 'Admin edit chef profile.'
-
 const userRefs = useUserFetch(userId)
 const { profile, pending } = useProfileFetch<ChefCore, ChefApp>(
   userId,
@@ -106,6 +102,16 @@ const isProfileLoading = computed(
 const resolvedCoreProfile = computed(() => coreProfile.value ?? null)
 const resolvedAppProfile = computed(() => appProfile.value ?? null)
 const chefCard = computed(() => makeCard(resolvedCoreProfile.value))
+const pageTitle = computed(() =>
+  chefCard.value?.displayName
+    ? `Admin · ${chefCard.value.displayName}`
+    : userId.value
+      ? `Admin · Chef · ${userId.value}`
+      : 'Admin · Chef Profile'
+)
+const pageDescription = computed(
+  () => 'Review the public profile and edit the underlying chef documents.'
+)
 
 const { ensure } = useProfileEnsure(chefConfig)
 const isCreating = ref(false)

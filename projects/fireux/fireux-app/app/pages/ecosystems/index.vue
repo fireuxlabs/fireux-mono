@@ -16,10 +16,7 @@
         :actions="actions"
       />
 
-      <EcosystemCollectionManager
-        :collection="ecosystems"
-        :pending="false"
-      />
+      <EcosystemCollectionManager :collection="ecosystems" />
     </UPageBody>
   </UPage>
 </template>

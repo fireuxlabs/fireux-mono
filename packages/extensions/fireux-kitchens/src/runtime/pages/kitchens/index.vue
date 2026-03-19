@@ -6,7 +6,14 @@
       :description="pageDescription"
     />
     <UPageBody class="pagebody">
-      <KitchenCTA />
+      <EntityIndexCta
+        title="Kitchens index"
+        description="Browse canonical kitchen records for this runtime. Runtime-mode selection and console entry live in the dashboard kitchen workspace."
+        family="special"
+        source="kitchens collection"
+        :count-label="`${collection.length} kitchen${collection.length === 1 ? '' : 's'}`"
+        :actions="actions"
+      />
       <KitchenCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
@@ -36,7 +43,28 @@ definePageMeta({
 })
 
 const pageTitle = 'Kitchens'
-const pageDescription = 'Browse kitchens.'
+const pageDescription = 'Canonical kitchen index for the current runtime.'
+
+const actions = [
+  {
+    label: 'Create',
+    cta: 'Create kitchen',
+    to: '/kitchens/create',
+    icon: 'i-lucide-plus',
+  },
+  {
+    label: 'Runtime',
+    cta: 'Open kitchen dashboard',
+    to: '/dashboard/kitchens',
+    icon: 'i-lucide-layout-dashboard',
+  },
+  {
+    label: 'Guide',
+    cta: 'Learn more',
+    to: '/kitchens/learn-more',
+    icon: 'i-lucide-book-open',
+  },
+] as const
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })

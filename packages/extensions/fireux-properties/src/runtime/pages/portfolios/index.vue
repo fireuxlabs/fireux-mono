@@ -32,7 +32,7 @@ definePageMeta({
 })
 
 const pageTitle = 'Portfolios'
-const pageDescription = 'Browse portfolios.'
+const pageDescription = 'Select a portfolio runtime for the current workspace.'
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 const { portfolios } = usePortfolioFetch()

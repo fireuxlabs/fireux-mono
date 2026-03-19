@@ -19,7 +19,7 @@
           :disabled="!docId"
           :to="editTo"
         >
-          Edit
+          Manage place
         </UButton>
       </template>
     </UPageHeader>

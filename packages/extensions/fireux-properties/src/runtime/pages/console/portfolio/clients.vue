@@ -76,9 +76,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import ClientCollectionManager from '../../../components/organisms/Client/Collection/Manager.vue'
 import { useRuntimePortfolio } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import { usePortfolioClientCollection } from '../../../composables/fireux/firestore/client/fetch/usePortfolioClientCollection'
-import ClientCollectionManager from '../../../components/organisms/Client/Collection/Manager.vue'
 
 definePageMeta({
   layout: 'console',

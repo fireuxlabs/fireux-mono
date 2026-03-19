@@ -86,11 +86,6 @@ const userId = computed(() => {
   return String(raw ?? '').trim() || null
 })
 
-const pageTitle = computed(() =>
-  userId.value ? `Admin · Supplier · ${userId.value}` : 'Admin · Supplier'
-)
-const pageDescription = 'Admin edit supplier profile.'
-
 const userRefs = useUserFetch(userId)
 const { profile, pending } = useProfileFetch<SupplierCore, SupplierApp>(
   userId,
@@ -106,6 +101,16 @@ const isProfileLoading = computed(
 const resolvedCoreProfile = computed(() => coreProfile.value ?? null)
 const resolvedAppProfile = computed(() => appProfile.value ?? null)
 const supplierCard = computed(() => makeCard(resolvedCoreProfile.value))
+const pageTitle = computed(() =>
+  supplierCard.value?.title
+    ? `Admin · ${supplierCard.value.title}`
+    : userId.value
+      ? `Admin · Supplier · ${userId.value}`
+      : 'Admin · Supplier'
+)
+const pageDescription = computed(
+  () => 'Review the public supplier record and edit the underlying supplier documents.'
+)
 
 const { ensure } = useProfileEnsure(supplierConfig)
 const isCreating = ref(false)

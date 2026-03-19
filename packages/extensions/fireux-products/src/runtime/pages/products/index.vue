@@ -4,7 +4,7 @@
     <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
-      <ProductCTA />
+      <ProductCTA :count="collection.length" />
       <ProductCollectionManager :collection="collection" />
     </UPageBody>
   </UPage>
@@ -20,12 +20,12 @@ const { appName } = useFireUXConfig()
 
 const pageTitle = 'Products'
 const pageDescription =
-  'Create and browse products available to this runtime.'
+  'Canonical product index for the current runtime.'
 
 definePageMeta({
   layout: 'default',
   title: 'Products',
-  description: pageDescription,
+  description: 'Canonical product index for the current runtime.',
   nav: {
     key: 'products',
     label: 'Products',

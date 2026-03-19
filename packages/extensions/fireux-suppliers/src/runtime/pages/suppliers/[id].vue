@@ -20,7 +20,7 @@
           variant="soft"
           @click="navigateTo('/dashboard/supplier/profile')"
         >
-          Edit
+          Manage supplier
         </UButton>
       </template>
     </UPageHeader>
@@ -111,8 +111,8 @@ const displayName = computed(() =>
 const pageTitle = computed(() => displayName.value ?? 'Supplier Profile')
 const pageDescription = computed(() =>
   displayName.value
-    ? `Inspect ${displayName.value}.`
-    : 'Supplier profile details.'
+    ? `Review the public supplier record for ${displayName.value}.`
+    : 'Public supplier record.'
 )
 const isDev = import.meta.dev
 

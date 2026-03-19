@@ -19,7 +19,7 @@
             <div class="mt-4 flex flex-wrap gap-2">
               <UButton
                 to="/dashboard/supplier/profile"
-                label="Edit profile"
+                label="Manage supplier"
                 color="neutral"
                 size="sm"
               />

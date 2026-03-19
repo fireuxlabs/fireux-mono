@@ -17,6 +17,8 @@
       <IngredientCTA :can-create="isAdmin" />
       <IngredientCollectionManager
         :collection="ingredients"
+        title="Ingredients"
+        description="Browse canonical ingredient records shared across kitchens in this runtime."
       />
     </UPageBody>
   </UPage>
@@ -50,7 +52,7 @@ const { ingredients } = useIngredientFetch()
 
 const pageTitle = 'Ingredients'
 const pageDescription =
-  'Create and browse global ingredients.'
+  'Canonical ingredient index for the current runtime.'
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
