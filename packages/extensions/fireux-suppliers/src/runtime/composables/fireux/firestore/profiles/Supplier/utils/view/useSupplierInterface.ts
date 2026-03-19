@@ -1,13 +1,13 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import {
-  csv,
-  firstNonEmptyString,
-  locationLabel,
-  resolveProfileBadges,
-  resolveProfileImage,
-  resolveProfileSummary,
-  safeString,
-  safeStringArray,
+    csv,
+    firstNonEmptyString,
+    locationLabel,
+    resolveProfileBadges,
+    resolveProfileImage,
+    resolveProfileSummary,
+    safeString,
+    safeStringArray,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { Ref } from 'vue'

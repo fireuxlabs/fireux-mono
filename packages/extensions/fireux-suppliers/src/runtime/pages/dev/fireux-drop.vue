@@ -97,12 +97,9 @@ const toggleSection = (key: keyof typeof openSections) => {
 
 const supplierModelRuntime = SupplierCoreRuntime
 
-const { coreSuppliers, appSuppliers } = useSupplierCollection()
+const { coreSuppliers } = useSupplierCollection()
 
-const suppliersCollection = computed(() => [
-  ...(appSuppliers?.value ?? []),
-  ...(coreSuppliers.value ?? []),
-])
+const suppliersCollection = computed(() => coreSuppliers.value ?? [])
 
 const {
   driftKind: suppliersDriftKind,

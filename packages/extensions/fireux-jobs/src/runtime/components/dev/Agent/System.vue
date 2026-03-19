@@ -54,9 +54,10 @@
           </p>
           <div class="space-y-4">
             <ProfilesAgentCardsProfile
-              v-for="card in agentProfileCards"
-              :key="`agent-profile-${card.id}`"
-              :card="card"
+              v-for="entry in agentProfileCards"
+              :key="`agent-profile-${entry.card.id}`"
+              :card="entry.card"
+              :profile="entry.profile as any"
             />
           </div>
         </div>
@@ -138,11 +139,14 @@ const agentPreviewCards = computed(() => {
 })
 
 const agentProfileCards = computed(() => {
-  const out: Array<NonNullable<ReturnType<typeof makeAgentCard>>> = []
+  const out: Array<{
+    card: NonNullable<ReturnType<typeof makeAgentCard>>
+    profile: unknown
+  }> = []
   for (const item of filteredAgents.value ?? []) {
     const card = makeAgentCard(item as any)
     if (!card) continue
-    out.push(card)
+    out.push({ card, profile: item })
   }
   return out
 })

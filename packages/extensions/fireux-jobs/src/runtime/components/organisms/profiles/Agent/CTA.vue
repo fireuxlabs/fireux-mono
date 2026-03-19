@@ -2,12 +2,17 @@
   <UPageCTA
     class="cta"
     title="Agent profile"
-    description="Create your agent profile so professionals know who to contact."
+    :description="ctaDescription"
     variant="subtle"
     orientation="horizontal"
   >
-    <div v-if="card()" class="cta__body space-y-4">
-      <ProfilesAgentCardsPreview v-bind="card()" :link="true" />
+    <div v-if="hasProfile && agentCard" class="cta__body space-y-4">
+      <ProfilesAgentCardsPreview v-bind="agentCard" :link="false" />
+
+      <div class="flex flex-wrap gap-2">
+        <UButton color="primary" @click="openProfile">View profile</UButton>
+        <UButton color="neutral" variant="soft" @click="openConsole">Manage profile</UButton>
+      </div>
     </div>
 
     <div v-else class="cta__body space-y-2">
@@ -17,9 +22,32 @@
 </template>
 
 <script setup lang="ts">
-import { useAgent } from '../../../../composables/fireux/firestore/profiles/Agent/useAgent';
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useAgent } from '../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
+const router = useRouter()
+const { appName } = useFireUXConfig()
 const { card } = useAgent()
+
+const agentCard = computed(() => card())
+const hasProfile = computed(() => Boolean(agentCard.value?.id))
+const ctaDescription = computed(() =>
+  hasProfile.value
+    ? `Your agent profile is live on ${appName}.`
+    : 'Create your agent profile so professionals know who to contact.'
+)
+
+const openProfile = () => {
+  const to = String(agentCard.value?.to || '').trim()
+  if (!to) return
+  router.push(to)
+}
+
+const openConsole = () => {
+  router.push('/dashboard/agent/profile')
+}
 
 </script>
 

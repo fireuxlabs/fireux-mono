@@ -11,13 +11,16 @@
 					v-if="professionalCard"
 					v-bind="professionalCard"
 					:link="false"
-					:action="true"
-					@action="openProfessionalProfile"
 				/>
+
+				<div class="flex flex-wrap gap-2">
+					<UButton color="primary" @click="openProfessionalProfile">View profile</UButton>
+					<UButton color="neutral" variant="soft" @click="openProfessionalConsole">Manage profile</UButton>
+				</div>
 			</div>
 
 		<div v-else class="cta__body space-y-2">
-			<ProfilesProfessionalCreateSystem @created="handleCreated" />
+			<ProfilesProfessionalCreateSystem />
 		</div>
 	</UPageCTA>
 </template>
@@ -46,7 +49,8 @@ const openProfessionalProfile = () => {
 	router.push(to)
 }
 
-const handleCreated = () => {
+
+const openProfessionalConsole = () => {
 	router.push('/dashboard/professional/profile')
 }
 </script>

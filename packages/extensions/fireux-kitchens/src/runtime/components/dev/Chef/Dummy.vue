@@ -41,7 +41,7 @@
 
       <div class="space-y-2">
         <div class="text-xs font-medium text-dimmed">Profile</div>
-        <ProfilesChefCardsProfile v-if="selectedCard" :card="selectedCard" />
+        <ProfilesChefCardsProfile v-if="selectedCard" :card="selectedCard" :profile="selectedChef?.chef ?? null" />
       </div>
     </div>
 
@@ -56,13 +56,13 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { dummyChefSurfaceList } from '../../../../../../../../dummy/chef.dummy'
-import type { ChefCard } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
-import { useChef } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
+import type { ChefCard } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
+import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
 import type { ChefCore } from '../../../models/profiles/Chef/Chef.model'
 
 defineOptions({ name: 'DevChefDummy' })
 
-const { card: toCard } = useChef()
+const { card: toCard } = useChefInterface()
 
 type ChefSurface = (typeof dummyChefSurfaceList)[number]
 

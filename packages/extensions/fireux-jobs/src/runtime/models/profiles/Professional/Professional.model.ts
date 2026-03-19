@@ -4,13 +4,13 @@ import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type {
-  CertificationItem,
-  EducationItem,
-  LanguageProficiency,
-  OtherExperienceItem,
-  ProjectItem,
-  RelevantExperienceItem,
-  VolunteeringItem,
+    CertificationItem,
+    EducationItem,
+    LanguageProficiency,
+    OtherExperienceItem,
+    ProjectItem,
+    RelevantExperienceItem,
+    VolunteeringItem,
 } from './supporting'
 
 /**

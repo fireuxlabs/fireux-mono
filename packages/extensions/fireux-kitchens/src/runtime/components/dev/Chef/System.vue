@@ -67,7 +67,8 @@
             <ProfilesChefCardsProfile
               v-for="entry in filteredCollection"
               :key="`chef-profile-${String((entry as any)?.user?.id ?? (entry as any)?.id ?? '')}`"
-              :chef="entry as any"
+              :card="makeChefCard(entry as any, (entry as any)?.user ?? null)!"
+              :profile="entry as any"
             />
           </div>
         </div>
@@ -79,8 +80,8 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
-import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
 import { useChefFetch } from '../../../composables/fireux/firestore/profiles/Chef/main/useChefFetch'
+import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
 import { ChefCore as ChefCoreModelRuntime } from '../../../models/profiles/Chef/Chef.model'
 
 defineOptions({ name: 'DevChefSystem' })

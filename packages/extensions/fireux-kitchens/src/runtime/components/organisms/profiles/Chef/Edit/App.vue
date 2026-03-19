@@ -2,9 +2,17 @@
   <ClientOnly>
     <div v-if="chef" class="space-y-6">
       <UCard>
-        <p class="text-sm opacity-70">
-          App-specific chef settings are not available yet.
-        </p>
+        <div class="space-y-2">
+          <h3 class="text-base font-semibold text-gray-900">
+            App-level Chef Settings
+          </h3>
+          <p class="text-sm text-gray-500">
+            There are currently no app-specific fields for the chef profile.
+          </p>
+          <p class="text-xs text-gray-400">
+            This section is reserved for tenant-specific overrides when they are needed.
+          </p>
+        </div>
       </UCard>
     </div>
 
@@ -18,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model'
+import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model';
 
 defineProps<{
   chef: Partial<ChefCore> | null | undefined

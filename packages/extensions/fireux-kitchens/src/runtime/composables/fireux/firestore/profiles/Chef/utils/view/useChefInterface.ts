@@ -1,11 +1,11 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import {
-  resolveProfileBadges,
-  resolveProfileDisplayName,
-  resolveProfileImage,
-  resolveProfileSummary,
-  resolveSecondaryAvatarUrl,
-  safeString,
+    resolveProfileBadges,
+    resolveProfileDisplayName,
+    resolveProfileImage,
+    resolveProfileSummary,
+    resolveSecondaryAvatarUrl,
+    safeString,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'

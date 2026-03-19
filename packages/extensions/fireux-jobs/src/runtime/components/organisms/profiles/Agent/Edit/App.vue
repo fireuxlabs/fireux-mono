@@ -2,9 +2,17 @@
   <ClientOnly>
     <div v-if="agent" class="space-y-6">
       <UCard>
-        <p class="text-sm opacity-70">
-          App-specific agent settings are not available yet.
-        </p>
+        <div class="space-y-2">
+          <h3 class="text-base font-semibold text-gray-900">
+            App-level Agent Settings
+          </h3>
+          <p class="text-sm text-gray-500">
+            There are currently no app-specific fields for the agent profile.
+          </p>
+          <p class="text-xs text-gray-400">
+            This section is reserved for tenant-specific overrides when they are needed.
+          </p>
+        </div>
       </UCard>
     </div>
 
@@ -18,7 +26,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model'
+import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model';
 
 defineProps<{
   agent: Partial<AgentCore> | null | undefined

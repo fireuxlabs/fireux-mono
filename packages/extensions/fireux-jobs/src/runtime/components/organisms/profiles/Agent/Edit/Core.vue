@@ -2,6 +2,13 @@
   <ClientOnly>
     <div v-if="agent" class="space-y-6">
       <UCard>
+        <template #header>
+          <div class="profile-edit__section-header">
+            <UIcon name="i-lucide-id-card" />
+            Identity
+          </div>
+        </template>
+
         <div class="space-y-4">
           <MoleculesFormsFirestoreSimpleField
             label="Title"
@@ -203,3 +210,12 @@ const handleContactPhone = async (value: string) =>
 const handleWebsiteUrl = async (value: string) =>
   wrap(() => updateWebsiteUrl(value), 'Website updated', 'Failed to update website')
 </script>
+
+<style scoped>
+.profile-edit__section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+}
+</style>

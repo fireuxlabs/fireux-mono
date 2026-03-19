@@ -1,7 +1,7 @@
 // FILE: packages/extensions/fireux-suppliers/src/runtime/models/supplier/Supplier.model.ts
 
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
-import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model';
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase';
 /**
  * Entity Class: Dual-Layer
  * Core Path: /suppliers/<userId>

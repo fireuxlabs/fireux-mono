@@ -1,11 +1,11 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import {
-  resolveProfileBadges,
-  resolveProfileDisplayName,
-  resolveProfileImage,
-  resolveProfileSummary,
-  resolveSecondaryAvatarUrl,
-  safeString,
+    resolveProfileBadges,
+    resolveProfileDisplayName,
+    resolveProfileImage,
+    resolveProfileSummary,
+    resolveSecondaryAvatarUrl,
+    safeString,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
 import type { ProfessionalCore, ProfessionalUserSummary } from '../../../../../../../models/profiles/Professional/Professional.model'

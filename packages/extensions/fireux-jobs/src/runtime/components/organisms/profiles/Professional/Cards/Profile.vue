@@ -1,9 +1,10 @@
 <template>
   <div class="mx-auto w-full max-w-3xl space-y-3">
     <ProfilesProfessionalCardsCell
-      v-bind="card"
+      v-bind="identityCard"
       :show-tagline="true"
       :show-subtitle="true"
+      :link="Boolean(identityCard.to)"
     />
 
     <UCard class="profile-card">
@@ -181,8 +182,8 @@ import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firesto
 import { usePlacesInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlacesInterface'
 import type { Place } from 'fireux-places/runtime/models/place.model'
 import type { Ref } from 'vue'
-import { computed, reactive, shallowRef, toRefs, watch, watchEffect } from 'vue'
-import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
+import { computed, shallowRef, toRefs, watch } from 'vue'
+import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import type { ProfessionalCore } from '../../../../../models/profiles/Professional/Professional.model'
 
 const props = defineProps<{
@@ -192,15 +193,9 @@ const props = defineProps<{
   prop?: string
 }>()
 
-const card = reactive({ badges: [] as string[], ...props.card })
-
-watchEffect(() => {
-  Object.assign(card, { badges: [] as string[], ...props.card })
-})
-
 const { prop } = toRefs(props)
 const profile = computed(() => props.profile ?? null)
-const badges = computed(() => card.badges ?? [])
+const identityCard = computed(() => ({ badges: [] as string[], ...props.card }))
 
 const positions = computed(() => profile.value?.positions ?? [])
 const certifications = computed(() => profile.value?.certifications ?? [])
@@ -287,15 +282,6 @@ const otherExperienceCards = computed(() =>
   })
 )
 
-const computedEntries = computed(() => {
-  const values = props.computed ?? {}
-  return Object.entries(values).map(([key, value]) => ({
-    key,
-    label: key,
-    value,
-  }))
-})
-
 const accordionItems = computed(() => {
   const hasSummary = Boolean(summary.value?.trim())
   const hasBio = Boolean(bio.value?.trim())
@@ -346,23 +332,4 @@ const formatRange = (
   return [start, end].filter(Boolean).join(' · ') || 'Dates not listed'
 }
 
-const isComplexValue = (value: unknown) => {
-  if (Array.isArray(value)) {
-    return value.some((entry) => typeof entry === 'object' && entry !== null)
-  }
-  return typeof value === 'object' && value !== null
-}
-
-const formatValue = (value: unknown) => {
-  if (value == null || value === '') return '—'
-  if (Array.isArray(value)) {
-    if (!value.length) return '—'
-    if (value.every((entry) => ['string', 'number', 'boolean'].includes(typeof entry))) {
-      return value.join(', ')
-    }
-    return JSON.stringify(value, null, 2)
-  }
-  if (typeof value === 'object') return JSON.stringify(value, null, 2)
-  return String(value)
-}
 </script>

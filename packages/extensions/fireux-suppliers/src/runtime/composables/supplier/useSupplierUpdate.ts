@@ -5,9 +5,8 @@ import type { SupplierCore } from '../../models/supplier/Supplier.model'
 
 /**
  * useSupplierUpdate
- * - Split update surface:
- *   - updateCoreProfile: global Supplier profile
- *   - updateAppProfile: tenant-scoped Supplier profile
+ * - Canon surface: global supplier record updates
+ * - Legacy app-scope update remains exposed only for compatibility with older callers
  *
  * Shared update surface for v1 scoped fields.
  */
@@ -38,10 +37,7 @@ export function useSupplierUpdate(
     await touchSeoIndex(options.id)
   }
 
-  /**
-   * Update the APP (tenant) Supplier profile
-   * - app-specific document (e.g. apps/{appId}/suppliers/{uid})
-   */
+  // Legacy compatibility path only. Supplier is no longer treated as an app-overlay family.
   const updateAppProfile = base.updateAppProfile
   const commitUpdate = async (
     patch: Partial<SupplierCore>,

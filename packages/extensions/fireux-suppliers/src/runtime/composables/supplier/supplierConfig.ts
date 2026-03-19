@@ -4,7 +4,7 @@ export const supplierConfig: ProfileConfig = {
   id: 'supplier',
   collectionName: 'suppliers',
   profileType: 'Supplier',
-  cta: 'Create your Supplier profile to appear in listings.',
+  cta: 'Create your supplier workspace record to appear in listings.',
   navLabel: 'Supplier',
   navIcon: 'i-lucide-package',
 } as const
