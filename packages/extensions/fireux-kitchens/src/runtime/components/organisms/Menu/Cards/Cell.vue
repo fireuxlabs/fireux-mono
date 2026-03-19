@@ -16,7 +16,7 @@
       <div class="min-w-0 flex-1 space-y-1.5">
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
-            <div class="truncate text-sm font-semibold">{{ name }}</div>
+            <div class="truncate text-sm font-semibold">{{ title }}</div>
 
             <div
               v-if="showSubtitle && subtitle"
@@ -31,16 +31,13 @@
           </div>
         </div>
 
-        <div class="truncate text-xs text-dimmed">
-          <span>Dishes: {{ dishCount }}</span>
-          <template v-if="windowLabel">
-            <span class="mx-1">·</span>
-            <span>{{ windowLabel }}</span>
-          </template>
+        <div v-if="showMeta" class="truncate text-xs text-dimmed">
+          <span v-if="meta">{{ meta }}</span>
+          <span v-else class="italic">missing</span>
         </div>
 
-        <div v-if="showTagline && (prop || description)" class="truncate text-xs text-dimmed">
-          <span>{{ prop || description }}</span>
+        <div v-if="showTagline && description" class="truncate text-xs text-dimmed">
+          <span>{{ description }}</span>
         </div>
       </div>
     </div>
@@ -53,24 +50,23 @@ import type { MenuCard } from '../../../../composables/fireux/firestore/runtime-
 type Props = Pick<
   MenuCard.Card,
   | 'to'
-  | 'name'
+  | 'title'
   | 'subtitle'
+  | 'meta'
   | 'active'
   | 'description'
-  | 'dishCount'
   | 'imageUrl'
   | 'isActiveNow'
-  | 'windowLabel'
 > & {
-  prop?: string
   showSubtitle?: boolean
+  showMeta?: boolean
   showTagline?: boolean
   link?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  prop: '',
   showSubtitle: true,
+  showMeta: true,
   showTagline: true,
   link: false,
 })

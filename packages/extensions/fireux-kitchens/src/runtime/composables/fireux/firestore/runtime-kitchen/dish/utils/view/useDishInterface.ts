@@ -27,6 +27,7 @@ export namespace DishCard {
     imageUrl: string
     title: string
     subtitle: string
+    meta: string
     badges: string[]
     name: string
     description: string
@@ -41,7 +42,7 @@ export type DishProfile = {
   card: DishCard.Card
   title: string
   subtitle: string
-  prop?: string
+  description: string
   active: boolean
 }
 
@@ -50,10 +51,8 @@ export function useDishInterface() {
 
   type DishCell = Pick<
     DishCard.Card,
-    'id' | 'to' | 'imageUrl' | 'name' | 'subtitle' | 'active'
-  > & {
-    prop?: string
-  }
+    'id' | 'to' | 'imageUrl' | 'title' | 'subtitle' | 'meta' | 'description' | 'active'
+  >
 
   type DishPreview = {
     imageUrl: string
@@ -81,6 +80,7 @@ export function useDishInterface() {
       imageUrl: safeString(dish.image_url).trim(),
       title: displayName,
       subtitle: joinSubtitle(active),
+      meta: 'Dish',
       badges: [active ? 'active' : 'inactive'],
       name: displayName,
       description: safeString(dish.description).trim(),
@@ -113,10 +113,11 @@ export function useDishInterface() {
       id: base.id,
       to: base.to,
       imageUrl: base.imageUrl,
-      name: base.name,
+      title: base.title,
       subtitle: base.subtitle,
+      meta: base.meta,
+      description: base.description,
       active: base.active,
-      prop: base.description,
     }
   }
 
@@ -149,7 +150,7 @@ export function useDishInterface() {
       card: base,
       title: base.title,
       subtitle: base.subtitle,
-      prop: base.description,
+      description: base.description,
       active: base.active,
     }
   }

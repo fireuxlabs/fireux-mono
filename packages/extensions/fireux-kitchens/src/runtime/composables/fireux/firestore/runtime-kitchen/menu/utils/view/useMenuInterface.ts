@@ -11,6 +11,7 @@ export namespace MenuCard {
     imageUrl: string
     title: string
     subtitle: string
+    meta: string
     badges: string[]
     name: string
     description: string
@@ -26,7 +27,7 @@ export type MenuProfile = {
   card: MenuCard.Card
   title: string
   subtitle: string
-  prop?: string
+  description: string
   active: boolean
   dishCount: number
 }
@@ -39,22 +40,20 @@ export function useMenuInterface() {
     | 'id'
     | 'to'
     | 'imageUrl'
-    | 'name'
+    | 'title'
     | 'subtitle'
+    | 'meta'
     | 'active'
-    | 'dishCount'
+    | 'description'
     | 'isActiveNow'
-    | 'windowLabel'
-  > & {
-    prop?: string
-  }
+  >
 
   type MenuPreview = {
     imageUrl: string
-    name: string
+    title: string
     subtitle: string
     isActiveNow: boolean
-    prop?: string
+    description: string
     badges: string[]
     details: Array<{ label: string; value: string | number }>
   }
@@ -80,6 +79,10 @@ export function useMenuInterface() {
       imageUrl: '',
       title: name,
       subtitle: '',
+      meta: [
+        `Dishes: ${dishes.length}`,
+        windowLabel,
+      ].filter(Boolean).join(' · '),
       badges: [
         active ? 'active' : 'inactive',
         `${dishes.length} ${dishes.length === 1 ? 'dish' : 'dishes'}`,
@@ -117,13 +120,12 @@ export function useMenuInterface() {
       id: base.id,
       to: base.to,
       imageUrl: base.imageUrl,
-      name: base.name,
+      title: base.title,
       subtitle: base.subtitle,
+      meta: base.meta,
       active: base.active,
-      dishCount: base.dishCount,
+      description: base.description,
       isActiveNow: base.isActiveNow,
-      windowLabel: base.windowLabel,
-      prop: base.description,
     }
   }
 
@@ -133,10 +135,10 @@ export function useMenuInterface() {
 
     return {
       imageUrl: base.imageUrl,
-      name: base.name,
+      title: base.title,
       subtitle: base.subtitle,
       isActiveNow: base.isActiveNow,
-      prop: base.description,
+      description: base.description,
       badges: base.badges,
       details: [
         { label: 'Active', value: base.active ? 'Yes' : 'No' },
@@ -154,7 +156,7 @@ export function useMenuInterface() {
       card: base,
       title: base.title,
       subtitle: base.subtitle,
-      prop: base.description,
+      description: base.description,
       active: base.active,
       dishCount: base.dishCount,
     }

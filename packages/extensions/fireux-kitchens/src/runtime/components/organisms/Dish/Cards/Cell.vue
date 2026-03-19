@@ -17,7 +17,7 @@
       <div class="min-w-0 flex-1 space-y-1">
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
-            <div class="truncate text-sm font-semibold">{{ name }}</div>
+            <div class="truncate text-sm font-semibold">{{ title }}</div>
 
             <div
               v-if="showSubtitle && subtitle"
@@ -37,12 +37,13 @@
           </UBadge>
         </div>
 
-        <div class="truncate text-xs text-dimmed">
-          <span>Dish</span>
+        <div v-if="showMeta" class="truncate text-xs text-dimmed">
+          <span v-if="meta">{{ meta }}</span>
+          <span v-else class="italic">missing</span>
         </div>
 
         <div v-if="showTagline" class="truncate text-xs text-dimmed">
-          <span v-if="prop || description">{{ prop || description }}</span>
+          <span v-if="description">{{ description }}</span>
           <span v-else class="italic">missing</span>
         </div>
       </div>
@@ -55,17 +56,17 @@ import type { DishCard } from '../../../../composables/fireux/firestore/runtime-
 
 type Props = Pick<
   DishCard.Card,
-  'to' | 'name' | 'subtitle' | 'active' | 'imageUrl' | 'description'
+  'to' | 'title' | 'subtitle' | 'active' | 'imageUrl' | 'description' | 'meta'
 > & {
-  prop?: string
   showSubtitle?: boolean
+  showMeta?: boolean
   showTagline?: boolean
   link?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  prop: '',
   showSubtitle: true,
+  showMeta: true,
   showTagline: true,
   link: false,
 })

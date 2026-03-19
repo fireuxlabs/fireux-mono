@@ -1,7 +1,7 @@
 <template>
   <component
-    :is="link && record.to ? 'NuxtLink' : 'div'"
-    :to="link && record.to ? record.to : undefined"
+    :is="link && props.to ? 'NuxtLink' : 'div'"
+    :to="link && props.to ? props.to : undefined"
     class="block w-full"
     @click="onClick"
   >
@@ -9,8 +9,8 @@
       class="flex w-full items-start gap-3 rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800/60 dark:bg-gray-900/40"
     >
       <UAvatar
-        :src="record.imageUrl || undefined"
-        :alt="record.title"
+        :src="props.imageUrl || undefined"
+        :alt="props.title"
         size="md"
         icon="i-lucide-building"
         class="shrink-0"
@@ -19,15 +19,15 @@
       <div class="min-w-0 flex-1 space-y-1">
         <div class="flex items-start justify-between gap-2">
           <div class="min-w-0">
-            <div class="truncate text-sm font-semibold">{{ record.title }}</div>
-            <div v-if="showSubtitle && record.subtitle" class="truncate text-xs text-dimmed">
-              {{ record.subtitle }}
+            <div class="truncate text-sm font-semibold">{{ props.title }}</div>
+            <div v-if="showSubtitle && props.subtitle" class="truncate text-xs text-dimmed">
+              {{ props.subtitle }}
             </div>
           </div>
         </div>
 
         <div v-if="showMeta" class="truncate text-xs text-dimmed">
-          <span v-if="record.meta">{{ record.meta }}</span>
+          <span v-if="props.meta">{{ props.meta }}</span>
           <span v-else class="italic">missing</span>
         </div>
       </div>
@@ -36,11 +36,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import type { PropertyCard } from '../../../../composables/fireux/firestore/property/utils/view/usePropertyInterface'
 
-type Props = Partial<PropertyCard.Card> & {
-  card?: PropertyCard.Card
+type Props = Pick<
+  PropertyCard.Card,
+  'to' | 'title' | 'subtitle' | 'meta' | 'imageUrl'
+> & {
   showSubtitle?: boolean
   showMeta?: boolean
   link?: boolean
@@ -57,8 +58,6 @@ const props = withDefaults(defineProps<Props>(), {
   link: false,
   action: false,
 })
-
-const record = computed(() => props.card ?? props)
 
 const onClick = () => {
   if (props.action) emit('action')
