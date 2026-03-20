@@ -1,0 +1,25 @@
+{
+  "name": "fireux-docs",
+  "version": "0.1.0",
+  "description": "Passive FireUX docs layer",
+  "private": true,
+  "type": "module",
+  "main": "./src/module.ts",
+  "types": "./src/module.ts",
+  "exports": {
+    ".": "./src/module.ts",
+    "./runtime/*": "./src/runtime/*",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@nuxt/content": "3.6.3",
+    "fireux-core": "workspace:*"
+  },
+  "peerDependencies": {
+    "@nuxt/kit": "^4.1.0",
+    "nuxt": "^4.1.0"
+  },
+  "files": [
+    "src/**/*"
+  ]
+}

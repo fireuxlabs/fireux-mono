@@ -25,7 +25,9 @@
     "pnpm": ">=10"
   },
   "dependencies": {
-    "fireux-core": "workspace:*"
+    "@nuxt/content": "3.6.3",
+    "fireux-core": "workspace:*",
+    "fireux-docs": "workspace:*"
   },
   "peerDependencies": {
     "nuxt": "^4.1.0",
