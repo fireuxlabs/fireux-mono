@@ -9,7 +9,6 @@
     ".": "./src/module.ts",
 
     "./types/*": "./src/types/*.ts",
-    "./types/app/*": "./src/types/app/*.ts",
     "./config/app/*": "./src/config/app/*.ts",
     "./config/app/runtime": {
       "types": "./src/config/app/runtime.ts",
@@ -32,7 +31,6 @@
       "default": "./src/config/module/pages-config.ts"
     },
     "./config/module/*": "./src/config/module/*.ts",
-    "./config/nuxt/*": "./src/config/nuxt/*.ts",
     "./runtime/*": "./src/runtime/*",
 
     "./package.json": "./package.json"
@@ -40,11 +38,9 @@
   "typesVersions": {
     "*": {
       "types/*": ["src/types/*.ts"],
-      "types/app/*": ["src/types/app/*.ts"],
       "config/app/*": ["src/config/app/*.ts"],
       "config/app/runtime": ["src/config/app/runtime.ts"],
       "config/module/*": ["src/config/module/*.ts"],
-      "config/nuxt/*": ["src/config/nuxt/*.ts"],
       "runtime/*": ["src/runtime/*"]
     }
   },
