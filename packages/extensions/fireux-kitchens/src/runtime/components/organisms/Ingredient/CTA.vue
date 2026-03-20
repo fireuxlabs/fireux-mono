@@ -1,8 +1,8 @@
 <template>
   <UPageCTA
     class="cta"
-    title="Ingredients"
-    description="Manage global ingredient records for this runtime."
+    title="Ingredient registry"
+    description="Create and curate the global ingredient records that kitchen runtimes attach to operational inventory."
     variant="naked"
   >
     <template #default>
