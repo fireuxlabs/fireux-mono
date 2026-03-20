@@ -6,8 +6,8 @@
     variant="subtle"
     orientation="horizontal"
   >
-    <div v-if="hasProfile && agentCard" class="cta__body space-y-4">
-      <ProfilesAgentCardsPreview v-bind="agentCard" :link="false" />
+    <div v-if="hasProfile && profileCard" class="cta__body space-y-4">
+      <ProfilesAgentCardsPreview v-bind="profileCard" :link="false" />
 
       <div class="flex flex-wrap gap-2">
         <UButton color="primary" @click="openProfile">View profile</UButton>
@@ -31,8 +31,8 @@ const router = useRouter()
 const { appName } = useFireUXConfig()
 const { card } = useAgent()
 
-const agentCard = computed(() => card())
-const hasProfile = computed(() => Boolean(agentCard.value?.id))
+const profileCard = computed(() => card())
+const hasProfile = computed(() => Boolean(profileCard.value?.id))
 const ctaDescription = computed(() =>
   hasProfile.value
     ? `Your agent profile is live on ${appName}.`
@@ -40,7 +40,7 @@ const ctaDescription = computed(() =>
 )
 
 const openProfile = () => {
-  const to = String(agentCard.value?.to || '').trim()
+  const to = String(profileCard.value?.to || '').trim()
   if (!to) return
   router.push(to)
 }
@@ -48,6 +48,4 @@ const openProfile = () => {
 const openConsole = () => {
   router.push('/dashboard/agent/profile')
 }
-
 </script>
-
