@@ -1,6 +1,6 @@
 # Tasks
 Authority: Automation context (Codex implementation handoff)
-Updated: 2026-03-14
+Updated: 2026-03-20
 Audience: Implementation context for Codex agents.
 
 ## Scope
@@ -9,21 +9,20 @@ Audience: Implementation context for Codex agents.
 - Priority: enforce Tier1 canon and preserve runtime contracts.
 
 ## Commit Window
-- Start: 2026-03-09T13:13:43+01:00
-- End: 2026-03-13T10:05:44+01:00
-- Source: manual_refresh_2026-03-13
+- Start: 2026-03-19T12:41:22Z
+- End: 2026-03-20T08:34:41Z
+- Source: automation_last_run_2026-03-19T12:41:22.288Z
 
 ## Implementation Signals
-- 542875481 feat: align consolable CTA family and project runtime entry (2026-03-10)
-- 60a8c1ec0 feat: align project console create flow (2026-03-11)
-- 95f6d18b1 refactor: delete stitch and simplify console routing (2026-03-11)
-- cf4b20dd8 feat: switch fireux ecosystem to named firestore db (2026-03-12)
-- 0017bb017 feat: add fireux console database discovery pipeline (2026-03-12)
+- 9c67baed9 align profile surfaces across agent chef professional and supplier (2026-03-19)
+- 9e15b2536 align public, admin, dashboard, and console pages (2026-03-19)
+- f5d30cea5 clean interface card surfaces (2026-03-19)
+- 020ce1c96 align collection managers and card surfaces (2026-03-19)
 
 ## Working Guidance
 - Validate against Tier1 first: docs/fireux-canon.md, docs/runtime-contract.md, docs/seo-canon.md.
 - Prefer shared runtime and composable fixes before project-local divergence.
-- Keep route, runtime-project, and firestore-db behavior aligned across core, ecosystems, and apps.
+- Apply style and surface alignment changes consistently across public, dashboard, admin, and console entry points.
 
 ## Next Run Checklist
 - Re-scan from the next successful timestamp.
