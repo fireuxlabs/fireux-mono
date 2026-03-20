@@ -1,29 +1,45 @@
 <template>
-  <UPageCTA
-    class="cta"
-    v-if="showCTA"
-    title="Add a product"
-    description="List new offerings or updates for this runtime."
-    variant="naked"
-  >
-    <template #default>
-      <p class="text-sm text-gray-600">
-        People with publish permissions can keep the catalog current.
-      </p>
-    </template>
-
-    <template #links>
-      <UButton color="primary" size="lg" to="/admin/products/create">
-        Create product
-      </UButton>
-    </template>
-  </UPageCTA>
+  <EntityIndexCta
+    title="Products index"
+    description="Browse canonical product records for this runtime. Publishing and merchandising actions stay in the admin product workspace."
+    family="special"
+    source="products collection"
+    :count-label="`${count} product${count === 1 ? '' : 's'}`"
+    :actions="actions"
+  />
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useProductPermissions } from '../../../composables/useProductPermissions';
 
+const props = withDefaults(defineProps<{ count?: number }>(), {
+  count: 0,
+})
+
 const { canManageProducts } = useProductPermissions()
-const showCTA = computed(() => canManageProducts.value)
+
+const actions = computed(() => {
+  const items = [
+    {
+      label: 'Related',
+      cta: 'Browse blog',
+      to: '/blog',
+      icon: 'i-lucide-newspaper',
+    },
+  ]
+
+  if (canManageProducts.value) {
+    items.unshift({
+      label: 'Create',
+      cta: 'Create product',
+      to: '/admin/products/create',
+      icon: 'i-lucide-plus',
+    })
+  }
+
+  return items
+})
+
+const count = props.count
 </script>
