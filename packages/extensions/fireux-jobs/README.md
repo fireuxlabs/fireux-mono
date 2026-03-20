@@ -7,9 +7,11 @@ Provides job listings and application flows while remaining legally safe:
 - FireUX connects parties; it is not the employer
 - jobs always reference the real employer entity
 
-## Structure
-- src/ — authored runtime and server code
-- registry.json — extension metadata
+## Structure Authority
+
+Package-root and `src/` structure for FireUX modules are defined centrally in:
+- `packages/core/fireux-docs/README.md`
+- `packages/core/fireux-docs/src/README.md`
 
 ## Notes
 - Prefer wording: list, connect, apply

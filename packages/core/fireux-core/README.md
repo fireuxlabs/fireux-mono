@@ -7,9 +7,11 @@ This package is the reference implementation for FireUX conventions:
 - shared runtime composables and models
 - shared utilities used by ecosystems, extensions, and apps
 
-## Structure
-- src/ — all authored source code
-- registry.json — package metadata used by FireUX tooling
+## Structure Authority
+
+Package-root and `src/` structure for FireUX modules are defined centrally in:
+- `packages/core/fireux-docs/README.md`
+- `packages/core/fireux-docs/src/README.md`
 
 ## Notes
 - Do not commit build output
