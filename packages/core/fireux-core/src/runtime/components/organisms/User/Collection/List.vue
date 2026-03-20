@@ -24,5 +24,4 @@ withDefaults(
     variant: 'pill',
   }
 )
-
 </script>

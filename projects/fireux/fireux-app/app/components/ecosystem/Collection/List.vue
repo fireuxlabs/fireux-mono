@@ -13,13 +13,10 @@
 </template>
 
 <script setup lang="ts">
-type EcosystemCollectionCard = {
-  id: string
-  to?: string
-}
+import type { EcosystemCard } from '../../../composables/useEcosystemInterface'
 
 withDefaults(defineProps<{
-  cards: EcosystemCollectionCard[]
+  cards: EcosystemCard.Card[]
   variant?: 'pill' | 'cell'
 }>(), {
   variant: 'pill',

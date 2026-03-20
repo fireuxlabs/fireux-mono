@@ -10,7 +10,6 @@
       <slot name="cell" :card="card" />
     </template>
   </div>
-
 </template>
 
 <script setup lang="ts">

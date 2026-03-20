@@ -13,13 +13,10 @@
 </template>
 
 <script setup lang="ts">
-type ProjectCollectionCard = {
-  id: string
-  to?: string
-}
+import type { ProjectCard } from '../../../composables/useProjectInterface'
 
 withDefaults(defineProps<{
-  cards: ProjectCollectionCard[]
+  cards: ProjectCard.Card[]
   variant?: 'pill' | 'cell'
 }>(), {
   variant: 'pill',
