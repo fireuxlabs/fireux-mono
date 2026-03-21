@@ -1,6 +1,6 @@
 # Onboarding Thread
-Authority: Automation context (Codex implementation handoff)
-Updated: 2026-03-20
+Authority: Tier3 automation context (Non-authoritative)
+Updated: 2026-03-21
 Audience: Implementation context for Codex agents.
 
 ## Scope
@@ -9,20 +9,24 @@ Audience: Implementation context for Codex agents.
 - Priority: enforce Tier1 canon and preserve runtime contracts.
 
 ## Commit Window
-- Start: 2026-03-19T12:41:22Z
-- End: 2026-03-20T08:34:41Z
-- Source: automation_last_run_2026-03-19T12:41:22.288Z
+- Start: 2026-03-20T06:59:55Z
+- End: 2026-03-21T10:05:18Z
+- Source: automation_last_run_2026-03-20T06:59:55.166Z
 
 ## Implementation Signals
-- 9c67baed9 align profile surfaces across agent chef professional and supplier (2026-03-19)
-- 9e15b2536 align public, admin, dashboard, and console pages (2026-03-19)
-- f5d30cea5 clean interface card surfaces (2026-03-19)
-- 020ce1c96 align collection managers and card surfaces (2026-03-19)
+- 7d06a9691 chore: trim stale fireux-core package exports (2026-03-20)
+- 9e19cb155 chore: add docs content configuration (2026-03-20)
+- 2cb89c104 docs: establish fireux docs structure pages (2026-03-20)
+- 2010c6a22 align ingredient operational cta (2026-03-20)
+- c07065e3d align company and product index ctas (2026-03-20)
+- 1e2d61557 align collection list family and remove supplier cta alias (2026-03-20)
+- d984824c7 save ai markdown notes (2026-03-20)
+- b0e0bca49 align profile ctas and define cta families (2026-03-20)
 
 ## Working Guidance
 - Validate against Tier1 first: docs/fireux-canon.md, docs/runtime-contract.md, docs/seo-canon.md.
 - Prefer shared runtime and composable fixes before project-local divergence.
-- Apply style and surface alignment changes consistently across public, dashboard, admin, and console entry points.
+- Keep changes small, localized, and automation-friendly.
 
 ## Next Run Checklist
 - Re-scan from the next successful timestamp.
