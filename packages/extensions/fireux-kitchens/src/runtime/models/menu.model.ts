@@ -4,10 +4,17 @@ import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
- * Minimal canon menu model for kitchens (Phase 1).
- * Firestore: kitchens/{kitchenId}/menus/{menuId}
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Publishing structure only, optimized for current product needs.
+ * Family: Kitchen-scoped
+ * Storage: console-owned operational record
+ * Path: /kitchens/<kitchenId>/menus/<menuId>
+ * Owner console: Kitchen
+ *
+ * Decision note:
+ * - Menu exists because a kitchen publishes and organizes it.
+ * - It stays scoped to the kitchen even when the public site renders it.
+ * - If that changes later, update the models README first, then this file.
  */
 
 export type MenuServiceMode = 'dine_in' | 'collection' | 'delivery'

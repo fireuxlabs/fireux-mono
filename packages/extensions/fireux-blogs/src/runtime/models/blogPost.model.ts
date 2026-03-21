@@ -14,8 +14,19 @@ export type BlogAuthor = {
 }
 
 /**
- * Entity Class: Root
- * Canonical Path: /blogs/<slug>
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ *
+ * Family: Domain Root
+ * Storage: root-first canonical model
+ * Root path: /blogs/<slug>
+ * Console use: may be authored or managed through a console, but does not need a stored overlay by default
+ * Transitional fields: legacy `appId`, `created_at`, and `updated_at` still remain in the stored shape
+ *
+ * Decision note:
+ * - BlogPost is treated as a root entity first, but the current stored shape still carries app-coupled transitional fields.
+ * - Keep those fields only while existing runtime surfaces still depend on them.
+ * - If app-scoped stored truth appears later, add it intentionally rather than by symmetry.
+ * - If that changes, update the models README first, then this file.
  */
 export const BlogPost = {
   id: '',

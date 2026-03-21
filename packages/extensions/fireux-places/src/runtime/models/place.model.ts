@@ -4,12 +4,17 @@ import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
- * Place (canonical location)
- * Firestore: places/{id}
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Canon rules:
- * - id is Google place_id when sourced from Google
- * - manual places also use id as doc id (not google)
+ * Family: Domain Root
+ * Storage: root canonical model
+ * Root path: /places/<placeId>
+ * Console use: consoles may link to Place as shared location truth
+ *
+ * Decision note:
+ * - Place is shared root location identity.
+ * - Console entities like Kitchen can layer on top of Place without replacing it.
+ * - If that changes later, update the models README first, then this file.
  */
 
 /** Canonical sources: google (provider), fireux (stored), manual (user-entered). */

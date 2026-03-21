@@ -4,11 +4,17 @@ import type { FireuxStamped } from '../core/meta.model'
 export type EcosystemStatus = 'draft' | 'active' | 'paused' | 'archived'
 
 /**
- * Entity Class: Root
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Canonical Path: /ecosystems/<ecosystemId>
+ * Family: System
+ * Storage: root canonical model
+ * Root path: /ecosystems/<ecosystemId>
+ * Console face: project-console facade when ecosystems are being managed inside a project console
  *
- * Ecosystem is the logical platform boundary inside a project.
+ * Decision note:
+ * - Ecosystem is a stored system entity, not a second scoped overlay by default.
+ * - A project console may manage Ecosystem through a facade over this root record.
+ * - If real scoped stored state appears later, update the models README first, then this file.
  */
 export const Ecosystem = {
   id: '',

@@ -5,18 +5,17 @@ import type { FireuxStamped } from './meta.model'
 import type { AppRole, AppSocialLinks } from './supporting/app'
 
 /**
- * Entity Class: Root
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Canonical Path: /apps/<appId>
+ * Family: System
+ * Storage: root canonical model
+ * Root path: /apps/<appId>
+ * Console face: project-console facade when apps are being managed inside a project console
  *
- * App is the tenant boundary and should remain a single root entity.
- * Governance, console flags, identity, and branding all live on the same doc.
- *
- * Canon rules:
- * - Empty string means unset
- * - Arrays always exist
- * - Stamps use FireuxStamped nesting
- * - Firestore doc id is the source of truth; do not persist duplicate `id` in AppDoc
+ * Decision note:
+ * - App is stored once as canonical system truth.
+ * - A console may manage App through a runtime facade, but that does not justify a second stored overlay yet.
+ * - If real scoped stored state appears later, update the models README first, then this file.
  */
 
 export type AppStatus = 'draft' | 'active' | 'paused' | 'archived'

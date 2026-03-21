@@ -1,11 +1,20 @@
-// FILE: packages/ecosystem/fireux-misebox/src/runtime/models/profiles/Chef/Chef.model.ts
+// FILE: packages/extensions/fireux-kitchens/src/runtime/models/profiles/Chef/Chef.model.ts
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+
 /**
- * Entity Class: Dual-Layer
- * Core Path: /chefs/<userId>
- * App Path: /apps/<appId>/chefs/<userId>
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ *
+ * Family: Identity
+ * Storage: root canonical record plus app overlay
+ * Root path: /chefs/<userId>
+ * Overlay path: /apps/<appId>/chefs/<userId>
+ *
+ * Decision note:
+ * - Chef is an identity profile first, with app-scoped stored truth only where real operational state exists.
+ * - The overlay should stay small until a concrete app need justifies more.
+ * - If that changes later, update the models README first, then this file.
  */
 
 export const ChefCore = {

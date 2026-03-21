@@ -11,7 +11,7 @@ import {
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { Ref } from 'vue'
-import type { SupplierCore } from '../../../../../../../models/profiles/Supplier/Supplier.model'
+import type { SupplierCore } from '../../../../../../../models/supplier/Supplier.model'
 import { supplierConfig } from '../../config/supplierConfig'
 
 type UserLike = Pick<User, 'avatar'>

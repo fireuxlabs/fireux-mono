@@ -1,8 +1,14 @@
 /**
- * FireUX Meta Content Model
- * - Used by ecosystem apps to keep landing/about/road-map copy aligned.
- * - Single source of truth for narrative + illustrative examples.
- * - Do not include registry-derived data here (for example runtime module registry payloads).
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ *
+ * Family: System support
+ * Storage: runtime content model, not a console overlay
+ * Scope: ecosystem app narrative and informational content
+ *
+ * Decision note:
+ * - Meta content supports system delivery but is not part of the main root/overlay/facade entity debate.
+ * - It lives with runtime models because the content shape is part of delivered runtime behavior.
+ * - If this needs a different home later, update the models README first, then this file.
  */
 
 export type FireuxMetaCta = {

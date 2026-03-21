@@ -2,10 +2,20 @@
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model';
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase';
+
 /**
- * Entity Class: Dual-Layer
- * Core Path: /suppliers/<userId>
- * App Path: /apps/<appId>/suppliers/<userId>
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ *
+ * Family: Console
+ * Storage: root canonical record plus app overlay
+ * Root path: /suppliers/<supplierId>
+ * Overlay path: /apps/<appId>/suppliers/<supplierId>
+ *
+ * Decision note:
+ * - Supplier is treated as a console entity, not as a user profile.
+ * - The path should read as supplier identity rather than user identity, even while some profile-era content fields remain during simplification.
+ * - Keep the current storage shape for now and simplify the profile-era field set later in a focused pass.
+ * - If that changes later, update the models README first, then this file.
  */
 
 export const SupplierCore = {

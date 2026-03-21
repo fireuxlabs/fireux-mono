@@ -1,6 +1,19 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
+/**
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ *
+ * Family: Portfolio-scoped
+ * Storage: console-owned operational record
+ * Owner console: Portfolio
+ * Scope: portfolio document storage and metadata
+ *
+ * Decision note:
+ * - Document is operational portfolio content, not a shared root entity.
+ * - Keep it scoped even if document files are later referenced by other portfolio records.
+ * - If that changes later, update the models README first, then this file.
+ */
 export const Document = {
   id: '' as string,
   portfolio_id: '' as string,

@@ -4,8 +4,17 @@ import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
- * Kitchen Mise Task (canonical Firestore shape)
- * Firestore: kitchens/{kitchenId}/mise/{taskId}
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ *
+ * Family: Kitchen-scoped
+ * Storage: console-owned operational record
+ * Path: /kitchens/<kitchenId>/mise/<taskId>
+ * Owner console: Kitchen
+ *
+ * Decision note:
+ * - Mise tasks exist because a kitchen is organizing service work.
+ * - They are operational records, not reusable global entities.
+ * - If that changes later, update the models README first, then this file.
  */
 export type KitchenMiseStatus = 'todo' | 'in_progress' | 'done' | 'blocked'
 export type KitchenMisePriority = 'low' | 'normal' | 'high' | 'urgent'

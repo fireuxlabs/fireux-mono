@@ -1,8 +1,20 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/profile.model.ts
 
-import type { FireuxStamped } from './meta.model'
 import type { FirebaseTimestamp } from '../../../types/firebase'
+import type { FireuxStamped } from './meta.model'
 
+/**
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ *
+ * Family: Identity support
+ * Storage: base shapes for root profile records and app overlays
+ * Used by: /chefs/<userId>, /agents/<userId>, /professionals/<userId>, /suppliers/<userId>, and similar profile collections
+ *
+ * Decision note:
+ * - Profiles follow the same root-plus-overlay rule as other identity records when scoped truth is real.
+ * - This file defines the shared base shapes so individual profile files stay aligned.
+ * - If the identity rule changes later, update the models README first, then this file.
+ */
 export const ProfileCoreFields = {
   title: '' as string,
   subtitle: '' as string,

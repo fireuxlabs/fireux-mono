@@ -1,6 +1,20 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
+/**
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ *
+ * Family: Kitchen-scoped
+ * Storage: console-owned operational record
+ * Path: /kitchens/<kitchenId>/orders/<orderId>
+ * Owner console: Kitchen
+ *
+ * Decision note:
+ * - KitchenOrder is the kitchen-owned operational order record.
+ * - Keep it distinct from the generic order engine model until the broader order canon is deliberately reconciled.
+ * - If that changes later, update the models README first, then this file.
+ */
+
 export type KitchenOrderItem = {
   id: string
   dish_id: string

@@ -4,15 +4,17 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { Place } from 'fireux-places/runtime/models/place.model'
 
 /**
- * Company collection record (Place-bound)
- * Firestore: companies/{placeId}
- * - Document ID is the canonical Place ID.
- * - This is a record on top of an existing Place.
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Canon strategy:
- * - Runtime object is the single source of truth
- * - TypeScript derives types from it
- * - Drift is detected by comparing data ↔ model shape
+ * Family: Domain Root
+ * Storage: root canonical model
+ * Root path: /companies/<placeId>
+ * Root link: company identity is anchored to Place via the same root id
+ *
+ * Decision note:
+ * - Company is a root entity layered on top of Place, not a console-owned record.
+ * - The root Place id stays the stable link instead of inventing a second company identity.
+ * - If that relationship changes later, update the models README first, then this file.
  */
 
 export interface Company {

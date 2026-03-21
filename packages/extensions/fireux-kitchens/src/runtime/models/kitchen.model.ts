@@ -5,20 +5,17 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { Place } from 'fireux-places/runtime/models/place.model'
 
 /**
- * FireUX Canon (Consoleable, 2-layer)
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Core (root scope)
- * - Path: /kitchens/<placeId>
- * - Purpose: thin record on top of Place (root != public; Place still hydrates display/seo)
+ * Family: Console
+ * Storage: root canonical record plus app overlay
+ * Root path: /kitchens/<kitchenId>
+ * Overlay path: /apps/<appId>/kitchens/<kitchenId>
  *
- * App (tenancy scope / private overlay)
- * - Path: /apps/<appId>/kitchens/<placeId>
- * - Purpose: governance + console/private switches + app-only controls
- *
- * Canon rules:
- * - Runtime object is the single source of truth
- * - Arrays always exist
- * - Stamps use FireuxStamped nesting (aligned with other consoleables)
+ * Decision note:
+ * - Kitchen is one console entity with a root public identity and an app-scoped operational overlay.
+ * - The root record stays thin and canonical; the overlay carries governance and private operational state.
+ * - If that rule changes later, update the models README first, then this file.
  */
 
 /** Core (root scope): kitchens/<placeId> */

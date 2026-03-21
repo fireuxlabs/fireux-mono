@@ -14,9 +14,17 @@ import type {
 } from './supporting'
 
 /**
- * Entity Class: Dual-Layer
- * Core Path: /professionals/<userId>
- * App Path: /apps/<appId>/professionals/<userId>
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ *
+ * Family: Identity
+ * Storage: root canonical record plus app overlay
+ * Root path: /professionals/<userId>
+ * Overlay path: /apps/<appId>/professionals/<userId>
+ *
+ * Decision note:
+ * - Professional is an identity profile first, with scoped truth added only when an app really owns operational state.
+ * - Keep the overlay minimal until a real app-specific need appears.
+ * - If that changes later, update the models README first, then this file.
  */
 export const ProfessionalCore = {
   id: '',

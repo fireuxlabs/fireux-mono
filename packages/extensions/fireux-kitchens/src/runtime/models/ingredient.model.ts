@@ -4,14 +4,17 @@ import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
- * Ingredient (canonical Firestore shape)
- * Firestore: ingredients/{ingredientId}
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Canon:
- * - Ingredient identity is kitchen-usage based.
- * - Supplier naming never defines ingredient identity.
- * - Avoid taxonomy trees (no parent/child ingredient hierarchy).
- * - Supplier products should map to ingredients via kitchen-level linkage.
+ * Family: Domain Root
+ * Storage: root canonical model
+ * Root path: /ingredients/<ingredientId>
+ * Console use: kitchens may own scoped usage records that link back through `ingredient_id`
+ *
+ * Decision note:
+ * - Ingredient is reusable shared truth at root.
+ * - Kitchen usage should be represented through scoped companion records rather than by mutating root identity.
+ * - If that rule changes later, update the models README first, then this file.
  */
 export const Ingredient = {
   id: '' as string,
@@ -29,7 +32,7 @@ export const Ingredient = {
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: '' as FireuxStamped['created']['by'],
+    by: '' as FireuxStamped['updated']['by'],
   },
 } as const
 
@@ -44,8 +47,14 @@ export type IngredientCreateInput = Omit<
 export type IngredientUpdateInput = Partial<Omit<IngredientCreateInput, never>>
 
 /**
- * KitchenIngredient (kitchen-specific attachment/link)
- * Firestore: kitchens/{kitchenId}/ingredients/{ingredientId}
+ * Family: Kitchen-scoped
+ * Storage: console-owned operational record
+ * Path: /kitchens/<kitchenId>/ingredients/<kitchenIngredientId>
+ * Owner console: Kitchen
+ *
+ * Decision note:
+ * - KitchenIngredient is the kitchen-owned usage record for a root Ingredient.
+ * - Keep `ingredient_id` as the link back to root truth rather than mirroring root identity directly.
  */
 
 export const KitchenIngredient = {
@@ -60,7 +69,7 @@ export const KitchenIngredient = {
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: '' as FireuxStamped['created']['by'],
+    by: '' as FireuxStamped['updated']['by'],
   },
 } as const
 
@@ -77,8 +86,14 @@ export type KitchenIngredientUpdateInput = Partial<
 >
 
 /**
- * KitchenSupplierIngredient (kitchen supplier <-> ingredient link)
- * Firestore: kitchens/{kitchenId}/supplier-ingredients/{supplierIngredientId}
+ * Family: Kitchen-scoped
+ * Storage: console-owned operational record
+ * Path: /kitchens/<kitchenId>/supplier-ingredients/<supplierIngredientId>
+ * Owner console: Kitchen
+ *
+ * Decision note:
+ * - This is a kitchen-owned supplier linkage record, not a root entity.
+ * - Keep both supplier and ingredient links explicit through ids.
  */
 export const KitchenSupplierIngredient = {
   id: '' as string,
@@ -93,7 +108,7 @@ export const KitchenSupplierIngredient = {
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: '' as FireuxStamped['created']['by'],
+    by: '' as FireuxStamped['updated']['by'],
   },
 } as const
 

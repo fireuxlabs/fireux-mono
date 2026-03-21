@@ -5,9 +5,17 @@ import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
- * Entity Class: Dual-Layer
- * Core Path: /agents/<userId>
- * App Path: /apps/<appId>/agents/<userId>
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ *
+ * Family: Identity
+ * Storage: root canonical record plus app overlay
+ * Root path: /agents/<userId>
+ * Overlay path: /apps/<appId>/agents/<userId>
+ *
+ * Decision note:
+ * - Agent is an identity profile first, with app-scoped stored truth only where real operational state exists.
+ * - The overlay is deliberately small until an app truly needs more scoped state.
+ * - If this changes later, update the models README first, then this file.
  */
 export const AgentCore = {
   id: '',

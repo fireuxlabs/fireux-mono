@@ -3,6 +3,22 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
+/**
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ *
+ * Family: Domain Root
+ * Storage: root-first canonical model
+ * Root path: /products/<productId>
+ * Console use: may be managed or linked inside consoles without requiring a stored overlay by default
+ * Transitional fields: legacy `appId`, `creator_id`, `created_at`, and `updated_at` still remain in the stored shape
+ *
+ * Decision note:
+ * - Product is treated as shared root truth first, but the current stored shape still carries app-coupled transitional fields.
+ * - Keep those fields only while existing runtime surfaces still depend on them.
+ * - If a console later needs real scoped stored product state, add it intentionally rather than by symmetry.
+ * - If that changes, update the models README first, then this file.
+ */
+
 export interface ProductFeature {
   title: string
   description?: string
@@ -47,11 +63,6 @@ export interface StripePriceInput {
 }
 
 export type ProductType = string
-
-/**
- * Entity Class: Root
- * Canonical Path: /products/<productId>
- */
 export const Product = {
   id: '',
   name: '',
@@ -100,4 +111,3 @@ export type ProductUpdateInput = Partial<Omit<ProductCreateInput, 'appId'>>
 // Compatibility alias kept while product runtime migrates away from implementation-first naming.
 export const FirebaseProduct = Product
 export type FirebaseProduct = Product
-

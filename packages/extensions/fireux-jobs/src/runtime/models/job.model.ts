@@ -4,14 +4,19 @@ import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
- * Job (canonical Firestore shape)
- * Firestore: jobs/{id}
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Principles:
- * - Stored shape only (no UI / no future theory)
- * - No optional nested objects
- * - Empty string = unset
- * - Small on purpose
+ * Family: Domain Root
+ * Storage: root-first canonical model
+ * Root path: /jobs/<jobId>
+ * Console use: consoles may create or manage jobs, but the job remains one root entity by default
+ * Transitional fields: legacy top-level `app_id` still remains because existing filters and runtime surfaces still read it
+ *
+ * Decision note:
+ * - Job is root canonical truth even when a kitchen or other workplace is linked to it.
+ * - The current stored shape still carries transitional app coupling while runtime filters migrate away from it.
+ * - If a console later needs real scoped stored job state, add it intentionally rather than by symmetry.
+ * - If that changes, update the models README first, then this file.
  */
 
 export type JobStatus = 'open' | 'closed'

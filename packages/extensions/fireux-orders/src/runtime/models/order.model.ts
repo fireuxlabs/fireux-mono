@@ -1,6 +1,20 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
+/**
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ *
+ * Family: System support
+ * Storage: root operational engine model
+ * Root path: generic order records
+ * Scope: shared order workflow outside the kitchen-specific order surface
+ *
+ * Decision note:
+ * - This is the generic order engine model, not the kitchen-owned order record.
+ * - Keep it separate until the broader order canon is deliberately unified.
+ * - If that changes later, update the models README first, then this file.
+ */
+
 export type OrderServiceMode = 'dine_in' | 'collection' | 'delivery'
 
 export type OrderStatus =

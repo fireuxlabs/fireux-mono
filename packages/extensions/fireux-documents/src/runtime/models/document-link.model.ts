@@ -9,6 +9,19 @@ export type DocumentLinkTargetType =
   | 'tenancy'
   | 'task'
 
+/**
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ *
+ * Family: Portfolio-scoped
+ * Storage: console-owned operational record
+ * Owner console: Portfolio
+ * Scope: links a portfolio-owned document to another portfolio-owned target
+ *
+ * Decision note:
+ * - DocumentLink exists only because portfolio operations need attachment state.
+ * - It is scoped by the portfolio even when it points to several target types.
+ * - If that ownership changes later, update the models README first, then this file.
+ */
 export const DocumentLink = {
   id: '' as string,
   portfolio_id: '' as string,

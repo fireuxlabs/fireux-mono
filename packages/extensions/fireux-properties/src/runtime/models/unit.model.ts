@@ -1,6 +1,20 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
+/**
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ *
+ * Family: Portfolio-scoped
+ * Storage: console-owned operational record
+ * Owner console: Portfolio
+ * Scope: units owned inside a portfolio property hierarchy
+ *
+ * Decision note:
+ * - Unit exists because a portfolio owns and manages the related property.
+ * - It should stay scoped until there is a real reason to promote it to shared root truth.
+ * - If that changes later, update the models README first, then this file.
+ */
+
 export const Unit = {
   id: '' as string,
   portfolio_id: '' as string,

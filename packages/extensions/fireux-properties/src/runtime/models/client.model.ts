@@ -2,6 +2,19 @@ import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ *
+ * Family: Portfolio-scoped
+ * Storage: console-owned operational record
+ * Owner console: Portfolio
+ * Scope: portfolio client and relationship state
+ *
+ * Decision note:
+ * - Client is currently treated as a portfolio-owned operational entity, not a global root record.
+ * - If a cross-portfolio client canon appears later, update the models README first, then this file.
+ */
+
+/**
  * Runtime ops status used by Granite client watchlists.
  */
 export type ClientStatus = 'active' | 'ending' | 'arrears' | 'prospect'
@@ -47,10 +60,6 @@ export interface ClientContact {
   notes: string
 }
 
-/**
- * Entity Class: Runtime Child
- * Canonical Path: /portfolios/<portfolioId>/clients/<clientId>
- */
 export const Client = {
   // Canon IDs
   id: '' as string,

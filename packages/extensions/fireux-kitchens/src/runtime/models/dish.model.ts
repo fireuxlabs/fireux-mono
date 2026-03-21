@@ -4,8 +4,17 @@ import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
- * Minimal dish model (Phase 1)
- * Firestore: kitchens/{kitchenId}/dishes/{dishId}
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ *
+ * Family: Kitchen-scoped
+ * Storage: console-owned operational record
+ * Path: /kitchens/<kitchenId>/dishes/<dishId>
+ * Owner console: Kitchen
+ *
+ * Decision note:
+ * - Dish exists because a kitchen owns and publishes it.
+ * - Keep links to recipes or ingredients explicit through ids rather than inventing root twins.
+ * - If Dish ever becomes a root entity, update the models README first, then this file.
  */
 
 export const Dish = {

@@ -4,8 +4,17 @@ import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
- * Kitchen Cost Snapshot (canonical Firestore shape)
- * Firestore: kitchens/{kitchenId}/costs/{costId}
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ *
+ * Family: Kitchen-scoped
+ * Storage: console-owned operational record
+ * Path: /kitchens/<kitchenId>/costs/<costId>
+ * Owner console: Kitchen
+ *
+ * Decision note:
+ * - Cost snapshots exist only because a kitchen is measuring its own operations.
+ * - They should stay scoped to the kitchen even if later reporting rolls them up elsewhere.
+ * - If that changes later, update the models README first, then this file.
  */
 export type KitchenCostPeriod = 'service' | 'day' | 'week' | 'month'
 

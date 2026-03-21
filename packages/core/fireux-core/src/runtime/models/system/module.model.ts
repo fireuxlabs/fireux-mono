@@ -2,11 +2,17 @@ import type { FirebaseTimestamp } from '../../../types/firebase'
 import type { FireuxStamped } from '../core/meta.model'
 
 /**
- * Entity Class: Root
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Canonical Path: /modules/<moduleId>
+ * Family: System
+ * Storage: root canonical model
+ * Root path: /modules/<moduleId>
+ * Console face: optional project-console facade if humans are managing module composition
  *
- * Module is the minimal capability record used for runtime composition.
+ * Decision note:
+ * - Module stays root-only until real scoped stored state appears.
+ * - A console can compose or inspect modules through a facade without inventing a second stored model.
+ * - If that decision changes later, update the models README first, then this file.
  */
 export const Module = {
   id: '',

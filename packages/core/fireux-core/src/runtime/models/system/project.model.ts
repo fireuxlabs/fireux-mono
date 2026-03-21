@@ -5,12 +5,17 @@ export type ProjectStatus = 'draft' | 'active' | 'paused' | 'archived'
 export type ProjectType = 'standalone_app' | 'ecosystem_app'
 
 /**
- * Entity Class: Root
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Canonical Path: /projects/<projectId>
+ * Family: Console
+ * Storage: root canonical model
+ * Root path: /projects/<projectId>
+ * Console face: project-console facade over the same root entity
  *
- * Project is the deployment container for FireUX.
- * It defines the root runtime identity before ecosystem or app layers exist.
+ * Decision note:
+ * - Project is operated through a project console, but that does not yet require a second stored overlay.
+ * - Treat the console-managed view as a facade unless real scoped stored truth appears later.
+ * - If this decision changes, update the models README first, then this file.
  */
 export const Project = {
   id: '',

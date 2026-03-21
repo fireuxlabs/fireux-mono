@@ -1,6 +1,20 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
+/**
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ *
+ * Family: Kitchen-scoped
+ * Storage: console-owned operational record
+ * Path: /kitchens/<kitchenId>/recipes/<recipeId>
+ * Owner console: Kitchen
+ *
+ * Decision note:
+ * - Recipe exists because a kitchen owns and operates it.
+ * - Keep recipe scoped even when it references reusable root entities like Ingredient.
+ * - If that changes later, update the models README first, then this file.
+ */
+
 export type WorkflowStatus = 'draft' | 'active' | 'archived'
 export type RecipeVisibility = 'private' | 'team' | 'shared' | 'public'
 export type ProtectionLevel = 'standard' | 'confidential' | 'secret'

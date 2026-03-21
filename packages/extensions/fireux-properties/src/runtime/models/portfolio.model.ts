@@ -3,13 +3,21 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
-export type PortfolioStatus = 'active' | 'archived'
-
 /**
- * Entity Class: Dual-Layer
- * Core Path: /portfolios/<portfolioId>
- * App Path: /apps/<appId>/portfolios/<portfolioId>
+ * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ *
+ * Family: Console
+ * Storage: root canonical record plus app overlay
+ * Root path: /portfolios/<portfolioId>
+ * Overlay path: /apps/<appId>/portfolios/<portfolioId>
+ *
+ * Decision note:
+ * - Portfolio is one console entity with a root identity and an app-scoped operational overlay.
+ * - The overlay exists because real governance and console state can differ by app.
+ * - If that changes later, update the models README first, then this file.
  */
+
+export type PortfolioStatus = 'active' | 'archived'
 export const PortfolioCore = {
   id: '',
   name: '',
