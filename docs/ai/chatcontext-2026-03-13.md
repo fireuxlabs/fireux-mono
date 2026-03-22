@@ -1,4 +1,5 @@
 # AI Chat Context Bundle (2026-03-13)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-13
 
 ## docs/ai/README.md
@@ -17,7 +18,7 @@ Updated: 2026-03-13
 ## docs/ai/codex-threads/alignment.md
 
 # Alignment Notes - useInterface composables
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-13
 Audience: Implementation context for coding agents and maintainers.
 
@@ -53,7 +54,7 @@ Audience: Implementation context for coding agents and maintainers.
 ## docs/ai/codex-threads/bringli.md
 
 # FireUX - Bringli ecosystem (Codex)
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-13
 Audience: Implementation context for coding agents and maintainers.
 
@@ -89,7 +90,7 @@ Audience: Implementation context for coding agents and maintainers.
 ## docs/ai/codex-threads/cleanbox.md
 
 # FireUX - Cleanbox ecosystem (Codex)
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-13
 Audience: Implementation context for coding agents and maintainers.
 
@@ -125,7 +126,7 @@ Audience: Implementation context for coding agents and maintainers.
 ## docs/ai/codex-threads/design-system.md
 
 # FireUX Design System - Codex Thread
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-13
 Audience: Implementation context for coding agents and maintainers.
 
@@ -161,7 +162,7 @@ Audience: Implementation context for coding agents and maintainers.
 ## docs/ai/codex-threads/droply.md
 
 # FireUX - Droply module thread (Codex)
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-13
 Audience: Implementation context for coding agents and maintainers.
 
@@ -197,7 +198,7 @@ Audience: Implementation context for coding agents and maintainers.
 ## docs/ai/codex-threads/extensions.md
 
 # FireUX Extensions - Recent Scan (Codex)
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-13
 Audience: Implementation context for coding agents and maintainers.
 
@@ -233,7 +234,7 @@ Audience: Implementation context for coding agents and maintainers.
 ## docs/ai/codex-threads/fallback.md
 
 # Fallback Policy
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-13
 Audience: Implementation context for coding agents and maintainers.
 
@@ -269,7 +270,7 @@ Audience: Implementation context for coding agents and maintainers.
 ## docs/ai/codex-threads/fireux-misebox.md
 
 # FireUX - Misebox ecosystem (Codex)
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-13
 Audience: Implementation context for coding agents and maintainers.
 
@@ -305,7 +306,7 @@ Audience: Implementation context for coding agents and maintainers.
 ## docs/ai/codex-threads/kitchens.md
 
 # Kitchens Roadmap (FireUX)
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-13
 Audience: Implementation context for coding agents and maintainers.
 
@@ -341,7 +342,7 @@ Audience: Implementation context for coding agents and maintainers.
 ## docs/ai/codex-threads/monorepo-install-incident.md
 
 # Monorepo Install Incident (2026-02-06)
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-13
 Audience: Implementation context for coding agents and maintainers.
 
@@ -377,7 +378,7 @@ Audience: Implementation context for coding agents and maintainers.
 ## docs/ai/codex-threads/onboarding.md
 
 # Onboarding Thread
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-13
 Audience: Implementation context for coding agents and maintainers.
 
@@ -413,7 +414,7 @@ Audience: Implementation context for coding agents and maintainers.
 ## docs/ai/codex-threads/packages.md
 
 # FireUX - Packages Map (Codex)
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-13
 Audience: Implementation context for coding agents and maintainers.
 
@@ -449,7 +450,7 @@ Audience: Implementation context for coding agents and maintainers.
 ## docs/ai/codex-threads/product-fulfillment.md
 
 # Product Fulfillment Thread Handoff
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-13
 Audience: Implementation context for coding agents and maintainers.
 
@@ -485,7 +486,7 @@ Audience: Implementation context for coding agents and maintainers.
 ## docs/ai/codex-threads/products.md
 
 # FireUX - Products and Revenue (Codex)
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-13
 Audience: Implementation context for coding agents and maintainers.
 
@@ -521,7 +522,7 @@ Audience: Implementation context for coding agents and maintainers.
 ## docs/ai/codex-threads/tasks.md
 
 # Tasks
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-13
 Audience: Implementation context for coding agents and maintainers.
 

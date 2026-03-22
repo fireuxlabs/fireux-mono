@@ -1,5 +1,5 @@
 # Alignment Notes - useInterface composables
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-08
 
 ## Scope
@@ -29,7 +29,7 @@ Updated: 2026-03-08
 
 
 # FireUX - Bringli ecosystem (Codex)
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-08
 
 ## Scope
@@ -59,7 +59,7 @@ Updated: 2026-03-08
 
 
 # FireUX - Cleanbox ecosystem (Codex)
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-08
 
 ## Scope
@@ -89,7 +89,7 @@ Updated: 2026-03-08
 
 
 # FireUX Design System - Codex Thread
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-08
 
 ## Scope
@@ -119,7 +119,7 @@ Updated: 2026-03-08
 
 
 # FireUX - Droply module thread (Codex)
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-08
 
 ## Scope
@@ -149,7 +149,7 @@ Updated: 2026-03-08
 
 
 # FireUX Extensions - Recent Scan (Codex)
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-08
 
 ## Scope
@@ -179,7 +179,7 @@ Updated: 2026-03-08
 
 
 # Fallback Policy
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-08
 
 ## Scope
@@ -209,7 +209,7 @@ Updated: 2026-03-08
 
 
 # FireUX - Misebox ecosystem (Codex)
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-08
 
 ## Scope
@@ -239,7 +239,7 @@ Updated: 2026-03-08
 
 
 # Kitchens Roadmap (FireUX)
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-08
 
 ## Scope
@@ -269,7 +269,7 @@ Updated: 2026-03-08
 
 
 # Monorepo Install Incident (2026-02-06)
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-08
 
 ## Scope
@@ -299,7 +299,7 @@ Updated: 2026-03-08
 
 
 # Onboarding Thread
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-08
 
 ## Scope
@@ -329,7 +329,7 @@ Updated: 2026-03-08
 
 
 # FireUX - Packages Map (Codex)
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-08
 
 ## Scope
@@ -359,7 +359,7 @@ Updated: 2026-03-08
 
 
 # Product Fulfillment Thread Handoff
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-08
 
 ## Scope
@@ -389,7 +389,7 @@ Updated: 2026-03-08
 
 
 # FireUX - Products and Revenue (Codex)
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-08
 
 ## Scope
@@ -419,7 +419,7 @@ Updated: 2026-03-08
 
 
 # Tasks
-Authority: Automation context (Codex implementation handoff)
+Authority: Tier3 automation context (Non-authoritative)
 Updated: 2026-03-08
 
 ## Scope

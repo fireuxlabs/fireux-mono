@@ -1,7 +1,7 @@
 # Runtime Directory
 
 Authority: Operational
-Updated: 2026-03-20
+Updated: 2026-03-22
 Scope: `packages/*/fireux-*/src/runtime` only.
 Does not apply to consuming app `app/`, `server/`, or root `public/` directories.
 
@@ -19,6 +19,7 @@ If `module.ts` is the entrypoint, `runtime/` is where the package actually lands
 runtime/
 ├─ assets/
 ├─ components/
+├─ concepts/
 ├─ composables/
 ├─ layouts/
 ├─ middleware/
@@ -39,6 +40,10 @@ Not every package needs every runtime subdirectory.
 ## components Directory
 
 `components/` contains Vue components delivered by the package at runtime.
+
+## concepts Directory
+
+`concepts/` contains cross-cutting runtime behaviour canon when a concept spans pages, components, composables, and related runtime layers.
 
 ## composables Directory
 
@@ -80,6 +85,7 @@ Not every package needs every runtime subdirectory.
 
 - every current FireUX module package has `src/runtime/`
 - `pages/`, `composables/`, `components/`, and `models/` are the strongest shared runtime patterns
+- `concepts/` is valid when a behaviour has outgrown any single runtime surface
 - `public/`, `server/`, `plugins/`, `layouts/`, `assets/`, `middleware/`, and `utils/` are valid but optional runtime surfaces
 - `runtime/models/` is already a normal and valid pattern across core, extensions, and ecosystems
 

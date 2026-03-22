@@ -1,7 +1,7 @@
 # Models Directory
 
 Authority: Operational
-Updated: 2026-03-21
+Updated: 2026-03-22
 Scope: `packages/*/fireux-*/src/runtime/models` and child directories under `models/*`.
 
 Learn how FireUX runtime models are classified, how they are stored, and how future model decisions should be explained.
@@ -43,8 +43,14 @@ Examples:
 - `Supplier`
 - `Project`
 
-Some console models use root plus overlay storage.
-Some console models stay root-only and expose a console facade.
+Console canon:
+- root canonical record
+- app-scoped operational overlay
+
+Public create creates the root console record.
+Console create ensures the app overlay and may create root first when missing.
+
+Some runtime implementations are still catching up to that rule, but this is the current console canon.
 
 ### System
 
@@ -97,6 +103,8 @@ Examples:
 - `UserCore` + `UserApp`
 - `KitchenCore` + `KitchenApp`
 - `PortfolioCore` + `PortfolioApp`
+- `SupplierCore` + `SupplierApp`
+- `ProjectCore` + `ProjectApp`
 
 ### Facade
 
@@ -105,12 +113,11 @@ A runtime, read, or console face of the same root entity.
 Use a facade when a console is managing the entity but there is not yet a second stored scoped truth.
 
 Examples for now:
-- `Project`
 - `App`
 - `Ecosystem`
 - `Module`
 
-Do not invent stored models like `ProjectApp`, `ProjectEcosystem`, or `ProjectModule` unless real scoped stored state appears.
+Do not invent stored models like `AppTenant`, `EcosystemProject`, or `ModuleProject` unless real scoped stored state appears.
 
 ## Child Directories
 
@@ -156,7 +163,8 @@ Each file should point back to this README so future changes can be made in one 
 - `runtime/models/` is already the normal home for FireUX runtime models
 - root, overlay, facade, and scoped models already coexist in runtime delivery space
 - the repo already supports `User` and `Kitchen` as root plus overlay patterns
-- the repo already supports `Project`, `App`, `Ecosystem`, and `Module` as root models that may have console facades
+- the repo already supports `App`, `Ecosystem`, and `Module` as root models that may have console facades
+- console canon now treats `Kitchen`, `Portfolio`, `Supplier`, and `Project` as root plus overlay entities
 
 ## Not Aligned Yet
 
@@ -164,6 +172,7 @@ Each file should point back to this README so future changes can be made in one 
 - `shared/` and `supporting/` still need tighter boundaries
 - some models still mix legacy flat stamps with newer nested stamps
 - some paths are still implicit in implementation rather than clearly documented in the file header
+- `Project` and some console flows are still catching up from older facade-first thinking to the newer shared console overlay rule
 
 ## Roadmap To Reconciliation
 
