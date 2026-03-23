@@ -1,4 +1,5 @@
 import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection'
+import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import { computed } from 'vue'
 import { agentConfig } from '../config/agentConfig'
 import type { AgentCore } from '../../../../../../models/profiles/Agent/Agent.model'
@@ -13,6 +14,8 @@ export function useAgentFetch() {
 
   const coreAgents = computed(() => coreAgentsHydrated.value ?? [])
   const appAgents = computed(() => appAgentsHydrated?.value ?? [])
+  const { byId: coreAgent } = useCollectionById(coreAgents)
+  const { byId: appAgent } = useCollectionById(appAgents)
 
   const pending = computed(() =>
     coreAgentsHydrated.value === undefined ||
@@ -22,6 +25,8 @@ export function useAgentFetch() {
   return {
     coreAgents,
     appAgents,
+    coreAgent,
+    appAgent,
     pending,
   }
 }

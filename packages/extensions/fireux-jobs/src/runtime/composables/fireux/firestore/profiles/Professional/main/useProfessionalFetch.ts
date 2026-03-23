@@ -1,4 +1,5 @@
 import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection'
+import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import { computed } from 'vue'
 import { professionalConfig } from '../config/professionalConfig'
 import type { ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
@@ -13,6 +14,8 @@ export function useProfessionalFetch() {
 
   const coreProfessionals = computed(() => coreProfessionalsHydrated.value ?? [])
   const appProfessionals = computed(() => appProfessionalsHydrated?.value ?? [])
+  const { byId: coreProfessional } = useCollectionById(coreProfessionals)
+  const { byId: appProfessional } = useCollectionById(appProfessionals)
 
   const pending = computed(() =>
     coreProfessionalsHydrated.value === undefined ||
@@ -22,6 +25,8 @@ export function useProfessionalFetch() {
   return {
     coreProfessionals,
     appProfessionals,
+    coreProfessional,
+    appProfessional,
     pending,
   }
 }

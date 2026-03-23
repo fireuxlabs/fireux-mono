@@ -1,4 +1,5 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import type { Ref, ShallowRef } from 'vue'
 import { computed, shallowRef, unref, watch } from 'vue'
 import type {
@@ -85,12 +86,14 @@ export function useKitchenIngredientFetch(
   })
 
   const count = computed(() => ingredients.value.length)
+  const { byId: ingredient } = useCollectionById(ingredients)
 
   return {
     kitchenId: resolvedKitchenId,
     kitchenCollectionPath,
     collectionPath,
     ingredients,
+    ingredient,
     count,
   }
 }

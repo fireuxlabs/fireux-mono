@@ -1,6 +1,7 @@
 import { useNuxtApp } from '#imports'
 import { collection } from 'firebase/firestore'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import { useCollection, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useAppUserCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useAppUserCollection'
 import { computed } from 'vue'
@@ -67,11 +68,13 @@ export function useSupplierFetch() {
   )
 
   const coreSuppliers = computed(() => coreSuppliersHydrated.value ?? [])
+  const { byId: supplier } = useCollectionById(coreSuppliers)
 
   const pending = computed(() => coreSuppliersHydrated.value === undefined)
 
   return {
     coreSuppliers,
+    supplier,
     pending,
   }
 }

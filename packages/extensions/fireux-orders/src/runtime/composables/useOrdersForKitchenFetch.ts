@@ -1,5 +1,6 @@
 import { collection, query, where, type Query } from 'firebase/firestore'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Order } from '../models/order.model'
@@ -82,9 +83,11 @@ export function useOrdersForKitchenFetch(kitchenId: Ref<string> | string) {
         toMillis((a as any).updated?.at ?? (a as any).updated_at)
     )
   })
+  const { byId: order } = useCollectionById(orders)
 
   return {
     kitchenId: resolvedKitchenId,
     orders,
+    order,
   }
 }

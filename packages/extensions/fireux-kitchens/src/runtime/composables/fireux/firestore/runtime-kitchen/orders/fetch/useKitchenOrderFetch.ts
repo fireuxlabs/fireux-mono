@@ -1,4 +1,5 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import type { Ref, ShallowRef } from 'vue'
 import { computed, shallowRef, unref, watch } from 'vue'
 import type { KitchenOrder } from '../../../../../../models/order.model'
@@ -43,12 +44,13 @@ export function useKitchenOrderFetch(
 	)
 
 	const orders = computed<KitchenOrder[]>(() => ordersRef.value?.value ?? [])
+  const { byId: order } = useCollectionById(orders)
 
 	return {
 		kitchenId: resolvedKitchenId,
 		kitchenCollectionPath,
 		ordersPath,
 		orders,
+    order,
 	}
 }
-
