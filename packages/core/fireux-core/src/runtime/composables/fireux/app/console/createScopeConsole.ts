@@ -1,5 +1,5 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import type { NavItem } from '../../../../../types/nav'
+import type { NavItem } from '../nav.types'
 
 type ScopeConsoleOptions<
   TRuntime,

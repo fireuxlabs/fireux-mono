@@ -1,7 +1,7 @@
 import { defineEventHandler } from 'h3'
-import { dirname, resolve } from 'node:path'
+import { dirname, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { readFile, stat } from 'node:fs/promises'
+import { readFile, readdir, stat } from 'node:fs/promises'
 
 type DocsEntry = {
   heading: string
@@ -10,64 +10,96 @@ type DocsEntry = {
   canonical: boolean
 }
 
-const headingPrefix = '### '
-const itemPrefix = '- ['
+const docsReadmeName = 'README.md'
 
-function normalizeHeading(rawHeading: string): string {
-  const trimmed = rawHeading.trim()
-  const [title] = trimmed.split(' — ')
-  return title.trim()
-}
-
-function parseEntry(line: string, heading: string): DocsEntry | null {
-  const match = line.match(/^- \[(.+?)\]\((.+?)\)(.*)$/)
-  if (!match) {
-    return null
-  }
-
-  const [, label, linkTarget, suffix] = match
-  const canonical = suffix.includes('✅')
-
-  return {
-    heading,
-    label,
-    path: linkTarget,
-    canonical,
-  }
-}
-
-function parseManifest(raw: string): DocsEntry[] {
-  const entries: DocsEntry[] = []
-  let currentHeading: string | null = null
-
+function firstHeading(raw: string): string | null {
   for (const line of raw.split('\n')) {
-    if (line.startsWith(headingPrefix)) {
-      const heading = normalizeHeading(line.slice(headingPrefix.length))
-      currentHeading = heading
+    if (line.startsWith('# ')) return line.slice(2).trim()
+  }
+  return null
+}
+
+function toPosixPath(value: string): string {
+  return value.split(sep).join('/')
+}
+
+function toDocsPath(relativeReadmePath: string): string {
+  const normalized = toPosixPath(relativeReadmePath)
+  const withoutReadme =
+    normalized === docsReadmeName
+      ? ''
+      : normalized.replace(/\/README\.md$/, '')
+  return withoutReadme ? `/${withoutReadme}` : '/'
+}
+
+function headingForPath(path: string): string {
+  if (path === '/') return 'Package Root'
+  if (path === '/src') return 'Source'
+  if (path.startsWith('/src/runtime')) return 'Runtime'
+  if (path.startsWith('/src/config')) return 'Config'
+  if (path.startsWith('/src/types')) return 'Types'
+  return 'Other'
+}
+
+function fallbackLabel(relativeReadmePath: string): string {
+  const normalized = toPosixPath(relativeReadmePath)
+  if (normalized === docsReadmeName) return 'FireUX Package Spine'
+
+  const segments = normalized.split('/')
+  const parent = segments.at(-2)
+  return parent || 'README'
+}
+
+async function walkReadmes(dir: string): Promise<string[]> {
+  const entries = await readdir(dir, { withFileTypes: true })
+  const out: string[] = []
+
+  for (const entry of entries) {
+    if (entry.name === 'node_modules' || entry.name === 'dist' || entry.name === '.output') {
       continue
     }
 
-    if (!currentHeading) continue
-    if (!line.startsWith(itemPrefix)) continue
+    const fullPath = resolve(dir, entry.name)
+    if (entry.isDirectory()) {
+      out.push(...(await walkReadmes(fullPath)))
+      continue
+    }
 
-    const entry = parseEntry(line, currentHeading)
-    if (entry) entries.push(entry)
+    if (entry.isFile() && entry.name === docsReadmeName) {
+      out.push(fullPath)
+    }
   }
 
-  return entries
+  return out
 }
 
 async function readDocsManifest(): Promise<DocsEntry[]> {
   const currentDir = dirname(fileURLToPath(import.meta.url))
-  const manifestPath = resolve(currentDir, '../../docs/_manifest.md')
+  const docsRoot = resolve(currentDir, '../../../../../packages/core/fireux-docs')
 
-  const fileStat = await stat(manifestPath)
-  if (!fileStat.isFile()) {
-    throw new Error(`Documentation manifest is not a file: ${manifestPath}`)
+  const docsStat = await stat(docsRoot)
+  if (!docsStat.isDirectory()) {
+    throw new Error(`FireUX docs root is not a directory: ${docsRoot}`)
   }
 
-  const raw = await readFile(manifestPath, 'utf-8')
-  return parseManifest(raw)
+  const readmes = await walkReadmes(docsRoot)
+  const entries = await Promise.all(
+    readmes.map(async (readmePath) => {
+      const relativeReadmePath = relative(docsRoot, readmePath)
+      const raw = await readFile(readmePath, 'utf-8')
+      const path = toDocsPath(relativeReadmePath)
+      const label = firstHeading(raw) || fallbackLabel(relativeReadmePath)
+
+      return {
+        heading: headingForPath(path),
+        label,
+        path,
+        canonical: true,
+      } satisfies DocsEntry
+    })
+  )
+
+  return entries.sort((a, b) => a.path.localeCompare(b.path))
 }
 
 export default defineEventHandler(async () => {

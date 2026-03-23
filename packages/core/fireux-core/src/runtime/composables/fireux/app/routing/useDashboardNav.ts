@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import type { NavItem } from '../../../../../types/nav'
+import type { NavItem } from '../nav.types'
 import { useUser } from '../../firestore/core/user/useUser'
 import { useNav } from '../ui/nav/useNav'
 

@@ -8,11 +8,11 @@ import { useApp } from '../../fireux/firestore/core/app/useApp'
 import { useAppUserCollection } from '../../fireux/firestore/core/user/fetch/useAppUserCollection'
 import { useUserCollection } from '../../fireux/firestore/core/user/fetch/useUserCollection'
 import type {
-  DevHealthApi,
-  DevHealthIssue,
-  DevHealthResult,
-  DevHealthScope,
-  DevHealthStatus,
+    DevHealthApi,
+    DevHealthIssue,
+    DevHealthResult,
+    DevHealthScope,
+    DevHealthStatus,
 } from './types'
 
 const resolveStatus = (issues: DevHealthIssue[]): DevHealthStatus => {

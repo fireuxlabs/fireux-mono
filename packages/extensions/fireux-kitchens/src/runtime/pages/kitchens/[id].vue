@@ -38,135 +38,281 @@
         </NuxtLink>
       </div>
 
-      <div v-else class="space-y-4">
-        <KitchenCardsProfile
-          v-if="kitchenProfile"
-          :model="kitchenProfile"
-        />
+      <div v-else class="space-y-6">
+        <section class="fireux-page-hero">
+          <div class="fireux-page-hero__grid">
+            <div class="fireux-page-hero__content">
+              <div class="fireux-page-hero__eyebrow">
+                Kitchen
+              </div>
 
-        <DevJson
-          v-if="isDev && kitchen"
-          :title="'Kitchen (Doc)'"
-          context="Kitchen detail page · kitchens/[id] · hydrated kitchen doc"
-          :data="kitchen"
-          :default-open="false"
-        />
+              <div class="space-y-3">
+                <h2 class="fireux-page-hero__title">
+                  {{ pageTitle }}
+                </h2>
+                <p class="fireux-page-hero__description">
+                  {{ heroDescription }}
+                </p>
+              </div>
 
-        <UCard>
-          <template #header>
-            <div class="space-y-1">
-              <div class="text-sm font-semibold">Menus</div>
-              <p class="text-xs text-dimmed">
-                See available menus for this kitchen.
-              </p>
+              <div class="fireux-page-hero__badges">
+                <UBadge
+                  size="sm"
+                  variant="soft"
+                  :color="canEdit ? 'primary' : 'neutral'"
+                >
+                  {{ canEdit ? 'Editable' : 'Read only' }}
+                </UBadge>
+                <UBadge
+                  v-if="kitchenProfile?.verified"
+                  size="sm"
+                  variant="soft"
+                  color="emerald"
+                >
+                  Verified
+                </UBadge>
+                <UBadge
+                  v-if="kitchenSourceLabel"
+                  size="sm"
+                  variant="soft"
+                  color="neutral"
+                >
+                  {{ kitchenSourceLabel }}
+                </UBadge>
+                <UBadge
+                  v-if="claimedByLabel"
+                  size="sm"
+                  variant="soft"
+                  color="neutral"
+                >
+                  Claimed by {{ claimedByLabel }}
+                </UBadge>
+              </div>
+
+              <div class="fireux-page-hero__actions">
+                <UButton
+                  v-if="activeMenu && menuLink(activeMenu.id)"
+                  color="primary"
+                  icon="i-lucide-book-open-check"
+                  :to="menuLink(activeMenu.id)"
+                >
+                  View active menu
+                </UButton>
+                <UButton
+                  v-if="showClaimButton"
+                  color="primary"
+                  variant="soft"
+                  icon="i-lucide-key-round"
+                  :loading="isClaiming"
+                  :disabled="isClaiming"
+                  @click="onClaimKitchen"
+                >
+                  Claim this kitchen
+                </UButton>
+                <UButton
+                  v-else-if="canEdit && kitchenId"
+                  color="neutral"
+                  variant="soft"
+                  icon="i-lucide-pencil"
+                  @click="goToEdit"
+                >
+                  Edit kitchen
+                </UButton>
+                <UButton
+                  variant="ghost"
+                  color="neutral"
+                  icon="i-lucide-chevrons-left-right-ellipsis"
+                  to="/kitchens"
+                >
+                  Browse kitchens
+                </UButton>
+              </div>
+
+              <div class="fireux-page-hero__facts text-sm text-dimmed">
+                <span v-if="kitchenProfile?.address">{{ kitchenProfile.address }}</span>
+                <span v-if="kitchenProfile?.website">
+                  {{ kitchenProfile.website }}
+                </span>
+              </div>
             </div>
-          </template>
 
-          <div class="space-y-3">
-            <UButton
-              v-if="activeMenu && menuLink(activeMenu.id)"
-              size="xs"
-              variant="soft"
-              color="primary"
-              icon="i-lucide-book-open-check"
-              :to="menuLink(activeMenu.id)"
-            >
-              View active menu
-            </UButton>
+            <div class="space-y-4">
+              <div class="fireux-page-hero__visual">
+                <img
+                  v-if="heroImageUrl"
+                  :src="heroImageUrl"
+                  :alt="pageTitle"
+                >
+                <div v-else class="flex h-full items-center justify-center text-sm text-dimmed">
+                  Kitchen imagery coming soon
+                </div>
+                <div class="fireux-page-hero__visual-overlay">
+                  <div class="text-sm font-semibold">
+                    {{ kitchenProfile?.prop || pageTitle }}
+                  </div>
+                  <div class="text-xs opacity-80">
+                    {{ heroLocation }}
+                  </div>
+                </div>
+              </div>
 
-            <div v-if="sortedMenus.length" class="flex flex-wrap gap-2">
-              <UButton
-                v-for="menu in sortedMenus"
-                :key="menu.id"
-                size="xs"
-                variant="soft"
-                color="neutral"
-                :to="menuLink(menu.id)"
-              >
-                {{ menu.name || menu.id || 'Untitled menu' }}
-              </UButton>
+              <div class="fireux-page-hero__stats">
+                <div class="fireux-page-hero__stat">
+                  <div class="fireux-page-hero__stat-value">
+                    {{ sortedMenus.length }}
+                  </div>
+                  <div class="fireux-page-hero__stat-label">
+                    Published menus
+                  </div>
+                </div>
+                <div class="fireux-page-hero__stat">
+                  <div class="fireux-page-hero__stat-value">
+                    {{ claimedByLabel ? 'Claimed' : 'Open' }}
+                  </div>
+                  <div class="fireux-page-hero__stat-label">
+                    Ownership state
+                  </div>
+                </div>
+              </div>
             </div>
-
-            <p v-else class="text-sm text-dimmed">
-              No menus available yet.
-            </p>
           </div>
-        </UCard>
+        </section>
 
-        <UCard>
-          <template #header>
-            <div class="space-y-1">
-              <div class="text-sm font-semibold">Permissions</div>
-              <p class="text-xs text-dimmed">
-                Edit access follows kitchen claim ownership and app admin role.
-              </p>
-            </div>
-          </template>
+        <div class="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(20rem,0.95fr)]">
+          <div class="space-y-6">
+            <KitchenCardsProfile
+              v-if="kitchenProfile"
+              class="fireux-page-surface"
+              :model="kitchenProfile"
+            />
 
-          <div class="space-y-3">
-            <div class="flex flex-wrap items-center gap-2">
-              <UBadge
-                size="xs"
-                variant="soft"
-                :color="canEdit ? 'primary' : 'neutral'"
-              >
-                {{ canEdit ? 'Can edit' : 'Read only' }}
-              </UBadge>
-              <UBadge v-if="isOwner" size="xs" variant="soft" color="emerald">
-                Owner
-              </UBadge>
-              <UBadge v-else-if="isAdmin" size="xs" variant="soft" color="primary">
-                Admin override
-              </UBadge>
-              <UBadge
-                v-if="claimedByLabel"
-                size="xs"
-                variant="soft"
-                color="neutral"
-              >
-                Claimed by: {{ claimedByLabel }}
-              </UBadge>
-            </div>
-
-            <p class="text-sm text-dimmed">
-              {{ permissionMessage }}
-            </p>
-
-            <div class="flex flex-wrap gap-2">
-              <UButton
-                v-if="canEdit && kitchenId"
-                size="xs"
-                variant="soft"
-                color="primary"
-                icon="i-lucide-pencil"
-                @click="goToEdit"
-              >
-                Edit kitchen
-              </UButton>
-              <UButton
-                v-if="showClaimButton"
-                size="xs"
-                variant="soft"
-                color="primary"
-                icon="i-lucide-key-round"
-                :loading="isClaiming"
-                :disabled="isClaiming"
-                @click="onClaimKitchen"
-              >
-                Claim this kitchen
-              </UButton>
-              <UButton
-                v-if="!canEdit && !showClaimButton"
-                size="xs"
-                variant="soft"
-                color="neutral"
-                icon="i-lucide-eye"
-              >
-                View only
-              </UButton>
-            </div>
+            <DevJson
+              v-if="isDev && kitchen"
+              :title="'Kitchen (Doc)'"
+              context="Kitchen detail page · kitchens/[id] · hydrated kitchen doc"
+              :data="kitchen"
+              :default-open="false"
+            />
           </div>
-        </UCard>
+
+          <div class="space-y-6">
+            <UCard class="fireux-page-surface">
+              <template #header>
+                <div class="space-y-1">
+                  <div class="text-sm font-semibold">Menus</div>
+                  <p class="text-xs text-dimmed">
+                    See available menus for this kitchen.
+                  </p>
+                </div>
+              </template>
+
+              <div class="space-y-3">
+                <UButton
+                  v-if="activeMenu && menuLink(activeMenu.id)"
+                  size="sm"
+                  variant="soft"
+                  color="primary"
+                  icon="i-lucide-book-open-check"
+                  :to="menuLink(activeMenu.id)"
+                >
+                  View active menu
+                </UButton>
+
+                <div v-if="sortedMenus.length" class="flex flex-wrap gap-2">
+                  <UButton
+                    v-for="menu in sortedMenus"
+                    :key="menu.id"
+                    size="xs"
+                    variant="soft"
+                    color="neutral"
+                    :to="menuLink(menu.id)"
+                  >
+                    {{ menu.name || menu.id || 'Untitled menu' }}
+                  </UButton>
+                </div>
+
+                <p v-else class="text-sm text-dimmed">
+                  No menus available yet.
+                </p>
+              </div>
+            </UCard>
+
+            <UCard class="fireux-page-surface">
+              <template #header>
+                <div class="space-y-1">
+                  <div class="text-sm font-semibold">Permissions</div>
+                  <p class="text-xs text-dimmed">
+                    Edit access follows kitchen claim ownership and app admin role.
+                  </p>
+                </div>
+              </template>
+
+              <div class="space-y-3">
+                <div class="flex flex-wrap items-center gap-2">
+                  <UBadge
+                    size="xs"
+                    variant="soft"
+                    :color="canEdit ? 'primary' : 'neutral'"
+                  >
+                    {{ canEdit ? 'Can edit' : 'Read only' }}
+                  </UBadge>
+                  <UBadge v-if="isOwner" size="xs" variant="soft" color="emerald">
+                    Owner
+                  </UBadge>
+                  <UBadge v-else-if="isAdmin" size="xs" variant="soft" color="primary">
+                    Admin override
+                  </UBadge>
+                  <UBadge
+                    v-if="claimedByLabel"
+                    size="xs"
+                    variant="soft"
+                    color="neutral"
+                  >
+                    Claimed by: {{ claimedByLabel }}
+                  </UBadge>
+                </div>
+
+                <p class="text-sm text-dimmed">
+                  {{ permissionMessage }}
+                </p>
+
+                <div class="flex flex-wrap gap-2">
+                  <UButton
+                    v-if="canEdit && kitchenId"
+                    size="xs"
+                    variant="soft"
+                    color="primary"
+                    icon="i-lucide-pencil"
+                    @click="goToEdit"
+                  >
+                    Edit kitchen
+                  </UButton>
+                  <UButton
+                    v-if="showClaimButton"
+                    size="xs"
+                    variant="soft"
+                    color="primary"
+                    icon="i-lucide-key-round"
+                    :loading="isClaiming"
+                    :disabled="isClaiming"
+                    @click="onClaimKitchen"
+                  >
+                    Claim this kitchen
+                  </UButton>
+                  <UButton
+                    v-if="!canEdit && !showClaimButton"
+                    size="xs"
+                    variant="soft"
+                    color="neutral"
+                    icon="i-lucide-eye"
+                  >
+                    View only
+                  </UButton>
+                </div>
+              </div>
+            </UCard>
+          </div>
+        </div>
       </div>
     </UPageBody>
   </UPage>
@@ -254,6 +400,26 @@ const menuLink = (menuIdRaw: unknown) => {
 
 const { profile } = useKitchenInterface()
 const kitchenProfile = computed(() => profile(kitchen.value))
+const kitchenSourceLabel = computed(() =>
+  kitchenProfile.value?.source === 'fireux'
+    ? 'FireUX'
+    : kitchenProfile.value?.source === 'manual'
+      ? 'Manual'
+      : kitchenProfile.value?.source === 'google'
+        ? 'Google'
+        : ''
+)
+const heroImageUrl = computed(() =>
+  kitchenProfile.value?.coverImage ||
+  kitchenProfile.value?.galleryImages?.[0] ||
+  kitchenProfile.value?.imageUrl ||
+  ''
+)
+const heroLocation = computed(() =>
+  kitchenProfile.value?.address ||
+  kitchenProfile.value?.subtitle ||
+  'Kitchen profile'
+)
 
 const { currentUser, isAdmin } = useUser()
 const claimedBy = computed(() => String(kitchen.value?.claimed_by || '').trim())
@@ -298,6 +464,12 @@ const onClaimKitchen = async () => {
 const pageTitle = computed(() => kitchen.value?.name || 'Kitchen')
 const pageDescription = computed(() =>
   kitchen.value?.short_address || kitchen.value?.formatted_address || 'Kitchen details.'
+)
+const heroDescription = computed(() =>
+  kitchenProfile.value?.about ||
+  kitchenProfile.value?.prop ||
+  pageDescription.value ||
+  'Discover this kitchen, its menus, and the team tools behind it.'
 )
 const isDev = import.meta.dev
 

@@ -1,7 +1,11 @@
-packages/ecosystem/fireux-fireux/src/runtime/pages/docs/index.vue
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useSeoMeta } from '#imports'
+
+function toFireuxDocsContentPath(routePath: string): string {
+  const normalized = routePath === '/' ? '/' : routePath.replace(/\/+$/, '')
+  return normalized === '/' ? '/README' : `${normalized}/README`
+}
 
 definePageMeta({
   layout: 'docs',
@@ -17,8 +21,10 @@ definePageMeta({
   },
 })
 
+const landingPath = toFireuxDocsContentPath('/')
+
 const { data: page } = await useAsyncData('fireux-docs-landing', () =>
-  queryContent({ source: 'fireuxDocs' }).where({ _path: '/' }).findOne()
+  queryCollection('fireuxDocs' as never).path(landingPath).first()
 )
 
 const title = computed(

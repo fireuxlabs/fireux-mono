@@ -1,5 +1,5 @@
 import {
-  useKitchenRecipeCollection as useCanonicalRecipeCollection,
+    useKitchenRecipeCollection as useCanonicalRecipeCollection,
 } from 'fireux-kitchens/runtime/composables/fireux/firestore/runtime-kitchen/recipe/fetch/useKitchenRecipeCollection'
 import { computed } from 'vue'
 import { useRecipeCreate } from './useRecipeCreate'

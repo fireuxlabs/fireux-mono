@@ -1,69 +1,115 @@
 <template>
   <UCard v-if="card || job">
-    <div>
-      <div v-if="card">
-        <!-- Company pill only (workplace is implicit via subtitle/image) -->
+    <div class="space-y-5">
+      <div v-if="card" class="space-y-4">
         <CompanyPill v-if="card.companyId" :id="card.companyId" />
 
-        <div>
-          <div>
-            <div>{{ card.title }}</div>
-            <UBadge
-              v-if="card.status"
-            >
-              {{ card.status === 'open' ? 'Open' : card.status }}
-            </UBadge>
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div class="space-y-2">
+            <div class="text-xl font-semibold leading-tight">
+              {{ card.title }}
+            </div>
+            <div v-if="card.subtitle" class="text-sm text-dimmed">
+              {{ card.subtitle }}
+            </div>
           </div>
 
-          <div v-if="card.subtitle">
-            {{ card.subtitle }}
-          </div>
-
-          <div v-if="card.description">
-            {{ card.description }}
-          </div>
-
-          <div v-if="card.badges?.length">
-            <UBadge
-              v-for="badge in card.badges"
-              :key="badge"
-            >
-              {{ badge }}
-            </UBadge>
-          </div>
-        </div>
-      </div>
-
-      <div v-if="job">
-        <h3>Job payload</h3>
-
-        <div>
-          <div
-            v-for="field in jobFields"
-            :key="field.key"
+          <UBadge
+            v-if="card.status"
+            size="sm"
+            variant="soft"
+            :color="card.status === 'open' ? 'emerald' : 'neutral'"
           >
-            <div>{{ field.label }}</div>
-            <div>{{ field.value }}</div>
+            {{ card.status === 'open' ? 'Open' : card.status }}
+          </UBadge>
+        </div>
+
+        <p v-if="card.description" class="text-sm leading-7 text-toned">
+          {{ card.description }}
+        </p>
+
+        <div class="grid gap-3 sm:grid-cols-3">
+          <div class="rounded-2xl border border-default bg-muted/40 p-4">
+            <div class="text-xs font-semibold uppercase tracking-[0.14em] text-dimmed">
+              Compensation
+            </div>
+            <div class="mt-2 text-lg font-semibold">
+              {{ payLabel }}
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-default bg-muted/40 p-4">
+            <div class="text-xs font-semibold uppercase tracking-[0.14em] text-dimmed">
+              Openings
+            </div>
+            <div class="mt-2 text-lg font-semibold">
+              {{ openingsLabel }}
+            </div>
+          </div>
+
+          <div class="rounded-2xl border border-default bg-muted/40 p-4">
+            <div class="text-xs font-semibold uppercase tracking-[0.14em] text-dimmed">
+              Role type
+            </div>
+            <div class="mt-2 text-lg font-semibold">
+              {{ jobTypeLabel }}
+            </div>
           </div>
         </div>
 
-        <div>
-          <div>Raw</div>
-          <pre>{{ jobJson }}</pre>
+        <div v-if="card.badges?.length" class="flex flex-wrap gap-2">
+          <UBadge
+            v-for="badge in card.badges"
+            :key="badge"
+            size="sm"
+            variant="soft"
+            color="neutral"
+          >
+            {{ badge }}
+          </UBadge>
         </div>
       </div>
+
+      <details
+        v-if="isDev && job"
+        class="rounded-2xl border border-default bg-muted/30 p-4"
+      >
+        <summary class="cursor-pointer text-sm font-medium">
+          Debug job payload
+        </summary>
+
+        <div class="mt-4 space-y-4">
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div
+              v-for="field in jobFields"
+              :key="field.key"
+              class="rounded-xl border border-default bg-default p-3"
+            >
+              <div class="text-[0.7rem] uppercase tracking-[0.14em] text-dimmed">
+                {{ field.label }}
+              </div>
+              <div class="mt-1 break-words text-sm font-medium">
+                {{ field.value }}
+              </div>
+            </div>
+          </div>
+
+          <pre class="overflow-x-auto rounded-xl border border-default bg-default p-3 text-xs">{{ jobJson }}</pre>
+        </div>
+      </details>
     </div>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/company/fetch/useCompanyFetch';
-import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/company/utils/view/useCompanyInterface';
-import { computed, defineComponent } from 'vue';
-import type { JobCard } from '../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface';
-import type { JobResolved } from '../../../../../models/job.model';
+import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/company/fetch/useCompanyFetch'
+import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/company/utils/view/useCompanyInterface'
+import { computed, defineComponent } from 'vue'
+import type { JobCard } from '../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
+import type { JobResolved } from '../../../../../models/job.model'
 
 const props = defineProps<{ card?: JobCard.Card; job?: JobResolved | null }>()
+const isDev = import.meta.dev
 
 const formatValue = (value: unknown): string => {
   if (value === null || value === undefined) return ''
@@ -92,14 +138,24 @@ const jobFields = computed(() => {
     { key: 'description', label: 'description', value: formatValue(job.description) },
     { key: 'status', label: 'status', value: formatValue(job.status) },
     { key: 'app_id', label: 'app_id', value: formatValue(job.app_id) },
-    { key: 'creator_id', label: 'creator_id', value: formatValue(job.creator_id) },
-    { key: 'created_at', label: 'created_at', value: formatValue(job.created_at) },
-    { key: 'updated_at', label: 'updated_at', value: formatValue(job.updated_at) },
     { key: 'workplace', label: 'workplace', value: formatValue((job as any).workplace) },
   ]
 })
 
 const jobJson = computed(() => (props.job ? JSON.stringify(props.job, null, 2) : ''))
+const payLabel = computed(() => {
+  const job = props.job
+  if (!job?.pay_rate) return 'Discuss'
+  return `${job.pay_currency || 'CHF'} ${job.pay_rate}/${job.pay_unit || 'hour'}`
+})
+const openingsLabel = computed(() => {
+  const count = Number(props.job?.openings_count || 0)
+  return count > 0 ? `${count} opening${count === 1 ? '' : 's'}` : 'Flexible'
+})
+const jobTypeLabel = computed(() => {
+  const value = String(props.job?.job_type || '').trim()
+  return value ? value.charAt(0).toUpperCase() + value.slice(1) : 'Role'
+})
 
 const CompanyPill = defineComponent({
   props: { id: String },
@@ -116,6 +172,7 @@ const CompanyPill = defineComponent({
         :name="companyCard.title"
         :description="companyCard.subtitle"
         :avatar="{ src: companyCard.avatarUrl, alt: companyCard.title }"
+        size="sm"
       />
     </div>
   `,

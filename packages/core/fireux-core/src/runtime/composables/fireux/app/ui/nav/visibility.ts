@@ -1,5 +1,5 @@
 import type { FireUXConfig } from '../../FireUXConfig'
-import type { NavVisibility } from '../../../../../../types/nav'
+import type { NavVisibility } from '../../nav.types'
 
 type RuntimeScope = Pick<FireUXConfig, 'appId' | 'ecosystem' | 'modules'>
 

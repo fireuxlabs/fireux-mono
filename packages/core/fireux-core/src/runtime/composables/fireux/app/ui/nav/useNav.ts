@@ -1,7 +1,7 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
 import { useFireUXConfig } from '../../FireUXConfig'
-import type { NavItem, NavMeta } from '../../../../../../types/nav'
+import type { NavItem, NavMeta } from '../../nav.types'
 import {
   isNavVisibleForScope,
   normaliseNavVisibility,

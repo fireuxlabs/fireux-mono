@@ -213,47 +213,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-
-type EnvVarEntry = { key: string; present: boolean; value?: string }
-type AdminAuthStatus = {
-  json: boolean
-  splitKeys: {
-    FIREBASE_PROJECT_ID: boolean
-    FIREBASE_CLIENT_EMAIL: boolean
-    FIREBASE_PRIVATE_KEY: boolean
-  }
-  file?: boolean
-  configured: boolean
-}
-type BrandAssetCheck = {
-  name: string
-  path: string
-  ok: boolean
-  reason?: string
-  width?: number
-  height?: number
-}
-interface EnvCheckResponse {
-  isValid: boolean
-  required: EnvVarEntry[]
-  optionalClient: EnvVarEntry[]
-  optional?: EnvVarEntry[]
-  server?: {
-    adminAuth: AdminAuthStatus
-    optional: EnvVarEntry[]
-  }
-  missingRequired: string[]
-  summary: {
-    required: string
-    optionalClient?: string
-    optional?: string
-    optionalServer?: string
-    brandAssets?: string
-  }
-  warnings: string[]
-  notes: string[]
-  brandAssets: BrandAssetCheck[]
-}
+import type { EnvCheckResponse } from '../../../../composables/fireux/app/utils/env-check.types'
 
 const props = withDefaults(
   defineProps<{

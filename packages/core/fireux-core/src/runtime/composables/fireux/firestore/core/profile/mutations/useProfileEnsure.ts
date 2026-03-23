@@ -1,9 +1,9 @@
 import { arrayUnion, doc, getDoc, serverTimestamp } from 'firebase/firestore'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
-  createProfileAppSeed,
-  createProfileCoreSeed,
-  type ProfileConfig,
+    createProfileAppSeed,
+    createProfileCoreSeed,
+    type ProfileConfig,
 } from '../../../../../../models/core/profile.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useFirestoreManager } from '../../../operations/useFirestoreManager'

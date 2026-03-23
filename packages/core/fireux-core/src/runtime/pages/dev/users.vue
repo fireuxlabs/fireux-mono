@@ -53,7 +53,6 @@ import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDri
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useUserCollection'
-import { User as UserModelRuntime } from '../../models/core/user.model'
 
 definePageMeta({
   layout: 'dev',

@@ -1,4 +1,4 @@
-import type { NavItem } from '../../../../../types/nav'
+import type { NavItem } from '../nav.types'
 
 export function filterConsoleScopeNavItems(items: NavItem[], routePath: string) {
   const match = String(routePath || '').trim().match(/^\/console\/([^/]+)\/create$/)

@@ -8,13 +8,16 @@ export type ProjectType = 'standalone_app' | 'ecosystem_app'
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
  * Family: Console
- * Storage: root canonical model
+ * Storage: root canonical record plus app overlay
  * Root path: /projects/<projectId>
- * Console face: project-console facade over the same root entity
+ * Overlay path: /apps/<appId>/projects/<projectId>
+ * Console face: project console over the same root plus overlay entity
  *
  * Decision note:
- * - Project is operated through a project console, but that does not yet require a second stored overlay.
- * - Treat the console-managed view as a facade unless real scoped stored truth appears later.
+ * - Project now follows the shared console canon used by Kitchen, Portfolio, and Supplier.
+ * - Public project creation should create the root project record.
+ * - Console project creation should ensure the app-scoped project overlay and may create root first when missing.
+ * - Runtime implementation is still catching up to this rule.
  * - If this decision changes, update the models README first, then this file.
  */
 export const Project = {

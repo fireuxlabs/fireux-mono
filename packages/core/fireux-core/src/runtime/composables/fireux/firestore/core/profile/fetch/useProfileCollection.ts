@@ -1,16 +1,16 @@
-import { computed, watchEffect } from 'vue'
-import { collection } from 'firebase/firestore'
 import { useNuxtApp } from '#imports'
-import { useFirestore, useCollection } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useFireUXConfig } from '../../../../app/FireUXConfig'
-import type {
-  CoreProfileBase,
-  ProfileConfig,
-} from '../../../../../../models/core/profile.model'
-import { useAppUserCollection } from '../../user/fetch/useAppUserCollection'
-import { useFirestoreRead } from '../../../operations/useFirestoreRead'
+import { collection } from 'firebase/firestore'
+import { useCollection, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Ref } from 'vue'
+import { computed, watchEffect } from 'vue'
+import type {
+    CoreProfileBase,
+    ProfileConfig,
+} from '../../../../../../models/core/profile.model'
 import type { User } from '../../../../../../models/core/user.model'
+import { useFireUXConfig } from '../../../../app/FireUXConfig'
+import { useFirestoreRead } from '../../../operations/useFirestoreRead'
+import { useAppUserCollection } from '../../user/fetch/useAppUserCollection'
 
 type UserSummary = {
   id: string

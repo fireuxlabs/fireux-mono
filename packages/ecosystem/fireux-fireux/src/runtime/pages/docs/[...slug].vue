@@ -54,6 +54,11 @@ import { useRoute, useHead } from '#imports'
 import { findPageHeadline } from '@nuxt/content/utils'
 import type { ContentNavigationItem } from '@nuxt/content'
 
+function toFireuxDocsContentPath(routePath: string): string {
+  const normalized = routePath === '/' ? '/' : routePath.replace(/\/+$/, '')
+  return normalized === '/' ? '/README' : `${normalized}/README`
+}
+
 definePageMeta({
   layout: 'docs',
   title: 'Docs',
@@ -72,25 +77,24 @@ const route = useRoute()
 const { toc } = useAppConfig()
 const navigation = inject<Ref<ContentNavigationItem[]>>('navigation')
 
-const sourcePath = computed(() => {
+const docsRoutePath = computed(() => {
   const stripped = route.path.replace(/^\/docs/, '') || '/'
   return stripped === '' ? '/' : stripped
 })
 
+const sourcePath = computed(() => toFireuxDocsContentPath(docsRoutePath.value))
+
 const { data: page } = await useAsyncData(
   `fireux-docs-page-${sourcePath.value}`,
-  () =>
-    queryContent({ source: 'fireuxDocs' })
-      .where({ _path: sourcePath.value })
-      .findOne()
+  () => queryCollection('fireuxDocs' as never).path(sourcePath.value).first()
 )
 
 const { data: surround } = await useAsyncData(
   `fireux-docs-surround-${sourcePath.value}`,
   () =>
-    queryContent({ source: 'fireuxDocs' })
-      .without(['body'])
-      .findSurround(sourcePath.value, { fields: ['description'] })
+    queryCollectionItemSurroundings('fireuxDocs' as never, sourcePath.value, {
+      fields: ['description'],
+    })
 )
 
 const title = computed(() => page.value?.seo?.title || page.value?.title)
@@ -106,7 +110,7 @@ useSeoMeta({
 })
 
 const headline = computed(() =>
-  findPageHeadline(navigation?.value, page.value?.path)
+  findPageHeadline(navigation?.value, route.path)
 )
 
 const links = computed(() => {

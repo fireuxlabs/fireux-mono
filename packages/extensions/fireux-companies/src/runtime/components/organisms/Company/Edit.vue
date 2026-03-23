@@ -12,7 +12,7 @@
           color="warning"
           variant="soft"
           title="Editing locked"
-          description="Only the claiming user or an admin can edit this place."
+          description="Only the claiming user or an admin can edit this company record."
         />
       </div>
     </ClientOnly>
@@ -20,10 +20,10 @@
 </template>
 
 <script setup lang="ts">
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import type { Place } from 'fireux-places/runtime/models/place.model'
-import { computed } from 'vue'
-import type { CompanyView } from '../../../models/company.model'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser';
+import type { Place } from 'fireux-places/runtime/models/place.model';
+import { computed } from 'vue';
+import type { CompanyView } from '../../../models/company.model';
 
 const props = defineProps<{ company: CompanyView | null }>()
 const company = computed(() => props.company)

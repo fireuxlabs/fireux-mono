@@ -1,5 +1,5 @@
-import { createReadOnlyScenarioRegistry } from '../../../runtime/createReadOnlyScenarioRegistry'
 import type { Project } from '../../../../../models/system/project.model'
+import { createReadOnlyScenarioRegistry } from '../../../runtime/createReadOnlyScenarioRegistry'
 
 type ProjectRow = {
   id: string

@@ -1,8 +1,5 @@
 import { useFetch } from '#imports'
-interface EnvCheckResponse {
-  ok: boolean
-  message?: string
-}
+import type { EnvCheckResponse } from './env-check.types'
 
 export function useAppEnvCheck() {
   return useFetch<EnvCheckResponse>('/api/internal/app/env-check', {

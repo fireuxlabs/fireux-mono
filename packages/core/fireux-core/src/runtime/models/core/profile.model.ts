@@ -8,7 +8,7 @@ import type { FireuxStamped } from './meta.model'
  *
  * Family: Identity support
  * Storage: base shapes for root profile records and app overlays
- * Used by: /chefs/<userId>, /agents/<userId>, /professionals/<userId>, /suppliers/<userId>, and similar profile collections
+ * Used by: /chefs/<userId>, /agents/<userId>, /professionals/<userId>, and similar identity profile collections
  *
  * Decision note:
  * - Profiles follow the same root-plus-overlay rule as other identity records when scoped truth is real.

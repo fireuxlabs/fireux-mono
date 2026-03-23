@@ -1,9 +1,9 @@
 <template>
-  <UContainer>
-    <UPage>
+  <UContainer class="docs-layout">
+    <UPage class="docs-layout__page">
       <!-- Left: docs navigation -->
       <template #left>
-        <UPageAside class="w-64 shrink-0">
+        <UPageAside class="docs-layout__aside w-64 shrink-0">
           <UContentNavigation
             highlight
             :navigation="navigation"
@@ -13,9 +13,9 @@
       </template>
 
       <!-- Main: current docs page -->
-      <UPageBody class="pagebody">
+      <UPageBody class="pagebody docs-layout__body">
         <header
-          class="flex flex-wrap items-start justify-between gap-3 border-b border-gray-200 pb-4 dark:border-gray-800"
+          class="docs-layout__hero flex flex-wrap items-start justify-between gap-3"
         >
           <div class="flex flex-wrap items-center gap-3">
             <UButton
@@ -74,8 +74,12 @@ const { data: navigationRaw } = await useAsyncData(
 
 function withDocsBase(items: any[] = []): any[] {
   return items.map((item) => {
-    const path = item._path || item.path || '/'
-    const prefixed = path === '/' ? '/docs' : `/docs${path}`
+    const contentPath = item._path || item.path || '/'
+    const normalizedPath =
+      contentPath === '/README'
+        ? '/'
+        : contentPath.replace(/\/README$/, '') || '/'
+    const prefixed = normalizedPath === '/' ? '/docs' : `/docs${normalizedPath}`
     return {
       ...item,
       _path: prefixed,
@@ -89,3 +93,34 @@ const navigation = computed(() => withDocsBase(navigationRaw.value || []))
 
 provide('navigation', navigation)
 </script>
+
+<style scoped>
+.docs-layout {
+  position: relative;
+}
+
+.docs-layout__page {
+  gap: 1.5rem;
+}
+
+.docs-layout__aside {
+  padding: 1rem;
+  border: 1px solid rgb(228 228 231 / 0.85);
+  border-radius: 1.5rem;
+  background: rgb(255 255 255 / 0.82);
+  box-shadow: 0 24px 54px -48px rgb(24 24 27 / 0.28);
+}
+
+.docs-layout__body {
+  min-width: 0;
+}
+
+.docs-layout__hero {
+  padding: 1.25rem;
+  border: 1px solid rgb(228 228 231 / 0.88);
+  border-radius: 1.5rem;
+  background:
+    linear-gradient(135deg, rgb(255 251 235 / 0.88), rgb(255 255 255 / 0.96));
+  box-shadow: 0 24px 54px -48px rgb(24 24 27 / 0.28);
+}
+</style>

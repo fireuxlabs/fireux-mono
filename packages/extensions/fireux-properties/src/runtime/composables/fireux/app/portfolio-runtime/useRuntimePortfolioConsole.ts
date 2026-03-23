@@ -1,9 +1,9 @@
-import { computed } from 'vue'
+import { usePortfolioComplianceRecordCollection } from 'fireux-compliance/runtime/composables/fireux/firestore/compliance/fetch/usePortfolioComplianceRecordCollection'
 import { createScopeConsole } from 'fireux-core/runtime/composables/fireux/app/console/createScopeConsole'
 import { useNav } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useNav'
-import { usePortfolioComplianceRecordCollection } from 'fireux-compliance/runtime/composables/fireux/firestore/compliance/fetch/usePortfolioComplianceRecordCollection'
 import { usePortfolioDocumentLinkCollection } from 'fireux-documents/runtime/composables/fireux/firestore/documents/fetch/usePortfolioDocumentLinkCollection'
 import { usePortfolioTaskCollection } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/fetch/usePortfolioTaskCollection'
+import { computed } from 'vue'
 import { usePortfolioPropertyCollection } from '../../firestore/property/fetch/usePortfolioPropertyCollection'
 import { useRuntimePortfolio } from './useRuntimePortfolio'
 
