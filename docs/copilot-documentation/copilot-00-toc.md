@@ -1,11 +1,11 @@
 ---
 title: FireUX Handbook ToC
 status: active
-updated: 2026-03-09
+updated: 2026-03-23
 ---
 
 # FireUX Handbook
-Updated: 2026-03-09
+Updated: 2026-03-23
 Authority: Tier2 (Operational index)
 
 ## 1. Canon Layer (Tier1)
@@ -33,7 +33,7 @@ Authority: Tier2 (Operational index)
 ## 4. Reports and Weekly Hygiene
 - [Reports index](../reports/README.md)
 - [Package documentation map](./package-docs-index.md)
-- Latest hygiene report: `../reports/weekly-docs-hygiene-2026-03-09.md`
+- Latest hygiene report: `../reports/weekly-docs-hygiene-2026-03-23.md`
 - Weekly cadence: Monday docs hygiene update (freshness, links, authority placement, ToC drift)
 
 ## 5. Supporting Inputs (Tier3)

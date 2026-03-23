@@ -1,10 +1,10 @@
 # Components Directory
 
 Authority: Operational
-Updated: 2026-03-22
+Updated: 2026-03-23
 Scope: `packages/*/fireux-*/src/runtime/components` and child directories under `components/*`.
 
-Learn how `runtime/components/` is used across FireUX module packages, and how the current create-system component families are aligned or still drifting.
+Learn how `runtime/components/` is used across FireUX module packages, and how the current create-system component families are aligned.
 
 ## Components Directory
 
@@ -186,4 +186,4 @@ For the current pass:
   - console create
   - form-first create shell
 
-The biggest drift left is now naming cleanup and any future create families beyond the current shipping slice.
+The main remaining work is naming cleanup and any future create families beyond the current shipping slice.

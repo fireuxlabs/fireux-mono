@@ -1,6 +1,6 @@
 # FireUX Documentation Hub
 Authority: Tier2 (Operational index)
-Updated: 2026-03-09
+Updated: 2026-03-23
 
 This is the docs landing map for weekly maintenance and day-to-day navigation.
 System definition: `docs/system.md`.

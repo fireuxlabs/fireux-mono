@@ -1,7 +1,7 @@
 # Concepts Directory
 
 Authority: Operational
-Updated: 2026-03-22
+Updated: 2026-03-23
 Scope: `packages/core/fireux-docs/src/runtime/concepts/*`.
 
 Learn how cross-cutting runtime concepts are documented when they span pages, components, composables, and models.
@@ -22,11 +22,18 @@ It is a cross-cutting behaviour layer.
 ## Current Concepts
 
 - `create/`
+- `update/`
 
-`create/` is the first real runtime concept because creation now spans:
+`create/` is a real runtime concept because creation spans:
 - route ownership
 - create-system orchestration
 - behavioural contracts in composables
+
+`update/` is now also a real runtime concept because editing spans:
+- route ownership
+- edit-family boundaries
+- stored-truth decisions in composables
+- public entity versus overlay versus scoped write targets
 
 ## What Belongs Here
 
@@ -46,10 +53,10 @@ It is a cross-cutting behaviour layer.
 1. Add concept docs only when the behaviour is truly cross-cutting.
 2. Keep the technical directories as the primary view of the repo.
 3. Use concepts to explain how those technical layers cooperate for one operation.
-4. Start with `create/` and add `read/`, `update/`, or `delete/` only when they become real enough to need their own canon.
+4. Start with the concepts that are real enough to need their own canon, and add `read/` or `delete/` only when they become equally cross-cutting.
 
 ## Short Version
 
 `runtime/concepts/` is where cross-cutting runtime behaviour gets a home.
 
-Right now, `create/` is the first real concept in that layer.
+Right now, `create/` and `update/` are the first real concepts in that layer.

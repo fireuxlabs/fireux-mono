@@ -1,31 +1,34 @@
 # Onboarding Thread
 Authority: Tier3 automation context (Non-authoritative)
-Updated: 2026-03-22
+Updated: 2026-03-23
 Audience: Implementation context for Codex agents.
 
 ## Scope
 - Thread key: onboarding.
 - Audience: Codex agents implementing code and runtime changes.
-- Priority: enforce Tier1 canon and preserve runtime contracts.
+- Priority: preserve runtime contracts and keep changes operationally minimal.
 
 ## Commit Window
-- Start: 2026-03-21T10:03:39.886Z
-- End: 2026-03-22T13:57:17Z
-- Source: automation_last_run_2026-03-21T10:03:39.886Z
+- Start: 2026-03-22T13:58:09Z
+- End: 2026-03-23T02:20:01+01:00
+- Source: memory_last_success
 
 ## Implementation Signals
-- 0f837e46f docs: align runtime model canon (2026-03-21)
-- 904ae8d47 docs: mark ai context as tier3 (2026-03-21)
+- 98a9116e chore: satisfy guard package shape checks (2026-03-23T02:20:01+01:00)
+- 8e044211 checkpoint: save remaining runtime alignment work (2026-03-23T02:20:01+01:00)
+- 992db2ae create: align public and console create flows (2026-03-23T02:20:01+01:00)
+- c56ce278 suppliers: de-profile supplier runtime (2026-03-23T02:20:01+01:00)
+- 3a7aec7a docs: save markdown updates (2026-03-23T02:20:01+01:00)
 
 ## Working Guidance
-- Validate against Tier1 first: docs/fireux-canon.md, docs/runtime-contract.md, docs/seo-canon.md.
-- Treat docs/ai content as Tier3 continuity context; it must not override runtime or product canon.
-- Prefer shared runtime and composable fixes before project-local divergence.
-- Keep changes small, localized, and automation-friendly.
+- Validate implementation decisions against Tier1 canon first.
+- Keep runtime-facing changes small, localized, and testable.
+- Prefer shared package/composable fixes over project-local divergence.
+- Treat this file as Tier3 continuity context only.
 
 ## Next Run Checklist
-- Re-scan from the next successful timestamp.
-- Rewrite this file in place, trim post-marker content, and keep one terminal marker.
-- Rebuild the daily consolidated chatcontext file.
+- Continue from the next successful scan timestamp.
+- Rebuild this file in place and enforce a single terminal marker.
+- Regenerate the daily chatcontext bundle.
 
 #end

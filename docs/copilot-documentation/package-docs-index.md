@@ -3,11 +3,11 @@ title: Package Documentation Map
 status: active
 authority: Tier2
 created: 2025-10-15
-updated: 2026-03-09
+updated: 2026-03-23
 ---
 
 # Package Documentation Map
-Updated: 2026-03-09
+Updated: 2026-03-23
 Authority: Tier2 (Index/reference)
 
 ## Canon Sources (Tier1)

@@ -1,7 +1,7 @@
 # Pages Directory
 
 Authority: Operational
-Updated: 2026-03-22
+Updated: 2026-03-23
 Scope: `packages/*/fireux-*/src/runtime/pages` and child directories under `pages/*`.
 
 Learn how FireUX runtime pages are grouped, which create surfaces matter first, and which entity buckets are still being deferred.
@@ -41,7 +41,7 @@ Why:
 
 Use this README to understand route ownership.
 Use `packages/core/fireux-docs/src/runtime/concepts/create/README.md` for create canon.
-Use `packages/core/fireux-docs/src/runtime/components/README.md` to understand current create-system families and drift.
+Use `packages/core/fireux-docs/src/runtime/components/README.md` to understand current create-system families.
 
 ## CRUD Lens
 
@@ -191,7 +191,7 @@ Important entities that are neither system bootstrap nor console identity.
   Current create surface: `places/create.vue`
 - `Company`
   Current create surface: `companies/create.vue`
-  Note: still placeholder-like
+  Type: normal payload create
 - `Job`
   Current create surface: `jobs/create.vue`
 - `BlogPost`
@@ -393,7 +393,6 @@ Examples:
 
 - `User` and `App` now have create routes, but they are ensure-first and should not be mistaken for normal public CRUD
 - `Ecosystem` and `Module` still do not have live canonical create pages
-- `companies/create.vue` is still placeholder-like
 - `jobs/create.vue`, `places/create.vue`, `admin/blogs/create.vue`, and `admin/products/create.vue` are all valid create surfaces, but they do not yet form one stable family
 - `kitchens/create.vue`, `portfolios/create.vue`, and `suppliers/create.vue` now have a clearer canon role as public root create pages, but their implementations are not equally separated from console create yet
 - setup-if-missing identity pages still create through profile workspaces rather than explicit create routes

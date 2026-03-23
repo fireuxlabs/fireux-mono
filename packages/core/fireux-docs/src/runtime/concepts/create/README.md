@@ -1,7 +1,7 @@
 # Create Concept
 
 Authority: Operational
-Updated: 2026-03-22
+Updated: 2026-03-23
 Scope: runtime create behaviour across `pages/`, `components/`, and `composables/`.
 
 Learn how FireUX create behaviour works at runtime, which create modes exist, and how console creation is supposed to behave.
@@ -194,7 +194,7 @@ Already strong:
 - form-first create shell systems for `Blog`, `Job`, and `Product`
 - console create systems for `Kitchen`, `Portfolio`, and `Supplier` now share one-system two-mode behaviour
 
-Still drifting:
+Later cleanup:
 - naming can still be tightened later, especially `createdRoot` versus `createdPublic`
 
 ## Roadmap To Reconciliation

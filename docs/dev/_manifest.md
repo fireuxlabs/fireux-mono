@@ -1,6 +1,6 @@
 # Documentation Manifest
 Authority: Tier2 (Operational index)
-Updated: 2026-03-09
+Updated: 2026-03-23
 ## Authority Model
 - Tier1 (authoritative): canon + contracts.
 - Tier2 (operational): runbooks, guides, migration notes, weekly reports.
