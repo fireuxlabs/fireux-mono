@@ -263,7 +263,7 @@ const hasContactDetails = computed(() =>
 
 const claimedUserId = computed(() => model.value.card.claimedBy || '')
 const { user: claimedUser } = useUserFetch(claimedUserId)
-const { card: userCard } = useUserInterface(claimedUser)
+const { interface: userCard } = useUserInterface(claimedUser)
 const claimedUserPill = computed(() => userCard(claimedUser.value))
 
 const sourceLabel = computed(() => {

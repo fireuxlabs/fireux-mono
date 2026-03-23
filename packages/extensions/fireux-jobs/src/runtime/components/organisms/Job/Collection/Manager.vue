@@ -100,7 +100,7 @@ const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
-const { card: makeCard, searchText } = useJobInterface()
+const { interface: makeCard, searchText } = useJobInterface()
 
 const {
   query,

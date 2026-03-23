@@ -249,7 +249,7 @@ const creatorId = computed(() => {
   return typeof raw === 'string' && raw.trim() ? raw.trim() : null
 })
 const { user: creatorUser } = useUserFetch(creatorId)
-const { card: userToCard } = useUserInterface()
+const { interface: userToCard } = useUserInterface()
 
 const creatorCard = computed(() => userToCard(creatorUser.value))
 

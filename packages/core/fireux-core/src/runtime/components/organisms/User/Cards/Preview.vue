@@ -26,12 +26,13 @@
 
         <div v-if="showBody" class="preview__body">
           <div class="preview__line">
-            <span v-if="bioOverride || bio">{{ bioOverride || bio }}</span>
+            <span v-if="bioOverride || summary || bio">{{ bioOverride || summary || bio }}</span>
             <span v-else class="italic">missing</span>
           </div>
 
           <div class="preview__line text-dimmed">
-            <span v-if="profiles.length">{{ profiles.join(', ') }}</span>
+            <span v-if="title">{{ title }}</span>
+            <span v-else-if="profiles.length">{{ profiles.join(', ') }}</span>
             <span v-else class="italic">missing</span>
             <span v-if="appsLabel"> · {{ appsLabel }}</span>
           </div>
@@ -47,6 +48,8 @@ type Props = {
   displayName: string
   handle: string
   badges: string[]
+  title: string
+  summary: string
   bio: string
   profiles: string[]
 
@@ -60,6 +63,8 @@ type Props = {
 }
 
 withDefaults(defineProps<Props>(), {
+  title: '',
+  summary: '',
   showSubtitle: true,
   showBadges: true,
   showBody: true,

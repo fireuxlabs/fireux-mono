@@ -51,7 +51,7 @@
             <template #preview>
               <UserCardsProfile
                 v-if="resolvedUser"
-                v-bind="card(resolvedUser)"
+                v-bind="interface(resolvedUser)"
                 :user="resolvedUser"
               />
             </template>
@@ -90,12 +90,12 @@ definePageMeta({
 
 useHead({ title: 'Profile' })
 
-const { currentUser, isLoading, card } = useUser()
-const { app, card: appToCard } = useApp()
+const { currentUser, isLoading, interface } = useUser()
+const { app, interface: appToCard } = useApp()
 
 const resolvedUser = computed(() => currentUser.value ?? null)
 
-const userCard = computed(() => (resolvedUser.value ? card(resolvedUser.value) : null))
+const userCard = computed(() => (resolvedUser.value ? interface(resolvedUser.value) : null))
 const appCard = computed(() => appToCard(app.value))
 
 </script>

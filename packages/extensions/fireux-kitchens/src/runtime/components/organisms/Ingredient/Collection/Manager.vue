@@ -95,7 +95,7 @@ const props = withDefaults(
   }
 )
 
-const { card: makeCard, searchText } = useIngredientInterface()
+const { interface: makeCard, searchText } = useIngredientInterface()
 
 const collection = computed(() => props.collection ?? [])
 const linkEnabled = computed(() => props.link !== false)

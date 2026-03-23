@@ -167,7 +167,7 @@ const claimedBy = computed(() =>
   ).trim()
 )
 const { user: claimedUser } = useUserFetch(claimedBy)
-const { card: userCard } = useUserInterface(claimedUser)
+const { interface: userCard } = useUserInterface(claimedUser)
 const claimedUserPill = computed(() => userCard(claimedUser.value))
 const { currentUser, isAdmin } = useUser()
 const isVerifiedUser = computed(() => Boolean((currentUser.value as any)?.verified || isAdmin.value))

@@ -98,7 +98,7 @@ const props = withDefaults(
   }
 )
 
-const { card: makeCard, searchText } = useClientInterface()
+const { interface: makeCard, searchText } = useClientInterface()
 
 const collection = computed(() => props.collection ?? [])
 const title = computed(() => String(props.title || 'Clients'))

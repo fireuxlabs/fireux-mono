@@ -91,9 +91,9 @@ const config = useFireUXConfig()
 const ecosystemLabel = config.ecosystem
 
 const { currentUser } = useUser()
-const { card } = useUserInterface()
+const { interface } = useUserInterface()
 const currentUserPill = computed(() =>
-  currentUser.value ? card(currentUser.value) : null
+  currentUser.value ? interface(currentUser.value) : null
 )
 const authIdentityLabel = computed(() =>
   String(authUser.value?.displayName || authUser.value?.email || authUser.value?.uid || 'unknown')

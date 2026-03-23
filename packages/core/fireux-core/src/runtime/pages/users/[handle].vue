@@ -107,10 +107,18 @@ const userCard = computed(() => {
   const profiles = Array.isArray(value.profiles) ? value.profiles : []
 
   return {
+    id: value.id,
+    to: value.path || `/users/${encodeURIComponent(value.handle || '')}`,
     avatarUrl: String(value.avatar || value.image || '').trim(),
+    secondaryAvatarUrl: '',
     displayName: String(value.displayName || value.title || '').trim(),
+    title: String(value.title || profiles[0] || '').trim(),
+    summary: String(value.description || value.bio || '').trim(),
     handle: value.handle ? `@${value.handle}` : '',
     badges: profiles,
+    contactEmail: '',
+    contactPhone: '',
+    websiteUrl: '',
     bio: String(value.bio || value.description || '').trim(),
     profiles,
     appsLabel: '',

@@ -99,8 +99,8 @@ import { computed, definePageMeta } from '#imports'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 
-const { app, pending, card: appToCard } = useApp()
-const { user, card: userToCard } = useUser()
+const { app, pending, interface: appToCard } = useApp()
+const { user, interface: userToCard } = useUser()
 
 const appCard = computed(() => appToCard(app.value))
 const userCard = computed(() => userToCard(user.value))

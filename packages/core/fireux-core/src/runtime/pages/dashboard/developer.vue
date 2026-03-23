@@ -46,10 +46,10 @@ import { definePageMeta } from '#imports'
 import { computed } from 'vue'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 
-const { app, pending, card } = useApp()
+const { app, pending, interface } = useApp()
 
 const appSnapshot = (pending.value ? null : app.value) ?? null
-const previewCard = computed(() => (appSnapshot ? card(appSnapshot) : null))
+const previewCard = computed(() => (appSnapshot ? interface(appSnapshot) : null))
 
 definePageMeta({
   layout: 'dashboard',

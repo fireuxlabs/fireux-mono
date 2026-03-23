@@ -96,7 +96,7 @@ const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
-const { card: makeCard, searchText } = useKitchenInterface()
+const { interface: makeCard, searchText } = useKitchenInterface()
 
 const {
   query,

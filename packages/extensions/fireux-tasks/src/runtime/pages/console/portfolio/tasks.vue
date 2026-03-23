@@ -147,11 +147,11 @@ const isReadOnly = computed(() => runtimePortfolio.isReadOnly.value)
 const { collection } = usePortfolioTaskCollection(runtimePortfolio)
 const { createTask } = useTaskCreate(runtimePortfolio)
 const { updateTask } = useTaskUpdate(runtimePortfolio)
-const { card } = useTaskInterface()
+const { interface } = useTaskInterface()
 
 const cards = computed(() =>
   collection.value
-    .map((entry) => card(entry))
+    .map((entry) => interface(entry))
     .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
 )
 

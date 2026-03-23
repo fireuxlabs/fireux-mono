@@ -29,9 +29,9 @@ import { useChef } from '../../../../composables/fireux/firestore/profiles/Chef/
 
 const router = useRouter()
 const { appName } = useFireUXConfig()
-const { card } = useChef()
+const { interface } = useChef()
 
-const profileCard = computed(() => card())
+const profileCard = computed(() => interface())
 const hasProfile = computed(() => Boolean(profileCard.value?.id))
 const ctaDescription = computed(() =>
   hasProfile.value

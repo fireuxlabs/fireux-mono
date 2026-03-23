@@ -103,10 +103,10 @@ const {
   setAppUserAdmin,
 } = useAppUpdate(appRef)
 const { memberships: users, fulfilled: hydratedUsers } = useAppUserCollection()
-const { card: userCard } = useUserInterface()
+const { interface: userCard } = useUserInterface()
 
 const appInterface = useAppInterface(appRef)
-const appCard = computed(() => appInterface.card())
+const appCard = computed(() => appInterface.interface())
 
 const withToast =
   <T>(operation: (value: T) => Promise<unknown>, ok: string, fail: string) =>
@@ -199,10 +199,16 @@ const fallbackUserCard = (options: {
     to: id ? `/users/${id}` : '',
 
     avatarUrl: '',
+    secondaryAvatarUrl: '',
     displayName,
+    title: '',
+    summary: '',
 
     handle: handle ? `@${handle}` : '',
     badges: [],
+    contactEmail: '',
+    contactPhone: '',
+    websiteUrl: '',
 
     bio: '',
     profiles: [],
@@ -221,6 +227,8 @@ const cardForUser = (target?: User | null | undefined): UserCard.Card => {
   return {
     ...fallbackUserCard({ id, displayName, handle }),
     avatarUrl: target?.avatar ?? '',
+    title: Array.isArray(target?.profiles) ? target.profiles[0] ?? '' : '',
+    summary: target?.bio ?? '',
     bio: target?.bio ?? '',
     profiles: target?.profiles ?? [],
     appsLabel: target?.userOf?.length ? `${target.userOf.length} apps` : '',

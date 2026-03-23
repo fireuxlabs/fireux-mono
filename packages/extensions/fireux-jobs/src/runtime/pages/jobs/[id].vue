@@ -246,7 +246,7 @@ const jobId = computed(() => {
 const { job } = useJobFetch(jobId)
 const { updateJob } = useJobUpdate()
 const { withToast } = useToastify()
-const { card: jobCardFactory } = useJobInterface()
+const { interface: jobCardFactory } = useJobInterface()
 
 const KitchenPill = defineComponent({
   props: { id: String },
@@ -254,7 +254,7 @@ const KitchenPill = defineComponent({
     const { kitchen } = useKitchenFetch()
     const kitchenData = computed(() => props.id ? kitchen(props.id).value : null)
     const kitchenInterface = useKitchenInterface()
-    const kitchenCard = computed(() => kitchenInterface.card(kitchenData.value))
+    const kitchenCard = computed(() => kitchenInterface.interface(kitchenData.value))
     return { kitchenCard }
   },
   template: `
@@ -275,7 +275,7 @@ const CompanyPill = defineComponent({
     const { company } = useCompanyFetch()
     const companyData = computed(() => props.id ? company(props.id).value : null)
     const companyInterface = useCompanyInterface()
-    const companyCard = computed(() => companyInterface.card(companyData.value))
+    const companyCard = computed(() => companyInterface.interface(companyData.value))
     return { companyCard }
   },
   template: `

@@ -163,7 +163,7 @@ const CompanyPill = defineComponent({
     const { company } = useCompanyFetch()
     const companyData = computed(() => (props.id ? company(props.id).value : null))
     const companyInterface = useCompanyInterface()
-    const companyCard = computed(() => companyInterface.card(companyData.value))
+    const companyCard = computed(() => companyInterface.interface(companyData.value))
     return { companyCard }
   },
   template: `

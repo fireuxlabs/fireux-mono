@@ -5,15 +5,24 @@ const safeString = (value: unknown) => String(value ?? '').trim()
 export namespace DocumentCard {
   export type Card = {
     id: string
+    imageUrl: string
     title: string
     subtitle: string
     meta: string
+    status: string
+    badges: string[]
+    summary: string
     to: string
   }
 }
 
 export function useDocumentInterface() {
-  function card(target?: Document | null | undefined): DocumentCard.Card | null {
+  type DocumentPill = DocumentCard.Card
+  type DocumentCell = DocumentCard.Card
+  type DocumentPreview = DocumentCard.Card
+  type DocumentProfile = DocumentCard.Card
+
+  function buildInterface(target?: Document | null | undefined): DocumentCard.Card | null {
     if (!target) return null
 
     const id = safeString(target.id)
@@ -21,11 +30,31 @@ export function useDocumentInterface() {
 
     return {
       id,
+      imageUrl: '',
       title: safeString(target.file_name) || id,
       subtitle: safeString(target.file_type) || 'Unknown file type',
       meta: `size ${target.size_bytes || 0} bytes · uploaded ${safeString(target.uploaded_at) || 'unset'}`,
+      status: '',
+      badges: [],
+      summary: '',
       to: '/console/portfolio/documents',
     }
+  }
+
+  function pill(target?: Document | null | undefined): DocumentPill | null {
+    return buildInterface(target)
+  }
+
+  function cell(target?: Document | null | undefined): DocumentCell | null {
+    return buildInterface(target)
+  }
+
+  function preview(target?: Document | null | undefined): DocumentPreview | null {
+    return buildInterface(target)
+  }
+
+  function profile(target?: Document | null | undefined): DocumentProfile | null {
+    return buildInterface(target)
   }
 
   function searchText(target: Document): string {
@@ -42,8 +71,11 @@ export function useDocumentInterface() {
       .toLowerCase()
   }
 
-  return {
-    card,
+  return { interface: buildInterface,
+    pill,
+    cell,
+    preview,
+    profile,
     searchText,
   }
 }

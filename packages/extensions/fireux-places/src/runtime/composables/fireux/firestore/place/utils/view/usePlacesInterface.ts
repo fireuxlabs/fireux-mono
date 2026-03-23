@@ -120,14 +120,14 @@ export function usePlacesInterface() {
     }
   }
 
-  function card(target?: BasePlace | null | undefined): PlaceCard.Card | null {
+  function buildInterface(target?: BasePlace | null | undefined): PlaceCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
 
   function pill(target?: BasePlace | null | undefined): PlacePill | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base) return null
     return {
       ...base,
@@ -137,7 +137,7 @@ export function usePlacesInterface() {
   }
 
   function cell(target?: (BasePlace & PlaceExtras) | null | undefined): PlaceCell | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base || !target) return null
     return {
       id: base.id,
@@ -152,7 +152,7 @@ export function usePlacesInterface() {
   }
 
   function preview(target?: (BasePlace & PlaceExtras) | null | undefined): PlacePreview | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base || !target) return null
     return {
       imageUrl: base.imageUrl,
@@ -165,7 +165,7 @@ export function usePlacesInterface() {
   }
 
   function profile(target?: (BasePlace & PlaceExtras) | null | undefined): PlaceProfile | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base || !target) return null
     const source = (target as any)?.source as PlaceSource | undefined
     const rating = (target as any)?.rating as number | undefined
@@ -207,5 +207,5 @@ export function usePlacesInterface() {
     return `${name} ${shortName} ${shortAddress || address} ${id}`.trim().toLowerCase()
   }
 
-  return { card, pill, cell, preview, profile, searchText }
+  return { interface: buildInterface, pill, cell, preview, profile, searchText }
 }

@@ -26,10 +26,10 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSupplier } from '../../composables/supplier/ops/useSupplier'
 
-const { card } = useSupplier()
+const { interface } = useSupplier()
 const router = useRouter()
 
-const supplierCard = computed(() => card())
+const supplierCard = computed(() => interface())
 const ctaDescription = computed(() =>
   supplierCard.value
     ? 'Your supplier record is live. Public discovery and supplier management are separate surfaces.'

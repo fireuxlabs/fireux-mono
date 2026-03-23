@@ -28,10 +28,10 @@ import { useRouter } from 'vue-router'
 import { useProfessional } from '../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
 
 const router = useRouter()
-const { card } = useProfessional()
+const { interface } = useProfessional()
 const { appName } = useFireUXConfig()
 
-const profileCard = computed(() => card())
+const profileCard = computed(() => interface())
 const hasProfile = computed(() => Boolean(profileCard.value?.id))
 const ctaDescription = computed(() =>
   hasProfile.value

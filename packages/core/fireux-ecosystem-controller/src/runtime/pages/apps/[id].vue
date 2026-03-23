@@ -96,12 +96,12 @@ const appId = computed(() => {
 
 const { app: currentApp } = useAppFetch(appId)
 
-const { card } = useAppInterface()
+const { interface } = useAppInterface()
 
-const appProfile = computed(() => (currentApp.value ? card(currentApp.value) : null))
+const appProfile = computed(() => (currentApp.value ? interface(currentApp.value) : null))
 
 const { users: appUsers, pending: usersPending } = useAppUserCollection(appId)
-const { card: userToCardByValue } = useUserInterface()
+const { interface: userToCardByValue } = useUserInterface()
 
 type UserFilter = 'all' | 'admins' | 'users'
 

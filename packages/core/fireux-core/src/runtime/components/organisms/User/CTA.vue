@@ -21,12 +21,12 @@
 
         <UserCardsPreview
           v-if="view === 'preview'"
-          v-bind="card(currentUser)"
+          v-bind="interface(currentUser)"
         />
 
         <UserCardsProfile
           v-else
-          v-bind="card(currentUser)"
+          v-bind="interface(currentUser)"
           :user="currentUser"
         />
       </div>
@@ -40,6 +40,6 @@
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 import { useCardViewToggle } from '../../../composables/shared/useCardViewToggle'
 
-const { isResolved, isInitialized, currentUser, card } = useUser()
+const { isResolved, isInitialized, currentUser, interface } = useUser()
 const { view, toggleView } = useCardViewToggle(() => Boolean(currentUser.value))
 </script>

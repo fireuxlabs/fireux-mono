@@ -67,8 +67,7 @@ definePageMeta({
   roles: ['admin'],
 })
 
-const { canManageProducts, pending: permissionsPending } =
-  useProductPermissions()
+const { canManageProducts, pending: permissionsPending } = useProductPermissions()
 
 useHead({ title: 'Create Product' })
 

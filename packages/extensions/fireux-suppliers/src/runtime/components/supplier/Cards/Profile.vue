@@ -91,7 +91,7 @@ const props = defineProps<{
   prop?: string
 }>()
 
-const { coreSupplier, card: toCard } = useSupplier()
+const { coreSupplier, interface: toCard } = useSupplier()
 
 const isSupplierCard = (value: unknown): value is SupplierCard.Card => {
   if (!value || typeof value !== 'object') return false

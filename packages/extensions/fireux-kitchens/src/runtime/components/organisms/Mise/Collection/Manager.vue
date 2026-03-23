@@ -91,7 +91,7 @@ const props = withDefaults(
   }
 )
 
-const { card: makeCard, searchText } = useMiseEnPlaceInterface()
+const { interface: makeCard, searchText } = useMiseEnPlaceInterface()
 
 const collection = computed(() => props.collection ?? [])
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search mise tasks...'))

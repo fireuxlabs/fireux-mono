@@ -193,7 +193,7 @@ const placePill = computed(() => pill(place.value))
 
 const claimedUserId = computed(() => place.value?.claimed_by || '')
 const { user: claimedUser } = useUserFetch(claimedUserId)
-const { card: userCard } = useUserInterface(claimedUser)
+const { interface: userCard } = useUserInterface(claimedUser)
 const claimedUserPill = computed(() => userCard(claimedUser.value))
 
 

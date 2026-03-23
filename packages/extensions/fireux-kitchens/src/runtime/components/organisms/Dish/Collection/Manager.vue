@@ -87,7 +87,7 @@ const props = withDefaults(
   }
 )
 
-const { card: makeCard, searchText } = useDishInterface()
+const { interface: makeCard, searchText } = useDishInterface()
 
 const collection = computed(() => props.collection ?? [])
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search dishes...'))

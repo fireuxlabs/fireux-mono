@@ -22,8 +22,7 @@
 <script setup lang="ts">
 import { useProductFulfillmentOnboarding } from '../../../../composables/fireux/onboarding/useProductFulfillmentOnboarding';
 
-const { onboardingAssetSpecs, applyRandomTestAssets } =
-  useProductFulfillmentOnboarding()
+const { onboardingAssetSpecs, applyRandomTestAssets } = useProductFulfillmentOnboarding()
 </script>
 
 <style scoped>

@@ -112,9 +112,9 @@ const confirmLabel = computed(() =>
   selectedSource.value === 'google' ? `Add ${typeLabel.value}` : `Use ${typeLabel.value}`
 )
 
-const { card } = usePlacesInterface()
+const { interface } = usePlacesInterface()
 const selectedCell = computed(() =>
-  selectedPlace.value ? card(selectedPlace.value as any) : null
+  selectedPlace.value ? interface(selectedPlace.value as any) : null
 )
 
 const selectedLogoTarget = computed(
@@ -229,7 +229,7 @@ async function onConfirmClick() {
     let logoOverride = selectedLogo.value
 
     if (selectedSource.value === 'google') {
-      const cardForLogo = selectedCell.value ?? card(place as any)
+      const cardForLogo = selectedCell.value ?? interface(place as any)
       const cachedLogo = cardForLogo
         ? await loadLogoForPlace(cardForLogo, { timeoutMs: 2000, priority: true })
         : null

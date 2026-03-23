@@ -184,12 +184,12 @@ const isReadOnly = computed(() => runtimePortfolio.isReadOnly.value)
 
 const { collection: documentCollection } = usePortfolioDocumentCollection(runtimePortfolio)
 const { collection: linkCollection } = usePortfolioDocumentLinkCollection(runtimePortfolio)
-const { card } = useDocumentInterface()
+const { interface } = useDocumentInterface()
 
 const documents = computed(() => documentCollection.value)
 const links = computed(() => linkCollection.value)
 const cards = computed(() =>
-  documents.value.map((entry) => card(entry)).filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
+  documents.value.map((entry) => interface(entry)).filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
 )
 
 const linkCountByDocument = computed(() => {

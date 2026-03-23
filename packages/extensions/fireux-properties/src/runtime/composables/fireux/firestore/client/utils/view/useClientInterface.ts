@@ -34,11 +34,18 @@ export namespace ClientCard {
     meta: string
     imageUrl: string
     status: string
+    badges: string[]
+    summary: string
   }
 }
 
 export function useClientInterface() {
-  function card(target?: Client | null | undefined): ClientCard.Card | null {
+  type ClientPill = ClientCard.Card
+  type ClientCell = ClientCard.Card
+  type ClientPreview = ClientCard.Card
+  type ClientProfile = ClientCard.Card
+
+  function buildInterface(target?: Client | null | undefined): ClientCard.Card | null {
     if (!target) return null
 
     const id = safeString(target.id)
@@ -82,7 +89,25 @@ export function useClientInterface() {
       meta: metaParts.filter(Boolean).join(' · '),
       imageUrl: safeString(target.avatar_url) || clientAvatarPlaceholder(id),
       status: safeString(target.status) || 'active',
+      badges: [],
+      summary: '',
     }
+  }
+
+  function pill(target?: Client | null | undefined): ClientPill | null {
+    return buildInterface(target)
+  }
+
+  function cell(target?: Client | null | undefined): ClientCell | null {
+    return buildInterface(target)
+  }
+
+  function preview(target?: Client | null | undefined): ClientPreview | null {
+    return buildInterface(target)
+  }
+
+  function profile(target?: Client | null | undefined): ClientProfile | null {
+    return buildInterface(target)
   }
 
   function searchText(target: Client): string {
@@ -107,8 +132,11 @@ export function useClientInterface() {
       .trim()
   }
 
-  return {
-    card,
+  return { interface: buildInterface,
+    pill,
+    cell,
+    preview,
+    profile,
     searchText,
   }
 }

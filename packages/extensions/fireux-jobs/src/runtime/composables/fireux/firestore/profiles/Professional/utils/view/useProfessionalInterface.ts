@@ -25,6 +25,10 @@ export namespace ProfessionalCard {
     title: string
     summary: string
     badges: string[]
+    handle: string
+    contactEmail: string
+    contactPhone: string
+    websiteUrl: string
   }
 }
 
@@ -32,7 +36,12 @@ export function useProfessionalInterface(
   profile?: ProfileRefs<ProfessionalCore> | null,
   userRef?: Ref<UserLike | null | undefined>
 ) {
-  function card(
+  type ProfessionalPill = ProfessionalCard.Card
+  type ProfessionalCell = ProfessionalCard.Card
+  type ProfessionalPreview = ProfessionalCard.Card
+  type ProfessionalProfile = ProfessionalCard.Card
+
+  function buildInterface(
     target?: ProfessionalTarget | null | undefined,
     userOverride?: UserLike | null
   ): ProfessionalCard.Card | null {
@@ -62,17 +71,50 @@ export function useProfessionalInterface(
       title: safeString(p.title),
       summary,
       badges,
+      handle: safeString(user?.handle).trim(),
+      contactEmail: '',
+      contactPhone: '',
+      websiteUrl: '',
     }
   }
 
+  function pill(
+    target?: ProfessionalTarget | null | undefined,
+    userOverride?: UserLike | null
+  ): ProfessionalPill | null {
+    return buildInterface(target, userOverride)
+  }
+
+  function cell(
+    target?: ProfessionalTarget | null | undefined,
+    userOverride?: UserLike | null
+  ): ProfessionalCell | null {
+    return buildInterface(target, userOverride)
+  }
+
+  function preview(
+    target?: ProfessionalTarget | null | undefined,
+    userOverride?: UserLike | null
+  ): ProfessionalPreview | null {
+    return buildInterface(target, userOverride)
+  }
+
+  function profile(
+    target?: ProfessionalTarget | null | undefined,
+    userOverride?: UserLike | null
+  ): ProfessionalProfile | null {
+    return buildInterface(target, userOverride)
+  }
+
   function searchText(target: ProfessionalTarget): string {
-    const mapped = card(target, target.user ?? userRef?.value ?? null)
+    const mapped = buildInterface(target, target.user ?? userRef?.value ?? null)
 
     return [
       mapped?.id ?? '',
       mapped?.displayName ?? '',
       mapped?.title ?? '',
       mapped?.summary ?? '',
+      mapped?.handle ?? '',
       ...(mapped?.badges ?? []),
     ]
       .join(' ')
@@ -80,5 +122,5 @@ export function useProfessionalInterface(
       .toLowerCase()
   }
 
-  return { card, searchText }
+  return { interface: buildInterface, pill, cell, preview, profile, searchText }
 }

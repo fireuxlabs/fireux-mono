@@ -126,8 +126,7 @@ export function useDevHealth(): DevHealthApi {
 
   // Core data sources reused across scopes
   const { app, pending: appPending } = useApp()
-  const { memberships: appUsers, pending: appUsersPending, fulfilled: hydratedAppUsers } =
-    useAppUserCollection()
+  const { memberships: appUsers, pending: appUsersPending, fulfilled: hydratedAppUsers } = useAppUserCollection()
   const { users: rawUsers } = useUserCollection()
 
   const checks = computed<DevHealthResult[]>(() => {

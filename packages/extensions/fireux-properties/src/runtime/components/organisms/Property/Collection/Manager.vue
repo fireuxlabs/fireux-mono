@@ -98,7 +98,7 @@ const props = withDefaults(
   }
 )
 
-const { card: makeCard, searchText } = usePropertyInterface()
+const { interface: makeCard, searchText } = usePropertyInterface()
 
 const collection = computed(() => props.collection ?? [])
 const title = computed(() => String(props.title || 'Properties'))

@@ -29,11 +29,19 @@ export namespace PropertyCard {
     subtitle: string
     meta: string
     imageUrl: string
+    status: string
+    badges: string[]
+    summary: string
   }
 }
 
 export function usePropertyInterface() {
-  function card(target?: Property | null | undefined): PropertyCard.Card | null {
+  type PropertyPill = PropertyCard.Card
+  type PropertyCell = PropertyCard.Card
+  type PropertyPreview = PropertyCard.Card
+  type PropertyProfile = PropertyCard.Card
+
+  function buildInterface(target?: Property | null | undefined): PropertyCard.Card | null {
     if (!target) return null
 
     const id = safeString(target.id)
@@ -65,7 +73,26 @@ export function usePropertyInterface() {
       subtitle,
       meta,
       imageUrl: safeString(target.image_url) || propertyImagePlaceholder(id),
+      status: '',
+      badges: [],
+      summary: '',
     }
+  }
+
+  function pill(target?: Property | null | undefined): PropertyPill | null {
+    return buildInterface(target)
+  }
+
+  function cell(target?: Property | null | undefined): PropertyCell | null {
+    return buildInterface(target)
+  }
+
+  function preview(target?: Property | null | undefined): PropertyPreview | null {
+    return buildInterface(target)
+  }
+
+  function profile(target?: Property | null | undefined): PropertyProfile | null {
+    return buildInterface(target)
   }
 
   function searchText(target: Property): string {
@@ -76,8 +103,11 @@ export function usePropertyInterface() {
       .trim()
   }
 
-  return {
-    card,
+  return { interface: buildInterface,
+    pill,
+    cell,
+    preview,
+    profile,
     searchText,
   }
 }

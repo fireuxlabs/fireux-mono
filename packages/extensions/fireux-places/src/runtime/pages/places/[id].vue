@@ -172,7 +172,7 @@ const placeProfile = computed(() => profile(place.value))
 
 const claimedBy = computed(() => String(place.value?.claimed_by ?? '').trim())
 const { user: claimedUser } = useUserFetch(claimedBy)
-const { card: userCard } = useUserInterface(claimedUser)
+const { interface: userCard } = useUserInterface(claimedUser)
 const claimedUserPill = computed(() => userCard(claimedUser.value))
 const { currentUser, isAdmin, isLoading, isResolved, isInitialized, cta } = useUser()
 const canEditAsAdmin = computed(() => Boolean(isAdmin.value))

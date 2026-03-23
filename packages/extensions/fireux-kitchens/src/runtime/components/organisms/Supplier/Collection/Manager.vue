@@ -91,7 +91,7 @@ const props = withDefaults(
   }
 )
 
-const { card: makeCard, searchText } = useSupplierInterface()
+const { interface: makeCard, searchText } = useSupplierInterface()
 
 const collection = computed(() => props.collection ?? [])
 const linkEnabled = computed(() => props.link !== false)

@@ -32,6 +32,9 @@
 
         <div v-if="showTagline" class="card__tagline">
           <span v-if="taglineOverride">{{ taglineOverride }}</span>
+          <span v-else-if="title && summary">{{ title }} · {{ summary }}</span>
+          <span v-else-if="summary">{{ summary }}</span>
+          <span v-else-if="title">{{ title }}</span>
           <span v-else-if="profiles.length && appsLabel">{{ profiles.join(', ') }} · {{ appsLabel }}</span>
           <span v-else-if="profiles.length">{{ profiles.join(', ') }}</span>
           <span v-else-if="appsLabel">{{ appsLabel }}</span>
@@ -46,7 +49,15 @@ import type { UserCard } from '../../../../composables/fireux/firestore/core/use
 
 type Props = Pick<
   UserCard.Card,
-  'to' | 'avatarUrl' | 'displayName' | 'handle' | 'badges' | 'profiles' | 'appsLabel'
+  | 'to'
+  | 'avatarUrl'
+  | 'displayName'
+  | 'handle'
+  | 'badges'
+  | 'title'
+  | 'summary'
+  | 'profiles'
+  | 'appsLabel'
 > & {
   /** Optional override for the tagline line. */
   taglineOverride?: string
@@ -68,6 +79,8 @@ const props = withDefaults(
     displayName: '',
     handle: '',
     badges: () => [],
+    title: '',
+    summary: '',
     profiles: () => [],
     appsLabel: '',
 

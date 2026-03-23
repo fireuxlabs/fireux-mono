@@ -8,16 +8,16 @@ export namespace ProductCard {
 
     // Media (empty string means unset)
     avatarUrl: string
+    imageUrl: string
 
     // Primary display fields
     title: string
     subtitle: string
+    summary: string
+    status: string
 
     name: string
     description: string
-
-    // Secondary media (empty string means unset)
-    imageUrl: string
 
     // Status/label chips
     badges: string[]
@@ -25,6 +25,11 @@ export namespace ProductCard {
 }
 
 export function useProductInterface() {
+  type ProductPill = ProductCard.Card
+  type ProductCell = ProductCard.Card
+  type ProductPreview = ProductCard.Card
+  type ProductProfile = ProductCard.Card
+
   const currencySymbols: Record<string, string> = {
     USD: '$',
     EUR: '€',
@@ -89,21 +94,38 @@ export function useProductInterface() {
       to: slug ? to : '',
 
       avatarUrl: imageUrl,
+      imageUrl,
       title: name,
       subtitle: tagline || description,
+      summary: description,
+      status: productType,
 
       name,
       description,
-
-      imageUrl,
       badges: buildBadges(product),
     }
   }
 
-  function card(target?: FirebaseProduct | null | undefined): ProductCard.Card | null {
+  function buildInterface(target?: FirebaseProduct | null | undefined): ProductCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
+  }
+
+  function pill(target?: FirebaseProduct | null | undefined): ProductPill | null {
+    return buildInterface(target)
+  }
+
+  function cell(target?: FirebaseProduct | null | undefined): ProductCell | null {
+    return buildInterface(target)
+  }
+
+  function preview(target?: FirebaseProduct | null | undefined): ProductPreview | null {
+    return buildInterface(target)
+  }
+
+  function profile(target?: FirebaseProduct | null | undefined): ProductProfile | null {
+    return buildInterface(target)
   }
 
   function searchText(product: FirebaseProduct): string {
@@ -113,5 +135,5 @@ export function useProductInterface() {
     return `${name} ${slug} ${id}`.trim().toLowerCase()
   }
 
-  return { card, searchText }
+  return { interface: buildInterface, pill, cell, preview, profile, searchText }
 }

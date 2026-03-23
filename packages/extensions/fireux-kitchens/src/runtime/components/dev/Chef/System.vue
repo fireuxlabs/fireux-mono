@@ -89,7 +89,7 @@ defineOptions({ name: 'DevChefSystem' })
 const chefCoreModelRuntime = ChefCoreModelRuntime
 
 const { coreChefs, appChefs, pending } = useChefFetch()
-const { card: makeChefCard } = useChefInterface()
+const { interface: makeChefCard } = useChefInterface()
 
 const collection = computed(() => [
   ...(appChefs?.value ?? []),

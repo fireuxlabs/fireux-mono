@@ -3,8 +3,7 @@ import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/fire
 
 /** Fetch subcollection prices for a given product. */
 export function useProductPrices() {
-  const { firestoreFetchSubcollection, getCollectionPath } =
-    useFirestoreManager()
+  const { firestoreFetchSubcollection, getCollectionPath } = useFirestoreManager()
 
   const fetchProductPrices = async (productId: string): Promise<Price[]> => {
     if (!productId) return []

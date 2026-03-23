@@ -8,16 +8,16 @@ export namespace BlogCard {
 
     // Media (empty string means unset)
     avatarUrl: string
+    imageUrl: string
 
     // Primary display fields
     subtitle: string
 
     title: string
+    summary: string
+    status: string
     excerpt: string
     author: string
-
-    // Secondary media (empty string means unset)
-    imageUrl: string
 
     // Status/label chips
     badges: string[]
@@ -33,6 +33,11 @@ function ellipsis(text: string, limit = 180): string {
 }
 
 export function useBlogInterface() {
+  type BlogPill = BlogCard.Card
+  type BlogCell = BlogCard.Card
+  type BlogPreview = BlogCard.Card
+  type BlogProfile = BlogCard.Card
+
   function map(post: BlogPost): BlogCard.Card {
     const content = safeString(post.content)
     const excerpt = ellipsis(stripHtml(content), 180)
@@ -47,21 +52,38 @@ export function useBlogInterface() {
       to: id ? `/blog/${id}` : '',
 
       avatarUrl: imageUrl,
+      imageUrl,
       subtitle: author,
 
       title,
+      summary: excerpt,
+      status: '',
       excerpt,
       author,
-
-      imageUrl,
       badges: [],
     }
   }
 
-  function card(target?: BlogPost | null | undefined): BlogCard.Card | null {
+  function buildInterface(target?: BlogPost | null | undefined): BlogCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
+  }
+
+  function pill(target?: BlogPost | null | undefined): BlogPill | null {
+    return buildInterface(target)
+  }
+
+  function cell(target?: BlogPost | null | undefined): BlogCell | null {
+    return buildInterface(target)
+  }
+
+  function preview(target?: BlogPost | null | undefined): BlogPreview | null {
+    return buildInterface(target)
+  }
+
+  function profile(target?: BlogPost | null | undefined): BlogProfile | null {
+    return buildInterface(target)
   }
 
   function searchText(post: BlogPost): string {
@@ -71,5 +93,5 @@ export function useBlogInterface() {
     return `${title} ${slug} ${author}`.trim().toLowerCase()
   }
 
-  return { card, searchText }
+  return { interface: buildInterface, pill, cell, preview, profile, searchText }
 }

@@ -23,11 +23,11 @@ const props = defineProps<{
   recipe?: Recipe | null
   prop?: string
 }>()
-const { pillProps } = useRecipeInterface()
+const { interface: toRecipeCard } = useRecipeInterface()
 
-const resolved = computed(() => pillProps(props.recipe ?? null))
+const resolved = computed(() => toRecipeCard(props.recipe ?? null))
 
-const vmTitle = computed(() => props.title ?? resolved.value.title)
-const vmSubtitle = computed(() => props.subtitle ?? resolved.value.subtitle ?? undefined)
-const vmAvatar = computed(() => props.avatar ?? null)
+const vmTitle = computed(() => props.title ?? resolved.value?.title ?? '')
+const vmSubtitle = computed(() => props.subtitle ?? resolved.value?.subtitle ?? undefined)
+const vmAvatar = computed(() => props.avatar ?? resolved.value?.avatarUrl ?? null)
 </script>

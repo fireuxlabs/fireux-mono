@@ -47,6 +47,7 @@ Not every package needs every runtime subdirectory.
 
 Current examples:
 - `concepts/create/`
+- `concepts/read/`
 - `concepts/update/`
 
 ## composables Directory

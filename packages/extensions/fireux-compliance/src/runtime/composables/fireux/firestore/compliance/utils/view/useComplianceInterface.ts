@@ -9,16 +9,25 @@ const safeString = (value: unknown) => String(value ?? '').trim()
 export namespace ComplianceCard {
   export type Card = {
     id: string
+    imageUrl: string
     title: string
     subtitle: string
+    meta: string
     status: ComplianceDerivedStatus | null
+    badges: string[]
+    summary: string
     expiryDate: string
     to: string
   }
 }
 
 export function useComplianceInterface() {
-  function card(target?: ComplianceRecord | null | undefined): ComplianceCard.Card | null {
+  type CompliancePill = ComplianceCard.Card
+  type ComplianceCell = ComplianceCard.Card
+  type CompliancePreview = ComplianceCard.Card
+  type ComplianceProfile = ComplianceCard.Card
+
+  function buildInterface(target?: ComplianceRecord | null | undefined): ComplianceCard.Card | null {
     if (!target) return null
 
     const id = safeString(target.id)
@@ -35,12 +44,32 @@ export function useComplianceInterface() {
 
     return {
       id,
+      imageUrl: '',
       title,
       subtitle,
+      meta: expiryDate ? `expires ${expiryDate}` : '',
       status,
+      badges: status ? [String(status)] : [],
+      summary: '',
       expiryDate,
       to: '/console/portfolio/compliance',
     }
+  }
+
+  function pill(target?: ComplianceRecord | null | undefined): CompliancePill | null {
+    return buildInterface(target)
+  }
+
+  function cell(target?: ComplianceRecord | null | undefined): ComplianceCell | null {
+    return buildInterface(target)
+  }
+
+  function preview(target?: ComplianceRecord | null | undefined): CompliancePreview | null {
+    return buildInterface(target)
+  }
+
+  function profile(target?: ComplianceRecord | null | undefined): ComplianceProfile | null {
+    return buildInterface(target)
   }
 
   function searchText(target: ComplianceRecord): string {
@@ -58,8 +87,11 @@ export function useComplianceInterface() {
       .toLowerCase()
   }
 
-  return {
-    card,
+  return { interface: buildInterface,
+    pill,
+    cell,
+    preview,
+    profile,
     searchText,
   }
 }

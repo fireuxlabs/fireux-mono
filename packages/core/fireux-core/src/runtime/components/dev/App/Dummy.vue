@@ -90,7 +90,7 @@ import type { AppModel } from '../../../models/core/app.model'
 
 defineOptions({ name: 'DevAppDummy' })
 
-const { card: appCard } = useAppInterface()
+const { interface: appCard } = useAppInterface()
 
 const selectedId = ref(String(dummyAppList[0]?.id ?? ''))
 

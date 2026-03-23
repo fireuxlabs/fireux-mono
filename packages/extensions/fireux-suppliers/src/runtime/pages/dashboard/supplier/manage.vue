@@ -95,7 +95,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { coreSupplier, appSupplier, card: supplierCardFromProfile } = useSupplier()
+const { coreSupplier, appSupplier, interface: supplierCardFromProfile } = useSupplier()
 
 const { ensure } = useSupplierEnsure()
 const isCreating = ref(false)

@@ -8,11 +8,13 @@ export namespace RecipeCard {
 
     // Media (empty string means unset)
     avatarUrl: string
+    imageUrl: string
 
     // Primary display fields
     subtitle: string
 
     title: string
+    summary: string
     status: string
 
     // Status/label chips
@@ -36,31 +38,37 @@ export function useRecipeInterface() {
       to: id ? `/recipes/${id}` : '',
 
       avatarUrl,
+      imageUrl: avatarUrl,
       subtitle,
 
       title,
+      summary: '',
       status,
 
       badges,
     }
   }
 
-  function card(target?: Recipe | null | undefined): RecipeCard.Card | null {
+  function buildInterface(target?: Recipe | null | undefined): RecipeCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
 
-  function pillProps(target?: Recipe | null | undefined): RecipeCard.Card {
-    return target ? map(target) : {
-      id: '',
-      to: '',
-      avatarUrl: '',
-      subtitle: '',
-      title: '',
-      status: '',
-      badges: [],
-    }
+  function pill(target?: Recipe | null | undefined): RecipeCard.Card | null {
+    return buildInterface(target)
+  }
+
+  function cell(target?: Recipe | null | undefined): RecipeCard.Card | null {
+    return buildInterface(target)
+  }
+
+  function preview(target?: Recipe | null | undefined): RecipeCard.Card | null {
+    return buildInterface(target)
+  }
+
+  function profile(target?: Recipe | null | undefined): RecipeCard.Card | null {
+    return buildInterface(target)
   }
 
   function searchText(recipe: Recipe): string {
@@ -70,5 +78,5 @@ export function useRecipeInterface() {
     return `${title} ${status} ${slug}`.trim().toLowerCase()
   }
 
-  return { card, pillProps, searchText }
+  return { interface: buildInterface, pill, cell, preview, profile, searchText }
 }

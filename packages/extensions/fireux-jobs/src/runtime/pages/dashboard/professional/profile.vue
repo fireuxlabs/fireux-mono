@@ -117,7 +117,7 @@ definePageMeta({
 const {
   coreProfile,
   appProfile,
-  card: professionalCardFromProfile,
+  interface: professionalCardFromProfile,
   computed: professionalComputed,
 } = useProfessional()
 

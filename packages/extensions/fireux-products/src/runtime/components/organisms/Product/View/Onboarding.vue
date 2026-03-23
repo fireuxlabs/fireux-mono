@@ -61,8 +61,7 @@ const accordionSteps = [
   { value: 'launch', label: 'Launch' },
 ]
 
-const { requiredAssetsComplete, requiredContentComplete } =
-  useProductFulfillmentOnboarding(computed(() => props.product))
+const { requiredAssetsComplete, requiredContentComplete } = useProductFulfillmentOnboarding(computed(() => props.product))
 
 const requirements = computed<string[]>(() => {
   const value = props.product?.metadata?.delivery?.requirements

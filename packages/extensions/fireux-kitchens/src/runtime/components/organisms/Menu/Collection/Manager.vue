@@ -91,7 +91,7 @@ const props = withDefaults(
   }
 )
 
-const { card: makeCard, searchText } = useMenuInterface()
+const { interface: makeCard, searchText } = useMenuInterface()
 
 const collection = computed(() => props.collection ?? [])
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search menus...'))

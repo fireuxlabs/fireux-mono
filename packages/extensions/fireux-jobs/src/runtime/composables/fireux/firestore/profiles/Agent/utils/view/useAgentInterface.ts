@@ -34,6 +34,8 @@ export namespace AgentCard {
     // Summary shown in lists
     summary: string
 
+    handle: string
+
     // IMPORTANT: only render contactEmail on authorized UI surfaces.
     contactEmail: string
     contactPhone: string
@@ -45,6 +47,11 @@ export function useAgentInterface(
   profile?: ProfileRefs<AgentCore> | null,
   userRef?: Ref<User | null | undefined>
 ) {
+  type AgentPill = AgentCard.Card
+  type AgentCell = AgentCard.Card
+  type AgentPreview = AgentCard.Card
+  type AgentProfile = AgentCard.Card
+
   const resolveUser = (target?: AgentCore | AgentResolved | null) => {
     if (target && 'user' in target && target.user) return target.user as UserLike
     return userRef?.value ?? null
@@ -77,6 +84,7 @@ export function useAgentInterface(
       badges: placementTypes,
 
       summary,
+      handle: safeString(u?.handle).trim(),
 
       contactEmail: safeString(p.agent_contact_email || p.contact_email).trim(),
       contactPhone: safeString(p.agent_contact_phone || p.contact_phone).trim(),
@@ -84,7 +92,7 @@ export function useAgentInterface(
     }
   }
 
-  function card(
+  function buildInterface(
     target?: AgentCore | AgentResolved | null | undefined
   ): AgentCard.Card | null {
     const p = target ?? profile?.coreProfile.value ?? null
@@ -92,6 +100,24 @@ export function useAgentInterface(
     const u = resolveUser(target as AgentCore | AgentResolved | null)
     const mapped = map(p, u)
     return mapped.id ? mapped : null
+  }
+
+  function pill(target?: AgentCore | AgentResolved | null | undefined): AgentPill | null {
+    return buildInterface(target)
+  }
+
+  function cell(target?: AgentCore | AgentResolved | null | undefined): AgentCell | null {
+    return buildInterface(target)
+  }
+
+  function preview(target?: AgentCore | AgentResolved | null | undefined): AgentPreview | null {
+    return buildInterface(target)
+  }
+
+  function profile(
+    target?: AgentCore | AgentResolved | null | undefined
+  ): AgentProfile | null {
+    return buildInterface(target)
   }
 
   function searchText(target: AgentCore | AgentResolved): string {
@@ -102,6 +128,7 @@ export function useAgentInterface(
       mapped.displayName,
       mapped.title,
       mapped.summary,
+      mapped.handle,
       mapped.contactEmail,
       mapped.contactPhone,
       mapped.websiteUrl,
@@ -112,5 +139,5 @@ export function useAgentInterface(
       .toLowerCase()
   }
 
-  return { card, searchText }
+  return { interface: buildInterface, pill, cell, preview, profile, searchText }
 }

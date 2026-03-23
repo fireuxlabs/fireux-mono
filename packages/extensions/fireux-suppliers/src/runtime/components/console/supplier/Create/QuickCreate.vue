@@ -47,8 +47,7 @@ const emit = defineEmits<{
   created: [supplier: any]
 }>()
 
-const { createQuickSupplier, creating, createError, createdSupplier } =
-  useSupplierQuickCreate()
+const { createQuickSupplier, creating, createError, createdSupplier } = useSupplierQuickCreate()
 
 const supplierName = ref('')
 

@@ -25,6 +25,10 @@ export namespace ChefCard {
     title: string
     summary: string
     badges: string[]
+    handle: string
+    contactEmail: string
+    contactPhone: string
+    websiteUrl: string
   }
 }
 
@@ -32,6 +36,11 @@ export function useChefInterface(
   profile?: ProfileRefs<ChefCore> | null,
   userRef?: Ref<User | null | undefined>
 ) {
+  type ChefPill = ChefCard.Card
+  type ChefCell = ChefCard.Card
+  type ChefPreview = ChefCard.Card
+  type ChefProfile = ChefCard.Card
+
   function map(p: ChefCore, u?: UserLike | null): ChefCard.Card {
     const id =
       safeString((p as any).owner_uid).trim() ||
@@ -59,15 +68,35 @@ export function useChefInterface(
       title: safeString((p as any).title).trim(),
       summary,
       badges,
+      handle: '',
+      contactEmail: '',
+      contactPhone: '',
+      websiteUrl: '',
     }
   }
 
-  function card(target?: ChefTarget | null, userOverride?: UserLike | null): ChefCard.Card | null {
+  function buildInterface(target?: ChefTarget | null, userOverride?: UserLike | null): ChefCard.Card | null {
     const p = target ?? profile?.coreProfile.value ?? null
     if (!p) return null
 
     const mapped = map(p, target?.user ?? userOverride ?? userRef?.value ?? null)
     return mapped.id && mapped.displayName ? mapped : null
+  }
+
+  function pill(target?: ChefTarget | null, userOverride?: UserLike | null): ChefPill | null {
+    return buildInterface(target, userOverride)
+  }
+
+  function cell(target?: ChefTarget | null, userOverride?: UserLike | null): ChefCell | null {
+    return buildInterface(target, userOverride)
+  }
+
+  function preview(target?: ChefTarget | null, userOverride?: UserLike | null): ChefPreview | null {
+    return buildInterface(target, userOverride)
+  }
+
+  function profile(target?: ChefTarget | null, userOverride?: UserLike | null): ChefProfile | null {
+    return buildInterface(target, userOverride)
   }
 
   function searchText(target: ChefTarget): string {
@@ -89,5 +118,5 @@ export function useChefInterface(
       .toLowerCase()
   }
 
-  return { card, searchText }
+  return { interface: buildInterface, pill, cell, preview, profile, searchText }
 }

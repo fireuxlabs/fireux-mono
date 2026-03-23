@@ -21,11 +21,15 @@ export namespace SupplierCard {
   export type Card = {
     id: string
     to: string
+    avatarUrl: string
     title: string
     subtitle: string
     badges: string[]
-    avatarUrl: string
     summary: string
+    status: string
+    shortName: string
+    ownerLabel: string
+    locationLabel: string
     organizationName: string
     locationsLabel: string
     tagline?: string
@@ -53,6 +57,11 @@ export function useSupplierInterface(
   supplier?: SupplierRefs | null,
   userRef?: Ref<User | null | undefined>
 ) {
+  type SupplierPill = SupplierCard.Card
+  type SupplierCell = SupplierCard.Card
+  type SupplierPreview = SupplierCard.Card
+  type SupplierProfile = SupplierCard.Card
+
   function resolveUser(
     target?: SupplierTarget | null | undefined,
     userOverride?: UserLike | null
@@ -116,20 +125,24 @@ export function useSupplierInterface(
     return {
       id,
       to: id ? `/${SUPPLIER_COLLECTION}/${encodeURIComponent(id)}` : '',
+      avatarUrl: primaryAvatar,
       title,
       subtitle,
       badges,
-      avatarUrl: primaryAvatar,
       organizationName,
       locationsLabel,
       summary,
+      status: '',
+      shortName: safeString(target.short_name),
+      ownerLabel: organizationName,
+      locationLabel: locationsLabel,
       tagline: tagline || undefined,
       categoriesCsv: categoriesCsv || undefined,
       specialtiesCsv: specialtiesCsv || undefined,
     }
   }
 
-  function card(
+  function buildInterface(
     target?: SupplierSurface | null | undefined,
     userOverride?: UserLike | null
   ): SupplierCard.Card | null {
@@ -138,6 +151,34 @@ export function useSupplierInterface(
 
     const mapped = map(source, resolveUser(source as SupplierTarget, userOverride))
     return mapped.id ? mapped : null
+  }
+
+  function pill(
+    target?: SupplierSurface | null | undefined,
+    userOverride?: UserLike | null
+  ): SupplierPill | null {
+    return buildInterface(target, userOverride)
+  }
+
+  function cell(
+    target?: SupplierSurface | null | undefined,
+    userOverride?: UserLike | null
+  ): SupplierCell | null {
+    return buildInterface(target, userOverride)
+  }
+
+  function preview(
+    target?: SupplierSurface | null | undefined,
+    userOverride?: UserLike | null
+  ): SupplierPreview | null {
+    return buildInterface(target, userOverride)
+  }
+
+  function profile(
+    target?: SupplierSurface | null | undefined,
+    userOverride?: UserLike | null
+  ): SupplierProfile | null {
+    return buildInterface(target, userOverride)
   }
 
   function searchText(target: SupplierSurface): string {
@@ -165,5 +206,5 @@ export function useSupplierInterface(
       .toLowerCase()
   }
 
-  return { card, searchText }
+  return { interface: buildInterface, pill, cell, preview, profile, searchText }
 }

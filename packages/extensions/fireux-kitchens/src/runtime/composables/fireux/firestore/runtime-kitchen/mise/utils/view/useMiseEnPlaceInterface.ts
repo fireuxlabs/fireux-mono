@@ -11,7 +11,9 @@ export namespace MiseEnPlaceCard {
     imageUrl: string
     title: string
     subtitle: string
+    meta: string
     badges: string[]
+    summary: string
     name: string
     description: string
     category: string
@@ -76,7 +78,9 @@ export function useMiseEnPlaceInterface() {
       imageUrl: '',
       title: name,
       subtitle: joinSubtitle(category, safeString(task.service_date).trim()),
+      meta: [category, unit].filter(Boolean).join(' · '),
       badges: tags.slice(0, 4),
+      summary: safeString(task.description).trim(),
       name,
       description: safeString(task.description).trim(),
       category,
@@ -86,14 +90,14 @@ export function useMiseEnPlaceInterface() {
     }
   }
 
-  function card(target?: KitchenMiseTask | null | undefined): MiseEnPlaceCard.Card | null {
+  function buildInterface(target?: KitchenMiseTask | null | undefined): MiseEnPlaceCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
 
   function pill(target?: KitchenMiseTask | null | undefined): MiseEnPlacePill | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base) return null
     return {
       ...base,
@@ -103,7 +107,7 @@ export function useMiseEnPlaceInterface() {
   }
 
   function cell(target?: KitchenMiseTask | null | undefined): MiseEnPlaceCell | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base) return null
     return {
       id: base.id,
@@ -119,7 +123,7 @@ export function useMiseEnPlaceInterface() {
   }
 
   function preview(target?: KitchenMiseTask | null | undefined): MiseEnPlacePreview | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base) return null
 
     return {
@@ -137,7 +141,7 @@ export function useMiseEnPlaceInterface() {
   }
 
   function profile(target?: KitchenMiseTask | null | undefined): MiseEnPlaceProfile | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base) return null
 
     return {
@@ -170,5 +174,5 @@ export function useMiseEnPlaceInterface() {
       .toLowerCase()
   }
 
-  return { card, pill, cell, preview, profile, searchText }
+  return { interface: buildInterface, pill, cell, preview, profile, searchText }
 }

@@ -92,7 +92,7 @@ const props = withDefaults(
   }
 )
 
-const { card: makeCard, searchText } = usePortfolioInterface()
+const { interface: makeCard, searchText } = usePortfolioInterface()
 const collection = computed(() => props.collection ?? [])
 const title = computed(() => String(props.title || 'Available Portfolios'))
 const description = computed(() => String(props.description || '').trim())

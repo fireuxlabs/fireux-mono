@@ -83,7 +83,7 @@ const professionalModelRuntime = {
 
 const { coreProfessionals, appProfessionals } = useProfessionalFetch()
 const { coreProfessionals: rawCoreProfessionals, appProfessionals: rawAppProfessionals } = useProfessionalCollection()
-const { card: makeProfessionalCard } = useProfessionalInterface()
+const { interface: makeProfessionalCard } = useProfessionalInterface()
 
 const professionalsCollection = computed(() => [
   ...(appProfessionals?.value ?? []),

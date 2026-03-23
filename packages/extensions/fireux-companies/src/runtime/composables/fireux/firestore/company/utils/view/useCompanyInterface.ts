@@ -116,14 +116,14 @@ export function useCompanyInterface() {
     }
   }
 
-  function card(target?: CompanyView | null | undefined): CompanyCard.Card | null {
+  function buildInterface(target?: CompanyView | null | undefined): CompanyCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
 
   function pill(target?: CompanyView | null | undefined): CompanyPill | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base) return null
     return {
       ...base,
@@ -133,7 +133,7 @@ export function useCompanyInterface() {
   }
 
   function cell(target?: CompanyView | null | undefined): CompanyCell | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base || !target) return null
     return {
       id: base.id,
@@ -148,7 +148,7 @@ export function useCompanyInterface() {
   }
 
   function preview(target?: CompanyView | null | undefined): CompanyPreview | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base || !target) return null
     return {
       imageUrl: base.imageUrl,
@@ -161,7 +161,7 @@ export function useCompanyInterface() {
   }
 
   function profile(target?: CompanyView | null | undefined): CompanyProfile | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base || !target) return null
     const address = base.shortAddress || base.formattedAddress
     return {
@@ -192,5 +192,5 @@ export function useCompanyInterface() {
     return `${name} ${website} ${shortAddress || formattedAddress} ${id}`.trim().toLowerCase()
   }
 
-  return { card, pill, cell, preview, profile, searchText }
+  return { interface: buildInterface, pill, cell, preview, profile, searchText }
 }

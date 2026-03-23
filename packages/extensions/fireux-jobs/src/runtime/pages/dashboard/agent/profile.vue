@@ -100,7 +100,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { coreProfile, appProfile, card: agentCardFromProfile } = useAgent()
+const { coreProfile, appProfile, interface: agentCardFromProfile } = useAgent()
 
 const { ensure } = useProfileEnsure(agentConfig)
 const isCreating = ref(false)

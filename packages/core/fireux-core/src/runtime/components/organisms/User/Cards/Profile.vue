@@ -6,6 +6,8 @@
         :display-name="displayName"
         :handle="handle"
         :badges="badges"
+        :title="title"
+        :summary="summary"
         :profiles="profiles"
         :apps-label="appsLabel"
         :show-subtitle="showSubtitle"
@@ -16,9 +18,17 @@
 
     <div class="profile__body">
       <section v-if="showDescription" class="profile__section">
-        <div class="profile__label">Bio</div>
+        <div class="profile__label">Summary</div>
         <div class="profile__value">
-          <span v-if="bioOverride || bio">{{ bioOverride || bio }}</span>
+          <span v-if="bioOverride || summary || bio">{{ bioOverride || summary || bio }}</span>
+          <span v-else class="italic">missing</span>
+        </div>
+      </section>
+
+      <section v-if="showMeta" class="profile__section">
+        <div class="profile__label">Title</div>
+        <div class="profile__value">
+          <span v-if="title">{{ title }}</span>
           <span v-else class="italic">missing</span>
         </div>
       </section>
@@ -72,6 +82,8 @@
         :display-name="displayName"
         :handle="handle"
         :badges="badges"
+        :title="title"
+        :summary="summary"
         :profiles="profiles"
         :show-subtitle="showSubtitle"
         :show-badges="showBadges"
@@ -86,6 +98,8 @@ type Props = {
   displayName: string
   handle: string
   badges: string[]
+  title: string
+  summary: string
   bio: string
   profiles: string[]
   appsLabel: string
@@ -110,6 +124,8 @@ type Props = {
 
 withDefaults(defineProps<Props>(), {
   badges: () => [],
+  title: '',
+  summary: '',
   profiles: () => [],
   showSubtitle: true,
   showBadges: true,

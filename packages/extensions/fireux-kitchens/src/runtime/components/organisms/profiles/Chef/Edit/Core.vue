@@ -70,8 +70,7 @@ import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model';
 const props = defineProps<{ chef: ChefCore | null }>()
 
 const chef = computed(() => props.chef ?? null)
-const { updateTitle, updateSummary, updateBio, updateImage, updateSignatureDishes } =
-  useChefUpdate()
+const { updateTitle, updateSummary, updateBio, updateImage, updateSignatureDishes } = useChefUpdate()
 
 const toast = useToastify()
 

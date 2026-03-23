@@ -16,6 +16,9 @@ export namespace IngredientCard {
     imageUrl: string
     title: string
     subtitle: string
+    meta: string
+    badges: string[]
+    summary: string
     name: string
     status: string
     supplierName: string
@@ -67,13 +70,16 @@ export function useIngredientInterface() {
       imageUrl: safeString(ingredient.image_url).trim(),
       title: name,
       subtitle: joinSubtitle(supplierRef),
+      meta: supplierRef,
+      badges: status ? [status] : [],
+      summary: '',
       name,
       status,
       supplierName: supplierRef,
     }
   }
 
-  function card(
+  function buildInterface(
     target?: IngredientInterfaceItem | null | undefined
   ): IngredientCard.Card | null {
     if (!target) return null
@@ -82,7 +88,7 @@ export function useIngredientInterface() {
   }
 
   function pill(target?: IngredientInterfaceItem | null | undefined): IngredientPill | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base) return null
     return {
       ...base,
@@ -92,7 +98,7 @@ export function useIngredientInterface() {
   }
 
   function cell(target?: IngredientInterfaceItem | null | undefined): IngredientCell | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base) return null
     return {
       id: base.id,
@@ -108,7 +114,7 @@ export function useIngredientInterface() {
   function preview(
     target?: IngredientInterfaceItem | null | undefined
   ): IngredientPreview | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base) return null
 
     return {
@@ -125,7 +131,7 @@ export function useIngredientInterface() {
   function profile(
     target?: IngredientInterfaceItem | null | undefined
   ): IngredientProfile | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base) return null
 
     return {
@@ -150,5 +156,5 @@ export function useIngredientInterface() {
       .toLowerCase()
   }
 
-  return { card, pill, cell, preview, profile, searchText }
+  return { interface: buildInterface, pill, cell, preview, profile, searchText }
 }

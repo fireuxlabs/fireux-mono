@@ -85,7 +85,7 @@ const KitchenPill = defineComponent({
     const { kitchen } = useKitchenFetch();
     const kitchenData = computed(() => props.id ? kitchen(props.id).value : null);
     const kitchenInterface = useKitchenInterface();
-    const kitchenCard = computed(() => kitchenInterface.card(kitchenData.value));
+    const kitchenCard = computed(() => kitchenInterface.interface(kitchenData.value));
     return { kitchenCard };
   },
   template: `
@@ -106,7 +106,7 @@ const CompanyPill = defineComponent({
     const { company } = useCompanyFetch();
     const companyData = computed(() => props.id ? company(props.id).value : null);
     const companyInterface = useCompanyInterface();
-    const companyCard = computed(() => companyInterface.card(companyData.value));
+    const companyCard = computed(() => companyInterface.interface(companyData.value));
     return { companyCard };
   },
   template: `
@@ -125,8 +125,8 @@ const props = defineProps<{
   form: JobCreateForm
 }>()
 
-const { coreProfile, card } = useAgent()
-const agentCard = computed(() => (coreProfile.value ? card(coreProfile.value) : null))
+const { coreProfile, interface } = useAgent()
+const agentCard = computed(() => (coreProfile.value ? interface(coreProfile.value) : null))
 
 const title = computed(() => props.form.title.trim() || 'Untitled job')
 const description = computed(() => props.form.description.trim())

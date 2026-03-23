@@ -22,12 +22,19 @@ It is a cross-cutting behaviour layer.
 ## Current Concepts
 
 - `create/`
+- `read/`
 - `update/`
 
 `create/` is a real runtime concept because creation spans:
 - route ownership
 - create-system orchestration
 - behavioural contracts in composables
+
+`read/` is now also a real runtime concept because reading spans:
+- route ownership
+- fetch versus collection versus resolved view seams
+- truth-layer distinction between public entity, overlay, scoped child, identity, and system reads
+- hydrated convenience data versus stored truth
 
 `update/` is now also a real runtime concept because editing spans:
 - route ownership
@@ -53,10 +60,10 @@ It is a cross-cutting behaviour layer.
 1. Add concept docs only when the behaviour is truly cross-cutting.
 2. Keep the technical directories as the primary view of the repo.
 3. Use concepts to explain how those technical layers cooperate for one operation.
-4. Start with the concepts that are real enough to need their own canon, and add `read/` or `delete/` only when they become equally cross-cutting.
+4. Start with the concepts that are real enough to need their own canon, and add new ones only when they become equally cross-cutting.
 
 ## Short Version
 
 `runtime/concepts/` is where cross-cutting runtime behaviour gets a home.
 
-Right now, `create/` and `update/` are the first real concepts in that layer.
+Right now, `create/`, `read/`, and `update/` are the first real concepts in that layer.

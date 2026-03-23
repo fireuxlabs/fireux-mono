@@ -125,14 +125,14 @@ export function useKitchenInterface() {
     }
   }
 
-  function card(target?: Kitchen | null | undefined): KitchenCard.Card | null {
+  function buildInterface(target?: Kitchen | null | undefined): KitchenCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
 
   function pill(target?: Kitchen | null | undefined): KitchenPill | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base) return null
     return {
       ...base,
@@ -142,7 +142,7 @@ export function useKitchenInterface() {
   }
 
   function cell(target?: Kitchen | null | undefined): KitchenCell | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base || !target) return null
     return {
       id: base.id,
@@ -157,7 +157,7 @@ export function useKitchenInterface() {
   }
 
   function preview(target?: Kitchen | null | undefined): KitchenPreview | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base || !target) return null
     return {
       imageUrl: base.imageUrl,
@@ -170,7 +170,7 @@ export function useKitchenInterface() {
   }
 
   function profile(target?: Kitchen | null | undefined): KitchenProfile | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base || !target) return null
     const address = base.shortAddress || base.formattedAddress
     return {
@@ -201,5 +201,5 @@ export function useKitchenInterface() {
     return `${name} ${website} ${shortAddress || formattedAddress} ${id}`.trim().toLowerCase()
   }
 
-  return { card, pill, cell, preview, profile, searchText }
+  return { interface: buildInterface, pill, cell, preview, profile, searchText }
 }

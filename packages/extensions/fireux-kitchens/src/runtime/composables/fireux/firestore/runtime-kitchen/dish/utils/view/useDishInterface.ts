@@ -28,7 +28,9 @@ export namespace DishCard {
     title: string
     subtitle: string
     meta: string
+    status: string
     badges: string[]
+    summary: string
     name: string
     description: string
     active: boolean
@@ -81,7 +83,9 @@ export function useDishInterface() {
       title: displayName,
       subtitle: joinSubtitle(active),
       meta: 'Dish',
+      status: active ? 'active' : 'inactive',
       badges: [active ? 'active' : 'inactive'],
+      summary: safeString(dish.description).trim(),
       name: displayName,
       description: safeString(dish.description).trim(),
       active,
@@ -91,13 +95,13 @@ export function useDishInterface() {
     }
   }
 
-  function card(target?: Dish | null | undefined): DishCard.Card | null {
+  function buildInterface(target?: Dish | null | undefined): DishCard.Card | null {
     if (!target) return null
     return map(target)
   }
 
   function pill(target?: Dish | null | undefined): DishPill | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base) return null
     return {
       ...base,
@@ -107,7 +111,7 @@ export function useDishInterface() {
   }
 
   function cell(target?: Dish | null | undefined): DishCell | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base) return null
     return {
       id: base.id,
@@ -122,7 +126,7 @@ export function useDishInterface() {
   }
 
   function preview(target?: Dish | null | undefined): DishPreview | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base) return null
 
     return {
@@ -143,7 +147,7 @@ export function useDishInterface() {
   }
 
   function profile(target?: Dish | null | undefined): DishProfile | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base) return null
 
     return {
@@ -170,5 +174,5 @@ export function useDishInterface() {
       .toLowerCase()
   }
 
-  return { card, pill, cell, preview, profile, searchText }
+  return { interface: buildInterface, pill, cell, preview, profile, searchText }
 }

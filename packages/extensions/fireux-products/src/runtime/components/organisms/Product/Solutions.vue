@@ -49,7 +49,7 @@ const SOLUTION_ROUTES: Record<string, string> = {
 const SOLUTION_SLUGS = Object.keys(SOLUTION_ROUTES)
 
 const { products } = useProductFetch()
-const { card: mapCard } = useProductInterface()
+const { interface: mapCard } = useProductInterface()
 
 const solutionItems = computed(() =>
   SOLUTION_SLUGS

@@ -10,11 +10,19 @@ export namespace AppCard {
     to: string
 
     // Media (empty string means unset)
+    avatarUrl: string
     thumbnailUrl: string
 
+    title: string
+    subtitle: string
     displayName: string
     ecosystem: string
     badges: string[]
+
+    summary: string
+    status: string
+    ownerLabel: string
+    locationLabel: string
 
     tagline: string
     shortName: string
@@ -54,6 +62,10 @@ function safeDerived(app: App) {
 
 export function useAppInterface(appRef?: Ref<App | null | undefined>) {
   const resolvedMode = useResolvedColorMode()
+  type AppPill = AppCard.Card
+  type AppCell = AppCard.Card
+  type AppPreview = AppCard.Card
+  type AppProfile = AppCard.Card
 
   function resolveWordmarkUrl(app: App): string {
     const media = safeMedia(app)
@@ -71,11 +83,19 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       id,
       to: id ? `/apps/${encodeURIComponent(id)}` : '',
 
+      avatarUrl: safeString(media.thumbnail_url) || safeString(media.logo_url),
       thumbnailUrl: safeString(media.thumbnail_url),
 
+      title: safeString(app.app_name),
+      subtitle: safeString(app.tagline) || safeString(app.ecosystem),
       displayName: safeString(app.app_name),
       ecosystem: safeString(app.ecosystem),
       badges: [],
+
+      summary: safeString(app.short_bio) || safeString(app.description),
+      status: app.role != null ? String(app.role) : '',
+      ownerLabel: '',
+      locationLabel: '',
 
       tagline: safeString(app.tagline),
       shortName: safeString(app.app_short_name),
@@ -95,11 +115,27 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
     }
   }
 
-  function card(target?: App | null | undefined): AppCard.Card | null {
+  function buildInterface(target?: App | null | undefined): AppCard.Card | null {
     const app = target ?? appRef?.value ?? null
     if (!app) return null
     const mapped = map(app)
     return mapped.id ? mapped : null
+  }
+
+  function pill(target?: App | null | undefined): AppPill | null {
+    return buildInterface(target)
+  }
+
+  function cell(target?: App | null | undefined): AppCell | null {
+    return buildInterface(target)
+  }
+
+  function preview(target?: App | null | undefined): AppPreview | null {
+    return buildInterface(target)
+  }
+
+  function profile(target?: App | null | undefined): AppProfile | null {
+    return buildInterface(target)
   }
 
   function searchText(app: App): string {
@@ -110,5 +146,5 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
     return `${name} ${shortName} ${ecosystem} ${id}`.trim().toLowerCase()
   }
 
-  return { card, searchText }
+  return { interface: buildInterface, pill, cell, preview, profile, searchText }
 }

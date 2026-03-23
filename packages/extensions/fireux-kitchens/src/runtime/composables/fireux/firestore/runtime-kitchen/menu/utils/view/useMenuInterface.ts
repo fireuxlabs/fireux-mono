@@ -12,7 +12,9 @@ export namespace MenuCard {
     title: string
     subtitle: string
     meta: string
+    status: string
     badges: string[]
+    summary: string
     name: string
     description: string
     active: boolean
@@ -83,10 +85,12 @@ export function useMenuInterface() {
         `Dishes: ${dishes.length}`,
         windowLabel,
       ].filter(Boolean).join(' · '),
+      status: active ? 'active' : 'inactive',
       badges: [
         active ? 'active' : 'inactive',
         `${dishes.length} ${dishes.length === 1 ? 'dish' : 'dishes'}`,
       ],
+      summary: safeString(menu.description).trim(),
       name,
       description: safeString(menu.description).trim(),
       active,
@@ -97,14 +101,14 @@ export function useMenuInterface() {
     }
   }
 
-  function card(target?: Menu | null | undefined): MenuCard.Card | null {
+  function buildInterface(target?: Menu | null | undefined): MenuCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
 
   function pill(target?: Menu | null | undefined): MenuPill | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base) return null
     return {
       ...base,
@@ -114,7 +118,7 @@ export function useMenuInterface() {
   }
 
   function cell(target?: Menu | null | undefined): MenuCell | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base) return null
     return {
       id: base.id,
@@ -130,7 +134,7 @@ export function useMenuInterface() {
   }
 
   function preview(target?: Menu | null | undefined): MenuPreview | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base) return null
 
     return {
@@ -149,7 +153,7 @@ export function useMenuInterface() {
   }
 
   function profile(target?: Menu | null | undefined): MenuProfile | null {
-    const base = card(target)
+    const base = buildInterface(target)
     if (!base) return null
 
     return {
@@ -176,5 +180,5 @@ export function useMenuInterface() {
       .toLowerCase()
   }
 
-  return { card, pill, cell, preview, profile, searchText }
+  return { interface: buildInterface, pill, cell, preview, profile, searchText }
 }
