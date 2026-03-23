@@ -49,7 +49,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import PropertyCollectionManager from '../../../components/organisms/Property/Collection/Manager.vue'
-import { useRuntimePortfolio } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import {
+  useRuntimePortfolio,
+  useRuntimePortfolioPath,
+} from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
 import { usePortfolioPropertyCollection } from '../../../composables/fireux/firestore/property/fetch/usePortfolioPropertyCollection'
 
@@ -71,12 +74,13 @@ definePageMeta({
 const runtimePortfolio = useRuntimePortfolio()
 const { collection } = usePortfolioPropertyCollection(runtimePortfolio)
 const { pill } = usePortfolioInterface()
+const propertiesPath = useRuntimePortfolioPath(runtimePortfolio, 'properties')
 
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const properties = computed(() => collection.value)
 const portfolioPill = computed(() => pill(runtimePortfolio.portfolio.value))
 const workspaceDescription = computed(
-  () => `Portfolio-scoped properties from portfolios/${runtimeId.value}/properties.`
+  () => `Portfolio-scoped properties from ${propertiesPath.value || 'read-only scenario'}.`
 )
 </script>

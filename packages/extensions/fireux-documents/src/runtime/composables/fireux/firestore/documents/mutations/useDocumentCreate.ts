@@ -1,5 +1,8 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import {
+  useRuntimePortfolio,
+  useRuntimePortfolioPath,
+} from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import type { Document } from '../../../../../models/document.model'
 
 export type DocumentCreateInput = Pick<
@@ -17,6 +20,7 @@ const normalize = (value: unknown) => String(value || '').trim()
 
 export function useDocumentCreate(runtimePortfolio = useRuntimePortfolio()) {
   const { createDocument } = useFirestoreCreate()
+  const collectionPath = useRuntimePortfolioPath(runtimePortfolio, 'documents')
 
   async function createDocumentRecord(input: DocumentCreateInput): Promise<string> {
     const portfolioId = normalize(runtimePortfolio.id.value)
@@ -49,15 +53,15 @@ export function useDocumentCreate(runtimePortfolio = useRuntimePortfolio()) {
       throw new Error('[fireux-documents] storage_path is required.')
     }
 
-    return createDocument<Omit<Document, 'id'>>(
-      `portfolios/${portfolioId}/documents`,
-      payload,
-      {
-        stamp: true,
-        creator: true,
-        app: true,
-      }
-    )
+    if (!collectionPath.value) {
+      throw new Error('[fireux-documents] runtime document path is required.')
+    }
+
+    return createDocument<Omit<Document, 'id'>>(collectionPath.value, payload, {
+      stamp: true,
+      creator: true,
+      app: true,
+    })
   }
 
   return {

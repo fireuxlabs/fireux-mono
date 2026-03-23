@@ -2,8 +2,10 @@ import { createScopeConsole } from 'fireux-core/runtime/composables/fireux/app/c
 import { useNav } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useNav'
 import { computed } from 'vue'
 import { useSupplierFetch } from '../../../supplier/useSupplierFetch'
+import { useRuntimeSupplier } from './useRuntimeSupplier'
 
 export function useRuntimeSupplierConsole() {
+  const runtime = useRuntimeSupplier()
   const nav = useNav(['console'])
   const { coreSuppliers, pending } = useSupplierFetch()
 
@@ -11,9 +13,17 @@ export function useRuntimeSupplierConsole() {
     nav.items.value.filter((item) => item.to.startsWith('/console/supplier'))
   )
 
+  const overview = computed(() => [
+    { key: 'root', label: 'Root supplier', count: runtime.coreSupplier.value ? 1 : 0 },
+    { key: 'console', label: 'App console', count: runtime.appSupplier.value ? 1 : 0 },
+    { key: 'directory', label: 'Known suppliers', count: coreSuppliers.value.length },
+  ])
+
   const stats = computed(() => ({
     suppliers: coreSuppliers.value.length,
-    pending: pending.value,
+    hasRootSupplier: Boolean(runtime.coreSupplier.value),
+    hasAppConsole: Boolean(runtime.appSupplier.value),
+    pending: pending.value || runtime.pending.value,
   }))
 
   const actions = {
@@ -23,11 +33,13 @@ export function useRuntimeSupplierConsole() {
   } as const
 
   return createScopeConsole({
-    runtime: null,
+    runtime,
     navItems,
     stats,
     actions,
     extra: {
+      supplier: runtime,
+      overview,
       coreSuppliers,
       pending,
     },

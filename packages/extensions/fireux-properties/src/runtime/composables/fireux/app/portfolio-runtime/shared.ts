@@ -7,6 +7,8 @@ export type RuntimePortfolioSelection = {
 
 export const RUNTIME_PORTFOLIO_ID_KEY = 'fireux-properties:runtime-portfolio:id'
 export const RUNTIME_PORTFOLIO_MODE_KEY = 'fireux-properties:runtime-portfolio:mode'
+export const ROOT_PORTFOLIO_COLLECTION_PATH = 'portfolios'
+export const TEST_PORTFOLIO_COLLECTION_PATH = 'test-portfolios'
 
 const toSingleValue = (value: unknown): unknown => (Array.isArray(value) ? value[0] : value)
 
@@ -22,6 +24,37 @@ export const normalizeMode = (value: unknown): RuntimePortfolioMode | null => {
   return null
 }
 
-export const resolveRuntimePortfolioCollectionPath = (
+export const resolvePortfolioConsoleCollectionPath = (appId?: unknown): string => {
+  const resolvedAppId = normalizeString(appId)
+  return resolvedAppId
+    ? `apps/${resolvedAppId}/${ROOT_PORTFOLIO_COLLECTION_PATH}`
+    : ROOT_PORTFOLIO_COLLECTION_PATH
+}
+
+export const resolveRuntimePortfolioDocumentCollectionPath = (
   mode: RuntimePortfolioMode
-): 'portfolios' | 'test-portfolios' => (mode === 'live' ? 'portfolios' : 'test-portfolios')
+): string => (mode === 'test' ? TEST_PORTFOLIO_COLLECTION_PATH : ROOT_PORTFOLIO_COLLECTION_PATH)
+
+export const resolveRuntimePortfolioDataCollectionPath = (
+  mode: RuntimePortfolioMode,
+  appId?: unknown
+): string => (mode === 'test'
+  ? TEST_PORTFOLIO_COLLECTION_PATH
+  : resolvePortfolioConsoleCollectionPath(appId))
+
+export const resolveRuntimePortfolioPath = (
+  basePath: unknown,
+  portfolioId: unknown,
+  suffix?: unknown
+): string => {
+  const resolvedBasePath = normalizeString(basePath)
+  const resolvedPortfolioId = normalizeString(portfolioId)
+  const resolvedSuffix = normalizeString(suffix)
+  if (!resolvedBasePath || !resolvedPortfolioId) return ''
+  return resolvedSuffix
+    ? `${resolvedBasePath}/${resolvedPortfolioId}/${resolvedSuffix}`
+    : `${resolvedBasePath}/${resolvedPortfolioId}`
+}
+
+export const resolveRuntimePortfolioCollectionPath =
+  resolveRuntimePortfolioDocumentCollectionPath

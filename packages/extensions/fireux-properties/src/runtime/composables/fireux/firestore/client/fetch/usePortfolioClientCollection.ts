@@ -1,6 +1,9 @@
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { useRuntimePortfolio } from '../../../app/portfolio-runtime/useRuntimePortfolio'
+import {
+  useRuntimePortfolio,
+  useRuntimePortfolioPath,
+} from '../../../app/portfolio-runtime/useRuntimePortfolio'
 import type { Client } from '../../../../../models/client.model'
 import type { ReadOnlyLease, ReadOnlyPortfolioScenario } from '../../../app/portfolio-runtime/read-only-scenarios'
 
@@ -292,15 +295,16 @@ const roundToMoney = (value: number) => Math.round(Number(value || 0))
 export function usePortfolioClientCollection(runtimePortfolio = useRuntimePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<Client[] | undefined> | null>
+  const collectionPath = useRuntimePortfolioPath(runtimePortfolio, 'clients')
 
   watch(
-    [runtimePortfolio.id, runtimePortfolio.mode],
-    ([nextId, nextMode]) => {
-      if (!nextId || nextMode === 'read-only') {
+    collectionPath,
+    (nextPath) => {
+      if (!nextPath || runtimePortfolio.isReadOnly.value) {
         sourceRef.value = null
         return
       }
-      sourceRef.value = firestoreFetchCollection<Client>(`portfolios/${nextId}/clients`)
+      sourceRef.value = firestoreFetchCollection<Client>(nextPath)
     },
     { immediate: true }
   )
@@ -322,6 +326,7 @@ export function usePortfolioClientCollection(runtimePortfolio = useRuntimePortfo
   })
 
   return {
+    collectionPath,
     collection,
   }
 }

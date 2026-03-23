@@ -4,21 +4,21 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import { useSupplier } from '../../../composables/supplier/ops/useSupplier'
+import { useRuntimeSupplier } from '../../../composables/fireux/app/supplier-console/useRuntimeSupplier'
 
 definePageMeta({
   layout: 'console',
   requiresAuth: true,
 })
 
-const { coreSupplier, pending } = useSupplier()
+const runtime = useRuntimeSupplier()
 
 const deadline = Date.now() + 1500
-while (pending.value && Date.now() < deadline) {
+while (runtime.pending.value && Date.now() < deadline) {
   await new Promise((resolve) => setTimeout(resolve, 50))
 }
 
-if (coreSupplier.value) {
+if (runtime.doc.value) {
   await navigateTo('/console/supplier/overview', { replace: true })
 } else {
   await navigateTo('/console/supplier/create', { replace: true })

@@ -1,6 +1,9 @@
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import {
+  useRuntimePortfolio,
+  useRuntimePortfolioPath,
+} from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import type { ReadOnlyTask } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/read-only-scenarios'
 import type { Task } from '../../../../../models/task.model'
 
@@ -23,15 +26,16 @@ const toTask = (entry: ReadOnlyTask): Task => ({
 export function usePortfolioTaskCollection(runtimePortfolio = useRuntimePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<Task[] | undefined> | null>
+  const collectionPath = useRuntimePortfolioPath(runtimePortfolio, 'tasks')
 
   watch(
-    [runtimePortfolio.id, runtimePortfolio.mode],
-    ([portfolioId, mode]) => {
-      if (!portfolioId || mode === 'read-only') {
+    collectionPath,
+    (nextPath) => {
+      if (!nextPath || runtimePortfolio.isReadOnly.value) {
         sourceRef.value = null
         return
       }
-      sourceRef.value = firestoreFetchCollection<Task>(`portfolios/${portfolioId}/tasks`)
+      sourceRef.value = firestoreFetchCollection<Task>(nextPath)
     },
     { immediate: true }
   )
@@ -44,6 +48,7 @@ export function usePortfolioTaskCollection(runtimePortfolio = useRuntimePortfoli
   })
 
   return {
+    collectionPath,
     collection,
   }
 }

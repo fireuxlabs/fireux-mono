@@ -7,14 +7,39 @@
     <template #body>
       <section class="space-y-8">
         <UCard>
-          <div class="grid gap-3 sm:grid-cols-2">
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div class="rounded border border-default p-3">
-              <div class="text-xs text-dimmed">Suppliers</div>
-              <div class="text-lg font-semibold">{{ stats.suppliers }}</div>
+              <div class="text-xs text-dimmed">Supplier ID</div>
+              <div class="text-lg font-semibold">{{ runtime.id || 'unset' }}</div>
+            </div>
+            <div class="rounded border border-default p-3">
+              <div class="text-xs text-dimmed">Root Path</div>
+              <div class="text-sm font-mono break-all">{{ runtime.documentCollectionPath }}</div>
+            </div>
+            <div class="rounded border border-default p-3">
+              <div class="text-xs text-dimmed">Console Path</div>
+              <div class="text-sm font-mono break-all">{{ runtime.collectionPath }}</div>
             </div>
             <div class="rounded border border-default p-3">
               <div class="text-xs text-dimmed">Status</div>
               <div class="text-lg font-semibold">{{ stats.pending ? 'Loading' : 'Ready' }}</div>
+            </div>
+          </div>
+        </UCard>
+
+        <UCard>
+          <div class="grid gap-3 sm:grid-cols-3">
+            <div class="rounded border border-default p-3">
+              <div class="text-xs text-dimmed">Root supplier</div>
+              <div class="text-lg font-semibold">{{ stats.hasRootSupplier ? 'yes' : 'no' }}</div>
+            </div>
+            <div class="rounded border border-default p-3">
+              <div class="text-xs text-dimmed">App console</div>
+              <div class="text-lg font-semibold">{{ stats.hasAppConsole ? 'yes' : 'no' }}</div>
+            </div>
+            <div class="rounded border border-default p-3">
+              <div class="text-xs text-dimmed">Known suppliers</div>
+              <div class="text-lg font-semibold">{{ stats.suppliers }}</div>
             </div>
           </div>
         </UCard>
@@ -41,7 +66,6 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { useRuntimeSupplierConsole } from '../../../composables/fireux/app/supplier-console/useRuntimeSupplierConsole'
-import { useSupplier } from '../../../composables/supplier/ops/useSupplier'
 
 definePageMeta({
   layout: 'console',
@@ -58,15 +82,14 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { coreSupplier, pending } = useSupplier()
-const { stats, actions } = useRuntimeSupplierConsole()
+const { runtime, stats, actions } = useRuntimeSupplierConsole()
 
 const deadline = Date.now() + 1500
-while (pending.value && Date.now() < deadline) {
+while (runtime.pending.value && Date.now() < deadline) {
   await new Promise((resolve) => setTimeout(resolve, 50))
 }
 
-if (!coreSupplier.value) {
+if (!runtime.doc.value) {
   await navigateTo('/console/supplier/create', { replace: true })
 }
 </script>

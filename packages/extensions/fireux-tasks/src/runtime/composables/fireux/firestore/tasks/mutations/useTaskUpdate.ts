@@ -1,11 +1,15 @@
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import {
+  useRuntimePortfolio,
+  useRuntimePortfolioPath,
+} from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import type { Task } from '../../../../../models/task.model'
 
 const normalize = (value: unknown) => String(value || '').trim()
 
 export function useTaskUpdate(runtimePortfolio = useRuntimePortfolio()) {
   const { updateDocument } = useFirestoreUpdate()
+  const collectionPath = useRuntimePortfolioPath(runtimePortfolio, 'tasks')
 
   async function updateTask(taskId: string, patch: Partial<Omit<Task, 'id'>>): Promise<void> {
     const portfolioId = normalize(runtimePortfolio.id.value)
@@ -22,11 +26,11 @@ export function useTaskUpdate(runtimePortfolio = useRuntimePortfolio()) {
       throw new Error('[fireux-tasks] taskId is required.')
     }
 
-    await updateDocument<Omit<Task, 'id'>>(
-      `portfolios/${portfolioId}/tasks`,
-      normalizedTaskId,
-      patch
-    )
+    if (!collectionPath.value) {
+      throw new Error('[fireux-tasks] runtime task path is required.')
+    }
+
+    await updateDocument<Omit<Task, 'id'>>(collectionPath.value, normalizedTaskId, patch)
   }
 
   return {

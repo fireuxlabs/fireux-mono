@@ -22,7 +22,7 @@
                 <div class="text-sm font-semibold">Task tracker</div>
                 <div class="text-xs text-dimmed">
                   Mode: <span class="font-medium">{{ runtimeMode }}</span>
-                  · Source: <code>portfolios/{{ runtimeId }}/tasks</code>
+                  · Source: <code>{{ isReadOnly ? 'read-only scenario' : tasksPath }}</code>
                 </div>
               </div>
             </div>
@@ -116,7 +116,10 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import {
+  useRuntimePortfolio,
+  useRuntimePortfolioPath,
+} from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import { computed, ref } from 'vue'
 import { usePortfolioTaskCollection } from '../../../composables/fireux/firestore/tasks/fetch/usePortfolioTaskCollection'
 import { useTaskCreate } from '../../../composables/fireux/firestore/tasks/mutations/useTaskCreate'
@@ -143,6 +146,7 @@ const runtimePortfolio = useRuntimePortfolio()
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const isReadOnly = computed(() => runtimePortfolio.isReadOnly.value)
+const tasksPath = useRuntimePortfolioPath(runtimePortfolio, 'tasks')
 
 const { collection } = usePortfolioTaskCollection(runtimePortfolio)
 const { createTask } = useTaskCreate(runtimePortfolio)

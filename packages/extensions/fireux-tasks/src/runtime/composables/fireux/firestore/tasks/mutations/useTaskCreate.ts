@@ -1,5 +1,8 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import {
+  useRuntimePortfolio,
+  useRuntimePortfolioPath,
+} from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import type { Task } from '../../../../../models/task.model'
 
 const normalize = (value: unknown) => String(value || '').trim()
@@ -17,6 +20,7 @@ export type TaskCreateInput = Pick<
 
 export function useTaskCreate(runtimePortfolio = useRuntimePortfolio()) {
   const { createDocument } = useFirestoreCreate()
+  const collectionPath = useRuntimePortfolioPath(runtimePortfolio, 'tasks')
 
   async function createTask(input: TaskCreateInput): Promise<string> {
     const portfolioId = normalize(runtimePortfolio.id.value)
@@ -46,7 +50,11 @@ export function useTaskCreate(runtimePortfolio = useRuntimePortfolio()) {
       updated: { at: {} as any, by: undefined },
     }
 
-    return createDocument<Omit<Task, 'id'>>(`portfolios/${portfolioId}/tasks`, payload, {
+    if (!collectionPath.value) {
+      throw new Error('[fireux-tasks] runtime task path is required.')
+    }
+
+    return createDocument<Omit<Task, 'id'>>(collectionPath.value, payload, {
       stamp: true,
       creator: true,
       app: true,

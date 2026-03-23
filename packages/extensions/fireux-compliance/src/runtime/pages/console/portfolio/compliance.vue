@@ -22,7 +22,7 @@
                 <div class="text-sm font-semibold">Compliance monitor</div>
                 <div class="text-xs text-dimmed">
                   Mode: <span class="font-medium">{{ runtimeMode }}</span>
-                  · Source: <code>portfolios/{{ runtimeId }}/compliance-records</code>
+                  · Source: <code>{{ isReadOnly ? 'read-only scenario' : compliancePath }}</code>
                 </div>
               </div>
             </div>
@@ -99,7 +99,10 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import {
+  useRuntimePortfolio,
+  useRuntimePortfolioPath,
+} from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import { useTaskCreate } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/mutations/useTaskCreate'
 import { useTaskProjection } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/utils/projection/useTaskProjection'
 import { computed } from 'vue'
@@ -126,6 +129,7 @@ const { collection } = usePortfolioComplianceRecordCollection(runtimePortfolio)
 const { interface } = useComplianceInterface()
 const { createTask } = useTaskCreate(runtimePortfolio)
 const { fromComplianceRecord } = useTaskProjection(runtimePortfolio)
+const compliancePath = useRuntimePortfolioPath(runtimePortfolio, 'compliance-records')
 
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)

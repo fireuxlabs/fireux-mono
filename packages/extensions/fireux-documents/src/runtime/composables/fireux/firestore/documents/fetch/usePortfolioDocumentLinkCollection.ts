@@ -1,6 +1,9 @@
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import {
+  useRuntimePortfolio,
+  useRuntimePortfolioPath,
+} from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import type { ReadOnlyDocumentLink } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/read-only-scenarios'
 import type { DocumentLink } from '../../../../../models/document-link.model'
 
@@ -20,15 +23,16 @@ const toDocumentLink = (entry: ReadOnlyDocumentLink): DocumentLink => ({
 export function usePortfolioDocumentLinkCollection(runtimePortfolio = useRuntimePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<DocumentLink[] | undefined> | null>
+  const collectionPath = useRuntimePortfolioPath(runtimePortfolio, 'document-links')
 
   watch(
-    [runtimePortfolio.id, runtimePortfolio.mode],
-    ([portfolioId, mode]) => {
-      if (!portfolioId || mode === 'read-only') {
+    collectionPath,
+    (nextPath) => {
+      if (!nextPath || runtimePortfolio.isReadOnly.value) {
         sourceRef.value = null
         return
       }
-      sourceRef.value = firestoreFetchCollection<DocumentLink>(`portfolios/${portfolioId}/document-links`)
+      sourceRef.value = firestoreFetchCollection<DocumentLink>(nextPath)
     },
     { immediate: true }
   )
@@ -43,6 +47,7 @@ export function usePortfolioDocumentLinkCollection(runtimePortfolio = useRuntime
   })
 
   return {
+    collectionPath,
     collection,
   }
 }

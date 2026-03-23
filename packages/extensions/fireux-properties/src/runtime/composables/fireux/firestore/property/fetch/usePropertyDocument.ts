@@ -1,6 +1,9 @@
 import { computed } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { useRuntimePortfolio } from '../../../app/portfolio-runtime/useRuntimePortfolio'
+import {
+  useRuntimePortfolio,
+  useRuntimePortfolioPath,
+} from '../../../app/portfolio-runtime/useRuntimePortfolio'
 import type { Property } from '../../../../../models/property.model'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
@@ -10,16 +13,16 @@ export function usePropertyDocument(
   runtimePortfolio = useRuntimePortfolio()
 ) {
   const { firestoreFetchDoc } = useFirestoreRead()
+  const propertiesPath = useRuntimePortfolioPath(runtimePortfolio, 'properties')
 
   const normalizedPropertyId = computed(() =>
     typeof propertyId === 'function' ? normalizeId(propertyId()) : normalizeId(propertyId)
   )
 
   const liveDoc = computed(() => {
-    const portfolioId = normalizeId(runtimePortfolio.id.value)
     const id = normalizedPropertyId.value
-    if (!portfolioId || !id || runtimePortfolio.isReadOnly.value) return null
-    return firestoreFetchDoc<Property>(`portfolios/${portfolioId}/properties`, id)
+    if (!propertiesPath.value || !id || runtimePortfolio.isReadOnly.value) return null
+    return firestoreFetchDoc<Property>(propertiesPath.value, id)
   })
 
   const document = computed<Property | null>(() => {
@@ -38,6 +41,7 @@ export function usePropertyDocument(
 
   return {
     propertyId: normalizedPropertyId,
+    collectionPath: propertiesPath,
     document,
   }
 }

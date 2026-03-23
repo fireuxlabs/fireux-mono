@@ -1,5 +1,8 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import {
+  useRuntimePortfolio,
+  useRuntimePortfolioPath,
+} from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import { useTaskCreate } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/mutations/useTaskCreate'
 import { useTaskProjection } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/utils/projection/useTaskProjection'
 import type { DocumentLink, DocumentLinkTargetType } from '../../../../../models/document-link.model'
@@ -19,6 +22,7 @@ export function linkDocumentToEntity(runtimePortfolio = useRuntimePortfolio()) {
   const { createDocument } = useFirestoreCreate()
   const { createTask } = useTaskCreate(runtimePortfolio)
   const { fromDocumentLink } = useTaskProjection(runtimePortfolio)
+  const collectionPath = useRuntimePortfolioPath(runtimePortfolio, 'document-links')
 
   async function mutate(input: LinkDocumentToEntityInput): Promise<string> {
     const portfolioId = normalize(runtimePortfolio.id.value)
@@ -52,15 +56,15 @@ export function linkDocumentToEntity(runtimePortfolio = useRuntimePortfolio()) {
       updated: { at: {} as any, by: undefined },
     }
 
-    const linkId = await createDocument<Omit<DocumentLink, 'id'>>(
-      `portfolios/${portfolioId}/document-links`,
-      payload,
-      {
-        stamp: true,
-        creator: true,
-        app: true,
-      }
-    )
+    if (!collectionPath.value) {
+      throw new Error('[fireux-documents] runtime document link path is required.')
+    }
+
+    const linkId = await createDocument<Omit<DocumentLink, 'id'>>(collectionPath.value, payload, {
+      stamp: true,
+      creator: true,
+      app: true,
+    })
 
     if (input.createTask) {
       await createTask(

@@ -1,6 +1,9 @@
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import {
+  useRuntimePortfolio,
+  useRuntimePortfolioPath,
+} from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import type { ReadOnlyDocument } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/read-only-scenarios'
 import type { Document } from '../../../../../models/document.model'
 
@@ -23,15 +26,16 @@ const toDocument = (entry: ReadOnlyDocument): Document => ({
 export function usePortfolioDocumentCollection(runtimePortfolio = useRuntimePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<Document[] | undefined> | null>
+  const collectionPath = useRuntimePortfolioPath(runtimePortfolio, 'documents')
 
   watch(
-    [runtimePortfolio.id, runtimePortfolio.mode],
-    ([portfolioId, mode]) => {
-      if (!portfolioId || mode === 'read-only') {
+    collectionPath,
+    (nextPath) => {
+      if (!nextPath || runtimePortfolio.isReadOnly.value) {
         sourceRef.value = null
         return
       }
-      sourceRef.value = firestoreFetchCollection<Document>(`portfolios/${portfolioId}/documents`)
+      sourceRef.value = firestoreFetchCollection<Document>(nextPath)
     },
     { immediate: true }
   )
@@ -44,6 +48,7 @@ export function usePortfolioDocumentCollection(runtimePortfolio = useRuntimePort
   })
 
   return {
+    collectionPath,
     collection,
   }
 }

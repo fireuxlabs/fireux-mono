@@ -23,9 +23,22 @@ export type UseRuntimeProjectParams = {
   collectionPath?: string | Ref<string | null | undefined>
 }
 
-const resolveRuntimeProjectCollectionPath = (
+const ROOT_PROJECT_COLLECTION_PATH = 'projects'
+const TEST_PROJECT_COLLECTION_PATH = 'test-projects'
+
+const resolveProjectConsoleCollectionPath = (appId?: unknown): string => {
+  const resolvedAppId = normalizeString(appId)
+  return resolvedAppId ? `apps/${resolvedAppId}/${ROOT_PROJECT_COLLECTION_PATH}` : ROOT_PROJECT_COLLECTION_PATH
+}
+
+const resolveRuntimeProjectDocumentCollectionPath = (
   mode: RuntimeProjectMode
-): 'projects' | 'test-projects' => (mode === 'live' ? 'projects' : 'test-projects')
+): string => (mode === 'test' ? TEST_PROJECT_COLLECTION_PATH : ROOT_PROJECT_COLLECTION_PATH)
+
+const resolveRuntimeProjectDataCollectionPath = (
+  mode: RuntimeProjectMode,
+  appId?: unknown
+): string => (mode === 'test' ? TEST_PROJECT_COLLECTION_PATH : resolveProjectConsoleCollectionPath(appId))
 
 function isOfflineFirestoreError(error: unknown): boolean {
   const code = typeof (error as any)?.code === 'string' ? (error as any).code : ''
@@ -72,19 +85,22 @@ export function useRuntimeProject(params?: UseRuntimeProjectParams) {
   const id = computed(() => normalizeString(idSource.value))
   const mode = computed<RuntimeProjectMode>(() => normalizeRuntimeMode(modeSource.value))
   const isReadOnly = computed(() => mode.value === 'read-only')
-  const collectionPath = computed(() => {
+  const documentCollectionPath = computed(() => {
     if (params?.collectionPath !== undefined) {
       const explicitPath = normalizeString(unref(params.collectionPath))
       if (explicitPath) return explicitPath
     }
-    return resolveRuntimeProjectCollectionPath(mode.value)
+    return resolveRuntimeProjectDocumentCollectionPath(mode.value)
   })
+  const projectCollectionPath = computed(() =>
+    resolveRuntimeProjectDataCollectionPath(mode.value, cfg.appId)
+  )
 
   const db = import.meta.server ? null : useFirestore()
   const docRef = computed(() => {
     if (!db) return null
     if (!id.value || isReadOnly.value) return null
-    return doc(db, collectionPath.value, id.value)
+    return doc(db, documentCollectionPath.value, id.value)
   })
 
   const docState =
@@ -103,7 +119,7 @@ export function useRuntimeProject(params?: UseRuntimeProjectParams) {
 
   guardDocumentPromise(
     docState as any,
-    `${collectionPath.value}/${id.value || ''}`
+    `${documentCollectionPath.value}/${id.value || ''}`
   )
 
   const readOnlyScenario = computed(() =>
@@ -138,7 +154,9 @@ export function useRuntimeProject(params?: UseRuntimeProjectParams) {
     id,
     mode,
     isReadOnly,
-    collectionPath,
+    collectionPath: projectCollectionPath,
+    documentCollectionPath,
+    projectCollectionPath,
 
     doc: project,
     project,

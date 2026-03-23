@@ -19,7 +19,12 @@
             </div>
 
             <div class="rounded border border-default p-3">
-              <div class="text-xs text-dimmed">Collection Path</div>
+              <div class="text-xs text-dimmed">Root Path</div>
+              <div class="text-sm font-mono">{{ documentCollectionPath }}</div>
+            </div>
+
+            <div class="rounded border border-default p-3">
+              <div class="text-xs text-dimmed">Console Path</div>
               <div class="text-sm font-mono">{{ collectionPath }}</div>
             </div>
 
@@ -73,6 +78,7 @@ const { collection: tasks } = usePortfolioTaskCollection(runtimePortfolio)
 
 const runtimeId = computed(() => String(runtimePortfolio.id.value || '').trim())
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
+const documentCollectionPath = computed(() => runtimePortfolio.documentCollectionPath.value)
 const collectionPath = computed(() => runtimePortfolio.collectionPath.value)
 const isReady = computed(() => runtimePortfolio.isReady.value)
 
@@ -80,6 +86,7 @@ const runtimeSnapshot = computed(() => ({
   id: runtimePortfolio.id.value,
   mode: runtimePortfolio.mode.value,
   isReadOnly: runtimePortfolio.isReadOnly.value,
+  documentCollectionPath: runtimePortfolio.documentCollectionPath.value,
   collectionPath: runtimePortfolio.collectionPath.value,
   pending: runtimePortfolio.pending.value,
   isLoading: runtimePortfolio.isLoading.value,

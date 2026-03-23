@@ -22,7 +22,7 @@
                 <div class="text-sm font-semibold">Document vault</div>
                 <div class="text-xs text-dimmed">
                   Mode: <span class="font-medium">{{ runtimeMode }}</span>
-                  · Source: <code>portfolios/{{ runtimeId }}/documents</code>
+                  · Source: <code>{{ isReadOnly ? 'read-only scenario' : documentsPath }}</code>
                 </div>
               </div>
             </div>
@@ -152,7 +152,10 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import {
+  useRuntimePortfolio,
+  useRuntimePortfolioPath,
+} from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import { computed, ref } from 'vue'
 import { usePortfolioDocumentCollection } from '../../../composables/fireux/firestore/documents/fetch/usePortfolioDocumentCollection'
 import { usePortfolioDocumentLinkCollection } from '../../../composables/fireux/firestore/documents/fetch/usePortfolioDocumentLinkCollection'
@@ -181,6 +184,7 @@ const runtimePortfolio = useRuntimePortfolio()
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const isReadOnly = computed(() => runtimePortfolio.isReadOnly.value)
+const documentsPath = useRuntimePortfolioPath(runtimePortfolio, 'documents')
 
 const { collection: documentCollection } = usePortfolioDocumentCollection(runtimePortfolio)
 const { collection: linkCollection } = usePortfolioDocumentLinkCollection(runtimePortfolio)
@@ -231,7 +235,7 @@ const uploadSelectedFile = async () => {
   try {
     const uploaded = await uploadFile({
       file: selectedFile.value,
-      pathPrefix: `portfolios/${runtimeId.value}/documents`,
+      pathPrefix: documentsPath.value,
     })
 
     const uploadedAt = new Date().toISOString().slice(0, 10)

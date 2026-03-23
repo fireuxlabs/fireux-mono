@@ -26,7 +26,7 @@
             <div class="text-xs text-dimmed">
               Mode: <span class="font-medium">{{ runtimeMode }}</span>
               · Source:
-              <code>{{ isReadOnly ? 'read-only scenario' : `portfolios/${runtimeId}/financials` }}</code>
+              <code>{{ isReadOnly ? 'read-only scenario' : financialsPath }}</code>
             </div>
           </UCard>
 
@@ -160,7 +160,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRuntimePortfolio } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import {
+  useRuntimePortfolio,
+  useRuntimePortfolioPath,
+} from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import { usePortfolioPropertyCollection } from '../../../composables/fireux/firestore/property/fetch/usePortfolioPropertyCollection'
 
 definePageMeta({
@@ -181,6 +184,7 @@ definePageMeta({
 const runtimePortfolio = useRuntimePortfolio()
 const { collection: propertyCollection } = usePortfolioPropertyCollection(runtimePortfolio)
 const isDev = import.meta.dev
+const financialsPath = useRuntimePortfolioPath(runtimePortfolio, 'financials')
 
 const runtimeId = computed(() => String(runtimePortfolio.id.value || '').trim())
 const runtimeMode = computed(() => runtimePortfolio.mode.value)

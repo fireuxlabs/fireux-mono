@@ -1,6 +1,11 @@
-import { computed, type Ref } from 'vue'
+import { computed, unref, type Ref } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRuntimePortfolioSelection } from './state'
-import { resolveRuntimePortfolioCollectionPath } from './shared'
+import {
+  resolveRuntimePortfolioDataCollectionPath,
+  resolveRuntimePortfolioDocumentCollectionPath,
+  resolveRuntimePortfolioPath as resolveRuntimePortfolioScopedPath,
+} from './shared'
 import {
   useRuntimePortfolioContext,
   type UseRuntimePortfolioParams,
@@ -12,13 +17,23 @@ export { useRuntimePortfolioSelection } from './state'
 export type { RuntimePortfolioMode } from './shared'
 
 export function useRuntimePortfolio(params?: UseRuntimePortfolioParams) {
+  const { appId } = useFireUXConfig()
   const selection = useRuntimePortfolioSelection()
   const { id, mode, isReadOnly } = useRuntimePortfolioContext(params, selection)
-  const collectionPath = computed(() => resolveRuntimePortfolioCollectionPath(mode.value))
+  const documentCollectionPath = computed(() => {
+    if (params?.collectionPath !== undefined) {
+      const explicitPath = String(unref(params.collectionPath) || '').trim()
+      if (explicitPath) return explicitPath
+    }
+    return resolveRuntimePortfolioDocumentCollectionPath(mode.value)
+  })
+  const portfolioCollectionPath = computed(() =>
+    resolveRuntimePortfolioDataCollectionPath(mode.value, appId)
+  )
   const { doc, pending, scenario } = useRuntimePortfolioDocument({
     id,
     isReadOnly,
-    collectionPath,
+    documentCollectionPath,
   })
   const data = useRuntimePortfolioData({
     id,
@@ -33,7 +48,9 @@ export function useRuntimePortfolio(params?: UseRuntimePortfolioParams) {
     id,
     mode,
     isReadOnly,
-    collectionPath,
+    collectionPath: portfolioCollectionPath,
+    documentCollectionPath,
+    portfolioCollectionPath,
 
     // Canon runtime contract
     doc,
@@ -57,6 +74,10 @@ export function useRuntimePortfolioPath(
   return computed(() => {
     const portfolioId = String(runtimePortfolio.id.value || '').trim()
     if (!portfolioId || runtimePortfolio.isReadOnly.value) return ''
-    return `portfolios/${portfolioId}/${suffix}`
+    return resolveRuntimePortfolioScopedPath(
+      runtimePortfolio.collectionPath.value,
+      portfolioId,
+      suffix
+    )
   })
 }

@@ -10,14 +10,14 @@ import {
 export function useRuntimePortfolioDocument(params: {
   id: Ref<string>
   isReadOnly: Ref<boolean>
-  collectionPath: Ref<string>
+  documentCollectionPath: Ref<string>
 }) {
   const db = useFirestore()
 
   const docRef = computed(() => {
     if (params.isReadOnly.value) return null
     if (!params.id.value) return null
-    const path = String(params.collectionPath.value || '').trim()
+    const path = String(params.documentCollectionPath.value || '').trim()
     if (!path) return null
     return firestoreDoc(db, path, params.id.value)
   })
