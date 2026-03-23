@@ -11,12 +11,13 @@ export type ProjectType = 'standalone_app' | 'ecosystem_app'
  * Storage: root canonical record plus app overlay
  * Root path: /projects/<projectId>
  * Overlay path: /apps/<appId>/projects/<projectId>
- * Console face: project console over the same root plus overlay entity
+ * Console face: project console hosted inside an app over the root project entity plus overlay
  *
  * Decision note:
- * - Project now follows the shared console canon used by Kitchen, Portfolio, and Supplier.
+ * - Project now follows the shared console-backed canon used by Kitchen, Portfolio, and Supplier.
  * - Public project creation should create the root project record.
  * - Console project creation should ensure the app-scoped project overlay and may create root first when missing.
+ * - If Project later grows operational child records, they should live under /apps/<appId>/projects/<projectId>/...
  * - Runtime implementation is still catching up to this rule.
  * - If this decision changes, update the models README first, then this file.
  */

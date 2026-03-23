@@ -1,4 +1,5 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { Dish, type Dish as DishDoc } from '../../../../../../models/dish.model'
 import type { Ingredient } from '../../../../../../models/ingredient.model'
 import { KitchenMiseTask, type KitchenMiseTask as KitchenMiseTaskDoc } from '../../../../../../models/kitchen-mise.model'
@@ -8,8 +9,7 @@ import {
     type Recipe as RecipeDoc,
     type RecipeIngredientLine,
 } from '../../../../../../models/recipe.model'
-
-const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
+import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-runtime/shared'
 const resolveCollectionPath = (
   kitchenCollectionPath: string,
   kitchenId: string,
@@ -74,6 +74,7 @@ function resolveRequiredIngredients(ingredients: Ingredient[]) {
 
 export function useKitchenMenuStackCreate() {
   const { setDocument } = useFirestoreCreate()
+  const { appId } = useFireUXConfig()
 
   const createStarterKitchenMenuStack = async (
     kitchenId: string,
@@ -83,8 +84,8 @@ export function useKitchenMenuStackCreate() {
     const resolvedKitchenId = String(kitchenId || '').trim()
     if (!resolvedKitchenId) throw new Error('Kitchen id is required')
     const kitchenCollectionPath = String(
-      options.kitchenCollectionPath || DEFAULT_KITCHEN_COLLECTION_PATH
-    ).trim()
+      options.kitchenCollectionPath || ''
+    ).trim() || resolveKitchenConsoleCollectionPath(appId)
 
     const { resolved, missing, nameById } = resolveRequiredIngredients(ingredients ?? [])
     if (missing.length) {

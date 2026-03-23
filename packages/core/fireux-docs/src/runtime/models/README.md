@@ -1,7 +1,7 @@
 # Models Directory
 
 Authority: Operational
-Updated: 2026-03-22
+Updated: 2026-03-23
 Scope: `packages/*/fireux-*/src/runtime/models` and child directories under `models/*`.
 
 Learn how FireUX runtime models are classified, how they are stored, and how future model decisions should be explained.
@@ -13,7 +13,7 @@ Learn how FireUX runtime models are classified, how they are stored, and how fut
 This directory can contain:
 - canonical root entities
 - stored overlays for entities that genuinely have scoped truth
-- console facades over root entities
+- app-hosted console overlays over root entities
 - scoped operational entities owned by a console
 - model support and protocol types that belong with runtime models
 
@@ -33,7 +33,7 @@ Identity models normally use root plus overlay storage:
 - root canonical record
 - app-scoped overlay only when real scoped stored state exists
 
-### Console
+### Console-backed Domain
 
 Where people operate.
 
@@ -43,12 +43,34 @@ Examples:
 - `Supplier`
 - `Project`
 
-Console canon:
-- root canonical record
-- app-scoped operational overlay
+Console-backed canon:
+- root public entity
+- app-scoped operational console overlay
+- app-owned child records beneath that overlay when operational children exist
 
-Public create creates the root console record.
+Public create creates the root public entity.
 Console create ensures the app overlay and may create root first when missing.
+
+Useful simplifier:
+- `root` = the canonical public entity
+- `not root` = either the app overlay or app-owned child records under it
+
+Important:
+- the console itself is not a root entity
+- the app hosts a console over the public entity
+
+Examples:
+- `kitchens/<kitchenId>`
+- `apps/<appId>/kitchens/<kitchenId>`
+- `apps/<appId>/kitchens/<kitchenId>/menus/<menuId>`
+- `apps/<appId>/kitchens/<kitchenId>/orders/<orderId>`
+- `portfolios/<portfolioId>`
+- `apps/<appId>/portfolios/<portfolioId>`
+- `apps/<appId>/portfolios/<portfolioId>/properties/<propertyId>`
+- `suppliers/<supplierId>`
+- `apps/<appId>/suppliers/<supplierId>`
+- `projects/<projectId>`
+- `apps/<appId>/projects/<projectId>`
 
 Some runtime implementations are still catching up to that rule, but this is the current console canon.
 
@@ -88,8 +110,10 @@ A scoped model must declare:
 - whether it is purely local to the console
 
 Examples:
-- Kitchen-scoped: `Menu`, `Dish`, `Recipe`, `KitchenOrder`, `KitchenTeamMember`, `KitchenMiseTask`, `KitchenCostSnapshot`
-- Portfolio-scoped: `Property`, `Unit`, `Client`, `Document`, `DocumentLink`, `ComplianceRecord`, `Task`
+- Kitchen-scoped under `apps/<appId>/kitchens/<kitchenId>/...`:
+  `Menu`, `Dish`, `Recipe`, `KitchenOrder`, `KitchenTeamMember`, `KitchenMiseTask`, `KitchenCostSnapshot`
+- Portfolio-scoped under `apps/<appId>/portfolios/<portfolioId>/...`:
+  `Property`, `Unit`, `Client`, `Document`, `DocumentLink`, `ComplianceRecord`, `Task`
 
 ## Overlay Versus Facade
 
@@ -98,6 +122,8 @@ Examples:
 A second stored scoped model.
 
 Use an overlay only when scoped truth really exists.
+
+For console-backed domains, the overlay is the app-hosted console for that root public entity.
 
 Examples:
 - `UserCore` + `UserApp`
@@ -192,3 +218,8 @@ Each model should clearly say:
 - whether it is root, overlay, facade, or scoped
 - who owns it
 - why that decision was made
+
+For console-backed domains, the clean storage rule is:
+- root public entity
+- app-hosted console overlay
+- app-owned child records beneath that overlay

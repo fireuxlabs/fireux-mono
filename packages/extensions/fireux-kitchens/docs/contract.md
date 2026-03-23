@@ -4,6 +4,9 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 
 ## 1) Purpose
 - Own kitchen runtime domain, kitchen operations entities, and kitchen console behavior.
+- Kitchen is split into:
+  - a root public kitchen entity
+  - an app-hosted kitchen console for operations
 
 ## 2) Core entities
 - `Kitchen`
@@ -19,7 +22,16 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 4) Collections + paths
 - Live: `kitchens/{kitchenId}`
 - Test: `test-kitchens/{kitchenId}`
+- Live kitchen console: `apps/{appId}/kitchens/{kitchenId}`
 - Global ingredients: `ingredients/{ingredientId}`
+- Kitchen-owned operational children:
+  - `apps/{appId}/kitchens/{kitchenId}/ingredients/{ingredientId}`
+  - `apps/{appId}/kitchens/{kitchenId}/recipes/{recipeId}`
+  - `apps/{appId}/kitchens/{kitchenId}/dishes/{dishId}`
+  - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}`
+  - `apps/{appId}/kitchens/{kitchenId}/mise/{taskId}`
+  - `apps/{appId}/kitchens/{kitchenId}/orders/{orderId}`
+- Test kitchen runtime mode mapping stays path-based under `test-kitchens/{kitchenId}`.
 - Runtime kitchen mode mapping follows `docs/runtime-contract.md`.
 
 ## 5) Routes (public vs internal; slug vs id)
@@ -30,6 +42,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Console/internal:
   - `/console/kitchen/*`
 - Console selection is runtime-state based, not query-param selection.
+- The console hosts operations; it is not the same thing as the public kitchen page.
 
 ## 6) Surfaces supported
 - `Pill`, `Cell`, `Preview`, `Profile` supported across kitchen operation entities.

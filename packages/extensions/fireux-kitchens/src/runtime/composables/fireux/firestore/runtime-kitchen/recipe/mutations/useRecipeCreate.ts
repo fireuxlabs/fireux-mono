@@ -1,4 +1,5 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useCurrentUser } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, unref, type Ref } from 'vue'
 import {
@@ -17,8 +18,7 @@ import {
   type WorkflowStatus,
 } from '../../../../../../models/recipe.model'
 import { useRuntimeKitchenSelection } from '../../../../app/kitchen-runtime/state'
-
-const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
+import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-runtime/shared'
 
 type RecipeCreateDraft = Partial<RecipeCreateInput> & {
   name: string
@@ -120,11 +120,13 @@ function buildRecipePayload(draft: RecipeCreateDraft, kitchenId: string, userId:
 
 export function useRecipeCreate(options: { kitchenCollectionPath?: string | Ref<string | null | undefined> } = {}) {
   const { createDocument } = useFirestoreCreate()
+  const { appId } = useFireUXConfig()
   const currentUser = useCurrentUser()
   const { runtimeKitchenId } = useRuntimeKitchenSelection()
 
   const kitchenCollectionPath = computed(() =>
-    String(unref(options.kitchenCollectionPath) || DEFAULT_KITCHEN_COLLECTION_PATH).trim()
+    String(unref(options.kitchenCollectionPath) || '').trim() ||
+    resolveKitchenConsoleCollectionPath(appId)
   )
 
   const createRecipe = async (

@@ -64,7 +64,9 @@ definePageMeta({
 
 const runtime = useRuntimeKitchen()
 const kitchenId = computed(() => String(runtime.id.value || '').trim())
-const { orders } = useKitchenOrdersFetch(kitchenId)
+const { orders } = useKitchenOrdersFetch(kitchenId, {
+  kitchenCollectionPath: runtime.kitchenCollectionPath,
+})
 
 type TicketLine = {
   label: string

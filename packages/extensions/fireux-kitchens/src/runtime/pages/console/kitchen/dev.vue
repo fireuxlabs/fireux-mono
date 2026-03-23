@@ -19,7 +19,12 @@
             </div>
 
             <div class="rounded border border-default p-3">
-              <div class="text-xs text-dimmed">Collection Path</div>
+              <div class="text-xs text-dimmed">Document Path</div>
+              <div class="text-sm font-mono">{{ documentCollectionPath }}</div>
+            </div>
+
+            <div class="rounded border border-default p-3">
+              <div class="text-xs text-dimmed">Data Path</div>
               <div class="text-sm font-mono">{{ collectionPath }}</div>
             </div>
 
@@ -65,6 +70,7 @@ const runtime = useRuntimeKitchen()
 
 const runtimeId = computed(() => String(runtime.id.value || '').trim())
 const runtimeMode = computed(() => runtime.mode.value)
+const documentCollectionPath = computed(() => runtime.documentCollectionPath.value)
 const collectionPath = computed(() => runtime.collectionPath.value)
 const isReady = computed(() => runtime.isReady.value)
 
@@ -74,6 +80,7 @@ const runtimeSnapshot = computed(() => {
     id: runtime.id.value,
     mode: runtime.mode.value,
     isReadOnly: runtime.isReadOnly.value,
+    documentCollectionPath: runtime.documentCollectionPath.value,
     collectionPath: runtime.collectionPath.value,
     pending: runtime.pending.value,
     isLoading: runtime.isLoading.value,

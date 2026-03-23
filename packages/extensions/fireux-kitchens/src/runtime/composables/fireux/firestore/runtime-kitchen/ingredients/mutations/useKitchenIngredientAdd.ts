@@ -1,6 +1,8 @@
 import { doc, getDoc } from 'firebase/firestore'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-runtime/shared'
 import {
     Ingredient,
     type IngredientCreateInput,
@@ -10,7 +12,6 @@ import {
 } from '../../../../../../models/ingredient.model'
 
 const GLOBAL_COLLECTION_PATH = 'ingredients'
-const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
 
 const resolveKitchenIngredientsPath = (basePath: string, kitchenId: string) =>
   `${basePath}/${kitchenId}/ingredients`
@@ -53,6 +54,7 @@ const buildKitchenIngredientPayload = (
 export function useKitchenIngredientAdd() {
   const { setDocument } = useFirestoreCreate()
   const db = useFirestore()
+  const { appId } = useFireUXConfig()
 
   const addIngredientToKitchen = async (
     kitchenId: string,
@@ -83,8 +85,8 @@ export function useKitchenIngredientAdd() {
 
     const kitchenPayload = buildKitchenIngredientPayload(ingredientId)
     const kitchenCollectionPath = String(
-      options.kitchenCollectionPath || DEFAULT_KITCHEN_COLLECTION_PATH
-    ).trim()
+      options.kitchenCollectionPath || ''
+    ).trim() || resolveKitchenConsoleCollectionPath(appId)
     const kitchenIngredientsPath = resolveKitchenIngredientsPath(
       kitchenCollectionPath,
       resolvedKitchenId

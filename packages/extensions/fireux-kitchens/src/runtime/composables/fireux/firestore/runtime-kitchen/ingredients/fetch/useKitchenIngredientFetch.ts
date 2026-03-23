@@ -1,7 +1,9 @@
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import type { Ref, ShallowRef } from 'vue'
 import { computed, shallowRef, unref, watch } from 'vue'
+import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-runtime/shared'
 import type {
     Ingredient,
     KitchenIngredient,
@@ -9,7 +11,6 @@ import type {
 } from '../../../../../../models/ingredient.model'
 
 const GLOBAL_COLLECTION_PATH = 'ingredients'
-const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
   `${basePath}/${kitchenId}/ingredients`
 
@@ -22,13 +23,15 @@ export function useKitchenIngredientFetch(
   options: UseKitchenIngredientFetchOptions = {}
 ) {
   const { firestoreFetchCollection } = useFirestoreRead()
+  const { appId } = useFireUXConfig()
 
   const resolvedKitchenId = computed(() =>
     String(typeof kitchenId === 'string' ? kitchenId : kitchenId.value || '').trim()
   )
 
   const kitchenCollectionPath = computed(() =>
-    String(unref(options.kitchenCollectionPath) || DEFAULT_KITCHEN_COLLECTION_PATH).trim()
+    String(unref(options.kitchenCollectionPath) || '').trim() ||
+    resolveKitchenConsoleCollectionPath(appId)
   )
 
   const collectionPath = computed(() =>

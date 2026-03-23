@@ -19,6 +19,14 @@ Read spans:
 Use this README as the read authority.
 Use the technical directories as supporting views.
 
+Useful simplifier:
+- `root` read = canonical entity read
+- `not root` read = either app-scoped overlay read or scoped child read
+
+Important:
+- the console itself is not a root entity
+- app-scoped read is the hosted console over a public entity
+
 ## Core Principle
 
 The main read question is not:
@@ -122,7 +130,7 @@ Examples:
 - `suppliers/<id>`
 - `portfolios/<id>`
 
-### Console Overlay Read
+### App-scoped Read
 
 Read the app-scoped operational layer.
 
@@ -131,16 +139,18 @@ Examples:
 - `apps/<appId>/suppliers/<id>`
 - `apps/<appId>/portfolios/<id>`
 
+For console-backed domains, this is the same thing as reading the hosted console for that entity inside an app.
+
 ### Scoped Child Read
 
 Read children owned by a console or parent operational record.
 
 Examples:
-- kitchen recipes
-- kitchen orders
-- portfolio documents
-- portfolio tasks
-- property units
+- `apps/<appId>/kitchens/<id>/recipes/<recipeId>`
+- `apps/<appId>/kitchens/<id>/orders/<orderId>`
+- `apps/<appId>/portfolios/<id>/documents/<documentId>`
+- `apps/<appId>/portfolios/<id>/tasks/<taskId>`
+- `apps/<appId>/portfolios/<id>/properties/<propertyId>`
 
 ### Identity Read
 
@@ -546,7 +556,7 @@ Examples:
 4. `use*Interface` should expose a stable read shape, not become a hidden mutation layer.
 5. `use*Computed` should stay derived and should not redefine stored truth.
 6. Hydrated fields must stay visibly hydrated.
-7. Public truth and app overlay truth must not get blurred.
+7. Public truth and app-scoped overlay truth must not get blurred.
 8. Scoped child reads should stay owned by their console or parent seam.
 
 ## Current Seams To Watch

@@ -1,18 +1,9 @@
-import { computed, type Ref } from 'vue'
-import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
-import { useOrdersForKitchenFetch } from 'fireux-orders/runtime/composables/useOrdersForKitchenFetch'
+import type { Ref } from 'vue'
+import { useKitchenOrderFetch } from './useKitchenOrderFetch'
 
-export function useKitchenOrdersFetch(kitchenId: Ref<string> | string) {
-  const resolvedKitchenId = computed(() =>
-    String(typeof kitchenId === 'string' ? kitchenId : kitchenId.value || '').trim()
-  )
-
-  const { orders } = useOrdersForKitchenFetch(resolvedKitchenId)
-  const { byId: order } = useCollectionById(orders)
-
-  return {
-    kitchenId: resolvedKitchenId,
-    orders,
-    order,
-  }
+export function useKitchenOrdersFetch(
+  kitchenId: Ref<string> | string,
+  options: { kitchenCollectionPath?: string | Ref<string | null | undefined> } = {}
+) {
+  return useKitchenOrderFetch(kitchenId, options)
 }

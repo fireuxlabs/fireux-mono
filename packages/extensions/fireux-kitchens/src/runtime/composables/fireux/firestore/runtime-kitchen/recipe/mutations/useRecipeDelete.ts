@@ -1,17 +1,19 @@
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
 import { computed, unref, type Ref } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRuntimeKitchenSelection } from '../../../../app/kitchen-runtime/state'
-
-const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
+import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-runtime/shared'
 
 const trim = (value: unknown) => String(value || '').trim()
 
 export function useRecipeDelete(options: { kitchenCollectionPath?: string | Ref<string | null | undefined> } = {}) {
   const { deleteDocument } = useFirestoreDelete()
+  const { appId } = useFireUXConfig()
   const { runtimeKitchenId } = useRuntimeKitchenSelection()
 
   const kitchenCollectionPath = computed(() =>
-    String(unref(options.kitchenCollectionPath) || DEFAULT_KITCHEN_COLLECTION_PATH).trim()
+    String(unref(options.kitchenCollectionPath) || '').trim() ||
+    resolveKitchenConsoleCollectionPath(appId)
   )
 
   const deleteRecipe = async (

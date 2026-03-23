@@ -11,10 +11,12 @@ import type { Place } from 'fireux-places/runtime/models/place.model'
  * Storage: root canonical record plus app overlay
  * Root path: /kitchens/<kitchenId>
  * Overlay path: /apps/<appId>/kitchens/<kitchenId>
+ * Child scope: /apps/<appId>/kitchens/<kitchenId>/<childCollection>/<childId>
  *
  * Decision note:
- * - Kitchen is one console entity with a root public identity and an app-scoped operational overlay.
+ * - Kitchen is one domain entity with a root public entity and an app-hosted kitchen console overlay.
  * - The root record stays thin and canonical; the overlay carries governance and private operational state.
+ * - Kitchen-owned operational children should live beneath the app-hosted overlay.
  * - If that rule changes later, update the models README first, then this file.
  */
 
@@ -41,7 +43,7 @@ export type KitchenCore = {
   [K in keyof typeof KitchenCore]: (typeof KitchenCore)[K]
 }
 
-/** App overlay (tenancy/private): apps/<appId>/kitchens/<placeId> */
+/** App overlay (hosted console/private): apps/<appId>/kitchens/<placeId> */
 export const KitchenApp = {
   id: '' as string,
 

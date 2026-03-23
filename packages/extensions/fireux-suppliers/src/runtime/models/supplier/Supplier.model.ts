@@ -10,10 +10,13 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase';
  * Storage: root canonical record plus app overlay
  * Root path: /suppliers/<supplierId>
  * Overlay path: /apps/<appId>/suppliers/<supplierId>
+ * Child scope: /apps/<appId>/suppliers/<supplierId>/<childCollection>/<childId>
  *
  * Decision note:
- * - Supplier is treated as a console entity, not as a user profile.
+ * - Supplier is treated as a domain entity with a root public entity and an app-hosted supplier console, not as a user profile.
  * - The path should read as supplier identity rather than user identity, even while some profile-era content fields remain during simplification.
+ * - Supplier operational state belongs to the app-hosted supplier console overlay.
+ * - Supplier-owned child records, if they become real, should live beneath that overlay.
  * - Keep the current storage shape for now and simplify the profile-era field set later in a focused pass.
  * - If that changes later, update the models README first, then this file.
  */

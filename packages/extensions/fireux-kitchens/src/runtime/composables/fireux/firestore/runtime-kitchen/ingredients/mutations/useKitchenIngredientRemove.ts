@@ -1,11 +1,13 @@
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
+import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-runtime/shared'
 
-const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
 const resolveKitchenIngredientsPath = (basePath: string, kitchenId: string) =>
   `${basePath}/${kitchenId}/ingredients`
 
 export function useKitchenIngredientRemove() {
   const { deleteDocument } = useFirestoreDelete()
+  const { appId } = useFireUXConfig()
 
   const removeIngredientFromKitchen = async (
     kitchenId: string,
@@ -19,8 +21,8 @@ export function useKitchenIngredientRemove() {
     if (!resolvedIngredientId) throw new Error('Ingredient id is required')
 
     const kitchenCollectionPath = String(
-      options.kitchenCollectionPath || DEFAULT_KITCHEN_COLLECTION_PATH
-    ).trim()
+      options.kitchenCollectionPath || ''
+    ).trim() || resolveKitchenConsoleCollectionPath(appId)
     const kitchenIngredientsPath = resolveKitchenIngredientsPath(
       kitchenCollectionPath,
       resolvedKitchenId

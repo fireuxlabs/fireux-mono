@@ -1,5 +1,6 @@
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { computed, unref, type Ref } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import {
     normalizePublishedRecipeSummary,
     normalizeRecipeAccessPolicy,
@@ -9,8 +10,7 @@ import {
     type RecipeUpdateInput,
 } from '../../../../../../models/recipe.model'
 import { useRuntimeKitchenSelection } from '../../../../app/kitchen-runtime/state'
-
-const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
+import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-runtime/shared'
 
 const trim = (value: unknown) => String(value || '').trim()
 const optional = (value: unknown) => {
@@ -24,10 +24,12 @@ const stringArray = (value: unknown) =>
 
 export function useRecipeUpdate(options: { kitchenCollectionPath?: string | Ref<string | null | undefined> } = {}) {
   const { updateDocument } = useFirestoreUpdate()
+  const { appId } = useFireUXConfig()
   const { runtimeKitchenId } = useRuntimeKitchenSelection()
 
   const kitchenCollectionPath = computed(() =>
-    String(unref(options.kitchenCollectionPath) || DEFAULT_KITCHEN_COLLECTION_PATH).trim()
+    String(unref(options.kitchenCollectionPath) || '').trim() ||
+    resolveKitchenConsoleCollectionPath(appId)
   )
 
   const updateRecipe = async (

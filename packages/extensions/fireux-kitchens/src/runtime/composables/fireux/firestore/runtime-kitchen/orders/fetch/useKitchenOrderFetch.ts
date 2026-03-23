@@ -1,10 +1,10 @@
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import type { Ref, ShallowRef } from 'vue'
 import { computed, shallowRef, unref, watch } from 'vue'
+import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-runtime/shared'
 import type { KitchenOrder } from '../../../../../../models/order.model'
-
-const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
 
 type UseKitchenOrderFetchOptions = {
 	kitchenCollectionPath?: string | Ref<string | null | undefined>
@@ -18,13 +18,15 @@ export function useKitchenOrderFetch(
 	options: UseKitchenOrderFetchOptions = {}
 ) {
 	const { firestoreFetchCollection } = useFirestoreRead()
+  const { appId } = useFireUXConfig()
 
 	const resolvedKitchenId = computed(() =>
 		String(typeof kitchenId === 'string' ? kitchenId : kitchenId.value || '').trim()
 	)
 
 	const kitchenCollectionPath = computed(() =>
-		String(unref(options.kitchenCollectionPath) || DEFAULT_KITCHEN_COLLECTION_PATH).trim()
+		String(unref(options.kitchenCollectionPath) || '').trim() ||
+    resolveKitchenConsoleCollectionPath(appId)
 	)
 
 	const ordersPath = computed(() =>

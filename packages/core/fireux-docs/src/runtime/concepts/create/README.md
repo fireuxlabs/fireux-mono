@@ -96,6 +96,13 @@ This is where app-specific operational state lives:
 Apps do not own these entities.
 Apps overlay them.
 
+For console-backed domains, this overlay is the hosted console inside a specific app.
+
+That means a console-backed domain should usually be understood as:
+- root public entity
+- app-hosted console overlay
+- app-owned child records beneath that overlay when operational records exist
+
 ## Console Create Canon
 
 Consoles currently include:
@@ -126,6 +133,7 @@ The console rule is:
 - ensure the public entity exists
 - create the public entity first if needed
 - ensure the app-scoped console overlay exists
+- leave app-owned child records to their own later create flows inside that hosted console
 
 ## Console Contract
 
@@ -185,6 +193,11 @@ That means:
 - `Portfolio`
 - `Supplier`
 - `Project` as target canon
+
+For all of these, the same structural rule applies:
+- root public entity at `/.../<id>`
+- app-hosted console overlay at `/apps/<appId>/.../<id>`
+- app-owned child records beneath that overlay where needed
 
 ## Current Status
 

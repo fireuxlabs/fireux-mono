@@ -10,10 +10,12 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Storage: root canonical record plus app overlay
  * Root path: /portfolios/<portfolioId>
  * Overlay path: /apps/<appId>/portfolios/<portfolioId>
+ * Child scope: /apps/<appId>/portfolios/<portfolioId>/<childCollection>/<childId>
  *
  * Decision note:
- * - Portfolio is one console entity with a root identity and an app-scoped operational overlay.
+ * - Portfolio is one domain entity with a root public entity and an app-hosted portfolio console overlay.
  * - The overlay exists because real governance and console state can differ by app.
+ * - Portfolio-owned operational children should live beneath the app-hosted overlay.
  * - If that changes later, update the models README first, then this file.
  */
 

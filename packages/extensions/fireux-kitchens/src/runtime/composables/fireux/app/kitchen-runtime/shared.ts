@@ -7,6 +7,8 @@ export type RuntimeKitchenSelection = {
 
 export const RUNTIME_KITCHEN_ID_KEY = 'fireux-kitchens:runtime-kitchen:id'
 export const RUNTIME_KITCHEN_MODE_KEY = 'fireux-kitchens:runtime-kitchen:mode'
+export const ROOT_KITCHEN_COLLECTION_PATH = 'kitchens'
+export const TEST_KITCHEN_COLLECTION_PATH = 'test-kitchens'
 
 const toSingleValue = (value: unknown): unknown => (Array.isArray(value) ? value[0] : value)
 
@@ -22,6 +24,47 @@ export const normalizeMode = (value: unknown): RuntimeKitchenMode | null => {
   return null
 }
 
-export const resolveRuntimeKitchenCollectionPath = (
+export const resolveKitchenConsoleCollectionPath = (appId?: unknown): string => {
+  const resolvedAppId = normalizeString(appId)
+  return resolvedAppId
+    ? `apps/${resolvedAppId}/${ROOT_KITCHEN_COLLECTION_PATH}`
+    : ROOT_KITCHEN_COLLECTION_PATH
+}
+
+export const resolveKitchenRuntimeCollectionBasePath = (
+  overridePath?: unknown,
+  appId?: unknown
+): string => {
+  const resolvedOverride = normalizeString(overridePath)
+  return resolvedOverride || resolveKitchenConsoleCollectionPath(appId)
+}
+
+export const resolveKitchenRuntimeChildCollectionPath = (input: {
+  kitchenCollectionPath?: unknown
+  kitchenId?: unknown
+  collectionName: string
+  appId?: unknown
+}): string => {
+  const basePath = resolveKitchenRuntimeCollectionBasePath(
+    input.kitchenCollectionPath,
+    input.appId
+  )
+  const kitchenId = normalizeString(input.kitchenId)
+  const collectionName = normalizeString(input.collectionName)
+  if (!basePath || !kitchenId || !collectionName) return ''
+  return `${basePath}/${kitchenId}/${collectionName}`
+}
+
+export const resolveRuntimeKitchenDocumentCollectionPath = (
   mode: RuntimeKitchenMode
-): 'kitchens' | 'test-kitchens' => (mode === 'live' ? 'kitchens' : 'test-kitchens')
+): string => (mode === 'test' ? TEST_KITCHEN_COLLECTION_PATH : ROOT_KITCHEN_COLLECTION_PATH)
+
+export const resolveRuntimeKitchenDataCollectionPath = (
+  mode: RuntimeKitchenMode,
+  appId?: unknown
+): string => (mode === 'test'
+  ? TEST_KITCHEN_COLLECTION_PATH
+  : resolveKitchenConsoleCollectionPath(appId))
+
+export const resolveRuntimeKitchenCollectionPath =
+  resolveRuntimeKitchenDocumentCollectionPath

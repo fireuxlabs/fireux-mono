@@ -75,9 +75,9 @@ Examples:
 - `packages/extensions/fireux-suppliers/src/runtime/components/console/supplier/Create/System.vue`
 
 Target canon:
-- public create makes the root console record
+- public create makes the root public entity
 - console create ensures the app-scoped overlay
-- console create may create the root record first if missing
+- console create may create the root public entity first if missing
 
 Current repo truth:
 - `Supplier`, `Kitchen`, and `Portfolio` now all use one create system with `public` and `console` modes

@@ -1,9 +1,13 @@
 import { computed } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRuntimeKitchenSelection } from './state'
 import { useRuntimeKitchenContext, type UseRuntimeKitchenParams } from './useRuntimeKitchenContext'
 import { useRuntimeKitchenDocument } from './useRuntimeKitchenDocument'
 import { useRuntimeKitchenData } from './useRuntimeKitchenData'
-import { resolveRuntimeKitchenCollectionPath } from './shared'
+import {
+  resolveRuntimeKitchenDataCollectionPath,
+  resolveRuntimeKitchenDocumentCollectionPath,
+} from './shared'
 
 export { useRuntimeKitchenSelection } from './state'
 export type { RuntimeKitchenMode } from './shared'
@@ -17,20 +21,26 @@ export type { RuntimeKitchenMode } from './shared'
  * - read-only -> scenario only (no Firestore)
  */
 export function useRuntimeKitchen(params?: UseRuntimeKitchenParams) {
+  const { appId } = useFireUXConfig()
   const selection = useRuntimeKitchenSelection()
 
   const { id, mode, isReadOnly } = useRuntimeKitchenContext(params, selection)
-  const collectionPath = computed(() => resolveRuntimeKitchenCollectionPath(mode.value))
+  const documentCollectionPath = computed(() =>
+    resolveRuntimeKitchenDocumentCollectionPath(mode.value)
+  )
+  const kitchenCollectionPath = computed(() =>
+    resolveRuntimeKitchenDataCollectionPath(mode.value, appId)
+  )
 
   const { doc, pending } = useRuntimeKitchenDocument({
     id,
     isReadOnly,
-    collectionPath,
+    documentCollectionPath,
   })
   const data = useRuntimeKitchenData({
     id,
     isReadOnly,
-    collectionPath,
+    kitchenCollectionPath,
   })
   const isLoading = computed(() => Boolean(pending.value))
   const isReady = computed(() => {
@@ -43,7 +53,9 @@ export function useRuntimeKitchen(params?: UseRuntimeKitchenParams) {
     id,
     mode,
     isReadOnly,
-    collectionPath,
+    collectionPath: kitchenCollectionPath,
+    documentCollectionPath,
+    kitchenCollectionPath,
 
     // Canon runtime contract
     doc,
@@ -54,6 +66,5 @@ export function useRuntimeKitchen(params?: UseRuntimeKitchenParams) {
 
     // Backward-compatible aliases for existing kitchen usage
     kitchen: doc,
-    kitchenCollectionPath: collectionPath,
   }
 }

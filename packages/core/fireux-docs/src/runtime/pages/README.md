@@ -114,8 +114,8 @@ These pages should:
 A console-owned create surface that ensures the app-scoped console overlay.
 
 This page should:
-- ensure the root console record exists
-- create the root record first if it is missing
+- ensure the root public entity exists
+- create the root public entity first if it is missing
 - ensure the app-scoped console overlay
 
 Examples:
@@ -124,6 +124,11 @@ Examples:
 - `console/supplier/create.vue`
 
 This is the operational onboarding path for consoles.
+
+For console-backed domains, the structural rule is:
+- public page creates the root public entity
+- console page ensures the app-hosted console overlay
+- child records for that console live beneath the app-hosted overlay, not beside the root entity
 
 ## Current Entity Buckets
 
@@ -214,6 +219,15 @@ Console page delivery normally has two faces:
 - a public or shareable route surface
 - an operational workspace under `console/<console>/...`
 
+Important:
+- route delivery may say `console/<console>/...`
+- stored truth for that operational workspace is still app-scoped
+- the console itself is not a root entity
+- for console-backed domains, think:
+  - root public entity
+  - app-hosted console overlay
+  - app-owned child records
+
 ### System
 
 What makes FireUX run.
@@ -301,7 +315,7 @@ Shared pattern:
 
 Behavioral rule:
 - ensure the app-scoped console overlay
-- create the root console first when missing
+- create the root public entity first when missing
 - act as the true operational onboarding path for the console
 
 ### Setup-if-missing Identity Family

@@ -1,8 +1,8 @@
 import { collection, doc, serverTimestamp, setDoc } from 'firebase/firestore'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-runtime/shared'
 import type { KitchenOrder, KitchenOrderItem } from '../../../../../../models/order.model'
-
-const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
 
 type CreateKitchenOrderInput = {
 	kitchenId: string
@@ -33,14 +33,15 @@ const makeOrderNumber = () => {
 
 export function useKitchenOrderCreate() {
 	const db = useFirestore()
+  const { appId } = useFireUXConfig()
 
 	const createOrder = async (input: CreateKitchenOrderInput) => {
 		const kitchenId = String(input.kitchenId || '').trim()
 		if (!kitchenId) throw new Error('Missing kitchenId')
 
 		const kitchenCollectionPath = String(
-			input.kitchenCollectionPath || DEFAULT_KITCHEN_COLLECTION_PATH
-		).trim()
+			input.kitchenCollectionPath || ''
+		).trim() || resolveKitchenConsoleCollectionPath(appId)
 
 		const orderId = makeOrderId()
 
@@ -62,14 +63,14 @@ export function useKitchenOrderCreate() {
 
 			items: [item],
 
-			app_id: (input.app_id || '') as any,
+			app_id: (input.app_id || appId || '') as any,
 			creator_id: (input.creator_id || '') as any,
 			created_at: serverTimestamp() as any,
 			updated_at: serverTimestamp() as any,
 			created: {
 				at: serverTimestamp() as any,
 				by: (input.creator_id || '') as any,
-				app_id: (input.app_id || '') as any,
+				app_id: (input.app_id || appId || '') as any,
 			},
 			updated: {
 				at: serverTimestamp() as any,

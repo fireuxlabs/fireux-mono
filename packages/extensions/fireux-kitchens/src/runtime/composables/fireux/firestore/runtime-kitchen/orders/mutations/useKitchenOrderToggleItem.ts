@@ -1,7 +1,7 @@
 import { doc, serverTimestamp, updateDoc } from 'firebase/firestore'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-
-const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
+import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-runtime/shared'
 
 type CloseKitchenOrderInput = {
   kitchenId: string
@@ -11,6 +11,7 @@ type CloseKitchenOrderInput = {
 
 export function useKitchenOrderToggleItem() {
   const db = useFirestore()
+  const { appId } = useFireUXConfig()
 
   const closeOrder = async (input: CloseKitchenOrderInput) => {
     const kitchenId = String(input.kitchenId || '').trim()
@@ -19,8 +20,8 @@ export function useKitchenOrderToggleItem() {
     if (!orderId) throw new Error('Missing orderId')
 
     const kitchenCollectionPath = String(
-      input.kitchenCollectionPath || DEFAULT_KITCHEN_COLLECTION_PATH
-    ).trim()
+      input.kitchenCollectionPath || ''
+    ).trim() || resolveKitchenConsoleCollectionPath(appId)
 
     const ref = doc(db, `${kitchenCollectionPath}/${kitchenId}/orders/${orderId}`)
 

@@ -1,14 +1,17 @@
 import { computed, type Ref } from 'vue'
+import { useKitchenDishCollection } from '../../firestore/runtime-kitchen/dish/fetch/useKitchenDishCollection'
 import { useKitchenIngredientFetch } from '../../firestore/runtime-kitchen/ingredients/fetch/useKitchenIngredientFetch'
+import { useKitchenMenuCollection } from '../../firestore/runtime-kitchen/menu/fetch/useKitchenMenuCollection'
+import { useKitchenMiseCollection } from '../../firestore/runtime-kitchen/mise/fetch/useKitchenMiseCollection'
 import { useKitchenOrderFetch } from '../../firestore/runtime-kitchen/orders/fetch/useKitchenOrderFetch'
-import { useKitchenMenuStackFetch } from '../../firestore/runtime-kitchen/stack/fetch/useKitchenMenuStackFetch'
+import { useKitchenRecipeCollection } from '../../firestore/runtime-kitchen/recipe/fetch/useKitchenRecipeCollection'
 import { useKitchenSupplierFetch } from '../../firestore/runtime-kitchen/suppliers/fetch/useKitchenSupplierFetch'
 import { getReadOnlyKitchenScenario } from './read-only-scenarios'
 
 export function useRuntimeKitchenData(params: {
   id: Ref<string>
   isReadOnly: Ref<boolean>
-  collectionPath: Ref<string>
+  kitchenCollectionPath: Ref<string>
 }) {
   // Prevent Firestore queries in read-only mode.
   const firestoreKitchenId = computed(() => (params.isReadOnly.value ? '' : params.id.value))
@@ -16,25 +19,32 @@ export function useRuntimeKitchenData(params: {
 
   const { ingredients: firestoreKitchenIngredients } = useKitchenIngredientFetch(
     firestoreKitchenId,
-    { kitchenCollectionPath: params.collectionPath }
+    { kitchenCollectionPath: params.kitchenCollectionPath }
   )
 
-  const {
-    menus: firestoreMenus,
-    dishes: firestoreDishes,
-    recipes: firestoreRecipes,
-    miseTasks: firestoreMiseTasks,
-  } = useKitchenMenuStackFetch(firestoreKitchenId, {
-    kitchenCollectionPath: params.collectionPath,
+  const { menus: firestoreMenus } = useKitchenMenuCollection(firestoreKitchenId, {
+    kitchenCollectionPath: params.kitchenCollectionPath,
+  })
+
+  const { dishes: firestoreDishes } = useKitchenDishCollection(firestoreKitchenId, {
+    kitchenCollectionPath: params.kitchenCollectionPath,
+  })
+
+  const { recipes: firestoreRecipes } = useKitchenRecipeCollection(firestoreKitchenId, {
+    kitchenCollectionPath: params.kitchenCollectionPath,
+  })
+
+  const { miseTasks: firestoreMiseTasks } = useKitchenMiseCollection(firestoreKitchenId, {
+    kitchenCollectionPath: params.kitchenCollectionPath,
   })
 
   const { suppliers: firestoreSuppliers } = useKitchenSupplierFetch(firestoreKitchenId, {
-    kitchenCollectionPath: params.collectionPath,
+    kitchenCollectionPath: params.kitchenCollectionPath,
     enabled,
   })
 
   const { orders: firestoreKitchenOrders } = useKitchenOrderFetch(firestoreKitchenId, {
-    kitchenCollectionPath: params.collectionPath,
+    kitchenCollectionPath: params.kitchenCollectionPath,
   })
 
   return computed(() => {
