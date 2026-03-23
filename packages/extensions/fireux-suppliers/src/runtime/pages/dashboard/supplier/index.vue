@@ -12,13 +12,13 @@
             <div class="space-y-2">
               <p class="text-sm font-medium">Welcome back</p>
               <p class="text-sm text-dimmed">
-                Keep your supplier profile updated to drive new orders.
+                Keep your supplier workspace updated to drive new orders.
               </p>
             </div>
 
             <div class="mt-4 flex flex-wrap gap-2">
               <UButton
-                to="/dashboard/supplier/profile"
+                to="/dashboard/supplier/manage"
                 label="Manage supplier"
                 color="neutral"
                 size="sm"
@@ -42,13 +42,13 @@
             </template>
             <div class="space-y-2">
               <UButton
-                to="/dashboard/supplier/profile"
+                to="/dashboard/supplier/manage"
                 label="Add product categories"
                 color="neutral"
                 block
               />
               <UButton
-                to="/dashboard/supplier/profile"
+                to="/dashboard/supplier/manage"
                 label="Update delivery areas"
                 variant="soft"
                 color="neutral"
@@ -62,7 +62,7 @@
           <template #header>
             <div class="flex items-center gap-2 text-sm font-semibold">
               <UIcon name="i-lucide-flag" />
-              Profile checklist
+              Supplier checklist
             </div>
           </template>
           <ul class="space-y-2 text-sm text-dimmed">
@@ -76,7 +76,7 @@
             </li>
             <li class="flex items-center gap-2">
               <UIcon name="i-lucide-check-circle" class="text-primary" />
-              Upload a profile image for credibility.
+              Upload a supplier image for credibility.
             </li>
           </ul>
         </UCard>
@@ -93,10 +93,8 @@ definePageMeta({
     key: 'console-supplier-home',
     label: 'Supplier',
     icon: 'i-lucide-package',
-    desktop: false,
+    desktop: true,
     mobile: false,
-    group: 'profiles',
-    profileId: 'supplier',
   },
   requiresAuth: true,
 })

@@ -1,21 +1,20 @@
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import {
-    csv,
-    firstNonEmptyString,
-    locationLabel,
-    resolveProfileBadges,
-    resolveProfileImage,
-    resolveProfileSummary,
-    safeString,
-    safeStringArray,
+  csv,
+  firstNonEmptyString,
+  locationLabel,
+  resolveProfileBadges,
+  resolveProfileImage,
+  resolveProfileSummary,
+  safeString,
+  safeStringArray,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { Ref } from 'vue'
-import type { SupplierCore } from '../../../../../../../models/supplier/Supplier.model'
-import { supplierConfig } from '../../config/supplierConfig'
+import type { SupplierCore } from '../../models/supplier/Supplier.model'
+import { SUPPLIER_COLLECTION } from './constants'
+import type { SupplierRefs } from './useSupplierRecord'
 
 type UserLike = Pick<User, 'avatar'>
-
 type SupplierTarget = SupplierSurface & { user?: UserLike | null }
 
 export namespace SupplierCard {
@@ -51,8 +50,8 @@ const firstArrayValue = (value: unknown): string =>
   firstNonEmptyString(Array.isArray(value) ? value : [])
 
 export function useSupplierInterface(
-	profile?: ProfileRefs<SupplierCore> | null,
-	userRef?: Ref<User | null | undefined>
+  supplier?: SupplierRefs | null,
+  userRef?: Ref<User | null | undefined>
 ) {
   function resolveUser(
     target?: SupplierTarget | null | undefined,
@@ -116,7 +115,7 @@ export function useSupplierInterface(
 
     return {
       id,
-      to: id ? `/${supplierConfig.collectionName}/${encodeURIComponent(id)}` : '',
+      to: id ? `/${SUPPLIER_COLLECTION}/${encodeURIComponent(id)}` : '',
       title,
       subtitle,
       badges,
@@ -134,7 +133,7 @@ export function useSupplierInterface(
     target?: SupplierSurface | null | undefined,
     userOverride?: UserLike | null
   ): SupplierCard.Card | null {
-    const source = target ?? profile?.coreProfile.value ?? null
+    const source = target ?? supplier?.coreSupplier.value ?? null
     if (!source) return null
 
     const mapped = map(source, resolveUser(source as SupplierTarget, userOverride))

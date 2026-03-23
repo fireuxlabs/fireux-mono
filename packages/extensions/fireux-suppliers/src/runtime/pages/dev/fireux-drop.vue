@@ -60,7 +60,7 @@
               </template>
             </UCard>
 
-            <ProfilesSupplierCollectionManager :collection="filteredSuppliers" />
+            <SupplierCollectionManager :collection="filteredSuppliers" />
           </div>
         </UCard>
       </div>

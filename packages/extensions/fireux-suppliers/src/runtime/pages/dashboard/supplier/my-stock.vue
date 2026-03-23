@@ -38,8 +38,8 @@
               </template>
               <div class="space-y-2">
                 <UButton
-                  to="/dashboard/supplier/profile"
-                  label="Update profile"
+                  to="/dashboard/supplier/manage"
+                  label="Update supplier"
                   color="neutral"
                   block
                 />
@@ -69,8 +69,6 @@ definePageMeta({
     icon: 'i-lucide-box',
     desktop: false,
     mobile: false,
-    group: 'profiles',
-    profileId: 'supplier',
   },
   requiresAuth: true,
 })

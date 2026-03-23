@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SupplierCard } from '../../../composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
+import type { SupplierCard } from '../../../composables/supplier/useSupplierInterface'
 
 type Props = Pick<
   SupplierCard.Card,

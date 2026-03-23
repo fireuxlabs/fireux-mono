@@ -28,7 +28,7 @@ definePageMeta({
     layouts: ['default'],
   },
   title: 'Suppliers',
-  description: 'Browse supplier profiles.',
+  description: 'Browse supplier records.',
   layout: 'default',
   name: 'SuppliersIndexPage',
 })

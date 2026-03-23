@@ -1,14 +1,14 @@
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import type { SupplierCore } from '../../../models/supplier/Supplier.model'
+import type { SupplierRefs } from '../useSupplierRecord'
 
 /**
  * useSupplierComputed
- * - Stubbed computed helpers for Supplier profiles
+ * - Stubbed computed helpers for Supplier records and workspace state
  * - Accepts refs + pending but does not use them yet
  * - Safe to spread into useSupplier() return
  */
 export function useSupplierComputed(
-  refs: ProfileRefs<SupplierCore>,
+  refs: SupplierRefs,
   pending: unknown
 ) {
   // Stub: keep args for future use, avoid TS “unused” warnings

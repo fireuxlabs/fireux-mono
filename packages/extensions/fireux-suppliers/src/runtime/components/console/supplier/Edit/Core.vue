@@ -34,7 +34,7 @@
           <MoleculesFormsFirestoreSimpleField
             label="Supplier Image URL"
             :firebase-value="imageUrl"
-            placeholder="Optional: image URL for this supplier profile"
+            placeholder="Optional: image URL for this supplier record"
             :maxlength="400"
             :update-function="handleImage"
           />
@@ -58,7 +58,7 @@
       </UCard>
     </div>
 
-    <MoleculesStateCard v-else entity="supplier profile" kind="document" loading />
+    <MoleculesStateCard v-else entity="supplier record" kind="document" loading />
   </ClientOnly>
 </template>
 

@@ -61,10 +61,7 @@
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
 import type { SupplierCore } from '../../../models/supplier/Supplier.model';
-import { useSupplierInterface } from '../../composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface';
-import SupplierCardsCell from '../Cards/Cell.vue';
-import SupplierCardsPill from '../Cards/Pill.vue';
-import SupplierCollectionList from './List.vue';
+import { useSupplierInterface } from '../../../composables/supplier';
 
 type SupplierEntry = SupplierCore & { user?: unknown }
 

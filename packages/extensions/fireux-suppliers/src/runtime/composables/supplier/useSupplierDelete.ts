@@ -2,13 +2,11 @@ import { deleteDoc, doc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { SupplierCore } from '../../models/supplier/Supplier.model'
 
 type DeleteScope = 'auto' | 'core' | 'app' | 'both'
 
-export function useSupplierDelete(_profile: ProfileRefs<SupplierCore>) {
+export function useSupplierDelete() {
   const db = useFirestore()
   const { deleteSeoIndexDoc } = useSeoIndexWrite()
   const { role, appId } = useFireUXConfig()

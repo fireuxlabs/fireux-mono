@@ -13,8 +13,11 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 
 ## 4) Collections + paths
 - `suppliers/{supplierId}`
-- No app-overlay canon is assumed for suppliers in the current architecture pass.
-- Treat supplier as a console/business entity family; legacy profile-style paths are compatibility debt, not target design.
+- `apps/{appId}/suppliers/{supplierId}`
+- Treat `Supplier` as a console/business entity family with:
+  - a public canonical supplier record
+  - an app-scoped supplier console overlay
+- Legacy profile-style supplier paths are compatibility debt, not target design.
 
 ## 5) Routes (public vs internal; slug vs id)
 - Current id-based routes:
@@ -27,7 +30,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `Pill`, `Cell`, `Preview`, `Profile` supported for supplier cards/profile views.
 
 ## 7) Runtime dependencies
-- Firestore profile stack + extension runtime config (`runtimeConfig.public.fireux.drop`).
+- Firestore supplier stack + extension runtime config (`runtimeConfig.public.fireux.drop`).
 
 ## 8) SEO hooks
 - If supplier pages are marked indexable/public, provide:

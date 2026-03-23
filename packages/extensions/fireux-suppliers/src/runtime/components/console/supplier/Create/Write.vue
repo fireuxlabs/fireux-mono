@@ -1,5 +1,5 @@
 <template>
-  <ProfilesSupplierCreateSystem v-bind="$attrs" />
+  <SupplierCreateSystem v-bind="$attrs" />
 </template>
 
 <script setup lang="ts">

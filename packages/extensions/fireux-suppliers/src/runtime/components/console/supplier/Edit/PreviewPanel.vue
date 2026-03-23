@@ -1,4 +1,4 @@
-<!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/components/Organisms/profiles/Supplier/Edit/PreviewPanel.vue -->
+<!-- FILE: packages/extensions/fireux-suppliers/src/runtime/components/console/supplier/Edit/PreviewPanel.vue -->
 <template>
   <ClientOnly>
     <section class="space-y-4">
@@ -26,13 +26,13 @@
           </UButton>
         </header>
 
-        <ProfilesSupplierCardsCell
+        <SupplierCardsCell
           v-if="showCellCard && previewCard"
           v-bind="previewCard"
           :link="Boolean(previewCard.to)"
           class="block"
         />
-        <ProfilesSupplierCardsPill
+        <SupplierCardsPill
           v-else-if="previewCard"
           v-bind="previewCard"
           :link="Boolean(previewCard.to)"
@@ -51,9 +51,9 @@
 import { computed, ref } from 'vue'
 import { useSupplier } from '../../../../composables/supplier/ops/useSupplier'
 
-const { coreProfile, pending, card } = useSupplier()
+const { coreSupplier, pending, card } = useSupplier()
 
-const previewCard = computed(() => (coreProfile.value ? card(coreProfile.value) : null))
+const previewCard = computed(() => (coreSupplier.value ? card(coreSupplier.value) : null))
 const isLoading = computed(() => Boolean(pending.value))
 const hasPreview = computed(() => Boolean(previewCard.value))
 

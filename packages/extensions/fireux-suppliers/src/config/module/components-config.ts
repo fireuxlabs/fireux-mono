@@ -10,10 +10,14 @@ export function configureComponents(resolver: Resolver) {
     pathPrefix: true,
   })
 
+  registerComponentAliases(resolver, './runtime/components/supplier', 'Supplier', {
+    global: true,
+  })
+
   registerComponentAliases(
     resolver,
-    './runtime/components/supplier',
-    'ProfilesSupplier',
+    './runtime/components/console/supplier',
+    'Supplier',
     { global: true }
   )
 }

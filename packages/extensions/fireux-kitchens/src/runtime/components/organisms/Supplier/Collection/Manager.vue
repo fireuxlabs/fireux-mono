@@ -60,13 +60,10 @@
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import {
-    useSupplierInterface,
-    type SupplierSurface,
-} from 'fireux-suppliers/runtime/composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
+  type SupplierSurface,
+  useSupplierInterface,
+} from 'fireux-suppliers/runtime/composables/supplier/useSupplierInterface'
 import { computed } from 'vue'
-import SupplierCardsCell from '../Cards/Cell.vue'
-import SupplierCardsPill from '../Cards/Pill.vue'
-import SupplierCollectionList from './List.vue'
 
 type SupplierCollectionEntry = SupplierSurface
 
@@ -86,7 +83,7 @@ const props = withDefaults(
     title: 'Suppliers',
     description: 'Browse suppliers for this runtime.',
     link: true,
-    searchPlaceholder: 'Search suppliers...',
+    searchPlaceholder: 'Search suppliers…',
     showSearch: true,
     showVariantToggle: true,
     showCount: true,
@@ -98,7 +95,7 @@ const { card: makeCard, searchText } = useSupplierInterface()
 
 const collection = computed(() => props.collection ?? [])
 const linkEnabled = computed(() => props.link !== false)
-const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search suppliers...'))
+const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search suppliers…'))
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)

@@ -47,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SupplierCard } from 'fireux-suppliers/runtime/composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
+import type { SupplierCard } from 'fireux-suppliers/runtime/composables/supplier/useSupplierInterface'
 
 const emit = defineEmits<{
   (event: 'action'): void

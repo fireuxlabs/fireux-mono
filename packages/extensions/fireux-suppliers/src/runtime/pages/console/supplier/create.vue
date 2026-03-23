@@ -1,11 +1,12 @@
 <template>
   <UDashboardPanel id="console-supplier-create">
     <template #header>
-      <LayoutsConsoleNavbar title="Create Supplier Profile" />
+      <LayoutsConsoleNavbar title="Create Supplier" />
     </template>
 
     <template #body>
       <SupplierCreateSystem
+        mode="console"
         return-to="/console/supplier/overview"
         cancel-to="/console/supplier/overview"
       />
@@ -14,8 +15,6 @@
 </template>
 
 <script setup lang="ts">
-import SupplierCreateSystem from '../../../components/console/supplier/Create/System.vue'
-
 definePageMeta({
   layout: 'console',
   nav: {

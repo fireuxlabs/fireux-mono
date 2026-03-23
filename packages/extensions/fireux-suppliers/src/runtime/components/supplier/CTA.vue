@@ -7,7 +7,7 @@
     orientation="horizontal"
   >
     <div v-if="supplierCard" class="cta__body space-y-4">
-      <ProfilesSupplierCardsPreview v-bind="supplierCard" :link="false" />
+      <SupplierCardsPreview v-bind="supplierCard" :link="false" />
 
       <div class="flex flex-wrap gap-2">
         <UButton color="primary" @click="openProfile">View supplier</UButton>
@@ -16,15 +16,15 @@
     </div>
 
     <div v-else class="cta__body space-y-2">
-      <ProfilesSupplierCreateSystem />
+      <SupplierCreateSystem />
     </div>
   </UPageCTA>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { useSupplier } from '../../composables/supplier/ops/useSupplier';
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useSupplier } from '../../composables/supplier/ops/useSupplier'
 
 const { card } = useSupplier()
 const router = useRouter()
@@ -43,8 +43,6 @@ const openProfile = () => {
 }
 
 const openConsole = () => {
-  router.push('/dashboard/supplier/profile')
+  router.push('/dashboard/supplier')
 }
-
 </script>
-

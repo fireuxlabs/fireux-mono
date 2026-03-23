@@ -1,14 +1,14 @@
 <template>
-  <section class="profile-create-system">
+  <section class="supplier-create-system">
     <UCard class="create-card">
       <template #header>
         <div class="header">
           <div>
-            <p class="eyebrow">Supplier profile</p>
-            <h2>Create your profile</h2>
+            <p class="eyebrow">Supplier workspace</p>
+            <h2>Create your supplier</h2>
           </div>
           <p class="lede">
-            Set up a supplier profile with your products and capabilities. You
+            Set up a supplier workspace with your products and capabilities. You
             can edit everything right after creating it.
           </p>
         </div>
@@ -40,7 +40,7 @@
               :disabled="isCreating"
               @click="handleCreate"
             >
-              {{ isCreating ? 'Creating…' : 'Create profile' }}
+              {{ isCreating ? 'Creating…' : 'Create supplier' }}
             </UButton>
             <UButton
               v-if="cancelTo"
@@ -60,44 +60,55 @@
 </template>
 
 <script setup lang="ts">
+import type {
+  ConsoleCreateMode,
+  ConsoleEnsureResult,
+} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useSupplierCreate } from '../../../../composables/supplier/useSupplierCreate';
 
 const props = defineProps<{
-  create?: () => Promise<unknown>
+  mode?: ConsoleCreateMode
+  create?: () => Promise<ConsoleEnsureResult>
   returnTo?: string
   cancelTo?: string
 }>()
 
 const emit = defineEmits<{
-  (e: 'created', payload: unknown): void
+  (e: 'created', payload: ConsoleEnsureResult): void
   (e: 'error', error: unknown): void
 }>()
 
 const router = useRouter()
-const { ensureSupplierProfile } = useSupplierCreate()
+const { ensureSupplier } = useSupplierCreate()
 
 const isCreating = ref(false)
 const errorMessage = ref<string | null>(null)
 const cancelTo = computed(() => String(props.cancelTo || '').trim())
+const resolvedMode = computed<ConsoleCreateMode>(() => props.mode ?? 'console')
 
 const handleCreate = async () => {
   if (isCreating.value) return
 
-  const create = props.create ?? ensureSupplierProfile
+  const create =
+    props.create ?? (() => ensureSupplier({ mode: resolvedMode.value }))
   isCreating.value = true
   errorMessage.value = null
 
   try {
     const result = await create()
     emit('created', result)
-    await router.push(props.returnTo || '/dashboard/supplier/profile')
+    const fallbackTo =
+      resolvedMode.value === 'public'
+        ? `/suppliers/${encodeURIComponent(result.id)}`
+        : '/dashboard/supplier'
+    await router.push(props.returnTo || fallbackTo)
   } catch (error) {
     const message =
       error instanceof Error
         ? error.message
-        : 'Unable to create a supplier profile right now.'
+        : 'Unable to create a supplier record right now.'
     errorMessage.value = message
     emit('error', error)
   } finally {
@@ -107,7 +118,7 @@ const handleCreate = async () => {
 </script>
 
 <style scoped>
-.profile-create-system {
+.supplier-create-system {
   display: flex;
   justify-content: center;
 }

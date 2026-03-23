@@ -1,38 +1,50 @@
-// Action: ENSURE · Phases: 1–4
-// Sketch: Supplier create (core + app, conditional)
-// One doc, one action, one name. No wiring yet.
-
 import { doc, getDoc } from 'firebase/firestore'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import type {
+  ConsoleCreateMode,
+  ConsoleEnsureResult,
+  ConsoleRootEnsureResult,
+} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserEnsure'
+import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { SupplierApp, SupplierCore } from '../../models/supplier/Supplier.model'
-import { supplierConfig } from './supplierConfig'
+import { SUPPLIER_COLLECTION } from './constants'
+
+export type EnsureSupplierOptions = {
+  mode?: ConsoleCreateMode
+  existingRootId?: string | null
+}
 
 export function useSupplierCreate() {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
   const { ensureUser } = useUserEnsure()
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
+  const { ensureConsole } = useConsoleEnsure()
 
-  async function ensureSupplierProfile(): Promise<{
-    createdCore: boolean
-    createdApp: boolean
-    id: string
-  }> {
+  async function ensureSupplier(
+    options: EnsureSupplierOptions = {}
+  ): Promise<ConsoleEnsureResult> {
     await ensureUser()
     const { uid } = await requireUid()
-    const { appId, isTenant } = useFireUXConfig()
 
-    let createdCore = false
-    let createdApp = false
+    const requestedRootId = String(options.existingRootId || '').trim()
 
-    const coreRef = doc(db, supplierConfig.collectionName, uid)
-    const coreSnap = await getDoc(coreRef)
-    if (!coreSnap.exists()) {
+    const ensureRoot = async (): Promise<ConsoleRootEnsureResult> => {
+      const rootId = requestedRootId || uid
+      const coreRef = doc(db, SUPPLIER_COLLECTION, rootId)
+      const coreSnap = await getDoc(coreRef)
+
+      if (coreSnap.exists()) {
+        return {
+          id: rootId,
+          created: false,
+        }
+      }
+
       const payload = {
         supplier_headline: '',
         supplier_bio: '',
@@ -58,37 +70,45 @@ export function useSupplierCreate() {
         delivery_range: 0,
       } satisfies Omit<SupplierCore, 'created' | 'updated' | 'id'>
 
-      await setDocument<SupplierCore>(supplierConfig.collectionName, uid, payload as unknown as SupplierCore, {
-        creator: true,
-      })
-      createdCore = true
-    }
-
-    if (isTenant && appId) {
-      const appCollection = `apps/${appId}/${supplierConfig.collectionName}`
-      const appRef = doc(db, 'apps', appId, supplierConfig.collectionName, uid)
-      const appSnap = await getDoc(appRef)
-      if (!appSnap.exists()) {
-        const payload = {
-          admin_ids: [] as string[],
-          join_requests: [] as string[],
-          console_enabled: true,
-        } satisfies Omit<SupplierApp, 'created' | 'updated' | 'id'>
-
-        await setDocument<SupplierApp>(appCollection, uid, payload as SupplierApp, {
+      await setDocument<SupplierCore>(
+        SUPPLIER_COLLECTION,
+        rootId,
+        payload as unknown as SupplierCore,
+        {
           creator: true,
-        })
-        createdApp = true
+        }
+      )
+
+      return {
+        id: rootId,
+        created: true,
       }
     }
 
-    await upsertSeoIndexDoc('seo_index_suppliers', uid, {
-      path: `/suppliers/${uid}`,
+    const result = await ensureConsole<SupplierApp>({
+      type: 'supplier',
+      mode: options.mode ?? 'console',
+      existingRootId: requestedRootId || undefined,
+      ensureRoot,
+      createOverlay: async () => {
+        const payload: Omit<SupplierApp, 'created' | 'updated' | 'id'> = {
+          admin_ids: [] as string[],
+          join_requests: [] as string[],
+          console_enabled: true,
+        }
+        return payload as SupplierApp
+      },
+    })
+
+    await upsertSeoIndexDoc('seo_index_suppliers', result.id, {
+      path: `/suppliers/${result.id}`,
       isPublic: true,
     })
 
-    return { createdCore, createdApp, id: uid }
+    return result
   }
 
-  return { ensureSupplierProfile }
+  return {
+    ensureSupplier,
+  }
 }

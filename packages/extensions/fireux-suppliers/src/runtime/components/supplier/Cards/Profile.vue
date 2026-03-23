@@ -77,7 +77,7 @@
 import { computed } from 'vue';
 import type {
     SupplierCard,
-    SupplierProfile,
+    SupplierRecord,
 } from '../../../composables/supplier/ops/useSupplier';
 import { useSupplier } from '../../../composables/supplier/ops/useSupplier';
 
@@ -86,12 +86,12 @@ const props = defineProps<{
   subtitle?: string
   avatar?: string | null
   avatarSecondary?: string | null
-  supplier?: SupplierProfile | SupplierCard.Card | null
+  supplier?: SupplierRecord | SupplierCard.Card | null
   card?: SupplierCard.Card | null
   prop?: string
 }>()
 
-const { coreProfile, card: toCard } = useSupplier()
+const { coreSupplier, card: toCard } = useSupplier()
 
 const isSupplierCard = (value: unknown): value is SupplierCard.Card => {
   if (!value || typeof value !== 'object') return false
@@ -106,7 +106,7 @@ const resolvedCard = computed<SupplierCard.Card | null>(() => {
     return isSupplierCard(supplied) ? supplied : toCard(supplied)
   }
 
-  return coreProfile.value ? toCard(coreProfile.value) : null
+  return coreSupplier.value ? toCard(coreSupplier.value) : null
 })
 
 const vm = computed(() => {

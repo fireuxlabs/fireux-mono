@@ -3,7 +3,7 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
-      <div class="console-profile">
+      <div class="supplier-console">
         <div class="flex justify-end">
           <UButton
             :icon="viewIcon"
@@ -15,8 +15,8 @@
           />
         </div>
 
-        <div class="console-profile__pills">
-          <ProfilesSupplierCardsPill
+        <div class="supplier-console__pills">
+          <SupplierCardsPill
             v-if="supplierCard"
             v-bind="supplierCard"
             :link="Boolean(supplierCard.to)"
@@ -24,34 +24,34 @@
           />
         </div>
 
-        <UPageCard v-if="isProfileLoading" variant="subtle">
-          <p class="text-sm text-dimmed">Loading profile…</p>
+        <UPageCard v-if="isSupplierLoading" variant="subtle">
+          <p class="text-sm text-dimmed">Loading supplier…</p>
         </UPageCard>
 
         <MoleculesProfilesAdminCreateCard
-          v-else-if="!resolvedCoreProfile"
-          title="Supplier profile not available"
-          description="This supplier profile hasn’t been created yet."
-          :button-label="supplierConfig.cta || 'Create Supplier profile'"
+          v-else-if="!resolvedCoreSupplier"
+          title="Supplier not available"
+          description="This supplier record hasn’t been created yet."
+          :button-label="SUPPLIER_CREATE_CTA"
           :loading="isCreating"
           :error="createError"
-          @create="createProfile"
+          @create="createSupplier"
         />
 
         <ClientOnly v-else>
-          <div v-if="view === 'profile'" class="console-profile__section">
-            <ProfilesSupplierCardsProfile
+          <div v-if="view === 'profile'" class="supplier-console__section">
+            <SupplierCardsProfile
               v-if="supplierCard"
               :card="supplierCard"
             />
           </div>
 
-          <div v-else class="console-profile__section">
-            <ProfilesSupplierEditCore :supplier="resolvedCoreProfile" />
+          <div v-else class="supplier-console__section">
+            <SupplierEditCore :supplier="resolvedCoreSupplier" />
 
-            <ProfilesSupplierEditApp
-              v-if="resolvedAppProfile"
-              :supplier="resolvedAppProfile"
+            <SupplierEditApp
+              v-if="resolvedAppSupplier"
+              :supplier="resolvedAppSupplier"
             />
           </div>
         </ClientOnly>
@@ -62,14 +62,13 @@
 
 <script setup lang="ts">
 import { useConsoleProfileView } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleProfileView'
-import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { useSupplierInterface } from '../../../composables/fireux/firestore/profiles/Supplier/utils/view/useSupplierInterface'
-import { supplierConfig } from '../../../composables/supplier/supplierConfig'
-import type { SupplierApp, SupplierCore } from '../../../models/supplier/Supplier.model'
+import { useSupplierInterface } from '../../../composables/supplier/useSupplierInterface'
+import { SUPPLIER_CREATE_CTA } from '../../../composables/supplier/constants'
+import { useSupplierEnsure } from '../../../composables/supplier/useSupplierEnsure'
+import { useSupplierRecord } from '../../../composables/supplier/useSupplierRecord'
 
 definePageMeta({
   layout: 'default',
@@ -87,20 +86,22 @@ const userId = computed(() => {
 })
 
 const userRefs = useUserFetch(userId)
-const { profile, pending } = useProfileFetch<SupplierCore, SupplierApp>(
-  userId,
-  supplierConfig
-)
-const { coreProfile, appProfile } = profile
+const { coreSupplier, appSupplier, pending } = useSupplierRecord(userId)
 
-const { card: makeCard } = useSupplierInterface(profile, userRefs.user)
-
-const isProfileLoading = computed(
-  () => pending.value || coreProfile.value === undefined
+const { card: makeCard } = useSupplierInterface(
+  {
+    coreSupplier,
+    appSupplier,
+  },
+  userRefs.user
 )
-const resolvedCoreProfile = computed(() => coreProfile.value ?? null)
-const resolvedAppProfile = computed(() => appProfile.value ?? null)
-const supplierCard = computed(() => makeCard(resolvedCoreProfile.value))
+
+const isSupplierLoading = computed(
+  () => pending.value || coreSupplier.value === undefined
+)
+const resolvedCoreSupplier = computed(() => coreSupplier.value ?? null)
+const resolvedAppSupplier = computed(() => appSupplier.value ?? null)
+const supplierCard = computed(() => makeCard(resolvedCoreSupplier.value))
 const pageTitle = computed(() =>
   supplierCard.value?.title
     ? `Admin · ${supplierCard.value.title}`
@@ -112,11 +113,11 @@ const pageDescription = computed(
   () => 'Review the public supplier record and edit the underlying supplier documents.'
 )
 
-const { ensure } = useProfileEnsure(supplierConfig)
+const { ensure } = useSupplierEnsure()
 const isCreating = ref(false)
 const createError = ref<string | null>(null)
 
-const createProfile = async () => {
+const createSupplier = async () => {
   if (isCreating.value || !userId.value) return
   isCreating.value = true
   createError.value = null
@@ -124,7 +125,7 @@ const createProfile = async () => {
   try {
     await ensure(userId.value)
   } catch (error) {
-    createError.value = (error as Error)?.message || 'Failed to create profile.'
+    createError.value = (error as Error)?.message || 'Failed to create supplier record.'
   } finally {
     isCreating.value = false
   }

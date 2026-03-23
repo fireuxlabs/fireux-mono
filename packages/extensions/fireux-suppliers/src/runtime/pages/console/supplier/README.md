@@ -1,7 +1,7 @@
 # Console Supplier Pages
 
 Authority: Operational
-Updated: 2026-03-22
+Updated: 2026-03-23
 Scope: `packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier/*`.
 
 This folder owns the operational supplier console workspace.
@@ -31,12 +31,10 @@ Console create family examples:
 
 ## Not Aligned Yet
 
-- supplier create has only recently been neutralized away from profile language
 - supplier console is still simpler than kitchen and portfolio console surfaces
-- public and console supplier create still reuse the same create system
-- the data behavior is already close to canon, but the page-role split is still not as explicit as the docs rule
+- generic core helpers still expose some profile-era names in view/edit toggles
 
 ## Short Version
 
 This folder is the supplier console workspace.
-Keep `create.vue` aligned with the shared console ensure-create family and keep the rest supplier-specific.
+`create.vue` now follows the shared console ensure-create family and the rest of the workspace stays supplier-specific.

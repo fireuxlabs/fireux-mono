@@ -10,7 +10,7 @@
 
     <MoleculesStateCard
       v-else
-      entity="supplier app profile"
+      entity="supplier app settings"
       kind="document"
       loading
     />
