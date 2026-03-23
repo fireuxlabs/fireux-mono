@@ -2,10 +2,12 @@
   <UPage>
     <UPageHeader
       title="Create Company"
-      description="Coming (company) creation-soon"
+      description="Create or reuse a company from a canonical place record."
     />
 
-    <UPageBody class="pagebody" />
+    <UPageBody class="pagebody">
+      <CompanyCreateSystem />
+    </UPageBody>
   </UPage>
 </template>
 

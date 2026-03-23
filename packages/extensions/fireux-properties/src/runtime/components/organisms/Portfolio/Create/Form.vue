@@ -65,27 +65,33 @@
 </template>
 
 <script setup lang="ts">
+import type {
+  ConsoleCreateMode,
+  ConsoleEnsureResult,
+} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { useRuntimePortfolioSelection } from '../../../../composables/fireux/app/portfolio-runtime/state'
 import { usePortfolioCreate } from '../../../../composables/fireux/firestore/portfolio/mutations/usePortfolioCreate'
 
 const props = withDefaults(defineProps<{
+  mode?: ConsoleCreateMode
   returnTo?: string
   cancelTo?: string
 }>(), {
+  mode: 'console',
   returnTo: '',
   cancelTo: '',
 })
 
 const emit = defineEmits<{
-  (event: 'created', portfolioId: string): void
+  (event: 'created', result: ConsoleEnsureResult): void
 }>()
 
 const route = useRoute()
 const router = useRouter()
 const { setRuntimePortfolio } = useRuntimePortfolioSelection()
-const { createPortfolio } = usePortfolioCreate()
+const { ensurePortfolio } = usePortfolioCreate()
 
 const name = ref('')
 const ownerLabel = ref('')
@@ -100,7 +106,7 @@ const resolvedReturnTo = computed(() => {
   if (explicit.startsWith('/')) return explicit
   const queryValue = String(route.query.returnTo || '').trim()
   if (queryValue.startsWith('/')) return queryValue
-  return '/console/portfolio/overview'
+  return props.mode === 'public' ? '/portfolios' : '/console/portfolio/overview'
 })
 
 const submit = async () => {
@@ -110,16 +116,20 @@ const submit = async () => {
   submitting.value = true
 
   try {
-    const portfolioId = await createPortfolio({
+    const result = await ensurePortfolio({
       name: name.value,
       owner_label: ownerLabel.value,
       region_label: regionLabel.value,
       strategy_label: strategyLabel.value,
       notes: notes.value,
+    }, {
+      mode: props.mode,
     })
 
-    setRuntimePortfolio({ portfolioId, mode: 'live' })
-    emit('created', portfolioId)
+    if (props.mode === 'console') {
+      setRuntimePortfolio({ portfolioId: result.id, mode: 'live' })
+    }
+    emit('created', result)
 
     if (route.path !== resolvedReturnTo.value) {
       await router.push(resolvedReturnTo.value)

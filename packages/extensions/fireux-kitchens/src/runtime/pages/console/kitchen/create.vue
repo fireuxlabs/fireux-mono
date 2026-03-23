@@ -5,7 +5,7 @@
     </template>
 
     <template #body>
-      <KitchenCreateSystem />
+      <KitchenCreateSystem mode="console" />
     </template>
   </UDashboardPanel>
 </template>

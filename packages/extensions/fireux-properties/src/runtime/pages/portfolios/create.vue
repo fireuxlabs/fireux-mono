@@ -7,7 +7,7 @@
     />
 
     <UPageBody class="pagebody">
-      <PortfolioCreateSystem :cancel-to="cancelTo" :return-to="returnTo" />
+      <PortfolioCreateSystem mode="public" :cancel-to="cancelTo" :return-to="returnTo" />
     </UPageBody>
   </UPage>
 </template>
@@ -42,10 +42,10 @@ useHead({ title: `${appName} | Create Portfolio` })
 
 const returnTo = computed(() => {
   const value = String(route.query.returnTo || '').trim()
-  return value.startsWith('/') ? value : '/console/portfolio/overview'
+  return value.startsWith('/') ? value : '/portfolios'
 })
 
 const cancelTo = computed(() => {
-  return returnTo.value === '/console/portfolio/overview' ? '/portfolios' : returnTo.value
+  return returnTo.value
 })
 </script>

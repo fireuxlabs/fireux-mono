@@ -10,6 +10,7 @@
     </template>
 
     <PortfolioCreateForm
+      :mode="props.mode ?? 'console'"
       :return-to="returnTo"
       :cancel-to="cancelTo"
       @created="$emit('created', $event)"
@@ -18,14 +19,19 @@
 </template>
 
 <script setup lang="ts">
+import type {
+  ConsoleCreateMode,
+  ConsoleEnsureResult,
+} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import PortfolioCreateForm from './Form.vue'
 
-defineProps<{
+const props = defineProps<{
+  mode?: ConsoleCreateMode
   returnTo?: string
   cancelTo?: string
 }>()
 
 defineEmits<{
-  (event: 'created', portfolioId: string): void
+  (event: 'created', result: ConsoleEnsureResult): void
 }>()
 </script>

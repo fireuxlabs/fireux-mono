@@ -1,10 +1,20 @@
 import { doc, getDoc } from 'firebase/firestore'
+import type {
+  ConsoleCreateMode,
+  ConsoleEnsureResult,
+  ConsoleRootEnsureResult,
+} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
+import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceSave'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { KitchenCollection, KitchenCreateInput } from '../../../../../models/kitchen.model'
+import type {
+  KitchenApp,
+  KitchenCollection,
+  KitchenCreateInput,
+} from '../../../../../models/kitchen.model'
 
 export const KitchenPayload = {
   id: '',
@@ -20,10 +30,16 @@ export type KitchenCreateOptions = {
   ensurePlace?: boolean
 }
 
+export type EnsureKitchenOptions = {
+  mode?: ConsoleCreateMode
+  existingRootId?: string | null
+}
+
 export function useKitchenCreate(options: KitchenCreateOptions = {}) {
   const { setDocument } = useFirestoreCreate()
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
   const { ensurePlaceExists } = usePlaceSave()
+  const { ensureConsole } = useConsoleEnsure()
   const db = useFirestore()
   const collectionPath =
     options.test ? 'test-kitchens' : options.collectionPath ?? 'kitchens'
@@ -91,5 +107,45 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     return resolvedId
   }
 
-  return { createKitchen }
+  async function ensureKitchen(
+    input: KitchenCreateInput & { place?: PlaceUpsertInput },
+    ensureOptions: EnsureKitchenOptions = {}
+  ): Promise<ConsoleEnsureResult> {
+    const resolvedId = String(
+      ensureOptions.existingRootId || input?.id || ''
+    ).trim()
+
+    const ensureRoot = async (): Promise<ConsoleRootEnsureResult> => {
+      if (!resolvedId) {
+        throw new Error('Kitchen id is required')
+      }
+
+      const rootRef = doc(db, collectionPath, resolvedId)
+      const rootSnap = await getDoc(rootRef)
+      if (rootSnap.exists()) {
+        return { id: resolvedId, created: false }
+      }
+
+      await createKitchen({
+        ...input,
+        id: resolvedId,
+      })
+
+      return { id: resolvedId, created: true }
+    }
+
+    return ensureConsole<KitchenApp>({
+      type: 'kitchen',
+      mode: ensureOptions.mode ?? 'console',
+      ensureRoot,
+      createOverlay: async () =>
+        ({
+          admin_ids: [] as string[],
+          join_requests: [] as string[],
+          console_enabled: true,
+        }) as KitchenApp,
+    })
+  }
+
+  return { createKitchen, ensureKitchen }
 }

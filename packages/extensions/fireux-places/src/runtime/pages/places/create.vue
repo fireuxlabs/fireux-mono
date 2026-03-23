@@ -5,19 +5,10 @@
       description="Create a place from Google if it is not in our database."
     />
 
-    <!-- section consumer -->
     <UPageBody class="pagebody">
-      <PlaceSearchSection
+      <PlaceCreateSystem
         :type="placeType"
-        @confirmed="onConfirmed"
-      />
-
-      <UAlert
-        color="neutral"
-        variant="soft"
-        icon="i-lucide-info"
-        title="Tip"
-        description="After confirmation, you’ll be redirected to the place detail page."
+        @created="onCreated"
       />
     </UPageBody>
   </UPage>
@@ -56,8 +47,8 @@ const placeType = computed<string | null>(() =>
   normalizePlaceType(route.query.type)
 )
 
-async function onConfirmed(payload: { placeId: string }) {
-  const id = payload?.placeId
+async function onCreated(payload: { id: string }) {
+  const id = payload?.id
   if (!id) return
   await router.push(`/places/${encodeURIComponent(id)}`)
 }
