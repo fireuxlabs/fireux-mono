@@ -49,7 +49,7 @@ const props = withDefaults(
 
 const fireux = useFireUXConfig()
 const { isAuthenticated, signOutUser } = useAuth()
-const { currentUser, interface, isLoading } = useUser()
+const { currentUser, interface: userInterface, isLoading } = useUser()
 
 const signOutLoading = ref(false)
 
@@ -57,7 +57,7 @@ const pillUser = computed((): UserCard.Card | undefined => {
   if (isLoading.value) return undefined
   const user = currentUser.value
   if (!user) return undefined
-  return interface(user)
+  return userInterface(user)
 })
 
 const avatarFallback = computed(() => {

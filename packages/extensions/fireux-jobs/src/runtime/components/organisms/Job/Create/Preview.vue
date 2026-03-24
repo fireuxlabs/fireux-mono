@@ -125,8 +125,8 @@ const props = defineProps<{
   form: JobCreateForm
 }>()
 
-const { coreProfile, interface } = useAgent()
-const agentCard = computed(() => (coreProfile.value ? interface(coreProfile.value) : null))
+const { coreProfile, interface: agentInterface } = useAgent()
+const agentCard = computed(() => (coreProfile.value ? agentInterface(coreProfile.value) : null))
 
 const title = computed(() => props.form.title.trim() || 'Untitled job')
 const description = computed(() => props.form.description.trim())

@@ -188,12 +188,14 @@ const documentsPath = useRuntimePortfolioPath(runtimePortfolio, 'documents')
 
 const { collection: documentCollection } = usePortfolioDocumentCollection(runtimePortfolio)
 const { collection: linkCollection } = usePortfolioDocumentLinkCollection(runtimePortfolio)
-const { interface } = useDocumentInterface()
+const { interface: documentInterface } = useDocumentInterface()
 
 const documents = computed(() => documentCollection.value)
 const links = computed(() => linkCollection.value)
 const cards = computed(() =>
-  documents.value.map((entry) => interface(entry)).filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
+  documents.value
+    .map((entry) => documentInterface(entry))
+    .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
 )
 
 const linkCountByDocument = computed(() => {

@@ -13,12 +13,10 @@ export { useRuntimeKitchenSelection } from './state'
 export type { RuntimeKitchenMode } from './shared'
 
 /**
- * Runtime kitchen resolver (composer)
+ * Canon kitchen console seam.
  *
- * Priority:
- * - live      -> kitchens/{kitchenId}/...
- * - test      -> test-kitchens/{kitchenId}/...
- * - read-only -> scenario only (no Firestore)
+ * Root kitchen identity stays at `/kitchens/<id>` or `/test-kitchens/<id>`.
+ * Console-owned data lives under the app-hosted kitchen scope.
  */
 export function useRuntimeKitchen(params?: UseRuntimeKitchenParams) {
   const { appId } = useFireUXConfig()
@@ -57,14 +55,12 @@ export function useRuntimeKitchen(params?: UseRuntimeKitchenParams) {
     documentCollectionPath,
     kitchenCollectionPath,
 
-    // Canon runtime contract
     doc,
     pending,
     isLoading,
     isReady,
     data,
 
-    // Backward-compatible aliases for existing kitchen usage
     kitchen: doc,
   }
 }

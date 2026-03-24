@@ -126,7 +126,7 @@ definePageMeta({
 
 const runtimePortfolio = useRuntimePortfolio()
 const { collection } = usePortfolioComplianceRecordCollection(runtimePortfolio)
-const { interface } = useComplianceInterface()
+const { interface: complianceInterface } = useComplianceInterface()
 const { createTask } = useTaskCreate(runtimePortfolio)
 const { fromComplianceRecord } = useTaskProjection(runtimePortfolio)
 const compliancePath = useRuntimePortfolioPath(runtimePortfolio, 'compliance-records')
@@ -137,7 +137,7 @@ const isReadOnly = computed(() => runtimePortfolio.isReadOnly.value)
 
 const cards = computed(() =>
   collection.value
-    .map((entry) => interface(entry))
+    .map((entry) => complianceInterface(entry))
     .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
 )
 

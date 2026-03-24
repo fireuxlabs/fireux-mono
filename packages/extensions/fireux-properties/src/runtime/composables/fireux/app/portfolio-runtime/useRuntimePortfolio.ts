@@ -4,18 +4,21 @@ import { useRuntimePortfolioSelection } from './state'
 import {
   resolveRuntimePortfolioDataCollectionPath,
   resolveRuntimePortfolioDocumentCollectionPath,
-  resolveRuntimePortfolioPath as resolveRuntimePortfolioScopedPath,
+  resolveRuntimePortfolioPath,
 } from './shared'
-import {
-  useRuntimePortfolioContext,
-  type UseRuntimePortfolioParams,
-} from './useRuntimePortfolioContext'
+import { useRuntimePortfolioContext, type UseRuntimePortfolioParams } from './useRuntimePortfolioContext'
 import { useRuntimePortfolioDocument } from './useRuntimePortfolioDocument'
 import { useRuntimePortfolioData } from './useRuntimePortfolioData'
 
 export { useRuntimePortfolioSelection } from './state'
 export type { RuntimePortfolioMode } from './shared'
 
+/**
+ * Canon portfolio console seam.
+ *
+ * Root portfolio identity stays at `/portfolios/<id>` or `/test-portfolios/<id>`.
+ * Console-owned data lives under the app-hosted portfolio scope.
+ */
 export function useRuntimePortfolio(params?: UseRuntimePortfolioParams) {
   const { appId } = useFireUXConfig()
   const selection = useRuntimePortfolioSelection()
@@ -52,14 +55,12 @@ export function useRuntimePortfolio(params?: UseRuntimePortfolioParams) {
     documentCollectionPath,
     portfolioCollectionPath,
 
-    // Canon runtime contract
     doc,
     pending,
     isLoading,
     isReady,
     data,
 
-    // Backward-compatible aliases
     portfolio: doc,
     scenario,
   }
@@ -68,14 +69,14 @@ export function useRuntimePortfolio(params?: UseRuntimePortfolioParams) {
 export type RuntimePortfolioRef = ReturnType<typeof useRuntimePortfolio>
 
 export function useRuntimePortfolioPath(
-  runtimePortfolio: RuntimePortfolioRef,
+  portfolioConsole: RuntimePortfolioRef,
   suffix: string
 ): Ref<string> {
   return computed(() => {
-    const portfolioId = String(runtimePortfolio.id.value || '').trim()
-    if (!portfolioId || runtimePortfolio.isReadOnly.value) return ''
-    return resolveRuntimePortfolioScopedPath(
-      runtimePortfolio.collectionPath.value,
+    const portfolioId = String(portfolioConsole.id.value || '').trim()
+    if (!portfolioId || portfolioConsole.isReadOnly.value) return ''
+    return resolveRuntimePortfolioPath(
+      portfolioConsole.collectionPath.value,
       portfolioId,
       suffix
     )

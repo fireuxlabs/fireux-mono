@@ -51,9 +51,9 @@
 import { computed, ref } from 'vue'
 import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent.ts'
 
-const { coreProfile, pending, interface } = useAgent()
+const { coreProfile, pending, interface: agentInterface } = useAgent()
 
-const previewCard = computed(() => (coreProfile.value ? interface(coreProfile.value) : null))
+const previewCard = computed(() => (coreProfile.value ? agentInterface(coreProfile.value) : null))
 const isLoading = computed(() => Boolean(pending.value))
 const hasPreview = computed(() => Boolean(previewCard.value))
 

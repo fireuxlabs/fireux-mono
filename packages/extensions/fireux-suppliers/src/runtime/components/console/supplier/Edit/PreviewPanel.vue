@@ -51,9 +51,9 @@
 import { computed, ref } from 'vue'
 import { useSupplier } from '../../../../composables/supplier/ops/useSupplier'
 
-const { coreSupplier, pending, interface } = useSupplier()
+const { coreSupplier, pending, interface: supplierInterface } = useSupplier()
 
-const previewCard = computed(() => (coreSupplier.value ? interface(coreSupplier.value) : null))
+const previewCard = computed(() => (coreSupplier.value ? supplierInterface(coreSupplier.value) : null))
 const isLoading = computed(() => Boolean(pending.value))
 const hasPreview = computed(() => Boolean(previewCard.value))
 

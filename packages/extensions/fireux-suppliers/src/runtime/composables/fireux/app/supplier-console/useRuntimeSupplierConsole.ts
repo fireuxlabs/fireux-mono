@@ -4,6 +4,10 @@ import { computed } from 'vue'
 import { useSupplierFetch } from '../../../supplier/useSupplierFetch'
 import { useRuntimeSupplier } from './useRuntimeSupplier'
 
+/**
+ * Canon supplier console shell.
+ * Wraps the console seam with nav, stats, and overview surface data.
+ */
 export function useRuntimeSupplierConsole() {
   const runtime = useRuntimeSupplier()
   const nav = useNav(['console'])

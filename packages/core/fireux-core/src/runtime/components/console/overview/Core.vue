@@ -50,7 +50,7 @@
 import { computed } from 'vue'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
-const { currentUser, interface, isLoading } = useUser()
+const { currentUser, interface: userInterface, isLoading } = useUser()
 
 const profileComplete = computed<number | null>(() => {
   if (isLoading.value) return null
@@ -74,7 +74,7 @@ const pill = computed(() => {
   if (isLoading.value) return null
   const user = currentUser.value
   if (!user) return null
-  return interface(user)
+  return userInterface(user)
 })
 
 const showProfileCompletedness = computed(() => {

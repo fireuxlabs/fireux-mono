@@ -7,6 +7,10 @@ import { computed } from 'vue'
 import { usePortfolioPropertyCollection } from '../../firestore/property/fetch/usePortfolioPropertyCollection'
 import { useRuntimePortfolio } from './useRuntimePortfolio'
 
+/**
+ * Canon portfolio console shell.
+ * Wraps the console seam with nav, stats, and overview surface data.
+ */
 export function useRuntimePortfolioConsole() {
   const runtime = useRuntimePortfolio()
   const nav = useNav(['console'])

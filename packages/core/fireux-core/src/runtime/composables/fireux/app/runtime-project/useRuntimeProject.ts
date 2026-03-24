@@ -3,24 +3,23 @@ import { doc, type DocumentSnapshot } from 'firebase/firestore'
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, ref, unref, type Ref } from 'vue'
 import type { ProjectDoc } from '../../../../models/system/project.model'
-import { normalizeRuntimeMode, normalizeString } from '../../runtime/runtime.normalize'
+import { normalizeString } from '../../runtime/runtime.normalize'
 import type { RuntimeMode } from '../../runtime/runtime.types'
 import { useFireUXConfig } from '../FireUXConfig'
 import { getReadOnlyProjectScenario } from './read-only-scenarios'
 import { useRuntimeProjectSelection } from './state'
+import {
+  useRuntimeProjectContext,
+  type UseRuntimeProjectParams,
+} from './useRuntimeProjectContext'
 
+export { useRuntimeProjectSelection } from './state'
 export type RuntimeProjectMode = RuntimeMode
 
 export type RuntimeProjectDoc = Partial<ProjectDoc> & Record<string, unknown> & {
   id?: string
   name?: string
   project_name?: string
-}
-
-export type UseRuntimeProjectParams = {
-  projectId?: string | Ref<string | null | undefined>
-  mode?: RuntimeProjectMode | Ref<RuntimeProjectMode | null | undefined>
-  collectionPath?: string | Ref<string | null | undefined>
 }
 
 const ROOT_PROJECT_COLLECTION_PATH = 'projects'
@@ -63,6 +62,12 @@ function guardDocumentPromise(
   })
 }
 
+/**
+ * Canon project console seam.
+ *
+ * Root project identity stays at `/projects/<id>` or `/test-projects/<id>`.
+ * App-hosted project console state lives under the app project scope.
+ */
 export function useRuntimeProject(params?: UseRuntimeProjectParams) {
   const cfg = useFireUXConfig()
   const runtimeConfig = useRuntimeConfig() as any
@@ -73,18 +78,7 @@ export function useRuntimeProject(params?: UseRuntimeProjectParams) {
     normalizeString(cfg.ecosystem)
   )
 
-  const idSource = computed(() =>
-    params?.projectId !== undefined
-      ? normalizeString(unref(params.projectId))
-      : normalizeString(selection.runtimeProjectId.value)
-  )
-  const modeSource = computed(() =>
-    params?.mode !== undefined ? unref(params.mode) : selection.runtimeProjectMode.value
-  )
-
-  const id = computed(() => normalizeString(idSource.value))
-  const mode = computed<RuntimeProjectMode>(() => normalizeRuntimeMode(modeSource.value))
-  const isReadOnly = computed(() => mode.value === 'read-only')
+  const { id, mode, isReadOnly } = useRuntimeProjectContext(params, selection)
   const documentCollectionPath = computed(() => {
     if (params?.collectionPath !== undefined) {
       const explicitPath = normalizeString(unref(params.collectionPath))
@@ -149,6 +143,15 @@ export function useRuntimeProject(params?: UseRuntimeProjectParams) {
   const ecosystem = computed(() => String(cfg.ecosystem || '').trim())
   const appId = computed(() => String(cfg.appId || '').trim())
   const appName = computed(() => String(cfg.appName || '').trim())
+  const data = {
+    name,
+    ecosystem,
+    appId,
+    appName,
+    firebaseProjectId: runtimeProjectId,
+    hasDoc,
+    readOnlyScenario,
+  }
 
   return {
     id,
@@ -159,27 +162,18 @@ export function useRuntimeProject(params?: UseRuntimeProjectParams) {
     projectCollectionPath,
 
     doc: project,
-    project,
     pending,
     isLoading,
     isReady,
-    hasDoc,
+    data,
 
+    project,
+    hasDoc,
     name,
     ecosystem,
     appId,
     appName,
     firebaseProjectId: runtimeProjectId,
     readOnlyScenario,
-
-    data: {
-      name,
-      ecosystem,
-      appId,
-      appName,
-      firebaseProjectId: runtimeProjectId,
-      hasDoc,
-      readOnlyScenario,
-    },
   }
 }

@@ -41,30 +41,34 @@ type FireuxConsolePayload = {
   }>
 }
 
+/**
+ * Canon project console shell.
+ * Wraps the console seam with nav, stats, endpoint payloads, and overview data.
+ */
 export function useRuntimeProjectConsole() {
-  const projectRuntime = useRuntimeProject()
-  const hasProjectSelection = computed(() => Boolean(projectRuntime.id.value))
+  const runtime = useRuntimeProject()
+  const hasProjectSelection = computed(() => Boolean(runtime.id.value))
   const appCollectionPath = computed(() =>
-    projectRuntime.mode.value === 'live' ? 'apps' : 'test-apps'
+    runtime.mode.value === 'live' ? 'apps' : 'test-apps'
   )
   const ecosystemCollectionPath = computed(() =>
-    projectRuntime.mode.value === 'live' ? 'ecosystems' : 'test-ecosystems'
+    runtime.mode.value === 'live' ? 'ecosystems' : 'test-ecosystems'
   )
   const { apps } = useAppCollection(appCollectionPath)
   const { ecosystems } = useEcosystemCollection(ecosystemCollectionPath)
-  const projectId = computed(() => normalizeString(projectRuntime.id.value))
-  const readOnlyScenario = computed(() => projectRuntime.readOnlyScenario.value)
+  const projectId = computed(() => normalizeString(runtime.id.value))
+  const readOnlyScenario = computed(() => runtime.readOnlyScenario.value)
 
   const consolePayload = ref<FireuxConsolePayload | null>(null)
   const consolePending = ref(false)
   const consoleError = ref('')
 
   const consoleEndpointUrl = computed(() =>
-    normalizeString((projectRuntime.doc.value as any)?.console_endpoint_url)
+    normalizeString((runtime.doc.value as any)?.console_endpoint_url)
   )
 
   watch(
-    [projectId, consoleEndpointUrl, computed(() => projectRuntime.mode.value)],
+    [projectId, consoleEndpointUrl, computed(() => runtime.mode.value)],
     async ([nextProjectId, nextEndpointUrl, nextMode]) => {
       consolePayload.value = null
       consoleError.value = ''
@@ -268,12 +272,12 @@ export function useRuntimeProjectConsole() {
   } as const
 
   return createScopeConsole({
-    runtime: projectRuntime,
+    runtime,
     navItems,
     stats,
     actions,
     extra: {
-      project: projectRuntime,
+      project: runtime,
       ecosystems,
       apps,
       projectEcosystems,

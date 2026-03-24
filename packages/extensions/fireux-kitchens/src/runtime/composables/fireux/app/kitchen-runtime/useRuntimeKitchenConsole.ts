@@ -3,6 +3,10 @@ import { createScopeConsole } from 'fireux-core/runtime/composables/fireux/app/c
 import { useNav } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useNav'
 import { useRuntimeKitchen } from './useRuntimeKitchen'
 
+/**
+ * Canon kitchen console shell.
+ * Wraps the console seam with nav, stats, and overview surface data.
+ */
 export function useRuntimeKitchenConsole() {
   const runtime = useRuntimeKitchen()
   const nav = useNav(['console'])

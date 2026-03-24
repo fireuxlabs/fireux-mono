@@ -151,11 +151,11 @@ const tasksPath = useRuntimePortfolioPath(runtimePortfolio, 'tasks')
 const { collection } = usePortfolioTaskCollection(runtimePortfolio)
 const { createTask } = useTaskCreate(runtimePortfolio)
 const { updateTask } = useTaskUpdate(runtimePortfolio)
-const { interface } = useTaskInterface()
+const { interface: taskInterface } = useTaskInterface()
 
 const cards = computed(() =>
   collection.value
-    .map((entry) => interface(entry))
+    .map((entry) => taskInterface(entry))
     .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
 )
 

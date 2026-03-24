@@ -33,7 +33,7 @@ import { useAppUserCollection } from '../../../composables/fireux/firestore/core
 import type { UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 const { pending, fulfilled } = useAppUserCollection()
-const { interface } = useUserInterface()
+const { interface: userInterface } = useUserInterface()
 
 const adminEntries = computed(() =>
   (fulfilled?.value ?? []).filter(
@@ -46,7 +46,7 @@ const adminCards = computed(() => {
   const result: Array<{ key: string; card: UserCard.Card }> = []
 
   entries.forEach((record, index) => {
-    const payload = interface(record as any)
+    const payload = userInterface(record as any)
     if (!payload) return
 
     result.push({

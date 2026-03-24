@@ -96,9 +96,9 @@ const appId = computed(() => {
 
 const { app: currentApp } = useAppFetch(appId)
 
-const { interface } = useAppInterface()
+const { interface: appInterface } = useAppInterface()
 
-const appProfile = computed(() => (currentApp.value ? interface(currentApp.value) : null))
+const appProfile = computed(() => (currentApp.value ? appInterface(currentApp.value) : null))
 
 const { users: appUsers, pending: usersPending } = useAppUserCollection(appId)
 const { interface: userToCardByValue } = useUserInterface()
