@@ -64,7 +64,11 @@ export function useChefInterface(
       to: id ? `/${chefConfig.collectionName}/${encodeURIComponent(id)}` : '',
       avatarUrl,
       secondaryAvatarUrl,
-      displayName: resolveProfileDisplayName([u?.display_name]),
+      displayName: resolveProfileDisplayName([
+        u?.display_name,
+        safeString((p as any).display_name).trim(),
+        safeString((p as any).name).trim(),
+      ]),
       title: safeString((p as any).title).trim(),
       summary,
       badges,
@@ -76,7 +80,7 @@ export function useChefInterface(
   }
 
   function buildInterface(target?: ChefTarget | null, userOverride?: UserLike | null): ChefCard.Card | null {
-    const p = target ?? profile?.coreProfile.value ?? null
+    const p = target ?? profile?.coreProfile?.value ?? null
     if (!p) return null
 
     const mapped = map(p, target?.user ?? userOverride ?? userRef?.value ?? null)

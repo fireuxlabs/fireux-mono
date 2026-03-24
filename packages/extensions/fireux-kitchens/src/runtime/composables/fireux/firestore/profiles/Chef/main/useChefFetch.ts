@@ -19,7 +19,7 @@ export function useChefFetch() {
 
   const pending = computed(() =>
     coreChefsHydrated.value === undefined ||
-    appChefsHydrated?.value === undefined
+    Boolean(appChefsHydrated && appChefsHydrated.value === undefined)
   )
 
   return {

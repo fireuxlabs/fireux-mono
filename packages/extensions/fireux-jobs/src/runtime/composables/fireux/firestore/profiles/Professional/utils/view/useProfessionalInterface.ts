@@ -45,7 +45,7 @@ export function useProfessionalInterface(
     target?: ProfessionalTarget | null | undefined,
     userOverride?: UserLike | null
   ): ProfessionalCard.Card | null {
-    const p = target ?? profile?.coreProfile.value ?? null
+    const p = target ?? profile?.coreProfile?.value ?? null
     if (!p) return null
 
     const user = target?.user ?? userOverride ?? userRef?.value ?? null

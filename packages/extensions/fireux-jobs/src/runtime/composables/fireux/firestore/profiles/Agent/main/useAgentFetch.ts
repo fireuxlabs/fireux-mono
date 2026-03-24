@@ -19,7 +19,7 @@ export function useAgentFetch() {
 
   const pending = computed(() =>
     coreAgentsHydrated.value === undefined ||
-    appAgentsHydrated?.value === undefined
+    Boolean(appAgentsHydrated && appAgentsHydrated.value === undefined)
   )
 
   return {

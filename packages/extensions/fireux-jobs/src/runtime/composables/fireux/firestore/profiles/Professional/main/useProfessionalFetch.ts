@@ -19,7 +19,7 @@ export function useProfessionalFetch() {
 
   const pending = computed(() =>
     coreProfessionalsHydrated.value === undefined ||
-    appProfessionalsHydrated?.value === undefined
+    Boolean(appProfessionalsHydrated && appProfessionalsHydrated.value === undefined)
   )
 
   return {

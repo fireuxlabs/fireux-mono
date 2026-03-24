@@ -1,26 +1,26 @@
 <template>
-  <div />
+  <UDashboardPanel id="console-supplier-entry">
+    <template #header>
+      <LayoutsConsoleNavbar title="Supplier Console" />
+    </template>
+
+    <template #body>
+      <section class="space-y-4">
+        <p class="text-sm text-dimmed">
+          Choose your live supplier console or open a read-only supplier scenario.
+        </p>
+
+        <SupplierEntry />
+      </section>
+    </template>
+  </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
-import { useRuntimeSupplier } from '../../../composables/fireux/app/supplier-console/useRuntimeSupplier'
+import SupplierEntry from '../../../components/console/supplier/Entry.vue'
 
 definePageMeta({
   layout: 'console',
   requiresAuth: true,
 })
-
-const runtime = useRuntimeSupplier()
-
-const deadline = Date.now() + 1500
-while (runtime.pending.value && Date.now() < deadline) {
-  await new Promise((resolve) => setTimeout(resolve, 50))
-}
-
-if (runtime.doc.value) {
-  await navigateTo('/console/supplier/overview', { replace: true })
-} else {
-  await navigateTo('/console/supplier/create', { replace: true })
-}
 </script>

@@ -6,6 +6,27 @@
     </template>
 
     <template #body>
+      <section v-if="hubCount > 0" class="space-y-4">
+        <p class="text-sm text-dimmed">
+          Choose which console family you want to enter for this app.
+        </p>
+
+        <UCard>
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <UButton
+              v-for="hub in consoleChildren"
+              :key="hub.key"
+              :to="hub.path"
+              variant="soft"
+              color="primary"
+              block
+            >
+              {{ toConsoleScopeLabel(hub.key) }}
+            </UButton>
+          </div>
+        </UCard>
+      </section>
+
       <UAlert
         v-if="hubCount === 0"
         color="neutral"
@@ -18,9 +39,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watchEffect } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { discoverConsoleChildren } from '../../composables/fireux/app/routing/consoleRoutes'
+import {
+  discoverConsoleChildren,
+  toConsoleScopeLabel,
+} from '../../composables/fireux/app/routing/consoleRoutes'
 
 definePageMeta({
   layout: 'console',
@@ -30,12 +54,4 @@ definePageMeta({
 const router = useRouter()
 const consoleChildren = computed(() => discoverConsoleChildren(router.getRoutes()))
 const hubCount = computed(() => consoleChildren.value.length)
-
-watchEffect(() => {
-  if (hubCount.value < 1) return
-  if (router.currentRoute.value.path !== '/console') return
-
-  const target = consoleChildren.value[0]?.path || ''
-  if (target) router.replace(target)
-})
 </script>

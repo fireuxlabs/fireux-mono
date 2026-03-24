@@ -57,7 +57,12 @@ const pillUser = computed((): UserCard.Card | undefined => {
   if (isLoading.value) return undefined
   const user = currentUser.value
   if (!user) return undefined
-  return userInterface(user)
+  const card = userInterface(user)
+  if (!card) return undefined
+  return {
+    ...card,
+    to: '/dashboard/user-profile',
+  }
 })
 
 const avatarFallback = computed(() => {

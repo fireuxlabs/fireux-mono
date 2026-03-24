@@ -1,15 +1,27 @@
 import type { NavItem } from '../nav.types'
 
-export function filterConsoleScopeNavItems(items: NavItem[], routePath: string) {
-  const match = String(routePath || '').trim().match(/^\/console\/([^/]+)\/create$/)
-  if (!match) return items
+function normalizePath(value: unknown): string {
+  return String(value || '').trim().replace(/\/+$/, '')
+}
 
-  const scopeRoot = `/console/${match[1]}`
+export function filterConsoleScopeNavItems(items: NavItem[], routePath: string) {
+  const currentPath = normalizePath(routePath)
+  if (currentPath === '/console') return []
+
+  const scopeMatch = currentPath.match(/^\/console\/([^/]+)(?:\/.*)?$/)
+  if (!scopeMatch) return items
+
+  const scopeRoot = `/console/${scopeMatch[1]}`
   const createPath = `${scopeRoot}/create`
+  const isScopeEntryRoute = currentPath === scopeRoot
+  const isCreateRoute = currentPath === createPath
 
   return items.filter((item) => {
-    const path = String(item.to || '').trim().replace(/\/+$/, '')
-    if (!path.startsWith(`${scopeRoot}/`)) return true
+    const path = normalizePath(item.to)
+    if (!path.startsWith('/console/')) return true
+    if (path !== scopeRoot && !path.startsWith(`${scopeRoot}/`)) return false
+    if (isScopeEntryRoute) return false
+    if (!isCreateRoute) return true
     return path === createPath
   })
 }

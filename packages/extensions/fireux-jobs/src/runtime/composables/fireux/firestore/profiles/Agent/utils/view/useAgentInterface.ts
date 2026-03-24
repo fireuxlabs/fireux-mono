@@ -95,7 +95,7 @@ export function useAgentInterface(
   function buildInterface(
     target?: AgentCore | AgentResolved | null | undefined
   ): AgentCard.Card | null {
-    const p = target ?? profile?.coreProfile.value ?? null
+    const p = target ?? profile?.coreProfile?.value ?? null
     if (!p) return null
     const u = resolveUser(target as AgentCore | AgentResolved | null)
     const mapped = map(p, u)
