@@ -1,7 +1,9 @@
 <template>
   <ConsoleEntityCTA
     title="Project console"
-    my-label="My Project"
+    entity="project"
+    console-to="/console/projects/overview"
+    my-label="My Project Consoles"
     test-label="Test Project"
     read-only-label="Read-only Projects"
     learn-more-to="/projects/learn-more"

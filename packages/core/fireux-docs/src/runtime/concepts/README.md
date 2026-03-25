@@ -1,7 +1,7 @@
 # Concepts Directory
 
 Authority: Operational
-Updated: 2026-03-23
+Updated: 2026-03-25
 Scope: `packages/core/fireux-docs/src/runtime/concepts/*`.
 
 Learn how cross-cutting runtime concepts are documented when they span pages, components, composables, and models.
@@ -22,6 +22,7 @@ It is a cross-cutting behaviour layer.
 ## Current Concepts
 
 - `create/`
+- `connect/`
 - `read/`
 - `update/`
 
@@ -41,6 +42,11 @@ It is a cross-cutting behaviour layer.
 - edit-family boundaries
 - stored-truth decisions in composables
 - public entity versus overlay versus scoped write targets
+
+`connect/` is now also a real runtime concept because relationship and authority spans:
+- public entity versus console overlay versus relationship link
+- profile and membership surfaces
+- permission meaning across pages, components, composables, and models
 
 ## What Belongs Here
 
@@ -66,4 +72,4 @@ It is a cross-cutting behaviour layer.
 
 `runtime/concepts/` is where cross-cutting runtime behaviour gets a home.
 
-Right now, `create/`, `read/`, and `update/` are the first real concepts in that layer.
+Right now, `create/`, `connect/`, `read/`, and `update/` are the real concepts in that layer.

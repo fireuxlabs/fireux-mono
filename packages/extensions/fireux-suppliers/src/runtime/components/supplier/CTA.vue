@@ -1,7 +1,9 @@
 <template>
   <ConsoleEntityCTA
     title="Supplier console"
-    my-label="My Supplier"
+    entity="supplier"
+    console-to="/console/supplier/overview"
+    my-label="My Supplier Consoles"
     test-label=""
     read-only-label="Read-only Suppliers"
     learn-more-to="/suppliers/learn-more"

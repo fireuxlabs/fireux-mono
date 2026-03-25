@@ -12,8 +12,10 @@
         </template>
       </UDashboardSidebar>
 
-      <div class="w-full h-screen overflow-y-auto p-0 lg:p-4 bg-elevated/50">
-        <NuxtPage />
+      <div class="w-full h-screen overflow-y-auto bg-elevated/50">
+        <div class="min-h-full p-0 lg:p-4">
+          <NuxtPage />
+        </div>
       </div>
     </UDashboardGroup>
   </ClientOnly>

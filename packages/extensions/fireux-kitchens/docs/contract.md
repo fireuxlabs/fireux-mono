@@ -1,5 +1,6 @@
 # fireux-kitchens Contract
 Authority: Tier1 (Authoritative)
+Updated: 2026-03-25
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -18,6 +19,8 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 
 ## 3) Identity rule
 - Live kitchen identity is place-backed and id-based; console runtime selection is state-based.
+- Chef association (`chef.kitchen_ids`) and workplace/profile links are relationship signals only.
+- Kitchen console authority comes from console governance (`admin_ids`, `console_enabled`) or allowed canonical claim rules, not from profile association alone.
 
 ## 4) Collections + paths
 - Live: `kitchens/{kitchenId}`
@@ -69,3 +72,4 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 10) Non-goals / prohibited fallbacks
 - No silent fallback switching between live/test/read-only.
 - No silent fallback selection of active kitchen inside console flows.
+- No treating profile linkage or workplace history as console permission.

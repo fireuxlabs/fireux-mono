@@ -1,5 +1,6 @@
 # fireux-suppliers Contract
 Authority: Tier1 (Authoritative)
+Updated: 2026-03-25
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -10,6 +11,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 
 ## 3) Identity rule
 - Supplier identity is id-based (`supplier.id` is canonical).
+- Supplier relationship or operator linkage is not console authority by itself.
 
 ## 4) Collections + paths
 - `suppliers/{supplierId}`
@@ -23,6 +25,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Current id-based routes:
   - `/suppliers`
   - `/suppliers/[id]`
+  - `/console/supplier/*`
   - `/suppliers/admin/[id]`
   - `/dashboard/supplier/*`
 
@@ -46,3 +49,4 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 10) Non-goals / prohibited fallbacks
 - No silent fallback to alternate supplier ids or legacy owner modules for canonical selection.
 - No implicit routing substitution when supplier id is missing.
+- No treating supplier relationship or operator linkage as console permission.

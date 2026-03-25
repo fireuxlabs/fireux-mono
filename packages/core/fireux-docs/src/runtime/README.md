@@ -1,7 +1,7 @@
 # Runtime Directory
 
 Authority: Operational
-Updated: 2026-03-23
+Updated: 2026-03-25
 Scope: `packages/*/fireux-*/src/runtime` only.
 Does not apply to consuming app `app/`, `server/`, or root `public/` directories.
 
@@ -47,6 +47,7 @@ Not every package needs every runtime subdirectory.
 
 Current examples:
 - `concepts/create/`
+- `concepts/connect/`
 - `concepts/read/`
 - `concepts/update/`
 

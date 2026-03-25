@@ -1,7 +1,9 @@
 <template>
   <ConsoleEntityCTA
     title="Portfolio console"
-    my-label="My Portfolios"
+    entity="portfolio"
+    console-to="/console/portfolio/overview"
+    my-label="My Portfolio Consoles"
     test-label="Test Portfolio"
     read-only-label="Read-only Portfolios"
     learn-more-to="/portfolios/learn-more"

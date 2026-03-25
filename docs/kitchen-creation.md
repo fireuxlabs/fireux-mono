@@ -1,5 +1,5 @@
 # Kitchen Creation Report
-Updated: 2026-03-02
+Updated: 2026-03-25
 Authority: Tier2 (Operational reference; canonical runtime policy is in `docs/runtime-contract.md`)
 
 Generated: 2026-02-18
@@ -9,11 +9,27 @@ Document the full current state of kitchen creation and define a consistent Kitc
 
 ## Executive Summary
 - `/kitchens/create` is now wired to the real creation flow (`KitchenCreateSystem`).
+- `/kitchens/create` is public create: it creates the root public kitchen entity.
+- `/console/kitchen/create` is console activation: it ensures the app-hosted kitchen console overlay.
 - Kitchen creation is place-backed by default: `useKitchenCreate()` now enforces place existence for live kitchens.
 - Kitchens remain thin marker docs; place fields are sourced from `places/{id}` via read-time hydration.
-- `createKitchen()` is reused outside kitchens (jobs/professional flows), so payload and relationship rules must stay consistent across extensions.
+- Relationship flows may still reference or ensure kitchens from outside the kitchens package, but that must not be treated as console authority.
 
-## Current User Path (Now)
+## Three Truths
+
+Kitchen has three separate truths:
+- it exists as a public kitchen
+- it can be operated as a kitchen console
+- it can be connected to a person
+
+That means:
+- `Create Kitchen` creates the public kitchen
+- `Activate Kitchen Console` ensures the app-hosted kitchen console
+- `Add Kitchen To Profile` or workplace linking is relationship only
+
+Relationship is not console authority.
+
+## Current User Path (Public Create)
 1. CTA links user to `/kitchens/create`.
 2. Create page renders `KitchenCreateSystem`.
 3. User confirms a place from search.
@@ -24,9 +40,11 @@ Document the full current state of kitchen creation and define a consistent Kitc
 
 ### 1) Entry Points and Route Surfaces
 - `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/create.vue`
-  - Kitchen create route; now mounts `KitchenCreateSystem`.
+  - Public kitchen create route; mounts `KitchenCreateSystem` in `public` mode.
+- `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/create.vue`
+  - Console kitchen activation route; mounts `KitchenCreateSystem` in `console` mode.
 - `packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/CTA.vue`
-  - Main CTA that routes to `/kitchens/create` when user has no linked kitchens.
+  - Shared chooser surface for public and console entry.
 - `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/learn-more.vue`
   - “Create a kitchen” button also routes to `/kitchens/create`.
 - `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/index.vue`
@@ -36,7 +54,8 @@ Document the full current state of kitchen creation and define a consistent Kitc
 - `packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Create/System.vue`
   - Creation workflow UI.
   - Uses `PlaceSearchSection` and `useKitchenCreate`.
-  - Checks for existing `kitchens/{id}` and shows “already exists” state.
+  - Supports `public` and `console` modes.
+  - In console mode, ensures the app overlay and links the kitchen to the chef profile as an association.
 - `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenCreate.ts`
   - Canon kitchen create mutation.
   - Writes to `kitchens` by default (`test-kitchens` if options specify).
@@ -96,7 +115,8 @@ Document the full current state of kitchen creation and define a consistent Kitc
 - `packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Create/Location.vue`
 - `packages/extensions/fireux-jobs/src/runtime/components/organisms/profiles/Professional/Fields/ExperienceSection.vue`
 
-These create kitchen docs as side effects when selecting workplaces/experience locations.
+These may ensure public kitchen docs as side effects when selecting workplaces/experience locations.
+They do not create the kitchen console overlay.
 
 ## Runtime Flow (Current)
 1. User searches place in `PlaceSearchSection`.
@@ -141,29 +161,34 @@ For live kitchens, a kitchen must always be place-backed.
 - Removes caller-by-caller responsibility for place enforcement.
 
 ## Remaining Gaps
-1. Kitchen ownership linking not handled
-- “My Kitchens” in CTA is derived from chef `coreProfile.kitchen_ids`.
-- Kitchen creation currently does not append created kitchen id into chef profile.
+1. Public create versus console activation can still be blurred in product copy
+- Public create and console activation are now different behaviors and should stay differently labeled.
 
-2. Duplicate place ensure behavior
+2. Relationship and authority must stay distinct
+- `chef.kitchen_ids` is association.
+- Console access comes from overlay governance or allowed claim rules.
+
+3. Duplicate place ensure behavior
 - Place is ensured in `PlaceSearchSection` path and again in `useKitchenCreate`.
 - Safe but redundant; can be simplified later.
 
-3. No explicit auth gate on create route
+4. No explicit auth gate on create route
 - `kitchens/create.vue` currently lacks `requiresAuth: true`.
 
-4. Schema drift risk from cross-extension calls
+5. Schema drift risk from cross-extension calls
 - Jobs components pass extra fields (e.g. `website`, `professionals_current`, `professionals_alumni`) into `createKitchen()`.
 - Current mutation can persist unexpected keys unless payload is explicitly narrowed.
 
-5. UX gap after success
+6. UX gap after success
 - Current creation system shows success/existing state but does not auto-redirect to detail/console.
 
 ## Next Wiring Steps (Recommended)
-1. Redirect on success (`/kitchens/{id}` or runtime-select + `/console/kitchen`).
-2. Update chef `kitchen_ids` when kitchen is successfully created/confirmed.
-3. Add explicit payload allow-list in `useKitchenCreate` to prevent schema drift from cross-extension callers.
-4. Decide single place-ensure owner for UI flow (component vs mutation), keeping mutation-level guard as safety.
+1. Lock route and CTA labels around:
+   - `Create Kitchen`
+   - `Activate Kitchen Console`
+   - `Add Kitchen To Profile`
+2. Add explicit payload allow-list in `useKitchenCreate` to prevent schema drift from cross-extension callers.
+3. Decide single place-ensure owner for UI flow (component vs mutation), keeping mutation-level guard as safety.
 
 ## Additional Observations
 - Kitchen read/edit flow is already place-centric and compatible with the thin-marker model.

@@ -1,7 +1,7 @@
 # Pages Directory
 
 Authority: Operational
-Updated: 2026-03-23
+Updated: 2026-03-25
 Scope: `packages/*/fireux-*/src/runtime/pages` and child directories under `pages/*`.
 
 Learn how FireUX runtime pages are grouped, which create surfaces matter first, and which entity buckets are still being deferred.
@@ -41,6 +41,7 @@ Why:
 
 Use this README to understand route ownership.
 Use `packages/core/fireux-docs/src/runtime/concepts/create/README.md` for create canon.
+Use `packages/core/fireux-docs/src/runtime/concepts/connect/README.md` for relationship and authority canon.
 Use `packages/core/fireux-docs/src/runtime/components/README.md` to understand current create-system families.
 
 ## CRUD Lens
@@ -130,6 +131,44 @@ For console-backed domains, the structural rule is:
 - console page ensures the app-hosted console overlay
 - child records for that console live beneath the app-hosted overlay, not beside the root entity
 
+### Relationship / Link Surface
+
+A relationship surface connects a person, team, company, or profile to an entity.
+
+It means:
+- association
+- history
+- membership
+- affiliation
+
+It does not mean:
+- console overlay creation
+- console authority
+
+This is where labels should prefer:
+- `Link X`
+- `Add X To Profile`
+- `Assign X`
+
+Avoid calling these surfaces `Create X` or `Activate X Console`.
+
+## Three Truths Of Console-backed Domains
+
+For console-backed families, a cold reader should always separate:
+
+- `Create X`
+  - create the public entity
+- `Activate X Console`
+  - ensure the app-hosted console overlay
+- `Link X`
+  - relationship only
+
+This applies to:
+- `Kitchen`
+- `Portfolio`
+- `Supplier`
+- `Project`
+
 ## Current Entity Buckets
 
 ### Important Platform
@@ -184,9 +223,10 @@ Important operational entities people enter and manage.
   Console create: `console/supplier/create.vue`
   Canon: public create makes root supplier, console create ensures app supplier
 
-Project follows the same console rule as target canon when project create surfaces become real:
+Project now follows the same console rule:
 - public create makes the root project
 - console create ensures the app project overlay
+- relationship and membership stay distinct from console authority
 
 ### Other Root or Admin-created Entities
 

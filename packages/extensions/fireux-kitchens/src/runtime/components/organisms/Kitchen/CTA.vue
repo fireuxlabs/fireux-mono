@@ -1,11 +1,26 @@
 <template>
   <ConsoleEntityCTA
     title="Kitchen console"
+    entity="kitchen"
+    console-to="/console/kitchen/overview"
     my-label="My Kitchen Consoles"
     test-label="Test Kitchen"
     read-only-label="Read-only Kitchens"
     learn-more-to="/kitchens/learn-more"
   >
+    <template #myNote>
+      <li>The live list only includes kitchens you can operate.</li>
+      <li>
+        Create kitchen ensures a Chef profile, then routes to
+        <code>/kitchens/create</code>.
+      </li>
+      <li>It creates the public kitchen first, not the console overlay directly.</li>
+    </template>
+
+    <template #testNote>
+      <li>Uses the shared kitchen test runtime instead of a live kitchen you operate.</li>
+    </template>
+
     <template #my>
       <div class="space-y-2">
         <KitchenCardsPill
@@ -62,6 +77,11 @@
           <p v-else class="text-sm text-dimmed">
             No read-only kitchens.
           </p>
+    </template>
+
+    <template #readOnlyNote>
+      <li>Uses a selected read-only scenario id.</li>
+      <li>Scenarios do not require live kitchen console authority.</li>
     </template>
 
     <template #default>

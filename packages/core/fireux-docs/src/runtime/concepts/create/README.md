@@ -1,7 +1,7 @@
 # Create Concept
 
 Authority: Operational
-Updated: 2026-03-23
+Updated: 2026-03-25
 Scope: runtime create behaviour across `pages/`, `components/`, and `composables/`.
 
 Learn how FireUX create behaviour works at runtime, which create modes exist, and how console creation is supposed to behave.
@@ -17,6 +17,7 @@ Create spans:
 
 Use this README as the create authority.
 Use the pages and components READMEs as supporting views.
+Use `packages/core/fireux-docs/src/runtime/concepts/connect/README.md` for relationship-versus-authority canon.
 
 ## Core Principle
 
@@ -60,6 +61,21 @@ Examples:
 This mode is for ordinary entity creation.
 
 ## Terminology
+
+### Three Truths
+
+For console-backed domains, creation only answers part of the story.
+
+There are three separate truths:
+- the thing exists
+- the thing can be operated
+- the thing can be connected to someone
+
+Create canon should only decide the first two:
+- public entity
+- console overlay
+
+Relationship or profile linkage is a separate concept.
 
 ### Public Entity
 
@@ -109,7 +125,7 @@ Consoles currently include:
 - `Kitchen`
 - `Portfolio`
 - `Supplier`
-- `Project` as target canon when its creation surfaces become real
+- `Project`
 
 Console create is not a separate top-level mode.
 
@@ -192,7 +208,7 @@ That means:
 - `Kitchen`
 - `Portfolio`
 - `Supplier`
-- `Project` as target canon
+- `Project`
 
 For all of these, the same structural rule applies:
 - root public entity at `/.../<id>`
