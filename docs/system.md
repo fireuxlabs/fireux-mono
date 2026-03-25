@@ -20,6 +20,8 @@ Updated: 2026-03-05
 - `docs/ecosystems/README.md`
 - `docs/reports/**`
 - `docs/migrations/README.md`
+- `packages/core/fireux-docs/src/runtime/README.md`
+- `packages/core/fireux-docs/src/runtime/*/README.md`
 
 ### Tier3 (non-authoritative)
 - `docs/ai/**`
@@ -39,6 +41,14 @@ If content reads like app marketing, app concepts, or app brief material, move i
 - Delete outdated files instead of keeping legacy copies.
 - Keep one ecosystem map file (`docs/ecosystems/README.md`) instead of per-ecosystem pages.
 - Keep one weekly hygiene report per week in `docs/reports/`.
+
+## Runtime README Branch System
+- Treat `packages/core/fireux-docs/src/runtime/README.md` as the runtime docs entry point.
+- Treat the sibling `packages/core/fireux-docs/src/runtime/*/README.md` files as the runtime branch system.
+- During runtime reconciliation work, follow:
+  1. runtime root README
+  2. relevant branch README
+  3. Tier1 canon when structural rules are involved
 
 ## Monday Workflow
 1. Refresh `Updated` on changed Tier1/Tier2 docs.

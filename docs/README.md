@@ -29,6 +29,8 @@ Only the Tier1 files above are authoritative canon. Folder names like `docs/cano
 - `docs/entity-layer-canon.md` layer strategy rules
 - `docs/migrations/README.md` migration runbook
 - `docs/reports/` weekly and generated audit reports
+- `packages/core/fireux-docs/src/runtime/README.md` runtime docs entry
+- `packages/core/fireux-docs/src/runtime/*/README.md` runtime branch READMEs
 - package/project docs under `packages/**/docs/` and `projects/**/docs/`
 
 ## Tier 3 (Tooling/History, non-authoritative)
@@ -44,6 +46,16 @@ Only the Tier1 files above are authoritative canon. Folder names like `docs/cano
 6. `docs/copilot-documentation/copilot-06-ci-cd.md`
 7. `docs/copilot-documentation/copilot-07-ux-conventions.md`
 8. `docs/copilot-documentation/copilot-08-operations.md`
+
+## Runtime README Branch System
+- `packages/core/fireux-docs/src/runtime/README.md` is the operational entry for runtime structure.
+- The sibling README files under `packages/core/fireux-docs/src/runtime/*/README.md` are the branch system for runtime alignment work.
+- Start at the runtime root README, then move to the relevant branch:
+  - `concepts/README.md` for cross-cutting runtime behaviour
+  - `models/README.md` for runtime model/storage rules
+  - `pages/README.md` for route ownership
+  - `components/README.md` for delivered UI families
+  - `composables/README.md` for runtime composable structure
 
 ## Monday Hygiene Cadence
 - Refresh Tier1/Tier2 indexes and chapter ToC.

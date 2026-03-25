@@ -16,6 +16,8 @@ Repository: fireux-mono
 ### Tier2 (operational docs)
 - `docs/README.md`
 - `docs/index.md`
+- `packages/core/fireux-docs/src/runtime/README.md`
+- `packages/core/fireux-docs/src/runtime/*/README.md`
 - `docs/copilot-documentation/copilot-00-toc.md`
 - `docs/dev/_manifest.md`
 - `docs/reports/README.md`
@@ -30,9 +32,20 @@ If any Tier2/Tier3 doc conflicts with Tier1, Tier1 wins.
 ## Where to look first
 1. `AGENTS.md` (this file)
 2. `docs/README.md`
-3. `docs/fireux-canon.md`
-4. `docs/runtime-contract.md`
-5. `docs/seo-canon.md`
+3. `packages/core/fireux-docs/src/runtime/README.md`
+4. `docs/fireux-canon.md`
+5. `docs/runtime-contract.md`
+6. `docs/seo-canon.md`
+
+## Runtime README Branch System
+- `packages/core/fireux-docs/src/runtime/README.md` is the runtime docs entry point.
+- `packages/core/fireux-docs/src/runtime/*/README.md` are the branch READMEs for each runtime surface:
+  - `components/README.md`
+  - `composables/README.md`
+  - `models/README.md`
+  - `pages/README.md`
+  - `concepts/README.md`
+- For cross-cutting runtime work, use the relevant branch README before relying on Tier3 context files.
 
 Note: The repository `AI/` folder was moved to `docs/ai/`. See `docs/ai/` for AI-related notes, chat transcripts, and codex threads.
 

@@ -1,35 +1,38 @@
 <template>
   <ConsoleEntityCTA
     title="Kitchen console"
-    my-label="My Kitchens"
+    my-label="My Kitchen Consoles"
     test-label="Test Kitchen"
     read-only-label="Read-only Kitchens"
     learn-more-to="/kitchens/learn-more"
   >
     <template #my>
-          <div class="space-y-2">
-            <KitchenCardsPill
-              v-if="liveKitchenPills.length"
-              v-for="item in liveKitchenPills"
-              :key="item.id"
-              v-bind="item"
-              :link="false"
-              :action="true"
-              :show-badges="false"
-              class="cursor-pointer"
-              @action="goToKitchen('live', item.id)"
-            />
-            <UButton
-              block
-              variant="subtle"
-              color="primary"
-              icon="i-lucide-plus"
-              :loading="isEnsuringLiveKitchen"
-              @click="createKitchen"
-            >
-              Create kitchen
-            </UButton>
-          </div>
+      <div class="space-y-2">
+        <KitchenCardsPill
+          v-for="item in liveKitchenPills"
+          v-if="liveKitchenPills.length"
+          :key="item.id"
+          v-bind="item"
+          :link="false"
+          :action="true"
+          :show-badges="false"
+          class="cursor-pointer"
+          @action="goToKitchen('live', item.id)"
+        />
+        <p v-else class="text-sm text-dimmed">
+          No kitchen consoles yet.
+        </p>
+        <UButton
+          block
+          variant="subtle"
+          color="primary"
+          icon="i-lucide-plus"
+          :loading="isEnsuringLiveKitchen"
+          @click="createKitchen"
+        >
+          Create kitchen
+        </UButton>
+      </div>
     </template>
 
     <template #test>
@@ -77,6 +80,9 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from '#imports'
 import { computed, ref } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { getReadOnlyKitchenScenarioList } from '../../../composables/fireux/app/kitchen-runtime/read-only-scenarios'
@@ -85,11 +91,19 @@ import { useRuntimeKitchenSelection } from '../../../composables/fireux/app/kitc
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { useChefCreate } from '../../../composables/fireux/firestore/profiles/Chef/main/useChefCreate'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
+import type { KitchenApp } from '../../../models/kitchen.model'
 import KitchenCardsPill from './Cards/Pill.vue'
 
 const { kitchens } = useKitchenFetch()
 const { pill: kitchenPill } = useKitchenInterface()
 const { currentUser, avatarSrc } = useUser()
+const { uid } = useAuth()
+const { appId } = useFireUXConfig()
+const { firestoreFetchCollection } = useFirestoreRead()
+
+const kitchenOverlays = appId
+  ? firestoreFetchCollection<KitchenApp>(`apps/${appId}/kitchens`)
+  : null
 
 const testChefName = computed(() => String(currentUser.value?.display_name || '').trim())
 
@@ -107,8 +121,44 @@ const testKitchenPill = computed(() => ({
   imageUrl: avatarSrc.value || '',
 }))
 
+const accessibleKitchenIds = computed(() => {
+  const currentUid = String(uid.value || '').trim()
+  if (!currentUid) return new Set<string>()
+
+  const ids = new Set<string>()
+
+  for (const overlay of kitchenOverlays?.value ?? []) {
+    const id = String((overlay as any)?.id || '').trim()
+    if (!id) continue
+    if ((overlay as any)?.console_enabled === false) continue
+
+    const adminIds = Array.isArray((overlay as any)?.admin_ids)
+      ? (overlay as any).admin_ids
+          .map((value: unknown) => String(value || '').trim())
+          .filter(Boolean)
+      : []
+
+    if (adminIds.includes(currentUid)) {
+      ids.add(id)
+    }
+  }
+
+  for (const kitchen of kitchens.value ?? []) {
+    const id = String((kitchen as any)?.id || '').trim()
+    const claimedBy = String((kitchen as any)?.claimed_by || '').trim()
+    if (id && claimedBy === currentUid) {
+      ids.add(id)
+    }
+  }
+
+  return ids
+})
+
 const liveKitchenPills = computed(() =>
   (kitchens.value ?? [])
+    .filter((entry) =>
+      accessibleKitchenIds.value.has(String((entry as any)?.id || '').trim())
+    )
     .map((entry) => kitchenPill(entry))
     .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
 )

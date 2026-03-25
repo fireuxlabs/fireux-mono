@@ -7,6 +7,7 @@ import type {
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceSave'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
@@ -40,6 +41,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
   const { ensurePlaceExists } = usePlaceSave()
   const { ensureConsole } = useConsoleEnsure()
+  const { uid } = useAuth()
   const db = useFirestore()
   const collectionPath =
     options.test ? 'test-kitchens' : options.collectionPath ?? 'kitchens'
@@ -140,7 +142,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       ensureRoot,
       createOverlay: async () =>
         ({
-          admin_ids: [] as string[],
+          admin_ids: uid.value ? [uid.value] : ([] as string[]),
           join_requests: [] as string[],
           console_enabled: true,
         }) as KitchenApp,
