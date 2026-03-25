@@ -10,7 +10,8 @@
     <ClientOnly>
       <div
         v-if="isDev"
-        class="fixed top-1/2 right-4 -translate-y-1/2 z-[2147483647] select-none"
+        class="fixed bottom-0 left-1/2 z-[2147483647] select-none"
+        style="transform: translateX(calc(-200% - 6rem));"
       >
         <UTooltip text="Open dev tools" :popper="{ placement: 'bottom' }">
           <UButton
