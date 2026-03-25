@@ -3,15 +3,11 @@
 :root {
 	/* FireUX Core Design Tokens */
 
-	/* Nuxt UI convenience aliases */
-	--fx-text: var(--ui-text);
-	--fx-text-muted: var(--ui-text-muted);
-	--fx-bg: var(--ui-bg);
-	--fx-bg-muted: var(--ui-bg-muted);
-	--fx-border: var(--ui-border);
-	--fx-primary: var(--ui-primary);
-	--fx-secondary: var(--ui-secondary);
-	--fx-radius: var(--ui-radius, 0.5rem);
+	/* FireUX-owned runtime tokens */
+	--fx-fireux-yellow: #f59e0b;
+	--fx-fireux-yellow-muted: #b45309;
+	--fx-dev-note-border: rgb(245 158 11 / 0.28);
+	--fx-dev-note-bg: rgb(245 158 11 / 0.08);
 
 	/* TODO: prune redundant scales once design system is finalized */
 
@@ -61,6 +57,21 @@
 	--z-tooltip: 1100;
 }
 
+.dark {
+	--fx-fireux-yellow-muted: #fbbf24;
+	--fx-dev-note-border: rgb(251 191 36 / 0.24);
+	--fx-dev-note-bg: rgb(245 158 11 / 0.12);
+}
+
+.fireux-dev-note {
+	border: 1px solid var(--fx-dev-note-border);
+	background: var(--fx-dev-note-bg);
+}
+
+.fireux-dev-note__label {
+	color: var(--fx-fireux-yellow-muted);
+}
+
 /* Base transition for interactive elements */
 .transition-base {
 	transition: all var(--duration-normal) ease;
@@ -73,4 +84,3 @@
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 	}
 }
-

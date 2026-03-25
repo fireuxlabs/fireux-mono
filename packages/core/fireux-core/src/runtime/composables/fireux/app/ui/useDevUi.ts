@@ -8,7 +8,9 @@ export function useDevUi() {
   const supportsInlineNotes = computed(() =>
     [
       '/kitchens',
+      '/kitchens/create',
       '/console/kitchen',
+      '/console/kitchen/create',
     ].includes(route.path)
   )
 

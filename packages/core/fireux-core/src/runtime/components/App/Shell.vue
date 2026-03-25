@@ -79,9 +79,10 @@
               :aria-label="panelOpen ? 'Collapse dev controls' : 'Expand dev controls'"
               size="xs"
               variant="ghost"
-              color="neutral"
-              icon="i-heroicons-wrench-screwdriver"
-              class="opacity-70 hover:opacity-100"
+              color="warning"
+              icon="i-lucide-flame"
+              class="opacity-90 hover:opacity-100"
+              style="color: var(--fx-fireux-yellow);"
               @click="togglePanel()"
             />
           </UTooltip>

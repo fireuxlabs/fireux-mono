@@ -11,10 +11,10 @@
     <template #myNote>
       <li>The live list only includes kitchens you can operate.</li>
       <li>
-        Create kitchen ensures a Chef profile, then routes to
-        <code>/kitchens/create</code>.
+        {{ createActionLabel }} ensures a Chef profile, then routes to
+        <code>{{ createPath }}</code>.
       </li>
-      <li>It creates the public kitchen first, not the console overlay directly.</li>
+      <li>{{ createActionMeaning }}</li>
     </template>
 
     <template #testNote>
@@ -45,7 +45,7 @@
           :loading="isEnsuringLiveKitchen"
           @click="createKitchen"
         >
-          Create kitchen
+          {{ createActionLabel }}
         </UButton>
       </div>
     </template>
@@ -113,6 +113,12 @@ import { useChefCreate } from '../../../composables/fireux/firestore/profiles/Ch
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { KitchenApp } from '../../../models/kitchen.model'
 import KitchenCardsPill from './Cards/Pill.vue'
+
+const props = withDefaults(defineProps<{
+  createSurface?: 'public' | 'console'
+}>(), {
+  createSurface: 'public',
+})
 
 const { kitchens } = useKitchenFetch()
 const { pill: kitchenPill } = useKitchenInterface()
@@ -209,6 +215,18 @@ const route = useRoute()
 const { runtimeKitchenId, setRuntimeKitchen } = useRuntimeKitchenSelection()
 const { ensureChefProfile } = useChefCreate()
 const isEnsuringLiveKitchen = ref(false)
+const isConsoleCreateSurface = computed(() => props.createSurface === 'console')
+const createPath = computed(() =>
+  isConsoleCreateSurface.value ? '/console/kitchen/create' : '/kitchens/create'
+)
+const createActionLabel = computed(() =>
+  isConsoleCreateSurface.value ? 'Create kitchen console' : 'Create kitchen'
+)
+const createActionMeaning = computed(() =>
+  isConsoleCreateSurface.value
+    ? 'It creates the kitchen console overlay and creates the public kitchen only if it does not already exist.'
+    : 'It creates the public kitchen first, not the console overlay directly.'
+)
 
 const ensureLiveKitchenProfile = async () => {
   if (isEnsuringLiveKitchen.value) return false
@@ -249,7 +267,7 @@ const goToKitchen = async (mode: RuntimeKitchenMode, kitchenId?: string) => {
 const createKitchen = async () => {
   const ready = await ensureLiveKitchenProfile()
   if (!ready) return
-  await router.push('/kitchens/create')
+  await router.push(createPath.value)
 }
 
 </script>

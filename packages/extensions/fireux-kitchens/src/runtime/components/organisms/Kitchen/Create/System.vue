@@ -10,6 +10,38 @@
         </div>
       </template>
 
+      <div
+        v-if="showDevNotes"
+        data-dev-note="true"
+        :data-dev-note-title="developerNoteTitle"
+        class="fireux-dev-note rounded-lg px-4 py-3 text-xs text-dimmed"
+      >
+        <p class="fireux-dev-note__label mb-1 text-[11px] font-semibold uppercase tracking-[0.16em]">
+          Developer Note
+        </p>
+        <ul data-dev-note-body class="list-disc space-y-1 pl-4">
+          <li>Needs a confirmed real place selection.</li>
+          <li v-if="isConsoleMode">Requires an authenticated user on the console route.</li>
+          <li v-else>If entered from the kitchen CTA, the flow normally ensures a Chef profile first.</li>
+          <li v-if="isConsoleMode">
+            Ensures
+            <code>kitchens/&lt;id&gt;</code>
+            and
+            <code>apps/&lt;appId&gt;/kitchens/&lt;id&gt;</code>.
+          </li>
+          <li v-else>
+            Creates or ensures
+            <code>kitchens/&lt;id&gt;</code>.
+          </li>
+          <li v-if="isConsoleMode">
+            Seeds console authority with the current user in
+            <code>admin_ids</code>
+            and links the kitchen to the chef profile association.
+          </li>
+          <li v-else>Does not create the app-hosted kitchen console overlay.</li>
+        </ul>
+      </div>
+
       <PlaceSearchSection
         type="kitchen"
         placeholder="Search by name or address"
@@ -71,6 +103,7 @@ import type {
   ConsoleEnsureResult,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { doc, getDoc } from 'firebase/firestore'
+import { useDevUi } from 'fireux-core/runtime/composables/fireux/app/ui/useDevUi'
 import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceSave'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { computed, ref } from 'vue'
@@ -87,6 +120,7 @@ const props = withDefaults(defineProps<{
 const { ensureKitchen } = useKitchenCreate()
 const { ensurePlaceExists } = usePlaceSave()
 const { coreProfile, updateCoreProfile } = useChef()
+const { notesVisible } = useDevUi()
 const db = useFirestore()
 
 const error = ref<string | null>(null)
@@ -94,6 +128,10 @@ const successResult = ref<ConsoleEnsureResult | null>(null)
 const existingId = ref<string | null>(null)
 
 const isConsoleMode = computed(() => props.mode === 'console')
+const showDevNotes = computed(() => import.meta.dev && notesVisible.value)
+const developerNoteTitle = computed(() =>
+  isConsoleMode.value ? 'Create Kitchen Console' : 'Create Kitchen'
+)
 const headerTitle = computed(() =>
   isConsoleMode.value ? 'Search for your venue' : 'Search for a venue'
 )

@@ -1,6 +1,6 @@
 <template>
   <LayoutsConsoleEntryShell>
-    <KitchenCTA />
+    <KitchenCTA create-surface="console" />
   </LayoutsConsoleEntryShell>
 </template>
 
