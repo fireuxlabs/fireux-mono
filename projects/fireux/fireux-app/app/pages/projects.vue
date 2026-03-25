@@ -3,7 +3,7 @@
     <UPageHeader
       class="pageheader"
       :title="pageTitle"
-      description="Platform project index for the current FireUX runtime."
+      :description="pageDescription"
     />
 
     <UPageBody class="pagebody">
@@ -36,12 +36,13 @@ definePageMeta({
 
 const { appName } = useFireUXConfig()
 const pageTitle = 'Projects'
+const pageDescription = 'Choose a project surface for the current runtime.'
 
 useHead({ title: `${appName} | ${pageTitle}` })
 
 useSeoMeta({
   title: 'Projects · FireUX',
-  description: 'Entity index for FireUX projects stored in db.collections.projects.',
+  description: pageDescription,
 })
 
 const { projects } = useProjectCollection()

@@ -35,7 +35,7 @@ definePageMeta({
 
 const pageTitle = 'Suppliers'
 const pageDescription =
-  'Browse supplier records for the current runtime.'
+  'Choose a supplier surface for this runtime.'
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
