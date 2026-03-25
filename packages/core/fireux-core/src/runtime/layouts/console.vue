@@ -1,6 +1,8 @@
 <!-- packages/core/fireux-core/src/runtime/layouts/console.vue -->
 <template>
-  <UDashboardGroup unit="rem">
+  <NuxtPage v-if="isConsoleEntryPage" />
+
+  <UDashboardGroup v-else unit="rem">
     <UDashboardSidebar
       id="core-console"
       v-model:open="open"
@@ -98,6 +100,7 @@ const open = ref(false)
 const route = useRoute()
 const { isOpen: isNotificationsSlideoverOpen } = useConsoleNotifications()
 const { desktop } = useConsoleNav()
+const isConsoleEntryPage = computed(() => Boolean(route.meta?.consoleEntry))
 
 const filteredDesktop = computed(() =>
   filterConsoleScopeNavItems(desktop.value, String(route.path || ''))
