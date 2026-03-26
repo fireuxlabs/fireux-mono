@@ -9,7 +9,6 @@ import KitchenCTA from '../../../components/organisms/Kitchen/CTA.vue'
 
 definePageMeta({
   layout: 'console',
-  requiresAuth: true,
   consoleEntry: true,
 })
 </script>

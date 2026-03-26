@@ -9,7 +9,6 @@ import PortfolioCTA from 'fireux-properties/runtime/components/organisms/Portfol
 
 definePageMeta({
   layout: 'console',
-  requiresAuth: true,
   consoleEntry: true,
 })
 </script>

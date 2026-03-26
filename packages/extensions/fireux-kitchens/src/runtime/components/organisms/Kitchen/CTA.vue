@@ -9,40 +9,45 @@
     learn-more-to="/kitchens/learn-more"
   >
     <template #myNote>
+      <li>Requires sign-in.</li>
       <li>The live list only includes kitchens you can operate.</li>
-      <li>
-        {{ createActionLabel }} ensures a Chef profile, then routes to
-        <code>{{ createPath }}</code>.
-      </li>
+      <li>{{ createActionNote }}</li>
       <li>{{ createActionMeaning }}</li>
     </template>
 
     <template #testNote>
+      <li>Available without sign-in.</li>
+      <li>Sign in to save your progress.</li>
       <li>Uses the shared kitchen test runtime instead of a live kitchen you operate.</li>
     </template>
 
     <template #my>
       <div class="space-y-2">
-        <KitchenCardsPill
-          v-for="item in liveKitchenPills"
-          v-if="liveKitchenPills.length"
-          :key="item.id"
-          v-bind="item"
-          :link="false"
-          :action="true"
-          :show-badges="false"
-          class="cursor-pointer"
-          @action="goToKitchen('live', item.id)"
-        />
+        <template v-if="isSignedIn">
+          <KitchenCardsPill
+            v-for="item in liveKitchenPills"
+            v-if="liveKitchenPills.length"
+            :key="item.id"
+            v-bind="item"
+            :link="false"
+            :action="true"
+            :show-badges="false"
+            class="cursor-pointer"
+            @action="goToKitchen('live', item.id)"
+          />
+          <p v-else class="text-sm text-dimmed">
+            No kitchen consoles yet.
+          </p>
+        </template>
         <p v-else class="text-sm text-dimmed">
-          No kitchen consoles yet.
+          Sign in to see your kitchen consoles and create one.
         </p>
         <UButton
           block
           variant="subtle"
           color="primary"
-          icon="i-lucide-plus"
-          :loading="isEnsuringLiveKitchen"
+          :icon="isSignedIn ? 'i-lucide-plus' : 'i-lucide-log-in'"
+          :loading="isSignedIn ? isEnsuringLiveKitchen : false"
           @click="createKitchen"
         >
           {{ createActionLabel }}
@@ -81,6 +86,7 @@
 
     <template #readOnlyNote>
       <li>Uses a selected read-only scenario id.</li>
+      <li>Available without sign-in.</li>
       <li>Scenarios do not require live kitchen console authority.</li>
     </template>
 
@@ -219,14 +225,36 @@ const isConsoleCreateSurface = computed(() => props.createSurface === 'console')
 const createPath = computed(() =>
   isConsoleCreateSurface.value ? '/console/kitchen/create' : '/kitchens/create'
 )
-const createActionLabel = computed(() => 'Create kitchen')
+const isSignedIn = computed(() => Boolean(String(uid.value || '').trim()))
+const signInPath = computed(() => `/auth?redirect=${encodeURIComponent(route.fullPath)}`)
+const createActionLabel = computed(() =>
+  isSignedIn.value
+    ? 'Create kitchen'
+    : isConsoleCreateSurface.value
+      ? 'Sign in to create kitchen console'
+      : 'Sign in to create kitchen'
+)
+const createActionNote = computed(() =>
+  isSignedIn.value
+    ? `Create kitchen ensures a Chef profile, then routes to ${createPath.value}.`
+    : `Sign in first, then continue to ${createPath.value} to create ${isConsoleCreateSurface.value ? 'the kitchen console' : 'the kitchen'}.`
+)
 const createActionMeaning = computed(() =>
   isConsoleCreateSurface.value
     ? 'It creates the kitchen console overlay and creates the public kitchen only if it does not already exist.'
     : 'It creates the public kitchen first, not the console overlay directly.'
 )
 
+const ensureAuthenticated = async () => {
+  if (String(uid.value || '').trim()) return true
+  await router.push(`/auth?redirect=${encodeURIComponent(route.fullPath)}`)
+  return false
+}
+
 const ensureLiveKitchenProfile = async () => {
+  const isSignedIn = await ensureAuthenticated()
+  if (!isSignedIn) return false
+
   if (isEnsuringLiveKitchen.value) return false
   isEnsuringLiveKitchen.value = true
 
@@ -263,6 +291,11 @@ const goToKitchen = async (mode: RuntimeKitchenMode, kitchenId?: string) => {
 }
 
 const createKitchen = async () => {
+  if (!isSignedIn.value) {
+    await router.push(signInPath.value)
+    return
+  }
+
   const ready = await ensureLiveKitchenProfile()
   if (!ready) return
   await router.push(createPath.value)

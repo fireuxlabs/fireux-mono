@@ -9,7 +9,6 @@ import KitchenCTA from 'fireux-kitchens/runtime/components/organisms/Kitchen/CTA
 
 definePageMeta({
   layout: 'console',
-  requiresAuth: true,
   consoleEntry: true,
 })
 </script>

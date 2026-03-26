@@ -9,7 +9,6 @@ import SupplierEntry from '../../../components/console/supplier/Entry.vue'
 
 definePageMeta({
   layout: 'console',
-  requiresAuth: true,
   consoleEntry: true,
 })
 </script>

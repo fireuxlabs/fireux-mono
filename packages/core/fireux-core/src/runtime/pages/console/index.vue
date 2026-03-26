@@ -45,7 +45,6 @@ import {
 
 definePageMeta({
   layout: 'console',
-  requiresAuth: true,
   consoleEntry: true,
 })
 

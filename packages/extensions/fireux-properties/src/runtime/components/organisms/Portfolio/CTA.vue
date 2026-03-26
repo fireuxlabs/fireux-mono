@@ -9,36 +9,39 @@
     learn-more-to="/portfolios/learn-more"
   >
     <template #myNote>
+      <li>Requires sign-in.</li>
       <li>The live list only includes portfolios you can operate.</li>
-      <li>
-        {{ createActionLabel }} routes to
-        <code>{{ createPath }}</code>.
-      </li>
+      <li>{{ createActionNote }}</li>
       <li>{{ createActionMeaning }}</li>
     </template>
 
     <template #my>
       <div class="space-y-2">
-        <div v-if="livePills.length" class="space-y-2">
-          <PortfolioCardsPill
-            v-for="item in livePills"
-            :key="item.id"
-            :to="''"
-            :title="item.title"
-            :subtitle="item.subtitle"
-            :badges="item.badges"
-            :action="true"
-            @action="goToPortfolio('live', item.id)"
-          />
-        </div>
+        <template v-if="isSignedIn">
+          <div v-if="livePills.length" class="space-y-2">
+            <PortfolioCardsPill
+              v-for="item in livePills"
+              :key="item.id"
+              :to="''"
+              :title="item.title"
+              :subtitle="item.subtitle"
+              :badges="item.badges"
+              :action="true"
+              @action="goToPortfolio('live', item.id)"
+            />
+          </div>
+          <p v-else class="text-sm text-dimmed">
+            No portfolio consoles yet.
+          </p>
+        </template>
         <p v-else class="text-sm text-dimmed">
-          No portfolio consoles yet.
+          Sign in to see your portfolio consoles and create one.
         </p>
         <UButton
           block
           variant="subtle"
           color="primary"
-          icon="i-lucide-plus"
+          :icon="isSignedIn ? 'i-lucide-plus' : 'i-lucide-log-in'"
           @click="createPortfolio"
         >
           {{ createActionLabel }}
@@ -47,6 +50,8 @@
     </template>
 
     <template #testNote>
+      <li>Available without sign-in.</li>
+      <li>Sign in to save your progress.</li>
       <li>Uses the shared portfolio test runtime instead of a live portfolio you operate.</li>
     </template>
 
@@ -82,6 +87,7 @@
 
     <template #readOnlyNote>
       <li>Uses a selected read-only scenario id.</li>
+      <li>Available without sign-in.</li>
       <li>Scenarios do not require live portfolio console authority.</li>
     </template>
 
@@ -99,7 +105,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from '#imports'
+import { useRoute, useRouter } from '#imports'
 import { computed } from 'vue'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
@@ -119,6 +125,7 @@ const props = withDefaults(defineProps<{
   createSurface: 'public',
 })
 
+const route = useRoute()
 const router = useRouter()
 const { runtimePortfolioId, setRuntimePortfolio } = useRuntimePortfolioSelection()
 const { portfolios } = usePortfolioFetch()
@@ -133,7 +140,20 @@ const portfolioOverlays = appId
 const createPath = computed(() =>
   isConsoleCreateSurface.value ? '/console/portfolio/create' : '/portfolios/create'
 )
-const createActionLabel = computed(() => 'Create portfolio')
+const isSignedIn = computed(() => Boolean(String(uid.value || '').trim()))
+const signInPath = computed(() => `/auth?redirect=${encodeURIComponent(route.fullPath)}`)
+const createActionLabel = computed(() =>
+  isSignedIn.value
+    ? 'Create portfolio'
+    : isConsoleCreateSurface.value
+      ? 'Sign in to create portfolio console'
+      : 'Sign in to create portfolio'
+)
+const createActionNote = computed(() =>
+  isSignedIn.value
+    ? `Create portfolio routes to ${createPath.value}.`
+    : `Sign in first, then continue to ${createPath.value} to create ${isConsoleCreateSurface.value ? 'the portfolio console' : 'the portfolio'}.`
+)
 const createActionMeaning = computed(() =>
   isConsoleCreateSurface.value
     ? 'It creates the portfolio console overlay and creates the public portfolio only if it does not already exist.'
@@ -196,6 +216,11 @@ const readOnlyPills = computed(() =>
 )
 
 const goToPortfolio = async (mode: RuntimePortfolioMode, portfolioId?: string) => {
+  if (mode === 'live' && !isSignedIn.value) {
+    await router.push(signInPath.value)
+    return
+  }
+
   const fallback = String(runtimePortfolioId.value || '').trim()
   const resolvedId = String(portfolioId || fallback).trim()
   setRuntimePortfolio({ portfolioId: resolvedId, mode })
@@ -203,6 +228,11 @@ const goToPortfolio = async (mode: RuntimePortfolioMode, portfolioId?: string) =
 }
 
 const createPortfolio = async () => {
+  if (!isSignedIn.value) {
+    await router.push(signInPath.value)
+    return
+  }
+
   await router.push(createPath.value)
 }
 </script>

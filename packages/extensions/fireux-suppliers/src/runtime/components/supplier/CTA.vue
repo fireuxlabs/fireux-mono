@@ -10,36 +10,50 @@
     :show-test="false"
   >
     <template #myNote>
+      <li>Requires sign-in.</li>
       <li>Live supplier entry follows the current operator supplier identity for this app.</li>
-      <li>
-        {{ createActionLabel }} routes to
-        <code>{{ createPath }}</code>.
-      </li>
+      <li>{{ createActionNote }}</li>
       <li>{{ createActionMeaning }}</li>
     </template>
 
     <template #my>
       <div class="space-y-2">
-        <SupplierCardsPill
-          v-if="liveSupplierPill"
-          v-bind="liveSupplierPill"
-          :link="false"
-          :action="true"
-          :show-badges="false"
-          class="cursor-pointer"
-          @action="goToSupplier('live', liveSupplierPill.id)"
-        />
+        <template v-if="isSignedIn">
+          <SupplierCardsPill
+            v-if="liveSupplierPill"
+            v-bind="liveSupplierPill"
+            :link="false"
+            :action="true"
+            :show-badges="false"
+            class="cursor-pointer"
+            @action="goToSupplier('live', liveSupplierPill.id)"
+          />
 
-        <UButton
-          v-else
-          block
-          variant="subtle"
-          color="primary"
-          icon="i-lucide-plus"
-          @click="createSupplier"
-        >
-          {{ createActionLabel }}
-        </UButton>
+          <UButton
+            v-else
+            block
+            variant="subtle"
+            color="primary"
+            icon="i-lucide-plus"
+            @click="createSupplier"
+          >
+            {{ createActionLabel }}
+          </UButton>
+        </template>
+        <template v-else>
+          <p class="text-sm text-dimmed">
+            Sign in to see your supplier console and create one.
+          </p>
+          <UButton
+            block
+            variant="subtle"
+            color="primary"
+            icon="i-lucide-log-in"
+            @click="createSupplier"
+          >
+            {{ createActionLabel }}
+          </UButton>
+        </template>
       </div>
     </template>
 
@@ -64,6 +78,7 @@
 
     <template #readOnlyNote>
       <li>Uses a selected read-only supplier scenario.</li>
+      <li>Available without sign-in.</li>
       <li>Scenarios do not require live supplier console authority.</li>
     </template>
 
@@ -82,7 +97,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
 import { getReadOnlySupplierScenarioList } from '../../composables/fireux/app/supplier-console/read-only-scenarios'
@@ -98,6 +113,7 @@ const props = withDefaults(defineProps<{
   createSurface: 'public',
 })
 
+const route = useRoute()
 const router = useRouter()
 const { uid } = useAuth()
 const { setRuntimeSupplier } = useRuntimeSupplierSelection()
@@ -107,7 +123,20 @@ const isConsoleCreateSurface = computed(() => props.createSurface === 'console')
 const createPath = computed(() =>
   isConsoleCreateSurface.value ? '/console/supplier/create' : '/suppliers/create'
 )
-const createActionLabel = computed(() => 'Create supplier')
+const isSignedIn = computed(() => Boolean(String(uid.value || '').trim()))
+const signInPath = computed(() => `/auth?redirect=${encodeURIComponent(route.fullPath)}`)
+const createActionLabel = computed(() =>
+  isSignedIn.value
+    ? 'Create supplier'
+    : isConsoleCreateSurface.value
+      ? 'Sign in to create supplier console'
+      : 'Sign in to create supplier'
+)
+const createActionNote = computed(() =>
+  isSignedIn.value
+    ? `Create supplier routes to ${createPath.value}.`
+    : `Sign in first, then continue to ${createPath.value} to create ${isConsoleCreateSurface.value ? 'the supplier console' : 'the supplier'}.`
+)
 const createActionMeaning = computed(() =>
   isConsoleCreateSurface.value
     ? 'It creates the supplier console overlay and creates the public supplier only if it does not already exist.'
@@ -129,12 +158,22 @@ const readOnlyPills = computed(() =>
 )
 
 const goToSupplier = async (mode: RuntimeSupplierMode, supplierId?: string) => {
+  if (mode === 'live' && !isSignedIn.value) {
+    await router.push(signInPath.value)
+    return
+  }
+
   const resolvedId = String(supplierId || uid.value || '').trim()
   setRuntimeSupplier({ supplierId: resolvedId, mode })
   await router.push('/console/supplier/overview')
 }
 
 const createSupplier = async () => {
+  if (!isSignedIn.value) {
+    await router.push(signInPath.value)
+    return
+  }
+
   await router.push(createPath.value)
 }
 </script>

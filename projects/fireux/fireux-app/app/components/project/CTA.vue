@@ -9,36 +9,39 @@
     learn-more-to="/projects/learn-more"
   >
     <template #myNote>
+      <li>Requires sign-in.</li>
       <li>The live list includes projects you own or can operate in this app.</li>
-      <li>
-        {{ createActionLabel }} routes to
-        <code>{{ createPath }}</code>.
-      </li>
+      <li>{{ createActionNote }}</li>
       <li>{{ createActionMeaning }}</li>
     </template>
 
     <template #my>
       <div class="space-y-2">
-        <div v-if="liveProjectCards.length" class="space-y-2">
-          <ProjectCardsPill
-            v-for="item in liveProjectCards"
-            :key="item.id"
-            :to="''"
-            :title="item.title"
-            :subtitle="item.subtitle"
-            :badges="item.badges"
-            :action="true"
-            @action="goToProject('live', item.id)"
-          />
-        </div>
+        <template v-if="isSignedIn">
+          <div v-if="liveProjectCards.length" class="space-y-2">
+            <ProjectCardsPill
+              v-for="item in liveProjectCards"
+              :key="item.id"
+              :to="''"
+              :title="item.title"
+              :subtitle="item.subtitle"
+              :badges="item.badges"
+              :action="true"
+              @action="goToProject('live', item.id)"
+            />
+          </div>
+          <p v-else class="text-sm text-dimmed">
+            No project consoles yet.
+          </p>
+        </template>
         <p v-else class="text-sm text-dimmed">
-          No project consoles yet.
+          Sign in to see your project consoles and create one.
         </p>
         <UButton
           block
           variant="subtle"
           color="primary"
-          icon="i-lucide-plus"
+          :icon="isSignedIn ? 'i-lucide-plus' : 'i-lucide-log-in'"
           @click="createProject"
         >
           {{ createActionLabel }}
@@ -47,6 +50,8 @@
     </template>
 
     <template #testNote>
+      <li>Available without sign-in.</li>
+      <li>Sign in to save your progress.</li>
       <li>Uses the shared project test runtime instead of a live project you operate.</li>
     </template>
 
@@ -64,6 +69,7 @@
 
     <template #readOnlyNote>
       <li>Uses a selected read-only scenario id.</li>
+      <li>Available without sign-in.</li>
       <li>Scenarios do not require live project console authority.</li>
     </template>
 
@@ -100,10 +106,11 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from '#imports'
+import { useRoute, useRouter } from '#imports'
 import { computed } from 'vue'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { getReadOnlyProjectScenarioList } from 'fireux-core/runtime/composables/fireux/app/runtime-project/read-only-scenarios/index'
 import { useRuntimeProjectSelection } from 'fireux-core/runtime/composables/fireux/app/runtime-project/state'
 import { useRuntimeProject } from 'fireux-core/runtime/composables/fireux/app/runtime-project/useRuntimeProject'
@@ -120,11 +127,13 @@ const props = withDefaults(defineProps<{
   createSurface: 'public',
 })
 
+const route = useRoute()
 const router = useRouter()
 const runtimeProject = useRuntimeProject()
 const { setRuntimeProject } = useRuntimeProjectSelection()
 const { projects } = useProjectCollection()
 const { currentUser } = useUser()
+const { uid } = useAuth()
 const { appId } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
 const isConsoleCreateSurface = computed(() => props.createSurface === 'console')
@@ -134,7 +143,20 @@ const projectOverlays = appId
 const createPath = computed(() =>
   isConsoleCreateSurface.value ? '/console/projects/create' : '/projects/create'
 )
-const createActionLabel = computed(() => 'Create project')
+const isSignedIn = computed(() => Boolean(String(uid.value || '').trim()))
+const signInPath = computed(() => `/auth?redirect=${encodeURIComponent(route.fullPath)}`)
+const createActionLabel = computed(() =>
+  isSignedIn.value
+    ? 'Create project'
+    : isConsoleCreateSurface.value
+      ? 'Sign in to create project console'
+      : 'Sign in to create project'
+)
+const createActionNote = computed(() =>
+  isSignedIn.value
+    ? `Create project routes to ${createPath.value}.`
+    : `Sign in first, then continue to ${createPath.value} to create ${isConsoleCreateSurface.value ? 'the project console' : 'the project'}.`
+)
 const createActionMeaning = computed(() =>
   isConsoleCreateSurface.value
     ? 'It creates the project console overlay and creates the public project only if it does not already exist.'
@@ -191,6 +213,11 @@ const liveProjectCards = computed(() =>
 )
 
 const goToProject = async (mode: RuntimeMode, projectId?: string) => {
+  if (mode === 'live' && !isSignedIn.value) {
+    await router.push(signInPath.value)
+    return
+  }
+
   const fallback = String(
     projectId ||
     liveProjectCards.value[0]?.id ||
@@ -203,6 +230,11 @@ const goToProject = async (mode: RuntimeMode, projectId?: string) => {
 }
 
 const createProject = async () => {
+  if (!isSignedIn.value) {
+    await router.push(signInPath.value)
+    return
+  }
+
   await router.push(createPath.value)
 }
 </script>

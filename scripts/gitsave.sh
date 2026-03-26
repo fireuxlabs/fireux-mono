@@ -53,10 +53,17 @@ run_repo_cleanup() {
   fi
 }
 
+run_preflight_clean() {
+  if [[ -f "scripts/pre-guard-clean.mjs" ]]; then
+    echo "[gitsave] Running lightweight preflight clean..."
+    pnpm -s pre-guard-clean || true
+  fi
+}
+
 usage() {
   echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean] [--repo-clean|--no-repo-clean] [--strict-scope|--no-strict-scope] [--allow-mixed] [--allow-large] [--allow-behind]" >&2
   echo "Example: gitsave \"fix: wire places quick add\"" >&2
-  echo "Defaults: --no-guard --no-clean --no-repo-clean --no-strict-scope" >&2
+  echo "Defaults: lightweight preflight clean, --no-guard --no-clean --no-repo-clean --no-strict-scope" >&2
   echo "Safety defaults: block behind-state pushes. Mixed-layer and large-batch checks are advisory unless --strict-scope is set." >&2
 }
 
@@ -223,6 +230,9 @@ if has_upstream; then
   fi
 fi
 
+# Always clear known guard-blocking local artifacts before staging.
+run_preflight_clean
+
 # Optional clean
 if $run_clean; then
   pnpm -s clean || true
@@ -231,7 +241,6 @@ fi
 # Optional guard
 # Optional guard (advisory, not blocking)
 if $run_guard; then
-  pnpm -s pre-guard-clean || true
   if ! pnpm -s guard; then
     echo "\nGuard failed. You may fix the issues above, or continue and push anyway." >&2
     read -p "Continue and push anyway? [y/N]: " confirm

@@ -1,10 +1,16 @@
-import { defineNuxtRouteMiddleware, navigateTo } from '#imports'
-import { useRuntimeProjectSelection } from '../composables/fireux/app/runtime-project'
+import { defineNuxtRouteMiddleware, navigateTo, useCookie } from '#imports'
 import { useAuth } from '../composables/fireux/firebase/useAuth'
 import { useUser } from '../composables/fireux/firestore/core/user/useUser'
+import { normalizeRuntimeMode } from '../composables/fireux/runtime/runtime.normalize'
 
 const AUTH_WAIT_TIMEOUT_MS = 2500
 const USER_WAIT_TIMEOUT_MS = 1500
+const CONSOLE_RUNTIME_COOKIES = [
+  { prefix: '/console/kitchen', cookieKey: 'fireux_runtime_kitchen' },
+  { prefix: '/console/portfolio', cookieKey: 'fireux_runtime_portfolio' },
+  { prefix: '/console/supplier', cookieKey: 'fireux_runtime_supplier' },
+  { prefix: '/console/projects', cookieKey: 'fireux_runtime_project' },
+] as const
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -17,6 +23,21 @@ async function waitFor(ready: () => boolean, timeoutMs: number) {
   }
 }
 
+function allowsGuestNonLiveConsole(path: string): boolean {
+  for (const entry of CONSOLE_RUNTIME_COOKIES) {
+    if (!path.startsWith(entry.prefix)) continue
+    if (path === `${entry.prefix}/create` || path.startsWith(`${entry.prefix}/create/`)) {
+      return false
+    }
+
+    const cookie = useCookie<Record<string, unknown> | null>(entry.cookieKey)
+    const mode = normalizeRuntimeMode(cookie.value?.mode, { defaultMode: 'live' })
+    return mode !== 'live'
+  }
+
+  return false
+}
+
 export default defineNuxtRouteMiddleware(async (to) => {
   if (import.meta.server) return
 
@@ -25,15 +46,11 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (!requiresAuth) return
 
   const { isAuthenticated, hasAuthState } = useAuth()
-  const projectSelection = useRuntimeProjectSelection()
   await waitFor(() => hasAuthState.value, AUTH_WAIT_TIMEOUT_MS)
-
-  const allowsGuestProjectConsole =
-    String(to.path || '').startsWith('/console/projects') &&
-    projectSelection.runtimeProjectMode.value !== 'live'
+  const allowsGuestConsole = allowsGuestNonLiveConsole(String(to.path || ''))
 
   if (!isAuthenticated.value) {
-    if (allowsGuestProjectConsole) return
+    if (allowsGuestConsole) return
     return navigateTo(`/auth?redirect=${encodeURIComponent(to.fullPath)}`)
   }
 
