@@ -18,7 +18,7 @@
     <template #testNote>
       <li>Available without sign-in.</li>
       <li>Sign in to save your progress.</li>
-      <li>Signed out uses a shared generic kitchen test identity. Signed in prefers Chef identity, then user identity.</li>
+      <li>Signed out uses an app-branded kitchen test identity. Signed in prefers Chef identity, then user identity.</li>
       <li>Test mode does not require a Chef profile. Chef gating is only for live kitchen entry.</li>
       <li>Uses the shared kitchen test runtime instead of a live kitchen you operate.</li>
     </template>
@@ -134,7 +134,7 @@ const { kitchens } = useKitchenFetch()
 const { pill: kitchenPill } = useKitchenInterface()
 const { currentUser, avatarSrc } = useUser()
 const { uid } = useAuth()
-const { appId } = useFireUXConfig()
+const { appId, appLogo, appThumbnail } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
 const { interface: chefInterface } = useChef()
 
@@ -220,11 +220,11 @@ const testKitchenIdentity = computed(() =>
   resolveConsoleTestIdentity({
     entityLabel: 'Kitchen',
     signedIn: isSignedIn.value,
+    appAvatarUrl: appLogo || appThumbnail || '/img/app/logo.png',
     userDisplayName: currentUser.value?.display_name,
     userAvatarUrl: avatarSrc.value,
     profileDisplayName: chefCard.value?.displayName,
     profileAvatarUrl: chefCard.value?.avatarUrl,
-    genericSubtitle: 'Shared kitchen onboarding runtime',
     userSubtitle: 'Personal kitchen test workspace',
     profileSubtitle: 'Chef-led kitchen test workspace',
   })

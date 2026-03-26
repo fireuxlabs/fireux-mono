@@ -52,7 +52,7 @@
     <template #testNote>
       <li>Available without sign-in.</li>
       <li>Sign in to save your progress.</li>
-      <li>Signed out uses a shared generic project test identity. Signed in uses your user identity when available.</li>
+      <li>Signed out uses an app-branded project test identity. Signed in uses your user identity when available.</li>
       <li>Uses the shared project test runtime instead of a live project you operate.</li>
     </template>
 
@@ -136,7 +136,7 @@ const { setRuntimeProject } = useRuntimeProjectSelection()
 const { projects } = useProjectCollection()
 const { currentUser, avatarSrc } = useUser()
 const { uid } = useAuth()
-const { appId } = useFireUXConfig()
+const { appId, appLogo, appThumbnail } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
 const isConsoleCreateSurface = computed(() => props.createSurface === 'console')
 const projectOverlays = appId
@@ -150,9 +150,9 @@ const testProjectIdentity = computed(() =>
   resolveConsoleTestIdentity({
     entityLabel: 'Project',
     signedIn: isSignedIn.value,
+    appAvatarUrl: appLogo || appThumbnail || '/img/app/logo.png',
     userDisplayName: currentUser.value?.display_name,
     userAvatarUrl: avatarSrc.value,
-    genericSubtitle: 'Shared project onboarding runtime',
     userSubtitle: 'Personal project test workspace',
   })
 )

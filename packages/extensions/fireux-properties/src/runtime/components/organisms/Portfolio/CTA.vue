@@ -52,7 +52,7 @@
     <template #testNote>
       <li>Available without sign-in.</li>
       <li>Sign in to save your progress.</li>
-      <li>Signed out uses a shared generic portfolio test identity. Signed in uses your user identity when available.</li>
+      <li>Signed out uses an app-branded portfolio test identity. Signed in uses your user identity when available.</li>
       <li>Uses the shared portfolio test runtime instead of a live portfolio you operate.</li>
     </template>
 
@@ -135,7 +135,7 @@ const { portfolios } = usePortfolioFetch()
 const { pill } = usePortfolioInterface()
 const { uid } = useAuth()
 const { currentUser, avatarSrc } = useUser()
-const { appId } = useFireUXConfig()
+const { appId, appLogo, appThumbnail } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
 const isConsoleCreateSurface = computed(() => props.createSurface === 'console')
 const portfolioOverlays = appId
@@ -149,9 +149,9 @@ const testPortfolioIdentity = computed(() =>
   resolveConsoleTestIdentity({
     entityLabel: 'Portfolio',
     signedIn: isSignedIn.value,
+    appAvatarUrl: appLogo || appThumbnail || '/img/app/logo.png',
     userDisplayName: currentUser.value?.display_name,
     userAvatarUrl: avatarSrc.value,
-    genericSubtitle: 'Shared portfolio onboarding runtime',
     userSubtitle: 'Personal portfolio test workspace',
   })
 )

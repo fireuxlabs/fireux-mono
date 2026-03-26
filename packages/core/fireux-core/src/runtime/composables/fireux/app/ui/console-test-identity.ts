@@ -3,6 +3,7 @@ type ConsoleTestIdentitySource = 'generic' | 'user' | 'profile'
 type ResolveConsoleTestIdentityInput = {
   entityLabel: string
   signedIn: boolean
+  appAvatarUrl?: unknown
   userDisplayName?: unknown
   userAvatarUrl?: unknown
   profileDisplayName?: unknown
@@ -63,6 +64,7 @@ export function resolveConsoleTestIdentity(
   input: ResolveConsoleTestIdentityInput
 ): ConsoleTestIdentity {
   const entityLabel = toText(input.entityLabel) || 'Console'
+  const appAvatarUrl = toText(input.appAvatarUrl)
   const genericAvatar = buildAvatarDataUrl(entityLabel)
   const userDisplayName = toText(input.userDisplayName)
   const userAvatarUrl = toText(input.userAvatarUrl)
@@ -93,9 +95,9 @@ export function resolveConsoleTestIdentity(
   }
 
   return {
-    title: `Test ${entityLabel}`,
-    subtitle: toText(input.genericSubtitle) || `Shared ${entityLabel.toLowerCase()} onboarding runtime`,
-    imageUrl: genericAvatar,
+    title: `User1234 Test ${entityLabel}`,
+    subtitle: toText(input.genericSubtitle) || 'Sign in to save your progress.',
+    imageUrl: appAvatarUrl || genericAvatar,
     source: 'generic',
   }
 }
