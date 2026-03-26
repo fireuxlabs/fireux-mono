@@ -37,32 +37,6 @@
               </p>
             </div>
 
-            <section v-if="showTest" class="space-y-2">
-              <p class="text-sm font-semibold">{{ testLabel }}</p>
-              <div
-                v-if="showInlineNotes"
-                :data-dev-note="true"
-                :data-dev-note-title="testLabel"
-                class="fireux-dev-note rounded-lg px-3 py-2 text-xs text-dimmed"
-              >
-                <p class="fireux-dev-note__label mb-1 text-[11px] font-semibold uppercase tracking-[0.16em]">
-                  Developer Note
-                </p>
-                <ul data-dev-note-body class="list-disc space-y-1 pl-4">
-                  <li v-if="consoleTo">
-                    Routes to
-                    <code>{{ consoleTo }}</code>.
-                  </li>
-                  <li>
-                    Sets runtime mode to
-                    <code>test</code>.
-                  </li>
-                  <slot name="testNote" />
-                </ul>
-              </div>
-              <slot name="test" />
-            </section>
-
             <section v-if="showReadOnly" class="space-y-2">
               <p class="text-sm font-semibold">{{ readOnlyLabel }}</p>
               <div
@@ -89,34 +63,32 @@
               <slot name="readOnly" />
             </section>
 
-            <section class="space-y-2">
+            <section v-if="showTest" class="space-y-2">
+              <p class="text-sm font-semibold">{{ testLabel }}</p>
               <div
                 v-if="showInlineNotes"
-                data-dev-note="true"
-                data-dev-note-title="Learn more"
+                :data-dev-note="true"
+                :data-dev-note-title="testLabel"
                 class="fireux-dev-note rounded-lg px-3 py-2 text-xs text-dimmed"
               >
                 <p class="fireux-dev-note__label mb-1 text-[11px] font-semibold uppercase tracking-[0.16em]">
                   Developer Note
                 </p>
                 <ul data-dev-note-body class="list-disc space-y-1 pl-4">
-                  <li>
+                  <li v-if="consoleTo">
                     Routes to
-                    <code>{{ learnMoreTo }}</code>.
+                    <code>{{ consoleTo }}</code>.
                   </li>
-                  <slot name="learnMoreNote" />
+                  <li>
+                    Sets runtime mode to
+                    <code>test</code>.
+                  </li>
+                  <slot name="testNote" />
                 </ul>
               </div>
-              <UButton
-                block
-                variant="subtle"
-                color="primary"
-                icon="i-lucide-book-open"
-                :to="learnMoreTo"
-              >
-                Learn more
-              </UButton>
+              <slot name="test" />
             </section>
+
           </section>
 
           <section v-if="showMy" class="space-y-4 border-t border-default pt-4">
@@ -236,35 +208,36 @@
             <slot name="readOnly" />
           </section>
 
-          <section class="space-y-2">
-            <div
-              v-if="showInlineNotes"
-              data-dev-note="true"
-              data-dev-note-title="Learn more"
-              class="fireux-dev-note rounded-lg px-3 py-2 text-xs text-dimmed"
-            >
-              <p class="fireux-dev-note__label mb-1 text-[11px] font-semibold uppercase tracking-[0.16em]">
-                Developer Note
-              </p>
-              <ul data-dev-note-body class="list-disc space-y-1 pl-4">
-                <li>
-                  Routes to
-                  <code>{{ learnMoreTo }}</code>.
-                </li>
-                <slot name="learnMoreNote" />
-              </ul>
-            </div>
-            <UButton
-              block
-              variant="subtle"
-              color="primary"
-              icon="i-lucide-book-open"
-              :to="learnMoreTo"
-            >
-              Learn more
-            </UButton>
-          </section>
         </template>
+
+        <section class="space-y-2">
+          <div
+            v-if="showInlineNotes"
+            data-dev-note="true"
+            data-dev-note-title="Learn more"
+            class="fireux-dev-note rounded-lg px-3 py-2 text-xs text-dimmed"
+          >
+            <p class="fireux-dev-note__label mb-1 text-[11px] font-semibold uppercase tracking-[0.16em]">
+              Developer Note
+            </p>
+            <ul data-dev-note-body class="list-disc space-y-1 pl-4">
+              <li>
+                Routes to
+                <code>{{ learnMoreTo }}</code>.
+              </li>
+              <slot name="learnMoreNote" />
+            </ul>
+          </div>
+          <UButton
+            block
+            variant="subtle"
+            color="primary"
+            icon="i-lucide-book-open"
+            :to="learnMoreTo"
+          >
+            Learn more
+          </UButton>
+        </section>
       </div>
     </template>
 
