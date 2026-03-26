@@ -53,6 +53,15 @@
       >
         Create project
       </UButton>
+      <UButton
+        v-if="cancelTo"
+        :to="cancelTo"
+        color="neutral"
+        variant="soft"
+        icon="i-lucide-arrow-left"
+      >
+        Cancel
+      </UButton>
     </div>
   </div>
 </template>
@@ -61,19 +70,25 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from '#imports'
 import { useRuntimeProjectSelection } from 'fireux-core/runtime/composables/fireux/app/runtime-project/state'
+import type {
+  ConsoleCreateMode,
+  ConsoleEnsureResult,
+} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { useProjectCreate } from 'fireux-core/runtime/composables/fireux/firestore/system/project/mutations/useProjectCreate'
 import type { FireuxProjectType } from 'fireux-core/runtime/models/system/project.model'
 
 const props = withDefaults(defineProps<{
+  mode?: ConsoleCreateMode
   returnTo?: string
   cancelTo?: string
 }>(), {
+  mode: 'console',
   returnTo: '',
   cancelTo: '',
 })
 
 const emit = defineEmits<{
-  (event: 'created', projectId: string): void
+  (event: 'created', result: ConsoleEnsureResult): void
 }>()
 
 const route = useRoute()
@@ -143,7 +158,7 @@ const resolvedReturnTo = computed(() => {
   if (explicit.startsWith('/')) return explicit
   const queryValue = String(route.query.returnTo || '').trim()
   if (queryValue.startsWith('/')) return queryValue
-  return '/console/projects/overview'
+  return props.mode === 'public' ? '/projects' : '/console/projects/overview'
 })
 
 watch(endpointUrl, () => {
@@ -259,7 +274,8 @@ const submit = async () => {
       throw new Error('Fetch the project endpoint before creating the project')
     }
 
-    const projectId = await createProject({
+    const result = await createProject({
+      id: projectMeta.value.firebase_project_id,
       name: projectMeta.value.name,
       slug: projectMeta.value.slug,
       description: projectMeta.value.description,
@@ -271,10 +287,14 @@ const submit = async () => {
       app_id: projectMeta.value.app_id,
       ecosystem_id: projectMeta.value.ecosystem_id,
       firebase_project_id: projectMeta.value.firebase_project_id,
+    }, {
+      mode: props.mode,
     })
 
-    setRuntimeProject({ projectId, mode: 'live' })
-    emit('created', projectId)
+    if (props.mode === 'console') {
+      setRuntimeProject({ projectId: result.id, mode: 'live' })
+    }
+    emit('created', result)
 
     if (route.path !== resolvedReturnTo.value) {
       await router.push(resolvedReturnTo.value)

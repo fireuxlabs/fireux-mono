@@ -176,10 +176,13 @@ For console-backed families, a cold reader should always separate:
 
 - `Create X`
   - create the public entity
-- `Create X Console`
+- `/console/X/create`
   - ensure the app-hosted console overlay
 - `Link X`
   - relationship only
+
+On entry CTAs, the button label may still stay simply `Create X`.
+The route is what carries the distinction.
 
 This applies to:
 - `Kitchen`
@@ -364,6 +367,7 @@ These are the clearest current family for operational console creation pages:
 - `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/create.vue`
 - `packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier/create.vue`
 - `packages/ecosystem/fireux-granite/src/runtime/pages/console/portfolio/create.vue`
+- `projects/fireux/fireux-app/app/pages/console/projects/create.vue`
 
 Shared pattern:
 - `layout: 'console'`

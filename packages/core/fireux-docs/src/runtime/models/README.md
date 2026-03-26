@@ -1,7 +1,7 @@
 # Models Directory
 
 Authority: Operational
-Updated: 2026-03-23
+Updated: 2026-03-26
 Scope: `packages/*/fireux-*/src/runtime/models` and child directories under `models/*`.
 
 Learn how FireUX runtime models are classified, how they are stored, and how future model decisions should be explained.
@@ -72,7 +72,7 @@ Examples:
 - `projects/<projectId>`
 - `apps/<appId>/projects/<projectId>`
 
-Some runtime implementations are still catching up to that rule, but this is the current console canon.
+This is the current console canon.
 
 ### System
 
@@ -131,6 +131,16 @@ Examples:
 - `PortfolioCore` + `PortfolioApp`
 - `SupplierCore` + `SupplierApp`
 - `ProjectCore` + `ProjectApp`
+
+Preferred model-file shape for console-backed domains:
+- `XCore`
+- `XApp`
+- `X` as the public/root read alias, usually `type X = XCore`
+- `XCreateInput`
+- `XUpdateInput`
+
+Compatibility note:
+- if an older file still exports `Project` or another legacy root name, keep a compatibility alias while consumers are aligned toward `XCore`
 
 ### Facade
 
@@ -198,7 +208,7 @@ Each file should point back to this README so future changes can be made in one 
 - `shared/` and `supporting/` still need tighter boundaries
 - some models still mix legacy flat stamps with newer nested stamps
 - some paths are still implicit in implementation rather than clearly documented in the file header
-- `Project` and some console flows are still catching up from older facade-first thinking to the newer shared console overlay rule
+- `Project` remains a system-console special case, even though it now follows the shared root-plus-overlay rule
 
 ## Roadmap To Reconciliation
 

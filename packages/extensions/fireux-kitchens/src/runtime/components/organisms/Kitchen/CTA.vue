@@ -219,9 +219,7 @@ const isConsoleCreateSurface = computed(() => props.createSurface === 'console')
 const createPath = computed(() =>
   isConsoleCreateSurface.value ? '/console/kitchen/create' : '/kitchens/create'
 )
-const createActionLabel = computed(() =>
-  isConsoleCreateSurface.value ? 'Create kitchen console' : 'Create kitchen'
-)
+const createActionLabel = computed(() => 'Create kitchen')
 const createActionMeaning = computed(() =>
   isConsoleCreateSurface.value
     ? 'It creates the kitchen console overlay and creates the public kitchen only if it does not already exist.'

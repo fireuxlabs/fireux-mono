@@ -208,7 +208,8 @@ Current role:
 - minimal footer
 
 Used by:
-- `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[id]/menu/[[menuId]].vue`
+- `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[id]/menu/index.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[id]/menu/[menuId].vue`
 
 ## Unused Layouts
 

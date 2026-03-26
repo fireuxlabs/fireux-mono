@@ -10,6 +10,7 @@
     :show-test="false"
   >
     <template #myNote>
+      <li>Live supplier entry follows the current operator supplier identity for this app.</li>
       <li>
         {{ createActionLabel }} routes to
         <code>{{ createPath }}</code>.
@@ -61,6 +62,11 @@
       </p>
     </template>
 
+    <template #readOnlyNote>
+      <li>Uses a selected read-only supplier scenario.</li>
+      <li>Scenarios do not require live supplier console authority.</li>
+    </template>
+
     <template #default>
       <img
         src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=640&h=520&q=80"
@@ -101,9 +107,7 @@ const isConsoleCreateSurface = computed(() => props.createSurface === 'console')
 const createPath = computed(() =>
   isConsoleCreateSurface.value ? '/console/supplier/create' : '/suppliers/create'
 )
-const createActionLabel = computed(() =>
-  isConsoleCreateSurface.value ? 'Create supplier console' : 'Create supplier'
-)
+const createActionLabel = computed(() => 'Create supplier')
 const createActionMeaning = computed(() =>
   isConsoleCreateSurface.value
     ? 'It creates the supplier console overlay and creates the public supplier only if it does not already exist.'

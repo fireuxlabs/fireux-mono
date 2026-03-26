@@ -1,72 +1,106 @@
 <template>
-  <section class="supplier-create-system">
-    <UCard class="create-card">
+  <section class="mx-auto flex w-full max-w-2xl justify-center">
+    <UCard class="w-full" :ui="{ body: 'space-y-6' }">
       <template #header>
-        <div class="header">
-          <div>
-            <p class="eyebrow">Supplier workspace</p>
-            <h2>Create your supplier</h2>
+        <div class="space-y-3">
+          <div class="space-y-1">
+            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-dimmed">
+              Supplier workspace
+            </p>
+            <h2 class="text-2xl font-semibold">
+              {{ headerTitle }}
+            </h2>
           </div>
-          <p class="lede">
-            Set up a supplier workspace with your products and capabilities. You
-            can edit everything right after creating it.
+          <p class="text-sm text-dimmed">
+            {{ headerDescription }}
           </p>
         </div>
       </template>
 
-      <div class="body">
-        <ul class="benefits">
-          <li>
-            <UIcon name="i-lucide-badge-check" />
-            <span>Listed in the FireUX directory</span>
+      <div
+        v-if="showDevNotes"
+        data-dev-note="true"
+        :data-dev-note-title="developerNoteTitle"
+        class="fireux-dev-note rounded-lg px-4 py-3 text-xs text-dimmed"
+      >
+        <p class="fireux-dev-note__label mb-1 text-[11px] font-semibold uppercase tracking-[0.16em]">
+          Developer Note
+        </p>
+        <ul data-dev-note-body class="list-disc space-y-1 pl-4">
+          <li v-if="isConsoleMode">
+            Ensures
+            <code>suppliers/&lt;id&gt;</code>
+            and
+            <code>apps/&lt;appId&gt;/suppliers/&lt;id&gt;</code>.
           </li>
-          <li>
-            <UIcon name="i-lucide-briefcase" />
-            <span>Add products, certifications, and details</span>
+          <li v-else>
+            Creates or ensures
+            <code>suppliers/&lt;id&gt;</code>.
           </li>
+          <li v-if="isConsoleMode">
+            Seeds console authority with the current operator in
+            <code>admin_ids</code>.
+          </li>
+          <li v-else>Does not create the app-hosted supplier console overlay.</li>
           <li>
-            <UIcon name="i-lucide-sparkles" />
-            <span>Receive invites from chefs and teams</span>
+            Success routes to
+            <code>{{ successTo }}</code>.
           </li>
         </ul>
+      </div>
 
-        <div class="actions">
-          <div class="flex flex-wrap gap-2">
-            <UButton
-              color="primary"
-              size="lg"
-              class="create-button"
-              :loading="isCreating"
-              :disabled="isCreating"
-              @click="handleCreate"
-            >
-              {{ isCreating ? 'Creating…' : 'Create supplier' }}
-            </UButton>
-            <UButton
-              v-if="cancelTo"
-              :to="cancelTo"
-              color="neutral"
-              variant="soft"
-              icon="i-lucide-arrow-left"
-            >
-              Cancel
-            </UButton>
-          </div>
-          <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+      <ul class="grid gap-3">
+        <li class="flex items-center gap-3 text-sm text-dimmed">
+          <UIcon name="i-lucide-badge-check" />
+          <span>Listed in the FireUX directory</span>
+        </li>
+        <li class="flex items-center gap-3 text-sm text-dimmed">
+          <UIcon name="i-lucide-briefcase" />
+          <span>Add products, certifications, and details</span>
+        </li>
+        <li class="flex items-center gap-3 text-sm text-dimmed">
+          <UIcon name="i-lucide-sparkles" />
+          <span>Receive invites from chefs and teams</span>
+        </li>
+      </ul>
+
+      <div class="space-y-2">
+        <div class="flex flex-wrap gap-2">
+          <UButton
+            color="primary"
+            size="lg"
+            class="min-w-60"
+            :loading="isCreating"
+            :disabled="isCreating"
+            @click="handleCreate"
+          >
+            {{ isCreating ? 'Creating…' : 'Create supplier' }}
+          </UButton>
+          <UButton
+            v-if="cancelTo"
+            :to="cancelTo"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-arrow-left"
+          >
+            Cancel
+          </UButton>
         </div>
+        <p v-if="errorMessage" class="text-sm text-red-600">{{ errorMessage }}</p>
       </div>
     </UCard>
   </section>
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import type {
   ConsoleCreateMode,
   ConsoleEnsureResult,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
-import { computed, ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useSupplierCreate } from '../../../../composables/supplier/useSupplierCreate';
+import { useDevUi } from 'fireux-core/runtime/composables/fireux/app/ui/useDevUi'
+import { useSupplierCreate } from '../../../../composables/supplier/useSupplierCreate'
 
 const props = defineProps<{
   mode?: ConsoleCreateMode
@@ -82,17 +116,33 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const { ensureSupplier } = useSupplierCreate()
+const { notesVisible } = useDevUi()
 
 const isCreating = ref(false)
 const errorMessage = ref<string | null>(null)
 const cancelTo = computed(() => String(props.cancelTo || '').trim())
 const resolvedMode = computed<ConsoleCreateMode>(() => props.mode ?? 'console')
+const isConsoleMode = computed(() => resolvedMode.value === 'console')
+const showDevNotes = computed(() => import.meta.dev && notesVisible.value)
+const developerNoteTitle = computed(() => 'Create Supplier')
+const headerTitle = computed(() =>
+  isConsoleMode.value ? 'Create your supplier console' : 'Create your public supplier'
+)
+const headerDescription = computed(() =>
+  isConsoleMode.value
+    ? 'We’ll ensure the supplier console for this app and create the public supplier only if it is missing.'
+    : 'We’ll create the public supplier record. Console setup happens later.'
+)
+const successTo = computed(() => {
+  const explicit = String(props.returnTo || '').trim()
+  if (explicit.startsWith('/')) return explicit
+  return resolvedMode.value === 'public' ? '/suppliers' : '/console/supplier/overview'
+})
 
 const handleCreate = async () => {
   if (isCreating.value) return
 
-  const create =
-    props.create ?? (() => ensureSupplier({ mode: resolvedMode.value }))
+  const create = props.create ?? (() => ensureSupplier({ mode: resolvedMode.value }))
   isCreating.value = true
   errorMessage.value = null
 
@@ -102,7 +152,7 @@ const handleCreate = async () => {
     const fallbackTo =
       resolvedMode.value === 'public'
         ? `/suppliers/${encodeURIComponent(result.id)}`
-        : '/dashboard/supplier'
+        : '/console/supplier/overview'
     await router.push(props.returnTo || fallbackTo)
   } catch (error) {
     const message =
@@ -116,82 +166,3 @@ const handleCreate = async () => {
   }
 }
 </script>
-
-<style scoped>
-.supplier-create-system {
-  display: flex;
-  justify-content: center;
-}
-
-.create-card {
-  max-width: 720px;
-  width: 100%;
-}
-
-.header {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.eyebrow {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--ui-text-400, #94a3b8);
-  margin: 0;
-}
-
-.header h2 {
-  margin: 0;
-  font-size: 1.5rem;
-}
-
-.lede {
-  margin: 0;
-  color: var(--ui-text-500, #64748b);
-}
-
-.body {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.benefits {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: 0.75rem;
-}
-
-.benefits li {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 0.95rem;
-  color: var(--ui-text-600, #475569);
-}
-
-.benefits li :deep(svg) {
-  color: var(--ui-primary-500, #2563eb);
-}
-
-.actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  align-items: flex-start;
-}
-
-.create-button {
-  min-width: 240px;
-}
-
-.error {
-  margin: 0;
-  color: #dc2626;
-  font-size: 0.875rem;
-}
-</style>

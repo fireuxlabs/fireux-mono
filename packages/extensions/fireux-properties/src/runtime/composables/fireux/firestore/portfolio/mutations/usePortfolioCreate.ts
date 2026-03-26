@@ -4,10 +4,15 @@ import type {
   ConsoleEnsureResult,
   ConsoleRootEnsureResult,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import type { Portfolio, PortfolioApp } from '../../../../../models/portfolio.model'
+import type {
+  Portfolio,
+  PortfolioApp,
+  PortfolioCreateInput,
+} from '../../../../../models/portfolio.model'
 
 const toSlug = (value: string) =>
   String(value || '')
@@ -26,20 +31,11 @@ export type EnsurePortfolioOptions = {
   existingRootId?: string | null
 }
 
-export type PortfolioCreateInput = {
-  name: string
-  slug?: string
-  owner_label?: string
-  status?: 'active' | 'archived'
-  strategy_label?: string
-  region_label?: string
-  notes?: string
-}
-
 export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
   const { ensureConsole } = useConsoleEnsure()
+  const { uid } = useAuth()
   const collectionPath =
     options.test === true ? 'test-portfolios' : String(options.collectionPath || 'portfolios').trim() || 'portfolios'
 
@@ -144,7 +140,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       ensureRoot,
       createOverlay: async () =>
         ({
-          admin_ids: [] as string[],
+          admin_ids: uid.value ? [uid.value] : ([] as string[]),
           join_requests: [] as string[],
           console_enabled: true,
         }) as PortfolioApp,

@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       title="Create Kitchen"
-      description="Select a real location to manage in FireUX."
+      description="Create the public kitchen record for a real venue. Console setup happens separately."
     />
 
     <UPageBody class="pagebody">
@@ -19,7 +19,7 @@ import KitchenCreateSystem from '../../components/organisms/Kitchen/Create/Syste
 definePageMeta({
   layout: 'default',
   title: 'Create Kitchen',
-  description: 'Select a real location to manage in FireUX.',
+  description: 'Create the public kitchen record for a real venue.',
   nav: {
     key: 'kitchens-create',
     label: 'Create kitchen',

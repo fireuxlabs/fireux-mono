@@ -180,6 +180,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceClaim'
 import { computed, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
+import { resolveKitchenConsoleCollectionPath } from '../../composables/fireux/app/kitchen-runtime/shared'
 import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenInterface } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { Kitchen } from '../../models/kitchen.model'
@@ -193,7 +194,7 @@ definePageMeta({
   name: 'KitchensDetailPage',
 })
 
-const { appName } = useFireUXConfig()
+const { appId, appName } = useFireUXConfig()
 const route = useRoute()
 const hasChildRoute = computed(() => {
   const path = String(route.path || '').trim()
@@ -230,7 +231,8 @@ const menusRef = shallowRef(null) as ShallowRef<Ref<Menu[] | undefined> | null>
 watch(
   kitchenId,
   (nextKitchenId) => {
-    const path = nextKitchenId ? `kitchens/${nextKitchenId}/menus` : ''
+    const basePath = resolveKitchenConsoleCollectionPath(appId)
+    const path = nextKitchenId ? `${basePath}/${nextKitchenId}/menus` : ''
     menusRef.value = path ? firestoreFetchCollection<Menu>(path) : null
   },
   { immediate: true }

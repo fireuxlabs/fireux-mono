@@ -39,6 +39,14 @@
             and links the kitchen to the chef profile association.
           </li>
           <li v-else>Does not create the app-hosted kitchen console overlay.</li>
+          <li v-if="isConsoleMode">
+            Success routes to
+            <code>/console/kitchen/overview</code>.
+          </li>
+          <li v-else>
+            Success routes to
+            <code>/kitchens/&lt;id&gt;</code>.
+          </li>
         </ul>
       </div>
 
@@ -79,7 +87,7 @@
         </div>
       </div>
       <div v-else-if="existingId" class="space-y-2 text-sm text-amber-600">
-        <div>This kitchen already exists.</div>
+        <div>This public kitchen already exists.</div>
         <div class="text-xs text-muted">Location ID: {{ existingId }}</div>
         <UButton
           size="xs"
@@ -87,7 +95,7 @@
           color="neutral"
           :to="`/kitchens/${encodeURIComponent(existingId)}`"
         >
-          Continue to kitchen
+          View kitchen
         </UButton>
       </div>
       <div v-if="error" class="text-sm text-red-600">

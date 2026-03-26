@@ -48,8 +48,8 @@
 
     <div v-if="isDev">
       <DevJson
-        :title="'Suppliers (JSON)'"
-        context="collection manager · suppliers"
+        :title="devJsonTitle"
+        :context="devJsonContext"
         :data="collection"
         :default-open="false"
       />
@@ -76,6 +76,8 @@ const props = withDefaults(
     showVariantToggle?: boolean
     showCount?: boolean
     initialVariant?: 'pill' | 'cell'
+    devJsonTitle?: string
+    devJsonContext?: string
   }>(),
   {
     title: 'Suppliers',
@@ -86,6 +88,8 @@ const props = withDefaults(
     showVariantToggle: true,
     showCount: true,
     initialVariant: 'pill',
+    devJsonTitle: 'Suppliers (JSON)',
+    devJsonContext: 'collection manager · suppliers',
   }
 )
 
@@ -101,6 +105,8 @@ const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
+const devJsonTitle = computed(() => String(props.devJsonTitle || 'Suppliers (JSON)').trim())
+const devJsonContext = computed(() => String(props.devJsonContext || 'collection manager · suppliers').trim())
 const { interface: makeCard, searchText } = useSupplierInterface()
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
   useCollectionSearch<SupplierEntry, ReturnType<typeof makeCard>>({

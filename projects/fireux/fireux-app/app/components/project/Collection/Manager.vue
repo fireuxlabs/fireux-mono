@@ -50,8 +50,8 @@
 
     <div v-if="isDev">
       <DevJson
-        title="Projects (JSON)"
-        context="collection manager · projects · raw collection"
+        :title="devJsonTitle"
+        :context="devJsonContext"
         :data="rawCollection"
         :default-open="false"
       />
@@ -77,6 +77,8 @@ const props = withDefaults(defineProps<{
   showVariantToggle?: boolean
   showCount?: boolean
   initialVariant?: 'pill' | 'cell'
+  devJsonTitle?: string
+  devJsonContext?: string
 }>(), {
   collection: () => [],
   title: 'Projects',
@@ -87,6 +89,8 @@ const props = withDefaults(defineProps<{
   showVariantToggle: true,
   showCount: true,
   initialVariant: 'pill',
+  devJsonTitle: 'Projects (JSON)',
+  devJsonContext: 'collection manager · projects · raw collection',
 })
 
 const rawCollection = computed(() => props.collection ?? [])
@@ -97,6 +101,10 @@ const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Sear
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
+const devJsonTitle = computed(() => String(props.devJsonTitle || 'Projects (JSON)').trim())
+const devJsonContext = computed(
+  () => String(props.devJsonContext || 'collection manager · projects · raw collection').trim()
+)
 const { item, card: makeCard, searchText } = useProjectInterface()
 
 const collection = computed<ProjectView.Item[]>(() =>

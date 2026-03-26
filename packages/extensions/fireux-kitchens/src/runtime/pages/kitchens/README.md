@@ -13,7 +13,8 @@ This README only explains the kitchen delta.
 
 - `index.vue`
 - `[id].vue`
-- `[id]/menu/[[menuId]].vue`
+- `[id]/menu/index.vue`
+- `[id]/menu/[menuId].vue`
 - `create.vue`
 - `edit/[id].vue`
 - `learn-more.vue`

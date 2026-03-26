@@ -49,8 +49,8 @@
 
     <div v-if="isDev">
       <DevJson
-        :title="'Kitchens (JSON)'"
-        context="collection manager · kitchens"
+        :title="devJsonTitle"
+        :context="devJsonContext"
         :data="collection"
         :default-open="false"
       />
@@ -75,6 +75,8 @@ const props = withDefaults(
     showCount?: boolean
     initialVariant?: 'pill' | 'cell'
     link?: boolean
+    devJsonTitle?: string
+    devJsonContext?: string
   }>(),
   {
     title: 'Kitchens',
@@ -85,6 +87,8 @@ const props = withDefaults(
     showCount: true,
     initialVariant: 'pill',
     link: true,
+    devJsonTitle: 'Kitchens (JSON)',
+    devJsonContext: 'collection manager · kitchens',
   }
 )
 
@@ -96,6 +100,8 @@ const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
+const devJsonTitle = computed(() => String(props.devJsonTitle || 'Kitchens (JSON)').trim())
+const devJsonContext = computed(() => String(props.devJsonContext || 'collection manager · kitchens').trim())
 const { interface: makeCard, searchText } = useKitchenInterface()
 
 const {

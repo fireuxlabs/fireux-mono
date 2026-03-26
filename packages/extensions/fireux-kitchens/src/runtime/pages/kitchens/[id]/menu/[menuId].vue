@@ -241,9 +241,11 @@
 <script setup lang="ts">
 import { useRoute } from '#imports'
 import { useBasket } from 'fireux-orders/runtime/composables/useBasket'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
+import { resolveKitchenConsoleCollectionPath } from '../../../../composables/fireux/app/kitchen-runtime/shared'
 import { useKitchenFetch } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import type { Menu, MenuSection, MenuServiceMode } from '../../../../models/menu.model'
 import {
@@ -256,7 +258,7 @@ definePageMeta({
   title: 'Kitchen Menu',
   description: 'Public menu view.',
   head: { title: 'Kitchen Menu' },
-  name: 'KitchenPublicMenuPage',
+  name: 'KitchenPublicMenuDetailPage',
 })
 
 const route = useRoute()
@@ -313,6 +315,7 @@ const requestedModeLabel = computed(() => {
 })
 
 const { kitchens } = useKitchenFetch()
+const { appId } = useFireUXConfig()
 const resolvedKitchen = computed(() => {
   const key = routeId.value
   if (!key) return null
@@ -346,9 +349,8 @@ const menusRef = shallowRef(null) as ShallowRef<Ref<Menu[] | undefined> | null>
 watch(
   kitchenId,
   (nextKitchenId) => {
-    const path = nextKitchenId
-      ? `kitchens/${nextKitchenId}/menus`
-      : ''
+    const basePath = resolveKitchenConsoleCollectionPath(appId)
+    const path = nextKitchenId ? `${basePath}/${nextKitchenId}/menus` : ''
 
     menusRef.value = path ? firestoreFetchCollection<Menu>(path) : null
   },

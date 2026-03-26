@@ -9,6 +9,7 @@
     learn-more-to="/projects/learn-more"
   >
     <template #myNote>
+      <li>The live list includes projects you own or can operate in this app.</li>
       <li>
         {{ createActionLabel }} routes to
         <code>{{ createPath }}</code>.
@@ -17,25 +18,36 @@
     </template>
 
     <template #my>
+      <div class="space-y-2">
+        <div v-if="liveProjectCards.length" class="space-y-2">
           <ProjectCardsPill
-            v-if="liveProjectCard"
+            v-for="item in liveProjectCards"
+            :key="item.id"
             :to="''"
-            :title="liveProjectCard.title"
-            :subtitle="liveProjectCard.subtitle"
-            :badges="liveProjectCard.badges"
+            :title="item.title"
+            :subtitle="item.subtitle"
+            :badges="item.badges"
             :action="true"
-            @action="goToProject('live', liveProjectId)"
+            @action="goToProject('live', item.id)"
           />
-          <UButton
-            v-else
-            block
-            variant="subtle"
-            color="primary"
-            icon="i-lucide-plus"
-            @click="createProject"
-          >
-            {{ createActionLabel }}
-          </UButton>
+        </div>
+        <p v-else class="text-sm text-dimmed">
+          No project consoles yet.
+        </p>
+        <UButton
+          block
+          variant="subtle"
+          color="primary"
+          icon="i-lucide-plus"
+          @click="createProject"
+        >
+          {{ createActionLabel }}
+        </UButton>
+      </div>
+    </template>
+
+    <template #testNote>
+      <li>Uses the shared project test runtime instead of a live project you operate.</li>
     </template>
 
     <template #test>
@@ -48,6 +60,11 @@
           >
             Enter Test Project
           </UButton>
+    </template>
+
+    <template #readOnlyNote>
+      <li>Uses a selected read-only scenario id.</li>
+      <li>Scenarios do not require live project console authority.</li>
     </template>
 
     <template #readOnly>
@@ -86,12 +103,15 @@
 import { useRouter } from '#imports'
 import { computed } from 'vue'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { getReadOnlyProjectScenarioList } from 'fireux-core/runtime/composables/fireux/app/runtime-project/read-only-scenarios/index'
 import { useRuntimeProjectSelection } from 'fireux-core/runtime/composables/fireux/app/runtime-project/state'
 import { useRuntimeProject } from 'fireux-core/runtime/composables/fireux/app/runtime-project/useRuntimeProject'
 import type { RuntimeMode } from 'fireux-core/runtime/composables/fireux/runtime/runtime.types'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import type { ProjectApp } from 'fireux-core/runtime/models/system/project.model'
 import ProjectCardsPill from './Cards/Pill.vue'
 
 const props = withDefaults(defineProps<{
@@ -105,13 +125,16 @@ const runtimeProject = useRuntimeProject()
 const { setRuntimeProject } = useRuntimeProjectSelection()
 const { projects } = useProjectCollection()
 const { currentUser } = useUser()
+const { appId } = useFireUXConfig()
+const { firestoreFetchCollection } = useFirestoreRead()
 const isConsoleCreateSurface = computed(() => props.createSurface === 'console')
+const projectOverlays = appId
+  ? firestoreFetchCollection<ProjectApp>(`apps/${appId}/projects`)
+  : null
 const createPath = computed(() =>
   isConsoleCreateSurface.value ? '/console/projects/create' : '/projects/create'
 )
-const createActionLabel = computed(() =>
-  isConsoleCreateSurface.value ? 'Create project console' : 'Create project'
-)
+const createActionLabel = computed(() => 'Create project')
 const createActionMeaning = computed(() =>
   isConsoleCreateSurface.value
     ? 'It creates the project console overlay and creates the public project only if it does not already exist.'
@@ -119,27 +142,58 @@ const createActionMeaning = computed(() =>
 )
 
 const readOnlyScenarios = computed(() => getReadOnlyProjectScenarioList())
-const ownedProjects = computed(() =>
+const accessibleProjectIds = computed(() => {
+  const currentUid = String(currentUser.value?.id || '').trim()
+  if (!currentUid) return new Set<string>()
+
+  const ids = new Set<string>()
+
+  for (const overlay of projectOverlays?.value ?? []) {
+    const id = String((overlay as any)?.id || '').trim()
+    if (!id) continue
+    if ((overlay as any)?.console_enabled === false) continue
+
+    const adminIds = Array.isArray((overlay as any)?.admin_ids)
+      ? (overlay as any).admin_ids
+          .map((value: unknown) => String(value || '').trim())
+          .filter(Boolean)
+      : []
+
+    if (adminIds.includes(currentUid)) {
+      ids.add(id)
+    }
+  }
+
+  for (const project of projects.value ?? []) {
+    const id = String((project as any)?.id || '').trim()
+    const ownerUserId = String((project as any)?.owner_user_id || '').trim()
+    if (id && ownerUserId === currentUid) {
+      ids.add(id)
+    }
+  }
+
+  return ids
+})
+
+const liveProjects = computed(() =>
   (projects.value ?? []).filter((entry) =>
-    String((entry as any).owner_user_id || '').trim() === String(currentUser.value?.id || '').trim()
+    accessibleProjectIds.value.has(String((entry as any)?.id || '').trim())
   )
 )
-const liveProject = computed(() => ownedProjects.value[0] ?? null)
-const liveProjectId = computed(() => String((liveProject.value as any)?.id || '').trim())
-const liveProjectCard = computed(() => {
-  if (!liveProject.value) return null
 
-  return {
-    title: String((liveProject.value as any)?.name || 'Project').trim(),
-    subtitle: liveProjectId.value,
-    badges: [String((liveProject.value as any)?.status || 'active').trim()],
-  }
-})
+const liveProjectCards = computed(() =>
+  liveProjects.value.map((entry) => ({
+    id: String((entry as any)?.id || '').trim(),
+    title: String((entry as any)?.name || 'Project').trim(),
+    subtitle: String((entry as any)?.slug || (entry as any)?.id || '').trim(),
+    badges: [String((entry as any)?.status || 'active').trim()],
+  }))
+)
 
 const goToProject = async (mode: RuntimeMode, projectId?: string) => {
   const fallback = String(
     projectId ||
-    liveProjectId.value ||
+    liveProjectCards.value[0]?.id ||
     runtimeProject.id.value ||
     ''
   ).trim()

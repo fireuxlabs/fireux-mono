@@ -6,6 +6,7 @@
 
     <template #body>
       <ProjectCreateSystem
+        mode="console"
         return-to="/console/projects/overview"
         cancel-to="/console/projects/overview"
       />

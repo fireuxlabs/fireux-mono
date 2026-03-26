@@ -3,7 +3,7 @@
     <UPageHeader
       class="pageheader"
       title="Create Supplier"
-      description="Create your supplier workspace once, then enter the same supplier console from anywhere."
+      description="Create the public supplier record. Console setup happens separately."
     />
 
     <UPageBody class="pagebody">
@@ -20,7 +20,7 @@ definePageMeta({
   layout: 'default',
   requiresAuth: true,
   title: 'Create Supplier',
-  description: 'Create a supplier record.',
+  description: 'Create the public supplier record.',
   nav: {
     key: 'suppliers-create',
     label: 'Create supplier',

@@ -1,10 +1,13 @@
 # Suppliers Pages
 
 Authority: Operational
-Updated: 2026-03-23
+Updated: 2026-03-26
 Scope: `packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/*`.
 
 This folder owns the public `Supplier` route tree.
+
+Use `packages/core/fireux-docs/src/runtime/concepts/console-entry/README.md` for the shared console-entry concept.
+This README only explains the supplier delta.
 
 ## Current Routes
 
@@ -21,22 +24,16 @@ This folder owns the public `Supplier` route tree.
 - `create.vue` is the public root-create page for `Supplier`
 - `console/supplier/create.vue` is the operational console create page
 
-Console creation canon:
-- public create makes the root supplier record
-- console create ensures the app supplier overlay and may create root first when missing
-
-## Aligned With
-
-Public console root-create examples:
-- `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/create.vue`
-- `packages/extensions/fireux-properties/src/runtime/pages/portfolios/create.vue`
-
-## Not Aligned Yet
-
-- shared admin-create helpers and view toggles still use generic core profile-era names
-- supplier still has some legacy content fields in the model and detail/edit surfaces
+Supplier-specific delta:
+- public create creates or ensures `suppliers/<id>`
+- public create does not ensure `apps/<appId>/suppliers/<id>`
+- live supplier entry still follows the current operator/company assumption
+- supplier remains intentionally thinner than Kitchen and Portfolio
 
 ## Short Version
 
-Treat `suppliers/create.vue` as the public root-create page for the supplier console.
-The console route owns overlay enablement, and the live implementation now follows that rule.
+This folder owns the public supplier side of the shared console-entry concept.
+Its delta is:
+- public supplier discovery
+- public supplier create
+- thinner operator-first supplier entry

@@ -3,11 +3,11 @@
     <UPageHeader
       class="pageheader"
       title="Create Project"
-      description="Create a project once, then enter the same project console from anywhere."
+      description="Create the public project record from the endpoint metadata. Console setup happens separately."
     />
 
     <UPageBody class="pagebody">
-      <ProjectCreateSystem :cancel-to="cancelTo" :return-to="returnTo" />
+      <ProjectCreateSystem mode="public" :cancel-to="cancelTo" :return-to="returnTo" />
     </UPageBody>
   </UPage>
 </template>
@@ -22,7 +22,7 @@ definePageMeta({
   layout: 'default',
   requiresAuth: true,
   title: 'Create Project',
-  description: 'Create a FireUX project.',
+  description: 'Create the public project record.',
   nav: {
     key: 'projects-create',
     label: 'Create project',
@@ -42,10 +42,10 @@ useHead({ title: `${appName} | Create Project` })
 
 const returnTo = computed(() => {
   const value = String(route.query.returnTo || '').trim()
-  return value.startsWith('/') ? value : '/console/projects/overview'
+  return value.startsWith('/') ? value : '/projects'
 })
 
 const cancelTo = computed(() => {
-  return returnTo.value === '/console/projects/overview' ? '/projects' : returnTo.value
+  return '/projects'
 })
 </script>

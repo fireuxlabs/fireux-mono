@@ -86,12 +86,17 @@ Use these labels consistently:
 
 - `Create X`
   - create the public entity
-- `Create X Console`
+- `/console/X/create`
   - ensure the app-hosted console overlay and console authority path
 - `Link X`
   - relationship only
 - `Add X To Profile`
   - relationship only
+
+User-facing CTA labels may stay simply `Create X` even on `/console/X`.
+In that case, the route context carries the distinction:
+- `/X/create` = public create
+- `/console/X/create` = console create
 
 Avoid these confusions:
 - calling a relationship link a create

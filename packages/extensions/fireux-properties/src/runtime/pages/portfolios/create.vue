@@ -3,7 +3,7 @@
     <UPageHeader
       class="pageheader"
       title="Create Portfolio"
-      description="Create a portfolio once, then enter the same portfolio console from anywhere."
+      description="Create the public portfolio record. Console setup happens separately."
     />
 
     <UPageBody class="pagebody">
@@ -22,7 +22,7 @@ definePageMeta({
   layout: 'default',
   requiresAuth: true,
   title: 'Create Portfolio',
-  description: 'Create a portfolio.',
+  description: 'Create the public portfolio record.',
   nav: {
     key: 'portfolios-create',
     label: 'Create portfolio',

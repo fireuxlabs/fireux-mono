@@ -93,6 +93,11 @@ Meaning:
 
 This is the operational onboarding path for the console-backed family.
 
+User-facing entry CTA labels may still say `Create X`.
+The route context carries the real meaning:
+- `/X/create` = public create
+- `/console/X/create` = console create
+
 ## Shared Canon
 
 The canonical shape is:

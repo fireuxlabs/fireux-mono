@@ -64,3 +64,14 @@ export type PortfolioApp = {
 }
 
 export type Portfolio = PortfolioCore
+
+export type PortfolioCreateInput = Omit<PortfolioCore, 'id' | 'created' | 'updated'> & {
+  slug?: string
+}
+
+export type PortfolioUpdateInput = Partial<
+  Pick<
+    PortfolioCore,
+    'name' | 'slug' | 'owner_label' | 'status' | 'strategy_label' | 'region_label' | 'notes'
+  >
+>

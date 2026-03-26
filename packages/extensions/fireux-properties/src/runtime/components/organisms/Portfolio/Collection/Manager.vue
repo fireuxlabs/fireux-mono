@@ -50,8 +50,8 @@
 
     <div v-if="isDev">
       <DevJson
-        title="Portfolios (JSON)"
-        context="collection manager · portfolios · root: portfolios"
+        :title="devJsonTitle"
+        :context="devJsonContext"
         :data="collection"
         :default-open="false"
       />
@@ -79,6 +79,8 @@ const props = withDefaults(
     showVariantToggle?: boolean
     showCount?: boolean
     initialVariant?: 'pill' | 'cell'
+    devJsonTitle?: string
+    devJsonContext?: string
   }>(),
   {
     title: 'Available Portfolios',
@@ -89,6 +91,8 @@ const props = withDefaults(
     showVariantToggle: true,
     showCount: true,
     initialVariant: 'pill',
+    devJsonTitle: 'Portfolios (JSON)',
+    devJsonContext: 'collection manager · portfolios · root: portfolios',
   }
 )
 
@@ -103,6 +107,10 @@ const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
+const devJsonTitle = computed(() => String(props.devJsonTitle || 'Portfolios (JSON)').trim())
+const devJsonContext = computed(
+  () => String(props.devJsonContext || 'collection manager · portfolios · root: portfolios').trim()
+)
 
 const {
   query,

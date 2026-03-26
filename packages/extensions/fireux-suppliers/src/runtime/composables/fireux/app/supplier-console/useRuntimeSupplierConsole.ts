@@ -33,7 +33,7 @@ export function useRuntimeSupplierConsole() {
   const actions = {
     openOverviewTo: '/console/supplier/overview',
     browseSuppliersTo: '/suppliers',
-    openWorkspaceTo: '/dashboard/supplier',
+    openWorkspaceTo: '/console/supplier/overview',
   } as const
 
   return createScopeConsole({

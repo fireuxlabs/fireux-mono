@@ -10,7 +10,7 @@ import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firesto
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { SupplierApp, SupplierCore } from '../../models/supplier/Supplier.model'
+import type { SupplierApp, SupplierCore, SupplierCreateInput } from '../../models/supplier/Supplier.model'
 import { SUPPLIER_COLLECTION } from './constants'
 
 export type EnsureSupplierOptions = {
@@ -45,7 +45,7 @@ export function useSupplierCreate() {
         }
       }
 
-      const payload = {
+      const payload: SupplierCreateInput = {
         supplier_headline: '',
         supplier_bio: '',
         supplier_image: '',
@@ -68,7 +68,7 @@ export function useSupplierCreate() {
         employee_count: 0,
         certifications: [] as string[],
         delivery_range: 0,
-      } satisfies Omit<SupplierCore, 'created' | 'updated' | 'id'>
+      }
 
       await setDocument<SupplierCore>(
         SUPPLIER_COLLECTION,
@@ -92,7 +92,7 @@ export function useSupplierCreate() {
       ensureRoot,
       createOverlay: async () => {
         const payload: Omit<SupplierApp, 'created' | 'updated' | 'id'> = {
-          admin_ids: [] as string[],
+          admin_ids: uid ? [uid] : ([] as string[]),
           join_requests: [] as string[],
           console_enabled: true,
         }

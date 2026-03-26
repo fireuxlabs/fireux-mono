@@ -40,7 +40,8 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 5) Routes (public vs internal; slug vs id)
 - Public/internal id-based pages currently include:
   - `/kitchens/[id]`
-  - `/kitchens/[id]/menu/[[menuId]]`
+  - `/kitchens/[id]/menu`
+  - `/kitchens/[id]/menu/[menuId]`
   - `/ingredients/[id]`
 - Console/internal:
   - `/console/kitchen/*`

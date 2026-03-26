@@ -91,3 +91,35 @@ export const SupplierApp = {
 export type SupplierApp = {
   [K in keyof typeof SupplierApp]: (typeof SupplierApp)[K]
 }
+
+export type Supplier = SupplierCore
+
+export type SupplierCreateInput = Omit<SupplierCore, 'id' | 'created' | 'updated'>
+
+export type SupplierUpdateInput = Partial<
+  Pick<
+    SupplierCore,
+    | 'supplier_headline'
+    | 'supplier_bio'
+    | 'supplier_image'
+    | 'supplier_product_categories'
+    | 'supplier_delivery_areas'
+    | 'supplier_organization_name'
+    | 'title'
+    | 'subtitle'
+    | 'tagline'
+    | 'summary'
+    | 'bio_long'
+    | 'tags'
+    | 'specialties'
+    | 'categories'
+    | 'organization_name'
+    | 'business_type'
+    | 'locations'
+    | 'years_in_business'
+    | 'products_offered'
+    | 'employee_count'
+    | 'certifications'
+    | 'delivery_range'
+  >
+>

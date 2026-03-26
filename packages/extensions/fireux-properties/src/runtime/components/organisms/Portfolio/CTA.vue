@@ -9,6 +9,7 @@
     learn-more-to="/portfolios/learn-more"
   >
     <template #myNote>
+      <li>The live list only includes portfolios you can operate.</li>
       <li>
         {{ createActionLabel }} routes to
         <code>{{ createPath }}</code>.
@@ -17,27 +18,36 @@
     </template>
 
     <template #my>
-          <div v-if="livePills.length" class="space-y-2">
-            <PortfolioCardsPill
-              v-for="item in livePills"
-              :key="item.id"
-              :to="''"
-              :title="item.title"
-              :subtitle="item.subtitle"
-              :badges="item.badges"
-              :action="true"
-              @action="goToPortfolio('live', item.id)"
-            />
-          </div>
-          <UButton
-            block
-            variant="subtle"
-            color="primary"
-            icon="i-lucide-plus"
-            @click="createPortfolio"
-          >
-            {{ createActionLabel }}
-          </UButton>
+      <div class="space-y-2">
+        <div v-if="livePills.length" class="space-y-2">
+          <PortfolioCardsPill
+            v-for="item in livePills"
+            :key="item.id"
+            :to="''"
+            :title="item.title"
+            :subtitle="item.subtitle"
+            :badges="item.badges"
+            :action="true"
+            @action="goToPortfolio('live', item.id)"
+          />
+        </div>
+        <p v-else class="text-sm text-dimmed">
+          No portfolio consoles yet.
+        </p>
+        <UButton
+          block
+          variant="subtle"
+          color="primary"
+          icon="i-lucide-plus"
+          @click="createPortfolio"
+        >
+          {{ createActionLabel }}
+        </UButton>
+      </div>
+    </template>
+
+    <template #testNote>
+      <li>Uses the shared portfolio test runtime instead of a live portfolio you operate.</li>
     </template>
 
     <template #test>
@@ -70,6 +80,11 @@
           </p>
     </template>
 
+    <template #readOnlyNote>
+      <li>Uses a selected read-only scenario id.</li>
+      <li>Scenarios do not require live portfolio console authority.</li>
+    </template>
+
     <template #default>
       <img
         src="https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=640&h=520&q=80"
@@ -87,11 +102,15 @@
 import { useRouter } from '#imports'
 import { computed } from 'vue'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { getReadOnlyPortfolioScenarioList } from '../../../composables/fireux/app/portfolio-runtime/read-only-scenarios'
 import type { RuntimePortfolioMode } from '../../../composables/fireux/app/portfolio-runtime/shared'
 import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
 import { usePortfolioFetch } from '../../../composables/fireux/firestore/portfolio/fetch/usePortfolioFetch'
 import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
+import type { PortfolioApp } from '../../../models/portfolio.model'
 import PortfolioCardsPill from './Cards/Pill.vue'
 
 const props = withDefaults(defineProps<{
@@ -104,21 +123,53 @@ const router = useRouter()
 const { runtimePortfolioId, setRuntimePortfolio } = useRuntimePortfolioSelection()
 const { portfolios } = usePortfolioFetch()
 const { pill } = usePortfolioInterface()
+const { uid } = useAuth()
+const { appId } = useFireUXConfig()
+const { firestoreFetchCollection } = useFirestoreRead()
 const isConsoleCreateSurface = computed(() => props.createSurface === 'console')
+const portfolioOverlays = appId
+  ? firestoreFetchCollection<PortfolioApp>(`apps/${appId}/portfolios`)
+  : null
 const createPath = computed(() =>
   isConsoleCreateSurface.value ? '/console/portfolio/create' : '/portfolios/create'
 )
-const createActionLabel = computed(() =>
-  isConsoleCreateSurface.value ? 'Create portfolio console' : 'Create portfolio'
-)
+const createActionLabel = computed(() => 'Create portfolio')
 const createActionMeaning = computed(() =>
   isConsoleCreateSurface.value
     ? 'It creates the portfolio console overlay and creates the public portfolio only if it does not already exist.'
     : 'It creates the public portfolio first, not the console overlay directly.'
 )
 
+const accessiblePortfolioIds = computed(() => {
+  const currentUid = String(uid.value || '').trim()
+  if (!currentUid) return new Set<string>()
+
+  const ids = new Set<string>()
+
+  for (const overlay of portfolioOverlays?.value ?? []) {
+    const id = String((overlay as any)?.id || '').trim()
+    if (!id) continue
+    if ((overlay as any)?.console_enabled === false) continue
+
+    const adminIds = Array.isArray((overlay as any)?.admin_ids)
+      ? (overlay as any).admin_ids
+          .map((value: unknown) => String(value || '').trim())
+          .filter(Boolean)
+      : []
+
+    if (adminIds.includes(currentUid)) {
+      ids.add(id)
+    }
+  }
+
+  return ids
+})
+
 const livePills = computed(() =>
   (portfolios.value ?? [])
+    .filter((entry) =>
+      accessiblePortfolioIds.value.has(String((entry as any)?.id || '').trim())
+    )
     .map((entry) => pill(entry))
     .filter((entry): entry is NonNullable<ReturnType<typeof pill>> => Boolean(entry))
 )
