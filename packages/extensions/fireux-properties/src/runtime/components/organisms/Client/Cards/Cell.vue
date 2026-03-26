@@ -40,6 +40,7 @@
 </template>
 
 <script setup lang="ts">
+import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import type { ClientCard } from '../../../../composables/fireux/firestore/client/utils/view/useClientInterface'
 
@@ -64,8 +65,16 @@ const props = withDefaults(defineProps<Props>(), {
 
 const record = computed(() => props.card ?? props)
 
-const onClick = () => {
-  if (props.action) emit('action')
+const onClick = (event?: MouseEvent) => {
+  if (props.action) {
+    emit('action')
+    return
+  }
+
+  if (!props.link || !props.to) return
+  if (event?.currentTarget instanceof HTMLAnchorElement) return
+
+  navigateTo(props.to)
 }
 
 const statusColor = (status: string) => {

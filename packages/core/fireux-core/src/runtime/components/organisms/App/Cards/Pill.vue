@@ -1,8 +1,7 @@
 <template>
-  <component
-    :is="link && to ? 'NuxtLink' : 'div'"
-    :to="link && to ? to : undefined"
-    @click="onClick"
+  <NuxtLink
+    v-if="link && to"
+    :to="to"
     class="pill"
   >
     <div class="flex min-w-0 items-start gap-2">
@@ -27,10 +26,40 @@
         </div>
       </div>
     </div>
-  </component>
+  </NuxtLink>
+
+  <div
+    v-else
+    class="pill"
+    @click="onClick"
+  >
+    <div class="flex min-w-0 items-start gap-2">
+      <UAvatar
+        v-if="thumbnailUrl"
+        :src="thumbnailUrl || undefined"
+        :alt="displayName || ''"
+        size="sm"
+      />
+
+      <div class="min-w-0 flex-1 space-y-1">
+        <p class="truncate text-sm font-medium text-highlighted">
+          {{ displayName }}
+        </p>
+        <p v-if="showSubtitle && ecosystem" class="truncate text-xs text-toned">
+          {{ ecosystem }}
+        </p>
+        <div v-if="showBadges && (badges?.length ?? 0)" class="flex flex-wrap items-center gap-1">
+          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
+            {{ badge }}
+          </UBadge>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
+import { navigateTo } from '#imports'
 import type { AppCard } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface';
 
 defineOptions({ inheritAttrs: false })
@@ -58,7 +87,14 @@ const props = withDefaults(defineProps<Props>(), {
   action: false,
 })
 
-const onClick = () => {
-  if (props.action) emit('action')
+const onClick = (event?: MouseEvent) => {
+  if (props.action) {
+    emit('action')
+    return
+  }
+
+  if (!props.link || !props.to) return
+
+  navigateTo(props.to)
 }
 </script>

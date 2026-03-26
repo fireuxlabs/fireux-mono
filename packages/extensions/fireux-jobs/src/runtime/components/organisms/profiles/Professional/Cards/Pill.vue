@@ -1,10 +1,9 @@
 <template>
-  <component
-    :is="link && to ? 'NuxtLink' : 'div'"
-    :to="link && to ? to : undefined"
-    @click="onClick"
-    class="pill"
-  >
+  <NuxtLink
+  v-if="link && to"
+  :to="to"
+  class="pill"
+>
     <UUser
       :name="displayName"
       :description="showSubtitle ? (title || undefined) : undefined"
@@ -28,10 +27,42 @@
         </div>
       </template>
     </UUser>
-  </component>
+</NuxtLink>
+
+<div
+  v-else
+  class="pill"
+  @click="onClick"
+>
+    <UUser
+      :name="displayName"
+      :description="showSubtitle ? (title || undefined) : undefined"
+      size="sm"
+    >
+      <template #avatar>
+        <UAvatar :src="image || avatarUrl || undefined" :alt="displayName || ''" size="xs" />
+      </template>
+
+      <template #default>
+        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
+          <UBadge
+            v-for="badge in badges"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
+            {{ badge }}
+          </UBadge>
+        </div>
+      </template>
+    </UUser>
+</div>
 </template>
 
 <script setup lang="ts">
+import { navigateTo } from '#imports'
+
 import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface';
 
 const emit = defineEmits<{
@@ -57,7 +88,15 @@ const props = withDefaults(
   }
 )
 
-const onClick = () => {
-  if (props.action) emit('action')
+const onClick = (event?: MouseEvent) => {
+  if (props.action) {
+    emit('action')
+    return
+  }
+
+  if (!props.link || !props.to) return
+  if (event?.currentTarget instanceof HTMLAnchorElement) return
+
+  navigateTo(props.to)
 }
 </script>

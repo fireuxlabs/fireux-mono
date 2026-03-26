@@ -46,6 +46,7 @@
 </template>
 
 <script setup lang="ts">
+import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import type { ProductCard } from '../../../../composables/fireux/firestore/product/utils/view/useProductInterface'
 
@@ -76,7 +77,15 @@ const props = withDefaults(defineProps<Props>(), {
 
 const record = computed(() => props.card ?? props)
 
-const onClick = () => {
-  if (props.action) emit('action')
+const onClick = (event?: MouseEvent) => {
+  if (props.action) {
+    emit('action')
+    return
+  }
+
+  if (!props.link || !props.to) return
+  if (event?.currentTarget instanceof HTMLAnchorElement) return
+
+  navigateTo(props.to)
 }
 </script>

@@ -36,6 +36,7 @@
 </template>
 
 <script setup lang="ts">
+import { navigateTo } from '#imports'
 import type { PropertyCard } from '../../../../composables/fireux/firestore/property/utils/view/usePropertyInterface'
 
 type Props = Pick<
@@ -59,7 +60,15 @@ const props = withDefaults(defineProps<Props>(), {
   action: false,
 })
 
-const onClick = () => {
-  if (props.action) emit('action')
+const onClick = (event?: MouseEvent) => {
+  if (props.action) {
+    emit('action')
+    return
+  }
+
+  if (!props.link || !props.to) return
+  if (event?.currentTarget instanceof HTMLAnchorElement) return
+
+  navigateTo(props.to)
 }
 </script>
