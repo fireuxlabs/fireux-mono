@@ -18,6 +18,8 @@
     <template #testNote>
       <li>Available without sign-in.</li>
       <li>Sign in to save your progress.</li>
+      <li>Signed out uses a shared generic kitchen test identity. Signed in prefers Chef identity, then user identity.</li>
+      <li>Test mode does not require a Chef profile. Chef gating is only for live kitchen entry.</li>
       <li>Uses the shared kitchen test runtime instead of a live kitchen you operate.</li>
     </template>
 
@@ -107,6 +109,7 @@
 import { useRoute, useRouter } from '#imports'
 import { computed, ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { resolveConsoleTestIdentity } from 'fireux-core/runtime/composables/fireux/app/ui/console-test-identity'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
@@ -116,6 +119,7 @@ import type { RuntimeKitchenMode } from '../../../composables/fireux/app/kitchen
 import { useRuntimeKitchenSelection } from '../../../composables/fireux/app/kitchen-runtime/state'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { useChefCreate } from '../../../composables/fireux/firestore/profiles/Chef/main/useChefCreate'
+import { useChef } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { KitchenApp } from '../../../models/kitchen.model'
 import KitchenCardsPill from './Cards/Pill.vue'
@@ -132,26 +136,11 @@ const { currentUser, avatarSrc } = useUser()
 const { uid } = useAuth()
 const { appId } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
+const { interface: chefInterface } = useChef()
 
 const kitchenOverlays = appId
   ? firestoreFetchCollection<KitchenApp>(`apps/${appId}/kitchens`)
   : null
-
-const testChefName = computed(() => String(currentUser.value?.display_name || '').trim())
-
-const testKitchenTitle = computed(() => {
-  const name = testChefName.value
-  if (!name) return 'Test Kitchen'
-  return /s$/i.test(name) ? `${name}' Test Kitchen` : `${name}'s Test Kitchen`
-})
-
-const testKitchenPill = computed(() => ({
-  id: 'test-kitchen',
-  to: '',
-  title: testKitchenTitle.value,
-  subtitle: 'Experimental kitchen stack',
-  imageUrl: avatarSrc.value || '',
-}))
 
 const accessibleKitchenIds = computed(() => {
   const currentUid = String(uid.value || '').trim()
@@ -226,6 +215,27 @@ const createPath = computed(() =>
   isConsoleCreateSurface.value ? '/console/kitchen/create' : '/kitchens/create'
 )
 const isSignedIn = computed(() => Boolean(String(uid.value || '').trim()))
+const chefCard = computed(() => chefInterface())
+const testKitchenIdentity = computed(() =>
+  resolveConsoleTestIdentity({
+    entityLabel: 'Kitchen',
+    signedIn: isSignedIn.value,
+    userDisplayName: currentUser.value?.display_name,
+    userAvatarUrl: avatarSrc.value,
+    profileDisplayName: chefCard.value?.displayName,
+    profileAvatarUrl: chefCard.value?.avatarUrl,
+    genericSubtitle: 'Shared kitchen onboarding runtime',
+    userSubtitle: 'Personal kitchen test workspace',
+    profileSubtitle: 'Chef-led kitchen test workspace',
+  })
+)
+const testKitchenPill = computed(() => ({
+  id: 'test-kitchen',
+  to: '',
+  title: testKitchenIdentity.value.title,
+  subtitle: testKitchenIdentity.value.subtitle,
+  imageUrl: testKitchenIdentity.value.imageUrl,
+}))
 const signInPath = computed(() => `/auth?redirect=${encodeURIComponent(route.fullPath)}`)
 const createActionLabel = computed(() =>
   isSignedIn.value

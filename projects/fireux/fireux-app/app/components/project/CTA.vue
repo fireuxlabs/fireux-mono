@@ -52,19 +52,20 @@
     <template #testNote>
       <li>Available without sign-in.</li>
       <li>Sign in to save your progress.</li>
+      <li>Signed out uses a shared generic project test identity. Signed in uses your user identity when available.</li>
       <li>Uses the shared project test runtime instead of a live project you operate.</li>
     </template>
 
     <template #test>
-          <UButton
-            block
-            variant="subtle"
-            color="primary"
-            icon="i-lucide-flask-conical"
-            @click="goToProject('test')"
-          >
-            Enter Test Project
-          </UButton>
+          <ProjectCardsPill
+            :to="''"
+            :title="testProjectIdentity.title"
+            :subtitle="testProjectIdentity.subtitle"
+            :image-url="testProjectIdentity.imageUrl"
+            :action="true"
+            :show-badges="false"
+            @action="goToProject('test')"
+          />
     </template>
 
     <template #readOnlyNote>
@@ -110,6 +111,7 @@ import { useRoute, useRouter } from '#imports'
 import { computed } from 'vue'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { resolveConsoleTestIdentity } from 'fireux-core/runtime/composables/fireux/app/ui/console-test-identity'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { getReadOnlyProjectScenarioList } from 'fireux-core/runtime/composables/fireux/app/runtime-project/read-only-scenarios/index'
 import { useRuntimeProjectSelection } from 'fireux-core/runtime/composables/fireux/app/runtime-project/state'
@@ -132,7 +134,7 @@ const router = useRouter()
 const runtimeProject = useRuntimeProject()
 const { setRuntimeProject } = useRuntimeProjectSelection()
 const { projects } = useProjectCollection()
-const { currentUser } = useUser()
+const { currentUser, avatarSrc } = useUser()
 const { uid } = useAuth()
 const { appId } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
@@ -144,6 +146,16 @@ const createPath = computed(() =>
   isConsoleCreateSurface.value ? '/console/projects/create' : '/projects/create'
 )
 const isSignedIn = computed(() => Boolean(String(uid.value || '').trim()))
+const testProjectIdentity = computed(() =>
+  resolveConsoleTestIdentity({
+    entityLabel: 'Project',
+    signedIn: isSignedIn.value,
+    userDisplayName: currentUser.value?.display_name,
+    userAvatarUrl: avatarSrc.value,
+    genericSubtitle: 'Shared project onboarding runtime',
+    userSubtitle: 'Personal project test workspace',
+  })
+)
 const signInPath = computed(() => `/auth?redirect=${encodeURIComponent(route.fullPath)}`)
 const createActionLabel = computed(() =>
   isSignedIn.value

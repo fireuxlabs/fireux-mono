@@ -52,19 +52,20 @@
     <template #testNote>
       <li>Available without sign-in.</li>
       <li>Sign in to save your progress.</li>
+      <li>Signed out uses a shared generic portfolio test identity. Signed in uses your user identity when available.</li>
       <li>Uses the shared portfolio test runtime instead of a live portfolio you operate.</li>
     </template>
 
     <template #test>
-          <UButton
-            block
-            variant="subtle"
-            color="primary"
-            icon="i-lucide-flask-conical"
-            @click="goToPortfolio('test')"
-          >
-            Enter Test Portfolio
-          </UButton>
+          <PortfolioCardsPill
+            :to="''"
+            :title="testPortfolioIdentity.title"
+            :subtitle="testPortfolioIdentity.subtitle"
+            :image-url="testPortfolioIdentity.imageUrl"
+            :action="true"
+            :show-badges="false"
+            @action="goToPortfolio('test')"
+          />
     </template>
 
     <template #readOnly>
@@ -109,8 +110,10 @@ import { useRoute, useRouter } from '#imports'
 import { computed } from 'vue'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { resolveConsoleTestIdentity } from 'fireux-core/runtime/composables/fireux/app/ui/console-test-identity'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { getReadOnlyPortfolioScenarioList } from '../../../composables/fireux/app/portfolio-runtime/read-only-scenarios'
 import type { RuntimePortfolioMode } from '../../../composables/fireux/app/portfolio-runtime/shared'
 import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
@@ -131,6 +134,7 @@ const { runtimePortfolioId, setRuntimePortfolio } = useRuntimePortfolioSelection
 const { portfolios } = usePortfolioFetch()
 const { pill } = usePortfolioInterface()
 const { uid } = useAuth()
+const { currentUser, avatarSrc } = useUser()
 const { appId } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
 const isConsoleCreateSurface = computed(() => props.createSurface === 'console')
@@ -141,6 +145,16 @@ const createPath = computed(() =>
   isConsoleCreateSurface.value ? '/console/portfolio/create' : '/portfolios/create'
 )
 const isSignedIn = computed(() => Boolean(String(uid.value || '').trim()))
+const testPortfolioIdentity = computed(() =>
+  resolveConsoleTestIdentity({
+    entityLabel: 'Portfolio',
+    signedIn: isSignedIn.value,
+    userDisplayName: currentUser.value?.display_name,
+    userAvatarUrl: avatarSrc.value,
+    genericSubtitle: 'Shared portfolio onboarding runtime',
+    userSubtitle: 'Personal portfolio test workspace',
+  })
+)
 const signInPath = computed(() => `/auth?redirect=${encodeURIComponent(route.fullPath)}`)
 const createActionLabel = computed(() =>
   isSignedIn.value
