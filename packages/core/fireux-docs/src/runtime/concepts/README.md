@@ -21,10 +21,18 @@ It is a cross-cutting behaviour layer.
 
 ## Current Concepts
 
+- `console-entry/`
 - `create/`
 - `connect/`
 - `read/`
 - `update/`
+
+`console-entry/` is now a real runtime concept because console-backed family entry spans:
+- app-level hub routing
+- family-specific chooser pages
+- public versus console shells
+- mode selection
+- public create versus console create
 
 `create/` is a real runtime concept because creation spans:
 - route ownership
@@ -72,4 +80,4 @@ It is a cross-cutting behaviour layer.
 
 `runtime/concepts/` is where cross-cutting runtime behaviour gets a home.
 
-Right now, `create/`, `connect/`, `read/`, and `update/` are the real concepts in that layer.
+Right now, `console-entry/`, `create/`, `connect/`, `read/`, and `update/` are the real concepts in that layer.

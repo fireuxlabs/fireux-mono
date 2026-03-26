@@ -54,10 +54,10 @@ run_repo_cleanup() {
 }
 
 usage() {
-  echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean] [--allow-mixed] [--allow-large] [--allow-behind]" >&2
+  echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean] [--repo-clean|--no-repo-clean] [--strict-scope|--no-strict-scope] [--allow-mixed] [--allow-large] [--allow-behind]" >&2
   echo "Example: gitsave \"fix: wire places quick add\"" >&2
-  echo "Defaults: --no-guard --no-clean" >&2
-  echo "Safety defaults: block behind-state pushes, mixed-layer commits, and commits over 20 files unless explicitly allowed." >&2
+  echo "Defaults: --no-guard --no-clean --no-repo-clean --no-strict-scope" >&2
+  echo "Safety defaults: block behind-state pushes. Mixed-layer and large-batch checks are advisory unless --strict-scope is set." >&2
 }
 
 classify_path() {
@@ -138,12 +138,43 @@ ensure_simple_scope() {
   return 0
 }
 
+warn_simple_scope() {
+  local allow_mixed="$1"
+  local allow_large="$2"
+  shift 2
+  local files=("$@")
+  local count="${#files[@]}"
+  local category
+  local seen=""
+  local categories=()
+
+  for file in "${files[@]}"; do
+    category="$(classify_path "$file")"
+    if [[ ",$seen," != *",$category,"* ]]; then
+      categories+=("$category")
+      seen+="${seen:+,}$category"
+    fi
+  done
+
+  if ! $allow_large && (( count > 20 )); then
+    echo "[gitsave] Warning: saving ${count} files in one go." >&2
+    echo "[gitsave] Consider smaller phase-sized saves when practical." >&2
+  fi
+
+  if ! $allow_mixed && (( ${#categories[@]} > 1 )); then
+    echo "[gitsave] Warning: mixed-layer save across categories: ${categories[*]}" >&2
+    echo "[gitsave] Use --strict-scope when you want this to block instead of warn." >&2
+  fi
+}
+
 commit_message=""
 run_guard=false
 run_clean=false
+run_repo_clean=false
 allow_mixed=false
 allow_large=false
 allow_behind=false
+strict_scope=false
 
 # Parse args
 args=()
@@ -153,6 +184,10 @@ for a in "$@"; do
     --no-guard) run_guard=false ;;
     --clean) run_clean=true ;;
     --no-clean) run_clean=false ;;
+    --repo-clean) run_repo_clean=true ;;
+    --no-repo-clean) run_repo_clean=false ;;
+    --strict-scope) strict_scope=true ;;
+    --no-strict-scope) strict_scope=false ;;
     --allow-mixed) allow_mixed=true ;;
     --allow-large) allow_large=true ;;
     --allow-behind) allow_behind=true ;;
@@ -212,8 +247,10 @@ if $run_guard; then
   fi
 fi
 
-# Always run repository cleanup before staging so cleanup changes are saved
-run_repo_cleanup
+# Optional repository cleanup
+if $run_repo_clean; then
+  run_repo_cleanup
+fi
 
 # Stage everything, including deletions.
 git add -A
@@ -251,7 +288,11 @@ if [[ -z "$commit_message" ]]; then
   fi
 
   print_staged_summary "${staged_changes[@]}"
-  ensure_simple_scope "$allow_mixed" "$allow_large" "${staged_changes[@]}" || exit 1
+  if $strict_scope; then
+    ensure_simple_scope "$allow_mixed" "$allow_large" "${staged_changes[@]}" || exit 1
+  else
+    warn_simple_scope "$allow_mixed" "$allow_large" "${staged_changes[@]}"
+  fi
 
   primary_file="${staged_changes[0]}"
   extra_count=$(( ${#staged_changes[@]} - 1 ))
@@ -273,7 +314,11 @@ else
   fi
 
   print_staged_summary "${staged_changes[@]}"
-  ensure_simple_scope "$allow_mixed" "$allow_large" "${staged_changes[@]}" || exit 1
+  if $strict_scope; then
+    ensure_simple_scope "$allow_mixed" "$allow_large" "${staged_changes[@]}" || exit 1
+  else
+    warn_simple_scope "$allow_mixed" "$allow_large" "${staged_changes[@]}"
+  fi
 fi
 
 # Create the commit.

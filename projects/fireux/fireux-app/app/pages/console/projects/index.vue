@@ -1,6 +1,6 @@
 <template>
   <LayoutsConsoleEntryShell>
-    <ProjectCTA />
+    <ProjectCTA create-surface="console" />
   </LayoutsConsoleEntryShell>
 </template>
 

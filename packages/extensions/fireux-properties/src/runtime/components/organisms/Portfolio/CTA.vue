@@ -8,6 +8,14 @@
     read-only-label="Read-only Portfolios"
     learn-more-to="/portfolios/learn-more"
   >
+    <template #myNote>
+      <li>
+        {{ createActionLabel }} routes to
+        <code>{{ createPath }}</code>.
+      </li>
+      <li>{{ createActionMeaning }}</li>
+    </template>
+
     <template #my>
           <div v-if="livePills.length" class="space-y-2">
             <PortfolioCardsPill
@@ -28,7 +36,7 @@
             icon="i-lucide-plus"
             @click="createPortfolio"
           >
-            Create portfolio
+            {{ createActionLabel }}
           </UButton>
     </template>
 
@@ -86,10 +94,28 @@ import { usePortfolioFetch } from '../../../composables/fireux/firestore/portfol
 import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
 import PortfolioCardsPill from './Cards/Pill.vue'
 
+const props = withDefaults(defineProps<{
+  createSurface?: 'public' | 'console'
+}>(), {
+  createSurface: 'public',
+})
+
 const router = useRouter()
 const { runtimePortfolioId, setRuntimePortfolio } = useRuntimePortfolioSelection()
 const { portfolios } = usePortfolioFetch()
 const { pill } = usePortfolioInterface()
+const isConsoleCreateSurface = computed(() => props.createSurface === 'console')
+const createPath = computed(() =>
+  isConsoleCreateSurface.value ? '/console/portfolio/create' : '/portfolios/create'
+)
+const createActionLabel = computed(() =>
+  isConsoleCreateSurface.value ? 'Create portfolio console' : 'Create portfolio'
+)
+const createActionMeaning = computed(() =>
+  isConsoleCreateSurface.value
+    ? 'It creates the portfolio console overlay and creates the public portfolio only if it does not already exist.'
+    : 'It creates the public portfolio first, not the console overlay directly.'
+)
 
 const livePills = computed(() =>
   (portfolios.value ?? [])
@@ -126,11 +152,6 @@ const goToPortfolio = async (mode: RuntimePortfolioMode, portfolioId?: string) =
 }
 
 const createPortfolio = async () => {
-  await router.push({
-    path: '/portfolios/create',
-    query: {
-      returnTo: '/console/portfolio/overview',
-    },
-  })
+  await router.push(createPath.value)
 }
 </script>

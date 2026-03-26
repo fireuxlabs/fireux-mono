@@ -8,6 +8,14 @@
     read-only-label="Read-only Projects"
     learn-more-to="/projects/learn-more"
   >
+    <template #myNote>
+      <li>
+        {{ createActionLabel }} routes to
+        <code>{{ createPath }}</code>.
+      </li>
+      <li>{{ createActionMeaning }}</li>
+    </template>
+
     <template #my>
           <ProjectCardsPill
             v-if="liveProjectCard"
@@ -26,7 +34,7 @@
             icon="i-lucide-plus"
             @click="createProject"
           >
-            Create project
+            {{ createActionLabel }}
           </UButton>
     </template>
 
@@ -86,11 +94,29 @@ import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/fir
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import ProjectCardsPill from './Cards/Pill.vue'
 
+const props = withDefaults(defineProps<{
+  createSurface?: 'public' | 'console'
+}>(), {
+  createSurface: 'public',
+})
+
 const router = useRouter()
 const runtimeProject = useRuntimeProject()
 const { setRuntimeProject } = useRuntimeProjectSelection()
 const { projects } = useProjectCollection()
 const { currentUser } = useUser()
+const isConsoleCreateSurface = computed(() => props.createSurface === 'console')
+const createPath = computed(() =>
+  isConsoleCreateSurface.value ? '/console/projects/create' : '/projects/create'
+)
+const createActionLabel = computed(() =>
+  isConsoleCreateSurface.value ? 'Create project console' : 'Create project'
+)
+const createActionMeaning = computed(() =>
+  isConsoleCreateSurface.value
+    ? 'It creates the project console overlay and creates the public project only if it does not already exist.'
+    : 'It creates the public project first, not the console overlay directly.'
+)
 
 const readOnlyScenarios = computed(() => getReadOnlyProjectScenarioList())
 const ownedProjects = computed(() =>
@@ -123,11 +149,6 @@ const goToProject = async (mode: RuntimeMode, projectId?: string) => {
 }
 
 const createProject = async () => {
-  await router.push({
-    path: '/projects/create',
-    query: {
-      returnTo: '/console/projects/overview',
-    },
-  })
+  await router.push(createPath.value)
 }
 </script>

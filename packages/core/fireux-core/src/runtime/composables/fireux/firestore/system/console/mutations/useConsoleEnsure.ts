@@ -40,7 +40,7 @@ const normalizeId = (value: unknown) => String(value || '').trim()
 export function useConsoleEnsure() {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
-  const { appId, isTenant } = useFireUXConfig()
+  const { appId } = useFireUXConfig()
 
   async function ensureConsole<TOverlay>(
     options: ConsoleEnsureOptions<TOverlay>
@@ -91,7 +91,9 @@ export function useConsoleEnsure() {
       }
     }
 
-    if (!isTenant || !appId) {
+    // Console-backed overlays are app-hosted, not tenant-only.
+    // A global app like misebox-app can still host /apps/<appId>/... console state.
+    if (!appId) {
       return {
         id,
         createdRoot,

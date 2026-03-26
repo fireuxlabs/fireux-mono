@@ -1,10 +1,13 @@
 # Kitchens Pages
 
 Authority: Operational
-Updated: 2026-03-22
+Updated: 2026-03-25
 Scope: `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/*`.
 
 This folder owns the public `Kitchen` route tree.
+
+Use `packages/core/fireux-docs/src/runtime/concepts/console-entry/README.md` for the shared console-entry concept.
+This README only explains the kitchen delta.
 
 ## Current Routes
 
@@ -18,28 +21,23 @@ This folder owns the public `Kitchen` route tree.
 
 ## Local Contract
 
-- `index.vue`, `[id].vue`, and menu detail are public or shareable kitchen delivery
-- `create.vue` is the public root-create page for `Kitchen`
-- `edit/[id].vue` belongs to the public entity edit family
+- `index.vue` is the public kitchen index
+- `index.vue` embeds the same chooser used by `/console/kitchen`
+- `[id].vue` and menu detail are public kitchen delivery
+- `create.vue` is the public kitchen create page
+- `edit/[id].vue` belongs to the public kitchen edit family
 
-Console creation canon:
-- public create makes the root kitchen record
-- console create ensures the app kitchen overlay and may create root first when missing
-
-## Aligned With
-
-Public entity edit family examples:
-- `packages/extensions/fireux-companies/src/runtime/pages/companies/edit/[id].vue`
-- `packages/extensions/fireux-places/src/runtime/pages/places/edit/[id].vue`
-
-## Not Aligned Yet
-
-- kitchen edit still carries place-backed assumptions
-- public create and public edit are both present here, but they do not belong to the same family
-- public and console kitchen create still reuse the same create system
-- current kitchen create writes the root kitchen record, but console create does not yet explicitly ensure the app kitchen overlay
+Kitchen-specific delta:
+- the public index can browse kitchens and also enter the kitchen chooser
+- the collection below the chooser is public kitchen browsing, not console entry
+- public create is place-backed and creates or ensures `kitchens/<id>`
+- public create does not ensure `apps/<appId>/kitchens/<id>`
+- entering live kitchen routes normally ensure a Chef profile first
 
 ## Short Version
 
-This folder mixes shareable kitchen pages with creation and edit.
-`create.vue` is the public root-create page for the kitchen console, while `edit/[id].vue` is part of the public entity edit family.
+This folder owns the public kitchen side of the shared console-entry concept.
+Its delta is:
+- public browsing
+- public kitchen create
+- Chef-aware live entry from the public chooser

@@ -9,6 +9,14 @@
     learn-more-to="/suppliers/learn-more"
     :show-test="false"
   >
+    <template #myNote>
+      <li>
+        {{ createActionLabel }} routes to
+        <code>{{ createPath }}</code>.
+      </li>
+      <li>{{ createActionMeaning }}</li>
+    </template>
+
     <template #my>
       <div class="space-y-2">
         <SupplierCardsPill
@@ -29,7 +37,7 @@
           icon="i-lucide-plus"
           @click="createSupplier"
         >
-          Create supplier
+          {{ createActionLabel }}
         </UButton>
       </div>
     </template>
@@ -78,11 +86,29 @@ import { useSupplierInterface } from '../../composables/supplier/useSupplierInte
 import { useSupplierRecord } from '../../composables/supplier/useSupplierRecord'
 import SupplierCardsPill from './Cards/Pill.vue'
 
+const props = withDefaults(defineProps<{
+  createSurface?: 'public' | 'console'
+}>(), {
+  createSurface: 'public',
+})
+
 const router = useRouter()
 const { uid } = useAuth()
 const { setRuntimeSupplier } = useRuntimeSupplierSelection()
 const supplierRecord = useSupplierRecord(computed(() => String(uid.value || '').trim()))
 const { pill: supplierPill } = useSupplierInterface(supplierRecord)
+const isConsoleCreateSurface = computed(() => props.createSurface === 'console')
+const createPath = computed(() =>
+  isConsoleCreateSurface.value ? '/console/supplier/create' : '/suppliers/create'
+)
+const createActionLabel = computed(() =>
+  isConsoleCreateSurface.value ? 'Create supplier console' : 'Create supplier'
+)
+const createActionMeaning = computed(() =>
+  isConsoleCreateSurface.value
+    ? 'It creates the supplier console overlay and creates the public supplier only if it does not already exist.'
+    : 'It creates the public supplier first, not the console overlay directly.'
+)
 
 const liveSupplierPill = computed(() => supplierPill())
 
@@ -105,6 +131,6 @@ const goToSupplier = async (mode: RuntimeSupplierMode, supplierId?: string) => {
 }
 
 const createSupplier = async () => {
-  await router.push('/console/supplier/create')
+  await router.push(createPath.value)
 }
 </script>

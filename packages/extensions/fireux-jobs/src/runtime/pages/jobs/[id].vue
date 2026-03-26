@@ -33,132 +33,25 @@
       />
 
       <template v-else>
-        <section class="fireux-page-hero">
-          <div class="fireux-page-hero__grid">
-            <div class="fireux-page-hero__content">
-              <div class="fireux-page-hero__eyebrow">
-                Job
-              </div>
-
-              <div class="space-y-3">
-                <h2 class="fireux-page-hero__title">
-                  {{ jobTitle }}
-                </h2>
-                <p class="fireux-page-hero__description">
-                  {{ heroDescription }}
-                </p>
-              </div>
-
-              <div class="fireux-page-hero__badges">
-                <UBadge size="sm" variant="soft" :color="statusColor">
-                  {{ job?.status || 'open' }}
-                </UBadge>
-                <UBadge
-                  v-if="job?.job_type"
-                  size="sm"
-                  variant="soft"
-                  color="neutral"
-                >
-                  {{ heroJobType }}
-                </UBadge>
-                <UBadge
-                  v-if="job?.workplace_type"
-                  size="sm"
-                  variant="soft"
-                  color="neutral"
-                >
-                  {{ workplaceTypeLabel }}
-                </UBadge>
-              </div>
-
-              <div class="fireux-page-hero__actions">
-                <UButton
-                  v-if="job?.workplace_type === 'kitchen' && job?.workplace_id"
-                  color="primary"
-                  icon="i-lucide-utensils-crossed"
-                  :to="`/kitchens/${encodeURIComponent(job.workplace_id)}`"
-                >
-                  View workplace
-                </UButton>
-                <UButton
-                  v-if="job?.company_id"
-                  variant="soft"
-                  color="neutral"
-                  icon="i-lucide-building-2"
-                  :to="`/companies/${encodeURIComponent(job.company_id)}`"
-                >
-                  View company
-                </UButton>
-                <UButton
-                  variant="ghost"
-                  color="neutral"
-                  icon="i-lucide-briefcase-business"
-                  to="/jobs"
-                >
-                  Browse jobs
-                </UButton>
-              </div>
-
-              <div class="fireux-page-hero__facts text-sm text-dimmed">
-                <span v-if="job?.workplace_label">{{ job.workplace_label }}</span>
-                <span v-if="job?.company_id">Company linked</span>
-              </div>
-            </div>
-
-            <div class="space-y-4">
-              <div class="fireux-page-hero__visual">
-                <img
-                  v-if="heroImageUrl"
-                  :src="heroImageUrl"
-                  :alt="jobTitle"
-                >
-                <div v-else class="flex h-full items-center justify-center text-sm text-dimmed">
-                  Workplace imagery coming soon
-                </div>
-                <div class="fireux-page-hero__visual-overlay">
-                  <div class="text-sm font-semibold">
-                    {{ job?.workplace_label || jobSubtitle }}
-                  </div>
-                  <div class="text-xs opacity-80">
-                    {{ heroVisualCaption }}
-                  </div>
-                </div>
-              </div>
-
-              <div class="fireux-page-hero__stats">
-                <div class="fireux-page-hero__stat">
-                  <div class="fireux-page-hero__stat-value">
-                    {{ payLabel }}
-                  </div>
-                  <div class="fireux-page-hero__stat-label">
-                    Compensation
-                  </div>
-                </div>
-                <div class="fireux-page-hero__stat">
-                  <div class="fireux-page-hero__stat-value">
-                    {{ openingsLabel }}
-                  </div>
-                  <div class="fireux-page-hero__stat-label">
-                    Open positions
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        <DevJson
+          v-if="isDev && job"
+          :title="'Job (Doc)'"
+          context="Job detail page · jobs/[id] · job doc"
+          :data="job"
+          :default-open="false"
+        />
 
         <div class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <div class="space-y-6">
             <JobCardsProfile
               v-if="job"
-              class="fireux-page-surface"
               :card="jobCard"
               :job="job"
             />
           </div>
 
           <div class="space-y-6">
-            <UCard class="fireux-page-surface">
+            <UCard>
               <template #header>
                 <h3 class="font-semibold">Manage</h3>
               </template>
@@ -189,7 +82,7 @@
               </div>
             </UCard>
 
-            <UCard class="fireux-page-surface">
+            <UCard>
               <template #header>
                 <h3 class="font-semibold">Workplace</h3>
               </template>
@@ -203,7 +96,7 @@
               <p v-else class="text-sm text-gray-600">No workplace linked.</p>
             </UCard>
 
-            <UCard class="fireux-page-surface">
+            <UCard>
               <template #header>
                 <h3 class="font-semibold">Company</h3>
               </template>
@@ -294,34 +187,10 @@ const jobTitle = computed(() => job.value?.title || 'Job Details')
 const jobSubtitle = computed(() =>
   job.value?.status ? `Status: ${job.value.status}` : 'Job pipeline entry'
 )
-const heroDescription = computed(() =>
-  String(job.value?.description || '').trim() ||
-  'A live FireUX role surface linking workplace, company, and hiring intent.'
-)
 const statusColor = computed(() =>
   job.value?.status === 'open' ? 'emerald' : 'neutral'
 )
-const heroImageUrl = computed(() => String(jobCard.value?.imageUrl || '').trim())
-const payLabel = computed(() => {
-  const current = job.value
-  if (!current?.pay_rate) return 'Discuss'
-  return `${current.pay_currency || 'CHF'} ${current.pay_rate}/${current.pay_unit || 'hour'}`
-})
-const openingsLabel = computed(() => {
-  const count = Number(job.value?.openings_count || 0)
-  return count > 0 ? `${count}` : 'Flexible'
-})
-const heroJobType = computed(() => {
-  const value = String(job.value?.job_type || '').trim()
-  return value ? value.charAt(0).toUpperCase() + value.slice(1) : 'Role'
-})
-const workplaceTypeLabel = computed(() => {
-  const value = String(job.value?.workplace_type || '').trim()
-  return value ? value.charAt(0).toUpperCase() + value.slice(1) : 'Workplace'
-})
-const heroVisualCaption = computed(() =>
-  String(job.value?.workplace_type || '').trim() || 'Hiring surface'
-)
+const isDev = import.meta.dev
 
 const statusOptions = [
   { label: 'Open', value: 'open' },

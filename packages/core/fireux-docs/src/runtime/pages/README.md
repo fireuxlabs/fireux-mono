@@ -42,6 +42,7 @@ Why:
 Use this README to understand route ownership.
 Use `packages/core/fireux-docs/src/runtime/concepts/create/README.md` for create canon.
 Use `packages/core/fireux-docs/src/runtime/concepts/connect/README.md` for relationship and authority canon.
+Use `packages/core/fireux-docs/src/runtime/concepts/console-entry/README.md` for family-entry canon.
 Use `packages/core/fireux-docs/src/runtime/components/README.md` to understand current create-system families.
 
 ## CRUD Lens
@@ -152,13 +153,30 @@ This is where labels should prefer:
 
 Avoid calling these surfaces `Create X` or `Activate X Console`.
 
+## Console-backed Entry Pattern
+
+Console-backed families should be read in this order:
+
+- `/console`
+  - choose the family
+- `/console/X`
+  - choose instance, mode, or create console
+- `/X`
+  - public discovery plus the same chooser when useful
+- `/X/create`
+  - public create
+- `/console/X/create`
+  - console create
+
+Kitchen is currently the clearest proof of this pattern.
+
 ## Three Truths Of Console-backed Domains
 
 For console-backed families, a cold reader should always separate:
 
 - `Create X`
   - create the public entity
-- `Activate X Console`
+- `Create X Console`
   - ensure the app-hosted console overlay
 - `Link X`
   - relationship only

@@ -1,6 +1,6 @@
 <template>
   <LayoutsConsoleEntryShell>
-    <PortfolioCTA />
+    <PortfolioCTA create-surface="console" />
   </LayoutsConsoleEntryShell>
 </template>
 

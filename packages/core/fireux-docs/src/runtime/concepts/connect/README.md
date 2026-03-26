@@ -86,7 +86,7 @@ Use these labels consistently:
 
 - `Create X`
   - create the public entity
-- `Activate X Console`
+- `Create X Console`
   - ensure the app-hosted console overlay and console authority path
 - `Link X`
   - relationship only
@@ -97,6 +97,12 @@ Avoid these confusions:
 - calling a relationship link a create
 - calling a public entity create a console create
 - treating profile association like console access
+
+Use `packages/core/fireux-docs/src/runtime/concepts/console-entry/README.md` when the question is about:
+- `/console`
+- `/console/X`
+- `/X`
+- public create versus console create entry flow
 
 ## Side-effect Rule
 
