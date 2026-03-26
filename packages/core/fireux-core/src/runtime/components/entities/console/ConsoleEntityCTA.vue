@@ -37,32 +37,6 @@
               </p>
             </div>
 
-            <section v-if="showReadOnly" class="space-y-2">
-              <p class="text-sm font-semibold">{{ readOnlyLabel }}</p>
-              <div
-                v-if="showInlineNotes"
-                :data-dev-note="true"
-                :data-dev-note-title="readOnlyLabel"
-                class="fireux-dev-note rounded-lg px-3 py-2 text-xs text-dimmed"
-              >
-                <p class="fireux-dev-note__label mb-1 text-[11px] font-semibold uppercase tracking-[0.16em]">
-                  Developer Note
-                </p>
-                <ul data-dev-note-body class="list-disc space-y-1 pl-4">
-                  <li v-if="consoleTo">
-                    Routes to
-                    <code>{{ consoleTo }}</code>.
-                  </li>
-                  <li>
-                    Sets runtime mode to
-                    <code>read-only</code>.
-                  </li>
-                  <slot name="readOnlyNote" />
-                </ul>
-              </div>
-              <slot name="readOnly" />
-            </section>
-
             <section v-if="showTest" class="space-y-2">
               <p class="text-sm font-semibold">{{ testLabel }}</p>
               <div
@@ -87,6 +61,32 @@
                 </ul>
               </div>
               <slot name="test" />
+            </section>
+
+            <section v-if="showReadOnly" class="space-y-2">
+              <p class="text-sm font-semibold">{{ readOnlyLabel }}</p>
+              <div
+                v-if="showInlineNotes"
+                :data-dev-note="true"
+                :data-dev-note-title="readOnlyLabel"
+                class="fireux-dev-note rounded-lg px-3 py-2 text-xs text-dimmed"
+              >
+                <p class="fireux-dev-note__label mb-1 text-[11px] font-semibold uppercase tracking-[0.16em]">
+                  Developer Note
+                </p>
+                <ul data-dev-note-body class="list-disc space-y-1 pl-4">
+                  <li v-if="consoleTo">
+                    Routes to
+                    <code>{{ consoleTo }}</code>.
+                  </li>
+                  <li>
+                    Sets runtime mode to
+                    <code>read-only</code>.
+                  </li>
+                  <slot name="readOnlyNote" />
+                </ul>
+              </div>
+              <slot name="readOnly" />
             </section>
 
           </section>

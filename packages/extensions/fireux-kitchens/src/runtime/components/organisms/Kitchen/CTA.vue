@@ -130,6 +130,17 @@ const props = withDefaults(defineProps<{
   createSurface: 'public',
 })
 
+const toFirstWord = (value: unknown): string => {
+  const text = String(value ?? '').trim()
+  return text ? text.split(/\s+/)[0] || '' : ''
+}
+
+const toPossessiveKitchenTitle = (value: unknown): string => {
+  const firstWord = toFirstWord(value)
+  if (!firstWord) return 'Your Kitchen'
+  return /s$/i.test(firstWord) ? `${firstWord}' Kitchen` : `${firstWord}'s Kitchen`
+}
+
 const { kitchens } = useKitchenFetch()
 const { pill: kitchenPill } = useKitchenInterface()
 const { currentUser, avatarSrc } = useUser()
@@ -232,8 +243,16 @@ const testKitchenIdentity = computed(() =>
 const testKitchenPill = computed(() => ({
   id: 'test-kitchen',
   to: '',
-  title: testKitchenIdentity.value.title,
-  subtitle: testKitchenIdentity.value.subtitle,
+  title:
+    testKitchenIdentity.value.source === 'generic'
+      ? testKitchenIdentity.value.title
+      : toPossessiveKitchenTitle(
+          chefCard.value?.displayName || currentUser.value?.display_name
+        ),
+  subtitle:
+    testKitchenIdentity.value.source === 'generic'
+      ? testKitchenIdentity.value.subtitle
+      : 'My test kitchen',
   imageUrl: testKitchenIdentity.value.imageUrl,
 }))
 const signInPath = computed(() => `/auth?redirect=${encodeURIComponent(route.fullPath)}`)
