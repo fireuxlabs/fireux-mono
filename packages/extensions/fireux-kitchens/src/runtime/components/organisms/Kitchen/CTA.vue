@@ -52,7 +52,7 @@
           :loading="isSignedIn ? isEnsuringLiveKitchen : false"
           @click="createKitchen"
         >
-          {{ createActionLabel }}
+          {{ createCopy.label }}
         </UButton>
       </div>
     </template>
@@ -109,6 +109,7 @@
 import { useRoute, useRouter } from '#imports'
 import { computed, ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { resolveConsoleCreateCopy } from 'fireux-core/runtime/composables/fireux/app/ui/console-create-copy'
 import { resolveConsoleTestIdentity } from 'fireux-core/runtime/composables/fireux/app/ui/console-test-identity'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
@@ -221,11 +222,16 @@ const route = useRoute()
 const { runtimeKitchenId, setRuntimeKitchen } = useRuntimeKitchenSelection()
 const { ensureChefProfile } = useChefCreate()
 const isEnsuringLiveKitchen = ref(false)
-const isConsoleCreateSurface = computed(() => props.createSurface === 'console')
-const createPath = computed(() =>
-  isConsoleCreateSurface.value ? '/console/kitchen/create' : '/kitchens/create'
-)
 const isSignedIn = computed(() => Boolean(String(uid.value || '').trim()))
+const createCopy = computed(() =>
+  resolveConsoleCreateCopy({
+    entityLabel: 'kitchen',
+    createSurface: props.createSurface,
+    signedIn: isSignedIn.value,
+    publicPath: '/kitchens/create',
+    consolePath: '/console/kitchen/create',
+  })
+)
 const chefCard = computed(() => chefInterface())
 const testKitchenIdentity = computed(() =>
   resolveConsoleTestIdentity({
@@ -256,23 +262,12 @@ const testKitchenPill = computed(() => ({
   imageUrl: testKitchenIdentity.value.imageUrl,
 }))
 const signInPath = computed(() => `/auth?redirect=${encodeURIComponent(route.fullPath)}`)
-const createActionLabel = computed(() =>
-  isSignedIn.value
-    ? 'Create kitchen'
-    : isConsoleCreateSurface.value
-      ? 'Sign in to create kitchen console'
-      : 'Sign in to create kitchen'
-)
 const createActionNote = computed(() =>
   isSignedIn.value
-    ? `Create kitchen ensures a Chef profile, then routes to ${createPath.value}.`
-    : `Sign in first, then continue to ${createPath.value} to create ${isConsoleCreateSurface.value ? 'the kitchen console' : 'the kitchen'}.`
+    ? `Create ${createCopy.value.targetLabel} ensures a Chef profile, then routes to ${createCopy.value.createPath}.`
+    : createCopy.value.note
 )
-const createActionMeaning = computed(() =>
-  isConsoleCreateSurface.value
-    ? 'It creates the kitchen console overlay and creates the public kitchen only if it does not already exist.'
-    : 'It creates the public kitchen first, not the console overlay directly.'
-)
+const createActionMeaning = computed(() => createCopy.value.meaning)
 
 const ensureAuthenticated = async () => {
   if (String(uid.value || '').trim()) return true
@@ -327,7 +322,7 @@ const createKitchen = async () => {
 
   const ready = await ensureLiveKitchenProfile()
   if (!ready) return
-  await router.push(createPath.value)
+  await router.push(createCopy.value.createPath)
 }
 
 </script>

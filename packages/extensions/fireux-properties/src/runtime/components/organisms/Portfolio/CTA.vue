@@ -44,7 +44,7 @@
           :icon="isSignedIn ? 'i-lucide-plus' : 'i-lucide-log-in'"
           @click="createPortfolio"
         >
-          {{ createActionLabel }}
+          {{ createCopy.label }}
         </UButton>
       </div>
     </template>
@@ -110,6 +110,7 @@ import { useRoute, useRouter } from '#imports'
 import { computed } from 'vue'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { resolveConsoleCreateCopy } from 'fireux-core/runtime/composables/fireux/app/ui/console-create-copy'
 import { resolveConsoleTestIdentity } from 'fireux-core/runtime/composables/fireux/app/ui/console-test-identity'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
@@ -137,14 +138,19 @@ const { uid } = useAuth()
 const { currentUser, avatarSrc } = useUser()
 const { appId, appLogo, appThumbnail } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
-const isConsoleCreateSurface = computed(() => props.createSurface === 'console')
 const portfolioOverlays = appId
   ? firestoreFetchCollection<PortfolioApp>(`apps/${appId}/portfolios`)
   : null
-const createPath = computed(() =>
-  isConsoleCreateSurface.value ? '/console/portfolio/create' : '/portfolios/create'
-)
 const isSignedIn = computed(() => Boolean(String(uid.value || '').trim()))
+const createCopy = computed(() =>
+  resolveConsoleCreateCopy({
+    entityLabel: 'portfolio',
+    createSurface: props.createSurface,
+    signedIn: isSignedIn.value,
+    publicPath: '/portfolios/create',
+    consolePath: '/console/portfolio/create',
+  })
+)
 const testPortfolioIdentity = computed(() =>
   resolveConsoleTestIdentity({
     entityLabel: 'Portfolio',
@@ -156,23 +162,8 @@ const testPortfolioIdentity = computed(() =>
   })
 )
 const signInPath = computed(() => `/auth?redirect=${encodeURIComponent(route.fullPath)}`)
-const createActionLabel = computed(() =>
-  isSignedIn.value
-    ? 'Create portfolio'
-    : isConsoleCreateSurface.value
-      ? 'Sign in to create portfolio console'
-      : 'Sign in to create portfolio'
-)
-const createActionNote = computed(() =>
-  isSignedIn.value
-    ? `Create portfolio routes to ${createPath.value}.`
-    : `Sign in first, then continue to ${createPath.value} to create ${isConsoleCreateSurface.value ? 'the portfolio console' : 'the portfolio'}.`
-)
-const createActionMeaning = computed(() =>
-  isConsoleCreateSurface.value
-    ? 'It creates the portfolio console overlay and creates the public portfolio only if it does not already exist.'
-    : 'It creates the public portfolio first, not the console overlay directly.'
-)
+const createActionNote = computed(() => createCopy.value.note)
+const createActionMeaning = computed(() => createCopy.value.meaning)
 
 const accessiblePortfolioIds = computed(() => {
   const currentUid = String(uid.value || '').trim()
@@ -247,6 +238,6 @@ const createPortfolio = async () => {
     return
   }
 
-  await router.push(createPath.value)
+  await router.push(createCopy.value.createPath)
 }
 </script>

@@ -37,7 +37,7 @@
             icon="i-lucide-plus"
             @click="createSupplier"
           >
-            {{ createActionLabel }}
+            {{ createCopy.label }}
           </UButton>
         </template>
         <template v-else>
@@ -51,7 +51,7 @@
             icon="i-lucide-log-in"
             @click="createSupplier"
           >
-            {{ createActionLabel }}
+            {{ createCopy.label }}
           </UButton>
         </template>
       </div>
@@ -99,6 +99,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { resolveConsoleCreateCopy } from 'fireux-core/runtime/composables/fireux/app/ui/console-create-copy'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
 import { getReadOnlySupplierScenarioList } from '../../composables/fireux/app/supplier-console/read-only-scenarios'
 import type { RuntimeSupplierMode } from '../../composables/fireux/app/supplier-console/state'
@@ -119,29 +120,19 @@ const { uid } = useAuth()
 const { setRuntimeSupplier } = useRuntimeSupplierSelection()
 const supplierRecord = useSupplierRecord(computed(() => String(uid.value || '').trim()))
 const { pill: supplierPill } = useSupplierInterface(supplierRecord)
-const isConsoleCreateSurface = computed(() => props.createSurface === 'console')
-const createPath = computed(() =>
-  isConsoleCreateSurface.value ? '/console/supplier/create' : '/suppliers/create'
-)
 const isSignedIn = computed(() => Boolean(String(uid.value || '').trim()))
+const createCopy = computed(() =>
+  resolveConsoleCreateCopy({
+    entityLabel: 'supplier',
+    createSurface: props.createSurface,
+    signedIn: isSignedIn.value,
+    publicPath: '/suppliers/create',
+    consolePath: '/console/supplier/create',
+  })
+)
 const signInPath = computed(() => `/auth?redirect=${encodeURIComponent(route.fullPath)}`)
-const createActionLabel = computed(() =>
-  isSignedIn.value
-    ? 'Create supplier'
-    : isConsoleCreateSurface.value
-      ? 'Sign in to create supplier console'
-      : 'Sign in to create supplier'
-)
-const createActionNote = computed(() =>
-  isSignedIn.value
-    ? `Create supplier routes to ${createPath.value}.`
-    : `Sign in first, then continue to ${createPath.value} to create ${isConsoleCreateSurface.value ? 'the supplier console' : 'the supplier'}.`
-)
-const createActionMeaning = computed(() =>
-  isConsoleCreateSurface.value
-    ? 'It creates the supplier console overlay and creates the public supplier only if it does not already exist.'
-    : 'It creates the public supplier first, not the console overlay directly.'
-)
+const createActionNote = computed(() => createCopy.value.note)
+const createActionMeaning = computed(() => createCopy.value.meaning)
 
 const liveSupplierPill = computed(() => supplierPill())
 
@@ -174,6 +165,6 @@ const createSupplier = async () => {
     return
   }
 
-  await router.push(createPath.value)
+  await router.push(createCopy.value.createPath)
 }
 </script>

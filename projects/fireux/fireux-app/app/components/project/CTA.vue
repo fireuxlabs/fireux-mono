@@ -44,7 +44,7 @@
           :icon="isSignedIn ? 'i-lucide-plus' : 'i-lucide-log-in'"
           @click="createProject"
         >
-          {{ createActionLabel }}
+          {{ createCopy.label }}
         </UButton>
       </div>
     </template>
@@ -111,6 +111,7 @@ import { useRoute, useRouter } from '#imports'
 import { computed } from 'vue'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { resolveConsoleCreateCopy } from 'fireux-core/runtime/composables/fireux/app/ui/console-create-copy'
 import { resolveConsoleTestIdentity } from 'fireux-core/runtime/composables/fireux/app/ui/console-test-identity'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { getReadOnlyProjectScenarioList } from 'fireux-core/runtime/composables/fireux/app/runtime-project/read-only-scenarios/index'
@@ -138,14 +139,19 @@ const { currentUser, avatarSrc } = useUser()
 const { uid } = useAuth()
 const { appId, appLogo, appThumbnail } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
-const isConsoleCreateSurface = computed(() => props.createSurface === 'console')
 const projectOverlays = appId
   ? firestoreFetchCollection<ProjectApp>(`apps/${appId}/projects`)
   : null
-const createPath = computed(() =>
-  isConsoleCreateSurface.value ? '/console/projects/create' : '/projects/create'
-)
 const isSignedIn = computed(() => Boolean(String(uid.value || '').trim()))
+const createCopy = computed(() =>
+  resolveConsoleCreateCopy({
+    entityLabel: 'project',
+    createSurface: props.createSurface,
+    signedIn: isSignedIn.value,
+    publicPath: '/projects/create',
+    consolePath: '/console/projects/create',
+  })
+)
 const testProjectIdentity = computed(() =>
   resolveConsoleTestIdentity({
     entityLabel: 'Project',
@@ -157,23 +163,8 @@ const testProjectIdentity = computed(() =>
   })
 )
 const signInPath = computed(() => `/auth?redirect=${encodeURIComponent(route.fullPath)}`)
-const createActionLabel = computed(() =>
-  isSignedIn.value
-    ? 'Create project'
-    : isConsoleCreateSurface.value
-      ? 'Sign in to create project console'
-      : 'Sign in to create project'
-)
-const createActionNote = computed(() =>
-  isSignedIn.value
-    ? `Create project routes to ${createPath.value}.`
-    : `Sign in first, then continue to ${createPath.value} to create ${isConsoleCreateSurface.value ? 'the project console' : 'the project'}.`
-)
-const createActionMeaning = computed(() =>
-  isConsoleCreateSurface.value
-    ? 'It creates the project console overlay and creates the public project only if it does not already exist.'
-    : 'It creates the public project first, not the console overlay directly.'
-)
+const createActionNote = computed(() => createCopy.value.note)
+const createActionMeaning = computed(() => createCopy.value.meaning)
 
 const readOnlyScenarios = computed(() => getReadOnlyProjectScenarioList())
 const accessibleProjectIds = computed(() => {
@@ -247,6 +238,6 @@ const createProject = async () => {
     return
   }
 
-  await router.push(createPath.value)
+  await router.push(createCopy.value.createPath)
 }
 </script>
