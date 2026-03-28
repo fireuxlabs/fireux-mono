@@ -1,14 +1,15 @@
 <template>
   <NuxtLink
-  v-if="link && to"
-  :to="to"
-  class="pill"
->
+    v-if="link && to"
+    :to="to"
+    class="pill"
+  >
     <div class="flex min-w-0 items-start gap-2">
       <UAvatar
-        v-if="imageUrl"
         :src="imageUrl || undefined"
         :alt="title || ''"
+        :text="avatarText || title || ''"
+        icon="i-lucide-orbit"
         size="sm"
       />
 
@@ -19,25 +20,26 @@
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
         </p>
-        <div v-if="showBadges && (badges?.length ?? 0)" class="flex flex-wrap items-center gap-1">
+        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
           <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
             {{ badge }}
           </UBadge>
         </div>
       </div>
     </div>
-</NuxtLink>
+  </NuxtLink>
 
-<div
-  v-else
-  class="pill"
-  @click="onClick"
->
+  <div
+    v-else
+    class="pill"
+    @click="onClick"
+  >
     <div class="flex min-w-0 items-start gap-2">
       <UAvatar
-        v-if="imageUrl"
         :src="imageUrl || undefined"
         :alt="title || ''"
+        :text="avatarText || title || ''"
+        icon="i-lucide-orbit"
         size="sm"
       />
 
@@ -48,22 +50,23 @@
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
         </p>
-        <div v-if="showBadges && (badges?.length ?? 0)" class="flex flex-wrap items-center gap-1">
+        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
           <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
             {{ badge }}
           </UBadge>
         </div>
       </div>
     </div>
-</div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-type ProjectPillProps = {
+type EcosystemPillProps = {
   to?: string
   imageUrl?: string
+  avatarText?: string
   title: string
   subtitle?: string
   badges?: string[]
@@ -77,7 +80,7 @@ const emit = defineEmits<{
   (event: 'action'): void
 }>()
 
-const props = withDefaults(defineProps<ProjectPillProps>(), {
+const props = withDefaults(defineProps<EcosystemPillProps>(), {
   badges: () => [],
   showSubtitle: true,
   showBadges: true,

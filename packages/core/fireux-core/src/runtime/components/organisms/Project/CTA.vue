@@ -57,15 +57,15 @@
     </template>
 
     <template #test>
-          <ProjectCardsPill
-            :to="''"
-            :title="testProjectIdentity.title"
-            :subtitle="testProjectIdentity.subtitle"
-            :image-url="testProjectIdentity.imageUrl"
-            :action="true"
-            :show-badges="false"
-            @action="goToProject('test')"
-          />
+      <ProjectCardsPill
+        :to="''"
+        :title="testProjectIdentity.title"
+        :subtitle="testProjectIdentity.subtitle"
+        :image-url="testProjectIdentity.imageUrl"
+        :action="true"
+        :show-badges="false"
+        @action="goToProject('test')"
+      />
     </template>
 
     <template #readOnlyNote>
@@ -75,22 +75,22 @@
     </template>
 
     <template #readOnly>
-          <div v-if="readOnlyScenarios.length" class="space-y-2">
-            <ProjectCardsPill
-              v-for="item in readOnlyScenarios"
-              :key="item.id"
-              :to="''"
-              :title="item.name"
-              :subtitle="item.label"
-              :image-url="item.image_url"
-              :link="false"
-              :action="true"
-              @action="goToProject('read-only', item.id)"
-            />
-          </div>
-          <p v-else class="text-sm text-dimmed">
-            No read-only projects.
-          </p>
+      <div v-if="readOnlyScenarios.length" class="space-y-2">
+        <ProjectCardsPill
+          v-for="item in readOnlyScenarios"
+          :key="item.id"
+          :to="''"
+          :title="item.name"
+          :subtitle="item.label"
+          :image-url="item.image_url"
+          :link="false"
+          :action="true"
+          @action="goToProject('read-only', item.id)"
+        />
+      </div>
+      <p v-else class="text-sm text-dimmed">
+        No read-only projects.
+      </p>
     </template>
 
     <template #default>
@@ -109,20 +109,20 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from '#imports'
 import { computed } from 'vue'
-import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { resolveConsoleEntryPath } from 'fireux-core/runtime/composables/fireux/app/ui/console-entry-routing'
-import { resolveConsoleCreateCopy } from 'fireux-core/runtime/composables/fireux/app/ui/console-create-copy'
-import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
-import { resolveConsoleTestIdentity } from 'fireux-core/runtime/composables/fireux/app/ui/console-test-identity'
-import { getReadOnlyProjectScenarioList } from 'fireux-core/runtime/composables/fireux/app/runtime-project/read-only-scenarios/index'
-import { useRuntimeProjectSelection } from 'fireux-core/runtime/composables/fireux/app/runtime-project/state'
-import { useRuntimeProject } from 'fireux-core/runtime/composables/fireux/app/runtime-project/useRuntimeProject'
-import type { RuntimeMode } from 'fireux-core/runtime/composables/fireux/runtime/runtime.types'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import type { ProjectApp } from 'fireux-core/runtime/models/system/project.model'
+import type { RuntimeMode } from '../../../composables/fireux/runtime/runtime.types'
+import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
+import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { useFirestoreRead } from '../../../composables/fireux/firestore/operations/useFirestoreRead'
+import { getReadOnlyProjectScenarioList } from '../../../composables/fireux/app/runtime-project/read-only-scenarios/index'
+import { useRuntimeProjectSelection } from '../../../composables/fireux/app/runtime-project/state'
+import { useRuntimeProject } from '../../../composables/fireux/app/runtime-project/useRuntimeProject'
+import { resolveConsoleCreateCopy } from '../../../composables/fireux/app/ui/console-create-copy'
+import { resolveConsoleEntryPath } from '../../../composables/fireux/app/ui/console-entry-routing'
+import { resolveConsoleTestIdentity } from '../../../composables/fireux/app/ui/console-test-identity'
+import { useConsoleEntryState } from '../../../composables/fireux/app/ui/useConsoleEntryState'
+import { useProjectCollection } from '../../../composables/fireux/firestore/system/project/fetch/useProjectCollection'
+import type { ProjectApp } from '../../../models/system/project.model'
+import ConsoleEntityCTA from '../../entities/console/ConsoleEntityCTA.vue'
 import ProjectCardsPill from './Cards/Pill.vue'
 
 const props = withDefaults(defineProps<{
@@ -137,7 +137,7 @@ const runtimeProject = useRuntimeProject()
 const { setRuntimeProject } = useRuntimeProjectSelection()
 const { projects } = useProjectCollection()
 const { currentUser, avatarSrc } = useUser()
-const { uid, isSignedIn } = useConsoleEntryState()
+const { isSignedIn } = useConsoleEntryState()
 const { appId, appLogo, appThumbnail } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
 const projectOverlays = appId
@@ -222,9 +222,7 @@ const goToProject = async (mode: RuntimeMode, projectId?: string) => {
   }
 
   if (mode === 'read-only') {
-    await router.push(
-      resolveConsoleEntryPath('/console/projects', 'read-only', projectId)
-    )
+    await router.push(resolveConsoleEntryPath('/console/projects', 'read-only', projectId))
     return
   }
 
@@ -235,9 +233,9 @@ const goToProject = async (mode: RuntimeMode, projectId?: string) => {
 
   const fallback = String(
     projectId ||
-    liveProjectCards.value[0]?.id ||
-    runtimeProject.id.value ||
-    ''
+      liveProjectCards.value[0]?.id ||
+      runtimeProject.id.value ||
+      ''
   ).trim()
   const resolvedId = fallback
   setRuntimeProject({ projectId: resolvedId, mode })

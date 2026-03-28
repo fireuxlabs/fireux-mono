@@ -1,17 +1,16 @@
 <template>
   <NuxtLink
-  v-if="link && to"
-  :to="to"
-  class="block w-full"
->
+    v-if="link && to"
+    :to="to"
+    class="block w-full"
+  >
     <div
       class="flex w-full items-start gap-3 rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800/60 dark:bg-gray-900/40"
     >
       <UAvatar
         :src="imageUrl || undefined"
         :alt="title"
-        :text="avatarText || title"
-        icon="i-lucide-orbit"
+        icon="i-lucide-folders"
         size="md"
         class="shrink-0"
       />
@@ -44,21 +43,20 @@
         </div>
       </div>
     </div>
-</NuxtLink>
+  </NuxtLink>
 
-<div
-  v-else
-  class="block w-full"
-  @click="onClick"
->
+  <div
+    v-else
+    class="block w-full"
+    @click="onClick"
+  >
     <div
       class="flex w-full items-start gap-3 rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800/60 dark:bg-gray-900/40"
     >
       <UAvatar
         :src="imageUrl || undefined"
         :alt="title"
-        :text="avatarText || title"
-        icon="i-lucide-orbit"
+        icon="i-lucide-folders"
         size="md"
         class="shrink-0"
       />
@@ -91,16 +89,15 @@
         </div>
       </div>
     </div>
-</div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-type EcosystemCellProps = {
+type ProjectCellProps = {
   to?: string
   imageUrl?: string
-  avatarText?: string
   title: string
   subtitle?: string
   meta?: string
@@ -116,7 +113,7 @@ const emit = defineEmits<{
   (event: 'action'): void
 }>()
 
-const props = withDefaults(defineProps<EcosystemCellProps>(), {
+const props = withDefaults(defineProps<ProjectCellProps>(), {
   badges: () => [],
   showSubtitle: true,
   showMeta: true,

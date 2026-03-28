@@ -67,15 +67,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from '#imports'
-import { useRuntimeProjectSelection } from 'fireux-core/runtime/composables/fireux/app/runtime-project/state'
+import { computed, ref, watch } from 'vue'
+import { useRuntimeProjectSelection } from '../../../../composables/fireux/app/runtime-project/state'
+import { useProjectCreate } from '../../../../composables/fireux/firestore/system/project/mutations/useProjectCreate'
 import type {
   ConsoleCreateMode,
   ConsoleEnsureResult,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
-import { useProjectCreate } from 'fireux-core/runtime/composables/fireux/firestore/system/project/mutations/useProjectCreate'
-import type { FireuxProjectType } from 'fireux-core/runtime/models/system/project.model'
+} from '../../../../composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+import type { FireuxProjectType } from '../../../../models/system/project.model'
 
 const props = withDefaults(defineProps<{
   mode?: ConsoleCreateMode
@@ -255,8 +255,7 @@ const fetchProjectMeta = async () => {
     if (err instanceof TypeError) {
       error.value = `Unable to reach ${lastFetchUrl.value || 'the project endpoint'}. Check the URL, CORS, and that the app is live.`
     } else {
-      error.value =
-        err instanceof Error ? err.message : 'Unable to fetch project metadata'
+      error.value = err instanceof Error ? err.message : 'Unable to fetch project metadata'
     }
   } finally {
     fetchingMeta.value = false
@@ -274,22 +273,25 @@ const submit = async () => {
       throw new Error('Fetch the project endpoint before creating the project')
     }
 
-    const result = await createProject({
-      id: projectMeta.value.firebase_project_id,
-      name: projectMeta.value.name,
-      slug: projectMeta.value.slug,
-      description: projectMeta.value.description,
-      image_url: projectMeta.value.image_url,
-      primary_project: projectMeta.value.primary_project,
-      project_type: projectMeta.value.project_type,
-      source_url: projectMeta.value.source_url,
-      console_endpoint_url: projectMeta.value.console_endpoint_url,
-      app_id: projectMeta.value.app_id,
-      ecosystem_id: projectMeta.value.ecosystem_id,
-      firebase_project_id: projectMeta.value.firebase_project_id,
-    }, {
-      mode: props.mode,
-    })
+    const result = await createProject(
+      {
+        id: projectMeta.value.firebase_project_id,
+        name: projectMeta.value.name,
+        slug: projectMeta.value.slug,
+        description: projectMeta.value.description,
+        image_url: projectMeta.value.image_url,
+        primary_project: projectMeta.value.primary_project,
+        project_type: projectMeta.value.project_type,
+        source_url: projectMeta.value.source_url,
+        console_endpoint_url: projectMeta.value.console_endpoint_url,
+        app_id: projectMeta.value.app_id,
+        ecosystem_id: projectMeta.value.ecosystem_id,
+        firebase_project_id: projectMeta.value.firebase_project_id,
+      },
+      {
+        mode: props.mode,
+      }
+    )
 
     if (props.mode === 'console') {
       setRuntimeProject({ projectId: result.id, mode: 'live' })

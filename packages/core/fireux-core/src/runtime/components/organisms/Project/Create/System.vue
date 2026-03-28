@@ -55,8 +55,8 @@ import { computed } from 'vue'
 import type {
   ConsoleCreateMode,
   ConsoleEnsureResult,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
-import { useDevUi } from 'fireux-core/runtime/composables/fireux/app/ui/useDevUi'
+} from '../../../../composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+import { useDevUi } from '../../../../composables/fireux/app/ui/useDevUi'
 import ProjectCreateForm from './Form.vue'
 
 const props = withDefaults(defineProps<{

@@ -13,10 +13,10 @@
 </template>
 
 <script setup lang="ts">
-import type { EcosystemInterfaceCard } from 'fireux-core/runtime/composables/fireux/firestore/system/ecosystem/utils/view/useEcosystemInterface'
+import type { ProjectInterfaceCard } from '../../../../composables/fireux/firestore/system/project/utils/view/useProjectInterface'
 
 withDefaults(defineProps<{
-  cards: EcosystemInterfaceCard[]
+  cards: ProjectInterfaceCard[]
   variant?: 'pill' | 'cell'
 }>(), {
   variant: 'pill',

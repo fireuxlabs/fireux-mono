@@ -31,27 +31,27 @@
       </div>
     </template>
 
-    <EcosystemCollectionList
+    <ProjectCollectionList
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
       <template #pill="{ card }">
-        <EcosystemCardsPill v-bind="card" :link="linkEnabled" />
+        <ProjectCardsPill v-bind="card" :link="linkEnabled" />
       </template>
       <template #cell="{ card }">
-        <EcosystemCardsCell v-bind="card" :link="linkEnabled" />
+        <ProjectCardsCell v-bind="card" :link="linkEnabled" />
       </template>
-    </EcosystemCollectionList>
+    </ProjectCollectionList>
 
     <p v-else>
-      {{ query ? 'No ecosystems match your search.' : 'No ecosystems found.' }}
+      {{ query ? 'No projects match your search.' : 'No projects found.' }}
     </p>
 
     <div v-if="isDev">
       <DevJson
-        title="Ecosystems (JSON)"
-        context="collection manager · ecosystems · raw collection"
+        :title="devJsonTitle"
+        :context="devJsonContext"
         :data="rawCollection"
         :default-open="false"
       />
@@ -60,16 +60,16 @@
 </template>
 
 <script setup lang="ts">
-import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-import {
-  useEcosystemInterface,
-  type EcosystemInterfaceCard,
-  type EcosystemInterfaceInput,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/ecosystem/utils/view/useEcosystemInterface'
 import { computed } from 'vue'
+import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch'
+import {
+  useProjectInterface,
+  type ProjectInterfaceCard,
+  type ProjectInterfaceInput,
+} from '../../../../composables/fireux/firestore/system/project/utils/view/useProjectInterface'
 
 const props = withDefaults(defineProps<{
-  collection?: EcosystemInterfaceInput[]
+  collection?: ProjectInterfaceInput[]
   title?: string
   description?: string
   link?: boolean
@@ -78,31 +78,38 @@ const props = withDefaults(defineProps<{
   showVariantToggle?: boolean
   showCount?: boolean
   initialVariant?: 'pill' | 'cell'
+  devJsonTitle?: string
+  devJsonContext?: string
 }>(), {
   collection: () => [],
-  title: 'Ecosystems',
-  description: 'Browse ecosystems available in this workspace.',
+  title: 'Projects',
+  description: 'Browse project records available in this workspace.',
   link: false,
-  searchPlaceholder: 'Search ecosystems…',
+  searchPlaceholder: 'Search projects…',
   showSearch: true,
   showVariantToggle: true,
   showCount: true,
-  initialVariant: 'cell',
+  initialVariant: 'pill',
+  devJsonTitle: 'Projects (JSON)',
+  devJsonContext: 'collection manager · projects · raw collection',
 })
 
 const rawCollection = computed(() => props.collection ?? [])
-const title = computed(() => String(props.title || 'Ecosystems'))
+const title = computed(() => String(props.title || 'Projects'))
 const description = computed(() => String(props.description || '').trim())
 const linkEnabled = computed(() => props.link !== false)
-const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search ecosystems…'))
+const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search projects…'))
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
-const { interface: makeCard, searchText } = useEcosystemInterface()
+const devJsonTitle = computed(() => String(props.devJsonTitle || 'Projects (JSON)').trim())
+const devJsonContext = computed(
+  () => String(props.devJsonContext || 'collection manager · projects · raw collection').trim()
+)
+const { interface: makeCard, searchText } = useProjectInterface()
 
-const collection = computed<EcosystemInterfaceInput[]>(() =>
-  rawCollection.value
-    .filter((row): row is EcosystemInterfaceInput => Boolean(makeCard(row)))
+const collection = computed<ProjectInterfaceInput[]>(() =>
+  rawCollection.value.filter((row): row is ProjectInterfaceInput => Boolean(makeCard(row)))
 )
 
 const {
@@ -111,7 +118,7 @@ const {
   toggleVariant,
   cards: cardsFiltered,
   visibleCount,
-} = useCollectionSearch<EcosystemInterfaceInput, EcosystemInterfaceCard>({
+} = useCollectionSearch<ProjectInterfaceInput, ProjectInterfaceCard>({
   items: collection,
   searchText: (row) => searchText(row),
   makeCard: (row) => makeCard(row),
