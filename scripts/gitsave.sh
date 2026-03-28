@@ -62,8 +62,10 @@ run_preflight_clean() {
 
 cleanup_git_refs() {
   local current_branch="$1"
+  local cleaned_any=false
 
   if git remote | grep -qx 'origin'; then
+    echo "[gitsave] Pruning stale origin refs..."
     git remote prune origin >/dev/null 2>&1 || true
   fi
 
@@ -79,10 +81,14 @@ cleanup_git_refs() {
     if ! $old_origin_in_use; then
       echo "[gitsave] Removing legacy remote 'old-origin'..."
       git remote remove old-origin || true
+      cleaned_any=true
     fi
   fi
 
   if [[ "$current_branch" != "main" ]]; then
+    if ! $cleaned_any; then
+      echo "[gitsave] No post-save branch cleanup needed."
+    fi
     return 0
   fi
 
@@ -98,13 +104,15 @@ cleanup_git_refs() {
         ;;
     esac
 
-    local unique_count
-    unique_count="$(git rev-list --count "$branch" "^main" 2>/dev/null || echo "1")"
-    if [[ "$unique_count" == "0" ]]; then
-      echo "[gitsave] Deleting empty local branch '$branch'..."
-      git branch -d "$branch" >/dev/null 2>&1 || true
+    echo "[gitsave] Deleting merged local branch '$branch'..."
+    if git branch -d "$branch" >/dev/null 2>&1; then
+      cleaned_any=true
     fi
-  done < <(git for-each-ref --format='%(refname:short)' refs/heads)
+  done < <(git branch --format='%(refname:short)' --merged main)
+
+  if ! $cleaned_any; then
+    echo "[gitsave] No post-save branch cleanup needed."
+  fi
 }
 
 usage() {
