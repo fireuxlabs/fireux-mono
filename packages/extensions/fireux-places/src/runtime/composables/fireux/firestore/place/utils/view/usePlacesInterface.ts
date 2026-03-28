@@ -207,5 +207,5 @@ export function usePlacesInterface() {
     return `${name} ${shortName} ${shortAddress || address} ${id}`.trim().toLowerCase()
   }
 
-  return { interface: buildInterface, pill, cell, preview, profile, searchText }
+  return { interface: buildInterface, searchText }
 }

@@ -103,11 +103,5 @@ export function usePropertyInterface() {
       .trim()
   }
 
-  return { interface: buildInterface,
-    pill,
-    cell,
-    preview,
-    profile,
-    searchText,
-  }
+  return { interface: buildInterface, searchText }
 }

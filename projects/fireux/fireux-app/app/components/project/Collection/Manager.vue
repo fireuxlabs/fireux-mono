@@ -62,13 +62,14 @@
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import { useProjectInterface, type ProjectCard, type ProjectView } from '../../../composables/useProjectInterface'
-import ProjectCardsCell from '../Cards/Cell.vue'
-import ProjectCardsPill from '../Cards/Pill.vue'
-import ProjectCollectionList from './List.vue'
+import {
+  useProjectInterface,
+  type ProjectInterfaceCard,
+  type ProjectInterfaceInput,
+} from '../../../composables/useProjectInterface'
 
 const props = withDefaults(defineProps<{
-  collection?: ProjectView.Row[]
+  collection?: ProjectInterfaceInput[]
   title?: string
   description?: string
   link?: boolean
@@ -105,12 +106,11 @@ const devJsonTitle = computed(() => String(props.devJsonTitle || 'Projects (JSON
 const devJsonContext = computed(
   () => String(props.devJsonContext || 'collection manager · projects · raw collection').trim()
 )
-const { item, card: makeCard, searchText } = useProjectInterface()
+const { interface: makeCard, searchText } = useProjectInterface()
 
-const collection = computed<ProjectView.Item[]>(() =>
+const collection = computed<ProjectInterfaceInput[]>(() =>
   rawCollection.value
-    .map((row) => item(row))
-    .filter((row): row is ProjectView.Item => Boolean(row))
+    .filter((row): row is ProjectInterfaceInput => Boolean(makeCard(row)))
 )
 
 const {
@@ -119,7 +119,7 @@ const {
   toggleVariant,
   cards: cardsFiltered,
   visibleCount,
-} = useCollectionSearch<ProjectView.Item, ProjectCard.Card>({
+} = useCollectionSearch<ProjectInterfaceInput, ProjectInterfaceCard>({
   items: collection,
   searchText: (row) => searchText(row),
   makeCard: (row) => makeCard(row),

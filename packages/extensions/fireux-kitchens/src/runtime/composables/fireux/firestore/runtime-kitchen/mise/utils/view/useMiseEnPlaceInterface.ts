@@ -174,5 +174,5 @@ export function useMiseEnPlaceInterface() {
       .toLowerCase()
   }
 
-  return { interface: buildInterface, pill, cell, preview, profile, searchText }
+  return { interface: buildInterface, searchText }
 }

@@ -146,5 +146,5 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
     return `${name} ${shortName} ${ecosystem} ${id}`.trim().toLowerCase()
   }
 
-  return { interface: buildInterface, pill, cell, preview, profile, searchText }
+  return { interface: buildInterface, searchText }
 }

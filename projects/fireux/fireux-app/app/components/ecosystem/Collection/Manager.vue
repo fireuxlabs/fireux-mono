@@ -64,15 +64,12 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 import { computed } from 'vue'
 import {
   useEcosystemInterface,
-  type EcosystemCard,
-  type EcosystemView,
+  type EcosystemInterfaceCard,
+  type EcosystemInterfaceInput,
 } from '../../../composables/useEcosystemInterface'
-import EcosystemCardsCell from '../Cards/Cell.vue'
-import EcosystemCardsPill from '../Cards/Pill.vue'
-import EcosystemCollectionList from './List.vue'
 
 const props = withDefaults(defineProps<{
-  collection?: EcosystemView.Row[]
+  collection?: EcosystemInterfaceInput[]
   title?: string
   description?: string
   link?: boolean
@@ -101,12 +98,11 @@ const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Sear
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
-const { item, card: makeCard, searchText } = useEcosystemInterface()
+const { interface: makeCard, searchText } = useEcosystemInterface()
 
-const collection = computed<EcosystemView.Item[]>(() =>
+const collection = computed<EcosystemInterfaceInput[]>(() =>
   rawCollection.value
-    .map((row) => item(row))
-    .filter((row): row is EcosystemView.Item => Boolean(row))
+    .filter((row): row is EcosystemInterfaceInput => Boolean(makeCard(row)))
 )
 
 const {
@@ -115,7 +111,7 @@ const {
   toggleVariant,
   cards: cardsFiltered,
   visibleCount,
-} = useCollectionSearch<EcosystemView.Item, EcosystemCard.Card>({
+} = useCollectionSearch<EcosystemInterfaceInput, EcosystemInterfaceCard>({
   items: collection,
   searchText: (row) => searchText(row),
   makeCard: (row) => makeCard(row),

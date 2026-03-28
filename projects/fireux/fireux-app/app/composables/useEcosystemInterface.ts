@@ -8,45 +8,30 @@ const labelize = (value: string) =>
     .map((part) => part[0]?.toUpperCase() + part.slice(1))
     .join(' ')
 
-export namespace EcosystemView {
-  export type Row = Omit<Partial<Ecosystem>, 'apps'> & {
-    key?: string
-    src?: string
-    text?: string
-    href?: string
-    appCount?: number
-    apps?: number | unknown[]
-  }
-
-  export type Item = {
-    id: string
-    key: string
-    name: string
-    description: string
-    status: string
-    imageUrl: string
-    avatarText: string
-    to: string
-    apps: number
-    team: string
-  }
+export type EcosystemInterfaceInput = Omit<Partial<Ecosystem>, 'apps'> & {
+  key?: string
+  src?: string
+  text?: string
+  href?: string
+  appCount?: number
+  apps?: number | unknown[]
 }
 
-export namespace EcosystemCard {
-  export type Card = {
-    id: string
-    to: string
-    imageUrl: string
-    avatarText: string
-    title: string
-    subtitle: string
-    meta: string
-    badges: string[]
-  }
+export type EcosystemInterfaceCard = {
+  id: string
+  to: string
+  imageUrl: string
+  avatarText: string
+  title: string
+  subtitle: string
+  meta: string
+  badges: string[]
 }
 
 export function useEcosystemInterface() {
-  function item(target?: EcosystemView.Row | null | undefined): EcosystemView.Item | null {
+  function buildInterface(
+    target?: EcosystemInterfaceInput | null | undefined
+  ): EcosystemInterfaceCard | null {
     if (!target) return null
 
     const key = safeString(target.key) || safeString(target.id) || safeString(target.slug)
@@ -65,48 +50,33 @@ export function useEcosystemInterface() {
 
     return {
       id: resolvedId,
-      key,
-      name,
-      description: safeString(target.description),
-      status: safeString(target.status),
-      imageUrl: safeString(target.src),
-      avatarText: safeString(target.text),
       to: safeString(target.href),
-      apps,
-      team: safeString(target.team),
-    }
-  }
-
-  function card(target?: EcosystemView.Item | null | undefined): EcosystemCard.Card | null {
-    if (!target) return null
-
-    return {
-      id: target.id,
-      to: target.to || '',
-      imageUrl: target.imageUrl || '',
-      avatarText: target.avatarText || target.name || target.key || '',
-      title: target.name || target.key || 'Untitled ecosystem',
-      subtitle: target.key || '',
-      meta: [target.team ? `team: ${target.team}` : '', `apps: ${target.apps}`]
+      imageUrl: safeString(target.src),
+      avatarText: safeString(target.text) || name || key,
+      title: name || key || 'Untitled ecosystem',
+      subtitle: key || '',
+      meta: [safeString(target.team) ? `team: ${safeString(target.team)}` : '', `apps: ${apps}`]
         .filter(Boolean)
         .join(' · '),
       badges: [
-        labelize(target.status),
-        `${target.apps} app${target.apps === 1 ? '' : 's'}`,
+        labelize(safeString(target.status)),
+        `${apps} app${apps === 1 ? '' : 's'}`,
       ].filter(Boolean),
     }
   }
 
-  function searchText(target: EcosystemView.Item): string {
-    return [target.key, target.name, target.status, target.team, target.description]
+  function searchText(target: EcosystemInterfaceInput): string {
+    const key = safeString(target.key) || safeString(target.id) || safeString(target.slug)
+    const name = safeString(target.name)
+
+    return [key, name, safeString(target.status), safeString(target.team), safeString(target.description)]
       .join(' ')
       .trim()
       .toLowerCase()
   }
 
   return {
-    item,
-    card,
+    interface: buildInterface,
     searchText,
   }
 }

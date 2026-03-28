@@ -93,5 +93,5 @@ export function useJobInterface() {
     return `${title} ${status} ${location} ${id}`.trim().toLowerCase()
   }
 
-  return { interface: buildInterface, pill, cell, preview, profile, searchText }
+  return { interface: buildInterface, searchText }
 }

@@ -60,10 +60,57 @@ run_preflight_clean() {
   fi
 }
 
+cleanup_git_refs() {
+  local current_branch="$1"
+
+  if git remote | grep -qx 'origin'; then
+    git remote prune origin >/dev/null 2>&1 || true
+  fi
+
+  if git remote | grep -qx 'old-origin' && git remote | grep -qx 'origin'; then
+    local old_origin_in_use=false
+    while IFS= read -r upstream; do
+      if [[ "$upstream" == old-origin/* ]]; then
+        old_origin_in_use=true
+        break
+      fi
+    done < <(git for-each-ref --format='%(upstream:short)' refs/heads)
+
+    if ! $old_origin_in_use; then
+      echo "[gitsave] Removing legacy remote 'old-origin'..."
+      git remote remove old-origin || true
+    fi
+  fi
+
+  if [[ "$current_branch" != "main" ]]; then
+    return 0
+  fi
+
+  while IFS= read -r branch; do
+    branch="$(trim "$branch")"
+    if [[ -z "$branch" || "$branch" == "$current_branch" ]]; then
+      continue
+    fi
+
+    case "$branch" in
+      main|master|develop|dev)
+        continue
+        ;;
+    esac
+
+    local unique_count
+    unique_count="$(git rev-list --count "$branch" "^main" 2>/dev/null || echo "1")"
+    if [[ "$unique_count" == "0" ]]; then
+      echo "[gitsave] Deleting empty local branch '$branch'..."
+      git branch -d "$branch" >/dev/null 2>&1 || true
+    fi
+  done < <(git for-each-ref --format='%(refname:short)' refs/heads)
+}
+
 usage() {
   echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean] [--repo-clean|--no-repo-clean] [--strict-scope|--no-strict-scope] [--allow-mixed] [--allow-large] [--allow-behind]" >&2
   echo "Example: gitsave \"fix: wire places quick add\"" >&2
-  echo "Defaults: lightweight preflight clean, --no-guard --no-clean --no-repo-clean --no-strict-scope" >&2
+  echo "Defaults: lightweight preflight clean, post-save git cleanup, --no-guard --no-clean --no-repo-clean --no-strict-scope" >&2
   echo "Safety defaults: block behind-state pushes. Mixed-layer and large-batch checks are advisory unless --strict-scope is set." >&2
 }
 
@@ -271,14 +318,17 @@ if git diff --cached --quiet; then
     if [[ "${ahead_count}" != "0" ]]; then
       echo "No changes to commit, but branch is ahead by ${ahead_count}; pushing..." >&2
       git push origin "$current_branch"
+      cleanup_git_refs "$current_branch"
       echo "Saved: pushed $current_branch to origin." >&2
       print_repo_state "end"
     else
       echo "No changes to commit." >&2
+      cleanup_git_refs "$current_branch"
       print_repo_state "end"
     fi
   else
     echo "No changes to commit (no upstream configured)." >&2
+    cleanup_git_refs "$current_branch"
     print_repo_state "end"
   fi
   exit 0
@@ -338,6 +388,7 @@ fi
 
 # Push to the matching branch on origin.
 git push origin "$current_branch"
+cleanup_git_refs "$current_branch"
 
 echo "Saved: committed to $current_branch and pushed to origin."
 print_repo_state "end"

@@ -8,36 +8,24 @@ const labelize = (value: string) =>
     .map((part) => part[0]?.toUpperCase() + part.slice(1))
     .join(' ')
 
-export namespace ProjectView {
-  export type Row = Partial<Project> & {
-    key?: string
-  }
-
-  export type Item = {
-    id: string
-    key: string
-    name: string
-    status: string
-    description: string
-    projectType: string
-    imageUrl: string
-  }
+export type ProjectInterfaceInput = Partial<Project> & {
+  key?: string
 }
 
-export namespace ProjectCard {
-  export type Card = {
-    id: string
-    to: string
-    imageUrl: string
-    title: string
-    subtitle: string
-    meta: string
-    badges: string[]
-  }
+export type ProjectInterfaceCard = {
+  id: string
+  to: string
+  imageUrl: string
+  title: string
+  subtitle: string
+  meta: string
+  badges: string[]
 }
 
 export function useProjectInterface() {
-  function item(target?: ProjectView.Row | null | undefined): ProjectView.Item | null {
+  function buildInterface(
+    target?: ProjectInterfaceInput | null | undefined
+  ): ProjectInterfaceCard | null {
     if (!target) return null
 
     const id = safeString(target.id)
@@ -53,43 +41,31 @@ export function useProjectInterface() {
 
     return {
       id: resolvedId,
-      key,
-      name,
-      status,
-      description,
-      projectType,
-      imageUrl,
-    }
-  }
-
-  function card(target?: ProjectView.Item | null | undefined): ProjectCard.Card | null {
-    if (!target) return null
-
-    return {
-      id: target.id,
       to: '',
-      imageUrl: target.imageUrl,
-      title: target.name || target.key || 'Untitled project',
-      subtitle: target.key || '',
+      imageUrl,
+      title: name || key || 'Untitled project',
+      subtitle: key || '',
       meta:
-        target.description ||
+        description ||
         [
-          target.projectType ? `type ${labelize(target.projectType)}` : '',
-          target.key ? `key ${target.key}` : '',
+          projectType ? `type ${labelize(projectType)}` : '',
+          key ? `key ${key}` : '',
         ]
           .filter(Boolean)
           .join(' · '),
-      badges: [labelize(target.status), labelize(target.projectType)].filter(Boolean),
+      badges: [labelize(status), labelize(projectType)].filter(Boolean),
     }
   }
 
-  function searchText(target: ProjectView.Item): string {
+  function searchText(target: ProjectInterfaceInput): string {
+    const key = safeString(target.key) || safeString(target.id) || safeString(target.slug)
+
     return [
-      target.key,
-      target.name,
-      target.status,
-      target.projectType,
-      target.description,
+      key,
+      safeString(target.name),
+      safeString(target.status),
+      safeString(target.project_type),
+      safeString(target.description),
     ]
       .join(' ')
       .trim()
@@ -97,8 +73,7 @@ export function useProjectInterface() {
   }
 
   return {
-    item,
-    card,
+    interface: buildInterface,
     searchText,
   }
 }

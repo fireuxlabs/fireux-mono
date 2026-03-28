@@ -111,5 +111,5 @@ export function useUserInterface(userRef?: Ref<CoreUser | null | undefined>) {
     return `${displayName} ${handle} ${id}`.trim().toLowerCase()
   }
 
-  return { interface: buildInterface, pill, cell, preview, profile, searchText }
+  return { interface: buildInterface, searchText }
 }

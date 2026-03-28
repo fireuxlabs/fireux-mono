@@ -93,5 +93,5 @@ export function useBlogInterface() {
     return `${title} ${slug} ${author}`.trim().toLowerCase()
   }
 
-  return { interface: buildInterface, pill, cell, preview, profile, searchText }
+  return { interface: buildInterface, searchText }
 }
