@@ -1,6 +1,6 @@
 # Documentation System
 Authority: Tier2 (Operational)
-Updated: 2026-03-05
+Updated: 2026-03-28
 
 ## Entry Point
 1. `AGENTS.md`
@@ -16,6 +16,7 @@ Updated: 2026-03-05
 
 ### Tier2 (operational)
 - `docs/copilot-documentation/**`
+- `docs/changelog/**`
 - `docs/guide/**`
 - `docs/ecosystems/README.md`
 - `docs/reports/**`
@@ -49,6 +50,12 @@ If content reads like app marketing, app concepts, or app brief material, move i
   1. runtime root README
   2. relevant branch README
   3. Tier1 canon when structural rules are involved
+
+## Changelog Branch System
+- Treat `docs/changelog/README.md` as the decision-history root.
+- Treat the sibling `docs/changelog/*/README.md` files as the branch history system from core down to apps.
+- Use changelog branches to capture meaningful direction shifts, reversals, and policy changes.
+- If a changelog entry becomes a long-lived architectural decision, promote it into an ADR.
 
 ## Monday Workflow
 1. Refresh `Updated` on changed Tier1/Tier2 docs.

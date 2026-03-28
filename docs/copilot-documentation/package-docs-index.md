@@ -33,6 +33,7 @@ Authority: Tier2 (Index/reference)
 
 ## Reporting and Ops
 - Weekly docs report index: `docs/reports/README.md`
+- Repo changelog system: `docs/changelog/README.md`
 - Manifest and authority placement: `docs/dev/_manifest.md`
 - Handbook chapter map: `docs/copilot-documentation/copilot-00-toc.md`
 

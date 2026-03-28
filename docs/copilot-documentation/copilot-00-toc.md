@@ -26,6 +26,7 @@ Authority: Tier2 (Operational index)
 
 ## 3. Operational Runbooks
 - [Appendices index](./copilot-appendices/README.md)
+- [Changelog system](../changelog/README.md)
 - [Migrations runbook](../migrations/README.md)
 - [SEO + indexing playbook](./copilot-appendices/seo-indexing-playbook.md)
 - [Documentation manifest](../dev/_manifest.md)

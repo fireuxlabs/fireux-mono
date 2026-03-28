@@ -12,6 +12,7 @@ Updated: 2026-03-23
 ## Start Here
 - Documentation system: `system.md`
 - Canon: `fireux-canon.md`, `runtime-contract.md`, `seo-canon.md`
+- Changelog system: `changelog/README.md`
 - Runtime docs entry: `../packages/core/fireux-docs/src/runtime/README.md`
 - Entity layers: `entity-layer-canon.md`
 - Handbook ToC: `copilot-documentation/copilot-00-toc.md`
@@ -21,6 +22,10 @@ Updated: 2026-03-23
 ## Runtime README Branch System
 - Use `packages/core/fireux-docs/src/runtime/README.md` as the runtime docs root.
 - Use the branch READMEs under `packages/core/fireux-docs/src/runtime/*/README.md` for surface-specific runtime work.
+
+## Changelog Branch System
+- Use `changelog/README.md` as the decision-history root.
+- Use `changelog/*/README.md` for branch history across core, extensions, ecosystems, apps, and runtime.
 
 ## Product Source of Truth
 Shared docs stay generic.

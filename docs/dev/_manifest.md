@@ -18,6 +18,11 @@ Updated: 2026-03-23
 - `projects/**/docs/**`
 - root operational docs (`README.md`, `AGENTS.md`)
 
+## Branch History System
+- Repo-level decision history lives under `docs/changelog/**`.
+- Runtime branch history is paired with `packages/core/fireux-docs/src/runtime/*/README.md`.
+- Use changelog branches for meaningful reversals and direction shifts, not audit snapshots.
+
 ## Tier3 Locations
 - `docs/ai/**`
 - `.vscode/**`

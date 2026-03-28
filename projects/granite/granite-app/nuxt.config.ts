@@ -15,4 +15,13 @@ const fireuxConfig = defineFireuxConfig({
   ],
 })
 
-export default defineNuxtConfig(fireuxConfig)
+export default defineNuxtConfig({
+  ...fireuxConfig,
+  vite: {
+    ...(fireuxConfig.vite || {}),
+    server: {
+      ...(fireuxConfig.vite?.server || {}),
+      allowedHosts: ['.ngrok-free.app'],
+    },
+  },
+})

@@ -25,6 +25,7 @@ Only the Tier1 files above are authoritative canon. Folder names like `docs/cano
 
 ## Tier 2 (Operational)
 - `docs/copilot-documentation/` handbook chapters and appendices
+- `docs/changelog/README.md` decision-history and change-history system
 - `docs/guide/` implementation guides
 - `docs/entity-layer-canon.md` layer strategy rules
 - `docs/migrations/README.md` migration runbook
@@ -56,6 +57,15 @@ Only the Tier1 files above are authoritative canon. Folder names like `docs/cano
   - `pages/README.md` for route ownership
   - `components/README.md` for delivered UI families
   - `composables/README.md` for runtime composable structure
+
+## Changelog Branch System
+- `docs/changelog/README.md` is the repo-level entry for decision history.
+- Use the branch changelogs under `docs/changelog/*/README.md` to record meaningful shifts from root to app:
+  - `core/README.md`
+  - `extensions/README.md`
+  - `ecosystems/README.md`
+  - `apps/README.md`
+  - `runtime/README.md`
 
 ## Monday Hygiene Cadence
 - Refresh Tier1/Tier2 indexes and chapter ToC.

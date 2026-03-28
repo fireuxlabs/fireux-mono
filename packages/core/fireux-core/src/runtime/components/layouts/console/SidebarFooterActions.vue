@@ -13,8 +13,8 @@
       aria-label="View profile"
     >
       <UAvatar
-          :src="pillUser.avatarUrl || undefined"
-          :alt="pillUser.displayName || 'User'"
+        :src="avatarSrc || pillUser.avatarUrl || undefined"
+        :alt="pillUser.displayName || 'User'"
         :text="avatarFallback"
         size="sm"
       />
@@ -49,7 +49,7 @@ const props = withDefaults(
 
 const fireux = useFireUXConfig()
 const { isAuthenticated, signOutUser } = useAuth()
-const { currentUser, interface: userInterface, isLoading } = useUser()
+const { currentUser, interface: userInterface, isLoading, avatarSrc } = useUser()
 
 const signOutLoading = ref(false)
 
@@ -61,6 +61,7 @@ const pillUser = computed((): UserCard.Card | undefined => {
   if (!card) return undefined
   return {
     ...card,
+    avatarUrl: avatarSrc.value || card.avatarUrl,
     to: '/dashboard/user-profile',
   }
 })
