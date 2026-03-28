@@ -1,7 +1,7 @@
 # Components Directory
 
 Authority: Operational
-Updated: 2026-03-23
+Updated: 2026-03-28
 Scope: `packages/*/fireux-*/src/runtime/components` and child directories under `components/*`.
 
 Learn how `runtime/components/` is used across FireUX module packages, and how the current create-system component families are aligned.
@@ -18,6 +18,10 @@ This README stays at repo and directory level only.
 For the current alignment pass, the important seam is:
 
 - `runtime/components/**/Create/System.vue`
+
+For drift inspection, another seam is now explicit:
+
+- `runtime/components/**/Collection/Manager.vue`
 
 Why this seam matters:
 
@@ -187,3 +191,35 @@ For the current pass:
   - form-first create shell
 
 The main remaining work is naming cleanup and any future create families beyond the current shipping slice.
+
+## Collection-manager Dev JSON
+
+Collection managers now carry a repo-wide developer contract:
+
+- the dev JSON panel should show the raw collection items, not the transformed card shape
+- nested object props inside each item should remain visible
+- direct Firestore subcollections should be appended in dev when they exist
+
+Why:
+
+- drift inspection is now a first-class repo need
+- operational audits need to see stored truth, not only UI-facing card data
+- hidden subcollections were previously easy to miss during migration work
+
+Current implementation shape:
+
+- collection managers call a shared dev helper to augment the raw collection
+- the helper keeps the original item payload intact
+- direct subcollections appear under `subcollections`
+
+Important limit:
+
+- this is a developer inspection contract
+- it is not a public runtime API contract
+- deep recursive subcollection crawling is not required by default; the active contract is direct subcollections only
+
+Use:
+- `packages/core/fireux-docs/src/runtime/composables/README.md`
+- `packages/core/fireux-docs/src/runtime/server/README.md`
+
+when the question becomes how that collection-manager contract is implemented.

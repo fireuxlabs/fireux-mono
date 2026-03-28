@@ -13,6 +13,7 @@ import {
 } from 'firebase/firestore'
 import { ref, type Ref } from 'vue'
 import { useCollection, useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { attachDevCollectionMeta } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 
 function isOfflineFirestoreError(error: unknown): boolean {
   const code = typeof (error as any)?.code === 'string' ? (error as any).code : ''
@@ -48,7 +49,8 @@ export function useFirestoreRead() {
   /** Run any Firestore Query (reactive) */
   const firestoreQuery = <T>(
     q: Query<T>,
-    ssrKey?: string
+    ssrKey?: string,
+    devCollectionPath?: string
   ): Ref<T[] | undefined> => {
     if (import.meta.server) {
       return ref(undefined) as Ref<T[] | undefined>
@@ -58,7 +60,10 @@ export function useFirestoreRead() {
     const binding = useCollection<T>(q, {
       ...options,
       transform: (docSnap: QueryDocumentSnapshot<T>) => {
-        return { ...(docSnap.data() as T), id: docSnap.id } as T
+        const value = { ...(docSnap.data() as T), id: docSnap.id } as T & Record<string, unknown>
+        return devCollectionPath
+          ? attachDevCollectionMeta(value, devCollectionPath, docSnap.id) as T
+          : value as T
       },
     } as any)
     guardFirestorePromise(binding as any, ssrKey || 'query')
@@ -70,7 +75,7 @@ export function useFirestoreRead() {
     collectionPath: string
   ): Ref<T[] | undefined> => {
     const q = fsq(collection(db, collectionPath)) as Query<T>
-    return firestoreQuery<T>(q, collectionPath)
+    return firestoreQuery<T>(q, collectionPath, collectionPath)
   }
 
   /** Fetch a single document (reactive) */
@@ -88,7 +93,8 @@ export function useFirestoreRead() {
       transform: (docSnap: DocumentSnapshot<T>) => {
         const raw = docSnap.data()
         if (!raw) return undefined
-        return { ...(raw as any), id: docSnap.id } as T
+        const value = { ...(raw as any), id: docSnap.id } as T & Record<string, unknown>
+        return attachDevCollectionMeta(value, collectionPath, docSnap.id) as T
       },
     } as any)
     guardFirestorePromise(

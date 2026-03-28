@@ -50,7 +50,7 @@
       <DevJson
         :title="'Dishes (JSON)'"
         context="collection manager · dishes"
-        :data="collection"
+        :data="devJsonData"
         :default-open="false"
       />
     </div>
@@ -58,6 +58,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
 import { useDishInterface } from '../../../../composables/fireux/firestore/runtime-kitchen/dish/utils/view/useDishInterface';
@@ -90,6 +91,7 @@ const props = withDefaults(
 const { interface: makeCard, searchText } = useDishInterface()
 
 const collection = computed(() => props.collection ?? [])
+const { devJsonData } = useDevCollectionJson(collection)
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search dishes...'))
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)

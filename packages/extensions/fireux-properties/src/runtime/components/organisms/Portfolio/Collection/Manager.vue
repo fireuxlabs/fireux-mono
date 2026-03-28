@@ -52,7 +52,7 @@
       <DevJson
         :title="devJsonTitle"
         :context="devJsonContext"
-        :data="collection"
+        :data="devJsonData"
         :default-open="false"
       />
     </div>
@@ -60,6 +60,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
 import { usePortfolioInterface } from '../../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
@@ -98,6 +99,7 @@ const props = withDefaults(
 
 const { interface: makeCard, searchText } = usePortfolioInterface()
 const collection = computed(() => props.collection ?? [])
+const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Available Portfolios'))
 const description = computed(() => String(props.description || '').trim())
 const linkEnabled = computed(() => props.link !== false)

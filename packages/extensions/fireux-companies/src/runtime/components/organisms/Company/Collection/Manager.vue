@@ -51,7 +51,7 @@
       <DevJson
         :title="'Companies (JSON)'"
         context="collection manager · companies"
-        :data="collection"
+        :data="devJsonData"
         :default-open="false"
       />
     </div>
@@ -59,6 +59,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
 import { useCompanyInterface } from '../../../../composables/fireux/firestore/company/utils/view/useCompanyInterface';
@@ -89,6 +90,7 @@ const props = withDefaults(
 )
 
 const collection = computed(() => props.collection ?? [])
+const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Companies'))
 const description = computed(
   () => String(props.description || 'Browse company records built on claimed places.')

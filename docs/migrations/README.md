@@ -1,6 +1,6 @@
 # Migrations
 Authority: Tier2 (Operational)
-Updated: 2026-03-02
+Updated: 2026-03-28
 
 Purpose: keep Firestore/data migrations repeatable across all FireUX ecosystems.
 
@@ -60,6 +60,30 @@ All migration scripts should:
 - Process documents in pages and batch writes (<= 450 ops per commit).
 - Print start/progress/done summary with counters.
 - Exit non-zero when invariants fail.
+
+## Current scripts to know
+
+### `scripts/migrate-projects-canonical-shape.mjs`
+
+Purpose:
+
+- normalize `Project` root docs toward the current canon
+- convert legacy flat project stamps to nested `created.at` / `updated.at`
+- normalize legacy `project_type` values such as `ecosystem-app` to `ecosystem_app`
+- ensure the app-scoped `ProjectApp` overlay where a project console actually manages that project
+
+Current usage notes:
+
+- supports dry-run by default and `--commit`
+- supports named database selection with `--database`
+- supports explicit app overlay ownership with `--app`
+
+Example:
+
+```bash
+GOOGLE_APPLICATION_CREDENTIALS=packages/ecosystem/fireux-fireux/src/config/firebase/service-account.json \
+node scripts/migrate-projects-canonical-shape.mjs --database fireux --app fireux-app
+```
 
 ## Invariant-first policy
 

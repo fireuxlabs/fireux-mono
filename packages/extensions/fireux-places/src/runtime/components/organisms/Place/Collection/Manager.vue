@@ -51,7 +51,7 @@
       <DevJson
         :title="'Places (JSON)'"
         context="collection manager · places"
-        :data="collection"
+        :data="devJsonData"
         :default-open="false"
       />
     </div>
@@ -59,6 +59,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
 import { usePlacesInterface } from '../../../../composables/fireux/firestore/place/utils/view/usePlacesInterface';
@@ -89,6 +90,7 @@ const props = withDefaults(
 )
 
 const collection = computed(() => props.collection ?? [])
+const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Places'))
 const description = computed(
   () => String(props.description || 'Browse place records available to this runtime.')

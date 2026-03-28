@@ -52,7 +52,7 @@
       <DevJson
         :title="'Users (JSON)'"
         :context="devJsonContext"
-        :data="collection"
+        :data="devJsonData"
         :default-open="false"
       />
     </div>
@@ -60,6 +60,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { computed } from 'vue';
 import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface';
 import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch';
@@ -90,6 +91,7 @@ const props = withDefaults(
 )
 
 const collection = computed(() => props.collection ?? [])
+const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Users'))
 const description = computed(() => String(props.description || 'Browse users available to this runtime.'))
 const linkEnabled = computed(() => props.link !== false)

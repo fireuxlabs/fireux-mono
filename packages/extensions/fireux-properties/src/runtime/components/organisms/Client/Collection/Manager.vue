@@ -58,7 +58,7 @@
       <DevJson
         :title="'Clients (JSON)'"
         context="collection manager · clients"
-        :data="collection"
+        :data="devJsonData"
         :default-open="false"
       />
     </div>
@@ -66,6 +66,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
 import { useClientInterface } from '../../../../composables/fireux/firestore/client/utils/view/useClientInterface'
@@ -101,6 +102,7 @@ const props = withDefaults(
 const { interface: makeCard, searchText } = useClientInterface()
 
 const collection = computed(() => props.collection ?? [])
+const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Clients'))
 const description = computed(() => String(props.description || '').trim())
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search clients...'))

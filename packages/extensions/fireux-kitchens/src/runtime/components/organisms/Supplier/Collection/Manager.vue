@@ -50,7 +50,7 @@
       <DevJson
         :title="'Suppliers (JSON)'"
         context="collection manager · suppliers"
-        :data="collection"
+        :data="devJsonData"
         :default-open="false"
       />
     </div>
@@ -58,6 +58,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import {
   type SupplierSurface,
@@ -94,6 +95,7 @@ const props = withDefaults(
 const { interface: makeCard, searchText } = useSupplierInterface()
 
 const collection = computed(() => props.collection ?? [])
+const { devJsonData } = useDevCollectionJson(collection)
 const linkEnabled = computed(() => props.link !== false)
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search suppliers…'))
 const showSearch = computed(() => props.showSearch !== false)

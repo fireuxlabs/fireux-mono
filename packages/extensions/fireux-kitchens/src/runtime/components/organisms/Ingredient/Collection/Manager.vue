@@ -59,6 +59,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
 import {
@@ -98,6 +99,10 @@ const props = withDefaults(
 const { interface: makeCard, searchText } = useIngredientInterface()
 
 const collection = computed(() => props.collection ?? [])
+const sourceDevJsonCollection = computed(() =>
+  Array.isArray(props.devJsonData) ? props.devJsonData as IngredientInterfaceItem[] : collection.value
+)
+const { devJsonData: augmentedDevJsonData } = useDevCollectionJson(sourceDevJsonCollection)
 const linkEnabled = computed(() => props.link !== false)
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search ingredients...'))
 const showSearch = computed(() => props.showSearch !== false)
@@ -125,7 +130,7 @@ const devJsonTitle = computed(() => props.devJsonTitle || 'Ingredients (JSON)')
 const devJsonContext = computed(
   () => props.devJsonContext || 'collection manager · ingredients'
 )
-const devJsonData = computed(() => props.devJsonData ?? collection.value)
+const devJsonData = computed(() => props.devJsonData ?? augmentedDevJsonData.value)
 const devJsonDefaultOpen = computed(() => props.devJsonDefaultOpen ?? false)
 const devJsonHideWhenEmpty = computed(() => props.devJsonHideWhenEmpty ?? true)
 </script>

@@ -1,7 +1,7 @@
 # Composables Directory
 
 Authority: Operational
-Updated: 2026-03-20
+Updated: 2026-03-28
 Scope: `packages/*/fireux-*/src/runtime/composables` only.
 
 Learn how `runtime/composables/` is used across FireUX module packages.
@@ -25,6 +25,33 @@ Learn how `runtime/composables/` is used across FireUX module packages.
 
 - grouping still varies by package
 - runtime-local types and helpers still need to stay close to the features that own them
+
+## Current Shared Dev Helper
+
+One new repo-wide composable seam is now real:
+
+- `runtime/composables/dev/useDevCollectionJson.ts`
+
+Purpose:
+
+- preserve raw collection-manager dev JSON
+- augment each item with direct Firestore subcollections in dev
+- give drift inspection one shared behavior across entities
+
+This helper is not an entity read contract.
+It is a developer inspection helper.
+
+That means:
+
+- it should stay out of entity interface canon
+- it should stay shared only because the behavior is truly repo-wide
+- it depends on collection docs carrying collection-path metadata from the shared Firestore read layer
+
+Use:
+- `packages/core/fireux-docs/src/runtime/components/README.md`
+- `packages/core/fireux-docs/src/runtime/server/README.md`
+
+to understand the full collection-manager dev inspection path.
 
 ## Roadmap To Reconciliation
 

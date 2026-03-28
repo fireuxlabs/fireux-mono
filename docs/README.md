@@ -1,6 +1,6 @@
 # FireUX Documentation Hub
 Authority: Tier2 (Operational index)
-Updated: 2026-03-23
+Updated: 2026-03-28
 
 This is the docs landing map for weekly maintenance and day-to-day navigation.
 System definition: `docs/system.md`.
@@ -33,6 +33,10 @@ Only the Tier1 files above are authoritative canon. Folder names like `docs/cano
 - `packages/core/fireux-docs/src/runtime/README.md` runtime docs entry
 - `packages/core/fireux-docs/src/runtime/*/README.md` runtime branch READMEs
 - package/project docs under `packages/**/docs/` and `projects/**/docs/`
+
+Current operational note:
+- repo-wide drift inspection now depends on runtime collection-manager dev JSON showing raw docs and direct subcollections where they exist
+- the shared behavior is documented in the runtime `components/`, `composables/`, and `server/` branch READMEs
 
 ## Tier 3 (Tooling/History, non-authoritative)
 - `docs/ai/**`

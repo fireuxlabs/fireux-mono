@@ -8,6 +8,27 @@ Use this together with:
 - `packages/core/fireux-docs/src/runtime/README.md`
 - sibling runtime branch READMEs under `packages/core/fireux-docs/src/runtime/*/README.md`
 
+## 2026-03-28 - Collection-manager dev JSON became a shared runtime inspection seam
+
+Previous:
+- collection-manager dev JSON showed the raw loaded docs, but hidden Firestore subcollections stayed invisible
+- drift inspection could miss real stored child data unless a page had a custom inspector
+
+Now:
+- collection managers use a shared dev snapshot helper
+- the shared Firestore read layer attaches dev collection-path metadata to fetched docs
+- a dev-only runtime server endpoint resolves direct subcollections for collection-manager inspection
+
+Why:
+- make drift discovery repo-wide instead of entity-by-entity
+- keep collection-manager dev JSON useful during migrations and schema cleanup
+- avoid hiding operational child data just because it is not in the UI card shape
+
+Affected:
+- collection-manager components
+- shared Firestore read composables
+- runtime dev server API
+
 ## 2026-03-12 - Runtime Firestore DB selection became explicit
 
 Previous:

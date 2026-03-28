@@ -1,7 +1,7 @@
 # Runtime Directory
 
 Authority: Operational
-Updated: 2026-03-25
+Updated: 2026-03-28
 Scope: `packages/*/fireux-*/src/runtime` only.
 Does not apply to consuming app `app/`, `server/`, or root `public/` directories.
 
@@ -82,6 +82,10 @@ Current examples:
 ## server Directory
 
 `server/` contains package-delivered server routes, handlers, and server-only support code.
+
+Recent repo truth:
+- runtime drift inspection now uses a dev-only server seam for collection snapshotting
+- collection managers remain component-owned, but direct subcollection discovery is now a runtime server concern
 
 ## utils Directory
 

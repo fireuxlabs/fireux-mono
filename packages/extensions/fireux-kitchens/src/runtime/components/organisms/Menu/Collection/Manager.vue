@@ -51,7 +51,7 @@
       <DevJson
         :title="'Menus (JSON)'"
         context="collection manager · menus"
-        :data="collection"
+        :data="devJsonData"
         :default-open="false"
       />
     </div>
@@ -59,6 +59,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
 import { useMenuInterface } from '../../../../composables/fireux/firestore/runtime-kitchen/menu/utils/view/useMenuInterface'
@@ -94,6 +95,7 @@ const props = withDefaults(
 const { interface: makeCard, searchText } = useMenuInterface()
 
 const collection = computed(() => props.collection ?? [])
+const { devJsonData } = useDevCollectionJson(collection)
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search menus...'))
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)

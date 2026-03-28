@@ -1,7 +1,7 @@
 # Server Directory
 
 Authority: Operational
-Updated: 2026-03-20
+Updated: 2026-03-28
 Scope: `packages/*/fireux-*/src/runtime/server` only.
 
 Learn how `runtime/server/` is used across FireUX module packages.
@@ -25,6 +25,31 @@ Learn how `runtime/server/` is used across FireUX module packages.
 
 - `runtime/server/` is selective rather than broad across package families
 - some packages do not need it and should stay narrower
+
+## Current Dev Snapshot Seam
+
+One server seam is now part of repo-wide drift tooling:
+
+- `runtime/server/api/dev/collection-snapshot.post.ts`
+
+Purpose:
+
+- list direct subcollections for known collection docs
+- return lightweight direct subcollection snapshots for dev JSON inspection
+- support collection-manager drift checks without changing public entity fetch contracts
+
+Rules:
+
+- dev-only
+- operational inspection only
+- direct subcollections only by default
+- should use the active runtime Firestore selection, including named databases where configured
+
+This is a valid `runtime/server/` use case because:
+
+- subcollections are not visible in the normal client collection payload
+- the behavior belongs to runtime delivery and runtime inspection
+- the repo now depends on this seam for drift discovery work
 
 ## Roadmap To Reconciliation
 

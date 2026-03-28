@@ -124,7 +124,7 @@ const { users, error: usersError } = useUserCollection()
 const { isTenant } = useFireUXConfig()
 const userModelRuntime = CoreUserModel
 const { currentUser: authUser } = useAuth()
-const { currentUser, avatarSrc, preview } = useUser()
+const { currentUser, avatarSrc, interface: userInterface } = useUser()
 const { getProxiedAvatarUrl } = useAvatarProxy()
 
 const userCollection = computed(() => users.value ?? [])
@@ -192,7 +192,7 @@ const signedInUserSummary = computed(() => {
   }
 })
 
-const signedInUserPreview = computed(() => preview(currentUser.value))
+const signedInUserPreview = computed(() => userInterface(currentUser.value))
 
 const signedInUserJson = computed(() => {
   if (currentUser.value) return currentUser.value

@@ -52,7 +52,7 @@
       <DevJson
         title="Ecosystems (JSON)"
         context="collection manager · ecosystems · raw collection"
-        :data="rawCollection"
+        :data="devJsonData"
         :default-open="false"
       />
     </div>
@@ -60,6 +60,7 @@
 </template>
 
 <script setup lang="ts">
+import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { computed } from 'vue'
 import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch'
 import {
@@ -91,6 +92,7 @@ const props = withDefaults(defineProps<{
 })
 
 const rawCollection = computed(() => props.collection ?? [])
+const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Ecosystems'))
 const description = computed(() => String(props.description || '').trim())
 const linkEnabled = computed(() => props.link !== false)

@@ -4,6 +4,24 @@ Updated: 2026-03-28
 
 Tracks meaningful changes in shared core platform behavior, repo-wide documentation structure, and cross-cutting system rules.
 
+## 2026-03-28 - Project canonical-shape migration path added
+
+Previous:
+- project root data and project app overlays were being normalized by hand during alignment work
+- the repo did not have one repeatable script for project shape cleanup
+
+Now:
+- `scripts/migrate-projects-canonical-shape.mjs` provides a repeatable path for project stamp normalization and overlay ensuring
+
+Why:
+- keep project migration work repeatable
+- reduce one-off data repair during control-plane cleanup
+- support dry-run-first migration discipline
+
+Affected:
+- project migration workflow
+- migration runbook
+
 ## 2026-03-12 - FireUX ecosystem switched to named Firestore DB
 
 Previous:
