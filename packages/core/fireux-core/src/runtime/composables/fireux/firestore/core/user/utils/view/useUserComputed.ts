@@ -1,7 +1,7 @@
 import { computed } from '#imports'
 import type {
-    UserApp,
-    UserCore,
+    AppUser,
+    CoreUser,
 } from '../../../../../../../models/core/user.model'
 import { useFireUXConfig } from '../../../../../app/FireUXConfig'
 import { useAvatarProxy } from '../../../../../app/ui/useAvatarProxy'
@@ -26,8 +26,8 @@ const CTA_JOIN_APP: UserCta = { key: 'join-app', label: 'Join app', to: '' }
 const CTA_AVATAR: UserCta = { key: 'avatar', label: '', to: '' }
 
 export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
-  const coreUser = user.coreUser as { value: UserCore | null | undefined }
-  const appUser = user.appUser as { value: UserApp | null | undefined }
+  const coreUser = user.coreUser as { value: CoreUser | null | undefined }
+  const appUser = user.appUser as { value: AppUser | null | undefined }
 
   const { uid, isAuthenticated, currentUser: authUserRef } = useAuth()
   const { isTenant, appId } = useFireUXConfig()
@@ -87,7 +87,7 @@ export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
   }
 
   const avatarSrc = computed<string | undefined>(() => {
-    const raw = authUserRef.value?.photoURL || coreUser.value?.avatar
+    const raw = coreUser.value?.avatar || authUserRef.value?.photoURL
     const normalized = typeof raw === 'string' ? raw.trim() : ''
     const proxied = getProxiedAvatarUrl(normalized || undefined)
     return proxied || undefined

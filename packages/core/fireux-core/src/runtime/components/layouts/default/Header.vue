@@ -53,7 +53,7 @@
             aria-label="Go to dashboard"
             data-fireux-header-avatar
           >
-            <UAvatar :src="avatarSrc" text="A" size="sm" />
+            <UAvatar :src="headerAvatarSrc" text="A" size="sm" />
           </UButton>
         </div>
       </template>
@@ -74,6 +74,7 @@
 import { computed } from '#imports'
 import { useRoute } from 'vue-router'
 import { useNav } from '../../../composables/fireux/app/ui/nav/useNav'
+import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
@@ -96,7 +97,16 @@ const mobileItems = computed(() =>
 )
 
 /** Auth */
-const { isAuthenticated } = useAuth()
+const { isAuthenticated, currentUser: authUser } = useAuth()
 const { avatarSrc } = useUser()
+const { getProxiedAvatarUrl } = useAvatarProxy()
+const headerAvatarSrc = computed(() => {
+  const authAvatar = typeof authUser.value?.photoURL === 'string'
+    ? authUser.value.photoURL.trim()
+    : ''
+  const resolved = authAvatar || avatarSrc.value || ''
+  const proxied = getProxiedAvatarUrl(resolved || undefined)
+  return proxied || undefined
+})
 
 </script>

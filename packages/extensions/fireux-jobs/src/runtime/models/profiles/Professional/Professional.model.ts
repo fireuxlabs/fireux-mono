@@ -1,7 +1,7 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
-import type { User } from 'fireux-core/runtime/models/core/user.model'
+import type { CoreUser } from 'fireux-core/runtime/models/core/user.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type {
     CertificationItem,
@@ -73,9 +73,9 @@ export type ProfessionalApp = {
   [K in keyof typeof ProfessionalApp]: (typeof ProfessionalApp)[K]
 }
 
-export type ProfessionalUserSummary = Pick<User, 'id' | 'display_name' | 'avatar'> &
-  Partial<Pick<User, 'handle' | 'email'>>
+export type ProfessionalUserSummary = Pick<CoreUser, 'id' | 'display_name' | 'avatar'> &
+  Partial<Pick<CoreUser, 'handle' | 'email'>>
 
 export type ProfessionalResolved = ProfessionalCore & {
-  user?: User | ProfessionalUserSummary
+  user?: CoreUser | ProfessionalUserSummary
 }

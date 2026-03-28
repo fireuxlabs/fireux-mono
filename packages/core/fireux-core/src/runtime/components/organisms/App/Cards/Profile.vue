@@ -206,7 +206,7 @@ import { useUserFetch } from '../../../../composables/fireux/firestore/core/user
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import type { AppModel } from '../../../../models/core/app.model'
-import type { User } from '../../../../models/core/user.model'
+import type { CoreUser } from '../../../../models/core/user.model'
 import { formatFirestoreTimestamp } from '../../../../utils/formatTimestamp'
 
 const props = defineProps({
@@ -289,7 +289,7 @@ const adminAvatarItems = computed<AdminAvatarItem[]>(() => {
   })
 })
 
-function normalizeUser(raw: any, fallbackId: string): User {
+function normalizeUser(raw: any, fallbackId: string): CoreUser {
   return {
     ...raw,
     id: raw?.id ?? fallbackId,

@@ -26,7 +26,18 @@
 
     <template #links>
       <div class="space-y-4">
-        <template v-if="showAuthSplit">
+        <template v-if="authPhase === 'loading'">
+          <section class="space-y-2">
+            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-dimmed">
+              Loading Console Access
+            </p>
+            <p class="text-sm text-dimmed">
+              Checking your sign-in state and available console lanes.
+            </p>
+          </section>
+        </template>
+
+        <template v-else-if="showAuthSplit">
           <section class="space-y-4">
             <div class="space-y-1">
               <p class="text-xs font-semibold uppercase tracking-[0.16em] text-dimmed">
@@ -249,7 +260,7 @@
 
 <script setup lang="ts">
 import { computed, inject } from 'vue'
-import { useAuth } from '../../../composables/fireux/firebase/useAuth'
+import { useConsoleEntryState } from '../../../composables/fireux/app/ui/useConsoleEntryState'
 import { useDevUi } from '../../../composables/fireux/app/ui/useDevUi'
 
 type ConsoleEntryClose = {
@@ -280,8 +291,7 @@ withDefaults(defineProps<{
 })
 
 const isDev = import.meta.dev
-const { isAuthenticated } = useAuth()
+const { authPhase, showAuthSplit } = useConsoleEntryState()
 const { notesVisible } = useDevUi()
 const showInlineNotes = computed(() => isDev && notesVisible.value)
-const showAuthSplit = computed(() => !isAuthenticated.value)
 </script>

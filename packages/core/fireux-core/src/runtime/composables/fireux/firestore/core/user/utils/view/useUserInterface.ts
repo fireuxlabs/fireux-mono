@@ -1,6 +1,7 @@
 import { safeArray, safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
-import type { UserCore } from '../../../../../../../models/core/user.model'
+import type { CoreUser } from '../../../../../../../models/core/user.model'
+import { useAuth } from '../../../../../firebase/useAuth'
 import { normalizeUserHandle } from '../identity/useUserHandleIdentity'
 
 export namespace UserCard {
@@ -32,13 +33,26 @@ export namespace UserCard {
   }
 }
 
-export function useUserInterface(userRef?: Ref<UserCore | null | undefined>) {
+export function useUserInterface(userRef?: Ref<CoreUser | null | undefined>) {
   type UserPill = UserCard.Card
   type UserCell = UserCard.Card
   type UserPreview = UserCard.Card
   type UserProfile = UserCard.Card
 
-  function map(user: UserCore): UserCard.Card {
+  const { uid, currentUser: authUser } = useAuth()
+
+  function resolveAvatarUrl(user: CoreUser): string {
+    const storedAvatar = safeString(user.avatar).trim()
+    if (storedAvatar) return storedAvatar
+
+    const currentUid = safeString(uid.value).trim()
+    const targetUid = safeString(user.id).trim()
+    if (!currentUid || !targetUid || currentUid !== targetUid) return ''
+
+    return safeString(authUser.value?.photoURL).trim()
+  }
+
+  function map(user: CoreUser): UserCard.Card {
     const id = safeString(user.id).trim()
     const handle = normalizeUserHandle(safeString(user.handle))
     const appCount = safeArray(user.userOf).length
@@ -48,7 +62,7 @@ export function useUserInterface(userRef?: Ref<UserCore | null | undefined>) {
       id,
       to: handle ? `/users/${encodeURIComponent(handle)}` : '',
 
-      avatarUrl: safeString(user.avatar).trim(),
+      avatarUrl: resolveAvatarUrl(user),
       secondaryAvatarUrl: '',
       displayName: safeString(user.display_name).trim(),
       title: profiles[0] || '',
@@ -67,30 +81,30 @@ export function useUserInterface(userRef?: Ref<UserCore | null | undefined>) {
     }
   }
 
-  function buildInterface(target?: UserCore | null | undefined): UserCard.Card | null {
+  function buildInterface(target?: CoreUser | null | undefined): UserCard.Card | null {
     const user = target ?? userRef?.value ?? null
     if (!user) return null
     const mapped = map(user)
     return mapped.id ? mapped : null
   }
 
-  function pill(target?: UserCore | null | undefined): UserPill | null {
+  function pill(target?: CoreUser | null | undefined): UserPill | null {
     return buildInterface(target)
   }
 
-  function cell(target?: UserCore | null | undefined): UserCell | null {
+  function cell(target?: CoreUser | null | undefined): UserCell | null {
     return buildInterface(target)
   }
 
-  function preview(target?: UserCore | null | undefined): UserPreview | null {
+  function preview(target?: CoreUser | null | undefined): UserPreview | null {
     return buildInterface(target)
   }
 
-  function profile(target?: UserCore | null | undefined): UserProfile | null {
+  function profile(target?: CoreUser | null | undefined): UserProfile | null {
     return buildInterface(target)
   }
 
-  function searchText(user: UserCore): string {
+  function searchText(user: CoreUser): string {
     const displayName = safeString(user.display_name)
     const handle = safeString(user.handle)
     const id = safeString(user.id)

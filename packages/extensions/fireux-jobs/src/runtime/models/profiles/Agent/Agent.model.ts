@@ -1,7 +1,7 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
-import type { User } from 'fireux-core/runtime/models/core/user.model'
+import type { CoreUser } from 'fireux-core/runtime/models/core/user.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -64,9 +64,9 @@ export type AgentApp = {
   [K in keyof typeof AgentApp]: (typeof AgentApp)[K]
 }
 
-export type AgentUserSummary = Pick<User, 'id' | 'display_name' | 'avatar'> &
-  Partial<Pick<User, 'handle' | 'email'>>
+export type AgentUserSummary = Pick<CoreUser, 'id' | 'display_name' | 'avatar'> &
+  Partial<Pick<CoreUser, 'handle' | 'email'>>
 
 export type AgentResolved = AgentCore & {
-  user?: User | AgentUserSummary
+  user?: CoreUser | AgentUserSummary
 }

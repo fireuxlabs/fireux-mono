@@ -86,7 +86,7 @@ import { computed, ref, watch } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import type { AppModel } from '../../models/core/app.model'
-import type { AppUser, User } from '../../models/core/user.model'
+import type { AppUser, CoreUser } from '../../models/core/user.model'
 
 const props = withDefaults(
   defineProps<{ app?: AppModel | null; apps?: AppModel[] | null }>(),
@@ -178,12 +178,12 @@ const loadBinding = async () => {
     users.forEach((u) => userIds.add(u.id))
   }
 
-  const coreUsers = new Map<string, User | null>()
+  const coreUsers = new Map<string, CoreUser | null>()
   await Promise.all(
     Array.from(userIds).map(async (id) => {
       try {
         const snap = await getDoc(doc(db, 'users', id) as any)
-        coreUsers.set(id, snap.exists() ? (snap.data() as User) : null)
+        coreUsers.set(id, snap.exists() ? (snap.data() as CoreUser) : null)
       } catch {
         coreUsers.set(id, null)
       }

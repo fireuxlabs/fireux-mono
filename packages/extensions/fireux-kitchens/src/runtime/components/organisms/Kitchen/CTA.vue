@@ -109,9 +109,12 @@
 import { useRoute, useRouter } from '#imports'
 import { computed, ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import {
+  resolveConsoleEntryPath,
+} from 'fireux-core/runtime/composables/fireux/app/ui/console-entry-routing'
 import { resolveConsoleCreateCopy } from 'fireux-core/runtime/composables/fireux/app/ui/console-create-copy'
+import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
 import { resolveConsoleTestIdentity } from 'fireux-core/runtime/composables/fireux/app/ui/console-test-identity'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
@@ -145,7 +148,7 @@ const toPossessiveKitchenTitle = (value: unknown): string => {
 const { kitchens } = useKitchenFetch()
 const { pill: kitchenPill } = useKitchenInterface()
 const { currentUser, avatarSrc } = useUser()
-const { uid } = useAuth()
+const { uid, isSignedIn } = useConsoleEntryState()
 const { appId, appLogo, appThumbnail } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
 const { interface: chefInterface } = useChef()
@@ -222,7 +225,6 @@ const route = useRoute()
 const { runtimeKitchenId, setRuntimeKitchen } = useRuntimeKitchenSelection()
 const { ensureChefProfile } = useChefCreate()
 const isEnsuringLiveKitchen = ref(false)
-const isSignedIn = computed(() => Boolean(String(uid.value || '').trim()))
 const createCopy = computed(() =>
   resolveConsoleCreateCopy({
     entityLabel: 'kitchen',
@@ -303,6 +305,18 @@ const ensureLiveKitchenProfile = async () => {
 }
 
 const goToKitchen = async (mode: RuntimeKitchenMode, kitchenId?: string) => {
+  if (mode === 'test') {
+    await router.push(resolveConsoleEntryPath('/console/kitchen', 'test'))
+    return
+  }
+
+  if (mode === 'read-only') {
+    await router.push(
+      resolveConsoleEntryPath('/console/kitchen', 'read-only', kitchenId)
+    )
+    return
+  }
+
   if (mode === 'live') {
     const ready = await ensureLiveKitchenProfile()
     if (!ready) return

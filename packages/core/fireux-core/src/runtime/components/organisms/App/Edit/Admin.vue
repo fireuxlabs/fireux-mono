@@ -73,7 +73,7 @@ import { useAppUserCollection } from '../../../../composables/fireux/firestore/c
 import { useUserFetch } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUserInterface, type UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import type { AppModel } from '../../../../models/core/app.model'
-import type { User } from '../../../../models/core/user.model'
+import type { CoreUser } from '../../../../models/core/user.model'
 
 const props = withDefaults(
   defineProps<{ app?: AppModel | null }>(),
@@ -216,7 +216,7 @@ const fallbackUserCard = (options: {
   }
 }
 
-const cardForUser = (target?: User | null | undefined): UserCard.Card => {
+const cardForUser = (target?: CoreUser | null | undefined): UserCard.Card => {
   const payload = userCard(target ?? undefined)
   if (payload) return payload
 

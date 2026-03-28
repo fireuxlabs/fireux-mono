@@ -126,7 +126,7 @@ Use an overlay only when scoped truth really exists.
 For console-backed domains, the overlay is the app-hosted console for that root public entity.
 
 Examples:
-- `UserCore` + `UserApp`
+- `CoreUser` + `AppUser`
 - `KitchenCore` + `KitchenApp`
 - `PortfolioCore` + `PortfolioApp`
 - `SupplierCore` + `SupplierApp`

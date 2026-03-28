@@ -8,13 +8,13 @@ import {
   safeString,
   safeStringArray,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { User } from 'fireux-core/runtime/models/core/user.model'
+import type { CoreUser } from 'fireux-core/runtime/models/core/user.model'
 import type { Ref } from 'vue'
 import type { SupplierCore } from '../../models/supplier/Supplier.model'
 import { SUPPLIER_COLLECTION } from './constants'
 import type { SupplierRefs } from './useSupplierRecord'
 
-type UserLike = Pick<User, 'avatar'>
+type UserLike = Pick<CoreUser, 'avatar'>
 type SupplierTarget = SupplierSurface & { user?: UserLike | null }
 
 export namespace SupplierCard {
@@ -55,7 +55,7 @@ const firstArrayValue = (value: unknown): string =>
 
 export function useSupplierInterface(
   supplier?: SupplierRefs | null,
-  userRef?: Ref<User | null | undefined>
+  userRef?: Ref<CoreUser | null | undefined>
 ) {
   type SupplierPill = SupplierCard.Card
   type SupplierCell = SupplierCard.Card

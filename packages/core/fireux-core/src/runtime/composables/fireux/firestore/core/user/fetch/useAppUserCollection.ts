@@ -1,6 +1,6 @@
 import { useNuxtApp } from '#imports'
 import { computed, isRef, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
-import type { UserApp, UserCore } from '../../../../../../models/core/user.model'
+import type { AppUser, CoreUser } from '../../../../../../models/core/user.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
@@ -11,8 +11,8 @@ type EnrichedUser = {
   handle?: string
   email?: string
   profiles?: string[]
-  appUser?: UserApp | null
-  coreUser?: UserCore | null
+  appUser?: AppUser | null
+  coreUser?: CoreUser | null
 }
 
 type AppUserCollectionAppId =
@@ -35,31 +35,31 @@ export function useAppUserCollection(appId?: AppUserCollectionAppId) {
     return String(value ?? runtimeAppId ?? '').trim()
   })
 
-  const membershipsRef = shallowRef(null) as ShallowRef<Ref<UserApp[] | undefined> | null>
+  const membershipsRef = shallowRef(null) as ShallowRef<Ref<AppUser[] | undefined> | null>
 
   watch(
     resolvedAppId,
     (nextAppId) => {
       membershipsRef.value = nextAppId
-        ? firestoreFetchCollection<UserApp>(`apps/${nextAppId}/users`)
+        ? firestoreFetchCollection<AppUser>(`apps/${nextAppId}/users`)
         : null
     },
     { immediate: true }
   )
 
-  const memberships = computed<UserApp[]>(() => membershipsRef.value?.value ?? [])
+  const memberships = computed<AppUser[]>(() => membershipsRef.value?.value ?? [])
   const pending = computed(
     () => Boolean(resolvedAppId.value) && membershipsRef.value?.value === undefined
   )
 
-  const userCache = new Map<string, Ref<UserCore | undefined>>()
+  const userCache = new Map<string, Ref<CoreUser | undefined>>()
 
   const ensureCoreUser = (id?: string | null) => {
     if (!id) return undefined
     if (!userCache.has(id)) {
       const ref = nuxtApp.runWithContext(() =>
-        firestoreFetchDoc<UserCore>('users', id)
-      ) as Ref<UserCore | undefined>
+        firestoreFetchDoc<CoreUser>('users', id)
+      ) as Ref<CoreUser | undefined>
       userCache.set(id, ref)
     }
     return userCache.get(id)
@@ -86,7 +86,7 @@ export function useAppUserCollection(appId?: AppUserCollectionAppId) {
       if (!record) continue
       const recordId = String((record as any).id ?? memberId).trim() || memberId
 
-      const coreUser = { ...(record as any), id: recordId } as UserCore
+      const coreUser = { ...(record as any), id: recordId } as CoreUser
 
       enriched.push({
         id: recordId,

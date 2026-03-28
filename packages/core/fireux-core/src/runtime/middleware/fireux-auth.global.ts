@@ -11,6 +11,15 @@ const CONSOLE_RUNTIME_COOKIES = [
   { prefix: '/console/supplier', cookieKey: 'fireux_runtime_supplier' },
   { prefix: '/console/projects', cookieKey: 'fireux_runtime_project' },
 ] as const
+const GUEST_CONSOLE_ROUTE_PREFIXES = [
+  '/console/kitchen/test',
+  '/console/kitchen/read-only',
+  '/console/portfolio/test',
+  '/console/portfolio/read-only',
+  '/console/supplier/read-only',
+  '/console/projects/test',
+  '/console/projects/read-only',
+] as const
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -38,6 +47,12 @@ function allowsGuestNonLiveConsole(path: string): boolean {
   return false
 }
 
+function allowsGuestConsoleRoute(path: string): boolean {
+  return GUEST_CONSOLE_ROUTE_PREFIXES.some((prefix) =>
+    path === prefix || path.startsWith(`${prefix}/`)
+  )
+}
+
 export default defineNuxtRouteMiddleware(async (to) => {
   if (import.meta.server) return
 
@@ -47,7 +62,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const { isAuthenticated, hasAuthState } = useAuth()
   await waitFor(() => hasAuthState.value, AUTH_WAIT_TIMEOUT_MS)
-  const allowsGuestConsole = allowsGuestNonLiveConsole(String(to.path || ''))
+  const path = String(to.path || '')
+  const allowsGuestConsole =
+    allowsGuestConsoleRoute(path) || allowsGuestNonLiveConsole(path)
 
   if (!isAuthenticated.value) {
     if (allowsGuestConsole) return

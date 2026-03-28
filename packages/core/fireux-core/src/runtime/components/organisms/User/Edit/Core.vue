@@ -98,12 +98,12 @@ import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
 import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
 import { useUser } from '../../../../composables/fireux/firestore/core/user/useUser'
 import { useUserFormattingAndValidation } from '../../../../composables/fireux/firestore/core/user/utils/validation/useUserFormatting'
-import type { User } from '../../../../models/core/user.model'
+import type { CoreUser } from '../../../../models/core/user.model'
 
 import type { UserRefs } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUserUpdate } from '../../../../composables/fireux/firestore/core/user/mutations/useUserUpdate'
 
-const props = defineProps<{ user: User | null; userRefs?: UserRefs }>()
+const props = defineProps<{ user: CoreUser | null; userRefs?: UserRefs }>()
 
 const toast = useToastify()
 const userApi = useUser()

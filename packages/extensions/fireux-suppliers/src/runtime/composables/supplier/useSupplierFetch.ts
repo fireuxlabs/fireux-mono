@@ -7,7 +7,7 @@ import { useAppUserCollection } from 'fireux-core/runtime/composables/fireux/fir
 import { computed } from 'vue'
 import { watchEffect } from 'vue'
 import type { SupplierCore } from '../../models/supplier/Supplier.model'
-import type { User } from 'fireux-core/runtime/models/core/user.model'
+import type { CoreUser } from 'fireux-core/runtime/models/core/user.model'
 import type { Ref } from 'vue'
 import { SUPPLIER_COLLECTION } from './constants'
 
@@ -23,14 +23,14 @@ export function useSupplierFetch() {
     { idField: 'id' } as any
   )
 
-  const coreUserRefs = new Map<string, Ref<User | undefined>>()
+  const coreUserRefs = new Map<string, Ref<CoreUser | undefined>>()
 
   const ensureCoreUserRef = (id?: string | null) => {
     if (!id) return undefined
     if (!coreUserRefs.has(id)) {
       const ref = nuxtApp.runWithContext(() =>
-        firestoreFetchDoc<User>('users', id)
-      ) as Ref<User | undefined>
+        firestoreFetchDoc<CoreUser>('users', id)
+      ) as Ref<CoreUser | undefined>
       coreUserRefs.set(id, ref)
     }
     return coreUserRefs.get(id)
@@ -44,10 +44,10 @@ export function useSupplierFetch() {
   })
 
   const userMap = computed(() => {
-    const map = new Map<string, User>()
+    const map = new Map<string, CoreUser>()
     for (const entry of users.value ?? []) {
       if (!entry?.id) continue
-      map.set(entry.id, entry as User)
+      map.set(entry.id, entry as CoreUser)
     }
     return map
   })

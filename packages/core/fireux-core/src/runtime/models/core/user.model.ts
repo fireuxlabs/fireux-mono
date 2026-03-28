@@ -14,14 +14,11 @@ import type { UserNotification } from './supporting/user'
  *
  * Decision note:
  * - User identity is global first, with app-scoped stored truth only where operational state is genuinely app-specific.
- * - UserApp is a real stored overlay, not just a console facade.
+ * - AppUser is a real stored overlay, not just a console facade.
  * - If the identity overlay rule changes later, update the models README first, then this file.
  */
 
-export interface UserCoreExtensions {}
-export interface UserAppExtensions {}
-
-export const UserCore = {
+export const CoreUserModel = {
   id: '',
 
   display_name: '',
@@ -44,14 +41,14 @@ export const UserCore = {
   },
 } as const
 
-export type UserCore = {
-  [K in keyof typeof UserCore]: (typeof UserCore)[K]
-} & UserCoreExtensions
+export type CoreUser = {
+  [K in keyof typeof CoreUserModel]: (typeof CoreUserModel)[K]
+}
 
 /**
  * App-specific user membership overlay.
  */
-export const UserApp = {
+export const AppUserModel = {
   id: '',
 
   role: 'user' as 'user' | 'admin',
@@ -70,14 +67,12 @@ export const UserApp = {
   },
 } as const
 
-export type UserApp = {
-  [K in keyof typeof UserApp]: (typeof UserApp)[K]
-} & UserAppExtensions
-
-export type User = UserCore
-export type AppUser = UserApp
-export type UserResolved = UserCore & {
-  appUser?: UserApp | null
+export type AppUser = {
+  [K in keyof typeof AppUserModel]: (typeof AppUserModel)[K]
 }
-export type UserCoreDoc = Omit<UserCore, 'id'>
-export type UserAppDoc = Omit<UserApp, 'id'>
+
+export type UserResolved = CoreUser & {
+  appUser?: AppUser | null
+}
+export type CoreUserDoc = Omit<CoreUser, 'id'>
+export type AppUserDoc = Omit<AppUser, 'id'>

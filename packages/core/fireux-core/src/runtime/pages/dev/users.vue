@@ -20,6 +20,14 @@
         :model="userModelRuntime"
       />
 
+      <UAlert
+        v-if="usersErrorMessage"
+        color="warning"
+        variant="soft"
+        title="Users collection unavailable"
+        :description="usersErrorMessage"
+      />
+
       <UCard>
         <template #header>
           <div class="space-y-3">
@@ -53,6 +61,7 @@ import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDri
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useUserCollection'
+import { CoreUserModel } from '../../models/core/user.model'
 
 definePageMeta({
   layout: 'dev',
@@ -69,13 +78,19 @@ definePageMeta({
   description: 'Developer view for Users (collection-first).',
 })
 
-const userModelRuntime = UserModelRuntime
-
-const { users } = useUserCollection()
+const { users, error: usersError } = useUserCollection()
 
 const { isTenant } = useFireUXConfig()
 
 const userCollection = computed(() => users.value ?? [])
+const usersErrorMessage = computed(() => {
+  const error = usersError.value as { code?: string; message?: string } | undefined
+  if (!error) return ''
+  if (error.code === 'permission-denied') {
+    return 'This runtime cannot list the root /users collection with the current Firestore rules. Check the Granite database rules or use a more scoped developer view.'
+  }
+  return error.message || 'Unable to read the root /users collection.'
+})
 
 const {
   driftKind: usersDriftKind,
@@ -86,7 +101,7 @@ const {
   filteredCollection: filteredUsers,
 } = useDevDriftFilter({
   collection: userCollection,
-  runtimeModel: userModelRuntime,
+  runtimeModel: CoreUserModel,
 })
 
 const filteredUsersDriftPayload = computed(() =>

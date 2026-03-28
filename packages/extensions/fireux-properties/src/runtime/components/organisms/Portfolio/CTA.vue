@@ -110,9 +110,10 @@ import { useRoute, useRouter } from '#imports'
 import { computed } from 'vue'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { resolveConsoleEntryPath } from 'fireux-core/runtime/composables/fireux/app/ui/console-entry-routing'
 import { resolveConsoleCreateCopy } from 'fireux-core/runtime/composables/fireux/app/ui/console-create-copy'
+import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
 import { resolveConsoleTestIdentity } from 'fireux-core/runtime/composables/fireux/app/ui/console-test-identity'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { getReadOnlyPortfolioScenarioList } from '../../../composables/fireux/app/portfolio-runtime/read-only-scenarios'
@@ -134,14 +135,13 @@ const router = useRouter()
 const { runtimePortfolioId, setRuntimePortfolio } = useRuntimePortfolioSelection()
 const { portfolios } = usePortfolioFetch()
 const { pill } = usePortfolioInterface()
-const { uid } = useAuth()
+const { uid, isSignedIn } = useConsoleEntryState()
 const { currentUser, avatarSrc } = useUser()
 const { appId, appLogo, appThumbnail } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
 const portfolioOverlays = appId
   ? firestoreFetchCollection<PortfolioApp>(`apps/${appId}/portfolios`)
   : null
-const isSignedIn = computed(() => Boolean(String(uid.value || '').trim()))
 const createCopy = computed(() =>
   resolveConsoleCreateCopy({
     entityLabel: 'portfolio',
@@ -221,6 +221,18 @@ const readOnlyPills = computed(() =>
 )
 
 const goToPortfolio = async (mode: RuntimePortfolioMode, portfolioId?: string) => {
+  if (mode === 'test') {
+    await router.push(resolveConsoleEntryPath('/console/portfolio', 'test'))
+    return
+  }
+
+  if (mode === 'read-only') {
+    await router.push(
+      resolveConsoleEntryPath('/console/portfolio', 'read-only', portfolioId)
+    )
+    return
+  }
+
   if (mode === 'live' && !isSignedIn.value) {
     await router.push(signInPath.value)
     return

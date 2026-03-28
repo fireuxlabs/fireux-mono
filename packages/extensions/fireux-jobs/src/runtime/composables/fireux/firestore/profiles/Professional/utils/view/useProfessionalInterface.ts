@@ -7,6 +7,7 @@ import {
     resolveSecondaryAvatarUrl,
     safeString,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { Ref } from 'vue'
 import type { ProfessionalCore, ProfessionalUserSummary } from '../../../../../../../models/profiles/Professional/Professional.model'
 import { professionalConfig } from '../../config/professionalConfig'
@@ -41,6 +42,19 @@ export function useProfessionalInterface(
   type ProfessionalPreview = ProfessionalCard.Card
   type ProfessionalProfile = ProfessionalCard.Card
 
+  const { uid, currentUser: authUser } = useAuth()
+
+  function resolveUserAvatar(user?: UserLike | null): string {
+    const storedAvatar = safeString(user?.avatar).trim()
+    if (storedAvatar) return storedAvatar
+
+    const currentUid = safeString(uid.value).trim()
+    const targetUid = safeString(user?.id).trim()
+    if (!currentUid || !targetUid || currentUid !== targetUid) return ''
+
+    return safeString(authUser.value?.photoURL).trim()
+  }
+
   function buildInterface(
     target?: ProfessionalTarget | null | undefined,
     userOverride?: UserLike | null
@@ -56,7 +70,7 @@ export function useProfessionalInterface(
     if (!id) return null
 
     const image = resolveProfileImage([p.image])
-    const avatar = safeString(user?.avatar)
+    const avatar = resolveUserAvatar(user)
     const summary = resolveProfileSummary([p.summary, p.bio])
     const badges = resolveProfileBadges([p.tags])
     const secondaryAvatarUrl = resolveSecondaryAvatarUrl(image, avatar)

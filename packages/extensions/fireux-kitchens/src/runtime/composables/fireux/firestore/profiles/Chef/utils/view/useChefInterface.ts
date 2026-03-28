@@ -7,12 +7,13 @@ import {
     resolveSecondaryAvatarUrl,
     safeString,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { User } from 'fireux-core/runtime/models/core/user.model'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import type { CoreUser } from 'fireux-core/runtime/models/core/user.model'
 import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 import type { ChefCore } from 'fireux-kitchens/runtime/models/profiles/Chef/Chef.model'
 import type { Ref } from 'vue'
 
-type UserLike = Pick<User, 'display_name' | 'avatar'> & Partial<Pick<User, 'id'>>
+type UserLike = Pick<CoreUser, 'display_name' | 'avatar'> & Partial<Pick<CoreUser, 'id'>>
 type ChefTarget = ChefCore & { user?: UserLike | null }
 
 export namespace ChefCard {
@@ -34,12 +35,25 @@ export namespace ChefCard {
 
 export function useChefInterface(
   profile?: ProfileRefs<ChefCore> | null,
-  userRef?: Ref<User | null | undefined>
+  userRef?: Ref<CoreUser | null | undefined>
 ) {
   type ChefPill = ChefCard.Card
   type ChefCell = ChefCard.Card
   type ChefPreview = ChefCard.Card
   type ChefProfile = ChefCard.Card
+
+  const { uid, currentUser: authUser } = useAuth()
+
+  function resolveUserAvatar(u?: UserLike | null): string {
+    const storedAvatar = safeString(u?.avatar).trim()
+    if (storedAvatar) return storedAvatar
+
+    const currentUid = safeString(uid.value).trim()
+    const targetUid = safeString(u?.id).trim()
+    if (!currentUid || !targetUid || currentUid !== targetUid) return ''
+
+    return safeString(authUser.value?.photoURL).trim()
+  }
 
   function map(p: ChefCore, u?: UserLike | null): ChefCard.Card {
     const id =
@@ -54,7 +68,7 @@ export function useChefInterface(
       (p as ChefCore & { summary?: string }).summary,
       (p as any).chef_bio,
     ])
-    const userAvatar = safeString(u?.avatar).trim()
+    const userAvatar = resolveUserAvatar(u)
     const avatarUrl = profileImage || userAvatar
     const badges = resolveProfileBadges([(p as ChefCore & { tags?: string[] }).tags])
     const secondaryAvatarUrl = resolveSecondaryAvatarUrl(avatarUrl, userAvatar)

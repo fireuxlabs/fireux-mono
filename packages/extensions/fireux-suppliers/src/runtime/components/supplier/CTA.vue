@@ -98,8 +98,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { resolveConsoleEntryPath } from 'fireux-core/runtime/composables/fireux/app/ui/console-entry-routing'
 import { resolveConsoleCreateCopy } from 'fireux-core/runtime/composables/fireux/app/ui/console-create-copy'
+import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
 import { getReadOnlySupplierScenarioList } from '../../composables/fireux/app/supplier-console/read-only-scenarios'
 import type { RuntimeSupplierMode } from '../../composables/fireux/app/supplier-console/state'
@@ -116,11 +117,10 @@ const props = withDefaults(defineProps<{
 
 const route = useRoute()
 const router = useRouter()
-const { uid } = useAuth()
+const { uid, isSignedIn } = useConsoleEntryState()
 const { setRuntimeSupplier } = useRuntimeSupplierSelection()
 const supplierRecord = useSupplierRecord(computed(() => String(uid.value || '').trim()))
 const { pill: supplierPill } = useSupplierInterface(supplierRecord)
-const isSignedIn = computed(() => Boolean(String(uid.value || '').trim()))
 const createCopy = computed(() =>
   resolveConsoleCreateCopy({
     entityLabel: 'supplier',
@@ -149,6 +149,13 @@ const readOnlyPills = computed(() =>
 )
 
 const goToSupplier = async (mode: RuntimeSupplierMode, supplierId?: string) => {
+  if (mode === 'read-only') {
+    await router.push(
+      resolveConsoleEntryPath('/console/supplier', 'read-only', supplierId)
+    )
+    return
+  }
+
   if (mode === 'live' && !isSignedIn.value) {
     await router.push(signInPath.value)
     return

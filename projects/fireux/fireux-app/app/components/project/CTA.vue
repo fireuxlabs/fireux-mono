@@ -111,9 +111,10 @@ import { useRoute, useRouter } from '#imports'
 import { computed } from 'vue'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { resolveConsoleEntryPath } from 'fireux-core/runtime/composables/fireux/app/ui/console-entry-routing'
 import { resolveConsoleCreateCopy } from 'fireux-core/runtime/composables/fireux/app/ui/console-create-copy'
+import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
 import { resolveConsoleTestIdentity } from 'fireux-core/runtime/composables/fireux/app/ui/console-test-identity'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { getReadOnlyProjectScenarioList } from 'fireux-core/runtime/composables/fireux/app/runtime-project/read-only-scenarios/index'
 import { useRuntimeProjectSelection } from 'fireux-core/runtime/composables/fireux/app/runtime-project/state'
 import { useRuntimeProject } from 'fireux-core/runtime/composables/fireux/app/runtime-project/useRuntimeProject'
@@ -136,13 +137,12 @@ const runtimeProject = useRuntimeProject()
 const { setRuntimeProject } = useRuntimeProjectSelection()
 const { projects } = useProjectCollection()
 const { currentUser, avatarSrc } = useUser()
-const { uid } = useAuth()
+const { uid, isSignedIn } = useConsoleEntryState()
 const { appId, appLogo, appThumbnail } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
 const projectOverlays = appId
   ? firestoreFetchCollection<ProjectApp>(`apps/${appId}/projects`)
   : null
-const isSignedIn = computed(() => Boolean(String(uid.value || '').trim()))
 const createCopy = computed(() =>
   resolveConsoleCreateCopy({
     entityLabel: 'project',
@@ -216,6 +216,18 @@ const liveProjectCards = computed(() =>
 )
 
 const goToProject = async (mode: RuntimeMode, projectId?: string) => {
+  if (mode === 'test') {
+    await router.push(resolveConsoleEntryPath('/console/projects', 'test'))
+    return
+  }
+
+  if (mode === 'read-only') {
+    await router.push(
+      resolveConsoleEntryPath('/console/projects', 'read-only', projectId)
+    )
+    return
+  }
+
   if (mode === 'live' && !isSignedIn.value) {
     await router.push(signInPath.value)
     return

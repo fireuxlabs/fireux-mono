@@ -2,7 +2,7 @@ import type { ComputedRef } from 'vue'
 import { computed } from 'vue'
 import type { App as AppType } from '../../../models/core/app.model'
 import { App as AppTemplate } from '../../../models/core/app.model'
-import type { AppUser, User } from '../../../models/core/user.model'
+import type { AppUser, CoreUser } from '../../../models/core/user.model'
 import { useFireUXConfig } from '../../fireux/app/FireUXConfig'
 import { useApp } from '../../fireux/firestore/core/app/useApp'
 import { useAppUserCollection } from '../../fireux/firestore/core/user/fetch/useAppUserCollection'
@@ -134,7 +134,7 @@ export function useDevHealth(): DevHealthApi {
 
     const appValue = app.value as AppType | null | undefined
     const appUsersValue = appUsers.value as AppUser[] | undefined
-    const rawUsersValue = rawUsers.value as User[] | undefined
+    const rawUsersValue = rawUsers.value as CoreUser[] | undefined
     const hydratedUsers = hydratedAppUsers.value
 
     // 1) App drift vs template
@@ -260,7 +260,7 @@ export function useDevHealth(): DevHealthApi {
     // 3) Membership hydration: every /apps/{id}/users entry should have a /users doc
     {
       const issues: DevHealthIssue[] = []
-      const rawUserMap = new Map<string, User>()
+      const rawUserMap = new Map<string, CoreUser>()
       for (const user of rawUsersValue ?? []) {
         if (!user?.id) continue
         rawUserMap.set(user.id, user)

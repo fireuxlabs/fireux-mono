@@ -48,12 +48,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
-import type { UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
-const { currentUser, interface: userInterface, isLoading, avatarSrc } = useUser()
-const { currentUser: authUser } = useAuth()
+const { currentUser, interface: userInterface, isLoading } = useUser()
 
 const profileComplete = computed<number | null>(() => {
   if (isLoading.value) return null
@@ -73,47 +70,11 @@ const profileComplete = computed<number | null>(() => {
   return Math.round((done / total) * 100)
 })
 
-const authFallbackPill = computed<UserCard.Card | null>(() => {
-  const auth = authUser.value
-  if (!auth) return null
-
-  const displayName =
-    String(auth.displayName ?? '').trim() ||
-    String(auth.email ?? '').trim().split('@')[0] ||
-    'User'
-
-  return {
-    id: String(auth.uid ?? '').trim(),
-    to: '/dashboard/user-profile',
-    avatarUrl: avatarSrc.value || String(auth.photoURL ?? '').trim(),
-    secondaryAvatarUrl: '',
-    displayName,
-    title: '',
-    summary: '',
-    handle: '',
-    badges: [],
-    contactEmail: '',
-    contactPhone: '',
-    websiteUrl: '',
-    bio: '',
-    profiles: [],
-    appsLabel: '',
-  }
-})
-
-const pill = computed<UserCard.Card | null>(() => {
-  if (isLoading.value && !authFallbackPill.value) return null
+const pill = computed(() => {
+  if (isLoading.value) return null
   const user = currentUser.value
-  if (user) {
-    const card = userInterface(user)
-    if (card) {
-      return {
-        ...card,
-        avatarUrl: avatarSrc.value || card.avatarUrl,
-      }
-    }
-  }
-  return authFallbackPill.value
+  if (!user) return null
+  return userInterface(user)
 })
 
 const showProfileCompletedness = computed(() => {
