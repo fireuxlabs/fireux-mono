@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import SupplierEntry from '../../../components/console/supplier/Entry.vue'
+import SupplierEntry from '../../../components/organisms/Supplier/Entry.vue'
 
 definePageMeta({
   layout: 'console',

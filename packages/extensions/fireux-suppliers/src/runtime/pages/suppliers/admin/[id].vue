@@ -32,7 +32,7 @@
           v-else-if="!resolvedCoreSupplier"
           title="Supplier not available"
           description="This supplier record hasn’t been created yet."
-          :button-label="SUPPLIER_CREATE_CTA"
+          :button-label="supplierCreateCta"
           :loading="isCreating"
           :error="createError"
           @create="createSupplier"
@@ -65,11 +65,11 @@ import { useConsoleProfileView } from 'fireux-core/runtime/composables/fireux/ap
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { useSupplierInterface } from '../../../composables/supplier/useSupplierInterface'
-import { SUPPLIER_CREATE_CTA } from '../../../composables/supplier/constants'
-import { useSupplierEnsure } from '../../../composables/supplier/useSupplierEnsure'
-import { useSupplierRecord } from '../../../composables/supplier/useSupplierRecord'
+import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
+import { useSupplierEnsure } from '../../../composables/fireux/firestore/supplier/mutations/useSupplierEnsure'
+import { useSupplierRecord } from '../../../composables/fireux/firestore/supplier/fetch/useSupplierRecord'
 
+const supplierCreateCta = 'Create your supplier workspace record to appear in listings.'
 definePageMeta({
   layout: 'default',
   name: 'SuppliersAdminEditPage',

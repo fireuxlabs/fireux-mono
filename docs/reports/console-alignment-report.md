@@ -216,7 +216,7 @@ Why it matters:
 Files:
 - `packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier/index.vue`
 - `packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier/overview.vue`
-- `packages/extensions/fireux-suppliers/src/runtime/composables/supplier/ops/useSupplier.ts`
+- `packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/useSupplier.ts`
 
 Why it matters:
 - Supplier behaves like a console scope, but the state/runtime resolution pattern is thinner and less parallel to project/kitchen/portfolio.

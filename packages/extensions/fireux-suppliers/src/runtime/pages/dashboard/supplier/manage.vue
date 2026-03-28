@@ -38,7 +38,7 @@
           variant="subtle"
         >
           <UButton
-            :label="SUPPLIER_CREATE_CTA"
+            :label="supplierCreateCta"
             color="neutral"
             :loading="isCreating"
             @click="createSupplier"
@@ -76,10 +76,11 @@
 <script setup lang="ts">
 import { useConsoleProfileView } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleProfileView'
 import { computed, ref } from 'vue'
-import { useSupplier } from '../../../composables/supplier/ops/useSupplier'
-import { SUPPLIER_CREATE_CTA, SUPPLIER_NAV_ICON } from '../../../composables/supplier/constants'
-import { useSupplierEnsure } from '../../../composables/supplier/useSupplierEnsure'
+import { useSupplier } from '../../../composables/fireux/firestore/supplier/useSupplier'
+import { useSupplierEnsure } from '../../../composables/fireux/firestore/supplier/mutations/useSupplierEnsure'
 
+const supplierCreateCta = 'Create your supplier workspace record to appear in listings.'
+const supplierNavIcon = 'i-lucide-package'
 const navTitle = 'Manage Supplier'
 
 definePageMeta({
@@ -88,7 +89,7 @@ definePageMeta({
     visibility: { modules: ['fireux-suppliers'] },
     key: 'console-supplier-manage',
     label: 'Manage supplier',
-    icon: SUPPLIER_NAV_ICON,
+    icon: supplierNavIcon,
     desktop: false,
     layouts: ['dashboard'],
   },

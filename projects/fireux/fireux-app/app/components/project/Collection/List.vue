@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ProjectInterfaceCard } from '../../../composables/useProjectInterface'
+import type { ProjectInterfaceCard } from 'fireux-core/runtime/composables/fireux/firestore/system/project/utils/view/useProjectInterface'
 
 withDefaults(defineProps<{
   cards: ProjectInterfaceCard[]

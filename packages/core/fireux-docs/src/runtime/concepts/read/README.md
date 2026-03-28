@@ -273,7 +273,7 @@ Examples:
 | `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/fetch/usePlacesFetch.ts` | Direct single fetch | Public entity | Singular place helper despite plural filename |
 | `packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/fetch/useProductFetch.ts` | Collection-backed selector fetch | Public entity / managed | Product collection plus selector |
 | `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/fetch/usePortfolioFetch.ts` | Collection-backed selector fetch | Public entity / workspace | Portfolio collection plus selector |
-| `packages/extensions/fireux-suppliers/src/runtime/composables/supplier/useSupplierFetch.ts` | Collection-backed selector fetch | Public entity / workspace | Hydrated supplier collection plus selector |
+| `packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/fetch/useSupplierFetch.ts` | Collection-backed selector fetch | Public entity / workspace | Hydrated supplier collection plus selector |
 
 ## Alignment Strategy
 
@@ -513,7 +513,7 @@ This pass removes that edge and treats the main interface contract as the only r
 | `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/client/utils/view/useClientInterface.ts` | Console operational child | Portfolio-scoped client record |
 | `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface.ts` | Organization / workspace entity | Workspace identity, currently thin |
 | `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/utils/view/usePropertyInterface.ts` | Console operational child | Portfolio property record |
-| `packages/extensions/fireux-suppliers/src/runtime/composables/supplier/useSupplierInterface.ts` | Organization / workspace entity | Public organization surface with workspace crossover |
+| `packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/utils/view/useSupplierInterface.ts` | Organization / workspace entity | Public organization surface with workspace crossover |
 | `packages/extensions/fireux-tasks/src/runtime/composables/fireux/firestore/tasks/utils/view/useTaskInterface.ts` | Console operational child | Portfolio task record |
 
 ## Current Edges To Watch

@@ -93,7 +93,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-import type { SupplierCard } from 'fireux-suppliers/runtime/composables/supplier/useSupplierInterface'
+import type { SupplierCard } from 'fireux-suppliers/runtime/composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
 const emit = defineEmits<{
   (event: 'action'): void

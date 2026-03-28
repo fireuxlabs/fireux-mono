@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { EcosystemInterfaceCard } from '../../../composables/useEcosystemInterface'
+import type { EcosystemInterfaceCard } from 'fireux-core/runtime/composables/fireux/firestore/system/ecosystem/utils/view/useEcosystemInterface'
 
 withDefaults(defineProps<{
   cards: EcosystemInterfaceCard[]

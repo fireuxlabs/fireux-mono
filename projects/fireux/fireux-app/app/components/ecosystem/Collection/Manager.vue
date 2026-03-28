@@ -61,12 +61,12 @@
 
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-import { computed } from 'vue'
 import {
   useEcosystemInterface,
   type EcosystemInterfaceCard,
   type EcosystemInterfaceInput,
-} from '../../../composables/useEcosystemInterface'
+} from 'fireux-core/runtime/composables/fireux/firestore/system/ecosystem/utils/view/useEcosystemInterface'
+import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{
   collection?: EcosystemInterfaceInput[]

@@ -12,7 +12,7 @@ export function configureComponents(resolver: Resolver) {
 
   registerComponentAliases(
     resolver,
-    './runtime/components/console/supplier',
+    './runtime/components/organisms/Supplier',
     'Supplier',
     { global: true }
   )

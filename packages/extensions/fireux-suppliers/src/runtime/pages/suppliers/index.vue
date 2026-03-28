@@ -14,7 +14,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useSupplierFetch } from '../../composables/supplier/useSupplierFetch'
+import { useSupplierFetch } from '../../composables/fireux/firestore/supplier/fetch/useSupplierFetch'
 
 definePageMeta({
   tag: 'suppliers',

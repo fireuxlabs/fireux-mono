@@ -1,7 +1,6 @@
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useSupplierRecord } from '../../../supplier/useSupplierRecord'
-import { SUPPLIER_COLLECTION } from '../../../supplier/constants'
+import { useSupplierRecord } from '../../firestore/supplier/fetch/useSupplierRecord'
 import { useRuntimeSupplierSelection } from './state'
 import {
   useRuntimeSupplierContext,
@@ -13,6 +12,7 @@ import {
 } from './read-only-scenarios'
 
 const normalize = (value: unknown) => String(value || '').trim()
+const supplierCollection = 'suppliers'
 export { useRuntimeSupplierSelection } from './state'
 export type { RuntimeSupplierMode } from './state'
 
@@ -27,10 +27,10 @@ export function useRuntimeSupplier(params?: UseRuntimeSupplierParams) {
   const selection = useRuntimeSupplierSelection()
   const { id, mode, isReadOnly } = useRuntimeSupplierContext(params, selection)
   const firestoreSupplierId = computed(() => (isReadOnly.value ? '' : id.value))
-  const documentCollectionPath = computed(() => SUPPLIER_COLLECTION)
+  const documentCollectionPath = computed(() => supplierCollection)
   const supplierCollectionPath = computed(() => {
     const resolvedAppId = normalize(appId)
-    return resolvedAppId ? `apps/${resolvedAppId}/${SUPPLIER_COLLECTION}` : SUPPLIER_COLLECTION
+    return resolvedAppId ? `apps/${resolvedAppId}/${supplierCollection}` : supplierCollection
   })
   const {
     supplier: liveSupplier,

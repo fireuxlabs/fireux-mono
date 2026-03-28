@@ -141,7 +141,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useDevStorageCollection } from 'fireux-core/runtime/composables/dev/useDevStorageCollection'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed, reactive, ref, watch } from 'vue'
-import { useSupplierCollection } from '../../composables/supplier/useSupplierCollection'
+import { useSupplierCollection } from '../../composables/fireux/firestore/supplier/fetch/useSupplierCollection'
 import type { SupplierApp, SupplierCore } from '../../models/supplier/Supplier.model'
 import { SupplierCore as SupplierCoreRuntime } from '../../models/supplier/Supplier.model'
 

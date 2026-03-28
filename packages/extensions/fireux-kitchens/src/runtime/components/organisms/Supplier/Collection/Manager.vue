@@ -62,7 +62,7 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 import {
   type SupplierSurface,
   useSupplierInterface,
-} from 'fireux-suppliers/runtime/composables/supplier/useSupplierInterface'
+} from 'fireux-suppliers/runtime/composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 import { computed } from 'vue'
 
 type SupplierCollectionEntry = SupplierSurface

@@ -61,12 +61,12 @@
 
 <script setup lang="ts">
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-import { computed } from 'vue'
 import {
   useProjectInterface,
   type ProjectInterfaceCard,
   type ProjectInterfaceInput,
-} from '../../../composables/useProjectInterface'
+} from 'fireux-core/runtime/composables/fireux/firestore/system/project/utils/view/useProjectInterface'
+import { computed } from 'vue'
 
 const props = withDefaults(defineProps<{
   collection?: ProjectInterfaceInput[]

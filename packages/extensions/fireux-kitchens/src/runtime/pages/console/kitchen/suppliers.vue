@@ -79,8 +79,8 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useKitchenBuyListSelection } from 'fireux-suppliers/runtime/composables/supplier/view/useKitchenBuyListSelection'
-import { useSupplierCatalogueForKitchen } from 'fireux-suppliers/runtime/composables/supplier/view/useSupplierCatalogueForKitchen'
+import { useKitchenBuyListSelection } from 'fireux-suppliers/runtime/composables/fireux/firestore/supplier/utils/view/useKitchenBuyListSelection'
+import { useSupplierCatalogueForKitchen } from 'fireux-suppliers/runtime/composables/fireux/firestore/supplier/utils/view/useSupplierCatalogueForKitchen'
 import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
 import { useIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
 import SupplierCollectionManager from '../../../components/organisms/Supplier/Collection/Manager.vue'

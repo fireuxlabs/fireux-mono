@@ -35,7 +35,7 @@
               v-if="isAdminUser"
               title="Supplier not available"
               description="Create a supplier record for this user."
-              :button-label="SUPPLIER_CREATE_CTA"
+              :button-label="supplierCreateCta"
               :loading="isCreating"
               :error="createError"
               @create="createSupplier"
@@ -74,9 +74,10 @@ import { navigateTo, useHead, useRoute, useSeoMeta } from '#imports'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, ref } from 'vue'
-import { SUPPLIER_COLLECTION, SUPPLIER_CREATE_CTA } from '../../composables/supplier/constants'
-import { useSupplierEnsure } from '../../composables/supplier/useSupplierEnsure'
+import { useSupplierEnsure } from '../../composables/fireux/firestore/supplier/mutations/useSupplierEnsure'
 
+const supplierCollection = 'suppliers'
+const supplierCreateCta = 'Create your supplier workspace record to appear in listings.'
 useSeoMeta({
   title: 'Supplier',
   description: 'View supplier record',
@@ -90,7 +91,7 @@ const { user, coreUser, appUser } = useUser()
 
 const { firestoreFetchDoc } = useFirestoreRead()
 const rawDoc = docId
-  ? await firestoreFetchDoc(SUPPLIER_COLLECTION, docId)
+  ? await firestoreFetchDoc(supplierCollection, docId)
   : null
 const supplierRecord = computed<any>(() => (rawDoc as any)?.value ?? rawDoc ?? null)
 const loading = computed(() => !rawDoc && !!docId)

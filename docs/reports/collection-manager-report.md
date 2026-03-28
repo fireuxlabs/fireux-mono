@@ -19,7 +19,7 @@ Scan scope:
 - `packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/Collection/Manager.vue`
 - `packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Collection/Manager.vue`
 - `packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Collection/Manager.vue`
-- `packages/extensions/fireux-suppliers/src/runtime/components/organisms/profiles/Supplier/Collection/Manager.vue`
+- `packages/extensions/fireux-suppliers/src/runtime/components/organisms/Supplier/Collection/Manager.vue`
 - `packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Collection/Manager.vue`
 - `packages/extensions/fireux-jobs/src/runtime/components/organisms/profiles/Agent/Collection/Manager.vue`
 - `packages/extensions/fireux-jobs/src/runtime/components/organisms/profiles/Professional/Collection/Manager.vue`

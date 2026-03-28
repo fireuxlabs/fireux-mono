@@ -72,7 +72,7 @@ These are the important console create systems for the current pass.
 Examples:
 - `packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Create/System.vue`
 - `packages/extensions/fireux-properties/src/runtime/components/organisms/Portfolio/Create/System.vue`
-- `packages/extensions/fireux-suppliers/src/runtime/components/console/supplier/Create/System.vue`
+- `packages/extensions/fireux-suppliers/src/runtime/components/organisms/Supplier/Create/System.vue`
 
 Target canon:
 - public create makes the root public entity
