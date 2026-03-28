@@ -1,33 +1,32 @@
 <template>
-  <UDashboardPanel id="console-projects-create">
+  <UDashboardPanel id="console-portfolio-create">
     <template #header>
-      <LayoutsConsoleNavbar title="Create Project" />
+      <LayoutsConsoleNavbar title="Create Portfolio" />
     </template>
 
     <template #body>
-      <ProjectCreateSystem
+      <PortfolioCreateSystem
         mode="console"
-        return-to="/console/projects/overview"
-        cancel-to="/console/projects/overview"
+        return-to="/console/portfolio/overview"
+        cancel-to="/console/portfolio/overview"
       />
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-
 definePageMeta({
   layout: 'console',
   nav: {
-    key: 'console-projects-create',
+    visibility: { modules: ['fireux-properties'] },
+    key: 'console-portfolio-create',
     label: 'Create',
     icon: 'i-lucide-plus',
-    order: 15,
+    order: 5,
     desktop: true,
     mobile: true,
     layouts: ['console'],
   },
   requiresAuth: true,
 })
-
 </script>

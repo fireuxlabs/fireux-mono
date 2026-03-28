@@ -366,8 +366,8 @@ Shared pattern:
 These are the clearest current family for operational console creation pages:
 - `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/create.vue`
 - `packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier/create.vue`
-- `packages/ecosystem/fireux-granite/src/runtime/pages/console/portfolio/create.vue`
-- `projects/fireux/fireux-app/app/pages/console/projects/create.vue`
+- `packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/create.vue`
+- `packages/core/fireux-core/src/runtime/pages/console/projects/create.vue`
 
 Shared pattern:
 - `layout: 'console'`
@@ -461,9 +461,9 @@ Examples:
 - `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/README.md`
 - `packages/extensions/fireux-places/src/runtime/pages/places/README.md`
 - `packages/extensions/fireux-properties/src/runtime/pages/portfolios/README.md`
+- `packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/README.md`
 - `packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/README.md`
 - `packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier/README.md`
-- `packages/ecosystem/fireux-granite/src/runtime/pages/console/portfolio/README.md`
 
 ## Not Aligned Yet
 

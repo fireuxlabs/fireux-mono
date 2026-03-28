@@ -1,0 +1,31 @@
+<template>
+  <UDashboardPanel id="console-projects-create">
+    <template #header>
+      <LayoutsConsoleNavbar title="Create Project" />
+    </template>
+
+    <template #body>
+      <ProjectCreateSystem
+        mode="console"
+        return-to="/console/projects/overview"
+        cancel-to="/console/projects/overview"
+      />
+    </template>
+  </UDashboardPanel>
+</template>
+
+<script setup lang="ts">
+definePageMeta({
+  layout: 'console',
+  nav: {
+    key: 'console-projects-create',
+    label: 'Create',
+    icon: 'i-lucide-plus',
+    order: 15,
+    desktop: true,
+    mobile: true,
+    layouts: ['console'],
+  },
+  requiresAuth: true,
+})
+</script>

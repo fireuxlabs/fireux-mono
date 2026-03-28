@@ -4,9 +4,9 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import { resolveConsoleTestRuntimeId } from 'fireux-core/runtime/composables/fireux/app/ui/console-entry-routing'
-import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
-import { useRuntimeProjectSelection } from 'fireux-core/runtime/composables/fireux/app/runtime-project/state'
+import { resolveConsoleTestRuntimeId } from '../../../composables/fireux/app/ui/console-entry-routing'
+import { useConsoleEntryState } from '../../../composables/fireux/app/ui/useConsoleEntryState'
+import { useRuntimeProjectSelection } from '../../../composables/fireux/app/runtime-project/state'
 
 definePageMeta({
   layout: 'console',

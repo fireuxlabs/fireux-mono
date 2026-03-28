@@ -1,7 +1,7 @@
 # Console Kitchen Pages
 
 Authority: Operational
-Updated: 2026-03-25
+Updated: 2026-03-28
 Scope: `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/*`.
 
 This folder owns the kitchen console workspace.
@@ -34,7 +34,7 @@ Kitchen-specific delta:
 - `index.vue` and `/kitchens` intentionally share the same chooser component
 - console create ensures `apps/<appId>/kitchens/<kitchenId>`
 - console create creates the public kitchen first when missing
-- console create seeds console authority and links the kitchen to the chef profile
+- console create seeds user-based console authority and may also link the kitchen to the Chef profile as a prerequisite/relationship side effect
 - operational records live under `apps/<appId>/kitchens/<kitchenId>/...`
 
 Kitchen is currently the reference implementation of the shared console-entry pattern.

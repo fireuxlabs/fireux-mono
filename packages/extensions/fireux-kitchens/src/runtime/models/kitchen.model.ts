@@ -1,6 +1,6 @@
 // FILE: packages/extensions/fireux-kitchens/src/runtime/models/kitchen.model.ts
 
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import { FireuxConsoleOverlay, type FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { Place } from 'fireux-places/runtime/models/place.model'
 
@@ -16,6 +16,7 @@ import type { Place } from 'fireux-places/runtime/models/place.model'
  * Decision note:
  * - Kitchen is one domain entity with a root public entity and an app-hosted kitchen console overlay.
  * - The root record stays thin and canonical; the overlay carries governance and private operational state.
+ * - Console authority stays user-based in the overlay; Chef is a family-specific prerequisite or presentation layer, not the ownership model.
  * - Kitchen-owned operational children should live beneath the app-hosted overlay.
  * - If that rule changes later, update the models README first, then this file.
  */
@@ -45,25 +46,7 @@ export type KitchenCore = {
 
 /** App overlay (hosted console/private): apps/<appId>/kitchens/<placeId> */
 export const KitchenApp = {
-  id: '' as string,
-
-  // Governance (private)
-  admin_ids: [] as string[],
-  join_requests: [] as string[],
-
-  // Console / ops (private)
-  console_enabled: true as boolean,
-
-  // Stamps
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-    app_id: undefined as FireuxStamped['created']['app_id'],
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
-  },
+  ...FireuxConsoleOverlay,
 } as const
 
 export type KitchenApp = {

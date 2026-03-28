@@ -74,6 +74,33 @@ Examples:
 
 This is the current console canon.
 
+### Console Ownership And Operator Profiles
+
+For console-backed domains, the stored console ownership pattern is shared:
+
+- the app-hosted overlay is the console record
+- console authority is user-based through:
+  - `admin_ids`
+  - `join_requests`
+  - `console_enabled`
+
+Optional family-specific operator profiles do not replace that overlay pattern.
+
+Examples:
+- `Kitchen` may require or prefer `Chef` for live operation and presentation
+- `Project` may later add a `ProjectLeader`-style profile
+- `Portfolio` or `Supplier` may later add role-specific operator profiles
+
+Current rule:
+- operator profiles are prerequisites, enrichment, or presentation layers
+- operator profiles are not the primary stored ownership model for the console overlay
+
+Root ownership hints may still exist where useful:
+- `Project.owner_user_id`
+- domain claim fields such as `Place.claimed_by`
+
+Those do not replace app-hosted overlay authority.
+
 ### System
 
 What makes FireUX run.
@@ -201,6 +228,7 @@ Each file should point back to this README so future changes can be made in one 
 - the repo already supports `User` and `Kitchen` as root plus overlay patterns
 - the repo already supports `App`, `Ecosystem`, and `Module` as root models that may have console facades
 - console canon now treats `Kitchen`, `Portfolio`, `Supplier`, and `Project` as root plus overlay entities
+- console canon now also treats those overlays as user-owned by default, with optional family-specific operator profile prerequisites on top
 
 ## Not Aligned Yet
 

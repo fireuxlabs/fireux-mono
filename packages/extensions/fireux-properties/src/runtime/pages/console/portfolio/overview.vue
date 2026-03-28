@@ -61,8 +61,8 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import { useRuntimePortfolioConsole } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolioConsole'
 import { computed } from 'vue'
+import { useRuntimePortfolioConsole } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolioConsole'
 
 definePageMeta({
   layout: 'console',

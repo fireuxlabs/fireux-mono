@@ -1,6 +1,6 @@
 # fireux-kitchens Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-03-25
+Updated: 2026-03-28
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -20,7 +20,8 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 3) Identity rule
 - Live kitchen identity is place-backed and id-based; console runtime selection is state-based.
 - Chef association (`chef.kitchen_ids`) and workplace/profile links are relationship signals only.
-- Kitchen console authority comes from console governance (`admin_ids`, `console_enabled`) or allowed canonical claim rules, not from profile association alone.
+- Kitchen console authority comes from user-based console governance (`admin_ids`, `console_enabled`) or allowed canonical claim rules, not from profile association alone.
+- `Chef` is currently a live-operation prerequisite and presentation layer, not a separate stored console ownership model.
 
 ## 4) Collections + paths
 - Live: `kitchens/{kitchenId}`

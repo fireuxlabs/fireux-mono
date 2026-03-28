@@ -4,11 +4,11 @@
 
 <script setup lang="ts">
 import { navigateTo, useRoute } from '#imports'
-import { useRuntimeProjectSelection } from 'fireux-core/runtime/composables/fireux/app/runtime-project/state'
+import { useRuntimeProjectSelection } from '../../../../composables/fireux/app/runtime-project/state'
 import {
   getReadOnlyProjectScenario,
   getReadOnlyProjectScenarioList,
-} from 'fireux-core/runtime/composables/fireux/app/runtime-project/read-only-scenarios/index'
+} from '../../../../composables/fireux/app/runtime-project/read-only-scenarios/index'
 
 definePageMeta({
   layout: 'console',

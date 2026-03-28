@@ -4,8 +4,8 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import { useRuntimePortfolioSelection } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/state'
-import { getReadOnlyPortfolioScenarioList } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/read-only-scenarios'
+import { useRuntimePortfolioSelection } from '../../../../composables/fireux/app/portfolio-runtime/state'
+import { getReadOnlyPortfolioScenarioList } from '../../../../composables/fireux/app/portfolio-runtime/read-only-scenarios'
 
 definePageMeta({
   layout: 'console',

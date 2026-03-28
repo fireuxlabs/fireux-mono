@@ -39,6 +39,34 @@ export interface FireuxStamps {
 export type FireuxStamped = FireuxStamps
 
 /**
+ * Canonical app-hosted console overlay support shape.
+ *
+ * Ownership and authority rule:
+ * - console authority is user-based through `admin_ids`, `join_requests`, and `console_enabled`
+ * - operator profiles such as Chef are optional family-specific prerequisites or presentation layers
+ * - operator profiles do not replace user-based console ownership in the stored overlay shape
+ */
+export const FireuxConsoleOverlay = {
+  id: '' as string,
+  admin_ids: [] as string[],
+  join_requests: [] as string[],
+  console_enabled: true as boolean,
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['updated']['by'],
+  },
+} as const
+
+export type FireuxConsoleOverlay = {
+  [K in keyof typeof FireuxConsoleOverlay]: (typeof FireuxConsoleOverlay)[K]
+}
+
+/**
  * Legacy flat stamp shape still present in stored data during migration.
  * Keep for migration tooling / transitional readers only.
  */

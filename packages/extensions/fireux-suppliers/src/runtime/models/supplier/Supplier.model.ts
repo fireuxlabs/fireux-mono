@@ -1,6 +1,6 @@
 // FILE: packages/extensions/fireux-suppliers/src/runtime/models/supplier/Supplier.model.ts
 
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model';
+import { FireuxConsoleOverlay, type FireuxStamped } from 'fireux-core/runtime/models/core/meta.model';
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase';
 
 /**
@@ -15,6 +15,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase';
  * Decision note:
  * - Supplier is treated as a domain entity with a root public entity and an app-hosted supplier console, not as a user profile.
  * - The path should read as supplier identity rather than user identity, even while some profile-era content fields remain during simplification.
+ * - Console authority stays user-based in the overlay; any future supplier operator profile should remain a prerequisite or presentation layer, not a second ownership model.
  * - Supplier operational state belongs to the app-hosted supplier console overlay.
  * - Supplier-owned child records, if they become real, should live beneath that overlay.
  * - Keep the current storage shape for now and simplify the profile-era field set later in a focused pass.
@@ -67,25 +68,7 @@ export type SupplierCore = {
 }
 
 export const SupplierApp = {
-  id: '' as string,
-
-  // Governance (private)
-  admin_ids: [] as string[],
-  join_requests: [] as string[],
-
-  // Console / ops (private)
-  console_enabled: true as boolean,
-
-  // Stamps
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-    app_id: undefined as FireuxStamped['created']['app_id'],
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
-  },
+  ...FireuxConsoleOverlay,
 } as const
 
 export type SupplierApp = {

@@ -1,5 +1,5 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
-import type { FireuxStamped } from '../core/meta.model'
+import { FireuxConsoleOverlay, type FireuxStamped } from '../core/meta.model'
 
 export type ProjectStatus = 'draft' | 'active' | 'paused' | 'archived'
 export type ProjectType = 'standalone_app' | 'ecosystem_app'
@@ -17,6 +17,7 @@ export type ProjectType = 'standalone_app' | 'ecosystem_app'
  * - Project now follows the shared console-backed canon used by Kitchen, Portfolio, and Supplier.
  * - Public project creation should create the root project record.
  * - Console project creation should ensure the app-scoped project overlay and may create root first when missing.
+ * - Console authority stays user-based in the overlay; `owner_user_id` is a canonical root ownership hint, not a replacement for overlay admin authority.
  * - If Project later grows operational child records, they should live under /apps/<appId>/projects/<projectId>/...
  * - Project still remains a system-console special case because endpoint enrichment and system metadata are central to its runtime.
  * - If this decision changes, update the models README first, then this file.
@@ -56,19 +57,7 @@ export type ProjectCore = {
 }
 
 export const ProjectApp = {
-  id: '',
-  admin_ids: [] as string[],
-  join_requests: [] as string[],
-  console_enabled: true as boolean,
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-    app_id: undefined as FireuxStamped['created']['app_id'],
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
-  },
+  ...FireuxConsoleOverlay,
 } as const
 
 export type ProjectApp = {

@@ -1,6 +1,6 @@
 // FILE: packages/extensions/fireux-properties/src/runtime/models/portfolio.model.ts
 
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import { FireuxConsoleOverlay, type FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -15,6 +15,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Decision note:
  * - Portfolio is one domain entity with a root public entity and an app-hosted portfolio console overlay.
  * - The overlay exists because real governance and console state can differ by app.
+ * - Console authority stays user-based in the overlay; if a future operator profile appears, it should remain a prerequisite or presentation layer over the same overlay pattern.
  * - Portfolio-owned operational children should live beneath the app-hosted overlay.
  * - If that changes later, update the models README first, then this file.
  */
@@ -44,19 +45,7 @@ export type PortfolioCore = {
 }
 
 export const PortfolioApp = {
-  id: '',
-  admin_ids: [] as string[],
-  join_requests: [] as string[],
-  console_enabled: true as boolean,
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-    app_id: undefined as FireuxStamped['created']['app_id'],
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
-  },
+  ...FireuxConsoleOverlay,
 } as const
 
 export type PortfolioApp = {
