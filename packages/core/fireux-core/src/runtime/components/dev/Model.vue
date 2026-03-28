@@ -34,11 +34,12 @@ type ShapeNode = {
 
 const props = withDefaults(
   defineProps<{
-    model: Record<string, unknown>
+    model?: Record<string, unknown>
     title?: string
   }>(),
   {
     title: 'Model shape',
+    model: () => ({}),
   }
 )
 
@@ -63,9 +64,9 @@ const toType = (key: string, value: unknown): string => {
   return typeof value
 }
 
-const buildNodes = (model: Record<string, unknown>): ShapeNode[] =>
-  Object.keys(model).map((key) => {
-    const value = model[key]
+const buildNodes = (model?: Record<string, unknown>): ShapeNode[] =>
+  Object.keys(model ?? {}).map((key) => {
+    const value = (model ?? {})[key]
     const type = toType(key, value)
     const children = isPlainObject(value) && Object.keys(value).length
       ? buildNodes(value)

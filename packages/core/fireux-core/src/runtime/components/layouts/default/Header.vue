@@ -34,7 +34,7 @@
         >
           <!-- Signed out => Sign in -->
           <UButton
-            v-if="!isAuthenticated"
+            v-if="authPhase === 'guest'"
             to="/auth"
             size="sm"
             color="primary"
@@ -46,15 +46,25 @@
 
           <!-- Signed in => dashboard -->
           <UButton
-            v-else
+            v-else-if="isSignedIn"
             to="/dashboard"
             variant="ghost"
             color="neutral"
             aria-label="Go to dashboard"
             data-fireux-header-avatar
           >
-            <UAvatar :src="headerAvatarSrc" text="A" size="sm" />
+            <UAvatar
+              :src="headerAvatarSrc"
+              :alt="headerAvatarName || 'User avatar'"
+              :text="headerAvatarText"
+              size="sm"
+            />
           </UButton>
+
+          <USkeleton
+            v-else
+            class="h-8 w-8 rounded-full"
+          />
         </div>
       </template>
 
@@ -73,6 +83,7 @@
 <script setup lang="ts">
 import { computed } from '#imports'
 import { useRoute } from 'vue-router'
+import { useConsoleEntryState } from '../../../composables/fireux/app/ui/useConsoleEntryState'
 import { useNav } from '../../../composables/fireux/app/ui/nav/useNav'
 import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
@@ -97,15 +108,36 @@ const mobileItems = computed(() =>
 )
 
 /** Auth */
-const { isAuthenticated, currentUser: authUser } = useAuth()
-const { avatarSrc } = useUser()
+const { authPhase, isSignedIn } = useConsoleEntryState()
+const { currentUser, avatarSrc } = useUser()
+const { currentUser: authUser } = useAuth()
 const { getProxiedAvatarUrl } = useAvatarProxy()
+const headerAvatarName = computed(() =>
+  String(
+    currentUser.value?.display_name ||
+    authUser.value?.displayName ||
+    ''
+  ).trim()
+)
+const headerAvatarText = computed(() => {
+  const name = headerAvatarName.value
+  if (!name) return 'U'
+
+  const parts = name.split(/\s+/).filter(Boolean)
+  if (!parts.length) return 'U'
+
+  if (parts.length === 1) {
+    return parts[0].slice(0, 2).toUpperCase()
+  }
+
+  return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase() || 'U'
+})
 const headerAvatarSrc = computed(() => {
   const authAvatar = typeof authUser.value?.photoURL === 'string'
     ? authUser.value.photoURL.trim()
     : ''
-  const resolved = authAvatar || avatarSrc.value || ''
-  const proxied = getProxiedAvatarUrl(resolved || undefined)
+  const resolved = avatarSrc.value || ''
+  const proxied = getProxiedAvatarUrl(resolved || authAvatar || undefined)
   return proxied || undefined
 })
 

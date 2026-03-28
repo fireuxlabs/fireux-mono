@@ -8,6 +8,12 @@ export function useAvatarProxy() {
   function getProxiedAvatarUrl(avatarUrl: string | null | undefined): string {
     if (!avatarUrl) return ''
     if (
+      avatarUrl.includes('firebasestorage.googleapis.com') ||
+      avatarUrl.includes('storage.googleapis.com')
+    ) {
+      return avatarUrl
+    }
+    if (
       avatarUrl.includes('googleusercontent.com') ||
       avatarUrl.includes('google.com/') ||
       avatarUrl.includes('googleapis.com') ||

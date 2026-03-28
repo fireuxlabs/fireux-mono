@@ -20,6 +20,44 @@
         :model="userModelRuntime"
       />
 
+      <UCard v-if="signedInUserPreview || signedInUserSummary" variant="subtle">
+        <template #header>
+          <div class="text-sm font-semibold">
+            Current user
+          </div>
+        </template>
+
+        <div class="space-y-4">
+          <UserCardsPreview
+            v-if="signedInUserPreview"
+            v-bind="signedInUserPreview"
+          />
+
+          <div
+            v-if="signedInUserSummary"
+            class="space-y-1 text-xs text-dimmed"
+          >
+            <div>
+              UID: <span class="font-mono">{{ signedInUserSummary.id }}</span>
+            </div>
+            <div v-if="signedInUserSummary.email">
+              Email: <span class="font-mono">{{ signedInUserSummary.email }}</span>
+            </div>
+            <div v-if="signedInUserSummary.handle">
+              Handle: <span class="font-mono">{{ signedInUserSummary.handle }}</span>
+            </div>
+          </div>
+
+          <DevJson
+            v-if="signedInUserJson"
+            :title="'Current user (JSON)'"
+            :context="'dev users · signed-in user · resolved user payload'"
+            :data="signedInUserJson"
+            :default-open="false"
+          />
+        </div>
+      </UCard>
+
       <UAlert
         v-if="usersErrorMessage"
         color="warning"
@@ -59,8 +97,11 @@
 import { definePageMeta } from '#imports'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
+import { useAvatarProxy } from '../../composables/fireux/app/ui/useAvatarProxy'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useUserCollection'
+import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 import { CoreUserModel } from '../../models/core/user.model'
 
 definePageMeta({
@@ -81,6 +122,10 @@ definePageMeta({
 const { users, error: usersError } = useUserCollection()
 
 const { isTenant } = useFireUXConfig()
+const userModelRuntime = CoreUserModel
+const { currentUser: authUser } = useAuth()
+const { currentUser, avatarSrc, preview } = useUser()
+const { getProxiedAvatarUrl } = useAvatarProxy()
 
 const userCollection = computed(() => users.value ?? [])
 const usersErrorMessage = computed(() => {
@@ -122,6 +167,44 @@ const usersDriftCopyPayload = computed(() => ({
   totalUsers: filteredUsers.value.length,
   users: filteredUsersDriftPayload.value,
 }))
+
+const signedInUserSummary = computed(() => {
+  const id = String(currentUser.value?.id || authUser.value?.uid || '').trim()
+  if (!id) return null
+
+  const displayName = String(
+    currentUser.value?.display_name || authUser.value?.displayName || ''
+  ).trim()
+  const parts = displayName.split(/\s+/).filter(Boolean)
+  const initials = parts.length > 1
+    ? `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase() || 'U'
+    : (parts[0]?.slice(0, 2).toUpperCase() || 'U')
+
+  return {
+    id,
+    displayName,
+    handle: String(currentUser.value?.handle || '').trim(),
+    email: String(currentUser.value?.email || authUser.value?.email || '').trim(),
+    avatarUrl: getProxiedAvatarUrl(
+      String(avatarSrc.value || authUser.value?.photoURL || '').trim() || undefined
+    ),
+    initials,
+  }
+})
+
+const signedInUserPreview = computed(() => preview(currentUser.value))
+
+const signedInUserJson = computed(() => {
+  if (currentUser.value) return currentUser.value
+  if (!authUser.value?.uid) return null
+
+  return {
+    id: authUser.value.uid,
+    display_name: authUser.value.displayName || '',
+    email: authUser.value.email || '',
+    avatar: authUser.value.photoURL || '',
+  }
+})
 
 const updateUsersSelectedField = (value: string) => {
   usersSelectedField.value = value
