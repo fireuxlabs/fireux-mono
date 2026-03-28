@@ -1,6 +1,6 @@
 # Alignment Notes - useInterface composables
 Authority: Tier3 automation context (Non-authoritative)
-Updated: 2026-03-25
+Updated: 2026-03-28
 Audience: Implementation context for Codex agents.
 
 ## Scope
