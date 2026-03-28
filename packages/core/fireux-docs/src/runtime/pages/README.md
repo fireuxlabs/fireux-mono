@@ -1,7 +1,7 @@
 # Pages Directory
 
 Authority: Operational
-Updated: 2026-03-25
+Updated: 2026-03-28
 Scope: `packages/*/fireux-*/src/runtime/pages` and child directories under `pages/*`.
 
 Learn how FireUX runtime pages are grouped, which create surfaces matter first, and which entity buckets are still being deferred.
@@ -169,6 +169,16 @@ Console-backed families should be read in this order:
   - console create
 
 Kitchen is currently the clearest proof of this pattern.
+
+Console visibility is now app-config driven:
+- each app declares visible families with `consoleFamilies`
+- `/console` should only show those declared families
+- route registration alone is not the visibility contract
+
+Main console page ownership is now read like this:
+- `Project` main console pages are core-owned
+- `Kitchen`, `Portfolio`, and `Supplier` main console pages are domain-owned
+- app and ecosystem packages may still own child pages when those are delivery-specific
 
 ## Three Truths Of Console-backed Domains
 

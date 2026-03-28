@@ -25,6 +25,7 @@ This README only explains the kitchen-console delta.
 ## Local Contract
 
 - this folder is operational, not public
+- apps must opt into kitchen visibility through `consoleFamilies`
 - `index.vue` is the family-specific chooser in console shell
 - `create.vue` is the kitchen console create page
 - the rest of the routes are kitchen-owned operational delivery

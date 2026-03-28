@@ -7,6 +7,7 @@ const fireuxConfig = defineFireuxConfig({
   name: 'Niederhorn',
   shortName: 'Niederhorn',
   role: 'tenant',
+  consoleFamilies: ['kitchen'],
   modules: [
     'fireux-kitchens',
   ],

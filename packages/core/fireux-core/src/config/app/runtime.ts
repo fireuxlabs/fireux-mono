@@ -18,6 +18,7 @@ export type RuntimeApp = {
   role: 'global' | 'tenant'
   ecosystem: string
   modules: readonly string[]
+  consoleFamilies?: readonly string[]
 }
 
 export type RuntimeFirebaseEcosystem = {

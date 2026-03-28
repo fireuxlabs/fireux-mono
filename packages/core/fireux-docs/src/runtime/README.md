@@ -86,6 +86,8 @@ Current examples:
 Recent repo truth:
 - runtime drift inspection now uses a dev-only server seam for collection snapshotting
 - collection managers remain component-owned, but direct subcollection discovery is now a runtime server concern
+- console family visibility is now an app-config concern through `consoleFamilies`
+- main console page ownership is now explicit: system consoles in core, domain consoles in their domain package
 
 ## utils Directory
 

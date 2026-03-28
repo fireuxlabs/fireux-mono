@@ -7,6 +7,7 @@ const fireuxConfig = defineFireuxConfig({
   name: 'Richies',
   shortName: 'Richies',
   role: 'tenant',
+  consoleFamilies: [],
   modules: [
     // tenant stays lean
   ],

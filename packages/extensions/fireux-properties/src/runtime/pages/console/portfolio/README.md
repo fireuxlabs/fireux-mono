@@ -26,6 +26,7 @@ This README only explains the portfolio-console delta.
 
 - this folder is operational, not public
 - `Portfolio` owns the console route family because it is the portfolio domain runtime anchor
+- apps must opt into portfolio visibility through `consoleFamilies`
 - `index.vue` is the family-specific chooser in console shell
 - `create.vue` belongs to the console create family
 - `overview.vue` is workspace delivery

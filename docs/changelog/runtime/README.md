@@ -8,6 +8,29 @@ Use this together with:
 - `packages/core/fireux-docs/src/runtime/README.md`
 - sibling runtime branch READMEs under `packages/core/fireux-docs/src/runtime/*/README.md`
 
+## 2026-03-28 - Console entry visibility and ownership became explicit
+
+Previous:
+- `/console` visibility could drift from real app intent because it was influenced by shared route presence
+- main console page ownership for `Project` and `Portfolio` was split across app, ecosystem, and domain layers
+
+Now:
+- apps declare visible console families through `consoleFamilies`
+- the shared `/console` hub uses app config instead of route discovery as the visibility contract
+- `Project` main console pages are core-owned
+- `Portfolio` main console pages are extension-owned with Granite acting as delivery shell
+
+Why:
+- keep app-level console exposure intentional
+- stop cross-app console leakage when shared routes exist
+- make main console page ownership match the entity ownership model
+
+Affected:
+- app runtime config
+- shared console-entry composables
+- runtime pages docs
+- project and portfolio console page ownership
+
 ## 2026-03-28 - Collection-manager dev JSON became a shared runtime inspection seam
 
 Previous:

@@ -7,6 +7,7 @@ const fireuxConfig = defineFireuxConfig({
   name: 'FireUX Tenant',
   shortName: 'Tenant',
   role: 'tenant',
+  consoleFamilies: [],
   modules: [],
 })
 

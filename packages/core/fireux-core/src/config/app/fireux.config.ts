@@ -31,6 +31,7 @@ export type FireuxAppConfig = {
   contactEmail?: string
   role: 'global' | 'tenant'
   modules?: NonNullable<NuxtConfig['modules']>
+  consoleFamilies?: string[]
   seo?: FireuxSeoConfig
 }
 
@@ -209,6 +210,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       role: app.role,
       ecosystem: app.ecosystem,
       modules: moduleNames,
+      ...(app.consoleFamilies ? { consoleFamilies: app.consoleFamilies } : {}),
     },
 
     firebaseApp: {

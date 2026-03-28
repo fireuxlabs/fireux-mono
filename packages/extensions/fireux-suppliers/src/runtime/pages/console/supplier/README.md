@@ -18,6 +18,7 @@ This README only explains the supplier-console delta.
 ## Local Contract
 
 - this folder is operational, not public
+- apps must opt into supplier visibility through `consoleFamilies`
 - `index.vue` is the family-specific chooser in console shell
 - `create.vue` belongs to the console create family
 - `overview.vue` is supplier workspace delivery

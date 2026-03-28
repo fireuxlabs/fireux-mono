@@ -9,12 +9,6 @@ export const configureRuntimeConfig = (nuxt: Nuxt) => {
 
   const graniteDefaults = {
     enabled: true,
-    console: {
-      runtimeAnchor: 'portfolio',
-      defaultMode: 'live',
-      allowedModes: ['live', 'read-only'],
-      selectorRoute: '/console/portfolio/overview',
-    },
     branding: {
       label: 'Granite',
       tagline: 'Rock Solid OS for portfolio landlords',

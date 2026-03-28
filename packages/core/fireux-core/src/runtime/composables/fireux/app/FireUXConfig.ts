@@ -12,6 +12,7 @@ export interface FireUXConfig {
   appShortName: string
   siteUrl?: string
   modules: string[]
+  consoleFamilies: string[]
 
   appThumbnail?: string
   appLogo?: string
@@ -89,6 +90,7 @@ function buildConfig(): Readonly<FireUXConfig> {
     siteUrl: optString(fireux, 'siteUrl'),
 
     modules: toStringArray(fireux.modules),
+    consoleFamilies: toStringArray(fireux.consoleFamilies),
 
     appThumbnail: optString(fireux, 'appThumbnail'),
     appLogo: optString(fireux, 'appLogo'),

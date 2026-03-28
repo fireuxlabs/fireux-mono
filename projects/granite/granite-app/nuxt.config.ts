@@ -7,6 +7,7 @@ const fireuxConfig = defineFireuxConfig({
   name: 'Granite',
   shortName: 'Granite',
   role: 'global',
+  consoleFamilies: ['portfolio'],
   modules: [
     'fireux-properties',
     'fireux-compliance',

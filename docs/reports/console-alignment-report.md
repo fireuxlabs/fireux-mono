@@ -1,7 +1,7 @@
 # Console Alignment Report
 
 Authority: working canon review
-Updated: 2026-03-15
+Updated: 2026-03-28
 
 ## Purpose
 
@@ -50,7 +50,7 @@ These files define the common console system used across scopes:
 - Core console shell: `packages/core/fireux-core/src/runtime/layouts/console.vue`
 - Core console root route: `packages/core/fireux-core/src/runtime/pages/console/index.vue`
 - Console navbar: `packages/core/fireux-core/src/runtime/components/layouts/console/Navbar.vue`
-- Console route discovery: `packages/core/fireux-core/src/runtime/composables/fireux/app/routing/consoleRoutes.ts`
+- Console family helper: `packages/core/fireux-core/src/runtime/composables/fireux/app/routing/consoleRoutes.ts`
 - Console nav helper: `packages/core/fireux-core/src/runtime/composables/fireux/app/routing/useConsoleNav.ts`
 - Shared config baseline: `packages/core/fireux-core/src/config/app/fireux.config.ts`
 
@@ -69,7 +69,7 @@ Project override:
 
 Status:
 - Aligned in behavior.
-- Shared shell and discovery model are consistent.
+- Shared shell and app-config-driven visibility model are consistent.
 
 ### 2. Scope Entry Routes
 
@@ -79,7 +79,7 @@ Purpose:
 - Redirect to `create` when no runtime exists.
 
 Project scope:
-- `projects/fireux/fireux-app/app/pages/console/projects/index.vue`
+- `packages/core/fireux-core/src/runtime/pages/console/projects/index.vue`
 
 Kitchen scope canon:
 - `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/index.vue`
@@ -92,18 +92,18 @@ Kitchen scope tenant override:
 - `projects/misebox/la-tap-berne/app/pages/console/kitchen/index.vue`
 
 Portfolio scope:
-- `packages/ecosystem/fireux-granite/src/runtime/pages/console/portfolio/index.vue`
+- `packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/index.vue`
 
 Supplier scope:
 - `packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier/index.vue`
 
 Status:
 - Same responsibility across all scopes.
-- Not fully consolidated in implementation.
+- Main page ownership is now consolidated by entity owner layer.
 
 Important drift:
-- Kitchen scope now uses reactive loading and avoids the old timeout-based false-empty pattern.
-- Project, portfolio, and supplier entry routes still use timeout-style waiting.
+- Kitchen scope still has tenant/app wrappers that can drift from the extension-owned canon.
+- Supplier runtime state is still less normalized than project, kitchen, and portfolio.
 
 ### 3. Scope Overview Routes
 
@@ -113,7 +113,7 @@ Purpose:
 - Show scope-specific operational summary.
 
 Project scope:
-- `projects/fireux/fireux-app/app/pages/console/projects/overview.vue`
+- `packages/core/fireux-core/src/runtime/pages/console/projects/overview.vue`
 
 Kitchen scope canon:
 - `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/overview.vue`
@@ -126,7 +126,7 @@ Kitchen scope tenant override:
 - `projects/misebox/la-tap-berne/app/pages/console/kitchen/overview.vue`
 
 Portfolio scope:
-- `packages/ecosystem/fireux-granite/src/runtime/pages/console/portfolio/overview.vue`
+- `packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/overview.vue`
 
 Supplier scope:
 - `packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier/overview.vue`
@@ -146,13 +146,13 @@ Purpose:
 - Provide creation flow when no runtime exists.
 
 Project scope:
-- `projects/fireux/fireux-app/app/pages/console/projects/create.vue`
+- `packages/core/fireux-core/src/runtime/pages/console/projects/create.vue`
 
 Kitchen scope:
 - `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/create.vue`
 
 Portfolio scope:
-- `packages/ecosystem/fireux-granite/src/runtime/pages/console/portfolio/create.vue`
+- `packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/create.vue`
 
 Supplier scope:
 - `packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier/create.vue`
@@ -198,25 +198,27 @@ Why it matters:
 - Fixes must be repeated in four places.
 - This is the clearest consolidation target.
 
-2. Entry-flow mechanics differ by scope
-
-Files:
-- `projects/fireux/fireux-app/app/pages/console/projects/index.vue`
-- `packages/ecosystem/fireux-granite/src/runtime/pages/console/portfolio/index.vue`
-- `packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier/index.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/index.vue`
-
-Why it matters:
-- These four files do the same job.
-- Kitchen has the strongest current implementation.
-- Project, portfolio, and supplier still use older timeout-style mechanics.
-
-3. Supplier runtime is less normalized than other scope runtimes
+2. Supplier runtime is less normalized than other scope runtimes
 
 Files:
 - `packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier/index.vue`
 - `packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier/overview.vue`
 - `packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/useSupplier.ts`
+
+Why it matters:
+- Supplier remains the least normalized console runtime stack.
+- It still carries more family-specific runtime behavior than the other consoleable entities.
+
+3. Console visibility is now config-driven and must stay documented that way
+
+Files:
+- `packages/core/fireux-core/src/config/app/fireux.config.ts`
+- `packages/core/fireux-core/src/runtime/composables/fireux/app/routing/useConsoleEntryCta.ts`
+- app `nuxt.config.ts` files
+
+Why it matters:
+- Route presence alone no longer decides which console families are visible.
+- Apps must declare their visible console families explicitly.
 
 Why it matters:
 - Supplier behaves like a console scope, but the state/runtime resolution pattern is thinner and less parallel to project/kitchen/portfolio.

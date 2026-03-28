@@ -4,6 +4,28 @@ Updated: 2026-03-28
 
 Tracks meaningful changes in app-level delivery, app surface ownership, and app-facing flow changes.
 
+## 2026-03-28 - App console visibility moved to app config
+
+Previous:
+- app console hubs could show families because shared routes existed, even when that app should not expose them
+
+Now:
+- apps declare visible console families through `consoleFamilies` in `nuxt.config.ts`
+- examples:
+  - FireUX app -> `projects`
+  - Misebox app -> `kitchen`, `supplier`
+  - Granite app -> `portfolio`
+  - apps like `fireux-tenant` and `cleanbox-app` can declare no visible console families
+
+Why:
+- make console exposure intentional per app
+- stop shared route registration from acting like app policy
+- keep tenant and global apps honest about what they actually manage
+
+Affected:
+- app `nuxt.config.ts` files
+- shared console entry CTA behavior
+
 ## 2026-03-11 - Project console create flow aligned
 
 Previous:

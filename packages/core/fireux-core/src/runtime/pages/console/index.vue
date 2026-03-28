@@ -36,19 +36,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
 import {
-  discoverConsoleChildren,
   toConsoleScopeLabel,
 } from '../../composables/fireux/app/routing/consoleRoutes'
+import { useConsoleEntryCta } from '../../composables/fireux/app/routing/useConsoleEntryCta'
 
 definePageMeta({
   layout: 'console',
   consoleEntry: true,
 })
 
-const router = useRouter()
-const consoleChildren = computed(() => discoverConsoleChildren(router.getRoutes()))
-const hubCount = computed(() => consoleChildren.value.length)
+const { consoleChildren, hasConsoleChildren } = useConsoleEntryCta()
+const hubCount = hasConsoleChildren
 </script>

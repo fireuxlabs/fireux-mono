@@ -7,6 +7,7 @@ const fireuxConfig = defineFireuxConfig({
   name: 'Cleanbox',
   shortName: 'Cleanbox',
   role: 'global',
+  consoleFamilies: [],
   modules: ['fireux-jobs', 'fireux-products', 'fireux-blogs'],
 })
 

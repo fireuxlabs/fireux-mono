@@ -22,6 +22,7 @@ This README only explains the project-console delta.
 
 - this folder is operational, not public
 - `Project` is a system console, so the main console route family is core-owned
+- apps must opt into project visibility through `consoleFamilies`
 - `index.vue` is the family-specific chooser in console shell
 - `create.vue` belongs to the console create family
 - `overview.vue` is the system project workspace entry

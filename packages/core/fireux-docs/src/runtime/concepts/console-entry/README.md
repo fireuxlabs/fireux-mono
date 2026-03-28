@@ -1,7 +1,7 @@
 # Console Entry Concept
 
 Authority: Operational
-Updated: 2026-03-25
+Updated: 2026-03-28
 Scope: console-backed entry flow across `pages/`, `components/`, `composables/`, and `models`.
 
 Learn how FireUX console-backed families are entered, where family choice happens, and how public entry differs from console entry.
@@ -29,12 +29,18 @@ This is the app-level console hub.
 Meaning:
 - choose which console-backed family to enter
 - do not choose a specific entity instance yet
+- only show the families the current app explicitly exposes
 
 Examples:
 - `Kitchen`
 - `Portfolio`
 - `Supplier`
 - `Project`
+
+Visibility source of truth:
+- app config declares visible families through `consoleFamilies`
+- `/console` does not infer visible families by scanning every registered console route
+- an app with `consoleFamilies: []` should not expose console entry at all
 
 ### 2) Choose Instance Or Mode
 
@@ -106,6 +112,16 @@ The canonical shape is:
 - `/X` = public discovery plus the same chooser when useful
 - `/X/create` = public facade create
 - `/console/X/create` = console create
+
+The canonical visibility rule is:
+- app config decides whether `/console` exists as a user-facing entry
+- app config decides which families appear there
+- route presence alone does not make a family visible in a given app
+
+The canonical ownership rule is:
+- system console main pages live in core
+- domain console main pages live with their domain package
+- app and ecosystem packages may still own branded child pages or delivery wrappers when needed
 
 ## Kitchen As Reference Variant
 
