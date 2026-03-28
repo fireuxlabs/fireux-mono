@@ -63,6 +63,12 @@ run_preflight_clean() {
 cleanup_git_refs() {
   local current_branch="$1"
   local cleaned_any=false
+  local repo_name
+  local worktree_path=""
+  local worktree_branch=""
+  local codex_worktree_prefix="$HOME/.codex/worktrees/"
+
+  repo_name="$(basename "$(pwd)")"
 
   if git remote | grep -qx 'origin'; then
     echo "[gitsave] Pruning stale origin refs..."
@@ -86,6 +92,26 @@ cleanup_git_refs() {
   fi
 
   if [[ "$current_branch" != "main" ]]; then
+    while IFS= read -r line; do
+      if [[ "$line" == worktree\ * ]]; then
+        worktree_path="${line#worktree }"
+        worktree_branch=""
+      elif [[ "$line" == branch\ * ]]; then
+        worktree_branch="${line#branch refs/heads/}"
+      elif [[ -z "$line" ]]; then
+        if [[ -n "$worktree_path" ]] \
+          && [[ "$worktree_path" == ${codex_worktree_prefix}*"/${repo_name}" ]] \
+          && [[ -z "$worktree_branch" ]]; then
+          echo "[gitsave] Removing stale Codex detached worktree '$worktree_path'..."
+          if git worktree remove "$worktree_path" >/dev/null 2>&1; then
+            cleaned_any=true
+          fi
+        fi
+        worktree_path=""
+        worktree_branch=""
+      fi
+    done < <(git worktree list --porcelain && printf '\n')
+
     if ! $cleaned_any; then
       echo "[gitsave] No post-save branch cleanup needed."
     fi
@@ -109,6 +135,26 @@ cleanup_git_refs() {
       cleaned_any=true
     fi
   done < <(git branch --format='%(refname:short)' --merged main)
+
+  while IFS= read -r line; do
+    if [[ "$line" == worktree\ * ]]; then
+      worktree_path="${line#worktree }"
+      worktree_branch=""
+    elif [[ "$line" == branch\ * ]]; then
+      worktree_branch="${line#branch refs/heads/}"
+    elif [[ -z "$line" ]]; then
+      if [[ -n "$worktree_path" ]] \
+        && [[ "$worktree_path" == ${codex_worktree_prefix}*"/${repo_name}" ]] \
+        && [[ -z "$worktree_branch" ]]; then
+        echo "[gitsave] Removing stale Codex detached worktree '$worktree_path'..."
+        if git worktree remove "$worktree_path" >/dev/null 2>&1; then
+          cleaned_any=true
+        fi
+      fi
+      worktree_path=""
+      worktree_branch=""
+    fi
+  done < <(git worktree list --porcelain && printf '\n')
 
   if ! $cleaned_any; then
     echo "[gitsave] No post-save branch cleanup needed."
