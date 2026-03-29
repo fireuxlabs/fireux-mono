@@ -7,11 +7,8 @@ function readEnv(key: string) {
 
 function normalizeStorageBucket(bucket?: string) {
   if (!bucket) return undefined
-  if (bucket.endsWith('.firebasestorage.app')) {
-    const projectId = bucket.replace(/\.firebasestorage\.app$/, '')
-    return `${projectId}.appspot.com`
-  }
-  return bucket
+  const trimmed = bucket.trim()
+  return trimmed.length ? trimmed : undefined
 }
 
 function getServiceAccountFromEnv():

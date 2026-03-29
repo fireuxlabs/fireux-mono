@@ -15,14 +15,8 @@ function readEnv(k: string) {
 
 function normalizeStorageBucket(bucket?: string) {
   if (!bucket) return undefined
-  // Firebase Web config may provide the new host-style bucket
-  // e.g. "fireux-2005.firebasestorage.app". Admin SDK expects
-  // the canonical bucket name "fireux-2005.appspot.com".
-  if (bucket.endsWith('.firebasestorage.app')) {
-    const projectId = bucket.replace(/\.firebasestorage\.app$/, '')
-    return `${projectId}.appspot.com`
-  }
-  return bucket
+  const trimmed = bucket.trim()
+  return trimmed.length ? trimmed : undefined
 }
 
 function getServiceAccountFromEnv():

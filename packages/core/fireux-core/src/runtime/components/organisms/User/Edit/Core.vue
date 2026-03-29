@@ -26,7 +26,7 @@
         <UCard>
           <div class="flex flex-col items-center gap-2">
             <MoleculesFormsFirestoreImagePicker
-              :src="user.avatar"
+              :src="proxiedAvatarUrl"
               :alt="user.display_name || user.handle || 'User'"
               :initials="avatarInitials"
               :update-function="handleAvatarUpload"
@@ -94,6 +94,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useAvatarProxy } from '../../../../composables/fireux/app/ui/useAvatarProxy'
 import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
 import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
 import { useUser } from '../../../../composables/fireux/firestore/core/user/useUser'
@@ -153,6 +154,8 @@ const handleToggleAdmin = async (nextValue: boolean) => {
 }
 
 const user = computed(() => props.user)
+const { useProxiedAvatar } = useAvatarProxy()
+const proxiedAvatarUrl = useProxiedAvatar(() => user.value?.avatar ?? '')
 const avatarInitials = computed(() => {
   const name = user.value?.display_name || user.value?.handle || user.value?.id || 'U'
   const trimmed = name.trim()
