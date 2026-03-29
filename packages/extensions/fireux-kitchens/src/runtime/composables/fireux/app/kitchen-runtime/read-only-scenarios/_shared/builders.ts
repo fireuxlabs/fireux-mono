@@ -1,17 +1,17 @@
 import type { Dish as DishDoc } from 'fireux-kitchens/runtime/models/dish.model'
-import { Dish as DishModel } from 'fireux-kitchens/runtime/models/dish.model'
+import { DishModel } from 'fireux-kitchens/runtime/models/dish.model'
 import type {
   Ingredient,
   KitchenIngredient as KitchenIngredientDoc,
 } from 'fireux-kitchens/runtime/models/ingredient.model'
 import {
-  Ingredient as IngredientModel,
-  KitchenIngredient as KitchenIngredientModel,
+  IngredientModel,
+  KitchenIngredientModel,
 } from 'fireux-kitchens/runtime/models/ingredient.model'
 import type { KitchenMiseTask as KitchenMiseTaskDoc } from 'fireux-kitchens/runtime/models/kitchen-mise.model'
-import { KitchenMiseTask as KitchenMiseTaskModel } from 'fireux-kitchens/runtime/models/kitchen-mise.model'
+import { KitchenMiseTaskModel } from 'fireux-kitchens/runtime/models/kitchen-mise.model'
 import type { Menu as MenuDoc } from 'fireux-kitchens/runtime/models/menu.model'
-import { Menu as MenuModel } from 'fireux-kitchens/runtime/models/menu.model'
+import { MenuModel } from 'fireux-kitchens/runtime/models/menu.model'
 import {
   readOnlySupplierIngredients,
   readOnlySuppliers,

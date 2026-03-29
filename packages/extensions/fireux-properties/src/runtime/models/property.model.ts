@@ -15,7 +15,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - If that changes later, update the models README first, then this file.
  */
 
-export const Property = {
+export const PropertyModel = {
   id: '' as string,
   portfolio_id: '' as string,
   name: '' as string,
@@ -42,5 +42,10 @@ export const Property = {
 } as const
 
 export type Property = {
-  [K in keyof typeof Property]: (typeof Property)[K]
+  [K in keyof typeof PropertyModel]: (typeof PropertyModel)[K]
 }
+
+export type PropertyCreateInput = Omit<Property, 'created' | 'updated'>
+export type PropertyUpdateInput = Partial<
+  Omit<Property, 'id' | 'created' | 'updated' | 'portfolio_id'>
+>

@@ -23,7 +23,7 @@ export type KitchenOrderItem = {
   checked: boolean
 }
 
-export const KitchenOrder = {
+export const KitchenOrderModel = {
   id: '' as string,
   kitchen_id: '' as string,
 
@@ -51,10 +51,10 @@ export const KitchenOrder = {
 } as const
 
 export type KitchenOrder = {
-  [K in keyof typeof KitchenOrder]: (typeof KitchenOrder)[K]
+  [K in keyof typeof KitchenOrderModel]: (typeof KitchenOrderModel)[K]
 }
 
-export type KitchenOrderCreateInput = Omit<
-  KitchenOrder,
-  'created' | 'updated'
+export type KitchenOrderCreateInput = Omit<KitchenOrder, 'created' | 'updated'>
+export type KitchenOrderUpdateInput = Partial<
+  Omit<KitchenOrder, 'id' | 'created' | 'updated' | 'kitchen_id'>
 >

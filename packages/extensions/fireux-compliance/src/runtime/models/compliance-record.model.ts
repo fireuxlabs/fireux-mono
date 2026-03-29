@@ -14,7 +14,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - It should stay scoped even when it links to supporting root records like type or document.
  * - If its ownership changes later, update the models README first, then this file.
  */
-export const ComplianceRecord = {
+export const ComplianceRecordModel = {
   id: '' as string,
   portfolio_id: '' as string,
   property_id: '' as string,
@@ -38,5 +38,10 @@ export const ComplianceRecord = {
 } as const
 
 export type ComplianceRecord = {
-  [K in keyof typeof ComplianceRecord]: (typeof ComplianceRecord)[K]
+  [K in keyof typeof ComplianceRecordModel]: (typeof ComplianceRecordModel)[K]
 }
+
+export type ComplianceRecordCreateInput = Omit<ComplianceRecord, 'id' | 'created' | 'updated'>
+export type ComplianceRecordUpdateInput = Partial<
+  Omit<ComplianceRecord, 'id' | 'created' | 'updated' | 'portfolio_id'>
+>

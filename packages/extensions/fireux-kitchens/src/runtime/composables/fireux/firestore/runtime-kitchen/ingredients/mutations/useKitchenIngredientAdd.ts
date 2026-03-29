@@ -4,11 +4,11 @@ import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/fires
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-runtime/shared'
 import {
-    Ingredient,
-    type IngredientCreateInput,
-    type Ingredient as IngredientDoc,
-    KitchenIngredient,
-    type KitchenIngredient as KitchenIngredientDoc,
+  IngredientModel,
+  type IngredientCreateInput,
+  type Ingredient as IngredientDoc,
+  KitchenIngredientModel,
+  type KitchenIngredient as KitchenIngredientDoc,
 } from '../../../../../../models/ingredient.model'
 
 const GLOBAL_COLLECTION_PATH = 'ingredients'
@@ -36,7 +36,7 @@ const buildGlobalIngredientPayload = (
   ingredientId: string,
   draft: KitchenIngredientAddDraft
 ): IngredientDoc => ({
-  ...Ingredient,
+  ...IngredientModel,
   id: ingredientId,
   name: String(draft.name || '').trim(),
   slug: toSlug(String(draft.slug || draft.name || ingredientId)),
@@ -46,7 +46,7 @@ const buildGlobalIngredientPayload = (
 const buildKitchenIngredientPayload = (
   ingredientId: string
 ): KitchenIngredientDoc => ({
-  ...KitchenIngredient,
+  ...KitchenIngredientModel,
   id: ingredientId,
   ingredient_id: ingredientId,
 })

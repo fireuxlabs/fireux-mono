@@ -50,7 +50,7 @@ export type MenuSection = {
   defaults?: Partial<MenuItemDefaults>
 }
 
-export const Menu = {
+export const MenuModel = {
   id: '' as string,
   kitchen_id: '' as string,
 
@@ -88,11 +88,8 @@ export const Menu = {
 } as const
 
 export type Menu = {
-  [K in keyof typeof Menu]: (typeof Menu)[K]
+  [K in keyof typeof MenuModel]: (typeof MenuModel)[K]
 }
 
-export type MenuCreateInput = Omit<
-  Menu,
-  'created' | 'updated'
->
-export type MenuUpdateInput = Partial<Omit<MenuCreateInput, 'id' | 'kitchen_id'>>
+export type MenuCreateInput = Omit<Menu, 'created' | 'updated'>
+export type MenuUpdateInput = Partial<Omit<Menu, 'id' | 'created' | 'updated' | 'kitchen_id'>>

@@ -15,7 +15,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - If that changes later, update the models README first, then this file.
  */
 
-export const Unit = {
+export const UnitModel = {
   id: '' as string,
   portfolio_id: '' as string,
   property_id: '' as string,
@@ -36,5 +36,10 @@ export const Unit = {
 } as const
 
 export type Unit = {
-  [K in keyof typeof Unit]: (typeof Unit)[K]
+  [K in keyof typeof UnitModel]: (typeof UnitModel)[K]
 }
+
+export type UnitCreateInput = Omit<Unit, 'created' | 'updated'>
+export type UnitUpdateInput = Partial<
+  Omit<Unit, 'id' | 'created' | 'updated' | 'portfolio_id' | 'property_id'>
+>

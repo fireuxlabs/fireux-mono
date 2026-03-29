@@ -28,7 +28,7 @@ export type KitchenTeamRole =
 
 export type KitchenTeamStatus = 'active' | 'inactive'
 
-export const KitchenTeamMember = {
+export const KitchenTeamMemberModel = {
   id: '' as string,
   kitchen_id: '' as string,
 
@@ -59,14 +59,10 @@ export const KitchenTeamMember = {
 } as const
 
 export type KitchenTeamMember = {
-  [K in keyof typeof KitchenTeamMember]: (typeof KitchenTeamMember)[K]
+  [K in keyof typeof KitchenTeamMemberModel]: (typeof KitchenTeamMemberModel)[K]
 }
 
-export type KitchenTeamMemberCreateInput = Omit<
-  KitchenTeamMember,
-  'created' | 'updated'
->
+export type KitchenTeamMemberCreateInput = Omit<KitchenTeamMember, 'created' | 'updated'>
 export type KitchenTeamMemberUpdateInput = Partial<
-  Omit<KitchenTeamMemberCreateInput, 'id' | 'kitchen_id'>
+  Omit<KitchenTeamMember, 'id' | 'created' | 'updated' | 'kitchen_id'>
 >
-

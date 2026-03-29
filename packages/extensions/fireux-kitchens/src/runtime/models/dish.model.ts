@@ -17,7 +17,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - If Dish ever becomes a root entity, update the models README first, then this file.
  */
 
-export const Dish = {
+export const DishModel = {
   id: '' as string,
   kitchen_id: '' as string,
 
@@ -46,11 +46,8 @@ export const Dish = {
 } as const
 
 export type Dish = {
-  [K in keyof typeof Dish]: (typeof Dish)[K]
+  [K in keyof typeof DishModel]: (typeof DishModel)[K]
 }
 
-export type DishCreateInput = Omit<
-  Dish,
-  'created' | 'updated'
->
-export type DishUpdateInput = Partial<Omit<DishCreateInput, 'id' | 'kitchen_id'>>
+export type DishCreateInput = Omit<Dish, 'created' | 'updated'>
+export type DishUpdateInput = Partial<Omit<Dish, 'id' | 'created' | 'updated' | 'kitchen_id'>>

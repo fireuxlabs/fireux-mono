@@ -77,7 +77,7 @@ const DEFAULT_POLICY: RecipeAccessPolicy = {
   shared_kitchen_ids: [],
 }
 
-export const Recipe = {
+export const RecipeModel = {
   id: '' as string,
 
   name: '' as string,
@@ -133,11 +133,11 @@ export const Recipe = {
 } as const
 
 export type Recipe = {
-  [K in keyof typeof Recipe]: (typeof Recipe)[K]
+  [K in keyof typeof RecipeModel]: (typeof RecipeModel)[K]
 }
 
 export type RecipeCreateInput = Omit<Recipe, 'created' | 'updated'>
-export type RecipeUpdateInput = Partial<Omit<RecipeCreateInput, 'id' | 'kitchen_id'>>
+export type RecipeUpdateInput = Partial<Omit<Recipe, 'id' | 'created' | 'updated' | 'kitchen_id'>>
 
 const WORKFLOW_VALUES = new Set<WorkflowStatus>(['draft', 'active', 'archived'])
 const VISIBILITY_VALUES = new Set<RecipeVisibility>(['private', 'team', 'shared', 'public'])
@@ -270,10 +270,10 @@ export function normalizeRecipe(value: unknown): Recipe {
   const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
   const created = source.created && typeof source.created === 'object'
     ? (source.created as Recipe['created'])
-    : Recipe.created
+    : RecipeModel.created
   const updated = source.updated && typeof source.updated === 'object'
     ? (source.updated as Recipe['updated'])
-    : Recipe.updated
+    : RecipeModel.updated
   const authorUserId =
     pickString(source.author_user_id) ||
     pickString((created as Record<string, unknown> | undefined)?.by)
@@ -293,7 +293,7 @@ export function normalizeRecipe(value: unknown): Recipe {
     : requestedPublicationStatus
 
   return {
-    ...Recipe,
+    ...RecipeModel,
     id: pickString(source.id),
     name: pickString(source.name) || pickString(source.title),
     slug: pickOptionalString(source.slug),

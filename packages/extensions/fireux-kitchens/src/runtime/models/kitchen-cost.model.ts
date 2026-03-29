@@ -18,7 +18,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  */
 export type KitchenCostPeriod = 'service' | 'day' | 'week' | 'month'
 
-export const KitchenCostSnapshot = {
+export const KitchenCostSnapshotModel = {
   id: '' as string,
   kitchen_id: '' as string,
 
@@ -50,14 +50,10 @@ export const KitchenCostSnapshot = {
 } as const
 
 export type KitchenCostSnapshot = {
-  [K in keyof typeof KitchenCostSnapshot]: (typeof KitchenCostSnapshot)[K]
+  [K in keyof typeof KitchenCostSnapshotModel]: (typeof KitchenCostSnapshotModel)[K]
 }
 
-export type KitchenCostSnapshotCreateInput = Omit<
-  KitchenCostSnapshot,
-  'created' | 'updated'
->
+export type KitchenCostSnapshotCreateInput = Omit<KitchenCostSnapshot, 'created' | 'updated'>
 export type KitchenCostSnapshotUpdateInput = Partial<
-  Omit<KitchenCostSnapshotCreateInput, 'id' | 'kitchen_id'>
+  Omit<KitchenCostSnapshot, 'id' | 'created' | 'updated' | 'kitchen_id'>
 >
-

@@ -1,11 +1,11 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { Dish, type Dish as DishDoc } from '../../../../../../models/dish.model'
+import { DishModel, type Dish as DishDoc } from '../../../../../../models/dish.model'
 import type { Ingredient } from '../../../../../../models/ingredient.model'
-import { KitchenMiseTask, type KitchenMiseTask as KitchenMiseTaskDoc } from '../../../../../../models/kitchen-mise.model'
-import { Menu, type Menu as MenuDoc } from '../../../../../../models/menu.model'
+import { KitchenMiseTaskModel, type KitchenMiseTask as KitchenMiseTaskDoc } from '../../../../../../models/kitchen-mise.model'
+import { MenuModel, type Menu as MenuDoc } from '../../../../../../models/menu.model'
 import {
-    Recipe,
+    RecipeModel,
     type Recipe as RecipeDoc,
     type RecipeIngredientLine,
 } from '../../../../../../models/recipe.model'
@@ -125,7 +125,7 @@ export function useKitchenMenuStackCreate() {
     ]
 
     const menuDoc: MenuDoc = {
-      ...Menu,
+      ...MenuModel,
       id: menuId,
       kitchen_id: resolvedKitchenId,
       name: 'Starter Service Menu',
@@ -151,7 +151,7 @@ export function useKitchenMenuStackCreate() {
 
     const dishes: DishDoc[] = [
       {
-        ...Dish,
+        ...DishModel,
         id: dishIds[0],
         kitchen_id: resolvedKitchenId,
         name: 'Classic Cheeseburger',
@@ -176,7 +176,7 @@ export function useKitchenMenuStackCreate() {
         active: true,
       },
       {
-        ...Dish,
+        ...DishModel,
         id: dishIds[1],
         kitchen_id: resolvedKitchenId,
         name: 'Caprese Lemon Salad',
@@ -196,7 +196,7 @@ export function useKitchenMenuStackCreate() {
         active: true,
       },
       {
-        ...Dish,
+        ...DishModel,
         id: dishIds[2],
         kitchen_id: resolvedKitchenId,
         name: 'Cheddar Onion Melt',
@@ -221,7 +221,7 @@ export function useKitchenMenuStackCreate() {
 
     const recipes: RecipeDoc[] = [
       {
-        ...Recipe,
+        ...RecipeModel,
         id: recipeIds[0],
         kitchen_id: resolvedKitchenId,
         primary_dish_id: dishIds[0],
@@ -268,7 +268,7 @@ export function useKitchenMenuStackCreate() {
         tags: ['burger', 'service'],
       },
       {
-        ...Recipe,
+        ...RecipeModel,
         id: recipeIds[1],
         kitchen_id: resolvedKitchenId,
         primary_dish_id: dishIds[1],
@@ -304,7 +304,7 @@ export function useKitchenMenuStackCreate() {
         tags: ['salad', 'cold'],
       },
       {
-        ...Recipe,
+        ...RecipeModel,
         id: recipeIds[2],
         kitchen_id: resolvedKitchenId,
         primary_dish_id: dishIds[2],
@@ -345,7 +345,7 @@ export function useKitchenMenuStackCreate() {
 
     const miseTasks: KitchenMiseTaskDoc[] = [
       {
-        ...KitchenMiseTask,
+        ...KitchenMiseTaskModel,
         id: miseTaskIds[0],
         kitchen_id: resolvedKitchenId,
         title: 'Prep produce station',
@@ -364,7 +364,7 @@ export function useKitchenMenuStackCreate() {
         ],
       },
       {
-        ...KitchenMiseTask,
+        ...KitchenMiseTaskModel,
         id: miseTaskIds[1],
         kitchen_id: resolvedKitchenId,
         title: 'Portion cheese for line',
@@ -382,7 +382,7 @@ export function useKitchenMenuStackCreate() {
         ],
       },
       {
-        ...KitchenMiseTask,
+        ...KitchenMiseTaskModel,
         id: miseTaskIds[2],
         kitchen_id: resolvedKitchenId,
         title: 'Set burger line',
@@ -401,7 +401,7 @@ export function useKitchenMenuStackCreate() {
         ],
       },
       {
-        ...KitchenMiseTask,
+        ...KitchenMiseTaskModel,
         id: miseTaskIds[3],
         kitchen_id: resolvedKitchenId,
         title: 'Service pass checks',

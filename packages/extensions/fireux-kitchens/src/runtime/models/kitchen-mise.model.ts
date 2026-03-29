@@ -25,7 +25,7 @@ export type KitchenMiseChecklistItem = {
   done: boolean
 }
 
-export const KitchenMiseTask = {
+export const KitchenMiseTaskModel = {
   id: '' as string,
   kitchen_id: '' as string,
 
@@ -61,13 +61,10 @@ export const KitchenMiseTask = {
 } as const
 
 export type KitchenMiseTask = {
-  [K in keyof typeof KitchenMiseTask]: (typeof KitchenMiseTask)[K]
+  [K in keyof typeof KitchenMiseTaskModel]: (typeof KitchenMiseTaskModel)[K]
 }
 
-export type KitchenMiseTaskCreateInput = Omit<
-  KitchenMiseTask,
-  'created' | 'updated'
->
+export type KitchenMiseTaskCreateInput = Omit<KitchenMiseTask, 'created' | 'updated'>
 export type KitchenMiseTaskUpdateInput = Partial<
-  Omit<KitchenMiseTaskCreateInput, 'id' | 'kitchen_id'>
+  Omit<KitchenMiseTask, 'id' | 'created' | 'updated' | 'kitchen_id'>
 >

@@ -22,7 +22,7 @@ export type DocumentLinkTargetType =
  * - It is scoped by the portfolio even when it points to several target types.
  * - If that ownership changes later, update the models README first, then this file.
  */
-export const DocumentLink = {
+export const DocumentLinkModel = {
   id: '' as string,
   portfolio_id: '' as string,
   document_id: '' as string,
@@ -41,5 +41,10 @@ export const DocumentLink = {
 } as const
 
 export type DocumentLink = {
-  [K in keyof typeof DocumentLink]: (typeof DocumentLink)[K]
+  [K in keyof typeof DocumentLinkModel]: (typeof DocumentLinkModel)[K]
 }
+
+export type DocumentLinkCreateInput = Omit<DocumentLink, 'id' | 'created' | 'updated'>
+export type DocumentLinkUpdateInput = Partial<
+  Omit<DocumentLink, 'id' | 'created' | 'updated' | 'portfolio_id'>
+>

@@ -2,7 +2,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-runtime/shared'
 import {
-    KitchenMiseTask,
+    KitchenMiseTaskModel,
     type KitchenMiseChecklistItem,
     type KitchenMisePriority,
     type KitchenMiseStatus,
@@ -55,7 +55,7 @@ const toStringArray = (value: unknown) =>
   )
 
 const buildMisePayload = (kitchenId: string, draft: KitchenMiseCreateDraft): KitchenMiseTaskDoc => ({
-  ...KitchenMiseTask,
+  ...KitchenMiseTaskModel,
   kitchen_id: kitchenId,
   title: String(draft.title || '').trim(),
   description: String(draft.description || '').trim(),

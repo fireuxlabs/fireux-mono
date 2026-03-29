@@ -1,5 +1,5 @@
 import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
-import type { TaskCreateInput } from '../../mutations/useTaskCreate'
+import type { TaskCreateInput } from '../../../../../models/task.model'
 
 const normalize = (value: unknown) => String(value || '').trim()
 

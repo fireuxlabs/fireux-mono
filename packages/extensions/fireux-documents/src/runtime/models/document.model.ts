@@ -14,7 +14,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Keep it scoped even if document files are later referenced by other portfolio records.
  * - If that changes later, update the models README first, then this file.
  */
-export const Document = {
+export const DocumentModel = {
   id: '' as string,
   portfolio_id: '' as string,
   file_name: '' as string,
@@ -36,5 +36,8 @@ export const Document = {
 } as const
 
 export type Document = {
-  [K in keyof typeof Document]: (typeof Document)[K]
+  [K in keyof typeof DocumentModel]: (typeof DocumentModel)[K]
 }
+
+export type DocumentCreateInput = Omit<Document, 'id' | 'created' | 'updated'>
+export type DocumentUpdateInput = Partial<Omit<Document, 'id' | 'created' | 'updated'>>

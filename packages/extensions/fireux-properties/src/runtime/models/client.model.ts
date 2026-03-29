@@ -60,7 +60,7 @@ export interface ClientContact {
   notes: string
 }
 
-export const Client = {
+export const ClientModel = {
   // Canon IDs
   id: '' as string,
   portfolio_id: '' as string,
@@ -119,9 +119,8 @@ export const Client = {
 } as const
 
 export type Client = {
-  [K in keyof typeof Client]: (typeof Client)[K]
+  [K in keyof typeof ClientModel]: (typeof ClientModel)[K]
 }
 
-export type ClientDoc = Omit<Client, 'id'>
 export type ClientCreateInput = Omit<Client, 'id' | 'created' | 'updated'>
-export type ClientUpdateInput = Partial<Omit<ClientCreateInput, never>>
+export type ClientUpdateInput = Partial<Omit<Client, 'id' | 'created' | 'updated'>>

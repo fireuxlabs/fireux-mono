@@ -3,20 +3,9 @@ import {
   useRuntimePortfolio,
   useRuntimePortfolioPath,
 } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
-import type { Task } from '../../../../../models/task.model'
+import type { Task, TaskCreateInput } from '../../../../../models/task.model'
 
 const normalize = (value: unknown) => String(value || '').trim()
-
-export type TaskCreateInput = Pick<
-  Task,
-  | 'title'
-  | 'description'
-  | 'status'
-  | 'source'
-  | 'due_date'
-  | 'linked_entity_type'
-  | 'linked_entity_id'
->
 
 export function useTaskCreate(runtimePortfolio = useRuntimePortfolio()) {
   const { createDocument } = useFirestoreCreate()

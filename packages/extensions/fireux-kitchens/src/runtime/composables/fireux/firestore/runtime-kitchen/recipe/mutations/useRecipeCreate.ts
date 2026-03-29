@@ -3,7 +3,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useCurrentUser } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, unref, type Ref } from 'vue'
 import {
-  Recipe,
+  RecipeModel,
   createDefaultRecipeAccessPolicy,
   normalizePublishedRecipeSummary,
   normalizeRecipeIngredientLines,
@@ -79,7 +79,7 @@ function buildRecipePayload(draft: RecipeCreateDraft, kitchenId: string, userId:
     : undefined
 
   return {
-    ...Recipe,
+    ...RecipeModel,
     name: trim(draft.name),
     slug: optional(draft.slug) || (publicationStatus === 'published' ? slugify(trim(draft.name)) : undefined),
     recipe_type: oneOf<RecipeType>(draft.recipe_type, ['base', 'component', 'prep', 'service'], 'service'),
@@ -113,8 +113,8 @@ function buildRecipePayload(draft: RecipeCreateDraft, kitchenId: string, userId:
     published_at: undefined,
     published_by: undefined,
     published_summary: publishedSummary,
-    created: Recipe.created,
-    updated: Recipe.updated,
+    created: RecipeModel.created,
+    updated: RecipeModel.updated,
   }
 }
 

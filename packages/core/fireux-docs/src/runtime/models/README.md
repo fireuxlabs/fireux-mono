@@ -6,6 +6,11 @@ Scope: `packages/*/fireux-*/src/runtime/models` and child directories under `mod
 
 Learn how FireUX runtime models are classified, how they are stored, and how future model decisions should be explained.
 
+Current repo truth:
+- the main model families are normalized around simple stored-shape contracts
+- model files describe stored things, not hydrated or read-time composites
+- combined read shapes belong in fetch, runtime, and interface seams
+
 ## Models Directory
 
 `runtime/models/` contains the runtime model layer for FireUX packages.
@@ -40,6 +45,12 @@ Preferred model-file shape for identity models:
 - `AppX`
 - `XCreateInput`
 - `XUpdateInput`
+
+Example:
+- `UserModel`
+- `AppUserModel`
+- `User`
+- `AppUser`
 
 ### Console-backed Domain
 
@@ -175,6 +186,18 @@ Examples:
 - Portfolio-scoped under `apps/<appId>/portfolios/<portfolioId>/...`:
   `Property`, `Unit`, `Client`, `Document`, `DocumentLink`, `ComplianceRecord`, `Task`
 
+Preferred model-file shape for scoped models:
+- `XModel`
+- `X`
+- `XCreateInput`
+- `XUpdateInput`
+
+Examples:
+- `MenuModel`
+- `RecipeModel`
+- `PropertyModel`
+- `DocumentModel`
+
 ## Overlay Versus Facade
 
 ### Overlay
@@ -207,6 +230,7 @@ The `User` model is the current reference pattern:
 Console-backed domain entities should use the same simple dual-model idea as `User`, but with console wording:
 - one root canonical model
 - one console overlay model
+- no hydrated/read-time composite type in the model file
 
 Field-discipline rule:
 - keep the root model honest and compact
@@ -237,6 +261,9 @@ Do not invent stored models like `AppTenant`, `EcosystemProject`, or `ModuleProj
 
 UI-only types like pill props should not live under `runtime/models`.
 If they are still useful, move them to shared package or runtime types instead.
+
+Example:
+- `packages/core/fireux-core/src/types/pill.ts`
 
 ## Child Directories
 

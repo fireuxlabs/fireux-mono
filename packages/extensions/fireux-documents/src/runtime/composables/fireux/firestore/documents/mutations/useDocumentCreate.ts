@@ -3,18 +3,7 @@ import {
   useRuntimePortfolio,
   useRuntimePortfolioPath,
 } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
-import type { Document } from '../../../../../models/document.model'
-
-export type DocumentCreateInput = Pick<
-  Document,
-  | 'file_name'
-  | 'file_type'
-  | 'size_bytes'
-  | 'storage_path'
-  | 'download_url'
-  | 'uploaded_at'
-  | 'notes'
->
+import type { Document, DocumentCreateInput } from '../../../../../models/document.model'
 
 const normalize = (value: unknown) => String(value || '').trim()
 

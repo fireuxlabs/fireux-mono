@@ -15,7 +15,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - If that changes later, update the models README first, then this file.
  */
 
-export const Task = {
+export const TaskModel = {
   id: '' as string,
   portfolio_id: '' as string,
   title: '' as string,
@@ -37,5 +37,8 @@ export const Task = {
 } as const
 
 export type Task = {
-  [K in keyof typeof Task]: (typeof Task)[K]
+  [K in keyof typeof TaskModel]: (typeof TaskModel)[K]
 }
+
+export type TaskCreateInput = Omit<Task, 'id' | 'created' | 'updated' | 'portfolio_id'>
+export type TaskUpdateInput = Partial<Omit<Task, 'id' | 'created' | 'updated' | 'portfolio_id'>>
