@@ -13,7 +13,7 @@
               <div>
                 <h3 class="text-base font-semibold">App Membership</h3>
                 <p class="text-xs text-gray-500">
-                  Tenant-specific access derived from the current app context.
+                  App-specific access and entitlement derived from the current app context.
                 </p>
               </div>
             </div>
@@ -24,14 +24,22 @@
               <UBadge size="sm" color="primary" variant="soft">
                 {{ overlay.role === 'admin' ? 'Admin' : 'Member' }}
               </UBadge>
+              <UBadge
+                size="sm"
+                :color="isAppPremium ? 'warning' : 'neutral'"
+                variant="soft"
+              >
+                {{ isAppPremium ? 'Premium' : 'Standard' }}
+              </UBadge>
               <span class="text-sm text-gray-500">
-                Role granted within this tenant
+                Access granted within this app
               </span>
             </div>
 
             <div class="flex items-center justify-between gap-3">
               <div class="text-xs text-gray-600 space-y-1">
                 <p>appUser.role: {{ appUserRole }}</p>
+                <p>appUser.is_premium: {{ String(isAppPremium) }}</p>
                 <p>
                   core adminOf: {{ props.user?.adminOf?.join(', ') || 'none' }}
                 </p>
@@ -41,6 +49,18 @@
                 :loading="togglingAdmin"
                 label="App admin"
                 @update:model-value="handleToggleAdmin"
+              />
+            </div>
+
+            <div class="flex items-center justify-between gap-3">
+              <div class="text-xs text-gray-600 space-y-1">
+                <p>Premium users can own multiple live console targets.</p>
+              </div>
+              <USwitch
+                :model-value="isAppPremium"
+                :loading="togglingPremium"
+                label="Premium"
+                @update:model-value="handleTogglePremium"
               />
             </div>
 
@@ -59,12 +79,8 @@
             class="flex flex-wrap items-center gap-3 text-sm text-emerald-900"
           >
             <span>
-              Role (local prototype):
-              <strong>{{ rolePreview }}</strong>
+              Premium capability is now a real app-user field.
             </span>
-            <UButton size="xs" variant="soft" @click="toggleRolePreview">
-              Toggle role (hello ↔ world)
-            </UButton>
           </div>
         </UCard>
       </div>
@@ -82,15 +98,11 @@ import type { User } from '../../../../models/core/user.model'
 const props = defineProps<{ user: User | null; userRefs?: UserRefs }>()
 
 const { appUser } = useUser()
-const { app, setAppUserAdmin } = useApp()
+const { app, setAppUserAdmin, setAppUserPremium } = useApp()
 
 const overlay = computed(() =>
   props.userRefs?.appUser?.value ?? appUser.value ?? null
 )
-const rolePreview = ref<'hello' | 'world'>('hello')
-const toggleRolePreview = () => {
-  rolePreview.value = rolePreview.value === 'hello' ? 'world' : 'hello'
-}
 
 const appAdmins = computed(() =>
   Array.isArray(app.value?.admin_ids)
@@ -102,7 +114,9 @@ const appAdmins = computed(() =>
 
 const appUserRole = computed(() => overlay.value?.role ?? 'user')
 const isAppAdmin = computed(() => appUserRole.value === 'admin')
+const isAppPremium = computed(() => overlay.value?.is_premium === true)
 const togglingAdmin = ref(false)
+const togglingPremium = ref(false)
 
 const handleToggleAdmin = async (nextValue: boolean) => {
   if (!props.user?.id) return
@@ -121,6 +135,23 @@ const handleToggleAdmin = async (nextValue: boolean) => {
     console.error('Admin toggle failed:', msg)
   } finally {
     togglingAdmin.value = false
+  }
+}
+
+const handleTogglePremium = async (nextValue: boolean) => {
+  if (!props.user?.id) return
+  togglingPremium.value = true
+  try {
+    await setAppUserPremium(props.user.id, nextValue)
+    console.log('app-user-premium-updated', {
+      userId: props.user.id,
+      isPremium: nextValue,
+    })
+  } catch (error) {
+    const msg = error instanceof Error ? error.message : 'Please try again.'
+    console.error('Premium toggle failed:', msg)
+  } finally {
+    togglingPremium.value = false
   }
 }
 </script>

@@ -41,7 +41,8 @@
           block
           variant="subtle"
           color="primary"
-          :icon="isSignedIn ? 'i-lucide-plus' : 'i-lucide-log-in'"
+          :icon="createCopy.limitReached ? 'i-lucide-lock' : (isSignedIn ? 'i-lucide-plus' : 'i-lucide-log-in')"
+          :disabled="createCopy.disabled"
           @click="createPortfolio"
         >
           {{ createCopy.label }}
@@ -69,7 +70,30 @@
     </template>
 
     <template #readOnly>
-          <div v-if="readOnlyPills.length" class="space-y-2">
+          <div
+            v-if="showPremiumPreviewToggle"
+            class="flex items-center justify-between gap-3 rounded-lg border border-default px-3 py-2"
+          >
+            <div class="space-y-1">
+              <p class="text-sm font-medium">View as premium</p>
+              <p class="text-xs text-dimmed">
+                Preview the grouped premium operator view for read-only portfolios.
+              </p>
+            </div>
+            <USwitch v-model="premiumPreviewEnabled" />
+          </div>
+
+          <div v-if="showBundledReadOnly && bundledReadOnlyPill" class="space-y-2">
+            <PortfolioCardsPill
+              v-bind="bundledReadOnlyPill"
+              :link="false"
+              :action="true"
+              :show-badges="false"
+              class="cursor-pointer"
+              @action="goToPortfolio('read-only')"
+            />
+          </div>
+          <div v-else-if="readOnlyPills.length" class="space-y-2">
             <PortfolioCardsPill
               v-for="item in readOnlyPills"
               :key="item.id"
@@ -112,6 +136,7 @@ import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/Co
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { resolveConsoleEntryPath } from 'fireux-core/runtime/composables/fireux/app/ui/console-entry-routing'
 import { resolveConsoleCreateCopy } from 'fireux-core/runtime/composables/fireux/app/ui/console-create-copy'
+import { useConsoleReadOnlyPreview } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleReadOnlyPreview'
 import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
 import { resolveConsoleTestIdentity } from 'fireux-core/runtime/composables/fireux/app/ui/console-test-identity'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
@@ -136,7 +161,7 @@ const { runtimePortfolioId, setRuntimePortfolio } = useRuntimePortfolioSelection
 const { portfolios } = usePortfolioFetch()
 const { pill } = usePortfolioInterface()
 const { uid, isSignedIn } = useConsoleEntryState()
-const { currentUser, avatarSrc } = useUser()
+const { currentUser, avatarSrc, canOwnMultipleConsoles } = useUser()
 const { appId, appLogo, appThumbnail } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
 const portfolioOverlays = appId
@@ -147,6 +172,8 @@ const createCopy = computed(() =>
     entityLabel: 'portfolio',
     createSurface: props.createSurface,
     signedIn: isSignedIn.value,
+    ownedCount: livePills.value.length,
+    canOwnMultipleConsoles: canOwnMultipleConsoles.value,
     publicPath: '/portfolios/create',
     consolePath: '/console/portfolio/create',
   })
@@ -220,6 +247,36 @@ const readOnlyPills = computed(() =>
   }))
 )
 
+const {
+  premiumPreviewEnabled,
+  showPremiumPreviewToggle,
+  showBundledReadOnly,
+  bundledTitle,
+  bundledSubtitle,
+} = useConsoleReadOnlyPreview({
+  entityKey: 'portfolio',
+  bundleTitle: 'My Read-only Portfolios',
+  singularNoun: 'portfolio',
+  pluralNoun: 'portfolios',
+  signedIn: isSignedIn,
+  isPremium: canOwnMultipleConsoles,
+  itemCount: computed(() => readOnlyPills.value.length),
+})
+
+const bundledReadOnlyPill = computed(() => {
+  if (!showBundledReadOnly.value) return null
+
+  const firstScenario = readOnlyScenarios.value[0]
+
+  return {
+    id: 'my-read-only-portfolios',
+    to: '',
+    title: bundledTitle.value,
+    subtitle: bundledSubtitle.value,
+    imageUrl: firstScenario?.imageUrl || '',
+  }
+})
+
 const goToPortfolio = async (mode: RuntimePortfolioMode, portfolioId?: string) => {
   if (mode === 'test') {
     await router.push(resolveConsoleEntryPath('/console/portfolio', 'test'))
@@ -249,6 +306,8 @@ const createPortfolio = async () => {
     await router.push(signInPath.value)
     return
   }
+
+  if (createCopy.value.disabled) return
 
   await router.push(createCopy.value.createPath)
 }

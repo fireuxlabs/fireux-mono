@@ -52,6 +52,12 @@ Example:
 - `User`
 - `AppUser`
 
+Typical app-user capability fields include:
+- `role`
+- `is_premium`
+- `console_enabled`
+- `console_scopes`
+
 ### Console-backed Domain
 
 Where people operate.

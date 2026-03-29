@@ -26,17 +26,18 @@
     <template #my>
       <div class="space-y-2">
         <template v-if="isSignedIn">
-          <KitchenCardsPill
-            v-for="item in liveKitchenPills"
-            v-if="liveKitchenPills.length"
-            :key="item.id"
-            v-bind="item"
-            :link="false"
-            :action="true"
-            :show-badges="false"
-            class="cursor-pointer"
-            @action="goToKitchen('live', item.id)"
-          />
+          <template v-if="liveKitchenPills.length">
+            <KitchenCardsPill
+              v-for="item in liveKitchenPills"
+              :key="item.id"
+              v-bind="item"
+              :link="false"
+              :action="true"
+              :show-badges="false"
+              class="cursor-pointer"
+              @action="goToKitchen('live', item.id)"
+            />
+          </template>
           <p v-else class="text-sm text-dimmed">
             No kitchen consoles yet.
           </p>
@@ -48,7 +49,8 @@
           block
           variant="subtle"
           color="primary"
-          :icon="isSignedIn ? 'i-lucide-plus' : 'i-lucide-log-in'"
+          :icon="createCopy.limitReached ? 'i-lucide-lock' : (isSignedIn ? 'i-lucide-plus' : 'i-lucide-log-in')"
+          :disabled="createCopy.disabled"
           :loading="isSignedIn ? isEnsuringLiveKitchen : false"
           @click="createKitchen"
         >
@@ -69,7 +71,29 @@
     </template>
 
     <template #readOnly>
-          <div v-if="readOnlyPills.length" class="space-y-2">
+          <div
+            v-if="showPremiumPreviewToggle"
+            class="flex items-center justify-between gap-3 rounded-lg border border-default px-3 py-2"
+          >
+            <div class="space-y-1">
+              <p class="text-sm font-medium">View as premium</p>
+              <p class="text-xs text-dimmed">
+                Preview the grouped premium operator view for read-only kitchens.
+              </p>
+            </div>
+            <USwitch v-model="premiumPreviewEnabled" />
+          </div>
+          <div v-if="showBundledReadOnly && bundledReadOnlyPill" class="space-y-2">
+            <KitchenCardsPill
+              v-bind="bundledReadOnlyPill"
+              :link="false"
+              :action="true"
+              :show-badges="false"
+              class="cursor-pointer"
+              @action="goToKitchen('read-only')"
+            />
+          </div>
+          <div v-else-if="readOnlyPills.length" class="space-y-2">
             <KitchenCardsPill
               v-for="item in readOnlyPills"
               :key="item.id"
@@ -113,6 +137,7 @@ import {
   resolveConsoleEntryPath,
 } from 'fireux-core/runtime/composables/fireux/app/ui/console-entry-routing'
 import { resolveConsoleCreateCopy } from 'fireux-core/runtime/composables/fireux/app/ui/console-create-copy'
+import { useConsoleReadOnlyPreview } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleReadOnlyPreview'
 import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
 import { resolveConsoleTestIdentity } from 'fireux-core/runtime/composables/fireux/app/ui/console-test-identity'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
@@ -147,7 +172,7 @@ const toPossessiveKitchenTitle = (value: unknown): string => {
 
 const { kitchens } = useKitchenFetch()
 const { pill: kitchenPill } = useKitchenInterface()
-const { currentUser, avatarSrc } = useUser()
+const { currentUser, avatarSrc, canOwnMultipleConsoles } = useUser()
 const { uid, isSignedIn } = useConsoleEntryState()
 const { appId, appLogo, appThumbnail } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
@@ -220,6 +245,36 @@ const readOnlyPills = computed(() =>
   }))
 )
 
+const {
+  premiumPreviewEnabled,
+  showPremiumPreviewToggle,
+  showBundledReadOnly,
+  bundledTitle,
+  bundledSubtitle,
+} = useConsoleReadOnlyPreview({
+  entityKey: 'kitchen',
+  bundleTitle: 'My Read-only Kitchens',
+  singularNoun: 'kitchen',
+  pluralNoun: 'kitchens',
+  signedIn: isSignedIn,
+  isPremium: canOwnMultipleConsoles,
+  itemCount: computed(() => readOnlyPills.value.length),
+})
+
+const bundledReadOnlyPill = computed(() => {
+  if (!showBundledReadOnly.value) return null
+
+  const firstScenario = readOnlyScenarios.value[0]
+
+  return {
+    id: 'my-read-only-kitchens',
+    to: '',
+    title: bundledTitle.value,
+    subtitle: bundledSubtitle.value,
+    imageUrl: firstScenario?.imageUrl || '',
+  }
+})
+
 const router = useRouter()
 const route = useRoute()
 const { runtimeKitchenId, setRuntimeKitchen } = useRuntimeKitchenSelection()
@@ -230,6 +285,8 @@ const createCopy = computed(() =>
     entityLabel: 'kitchen',
     createSurface: props.createSurface,
     signedIn: isSignedIn.value,
+    ownedCount: liveKitchenPills.value.length,
+    canOwnMultipleConsoles: canOwnMultipleConsoles.value,
     publicPath: '/kitchens/create',
     consolePath: '/console/kitchen/create',
   })
@@ -333,6 +390,8 @@ const createKitchen = async () => {
     await router.push(signInPath.value)
     return
   }
+
+  if (createCopy.value.disabled) return
 
   const ready = await ensureLiveKitchenProfile()
   if (!ready) return

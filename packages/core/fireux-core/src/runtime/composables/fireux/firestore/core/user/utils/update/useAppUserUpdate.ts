@@ -19,6 +19,9 @@ type AppMembershipActions = {
   /** Single, canonical role toggle (admin <-> user). */
   setAdmin: (makeAdmin: boolean) => Promise<void>
 
+  /** App-scoped premium entitlement. */
+  setPremium: (isPremium: boolean) => Promise<void>
+
   /** Leaves the current app (removes membership overlay + mirrors). */
   leave: () => Promise<void>
 }
@@ -62,6 +65,12 @@ export function useAppUserUpdate(user: UserRefs) {
         adminOf: makeAdmin
           ? (arrayUnion(appId) as unknown as string[])
           : (arrayRemove(appId) as unknown as string[]),
+      })
+    },
+    setPremium: async (isPremium) => {
+      const { uid, appId } = requireContext()
+      await updateDocument(`apps/${appId}/users`, uid, {
+        is_premium: Boolean(isPremium),
       })
     },
     leave: async () => {

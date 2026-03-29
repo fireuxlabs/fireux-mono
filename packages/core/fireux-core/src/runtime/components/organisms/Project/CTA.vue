@@ -42,7 +42,8 @@
           block
           variant="subtle"
           color="primary"
-          :icon="isSignedIn ? 'i-lucide-plus' : 'i-lucide-log-in'"
+          :icon="createCopy.limitReached ? 'i-lucide-lock' : (isSignedIn ? 'i-lucide-plus' : 'i-lucide-log-in')"
+          :disabled="createCopy.disabled"
           @click="createProject"
         >
           {{ createCopy.label }}
@@ -76,7 +77,29 @@
     </template>
 
     <template #readOnly>
-      <div v-if="readOnlyScenarios.length" class="space-y-2">
+      <div
+        v-if="showPremiumPreviewToggle"
+        class="flex items-center justify-between gap-3 rounded-lg border border-default px-3 py-2"
+      >
+        <div class="space-y-1">
+          <p class="text-sm font-medium">View as premium</p>
+          <p class="text-xs text-dimmed">
+            Preview the grouped premium operator view for read-only projects.
+          </p>
+        </div>
+        <USwitch v-model="premiumPreviewEnabled" />
+      </div>
+
+      <div v-if="showBundledReadOnly && bundledReadOnlyPill" class="space-y-2">
+        <ProjectCardsPill
+          v-bind="bundledReadOnlyPill"
+          :link="false"
+          :action="true"
+          :show-badges="false"
+          @action="goToProject('read-only')"
+        />
+      </div>
+      <div v-else-if="readOnlyScenarios.length" class="space-y-2">
         <ProjectCardsPill
           v-for="item in readOnlyScenarios"
           :key="item.id"
@@ -119,6 +142,7 @@ import { useRuntimeProjectSelection } from '../../../composables/fireux/app/runt
 import { useRuntimeProject } from '../../../composables/fireux/app/runtime-project/useRuntimeProject'
 import { resolveConsoleCreateCopy } from '../../../composables/fireux/app/ui/console-create-copy'
 import { resolveConsoleEntryPath } from '../../../composables/fireux/app/ui/console-entry-routing'
+import { useConsoleReadOnlyPreview } from '../../../composables/fireux/app/ui/useConsoleReadOnlyPreview'
 import { resolveConsoleTestIdentity } from '../../../composables/fireux/app/ui/console-test-identity'
 import { useConsoleEntryState } from '../../../composables/fireux/app/ui/useConsoleEntryState'
 import { useProjectCollection } from '../../../composables/fireux/firestore/system/project/fetch/useProjectCollection'
@@ -137,7 +161,7 @@ const router = useRouter()
 const runtimeProject = useRuntimeProject()
 const { setRuntimeProject } = useRuntimeProjectSelection()
 const { projects } = useProjectCollection()
-const { currentUser, avatarSrc } = useUser()
+const { currentUser, avatarSrc, canOwnMultipleConsoles } = useUser()
 const { isSignedIn } = useConsoleEntryState()
 const { appId, appLogo, appThumbnail } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
@@ -149,6 +173,8 @@ const createCopy = computed(() =>
     entityLabel: 'project',
     createSurface: props.createSurface,
     signedIn: isSignedIn.value,
+    ownedCount: liveProjectCards.value.length,
+    canOwnMultipleConsoles: canOwnMultipleConsoles.value,
     publicPath: '/projects/create',
     consolePath: '/console/projects/create',
   })
@@ -168,6 +194,35 @@ const createActionNote = computed(() => createCopy.value.note)
 const createActionMeaning = computed(() => createCopy.value.meaning)
 
 const readOnlyScenarios = computed(() => getReadOnlyProjectScenarioList())
+const {
+  premiumPreviewEnabled,
+  showPremiumPreviewToggle,
+  showBundledReadOnly,
+  bundledTitle,
+  bundledSubtitle,
+} = useConsoleReadOnlyPreview({
+  entityKey: 'project',
+  bundleTitle: 'My Read-only Projects',
+  singularNoun: 'project',
+  pluralNoun: 'projects',
+  signedIn: isSignedIn,
+  isPremium: canOwnMultipleConsoles,
+  itemCount: computed(() => readOnlyScenarios.value.length),
+})
+
+const bundledReadOnlyPill = computed(() => {
+  if (!showBundledReadOnly.value) return null
+
+  const firstScenario = readOnlyScenarios.value[0]
+
+  return {
+    id: 'my-read-only-projects',
+    to: '',
+    title: bundledTitle.value,
+    subtitle: bundledSubtitle.value,
+    imageUrl: String(firstScenario?.image_url || '').trim(),
+  }
+})
 const accessibleProjectIds = computed(() => {
   const currentUid = String(currentUser.value?.id || '').trim()
   if (!currentUid) return new Set<string>()
@@ -249,6 +304,8 @@ const createProject = async () => {
     await router.push(signInPath.value)
     return
   }
+
+  if (createCopy.value.disabled) return
 
   await router.push(createCopy.value.createPath)
 }

@@ -52,6 +52,7 @@ export const AppUserModel = {
   id: '',
 
   role: 'user' as 'user' | 'admin',
+  is_premium: false,
   console_enabled: false,
   console_scopes: [],
   notifications: [] as UserNotification[],

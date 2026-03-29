@@ -45,21 +45,31 @@
           </UButton>
 
           <!-- Signed in => dashboard -->
-          <UButton
-            v-else-if="isSignedIn"
-            to="/dashboard"
-            variant="ghost"
-            color="neutral"
-            aria-label="Go to dashboard"
-            data-fireux-header-avatar
-          >
-            <UAvatar
-              :src="headerAvatarSrc"
-              :alt="headerAvatarName || 'User avatar'"
-              :text="headerAvatarText"
+          <template v-else-if="isSignedIn">
+            <UBadge
+              v-if="isPremium"
+              color="primary"
+              variant="soft"
               size="sm"
-            />
-          </UButton>
+            >
+              Premium
+            </UBadge>
+
+            <UButton
+              to="/dashboard"
+              variant="ghost"
+              color="neutral"
+              aria-label="Go to dashboard"
+              data-fireux-header-avatar
+            >
+              <UAvatar
+                :src="headerAvatarSrc"
+                :alt="headerAvatarName || 'User avatar'"
+                :text="headerAvatarText"
+                size="sm"
+              />
+            </UButton>
+          </template>
 
           <USkeleton
             v-else
@@ -109,7 +119,7 @@ const mobileItems = computed(() =>
 
 /** Auth */
 const { authPhase, isSignedIn } = useConsoleEntryState()
-const { currentUser, avatarSrc } = useUser()
+const { currentUser, avatarSrc, isPremium } = useUser()
 const { currentUser: authUser } = useAuth()
 const { getProxiedAvatarUrl } = useAvatarProxy()
 const headerAvatarName = computed(() =>

@@ -71,6 +71,19 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     })
   }
 
+  const updateAppUserPremium = async (
+    uid: string,
+    isPremium: boolean
+  ) => {
+    const appId = ensureAppId()
+    const userId = String(uid ?? '').trim()
+    if (!userId) throw new Error('[useAppUpdate] Missing uid')
+
+    await updateDocument(`apps/${appId}/users`, userId, {
+      is_premium: Boolean(isPremium),
+    })
+  }
+
   const text = (raw: unknown, max: number) =>
     String(raw ?? '')
       .trim()
@@ -233,6 +246,10 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     await updateAppMembership(uid, membershipRole)
   }
 
+  async function setAppUserPremium(uid: string, isPremium: boolean) {
+    await updateAppUserPremium(uid, isPremium)
+  }
+
   return {
     updateDescription,
     updateTagline,
@@ -251,6 +268,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     overwriteImageFromLocal,
     handleJoinRequests,
     setAppUserAdmin,
+    setAppUserPremium,
     membership: {
       setAdmin: (uid: string, makeAdmin: boolean) =>
         updateAppMembership(uid, makeAdmin ? 'admin' : 'user'),

@@ -1,12 +1,13 @@
 import { computed } from '#imports'
 import type {
-    AppUser,
-    User,
+  AppUser,
+  User,
 } from '../../../../../../../models/core/user.model'
 import { useFireUXConfig } from '../../../../../app/FireUXConfig'
 import { useAvatarProxy } from '../../../../../app/ui/useAvatarProxy'
 import { useAuth } from '../../../../../firebase/useAuth'
 import type { UserRefs } from '../../fetch/useUserFetch'
+import { useUserPermissions } from './useUserPermissions'
 
 type UserCtaKey = 'sign-in' | 'create-core-user' | 'join-app' | 'avatar'
 
@@ -32,6 +33,7 @@ export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
   const { uid, isAuthenticated, currentUser: authUserRef } = useAuth()
   const { isTenant, appId } = useFireUXConfig()
   const { getProxiedAvatarUrl } = useAvatarProxy()
+  const permissions = useUserPermissions(user)
 
   const isPending = computed(() => Boolean(pending?.value))
   const isLoading = computed(
@@ -56,17 +58,6 @@ export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
     return true
   })
   const currentUser = computed(() => coreUser.value ?? null)
-
-  const isAdmin = computed(() => {
-    if (appUser.value?.role === 'admin') return true
-
-    const activeAppId = appId?.trim()
-    if (!activeAppId) return false
-
-    // Fall back to core app membership so admin UI works when app overlay
-    // docs are missing or still onboarding.
-    return Boolean(coreUser.value?.adminOf?.some((id) => id === activeAppId))
-  })
 
   const cta = computed((): UserCta => {
     if (!isAuthenticated.value || !uid.value) return CTA_SIGN_IN
@@ -99,7 +90,7 @@ export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
     isLoading,
     isResolved,
     isInitialized,
-    isAdmin,
+    ...permissions,
     cta,
     hasProfile,
   }

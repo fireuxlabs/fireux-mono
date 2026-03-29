@@ -7,6 +7,15 @@
     <template #right>
       <slot name="right" />
 
+      <UBadge
+        v-if="isPremium"
+        color="primary"
+        variant="soft"
+        size="sm"
+      >
+        Premium
+      </UBadge>
+
       <UTooltip text="Notifications" :shortcuts="['N']">
         <UButton
           color="neutral"
@@ -25,6 +34,7 @@
 
 <script setup lang="ts">
 import { useConsoleNotifications } from '../../../composables/fireux/app/ui/useConsoleNotifications'
+import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
 defineProps<{
   title: string
@@ -32,4 +42,5 @@ defineProps<{
 }>()
 
 const { open: openNotifications } = useConsoleNotifications()
+const { isPremium } = useUser()
 </script>

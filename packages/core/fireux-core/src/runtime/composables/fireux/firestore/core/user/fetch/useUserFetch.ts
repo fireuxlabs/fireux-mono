@@ -35,6 +35,10 @@ function normalizeAppUser(raw: AppUser, fallbackId: string): AppUser {
     ...raw,
     id: raw.id ?? fallbackId,
     role: raw.role === 'admin' ? 'admin' : 'user',
+    is_premium:
+      typeof anyRaw.is_premium === 'boolean'
+        ? anyRaw.is_premium
+        : false,
     console_enabled:
       typeof anyRaw.console_enabled === 'boolean'
         ? anyRaw.console_enabled

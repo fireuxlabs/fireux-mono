@@ -1,7 +1,8 @@
-import { doc, getDoc } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestore } from '../../../vuefire'
+import { useAuth } from '../../../../firebase/useAuth'
 
 export type ConsoleEntityType = 'kitchen' | 'portfolio' | 'supplier' | 'project'
 export type ConsoleCreateMode = 'public' | 'console'
@@ -41,6 +42,40 @@ export function useConsoleEnsure() {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
   const { appId } = useFireUXConfig()
+  const { uid } = useAuth()
+
+  async function assertCanCreateAdditionalConsole(
+    type: ConsoleEntityType,
+    overlayId: string
+  ) {
+    const currentUid = normalizeId(uid.value)
+    const currentAppId = normalizeId(appId)
+    if (!currentUid || !currentAppId) return
+
+    const appUserRef = doc(db, 'apps', currentAppId, 'users', currentUid)
+    const appUserSnap = await getDoc(appUserRef)
+    const isPremium = appUserSnap.exists() && appUserSnap.get('is_premium') === true
+    if (isPremium) return
+
+    const collectionName = consoleCollectionByType[type]
+    const overlaysQuery = query(
+      collection(db, 'apps', currentAppId, collectionName),
+      where('admin_ids', 'array-contains', currentUid)
+    )
+    const overlaysSnap = await getDocs(overlaysQuery)
+
+    const accessibleOverlayIds = overlaysSnap.docs
+      .filter((snap) => snap.get('console_enabled') !== false)
+      .map((snap) => normalizeId(snap.id))
+      .filter(Boolean)
+
+    if (!accessibleOverlayIds.length) return
+    if (accessibleOverlayIds.includes(overlayId)) return
+
+    throw new Error(
+      `Standard users can only own one live ${type} console per app. Premium unlocks multiple.`
+    )
+  }
 
   async function ensureConsole<TOverlay>(
     options: ConsoleEnsureOptions<TOverlay>
@@ -112,6 +147,7 @@ export function useConsoleEnsure() {
     const overlaySnap = await getDoc(overlayRef)
 
     if (!overlaySnap.exists()) {
+      await assertCanCreateAdditionalConsole(options.type, resolvedOverlayId)
       const overlayPayload = await options.createOverlay(id)
       await setDocument<TOverlay>(
         `apps/${appId}/${collectionName}`,

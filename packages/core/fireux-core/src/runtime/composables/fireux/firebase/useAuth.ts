@@ -1,4 +1,5 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/firebase/useAuth.ts
+import { useState } from '#imports'
 import { getApps } from 'firebase/app'
 import {
     createUserWithEmailAndPassword,
@@ -20,6 +21,8 @@ import { useUserEnsure } from '../firestore/core/user/mutations/useUserEnsure'
 
 let googleSignInInFlight: Promise<User | null> | null = null
 let googleRedirectResultInFlight: Promise<User | null> | null = null
+let authStateUnsubscribe: (() => void) | null = null
+let bindRetryTimer: ReturnType<typeof setTimeout> | null = null
 
 export type AuthUser = {
   uid?: string | null
@@ -54,13 +57,11 @@ export function useAuth() {
   })()
 
   // “stable” refs we always return (never throw)
-  const auth = ref<Auth | null>(null)
-  const currentUser = ref<User | null>(null) as Ref<User | null>
-  const isReady = ref(false)
-  const hasAuthState = ref(false)
-  const lastBindError = ref<unknown>(null)
-
-  let authStateUnsubscribe: (() => void) | null = null
+  const auth = useState<Auth | null>('fireux_auth_instance', () => null)
+  const currentUser = useState<User | null>('fireux_auth_current_user', () => null) as Ref<User | null>
+  const isReady = useState('fireux_auth_ready', () => false)
+  const hasAuthState = useState('fireux_auth_has_auth_state', () => false)
+  const lastBindError = useState<unknown>('fireux_auth_bind_error', () => null)
 
   const armAuthStateResolution = () => {
     if (!import.meta.client) return
@@ -87,6 +88,20 @@ export function useAuth() {
         authStateUnsubscribe = null
       }
     )
+  }
+
+  const scheduleBindRetry = () => {
+    if (!import.meta.client) return
+    if (isReady.value || hasAuthState.value) return
+    if (bindRetryTimer) return
+
+    bindRetryTimer = globalThis.setTimeout(() => {
+      bindRetryTimer = null
+      if (isReady.value || hasAuthState.value) return
+      bind()
+      armAuthStateResolution()
+      scheduleBindRetry()
+    }, 100)
   }
 
   const bind = () => {
@@ -120,12 +135,14 @@ export function useAuth() {
 
   // first attempt (works when vuefire is already installed)
   bind()
+  scheduleBindRetry()
 
   // retry after mount (covers “installed a moment later” cases)
   if (import.meta.client) {
     onMounted(() => {
       if (!isReady.value) bind()
       armAuthStateResolution()
+      scheduleBindRetry()
       void resolveGoogleRedirectResult()
     })
   }

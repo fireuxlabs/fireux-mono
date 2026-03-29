@@ -186,6 +186,9 @@ export async function ensureUserAppMembership(
     if (current?.role !== membershipRole) {
       patch.role = membershipRole
     }
+    if (typeof (current as any)?.is_premium !== 'boolean') {
+      patch.is_premium = false
+    }
     if (typeof (current as any)?.console_enabled !== 'boolean') {
       patch.console_enabled = membershipRole === 'admin'
     }
@@ -207,6 +210,7 @@ export async function ensureUserAppMembership(
       appUserRef,
       {
         role: membershipRole,
+        is_premium: false,
         console_enabled: membershipRole === 'admin',
         console_scopes: [],
         notifications: [],

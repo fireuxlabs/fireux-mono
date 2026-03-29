@@ -34,7 +34,8 @@
             block
             variant="subtle"
             color="primary"
-            icon="i-lucide-plus"
+            :icon="createCopy.limitReached ? 'i-lucide-lock' : 'i-lucide-plus'"
+            :disabled="createCopy.disabled"
             @click="createSupplier"
           >
             {{ createCopy.label }}
@@ -58,7 +59,30 @@
     </template>
 
     <template #readOnly>
-      <div v-if="readOnlyPills.length" class="space-y-2">
+      <div
+        v-if="showPremiumPreviewToggle"
+        class="flex items-center justify-between gap-3 rounded-lg border border-default px-3 py-2"
+      >
+        <div class="space-y-1">
+          <p class="text-sm font-medium">View as premium</p>
+          <p class="text-xs text-dimmed">
+            Preview the grouped premium operator view for read-only suppliers.
+          </p>
+        </div>
+        <USwitch v-model="premiumPreviewEnabled" />
+      </div>
+
+      <div v-if="showBundledReadOnly && bundledReadOnlyPill" class="space-y-2">
+        <SupplierCardsPill
+          v-bind="bundledReadOnlyPill"
+          :link="false"
+          :action="true"
+          :show-badges="false"
+          class="cursor-pointer"
+          @action="goToSupplier('read-only')"
+        />
+      </div>
+      <div v-else-if="readOnlyPills.length" class="space-y-2">
         <SupplierCardsPill
           v-for="item in readOnlyPills"
           :key="item.id"
@@ -100,7 +124,9 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { resolveConsoleEntryPath } from 'fireux-core/runtime/composables/fireux/app/ui/console-entry-routing'
 import { resolveConsoleCreateCopy } from 'fireux-core/runtime/composables/fireux/app/ui/console-create-copy'
+import { useConsoleReadOnlyPreview } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleReadOnlyPreview'
 import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
 import { getReadOnlySupplierScenarioList } from '../../../composables/fireux/app/supplier-console/read-only-scenarios'
 import type { RuntimeSupplierMode } from '../../../composables/fireux/app/supplier-console/state'
@@ -118,6 +144,7 @@ const props = withDefaults(defineProps<{
 const route = useRoute()
 const router = useRouter()
 const { uid, isSignedIn } = useConsoleEntryState()
+const { canOwnMultipleConsoles } = useUser()
 const { setRuntimeSupplier } = useRuntimeSupplierSelection()
 const supplierRecord = useSupplierRecord(computed(() => String(uid.value || '').trim()))
 const { pill: supplierPill } = useSupplierInterface(supplierRecord)
@@ -126,6 +153,8 @@ const createCopy = computed(() =>
     entityLabel: 'supplier',
     createSurface: props.createSurface,
     signedIn: isSignedIn.value,
+    ownedCount: liveSupplierPill.value ? 1 : 0,
+    canOwnMultipleConsoles: canOwnMultipleConsoles.value,
     publicPath: '/suppliers/create',
     consolePath: '/console/supplier/create',
   })
@@ -147,6 +176,36 @@ const readOnlyPills = computed(() =>
     }))
     .filter((entry) => Boolean(entry.id))
 )
+
+const {
+  premiumPreviewEnabled,
+  showPremiumPreviewToggle,
+  showBundledReadOnly,
+  bundledTitle,
+  bundledSubtitle,
+} = useConsoleReadOnlyPreview({
+  entityKey: 'supplier',
+  bundleTitle: 'My Read-only Suppliers',
+  singularNoun: 'supplier',
+  pluralNoun: 'suppliers',
+  signedIn: isSignedIn,
+  isPremium: canOwnMultipleConsoles,
+  itemCount: computed(() => readOnlyPills.value.length),
+})
+
+const bundledReadOnlyPill = computed(() => {
+  if (!showBundledReadOnly.value) return null
+
+  const firstScenario = readOnlyPills.value[0]
+
+  return {
+    id: 'my-read-only-suppliers',
+    to: '',
+    title: bundledTitle.value,
+    subtitle: bundledSubtitle.value,
+    imageUrl: String(firstScenario?.imageUrl || '').trim(),
+  }
+})
 
 const goToSupplier = async (mode: RuntimeSupplierMode, supplierId?: string) => {
   if (mode === 'read-only') {
@@ -171,6 +230,8 @@ const createSupplier = async () => {
     await router.push(signInPath.value)
     return
   }
+
+  if (createCopy.value.disabled) return
 
   await router.push(createCopy.value.createPath)
 }

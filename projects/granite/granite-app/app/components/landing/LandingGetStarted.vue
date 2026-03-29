@@ -50,10 +50,10 @@
       </div>
 
       <div class="flex flex-wrap gap-3">
-        <UButton to="/console/portfolio/overview" color="primary" icon="i-lucide-building">
+        <UButton to="/console/portfolio" color="primary" icon="i-lucide-building">
           Select portfolio
         </UButton>
-        <UButton to="/console/portfolio/overview" variant="outline" icon="i-lucide-terminal">
+        <UButton to="/console/portfolio" variant="outline" icon="i-lucide-terminal">
           Enter via selector
         </UButton>
       </div>
