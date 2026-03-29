@@ -15,14 +15,14 @@ import type { FireuxStamped } from './meta.model'
  * - This file defines the shared base shapes so individual profile files stay aligned.
  * - If the identity rule changes later, update the models README first, then this file.
  */
-export const ProfileCoreFields = {
+export const ProfileFields = {
   title: '' as string,
   subtitle: '' as string,
   tagline: '' as string,
   tags: [] as string[],
 } as const
 
-export const ProfileCoreStamps = {
+export const ProfileStamps = {
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['created']['by'],
@@ -33,7 +33,7 @@ export const ProfileCoreStamps = {
   },
 } as const
 
-export const ProfileAppStamps = {
+export const AppProfileStamps = {
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['created']['by'],
@@ -45,36 +45,36 @@ export const ProfileAppStamps = {
   },
 } as const
 
-export function createProfileCoreSeed() {
+export function createProfileSeed() {
   return {
     id: '' as string,
-    title: ProfileCoreFields.title,
-    subtitle: ProfileCoreFields.subtitle,
-    tagline: ProfileCoreFields.tagline,
-    tags: [...ProfileCoreFields.tags],
-    created: { ...ProfileCoreStamps.created },
-    updated: { ...ProfileCoreStamps.updated },
+    title: ProfileFields.title,
+    subtitle: ProfileFields.subtitle,
+    tagline: ProfileFields.tagline,
+    tags: [...ProfileFields.tags],
+    created: { ...ProfileStamps.created },
+    updated: { ...ProfileStamps.updated },
   }
 }
 
-export function createProfileAppSeed() {
+export function createAppProfileSeed() {
   return {
     id: '' as string,
-    created: { ...ProfileAppStamps.created },
-    updated: { ...ProfileAppStamps.updated },
+    created: { ...AppProfileStamps.created },
+    updated: { ...AppProfileStamps.updated },
   }
 }
 
 /**
- * Core profile doc base shape (global truth)
+ * Profile doc base shape (global truth)
  * Example path: /chefs/<uid>, /agents/<uid>, /professionals/<uid>, etc.
  *
  * Canon notes:
- * - Core profiles are user-owned (creator_id optional; uid is the authority)
+ * - Profiles are user-owned (creator_id optional; uid is the authority)
  * - `tagline` is now universal (remove duplication from each profile)
  * - `tags` are stored (UI derives badges)
  */
-export type CoreProfileBase = FireuxStamped & {
+export type ProfileBase = FireuxStamped & {
   id: string
 
   title: string

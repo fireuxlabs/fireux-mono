@@ -18,23 +18,22 @@ export type ProjectType = 'standalone_app' | 'ecosystem_app'
  * - Public project creation should create the root project record.
  * - Console project creation should ensure the app-scoped project overlay and may create root first when missing.
  * - Console authority stays user-based in the overlay; `owner_user_id` is a canonical root ownership hint, not a replacement for overlay admin authority.
+ * - Public facade depth can vary by family; Project may stay relatively thin publicly while still using the same root-plus-overlay pattern.
  * - If Project later grows operational child records, they should live under /apps/<appId>/projects/<projectId>/...
  * - Project still remains a system-console special case because endpoint enrichment and system metadata are central to its runtime.
  * - If this decision changes, update the models README first, then this file.
  */
-export const ProjectCore = {
+export const ProjectModel = {
   id: '',
 
   name: '',
   slug: '',
   description: '',
   image_url: '',
-
   status: 'active' as ProjectStatus,
+  source_url: '',
   primary_project: false,
   project_type: 'standalone_app' as ProjectType,
-
-  source_url: '',
   console_endpoint_url: '',
   app_id: '',
   ecosystem_id: '',
@@ -52,43 +51,20 @@ export const ProjectCore = {
   },
 } as const
 
-export type ProjectCore = {
-  [K in keyof typeof ProjectCore]: (typeof ProjectCore)[K]
+export type Project = {
+  [K in keyof typeof ProjectModel]: (typeof ProjectModel)[K]
 }
 
-export const ProjectApp = {
+export const ConsoleProjectModel = {
   ...FireuxConsoleOverlay,
 } as const
 
-export type ProjectApp = {
-  [K in keyof typeof ProjectApp]: (typeof ProjectApp)[K]
+export type ConsoleProject = {
+  [K in keyof typeof ConsoleProjectModel]: (typeof ConsoleProjectModel)[K]
 }
 
-export type Project = ProjectCore
-export const Project = ProjectCore
-
-export type ProjectCreateInput = Omit<ProjectCore, 'created' | 'updated' | 'owner_user_id'> & {
+export type ProjectCreateInput = Omit<Project, 'created' | 'updated' | 'owner_user_id'> & {
   owner_user_id?: string
 }
 
-export type ProjectUpdateInput = Partial<
-  Pick<
-    ProjectCore,
-    | 'name'
-    | 'slug'
-    | 'description'
-    | 'image_url'
-    | 'status'
-    | 'primary_project'
-    | 'project_type'
-    | 'source_url'
-    | 'console_endpoint_url'
-    | 'app_id'
-    | 'ecosystem_id'
-    | 'firebase_project_id'
-    | 'owner_user_id'
-  >
->
-
-export type ProjectDoc = Omit<ProjectCore, 'id'>
-export type ProjectResolved = ProjectCore
+export type ProjectUpdateInput = Partial<Omit<Project, 'id' | 'created' | 'updated'>>

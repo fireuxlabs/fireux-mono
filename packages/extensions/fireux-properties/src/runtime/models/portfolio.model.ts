@@ -14,6 +14,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  *
  * Decision note:
  * - Portfolio is one domain entity with a root public entity and an app-hosted portfolio console overlay.
+ * - Public facade depth can vary by family; Portfolio can stay intentionally minimal in public while still using the same root-plus-overlay pattern.
  * - The overlay exists because real governance and console state can differ by app.
  * - Console authority stays user-based in the overlay; if a future operator profile appears, it should remain a prerequisite or presentation layer over the same overlay pattern.
  * - Portfolio-owned operational children should live beneath the app-hosted overlay.
@@ -21,7 +22,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  */
 
 export type PortfolioStatus = 'active' | 'archived'
-export const PortfolioCore = {
+export const PortfolioModel = {
   id: '',
   name: '',
   slug: '',
@@ -40,27 +41,22 @@ export const PortfolioCore = {
   },
 } as const
 
-export type PortfolioCore = {
-  [K in keyof typeof PortfolioCore]: (typeof PortfolioCore)[K]
+export type Portfolio = {
+  [K in keyof typeof PortfolioModel]: (typeof PortfolioModel)[K]
 }
 
-export const PortfolioApp = {
+export const ConsolePortfolioModel = {
   ...FireuxConsoleOverlay,
 } as const
 
-export type PortfolioApp = {
-  [K in keyof typeof PortfolioApp]: (typeof PortfolioApp)[K]
+export type ConsolePortfolio = {
+  [K in keyof typeof ConsolePortfolioModel]: (typeof ConsolePortfolioModel)[K]
 }
 
-export type Portfolio = PortfolioCore
-
-export type PortfolioCreateInput = Omit<PortfolioCore, 'id' | 'created' | 'updated'> & {
+export type PortfolioCreateInput = Omit<Portfolio, 'id' | 'created' | 'updated'> & {
   slug?: string
 }
 
 export type PortfolioUpdateInput = Partial<
-  Pick<
-    PortfolioCore,
-    'name' | 'slug' | 'owner_label' | 'status' | 'strategy_label' | 'region_label' | 'notes'
-  >
+  Omit<Portfolio, 'id' | 'created' | 'updated'>
 >

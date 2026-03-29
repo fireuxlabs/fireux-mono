@@ -17,7 +17,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - If that changes later, update the models README first, then this file.
  */
 
-export const ChefCore = {
+export const ChefModel = {
   id: '' as string,
 
   // Chef (scoped, v1)
@@ -53,11 +53,11 @@ export const ChefCore = {
   },
 } as const
 
-export type ChefCore = {
-  [K in keyof typeof ChefCore]: (typeof ChefCore)[K]
+export type Chef = {
+  [K in keyof typeof ChefModel]: (typeof ChefModel)[K]
 }
 
-export const ChefApp = {
+export const AppChefModel = {
   id: '' as string,
 
   // Stamps
@@ -71,6 +71,9 @@ export const ChefApp = {
   },
 } as const
 
-export type ChefApp = {
-  [K in keyof typeof ChefApp]: (typeof ChefApp)[K]
+export type AppChef = {
+  [K in keyof typeof AppChefModel]: (typeof AppChefModel)[K]
 }
+
+export type ChefCreateInput = Omit<Chef, 'id' | 'created' | 'updated'>
+export type ChefUpdateInput = Partial<Omit<Chef, 'id' | 'created' | 'updated'>>

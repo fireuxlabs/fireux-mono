@@ -123,33 +123,3 @@ export type KitchenSupplierIngredientCreateInput = Omit<
 export type KitchenSupplierIngredientUpdateInput = Partial<
   Omit<KitchenSupplierIngredientCreateInput, 'kitchen_id' | 'supplier_id' | 'ingredient_id'>
 >
-
-/**
- * Read-time convenience shape for kitchen ingredient screens.
- * This is not stored as-is.
- */
-export type KitchenIngredientResolved = KitchenIngredient &
-  {
-    supplier_id?: string
-    supplier_name?: string
-  } &
-  Partial<
-    Pick<
-      Ingredient,
-      | 'name'
-      | 'image_url'
-    >
-  >
-
-/**
- * Read-time convenience shape for kitchen supplier ingredient screens.
- * This is not stored as-is.
- */
-export type KitchenSupplierIngredientResolved = KitchenSupplierIngredient &
-  Partial<
-    Pick<
-      Ingredient,
-      | 'name'
-      | 'image_url'
-    >
-  >

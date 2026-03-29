@@ -1,7 +1,6 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
-import type { CoreUser } from 'fireux-core/runtime/models/core/user.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -17,7 +16,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - The overlay is deliberately small until an app truly needs more scoped state.
  * - If this changes later, update the models README first, then this file.
  */
-export const AgentCore = {
+export const AgentModel = {
   id: '',
   title: '',
   summary: '',
@@ -44,11 +43,11 @@ export const AgentCore = {
   },
 } as const
 
-export type AgentCore = {
-  [K in keyof typeof AgentCore]: (typeof AgentCore)[K]
+export type Agent = {
+  [K in keyof typeof AgentModel]: (typeof AgentModel)[K]
 }
 
-export const AgentApp = {
+export const AppAgentModel = {
   id: '',
   created: {
     at: {} as FirebaseTimestamp,
@@ -60,13 +59,9 @@ export const AgentApp = {
   },
 } as const
 
-export type AgentApp = {
-  [K in keyof typeof AgentApp]: (typeof AgentApp)[K]
+export type AppAgent = {
+  [K in keyof typeof AppAgentModel]: (typeof AppAgentModel)[K]
 }
 
-export type AgentUserSummary = Pick<CoreUser, 'id' | 'display_name' | 'avatar'> &
-  Partial<Pick<CoreUser, 'handle' | 'email'>>
-
-export type AgentResolved = AgentCore & {
-  user?: CoreUser | AgentUserSummary
-}
+export type AgentCreateInput = Omit<Agent, 'id' | 'created' | 'updated'>
+export type AgentUpdateInput = Partial<Omit<Agent, 'id' | 'created' | 'updated'>>

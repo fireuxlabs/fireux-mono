@@ -35,4 +35,3 @@ export type Module = {
 }
 
 export type ModuleDoc = Omit<Module, 'id'>
-export type ModuleResolved = Module

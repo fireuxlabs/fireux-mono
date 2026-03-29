@@ -76,6 +76,5 @@ export type App = {
 }
 
 export type AppDoc = Omit<App, 'id'>
-export type AppResolved = App
 export type AppCreateInput = Omit<App, 'id' | 'created' | 'updated'>
 export type AppUpdateInput = Partial<Omit<AppCreateInput, never>>

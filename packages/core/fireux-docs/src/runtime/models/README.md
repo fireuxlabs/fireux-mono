@@ -1,7 +1,7 @@
 # Models Directory
 
 Authority: Operational
-Updated: 2026-03-26
+Updated: 2026-03-29
 Scope: `packages/*/fireux-*/src/runtime/models` and child directories under `models/*`.
 
 Learn how FireUX runtime models are classified, how they are stored, and how future model decisions should be explained.
@@ -33,6 +33,14 @@ Identity models normally use root plus overlay storage:
 - root canonical record
 - app-scoped overlay only when real scoped stored state exists
 
+Preferred model-file shape for identity models:
+- `XModel`
+- `AppXModel`
+- `X`
+- `AppX`
+- `XCreateInput`
+- `XUpdateInput`
+
 ### Console-backed Domain
 
 Where people operate.
@@ -58,6 +66,10 @@ Useful simplifier:
 Important:
 - the console itself is not a root entity
 - the app hosts a console over the public entity
+- public richness can vary by family:
+  - `Kitchen` can be rich and public-facing
+  - `Portfolio` can be intentionally thin because much of its data is confidential
+  - `Project` and `Supplier` can sit somewhere in between
 
 Examples:
 - `kitchens/<kitchenId>`
@@ -153,21 +165,33 @@ Use an overlay only when scoped truth really exists.
 For console-backed domains, the overlay is the app-hosted console for that root public entity.
 
 Examples:
-- `CoreUser` + `AppUser`
-- `KitchenCore` + `KitchenApp`
-- `PortfolioCore` + `PortfolioApp`
-- `SupplierCore` + `SupplierApp`
-- `ProjectCore` + `ProjectApp`
+- `User` + `AppUser`
+- `Kitchen` + `ConsoleKitchen`
+- `Portfolio` + `ConsolePortfolio`
+- `Supplier` + `ConsoleSupplier`
+- `Project` + `ConsoleProject`
 
 Preferred model-file shape for console-backed domains:
-- `XCore`
-- `XApp`
-- `X` as the public/root read alias, usually `type X = XCore`
+- `XModel`
+- `ConsoleXModel`
+- `X`
+- `ConsoleX`
 - `XCreateInput`
 - `XUpdateInput`
 
-Compatibility note:
-- if an older file still exports `Project` or another legacy root name, keep a compatibility alias while consumers are aligned toward `XCore`
+The `User` model is the current reference pattern:
+- `User`
+- `AppUser`
+
+Console-backed domain entities should use the same simple dual-model idea as `User`, but with console wording:
+- one root canonical model
+- one console overlay model
+
+Field-discipline rule:
+- keep the root model honest and compact
+- keep the console overlay focused on app-hosted governance and access
+- if a root model still carries legacy or confidential fields, simplify that in a focused cleanup pass rather than adding extra structural layers
+- if a family needs a richer combined read shape, build that in fetch/runtime/interface layers rather than in the model file
 
 ### Facade
 

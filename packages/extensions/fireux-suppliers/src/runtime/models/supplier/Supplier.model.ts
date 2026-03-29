@@ -15,6 +15,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase';
  * Decision note:
  * - Supplier is treated as a domain entity with a root public entity and an app-hosted supplier console, not as a user profile.
  * - The path should read as supplier identity rather than user identity, even while some profile-era content fields remain during simplification.
+ * - Public facade depth can vary by family; Supplier may expose only the fields that make sense for its marketplace/public role.
  * - Console authority stays user-based in the overlay; any future supplier operator profile should remain a prerequisite or presentation layer, not a second ownership model.
  * - Supplier operational state belongs to the app-hosted supplier console overlay.
  * - Supplier-owned child records, if they become real, should live beneath that overlay.
@@ -22,18 +23,17 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase';
  * - If that changes later, update the models README first, then this file.
  */
 
-export const SupplierCore = {
+export const SupplierModel = {
   id: '' as string,
 
-  // Display/content (minimal placeholder)
+  // Public-facing supplier identity/content
   supplier_headline: '' as string,
   supplier_bio: '' as string,
   supplier_image: '' as string,
-
   supplier_product_categories: [] as string[],
   supplier_delivery_areas: [] as string[],
-
   supplier_organization_name: '' as string,
+
   // Deprecated fields retained temporarily for migration compatibility.
   title: '' as string,
   subtitle: '' as string,
@@ -51,7 +51,6 @@ export const SupplierCore = {
   employee_count: 0 as number,
   certifications: [] as string[],
   delivery_range: 0 as number,
-
   // Stamps
   created: {
     at: {} as FirebaseTimestamp,
@@ -63,46 +62,20 @@ export const SupplierCore = {
   },
 } as const
 
-export type SupplierCore = {
-  [K in keyof typeof SupplierCore]: (typeof SupplierCore)[K]
+export type Supplier = {
+  [K in keyof typeof SupplierModel]: (typeof SupplierModel)[K]
 }
 
-export const SupplierApp = {
+export const ConsoleSupplierModel = {
   ...FireuxConsoleOverlay,
 } as const
 
-export type SupplierApp = {
-  [K in keyof typeof SupplierApp]: (typeof SupplierApp)[K]
+export type ConsoleSupplier = {
+  [K in keyof typeof ConsoleSupplierModel]: (typeof ConsoleSupplierModel)[K]
 }
 
-export type Supplier = SupplierCore
-
-export type SupplierCreateInput = Omit<SupplierCore, 'id' | 'created' | 'updated'>
+export type SupplierCreateInput = Omit<Supplier, 'id' | 'created' | 'updated'>
 
 export type SupplierUpdateInput = Partial<
-  Pick<
-    SupplierCore,
-    | 'supplier_headline'
-    | 'supplier_bio'
-    | 'supplier_image'
-    | 'supplier_product_categories'
-    | 'supplier_delivery_areas'
-    | 'supplier_organization_name'
-    | 'title'
-    | 'subtitle'
-    | 'tagline'
-    | 'summary'
-    | 'bio_long'
-    | 'tags'
-    | 'specialties'
-    | 'categories'
-    | 'organization_name'
-    | 'business_type'
-    | 'locations'
-    | 'years_in_business'
-    | 'products_offered'
-    | 'employee_count'
-    | 'certifications'
-    | 'delivery_range'
-  >
+  Omit<Supplier, 'id' | 'created' | 'updated'>
 >

@@ -1,7 +1,6 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
-import type { CoreUser } from 'fireux-core/runtime/models/core/user.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type {
     CertificationItem,
@@ -26,7 +25,7 @@ import type {
  * - Keep the overlay minimal until a real app-specific need appears.
  * - If that changes later, update the models README first, then this file.
  */
-export const ProfessionalCore = {
+export const ProfessionalModel = {
   id: '',
   title: '',
   subtitle: '',
@@ -53,11 +52,11 @@ export const ProfessionalCore = {
   },
 } as const
 
-export type ProfessionalCore = {
-  [K in keyof typeof ProfessionalCore]: (typeof ProfessionalCore)[K]
+export type Professional = {
+  [K in keyof typeof ProfessionalModel]: (typeof ProfessionalModel)[K]
 }
 
-export const ProfessionalApp = {
+export const AppProfessionalModel = {
   id: '',
   created: {
     at: {} as FirebaseTimestamp,
@@ -69,13 +68,9 @@ export const ProfessionalApp = {
   },
 } as const
 
-export type ProfessionalApp = {
-  [K in keyof typeof ProfessionalApp]: (typeof ProfessionalApp)[K]
+export type AppProfessional = {
+  [K in keyof typeof AppProfessionalModel]: (typeof AppProfessionalModel)[K]
 }
 
-export type ProfessionalUserSummary = Pick<CoreUser, 'id' | 'display_name' | 'avatar'> &
-  Partial<Pick<CoreUser, 'handle' | 'email'>>
-
-export type ProfessionalResolved = ProfessionalCore & {
-  user?: CoreUser | ProfessionalUserSummary
-}
+export type ProfessionalCreateInput = Omit<Professional, 'id' | 'created' | 'updated'>
+export type ProfessionalUpdateInput = Partial<Omit<Professional, 'id' | 'created' | 'updated'>>

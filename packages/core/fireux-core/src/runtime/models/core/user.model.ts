@@ -18,7 +18,7 @@ import type { UserNotification } from './supporting/user'
  * - If the identity overlay rule changes later, update the models README first, then this file.
  */
 
-export const CoreUserModel = {
+export const UserModel = {
   id: '',
 
   display_name: '',
@@ -41,8 +41,8 @@ export const CoreUserModel = {
   },
 } as const
 
-export type CoreUser = {
-  [K in keyof typeof CoreUserModel]: (typeof CoreUserModel)[K]
+export type User = {
+  [K in keyof typeof UserModel]: (typeof UserModel)[K]
 }
 
 /**
@@ -71,8 +71,5 @@ export type AppUser = {
   [K in keyof typeof AppUserModel]: (typeof AppUserModel)[K]
 }
 
-export type UserResolved = CoreUser & {
-  appUser?: AppUser | null
-}
-export type CoreUserDoc = Omit<CoreUser, 'id'>
-export type AppUserDoc = Omit<AppUser, 'id'>
+export type UserCreateInput = Omit<User, 'id' | 'created' | 'updated'>
+export type UserUpdateInput = Partial<Omit<User, 'id' | 'created' | 'updated'>>

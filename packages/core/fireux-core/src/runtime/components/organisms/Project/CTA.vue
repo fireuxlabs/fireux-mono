@@ -23,6 +23,7 @@
               v-for="item in liveProjectCards"
               :key="item.id"
               :to="''"
+              :image-url="item.imageUrl"
               :title="item.title"
               :subtitle="item.subtitle"
               :badges="item.badges"
@@ -209,6 +210,7 @@ const liveProjects = computed(() =>
 const liveProjectCards = computed(() =>
   liveProjects.value.map((entry) => ({
     id: String((entry as any)?.id || '').trim(),
+    imageUrl: String((entry as any)?.image_url || '').trim(),
     title: String((entry as any)?.name || 'Project').trim(),
     subtitle: String((entry as any)?.slug || (entry as any)?.id || '').trim(),
     badges: [String((entry as any)?.status || 'active').trim()],

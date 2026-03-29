@@ -43,4 +43,3 @@ export type Ecosystem = {
 }
 
 export type EcosystemDoc = Omit<Ecosystem, 'id'>
-export type EcosystemResolved = Ecosystem

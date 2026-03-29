@@ -122,14 +122,6 @@ export type Job = {
 }
 
 /**
- * Read-time enrichment only (never stored)
- * Ecosystems can hydrate workplace_id to a concrete entity (kitchen, ship, truck).
- */
-export type JobResolved = Job & {
-  workplace?: unknown | null
-}
-
-/**
  * Create / update helpers
  */
 export type JobCreateInput = Omit<
