@@ -4,7 +4,7 @@ import { hydratePlaceCollection, hydratePlaceDoc } from 'fireux-places/runtime/c
 import type { Place } from 'fireux-places/runtime/models/place.model'
 import { computed, isRef, unref, type Ref } from 'vue'
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { Kitchen, KitchenCollection } from '../../../../../models/kitchen.model'
+import type { Kitchen } from '../../../../../models/kitchen.model'
 
 const DEFAULT_COLLECTION_PATH = 'kitchens'
 
@@ -66,7 +66,7 @@ export function useKitchenFetch(options: UseKitchenFetchOptions = {}) {
   }
 
   // ✅ raw Firestore sources
-  const kitchensCollection = firestoreFetchCollection<KitchenCollection>(collectionPath)
+  const kitchensCollection = firestoreFetchCollection<Kitchen>(collectionPath)
 
   // ✅ canonical hydration helpers (rename at call-site)
   const hydrate = hydratePlaceCollection
@@ -132,7 +132,7 @@ export function useKitchenFetch(options: UseKitchenFetchOptions = {}) {
     const resolvedPath = computed(() => String(unref(pathRef) || '').trim())
     const shouldHydrateDoc = kitchenOptions.hydrate ?? shouldHydrateCollection
 
-    const kitchenDoc = fetchDocRef<KitchenCollection>(resolvedPath, resolvedId)
+    const kitchenDoc = fetchDocRef<Kitchen>(resolvedPath, resolvedId)
 
     if (!shouldHydrateDoc) {
       return computed<Kitchen | undefined>(() => {

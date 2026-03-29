@@ -109,8 +109,8 @@ import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/v
 import { getDefaultReadOnlyKitchenScenario } from '../../../composables/fireux/app/kitchen-runtime/read-only-scenarios'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { KitchenIngredientModel } from '../../../models/ingredient.model'
-import type { Kitchen, KitchenCollection } from '../../../models/kitchen.model'
-import { KitchenCollection as KitchenModelRuntime } from '../../../models/kitchen.model'
+import type { Kitchen } from '../../../models/kitchen.model'
+import { KitchenModel as KitchenModelRuntime } from '../../../models/kitchen.model'
 
 defineOptions({ name: 'DevTestKitchenSystem' })
 
@@ -120,7 +120,7 @@ const db = useFirestore()
 const { setDocument } = useFirestoreCreate()
 
 const { firestoreFetchCollection } = useFirestoreRead()
-const kitchensCollection = firestoreFetchCollection<KitchenCollection>('test-kitchens')
+const kitchensCollection = firestoreFetchCollection<Kitchen>('test-kitchens')
 const { kitchens: hydratedKitchens } = useKitchenFetch({
   collectionPath: 'test-kitchens',
 })
@@ -282,13 +282,13 @@ const syncReadOnlyToTestKitchen = async () => {
   syncError.value = ''
 
   try {
-    const kitchenDoc: KitchenCollection = {
-      ...(readOnlyKitchenScenario.kitchen as KitchenCollection),
+    const kitchenDoc: Kitchen = {
+      ...(readOnlyKitchenScenario.kitchen as Kitchen),
       id: kitchenId,
       is_test_kitchen: true,
     }
 
-    await setDocument<KitchenCollection>('test-kitchens', kitchenId, kitchenDoc, {
+    await setDocument<Kitchen>('test-kitchens', kitchenId, kitchenDoc, {
       app: true,
       creator: true,
     })

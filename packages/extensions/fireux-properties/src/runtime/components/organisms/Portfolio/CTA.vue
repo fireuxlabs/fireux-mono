@@ -121,7 +121,7 @@ import type { RuntimePortfolioMode } from '../../../composables/fireux/app/portf
 import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
 import { usePortfolioFetch } from '../../../composables/fireux/firestore/portfolio/fetch/usePortfolioFetch'
 import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
-import type { PortfolioApp } from '../../../models/portfolio.model'
+import type { ConsolePortfolio } from '../../../models/portfolio.model'
 import PortfolioCardsPill from './Cards/Pill.vue'
 
 const props = withDefaults(defineProps<{
@@ -140,7 +140,7 @@ const { currentUser, avatarSrc } = useUser()
 const { appId, appLogo, appThumbnail } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
 const portfolioOverlays = appId
-  ? firestoreFetchCollection<PortfolioApp>(`apps/${appId}/portfolios`)
+  ? firestoreFetchCollection<ConsolePortfolio>(`apps/${appId}/portfolios`)
   : null
 const createCopy = computed(() =>
   resolveConsoleCreateCopy({

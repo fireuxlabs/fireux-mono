@@ -18,9 +18,9 @@
 </template>
 
 <script setup lang="ts">
-import type { SupplierCore } from '../../../../models/supplier/Supplier.model'
+import type { Supplier } from '../../../../models/supplier/Supplier.model'
 
 defineProps<{
-  supplier: Partial<SupplierCore> | null | undefined
+  supplier: Partial<Supplier> | null | undefined
 }>()
 </script>

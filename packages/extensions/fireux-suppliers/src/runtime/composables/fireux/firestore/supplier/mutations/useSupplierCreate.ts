@@ -10,7 +10,7 @@ import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firesto
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { SupplierApp, SupplierCore, SupplierCreateInput } from '../../../../../models/supplier/Supplier.model'
+import type { ConsoleSupplier, Supplier, SupplierCreateInput } from '../../../../../models/supplier/Supplier.model'
 
 const supplierCollection = 'suppliers'
 export type EnsureSupplierOptions = {
@@ -46,34 +46,19 @@ export function useSupplierCreate() {
       }
 
       const payload: SupplierCreateInput = {
+        supplier_organization_name: '',
         supplier_headline: '',
+        summary: '',
         supplier_bio: '',
         supplier_image: '',
         supplier_product_categories: [] as string[],
         supplier_delivery_areas: [] as string[],
-        supplier_organization_name: '',
-        title: '',
-        subtitle: '',
-        tagline: '',
-        tags: [] as string[],
-        summary: '',
-        bio_long: '',
-        specialties: [] as string[],
-        categories: [] as string[],
-        organization_name: '',
-        business_type: '',
-        locations: [] as Array<{ city: string; country: string }>,
-        years_in_business: 0,
-        products_offered: [] as string[],
-        employee_count: 0,
-        certifications: [] as string[],
-        delivery_range: 0,
       }
 
-      await setDocument<SupplierCore>(
+      await setDocument<Supplier>(
         supplierCollection,
         rootId,
-        payload as unknown as SupplierCore,
+        payload as unknown as Supplier,
         {
           creator: true,
         }
@@ -85,18 +70,18 @@ export function useSupplierCreate() {
       }
     }
 
-    const result = await ensureConsole<SupplierApp>({
+    const result = await ensureConsole<ConsoleSupplier>({
       type: 'supplier',
       mode: options.mode ?? 'console',
       existingRootId: requestedRootId || undefined,
       ensureRoot,
       createOverlay: async () => {
-        const payload: Omit<SupplierApp, 'created' | 'updated' | 'id'> = {
+        const payload: Omit<ConsoleSupplier, 'created' | 'updated' | 'id'> = {
           admin_ids: uid ? [uid] : ([] as string[]),
           join_requests: [] as string[],
           console_enabled: true,
         }
-        return payload as SupplierApp
+        return payload as ConsoleSupplier
       },
     })
 

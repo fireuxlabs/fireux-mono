@@ -8,12 +8,12 @@ import {
     safeString,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import type { CoreUser } from 'fireux-core/runtime/models/core/user.model'
+import type { User } from 'fireux-core/runtime/models/core/user.model'
 import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 import type { ChefCore } from 'fireux-kitchens/runtime/models/profiles/Chef/Chef.model'
 import type { Ref } from 'vue'
 
-type UserLike = Pick<CoreUser, 'display_name' | 'avatar'> & Partial<Pick<CoreUser, 'id'>>
+type UserLike = Pick<User, 'display_name' | 'avatar'> & Partial<Pick<User, 'id'>>
 type ChefTarget = ChefCore & { user?: UserLike | null }
 
 export namespace ChefCard {
@@ -35,7 +35,7 @@ export namespace ChefCard {
 
 export function useChefInterface(
   profile?: ProfileRefs<ChefCore> | null,
-  userRef?: Ref<CoreUser | null | undefined>
+  userRef?: Ref<User | null | undefined>
 ) {
   type ChefPill = ChefCard.Card
   type ChefCell = ChefCard.Card

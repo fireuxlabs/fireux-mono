@@ -102,7 +102,7 @@ import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
-import { CoreUserModel } from '../../models/core/user.model'
+import { UserModel } from '../../models/core/user.model'
 
 definePageMeta({
   layout: 'dev',
@@ -122,7 +122,7 @@ definePageMeta({
 const { users, error: usersError } = useUserCollection()
 
 const { isTenant } = useFireUXConfig()
-const userModelRuntime = CoreUserModel
+const userModelRuntime = UserModel
 const { currentUser: authUser } = useAuth()
 const { currentUser, avatarSrc, interface: userInterface } = useUser()
 const { getProxiedAvatarUrl } = useAvatarProxy()
@@ -146,7 +146,7 @@ const {
   filteredCollection: filteredUsers,
 } = useDevDriftFilter({
   collection: userCollection,
-  runtimeModel: CoreUserModel,
+  runtimeModel: UserModel,
 })
 
 const filteredUsersDriftPayload = computed(() =>

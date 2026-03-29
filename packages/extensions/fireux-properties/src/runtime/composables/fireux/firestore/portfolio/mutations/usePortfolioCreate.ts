@@ -9,8 +9,8 @@ import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firesto
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import type {
+  ConsolePortfolio,
   Portfolio,
-  PortfolioApp,
   PortfolioCreateInput,
 } from '../../../../../models/portfolio.model'
 
@@ -133,7 +133,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       return { id: slug, created: true }
     }
 
-    return ensureConsole<PortfolioApp>({
+    return ensureConsole<ConsolePortfolio>({
       type: 'portfolio',
       mode: ensureOptions.mode ?? 'console',
       existingRootId: requestedRootId || undefined,
@@ -143,7 +143,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
           admin_ids: uid.value ? [uid.value] : ([] as string[]),
           join_requests: [] as string[],
           console_enabled: true,
-        }) as PortfolioApp,
+        }) as ConsolePortfolio,
     })
   }
 

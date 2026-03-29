@@ -12,8 +12,8 @@ This file remains the short alignment index for entity modeling. The detailed cl
 ## Core Rule
 Every FireUX entity must belong to exactly one class:
 - `Root`
-- `Runtime Child`
-- `Dual-Layer`
+- `Scoped`
+- `Overlay-backed`
 
 ## Alignment Checks
 Before changing a model:
@@ -21,7 +21,7 @@ Before changing a model:
 2. Confirm the canonical Firestore path story.
 3. Confirm the exported object naming matches the class.
 4. Confirm stamps use nested `created` and `updated`.
-5. Confirm enriched read models are explicitly non-persisted.
+5. Confirm model files only describe stored shapes.
 
 ## Drift Rule
 If a model changes class or storage contract, update:

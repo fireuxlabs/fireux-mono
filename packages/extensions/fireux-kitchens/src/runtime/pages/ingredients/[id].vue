@@ -71,7 +71,7 @@
           </template>
 
           <div class="space-y-4">
-            <UFormGroup label="Image">
+            <UFormField label="Image">
               <div class="flex flex-col items-center gap-2">
                 <MoleculesFormsFirestoreImagePicker
                   :src="ingredient?.image_url || ''"
@@ -83,11 +83,11 @@
                   Uploading image…
                 </p>
               </div>
-            </UFormGroup>
+            </UFormField>
 
-            <UFormGroup label="Name" required>
+            <UFormField label="Name" required>
               <UInput v-model="form.name" placeholder="Ingredient name" />
-            </UFormGroup>
+            </UFormField>
 
             <div class="flex justify-end gap-2">
               <UButton

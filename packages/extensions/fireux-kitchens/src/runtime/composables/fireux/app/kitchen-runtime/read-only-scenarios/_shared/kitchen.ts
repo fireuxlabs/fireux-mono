@@ -1,4 +1,4 @@
-import { KitchenCollection, type Kitchen } from '../../../../../../models/kitchen.model'
+import { KitchenModel, type Kitchen } from '../../../../../../models/kitchen.model'
 
 type CreateReadOnlyKitchenParams = {
   id: string
@@ -14,7 +14,7 @@ export const createReadOnlyKitchen = (params: CreateReadOnlyKitchenParams): Kitc
   const imageUrl = String(params.imageUrl || '').trim()
 
   return {
-    ...KitchenCollection,
+    ...KitchenModel,
     id,
     is_test_kitchen: false,
     name: String(params.name || '').trim(),

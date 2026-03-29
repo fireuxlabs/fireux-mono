@@ -1,12 +1,11 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type {
-    ProjectApp,
-    ProjectCore,
-    Project,
-    ProjectCreateInput,
-    ProjectStatus,
-    ProjectType,
+  ConsoleProject,
+  Project,
+  ProjectCreateInput,
+  ProjectStatus,
+  ProjectType,
 } from '../../../../../../models/system/project.model'
 import { normalizeSlug } from '../../../../../../utils/slug/normalizeSlug'
 import { validateSlugFormat } from '../../../../../../utils/slug/validateSlugFormat'
@@ -110,7 +109,7 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
         return { id, created: false }
       }
 
-      const payload: Omit<ProjectCore, 'id' | 'created' | 'updated'> = {
+      const payload: Omit<Project, 'id' | 'created' | 'updated'> = {
         name,
         slug,
         description,
@@ -133,7 +132,7 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
       return { id, created: true }
     }
 
-    return ensureConsole<ProjectApp>({
+    return ensureConsole<ConsoleProject>({
       type: 'project',
       mode: ensureOptions.mode ?? 'console',
       existingRootId: requestedRootId || undefined,
@@ -143,7 +142,7 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
           admin_ids: [user.uid],
           join_requests: [] as string[],
           console_enabled: true,
-        }) as ProjectApp,
+        }) as ConsoleProject,
     })
   }
 

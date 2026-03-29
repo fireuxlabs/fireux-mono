@@ -97,9 +97,10 @@ const supplierRecord = computed<any>(() => (rawDoc as any)?.value ?? rawDoc ?? n
 const loading = computed(() => !rawDoc && !!docId)
 
 const resolveName = (p: any) =>
+  p?.supplier_organization_name ||
+  p?.supplier_headline ||
   p?.display_name ||
   p?.name ||
-  p?.title ||
   p?.agency_name ||
   p?.company_name ||
   p?.business_name ||

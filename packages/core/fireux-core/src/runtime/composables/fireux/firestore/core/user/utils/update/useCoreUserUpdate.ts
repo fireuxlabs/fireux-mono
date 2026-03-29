@@ -1,7 +1,7 @@
 import { addDoc, arrayRemove, arrayUnion, collection } from 'firebase/firestore'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type {
-    CoreUser,
+    User,
 } from '../../../../../../../models/core/user.model'
 import type { UserNotification } from '../../../../../../../models/core/supporting/user'
 import { useImageStorage } from '../../../../../firebase/useImageStorage'
@@ -18,7 +18,7 @@ export function useCoreUserUpdate(user: UserRefs) {
   const { claimHandle } = useUserHandleClaim()
   const db = useFirestore()
 
-  const core = user.coreUser as { value: CoreUser | undefined }
+  const core = user.coreUser as { value: User | undefined }
 
   const requireCoreId = () => {
     const id = core.value?.id
@@ -27,7 +27,7 @@ export function useCoreUserUpdate(user: UserRefs) {
   }
 
   const updateCore = (data: Record<string, unknown>) =>
-    updateDocument<CoreUser>('users', requireCoreId(), data as Partial<CoreUser>)
+    updateDocument<User>('users', requireCoreId(), data as Partial<User>)
 
   const formatAndValidate = <T>(
     formatter: {

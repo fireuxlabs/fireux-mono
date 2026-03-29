@@ -13,7 +13,7 @@ import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/v
 import type { FirebaseTimestamp } from '../../../../../../../types/firebase'
 import type {
   AppUser,
-  CoreUser,
+  User,
 } from '../../../../../../models/core/user.model'
 import type { NotificationScope, UserNotification } from '../../../../../../models/core/supporting/user'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
@@ -30,7 +30,7 @@ export type EnsureCoreOptions = {
 
 export type EnsureCoreResult = {
   created: boolean
-  snapshot?: DocumentSnapshot<CoreUser>
+  snapshot?: DocumentSnapshot<User>
   displayName: string
   handle: string
 }
@@ -78,7 +78,7 @@ export async function ensureCoreUserDocument(
   const snapshot = await getDoc(ref)
 
   if (snapshot.exists()) {
-    const data = snapshot.data() as CoreUser | undefined
+    const data = snapshot.data() as User | undefined
     const existingName = data?.display_name
     if (!existingName) {
       throw new Error('[ensureCoreUserDocument] Existing user missing display_name')
@@ -109,12 +109,12 @@ export async function ensureCoreUserDocument(
 
     if (Object.keys(patch).length) {
       const { updateDocument } = useFirestoreManager()
-      await updateDocument<CoreUser>('users', uid, patch as any)
+      await updateDocument<User>('users', uid, patch as any)
     }
 
     return {
       created: false,
-      snapshot: snapshot as DocumentSnapshot<CoreUser>,
+      snapshot: snapshot as DocumentSnapshot<User>,
       displayName: existingName,
       handle: resolvedHandle,
     }
@@ -145,7 +145,7 @@ export async function ensureCoreUserDocument(
   }
 
   const { setDocument } = useFirestoreManager()
-  await setDocument<CoreUser>('users', uid, payload as unknown as CoreUser)
+  await setDocument<User>('users', uid, payload as unknown as User)
 
   return { created: true, displayName, handle }
 }

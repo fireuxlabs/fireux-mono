@@ -1,6 +1,6 @@
 import { collection, query as fsq, type Query, type QueryDocumentSnapshot } from 'firebase/firestore'
 import { computed, ref, type Ref } from 'vue'
-import type { CoreUser } from '../../../../../../models/core/user.model'
+import type { User } from '../../../../../../models/core/user.model'
 import { useCollection, useFirestore } from '../../../vuefire'
 
 function isOfflineFirestoreError(error: unknown): boolean {
@@ -32,7 +32,7 @@ function guardCollectionPromise(
 export function useUserCollection() {
   if (import.meta.server) {
     return {
-      users: ref([] as CoreUser[]),
+      users: ref([] as User[]),
       count: ref(0),
       pending: ref(false),
       error: ref(undefined),
@@ -40,12 +40,12 @@ export function useUserCollection() {
   }
 
   const db = useFirestore()
-  const binding = useCollection<CoreUser>(
-    fsq(collection(db, 'users')) as Query<CoreUser>,
+  const binding = useCollection<User>(
+    fsq(collection(db, 'users')) as Query<User>,
     {
       ssrKey: 'users',
-      transform: (docSnap: QueryDocumentSnapshot<CoreUser>) => {
-        return { ...(docSnap.data() as CoreUser), id: docSnap.id } as CoreUser
+      transform: (docSnap: QueryDocumentSnapshot<User>) => {
+        return { ...(docSnap.data() as User), id: docSnap.id } as User
       },
     } as any
   )

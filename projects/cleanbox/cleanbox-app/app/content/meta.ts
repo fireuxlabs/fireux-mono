@@ -12,7 +12,7 @@ const sourceMeta = {
       'Cleanbox is the <strong>operating system</strong> for cleaning companies and crews. Coordinate schedules, quality checks, and billing from one <strong>streamlined console</strong>. Keep every service <strong>verified</strong>, recurring, and client-ready.',
     primaryCtaLabel: 'Get started',
     secondaryCtaLabel: 'Browse crews',
-    secondaryCtaTo: '/crews',
+    secondaryCtaTo: '/users',
     consoleBridgeLine:
       'The operating system for repeatable cleaning operations with <strong>proof</strong>, quality control, and billing discipline.',
     heroBullets: [

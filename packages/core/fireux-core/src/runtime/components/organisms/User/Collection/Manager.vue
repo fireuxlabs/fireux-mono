@@ -64,11 +64,11 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { computed } from 'vue';
 import { useUserInterface } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface';
 import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch';
-import type { CoreUser } from '../../../../models/core/user.model';
+import type { User } from '../../../../models/core/user.model';
 
 const props = withDefaults(
   defineProps<{
-    collection?: CoreUser[]
+    collection?: User[]
     title?: string
     description?: string
     link?: boolean
@@ -109,7 +109,7 @@ const {
   toggleVariant,
   cards: cardsFiltered,
   visibleCount,
-} = useCollectionSearch<CoreUser, ReturnType<typeof makeCard>>({
+} = useCollectionSearch<User, ReturnType<typeof makeCard>>({
   items: collection,
   searchText: (user) => searchText(user),
   makeCard: (user) => makeCard(user),

@@ -1,7 +1,7 @@
 import { createScopeConsole } from 'fireux-core/runtime/composables/fireux/app/console/createScopeConsole'
 import { useNav } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useNav'
 import { computed } from 'vue'
-import { useSupplierFetch } from '../../../supplier/useSupplierFetch'
+import { useSupplierFetch } from '../../firestore/supplier/fetch/useSupplierFetch'
 import { useRuntimeSupplier } from './useRuntimeSupplier'
 
 /**

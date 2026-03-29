@@ -1,41 +1,41 @@
 <template>
   <div class="space-y-4">
-    <UFormGroup label="Portfolio name" required>
+    <UFormField label="Portfolio name" required>
       <UInput
         v-model="name"
         placeholder="Bern Residential Portfolio"
         autofocus
       />
-    </UFormGroup>
+    </UFormField>
 
-    <UFormGroup label="Owner label">
+    <UFormField label="Owner label">
       <UInput
         v-model="ownerLabel"
         placeholder="Daniel Watson"
       />
-    </UFormGroup>
+    </UFormField>
 
-    <UFormGroup label="Region label">
+    <UFormField label="Region label">
       <UInput
         v-model="regionLabel"
         placeholder="Bern"
       />
-    </UFormGroup>
+    </UFormField>
 
-    <UFormGroup label="Strategy label">
+    <UFormField label="Strategy label">
       <UInput
         v-model="strategyLabel"
         placeholder="Income"
       />
-    </UFormGroup>
+    </UFormField>
 
-    <UFormGroup label="Notes">
+    <UFormField label="Notes">
       <UTextarea
         v-model="notes"
         :rows="4"
         placeholder="Short operating note for this portfolio."
       />
-    </UFormGroup>
+    </UFormField>
 
     <div v-if="error" class="text-sm text-red-600">
       {{ error }}

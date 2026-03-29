@@ -2,7 +2,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import type { SupplierApp, SupplierCore } from '../../../../../models/supplier/Supplier.model'
+import type { ConsoleSupplier, Supplier } from '../../../../../models/supplier/Supplier.model'
 import type { SupplierRefs } from '../fetch/useSupplierRecord'
 
 const supplierCollection = 'suppliers'
@@ -69,11 +69,11 @@ export function useSupplierUpdate(
   }
 
   const updateCoreSupplier = async (
-    patch: Partial<SupplierCore>,
+    patch: Partial<Supplier>,
     options: { id?: string | null } = {}
   ) => {
     const resolvedId = await resolveId(options.id)
-    await updateDocument<SupplierCore>(
+    await updateDocument<Supplier>(
       supplierCollection,
       resolvedId,
       pruneUndefined(patch)
@@ -82,7 +82,7 @@ export function useSupplierUpdate(
   }
 
   const updateAppSupplier = async (
-    patch: Partial<SupplierApp>,
+    patch: Partial<ConsoleSupplier>,
     options: { id?: string | null } = {}
   ) => {
     if (!isTenant || !appId) {
@@ -90,7 +90,7 @@ export function useSupplierUpdate(
     }
 
     const resolvedId = await resolveId(options.id)
-    await updateDocument<SupplierApp>(
+    await updateDocument<ConsoleSupplier>(
       `apps/${appId}/${supplierCollection}`,
       resolvedId,
       pruneUndefined(patch)
@@ -98,11 +98,11 @@ export function useSupplierUpdate(
   }
 
   const commitUpdate = async (
-    patch: Partial<SupplierCore>,
+    patch: Partial<Supplier>,
     options: UpdateOptions = {}
   ) => {
     if (options.scope === 'app') {
-      await updateAppSupplier(patch as Partial<SupplierApp>, options)
+      await updateAppSupplier(patch as Partial<ConsoleSupplier>, options)
       return
     }
 

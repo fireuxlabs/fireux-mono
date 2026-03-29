@@ -89,7 +89,7 @@ definePageMeta({
     visibility: { modules: ['fireux-properties'] },
     key: 'console-portfolio-clients',
     label: 'Clients',
-    icon: 'i-lucide-buildings',
+    icon: 'i-lucide-building-2',
     order: 22,
     desktop: true,
     mobile: true,

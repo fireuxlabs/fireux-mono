@@ -26,11 +26,14 @@ export type ProjectType = 'standalone_app' | 'ecosystem_app'
 export const ProjectModel = {
   id: '',
 
+  // Public-facing identity
   name: '',
   slug: '',
   description: '',
   image_url: '',
   status: 'active' as ProjectStatus,
+
+  // System/runtime identity
   source_url: '',
   primary_project: false,
   project_type: 'standalone_app' as ProjectType,
@@ -38,6 +41,8 @@ export const ProjectModel = {
   app_id: '',
   ecosystem_id: '',
   firebase_project_id: '',
+
+  // Canonical root ownership hint
   owner_user_id: '',
 
   created: {

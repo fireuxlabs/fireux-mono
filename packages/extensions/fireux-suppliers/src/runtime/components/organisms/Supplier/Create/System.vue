@@ -56,7 +56,7 @@
         </li>
         <li class="flex items-center gap-3 text-sm text-dimmed">
           <UIcon name="i-lucide-briefcase" />
-          <span>Add products, certifications, and details</span>
+          <span>Add categories, coverage, and supplier details</span>
         </li>
         <li class="flex items-center gap-3 text-sm text-dimmed">
           <UIcon name="i-lucide-sparkles" />

@@ -45,10 +45,6 @@ export type User = {
   [K in keyof typeof UserModel]: (typeof UserModel)[K]
 }
 
-// Compatibility bridge while older runtime surfaces finish moving from CoreUser* naming.
-export const CoreUserModel = UserModel
-export type CoreUser = User
-
 /**
  * App-specific user membership overlay.
  */

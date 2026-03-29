@@ -65,7 +65,7 @@ Relationship is not console authority.
 
 ### 3) Kitchen Model + Read/Hydration Contract
 - `packages/extensions/fireux-kitchens/src/runtime/models/kitchen.model.ts`
-  - Stored `KitchenCollection` is minimal: `id`, `is_test_kitchen`, timestamps.
+  - Stored `Kitchen` is minimal: `id`, `is_test_kitchen`, timestamps.
   - Runtime `Kitchen` is hydrated with place fields at read time.
 - `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenFetch.ts`
   - Hydrates kitchens with `places/{id}` data.

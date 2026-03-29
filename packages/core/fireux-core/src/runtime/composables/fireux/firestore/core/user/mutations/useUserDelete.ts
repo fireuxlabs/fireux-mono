@@ -1,8 +1,8 @@
 import { ref, type Ref } from 'vue'
-import type { CoreUser } from '../../../../../../models/core/user.model'
+import type { User } from '../../../../../../models/core/user.model'
 import type { UserRefs } from '../fetch/useUserFetch'
 
-type UserSource = Ref<CoreUser | null | undefined> | UserRefs | undefined
+type UserSource = Ref<User | null | undefined> | UserRefs | undefined
 
 export function useUserDelete(userRef?: UserSource) {
   const deleting = ref(false)
@@ -16,7 +16,7 @@ export function useUserDelete(userRef?: UserSource) {
       if (maybeGrouped && 'coreUser' in maybeGrouped) {
         return maybeGrouped.coreUser?.value?.id
       }
-      return (userRef as Ref<CoreUser | null | undefined>).value?.id
+      return (userRef as Ref<User | null | undefined>).value?.id
     })()
 
     if (!resolvedId) throw new Error('User id is required')

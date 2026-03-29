@@ -1,6 +1,6 @@
 import { useNuxtApp } from '#imports'
 import { computed, isRef, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
-import type { AppUser, CoreUser } from '../../../../../../models/core/user.model'
+import type { AppUser, User } from '../../../../../../models/core/user.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
@@ -12,7 +12,7 @@ type EnrichedUser = {
   email?: string
   profiles?: string[]
   appUser?: AppUser | null
-  coreUser?: CoreUser | null
+  coreUser?: User | null
 }
 
 type AppUserCollectionAppId =
@@ -52,14 +52,14 @@ export function useAppUserCollection(appId?: AppUserCollectionAppId) {
     () => Boolean(resolvedAppId.value) && membershipsRef.value?.value === undefined
   )
 
-  const userCache = new Map<string, Ref<CoreUser | undefined>>()
+  const userCache = new Map<string, Ref<User | undefined>>()
 
   const ensureCoreUser = (id?: string | null) => {
     if (!id) return undefined
     if (!userCache.has(id)) {
       const ref = nuxtApp.runWithContext(() =>
-        firestoreFetchDoc<CoreUser>('users', id)
-      ) as Ref<CoreUser | undefined>
+        firestoreFetchDoc<User>('users', id)
+      ) as Ref<User | undefined>
       userCache.set(id, ref)
     }
     return userCache.get(id)
@@ -86,7 +86,7 @@ export function useAppUserCollection(appId?: AppUserCollectionAppId) {
       if (!record) continue
       const recordId = String((record as any).id ?? memberId).trim() || memberId
 
-      const coreUser = { ...(record as any), id: recordId } as CoreUser
+      const coreUser = { ...(record as any), id: recordId } as User
 
       enriched.push({
         id: recordId,

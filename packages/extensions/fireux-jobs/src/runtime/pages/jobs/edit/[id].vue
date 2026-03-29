@@ -28,13 +28,13 @@
       />
 
       <form v-else class="space-y-6" @submit.prevent="onSave">
-        <UFormGroup label="Job title" required>
+        <UFormField label="Job title" required>
           <UInput v-model="form.title" placeholder="e.g. Chef de Partie" />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup label="Status" required>
+        <UFormField label="Status" required>
           <USelect v-model="form.status" :options="statusOptions" />
-        </UFormGroup>
+        </UFormField>
 
         <div class="flex items-center justify-between">
           <span class="text-sm text-gray-500">Update the title or lane.</span>

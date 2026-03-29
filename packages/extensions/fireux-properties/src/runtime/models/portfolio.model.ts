@@ -1,5 +1,3 @@
-// FILE: packages/extensions/fireux-properties/src/runtime/models/portfolio.model.ts
-
 import { FireuxConsoleOverlay, type FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
@@ -24,6 +22,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 export type PortfolioStatus = 'active' | 'archived'
 export const PortfolioModel = {
   id: '',
+
   name: '',
   slug: '',
   owner_label: '',
@@ -31,9 +30,11 @@ export const PortfolioModel = {
   strategy_label: '',
   region_label: '',
   notes: '',
+
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
@@ -57,6 +58,4 @@ export type PortfolioCreateInput = Omit<Portfolio, 'id' | 'created' | 'updated'>
   slug?: string
 }
 
-export type PortfolioUpdateInput = Partial<
-  Omit<Portfolio, 'id' | 'created' | 'updated'>
->
+export type PortfolioUpdateInput = Partial<Omit<Portfolio, 'id' | 'created' | 'updated'>>

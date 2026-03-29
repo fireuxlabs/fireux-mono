@@ -7,7 +7,7 @@ import type {
     CoreProfileBase,
     ProfileConfig,
 } from '../../../../../../models/core/profile.model'
-import type { CoreUser } from '../../../../../../models/core/user.model'
+import type { User } from '../../../../../../models/core/user.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import { useAppUserCollection } from '../../user/fetch/useAppUserCollection'
@@ -44,14 +44,14 @@ export function useProfileCollection<
       : null
 
   const { users } = useAppUserCollection()
-  const coreUserRefs = new Map<string, Ref<CoreUser | undefined>>()
+  const coreUserRefs = new Map<string, Ref<User | undefined>>()
 
   const ensureCoreUserRef = (id?: string | null) => {
     if (!id) return undefined
     if (!coreUserRefs.has(id)) {
       const ref = nuxtApp.runWithContext(() =>
-        firestoreFetchDoc<CoreUser>('users', id)
-      ) as Ref<CoreUser | undefined>
+        firestoreFetchDoc<User>('users', id)
+      ) as Ref<User | undefined>
       coreUserRefs.set(id, ref)
     }
     return coreUserRefs.get(id)
@@ -115,7 +115,7 @@ export function useProfileCollection<
 
   const attachUser = (
     entries: TProfile[] | null | undefined
-  ): Array<TProfile & { user?: CoreUser | UserSummary }> => {
+  ): Array<TProfile & { user?: User | UserSummary }> => {
     if (!entries?.length) return []
     return entries.map((profile) => {
       const resolvedUser = resolveUserForProfile(profile)
@@ -123,18 +123,18 @@ export function useProfileCollection<
       return {
         ...profile,
         user: resolvedUser as any,
-      } as TProfile & { user?: CoreUser | UserSummary }
+      } as TProfile & { user?: User | UserSummary }
     })
   }
 
   const globalProfilesWithUser = computed<
-    Array<TProfile & { user?: CoreUser | UserSummary }>
+    Array<TProfile & { user?: User | UserSummary }>
   >(() =>
     attachUser((globalProfiles.value ?? []) as TProfile[])
   )
 
   const localProfilesWithUser = localProfiles
-    ? computed<Array<TProfile & { user?: CoreUser | UserSummary }>>(() =>
+    ? computed<Array<TProfile & { user?: User | UserSummary }>>(() =>
       attachUser((localProfiles.value ?? []) as TProfile[])
     )
     : null

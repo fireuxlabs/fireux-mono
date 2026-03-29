@@ -125,7 +125,7 @@ import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/f
 import { useChefCreate } from '../../../composables/fireux/firestore/profiles/Chef/main/useChefCreate'
 import { useChef } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import type { KitchenApp } from '../../../models/kitchen.model'
+import type { ConsoleKitchen } from '../../../models/kitchen.model'
 import KitchenCardsPill from './Cards/Pill.vue'
 
 const props = withDefaults(defineProps<{
@@ -154,7 +154,7 @@ const { firestoreFetchCollection } = useFirestoreRead()
 const { interface: chefInterface } = useChef()
 
 const kitchenOverlays = appId
-  ? firestoreFetchCollection<KitchenApp>(`apps/${appId}/kitchens`)
+  ? firestoreFetchCollection<ConsoleKitchen>(`apps/${appId}/kitchens`)
   : null
 
 const accessibleKitchenIds = computed(() => {

@@ -113,8 +113,8 @@ import {
   resolveKitchenConsoleCollectionPath,
 } from '../../../composables/fireux/app/kitchen-runtime/shared'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
-import type { Kitchen, KitchenApp, KitchenCollection } from '../../../models/kitchen.model'
-import { KitchenCollection as KitchenModelRuntime } from '../../../models/kitchen.model'
+import type { ConsoleKitchen, Kitchen } from '../../../models/kitchen.model'
+import { KitchenModel as KitchenModelRuntime } from '../../../models/kitchen.model'
 
 defineOptions({ name: 'DevKitchenSystem' })
 
@@ -122,7 +122,7 @@ const kitchenModelRuntime = KitchenModelRuntime
 
 const { firestoreFetchCollection } = useFirestoreRead()
 const { appId } = useFireUXConfig()
-const kitchensCollection = firestoreFetchCollection<KitchenCollection>('kitchens')
+const kitchensCollection = firestoreFetchCollection<Kitchen>('kitchens')
 const placesCollection = firestoreFetchCollection<Place>('places')
 const { kitchens: hydratedKitchens } = useKitchenFetch()
 
@@ -133,12 +133,12 @@ const overlayKitchenCollectionPath = computed(() =>
   resolvedAppId.value ? resolveKitchenConsoleCollectionPath(resolvedAppId.value) : ''
 )
 
-const kitchenAppsRef = shallowRef<Ref<KitchenApp[] | undefined> | null>(null)
+const kitchenAppsRef = shallowRef<Ref<ConsoleKitchen[] | undefined> | null>(null)
 
 watch(
   overlayKitchenCollectionPath,
   (nextPath) => {
-    kitchenAppsRef.value = nextPath ? firestoreFetchCollection<KitchenApp>(nextPath) : null
+    kitchenAppsRef.value = nextPath ? firestoreFetchCollection<ConsoleKitchen>(nextPath) : null
   },
   { immediate: true }
 )
@@ -170,7 +170,7 @@ const hydratedById = computed(() => {
 })
 
 const rawKitchenById = computed(() => {
-  const map = new Map<string, KitchenCollection>()
+  const map = new Map<string, Kitchen>()
   for (const kitchen of kitchensCollectionValue.value) {
     if (kitchen?.id) map.set(String(kitchen.id), kitchen)
   }
@@ -186,7 +186,7 @@ const placeById = computed(() => {
 })
 
 const kitchenAppById = computed(() => {
-  const map = new Map<string, KitchenApp>()
+  const map = new Map<string, ConsoleKitchen>()
   for (const kitchenApp of kitchenApps.value) {
     if (kitchenApp?.id) map.set(String(kitchenApp.id), kitchenApp)
   }

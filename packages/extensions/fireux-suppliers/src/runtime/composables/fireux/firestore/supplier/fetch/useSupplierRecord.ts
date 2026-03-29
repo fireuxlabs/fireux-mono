@@ -3,7 +3,7 @@ import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireu
 import type { Ref } from 'vue'
 import { computed, isRef } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import type { SupplierApp, SupplierCore } from '../../../../../models/supplier/Supplier.model'
+import type { ConsoleSupplier, Supplier } from '../../../../../models/supplier/Supplier.model'
 
 const supplierCollection = 'suppliers'
 function asStringArray(value: unknown): string[] {
@@ -11,14 +11,14 @@ function asStringArray(value: unknown): string[] {
   return value.filter((item): item is string => typeof item === 'string' && item.length > 0)
 }
 
-function normalizeCoreSupplier(raw: SupplierCore, fallbackId: string): SupplierCore {
+function normalizeSupplier(raw: Supplier, fallbackId: string): Supplier {
   return {
     ...raw,
     id: raw.id ?? fallbackId,
   }
 }
 
-function normalizeAppSupplier(raw: SupplierApp, fallbackId: string): SupplierApp {
+function normalizeConsoleSupplier(raw: ConsoleSupplier, fallbackId: string): ConsoleSupplier {
   const anyRaw = raw as any
   return {
     ...raw,
@@ -31,8 +31,8 @@ function normalizeAppSupplier(raw: SupplierApp, fallbackId: string): SupplierApp
 }
 
 export type SupplierRefs = {
-  coreSupplier: Ref<SupplierCore | null | undefined>
-  appSupplier: Ref<SupplierApp | null | undefined>
+  coreSupplier: Ref<Supplier | null | undefined>
+  appSupplier: Ref<ConsoleSupplier | null | undefined>
 }
 
 export function useSupplierRecord(
@@ -42,9 +42,9 @@ export function useSupplierRecord(
   const supplierId = computed(() => (isRef(id) ? id.value : id))
 
   if (import.meta.server) {
-    const supplier = computed<SupplierCore | null>(() => null)
-    const coreSupplier = computed<SupplierCore | null | undefined>(() => null)
-    const appSupplier = computed<SupplierApp | null | undefined>(() => null)
+    const supplier = computed<Supplier | null>(() => null)
+    const coreSupplier = computed<Supplier | null | undefined>(() => null)
+    const appSupplier = computed<ConsoleSupplier | null | undefined>(() => null)
     const pending = computed(() => false)
     return { supplier, coreSupplier, appSupplier, pending }
   }
@@ -61,29 +61,29 @@ export function useSupplierRecord(
       : null
   )
 
-  const coreState = useDocument<SupplierCore | undefined>(coreDoc as any)
-  const appState = useDocument<SupplierApp | undefined>(appDoc as any)
+  const coreState = useDocument<Supplier | undefined>(coreDoc as any)
+  const appState = useDocument<ConsoleSupplier | undefined>(appDoc as any)
 
-  const coreSupplier = computed<SupplierCore | null | undefined>(() => {
+  const coreSupplier = computed<Supplier | null | undefined>(() => {
     if (coreState.pending.value) return undefined
 
     const raw = coreState.data.value
     if (!raw) return null
 
-    return normalizeCoreSupplier(raw as SupplierCore, supplierId.value ?? '')
+    return normalizeSupplier(raw as Supplier, supplierId.value ?? '')
   })
 
-  const appSupplier = computed<SupplierApp | null | undefined>(() => {
+  const appSupplier = computed<ConsoleSupplier | null | undefined>(() => {
     if (!appDoc.value) return null
     if (appState.pending.value) return undefined
 
     const raw = appState.data.value
     if (!raw) return null
 
-    return normalizeAppSupplier(raw as SupplierApp, supplierId.value ?? '')
+    return normalizeConsoleSupplier(raw as ConsoleSupplier, supplierId.value ?? '')
   })
 
-  const supplier = computed<SupplierCore | null>(() => coreSupplier.value ?? null)
+  const supplier = computed<Supplier | null>(() => coreSupplier.value ?? null)
   const pending = computed(
     () => Boolean(coreState.pending.value) || Boolean(appState.pending.value)
   )

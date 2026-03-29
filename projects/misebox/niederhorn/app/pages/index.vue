@@ -101,14 +101,14 @@ const solutionCards = [
   {
     title: 'Station planner',
     copy: 'Configure pass, garde manger, and pastry to match your service.',
-    href: '/stations',
+    href: '/console/kitchen/stations',
     cta: 'Plan stations',
     icon: 'i-lucide-layers',
   },
   {
     title: 'Production log',
     copy: 'Audit prep yields, variance, and temp logs straight from the line.',
-    href: '/production',
+    href: '/console/kitchen/mise',
     cta: 'View log',
     icon: 'i-lucide-clipboard-check',
   },
@@ -122,7 +122,7 @@ const solutionCards = [
 ]
 
 const fuelMeters = [
-  { label: 'Prep complete', value: 86, icon: 'i-lucide-knife' },
+  { label: 'Prep complete', value: 86, icon: 'i-lucide-utensils-crossed' },
   { label: 'Service readiness', value: 92, icon: 'i-lucide-badge-check' },
   { label: 'Inventory sync', value: 74, icon: 'i-lucide-package-search' },
 ]

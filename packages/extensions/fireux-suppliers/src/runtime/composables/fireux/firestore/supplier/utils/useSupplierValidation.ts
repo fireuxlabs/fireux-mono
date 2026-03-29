@@ -1,14 +1,11 @@
-import type { SupplierCore } from '../../../../../models/supplier/Supplier.model'
+import type { Supplier } from '../../../../../models/supplier/Supplier.model'
 
 export function useSupplierValidation() {
   /** Validate supplier data */
-  function validateSupplier(supplier: Partial<SupplierCore>) {
+  function validateSupplier(supplier: Partial<Supplier>) {
     const errors: string[] = []
 
-    const name =
-      (supplier as any).organization_name?.trim?.() ||
-      (supplier as any).title?.trim?.() ||
-      ''
+    const name = String(supplier.supplier_organization_name ?? '').trim()
 
     if (!name) {
       errors.push('Organization name is required')

@@ -61,14 +61,6 @@
           <span v-else class="text-dimmed italic">missing</span>
         </div>
       </div>
-
-      <div class="space-y-1">
-        <div class="text-xs font-medium text-dimmed">Specialties</div>
-        <div class="text-sm">
-          <span v-if="vm.specialtiesCsv">{{ vm.specialtiesCsv }}</span>
-          <span v-else class="text-dimmed italic">missing</span>
-        </div>
-      </div>
     </div>
   </UCard>
 </template>
@@ -122,7 +114,6 @@ const vm = computed(() => {
   const organizationName = String(card?.organizationName ?? '').trim()
   const locationsLabel = String(card?.locationsLabel ?? '').trim()
   const categoriesCsv = String(card?.categoriesCsv ?? '').trim()
-  const specialtiesCsv = String(card?.specialtiesCsv ?? '').trim()
 
   return {
     title,
@@ -134,7 +125,6 @@ const vm = computed(() => {
     organizationName,
     locationsLabel,
     categoriesCsv,
-    specialtiesCsv,
   }
 })
 </script>

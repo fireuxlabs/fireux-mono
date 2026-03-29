@@ -142,8 +142,8 @@ import { useDevStorageCollection } from 'fireux-core/runtime/composables/dev/use
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed, reactive, ref, watch } from 'vue'
 import { useSupplierCollection } from '../../composables/fireux/firestore/supplier/fetch/useSupplierCollection'
-import type { SupplierApp, SupplierCore } from '../../models/supplier/Supplier.model'
-import { SupplierCore as SupplierCoreRuntime } from '../../models/supplier/Supplier.model'
+import type { ConsoleSupplier, Supplier } from '../../models/supplier/Supplier.model'
+import { SupplierModel as SupplierModelRuntime } from '../../models/supplier/Supplier.model'
 
 definePageMeta({
   layout: 'dev',
@@ -167,7 +167,7 @@ const toggleSection = (key: keyof typeof openSections) => {
   openSections[key] = !openSections[key]
 }
 
-const supplierModelRuntime = SupplierCoreRuntime
+const supplierModelRuntime = SupplierModelRuntime
 
 const { coreSuppliers } = useSupplierCollection()
 const { appId } = useFireUXConfig()
@@ -175,12 +175,12 @@ const resolvedAppId = computed(() => String(appId || '').trim())
 const overlaySupplierCollectionPath = computed(() =>
   resolvedAppId.value ? `apps/${resolvedAppId.value}/suppliers` : ''
 )
-const supplierAppsState = useDevStorageCollection<SupplierApp>(overlaySupplierCollectionPath)
+const supplierAppsState = useDevStorageCollection<ConsoleSupplier>(overlaySupplierCollectionPath)
 const supplierApps = computed(() => supplierAppsState.items.value)
 
 const suppliersCollection = computed(() => coreSuppliers.value ?? [])
 const rootSupplierById = computed(() => {
-  const map = new Map<string, SupplierCore & { user?: unknown }>()
+  const map = new Map<string, Supplier & { user?: unknown }>()
   for (const supplier of suppliersCollection.value) {
     const id = String(supplier?.id || '').trim()
     if (!id) continue
@@ -190,7 +190,7 @@ const rootSupplierById = computed(() => {
 })
 
 const appSupplierById = computed(() => {
-  const map = new Map<string, SupplierApp>()
+  const map = new Map<string, ConsoleSupplier>()
   for (const supplier of supplierApps.value) {
     const id = String(supplier?.id || '').trim()
     if (!id) continue
@@ -245,7 +245,6 @@ const supplierOptions = computed(() =>
     const labelBase =
       String((supplier as any)?.supplier_organization_name || '').trim() ||
       String((supplier as any)?.supplier_headline || '').trim() ||
-      String((supplier as any)?.title || '').trim() ||
       id
     const overlayStatus = appSupplierById.value.has(id) ? 'console' : 'root only'
     return {

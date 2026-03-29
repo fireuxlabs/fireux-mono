@@ -130,8 +130,8 @@ import {
 } from '../../composables/fireux/app/portfolio-runtime/shared'
 import { useRuntimePortfolio } from '../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import { usePortfolioCollection } from '../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
-import type { Portfolio, PortfolioApp } from '../../models/portfolio.model'
-import { PortfolioCore as PortfolioModelRuntime } from '../../models/portfolio.model'
+import type { ConsolePortfolio, Portfolio } from '../../models/portfolio.model'
+import { PortfolioModel as PortfolioModelRuntime } from '../../models/portfolio.model'
 
 definePageMeta({
   layout: 'dev',
@@ -162,7 +162,7 @@ const overlayPortfolioCollectionPath = computed(() =>
   resolvedAppId.value ? resolvePortfolioConsoleCollectionPath(resolvedAppId.value) : ''
 )
 
-const portfolioAppsState = useDevStorageCollection<PortfolioApp>(overlayPortfolioCollectionPath)
+const portfolioAppsState = useDevStorageCollection<ConsolePortfolio>(overlayPortfolioCollectionPath)
 const portfolioApps = computed(() => portfolioAppsState.items.value)
 
 const rootPortfolioById = computed(() => {
@@ -176,7 +176,7 @@ const rootPortfolioById = computed(() => {
 })
 
 const portfolioAppById = computed(() => {
-  const map = new Map<string, PortfolioApp>()
+  const map = new Map<string, ConsolePortfolio>()
   for (const portfolioApp of portfolioApps.value) {
     const id = String(portfolioApp?.id || '').trim()
     if (!id) continue

@@ -61,10 +61,10 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
-import type { SupplierCore } from '../../../../models/supplier/Supplier.model';
+import type { Supplier } from '../../../../models/supplier/Supplier.model';
 import { useSupplierInterface } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface';
 
-type SupplierEntry = SupplierCore & { user?: unknown }
+type SupplierEntry = Supplier & { user?: unknown }
 
 const props = withDefaults(
   defineProps<{
@@ -113,8 +113,8 @@ const { interface: makeCard, searchText } = useSupplierInterface()
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
   useCollectionSearch<SupplierEntry, ReturnType<typeof makeCard>>({
     items: collection,
-    searchText: (entry) => searchText(entry as SupplierCore),
-    makeCard: (entry) => makeCard(entry as SupplierCore, (entry as any)?.user ?? null),
+    searchText: (entry) => searchText(entry as Supplier),
+    makeCard: (entry) => makeCard(entry as Supplier, (entry as any)?.user ?? null),
     initialVariant: props.initialVariant,
   })
 

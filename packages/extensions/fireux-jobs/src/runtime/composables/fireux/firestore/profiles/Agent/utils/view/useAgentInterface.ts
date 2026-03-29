@@ -8,13 +8,15 @@ import {
     safeString,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import type { CoreUser } from 'fireux-core/runtime/models/core/user.model'
+import type { User } from 'fireux-core/runtime/models/core/user.model'
 import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
-import type { AgentCore, AgentResolved } from 'fireux-jobs/runtime/models/profiles/Agent/Agent.model'
+import type { AgentCore } from 'fireux-jobs/runtime/models/profiles/Agent/Agent.model'
 import type { Ref } from 'vue'
 
-type UserLike = Pick<CoreUser, 'display_name' | 'avatar'> &
-  Partial<Pick<CoreUser, 'id' | 'handle' | 'email'>>
+type UserLike = Pick<User, 'display_name' | 'avatar'> &
+  Partial<Pick<User, 'id' | 'handle' | 'email'>>
+
+type AgentTarget = AgentCore & { user?: UserLike | null }
 
 export namespace AgentCard {
   export type Card = {
@@ -46,7 +48,7 @@ export namespace AgentCard {
 
 export function useAgentInterface(
   profile?: ProfileRefs<AgentCore> | null,
-  userRef?: Ref<CoreUser | null | undefined>
+  userRef?: Ref<User | null | undefined>
 ) {
   type AgentPill = AgentCard.Card
   type AgentCell = AgentCard.Card
@@ -66,7 +68,7 @@ export function useAgentInterface(
     return safeString(authUser.value?.photoURL).trim()
   }
 
-  const resolveUser = (target?: AgentCore | AgentResolved | null) => {
+  const resolveUser = (target?: AgentTarget | null) => {
     if (target && 'user' in target && target.user) return target.user as UserLike
     return userRef?.value ?? null
   }
@@ -107,34 +109,34 @@ export function useAgentInterface(
   }
 
   function buildInterface(
-    target?: AgentCore | AgentResolved | null | undefined
+    target?: AgentTarget | null | undefined
   ): AgentCard.Card | null {
     const p = target ?? profile?.coreProfile?.value ?? null
     if (!p) return null
-    const u = resolveUser(target as AgentCore | AgentResolved | null)
+    const u = resolveUser(target as AgentTarget | null)
     const mapped = map(p, u)
     return mapped.id ? mapped : null
   }
 
-  function pill(target?: AgentCore | AgentResolved | null | undefined): AgentPill | null {
+  function pill(target?: AgentTarget | null | undefined): AgentPill | null {
     return buildInterface(target)
   }
 
-  function cell(target?: AgentCore | AgentResolved | null | undefined): AgentCell | null {
+  function cell(target?: AgentTarget | null | undefined): AgentCell | null {
     return buildInterface(target)
   }
 
-  function preview(target?: AgentCore | AgentResolved | null | undefined): AgentPreview | null {
+  function preview(target?: AgentTarget | null | undefined): AgentPreview | null {
     return buildInterface(target)
   }
 
   function profile(
-    target?: AgentCore | AgentResolved | null | undefined
+    target?: AgentTarget | null | undefined
   ): AgentProfile | null {
     return buildInterface(target)
   }
 
-  function searchText(target: AgentCore | AgentResolved): string {
+  function searchText(target: AgentTarget): string {
     const mapped = map(target, resolveUser(target))
 
     return [

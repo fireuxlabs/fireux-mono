@@ -63,12 +63,12 @@
 </template>
 
 <script setup lang="ts">
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify';
-import { computed } from 'vue';
-import { useSupplierUpdate } from '../../../../composables/fireux/firestore/supplier/mutations/useSupplierUpdate';
-import type { SupplierCore } from '../../../../models/supplier/Supplier.model';
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { computed } from 'vue'
+import { useSupplierUpdate } from '../../../../composables/fireux/firestore/supplier/mutations/useSupplierUpdate'
+import type { Supplier } from '../../../../models/supplier/Supplier.model'
 
-const props = defineProps<{ supplier: SupplierCore | null }>()
+const props = defineProps<{ supplier: Supplier | null }>()
 
 const supplier = computed(() => props.supplier ?? null)
 const {
@@ -82,20 +82,16 @@ const {
 
 const toast = useToastify()
 
-const headline = computed(
-  () => supplier.value?.supplier_headline ?? supplier.value?.title ?? ''
-)
+const headline = computed(() => supplier.value?.supplier_headline ?? '')
 const summary = computed(() => supplier.value?.summary ?? '')
-const bio = computed(() => supplier.value?.supplier_bio ?? supplier.value?.bio_long ?? '')
+const bio = computed(() => supplier.value?.supplier_bio ?? '')
 const imageUrl = computed(() => supplier.value?.supplier_image ?? '')
 
-const categories = computed(() => {
-  const list =
-    supplier.value?.supplier_product_categories?.length
-      ? supplier.value?.supplier_product_categories
-      : supplier.value?.categories ?? []
-  return Array.isArray(list) ? list : []
-})
+const categories = computed(() =>
+  Array.isArray(supplier.value?.supplier_product_categories)
+    ? supplier.value?.supplier_product_categories
+    : []
+)
 
 const deliveryAreas = computed(() =>
   Array.isArray(supplier.value?.supplier_delivery_areas)

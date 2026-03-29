@@ -6,7 +6,7 @@ import { useUserUpdate } from './mutations/useUserUpdate'
 import { useUserComputed } from './utils/view/useUserComputed'
 import { useUserInterface } from './utils/view/useUserInterface'
 
-export type { AppUser, CoreUser } from '../../../../../models/core/user.model'
+export type { AppUser, User } from '../../../../../models/core/user.model'
 
 /**
  * useUser

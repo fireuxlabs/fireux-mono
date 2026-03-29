@@ -106,8 +106,8 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useRuntimeProjectSelection } from 'fireux-core/runtime/composables/fireux/app/runtime-project/state'
 import { useDevStorageCollection } from 'fireux-core/runtime/composables/dev/useDevStorageCollection'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
-import type { Project, ProjectApp } from 'fireux-core/runtime/models/system/project.model'
-import { ProjectCore as ProjectModelRuntime } from 'fireux-core/runtime/models/system/project.model'
+import type { ConsoleProject, Project } from 'fireux-core/runtime/models/system/project.model'
+import { ProjectModel as ProjectModelRuntime } from 'fireux-core/runtime/models/system/project.model'
 
 definePageMeta({
   layout: 'dev',
@@ -132,7 +132,7 @@ const { projects } = useProjectCollection()
 const overlayProjectCollectionPath = computed(() =>
   resolvedAppId.value ? `apps/${resolvedAppId.value}/projects` : ''
 )
-const projectAppsState = useDevStorageCollection<ProjectApp>(overlayProjectCollectionPath)
+const projectAppsState = useDevStorageCollection<ConsoleProject>(overlayProjectCollectionPath)
 const projectApps = computed(() => projectAppsState.items.value)
 
 const rootProjectById = computed(() => {
@@ -146,7 +146,7 @@ const rootProjectById = computed(() => {
 })
 
 const projectAppById = computed(() => {
-  const map = new Map<string, ProjectApp>()
+  const map = new Map<string, ConsoleProject>()
   for (const project of projectApps.value) {
     const id = String(project?.id || '').trim()
     if (!id) continue

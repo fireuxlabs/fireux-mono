@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-4">
-    <UFormGroup
+    <UFormField
       label="FireUX console endpoint"
       required
       description="Add your URL."
@@ -21,7 +21,7 @@
           Fetch
         </UButton>
       </div>
-    </UFormGroup>
+    </UFormField>
 
     <UAlert
       v-if="projectMeta"

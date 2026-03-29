@@ -12,8 +12,8 @@ import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type {
-  KitchenApp,
-  KitchenCollection,
+  ConsoleKitchen,
+  Kitchen,
   KitchenCreateInput,
 } from '../../../../../models/kitchen.model'
 
@@ -78,10 +78,10 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       }
     }
 
-    const resolvedPayload: KitchenCollection = {
+    const resolvedPayload: Kitchen = {
       id: resolvedId,
       is_test_kitchen: isTestKitchenCollection,
-    } as KitchenCollection
+    } as Kitchen
 
     const ref = doc(db, collectionPath, resolvedId)
     const snap = await getDoc(ref)
@@ -93,10 +93,10 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       return resolvedId
     }
 
-    await setDocument<KitchenCollection>(
+    await setDocument<Kitchen>(
       collectionPath,
       resolvedId,
-      resolvedPayload as KitchenCollection,
+      resolvedPayload as Kitchen,
       {
         creator: false,
       }
@@ -136,7 +136,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       return { id: resolvedId, created: true }
     }
 
-    return ensureConsole<KitchenApp>({
+    return ensureConsole<ConsoleKitchen>({
       type: 'kitchen',
       mode: ensureOptions.mode ?? 'console',
       ensureRoot,
@@ -145,7 +145,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
           admin_ids: uid.value ? [uid.value] : ([] as string[]),
           join_requests: [] as string[],
           console_enabled: true,
-        }) as KitchenApp,
+        }) as ConsoleKitchen,
     })
   }
 

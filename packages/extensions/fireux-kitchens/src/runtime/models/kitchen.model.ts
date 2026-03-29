@@ -1,5 +1,3 @@
-// FILE: packages/extensions/fireux-kitchens/src/runtime/models/kitchen.model.ts
-
 import { FireuxConsoleOverlay, type FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
@@ -21,16 +19,14 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Kitchen-owned operational children should live beneath the app-hosted overlay.
  * - If that rule changes later, update the models README first, then this file.
  */
-/** Core (root scope): kitchens/<placeId> */
 export const KitchenModel = {
-  /** Canonical Place ID (also the Firestore document ID). */
-  id: '' as string,
-  is_test_kitchen: false as boolean,
+  id: '',
+  is_test_kitchen: false,
 
-  // Stamps (core)
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
@@ -42,7 +38,6 @@ export type Kitchen = {
   [K in keyof typeof KitchenModel]: (typeof KitchenModel)[K]
 }
 
-/** App overlay (hosted console/private): apps/<appId>/kitchens/<placeId> */
 export const ConsoleKitchenModel = {
   ...FireuxConsoleOverlay,
 } as const

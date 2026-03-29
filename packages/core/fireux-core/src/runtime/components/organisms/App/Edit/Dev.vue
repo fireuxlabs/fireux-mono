@@ -159,7 +159,7 @@ import { computed, ref, watch } from 'vue'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import { useAppUserCollection } from '../../../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
 import type { AppModel } from '../../../../models/core/app.model'
-import type { CoreUser } from '../../../../models/core/user.model'
+import type { User } from '../../../../models/core/user.model'
 
 const props = withDefaults(defineProps<{ app?: AppModel | null }>(), { app: null })
 const app = computed(() => props.app)
@@ -169,7 +169,7 @@ const driftAppId = computed(() => app.value?.id ?? configAppId ?? '')
 
 const { memberships: appUsers, pending: appUsersPending } = useAppUserCollection()
 const db = useFirestore()
-const coreUsers = ref<Map<string, CoreUser | null>>(new Map())
+const coreUsers = ref<Map<string, User | null>>(new Map())
 const driftPending = ref(false)
 
 const appUserIds = computed(() =>
@@ -186,13 +186,13 @@ watch(
     if (!appId) return
 
     driftPending.value = true
-    const next = new Map<string, CoreUser | null>()
+    const next = new Map<string, User | null>()
 
     await Promise.all(
       ids.map(async (id) => {
         try {
           const snap = await getDoc(doc(db, 'users', id) as any)
-          next.set(id, snap.exists() ? (snap.data() as CoreUser) : null)
+          next.set(id, snap.exists() ? (snap.data() as User) : null)
         } catch {
           next.set(id, null)
         }

@@ -2,17 +2,11 @@ export type ReadOnlySupplierCore = Record<string, unknown> & {
   id: string
   supplier_organization_name?: string
   supplier_headline?: string
+  summary?: string
   supplier_bio?: string
   supplier_image?: string
   supplier_product_categories?: string[]
   supplier_delivery_areas?: string[]
-  title?: string
-  subtitle?: string
-  tagline?: string
-  summary?: string
-  organization_name?: string
-  business_type?: string
-  certifications?: string[]
 }
 
 export type ReadOnlySupplierApp = Record<string, unknown> & {

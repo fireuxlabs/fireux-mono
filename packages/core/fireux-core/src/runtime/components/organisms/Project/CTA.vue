@@ -122,7 +122,7 @@ import { resolveConsoleEntryPath } from '../../../composables/fireux/app/ui/cons
 import { resolveConsoleTestIdentity } from '../../../composables/fireux/app/ui/console-test-identity'
 import { useConsoleEntryState } from '../../../composables/fireux/app/ui/useConsoleEntryState'
 import { useProjectCollection } from '../../../composables/fireux/firestore/system/project/fetch/useProjectCollection'
-import type { ProjectApp } from '../../../models/system/project.model'
+import type { ConsoleProject } from '../../../models/system/project.model'
 import ConsoleEntityCTA from '../../entities/console/ConsoleEntityCTA.vue'
 import ProjectCardsPill from './Cards/Pill.vue'
 
@@ -142,7 +142,7 @@ const { isSignedIn } = useConsoleEntryState()
 const { appId, appLogo, appThumbnail } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
 const projectOverlays = appId
-  ? firestoreFetchCollection<ProjectApp>(`apps/${appId}/projects`)
+  ? firestoreFetchCollection<ConsoleProject>(`apps/${appId}/projects`)
   : null
 const createCopy = computed(() =>
   resolveConsoleCreateCopy({

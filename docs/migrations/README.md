@@ -70,7 +70,7 @@ Purpose:
 - normalize `Project` root docs toward the current canon
 - convert legacy flat project stamps to nested `created.at` / `updated.at`
 - normalize legacy `project_type` values such as `ecosystem-app` to `ecosystem_app`
-- ensure the app-scoped `ProjectApp` overlay where a project console actually manages that project
+- ensure the app-scoped `ConsoleProject` overlay where a project console actually manages that project
 
 Current usage notes:
 

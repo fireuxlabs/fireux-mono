@@ -1,6 +1,6 @@
 import { safeArray, safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
-import type { CoreUser } from '../../../../../../../models/core/user.model'
+import type { User } from '../../../../../../../models/core/user.model'
 import { useAvatarProxy } from '../../../../../app/ui/useAvatarProxy'
 import { useAuth } from '../../../../../firebase/useAuth'
 import { normalizeUserHandle } from '../identity/useUserHandleIdentity'
@@ -34,7 +34,7 @@ export namespace UserCard {
   }
 }
 
-export function useUserInterface(userRef?: Ref<CoreUser | null | undefined>) {
+export function useUserInterface(userRef?: Ref<User | null | undefined>) {
   type UserPill = UserCard.Card
   type UserCell = UserCard.Card
   type UserPreview = UserCard.Card
@@ -43,7 +43,7 @@ export function useUserInterface(userRef?: Ref<CoreUser | null | undefined>) {
   const { uid, currentUser: authUser } = useAuth()
   const { getProxiedAvatarUrl } = useAvatarProxy()
 
-  function resolveAvatarUrl(user: CoreUser): string {
+  function resolveAvatarUrl(user: User): string {
     const storedAvatar = safeString(user.avatar).trim()
     if (storedAvatar) return getProxiedAvatarUrl(storedAvatar)
 
@@ -54,7 +54,7 @@ export function useUserInterface(userRef?: Ref<CoreUser | null | undefined>) {
     return getProxiedAvatarUrl(safeString(authUser.value?.photoURL).trim())
   }
 
-  function map(user: CoreUser): UserCard.Card {
+  function map(user: User): UserCard.Card {
     const id = safeString(user.id).trim()
     const handle = normalizeUserHandle(safeString(user.handle))
     const appCount = safeArray(user.userOf).length
@@ -83,30 +83,30 @@ export function useUserInterface(userRef?: Ref<CoreUser | null | undefined>) {
     }
   }
 
-  function buildInterface(target?: CoreUser | null | undefined): UserCard.Card | null {
+  function buildInterface(target?: User | null | undefined): UserCard.Card | null {
     const user = target ?? userRef?.value ?? null
     if (!user) return null
     const mapped = map(user)
     return mapped.id ? mapped : null
   }
 
-  function pill(target?: CoreUser | null | undefined): UserPill | null {
+  function pill(target?: User | null | undefined): UserPill | null {
     return buildInterface(target)
   }
 
-  function cell(target?: CoreUser | null | undefined): UserCell | null {
+  function cell(target?: User | null | undefined): UserCell | null {
     return buildInterface(target)
   }
 
-  function preview(target?: CoreUser | null | undefined): UserPreview | null {
+  function preview(target?: User | null | undefined): UserPreview | null {
     return buildInterface(target)
   }
 
-  function profile(target?: CoreUser | null | undefined): UserProfile | null {
+  function profile(target?: User | null | undefined): UserProfile | null {
     return buildInterface(target)
   }
 
-  function searchText(user: CoreUser): string {
+  function searchText(user: User): string {
     const displayName = safeString(user.display_name)
     const handle = safeString(user.handle)
     const id = safeString(user.id)
