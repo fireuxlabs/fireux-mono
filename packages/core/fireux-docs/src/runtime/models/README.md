@@ -125,6 +125,12 @@ Examples:
 System models are usually stored once at root.
 If a console manages them, it should normally do so through a facade first, not by inventing a second stored overlay.
 
+Preferred model-file shape for system models:
+- `XModel`
+- `X`
+- `XCreateInput`
+- `XUpdateInput`
+
 ### Domain Root
 
 What exists independently of a console.

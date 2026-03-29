@@ -20,7 +20,7 @@ import type { AppRole, AppSocialLinks } from './supporting/app'
 
 export type AppStatus = 'draft' | 'active' | 'paused' | 'archived'
 
-export const App = {
+export const AppModel = {
   id: '',
 
   // Registry + hierarchy
@@ -72,9 +72,8 @@ export const App = {
 } as const
 
 export type App = {
-  [K in keyof typeof App]: (typeof App)[K]
+  [K in keyof typeof AppModel]: (typeof AppModel)[K]
 }
 
-export type AppDoc = Omit<App, 'id'>
 export type AppCreateInput = Omit<App, 'id' | 'created' | 'updated'>
-export type AppUpdateInput = Partial<Omit<AppCreateInput, never>>
+export type AppUpdateInput = Partial<Omit<App, 'id' | 'created' | 'updated'>>

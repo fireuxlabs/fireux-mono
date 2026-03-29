@@ -16,7 +16,7 @@ export type EcosystemStatus = 'draft' | 'active' | 'paused' | 'archived'
  * - A project console may manage Ecosystem through a facade over this root record.
  * - If real scoped stored state appears later, update the models README first, then this file.
  */
-export const Ecosystem = {
+export const EcosystemModel = {
   id: '',
 
   project_id: '',
@@ -39,7 +39,8 @@ export const Ecosystem = {
 } as const
 
 export type Ecosystem = {
-  [K in keyof typeof Ecosystem]: (typeof Ecosystem)[K]
+  [K in keyof typeof EcosystemModel]: (typeof EcosystemModel)[K]
 }
 
-export type EcosystemDoc = Omit<Ecosystem, 'id'>
+export type EcosystemCreateInput = Omit<Ecosystem, 'id' | 'created' | 'updated'>
+export type EcosystemUpdateInput = Partial<Omit<Ecosystem, 'id' | 'created' | 'updated'>>
