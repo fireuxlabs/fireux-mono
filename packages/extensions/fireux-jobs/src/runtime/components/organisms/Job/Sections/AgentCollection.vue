@@ -21,7 +21,7 @@
               <div class="space-y-1">
                 <h3 class="font-semibold leading-tight">{{ job.title }}</h3>
                 <p class="text-xs uppercase tracking-wide text-gray-400">
-                  {{ job.app_id || 'App unknown' }}
+                  {{ job.source_app_id || 'App unknown' }}
                 </p>
               </div>
               <div class="flex flex-col items-end gap-2">
@@ -64,7 +64,7 @@ const { uid: authUid } = useAuth()
 const jobs = computed<Job[]>(() => {
   const ownerId = coreUser.value?.id ?? authUid.value ?? null
   if (!ownerId) return []
-  return (allJobs.value ?? []).filter((job) => job.created_by === ownerId)
+  return (allJobs.value ?? []).filter((job) => job.created?.by === ownerId)
 })
 
 const pending = computed<boolean>(() => isPending.value)

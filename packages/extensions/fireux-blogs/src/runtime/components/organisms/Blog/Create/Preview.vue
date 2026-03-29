@@ -94,14 +94,7 @@ import { useBlogDraftState } from '../../../../composables/fireux/firestore/blog
 const { blogPost, featuredImageData, socialImageData } = useBlogDraftState()
 
 // Avoid hydration drift by using a stable date label
-const createdAtLabel = computed(() => {
-  const timestamps = blogPost.value as unknown as Partial<{
-    created_at: string
-    updated_at: string
-  }>
-
-  return timestamps.created_at || timestamps.updated_at || 'Draft'
-})
+const createdAtLabel = computed(() => 'Draft')
 
 // Sanitize the HTML before injecting (client-only to prevent SSR mismatch)
 const isClient = ref(false)

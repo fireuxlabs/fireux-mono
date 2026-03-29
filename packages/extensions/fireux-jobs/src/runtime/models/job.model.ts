@@ -1,6 +1,10 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/job.model.ts
 
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import {
+  FireuxRootScope,
+  type FireuxRootVisibility,
+  type FireuxStamped,
+} from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -10,11 +14,11 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Storage: root-first canonical model
  * Root path: /jobs/<jobId>
  * Console use: consoles may create or manage jobs, but the job remains one root entity by default
- * Transitional fields: legacy top-level `app_id` still remains because existing filters and runtime surfaces still read it
+ * Root scope: filtered by source app / ecosystem / owner fields rather than app-local duplication
  *
  * Decision note:
  * - Job is root canonical truth even when a kitchen or other workplace is linked to it.
- * - The current stored shape still carries transitional app coupling while runtime filters migrate away from it.
+ * - Tenant and ecosystem job pages should filter the same root records through shared root scoping fields.
  * - If a console later needs real scoped stored job state, add it intentionally rather than by symmetry.
  * - If that changes, update the models README first, then this file.
  */
@@ -49,11 +53,11 @@ export type JobPayUnit = 'hour' | 'shift' | 'day'
 export type WorkplaceType = string
 
 // 🔑 Runtime canonical Job (source of truth)
-export const Job = {
+export const JobModel = {
   /** Firestore document ID */
   id: '' as string,
-  // Legacy top-level app scope still read by existing filters.
-  app_id: '' as string,
+  ...FireuxRootScope,
+  visibility: 'ecosystem' as FireuxRootVisibility,
 
   /**
    * Employer reference (billing / ownership)
@@ -117,8 +121,10 @@ export const Job = {
   },
 } as const
 
+export const Job = JobModel
+
 export type Job = {
-  [K in keyof typeof Job]: (typeof Job)[K]
+  [K in keyof typeof JobModel]: (typeof JobModel)[K]
 }
 
 /**
@@ -129,4 +135,4 @@ export type JobCreateInput = Omit<
   'created' | 'updated' | 'id'
 >
 
-export type JobUpdateInput = Partial<Omit<JobCreateInput, never>>
+export type JobUpdateInput = Partial<Omit<Job, 'id' | 'created' | 'updated'>>

@@ -19,6 +19,12 @@ Updated: 2026-03-12
 - Canon path:
   - `useFirestore()` / shared Firestore composables
   - resolved database comes from ecosystem/runtime config
+- Root-first entities may still be app- or ecosystem-filtered at read time through explicit scope fields such as:
+  - `source_app_id`
+  - `source_ecosystem_id`
+  - `owner_type`
+  - `owner_id`
+  - `visibility`
 - Non-canon for entity index pages:
   - endpoint-first SSR collection loading
   - per-entity server proxy replacements for normal Firestore reads

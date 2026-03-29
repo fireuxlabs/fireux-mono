@@ -13,6 +13,11 @@ import { useCreateProductState } from './state/useCreateProductState'
 
 export const ProductPayload = {
   id: '',
+  source_app_id: '',
+  source_ecosystem_id: '',
+  owner_type: 'app',
+  owner_id: '',
+  visibility: 'app',
   name: '',
   Q: '',
   A: '',
@@ -32,7 +37,6 @@ export const ProductPayload = {
   product_type: '',
   track_stock: false,
   stock: 0 as number | null,
-  appId: '',
   metadata: {} as Record<string, any>,
 }
 
@@ -113,6 +117,15 @@ export function useProductCreate() {
         throw new Error('At least one price is required')
       }
 
+      const sourceAppId = String(payload.source_app_id || fireux.appId || '').trim()
+      const sourceEcosystemId = String(
+        payload.source_ecosystem_id || fireux.ecosystem || ''
+      ).trim()
+      const ownerType = String(payload.owner_type || (sourceAppId ? 'app' : 'ecosystem')).trim()
+      const ownerId = String(
+        payload.owner_id || (ownerType === 'ecosystem' ? sourceEcosystemId : sourceAppId)
+      ).trim()
+
       const stripeResponse = await fetch('/api/stripe/create-product', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
@@ -121,7 +134,7 @@ export function useProductCreate() {
             name: payload.name,
             description: payload.description,
             slug,
-            appId: payload.appId || fireux.appId,
+            source_app_id: sourceAppId,
             prices: normalizedPriceInputs,
           },
         }),
@@ -163,7 +176,11 @@ export function useProductCreate() {
         ...payload,
         id: slug,
         slug,
-        appId: payload.appId || fireux.appId,
+        source_app_id: sourceAppId,
+        source_ecosystem_id: sourceEcosystemId,
+        owner_type: ownerType,
+        owner_id: ownerId,
+        visibility: payload.visibility || 'app',
         prices: normalizedPrices,
         default_price: defaultPriceCandidate
           ? {

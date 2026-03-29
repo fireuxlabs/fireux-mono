@@ -1,12 +1,17 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type {
   Ingredient,
-  KitchenIngredientResolved,
+  KitchenIngredient,
 } from '../../../../../../models/ingredient.model'
 
 const joinSubtitle = (supplierRef = ''): string => safeString(supplierRef).trim()
 
-export type IngredientInterfaceItem = Ingredient | KitchenIngredientResolved
+export type IngredientInterfaceItem =
+  | Ingredient
+  | (KitchenIngredient &
+      Partial<Ingredient> & {
+        ingredient_id?: string
+      })
 
 export namespace IngredientCard {
   export type Card = {

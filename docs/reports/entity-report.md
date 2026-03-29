@@ -94,7 +94,6 @@ Cleanup priority used in this report:
 | Document | runtime entity | stored portfolio document record | runtime child | portfolios/{portfolioId}/documents/{documentId} | packages/extensions/fireux-documents/src/runtime/models/document.model.ts | packages/extensions/fireux-documents/src/runtime/composables/fireux/firestore/documents/fetch/useDocumentCollection.ts | packages/extensions/fireux-documents/src/runtime/composables/fireux/firestore/documents/mutations/useDocumentCreate.ts | missing | missing | packages/extensions/fireux-documents/src/runtime/pages/console/portfolio/documents.vue | no | portfolio parent only | yes | no | safe scenario mirror exists | medium | medium |
 | DocumentLink | runtime entity | link document to a portfolio child entity | runtime child | portfolios/{portfolioId}/document-links/{documentLinkId} | packages/extensions/fireux-documents/src/runtime/models/document-link.model.ts | packages/extensions/fireux-documents/src/runtime/composables/fireux/firestore/documents/fetch/useDocumentLinkCollection.ts | missing | missing | missing | packages/extensions/fireux-documents/src/runtime/pages/console/portfolio/documents.vue | no | portfolio parent only | yes | no | safe scenario mirror exists | medium | medium |
 | ComplianceRecord | runtime entity | compliance or certification record | runtime child | portfolios/{portfolioId}/compliance/{recordId} | packages/extensions/fireux-compliance/src/runtime/models/compliance-record.model.ts | packages/extensions/fireux-compliance/src/runtime/composables/fireux/firestore/compliance/fetch/useComplianceRecordCollection.ts | not confirmed in this pass | packages/extensions/fireux-compliance/src/runtime/composables/fireux/firestore/compliance/utils/view/useComplianceRecordInterface.ts | missing | packages/extensions/fireux-compliance/src/runtime/pages/console/portfolio/compliance.vue | no | portfolio parent only | yes | no | no | strong | low |
-| ComplianceItemType | config entity | compliance type definition and metadata | config registry | compliance-item-types/{typeId} inferred | packages/extensions/fireux-compliance/src/runtime/models/compliance-item-type.model.ts | missing | missing | missing | missing | missing | no | no | no | no | no | medium | low |
 | Order | operational entity | customer or service order with scope binding | root | orders/{orderId} | packages/extensions/fireux-orders/src/runtime/models/order.model.ts | packages/extensions/fireux-orders/src/runtime/composables/fireux/firestore/orders/fetch/useOrdersFetchByScope.ts | packages/extensions/fireux-orders/src/runtime/composables/useOrderCreate.ts | not confirmed in this pass | missing | packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/orders.vue | no | optional place or kitchen link | no | no | no | strong | medium |
 | Task (core) | shared base | shared minimal task shape | base abstraction | n/a | packages/core/fireux-core/src/runtime/models/shared/task.model.ts | missing | missing | missing | missing | missing | no | no | no | no | safe extension pair | strong | low |
 | Task (extension) | runtime entity | task record with domain source metadata | runtime child | portfolios/{portfolioId}/tasks/{taskId} inferred | packages/extensions/fireux-tasks/src/runtime/models/task.model.ts | packages/extensions/fireux-tasks/src/runtime/composables/fireux/firestore/tasks/fetch/useTaskCollection.ts | packages/extensions/fireux-tasks/src/runtime/composables/fireux/firestore/tasks/mutations/useTaskCreate.ts | packages/extensions/fireux-tasks/src/runtime/composables/fireux/firestore/tasks/utils/view/useTaskInterface.ts | missing | packages/extensions/fireux-tasks/src/runtime/pages/console/portfolio/tasks.vue | no | portfolio parent only | yes | no | safe extension pair | medium | medium |
@@ -381,13 +380,6 @@ Cleanup priority used in this report:
 - Flags: runtime child; no duplicate residence.
 - Rating: strong. Cleanup priority: low.
 
-### ComplianceItemType
-- Type and class: config entity; config registry.
-- Purpose: compliance type definition and metadata.
-- Residence: compliance-item-types/{typeId} inferred.
-- Model: packages/extensions/fireux-compliance/src/runtime/models/compliance-item-type.model.ts.
-- Fetch, create, interface: not confirmed in this pass.
-- Public and console surfaces: missing.
 - Flags: not runtime child; no duplicate residence.
 - Rating: medium. Cleanup priority: low.
 
@@ -665,8 +657,6 @@ Model and collection fetch exist, but no strong public or admin surface was conf
 Model and create path exist, but the dedicated entity-style surface stack is thinner than App or Place.
 3. KitchenCostSnapshot.
 Model exists, but the visible UI stack is weak.
-4. ComplianceItemType.
-Model exists, but fetch, interface, and page ownership are thin.
 
 ### Runtime behavior without a normalized runtime state model
 
@@ -713,7 +703,7 @@ Keep them fenced, or promote them fully with production canon.
 ### Medium-priority cleanup targets
 
 1. Normalize runtime-child kitchen naming so Menu, Dish, KitchenRecipe, and KitchenMiseTask read more like clean entity stacks and less like menu-stack plumbing.
-2. Strengthen thin registry entities such as Ecosystem, Project, and ComplianceItemType where needed.
+2. Strengthen thin registry entities such as Ecosystem and Project where needed.
 3. Standardize more entity indexes around the same assembly recipe: page header, EntityIndexCta, entity CTA where useful, collection manager.
 
 ### Low-priority cleanup targets

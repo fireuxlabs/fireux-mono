@@ -14,8 +14,17 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Default publish rule: for published products, public `slug` equals Firestore product document id (unless Deano overrides to slug->id lookup/index).
 
 ## 4) Collections + paths
-- `apps/{appId}/products/{productId}`
-- `apps/{appId}/products/{productId}/prices/{priceId}` (optional)
+- `products/{productId}`
+- `products/{productId}/prices/{priceId}` (optional)
+
+## 4a) Root scope fields
+- `source_app_id`
+- `source_ecosystem_id`
+- `owner_type`
+- `owner_id`
+- `visibility`
+
+Product pages should filter root products through these fields rather than creating app-local product storage by default.
 
 ## 5) Routes (public vs internal; slug vs id)
 - Public/indexable:

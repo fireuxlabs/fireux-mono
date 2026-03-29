@@ -32,6 +32,11 @@ export function useCreateProductState() {
 
   const product = useStorage<ProductDraft>(STORAGE_KEY, {
     id: '',
+    source_app_id: tenantId,
+    source_ecosystem_id: useFireUXConfig().ecosystem,
+    owner_type: 'app',
+    owner_id: tenantId,
+    visibility: 'app',
     name: '',
     tagline: '',
     Q: '',
@@ -43,15 +48,16 @@ export function useCreateProductState() {
     product_type: defaultKind,
     features: [],
     metadata: {},
-    appId: tenantId,
-    creator_id: currentUser.value?.uid || '',
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
   })
 
   const applyBlankDefaults = () => {
     product.value = {
       id: '',
+      source_app_id: tenantId,
+      source_ecosystem_id: useFireUXConfig().ecosystem,
+      owner_type: 'app',
+      owner_id: tenantId,
+      visibility: 'app',
       name: '',
       tagline: '',
       Q: '',
@@ -63,10 +69,6 @@ export function useCreateProductState() {
       product_type: defaultKind,
       features: [],
       metadata: {},
-      appId: tenantId,
-      creator_id: currentUser.value?.uid || '',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
     }
     mainImageData.value = ''
   }
@@ -93,11 +95,9 @@ export function useCreateProductState() {
 
   onMounted(() => {
     applyBlankDefaults()
-    if (currentUser.value?.uid) {
-      product.value.creator_id = currentUser.value.uid
-    }
     if (tenantId) {
-      product.value.appId = tenantId
+      product.value.source_app_id = tenantId
+      product.value.owner_id = tenantId
     }
   })
 

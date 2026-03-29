@@ -18,6 +18,15 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `agents/{id}` and app-scoped agent overlays where configured
 - `professionals/{id}` and app-scoped professional overlays where configured
 
+## 4a) Root scope fields
+- `source_app_id`
+- `source_ecosystem_id`
+- `owner_type`
+- `owner_id`
+- `visibility`
+
+Tenant and ecosystem job pages should filter the same root jobs through these fields rather than duplicating jobs under app paths.
+
 ## 5) Routes (public vs internal; slug vs id)
 - Current routes are id-based:
   - `/jobs/[id]`, `/jobs/create`, `/jobs/edit/[id]`

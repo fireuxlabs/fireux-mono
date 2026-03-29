@@ -3,6 +3,18 @@ import { computed, type Ref } from 'vue'
 import type { BlogPost } from '../../../../../models/blogPost.model'
 import { useBlogCollection } from './useBlogCollection'
 
+const timestampToMillis = (value: unknown): number => {
+  if (!value) return 0
+  if (typeof value === 'string') return new Date(value).getTime()
+  if (value instanceof Date) return value.getTime()
+  if (typeof value === 'object' && value !== null) {
+    const seconds = Number((value as { seconds?: unknown }).seconds ?? 0)
+    const nanoseconds = Number((value as { nanoseconds?: unknown }).nanoseconds ?? 0)
+    return seconds * 1000 + Math.floor(nanoseconds / 1_000_000)
+  }
+  return 0
+}
+
 /**
  * Fetch helpers for blog posts (list + single).
  */
@@ -14,8 +26,8 @@ export function useBlogFetch() {
     const posts = collection.value
     if (!posts) return posts
     return posts.slice().sort((a, b) => {
-      const createdA = new Date(a.created_at ?? '').getTime()
-      const createdB = new Date(b.created_at ?? '').getTime()
+      const createdA = timestampToMillis(a.created?.at)
+      const createdB = timestampToMillis(b.created?.at)
       return createdB - createdA
     })
   })

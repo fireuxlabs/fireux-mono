@@ -15,6 +15,15 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `blogs/{slug}`
 - Collection name sanity-check: runtime write/read composables currently use `blogs` (no alias collection configured).
 
+## 4a) Root scope fields
+- `source_app_id`
+- `source_ecosystem_id`
+- `owner_type`
+- `owner_id`
+- `visibility`
+
+Blog pages should filter root posts through these fields rather than creating app-local blog storage by default.
+
 ## 5) Routes (public vs internal; slug vs id)
 - Public/indexable:
   - `/blog`

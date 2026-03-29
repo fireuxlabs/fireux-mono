@@ -40,6 +40,10 @@ export function useJobFetch(
       (legacyKitchenId ? 'kitchen' : '')
     return {
       ...current,
+      workplace:
+        workplaceType === 'kitchen' && workplaceId
+          ? kitchenById.value.get(String(workplaceId)) ?? null
+          : null,
       kitchen:
         workplaceType === 'kitchen' && workplaceId
           ? kitchenById.value.get(String(workplaceId)) ?? null

@@ -36,6 +36,8 @@ export const Ingredient = {
   },
 } as const
 
+export const IngredientModel = Ingredient
+
 export type Ingredient = {
   [K in keyof typeof Ingredient]: (typeof Ingredient)[K]
 }
@@ -57,7 +59,7 @@ export type IngredientUpdateInput = Partial<Omit<IngredientCreateInput, never>>
  * - Keep `ingredient_id` as the link back to root truth rather than mirroring root identity directly.
  */
 
-export const KitchenIngredient = {
+export const KitchenIngredientModel = {
   id: '' as string,
   // Same value as document id; kept explicit for query and migration ergonomics.
   ingredient_id: '' as string,
@@ -73,8 +75,10 @@ export const KitchenIngredient = {
   },
 } as const
 
+export const KitchenIngredient = KitchenIngredientModel
+
 export type KitchenIngredient = {
-  [K in keyof typeof KitchenIngredient]: (typeof KitchenIngredient)[K]
+  [K in keyof typeof KitchenIngredientModel]: (typeof KitchenIngredientModel)[K]
 }
 
 export type KitchenIngredientCreateInput = Omit<
@@ -95,7 +99,7 @@ export type KitchenIngredientUpdateInput = Partial<
  * - This is a kitchen-owned supplier linkage record, not a root entity.
  * - Keep both supplier and ingredient links explicit through ids.
  */
-export const KitchenSupplierIngredient = {
+export const KitchenSupplierIngredientModel = {
   id: '' as string,
   kitchen_id: '' as string,
   supplier_id: '' as string,
@@ -112,8 +116,10 @@ export const KitchenSupplierIngredient = {
   },
 } as const
 
+export const KitchenSupplierIngredient = KitchenSupplierIngredientModel
+
 export type KitchenSupplierIngredient = {
-  [K in keyof typeof KitchenSupplierIngredient]: (typeof KitchenSupplierIngredient)[K]
+  [K in keyof typeof KitchenSupplierIngredientModel]: (typeof KitchenSupplierIngredientModel)[K]
 }
 
 export type KitchenSupplierIngredientCreateInput = Omit<

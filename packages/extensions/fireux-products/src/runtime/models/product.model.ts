@@ -1,6 +1,9 @@
 // FILE: packages/extensions/fireux-products/src/runtime/models/product.model.ts
 
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import {
+  FireuxRootScope,
+  type FireuxStamped,
+} from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -10,12 +13,12 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Storage: root-first canonical model
  * Root path: /products/<productId>
  * Console use: may be managed or linked inside consoles without requiring a stored overlay by default
- * Transitional fields: legacy `appId`, `creator_id`, `created_at`, and `updated_at` still remain in the stored shape
+ * Root scope: filtered by source app / ecosystem / owner fields rather than app-local duplication
  *
  * Decision note:
- * - Product is treated as shared root truth first, but the current stored shape still carries app-coupled transitional fields.
- * - Keep those fields only while existing runtime surfaces still depend on them.
- * - If a console later needs real scoped stored product state, add it intentionally rather than by symmetry.
+ * - Product is shared root truth first.
+ * - App and ecosystem product pages should filter root products through shared root scoping fields.
+ * - Do not create app-local product storage unless real app-local workflow state appears later.
  * - If that changes, update the models README first, then this file.
  */
 
@@ -63,8 +66,9 @@ export interface StripePriceInput {
 }
 
 export type ProductType = string
-export const Product = {
+export const ProductModel = {
   id: '',
+  ...FireuxRootScope,
   name: '',
   tagline: '',
   Q: '',
@@ -85,15 +89,11 @@ export const Product = {
   product_type: 'service' as ProductType,
   track_stock: false as boolean,
   stock: null as number | null,
-  appId: '',
   metadata: {} as Record<string, any>,
-  // Legacy transitional fields still read/written by existing surfaces.
-  creator_id: '' as string,
-  created_at: '' as string,
-  updated_at: '' as string,
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
@@ -101,12 +101,16 @@ export const Product = {
   },
 } as const
 
+export const Product = ProductModel
+
 export type Product = {
-  [K in keyof typeof Product]: (typeof Product)[K]
+  [K in keyof typeof ProductModel]: (typeof ProductModel)[K]
 }
 
 export type ProductCreateInput = Omit<Product, 'id' | 'created' | 'updated'>
-export type ProductUpdateInput = Partial<Omit<ProductCreateInput, 'appId'>>
+export type ProductUpdateInput = Partial<
+  Omit<Product, 'id' | 'created' | 'updated'>
+>
 
 // Compatibility alias kept while product runtime migrates away from implementation-first naming.
 export const FirebaseProduct = Product

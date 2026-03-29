@@ -5,14 +5,15 @@ import { onMounted } from 'vue'
 import type { BlogPostEntry } from '../../../../../../models/blogPost.model'
 import { useBlogUtils } from '../../../blog/utils/useBlogUtils'
 
-type BlogPostPayload = BlogPostEntry & {
-  created_at: string
-  updated_at: string
-  appId: string
-}
+type BlogPostPayload = BlogPostEntry
 
 const defaultBlogPost: BlogPostEntry = {
   id: '',
+  source_app_id: '',
+  source_ecosystem_id: '',
+  owner_type: 'app',
+  owner_id: '',
+  visibility: 'app',
   title: '',
   content: '',
   metaDescription: '',
@@ -32,9 +33,6 @@ const defaultBlogPost: BlogPostEntry = {
   cta_text: '',
   type: 'article',
   product_id: undefined,
-  appId: '',
-  created_at: '',
-  updated_at: '',
 }
 
 /**
@@ -95,9 +93,11 @@ export function useBlogDraftState() {
       cta_text: '',
       type: 'article',
       product_id: undefined,
-      appId: tenantId,
-      created_at: '',
-      updated_at: '',
+      source_app_id: tenantId,
+      source_ecosystem_id: useFireUXConfig().ecosystem,
+      owner_type: 'app',
+      owner_id: tenantId,
+      visibility: 'app',
     }
 
     featuredImageData.value = ''
@@ -105,12 +105,14 @@ export function useBlogDraftState() {
   }
 
   function getBlogPostPayload(): BlogPostPayload {
-    const now = new Date().toISOString()
+    const ecosystemId = useFireUXConfig().ecosystem
     return {
       ...blogPost.value,
-      created_at: now,
-      updated_at: now,
-      appId: tenantId,
+      source_app_id: tenantId,
+      source_ecosystem_id: ecosystemId,
+      owner_type: 'app',
+      owner_id: tenantId || ecosystemId,
+      visibility: blogPost.value.visibility || 'app',
     }
   }
 

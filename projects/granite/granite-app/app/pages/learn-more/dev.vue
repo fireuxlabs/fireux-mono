@@ -22,7 +22,7 @@
           </template>
           <ul class="list-disc space-y-2 pl-5 text-sm">
             <li>Portfolio, Property, Unit, Client</li>
-            <li>ComplianceItemType, ComplianceRecord</li>
+            <li>ComplianceRecord</li>
             <li>Document, DocumentLink, Task</li>
           </ul>
         </UCard>

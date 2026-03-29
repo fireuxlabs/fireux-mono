@@ -145,6 +145,20 @@ Examples:
 
 These stay canonical at root unless real scoped stored truth appears later.
 
+Root-first entities may still be filtered by app or ecosystem without duplicating storage.
+
+Preferred scoping fields for root-first publishable/owned entities:
+- `source_app_id`
+- `source_ecosystem_id`
+- `owner_type`
+- `owner_id`
+- `visibility`
+
+Important:
+- an app page showing "my jobs", "my products", or "my blog posts" does not justify app-local storage on its own
+- keep the canonical record at root and filter at read time
+- only introduce app-local storage when real local workflow state appears
+
 ### Scoped
 
 What only exists because a console owns it.

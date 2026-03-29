@@ -33,9 +33,16 @@ Products/catalog module for FireUX apps.
 
 ## Data shape (typical)
 
-FireUX uses app-scoped collections by default:
-- `apps/{appId}/products/{productId}`
-- `apps/{appId}/products/{productId}/prices/{priceId}` (if used)
+FireUX treats products as root canonical records:
+- `products/{productId}`
+- `products/{productId}/prices/{priceId}` (if used)
+
+App and ecosystem product pages should filter root products through scope fields such as:
+- `source_app_id`
+- `source_ecosystem_id`
+- `owner_type`
+- `owner_id`
+- `visibility`
 
 The canonical shape is defined in:
 - `src/runtime/models/product.model.ts`

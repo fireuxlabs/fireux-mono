@@ -48,10 +48,10 @@
         <li v-if="product?.id"><strong>ID:</strong> {{ product.id }}</li>
         <li><strong>Name:</strong> {{ display(product?.name) }}</li>
         <li><strong>Slug:</strong> {{ display(product?.slug) }}</li>
-        <li><strong>Created:</strong> {{ display(product?.created_at) }}</li>
-        <li><strong>Updated:</strong> {{ display(product?.updated_at) }}</li>
-        <li><strong>Tenant:</strong> {{ display(product?.appId) }}</li>
-        <li><strong>Creator:</strong> {{ display(product?.creator_id) }}</li>
+        <li><strong>Created:</strong> {{ displayTimestamp(product?.created?.at) }}</li>
+        <li><strong>Updated:</strong> {{ displayTimestamp(product?.updated?.at) }}</li>
+        <li><strong>Source App:</strong> {{ display(product?.source_app_id) }}</li>
+        <li><strong>Owner:</strong> {{ display(product?.owner_id) }}</li>
         <li>
           <strong>Image Supplied:</strong>
           {{ product?.main_image ? 'Yes' : 'No' }}
@@ -143,6 +143,20 @@ function display(value: unknown): string {
   return typeof value === 'string' && value.trim() !== '' ? value : '!'
 }
 
+function displayTimestamp(value: unknown): string {
+  if (!value) return '!'
+  if (typeof value === 'string') return display(value)
+  if (value instanceof Date) return value.toISOString()
+  if (typeof value === 'object' && value !== null) {
+    const seconds = Number((value as { seconds?: unknown }).seconds ?? 0)
+    const nanoseconds = Number((value as { nanoseconds?: unknown }).nanoseconds ?? 0)
+    if (seconds > 0) {
+      return new Date(seconds * 1000 + Math.floor(nanoseconds / 1_000_000)).toISOString()
+    }
+  }
+  return '!'
+}
+
 function formatMoney(unitAmount: number, currency?: string): string {
   const iso = (currency || 'EUR').toUpperCase()
   return new Intl.NumberFormat('en-US', {
@@ -203,7 +217,7 @@ async function startCheckout() {
   if (props.mode === 'preview') return
 
   const product = props.product
-  const appId = String(product?.appId || '').trim()
+  const appId = String(product?.source_app_id || '').trim()
   const productId = String(product?.id || '').trim()
   const slug = String(product?.slug || '').trim()
   const priceId = resolveCheckoutPriceId(product)

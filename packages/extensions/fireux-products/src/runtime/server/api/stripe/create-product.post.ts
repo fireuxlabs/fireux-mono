@@ -121,7 +121,7 @@ export default defineEventHandler(async (event: H3Event) => {
       return json
     }
 
-    const appId = String(product.appId || 'app').trim()
+    const appId = String(product.source_app_id || product.appId || 'app').trim()
     const slug = String(product.slug || product.name || 'product').trim()
     const baseIdempotency = `${appId}:${slug}`
 
@@ -160,7 +160,7 @@ export default defineEventHandler(async (event: H3Event) => {
     let stripeProduct =
       existingProducts.find(
         (entry) =>
-          String(entry?.metadata?.appId || '') === appId &&
+          String(entry?.metadata?.source_app_id || entry?.metadata?.appId || '') === appId &&
           String(entry?.metadata?.slug || '') === slug
       ) || null
 
@@ -174,6 +174,7 @@ export default defineEventHandler(async (event: H3Event) => {
             description: product.description || '',
             metadata: {
               appId: product.appId || '',
+              source_app_id: product.source_app_id || product.appId || '',
               slug: product.slug || '',
             },
           },
@@ -187,7 +188,8 @@ export default defineEventHandler(async (event: H3Event) => {
           {
             name: product.name,
             description: product.description || '',
-            'metadata[appId]': product.appId || '',
+            'metadata[appId]': product.source_app_id || product.appId || '',
+            'metadata[source_app_id]': product.source_app_id || product.appId || '',
             'metadata[slug]': product.slug || '',
           },
           `products:${baseIdempotency}`

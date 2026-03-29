@@ -76,7 +76,6 @@ References:
 | `packages/core/fireux-core/src/runtime/models/shared/pill.model.ts` | Other | Shared view protocol | support model |
 | `packages/core/fireux-core/src/runtime/models/shared/task.model.ts` | Other | Shared base task protocol | support model |
 | `packages/core/fireux-core/src/runtime/models/system/meta-content.model.ts` | Other | Meta content contract, not an entity | support model |
-| `packages/extensions/fireux-compliance/src/runtime/models/compliance-item-type.model.ts` | Other | Taxonomy/support model, not a business entity record | support model |
 | `packages/extensions/fireux-suppliers/src/runtime/models/profiles/Supplier/Supplier.model.ts` | Other | Re-export wrapper only | duplicate wrapper model |
 
 ## Priority Drift Targets

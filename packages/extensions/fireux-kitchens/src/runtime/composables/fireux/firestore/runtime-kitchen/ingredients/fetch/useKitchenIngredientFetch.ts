@@ -7,7 +7,6 @@ import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-run
 import type {
     Ingredient,
     KitchenIngredient,
-    KitchenIngredientResolved,
 } from '../../../../../../models/ingredient.model'
 
 const GLOBAL_COLLECTION_PATH = 'ingredients'
@@ -17,6 +16,11 @@ const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
 type UseKitchenIngredientFetchOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
 }
+
+type KitchenIngredientRecord = KitchenIngredient &
+  Partial<Ingredient> & {
+    ingredient_id: string
+  }
 
 export function useKitchenIngredientFetch(
   kitchenId: Ref<string> | string,
@@ -66,7 +70,7 @@ export function useKitchenIngredientFetch(
     return map
   })
 
-  const ingredients = computed<KitchenIngredientResolved[]>(() => {
+  const ingredients = computed<KitchenIngredientRecord[]>(() => {
     const kitchenItems = kitchenCollectionRef.value?.value ?? []
 
     return kitchenItems.map((entry) => {

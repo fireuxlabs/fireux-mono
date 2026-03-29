@@ -1,8 +1,7 @@
 import { computed, type Ref } from 'vue'
-import type { JobResolved } from '../../../../../../models/job.model'
-import { useJobInterface } from './useJobInterface'
+import { useJobInterface, type JobView } from './useJobInterface'
 
-export function useJobComputed(job: Ref<JobResolved | null>, pending: Ref<boolean>) {
+export function useJobComputed(job: Ref<JobView | null>, pending: Ref<boolean>) {
   const { interface: jobInterface, searchText } = useJobInterface()
 
   const isPending = computed(() => Boolean(pending.value))

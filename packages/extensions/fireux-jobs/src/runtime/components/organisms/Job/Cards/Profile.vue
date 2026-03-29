@@ -105,10 +105,12 @@
 import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/company/fetch/useCompanyFetch'
 import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/company/utils/view/useCompanyInterface'
 import { computed, defineComponent } from 'vue'
-import type { JobCard } from '../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
-import type { JobResolved } from '../../../../../models/job.model'
+import type {
+  JobCard,
+  JobView,
+} from '../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 
-const props = defineProps<{ card?: JobCard.Card; job?: JobResolved | null }>()
+const props = defineProps<{ card?: JobCard.Card; job?: JobView | null }>()
 const isDev = import.meta.dev
 
 const formatValue = (value: unknown): string => {
@@ -137,7 +139,7 @@ const jobFields = computed(() => {
     { key: 'title', label: 'title', value: formatValue(job.title) },
     { key: 'description', label: 'description', value: formatValue(job.description) },
     { key: 'status', label: 'status', value: formatValue(job.status) },
-    { key: 'app_id', label: 'app_id', value: formatValue(job.app_id) },
+    { key: 'source_app_id', label: 'source_app_id', value: formatValue(job.source_app_id) },
     { key: 'workplace', label: 'workplace', value: formatValue((job as any).workplace) },
   ]
 })

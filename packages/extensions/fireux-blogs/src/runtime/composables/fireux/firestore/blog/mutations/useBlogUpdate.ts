@@ -1,4 +1,3 @@
-import { serverTimestamp } from 'firebase/firestore'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate.ts'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import type { BlogPost } from '../../../../../models/blogPost.model'
@@ -19,12 +18,7 @@ export function useBlogUpdate() {
       throw new Error('Invalid update payload. Must be an object.')
     }
 
-    const updateData = {
-      ...updates,
-      updated_at: serverTimestamp(),
-    }
-
-    await updateDocument('blogs', postId, updateData)
+    await updateDocument('blogs', postId, updates)
     await upsertSeoIndexDoc('seo_index_blogs', postId, {
       path: `/blog/${String(updates?.slug || postId).trim()}`,
       isPublic: true,

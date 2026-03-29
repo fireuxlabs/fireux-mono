@@ -23,7 +23,7 @@
               <div class="space-y-1">
                 <h3 class="font-semibold leading-tight">{{ job.title }}</h3>
                 <p class="text-xs uppercase tracking-wide text-gray-400">
-                  {{ job.app_id || 'App unknown' }}
+                  {{ job.source_app_id || 'App unknown' }}
                 </p>
               </div>
               <div class="flex flex-col items-end gap-2">

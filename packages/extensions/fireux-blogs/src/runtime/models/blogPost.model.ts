@@ -1,6 +1,9 @@
 // FILE: packages/extensions/fireux-blogs/src/runtime/models/blogPost.model.ts
 
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import {
+  FireuxRootScope,
+  type FireuxStamped,
+} from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type BlogPostType = 'article' | 'product'
@@ -20,16 +23,17 @@ export type BlogAuthor = {
  * Storage: root-first canonical model
  * Root path: /blogs/<slug>
  * Console use: may be authored or managed through a console, but does not need a stored overlay by default
- * Transitional fields: legacy `appId`, `created_at`, and `updated_at` still remain in the stored shape
+ * Root scope: filtered by source app / ecosystem / owner fields rather than app-local duplication
  *
  * Decision note:
- * - BlogPost is treated as a root entity first, but the current stored shape still carries app-coupled transitional fields.
- * - Keep those fields only while existing runtime surfaces still depend on them.
- * - If app-scoped stored truth appears later, add it intentionally rather than by symmetry.
+ * - BlogPost is root canonical truth.
+ * - App and ecosystem surfaces should filter root blog posts through shared root scoping fields.
+ * - Do not create app-local blog post storage unless real app-local state appears later.
  * - If that changes, update the models README first, then this file.
  */
-export const BlogPost = {
+export const BlogPostModel = {
   id: '',
+  ...FireuxRootScope,
   title: '',
   content: '',
   metaDescription: '',
@@ -51,13 +55,10 @@ export const BlogPost = {
   cta_text: '',
   type: 'article' as BlogPostType,
   product_id: '',
-  appId: '',
-  // Legacy transitional fields still read/written by existing surfaces.
-  created_at: '',
-  updated_at: '',
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
   },
   updated: {
     at: {} as FirebaseTimestamp,
@@ -65,10 +66,14 @@ export const BlogPost = {
   },
 } as const
 
+export const BlogPost = BlogPostModel
+
 export type BlogPost = {
-  [K in keyof typeof BlogPost]: (typeof BlogPost)[K]
+  [K in keyof typeof BlogPostModel]: (typeof BlogPostModel)[K]
 }
 
 export type BlogPostCreateInput = Omit<BlogPost, 'created' | 'updated'>
-export type BlogPostUpdateInput = Partial<Omit<BlogPostCreateInput, 'id' | 'slug'>>
+export type BlogPostUpdateInput = Partial<
+  Omit<BlogPost, 'id' | 'slug' | 'created' | 'updated'>
+>
 export type BlogPostEntry = BlogPostCreateInput

@@ -145,8 +145,8 @@ const sourceMeta = {
         },
         {
           name: 'fireux-compliance',
-          summary: 'Compliance definitions and evidence tracking.',
-          entities: ['ComplianceItemType', 'ComplianceRecord'],
+          summary: 'Compliance evidence tracking.',
+          entities: ['ComplianceRecord'],
         },
         {
           name: 'fireux-documents',
@@ -190,16 +190,10 @@ const sourceMeta = {
           linksTo: ['Portfolio', 'Property', 'Unit', 'Task'],
         },
         {
-          name: 'ComplianceItemType',
-          purpose: 'Definition of what evidence is required and how often.',
-          keyFields: ['id', 'name', 'scope', 'recurrence_days', 'active'],
-          linksTo: ['ComplianceRecord'],
-        },
-        {
           name: 'ComplianceRecord',
           purpose: 'Actual evidence record with issue/expiry dates and status.',
           keyFields: ['id', 'item_type_id', 'scope_type', 'scope_id', 'expiry_date'],
-          linksTo: ['ComplianceItemType', 'DocumentLink', 'Task'],
+          linksTo: ['DocumentLink', 'Task'],
         },
         {
           name: 'Document',
@@ -319,7 +313,7 @@ Portfolio
   -> Property
        -> Unit
        -> Client
-  -> ComplianceRecord <- ComplianceItemType
+  -> ComplianceRecord
   -> Task
 
 Document

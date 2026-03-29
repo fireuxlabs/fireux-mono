@@ -37,6 +37,14 @@ export function useJobCollection() {
         if (workplaceType !== 'kitchen' || !workplaceId) return null
         return kitchenById.value.get(String(workplaceId)) ?? null
       })(),
+      workplace: (() => {
+        const legacyKitchenId = String((job as any)?.kitchen_id ?? '')
+        const workplaceId = String((job as any)?.workplace_id ?? '') || legacyKitchenId
+        const workplaceType = String((job as any)?.workplace_type ?? '') ||
+          (legacyKitchenId ? 'kitchen' : '')
+        if (workplaceType !== 'kitchen' || !workplaceId) return null
+        return kitchenById.value.get(String(workplaceId)) ?? null
+      })(),
     }))
   })
 
@@ -45,7 +53,7 @@ export function useJobCollection() {
     if (!fireUXConfig.isTenant || !fireUXConfig.appId) {
       return allJobs
     }
-    return allJobs.filter((job) => job.app_id === fireUXConfig.appId)
+    return allJobs.filter((job) => job.source_app_id === fireUXConfig.appId)
   })
 
   return {

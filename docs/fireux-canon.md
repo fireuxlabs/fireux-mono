@@ -10,6 +10,8 @@ Updated: 2026-03-12
 - Apps consume extension domains; apps do not fork extension canon behavior.
 - Runtime state is the single source of truth for active selection context.
 - Canon docs override operational docs and tooling/history docs on conflict.
+- App pages do not justify app-local storage on their own.
+- Root-first entities may be filtered by explicit scope fields instead of being duplicated under app paths.
 - FireUX project control data must be minimal and explicit.
 - The canonical project control doc path is `project/<firebaseProjectId>`.
 - Current required control fields are:
@@ -23,6 +25,7 @@ Updated: 2026-03-12
 - Interface composables are view-only (format/mapping for UI surfaces).
 - Writes must be explicit through mutation composables.
 - Missing required state/data must be surfaced explicitly, not inferred.
+- App/ecosystem ownership filtering must be explicit through stored fields, not implied by collection path alone.
 
 ## Endpoint Canon
 - Entity index pages that are rendered through `Index.vue` + `CollectionManager` are client-side Firestore surfaces.

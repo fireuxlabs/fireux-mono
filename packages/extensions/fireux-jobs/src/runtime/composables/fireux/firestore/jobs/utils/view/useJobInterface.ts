@@ -1,5 +1,12 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { Job, JobResolved } from '../../../../../../models/job.model'
+import type { Job } from '../../../../../../models/job.model'
+
+export type JobView = Job & {
+  workplace?: {
+    short_address?: string
+    image_url?: string
+  } | null
+}
 
 export namespace JobCard {
   export type Card = {
@@ -32,12 +39,12 @@ export function useJobInterface() {
   type JobPreview = JobCard.Card
   type JobProfile = JobCard.Card
 
-  function resolveSubtitle(job: JobResolved): string {
+  function resolveSubtitle(job: JobView): string {
     const workplace = (job as any)?.workplace as any | null | undefined
     return safeString(workplace?.short_address).trim()
   }
 
-  function map(job: JobResolved): JobCard.Card {
+  function map(job: JobView): JobCard.Card {
     const id = safeString(job.id).trim()
     const workplace = (job as any)?.workplace as any | null | undefined
     const workplaceId = safeString((job as any)?.workplace_id)
@@ -62,29 +69,29 @@ export function useJobInterface() {
     }
   }
 
-  function buildInterface(target?: JobResolved | null | undefined): JobCard.Card | null {
+  function buildInterface(target?: JobView | null | undefined): JobCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
 
-  function pill(target?: JobResolved | null | undefined): JobPill | null {
+  function pill(target?: JobView | null | undefined): JobPill | null {
     return buildInterface(target)
   }
 
-  function cell(target?: JobResolved | null | undefined): JobCell | null {
+  function cell(target?: JobView | null | undefined): JobCell | null {
     return buildInterface(target)
   }
 
-  function preview(target?: JobResolved | null | undefined): JobPreview | null {
+  function preview(target?: JobView | null | undefined): JobPreview | null {
     return buildInterface(target)
   }
 
-  function profile(target?: JobResolved | null | undefined): JobProfile | null {
+  function profile(target?: JobView | null | undefined): JobProfile | null {
     return buildInterface(target)
   }
 
-  function searchText(job: JobResolved): string {
+  function searchText(job: JobView): string {
     // keep it simple; add company/place names later once jobs are hydrated
     const title = safeString(job.title)
     const status = safeString(job.status)
