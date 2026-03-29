@@ -87,10 +87,11 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed, reactive } from 'vue'
+import type { CompanyHydrated } from '../../composables/fireux/firestore/company/fetch/types'
 import { useCompanyFetch } from '../../composables/fireux/firestore/company/fetch/useCompanyFetch'
 import { useCompanies } from '../../composables/fireux/firestore/company/useCompanies'
-import type { Company, CompanyView } from '../../models/company.model'
-import { Company as CompanyModelRuntime } from '../../models/company.model'
+import type { Company } from '../../models/company.model'
+import { CompanyModel as CompanyModelRuntime } from '../../models/company.model'
 
 definePageMeta({
   layout: 'dev',
@@ -135,7 +136,7 @@ const {
 
 
 const hydratedById = computed(() => {
-  const map = new Map<string, CompanyView>()
+  const map = new Map<string, CompanyHydrated>()
   for (const company of hydratedCompanies.value ?? []) {
     if (company?.id) map.set(String(company.id), company)
   }
@@ -145,7 +146,7 @@ const hydratedById = computed(() => {
 const filteredCompaniesResolved = computed(() =>
   filteredCompanies.value
     .map((company) => hydratedById.value.get(String(company.id)))
-    .filter(Boolean) as CompanyView[]
+    .filter(Boolean) as CompanyHydrated[]
 )
 
 const filteredCompaniesDriftPayload = computed(() =>

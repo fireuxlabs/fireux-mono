@@ -1,11 +1,12 @@
-import type { Module } from '../../../../../../models/system/module.model'
+import type {
+  Module,
+  ModuleCreateInput,
+} from '../../../../../../models/system/module.model'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 
 export type ModuleCreateOptions = {
   collectionPath?: string
 }
-
-export type ModuleCreateInput = Omit<Module, 'created' | 'updated'>
 
 const normalizeString = (value: unknown) => String(value || '').trim()
 

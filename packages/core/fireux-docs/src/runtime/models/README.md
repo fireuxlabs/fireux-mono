@@ -15,7 +15,7 @@ This directory can contain:
 - stored overlays for entities that genuinely have scoped truth
 - app-hosted console overlays over root entities
 - scoped operational entities owned by a console
-- model support and protocol types that belong with runtime models
+- model support contracts that belong with runtime models
 
 ## Model Families
 
@@ -142,6 +142,7 @@ Examples:
 - `Job`
 - `BlogPost`
 - `Product`
+- `Module`
 
 These stay canonical at root unless real scoped stored truth appears later.
 
@@ -213,6 +214,14 @@ Field-discipline rule:
 - if a root model still carries legacy or confidential fields, simplify that in a focused cleanup pass rather than adding extra structural layers
 - if a family needs a richer combined read shape, build that in fetch/runtime/interface layers rather than in the model file
 
+Support rule:
+- `meta`
+  - shared storage/model support canon
+- `meta-content`
+  - typed content/config canon used by app content files
+
+Do not merge `meta` and `meta-content`.
+
 ### Facade
 
 A runtime, read, or console face of the same root entity.
@@ -225,6 +234,9 @@ Examples for now:
 - `Module`
 
 Do not invent stored models like `AppTenant`, `EcosystemProject`, or `ModuleProject` unless real scoped stored state appears.
+
+UI-only types like pill props should not live under `runtime/models`.
+If they are still useful, move them to shared package or runtime types instead.
 
 ## Child Directories
 

@@ -122,7 +122,7 @@ import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestor
 import { computed, ref } from 'vue'
 import { useCompanyFetch } from '../../composables/fireux/firestore/company/fetch/useCompanyFetch'
 import { useCompanyInterface } from '../../composables/fireux/firestore/company/utils/view/useCompanyInterface'
-import type { CompanyView } from '../../models/company.model'
+import type { CompanyHydrated } from '../../composables/fireux/firestore/company/fetch/types'
 
 definePageMeta({
   layout: 'default',
@@ -144,7 +144,7 @@ const editTo = computed(() =>
 const { company: fetchCompany } = useCompanyFetch()
 const rawDoc = docId ? await fetchCompany(docId) : null
 
-const company = computed<CompanyView | null>(
+const company = computed<CompanyHydrated | null>(
   () => (rawDoc as any)?.value ?? rawDoc ?? null
 )
 

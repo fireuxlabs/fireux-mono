@@ -1,4 +1,9 @@
-import { Place, type BasePlace, type GooglePlace, type PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
+import {
+  PlaceModel,
+  type BasePlace,
+  type GooglePlace,
+  type PlaceUpsertInput,
+} from 'fireux-places/runtime/models/place.model'
 import { toShortAddress } from '../../utils/view/formatPlaceAddress'
 
 const GOOGLE_AUTOCOMPLETE_ENDPOINT = '/api/places/autocomplete'
@@ -196,7 +201,7 @@ export async function fetchGoogle(
 function toStoredPlace(g: GooglePlace): PlaceUpsertInput {
   const search_term = `${g.name} ${g.formatted_address}`.toLowerCase()
   return {
-    ...Place,
+    ...PlaceModel,
     id: g.id,
     name: g.name,
     short_name: '',

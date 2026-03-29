@@ -16,7 +16,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Kitchen usage should be represented through scoped companion records rather than by mutating root identity.
  * - If that rule changes later, update the models README first, then this file.
  */
-export const Ingredient = {
+export const IngredientModel = {
   id: '' as string,
 
   name: '' as string,
@@ -36,17 +36,12 @@ export const Ingredient = {
   },
 } as const
 
-export const IngredientModel = Ingredient
-
 export type Ingredient = {
-  [K in keyof typeof Ingredient]: (typeof Ingredient)[K]
+  [K in keyof typeof IngredientModel]: (typeof IngredientModel)[K]
 }
 
-export type IngredientCreateInput = Omit<
-  Ingredient,
-  'id' | 'created' | 'updated'
->
-export type IngredientUpdateInput = Partial<Omit<IngredientCreateInput, never>>
+export type IngredientCreateInput = Omit<Ingredient, 'id' | 'created' | 'updated'>
+export type IngredientUpdateInput = Partial<Omit<Ingredient, 'id' | 'created' | 'updated'>>
 
 /**
  * Family: Kitchen-scoped
@@ -74,8 +69,6 @@ export const KitchenIngredientModel = {
     by: '' as FireuxStamped['updated']['by'],
   },
 } as const
-
-export const KitchenIngredient = KitchenIngredientModel
 
 export type KitchenIngredient = {
   [K in keyof typeof KitchenIngredientModel]: (typeof KitchenIngredientModel)[K]
@@ -115,8 +108,6 @@ export const KitchenSupplierIngredientModel = {
     by: '' as FireuxStamped['updated']['by'],
   },
 } as const
-
-export const KitchenSupplierIngredient = KitchenSupplierIngredientModel
 
 export type KitchenSupplierIngredient = {
   [K in keyof typeof KitchenSupplierIngredientModel]: (typeof KitchenSupplierIngredientModel)[K]

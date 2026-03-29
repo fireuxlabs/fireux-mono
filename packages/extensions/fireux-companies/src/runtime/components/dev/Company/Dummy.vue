@@ -62,12 +62,12 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { dummyCompanyHydratedList } from '../../../../../../../../dummy/company.dummy'
+import type { CompanyHydrated } from '../../../composables/fireux/firestore/company/fetch/types'
 import { useCompanyInterface } from '../../../composables/fireux/firestore/company/utils/view/useCompanyInterface'
-import type { CompanyView } from '../../../models/company.model'
 
 const { pill, cell, preview, profile } = useCompanyInterface()
 
-const dummyCompanyList = dummyCompanyHydratedList as CompanyView[]
+const dummyCompanyList = dummyCompanyHydratedList as CompanyHydrated[]
 
 const selectedId = ref(String(dummyCompanyList[0]?.id ?? ''))
 
@@ -93,7 +93,7 @@ const dummyCell = computed(() => cell(selectedCompany.value ?? dummyCompanyList[
 const dummyPreview = computed(() => preview(selectedCompany.value ?? dummyCompanyList[0]))
 const dummyProfile = computed(() => profile(selectedCompany.value ?? dummyCompanyList[0]))
 
-const selectCompany = (company: CompanyView) => {
+const selectCompany = (company: CompanyHydrated) => {
   selectedId.value = String(company.id)
 }
 </script>

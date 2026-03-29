@@ -1,7 +1,8 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { hydratePlaceCollection, hydratePlaceDoc } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceHydration'
 import type { Place } from 'fireux-places/runtime/models/place.model'
-import type { Company, CompanyView } from 'fireux-companies/runtime/models/company.model'
+import type { Company } from 'fireux-companies/runtime/models/company.model'
+import type { CompanyHydrated } from './types'
 import { computed } from 'vue'
 
 const COLLECTION_PATH = 'companies'
@@ -25,7 +26,7 @@ export function useCompanyFetch() {
   const companies = hydrate(
     computed(() => companiesCollection.value ?? []),
     computed(() => placesCollection.value ?? []),
-    (entry, place): CompanyView => ({
+    (entry, place): CompanyHydrated => ({
       ...(place ?? {}),
       ...entry,
       id: entry.id,
@@ -41,7 +42,7 @@ export function useCompanyFetch() {
       computed(() => companyDoc.value),
       computed(() => placeDoc.value),
       computed(() => id),
-      (entry, place, docId): CompanyView => ({
+      (entry, place, docId): CompanyHydrated => ({
         ...(place ?? {}),
         ...(entry ?? {}),
         id: docId,

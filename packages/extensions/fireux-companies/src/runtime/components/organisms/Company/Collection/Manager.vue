@@ -62,12 +62,12 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
+import type { CompanyHydrated } from '../../../../composables/fireux/firestore/company/fetch/types';
 import { useCompanyInterface } from '../../../../composables/fireux/firestore/company/utils/view/useCompanyInterface';
-import type { CompanyView } from '../../../../models/company.model';
 
 const props = withDefaults(
   defineProps<{
-    collection?: CompanyView[]
+    collection?: CompanyHydrated[]
     title?: string
     description?: string
     link?: boolean
@@ -110,10 +110,10 @@ const {
   toggleVariant,
   cards: cardsFiltered,
   visibleCount,
-} = useCollectionSearch<CompanyView, ReturnType<typeof makeCard>>({
+} = useCollectionSearch<CompanyHydrated, ReturnType<typeof makeCard>>({
   items: collection,
-  searchText: (company: CompanyView) => searchText(company),
-  makeCard: (company: CompanyView) => makeCard(company),
+  searchText: (company: CompanyHydrated) => searchText(company),
+  makeCard: (company: CompanyHydrated) => makeCard(company),
   initialVariant: props.initialVariant,
 })
 const isDev = import.meta.dev

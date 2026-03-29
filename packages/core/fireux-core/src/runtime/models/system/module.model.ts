@@ -14,7 +14,7 @@ import type { FireuxStamped } from '../core/meta.model'
  * - A console can compose or inspect modules through a facade without inventing a second stored model.
  * - If that decision changes later, update the models README first, then this file.
  */
-export const Module = {
+export const ModuleModel = {
   id: '',
   name: '',
   team: '',
@@ -31,7 +31,8 @@ export const Module = {
 } as const
 
 export type Module = {
-  [K in keyof typeof Module]: (typeof Module)[K]
+  [K in keyof typeof ModuleModel]: (typeof ModuleModel)[K]
 }
 
-export type ModuleDoc = Omit<Module, 'id'>
+export type ModuleCreateInput = Omit<Module, 'created' | 'updated'>
+export type ModuleUpdateInput = Partial<Omit<Module, 'id' | 'created' | 'updated'>>

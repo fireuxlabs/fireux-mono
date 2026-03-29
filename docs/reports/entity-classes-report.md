@@ -73,8 +73,6 @@ References:
 | `packages/extensions/fireux-suppliers/src/runtime/models/supplier/Supplier.model.ts` | Dual-Layer | Supplier core plus app overlay | no `Supplier` alias, large legacy payload |
 | `packages/core/fireux-core/src/runtime/models/core/meta.model.ts` | Other | Shared stamp contract | support model |
 | `packages/core/fireux-core/src/runtime/models/core/profile.model.ts` | Other | Shared profile base contract | support model |
-| `packages/core/fireux-core/src/runtime/models/shared/pill.model.ts` | Other | Shared view protocol | support model |
-| `packages/core/fireux-core/src/runtime/models/shared/task.model.ts` | Other | Shared base task protocol | support model |
 | `packages/core/fireux-core/src/runtime/models/system/meta-content.model.ts` | Other | Meta content contract, not an entity | support model |
 | `packages/extensions/fireux-suppliers/src/runtime/models/profiles/Supplier/Supplier.model.ts` | Other | Re-export wrapper only | duplicate wrapper model |
 

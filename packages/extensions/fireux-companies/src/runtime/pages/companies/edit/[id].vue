@@ -91,7 +91,7 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { computed } from 'vue'
 import { useCompanyFetch } from '../../../composables/fireux/firestore/company/fetch/useCompanyFetch'
 import { useCompanyInterface } from '../../../composables/fireux/firestore/company/utils/view/useCompanyInterface'
-import type { CompanyView } from '../../../models/company.model'
+import type { CompanyHydrated } from '../../../composables/fireux/firestore/company/fetch/types'
 
 definePageMeta({
   layout: 'default',
@@ -111,7 +111,7 @@ const companyId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 const { company: fetchCompany } = useCompanyFetch()
 const docRef = companyId ? fetchCompany(companyId) : null
 
-const company = computed<CompanyView | null>(() => docRef?.value ?? null)
+const company = computed<CompanyHydrated | null>(() => docRef?.value ?? null)
 const loading = computed(() => Boolean(companyId) && docRef?.value === undefined)
 
 const { currentUser, isAdmin } = useUser()

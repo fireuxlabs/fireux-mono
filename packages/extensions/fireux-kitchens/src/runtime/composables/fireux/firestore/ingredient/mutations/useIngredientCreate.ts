@@ -2,9 +2,9 @@ import { doc, getDoc } from 'firebase/firestore'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
-    Ingredient,
-    type IngredientCreateInput,
-    type Ingredient as IngredientDoc,
+  IngredientModel,
+  type IngredientCreateInput,
+  type Ingredient as IngredientDoc,
 } from '../../../../../models/ingredient.model'
 
 const GLOBAL_COLLECTION_PATH = 'ingredients'
@@ -33,7 +33,7 @@ const buildIngredientPayload = (
   ingredientId: string,
   draft: IngredientCreateDraft
 ): IngredientDoc => ({
-  ...Ingredient,
+  ...IngredientModel,
   id: ingredientId,
   name: String(draft.name || '').trim(),
   slug: resolveIngredientSlug(draft),

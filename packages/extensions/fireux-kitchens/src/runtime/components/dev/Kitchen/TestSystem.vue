@@ -108,7 +108,7 @@ import { computed, ref } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { getDefaultReadOnlyKitchenScenario } from '../../../composables/fireux/app/kitchen-runtime/read-only-scenarios'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
-import { KitchenIngredient as KitchenIngredientModel } from '../../../models/ingredient.model'
+import { KitchenIngredientModel } from '../../../models/ingredient.model'
 import type { Kitchen, KitchenCollection } from '../../../models/kitchen.model'
 import { KitchenCollection as KitchenModelRuntime } from '../../../models/kitchen.model'
 

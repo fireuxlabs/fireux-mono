@@ -8,7 +8,7 @@ import type {
   PlaceSocialLinks,
   PlaceSource,
 } from 'fireux-places/runtime/models/place.model'
-import type { CompanyView } from 'fireux-companies/runtime/models/company.model'
+import type { CompanyHydrated } from 'fireux-companies/runtime/composables/fireux/firestore/company/fetch/types'
 
 export namespace CompanyCard {
   export type Card = {
@@ -83,7 +83,7 @@ export function useCompanyInterface() {
     prop?: string
   }
 
-  function map(company: CompanyView): CompanyCard.Card {
+  function map(company: CompanyHydrated): CompanyCard.Card {
     const id = safeString(company.id).trim()
     const name = safeString(company.name)
     const shortName = safeString((company as any)?.short_name)
@@ -116,13 +116,13 @@ export function useCompanyInterface() {
     }
   }
 
-  function buildInterface(target?: CompanyView | null | undefined): CompanyCard.Card | null {
+  function buildInterface(target?: CompanyHydrated | null | undefined): CompanyCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
 
-  function pill(target?: CompanyView | null | undefined): CompanyPill | null {
+  function pill(target?: CompanyHydrated | null | undefined): CompanyPill | null {
     const base = buildInterface(target)
     if (!base) return null
     return {
@@ -132,7 +132,7 @@ export function useCompanyInterface() {
     }
   }
 
-  function cell(target?: CompanyView | null | undefined): CompanyCell | null {
+  function cell(target?: CompanyHydrated | null | undefined): CompanyCell | null {
     const base = buildInterface(target)
     if (!base || !target) return null
     return {
@@ -147,7 +147,7 @@ export function useCompanyInterface() {
     }
   }
 
-  function preview(target?: CompanyView | null | undefined): CompanyPreview | null {
+  function preview(target?: CompanyHydrated | null | undefined): CompanyPreview | null {
     const base = buildInterface(target)
     if (!base || !target) return null
     return {
@@ -160,7 +160,7 @@ export function useCompanyInterface() {
     }
   }
 
-  function profile(target?: CompanyView | null | undefined): CompanyProfile | null {
+  function profile(target?: CompanyHydrated | null | undefined): CompanyProfile | null {
     const base = buildInterface(target)
     if (!base || !target) return null
     const address = base.shortAddress || base.formattedAddress
@@ -183,7 +183,7 @@ export function useCompanyInterface() {
     }
   }
 
-  function searchText(company: CompanyView): string {
+  function searchText(company: CompanyHydrated): string {
     const name = safeString(company.name)
     const website = safeString((company as any)?.website)
     const shortAddress = sanitizeShortAddress((company as any)?.short_address)
