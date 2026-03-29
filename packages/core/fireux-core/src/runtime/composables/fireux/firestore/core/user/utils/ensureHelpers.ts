@@ -56,7 +56,7 @@ async function resolveCoreUserAvatar(
   const fallback = getDefaultImageUrl(source)
 
   try {
-    return await uploadImage(`users/${uid}/avatar/current`, source)
+    return await uploadImage(`users/${uid}/avatar`, source)
   } catch (error) {
     if (import.meta.dev) {
       console.warn('[ensureCoreUserDocument] failed to upload default avatar', {

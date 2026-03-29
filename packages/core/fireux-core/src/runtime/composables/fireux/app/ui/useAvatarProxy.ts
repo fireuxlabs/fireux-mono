@@ -7,18 +7,20 @@ import type { Ref, ComputedRef } from 'vue'
 export function useAvatarProxy() {
   function getProxiedAvatarUrl(avatarUrl: string | null | undefined): string {
     if (!avatarUrl) return ''
-    if (
-      avatarUrl.includes('firebasestorage.googleapis.com') ||
-      avatarUrl.includes('storage.googleapis.com')
-    ) {
-      return avatarUrl
-    }
+    if (avatarUrl.startsWith('/')) return avatarUrl
+    if (avatarUrl.startsWith('data:')) return avatarUrl
+    if (avatarUrl.startsWith('blob:')) return avatarUrl
     if (
       avatarUrl.includes('googleusercontent.com') ||
       avatarUrl.includes('google.com/') ||
       avatarUrl.includes('googleapis.com') ||
-      avatarUrl.includes('gstatic.com')
+      avatarUrl.includes('gstatic.com') ||
+      avatarUrl.includes('firebasestorage.googleapis.com') ||
+      avatarUrl.includes('storage.googleapis.com')
     ) {
+      return `/api/proxy/image?url=${encodeURIComponent(avatarUrl)}`
+    }
+    if (/^https?:\/\//i.test(avatarUrl)) {
       return `/api/proxy/image?url=${encodeURIComponent(avatarUrl)}`
     }
     return avatarUrl

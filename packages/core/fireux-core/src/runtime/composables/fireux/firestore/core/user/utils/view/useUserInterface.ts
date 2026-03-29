@@ -1,6 +1,7 @@
 import { safeArray, safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
 import type { CoreUser } from '../../../../../../../models/core/user.model'
+import { useAvatarProxy } from '../../../../../app/ui/useAvatarProxy'
 import { useAuth } from '../../../../../firebase/useAuth'
 import { normalizeUserHandle } from '../identity/useUserHandleIdentity'
 
@@ -40,16 +41,17 @@ export function useUserInterface(userRef?: Ref<CoreUser | null | undefined>) {
   type UserProfile = UserCard.Card
 
   const { uid, currentUser: authUser } = useAuth()
+  const { getProxiedAvatarUrl } = useAvatarProxy()
 
   function resolveAvatarUrl(user: CoreUser): string {
     const storedAvatar = safeString(user.avatar).trim()
-    if (storedAvatar) return storedAvatar
+    if (storedAvatar) return getProxiedAvatarUrl(storedAvatar)
 
     const currentUid = safeString(uid.value).trim()
     const targetUid = safeString(user.id).trim()
     if (!currentUid || !targetUid || currentUid !== targetUid) return ''
 
-    return safeString(authUser.value?.photoURL).trim()
+    return getProxiedAvatarUrl(safeString(authUser.value?.photoURL).trim())
   }
 
   function map(user: CoreUser): UserCard.Card {

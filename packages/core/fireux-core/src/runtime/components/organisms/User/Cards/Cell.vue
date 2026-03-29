@@ -5,7 +5,7 @@
   class="card card--cell"
 >
     <div class="card__media">
-      <UAvatar :src="avatarUrl" :alt="displayName" size="sm" />
+      <UAvatar :src="proxiedAvatarUrl || undefined" :alt="displayName" size="sm" />
 
       <div class="card__content card__stack">
         <div class="card__header">
@@ -48,7 +48,7 @@
   @click="onClick"
 >
     <div class="card__media">
-      <UAvatar :src="avatarUrl" :alt="displayName" size="sm" />
+      <UAvatar :src="proxiedAvatarUrl || undefined" :alt="displayName" size="sm" />
 
       <div class="card__content card__stack">
         <div class="card__header">
@@ -89,6 +89,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
+import { useAvatarProxy } from '../../../../composables/fireux/app/ui/useAvatarProxy'
 import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 type Props = Pick<
@@ -147,4 +148,7 @@ const onClick = (event?: MouseEvent) => {
 
   navigateTo(props.to)
 }
+
+const { useProxiedAvatar } = useAvatarProxy()
+const proxiedAvatarUrl = useProxiedAvatar(() => props.avatarUrl)
 </script>

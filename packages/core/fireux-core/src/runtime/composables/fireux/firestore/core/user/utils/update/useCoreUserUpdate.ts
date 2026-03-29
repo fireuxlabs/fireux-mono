@@ -64,7 +64,7 @@ export function useCoreUserUpdate(user: UserRefs) {
     },
     uploadAvatar: async (source: File | Blob) => {
       const id = requireCoreId()
-      const path = `users/${id}/avatar/current`
+      const path = `users/${id}/avatar`
       const url = await uploadImage(path, source)
       await updateCore({ avatar: url })
       return url

@@ -1,7 +1,7 @@
 <template>
   <UCard class="preview">
     <div class="preview__row">
-      <UAvatar :src="avatarUrl || undefined" :alt="displayName" size="sm" />
+      <UAvatar :src="proxiedAvatarUrl || undefined" :alt="displayName" size="sm" />
 
       <div class="preview__main">
         <div class="preview__top">
@@ -43,6 +43,8 @@
 </template>
 
 <script setup lang="ts">
+import { useAvatarProxy } from '../../../../composables/fireux/app/ui/useAvatarProxy'
+
 type Props = {
   avatarUrl: string
   displayName: string
@@ -62,11 +64,14 @@ type Props = {
   showBody?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   title: '',
   summary: '',
   showSubtitle: true,
   showBadges: true,
   showBody: true,
 })
+
+const { useProxiedAvatar } = useAvatarProxy()
+const proxiedAvatarUrl = useProxiedAvatar(() => props.avatarUrl)
 </script>
