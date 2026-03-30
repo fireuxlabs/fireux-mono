@@ -490,7 +490,35 @@ export const stackSizzleScenario = (): DummyScenario => {
         name: 'Core Menu',
         description: 'Full Stack & Sizzle lineup for standard service.',
         active: true,
-        dish_ids: [...coreDishIds],
+        service_modes: ['dine_in', 'collection', 'delivery'],
+        sections: [
+          {
+            id: 'section-burgers',
+            label: 'Burgers',
+            description: 'Core burger lineup from grill and fryer stations.',
+            sort_order: 1,
+            items: [
+              { id: 'item-classic-burger', dish_id: 'classic-burger', label: 'Classic Burger', price_minor: 1850, sort_order: 1 },
+              { id: 'item-cheese-burger', dish_id: 'cheese-burger', label: 'Cheese Burger', price_minor: 2050, sort_order: 2 },
+              { id: 'item-double-burger', dish_id: 'double-burger', label: 'Double Burger', price_minor: 2450, sort_order: 3 },
+              { id: 'item-bacon-burger', dish_id: 'bacon-burger', label: 'Bacon Burger', price_minor: 2350, sort_order: 4 },
+              { id: 'item-stack-burger', dish_id: 'stack-burger', label: 'Stack Burger', price_minor: 2550, sort_order: 5 },
+              { id: 'item-fried-chicken-burger', dish_id: 'fried-chicken-burger', label: 'Fried Chicken Burger', price_minor: 2150, sort_order: 6 },
+              { id: 'item-veggie-burger', dish_id: 'veggie-burger', label: 'Veggie Burger', price_minor: 2050, sort_order: 7 },
+            ],
+          },
+          {
+            id: 'section-sides',
+            label: 'Sides',
+            description: 'Fast sides and add-ons from fryer and cold prep.',
+            sort_order: 2,
+            items: [
+              { id: 'item-fries', dish_id: 'fries', label: 'Fries', price_minor: 650, sort_order: 1 },
+              { id: 'item-loaded-fries', dish_id: 'loaded-fries', label: 'Loaded Fries', price_minor: 1100, sort_order: 2 },
+              { id: 'item-house-slaw', dish_id: 'house-slaw', label: 'House Slaw', price_minor: 550, sort_order: 3 },
+            ],
+          },
+        ],
         sort_order: 1,
       },
     }),
@@ -501,7 +529,21 @@ export const stackSizzleScenario = (): DummyScenario => {
         name: 'Late Menu',
         description: 'Late service burgers only.',
         active: true,
-        dish_ids: [...lateDishIds],
+        service_modes: ['dine_in', 'collection'],
+        sections: [
+          {
+            id: 'section-late-burgers',
+            label: 'Late Night Burgers',
+            description: 'Reduced menu after the full kitchen closes down.',
+            sort_order: 1,
+            items: [
+              { id: 'item-late-classic-burger', dish_id: 'classic-burger', label: 'Classic Burger', price_minor: 1850, sort_order: 1 },
+              { id: 'item-late-cheese-burger', dish_id: 'cheese-burger', label: 'Cheese Burger', price_minor: 2050, sort_order: 2 },
+              { id: 'item-late-double-burger', dish_id: 'double-burger', label: 'Double Burger', price_minor: 2450, sort_order: 3 },
+              { id: 'item-late-fried-chicken-burger', dish_id: 'fried-chicken-burger', label: 'Fried Chicken Burger', price_minor: 2150, sort_order: 4 },
+            ],
+          },
+        ],
         sort_order: 2,
       },
     }),
@@ -646,7 +688,25 @@ export const stackSizzleScenario = (): DummyScenario => {
     },
   ]
 
-  const kitchenStations = buildReadOnlyStations(kitchenId)
+  const kitchenStations = buildReadOnlyStations(kitchenId, {
+    patchByKey: {
+      prep: {
+        description: 'Beef portioning, sauce setup, and burger garnish prep before service.',
+      },
+      grill: {
+        description: 'Smash burgers, toast buns, finish bacon, and push burger tickets fast.',
+      },
+      fryer: {
+        description: 'Fries, fried chicken, and veggie patties on a tight late-service loop.',
+      },
+      cold: {
+        description: 'Slaw, pickles, lettuce, and tomato garnish station with backup mise.',
+      },
+      pass: {
+        description: 'Expo checks burger builds, side parity, and ticket pacing for dine-in and delivery.',
+      },
+    },
+  })
 
   const competencyGroups: Array<Record<string, unknown>> = [
     {
@@ -721,10 +781,151 @@ export const stackSizzleScenario = (): DummyScenario => {
   const kitchenSuppliers = buildReadOnlySuppliers(kitchenId)
   const kitchenSupplierIngredients = buildReadOnlySupplierIngredients(kitchenId)
 
-  const kitchenPurchases: Array<Record<string, unknown>> = []
-  const kitchenIncomingOrders: Array<Record<string, unknown>> = []
+  const kitchenPurchases: Array<Record<string, unknown>> = [
+    {
+      id: 'po-ss-240212-01',
+      kitchen_id: kitchenId,
+      order_number: 'PO-SS-240212-01',
+      name: 'Protein top-up',
+      supplier_id: 'supplier-butcher-01',
+      supplier_name: 'Old Town Butchers',
+      status: 'sent',
+      total_minor: 78000,
+      currency_code: 'CHF',
+      expected_delivery: '2026-02-13',
+      lines: [
+        { ingredient_id: ingredientIds.beefPatty, label: 'Beef Patty', quantity: 10, unit: 'kg' },
+        { ingredient_id: ingredientIds.bacon, label: 'Bacon', quantity: 4, unit: 'kg' },
+        { ingredient_id: ingredientIds.chickenBreast, label: 'Chicken Breast', quantity: 6, unit: 'kg' },
+      ],
+    },
+    {
+      id: 'po-ss-240212-02',
+      kitchen_id: kitchenId,
+      order_number: 'PO-SS-240212-02',
+      name: 'Produce refresh',
+      supplier_id: 'supplier-produce-01',
+      supplier_name: 'Market Greens Co.',
+      status: 'draft',
+      total_minor: 19600,
+      currency_code: 'CHF',
+      expected_delivery: '2026-02-14',
+      lines: [
+        { ingredient_id: ingredientIds.lettuce, label: 'Lettuce', quantity: 12, unit: 'head' },
+        { ingredient_id: ingredientIds.tomato, label: 'Tomato', quantity: 8, unit: 'kg' },
+        { ingredient_id: ingredientIds.potato, label: 'Potato', quantity: 20, unit: 'kg' },
+      ],
+    },
+    {
+      id: 'po-ss-240212-03',
+      kitchen_id: kitchenId,
+      order_number: 'PO-SS-240212-03',
+      name: 'Sauces + cheese',
+      supplier_id: 'supplier-specialty-01',
+      supplier_name: 'Pantry Select',
+      status: 'received',
+      total_minor: 34500,
+      currency_code: 'CHF',
+      expected_delivery: '2026-02-12',
+      lines: [
+        { ingredient_id: ingredientIds.americanCheese, label: 'American Cheese', quantity: 3, unit: 'kg' },
+        { ingredient_id: ingredientIds.ketchup, label: 'Ketchup', quantity: 6, unit: 'l' },
+        { ingredient_id: ingredientIds.mayo, label: 'Mayo', quantity: 6, unit: 'l' },
+      ],
+    },
+  ]
 
-  const trainingModules = buildReadOnlyTrainingModules(kitchenId)
+  const kitchenIncomingOrders: Array<Record<string, unknown>> = [
+    {
+      id: 'order-ss-240212-01',
+      kitchen_id: kitchenId,
+      order_number: '240212-1138',
+      status: 'open',
+      channel: 'staff',
+      created_at: '2026-02-12T11:38:00.000Z',
+      customer: { name: 'Ava Rossi' },
+      service: {
+        mode: 'dine_in',
+        table_label: '12',
+        server_name: 'Nico',
+      },
+      lines: [
+        { id: 'line-1', dish_id: 'classic-burger', label: 'Classic Burger', qty: 2 },
+        { id: 'line-2', dish_id: 'fries', label: 'Fries', qty: 2 },
+      ],
+    },
+    {
+      id: 'order-ss-240212-02',
+      kitchen_id: kitchenId,
+      order_number: '240212-1205',
+      status: 'open',
+      channel: 'delivery',
+      created_at: '2026-02-12T12:05:00.000Z',
+      customer: { name: 'Mila Santos' },
+      service: {
+        mode: 'delivery',
+        delivery_time: '12:25',
+      },
+      lines: [
+        { id: 'line-1', dish_id: 'fried-chicken-burger', label: 'Fried Chicken Burger', qty: 1 },
+        { id: 'line-2', dish_id: 'loaded-fries', label: 'Loaded Fries', qty: 1 },
+        { id: 'line-3', dish_id: 'house-slaw', label: 'House Slaw', qty: 1 },
+      ],
+    },
+    {
+      id: 'order-ss-240212-03',
+      kitchen_id: kitchenId,
+      order_number: '240212-1230',
+      status: 'open',
+      channel: 'collection',
+      created_at: '2026-02-12T12:14:00.000Z',
+      customer: { name: 'Jonas Meier' },
+      service: {
+        mode: 'collection',
+        pickup_time: '12:30',
+      },
+      lines: [
+        { id: 'line-1', dish_id: 'double-burger', label: 'Double Burger', qty: 1 },
+        { id: 'line-2', dish_id: 'veggie-burger', label: 'Veggie Burger', qty: 1 },
+        { id: 'line-3', dish_id: 'fries', label: 'Fries', qty: 2 },
+      ],
+    },
+  ]
+
+  const trainingModules = buildReadOnlyTrainingModules(kitchenId, {
+    patchById: {
+      'train-core-01': {
+        title: 'Burger line food safety',
+        description: 'Cross-contamination controls for raw beef, cooked patties, fryer baskets, and garnish pans.',
+        tags: ['hygiene', 'burger-line', 'haccp'],
+      },
+      'train-core-02': {
+        title: 'Opening burger station',
+        description: 'Open grill, fryer, garnish rail, and bun station for Stack & Sizzle service.',
+        tags: ['ops', 'opening', 'burger-line'],
+      },
+      'train-core-03': {
+        title: 'Closing + oil shutdown',
+        description: 'Close the flat top, filter fryer oil, break down garnish, and log waste.',
+        tags: ['ops', 'close', 'fryer'],
+      },
+      'train-core-04': {
+        title: 'Late menu handover',
+        description: 'Hand over to the reduced late-night lineup with clear station and stock ownership.',
+        tags: ['training', 'late-menu', 'service'],
+      },
+    },
+    add: [
+      {
+        id: 'train-stack-05',
+        title: 'Delivery burger packing',
+        description: 'Pack burgers, fries, sauces, and labels so delivery orders land hot and intact.',
+        status: 'published',
+        minutes: 10,
+        tags: ['delivery', 'packing', 'service'],
+      },
+    ],
+  })
 
   const haccpChecks: Array<Record<string, unknown>> = [
     {
@@ -756,6 +957,26 @@ export const stackSizzleScenario = (): DummyScenario => {
       target: { required: true },
       last_recorded: '2026-02-12',
       status: 'due',
+    },
+    {
+      id: 'haccp-ss-04',
+      kitchen_id: kitchenId,
+      type: 'oil_quality',
+      title: 'Fryer oil quality check',
+      frequency: 'daily',
+      target: { required: true },
+      last_recorded: '2026-02-12',
+      status: 'ok',
+    },
+    {
+      id: 'haccp-ss-05',
+      kitchen_id: kitchenId,
+      type: 'holding',
+      title: 'Cold garnish rail temp',
+      frequency: 'per_service',
+      target: { max_c: 5 },
+      last_recorded: '2026-02-12',
+      status: 'ok',
     },
   ]
 

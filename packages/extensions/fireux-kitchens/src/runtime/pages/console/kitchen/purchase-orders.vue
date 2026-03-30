@@ -24,6 +24,11 @@
               <div class="text-xs text-dimmed">
                 {{ purchase.status || 'draft' }}
                 <template v-if="purchase.supplier_name"> · {{ purchase.supplier_name }}</template>
+                <template v-if="purchase.expected_delivery"> · ETA {{ purchase.expected_delivery }}</template>
+              </div>
+              <div class="mt-1 text-xs text-dimmed">
+                {{ purchaseLineSummary(purchase) }}
+                <template v-if="purchase.total_minor"> · {{ formatMinor(purchase.total_minor, purchase.currency_code) }}</template>
               </div>
             </div>
           </div>
@@ -63,4 +68,18 @@ definePageMeta({
 const runtime = useRuntimeKitchen()
 const mode = runtime.mode
 const purchases = computed(() => runtime.data.value.purchases ?? [])
+
+const formatMinor = (value: unknown, currencyCode: unknown) => {
+  const minor = Number(value || 0)
+  const code = String(currencyCode || 'CHF').trim() || 'CHF'
+  if (!Number.isFinite(minor) || minor <= 0) return ''
+  return `${code} ${(minor / 100).toFixed(2)}`
+}
+
+const purchaseLineSummary = (purchase: Record<string, unknown>) => {
+  const lines = Array.isArray(purchase.lines) ? purchase.lines : []
+  const qty = lines.reduce((sum, line) => sum + Math.max(0, Number((line as any)?.quantity || 0)), 0)
+  if (!lines.length) return 'No lines'
+  return `${lines.length} ${lines.length === 1 ? 'line' : 'lines'} · ${qty} units`
+}
 </script>

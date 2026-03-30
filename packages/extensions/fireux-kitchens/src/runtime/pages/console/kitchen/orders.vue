@@ -71,9 +71,14 @@ definePageMeta({
 
 const runtime = useRuntimeKitchen()
 const kitchenId = computed(() => String(runtime.id.value || '').trim())
-const { orders } = useKitchenOrdersFetch(kitchenId, {
+const { orders: firestoreOrders } = useKitchenOrdersFetch(kitchenId, {
   kitchenCollectionPath: runtime.kitchenCollectionPath,
 })
+const orders = computed(() =>
+  runtime.isReadOnly.value
+    ? ((runtime.data.value.incomingOrders ?? []) as Array<Record<string, unknown>>)
+    : (firestoreOrders.value as Array<Record<string, unknown>>)
+)
 
 type TicketLine = {
   label: string
@@ -91,6 +96,10 @@ type OrderTicket = {
 const toMillis = (value: unknown): number => {
   if (!value) return 0
   if (typeof value === 'number') return Number.isFinite(value) ? value : 0
+  if (typeof value === 'string') {
+    const parsed = Date.parse(value)
+    return Number.isFinite(parsed) ? parsed : 0
+  }
 
   if (typeof value === 'object') {
     const source = value as Record<string, unknown>
@@ -169,12 +178,16 @@ const resolveServerName = (order: Record<string, any>) => {
 
 const summarizeLines = (order: Record<string, any>): TicketLine[] => {
   const byLabel = new Map<string, number>()
-  const lines = Array.isArray(order.lines) ? order.lines : []
+  const lines = Array.isArray(order.lines)
+    ? order.lines
+    : Array.isArray(order.items)
+      ? order.items
+      : []
 
   for (const line of lines) {
     const label = String(line?.label || line?.dish_id || 'Unnamed item').trim()
     if (!label) continue
-    const qty = Math.max(0, Number(line?.qty || 0))
+    const qty = Math.max(0, Number(line?.qty || line?.quantity || 0))
     if (!qty) continue
     byLabel.set(label, (byLabel.get(label) || 0) + qty)
   }

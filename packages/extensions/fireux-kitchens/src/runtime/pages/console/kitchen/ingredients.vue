@@ -25,20 +25,33 @@
           <div class="text-xs text-dimmed">
             Mode: <span class="font-medium">{{ mode }}</span>
             · Kitchen: <span class="font-mono">{{ kitchenId }}</span>
+            <template v-if="selectedDish">
+              · Dish: <span class="font-medium">{{ selectedDishLabel }}</span>
+            </template>
           </div>
 
+          <UAlert
+            v-if="selectedDish"
+            color="neutral"
+            variant="soft"
+            :title="`Ingredients for ${selectedDishLabel}`"
+            description="This view is filtered from the selected dish context."
+          />
+
           <IngredientCollectionManager
-            :collection="kitchenIngredients"
-            title="My ingredients"
-            :description="mode === 'read-only'
-              ? 'Ingredients attached to this kitchen.'
-              : 'Ingredients attached to this kitchen. Click to remove.'"
+            :collection="kitchenIngredientsVisible"
+            :title="selectedDish ? 'Linked ingredients' : 'My ingredients'"
+            :description="selectedDish
+              ? 'Ingredients linked to the selected dish.'
+              : mode === 'read-only'
+                ? 'Ingredients attached to this kitchen.'
+                : 'Ingredients attached to this kitchen. Click to remove.'"
             :link="mode === 'read-only'"
             @select="handleRemoveFromKitchen"
           />
 
           <IngredientCollectionManager
-            v-if="mode !== 'read-only'"
+            v-if="mode !== 'read-only' && !selectedDish"
             :collection="globalIngredientsAvailable"
             title="Global library"
             description="Shared ingredient catalog. Click to add to this kitchen."
@@ -58,6 +71,7 @@ import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runti
 import { useIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
 import { useKitchenIngredientAdd } from '../../../composables/fireux/firestore/runtime-kitchen/ingredients/mutations/useKitchenIngredientAdd'
 import { useKitchenIngredientRemove } from '../../../composables/fireux/firestore/runtime-kitchen/ingredients/mutations/useKitchenIngredientRemove'
+import type { Dish } from '../../../models/dish.model'
 
 definePageMeta({
   layout: 'console',
@@ -83,6 +97,16 @@ const transferBusyIds = new Set<string>()
 
 const mode = runtime.mode
 const kitchenId = computed(() => String(runtime.id.value || '').trim())
+const dishes = computed(() => runtime.data.value.dishes ?? [])
+const route = useRoute()
+const selectedDishId = computed(() => String(route.query.dishId || '').trim())
+const selectedDish = computed<Dish | null>(() => {
+  if (!selectedDishId.value) return null
+  return dishes.value.find((dish) => String(dish.id || '').trim() === selectedDishId.value) || null
+})
+const selectedDishLabel = computed(
+  () => selectedDish.value?.name || selectedDish.value?.id || 'Selected dish'
+)
 const kitchenIngredientIds = computed(() => {
   const out = new Set<string>()
   const kitchenItems = runtime.data.value.kitchenIngredients ?? []
@@ -120,6 +144,21 @@ const kitchenIngredients = computed(() => {
       image_url: entryImage || globalImage,
       name: entryName || globalName,
     }
+  })
+})
+
+const kitchenIngredientsVisible = computed(() => {
+  if (!selectedDish.value) return kitchenIngredients.value
+
+  const ingredientIds = new Set(
+    (selectedDish.value.ingredient_ids ?? [])
+      .map((id) => String(id || '').trim())
+      .filter(Boolean)
+  )
+
+  return kitchenIngredients.value.filter((ingredient: any) => {
+    const ingredientId = String(ingredient?.ingredient_id || ingredient?.id || '').trim()
+    return ingredientId ? ingredientIds.has(ingredientId) : false
   })
 })
 
