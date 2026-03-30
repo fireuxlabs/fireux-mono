@@ -30,10 +30,7 @@ export function resolveConsoleEntryPath(
   }
 
   if (mode === 'read-only') {
-    const normalizedId = toText(id)
-    return normalizedId
-      ? `${normalizedBasePath}/read-only/${encodeURIComponent(normalizedId)}`
-      : `${normalizedBasePath}/read-only`
+    return `${normalizedBasePath}/overview`
   }
 
   return `${normalizedBasePath}/overview`

@@ -1,10 +1,14 @@
-import { useCookie, useState } from '#imports'
 import { computed } from 'vue'
 import { normalizeMode, normalizeString, type RuntimePortfolioMode } from './shared'
+import { selectionKey, useRuntimeSelection } from 'fireux-core/runtime/composables/fireux/runtime/useRuntimeSelection'
 
 type RuntimePortfolioSelectionState = {
-  portfolioId: string
+  selectedId: string
   mode: RuntimePortfolioMode
+}
+
+type RuntimePortfolioSelectionInput = Partial<RuntimePortfolioSelectionState> & {
+  portfolioId?: string
 }
 
 const COOKIE_KEY = 'fireux_runtime_portfolio'
@@ -12,51 +16,45 @@ const COOKIE_KEY = 'fireux_runtime_portfolio'
 const normalizeSelectionState = (value: unknown): RuntimePortfolioSelectionState => {
   const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
   return {
-    portfolioId: normalizeString(source.portfolioId),
+    selectedId: normalizeString(source.selectedId ?? source.portfolioId),
     mode: normalizeMode(source.mode) ?? 'live',
   }
 }
 
 export function useRuntimePortfolioSelection() {
-  const cookie = useCookie<RuntimePortfolioSelectionState>(COOKIE_KEY, {
-    default: () => ({ portfolioId: '', mode: 'live' }),
-    path: '/',
-    sameSite: 'lax',
+  const selection = useRuntimeSelection<RuntimePortfolioSelectionState>({
+    cookieKey: COOKIE_KEY,
+    defaultState: () => ({ selectedId: '', mode: 'live' }),
+    normalizeState: normalizeSelectionState,
   })
 
-  const runtimePortfolioState = useState<RuntimePortfolioSelectionState>(COOKIE_KEY, () =>
-    normalizeSelectionState(cookie.value)
-  )
-
-  cookie.value = normalizeSelectionState(runtimePortfolioState.value)
-
-  const setRuntimePortfolio = (selection: Partial<RuntimePortfolioSelectionState> = {}) => {
+  const setRuntimePortfolio = (selectionPatch: RuntimePortfolioSelectionInput = {}) => {
     const next: RuntimePortfolioSelectionState = {
-      portfolioId:
-        selection.portfolioId !== undefined
-          ? normalizeString(selection.portfolioId)
-          : runtimePortfolioState.value.portfolioId,
+      selectedId:
+        selectionPatch.selectedId !== undefined || selectionPatch.portfolioId !== undefined
+          ? normalizeString(selectionPatch.selectedId ?? selectionPatch.portfolioId)
+          : selection.state.value.selectedId,
       mode:
-        selection.mode !== undefined
-          ? normalizeMode(selection.mode) ?? runtimePortfolioState.value.mode
-          : runtimePortfolioState.value.mode,
+        selectionPatch.mode !== undefined
+          ? normalizeMode(selectionPatch.mode) ?? selection.state.value.mode
+          : selection.state.value.mode,
     }
 
-    runtimePortfolioState.value = next
-    cookie.value = next
+    selection.set(next)
   }
 
   const clearRuntimePortfolio = () => {
-    const next: RuntimePortfolioSelectionState = { portfolioId: '', mode: 'live' }
-    runtimePortfolioState.value = next
-    cookie.value = next
+    selection.clear()
   }
 
+  const selectedId = selectionKey(selection, 'selectedId')
+  const mode = computed(() => normalizeMode(selection.state.value.mode) ?? 'live')
+
   return {
-    runtimePortfolioId: computed(() => runtimePortfolioState.value.portfolioId),
-    runtimePortfolioMode: computed(
-      () => normalizeMode(runtimePortfolioState.value.mode) ?? 'live'
-    ),
+    selectedId,
+    mode,
+    runtimePortfolioId: selectedId,
+    runtimePortfolioMode: mode,
     setRuntimePortfolio,
     clearRuntimePortfolio,
   }

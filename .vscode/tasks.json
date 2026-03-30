@@ -35,7 +35,12 @@
       "args": ["dev:fireux"],
       "options": { "cwd": "${workspaceFolder}" },
       "isBackground": true,
-      "problemMatcher": ["$eslint-compact"]
+      "problemMatcher": ["$eslint-compact"],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
     },
     {
       "label": "dev:misebox (3001)",
@@ -44,7 +49,12 @@
       "args": ["dev:misebox"],
       "options": { "cwd": "${workspaceFolder}" },
       "isBackground": true,
-      "problemMatcher": ["$eslint-compact"]
+      "problemMatcher": ["$eslint-compact"],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
     },
     {
       "label": "dev:cleanbox (3002)",
@@ -84,7 +94,12 @@
       "command": "pnpm",
       "args": ["dev:bringli"],
       "options": { "cwd": "${workspaceFolder}" },
-      "isBackground": true
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
     },
     {
       "label": "dev:granite (3007)",
@@ -92,7 +107,12 @@
       "command": "pnpm",
       "args": ["dev:granite"],
       "options": { "cwd": "${workspaceFolder}" },
-      "isBackground": true
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
     },
     {
       "label": "dev:all (3000+3001+3002)",

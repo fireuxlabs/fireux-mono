@@ -70,8 +70,8 @@ export function useRuntimeSupplierConsole() {
     readOnlyScenarios.value
       .map((entry) =>
         supplierInterface({
-          ...(entry.coreSupplier ?? {}),
-          id: String((entry.coreSupplier as any)?.id || '').trim() || String(entry.id || '').trim(),
+          ...(entry.supplier ?? {}),
+          id: String((entry.supplier as any)?.id || '').trim() || String(entry.id || '').trim(),
         } as Supplier)
       )
       .filter((entry): entry is NonNullable<ReturnType<typeof supplierInterface>> => Boolean(entry))
@@ -95,7 +95,7 @@ export function useRuntimeSupplierConsole() {
     if (!currentId) return null
     if (runtime.isReadOnly.value) {
       return (
-        readOnlyScenarios.value.find((entry) => String(entry.id || '').trim() === currentId)?.coreSupplier ??
+        readOnlyScenarios.value.find((entry) => String(entry.id || '').trim() === currentId)?.supplier ??
         null
       )
     }
@@ -131,7 +131,7 @@ export function useRuntimeSupplierConsole() {
             key: 'console',
             label: 'Console memberships',
             count: runtime.isReadOnly.value
-              ? readOnlyScenarios.value.filter((entry) => Boolean(entry.appSupplier)).length
+              ? readOnlyScenarios.value.filter((entry) => Boolean(entry.consoleSupplier)).length
               : ownedSuppliers.value.length,
           },
           {

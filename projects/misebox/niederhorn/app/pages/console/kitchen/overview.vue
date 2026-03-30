@@ -7,10 +7,30 @@
     <template #body>
       <section class="space-y-8">
         <div class="text-xs text-dimmed">
-          Mode: <span class="font-medium">{{ mode }}</span>
+          <template v-if="isOperatorOverview">
+            Scope:
+            <span class="font-medium">
+              {{ runtime.mode === 'read-only' ? 'All read-only kitchens' : 'All owned kitchens' }}
+            </span>
+            <template v-if="activeKitchen">
+              · Active kitchen:
+              <span class="font-mono">{{ activeKitchen.id }}</span>
+            </template>
+          </template>
+          <template v-else>
+            Mode: <span class="font-medium">{{ mode }}</span>
+          </template>
         </div>
 
         <UCard>
+          <template #header>
+            <div class="text-sm font-semibold">
+              {{ isOperatorOverview
+                ? runtime.mode === 'read-only' ? 'All read-only kitchens' : 'All owned kitchens'
+                : 'Kitchen runtime' }}
+            </div>
+          </template>
+
           <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             <div
               v-for="item in overview"
@@ -22,14 +42,85 @@
             </div>
           </div>
         </UCard>
+
+        <UCard v-if="isOperatorOverview">
+          <template #header>
+            <div class="text-sm font-semibold">
+              {{ runtime.mode === 'read-only' ? 'Read-only kitchens' : 'Owned kitchens' }}
+            </div>
+          </template>
+
+          <div class="space-y-3">
+            <div v-if="availableKitchenPills.length" class="space-y-2">
+              <KitchenCardsPill
+                v-for="item in availableKitchenPills"
+                :key="item.id"
+                v-bind="item"
+                :link="false"
+                :action="true"
+                :show-badges="false"
+                class="cursor-pointer"
+                @action="selectKitchen(item.id)"
+              />
+            </div>
+
+            <p class="text-sm text-dimmed">
+              Overview totals above include all {{ runtime.mode === 'read-only' ? 'read-only' : 'owned' }} kitchens. Select one here when you want Menu, Team, or Suppliers routes to work against a specific kitchen.
+            </p>
+
+            <UAlert
+              v-if="!hasActiveKitchen"
+              color="neutral"
+              variant="soft"
+              title="Select a kitchen for workspace routes"
+              :description="`Choose one ${runtime.mode === 'read-only' ? 'read-only' : 'owned'} kitchen above before opening deeper console routes.`"
+            />
+            <UAlert
+              v-else-if="activeKitchenPill"
+              color="primary"
+              variant="soft"
+              title="Active kitchen selected"
+              :description="`${activeKitchenPill.title}${activeKitchenPill.subtitle ? ` · ${activeKitchenPill.subtitle}` : ''}`"
+            />
+          </div>
+        </UCard>
+
+        <UCard>
+          <template #header>
+            <div class="text-sm font-semibold">Quick actions</div>
+          </template>
+
+          <UAlert
+            v-if="isOperatorOverview && !hasActiveKitchen"
+            color="neutral"
+            variant="soft"
+            title="Pick an active kitchen first"
+            :description="`The overview is showing all ${runtime.mode === 'read-only' ? 'read-only' : 'owned'} kitchens. Select one above to enable Menu, Team, and Suppliers routes.`"
+          />
+
+          <div v-else class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <UButton
+              v-for="link in surfaceLinks"
+              :key="link.key"
+              :to="link.to"
+              variant="soft"
+              :icon="link.icon"
+              block
+            >
+              {{ link.label }}
+            </UButton>
+          </div>
+        </UCard>
       </section>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { useRuntimeKitchen } from 'fireux-kitchens/runtime/composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
 import { computed } from 'vue'
+import { useConsoleOverviewEntry } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleOverviewEntry'
+import { useRuntimeKitchenConsole } from 'fireux-kitchens/runtime/composables/fireux/app/kitchen-runtime/useRuntimeKitchenConsole'
+import KitchenCardsPill from 'fireux-kitchens/runtime/components/organisms/Kitchen/Cards/Pill.vue'
 
 definePageMeta({
   layout: 'console',
@@ -46,24 +137,43 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const runtime = useRuntimeKitchen()
+const {
+  runtime,
+  overview,
+  surfaceLinks,
+  ownedKitchens,
+  ownedKitchenPills,
+  readOnlyScenarios,
+  readOnlyKitchenPills,
+  activeKitchen,
+  activeKitchenPill,
+  hasActiveKitchen,
+  isOperatorOverview,
+  ownershipPending,
+  setActiveOwnedKitchen,
+} = useRuntimeKitchenConsole()
+
 const mode = runtime.mode
-const overview = computed(() => {
-  const data = runtime.data.value
-  return [
-    { key: 'ingredients', label: 'Kitchen Ingredients', count: data.kitchenIngredients?.length ?? 0 },
-    { key: 'mise', label: 'Mise Tasks', count: data.miseTasks?.length ?? 0 },
-    { key: 'recipes', label: 'Recipes', count: data.recipes?.length ?? 0 },
-    { key: 'dishes', label: 'Dishes', count: data.dishes?.length ?? 0 },
-    { key: 'menus', label: 'Menus', count: data.menus?.length ?? 0 },
-    { key: 'team', label: 'Team Members', count: data.teamMembers?.length ?? 0 },
-    { key: 'stations', label: 'Stations', count: data.stations?.length ?? 0 },
-    { key: 'suppliers', label: 'Suppliers', count: data.suppliers?.length ?? 0 },
-    { key: 'supplierIngredients', label: 'Supplier Ingredients', count: data.supplierIngredients?.length ?? 0 },
-    { key: 'purchases', label: 'Orders Out', count: data.purchases?.length ?? 0 },
-    { key: 'incomingOrders', label: 'Orders In', count: data.incomingOrders?.length ?? 0 },
-    { key: 'trainingModules', label: 'Training Modules', count: data.trainingModules?.length ?? 0 },
-    { key: 'haccpChecks', label: 'HACCP Checks', count: data.haccpChecks?.length ?? 0 },
-  ]
+const availableKitchenPills = computed(() =>
+  runtime.mode.value === 'read-only' ? readOnlyKitchenPills.value : ownedKitchenPills.value
+)
+
+const { ensureOverviewEntry } = useConsoleOverviewEntry({
+  runtimeId: runtime.id,
+  mode: computed(() => runtime.mode.value),
+  ownershipPending,
+  liveCount: computed(() => ownedKitchens.value.length),
+  readOnlyCount: computed(() => readOnlyScenarios.value.length),
+  singleLiveId: computed(() => String((ownedKitchens.value[0] as any)?.id || '')),
+  singleReadOnlyId: computed(() => String((readOnlyScenarios.value[0]?.kitchen as any)?.id || '')),
+  setActiveTarget: setActiveOwnedKitchen,
+  createPath: '/console/kitchen/create',
+  overviewPath: '/console/kitchen/overview',
 })
+
+await ensureOverviewEntry()
+
+const selectKitchen = (kitchenId: string) => {
+  setActiveOwnedKitchen(kitchenId)
+}
 </script>

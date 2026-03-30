@@ -17,3 +17,8 @@ One reusable map replaces per-ecosystem product docs in this folder.
 - Do not add app-specific product narratives in `docs/**`.
 - Keep shared docs operational and app-agnostic.
 - Put ecosystem-specific product narrative in app pages (`/about`, `/road-map`).
+
+## Firestore Rule
+- During development, ecosystem Firestore rules may stay temporarily open so console and model work can move quickly.
+- Before shipping any ecosystem, replace dev-open rules with shippable rules and deploy them to the actual database that ecosystem uses, not just `(default)`.
+- Always verify the ecosystem runtime config points at the intended Firestore `databaseId` before debugging permissions.

@@ -6,18 +6,34 @@
 
     <template #body>
       <section class="space-y-8">
-        <MenuCollectionManager
-          :collection="menus"
-          :selected-id="selectedMenuId"
-          title="Menus"
-          description="Service menus built from kitchen dishes."
-          :link="false"
-          @select="onSelectMenu"
+        <UAlert
+          v-if="!kitchenId"
+          color="neutral"
+          variant="soft"
+          title="No kitchen selected"
+          description="Select a kitchen on /console/kitchen/overview before using menus."
+          :actions="[
+            {
+              label: 'Go to kitchens',
+              to: '/console/kitchen/overview',
+              icon: 'i-lucide-arrow-right',
+            },
+          ]"
         />
 
-        <QRManager :size="72" />
+        <template v-else>
+          <MenuCollectionManager
+            :collection="menus"
+            :selected-id="selectedMenuId"
+            title="Menus"
+            description="Service menus built from kitchen dishes."
+            :link="false"
+            @select="onSelectMenu"
+          />
 
-        <UCard v-if="selectedMenu">
+          <QRManager :size="72" />
+
+          <UCard v-if="selectedMenu">
           <div class="flex items-start justify-between gap-3">
             <div class="space-y-1">
               <div class="font-medium">
@@ -83,7 +99,8 @@
               description="Add sections and items to structure this menu."
             />
           </div>
-        </UCard>
+          </UCard>
+        </template>
       </section>
     </template>
   </UDashboardPanel>
@@ -116,6 +133,7 @@ definePageMeta({
 })
 
 const runtime = useRuntimeKitchen()
+const kitchenId = computed(() => String(runtime.id.value || '').trim())
 const menus = computed(() => runtime.data.value.menus ?? [])
 const dishes = computed(() => runtime.data.value.dishes ?? [])
 
@@ -139,10 +157,10 @@ const selectedMenu = computed(() => {
 })
 
 const selectedMenuViewTo = computed(() => {
-  const kitchenId = String(selectedMenu.value?.kitchen_id || runtime.id.value || '').trim()
+  const resolvedKitchenId = String(selectedMenu.value?.kitchen_id || runtime.id.value || '').trim()
   const menuId = String(selectedMenu.value?.id || '').trim()
-  if (!kitchenId || !menuId) return ''
-  return `/kitchens/${encodeURIComponent(kitchenId)}/menu/${encodeURIComponent(menuId)}`
+  if (!resolvedKitchenId || !menuId) return ''
+  return `/kitchens/${encodeURIComponent(resolvedKitchenId)}/menu/${encodeURIComponent(menuId)}`
 })
 
 const onSelectMenu = (menuId: string) => {

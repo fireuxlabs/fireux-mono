@@ -8,9 +8,6 @@ import type {
 } from './_shared/types'
 
 export type {
-  ReadOnlyProjectAppRow,
-  ReadOnlyProjectEcosystemRow,
-  ReadOnlyProjectRow,
   ReadOnlyProjectScenario,
   ReadOnlyProjectScenarioListItem,
 } from './_shared/types'

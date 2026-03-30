@@ -6,28 +6,46 @@
 
     <template #body>
       <section class="space-y-8">
-        <div class="text-xs text-dimmed">
-          Mode: <span class="font-medium">{{ mode }}</span>
-        </div>
-
-        <IngredientCollectionManager
-          :collection="kitchenIngredients"
-          title="My ingredients"
-          :description="mode === 'read-only'
-            ? 'Ingredients attached to this kitchen.'
-            : 'Ingredients attached to this kitchen. Click to remove.'"
-          :link="mode === 'read-only'"
-          @select="handleRemoveFromKitchen"
+        <UAlert
+          v-if="!kitchenId"
+          color="neutral"
+          variant="soft"
+          title="No kitchen selected"
+          description="Select a kitchen on /console/kitchen/overview before managing ingredients."
+          :actions="[
+            {
+              label: 'Go to kitchens',
+              to: '/console/kitchen/overview',
+              icon: 'i-lucide-arrow-right',
+            },
+          ]"
         />
 
-        <IngredientCollectionManager
-          v-if="mode !== 'read-only'"
-          :collection="globalIngredientsAvailable"
-          title="Global library"
-          description="Shared ingredient catalog. Click to add to this kitchen."
-          :link="false"
-          @select="handleAddToKitchen"
-        />
+        <template v-else>
+          <div class="text-xs text-dimmed">
+            Mode: <span class="font-medium">{{ mode }}</span>
+            · Kitchen: <span class="font-mono">{{ kitchenId }}</span>
+          </div>
+
+          <IngredientCollectionManager
+            :collection="kitchenIngredients"
+            title="My ingredients"
+            :description="mode === 'read-only'
+              ? 'Ingredients attached to this kitchen.'
+              : 'Ingredients attached to this kitchen. Click to remove.'"
+            :link="mode === 'read-only'"
+            @select="handleRemoveFromKitchen"
+          />
+
+          <IngredientCollectionManager
+            v-if="mode !== 'read-only'"
+            :collection="globalIngredientsAvailable"
+            title="Global library"
+            description="Shared ingredient catalog. Click to add to this kitchen."
+            :link="false"
+            @select="handleAddToKitchen"
+          />
+        </template>
       </section>
     </template>
   </UDashboardPanel>
@@ -64,6 +82,7 @@ const toast = useToastify()
 const transferBusyIds = new Set<string>()
 
 const mode = runtime.mode
+const kitchenId = computed(() => String(runtime.id.value || '').trim())
 const kitchenIngredientIds = computed(() => {
   const out = new Set<string>()
   const kitchenItems = runtime.data.value.kitchenIngredients ?? []
@@ -117,13 +136,12 @@ const resolveRuntimeKitchenWriteContext = () => {
     throw new Error('Read-only kitchen cannot be modified')
   }
 
-  const kitchenId = String(runtime.id.value || '').trim()
-  if (!kitchenId) throw new Error('No runtime kitchen selected')
+  if (!kitchenId.value) throw new Error('No runtime kitchen selected')
 
   const kitchenCollectionPath = String(runtime.kitchenCollectionPath.value || '').trim()
   if (!kitchenCollectionPath) throw new Error('No runtime kitchen collection path')
 
-  return { kitchenId, kitchenCollectionPath }
+  return { kitchenId: kitchenId.value, kitchenCollectionPath }
 }
 
 const withIngredientTransferGuard = async (

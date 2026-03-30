@@ -1,3 +1,7 @@
+import {
+  ConsoleSupplierModel,
+  SupplierModel,
+} from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
 import type { ReadOnlySupplierScenario } from '../_shared/types'
 
 export const harborProvisionsScenario = (): ReadOnlySupplierScenario => ({
@@ -6,7 +10,8 @@ export const harborProvisionsScenario = (): ReadOnlySupplierScenario => ({
   label: 'Coastal produce and dry goods',
   image_url:
     'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=320&h=320&q=80',
-  coreSupplier: {
+  supplier: {
+    ...SupplierModel,
     id: 'harbor-provisions',
     supplier_organization_name: 'Harbor Provisions',
     supplier_headline: 'Daily coastal produce and pantry staples.',
@@ -18,7 +23,8 @@ export const harborProvisionsScenario = (): ReadOnlySupplierScenario => ({
     supplier_product_categories: ['Produce', 'Seafood', 'Dry Goods'],
     supplier_delivery_areas: ['Zurich', 'Basel', 'Lucerne'],
   },
-  appSupplier: {
+  consoleSupplier: {
+    ...ConsoleSupplierModel,
     id: 'harbor-provisions',
     admin_ids: ['ops-harbor'],
     join_requests: [],

@@ -1,11 +1,15 @@
-import { useCookie, useState } from '#imports'
 import { computed } from 'vue'
+import { selectionKey, useRuntimeSelection } from 'fireux-core/runtime/composables/fireux/runtime/useRuntimeSelection'
 
 export type RuntimeSupplierMode = 'live' | 'read-only'
 
 type RuntimeSupplierSelectionState = {
-  supplierId: string
+  selectedId: string
   mode: RuntimeSupplierMode
+}
+
+type RuntimeSupplierSelectionInput = Partial<RuntimeSupplierSelectionState> & {
+  supplierId?: string
 }
 
 const COOKIE_KEY = 'fireux_runtime_supplier'
@@ -22,54 +26,47 @@ const normalizeMode = (value: unknown): RuntimeSupplierMode => {
 const normalizeSelectionState = (value: unknown): RuntimeSupplierSelectionState => {
   const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
   return {
-    supplierId: normalizeString(source.supplierId),
+    selectedId: normalizeString(source.selectedId ?? source.supplierId),
     mode: normalizeMode(source.mode),
   }
 }
 
 export function useRuntimeSupplierSelection() {
-  const cookie = useCookie<RuntimeSupplierSelectionState>(COOKIE_KEY, {
-    default: () => ({ supplierId: '', mode: 'live' }),
-    path: '/',
-    sameSite: 'lax',
+  const selection = useRuntimeSelection<RuntimeSupplierSelectionState>({
+    cookieKey: COOKIE_KEY,
+    defaultState: () => ({ selectedId: '', mode: 'live' }),
+    normalizeState: normalizeSelectionState,
   })
 
-  const runtimeSupplierState = useState<RuntimeSupplierSelectionState>(COOKIE_KEY, () =>
-    normalizeSelectionState(cookie.value)
-  )
-
-  cookie.value = normalizeSelectionState(runtimeSupplierState.value)
-
-  const setRuntimeSupplier = (selection: Partial<RuntimeSupplierSelectionState> = {}) => {
+  const setRuntimeSupplier = (selectionPatch: RuntimeSupplierSelectionInput = {}) => {
     const next: RuntimeSupplierSelectionState = {
-      supplierId:
-        selection.supplierId !== undefined
-          ? normalizeString(selection.supplierId)
-          : runtimeSupplierState.value.supplierId,
+      selectedId:
+        selectionPatch.selectedId !== undefined || selectionPatch.supplierId !== undefined
+          ? normalizeString(selectionPatch.selectedId ?? selectionPatch.supplierId)
+          : selection.state.value.selectedId,
       mode:
-        selection.mode !== undefined
-          ? normalizeMode(selection.mode)
-          : runtimeSupplierState.value.mode,
+        selectionPatch.mode !== undefined
+          ? normalizeMode(selectionPatch.mode)
+          : selection.state.value.mode,
     }
 
-    runtimeSupplierState.value = next
-    cookie.value = next
+    selection.set(next)
   }
 
   const clearRuntimeSupplier = () => {
-    const next: RuntimeSupplierSelectionState = {
-      supplierId: '',
-      mode: 'live',
-    }
-    runtimeSupplierState.value = next
-    cookie.value = next
+    selection.clear()
   }
 
+  const selectedId = selectionKey(selection, 'selectedId')
+  const mode = computed<RuntimeSupplierMode>(() =>
+    normalizeMode(selection.state.value.mode)
+  )
+
   return {
-    runtimeSupplierId: computed(() => runtimeSupplierState.value.supplierId),
-    runtimeSupplierMode: computed<RuntimeSupplierMode>(() =>
-      normalizeMode(runtimeSupplierState.value.mode)
-    ),
+    selectedId,
+    mode,
+    runtimeSupplierId: selectedId,
+    runtimeSupplierMode: mode,
     setRuntimeSupplier,
     clearRuntimeSupplier,
   }

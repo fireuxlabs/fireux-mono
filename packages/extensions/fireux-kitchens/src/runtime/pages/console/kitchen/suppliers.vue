@@ -6,72 +6,89 @@
 
     <template #body>
       <section class="space-y-8">
-        <div class="text-xs text-dimmed">
-          Mode: <span class="font-medium">{{ mode }}</span> · Suppliers:
-          <span class="font-medium">{{ supplierCollection.length }}</span>
-          <span class="text-dimmed"> / {{ suppliers.length }}</span>
-          <span class="mx-2">·</span>
-          Catalogue Rows: <span class="font-medium">{{ supplierIngredientCollectionAll.length }}</span>
-          <span class="mx-2">·</span>
-          Buy Lists: <span class="font-medium">{{ myItemsCollection.length }}</span>
-        </div>
+        <UAlert
+          v-if="!kitchenId"
+          color="neutral"
+          variant="soft"
+          title="No kitchen selected"
+          description="Select a kitchen on /console/kitchen/overview before using suppliers."
+          :actions="[
+            {
+              label: 'Go to kitchens',
+              to: '/console/kitchen/overview',
+              icon: 'i-lucide-arrow-right',
+            },
+          ]"
+        />
 
-        <SupplierCollectionManager
-          :collection="supplierCollection"
-          :title="supplierCollectionTitle"
-          :description="supplierCollectionDescription"
-          :link="false"
-          :selected-id="selectedSupplierId"
-          @select="onSelectSupplier"
-        >
-          <template #controls>
-            <UButton
-              size="xs"
-              :variant="supplierLayer === 'my' ? 'solid' : 'soft'"
-              icon="i-lucide-user-check"
-              @click="supplierLayer = 'my'"
-            >
-              My Suppliers
-            </UButton>
-            <UButton
-              size="xs"
-              :variant="supplierLayer === 'all' ? 'solid' : 'soft'"
-              icon="i-lucide-users"
-              @click="supplierLayer = 'all'"
-            >
-              All Suppliers
-            </UButton>
-          </template>
-        </SupplierCollectionManager>
+        <template v-else>
+          <div class="text-xs text-dimmed">
+            Mode: <span class="font-medium">{{ mode }}</span> · Suppliers:
+            <span class="font-medium">{{ supplierCollection.length }}</span>
+            <span class="text-dimmed"> / {{ suppliers.length }}</span>
+            <span class="mx-2">·</span>
+            Catalogue Rows: <span class="font-medium">{{ supplierIngredientCollectionAll.length }}</span>
+            <span class="mx-2">·</span>
+            Buy Lists: <span class="font-medium">{{ myItemsCollection.length }}</span>
+          </div>
 
-        <IngredientCollectionManager
-          :collection="supplierItemsCollection"
-          :link="false"
-          :title="supplierItemsTitle"
-          :description="supplierItemsDescription"
-          :dev-json-title="supplierItemsDevJsonTitle"
-          :dev-json-context="supplierItemsDevJsonContext"
-          :dev-json-data="supplierItemsCollection"
-        >
-          <template #controls>
-            <UButton
-              size="xs"
-              :variant="layer === 'my' ? 'solid' : 'soft'"
-              icon="i-lucide-check-circle"
-              @click="layer = 'my'"
-            >
-              Buy Lists
-            </UButton>
-            <UButton
-              size="xs"
-              :variant="layer === 'catalogue' ? 'solid' : 'soft'"
-              icon="i-lucide-list"
-              @click="layer = 'catalogue'"
-            >
-              Catalogue
-            </UButton>
-          </template>
-        </IngredientCollectionManager>
+          <SupplierCollectionManager
+            :collection="supplierCollection"
+            :title="supplierCollectionTitle"
+            :description="supplierCollectionDescription"
+            :link="false"
+            :selected-id="selectedSupplierId"
+            @select="onSelectSupplier"
+          >
+            <template #controls>
+              <UButton
+                size="xs"
+                :variant="supplierLayer === 'my' ? 'solid' : 'soft'"
+                icon="i-lucide-user-check"
+                @click="supplierLayer = 'my'"
+              >
+                My Suppliers
+              </UButton>
+              <UButton
+                size="xs"
+                :variant="supplierLayer === 'all' ? 'solid' : 'soft'"
+                icon="i-lucide-users"
+                @click="supplierLayer = 'all'"
+              >
+                All Suppliers
+              </UButton>
+            </template>
+          </SupplierCollectionManager>
+
+          <IngredientCollectionManager
+            :collection="supplierItemsCollection"
+            :link="false"
+            :title="supplierItemsTitle"
+            :description="supplierItemsDescription"
+            :dev-json-title="supplierItemsDevJsonTitle"
+            :dev-json-context="supplierItemsDevJsonContext"
+            :dev-json-data="supplierItemsCollection"
+          >
+            <template #controls>
+              <UButton
+                size="xs"
+                :variant="layer === 'my' ? 'solid' : 'soft'"
+                icon="i-lucide-check-circle"
+                @click="layer = 'my'"
+              >
+                Buy Lists
+              </UButton>
+              <UButton
+                size="xs"
+                :variant="layer === 'catalogue' ? 'solid' : 'soft'"
+                icon="i-lucide-list"
+                @click="layer = 'catalogue'"
+              >
+                Catalogue
+              </UButton>
+            </template>
+          </IngredientCollectionManager>
+        </template>
       </section>
     </template>
   </UDashboardPanel>
@@ -102,6 +119,7 @@ definePageMeta({
 
 const runtime = useRuntimeKitchen()
 const mode = runtime.mode
+const kitchenId = computed(() => String(runtime.id.value || '').trim())
 const kitchen = runtime.kitchen
 
 const suppliers = computed(() => runtime.data.value.suppliers ?? [])

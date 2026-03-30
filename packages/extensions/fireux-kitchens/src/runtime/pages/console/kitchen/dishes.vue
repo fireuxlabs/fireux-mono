@@ -6,47 +6,63 @@
 
     <template #body>
       <section class="space-y-8">
-        <div class="text-xs text-dimmed">
-          Mode: <span class="font-medium">{{ mode }}</span>
-          <span class="mx-2">·</span>
-          Kitchen: <span class="font-medium">{{ kitchenId || 'none' }}</span>
-          <span class="mx-2">·</span>
-          Dishes: <span class="font-medium">{{ dishesVisible.length }}</span>
-          <span class="mx-1">/</span>
-          <span class="font-medium">{{ dishes.length }}</span>
-          <span class="mx-2">·</span>
-          Selected Dish:
-          <span class="font-medium">{{ selectedDishLabel }}</span>
-        </div>
-
-        <div class="flex items-center justify-end gap-2">
-          <UButton
-            size="xs"
-            :variant="dishScope === 'linked' ? 'solid' : 'soft'"
-            @click="dishScope = 'linked'"
-          >
-            Show linked
-          </UButton>
-          <UButton
-            size="xs"
-            :variant="dishScope === 'all' ? 'solid' : 'soft'"
-            @click="dishScope = 'all'"
-          >
-            Show all
-          </UButton>
-        </div>
-
-        <DishCollectionManager
-          :collection="dishesVisible"
-          :selected-id="selectedDishId"
-          title="Dishes"
-          description="Service-ready items for this kitchen."
-          :link="false"
-          :selection-mode="true"
-          @select="onSelectDish"
+        <UAlert
+          v-if="!kitchenId"
+          color="neutral"
+          variant="soft"
+          title="No kitchen selected"
+          description="Select a kitchen on /console/kitchen/overview before using dishes."
+          :actions="[
+            {
+              label: 'Go to kitchens',
+              to: '/console/kitchen/overview',
+              icon: 'i-lucide-arrow-right',
+            },
+          ]"
         />
 
-        <UCard v-if="selectedDish">
+        <template v-else>
+          <div class="text-xs text-dimmed">
+            Mode: <span class="font-medium">{{ mode }}</span>
+            <span class="mx-2">·</span>
+            Kitchen: <span class="font-medium">{{ kitchenId || 'none' }}</span>
+            <span class="mx-2">·</span>
+            Dishes: <span class="font-medium">{{ dishesVisible.length }}</span>
+            <span class="mx-1">/</span>
+            <span class="font-medium">{{ dishes.length }}</span>
+            <span class="mx-2">·</span>
+            Selected Dish:
+            <span class="font-medium">{{ selectedDishLabel }}</span>
+          </div>
+
+          <div class="flex items-center justify-end gap-2">
+            <UButton
+              size="xs"
+              :variant="dishScope === 'linked' ? 'solid' : 'soft'"
+              @click="dishScope = 'linked'"
+            >
+              Show linked
+            </UButton>
+            <UButton
+              size="xs"
+              :variant="dishScope === 'all' ? 'solid' : 'soft'"
+              @click="dishScope = 'all'"
+            >
+              Show all
+            </UButton>
+          </div>
+
+          <DishCollectionManager
+            :collection="dishesVisible"
+            :selected-id="selectedDishId"
+            title="Dishes"
+            description="Service-ready items for this kitchen."
+            :link="false"
+            :selection-mode="true"
+            @select="onSelectDish"
+          />
+
+          <UCard v-if="selectedDish">
           <div class="space-y-2">
             <div class="font-medium">
               {{ selectedDish.name || selectedDish.id || 'Untitled dish' }}
@@ -79,31 +95,32 @@
               </div>
             </div>
           </div>
-        </UCard>
+          </UCard>
 
-        <UAlert
-          v-else-if="dishesVisible.length"
-          color="neutral"
-          variant="soft"
-          title="No dish selected"
-          description="Select a dish above to inspect details."
-        />
+          <UAlert
+            v-else-if="dishesVisible.length"
+            color="neutral"
+            variant="soft"
+            title="No dish selected"
+            description="Select a dish above to inspect details."
+          />
 
-        <UAlert
-          v-else-if="dishes.length"
-          color="neutral"
-          variant="soft"
-          title="No linked dishes"
-          description="No dishes are linked from menu items in this scope."
-        />
+          <UAlert
+            v-else-if="dishes.length"
+            color="neutral"
+            variant="soft"
+            title="No linked dishes"
+            description="No dishes are linked from menu items in this scope."
+          />
 
-        <UAlert
-          v-else
-          color="neutral"
-          variant="soft"
-          title="No dishes loaded"
-          description="No dish documents found for the current kitchen context."
-        />
+          <UAlert
+            v-else
+            color="neutral"
+            variant="soft"
+            title="No dishes loaded"
+            description="No dish documents found for the current kitchen context."
+          />
+        </template>
       </section>
     </template>
   </UDashboardPanel>

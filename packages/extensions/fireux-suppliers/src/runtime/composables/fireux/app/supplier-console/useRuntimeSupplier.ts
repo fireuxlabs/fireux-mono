@@ -45,15 +45,15 @@ export function useRuntimeSupplier(params?: UseRuntimeSupplierParams) {
   })
 
   const coreSupplier = computed(() =>
-    isReadOnly.value ? readOnlyScenario.value?.coreSupplier ?? null : liveCoreSupplier.value ?? null
+    isReadOnly.value ? readOnlyScenario.value?.supplier ?? null : liveCoreSupplier.value ?? null
   )
 
   const appSupplier = computed(() =>
-    isReadOnly.value ? readOnlyScenario.value?.appSupplier ?? null : liveAppSupplier.value ?? null
+    isReadOnly.value ? readOnlyScenario.value?.consoleSupplier ?? null : liveAppSupplier.value ?? null
   )
 
   const supplier = computed(() =>
-    isReadOnly.value ? readOnlyScenario.value?.coreSupplier ?? null : liveSupplier.value ?? null
+    isReadOnly.value ? readOnlyScenario.value?.supplier ?? null : liveSupplier.value ?? null
   )
 
   const pending = computed(() => (isReadOnly.value ? false : Boolean(livePending.value)))

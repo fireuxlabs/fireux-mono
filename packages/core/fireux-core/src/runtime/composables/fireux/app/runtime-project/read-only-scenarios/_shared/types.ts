@@ -1,35 +1,16 @@
+import type { App } from '../../../../../models/core/app.model'
+import type { Ecosystem } from '../../../../../models/system/ecosystem.model'
 import type { Project } from '../../../../../models/system/project.model'
-
-export type ReadOnlyProjectRow = {
-  id: string
-  name: string
-  status: string
-}
-
-export type ReadOnlyProjectEcosystemRow = {
-  id: string
-  name: string
-  team: string
-  appCount: number
-}
-
-export type ReadOnlyProjectAppRow = {
-  id: string
-  name: string
-  shortName: string
-  ecosystemId: string
-  status: string
-}
 
 export type ReadOnlyProjectScenario = {
   id: string
   name: string
   label: string
   image_url: string
-  project: Partial<Project> & { id: string }
-  projects: ReadOnlyProjectRow[]
-  ecosystems: ReadOnlyProjectEcosystemRow[]
-  apps: ReadOnlyProjectAppRow[]
+  project: Project
+  projects: Project[]
+  ecosystems: Ecosystem[]
+  apps: App[]
 }
 
 export type ReadOnlyProjectScenarioListItem = {

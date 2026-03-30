@@ -1,28 +1,19 @@
-export type ReadOnlySupplierCore = Record<string, unknown> & {
-  id: string
-  supplier_organization_name?: string
-  supplier_headline?: string
-  summary?: string
-  supplier_bio?: string
-  supplier_image?: string
-  supplier_product_categories?: string[]
-  supplier_delivery_areas?: string[]
-}
+import type {
+  ConsoleSupplier,
+  Supplier,
+} from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
 
-export type ReadOnlySupplierApp = Record<string, unknown> & {
-  id: string
-  admin_ids?: string[]
-  join_requests?: string[]
-  console_enabled?: boolean
-}
+export type ReadOnlySupplierCore = Supplier
+
+export type ReadOnlySupplierApp = ConsoleSupplier
 
 export type ReadOnlySupplierScenario = {
   id: string
   name: string
   label: string
   image_url: string
-  coreSupplier: ReadOnlySupplierCore
-  appSupplier: ReadOnlySupplierApp
+  supplier: ReadOnlySupplierCore
+  consoleSupplier: ReadOnlySupplierApp
 }
 
 export type ReadOnlySupplierScenarioListItem = {

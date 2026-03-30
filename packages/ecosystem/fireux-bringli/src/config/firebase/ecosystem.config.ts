@@ -11,6 +11,7 @@ export const ecosystemConfig = {
     projectId: 'bringli-b0517',
     storageBucket: 'bringli-b0517.firebasestorage.app',
     messagingSenderId: '286263060307',
+    databaseId: 'bringli',
   },
   ssrRegion: 'europe-west1',
 } as const satisfies FireuxEcosystemConfig

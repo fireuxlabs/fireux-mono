@@ -6,12 +6,28 @@
 
     <template #body>
       <section class="space-y-8">
-        <div class="text-xs text-dimmed">
-          Mode: <span class="font-medium">{{ mode }}</span> · Team members:
-          <span class="font-medium">{{ teamMembers.length }}</span>
-        </div>
+        <UAlert
+          v-if="!kitchenId"
+          color="neutral"
+          variant="soft"
+          title="No kitchen selected"
+          description="Select a kitchen on /console/kitchen/overview before viewing team."
+          :actions="[
+            {
+              label: 'Go to kitchens',
+              to: '/console/kitchen/overview',
+              icon: 'i-lucide-arrow-right',
+            },
+          ]"
+        />
 
-        <UCard v-if="teamMembers.length">
+        <template v-else>
+          <div class="text-xs text-dimmed">
+            Mode: <span class="font-medium">{{ mode }}</span> · Team members:
+            <span class="font-medium">{{ teamMembers.length }}</span>
+          </div>
+
+          <UCard v-if="teamMembers.length">
           <div class="space-y-3">
             <div
               v-for="member in teamMembers"
@@ -52,15 +68,16 @@
               </div>
             </div>
           </div>
-        </UCard>
+          </UCard>
 
-        <UAlert
-          v-else
-          color="neutral"
-          variant="soft"
-          title="No team members loaded"
-          description="No team members found for this kitchen context."
-        />
+          <UAlert
+            v-else
+            color="neutral"
+            variant="soft"
+            title="No team members loaded"
+            description="No team members found for this kitchen context."
+          />
+        </template>
       </section>
     </template>
   </UDashboardPanel>
@@ -87,6 +104,7 @@ definePageMeta({
 
 const runtime = useRuntimeKitchen()
 const mode = runtime.mode
+const kitchenId = computed(() => String(runtime.id.value || '').trim())
 const teamAvatarPlaceholder = (seed: string) =>
   `https://i.pravatar.cc/256?u=${encodeURIComponent(`fireux-kitchen-team-${seed || 'member'}`)}`
 const teamMembers = computed(() =>

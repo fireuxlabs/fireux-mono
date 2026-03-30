@@ -6,7 +6,23 @@
 
     <template #body>
       <section class="space-y-6">
-        <UCard>
+        <UAlert
+          v-if="!runtime.id"
+          color="neutral"
+          variant="soft"
+          title="No project selected"
+          description="Select a project on /console/projects/overview before managing apps."
+          :actions="[
+            {
+              label: 'Go to projects',
+              to: '/console/projects/overview',
+              icon: 'i-lucide-arrow-right',
+            },
+          ]"
+        />
+
+        <template v-else>
+          <UCard>
           <template #header>
             <div class="text-sm font-semibold">App management</div>
           </template>
@@ -40,10 +56,10 @@
           description="Create your first app from the project console."
         />
 
-        <UCard
-          v-for="app in appRows"
-          :key="app.id"
-        >
+          <UCard
+            v-for="app in appRows"
+            :key="app.id"
+          >
           <template #header>
             <div class="flex items-start justify-between gap-3">
               <div class="space-y-1">
@@ -89,14 +105,14 @@
               Save
             </UButton>
           </div>
-        </UCard>
+          </UCard>
+        </template>
       </section>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
 import { computed, reactive, watchEffect } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useRuntimeProjectConsole } from 'fireux-core/runtime/composables/fireux/app/runtime-project/useRuntimeProjectConsole'
@@ -118,9 +134,6 @@ definePageMeta({
 })
 
 const { runtime, appRows, ecosystemRows, actions } = useRuntimeProjectConsole()
-if (!runtime.id.value) {
-  await navigateTo('/console/projects/create', { replace: true })
-}
 const { updateDocument } = useFirestoreUpdate()
 const toast = useToastify()
 const isWritableMode = computed(() => runtime.mode.value === 'live')

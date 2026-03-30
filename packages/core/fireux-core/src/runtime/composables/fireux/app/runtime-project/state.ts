@@ -1,11 +1,15 @@
-import { useCookie, useState } from '#imports'
 import { computed } from 'vue'
 import { normalizeRuntimeMode, normalizeString } from '../../runtime/runtime.normalize'
 import type { RuntimeMode } from '../../runtime/runtime.types'
+import { selectionKey, useRuntimeSelection } from '../../runtime/useRuntimeSelection'
 
 export type RuntimeProjectSelectionState = {
-  projectId: string
+  selectedId: string
   mode: RuntimeMode
+}
+
+type RuntimeProjectSelectionInput = Partial<RuntimeProjectSelectionState> & {
+  projectId?: string
 }
 
 const COOKIE_KEY = 'fireux_runtime_project'
@@ -13,49 +17,45 @@ const COOKIE_KEY = 'fireux_runtime_project'
 const normalizeSelectionState = (value: unknown): RuntimeProjectSelectionState => {
   const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
   return {
-    projectId: normalizeString(source.projectId),
+    selectedId: normalizeString(source.selectedId ?? source.projectId),
     mode: normalizeRuntimeMode(source.mode) ?? 'live',
   }
 }
 
 export function useRuntimeProjectSelection() {
-  const cookie = useCookie<RuntimeProjectSelectionState>(COOKIE_KEY, {
-    default: () => ({ projectId: '', mode: 'live' }),
-    path: '/',
-    sameSite: 'lax',
+  const selection = useRuntimeSelection<RuntimeProjectSelectionState>({
+    cookieKey: COOKIE_KEY,
+    defaultState: () => ({ selectedId: '', mode: 'live' }),
+    normalizeState: normalizeSelectionState,
   })
 
-  const runtimeProjectState = useState<RuntimeProjectSelectionState>(COOKIE_KEY, () =>
-    normalizeSelectionState(cookie.value)
-  )
-
-  cookie.value = normalizeSelectionState(runtimeProjectState.value)
-
-  const setRuntimeProject = (selection: Partial<RuntimeProjectSelectionState> = {}) => {
+  const setRuntimeProject = (selectionPatch: RuntimeProjectSelectionInput = {}) => {
     const next: RuntimeProjectSelectionState = {
-      projectId:
-        selection.projectId !== undefined
-          ? normalizeString(selection.projectId)
-          : runtimeProjectState.value.projectId,
+      selectedId:
+        selectionPatch.selectedId !== undefined || selectionPatch.projectId !== undefined
+          ? normalizeString(selectionPatch.selectedId ?? selectionPatch.projectId)
+          : selection.state.value.selectedId,
       mode:
-        selection.mode !== undefined
-          ? normalizeRuntimeMode(selection.mode) ?? runtimeProjectState.value.mode
-          : runtimeProjectState.value.mode,
+        selectionPatch.mode !== undefined
+          ? normalizeRuntimeMode(selectionPatch.mode) ?? selection.state.value.mode
+          : selection.state.value.mode,
     }
 
-    runtimeProjectState.value = next
-    cookie.value = next
+    selection.set(next)
   }
 
   const clearRuntimeProject = () => {
-    const next: RuntimeProjectSelectionState = { projectId: '', mode: 'live' }
-    runtimeProjectState.value = next
-    cookie.value = next
+    selection.clear()
   }
 
+  const selectedId = selectionKey(selection, 'selectedId')
+  const mode = computed(() => normalizeRuntimeMode(selection.state.value.mode) ?? 'live')
+
   return {
-    runtimeProjectId: computed(() => runtimeProjectState.value.projectId),
-    runtimeProjectMode: computed(() => normalizeRuntimeMode(runtimeProjectState.value.mode) ?? 'live'),
+    selectedId,
+    mode,
+    runtimeProjectId: selectedId,
+    runtimeProjectMode: mode,
     setRuntimeProject,
     clearRuntimeProject,
   }

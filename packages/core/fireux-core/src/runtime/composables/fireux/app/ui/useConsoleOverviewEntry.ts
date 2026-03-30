@@ -1,4 +1,4 @@
-import { navigateTo } from '#imports'
+import { navigateTo, useNuxtApp } from '#imports'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 
 type UseConsoleOverviewEntryOptions = {
@@ -24,6 +24,7 @@ const normalizeCount = (value: unknown): number => {
 }
 
 export function useConsoleOverviewEntry(options: UseConsoleOverviewEntryOptions) {
+  const nuxtApp = useNuxtApp()
   const readOnlyMode = normalizeString(options.readOnlyMode || 'read-only') || 'read-only'
   const liveMode = normalizeString(options.liveMode || 'live') || 'live'
   const waitMs = Number(options.waitMs ?? 1500)
@@ -40,6 +41,9 @@ export function useConsoleOverviewEntry(options: UseConsoleOverviewEntryOptions)
     isLiveMode.value ? Boolean(toValue(options.ownershipPending)) : false
   )
 
+  const redirectTo = async (path: string) =>
+    await nuxtApp.runWithContext(() => navigateTo(path, { replace: true }))
+
   const ensureOverviewEntry = async () => {
     const deadline = Date.now() + waitMs
 
@@ -51,18 +55,18 @@ export function useConsoleOverviewEntry(options: UseConsoleOverviewEntryOptions)
 
     if (isReadOnlyMode.value && readOnlyCount.value === 1 && singleReadOnlyId.value) {
       options.setActiveTarget(singleReadOnlyId.value)
-      await navigateTo(options.overviewPath, { replace: true })
+      await redirectTo(options.overviewPath)
       return
     }
 
     if (isLiveMode.value && liveCount.value === 1 && singleLiveId.value) {
       options.setActiveTarget(singleLiveId.value)
-      await navigateTo(options.overviewPath, { replace: true })
+      await redirectTo(options.overviewPath)
       return
     }
 
     if (isLiveMode.value && liveCount.value === 0) {
-      await navigateTo(options.createPath, { replace: true })
+      await redirectTo(options.createPath)
     }
   }
 

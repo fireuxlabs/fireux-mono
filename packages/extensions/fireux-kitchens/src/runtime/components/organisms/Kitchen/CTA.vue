@@ -369,15 +369,8 @@ const goToKitchen = async (mode: RuntimeKitchenMode, kitchenId?: string) => {
 
   if (mode === 'read-only') {
     const resolvedId = String(kitchenId || '').trim()
-    if (!resolvedId) {
-      setRuntimeKitchen({ mode: 'read-only', kitchenId: '' })
-      await router.push('/console/kitchen/overview')
-      return
-    }
-
-    await router.push(
-      resolveConsoleEntryPath('/console/kitchen', 'read-only', resolvedId)
-    )
+    setRuntimeKitchen({ mode: 'read-only', kitchenId: resolvedId })
+    await router.push(resolveConsoleEntryPath('/console/kitchen', 'read-only', resolvedId))
     return
   }
 

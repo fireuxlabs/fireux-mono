@@ -244,15 +244,8 @@ const bundledReadOnlyPill = computed(() => {
 const goToSupplier = async (mode: RuntimeSupplierMode, supplierId?: string) => {
   if (mode === 'read-only') {
     const resolvedId = String(supplierId || '').trim()
-    if (!resolvedId) {
-      setRuntimeSupplier({ mode: 'read-only', supplierId: '' })
-      await router.push('/console/supplier/overview')
-      return
-    }
-
-    await router.push(
-      resolveConsoleEntryPath('/console/supplier', 'read-only', resolvedId)
-    )
+    setRuntimeSupplier({ mode: 'read-only', supplierId: resolvedId })
+    await router.push(resolveConsoleEntryPath('/console/supplier', 'read-only', resolvedId))
     return
   }
 
