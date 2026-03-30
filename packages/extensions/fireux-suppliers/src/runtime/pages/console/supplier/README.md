@@ -1,7 +1,7 @@
 # Console Supplier Pages
 
 Authority: Operational
-Updated: 2026-03-26
+Updated: 2026-03-30
 Scope: `packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier/*`.
 
 This folder owns the operational supplier console workspace.
@@ -14,6 +14,8 @@ This README only explains the supplier-console delta.
 - `index.vue`
 - `overview.vue`
 - `create.vue`
+- `read-only/index.vue`
+- `read-only/[scenarioId].vue`
 
 ## Local Contract
 
@@ -22,14 +24,14 @@ This README only explains the supplier-console delta.
 - `index.vue` is the family-specific chooser in console shell
 - `create.vue` belongs to the console create family
 - `overview.vue` is supplier workspace delivery
+- read-only entry stays route-driven through the shared console runtime helpers
 
 Supplier-console delta:
 - console create ensures `apps/<appId>/suppliers/<supplierId>`
 - console create creates the root supplier first when missing
 - console create seeds console authority for the current operator
-- supplier console stays intentionally simpler than Kitchen and Portfolio
 
 ## Short Version
 
 This folder is the supplier-console half of the shared console-entry concept.
-Treat it as a thinner console reference, not a profile-era surface.
+Treat Supplier like the other console families: owned live targets plus shared read-only entry.

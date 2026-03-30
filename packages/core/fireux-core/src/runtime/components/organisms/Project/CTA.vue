@@ -279,7 +279,14 @@ const goToProject = async (mode: RuntimeMode, projectId?: string) => {
   }
 
   if (mode === 'read-only') {
-    await router.push(resolveConsoleEntryPath('/console/projects', 'read-only', projectId))
+    const resolvedId = String(projectId || '').trim()
+    if (!resolvedId) {
+      setRuntimeProject({ mode: 'read-only', projectId: '' })
+      await router.push('/console/projects/overview')
+      return
+    }
+
+    await router.push(resolveConsoleEntryPath('/console/projects', 'read-only', resolvedId))
     return
   }
 

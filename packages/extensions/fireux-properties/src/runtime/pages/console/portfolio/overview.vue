@@ -7,16 +7,30 @@
     <template #body>
       <section class="space-y-8">
         <div class="text-xs text-dimmed">
-          Mode: <span class="font-medium">{{ runtime.mode }}</span>
-          · Portfolio: <span class="font-mono">{{ runtime.id }}</span>
+          <template v-if="isOperatorOverview">
+            Scope:
+            <span class="font-medium">
+              {{ runtime.isReadOnly ? 'All read-only portfolios' : 'All owned portfolios' }}
+            </span>
+            <template v-if="activePortfolio">
+              · Active portfolio:
+              <span class="font-mono">{{ activePortfolio.id }}</span>
+            </template>
+          </template>
+          <template v-else>
+            Mode: <span class="font-medium">{{ runtime.mode }}</span>
+            · Portfolio: <span class="font-mono">{{ runtime.id }}</span>
+          </template>
         </div>
 
         <UCard>
           <template #header>
-            <div class="text-sm font-semibold">Portfolio runtime</div>
+            <div class="text-sm font-semibold">
+              {{ isOperatorOverview ? 'All owned portfolios' : 'Portfolio runtime' }}
+            </div>
           </template>
 
-          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
             <div
               v-for="item in overview"
               :key="item.key"
@@ -28,12 +42,62 @@
           </div>
         </UCard>
 
+        <UCard v-if="isOperatorOverview">
+          <template #header>
+            <div class="text-sm font-semibold">
+              {{ runtime.isReadOnly ? 'Read-only portfolios' : 'Owned portfolios' }}
+            </div>
+          </template>
+
+          <div class="space-y-3">
+            <div v-if="availablePortfolioPills.length" class="space-y-2">
+              <PortfolioCardsPill
+                v-for="item in availablePortfolioPills"
+                :key="item.id"
+                v-bind="item"
+                :link="false"
+                :action="true"
+                :show-badges="false"
+                class="cursor-pointer"
+                @action="selectPortfolio(item.id)"
+              />
+            </div>
+
+            <p class="text-sm text-dimmed">
+              Overview totals above include all {{ runtime.isReadOnly ? 'read-only' : 'owned' }} portfolios. Select one here when you want child routes like Properties, Clients, Finance, or Incidents to work against a specific portfolio.
+            </p>
+
+            <UAlert
+              v-if="!hasActivePortfolio"
+              color="neutral"
+              variant="soft"
+              title="Select a portfolio for workspace routes"
+              :description="`Choose one ${runtime.isReadOnly ? 'read-only' : 'owned'} portfolio above before opening deeper console routes.`"
+            />
+            <UAlert
+              v-else-if="activePortfolioPill"
+              color="primary"
+              variant="soft"
+              title="Active portfolio selected"
+              :description="`${activePortfolioPill.title}${activePortfolioPill.subtitle ? ` · ${activePortfolioPill.subtitle}` : ''}`"
+            />
+          </div>
+        </UCard>
+
         <UCard>
           <template #header>
             <div class="text-sm font-semibold">Quick actions</div>
           </template>
 
-          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <UAlert
+            v-if="isOperatorOverview && !hasActivePortfolio"
+            color="neutral"
+            variant="soft"
+            title="Pick an active portfolio first"
+            :description="`The overview is showing all ${runtime.isReadOnly ? 'read-only' : 'owned'} portfolios. Select one above to enable deeper portfolio routes.`"
+          />
+
+          <div v-else class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <UButton
               v-for="link in surfaceLinks"
               :key="link.key"
@@ -62,7 +126,9 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
+import { useConsoleOverviewEntry } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleOverviewEntry'
 import { useRuntimePortfolioConsole } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolioConsole'
+import PortfolioCardsPill from '../../../components/organisms/Portfolio/Cards/Pill.vue'
 
 definePageMeta({
   layout: 'console',
@@ -79,12 +145,46 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, surfaceLinks, overview, stats } = useRuntimePortfolioConsole()
-if (!runtime.id.value) {
-  await navigateTo('/console/portfolio/create', { replace: true })
-}
+const {
+  runtime,
+  surfaceLinks,
+  overview,
+  stats,
+  ownedPortfolios,
+  ownedPortfolioPills,
+  readOnlyScenarios,
+  readOnlyPortfolioPills,
+  activePortfolio,
+  activePortfolioPill,
+  hasActivePortfolio,
+  isOperatorOverview,
+  ownershipPending,
+  setActiveOwnedPortfolio,
+} = useRuntimePortfolioConsole()
+
+const availablePortfolioPills = computed(() =>
+  runtime.isReadOnly.value ? readOnlyPortfolioPills.value : ownedPortfolioPills.value
+)
+const { ensureOverviewEntry } = useConsoleOverviewEntry({
+  runtimeId: runtime.id,
+  mode: computed(() => runtime.mode.value),
+  ownershipPending,
+  liveCount: computed(() => ownedPortfolios.value.length),
+  readOnlyCount: computed(() => readOnlyScenarios.value.length),
+  singleLiveId: computed(() => String(ownedPortfolios.value[0]?.id || '')),
+  singleReadOnlyId: computed(() => String(readOnlyScenarios.value[0]?.id || '')),
+  setActiveTarget: setActiveOwnedPortfolio,
+  createPath: '/console/portfolio/create',
+  overviewPath: '/console/portfolio/overview',
+})
+
+await ensureOverviewEntry()
 
 const isDev = import.meta.dev
+
+const selectPortfolio = (portfolioId: string) => {
+  setActiveOwnedPortfolio(portfolioId)
+}
 
 const runtimeSnapshot = computed(() => ({
   id: runtime.id.value,
@@ -98,5 +198,9 @@ const runtimeSnapshot = computed(() => ({
   doc: runtime.doc.value,
   data: runtime.data.value,
   stats: stats.value,
+  ownedPortfolios: ownedPortfolios.value,
+  readOnlyScenarios: readOnlyScenarios.value,
+  isOperatorOverview: isOperatorOverview.value,
+  hasActivePortfolio: hasActivePortfolio.value,
 }))
 </script>

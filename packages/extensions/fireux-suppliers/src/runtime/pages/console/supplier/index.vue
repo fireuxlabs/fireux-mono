@@ -1,11 +1,11 @@
 <template>
   <LayoutsConsoleEntryShell>
-    <SupplierEntry />
+    <SupplierCTA create-surface="console" />
   </LayoutsConsoleEntryShell>
 </template>
 
 <script setup lang="ts">
-import SupplierEntry from '../../../components/organisms/Supplier/Entry.vue'
+import SupplierCTA from '../../../components/organisms/Supplier/CTA.vue'
 
 definePageMeta({
   layout: 'console',

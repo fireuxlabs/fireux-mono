@@ -100,6 +100,7 @@ import type {
   ConsoleEnsureResult,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { useDevUi } from 'fireux-core/runtime/composables/fireux/app/ui/useDevUi'
+import { useRuntimeSupplierSelection } from '../../../../composables/fireux/app/supplier-console/state'
 import { useSupplierCreate } from '../../../../composables/fireux/firestore/supplier/mutations/useSupplierCreate'
 
 const props = defineProps<{
@@ -116,6 +117,7 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const { ensureSupplier } = useSupplierCreate()
+const { setRuntimeSupplier } = useRuntimeSupplierSelection()
 const { notesVisible } = useDevUi()
 
 const isCreating = ref(false)
@@ -148,6 +150,9 @@ const handleCreate = async () => {
 
   try {
     const result = await create()
+    if (isConsoleMode.value) {
+      setRuntimeSupplier({ supplierId: result.id, mode: 'live' })
+    }
     emit('created', result)
     const fallbackTo =
       resolvedMode.value === 'public'

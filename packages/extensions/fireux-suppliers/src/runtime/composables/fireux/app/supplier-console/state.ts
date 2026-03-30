@@ -1,6 +1,5 @@
 import { useCookie, useState } from '#imports'
 import { computed } from 'vue'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 
 export type RuntimeSupplierMode = 'live' | 'read-only'
 
@@ -29,7 +28,6 @@ const normalizeSelectionState = (value: unknown): RuntimeSupplierSelectionState 
 }
 
 export function useRuntimeSupplierSelection() {
-  const { uid } = useAuth()
   const cookie = useCookie<RuntimeSupplierSelectionState>(COOKIE_KEY, {
     default: () => ({ supplierId: '', mode: 'live' }),
     path: '/',
@@ -40,15 +38,6 @@ export function useRuntimeSupplierSelection() {
     normalizeSelectionState(cookie.value)
   )
 
-  const authSupplierId = computed(() => normalizeString(uid.value))
-
-  if (!runtimeSupplierState.value.supplierId && authSupplierId.value) {
-    runtimeSupplierState.value = {
-      supplierId: authSupplierId.value,
-      mode: runtimeSupplierState.value.mode,
-    }
-  }
-
   cookie.value = normalizeSelectionState(runtimeSupplierState.value)
 
   const setRuntimeSupplier = (selection: Partial<RuntimeSupplierSelectionState> = {}) => {
@@ -56,7 +45,7 @@ export function useRuntimeSupplierSelection() {
       supplierId:
         selection.supplierId !== undefined
           ? normalizeString(selection.supplierId)
-          : runtimeSupplierState.value.supplierId || authSupplierId.value,
+          : runtimeSupplierState.value.supplierId,
       mode:
         selection.mode !== undefined
           ? normalizeMode(selection.mode)
@@ -77,9 +66,7 @@ export function useRuntimeSupplierSelection() {
   }
 
   return {
-    runtimeSupplierId: computed(
-      () => runtimeSupplierState.value.supplierId || authSupplierId.value
-    ),
+    runtimeSupplierId: computed(() => runtimeSupplierState.value.supplierId),
     runtimeSupplierMode: computed<RuntimeSupplierMode>(() =>
       normalizeMode(runtimeSupplierState.value.mode)
     ),

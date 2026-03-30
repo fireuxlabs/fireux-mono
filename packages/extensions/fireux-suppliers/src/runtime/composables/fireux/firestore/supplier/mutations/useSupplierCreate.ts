@@ -1,4 +1,4 @@
-import { doc, getDoc } from 'firebase/firestore'
+import { collection, doc, getDoc } from 'firebase/firestore'
 import type {
   ConsoleCreateMode,
   ConsoleEnsureResult,
@@ -34,7 +34,7 @@ export function useSupplierCreate() {
     const requestedRootId = String(options.existingRootId || '').trim()
 
     const ensureRoot = async (): Promise<ConsoleRootEnsureResult> => {
-      const rootId = requestedRootId || uid
+      const rootId = requestedRootId || doc(collection(db, supplierCollection)).id
       const coreRef = doc(db, supplierCollection, rootId)
       const coreSnap = await getDoc(coreRef)
 

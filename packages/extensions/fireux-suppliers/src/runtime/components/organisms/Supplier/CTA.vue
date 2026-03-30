@@ -11,7 +11,7 @@
   >
     <template #myNote>
       <li>Requires sign-in.</li>
-      <li>Live supplier entry follows the current operator supplier identity for this app.</li>
+      <li>The live list only includes suppliers you can operate in this app.</li>
       <li>{{ createActionNote }}</li>
       <li>{{ createActionMeaning }}</li>
     </template>
@@ -19,42 +19,38 @@
     <template #my>
       <div class="space-y-2">
         <template v-if="isSignedIn">
-          <SupplierCardsPill
-            v-if="liveSupplierPill"
-            v-bind="liveSupplierPill"
-            :link="false"
-            :action="true"
-            :show-badges="false"
-            class="cursor-pointer"
-            @action="goToSupplier('live', liveSupplierPill.id)"
-          />
-
-          <UButton
-            v-else
-            block
-            variant="subtle"
-            color="primary"
-            :icon="createCopy.limitReached ? 'i-lucide-lock' : 'i-lucide-plus'"
-            :disabled="createCopy.disabled"
-            @click="createSupplier"
-          >
-            {{ createCopy.label }}
-          </UButton>
+          <div v-if="liveSupplierPills.length" class="space-y-2">
+            <SupplierCardsPill
+              v-for="item in liveSupplierPills"
+              :key="item.id"
+              v-bind="item"
+              :link="false"
+              :action="true"
+              :show-badges="false"
+              class="cursor-pointer"
+              @action="goToSupplier('live', item.id)"
+            />
+          </div>
+          <p v-else class="text-sm text-dimmed">
+            No supplier consoles yet.
+          </p>
         </template>
         <template v-else>
           <p class="text-sm text-dimmed">
-            Sign in to see your supplier console and create one.
+            Sign in to see your supplier consoles and create one.
           </p>
-          <UButton
-            block
-            variant="subtle"
-            color="primary"
-            icon="i-lucide-log-in"
-            @click="createSupplier"
-          >
-            {{ createCopy.label }}
-          </UButton>
         </template>
+
+        <UButton
+          block
+          variant="subtle"
+          color="primary"
+          :icon="createCopy.limitReached ? 'i-lucide-lock' : (isSignedIn ? 'i-lucide-plus' : 'i-lucide-log-in')"
+          :disabled="createCopy.disabled"
+          @click="createSupplier"
+        >
+          {{ createCopy.label }}
+        </UButton>
       </div>
     </template>
 
@@ -122,17 +118,20 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { resolveConsoleEntryPath } from 'fireux-core/runtime/composables/fireux/app/ui/console-entry-routing'
 import { resolveConsoleCreateCopy } from 'fireux-core/runtime/composables/fireux/app/ui/console-create-copy'
 import { useConsoleReadOnlyPreview } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleReadOnlyPreview'
 import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
 import { getReadOnlySupplierScenarioList } from '../../../composables/fireux/app/supplier-console/read-only-scenarios'
 import type { RuntimeSupplierMode } from '../../../composables/fireux/app/supplier-console/state'
 import { useRuntimeSupplierSelection } from '../../../composables/fireux/app/supplier-console/state'
+import { useSupplierFetch } from '../../../composables/fireux/firestore/supplier/fetch/useSupplierFetch'
 import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
-import { useSupplierRecord } from '../../../composables/fireux/firestore/supplier/fetch/useSupplierRecord'
+import type { ConsoleSupplier } from '../../../models/supplier/Supplier.model'
 import SupplierCardsPill from './Cards/Pill.vue'
 
 const props = withDefaults(defineProps<{
@@ -146,14 +145,51 @@ const router = useRouter()
 const { uid, isSignedIn } = useConsoleEntryState()
 const { canOwnMultipleConsoles } = useUser()
 const { setRuntimeSupplier } = useRuntimeSupplierSelection()
-const supplierRecord = useSupplierRecord(computed(() => String(uid.value || '').trim()))
-const { pill: supplierPill } = useSupplierInterface(supplierRecord)
+const { coreSuppliers } = useSupplierFetch()
+const { pill: supplierPill } = useSupplierInterface()
+const { appId } = useFireUXConfig()
+const { firestoreFetchCollection } = useFirestoreRead()
+const supplierOverlays = appId
+  ? firestoreFetchCollection<ConsoleSupplier>(`apps/${appId}/suppliers`)
+  : null
+const accessibleSupplierIds = computed(() => {
+  const currentUid = String(uid.value || '').trim()
+  if (!currentUid) return new Set<string>()
+
+  const ids = new Set<string>()
+
+  for (const overlay of supplierOverlays?.value ?? []) {
+    const id = String((overlay as any)?.id || '').trim()
+    if (!id) continue
+    if ((overlay as any)?.console_enabled === false) continue
+
+    const adminIds = Array.isArray((overlay as any)?.admin_ids)
+      ? (overlay as any).admin_ids
+          .map((value: unknown) => String(value || '').trim())
+          .filter(Boolean)
+      : []
+
+    if (adminIds.includes(currentUid)) {
+      ids.add(id)
+    }
+  }
+
+  return ids
+})
+const liveSupplierPills = computed(() =>
+  (coreSuppliers.value ?? [])
+    .filter((entry) =>
+      accessibleSupplierIds.value.has(String((entry as any)?.id || '').trim())
+    )
+    .map((entry) => supplierPill(entry))
+    .filter((entry): entry is NonNullable<ReturnType<typeof supplierPill>> => Boolean(entry))
+)
 const createCopy = computed(() =>
   resolveConsoleCreateCopy({
     entityLabel: 'supplier',
     createSurface: props.createSurface,
     signedIn: isSignedIn.value,
-    ownedCount: liveSupplierPill.value ? 1 : 0,
+    ownedCount: liveSupplierPills.value.length,
     canOwnMultipleConsoles: canOwnMultipleConsoles.value,
     publicPath: '/suppliers/create',
     consolePath: '/console/supplier/create',
@@ -162,8 +198,6 @@ const createCopy = computed(() =>
 const signInPath = computed(() => `/auth?redirect=${encodeURIComponent(route.fullPath)}`)
 const createActionNote = computed(() => createCopy.value.note)
 const createActionMeaning = computed(() => createCopy.value.meaning)
-
-const liveSupplierPill = computed(() => supplierPill())
 
 const readOnlyPills = computed(() =>
   getReadOnlySupplierScenarioList()
@@ -209,8 +243,15 @@ const bundledReadOnlyPill = computed(() => {
 
 const goToSupplier = async (mode: RuntimeSupplierMode, supplierId?: string) => {
   if (mode === 'read-only') {
+    const resolvedId = String(supplierId || '').trim()
+    if (!resolvedId) {
+      setRuntimeSupplier({ mode: 'read-only', supplierId: '' })
+      await router.push('/console/supplier/overview')
+      return
+    }
+
     await router.push(
-      resolveConsoleEntryPath('/console/supplier', 'read-only', supplierId)
+      resolveConsoleEntryPath('/console/supplier', 'read-only', resolvedId)
     )
     return
   }
@@ -220,7 +261,12 @@ const goToSupplier = async (mode: RuntimeSupplierMode, supplierId?: string) => {
     return
   }
 
-  const resolvedId = String(supplierId || uid.value || '').trim()
+  const resolvedId = String(supplierId || '').trim()
+  if (!resolvedId) {
+    await router.push('/console/supplier')
+    return
+  }
+
   setRuntimeSupplier({ supplierId: resolvedId, mode })
   await router.push('/console/supplier/overview')
 }

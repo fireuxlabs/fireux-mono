@@ -284,8 +284,15 @@ const goToPortfolio = async (mode: RuntimePortfolioMode, portfolioId?: string) =
   }
 
   if (mode === 'read-only') {
+    const resolvedId = String(portfolioId || '').trim()
+    if (!resolvedId) {
+      setRuntimePortfolio({ mode: 'read-only', portfolioId: '' })
+      await router.push('/console/portfolio/overview')
+      return
+    }
+
     await router.push(
-      resolveConsoleEntryPath('/console/portfolio', 'read-only', portfolioId)
+      resolveConsoleEntryPath('/console/portfolio', 'read-only', resolvedId)
     )
     return
   }

@@ -21,7 +21,7 @@ definePageMeta({
     key: 'console-projects-create',
     label: 'Create',
     icon: 'i-lucide-plus',
-    order: 15,
+    order: 5,
     desktop: true,
     mobile: true,
     layouts: ['console'],
