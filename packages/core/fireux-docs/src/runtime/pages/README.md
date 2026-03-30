@@ -1,7 +1,7 @@
 # Pages Directory
 
 Authority: Operational
-Updated: 2026-03-28
+Updated: 2026-03-30
 Scope: `packages/*/fireux-*/src/runtime/pages` and child directories under `pages/*`.
 
 Learn how FireUX runtime pages are grouped, which create surfaces matter first, and which entity buckets are still being deferred.
@@ -160,7 +160,9 @@ Console-backed families should be read in this order:
 - `/console`
   - choose the family
 - `/console/X`
-  - choose instance, mode, or create console
+  - family entry and selector surface
+- `/console/X/overview`
+  - shared operator overview for one, many, or demo targets
 - `/X`
   - public discovery plus the same chooser when useful
 - `/X/create`
@@ -174,6 +176,14 @@ Console visibility is now app-config driven:
 - each app declares visible families with `consoleFamilies`
 - `/console` should only show those declared families
 - route registration alone is not the visibility contract
+
+Mode is now a runtime concern rather than a second page tree:
+- `live`, `read-only`, and `test` should reuse the same main console pages
+- `/console/X/overview` is the shared seam that decides:
+  - one target -> auto-select it
+  - many targets -> show all-target overview
+  - zero live targets -> create
+- legacy `/read-only` routes may still exist as convenience seams, but they should only set runtime mode and enter the normal console pages
 
 Main console page ownership is now read like this:
 - `Project` main console pages are core-owned

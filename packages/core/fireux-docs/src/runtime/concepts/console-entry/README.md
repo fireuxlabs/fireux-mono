@@ -1,7 +1,7 @@
 # Console Entry Concept
 
 Authority: Operational
-Updated: 2026-03-28
+Updated: 2026-03-30
 Scope: console-backed entry flow across `pages/`, `components/`, `composables/`, and `models`.
 
 Learn how FireUX console-backed families are entered, where family choice happens, and how public entry differs from console entry.
@@ -11,11 +11,12 @@ Learn how FireUX console-backed families are entered, where family choice happen
 Console-backed families share one entry pattern:
 - `/console`
 - `/console/X`
+- `/console/X/overview`
 - `/X`
 - `/X/create`
 - `/console/X/create`
 
-These are not five unrelated routes.
+These are not unrelated routes.
 They are one concept with different entry depths.
 
 ## Shared Pattern
@@ -49,12 +50,31 @@ Visibility source of truth:
 This is the family-specific chooser.
 
 Meaning:
-- choose a live instance
-- choose `test`
-- choose `read-only`
+- enter the family
+- choose a live instance when needed
 - choose create
+- set runtime mode when coming from demo or test entry seams
 
 This route is console entry, not yet the operational workspace.
+
+### 2b) Shared Overview
+
+`/console/X/overview`
+
+This is the shared console overview seam.
+
+Meaning:
+- if one target is available, auto-select it
+- if many targets are available, show the all-target overview
+- if zero live targets exist, fall through to create
+- keep the same overview route whether the runtime mode is `live`, `read-only`, or `test`
+
+The route answers:
+- which console family is active
+
+Runtime state answers:
+- which target or scenario is selected
+- whether the console is writable
 
 ### 3) Public Family Surface
 
@@ -108,10 +128,16 @@ The route context carries the real meaning:
 
 The canonical shape is:
 - `/console` = choose family
-- `/console/X` = choose instance, mode, or create console
+- `/console/X` = family entry and selection seam
+- `/console/X/overview` = shared operator overview
 - `/X` = public discovery plus the same chooser when useful
 - `/X/create` = public facade create
 - `/console/X/create` = console create
+
+The canonical mode rule is:
+- `live`, `read-only`, and `test` are runtime modes, not separate console architectures
+- explicit `/read-only` routes may still exist as transitional or convenience seams
+- those seams should only set runtime mode and then enter the normal console routes
 
 The canonical visibility rule is:
 - app config decides whether `/console` exists as a user-facing entry
@@ -142,7 +168,8 @@ So kitchen should be treated as:
 The concept doc should explain:
 - family choice
 - family chooser
-- mode choice
+- runtime mode choice
+- shared overview behavior
 - public create versus console create
 
 The local family docs should explain only the delta.
@@ -165,7 +192,8 @@ Console-backed families all follow one entry pattern.
 
 The shared concept is:
 - choose family
-- choose instance or mode
+- enter the family and resolve mode in runtime
+- use overview as the shared operator seam
 - split public create from console create
 
 Kitchen is the current reference implementation of that pattern.

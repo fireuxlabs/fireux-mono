@@ -1,6 +1,7 @@
 // FILE: scripts/guards/root.mjs
 import { existsSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
+import { syncDevWorkspace } from '../sync-dev-workspace.mjs'
 
 const ALLOWED_ROOT_DIRS = new Set([
   // VCS / tooling
@@ -123,6 +124,8 @@ export async function run(ctx) {
       ].join('\n')
     )
   }
+
+  await syncDevWorkspace({ check: true, silent: true })
 
   console.log('[guard] ✅ Repo root is clean')
 }

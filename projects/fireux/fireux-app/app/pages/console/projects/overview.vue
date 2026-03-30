@@ -9,9 +9,7 @@
         <div class="text-xs text-dimmed">
           <template v-if="isOperatorOverview">
             Scope:
-            <span class="font-medium">
-              {{ runtime.isReadOnly ? 'All read-only projects' : 'All owned projects' }}
-            </span>
+            <span class="font-medium">{{ scopeLabel }}</span>
             <template v-if="activeProject">
               · Active project:
               <span class="font-mono">{{ activeProject.id }}</span>
@@ -25,17 +23,10 @@
 
         <UCard>
           <template #header>
-            <div class="text-sm font-semibold">
-              {{ isOperatorOverview
-                ? runtime.isReadOnly ? 'All read-only projects' : 'All owned projects'
-                : 'Project runtime' }}
-            </div>
+            <div class="text-sm font-semibold">{{ isOperatorOverview ? scopeLabel : singleOverviewTitle }}</div>
           </template>
 
-          <div
-            v-if="isOperatorOverview"
-            class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
-          >
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <div
               v-for="item in overview"
               :key="item.key"
@@ -45,32 +36,11 @@
               <div class="text-lg font-semibold">{{ item.count }}</div>
             </div>
           </div>
-
-          <div v-else class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <div class="rounded border border-default p-3">
-              <div class="text-xs text-dimmed">Project ID</div>
-              <div class="text-sm font-mono break-all">{{ runtime.id }}</div>
-            </div>
-            <div class="rounded border border-default p-3">
-              <div class="text-xs text-dimmed">Collection path</div>
-              <div class="text-sm font-mono">{{ runtime.collectionPath }}</div>
-            </div>
-            <div class="rounded border border-default p-3">
-              <div class="text-xs text-dimmed">Ecosystems</div>
-              <div class="text-sm font-semibold">{{ stats.ecosystems }}</div>
-            </div>
-            <div class="rounded border border-default p-3">
-              <div class="text-xs text-dimmed">Apps</div>
-              <div class="text-sm font-semibold">{{ stats.apps }}</div>
-            </div>
-          </div>
         </UCard>
 
         <UCard v-if="isOperatorOverview">
           <template #header>
-            <div class="text-sm font-semibold">
-              {{ runtime.isReadOnly ? 'Read-only projects' : 'Owned projects' }}
-            </div>
+            <div class="text-sm font-semibold">{{ targetListTitle }}</div>
           </template>
 
           <div class="space-y-3">
@@ -90,22 +60,20 @@
               />
             </div>
 
-            <p class="text-sm text-dimmed">
-              Overview totals above include all {{ runtime.isReadOnly ? 'read-only' : 'owned' }} projects. Select one here when you want Ecosystems or Apps routes to work against a specific project.
-            </p>
+            <p class="text-sm text-dimmed">{{ selectionHelp }}</p>
 
             <UAlert
               v-if="!hasActiveProject"
               color="neutral"
               variant="soft"
-              title="Select a project for workspace routes"
-              :description="`Choose one ${runtime.isReadOnly ? 'read-only' : 'owned'} project above before opening deeper console routes.`"
+              :title="selectionTitle"
+              :description="selectionDescription"
             />
             <UAlert
               v-else-if="activeProjectPill"
               color="primary"
               variant="soft"
-              title="Active project selected"
+              :title="activeSelectionTitle"
               :description="`${activeProjectPill.title}${activeProjectPill.subtitle ? ` · ${activeProjectPill.subtitle}` : ''}`"
             />
           </div>
@@ -120,38 +88,30 @@
             v-if="isOperatorOverview && !hasActiveProject"
             color="neutral"
             variant="soft"
-            title="Pick an active project first"
-            :description="`The overview is showing all ${runtime.isReadOnly ? 'read-only' : 'owned'} projects. Select one above to enable Ecosystems and Apps routes.`"
+            :title="quickActionsTitle"
+            :description="quickActionsDescription"
           />
 
           <div v-else class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <UButton
-              v-for="entry in workspaceNavItems"
-              :key="entry.key"
-              :to="entry.to"
+              v-for="link in actionLinks"
+              :key="link.key"
+              :to="link.to"
               variant="soft"
-              :icon="entry.icon"
+              :icon="link.icon"
               block
             >
-              {{ entry.label }}
+              {{ link.label }}
             </UButton>
           </div>
         </UCard>
-
-        <UAlert
-          v-if="isDev"
-          color="neutral"
-          variant="soft"
-          title="Project debug"
-          :description="`Project exists: ${hasProject ? 'yes' : 'no'}`"
-        />
 
         <DevJson
           v-if="isDev"
           title="Project Runtime (JSON)"
           context="projects/fireux/fireux-app · /console/projects/overview"
           :data="runtimeSnapshot"
-          :default-open="true"
+          :default-open="false"
         />
       </section>
     </template>
@@ -161,6 +121,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useConsoleOverviewEntry } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleOverviewEntry'
+import { useConsoleOverviewLabels } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleOverviewLabels'
 import { useRuntimeProjectConsole } from 'fireux-core/runtime/composables/fireux/app/runtime-project/useRuntimeProjectConsole'
 import ProjectCardsPill from 'fireux-core/runtime/components/organisms/Project/Cards/Pill.vue'
 
@@ -182,7 +143,6 @@ const {
   runtime,
   navItems,
   overview,
-  stats,
   ownedProjects,
   ownedProjectPills,
   readOnlyScenarios,
@@ -195,12 +155,27 @@ const {
   setActiveOwnedProject,
 } = useRuntimeProjectConsole()
 
+const {
+  scopeLabel,
+  targetListTitle,
+  selectionTitle,
+  selectionDescription,
+  selectionHelp,
+  activeSelectionTitle,
+  quickActionsTitle,
+  quickActionsDescription,
+  singleOverviewTitle,
+} = useConsoleOverviewLabels({
+  singular: 'project',
+  plural: 'projects',
+  isReadOnly: computed(() => runtime.isReadOnly.value),
+})
+
 const isDev = import.meta.dev
-const hasProject = computed(() => Boolean(String(runtime.id.value || '').trim()))
 const availableProjectPills = computed(() =>
   runtime.isReadOnly.value ? readOnlyProjectPills.value : ownedProjectPills.value
 )
-const workspaceNavItems = computed(() =>
+const actionLinks = computed(() =>
   navItems.value.filter((entry) => entry.key !== 'create' && entry.key !== 'overview')
 )
 
@@ -258,6 +233,7 @@ const runtimeSnapshot = computed(() => ({
   doc: toDebugValue(runtime.doc.value),
   data: toDebugValue(runtime.data.value),
   overview: overview.value,
+  actionLinks: toDebugValue(actionLinks.value),
   ownedProjects: toDebugValue(ownedProjects.value),
   readOnlyScenarios: toDebugValue(readOnlyScenarios.value),
   isOperatorOverview: isOperatorOverview.value,

@@ -9,30 +9,24 @@
         <div class="text-xs text-dimmed">
           <template v-if="isOperatorOverview">
             Scope:
-            <span class="font-medium">
-              {{ runtime.mode === 'read-only' ? 'All read-only kitchens' : 'All owned kitchens' }}
-            </span>
+            <span class="font-medium">{{ scopeLabel }}</span>
             <template v-if="activeKitchen">
               · Active kitchen:
               <span class="font-mono">{{ activeKitchen.id }}</span>
             </template>
           </template>
           <template v-else>
-            Mode: <span class="font-medium">{{ mode }}</span>
+            Mode: <span class="font-medium">{{ runtime.mode }}</span>
             · Kitchen: <span class="font-mono">{{ runtime.id }}</span>
           </template>
         </div>
 
         <UCard>
           <template #header>
-            <div class="text-sm font-semibold">
-              {{ isOperatorOverview
-                ? runtime.isReadOnly ? 'All read-only kitchens' : 'All owned kitchens'
-                : 'Kitchen runtime' }}
-            </div>
+            <div class="text-sm font-semibold">{{ isOperatorOverview ? scopeLabel : singleOverviewTitle }}</div>
           </template>
 
-          <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <div
               v-for="item in overview"
               :key="item.key"
@@ -46,9 +40,7 @@
 
         <UCard v-if="isOperatorOverview">
           <template #header>
-            <div class="text-sm font-semibold">
-              {{ runtime.isReadOnly ? 'Read-only kitchens' : 'Owned kitchens' }}
-            </div>
+            <div class="text-sm font-semibold">{{ targetListTitle }}</div>
           </template>
 
           <div class="space-y-3">
@@ -65,22 +57,20 @@
               />
             </div>
 
-            <p class="text-sm text-dimmed">
-              Overview totals above include all {{ runtime.isReadOnly ? 'read-only' : 'owned' }} kitchens. Select one here when you want Menu, Team, or Suppliers routes to work against a specific kitchen.
-            </p>
+            <p class="text-sm text-dimmed">{{ selectionHelp }}</p>
 
             <UAlert
               v-if="!hasActiveKitchen"
               color="neutral"
               variant="soft"
-              title="Select a kitchen for workspace routes"
-              :description="`Choose one ${runtime.isReadOnly ? 'read-only' : 'owned'} kitchen above before opening deeper console routes.`"
+              :title="selectionTitle"
+              :description="selectionDescription"
             />
             <UAlert
               v-else-if="activeKitchenPill"
               color="primary"
               variant="soft"
-              title="Active kitchen selected"
+              :title="activeSelectionTitle"
               :description="`${activeKitchenPill.title}${activeKitchenPill.subtitle ? ` · ${activeKitchenPill.subtitle}` : ''}`"
             />
           </div>
@@ -95,13 +85,13 @@
             v-if="isOperatorOverview && !hasActiveKitchen"
             color="neutral"
             variant="soft"
-            title="Pick an active kitchen first"
-            :description="`The overview is showing all ${runtime.isReadOnly ? 'read-only' : 'owned'} kitchens. Select one above to enable Menu, Team, and Suppliers routes.`"
+            :title="quickActionsTitle"
+            :description="quickActionsDescription"
           />
 
           <div v-else class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <UButton
-              v-for="link in surfaceLinks"
+              v-for="link in actionLinks"
               :key="link.key"
               :to="link.to"
               variant="soft"
@@ -128,6 +118,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useConsoleOverviewEntry } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleOverviewEntry'
+import { useConsoleOverviewLabels } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleOverviewLabels'
 import { useRuntimeKitchenConsole } from 'fireux-kitchens/runtime/composables/fireux/app/kitchen-runtime/useRuntimeKitchenConsole'
 import KitchenCardsPill from 'fireux-kitchens/runtime/components/organisms/Kitchen/Cards/Pill.vue'
 
@@ -162,10 +153,26 @@ const {
   setActiveOwnedKitchen,
 } = useRuntimeKitchenConsole()
 
-const mode = runtime.mode
+const {
+  scopeLabel,
+  targetListTitle,
+  selectionTitle,
+  selectionDescription,
+  selectionHelp,
+  activeSelectionTitle,
+  quickActionsTitle,
+  quickActionsDescription,
+  singleOverviewTitle,
+} = useConsoleOverviewLabels({
+  singular: 'kitchen',
+  plural: 'kitchens',
+  isReadOnly: computed(() => runtime.isReadOnly.value),
+})
+
 const isDev = import.meta.dev
+const actionLinks = computed(() => surfaceLinks.value)
 const availableKitchenPills = computed(() =>
-  runtime.mode.value === 'read-only' ? readOnlyKitchenPills.value : ownedKitchenPills.value
+  runtime.isReadOnly.value ? readOnlyKitchenPills.value : ownedKitchenPills.value
 )
 
 const { ensureOverviewEntry } = useConsoleOverviewEntry({
@@ -201,6 +208,7 @@ const runtimeSnapshot = computed(() => {
     doc: runtime.doc.value,
     data,
     overview: overview.value,
+    actionLinks: actionLinks.value,
     ownedKitchens: ownedKitchens.value,
     readOnlyScenarios: readOnlyScenarios.value,
     isOperatorOverview: isOperatorOverview.value,

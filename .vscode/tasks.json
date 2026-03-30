@@ -1,12 +1,13 @@
 {
-  // VS Code Tasks for FireUX apps and utilities
   "version": "2.0.0",
   "tasks": [
     {
       "label": "Git Tree (full)",
       "type": "shell",
       "command": "pnpm",
-      "args": ["git-tree:full"],
+      "args": [
+        "git-tree:full"
+      ],
       "presentation": {
         "echo": true,
         "reveal": "always",
@@ -19,7 +20,9 @@
       "label": "Git Tree",
       "type": "shell",
       "command": "pnpm",
-      "args": ["git-tree"],
+      "args": [
+        "git-tree"
+      ],
       "presentation": {
         "echo": true,
         "reveal": "always",
@@ -29,13 +32,27 @@
       "problemMatcher": []
     },
     {
-      "label": "dev:fireux (3000)",
+      "label": "pnpm dev:fireux",
       "type": "shell",
       "command": "pnpm",
-      "args": ["dev:fireux"],
-      "options": { "cwd": "${workspaceFolder}" },
+      "args": [
+        "dev:fireux"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "isBackground": true,
-      "problemMatcher": ["$eslint-compact"],
+      "problemMatcher": {
+        "owner": "fireux-dev",
+        "pattern": {
+          "regexp": "^(?!)",
+          "message": 0
+        },
+        "background": {
+          "activeOnStart": true,
+          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+        }
+      },
       "presentation": {
         "reveal": "always",
         "focus": false,
@@ -43,13 +60,27 @@
       }
     },
     {
-      "label": "dev:misebox (3001)",
+      "label": "pnpm dev:misebox",
       "type": "shell",
       "command": "pnpm",
-      "args": ["dev:misebox"],
-      "options": { "cwd": "${workspaceFolder}" },
+      "args": [
+        "dev:misebox"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "isBackground": true,
-      "problemMatcher": ["$eslint-compact"],
+      "problemMatcher": {
+        "owner": "fireux-dev",
+        "pattern": {
+          "regexp": "^(?!)",
+          "message": 0
+        },
+        "background": {
+          "activeOnStart": true,
+          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+        }
+      },
       "presentation": {
         "reveal": "always",
         "focus": false,
@@ -57,44 +88,27 @@
       }
     },
     {
-      "label": "dev:cleanbox (3002)",
+      "label": "pnpm dev:cleanbox",
       "type": "shell",
       "command": "pnpm",
-      "args": ["dev:cleanbox"],
-      "options": { "cwd": "${workspaceFolder}" },
-      "isBackground": true
-    },
-    {
-      "label": "dev:niederhorn (3003)",
-      "type": "shell",
-      "command": "pnpm",
-      "args": ["dev:niederhorn"],
-      "options": { "cwd": "${workspaceFolder}" },
-      "isBackground": true
-    },
-    {
-      "label": "dev:richies (3004)",
-      "type": "shell",
-      "command": "pnpm",
-      "args": ["dev:richies"],
-      "options": { "cwd": "${workspaceFolder}" },
-      "isBackground": true
-    },
-    {
-      "label": "dev:tenant (3005)",
-      "type": "shell",
-      "command": "pnpm",
-      "args": ["dev:tenant"],
-      "options": { "cwd": "${workspaceFolder}" },
-      "isBackground": true
-    },
-    {
-      "label": "dev:bringli (3006)",
-      "type": "shell",
-      "command": "pnpm",
-      "args": ["dev:bringli"],
-      "options": { "cwd": "${workspaceFolder}" },
+      "args": [
+        "dev:cleanbox"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "isBackground": true,
+      "problemMatcher": {
+        "owner": "fireux-dev",
+        "pattern": {
+          "regexp": "^(?!)",
+          "message": 0
+        },
+        "background": {
+          "activeOnStart": true,
+          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+        }
+      },
       "presentation": {
         "reveal": "always",
         "focus": false,
@@ -102,12 +116,27 @@
       }
     },
     {
-      "label": "dev:granite (3007)",
+      "label": "pnpm dev:niederhorn",
       "type": "shell",
       "command": "pnpm",
-      "args": ["dev:granite"],
-      "options": { "cwd": "${workspaceFolder}" },
+      "args": [
+        "dev:niederhorn"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "isBackground": true,
+      "problemMatcher": {
+        "owner": "fireux-dev",
+        "pattern": {
+          "regexp": "^(?!)",
+          "message": 0
+        },
+        "background": {
+          "activeOnStart": true,
+          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+        }
+      },
       "presentation": {
         "reveal": "always",
         "focus": false,
@@ -115,56 +144,200 @@
       }
     },
     {
-      "label": "dev:all (3000+3001+3002)",
+      "label": "pnpm dev:richies",
       "type": "shell",
       "command": "pnpm",
-      "args": ["dev:all"],
-      "options": { "cwd": "${workspaceFolder}" },
-      "isBackground": true
+      "args": [
+        "dev:richies"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "fireux-dev",
+        "pattern": {
+          "regexp": "^(?!)",
+          "message": 0
+        },
+        "background": {
+          "activeOnStart": true,
+          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
     },
     {
-      "label": "dev:all-extended (3000-3005)",
+      "label": "pnpm dev:tenant",
       "type": "shell",
       "command": "pnpm",
-      "args": ["dev:all-extended"],
-      "options": { "cwd": "${workspaceFolder}" },
-      "isBackground": true
+      "args": [
+        "dev:tenant"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "fireux-dev",
+        "pattern": {
+          "regexp": "^(?!)",
+          "message": 0
+        },
+        "background": {
+          "activeOnStart": true,
+          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:bringli",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "dev:bringli"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "fireux-dev",
+        "pattern": {
+          "regexp": "^(?!)",
+          "message": 0
+        },
+        "background": {
+          "activeOnStart": true,
+          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:granite",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "dev:granite"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "fireux-dev",
+        "pattern": {
+          "regexp": "^(?!)",
+          "message": 0
+        },
+        "background": {
+          "activeOnStart": true,
+          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:la-tap-berne",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "dev:la-tap-berne"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "fireux-dev",
+        "pattern": {
+          "regexp": "^(?!)",
+          "message": 0
+        },
+        "background": {
+          "activeOnStart": true,
+          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
     },
     {
       "label": "pnpm: build:packages",
       "type": "shell",
       "command": "pnpm",
-      "args": ["build:packages"],
+      "args": [
+        "build:packages"
+      ],
       "isBackground": false,
-      "problemMatcher": ["$tsc"],
+      "problemMatcher": [
+        "$tsc"
+      ],
       "group": "build"
     },
     {
       "label": "pnpm: lint",
       "type": "shell",
       "command": "pnpm",
-      "args": ["lint"],
-      "options": { "cwd": "${workspaceFolder}" },
+      "args": [
+        "lint"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "isBackground": false,
-      "problemMatcher": ["$eslint-compact"],
+      "problemMatcher": [
+        "$eslint-compact"
+      ],
       "group": "test"
     },
     {
       "label": "pnpm: typecheck",
       "type": "shell",
       "command": "pnpm",
-      "args": ["typecheck"],
-      "options": { "cwd": "${workspaceFolder}" },
+      "args": [
+        "typecheck"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "isBackground": false,
-      "problemMatcher": ["$tsc"],
+      "problemMatcher": [
+        "$tsc"
+      ],
       "group": "build"
     },
     {
       "label": "pnpm: guard",
       "type": "shell",
       "command": "pnpm",
-      "args": ["guard"],
-      "options": { "cwd": "${workspaceFolder}" },
+      "args": [
+        "guard"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "isBackground": false,
       "problemMatcher": [],
       "group": "test"
@@ -173,8 +346,12 @@
       "label": "pnpm: format",
       "type": "shell",
       "command": "pnpm",
-      "args": ["format"],
-      "options": { "cwd": "${workspaceFolder}" },
+      "args": [
+        "format"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "isBackground": false,
       "problemMatcher": []
     }

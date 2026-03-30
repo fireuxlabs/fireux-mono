@@ -1,7 +1,7 @@
 # Runtime Directory
 
 Authority: Operational
-Updated: 2026-03-29
+Updated: 2026-03-30
 Scope: `packages/*/fireux-*/src/runtime` only.
 Does not apply to consuming app `app/`, `server/`, or root `public/` directories.
 
@@ -88,6 +88,8 @@ Recent repo truth:
 - collection managers remain component-owned, but direct subcollection discovery is now a runtime server concern
 - console family visibility is now an app-config concern through `consoleFamilies`
 - main console page ownership is now explicit: system consoles in core, domain consoles in their domain package
+- console-backed runtime now treats `live`, `read-only`, and `test` as runtime modes rather than separate console architectures
+- `/console/X/overview` is now the shared operator seam: one target auto-selects, many targets show an all-target overview, and zero live targets fall through to create
 - the runtime model layer is now normalized around simple stored-shape contracts:
   - root, system, domain-root, and scoped families use `XModel`, `X`, `XCreateInput`, `XUpdateInput`
   - identity overlays use `AppXModel` and `AppX`

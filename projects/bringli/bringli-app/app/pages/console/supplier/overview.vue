@@ -9,9 +9,7 @@
         <div class="text-xs text-dimmed">
           <template v-if="isOperatorOverview">
             Scope:
-            <span class="font-medium">
-              {{ runtime.isReadOnly ? 'All read-only suppliers' : 'All owned suppliers' }}
-            </span>
+            <span class="font-medium">{{ scopeLabel }}</span>
             <template v-if="activeSupplier">
               · Active supplier:
               <span class="font-mono">{{ activeSupplier.id }}</span>
@@ -25,17 +23,10 @@
 
         <UCard>
           <template #header>
-            <div class="text-sm font-semibold">
-              {{ isOperatorOverview
-                ? runtime.isReadOnly ? 'All read-only suppliers' : 'All owned suppliers'
-                : 'Supplier runtime' }}
-            </div>
+            <div class="text-sm font-semibold">{{ isOperatorOverview ? scopeLabel : singleOverviewTitle }}</div>
           </template>
 
-          <div
-            v-if="isOperatorOverview"
-            class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
-          >
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <div
               v-for="item in overview"
               :key="item.key"
@@ -45,32 +36,11 @@
               <div class="text-lg font-semibold">{{ item.count }}</div>
             </div>
           </div>
-
-          <div v-else class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <div class="rounded border border-default p-3">
-              <div class="text-xs text-dimmed">Supplier ID</div>
-              <div class="text-lg font-semibold">{{ runtime.id || 'unset' }}</div>
-            </div>
-            <div class="rounded border border-default p-3">
-              <div class="text-xs text-dimmed">Root Path</div>
-              <div class="text-sm font-mono break-all">{{ runtime.documentCollectionPath }}</div>
-            </div>
-            <div class="rounded border border-default p-3">
-              <div class="text-xs text-dimmed">Console Path</div>
-              <div class="text-sm font-mono break-all">{{ runtime.collectionPath }}</div>
-            </div>
-            <div class="rounded border border-default p-3">
-              <div class="text-xs text-dimmed">Status</div>
-              <div class="text-lg font-semibold">{{ stats.pending ? 'Loading' : 'Ready' }}</div>
-            </div>
-          </div>
         </UCard>
 
         <UCard v-if="isOperatorOverview">
           <template #header>
-            <div class="text-sm font-semibold">
-              {{ runtime.isReadOnly ? 'Read-only suppliers' : 'Owned suppliers' }}
-            </div>
+            <div class="text-sm font-semibold">{{ targetListTitle }}</div>
           </template>
 
           <div class="space-y-3">
@@ -87,41 +57,22 @@
               />
             </div>
 
-            <p class="text-sm text-dimmed">
-              Overview totals above include all {{ runtime.isReadOnly ? 'read-only' : 'owned' }} suppliers. Select one here when you want the supplier workspace to focus on a specific supplier.
-            </p>
+            <p class="text-sm text-dimmed">{{ selectionHelp }}</p>
 
             <UAlert
               v-if="!hasActiveSupplier"
               color="neutral"
               variant="soft"
-              title="Select a supplier for workspace routes"
-              :description="`Choose one ${runtime.isReadOnly ? 'read-only' : 'owned'} supplier above before opening deeper supplier routes.`"
+              :title="selectionTitle"
+              :description="selectionDescription"
             />
             <UAlert
               v-else-if="activeSupplierPill"
               color="primary"
               variant="soft"
-              title="Active supplier selected"
+              :title="activeSelectionTitle"
               :description="`${activeSupplierPill.title}${activeSupplierPill.subtitle ? ` · ${activeSupplierPill.subtitle}` : ''}`"
             />
-          </div>
-        </UCard>
-
-        <UCard v-else>
-          <div class="grid gap-3 sm:grid-cols-3">
-            <div class="rounded border border-default p-3">
-              <div class="text-xs text-dimmed">Root supplier</div>
-              <div class="text-lg font-semibold">{{ stats.hasRootSupplier ? 'yes' : 'no' }}</div>
-            </div>
-            <div class="rounded border border-default p-3">
-              <div class="text-xs text-dimmed">App console</div>
-              <div class="text-lg font-semibold">{{ stats.hasAppConsole ? 'yes' : 'no' }}</div>
-            </div>
-            <div class="rounded border border-default p-3">
-              <div class="text-xs text-dimmed">Known suppliers</div>
-              <div class="text-lg font-semibold">{{ stats.suppliers }}</div>
-            </div>
           </div>
         </UCard>
 
@@ -134,16 +85,20 @@
             v-if="isOperatorOverview && !hasActiveSupplier"
             color="neutral"
             variant="soft"
-            title="Pick an active supplier first"
-            :description="`The overview is showing all ${runtime.isReadOnly ? 'read-only' : 'owned'} suppliers. Select one above to enable the supplier workspace.`"
+            :title="quickActionsTitle"
+            :description="quickActionsDescription"
           />
 
           <div v-else class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <UButton :to="actions.openWorkspaceTo" variant="soft" icon="i-lucide-layout-dashboard" block>
-              Supplier workspace
-            </UButton>
-            <UButton :to="actions.browseSuppliersTo" variant="soft" icon="i-lucide-truck" block>
-              Browse suppliers
+            <UButton
+              v-for="link in actionLinks"
+              :key="link.key"
+              :to="link.to"
+              variant="soft"
+              :icon="link.icon"
+              block
+            >
+              {{ link.label }}
             </UButton>
           </div>
         </UCard>
@@ -163,6 +118,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useConsoleOverviewEntry } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleOverviewEntry'
+import { useConsoleOverviewLabels } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleOverviewLabels'
 import { useRuntimeSupplierConsole } from 'fireux-suppliers/runtime/composables/fireux/app/supplier-console/useRuntimeSupplierConsole'
 import SupplierCardsPill from 'fireux-suppliers/runtime/components/organisms/Supplier/Cards/Pill.vue'
 
@@ -198,7 +154,37 @@ const {
   setActiveOwnedSupplier,
 } = useRuntimeSupplierConsole()
 
+const {
+  scopeLabel,
+  targetListTitle,
+  selectionTitle,
+  selectionDescription,
+  selectionHelp,
+  activeSelectionTitle,
+  quickActionsTitle,
+  quickActionsDescription,
+  singleOverviewTitle,
+} = useConsoleOverviewLabels({
+  singular: 'supplier',
+  plural: 'suppliers',
+  isReadOnly: computed(() => runtime.isReadOnly.value),
+})
+
 const isDev = import.meta.dev
+const actionLinks = computed(() => [
+  {
+    key: 'workspace',
+    to: actions.openWorkspaceTo,
+    icon: 'i-lucide-layout-dashboard',
+    label: 'Supplier workspace',
+  },
+  {
+    key: 'browse',
+    to: actions.browseSuppliersTo,
+    icon: 'i-lucide-truck',
+    label: 'Browse suppliers',
+  },
+])
 const availableSupplierPills = computed(() =>
   runtime.isReadOnly.value ? readOnlySupplierPills.value : ownedSupplierPills.value
 )
@@ -234,6 +220,8 @@ const runtimeSnapshot = computed(() => ({
   doc: runtime.doc.value,
   data: runtime.data.value,
   stats: stats.value,
+  overview: overview.value,
+  actionLinks: actionLinks.value,
   ownedSuppliers: ownedSuppliers.value,
   readOnlyScenarios: readOnlyScenarios.value,
   isOperatorOverview: isOperatorOverview.value,

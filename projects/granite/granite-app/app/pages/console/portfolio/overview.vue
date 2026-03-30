@@ -9,9 +9,7 @@
         <div class="text-xs text-dimmed">
           <template v-if="isOperatorOverview">
             Scope:
-            <span class="font-medium">
-              {{ runtime.isReadOnly ? 'All read-only portfolios' : 'All owned portfolios' }}
-            </span>
+            <span class="font-medium">{{ scopeLabel }}</span>
             <template v-if="activePortfolio">
               · Active portfolio:
               <span class="font-mono">{{ activePortfolio.id }}</span>
@@ -25,14 +23,10 @@
 
         <UCard>
           <template #header>
-            <div class="text-sm font-semibold">
-              {{ isOperatorOverview
-                ? runtime.isReadOnly ? 'All read-only portfolios' : 'All owned portfolios'
-                : 'Portfolio runtime' }}
-            </div>
+            <div class="text-sm font-semibold">{{ isOperatorOverview ? scopeLabel : singleOverviewTitle }}</div>
           </template>
 
-          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <div
               v-for="item in overview"
               :key="item.key"
@@ -46,9 +40,7 @@
 
         <UCard v-if="isOperatorOverview">
           <template #header>
-            <div class="text-sm font-semibold">
-              {{ runtime.isReadOnly ? 'Read-only portfolios' : 'Owned portfolios' }}
-            </div>
+            <div class="text-sm font-semibold">{{ targetListTitle }}</div>
           </template>
 
           <div class="space-y-3">
@@ -65,22 +57,20 @@
               />
             </div>
 
-            <p class="text-sm text-dimmed">
-              Overview totals above include all {{ runtime.isReadOnly ? 'read-only' : 'owned' }} portfolios. Select one here when you want child routes like Properties, Clients, Finance, or Incidents to work against a specific portfolio.
-            </p>
+            <p class="text-sm text-dimmed">{{ selectionHelp }}</p>
 
             <UAlert
               v-if="!hasActivePortfolio"
               color="neutral"
               variant="soft"
-              title="Select a portfolio for workspace routes"
-              :description="`Choose one ${runtime.isReadOnly ? 'read-only' : 'owned'} portfolio above before opening deeper console routes.`"
+              :title="selectionTitle"
+              :description="selectionDescription"
             />
             <UAlert
               v-else-if="activePortfolioPill"
               color="primary"
               variant="soft"
-              title="Active portfolio selected"
+              :title="activeSelectionTitle"
               :description="`${activePortfolioPill.title}${activePortfolioPill.subtitle ? ` · ${activePortfolioPill.subtitle}` : ''}`"
             />
           </div>
@@ -95,13 +85,13 @@
             v-if="isOperatorOverview && !hasActivePortfolio"
             color="neutral"
             variant="soft"
-            title="Pick an active portfolio first"
-            :description="`The overview is showing all ${runtime.isReadOnly ? 'read-only' : 'owned'} portfolios. Select one above to enable deeper portfolio routes.`"
+            :title="quickActionsTitle"
+            :description="quickActionsDescription"
           />
 
           <div v-else class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             <UButton
-              v-for="link in surfaceLinks"
+              v-for="link in actionLinks"
               :key="link.key"
               :to="link.to"
               variant="soft"
@@ -128,6 +118,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useConsoleOverviewEntry } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleOverviewEntry'
+import { useConsoleOverviewLabels } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleOverviewLabels'
 import { useRuntimePortfolioConsole } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolioConsole'
 import PortfolioCardsPill from 'fireux-properties/runtime/components/organisms/Portfolio/Cards/Pill.vue'
 
@@ -150,7 +141,6 @@ const {
   runtime,
   surfaceLinks,
   overview,
-  stats,
   ownedPortfolios,
   ownedPortfolioPills,
   readOnlyScenarios,
@@ -163,7 +153,24 @@ const {
   setActiveOwnedPortfolio,
 } = useRuntimePortfolioConsole()
 
+const {
+  scopeLabel,
+  targetListTitle,
+  selectionTitle,
+  selectionDescription,
+  selectionHelp,
+  activeSelectionTitle,
+  quickActionsTitle,
+  quickActionsDescription,
+  singleOverviewTitle,
+} = useConsoleOverviewLabels({
+  singular: 'portfolio',
+  plural: 'portfolios',
+  isReadOnly: computed(() => runtime.isReadOnly.value),
+})
+
 const isDev = import.meta.dev
+const actionLinks = computed(() => surfaceLinks.value)
 const availablePortfolioPills = computed(() =>
   runtime.isReadOnly.value ? readOnlyPortfolioPills.value : ownedPortfolioPills.value
 )
@@ -198,7 +205,8 @@ const runtimeSnapshot = computed(() => ({
   isReady: runtime.isReady.value,
   doc: runtime.doc.value,
   data: runtime.data.value,
-  stats: stats.value,
+  overview: overview.value,
+  actionLinks: actionLinks.value,
   ownedPortfolios: ownedPortfolios.value,
   readOnlyScenarios: readOnlyScenarios.value,
   isOperatorOverview: isOperatorOverview.value,

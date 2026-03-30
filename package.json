@@ -22,8 +22,9 @@
     "dev:bringli": "node scripts/dev-app-with-smoke.mjs --app bringli",
     "dev:granite": "node scripts/dev-app-with-smoke.mjs --app granite",
     "dev:la-tap-berne": "node scripts/dev-app-with-smoke.mjs --app la-tap-berne",
-    "dev:all": "concurrently \"pnpm dev:fireux\" \"pnpm dev:misebox\" \"pnpm dev:cleanbox\"",
-    "dev:all-extended": "concurrently \"pnpm dev:fireux\" \"pnpm dev:misebox\" \"pnpm dev:cleanbox\" \"pnpm dev:niederhorn\" \"pnpm dev:richies\" \"pnpm dev:tenant\"",
+    "dev:all": "node scripts/dev-app-group.mjs --group all",
+    "dev:all-extended": "node scripts/dev-app-group.mjs --group all-extended",
+    "dev:full": "node scripts/dev-app-group.mjs --group full",
     "smoke:app": "node scripts/smoke-app.mjs",
     "smoke:http": "node scripts/smoke-app.mjs --all",
     "smoke:prepare:app": "node scripts/smoke-prepare.mjs",
@@ -60,9 +61,11 @@
     "mirror:sync": "node scripts/mirror-sync.mjs",
     "mirror:gitq": "node scripts/mirror-from-gitq.mjs",
     "mirror:models": "node scripts/mirror-models.mjs",
+    "sync:dev-workspace": "node scripts/sync-dev-workspace.mjs",
     "seo:sitemap-counts": "node scripts/seo-sitemap-counts.mjs",
     "meta:report": "node scripts/page-meta-report.mjs",
-    "reports:regenerate": "node scripts/reports/regenerate-reports.mjs"
+    "reports:regenerate": "node scripts/reports/regenerate-reports.mjs",
+    "sync:dev-workspace:check": "node scripts/sync-dev-workspace.mjs --check"
   },
   "engines": {
     "node": ">=20.11 <23",
