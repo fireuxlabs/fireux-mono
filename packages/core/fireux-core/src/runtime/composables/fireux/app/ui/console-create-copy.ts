@@ -28,7 +28,7 @@ export function resolveConsoleCreateCopy(
   const entityLabel = toText(input.entityLabel).toLowerCase() || 'entity'
   const isConsoleCreateSurface = input.createSurface === 'console'
   const createPath = isConsoleCreateSurface ? input.consolePath : input.publicPath
-  const targetLabel = isConsoleCreateSurface ? `${entityLabel} console` : entityLabel
+  const targetLabel = entityLabel
   const ownedCount = Math.max(0, Number(input.ownedCount || 0))
   const canOwnMultipleConsoles = Boolean(input.canOwnMultipleConsoles)
   const limitReached =
@@ -42,7 +42,7 @@ export function resolveConsoleCreateCopy(
       createPath,
       targetLabel,
       label: `Premium required for another ${targetLabel}`,
-      note: `Standard users can own one live ${targetLabel} per app. You already operate ${ownedCount}.`,
+      note: `Standard users can operate one live ${targetLabel} per app. You already operate ${ownedCount}.`,
       meaning: `Premium unlocks multiple live ${entityLabel} consoles.`,
       disabled: true,
       limitReached: true,
@@ -53,13 +53,17 @@ export function resolveConsoleCreateCopy(
     createPath,
     targetLabel,
     label: input.signedIn
-      ? `Create ${targetLabel}`
+      ? isConsoleCreateSurface && ownedCount > 0 && canOwnMultipleConsoles
+        ? `Add ${targetLabel}`
+        : `Create ${targetLabel}`
       : `Sign in to create ${targetLabel}`,
     note: input.signedIn
-      ? `Create ${targetLabel} routes to ${createPath}.`
+      ? isConsoleCreateSurface && ownedCount > 0 && canOwnMultipleConsoles
+        ? `Add another ${targetLabel} through ${createPath}.`
+        : `Create ${targetLabel} routes to ${createPath}.`
       : `Sign in first, then continue to ${createPath} to create the ${targetLabel}.`,
     meaning: isConsoleCreateSurface
-      ? `It creates the ${entityLabel} console overlay and creates the public ${entityLabel} only if it does not already exist.`
+      ? `It creates the ${entityLabel} and grants console access in one flow.`
       : `It creates the public ${entityLabel} first, not the console overlay directly.`,
     disabled: false,
     limitReached: false,

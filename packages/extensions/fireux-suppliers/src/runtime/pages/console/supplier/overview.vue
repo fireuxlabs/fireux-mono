@@ -23,6 +23,8 @@
           </template>
         </div>
 
+        <UAlert color="primary" variant="soft" title="Hello world" />
+
         <UCard>
           <template #header>
             <div class="text-sm font-semibold">

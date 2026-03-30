@@ -3,9 +3,10 @@
     title="Supplier console"
     entity="supplier"
     console-to="/console/supplier/overview"
-    my-label="My Supplier Consoles"
+    my-label=""
     test-label=""
-    read-only-label="Read-only Suppliers"
+    :read-only-label="showBundledReadOnly ? '' : 'Demo Suppliers'"
+    :collapse-secondary-modes="collapseSecondaryModes"
     learn-more-to="/suppliers/learn-more"
     :show-test="false"
   >
@@ -19,7 +20,14 @@
     <template #my>
       <div class="space-y-2">
         <template v-if="isSignedIn">
-          <div v-if="liveSupplierPills.length" class="space-y-2">
+          <div v-if="showBundledLive && bundledLiveSupplierPill" class="space-y-2">
+            <ConsoleBundleEntry
+              v-bind="bundledLiveSupplierPill"
+              @action="goToSupplier('live')"
+              @secondary-action="createSupplier"
+            />
+          </div>
+          <div v-else-if="liveSupplierPills.length" class="space-y-2">
             <SupplierCardsPill
               v-for="item in liveSupplierPills"
               :key="item.id"
@@ -42,6 +50,7 @@
         </template>
 
         <UButton
+          v-if="!showBundledLive || !bundledLiveSupplierPill"
           block
           variant="subtle"
           color="primary"
@@ -62,19 +71,15 @@
         <div class="space-y-1">
           <p class="text-sm font-medium">View as premium</p>
           <p class="text-xs text-dimmed">
-            Preview the grouped premium operator view for read-only suppliers.
+            Preview the grouped premium operator view for demo suppliers.
           </p>
         </div>
         <USwitch v-model="premiumPreviewEnabled" />
       </div>
 
       <div v-if="showBundledReadOnly && bundledReadOnlyPill" class="space-y-2">
-        <SupplierCardsPill
+        <ConsoleBundleEntry
           v-bind="bundledReadOnlyPill"
-          :link="false"
-          :action="true"
-          :show-badges="false"
-          class="cursor-pointer"
           @action="goToSupplier('read-only')"
         />
       </div>
@@ -92,12 +97,12 @@
       </div>
 
       <p v-else class="text-sm text-dimmed">
-        No read-only suppliers.
+        No demo suppliers.
       </p>
     </template>
 
     <template #readOnlyNote>
-      <li>Uses a selected read-only supplier scenario.</li>
+      <li>Uses a selected demo supplier scenario.</li>
       <li>Available without sign-in.</li>
       <li>Scenarios do not require live supplier console authority.</li>
     </template>
@@ -121,10 +126,11 @@ import { useRoute, useRouter } from 'vue-router'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { resolveConsoleEntryPath } from 'fireux-core/runtime/composables/fireux/app/ui/console-entry-routing'
 import { resolveConsoleCreateCopy } from 'fireux-core/runtime/composables/fireux/app/ui/console-create-copy'
-import { useConsoleReadOnlyPreview } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleReadOnlyPreview'
+import { useConsoleFamilyAccess } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleFamilyAccess'
 import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import ConsoleBundleEntry from 'fireux-core/runtime/components/entities/console/ConsoleBundleEntry.vue'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
 import { getReadOnlySupplierScenarioList } from '../../../composables/fireux/app/supplier-console/read-only-scenarios'
 import type { RuntimeSupplierMode } from '../../../composables/fireux/app/supplier-console/state'
@@ -143,11 +149,11 @@ const props = withDefaults(defineProps<{
 const route = useRoute()
 const router = useRouter()
 const { uid, isSignedIn } = useConsoleEntryState()
-const { canOwnMultipleConsoles } = useUser()
+const { currentUser, canOwnMultipleConsoles } = useUser()
 const { setRuntimeSupplier } = useRuntimeSupplierSelection()
 const { coreSuppliers } = useSupplierFetch()
 const { pill: supplierPill } = useSupplierInterface()
-const { appId } = useFireUXConfig()
+const { appId, appLogo, appThumbnail } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
 const supplierOverlays = appId
   ? firestoreFetchCollection<ConsoleSupplier>(`apps/${appId}/suppliers`)
@@ -214,17 +220,43 @@ const readOnlyPills = computed(() =>
 const {
   premiumPreviewEnabled,
   showPremiumPreviewToggle,
+  showBundledLive,
+  liveBundleTitle,
+  liveBundleSubtitle,
   showBundledReadOnly,
-  bundledTitle,
-  bundledSubtitle,
-} = useConsoleReadOnlyPreview({
+  readOnlyBundleTitle,
+  readOnlyBundleSubtitle,
+} = useConsoleFamilyAccess({
   entityKey: 'supplier',
-  bundleTitle: 'My Read-only Suppliers',
   singularNoun: 'supplier',
   pluralNoun: 'suppliers',
+  ownerName: computed(() => currentUser.value?.display_name),
   signedIn: isSignedIn,
   isPremium: canOwnMultipleConsoles,
-  itemCount: computed(() => readOnlyPills.value.length),
+  liveCount: computed(() => liveSupplierPills.value.length),
+  readOnlyCount: computed(() => readOnlyPills.value.length),
+})
+const collapseSecondaryModes = computed(
+  () => canOwnMultipleConsoles.value && liveSupplierPills.value.length > 0
+)
+
+const bundledLiveSupplierPill = computed(() => {
+  if (!showBundledLive.value) return null
+
+  const firstSupplier = liveSupplierPills.value[0]
+
+  return {
+    id: 'my-live-suppliers',
+    title: liveBundleTitle.value,
+    subtitle: liveBundleSubtitle.value,
+    imageUrl: String(currentUser.value?.avatar || '').trim(),
+    secondaryActionLabel:
+      createCopy.value.disabled ? '' : createCopy.value.label,
+    previewItems: liveSupplierPills.value.slice(0, 4).map((item) => ({
+      title: item.title,
+      imageUrl: item.avatarUrl,
+    })),
+  }
 })
 
 const bundledReadOnlyPill = computed(() => {
@@ -234,10 +266,13 @@ const bundledReadOnlyPill = computed(() => {
 
   return {
     id: 'my-read-only-suppliers',
-    to: '',
-    title: bundledTitle.value,
-    subtitle: bundledSubtitle.value,
-    imageUrl: String(firstScenario?.imageUrl || '').trim(),
+    title: readOnlyBundleTitle.value,
+    subtitle: readOnlyBundleSubtitle.value,
+    imageUrl: String(appLogo || appThumbnail || '/img/app/logo.png').trim(),
+    previewItems: readOnlyPills.value.slice(0, 4).map((item) => ({
+      title: item.title,
+      imageUrl: item.imageUrl,
+    })),
   }
 })
 
@@ -255,11 +290,6 @@ const goToSupplier = async (mode: RuntimeSupplierMode, supplierId?: string) => {
   }
 
   const resolvedId = String(supplierId || '').trim()
-  if (!resolvedId) {
-    await router.push('/console/supplier')
-    return
-  }
-
   setRuntimeSupplier({ supplierId: resolvedId, mode })
   await router.push('/console/supplier/overview')
 }

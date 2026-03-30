@@ -3,9 +3,10 @@
     title="Portfolio console"
     entity="portfolio"
     console-to="/console/portfolio/overview"
-    my-label="My Portfolio Consoles"
+    my-label=""
     test-label="Test Portfolio"
-    read-only-label="Read-only Portfolios"
+    :read-only-label="showBundledReadOnly ? '' : 'Demo Portfolios'"
+    :collapse-secondary-modes="collapseSecondaryModes"
     learn-more-to="/portfolios/learn-more"
   >
     <template #myNote>
@@ -18,7 +19,14 @@
     <template #my>
       <div class="space-y-2">
         <template v-if="isSignedIn">
-          <div v-if="livePills.length" class="space-y-2">
+          <div v-if="showBundledLive && bundledLivePortfolioPill" class="space-y-2">
+            <ConsoleBundleEntry
+              v-bind="bundledLivePortfolioPill"
+              @action="goToPortfolio('live')"
+              @secondary-action="createPortfolio"
+            />
+          </div>
+          <div v-else-if="livePills.length" class="space-y-2">
             <PortfolioCardsPill
               v-for="item in livePills"
               :key="item.id"
@@ -38,6 +46,7 @@
           Sign in to see your portfolio consoles and create one.
         </p>
         <UButton
+          v-if="!showBundledLive || !bundledLivePortfolioPill"
           block
           variant="subtle"
           color="primary"
@@ -77,19 +86,15 @@
             <div class="space-y-1">
               <p class="text-sm font-medium">View as premium</p>
               <p class="text-xs text-dimmed">
-                Preview the grouped premium operator view for read-only portfolios.
+                Preview the grouped premium operator view for demo portfolios.
               </p>
             </div>
             <USwitch v-model="premiumPreviewEnabled" />
           </div>
 
           <div v-if="showBundledReadOnly && bundledReadOnlyPill" class="space-y-2">
-            <PortfolioCardsPill
+            <ConsoleBundleEntry
               v-bind="bundledReadOnlyPill"
-              :link="false"
-              :action="true"
-              :show-badges="false"
-              class="cursor-pointer"
               @action="goToPortfolio('read-only')"
             />
           </div>
@@ -106,12 +111,12 @@
             />
           </div>
           <p v-else class="text-sm text-dimmed">
-            No read-only portfolios.
+            No demo portfolios.
           </p>
     </template>
 
     <template #readOnlyNote>
-      <li>Uses a selected read-only scenario id.</li>
+      <li>Uses a selected demo scenario id.</li>
       <li>Available without sign-in.</li>
       <li>Scenarios do not require live portfolio console authority.</li>
     </template>
@@ -136,11 +141,12 @@ import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/Co
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { resolveConsoleEntryPath } from 'fireux-core/runtime/composables/fireux/app/ui/console-entry-routing'
 import { resolveConsoleCreateCopy } from 'fireux-core/runtime/composables/fireux/app/ui/console-create-copy'
-import { useConsoleReadOnlyPreview } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleReadOnlyPreview'
+import { useConsoleFamilyAccess } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleFamilyAccess'
 import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
 import { resolveConsoleTestIdentity } from 'fireux-core/runtime/composables/fireux/app/ui/console-test-identity'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import ConsoleBundleEntry from 'fireux-core/runtime/components/entities/console/ConsoleBundleEntry.vue'
 import { getReadOnlyPortfolioScenarioList } from '../../../composables/fireux/app/portfolio-runtime/read-only-scenarios'
 import type { RuntimePortfolioMode } from '../../../composables/fireux/app/portfolio-runtime/shared'
 import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
@@ -157,7 +163,7 @@ const props = withDefaults(defineProps<{
 
 const route = useRoute()
 const router = useRouter()
-const { runtimePortfolioId, setRuntimePortfolio } = useRuntimePortfolioSelection()
+const { setRuntimePortfolio } = useRuntimePortfolioSelection()
 const { portfolios } = usePortfolioFetch()
 const { pill } = usePortfolioInterface()
 const { uid, isSignedIn } = useConsoleEntryState()
@@ -250,17 +256,43 @@ const readOnlyPills = computed(() =>
 const {
   premiumPreviewEnabled,
   showPremiumPreviewToggle,
+  showBundledLive,
+  liveBundleTitle,
+  liveBundleSubtitle,
   showBundledReadOnly,
-  bundledTitle,
-  bundledSubtitle,
-} = useConsoleReadOnlyPreview({
+  readOnlyBundleTitle,
+  readOnlyBundleSubtitle,
+} = useConsoleFamilyAccess({
   entityKey: 'portfolio',
-  bundleTitle: 'My Read-only Portfolios',
   singularNoun: 'portfolio',
   pluralNoun: 'portfolios',
+  ownerName: computed(() => currentUser.value?.display_name),
   signedIn: isSignedIn,
   isPremium: canOwnMultipleConsoles,
-  itemCount: computed(() => readOnlyPills.value.length),
+  liveCount: computed(() => livePills.value.length),
+  readOnlyCount: computed(() => readOnlyPills.value.length),
+})
+const collapseSecondaryModes = computed(
+  () => canOwnMultipleConsoles.value && livePills.value.length > 0
+)
+
+const bundledLivePortfolioPill = computed(() => {
+  if (!showBundledLive.value) return null
+
+  const firstPortfolio = livePills.value[0]
+
+  return {
+    id: 'my-live-portfolios',
+    title: liveBundleTitle.value,
+    subtitle: liveBundleSubtitle.value,
+    imageUrl: String(avatarSrc.value || '').trim(),
+    secondaryActionLabel:
+      createCopy.value.disabled ? '' : createCopy.value.label,
+    previewItems: livePills.value.slice(0, 4).map((item) => ({
+      title: item.title,
+      imageUrl: item.imageUrl,
+    })),
+  }
 })
 
 const bundledReadOnlyPill = computed(() => {
@@ -270,10 +302,13 @@ const bundledReadOnlyPill = computed(() => {
 
   return {
     id: 'my-read-only-portfolios',
-    to: '',
-    title: bundledTitle.value,
-    subtitle: bundledSubtitle.value,
-    imageUrl: firstScenario?.imageUrl || '',
+    title: readOnlyBundleTitle.value,
+    subtitle: readOnlyBundleSubtitle.value,
+    imageUrl: String(appLogo || appThumbnail || '/img/app/logo.png').trim(),
+    previewItems: readOnlyScenarios.value.slice(0, 4).map((item) => ({
+      title: item.name,
+      imageUrl: item.imageUrl,
+    })),
   }
 })
 
@@ -295,8 +330,7 @@ const goToPortfolio = async (mode: RuntimePortfolioMode, portfolioId?: string) =
     return
   }
 
-  const fallback = String(runtimePortfolioId.value || '').trim()
-  const resolvedId = String(portfolioId || fallback).trim()
+  const resolvedId = String(portfolioId || '').trim()
   setRuntimePortfolio({ portfolioId: resolvedId, mode })
   await router.push('/console/portfolio/overview')
 }

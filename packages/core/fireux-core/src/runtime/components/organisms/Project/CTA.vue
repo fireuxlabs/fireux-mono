@@ -3,9 +3,10 @@
     title="Project console"
     entity="project"
     console-to="/console/projects/overview"
-    my-label="My Project Consoles"
+    my-label=""
     test-label="Test Project"
-    read-only-label="Read-only Projects"
+    :read-only-label="showBundledReadOnly ? '' : 'Demo Projects'"
+    :collapse-secondary-modes="collapseSecondaryModes"
     learn-more-to="/projects/learn-more"
   >
     <template #myNote>
@@ -18,7 +19,14 @@
     <template #my>
       <div class="space-y-2">
         <template v-if="isSignedIn">
-          <div v-if="liveProjectCards.length" class="space-y-2">
+          <div v-if="showBundledLive && bundledLiveProjectPill" class="space-y-2">
+            <ConsoleBundleEntry
+              v-bind="bundledLiveProjectPill"
+              @action="goToProject('live')"
+              @secondary-action="createProject"
+            />
+          </div>
+          <div v-else-if="liveProjectCards.length" class="space-y-2">
             <ProjectCardsPill
               v-for="item in liveProjectCards"
               :key="item.id"
@@ -39,6 +47,7 @@
           Sign in to see your project consoles and create one.
         </p>
         <UButton
+          v-if="!showBundledLive || !bundledLiveProjectPill"
           block
           variant="subtle"
           color="primary"
@@ -71,7 +80,7 @@
     </template>
 
     <template #readOnlyNote>
-      <li>Uses a selected read-only scenario id.</li>
+      <li>Uses a selected demo scenario id.</li>
       <li>Available without sign-in.</li>
       <li>Scenarios do not require live project console authority.</li>
     </template>
@@ -84,18 +93,15 @@
         <div class="space-y-1">
           <p class="text-sm font-medium">View as premium</p>
           <p class="text-xs text-dimmed">
-            Preview the grouped premium operator view for read-only projects.
+            Preview the grouped premium operator view for demo projects.
           </p>
         </div>
         <USwitch v-model="premiumPreviewEnabled" />
       </div>
 
       <div v-if="showBundledReadOnly && bundledReadOnlyPill" class="space-y-2">
-        <ProjectCardsPill
+        <ConsoleBundleEntry
           v-bind="bundledReadOnlyPill"
-          :link="false"
-          :action="true"
-          :show-badges="false"
           @action="goToProject('read-only')"
         />
       </div>
@@ -113,7 +119,7 @@
         />
       </div>
       <p v-else class="text-sm text-dimmed">
-        No read-only projects.
+        No demo projects.
       </p>
     </template>
 
@@ -139,15 +145,15 @@ import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from '../../../composables/fireux/firestore/operations/useFirestoreRead'
 import { getReadOnlyProjectScenarioList } from '../../../composables/fireux/app/runtime-project/read-only-scenarios/index'
 import { useRuntimeProjectSelection } from '../../../composables/fireux/app/runtime-project/state'
-import { useRuntimeProject } from '../../../composables/fireux/app/runtime-project/useRuntimeProject'
+import { useConsoleFamilyAccess } from '../../../composables/fireux/app/ui/useConsoleFamilyAccess'
 import { resolveConsoleCreateCopy } from '../../../composables/fireux/app/ui/console-create-copy'
 import { resolveConsoleEntryPath } from '../../../composables/fireux/app/ui/console-entry-routing'
-import { useConsoleReadOnlyPreview } from '../../../composables/fireux/app/ui/useConsoleReadOnlyPreview'
 import { resolveConsoleTestIdentity } from '../../../composables/fireux/app/ui/console-test-identity'
 import { useConsoleEntryState } from '../../../composables/fireux/app/ui/useConsoleEntryState'
 import { useProjectCollection } from '../../../composables/fireux/firestore/system/project/fetch/useProjectCollection'
 import type { ConsoleProject } from '../../../models/system/project.model'
 import ConsoleEntityCTA from '../../entities/console/ConsoleEntityCTA.vue'
+import ConsoleBundleEntry from '../../entities/console/ConsoleBundleEntry.vue'
 import ProjectCardsPill from './Cards/Pill.vue'
 
 const props = withDefaults(defineProps<{
@@ -158,7 +164,6 @@ const props = withDefaults(defineProps<{
 
 const route = useRoute()
 const router = useRouter()
-const runtimeProject = useRuntimeProject()
 const { setRuntimeProject } = useRuntimeProjectSelection()
 const { projects } = useProjectCollection()
 const { currentUser, avatarSrc, canOwnMultipleConsoles } = useUser()
@@ -197,17 +202,43 @@ const readOnlyScenarios = computed(() => getReadOnlyProjectScenarioList())
 const {
   premiumPreviewEnabled,
   showPremiumPreviewToggle,
+  showBundledLive,
+  liveBundleTitle,
+  liveBundleSubtitle,
   showBundledReadOnly,
-  bundledTitle,
-  bundledSubtitle,
-} = useConsoleReadOnlyPreview({
+  readOnlyBundleTitle,
+  readOnlyBundleSubtitle,
+} = useConsoleFamilyAccess({
   entityKey: 'project',
-  bundleTitle: 'My Read-only Projects',
   singularNoun: 'project',
   pluralNoun: 'projects',
+  ownerName: computed(() => currentUser.value?.display_name),
   signedIn: isSignedIn,
   isPremium: canOwnMultipleConsoles,
-  itemCount: computed(() => readOnlyScenarios.value.length),
+  liveCount: computed(() => liveProjectCards.value.length),
+  readOnlyCount: computed(() => readOnlyScenarios.value.length),
+})
+const collapseSecondaryModes = computed(
+  () => canOwnMultipleConsoles.value && liveProjectCards.value.length > 0
+)
+
+const bundledLiveProjectPill = computed(() => {
+  if (!showBundledLive.value) return null
+
+  const firstProject = liveProjectCards.value[0]
+
+  return {
+    id: 'my-live-projects',
+    title: liveBundleTitle.value,
+    subtitle: liveBundleSubtitle.value,
+    imageUrl: String(avatarSrc.value || '').trim(),
+    secondaryActionLabel:
+      createCopy.value.disabled ? '' : createCopy.value.label,
+    previewItems: liveProjectCards.value.slice(0, 4).map((item) => ({
+      title: item.title,
+      imageUrl: item.imageUrl,
+    })),
+  }
 })
 
 const bundledReadOnlyPill = computed(() => {
@@ -217,10 +248,13 @@ const bundledReadOnlyPill = computed(() => {
 
   return {
     id: 'my-read-only-projects',
-    to: '',
-    title: bundledTitle.value,
-    subtitle: bundledSubtitle.value,
-    imageUrl: String(firstScenario?.image_url || '').trim(),
+    title: readOnlyBundleTitle.value,
+    subtitle: readOnlyBundleSubtitle.value,
+    imageUrl: String(appLogo || appThumbnail || '/img/app/logo.png').trim(),
+    previewItems: readOnlyScenarios.value.slice(0, 4).map((item) => ({
+      title: String(item.name || '').trim(),
+      imageUrl: String(item.image_url || '').trim(),
+    })),
   }
 })
 const accessibleProjectIds = computed(() => {
@@ -290,13 +324,7 @@ const goToProject = async (mode: RuntimeMode, projectId?: string) => {
     return
   }
 
-  const fallback = String(
-    projectId ||
-      liveProjectCards.value[0]?.id ||
-      runtimeProject.id.value ||
-      ''
-  ).trim()
-  const resolvedId = fallback
+  const resolvedId = String(projectId || '').trim()
   setRuntimeProject({ projectId: resolvedId, mode })
   await router.push('/console/projects/overview')
 }

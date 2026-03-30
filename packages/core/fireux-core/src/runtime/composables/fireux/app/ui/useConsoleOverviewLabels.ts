@@ -11,7 +11,7 @@ export function useConsoleOverviewLabels(options: {
 }) {
   const { singular, plural, isReadOnly } = options
 
-  const ownershipLabel = computed(() => (toValue(isReadOnly) ? 'read-only' : 'owned'))
+  const ownershipLabel = computed(() => (toValue(isReadOnly) ? 'demo' : 'owned'))
   const scopeLabel = computed(() => `All ${ownershipLabel.value} ${plural}`)
   const targetListTitle = computed(() => `${capitalize(ownershipLabel.value)} ${plural}`)
   const selectionTitle = `Select a ${singular} for workspace routes`
