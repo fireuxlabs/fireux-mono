@@ -4,7 +4,6 @@
     entity="project"
     console-to="/console/projects/overview"
     my-label=""
-    test-label="Test Project"
     :read-only-label="showBundledReadOnly ? '' : 'Demo Projects'"
     :collapse-secondary-modes="collapseSecondaryModes"
     learn-more-to="/projects/learn-more"
@@ -58,25 +57,6 @@
           {{ createCopy.label }}
         </UButton>
       </div>
-    </template>
-
-    <template #testNote>
-      <li>Available without sign-in.</li>
-      <li>Sign in to save your progress.</li>
-      <li>Signed out uses an app-branded project test identity. Signed in uses your user identity when available.</li>
-      <li>Uses the shared project test runtime instead of a live project you operate.</li>
-    </template>
-
-    <template #test>
-      <ProjectCardsPill
-        :to="''"
-        :title="testProjectIdentity.title"
-        :subtitle="testProjectIdentity.subtitle"
-        :image-url="testProjectIdentity.imageUrl"
-        :action="true"
-        :show-badges="false"
-        @action="goToProject('test')"
-      />
     </template>
 
     <template #readOnlyNote>
@@ -148,7 +128,6 @@ import { useRuntimeProjectSelection } from '../../../composables/fireux/app/runt
 import { useConsoleFamilyAccess } from '../../../composables/fireux/app/ui/useConsoleFamilyAccess'
 import { resolveConsoleCreateCopy } from '../../../composables/fireux/app/ui/console-create-copy'
 import { resolveConsoleEntryPath } from '../../../composables/fireux/app/ui/console-entry-routing'
-import { resolveConsoleTestIdentity } from '../../../composables/fireux/app/ui/console-test-identity'
 import { useConsoleEntryState } from '../../../composables/fireux/app/ui/useConsoleEntryState'
 import { useProjectCollection } from '../../../composables/fireux/firestore/system/project/fetch/useProjectCollection'
 import type { ConsoleProject } from '../../../models/system/project.model'
@@ -182,16 +161,6 @@ const createCopy = computed(() =>
     canOwnMultipleConsoles: canOwnMultipleConsoles.value,
     publicPath: '/projects/create',
     consolePath: '/console/projects/create',
-  })
-)
-const testProjectIdentity = computed(() =>
-  resolveConsoleTestIdentity({
-    entityLabel: 'Project',
-    signedIn: isSignedIn.value,
-    appAvatarUrl: appLogo || appThumbnail || '/img/app/logo.png',
-    userDisplayName: currentUser.value?.display_name,
-    userAvatarUrl: avatarSrc.value,
-    userSubtitle: 'Personal project test workspace',
   })
 )
 const signInPath = computed(() => `/auth?redirect=${encodeURIComponent(route.fullPath)}`)
@@ -307,11 +276,6 @@ const liveProjectCards = computed(() =>
 )
 
 const goToProject = async (mode: RuntimeMode, projectId?: string) => {
-  if (mode === 'test') {
-    await router.push(resolveConsoleEntryPath('/console/projects', 'test'))
-    return
-  }
-
   if (mode === 'read-only') {
     const resolvedId = String(projectId || '').trim()
     setRuntimeProject({ mode: 'read-only', projectId: resolvedId })

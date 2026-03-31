@@ -1,4 +1,4 @@
-export type RuntimePortfolioMode = 'live' | 'test' | 'read-only'
+export type RuntimePortfolioMode = 'live' | 'read-only'
 
 export type RuntimePortfolioSelection = {
   portfolioId?: string | null | undefined
@@ -8,7 +8,6 @@ export type RuntimePortfolioSelection = {
 export const RUNTIME_PORTFOLIO_ID_KEY = 'fireux-properties:runtime-portfolio:id'
 export const RUNTIME_PORTFOLIO_MODE_KEY = 'fireux-properties:runtime-portfolio:mode'
 export const ROOT_PORTFOLIO_COLLECTION_PATH = 'portfolios'
-export const TEST_PORTFOLIO_COLLECTION_PATH = 'test-portfolios'
 
 const toSingleValue = (value: unknown): unknown => (Array.isArray(value) ? value[0] : value)
 
@@ -18,7 +17,7 @@ export const normalizeString = (value: unknown): string =>
 export const normalizeMode = (value: unknown): RuntimePortfolioMode | null => {
   const normalized = normalizeString(value).toLowerCase()
   if (normalized === 'dummy' || normalized === 'readonly') return 'read-only'
-  if (normalized === 'live' || normalized === 'test' || normalized === 'read-only') {
+  if (normalized === 'live' || normalized === 'read-only') {
     return normalized
   }
   return null
@@ -33,14 +32,12 @@ export const resolvePortfolioConsoleCollectionPath = (appId?: unknown): string =
 
 export const resolveRuntimePortfolioDocumentCollectionPath = (
   mode: RuntimePortfolioMode
-): string => (mode === 'test' ? TEST_PORTFOLIO_COLLECTION_PATH : ROOT_PORTFOLIO_COLLECTION_PATH)
+): string => ROOT_PORTFOLIO_COLLECTION_PATH
 
 export const resolveRuntimePortfolioDataCollectionPath = (
   mode: RuntimePortfolioMode,
   appId?: unknown
-): string => (mode === 'test'
-  ? TEST_PORTFOLIO_COLLECTION_PATH
-  : resolvePortfolioConsoleCollectionPath(appId))
+): string => resolvePortfolioConsoleCollectionPath(appId)
 
 export const resolveRuntimePortfolioPath = (
   basePath: unknown,

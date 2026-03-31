@@ -1,9 +1,4 @@
-type ConsoleMode = 'live' | 'test' | 'read-only'
-
-type ResolveConsoleTestRuntimeIdInput = {
-  entityKey: string
-  uid?: unknown
-}
+type ConsoleMode = 'live' | 'read-only'
 
 const toText = (value: unknown): string => String(value ?? '').trim()
 
@@ -25,23 +20,9 @@ export function resolveConsoleEntryPath(
 ): string {
   const normalizedBasePath = normalizeBasePath(basePath)
 
-  if (mode === 'test') {
-    return `${normalizedBasePath}/test`
-  }
-
   if (mode === 'read-only') {
     return `${normalizedBasePath}/overview`
   }
 
   return `${normalizedBasePath}/overview`
-}
-
-export function resolveConsoleTestRuntimeId(
-  input: ResolveConsoleTestRuntimeIdInput
-): string {
-  const normalizedUid = toSlug(input.uid)
-  if (normalizedUid) return `user-${normalizedUid}`
-
-  const normalizedEntityKey = toSlug(input.entityKey) || 'console'
-  return `guest-${normalizedEntityKey}`
 }

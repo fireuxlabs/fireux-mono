@@ -1,55 +1,36 @@
 <template>
   <UDashboardPanel id="console-kitchen-home">
     <template #header>
-      <LayoutsConsoleNavbar title="Kitchen" />
+      <LayoutsConsoleNavbar title="Kitchen Overview" />
     </template>
 
     <template #body>
-      <section class="space-y-8">
+      <section class="space-y-6">
         <div class="text-xs text-dimmed">
           <template v-if="isOperatorOverview">
             Scope:
-            <span class="font-medium">
-              {{ runtime.mode === 'read-only' ? 'All read-only kitchens' : 'All owned kitchens' }}
-            </span>
-            <template v-if="activeKitchen">
-              · Active kitchen:
-              <span class="font-mono">{{ activeKitchen.id }}</span>
-            </template>
+            <span class="font-medium">{{ scopeLabel }}</span>
           </template>
           <template v-else>
-            Mode: <span class="font-medium">{{ mode }}</span>
+            Mode: <span class="font-medium">{{ runtime.mode }}</span>
+            <template v-if="runtime.id">
+              · Active kitchen:
+              <span class="font-mono">{{ runtime.id }}</span>
+            </template>
           </template>
         </div>
 
         <UCard>
           <template #header>
             <div class="text-sm font-semibold">
-              {{ isOperatorOverview ? 'All owned kitchens' : 'Kitchen runtime' }}
-            </div>
-          </template>
-
-          <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            <div
-              v-for="item in overview"
-              :key="item.key"
-              class="rounded border border-default p-3"
-            >
-              <div class="text-xs text-dimmed">{{ item.label }}</div>
-              <div class="text-lg font-semibold">{{ item.count }}</div>
-            </div>
-          </div>
-        </UCard>
-
-        <UCard v-if="isOperatorOverview">
-          <template #header>
-            <div class="text-sm font-semibold">
-              {{ runtime.mode === 'read-only' ? 'Read-only kitchens' : 'Owned kitchens' }}
+              {{ isOperatorOverview ? targetListTitle : singleOverviewTitle }}
             </div>
           </template>
 
           <div class="space-y-3">
-            <div v-if="availableKitchenPills.length" class="space-y-2">
+            <p class="text-sm text-dimmed">{{ selectionHelpText }}</p>
+
+            <div v-if="showSelector && availableKitchenPills.length" class="space-y-2">
               <KitchenCardsPill
                 v-for="item in availableKitchenPills"
                 :key="item.id"
@@ -62,51 +43,21 @@
               />
             </div>
 
-            <p class="text-sm text-dimmed">
-              Overview totals above include all {{ runtime.mode === 'read-only' ? 'read-only' : 'owned' }} kitchens. Select one here when you want Menu, Team, or Suppliers routes to work against a specific kitchen.
-            </p>
-
             <UAlert
-              v-if="!hasActiveKitchen"
+              v-if="isOperatorOverview && !hasActiveKitchen"
               color="neutral"
               variant="soft"
-              title="Select a kitchen for workspace routes"
-              :description="`Choose one ${runtime.mode === 'read-only' ? 'read-only' : 'owned'} kitchen above before opening deeper console routes.`"
+              :title="selectionTitle"
+              :description="selectionDescription"
             />
+
             <UAlert
-              v-else-if="activeKitchenPill"
+              v-else-if="activeSelectionDescription"
               color="primary"
               variant="soft"
-              title="Active kitchen selected"
-              :description="`${activeKitchenPill.title}${activeKitchenPill.subtitle ? ` · ${activeKitchenPill.subtitle}` : ''}`"
+              :title="activeSelectionTitle"
+              :description="activeSelectionDescription"
             />
-          </div>
-        </UCard>
-
-        <UCard>
-          <template #header>
-            <div class="text-sm font-semibold">Quick actions</div>
-          </template>
-
-          <UAlert
-            v-if="isOperatorOverview && !hasActiveKitchen"
-            color="neutral"
-            variant="soft"
-            title="Pick an active kitchen first"
-            :description="`The overview is showing all ${runtime.mode === 'read-only' ? 'read-only' : 'owned'} kitchens. Select one above to enable Menu, Team, and Suppliers routes.`"
-          />
-
-          <div v-else class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <UButton
-              v-for="link in surfaceLinks"
-              :key="link.key"
-              :to="link.to"
-              variant="soft"
-              :icon="link.icon"
-              block
-            >
-              {{ link.label }}
-            </UButton>
           </div>
         </UCard>
 
@@ -123,9 +74,9 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import { useConsoleOverviewEntry } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleOverviewEntry'
+import { useConsoleOverviewLabels } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleOverviewLabels'
 import { useRuntimeKitchenConsole } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchenConsole'
 import KitchenCardsPill from '../../../components/organisms/Kitchen/Cards/Pill.vue'
 
@@ -146,24 +97,53 @@ definePageMeta({
 
 const {
   runtime,
-  overview,
-  surfaceLinks,
   ownedKitchens,
   ownedKitchenPills,
   readOnlyScenarios,
   readOnlyKitchenPills,
-  activeKitchen,
   activeKitchenPill,
   hasActiveKitchen,
+  canSelectMultipleLive,
+  showSelector,
   isOperatorOverview,
   ownershipPending,
   setActiveOwnedKitchen,
 } = useRuntimeKitchenConsole()
-const mode = runtime.mode
+
+const {
+  scopeLabel,
+  targetListTitle,
+  selectionTitle,
+  selectionDescription,
+  selectionHelp,
+  activeSelectionTitle,
+  singleOverviewTitle,
+} = useConsoleOverviewLabels({
+  singular: 'kitchen',
+  plural: 'kitchens',
+  isReadOnly: computed(() => runtime.isReadOnly.value),
+})
+
 const isDev = import.meta.dev
 const availableKitchenPills = computed(() =>
-  runtime.mode.value === 'read-only' ? readOnlyKitchenPills.value : ownedKitchenPills.value
+  runtime.isReadOnly.value ? readOnlyKitchenPills.value : ownedKitchenPills.value
 )
+const selectionHelpText = computed(() => {
+  if (isOperatorOverview.value) return selectionHelp.value
+  if (showSelector.value) {
+    return 'This console is scoped to one active kitchen. Switch the active kitchen here any time.'
+  }
+  return 'This console is running as a single-kitchen workspace.'
+})
+const activeSelectionDescription = computed(() => {
+  if (activeKitchenPill.value) {
+    return `${activeKitchenPill.value.title}${
+      activeKitchenPill.value.subtitle ? ` · ${activeKitchenPill.value.subtitle}` : ''
+    }`
+  }
+  return String(runtime.id.value || '').trim()
+})
+
 const { ensureOverviewEntry } = useConsoleOverviewEntry({
   runtimeId: runtime.id,
   mode: computed(() => runtime.mode.value),
@@ -172,6 +152,7 @@ const { ensureOverviewEntry } = useConsoleOverviewEntry({
   readOnlyCount: computed(() => readOnlyScenarios.value.length),
   singleLiveId: computed(() => String((ownedKitchens.value[0] as any)?.id || '')),
   singleReadOnlyId: computed(() => String((readOnlyScenarios.value[0]?.kitchen as any)?.id || '')),
+  allowMultiLiveSelection: canSelectMultipleLive,
   setActiveTarget: setActiveOwnedKitchen,
   createPath: '/console/kitchen/create',
   overviewPath: '/console/kitchen/overview',
@@ -196,9 +177,10 @@ const runtimeSnapshot = computed(() => {
     isReady: runtime.isReady.value,
     doc: runtime.doc.value,
     data,
-    overview: overview.value,
     ownedKitchens: ownedKitchens.value,
     readOnlyScenarios: readOnlyScenarios.value,
+    canSelectMultipleLive: canSelectMultipleLive.value,
+    showSelector: showSelector.value,
     isOperatorOverview: isOperatorOverview.value,
     hasActiveKitchen: hasActiveKitchen.value,
   }

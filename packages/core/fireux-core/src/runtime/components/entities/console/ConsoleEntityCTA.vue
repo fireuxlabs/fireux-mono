@@ -32,49 +32,23 @@
               Loading Console Access
             </p>
             <p class="text-sm text-dimmed">
-              Checking your sign-in state and available console lanes.
+              Checking your sign-in state and available console routes.
             </p>
           </section>
         </template>
 
         <template v-else-if="showAuthSplit">
-          <section class="space-y-4">
+          <section v-if="showReadOnly" class="space-y-4">
             <div class="space-y-1">
               <p class="text-xs font-semibold uppercase tracking-[0.16em] text-dimmed">
                 Available Without Sign-In
               </p>
               <p class="text-xs text-dimmed">
-                Explore demo and test spaces first. Sign in only when you want your own console or to save progress.
+                Explore demo consoles first. Sign in when you want your own console.
               </p>
             </div>
 
-            <section v-if="showTest" class="space-y-2">
-              <p class="text-sm font-semibold">{{ testLabel }}</p>
-              <div
-                v-if="showInlineNotes"
-                :data-dev-note="true"
-                :data-dev-note-title="testLabel"
-                class="fireux-dev-note rounded-lg px-3 py-2 text-xs text-dimmed"
-              >
-                <p class="fireux-dev-note__label mb-1 text-[11px] font-semibold uppercase tracking-[0.16em]">
-                  Developer Note
-                </p>
-                <ul data-dev-note-body class="list-disc space-y-1 pl-4">
-                  <li v-if="consoleTo">
-                    Routes to
-                    <code>{{ consoleTo }}</code>.
-                  </li>
-                  <li>
-                    Sets runtime mode to
-                    <code>test</code>.
-                  </li>
-                  <slot name="testNote" />
-                </ul>
-              </div>
-              <slot name="test" />
-            </section>
-
-            <section v-if="showReadOnly" class="space-y-2">
+            <section class="space-y-2">
               <p v-if="readOnlyLabel" class="text-sm font-semibold">{{ readOnlyLabel }}</p>
               <div
                 v-if="showInlineNotes"
@@ -92,14 +66,13 @@
                   </li>
                   <li>
                     Sets runtime mode to
-                    <code>demo</code>.
+                    <code>read-only</code>.
                   </li>
                   <slot name="readOnlyNote" />
                 </ul>
               </div>
               <slot name="readOnly" />
             </section>
-
           </section>
 
           <section v-if="showMy" class="space-y-4 border-t border-default pt-4">
@@ -172,7 +145,7 @@
               class="group"
               color="neutral"
               variant="ghost"
-              :label="secondaryModesLabel"
+              label="Demo"
               icon="i-lucide-layers-2"
               trailing-icon="i-lucide-chevron-down"
               block
@@ -183,32 +156,6 @@
 
             <template #content>
               <div class="space-y-4 pt-3">
-                <section v-if="showTest" class="space-y-2">
-                  <p class="text-sm font-semibold">{{ testLabel }}</p>
-                  <div
-                    v-if="showInlineNotes"
-                    :data-dev-note="true"
-                    :data-dev-note-title="testLabel"
-                    class="fireux-dev-note rounded-lg px-3 py-2 text-xs text-dimmed"
-                  >
-                    <p class="fireux-dev-note__label mb-1 text-[11px] font-semibold uppercase tracking-[0.16em]">
-                      Developer Note
-                    </p>
-                    <ul data-dev-note-body class="list-disc space-y-1 pl-4">
-                      <li v-if="consoleTo">
-                        Routes to
-                        <code>{{ consoleTo }}</code>.
-                      </li>
-                      <li>
-                        Sets runtime mode to
-                        <code>test</code>.
-                      </li>
-                      <slot name="testNote" />
-                    </ul>
-                  </div>
-                  <slot name="test" />
-                </section>
-
                 <section v-if="showReadOnly" class="space-y-2">
                   <p v-if="readOnlyLabel" class="text-sm font-semibold">{{ readOnlyLabel }}</p>
                   <div
@@ -227,7 +174,7 @@
                       </li>
                       <li>
                         Sets runtime mode to
-                        <code>demo</code>.
+                        <code>read-only</code>.
                       </li>
                       <slot name="readOnlyNote" />
                     </ul>
@@ -238,60 +185,31 @@
             </template>
           </UCollapsible>
 
-          <template v-else>
-            <section v-if="showTest" class="space-y-2">
-              <p class="text-sm font-semibold">{{ testLabel }}</p>
-              <div
-                v-if="showInlineNotes"
-                :data-dev-note="true"
-                :data-dev-note-title="testLabel"
-                class="fireux-dev-note rounded-lg px-3 py-2 text-xs text-dimmed"
-              >
-                <p class="fireux-dev-note__label mb-1 text-[11px] font-semibold uppercase tracking-[0.16em]">
-                  Developer Note
-                </p>
-                <ul data-dev-note-body class="list-disc space-y-1 pl-4">
-                  <li v-if="consoleTo">
-                    Routes to
-                    <code>{{ consoleTo }}</code>.
-                  </li>
-                  <li>
-                    Sets runtime mode to
-                    <code>test</code>.
-                  </li>
-                  <slot name="testNote" />
-                </ul>
-              </div>
-              <slot name="test" />
-            </section>
-
-            <section v-if="showReadOnly" class="space-y-2">
-              <p v-if="readOnlyLabel" class="text-sm font-semibold">{{ readOnlyLabel }}</p>
-              <div
-                v-if="showInlineNotes"
-                :data-dev-note="true"
-                :data-dev-note-title="readOnlyLabel || 'Demo console'"
-                class="fireux-dev-note rounded-lg px-3 py-2 text-xs text-dimmed"
-              >
-                <p class="fireux-dev-note__label mb-1 text-[11px] font-semibold uppercase tracking-[0.16em]">
-                  Developer Note
-                </p>
-                <ul data-dev-note-body class="list-disc space-y-1 pl-4">
-                  <li v-if="consoleTo">
-                    Routes to
-                    <code>{{ consoleTo }}</code>.
-                  </li>
-                  <li>
-                    Sets runtime mode to
-                    <code>demo</code>.
-                  </li>
-                  <slot name="readOnlyNote" />
-                </ul>
-              </div>
-              <slot name="readOnly" />
-            </section>
-          </template>
-
+          <section v-else-if="showReadOnly" class="space-y-2">
+            <p v-if="readOnlyLabel" class="text-sm font-semibold">{{ readOnlyLabel }}</p>
+            <div
+              v-if="showInlineNotes"
+              :data-dev-note="true"
+              :data-dev-note-title="readOnlyLabel || 'Demo console'"
+              class="fireux-dev-note rounded-lg px-3 py-2 text-xs text-dimmed"
+            >
+              <p class="fireux-dev-note__label mb-1 text-[11px] font-semibold uppercase tracking-[0.16em]">
+                Developer Note
+              </p>
+              <ul data-dev-note-body class="list-disc space-y-1 pl-4">
+                <li v-if="consoleTo">
+                  Routes to
+                  <code>{{ consoleTo }}</code>.
+                </li>
+                <li>
+                  Sets runtime mode to
+                  <code>read-only</code>.
+                </li>
+                <slot name="readOnlyNote" />
+              </ul>
+            </div>
+            <slot name="readOnly" />
+          </section>
         </template>
 
         <section class="space-y-2">
@@ -351,16 +269,13 @@ const props = withDefaults(defineProps<{
   entity?: string
   consoleTo?: string
   myLabel: string
-  testLabel: string
   readOnlyLabel: string
   learnMoreTo: string
   showMy?: boolean
-  showTest?: boolean
   showReadOnly?: boolean
   collapseSecondaryModes?: boolean
 }>(), {
   showMy: true,
-  showTest: true,
   showReadOnly: true,
   collapseSecondaryModes: false,
 })
@@ -369,11 +284,5 @@ const isDev = import.meta.dev
 const { authPhase, showAuthSplit } = useConsoleEntryState()
 const { notesVisible } = useDevUi()
 const showInlineNotes = computed(() => isDev && notesVisible.value)
-const hasSecondaryModes = computed(() => Boolean(props.showTest || props.showReadOnly))
-const secondaryModesLabel = computed(() => {
-  if (props.showTest && props.showReadOnly) return 'Demo & test'
-  if (props.showReadOnly) return 'Demo'
-  if (props.showTest) return 'Test'
-  return 'More'
-})
+const hasSecondaryModes = computed(() => Boolean(props.showReadOnly))
 </script>

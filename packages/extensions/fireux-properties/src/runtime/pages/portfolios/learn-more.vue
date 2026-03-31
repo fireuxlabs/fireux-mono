@@ -25,7 +25,7 @@
         </template>
 
         <ol class="list-decimal space-y-2 pl-5 text-sm">
-          <li>Select a live, test, or read-only portfolio from the portfolio CTA.</li>
+          <li>Select a live or demo portfolio from the portfolio CTA.</li>
           <li>Open the portfolio console to work across properties, clients, incidents, and documents.</li>
           <li>Keep portfolio identity and operational state aligned through the same runtime record.</li>
         </ol>

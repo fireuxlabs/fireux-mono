@@ -14,7 +14,6 @@ This README only explains the project-console delta.
 - `index.vue`
 - `overview.vue`
 - `create.vue`
-- `test.vue`
 - `read-only/index.vue`
 - `read-only/[scenarioId].vue`
 
@@ -32,7 +31,7 @@ Project-console delta:
 - console create ensures `apps/<appId>/projects/<projectId>`
 - console create creates the root project first when missing
 - console create seeds user-based console authority for the current user
-- read-only and test entry stay route-driven through the shared console runtime helpers
+- read-only entry stays route-driven through the shared console runtime helpers
 
 ## Short Version
 

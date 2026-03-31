@@ -1,9 +1,11 @@
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { createScopeConsole } from 'fireux-core/runtime/composables/fireux/app/console/createScopeConsole'
+import { useRuntimeConsoleBase } from 'fireux-core/runtime/composables/fireux/app/console/useRuntimeConsoleBase'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
 import { useNav } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useNav'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenInterface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 import type { ConsoleKitchen, Kitchen } from '../../../models/kitchen.model'
@@ -35,6 +37,7 @@ export function useRuntimeKitchenConsole() {
   const runtime = useRuntimeKitchen()
   const { appId } = useFireUXConfig()
   const { uid } = useConsoleEntryState()
+  const { canOwnMultipleConsoles } = useUser()
   const nav = useNav(['console'])
   const { firestoreFetchCollection } = useFirestoreRead()
   const { kitchens } = useKitchenFetch()
@@ -131,36 +134,26 @@ export function useRuntimeKitchenConsole() {
     { immediate: true }
   )
 
-  const hasActiveKitchen = computed(() => {
-    const currentId = String(runtime.id.value || '').trim()
-    if (!currentId) return false
-    if (runtime.mode.value === 'read-only') {
-      return readOnlyScenarios.value.some(
-        (entry) => String((entry.kitchen as any)?.id || '').trim() === currentId
-      )
-    }
-    return accessibleKitchenIds.value.has(currentId)
+  const selection = useRuntimeConsoleBase({
+    runtime,
+    owned: ownedKitchens,
+    readOnly: readOnlyScenarios,
+    canOwnMultiple: canOwnMultipleConsoles,
+    ownedId: (entry) => String((entry as any)?.id || '').trim(),
+    readOnlyId: (entry) => String((entry.kitchen as any)?.id || '').trim(),
+    ownedItem: (entry) => entry,
+    readOnlyItem: (entry) => entry.kitchen ?? null,
   })
 
-  const activeKitchen = computed(() => {
-    const currentId = String(runtime.id.value || '').trim()
-    if (!currentId) return null
-    if (runtime.mode.value === 'read-only') {
-      return (
-        readOnlyScenarios.value.find(
-          (entry) => String((entry.kitchen as any)?.id || '').trim() === currentId
-        )?.kitchen ?? null
-      )
-    }
-    return (
-      ownedKitchens.value.find((entry) => String((entry as any)?.id || '').trim() === currentId) ??
-      null
-    )
-  })
+  const hasActiveKitchen = selection.hasActiveItem
+  const activeKitchen = selection.activeItem
 
   const activeKitchenPill = computed(() =>
     activeKitchen.value ? kitchenInterface(activeKitchen.value as Kitchen) : null
   )
+  const canSelectMultipleLive = selection.canSelectMultipleLive
+  const canSelectMultipleReadOnly = selection.canSelectMultipleReadOnly
+  const showSelector = selection.showSelector
 
   const ownershipPending = computed(
     () =>
@@ -253,12 +246,7 @@ export function useRuntimeKitchenConsole() {
     ),
   }))
 
-  const isOperatorOverview = computed(
-    () =>
-      runtime.mode.value !== 'test' &&
-      ((runtime.mode.value === 'read-only' && readOnlyScenarios.value.length > 1) ||
-        (runtime.mode.value === 'live' && ownedKitchens.value.length > 1))
-  )
+  const isOperatorOverview = selection.isOperatorOverview
 
   const overview = computed(() => {
     if (isOperatorOverview.value) {
@@ -351,6 +339,10 @@ export function useRuntimeKitchenConsole() {
       activeKitchen,
       activeKitchenPill,
       hasActiveKitchen,
+      canOwnMultipleConsoles,
+      canSelectMultipleLive,
+      canSelectMultipleReadOnly,
+      showSelector,
       isOperatorOverview,
       ownershipPending,
       operatorPending,

@@ -15,7 +15,7 @@ export type { RuntimeKitchenMode } from './shared'
 /**
  * Canon kitchen console seam.
  *
- * Root kitchen identity stays at `/kitchens/<id>` or `/test-kitchens/<id>`.
+ * Root kitchen identity stays at `/kitchens/<id>`.
  * Console-owned data lives under the app-hosted kitchen scope.
  */
 export function useRuntimeKitchen(params?: UseRuntimeKitchenParams) {

@@ -1,8 +1,10 @@
 import { createScopeConsole } from 'fireux-core/runtime/composables/fireux/app/console/createScopeConsole'
+import { useRuntimeConsoleBase } from 'fireux-core/runtime/composables/fireux/app/console/useRuntimeConsoleBase'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
 import { useNav } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useNav'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { computed } from 'vue'
 import { useSupplierFetch } from '../../firestore/supplier/fetch/useSupplierFetch'
 import { useSupplierInterface } from '../../firestore/supplier/utils/view/useSupplierInterface'
@@ -19,6 +21,7 @@ export function useRuntimeSupplierConsole() {
   const runtime = useRuntimeSupplier()
   const { appId } = useFireUXConfig()
   const { uid } = useConsoleEntryState()
+  const { canOwnMultipleConsoles } = useUser()
   const nav = useNav(['console'])
   const { firestoreFetchCollection } = useFirestoreRead()
   const { setRuntimeSupplier } = useRuntimeSupplierSelection()
@@ -81,39 +84,27 @@ export function useRuntimeSupplierConsole() {
     nav.items.value.filter((item) => item.to.startsWith('/console/supplier'))
   )
 
-  const hasActiveSupplier = computed(() => {
-    const currentId = String(runtime.id.value || '').trim()
-    if (!currentId) return false
-    if (runtime.isReadOnly.value) {
-      return readOnlyScenarios.value.some((entry) => String(entry.id || '').trim() === currentId)
-    }
-    return accessibleSupplierIds.value.has(currentId)
+  const selection = useRuntimeConsoleBase({
+    runtime,
+    owned: ownedSuppliers,
+    readOnly: readOnlyScenarios,
+    canOwnMultiple: canOwnMultipleConsoles,
+    ownedId: (entry) => String((entry as any)?.id || '').trim(),
+    readOnlyId: (entry) => String(entry.id || '').trim(),
+    ownedItem: (entry) => entry,
+    readOnlyItem: (entry) => entry.supplier ?? null,
   })
 
-  const activeSupplier = computed(() => {
-    const currentId = String(runtime.id.value || '').trim()
-    if (!currentId) return null
-    if (runtime.isReadOnly.value) {
-      return (
-        readOnlyScenarios.value.find((entry) => String(entry.id || '').trim() === currentId)?.supplier ??
-        null
-      )
-    }
-    return (
-      ownedSuppliers.value.find((entry) => String((entry as any)?.id || '').trim() === currentId) ??
-      null
-    )
-  })
+  const hasActiveSupplier = selection.hasActiveItem
+  const activeSupplier = selection.activeItem
 
   const activeSupplierPill = computed(() =>
     activeSupplier.value ? supplierInterface(activeSupplier.value as Supplier) : null
   )
-
-  const isOperatorOverview = computed(
-    () =>
-      (runtime.isReadOnly.value && readOnlyScenarios.value.length > 1) ||
-      (!runtime.isReadOnly.value && ownedSuppliers.value.length > 1)
-  )
+  const canSelectMultipleLive = selection.canSelectMultipleLive
+  const canSelectMultipleReadOnly = selection.canSelectMultipleReadOnly
+  const showSelector = selection.showSelector
+  const isOperatorOverview = selection.isOperatorOverview
 
   const ownershipPending = computed(
     () => pending.value || (Boolean(appId) && supplierOverlays?.value === undefined)
@@ -189,6 +180,10 @@ export function useRuntimeSupplierConsole() {
       activeSupplier,
       activeSupplierPill,
       hasActiveSupplier,
+      canOwnMultipleConsoles,
+      canSelectMultipleLive,
+      canSelectMultipleReadOnly,
+      showSelector,
       isOperatorOverview,
       ownershipPending,
       setActiveOwnedSupplier,

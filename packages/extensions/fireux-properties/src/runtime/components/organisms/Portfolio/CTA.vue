@@ -4,7 +4,6 @@
     entity="portfolio"
     console-to="/console/portfolio/overview"
     my-label=""
-    test-label="Test Portfolio"
     :read-only-label="showBundledReadOnly ? '' : 'Demo Portfolios'"
     :collapse-secondary-modes="collapseSecondaryModes"
     learn-more-to="/portfolios/learn-more"
@@ -57,25 +56,6 @@
           {{ createCopy.label }}
         </UButton>
       </div>
-    </template>
-
-    <template #testNote>
-      <li>Available without sign-in.</li>
-      <li>Sign in to save your progress.</li>
-      <li>Signed out uses an app-branded portfolio test identity. Signed in uses your user identity when available.</li>
-      <li>Uses the shared portfolio test runtime instead of a live portfolio you operate.</li>
-    </template>
-
-    <template #test>
-          <PortfolioCardsPill
-            :to="''"
-            :title="testPortfolioIdentity.title"
-            :subtitle="testPortfolioIdentity.subtitle"
-            :image-url="testPortfolioIdentity.imageUrl"
-            :action="true"
-            :show-badges="false"
-            @action="goToPortfolio('test')"
-          />
     </template>
 
     <template #readOnly>
@@ -143,7 +123,6 @@ import { resolveConsoleEntryPath } from 'fireux-core/runtime/composables/fireux/
 import { resolveConsoleCreateCopy } from 'fireux-core/runtime/composables/fireux/app/ui/console-create-copy'
 import { useConsoleFamilyAccess } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleFamilyAccess'
 import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
-import { resolveConsoleTestIdentity } from 'fireux-core/runtime/composables/fireux/app/ui/console-test-identity'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import ConsoleBundleEntry from 'fireux-core/runtime/components/entities/console/ConsoleBundleEntry.vue'
@@ -182,16 +161,6 @@ const createCopy = computed(() =>
     canOwnMultipleConsoles: canOwnMultipleConsoles.value,
     publicPath: '/portfolios/create',
     consolePath: '/console/portfolio/create',
-  })
-)
-const testPortfolioIdentity = computed(() =>
-  resolveConsoleTestIdentity({
-    entityLabel: 'Portfolio',
-    signedIn: isSignedIn.value,
-    appAvatarUrl: appLogo || appThumbnail || '/img/app/logo.png',
-    userDisplayName: currentUser.value?.display_name,
-    userAvatarUrl: avatarSrc.value,
-    userSubtitle: 'Personal portfolio test workspace',
   })
 )
 const signInPath = computed(() => `/auth?redirect=${encodeURIComponent(route.fullPath)}`)
@@ -313,11 +282,6 @@ const bundledReadOnlyPill = computed(() => {
 })
 
 const goToPortfolio = async (mode: RuntimePortfolioMode, portfolioId?: string) => {
-  if (mode === 'test') {
-    await router.push(resolveConsoleEntryPath('/console/portfolio', 'test'))
-    return
-  }
-
   if (mode === 'read-only') {
     const resolvedId = String(portfolioId || '').trim()
     setRuntimePortfolio({ mode: 'read-only', portfolioId: resolvedId })

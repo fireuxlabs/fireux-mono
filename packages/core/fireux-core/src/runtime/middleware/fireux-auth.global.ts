@@ -12,12 +12,9 @@ const CONSOLE_RUNTIME_COOKIES = [
   { prefix: '/console/projects', cookieKey: 'fireux_runtime_project' },
 ] as const
 const GUEST_CONSOLE_ROUTE_PREFIXES = [
-  '/console/kitchen/test',
   '/console/kitchen/read-only',
-  '/console/portfolio/test',
   '/console/portfolio/read-only',
   '/console/supplier/read-only',
-  '/console/projects/test',
   '/console/projects/read-only',
 ] as const
 

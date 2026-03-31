@@ -1,56 +1,36 @@
 <template>
   <UDashboardPanel id="console-portfolio-home">
     <template #header>
-      <LayoutsConsoleNavbar title="Portfolio" />
+      <LayoutsConsoleNavbar title="Portfolio Overview" />
     </template>
 
     <template #body>
-      <section class="space-y-8">
+      <section class="space-y-6">
         <div class="text-xs text-dimmed">
           <template v-if="isOperatorOverview">
             Scope:
-            <span class="font-medium">
-              {{ runtime.isReadOnly ? 'All read-only portfolios' : 'All owned portfolios' }}
-            </span>
-            <template v-if="activePortfolio">
-              · Active portfolio:
-              <span class="font-mono">{{ activePortfolio.id }}</span>
-            </template>
+            <span class="font-medium">{{ scopeLabel }}</span>
           </template>
           <template v-else>
             Mode: <span class="font-medium">{{ runtime.mode }}</span>
-            · Portfolio: <span class="font-mono">{{ runtime.id }}</span>
+            <template v-if="runtime.id">
+              · Active portfolio:
+              <span class="font-mono">{{ runtime.id }}</span>
+            </template>
           </template>
         </div>
 
         <UCard>
           <template #header>
             <div class="text-sm font-semibold">
-              {{ isOperatorOverview ? 'All owned portfolios' : 'Portfolio runtime' }}
-            </div>
-          </template>
-
-          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-            <div
-              v-for="item in overview"
-              :key="item.key"
-              class="rounded border border-default p-3"
-            >
-              <div class="text-xs text-dimmed">{{ item.label }}</div>
-              <div class="text-lg font-semibold">{{ item.count }}</div>
-            </div>
-          </div>
-        </UCard>
-
-        <UCard v-if="isOperatorOverview">
-          <template #header>
-            <div class="text-sm font-semibold">
-              {{ runtime.isReadOnly ? 'Read-only portfolios' : 'Owned portfolios' }}
+              {{ isOperatorOverview ? targetListTitle : singleOverviewTitle }}
             </div>
           </template>
 
           <div class="space-y-3">
-            <div v-if="availablePortfolioPills.length" class="space-y-2">
+            <p class="text-sm text-dimmed">{{ selectionHelpText }}</p>
+
+            <div v-if="showSelector && availablePortfolioPills.length" class="space-y-2">
               <PortfolioCardsPill
                 v-for="item in availablePortfolioPills"
                 :key="item.id"
@@ -63,51 +43,21 @@
               />
             </div>
 
-            <p class="text-sm text-dimmed">
-              Overview totals above include all {{ runtime.isReadOnly ? 'read-only' : 'owned' }} portfolios. Select one here when you want child routes like Properties, Clients, Finance, or Incidents to work against a specific portfolio.
-            </p>
-
             <UAlert
-              v-if="!hasActivePortfolio"
+              v-if="isOperatorOverview && !hasActivePortfolio"
               color="neutral"
               variant="soft"
-              title="Select a portfolio for workspace routes"
-              :description="`Choose one ${runtime.isReadOnly ? 'read-only' : 'owned'} portfolio above before opening deeper console routes.`"
+              :title="selectionTitle"
+              :description="selectionDescription"
             />
+
             <UAlert
-              v-else-if="activePortfolioPill"
+              v-else-if="activeSelectionDescription"
               color="primary"
               variant="soft"
-              title="Active portfolio selected"
-              :description="`${activePortfolioPill.title}${activePortfolioPill.subtitle ? ` · ${activePortfolioPill.subtitle}` : ''}`"
+              :title="activeSelectionTitle"
+              :description="activeSelectionDescription"
             />
-          </div>
-        </UCard>
-
-        <UCard>
-          <template #header>
-            <div class="text-sm font-semibold">Quick actions</div>
-          </template>
-
-          <UAlert
-            v-if="isOperatorOverview && !hasActivePortfolio"
-            color="neutral"
-            variant="soft"
-            title="Pick an active portfolio first"
-            :description="`The overview is showing all ${runtime.isReadOnly ? 'read-only' : 'owned'} portfolios. Select one above to enable deeper portfolio routes.`"
-          />
-
-          <div v-else class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <UButton
-              v-for="link in surfaceLinks"
-              :key="link.key"
-              :to="link.to"
-              variant="soft"
-              :icon="link.icon"
-              block
-            >
-              {{ link.label }}
-            </UButton>
           </div>
         </UCard>
 
@@ -124,9 +74,9 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import { useConsoleOverviewEntry } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleOverviewEntry'
+import { useConsoleOverviewLabels } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleOverviewLabels'
 import { useRuntimePortfolioConsole } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolioConsole'
 import PortfolioCardsPill from '../../../components/organisms/Portfolio/Cards/Pill.vue'
 
@@ -147,24 +97,53 @@ definePageMeta({
 
 const {
   runtime,
-  surfaceLinks,
-  overview,
-  stats,
   ownedPortfolios,
   ownedPortfolioPills,
   readOnlyScenarios,
   readOnlyPortfolioPills,
-  activePortfolio,
   activePortfolioPill,
   hasActivePortfolio,
+  canSelectMultipleLive,
+  showSelector,
   isOperatorOverview,
   ownershipPending,
   setActiveOwnedPortfolio,
 } = useRuntimePortfolioConsole()
 
+const {
+  scopeLabel,
+  targetListTitle,
+  selectionTitle,
+  selectionDescription,
+  selectionHelp,
+  activeSelectionTitle,
+  singleOverviewTitle,
+} = useConsoleOverviewLabels({
+  singular: 'portfolio',
+  plural: 'portfolios',
+  isReadOnly: computed(() => runtime.isReadOnly.value),
+})
+
+const isDev = import.meta.dev
 const availablePortfolioPills = computed(() =>
   runtime.isReadOnly.value ? readOnlyPortfolioPills.value : ownedPortfolioPills.value
 )
+const selectionHelpText = computed(() => {
+  if (isOperatorOverview.value) return selectionHelp.value
+  if (showSelector.value) {
+    return 'This console is scoped to one active portfolio. Switch the active portfolio here any time.'
+  }
+  return 'This console is running as a single-portfolio workspace.'
+})
+const activeSelectionDescription = computed(() => {
+  if (activePortfolioPill.value) {
+    return `${activePortfolioPill.value.title}${
+      activePortfolioPill.value.subtitle ? ` · ${activePortfolioPill.value.subtitle}` : ''
+    }`
+  }
+  return String(runtime.id.value || '').trim()
+})
+
 const { ensureOverviewEntry } = useConsoleOverviewEntry({
   runtimeId: runtime.id,
   mode: computed(() => runtime.mode.value),
@@ -173,14 +152,13 @@ const { ensureOverviewEntry } = useConsoleOverviewEntry({
   readOnlyCount: computed(() => readOnlyScenarios.value.length),
   singleLiveId: computed(() => String(ownedPortfolios.value[0]?.id || '')),
   singleReadOnlyId: computed(() => String(readOnlyScenarios.value[0]?.id || '')),
+  allowMultiLiveSelection: canSelectMultipleLive,
   setActiveTarget: setActiveOwnedPortfolio,
   createPath: '/console/portfolio/create',
   overviewPath: '/console/portfolio/overview',
 })
 
 await ensureOverviewEntry()
-
-const isDev = import.meta.dev
 
 const selectPortfolio = (portfolioId: string) => {
   setActiveOwnedPortfolio(portfolioId)
@@ -197,9 +175,10 @@ const runtimeSnapshot = computed(() => ({
   isReady: runtime.isReady.value,
   doc: runtime.doc.value,
   data: runtime.data.value,
-  stats: stats.value,
   ownedPortfolios: ownedPortfolios.value,
   readOnlyScenarios: readOnlyScenarios.value,
+  canSelectMultipleLive: canSelectMultipleLive.value,
+  showSelector: showSelector.value,
   isOperatorOverview: isOperatorOverview.value,
   hasActivePortfolio: hasActivePortfolio.value,
 }))

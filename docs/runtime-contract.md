@@ -78,17 +78,15 @@ Updated: 2026-03-31
 ## Runtime Mode Rules (Console Runtimes)
 - Supported modes:
   - `live`
-  - `test`
   - `read-only`
 - Mode behavior:
   - `live`: Firestore-backed production collections.
-  - `test`: Firestore-backed sandbox/test collections.
   - `read-only`: scenario/data-pack mode with no Firestore writes.
 
 ### Legacy Input Alias
 - `dummy` is not a canonical runtime mode.
 - Runtime normalizers may accept `dummy` as backward-compatible input and map it to `read-only`.
-- New state, routes, and UI labels must only use `live`, `test`, `read-only`.
+- New state, routes, and UI labels must only use `live`, `read-only`.
 
 ## Read-only Data Policy
 - Runtime read-only data must come from domain `read-only-scenarios/` registries.
@@ -97,7 +95,6 @@ Updated: 2026-03-31
 
 ## Collection Path Policy (Kitchen Runtime)
 - `live` -> `kitchens/{kitchenId}`
-- `test` -> `test-kitchens/{kitchenId}`
 - `read-only` -> no Firestore collection path (scenario-backed)
 
 ## Route Policy (ID vs Slug)
@@ -147,7 +144,7 @@ Updated: 2026-03-31
 
 ## Conflicts Resolved
 - Previous broad “[id] for all object pages” guidance is replaced by the mixed route policy above (public slug, internal id).
-- Kitchen live/test split is canonicalized here and supersedes ambiguous one-collection summaries.
+- Kitchen live/read-only split is canonicalized here and supersedes ambiguous one-collection summaries.
 - Runtime selection canon is state-based for consoles; query-selection statements in Tier3 history docs are non-authoritative.
 
 ## TBD Decisions (Deano)

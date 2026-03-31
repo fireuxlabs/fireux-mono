@@ -23,7 +23,6 @@ export type RuntimeProjectDoc = Partial<ProjectDoc> & Record<string, unknown> & 
 }
 
 const ROOT_PROJECT_COLLECTION_PATH = 'projects'
-const TEST_PROJECT_COLLECTION_PATH = 'test-projects'
 
 const resolveProjectConsoleCollectionPath = (appId?: unknown): string => {
   const resolvedAppId = normalizeString(appId)
@@ -32,12 +31,12 @@ const resolveProjectConsoleCollectionPath = (appId?: unknown): string => {
 
 const resolveRuntimeProjectDocumentCollectionPath = (
   mode: RuntimeProjectMode
-): string => (mode === 'test' ? TEST_PROJECT_COLLECTION_PATH : ROOT_PROJECT_COLLECTION_PATH)
+): string => ROOT_PROJECT_COLLECTION_PATH
 
 const resolveRuntimeProjectDataCollectionPath = (
   mode: RuntimeProjectMode,
   appId?: unknown
-): string => (mode === 'test' ? TEST_PROJECT_COLLECTION_PATH : resolveProjectConsoleCollectionPath(appId))
+): string => resolveProjectConsoleCollectionPath(appId)
 
 function isOfflineFirestoreError(error: unknown): boolean {
   const code = typeof (error as any)?.code === 'string' ? (error as any).code : ''
@@ -65,7 +64,7 @@ function guardDocumentPromise(
 /**
  * Canon project console seam.
  *
- * Root project identity stays at `/projects/<id>` or `/test-projects/<id>`.
+ * Root project identity stays at `/projects/<id>`.
  * App-hosted project console state lives under the app project scope.
  */
 export function useRuntimeProject(params?: UseRuntimeProjectParams) {

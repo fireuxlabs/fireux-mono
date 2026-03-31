@@ -16,7 +16,7 @@ export type { RuntimePortfolioMode } from './shared'
 /**
  * Canon portfolio console seam.
  *
- * Root portfolio identity stays at `/portfolios/<id>` or `/test-portfolios/<id>`.
+ * Root portfolio identity stays at `/portfolios/<id>`.
  * Console-owned data lives under the app-hosted portfolio scope.
  */
 export function useRuntimePortfolio(params?: UseRuntimePortfolioParams) {

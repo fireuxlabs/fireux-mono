@@ -53,7 +53,7 @@ Meaning:
 - enter the family
 - choose a live instance when needed
 - choose create
-- set runtime mode when coming from demo or test entry seams
+- set runtime mode when coming from demo entry seams
 
 This route is console entry, not yet the operational workspace.
 
@@ -67,7 +67,7 @@ Meaning:
 - if one target is available, auto-select it
 - if many targets are available, show the all-target overview
 - if zero live targets exist, fall through to create
-- keep the same overview route whether the runtime mode is `live`, `read-only`, or `test`
+- keep the same overview route whether the runtime mode is `live` or `read-only`
 
 The route answers:
 - which console family is active
@@ -135,7 +135,7 @@ The canonical shape is:
 - `/console/X/create` = console create
 
 The canonical mode rule is:
-- `live`, `read-only`, and `test` are runtime modes, not separate console architectures
+- `live` and `read-only` are runtime modes, not separate console architectures
 - explicit `/read-only` routes may still exist as transitional or convenience seams
 - those seams should only set runtime mode and then enter the normal console routes
 

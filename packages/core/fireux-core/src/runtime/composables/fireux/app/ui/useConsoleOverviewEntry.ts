@@ -8,6 +8,7 @@ type UseConsoleOverviewEntryOptions = {
   readOnlyCount: MaybeRefOrGetter<number | null | undefined>
   singleLiveId: MaybeRefOrGetter<string | null | undefined>
   singleReadOnlyId: MaybeRefOrGetter<string | null | undefined>
+  allowMultiLiveSelection?: MaybeRefOrGetter<boolean | null | undefined>
   setActiveTarget: (targetId: string) => void
   createPath: string
   overviewPath: string
@@ -35,6 +36,9 @@ export function useConsoleOverviewEntry(options: UseConsoleOverviewEntryOptions)
   const readOnlyCount = computed(() => normalizeCount(toValue(options.readOnlyCount)))
   const singleLiveId = computed(() => normalizeString(toValue(options.singleLiveId)))
   const singleReadOnlyId = computed(() => normalizeString(toValue(options.singleReadOnlyId)))
+  const allowMultiLiveSelection = computed(() =>
+    Boolean(toValue(options.allowMultiLiveSelection))
+  )
   const isReadOnlyMode = computed(() => mode.value === readOnlyMode)
   const isLiveMode = computed(() => mode.value === liveMode)
   const entryPending = computed(() =>
@@ -60,6 +64,17 @@ export function useConsoleOverviewEntry(options: UseConsoleOverviewEntryOptions)
     }
 
     if (isLiveMode.value && liveCount.value === 1 && singleLiveId.value) {
+      options.setActiveTarget(singleLiveId.value)
+      await redirectTo(options.overviewPath)
+      return
+    }
+
+    if (
+      isLiveMode.value &&
+      liveCount.value > 1 &&
+      !allowMultiLiveSelection.value &&
+      singleLiveId.value
+    ) {
       options.setActiveTarget(singleLiveId.value)
       await redirectTo(options.overviewPath)
       return

@@ -25,7 +25,6 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 
 ## 4) Collections + paths
 - Live: `kitchens/{kitchenId}`
-- Test: `test-kitchens/{kitchenId}`
 - Live kitchen console: `apps/{appId}/kitchens/{kitchenId}`
 - Global ingredients: `ingredients/{ingredientId}`
 - Kitchen-owned operational children:
@@ -35,7 +34,6 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}`
   - `apps/{appId}/kitchens/{kitchenId}/mise/{taskId}`
   - `apps/{appId}/kitchens/{kitchenId}/orders/{orderId}`
-- Test kitchen runtime mode mapping stays path-based under `test-kitchens/{kitchenId}`.
 - Runtime kitchen mode mapping follows `docs/runtime-contract.md`.
 
 ## 5) Routes (public vs internal; slug vs id)
@@ -55,7 +53,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 
 ## 7) Runtime dependencies
 - Runtime kitchen selection state (`runtimeKitchenId`, `runtimeKitchenMode`).
-- Mode-aware data loading (`live`, `test`, `read-only`).
+- Mode-aware data loading (`live`, `read-only`).
 - Legacy input alias `dummy` may be accepted by normalizers and maps to `read-only`.
 
 ## 8) SEO hooks
@@ -72,6 +70,6 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `useChefCreate`, `useChefUpdate`, `useChefDelete`
 
 ## 10) Non-goals / prohibited fallbacks
-- No silent fallback switching between live/test/read-only.
+- No silent fallback switching between live/read-only.
 - No silent fallback selection of active kitchen inside console flows.
 - No treating profile linkage or workplace history as console permission.

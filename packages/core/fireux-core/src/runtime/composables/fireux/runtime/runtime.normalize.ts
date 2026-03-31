@@ -17,7 +17,7 @@ export const normalizeRuntimeMode = (
 
   const allowed: RuntimeMode[] = options?.allowed?.length
     ? options.allowed
-    : ['live', 'test', 'read-only']
+    : ['live', 'read-only']
 
   const aliases: Record<string, RuntimeMode> = options?.aliases ?? {
     dummy: 'read-only',

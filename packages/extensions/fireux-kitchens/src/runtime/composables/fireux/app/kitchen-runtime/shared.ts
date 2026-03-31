@@ -1,4 +1,4 @@
-export type RuntimeKitchenMode = 'read-only' | 'test' | 'live'
+export type RuntimeKitchenMode = 'read-only' | 'live'
 
 export type RuntimeKitchenSelection = {
   kitchenId?: string | null | undefined
@@ -8,7 +8,6 @@ export type RuntimeKitchenSelection = {
 export const RUNTIME_KITCHEN_ID_KEY = 'fireux-kitchens:runtime-kitchen:id'
 export const RUNTIME_KITCHEN_MODE_KEY = 'fireux-kitchens:runtime-kitchen:mode'
 export const ROOT_KITCHEN_COLLECTION_PATH = 'kitchens'
-export const TEST_KITCHEN_COLLECTION_PATH = 'test-kitchens'
 
 const toSingleValue = (value: unknown): unknown => (Array.isArray(value) ? value[0] : value)
 
@@ -18,7 +17,7 @@ export const normalizeString = (value: unknown): string =>
 export const normalizeMode = (value: unknown): RuntimeKitchenMode | null => {
   const normalized = normalizeString(value).toLowerCase()
   if (normalized === 'dummy' || normalized === 'readonly') return 'read-only'
-  if (normalized === 'read-only' || normalized === 'test' || normalized === 'live') {
+  if (normalized === 'read-only' || normalized === 'live') {
     return normalized
   }
   return null
@@ -57,14 +56,12 @@ export const resolveKitchenRuntimeChildCollectionPath = (input: {
 
 export const resolveRuntimeKitchenDocumentCollectionPath = (
   mode: RuntimeKitchenMode
-): string => (mode === 'test' ? TEST_KITCHEN_COLLECTION_PATH : ROOT_KITCHEN_COLLECTION_PATH)
+): string => ROOT_KITCHEN_COLLECTION_PATH
 
 export const resolveRuntimeKitchenDataCollectionPath = (
   mode: RuntimeKitchenMode,
   appId?: unknown
-): string => (mode === 'test'
-  ? TEST_KITCHEN_COLLECTION_PATH
-  : resolveKitchenConsoleCollectionPath(appId))
+): string => resolveKitchenConsoleCollectionPath(appId)
 
 export const resolveRuntimeKitchenCollectionPath =
   resolveRuntimeKitchenDocumentCollectionPath

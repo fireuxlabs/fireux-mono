@@ -21,7 +21,7 @@ export const normalizeString = (value: unknown): string =>
 export const normalizeMode = (value: unknown): RuntimeAppMode | null => {
   const normalized = normalizeString(value).toLowerCase()
   if (normalized === 'dummy' || normalized === 'readonly') return 'read-only'
-  if (normalized === 'read-only' || normalized === 'test' || normalized === 'live') {
+  if (normalized === 'read-only' || normalized === 'live') {
     return normalized as RuntimeAppMode
   }
   return null
@@ -29,4 +29,4 @@ export const normalizeMode = (value: unknown): RuntimeAppMode | null => {
 
 export const resolveRuntimeAppCollectionPath = (
   mode: RuntimeAppMode
-): 'apps' | 'test-apps' => (mode === 'live' ? 'apps' : 'test-apps')
+): 'apps' => 'apps'

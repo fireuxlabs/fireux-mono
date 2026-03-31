@@ -1,9 +1,11 @@
 import { usePortfolioComplianceRecordCollection } from 'fireux-compliance/runtime/composables/fireux/firestore/compliance/fetch/usePortfolioComplianceRecordCollection'
 import { createScopeConsole } from 'fireux-core/runtime/composables/fireux/app/console/createScopeConsole'
+import { useRuntimeConsoleBase } from 'fireux-core/runtime/composables/fireux/app/console/useRuntimeConsoleBase'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
 import { useNav } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useNav'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { usePortfolioDocumentLinkCollection } from 'fireux-documents/runtime/composables/fireux/firestore/documents/fetch/usePortfolioDocumentLinkCollection'
 import { usePortfolioTaskCollection } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/fetch/usePortfolioTaskCollection'
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
@@ -34,6 +36,7 @@ export function useRuntimePortfolioConsole() {
   const nav = useNav(['console'])
   const { appId } = useFireUXConfig()
   const { uid } = useConsoleEntryState()
+  const { canOwnMultipleConsoles } = useUser()
   const { setRuntimePortfolio } = useRuntimePortfolioSelection()
   const { firestoreFetchCollection } = useFirestoreRead()
   const { pill } = usePortfolioInterface()
@@ -120,34 +123,26 @@ export function useRuntimePortfolioConsole() {
     { immediate: true }
   )
 
-  const hasActivePortfolio = computed(() => {
-    const currentId = String(runtime.id.value || '').trim()
-    if (!currentId) return false
-    if (runtime.isReadOnly.value) {
-      return readOnlyScenarios.value.some((entry) => String(entry.id || '').trim() === currentId)
-    }
-    return accessiblePortfolioIds.value.has(currentId)
+  const selection = useRuntimeConsoleBase({
+    runtime,
+    owned: ownedPortfolios,
+    readOnly: readOnlyScenarios,
+    canOwnMultiple: canOwnMultipleConsoles,
+    ownedId: (entry) => String((entry as any)?.id || '').trim(),
+    readOnlyId: (entry) => String(entry.id || '').trim(),
+    ownedItem: (entry) => entry,
+    readOnlyItem: (entry) => entry.portfolio ?? null,
   })
 
-  const activePortfolio = computed(() => {
-    const currentId = String(runtime.id.value || '').trim()
-    if (!currentId) return null
-    if (runtime.isReadOnly.value) {
-      return (
-        readOnlyScenarios.value.find((entry) => String(entry.id || '').trim() === currentId)?.portfolio ??
-        null
-      )
-    }
-    return (
-      ownedPortfolios.value.find(
-        (entry) => String((entry as any)?.id || '').trim() === currentId
-      ) ?? null
-    )
-  })
+  const hasActivePortfolio = selection.hasActiveItem
+  const activePortfolio = selection.activeItem
 
   const activePortfolioPill = computed(() =>
     activePortfolio.value ? pill(activePortfolio.value) : null
   )
+  const canSelectMultipleLive = selection.canSelectMultipleLive
+  const canSelectMultipleReadOnly = selection.canSelectMultipleReadOnly
+  const showSelector = selection.showSelector
 
   const ownershipPending = computed(
     () =>
@@ -220,11 +215,7 @@ export function useRuntimePortfolioConsole() {
     ),
   }))
 
-  const isOperatorOverview = computed(
-    () =>
-      (runtime.isReadOnly.value && readOnlyScenarios.value.length > 1) ||
-      (!runtime.isReadOnly.value && ownedPortfolios.value.length > 1)
-  )
+  const isOperatorOverview = selection.isOperatorOverview
 
   const stats = computed(() => ({
     portfolios: isOperatorOverview.value
@@ -309,6 +300,10 @@ export function useRuntimePortfolioConsole() {
       activePortfolio,
       activePortfolioPill,
       hasActivePortfolio,
+      canOwnMultipleConsoles,
+      canSelectMultipleLive,
+      canSelectMultipleReadOnly,
+      showSelector,
       isOperatorOverview,
       ownershipPending,
       operatorPending,

@@ -4,11 +4,9 @@
     entity="supplier"
     console-to="/console/supplier/overview"
     my-label=""
-    test-label=""
     :read-only-label="showBundledReadOnly ? '' : 'Demo Suppliers'"
     :collapse-secondary-modes="collapseSecondaryModes"
     learn-more-to="/suppliers/learn-more"
-    :show-test="false"
   >
     <template #myNote>
       <li>Requires sign-in.</li>

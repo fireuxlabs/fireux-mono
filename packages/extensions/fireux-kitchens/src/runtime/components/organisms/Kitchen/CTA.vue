@@ -4,7 +4,6 @@
     entity="kitchen"
     console-to="/console/kitchen/overview"
     my-label=""
-    test-label="Test Kitchen"
     :read-only-label="showBundledReadOnly ? '' : 'Demo Kitchens'"
     :collapse-secondary-modes="collapseSecondaryModes"
     learn-more-to="/kitchens/learn-more"
@@ -14,14 +13,6 @@
       <li>The live list only includes kitchens you can operate.</li>
       <li>{{ createActionNote }}</li>
       <li>{{ createActionMeaning }}</li>
-    </template>
-
-    <template #testNote>
-      <li>Available without sign-in.</li>
-      <li>Sign in to save your progress.</li>
-      <li>Signed out uses an app-branded kitchen test identity. Signed in prefers Chef identity, then user identity.</li>
-      <li>Test mode does not require a Chef profile. Chef gating is only for live kitchen entry.</li>
-      <li>Uses the shared kitchen test runtime instead of a live kitchen you operate.</li>
     </template>
 
     <template #my>
@@ -66,17 +57,6 @@
           {{ createCopy.label }}
         </UButton>
       </div>
-    </template>
-
-    <template #test>
-          <KitchenCardsPill
-            v-bind="testKitchenPill"
-            :link="false"
-            :action="true"
-            :show-badges="false"
-            class="cursor-pointer"
-            @action="goToKitchen('test')"
-          />
     </template>
 
     <template #readOnly>
@@ -144,7 +124,6 @@ import {
 import { resolveConsoleCreateCopy } from 'fireux-core/runtime/composables/fireux/app/ui/console-create-copy'
 import { useConsoleFamilyAccess } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleFamilyAccess'
 import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
-import { resolveConsoleTestIdentity } from 'fireux-core/runtime/composables/fireux/app/ui/console-test-identity'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import ConsoleBundleEntry from 'fireux-core/runtime/components/entities/console/ConsoleBundleEntry.vue'
 import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
@@ -154,7 +133,6 @@ import type { RuntimeKitchenMode } from '../../../composables/fireux/app/kitchen
 import { useRuntimeKitchenSelection } from '../../../composables/fireux/app/kitchen-runtime/state'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { useChefCreate } from '../../../composables/fireux/firestore/profiles/Chef/main/useChefCreate'
-import { useChef } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { ConsoleKitchen } from '../../../models/kitchen.model'
 import KitchenCardsPill from './Cards/Pill.vue'
@@ -165,24 +143,12 @@ const props = withDefaults(defineProps<{
   createSurface: 'public',
 })
 
-const toFirstWord = (value: unknown): string => {
-  const text = String(value ?? '').trim()
-  return text ? text.split(/\s+/)[0] || '' : ''
-}
-
-const toPossessiveKitchenTitle = (value: unknown): string => {
-  const firstWord = toFirstWord(value)
-  if (!firstWord) return 'Your Kitchen'
-  return /s$/i.test(firstWord) ? `${firstWord}' Kitchen` : `${firstWord}'s Kitchen`
-}
-
 const { kitchens } = useKitchenFetch()
 const { pill: kitchenPill } = useKitchenInterface()
 const { currentUser, avatarSrc, canOwnMultipleConsoles } = useUser()
 const { uid, isSignedIn } = useConsoleEntryState()
 const { appId, appLogo, appThumbnail } = useFireUXConfig()
 const { firestoreFetchCollection } = useFirestoreRead()
-const { interface: chefInterface } = useChef()
 
 const kitchenOverlays = appId
   ? firestoreFetchCollection<ConsoleKitchen>(`apps/${appId}/kitchens`)
@@ -326,35 +292,6 @@ const createCopy = computed(() =>
     consolePath: '/console/kitchen/create',
   })
 )
-const chefCard = computed(() => chefInterface())
-const testKitchenIdentity = computed(() =>
-  resolveConsoleTestIdentity({
-    entityLabel: 'Kitchen',
-    signedIn: isSignedIn.value,
-    appAvatarUrl: appLogo || appThumbnail || '/img/app/logo.png',
-    userDisplayName: currentUser.value?.display_name,
-    userAvatarUrl: avatarSrc.value,
-    profileDisplayName: chefCard.value?.displayName,
-    profileAvatarUrl: chefCard.value?.avatarUrl,
-    userSubtitle: 'Personal kitchen test workspace',
-    profileSubtitle: 'Chef-led kitchen test workspace',
-  })
-)
-const testKitchenPill = computed(() => ({
-  id: 'test-kitchen',
-  to: '',
-  title:
-    testKitchenIdentity.value.source === 'generic'
-      ? testKitchenIdentity.value.title
-      : toPossessiveKitchenTitle(
-          chefCard.value?.displayName || currentUser.value?.display_name
-        ),
-  subtitle:
-    testKitchenIdentity.value.source === 'generic'
-      ? testKitchenIdentity.value.subtitle
-      : 'My test kitchen',
-  imageUrl: testKitchenIdentity.value.imageUrl,
-}))
 const signInPath = computed(() => `/auth?redirect=${encodeURIComponent(route.fullPath)}`)
 const createActionNote = computed(() =>
   isSignedIn.value
@@ -397,11 +334,6 @@ const ensureLiveKitchenProfile = async () => {
 }
 
 const goToKitchen = async (mode: RuntimeKitchenMode, kitchenId?: string) => {
-  if (mode === 'test') {
-    await router.push(resolveConsoleEntryPath('/console/kitchen', 'test'))
-    return
-  }
-
   if (mode === 'read-only') {
     const resolvedId = String(kitchenId || '').trim()
     setRuntimeKitchen({ mode: 'read-only', kitchenId: resolvedId })
