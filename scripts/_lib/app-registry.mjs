@@ -103,6 +103,18 @@ export const APP_REGISTRY = {
     consoleFamilies: ['supplier'],
     launchOrder: 7,
   },
+  'find-my-seo': {
+    key: 'find-my-seo',
+    name: 'Find My SEO',
+    appId: 'find-my-seo-app',
+    ecosystem: 'fireux',
+    databaseId: 'fireux',
+    role: 'global',
+    workspace: './projects/fireux/find-my-seo-app',
+    port: 3010,
+    consoleFamilies: [],
+    launchOrder: 8,
+  },
   granite: {
     key: 'granite',
     name: 'Granite',
@@ -113,7 +125,7 @@ export const APP_REGISTRY = {
     workspace: './projects/granite/granite-app',
     port: 3007,
     consoleFamilies: ['portfolio'],
-    launchOrder: 8,
+    launchOrder: 9,
   },
   'la-tap-berne': {
     key: 'la-tap-berne',
@@ -125,14 +137,14 @@ export const APP_REGISTRY = {
     workspace: './projects/misebox/la-tap-berne',
     port: 3008,
     consoleFamilies: ['kitchen'],
-    launchOrder: 9,
+    launchOrder: 10,
   },
 }
 
 export const APP_GROUPS = {
   all: ['fireux', 'misebox', 'cleanbox'],
   'all-extended': ['fireux', 'misebox', 'cleanbox', 'niederhorn', 'richies', 'tenant'],
-  full: ['fireux', 'misebox', 'cleanbox', 'niederhorn', 'richies', 'tenant', 'bringli', 'granite', 'la-tap-berne'],
+  full: ['fireux', 'misebox', 'cleanbox', 'niederhorn', 'richies', 'tenant', 'bringli', 'find-my-seo', 'granite', 'la-tap-berne'],
 }
 
 export const APP_KEYS = Object.keys(APP_REGISTRY)

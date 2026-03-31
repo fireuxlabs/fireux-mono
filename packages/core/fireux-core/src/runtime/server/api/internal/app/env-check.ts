@@ -10,6 +10,7 @@ import {
 import { existsSync, readFileSync } from 'node:fs'
 import imageSize from 'image-size'
 import { fileURLToPath } from 'node:url'
+import { resolveFireuxBrandAssets } from '../../../../../utils/brandAssets'
 
 type ISizeCalculationResult = ReturnType<typeof imageSize>
 
@@ -242,10 +243,11 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
   const env = process.env as Record<string, string | undefined>
   const runtimeConfig = (
     event.context as {
-      runtimeConfig?: { public?: Record<string, unknown> }
+      runtimeConfig?: { public?: Record<string, any> }
     }
   ).runtimeConfig
   const ecosystem = runtimeConfig?.public?.ecosystem as string | undefined
+  const role = runtimeConfig?.public?.fireux?.role as string | undefined
   const appNamespace = env.APP_ID?.trim()
   const here = dirname(fileURLToPath(import.meta.url))
   const repoRoot = findRepoRoot(here)
@@ -369,6 +371,7 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
     appNamespace
   )
   const brandNamespace = (appNamespace || ecosystem || 'fireux').trim()
+  const tenantBrandAssets = resolveFireuxBrandAssets({ role: 'tenant' })
   const brandRequirements: Array<{
     name: string
     path: string
@@ -401,6 +404,37 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
             minAspect: 3,
           },
         ]
+      : role === 'tenant'
+        ? [
+            {
+              name: 'logo',
+              path: tenantBrandAssets.logo.replace(/^\//, ''),
+              width: 512,
+              height: 512,
+            },
+            {
+              name: 'cover',
+              path: tenantBrandAssets.cover.replace(/^\//, ''),
+            },
+            {
+              name: 'thumbnail',
+              path: tenantBrandAssets.thumbnail.replace(/^\//, ''),
+            },
+            {
+              name: 'wordmark-light',
+              path: 'img/core/brand/wordmark-light.png',
+              minWidth: 256,
+              minHeight: 64,
+              minAspect: 3,
+            },
+            {
+              name: 'wordmark-dark',
+              path: 'img/core/brand/wordmark-dark.png',
+              minWidth: 256,
+              minHeight: 64,
+              minAspect: 3,
+            },
+          ]
       : [
           {
             name: 'logo',
@@ -523,6 +557,8 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
       'Env vars are fixed and non-editable via UI.',
       brandNamespace === 'fireux'
         ? 'Brand asset validation checks /img/core/brand/ for required files and dimensions.'
+        : role === 'tenant'
+          ? 'Brand asset validation checks shared tenant placeholder assets from /img/core/brand/ and /img/core/defaults/.'
         : 'Brand asset validation checks /img/app/ for required files and dimensions.',
       ...(detectedServiceAccountPath
         ? [`Service account file detected at ${detectedServiceAccountPath}.`]

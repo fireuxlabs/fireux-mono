@@ -2,6 +2,7 @@
 {
   "files": [],
   "references": [
+    { "path": "fireux/find-my-seo-app" },
     { "path": "bringli/bringli-app" },
     { "path": "cleanbox/cleanbox-app" },
     { "path": "cleanbox/richies-reinigung" },

@@ -1,6 +1,6 @@
 # AI Context Docs
 Authority: Tier3 (Non-authoritative)
-Updated: 2026-03-13
+Updated: 2026-03-31
 
 - Purpose: AI memory, thread context, and upload bundles.
 - Canonical location: `docs/ai/**`.

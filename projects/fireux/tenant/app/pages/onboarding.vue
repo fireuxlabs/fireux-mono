@@ -1,5 +1,7 @@
 <template>
-  <div class="py-12">
+  <div class="space-y-6 py-12">
+    <MissingBrandAssetsFlag />
+    <TenantPlaceholderFlag />
     <AppCreateSystem />
   </div>
 </template>

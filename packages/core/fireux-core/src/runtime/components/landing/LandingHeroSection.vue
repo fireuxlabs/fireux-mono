@@ -80,11 +80,9 @@
               class="mx-auto"
               size="large"
               :alt="`${appAlt} wordmark`"
-              light-src="/img/app/wordmark-light.png"
-              dark-src="/img/app/wordmark-dark.png"
             />
             <img
-              src="/img/app/logo.png"
+              :src="brandAssets.logo"
               :alt="`${appAlt} emblem`"
               class="mx-auto h-11 w-11 rounded-full object-cover"
             />
@@ -149,7 +147,7 @@
       <div class="landing-index-divider">
         <USeparator
           :avatar="{
-            src: '/img/app/logo.png',
+            src: brandAssets.logo,
             alt: appAlt,
           }"
           color="primary"
@@ -167,6 +165,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useFireuxBrandAssets } from 'fireux-core/runtime/composables/fireux/app/useFireuxBrandAssets'
 import { useConsoleEntryCta } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleEntryCta'
 import { toConsoleScopeLabel } from 'fireux-core/runtime/composables/fireux/app/routing/consoleRoutes'
 import { useKeyEntityTags } from 'fireux-core/runtime/composables/fireux/app/routing/useKeyEntityTags'
@@ -203,6 +202,7 @@ const appAlt = computed(() => {
   return props.appName.charAt(0).toUpperCase() + props.appName.slice(1)
 })
 
+const brandAssets = useFireuxBrandAssets()
 const heroBulletsResolved = computed(() => props.heroBullets ?? [])
 const rightPanelItemsResolved = computed(() => props.rightPanelItems ?? [])
 const { keyEntityTags } = useKeyEntityTags()

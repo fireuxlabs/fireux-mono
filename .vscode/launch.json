@@ -109,6 +109,17 @@
       }
     },
     {
+      "name": "Find My SEO dev (3010)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:find-my-seo",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 8
+      }
+    },
+    {
       "name": "Granite dev (3007)",
       "type": "node-terminal",
       "request": "launch",
@@ -116,7 +127,7 @@
       "cwd": "${workspaceFolder}",
       "presentation": {
         "group": "Dev Servers",
-        "order": 8
+        "order": 9
       }
     },
     {
@@ -127,7 +138,7 @@
       "cwd": "${workspaceFolder}",
       "presentation": {
         "group": "Dev Servers",
-        "order": 9
+        "order": 10
       }
     }
   ],
@@ -152,7 +163,7 @@
       ]
     },
     {
-      "name": "All dev servers full (3000-3008)",
+      "name": "All dev servers full (3000-3010)",
       "configurations": [
         "FireUX dev (3000)",
         "Misebox dev (3001)",
@@ -161,6 +172,7 @@
         "Richies Reinigung dev (3004)",
         "FireUX Tenant dev (3005)",
         "Bringli dev (3006)",
+        "Find My SEO dev (3010)",
         "Granite dev (3007)",
         "La Tap Berne dev (3008)"
       ]

@@ -5,9 +5,15 @@
         <div class="section__header">
           <div class="section__copy">
             <h3 class="text-base font-semibold">Images</h3>
-            <p class="text-xs text-dimmed">
+          <p class="text-xs text-dimmed">
               Firestore URLs are the canonical record values. Public assets are served from
               <span class="font-mono">/public/img/app</span> and can be synced to overwrite Firestore.
+            </p>
+            <p
+              v-if="isDev"
+              class="text-xs text-dimmed"
+            >
+              In dev, missing app record URLs can fall back to local public assets for display only. This backup does not change canonical Firestore or Storage media.
             </p>
           </div>
         </div>
@@ -185,6 +191,7 @@ const localPwa192Path = '/img/app/pwa/icon-192.png'
 const localPwa512Path = '/img/app/pwa/icon-512.png'
 const localWordmarkLightPath = '/img/app/wordmark-light.png'
 const localWordmarkDarkPath = '/img/app/wordmark-dark.png'
+const isDev = import.meta.dev
 
 type ImageItemBase = {
   key: string

@@ -1,23 +1,21 @@
 <template>
   <div class="brand-landing">
+    <MissingBrandAssetsFlag />
+    <TenantPlaceholderFlag />
+
     <EffectsBubbles />
 
     <section class="brand-card" aria-labelledby="richies-brand">
-      <img
+      <AppBrandLogo
         class="brand-avatar"
-        src="/img/app/logo.png"
+        size="hero"
         alt="Richies Reinigung logo"
-        width="120"
-        height="120"
       />
 
-      <img
+      <AppBrandWordmark
         class="brand-wordmark"
-        src="/img/app/wordmark-light.png"
-        srcset="/img/app/wordmark-light.png 1x, /img/app/wordmark-light-2x.png 2x"
+        size="hero"
         alt="Richies Reinigung wordmark"
-        width="320"
-        height="80"
       />
 
       <p id="richies-brand" class="lede">

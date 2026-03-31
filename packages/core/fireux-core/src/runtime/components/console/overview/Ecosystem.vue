@@ -47,6 +47,7 @@
 import { computed } from 'vue'
 import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
+import { resolveAppMediaForView } from '../../../composables/fireux/firestore/core/app/utils/appMedia'
 import { useFirestoreRead } from '../../../composables/fireux/firestore/operations/useFirestoreRead'
 import type { AppModel } from '../../../models/core/app.model'
 
@@ -166,12 +167,15 @@ const apps = computed<AppModel[]>(() => {
 })
 
 const avatarSrc = (app: AppModel) => {
+  const resolvedMedia = resolveAppMediaForView((app as any)?.media, {
+    devLocalFallback: import.meta.dev,
+  })
   const raw =
     userAppLogoUrl(app) ||
-    (app as any)?.media?.thumbnail_url ||
-    (app as any)?.media?.logo_url ||
-    (app as any)?.media?.wordmark_light_url ||
-    (app as any)?.media?.wordmark_dark_url ||
+    resolvedMedia.thumbnailUrl ||
+    resolvedMedia.logoUrl ||
+    resolvedMedia.wordmarkLightUrl ||
+    resolvedMedia.wordmarkDarkUrl ||
     (app as any).avatar_url ||
     (app as any).logo_url ||
     (app as any).wordmark_light_url ||

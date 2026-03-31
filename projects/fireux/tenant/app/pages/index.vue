@@ -1,5 +1,8 @@
 <!-- FILE: projects/fireux/tenant/app/pages/index.vue -->
 <template>
+  <MissingBrandAssetsFlag />
+  <TenantPlaceholderFlag />
+
   <!-- Background effect -->
   <EffectsStars />
 

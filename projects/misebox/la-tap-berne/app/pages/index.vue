@@ -1,4 +1,7 @@
 <template>
+  <MissingBrandAssetsFlag />
+  <TenantPlaceholderFlag />
+
   <EffectsStars />
 
   <LandingShell>

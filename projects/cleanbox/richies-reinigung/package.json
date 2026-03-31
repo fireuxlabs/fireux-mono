@@ -12,7 +12,7 @@
     "deploy:hosting": "pnpm build && pnpm prepare:firebase-output && pnpm dlx firebase-tools@15.8.0 deploy --project cleanbox-f15bc --config firebase.json",
     "check:env": "node ../../../scripts/check-env.mjs",
     "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
-    "clean": "rimraf .nuxt dist"
+    "clean": "rm -rf app/.nuxt .output dist"
   },
   "dependencies": {
     "@nuxt/icon": "2.x",

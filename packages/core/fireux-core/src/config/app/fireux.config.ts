@@ -6,6 +6,7 @@ import { configPwa } from './pwa'
 import { setRuntime } from './runtime'
 import type { FireuxSeoConfig } from './seo'
 import { configViteWorkspace } from './vite'
+import { resolveFireuxBrandAssets } from '../../utils/brandAssets'
 
 declare module '@nuxt/schema' {
   interface NuxtConfig {
@@ -23,9 +24,9 @@ export type FireuxAppConfig = {
   id: string
   name: string
   shortName: string
-  /** Optional app thumbnail path/URL (defaults to /img/app/thumbnail.png). */
+  /** Optional app thumbnail path/URL (role-aware defaults apply when omitted). */
   appThumbnail?: string
-  /** Optional app logo path/URL (preferred). Defaults to /img/app/logo.png. */
+  /** Optional app logo path/URL (preferred). Role-aware defaults apply when omitted. */
   appLogo?: string
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
@@ -112,6 +113,11 @@ function optEnv(name: string): string | undefined {
 
 export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   const nuxt: NuxtConfig = {}
+  const brandAssets = resolveFireuxBrandAssets({
+    role: app.role,
+    appLogo: app.appLogo,
+    appThumbnail: app.appThumbnail,
+  })
 
   // Ensure responsive breakpoints behave correctly on mobile.
   // Without an explicit viewport meta tag, browsers may render using a
@@ -202,8 +208,8 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       id: app.id,
       name: app.name,
       shortName: app.shortName,
-      appThumbnail: app.appThumbnail || '/img/app/thumbnail.png',
-      appLogo: app.appLogo || '/img/app/logo.png',
+      appThumbnail: brandAssets.thumbnail,
+      appLogo: brandAssets.logo,
       ...(app.contactEmail ? { contactEmail: app.contactEmail } : {}),
       domain: envDomain,
       ...(app.seo?.siteUrl ? { siteUrl: app.seo.siteUrl } : {}),
@@ -231,6 +237,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     themeColor: '#000000',
     backgroundColor: '#000000',
     lang: 'en',
+    role: app.role,
   })
 
   configNitroFirebase(nuxt, {

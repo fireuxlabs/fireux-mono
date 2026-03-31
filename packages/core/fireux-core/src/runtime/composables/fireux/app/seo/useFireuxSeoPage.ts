@@ -66,6 +66,7 @@ export function useFireuxSeoPage(input: FireuxSeoPageInput = {}) {
     input.description?.trim() ||
     (typeof seo.defaultDescription === 'string' ? seo.defaultDescription : '') ||
     `${baseTitle} on FireUX`
+  const noindex = input.noindex ?? fireuxConfig.isTenant
 
   useSeoMeta({
     title,
@@ -75,7 +76,7 @@ export function useFireuxSeoPage(input: FireuxSeoPageInput = {}) {
     ogType: input.type || 'website',
     ogUrl: canonicalUrl,
     ...(input.image ? { ogImage: input.image, twitterImage: input.image } : {}),
-    robots: input.noindex ? 'noindex, nofollow' : 'index, follow',
+    robots: noindex ? 'noindex, nofollow' : 'index, follow',
     twitterCard: 'summary_large_image',
   })
 

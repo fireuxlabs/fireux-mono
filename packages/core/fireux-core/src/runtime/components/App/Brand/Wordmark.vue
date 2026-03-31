@@ -1,21 +1,24 @@
 <template>
   <ClientOnly>
     <img
-      v-if="resolvedSrc"
+      v-if="displaySrc"
       v-bind="$attrs"
-      :src="resolvedSrc"
+      :src="displaySrc"
       :alt="alt"
       class="fx-brand-wordmark"
       :class="`fx-brand-wordmark--${size}`"
       loading="lazy"
       decoding="async"
+      @error="handleError"
     />
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useResolvedColorMode } from '../../../composables/fireux/app/useColorMode'
+import { useFireuxBrandAssets } from '../../../composables/fireux/app/useFireuxBrandAssets'
+import { CORE_BRAND_FALLBACK_ASSETS } from '../../../../utils/brandAssets'
 
 type BrandSize = 'card' | 'small' | 'medium' | 'large' | 'hero'
 
@@ -34,6 +37,7 @@ const props = withDefaults(defineProps<Props>(), {
 const size = computed<BrandSize>(() => props.size)
 
 const resolvedMode = useResolvedColorMode()
+const brandAssets = useFireuxBrandAssets()
 
 const isDark = computed(() => resolvedMode.value === 'dark')
 
@@ -41,8 +45,30 @@ const alt = computed(() => (props.alt || '').trim() || 'App logo')
 
 const resolvedSrc = computed(() => {
   const raw = isDark.value ? props.darkSrc : props.lightSrc
-  return typeof raw === 'string' ? raw.trim() : ''
+  const normalized = typeof raw === 'string' ? raw.trim() : ''
+  if (normalized) return normalized
+  return isDark.value
+    ? brandAssets.value.wordmarkDark
+    : brandAssets.value.wordmarkLight
 })
+const failed = ref(false)
+const fallbackSrc = computed(() =>
+  isDark.value
+    ? CORE_BRAND_FALLBACK_ASSETS.wordmarkDark
+    : CORE_BRAND_FALLBACK_ASSETS.wordmarkLight
+)
+const displaySrc = computed(() =>
+  failed.value ? fallbackSrc.value : resolvedSrc.value
+)
+
+watch([resolvedSrc, isDark], () => {
+  failed.value = false
+})
+
+function handleError() {
+  if (displaySrc.value === fallbackSrc.value) return
+  failed.value = true
+}
 
 </script>
 

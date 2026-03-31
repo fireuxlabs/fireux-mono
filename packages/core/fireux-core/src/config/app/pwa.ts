@@ -1,5 +1,9 @@
 // packages/core/fireux-core/src/config/pwa.ts
 import type { NuxtConfig } from '@nuxt/schema'
+import {
+  resolveFireuxBrandAssets,
+  type FireuxBrandRole,
+} from '../../utils/brandAssets'
 
 export type FireUXPwaConfig = {
   name: string
@@ -7,9 +11,11 @@ export type FireUXPwaConfig = {
   themeColor: string
   backgroundColor: string
   lang: string
+  role?: FireuxBrandRole
 }
 
 export function configPwa(nuxt: NuxtConfig, c: FireUXPwaConfig) {
+  const brandAssets = resolveFireuxBrandAssets({ role: c.role })
   ;(nuxt as any).pwa = {
     ...((nuxt as any).pwa || {}),
     registerType: 'autoUpdate',
@@ -37,8 +43,8 @@ export function configPwa(nuxt: NuxtConfig, c: FireUXPwaConfig) {
       theme_color: c.themeColor,
       lang: c.lang,
       icons: [
-        { src: '/img/app/pwa/icon-192.png', sizes: '192x192', type: 'image/png' },
-        { src: '/img/app/pwa/icon-512.png', sizes: '512x512', type: 'image/png' },
+        { src: brandAssets.pwaIcon192, sizes: '192x192', type: 'image/png' },
+        { src: brandAssets.pwaIcon512, sizes: '512x512', type: 'image/png' },
       ],
     },
   }
@@ -57,7 +63,7 @@ export function configPwa(nuxt: NuxtConfig, c: FireUXPwaConfig) {
 
   head.link.push(
     { rel: 'manifest', href: '/manifest.webmanifest' },
-    { rel: 'icon', href: '/favicon.ico' },
-    { rel: 'apple-touch-icon', sizes: '180x180', href: '/img/app/pwa/icon-192.png' }
+    { rel: 'icon', href: brandAssets.favicon },
+    { rel: 'apple-touch-icon', sizes: '180x180', href: brandAssets.pwaIcon192 }
   )
 }

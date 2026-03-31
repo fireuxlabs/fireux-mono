@@ -4,12 +4,7 @@
     <UCard class="w-full">
       <div class="space-y-4">
         <div class="flex w-full justify-center" aria-label="Brand wordmark">
-          <AppBrandWordmark
-            size="large"
-            class="h-16 w-auto max-w-full object-contain"
-            light-src="/img/app/wordmark-light.svg"
-            dark-src="/img/app/wordmark-dark.png"
-          />
+          <AppBrandWordmark size="large" class="h-16 w-auto max-w-full object-contain" />
         </div>
 
         <template v-if="isAuthenticated">

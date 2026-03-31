@@ -3,6 +3,7 @@ import type { Ref } from 'vue'
 import type { App } from '../../../../../../../models/core/app.model'
 import type { AppSocialLinks } from '../../../../../../../models/core/supporting/app'
 import { useResolvedColorMode } from '../../../../../app/useColorMode'
+import { resolveAppMediaForView } from '../appMedia'
 
 export namespace AppCard {
   export type Card = {
@@ -68,14 +69,18 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
   type AppProfile = AppCard.Card
 
   function resolveWordmarkUrl(app: App): string {
-    const media = safeMedia(app)
+    const media = resolveAppMediaForView(safeMedia(app), {
+      devLocalFallback: import.meta.dev,
+    })
     return resolvedMode.value === 'dark'
-      ? media.wordmark_dark_url
-      : media.wordmark_light_url
+      ? media.wordmarkDarkUrl
+      : media.wordmarkLightUrl
   }
 
   function map(app: App): AppCard.Card {
-    const media = safeMedia(app)
+    const media = resolveAppMediaForView(safeMedia(app), {
+      devLocalFallback: import.meta.dev,
+    })
     const derived = safeDerived(app)
     const id = safeString(app.id).trim()
 
@@ -83,8 +88,8 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       id,
       to: id ? `/apps/${encodeURIComponent(id)}` : '',
 
-      avatarUrl: safeString(media.thumbnail_url) || safeString(media.logo_url),
-      thumbnailUrl: safeString(media.thumbnail_url),
+      avatarUrl: safeString(media.thumbnailUrl) || safeString(media.logoUrl),
+      thumbnailUrl: safeString(media.thumbnailUrl),
 
       title: safeString(app.app_name),
       subtitle: safeString(app.tagline) || safeString(app.ecosystem),
@@ -106,9 +111,9 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       shortBio: safeString(app.short_bio),
       longBio: safeString(app.long_bio),
 
-      logoUrl: safeString(media.logo_url),
-      wordmarkLightUrl: safeString(media.wordmark_light_url),
-      wordmarkDarkUrl: safeString(media.wordmark_dark_url),
+      logoUrl: safeString(media.logoUrl),
+      wordmarkLightUrl: safeString(media.wordmarkLightUrl),
+      wordmarkDarkUrl: safeString(media.wordmarkDarkUrl),
       wordmarkUrl: resolveWordmarkUrl(app),
 
       socialLinks: (app.social_links ?? {}) as AppSocialLinks,

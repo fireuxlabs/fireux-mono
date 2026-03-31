@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-03-12
+Updated: 2026-03-31
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -19,6 +19,10 @@ Updated: 2026-03-12
   - `main_ecosystem_id`
 - A global/main app may ensure the project control doc exists.
 - Tenant apps must not claim or overwrite project control ownership.
+- Tenant apps are child app surfaces inside a FireUX ecosystem, not independent ecosystem canons.
+- Tenant apps may stay intentionally thin and do not justify new top-level domain/storage patterns on their own.
+- Placeholder tenant branding/assets are canonical until tenant-specific assets are explicitly provided.
+- Existing tenant implementations do not define canon; shared tenant rules come from Tier1 and shared runtime.
 
 ## Behavioral Canon
 - No silent fallbacks for selection, routing, or identity decisions.
@@ -26,6 +30,7 @@ Updated: 2026-03-12
 - Writes must be explicit through mutation composables.
 - Missing required state/data must be surfaced explicitly, not inferred.
 - App/ecosystem ownership filtering must be explicit through stored fields, not implied by collection path alone.
+- Shared placeholder branding for tenant apps is allowed because it does not decide selection, routing, or identity.
 
 ## Endpoint Canon
 - Entity index pages that are rendered through `Index.vue` + `CollectionManager` are client-side Firestore surfaces.

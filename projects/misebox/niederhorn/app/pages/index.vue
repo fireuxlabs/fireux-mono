@@ -1,5 +1,8 @@
 <template>
   <div class="landing-page">
+    <MissingBrandAssetsFlag />
+    <TenantPlaceholderFlag />
+
     <EffectsStars />
 
     <LandingShell>

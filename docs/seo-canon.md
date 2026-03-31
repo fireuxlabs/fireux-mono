@@ -1,6 +1,6 @@
 # SEO Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-03-02
+Updated: 2026-03-31
 ## Purpose
 - Define repo-wide SEO requirements for public FireUX entities and pages.
 
@@ -34,6 +34,8 @@ Updated: 2026-03-02
 - Public published pages: indexable.
 - Console/admin/auth-only pages: `noindex, nofollow`.
 - Draft/unpublished public candidates: `noindex`.
+- Tenant apps default to `noindex, nofollow` unless a Tier1/Tier1-extension contract explicitly declares published tenant SEO surfaces.
+- Placeholder tenant pages/assets do not create indexable SEO surfaces.
 
 ## Sitemap Policy
 - Sitemap is generated from published canonical public entities only.

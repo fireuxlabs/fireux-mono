@@ -172,7 +172,7 @@ function buildLaunchCompounds() {
   const compoundDefinitions = [
     { key: 'all', name: 'All dev servers (3000+3001+3002)' },
     { key: 'all-extended', name: 'All dev servers extended (3000-3005)' },
-    { key: 'full', name: 'All dev servers full (3000-3008)' },
+    { key: 'full', name: 'All dev servers full (3000-3010)' },
   ]
 
   return compoundDefinitions

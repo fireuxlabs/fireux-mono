@@ -7,6 +7,13 @@ export type AppImageKind =
   | 'wordmarkLight'
   | 'wordmarkDark'
 
+type AppMediaRecordLike = {
+  thumbnail_url?: string
+  logo_url?: string
+  wordmark_light_url?: string
+  wordmark_dark_url?: string
+}
+
 type AppImageFirestoreField =
   | 'media.thumbnail_url'
   | 'media.logo_url'
@@ -28,6 +35,19 @@ export function appImageStoragePath(appId: string, kind: AppImageKind): string {
   }
 }
 
+export function appImageLocalPublicPath(kind: AppImageKind): string {
+  switch (kind) {
+    case 'thumbnail':
+      return '/img/app/thumbnail.png'
+    case 'logo':
+      return '/img/app/logo.png'
+    case 'wordmarkLight':
+      return '/img/app/wordmark-light.png'
+    case 'wordmarkDark':
+      return '/img/app/wordmark-dark.png'
+  }
+}
+
 export function appImageFirestoreField(kind: AppImageKind): AppImageFirestoreField {
   switch (kind) {
     case 'thumbnail':
@@ -43,4 +63,46 @@ export function appImageFirestoreField(kind: AppImageKind): AppImageFirestoreFie
 
 export function isWordmarkKind(kind: AppImageKind): boolean {
   return kind === 'wordmarkLight' || kind === 'wordmarkDark'
+}
+
+function safeUrl(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : ''
+}
+
+/**
+ * Dev-only visual backup:
+ * - Canonical record and storage paths remain Firestore + Storage based.
+ * - When an app is new and media has not been synced yet, local public assets can
+ *   be rendered for development surfaces without rewriting canonical data.
+ */
+export function resolveAppMediaForView(
+  media: AppMediaRecordLike | null | undefined,
+  options?: {
+    devLocalFallback?: boolean
+  }
+) {
+  const devLocalFallback = Boolean(options?.devLocalFallback)
+
+  const thumbnailUrl =
+    safeUrl(media?.thumbnail_url) ||
+    (devLocalFallback ? appImageLocalPublicPath('thumbnail') : '')
+
+  const logoUrl =
+    safeUrl(media?.logo_url) ||
+    (devLocalFallback ? appImageLocalPublicPath('logo') : '')
+
+  const wordmarkLightUrl =
+    safeUrl(media?.wordmark_light_url) ||
+    (devLocalFallback ? appImageLocalPublicPath('wordmarkLight') : '')
+
+  const wordmarkDarkUrl =
+    safeUrl(media?.wordmark_dark_url) ||
+    (devLocalFallback ? appImageLocalPublicPath('wordmarkDark') : '')
+
+  return {
+    thumbnailUrl,
+    logoUrl,
+    wordmarkLightUrl,
+    wordmarkDarkUrl,
+  }
 }

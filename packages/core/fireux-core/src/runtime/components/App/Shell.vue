@@ -122,11 +122,13 @@
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHead } from '#imports'
+import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useDevUi } from '../../composables/fireux/app/ui/useDevUi'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 
 const isDev = import.meta.dev
 const router = useRouter()
+const fireuxConfig = useFireUXConfig()
 const { panelOpen, notesVisible, supportsInlineNotes, toggleNotes, togglePanel } = useDevUi()
 const copiedNotes = ref(false)
 const canCopyNotes = computed(() => supportsInlineNotes.value && notesVisible.value)
@@ -150,6 +152,9 @@ const showOnboardingModal = computed(
 )
 
 useHead({
+  meta: fireuxConfig.isTenant
+    ? [{ name: 'robots', content: 'noindex, nofollow' }]
+    : [],
   link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],
 })
 

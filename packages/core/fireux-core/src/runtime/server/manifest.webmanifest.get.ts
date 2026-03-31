@@ -1,5 +1,6 @@
 import { defineEventHandler, setHeader } from 'h3'
 import { useRuntimeConfig } from '#imports'
+import { resolveFireuxBrandAssets } from '../../utils/brandAssets'
 
 const DEFAULT_BACKGROUND = '#ffffff'
 const DEFAULT_THEME = '#0f172a'
@@ -7,10 +8,30 @@ const DEFAULT_THEME = '#0f172a'
 export default defineEventHandler((event) => {
   const runtimeConfig = useRuntimeConfig()
   const pub = runtimeConfig.public || {}
-  const name = pub.appName || 'FireUX'
-  const shortName = pub.appShortName || name
-  const description = pub.appDescription || 'FireUX application'
-  const themeColor = pub.primaryColor || DEFAULT_THEME
+  const fireux = (pub.fireux || {}) as Record<string, unknown>
+  const name =
+    (typeof fireux.name === 'string' && fireux.name.trim()) ||
+    (typeof pub.appName === 'string' && pub.appName.trim()) ||
+    'FireUX'
+  const shortName =
+    (typeof fireux.shortName === 'string' && fireux.shortName.trim()) ||
+    (typeof pub.appShortName === 'string' && pub.appShortName.trim()) ||
+    name
+  const description =
+    (typeof pub.appDescription === 'string' && pub.appDescription.trim()) ||
+    'FireUX application'
+  const themeColor =
+    (typeof fireux.primaryColor === 'string' && fireux.primaryColor.trim()) ||
+    (typeof pub.primaryColor === 'string' && pub.primaryColor.trim()) ||
+    DEFAULT_THEME
+  const brandAssets = resolveFireuxBrandAssets({
+    role: typeof fireux.role === 'string' ? fireux.role : undefined,
+    appLogo: typeof fireux.appLogo === 'string' ? fireux.appLogo : undefined,
+    appThumbnail:
+      typeof fireux.appThumbnail === 'string'
+        ? fireux.appThumbnail
+        : undefined,
+  })
 
   setHeader(event, 'content-type', 'application/manifest+json')
 
@@ -24,13 +45,13 @@ export default defineEventHandler((event) => {
     theme_color: themeColor,
     icons: [
       {
-        src: '/img/app/pwa/icon-192.png',
+        src: brandAssets.pwaIcon192,
         sizes: '192x192',
         type: 'image/png',
         purpose: 'any maskable',
       },
       {
-        src: '/img/app/pwa/icon-512.png',
+        src: brandAssets.pwaIcon512,
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any maskable',

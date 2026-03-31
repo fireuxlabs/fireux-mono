@@ -8,12 +8,7 @@
             :alt="`${appName} icon`"
             class="tenant-brand__icon"
           />
-          <AppBrandWordmark
-            size="large"
-            class="tenant-brand__wordmark"
-            light-src="/img/app/wordmark-light.svg"
-            dark-src="/img/app/wordmark-dark.png"
-          />
+          <AppBrandWordmark size="large" class="tenant-brand__wordmark" />
         </div>
       </section>
       <AuthSystem />
@@ -22,16 +17,17 @@
 </template>
 
 <script setup lang="ts">
-import { definePageMeta } from '#imports'
+import { computed, definePageMeta } from '#imports'
 import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
+import { useFireuxBrandAssets } from '../composables/fireux/app/useFireuxBrandAssets'
 
 definePageMeta({
   layout: 'auth'
 })
 
 const { appName, isTenant } = useFireUXConfig()
-
-const tenantIcon = '/img/app/logo.png'
+const brandAssets = useFireuxBrandAssets()
+const tenantIcon = computed(() => brandAssets.value.logo)
 
 </script>
 

@@ -8,11 +8,7 @@
         </ClientOnly>
 
         <div class="flex flex-col items-center gap-4 text-center">
-          <AppBrandWordmark
-            size="medium"
-            light-src="/img/app/wordmark-light.svg"
-            dark-src="/img/app/wordmark-dark.png"
-          />
+          <AppBrandWordmark size="medium" />
           <div class="text-sm text-gray-600 flex flex-col items-center gap-1">
             <a
               href="https://fireux.app"

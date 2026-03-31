@@ -1,6 +1,6 @@
 # Runtime Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-03-12
+Updated: 2026-03-31
 ## Purpose
 - Define runtime selection, mode, collection path, and route policy across FireUX domains.
 
@@ -44,6 +44,16 @@ Updated: 2026-03-12
 - A global/main app may ensure this doc exists during app initialization.
 - Tenant apps must not create or claim the project control doc.
 
+## Tenant App Contract
+- Tenant apps are canonical thin child apps hosted on FireUX.
+- Default tenant shape is:
+  - thin public/auth shell
+  - light dashboard only when explicitly needed
+  - no console family by default
+- Tenant apps must consume shared runtime/app contracts rather than defining tenant-local project control behavior.
+- Tenant placeholder branding/assets are canonical bootstrapping behavior until tenant-specific assets are supplied.
+- Placeholder tenant assets must come from shared core asset paths, not ad hoc tenant-local exceptions.
+
 ## Runtime Selection Rules
 - Console/runtime entity selection is state-based.
 - Console pages must resolve active context from runtime state, not route query selection.
@@ -80,6 +90,7 @@ Updated: 2026-03-12
 ## Route Policy (ID vs Slug)
 - Internal routes may use `[id]`.
 - Public/indexable entity routes should use `[slug]` where the entity is published for discovery/SEO.
+- Tenant apps remain non-indexable by default unless a Tier1/Tier1-extension contract explicitly publishes a tenant route class.
 - Current canonical mapping:
   - Blogs public detail route: slug-based.
   - Products public detail route: slug-based.

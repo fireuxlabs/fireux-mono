@@ -1,20 +1,19 @@
 FireUX AI context refresh
-Updated: 2026-03-13
+Updated: 2026-03-31
 
 Goal:
 - Keep Tier3 AI context aligned with the latest repo changes without creating a second documentation authority.
 
 Status:
-- Flattened duplicate AI tree so `docs/ai/**` is the only canonical AI-doc location.
-- Refreshed implementation thread notes for the March 10 to March 12 commit window.
-- Generated a new consolidated bundle for 2026-03-13.
+- Refreshed implementation thread notes for the March 28 to March 31 commit window.
+- Generated a new consolidated bundle for 2026-03-31.
 
 Next checks:
-- Re-scan after the next successful save touching console routing, runtime-project state, or firestore database selection.
+- Re-scan after the next successful save touching console runtime flows, supplier scope, or root-first model decisions.
 - Keep `docs/ai/**` non-authoritative and defer rule changes to Tier1 canon docs.
-- Remove stale historical bundles later if we decide to keep only the latest rolling set.
+- Decide later whether older historical bundles should be pruned to a rolling window.
 
 Notes:
-- Current repo signals are dominated by console/project flow alignment, named Firestore DB rollout, and console database discovery.
+- Current repo signals are dominated by console runtime flow alignment, root-first model scope, supplier normalization, and drift tooling.
 
 #end
