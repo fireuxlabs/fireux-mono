@@ -7,7 +7,7 @@
     <template #body>
       <section class="space-y-8">
         <div class="text-xs text-dimmed">
-          <template v-if="isOperatorOverview">
+          <template v-if="showAggregateOverview">
             Scope:
             <span class="font-medium">{{ scopeLabel }}</span>
             <template v-if="activeProject">
@@ -21,14 +21,17 @@
           </template>
         </div>
 
-        <UAlert color="primary" variant="soft" title="Hello world" />
-
         <UCard>
           <template #header>
-            <div class="text-sm font-semibold">{{ isOperatorOverview ? scopeLabel : singleOverviewTitle }}</div>
+            <div class="text-sm font-semibold">
+              {{ showAggregateOverview ? scopeLabel : singleOverviewTitle }}
+            </div>
           </template>
 
-          <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div
+            v-if="showAggregateOverview"
+            class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+          >
             <div
               v-for="item in overview"
               :key="item.key"
@@ -38,9 +41,36 @@
               <div class="text-lg font-semibold">{{ item.count }}</div>
             </div>
           </div>
+
+          <div v-else class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="rounded border border-default p-3">
+              <div class="text-xs text-dimmed">Project</div>
+              <div class="text-sm font-semibold">
+                {{ activeProjectPill?.title || runtime.name || runtime.id }}
+              </div>
+              <div v-if="activeProjectPill?.subtitle" class="text-xs text-dimmed">
+                {{ activeProjectPill.subtitle }}
+              </div>
+            </div>
+
+            <div class="rounded border border-default p-3">
+              <div class="text-xs text-dimmed">Project ID</div>
+              <div class="text-sm font-mono break-all">{{ runtime.id }}</div>
+            </div>
+
+            <div class="rounded border border-default p-3">
+              <div class="text-xs text-dimmed">Ecosystems</div>
+              <div class="text-lg font-semibold">{{ stats.ecosystems }}</div>
+            </div>
+
+            <div class="rounded border border-default p-3">
+              <div class="text-xs text-dimmed">Apps</div>
+              <div class="text-lg font-semibold">{{ stats.apps }}</div>
+            </div>
+          </div>
         </UCard>
 
-        <UCard v-if="isOperatorOverview">
+        <UCard v-if="showProjectSelector">
           <template #header>
             <div class="text-sm font-semibold">{{ targetListTitle }}</div>
           </template>
@@ -62,7 +92,7 @@
               />
             </div>
 
-            <p class="text-sm text-dimmed">{{ selectionHelp }}</p>
+            <p class="text-sm text-dimmed">{{ selectionHelpText }}</p>
 
             <UAlert
               v-if="!hasActiveProject"
@@ -87,7 +117,7 @@
           </template>
 
           <UAlert
-            v-if="isOperatorOverview && !hasActiveProject"
+            v-if="!hasActiveProject"
             color="neutral"
             variant="soft"
             :title="quickActionsTitle"
@@ -145,6 +175,7 @@ const {
   runtime,
   navItems,
   overview,
+  stats,
   ownedProjects,
   ownedProjectPills,
   readOnlyScenarios,
@@ -177,8 +208,16 @@ const isDev = import.meta.dev
 const availableProjectPills = computed(() =>
   runtime.isReadOnly.value ? readOnlyProjectPills.value : ownedProjectPills.value
 )
+const showScopedOverview = computed(() => hasActiveProject.value)
+const showAggregateOverview = computed(() => !showScopedOverview.value)
+const showProjectSelector = computed(() => availableProjectPills.value.length > 1)
 const actionLinks = computed(() =>
   navItems.value.filter((entry) => entry.key !== 'create' && entry.key !== 'overview')
+)
+const selectionHelpText = computed(() =>
+  hasActiveProject.value
+    ? `The rest of the console is now running against ${runtime.id.value}. Pick another ${runtime.isReadOnly.value ? 'read-only' : 'owned'} project here any time to switch the active runtime.`
+    : selectionHelp.value
 )
 
 const { ensureOverviewEntry } = useConsoleOverviewEntry({
@@ -233,12 +272,23 @@ const runtimeSnapshot = computed(() => ({
   isLoading: runtime.isLoading.value,
   isReady: runtime.isReady.value,
   doc: toDebugValue(runtime.doc.value),
-  data: toDebugValue(runtime.data.value),
+  data: {
+    name: runtime.name.value,
+    ecosystem: runtime.ecosystem.value,
+    appId: runtime.appId.value,
+    appName: runtime.appName.value,
+    firebaseProjectId: runtime.firebaseProjectId.value,
+    hasDoc: runtime.hasDoc.value,
+    readOnlyScenario: toDebugValue(runtime.readOnlyScenario.value),
+  },
   overview: overview.value,
   actionLinks: toDebugValue(actionLinks.value),
   ownedProjects: toDebugValue(ownedProjects.value),
   readOnlyScenarios: toDebugValue(readOnlyScenarios.value),
   isOperatorOverview: isOperatorOverview.value,
+  showScopedOverview: showScopedOverview.value,
+  showAggregateOverview: showAggregateOverview.value,
+  showProjectSelector: showProjectSelector.value,
   hasActiveProject: hasActiveProject.value,
 }))
 </script>

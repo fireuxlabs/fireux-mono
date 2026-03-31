@@ -10,7 +10,7 @@
         <div class="text-xs text-gray-500 dark:text-gray-400">
           Mode:
           <span class="font-mono">
-            {{ isTenant ? 'tenant (single app)' : 'global (all apps)' }}
+            {{ modeLabel }}
           </span>
         </div>
       </UCard>
@@ -121,7 +121,7 @@ definePageMeta({
 
 const { users, error: usersError } = useUserCollection()
 
-const { isTenant } = useFireUXConfig()
+const { role } = useFireUXConfig()
 const userModelRuntime = UserModel
 const { currentUser: authUser } = useAuth()
 const {
@@ -142,6 +142,11 @@ const usersErrorMessage = computed(() => {
     return 'This runtime cannot list the root /users collection with the current Firestore rules. Check the Granite database rules or use a more scoped developer view.'
   }
   return error.message || 'Unable to read the root /users collection.'
+})
+const modeLabel = computed(() => {
+  if (role === 'tenant') return 'tenant (single app)'
+  if (role === 'standalone') return 'standalone (all apps)'
+  return 'global (all apps)'
 })
 
 const {

@@ -16,7 +16,7 @@ export function useUserUpdate(user: UserRefs, sourceLabel = 'unspecified') {
   // NOTE: appUser.id is ALSO uid (NOT appId)
   const appUserUid = user.appUser?.value?.id ?? null
 
-  const activeAppId = cfg.isTenant ? cfg.appId : cfg.globalAppId
+  const activeAppId = cfg.appId || cfg.globalAppId
 
   if (cfg.devMode) {
     if (coreUid && appUserUid && coreUid !== appUserUid) {

@@ -6,7 +6,7 @@ const fireuxConfig = defineFireuxConfig({
   id: 'find-my-seo-app',
   name: 'Find My SEO',
   shortName: 'FindMySEO',
-  role: 'global',
+  role: 'standalone',
   consoleFamilies: [],
   modules: [],
 })

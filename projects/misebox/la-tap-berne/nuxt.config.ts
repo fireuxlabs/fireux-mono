@@ -7,10 +7,8 @@ const fireuxConfig = defineFireuxConfig({
   name: 'La Tap Berne',
   shortName: 'La Tap Berne',
   role: 'tenant',
-  consoleFamilies: ['kitchen'],
-  modules: [
-    'fireux-kitchens',
-  ],
+  consoleFamilies: [],
+  modules: [],
 })
 
 export default defineNuxtConfig(fireuxConfig)

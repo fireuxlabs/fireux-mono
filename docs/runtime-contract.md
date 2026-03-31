@@ -41,11 +41,13 @@ Updated: 2026-03-31
   - `main_app_id`
   - `main_ecosystem_id`
 - These fields define which app and ecosystem speak for the project.
+- Each ecosystem has exactly one global/main app.
 - A global/main app may ensure this doc exists during app initialization.
 - Tenant apps must not create or claim the project control doc.
+- Standalone apps must not create or claim the project control doc.
 
 ## Tenant App Contract
-- Tenant apps are canonical thin child apps hosted on FireUX.
+- Tenant apps are canonical thin child apps hosted inside a FireUX ecosystem.
 - Default tenant shape is:
   - thin public/auth shell
   - light dashboard only when explicitly needed
@@ -53,6 +55,17 @@ Updated: 2026-03-31
 - Tenant apps must consume shared runtime/app contracts rather than defining tenant-local project control behavior.
 - Tenant placeholder branding/assets are canonical bootstrapping behavior until tenant-specific assets are supplied.
 - Placeholder tenant assets must come from shared core asset paths, not ad hoc tenant-local exceptions.
+
+## Standalone App Contract
+- Standalone apps are FireUX-hosted product apps inside the `fireux` ecosystem.
+- Standalone apps are not tenant children and are not the ecosystem global/main app.
+- Standalone apps may use shared runtime/app contracts and shared core modules.
+- Standalone apps are public/non-tenant by default:
+  - indexable unless a page explicitly opts out
+  - no tenant auth chrome
+  - app-local branding/assets expected when available
+- Standalone apps must not auto-load ecosystem-controller-only governance surfaces.
+- Phase 1 canon allows standalone apps only in the `fireux` ecosystem.
 
 ## Runtime Selection Rules
 - Console/runtime entity selection is state-based.

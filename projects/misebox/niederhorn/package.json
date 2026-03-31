@@ -1,5 +1,5 @@
 {
-  "name": "Niederhorn",
+  "name": "niederhorn",
   "private": true,
   "type": "module",
   "scripts": {
@@ -17,12 +17,8 @@
   "dependencies": {
     "@nuxt/icon": "2.x",
     "@nuxt/ui": "^4.0.0-alpha.2",
-    "dompurify": "^3.2.6",
     "firebase-functions": "^6.3.2",
     "fireux-core": "workspace:*",
-    "fireux-kitchens": "workspace:*",
-    "fireux-places": "workspace:*",
-    "fireux-jobs": "workspace:*",
     "fireux-misebox": "workspace:*",
     "nuxt": "4.1.2",
     "vue": "3.5.20",

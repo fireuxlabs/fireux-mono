@@ -17,12 +17,18 @@ Updated: 2026-03-31
 - Current required control fields are:
   - `main_app_id`
   - `main_ecosystem_id`
+- Each ecosystem has exactly one global/main app.
 - A global/main app may ensure the project control doc exists.
+- Global/main apps own project control identity for their ecosystem.
 - Tenant apps must not claim or overwrite project control ownership.
 - Tenant apps are child app surfaces inside a FireUX ecosystem, not independent ecosystem canons.
 - Tenant apps may stay intentionally thin and do not justify new top-level domain/storage patterns on their own.
 - Placeholder tenant branding/assets are canonical until tenant-specific assets are explicitly provided.
 - Existing tenant implementations do not define canon; shared tenant rules come from Tier1 and shared runtime.
+- Standalone apps are FireUX-hosted product apps inside the `fireux` ecosystem.
+- Standalone apps are not tenant children and are not ecosystem globals.
+- Standalone apps may use shared core/runtime foundations but must not claim project control or ecosystem-controller ownership.
+- Phase 1 canon allows standalone apps only in the `fireux` ecosystem.
 
 ## Behavioral Canon
 - No silent fallbacks for selection, routing, or identity decisions.

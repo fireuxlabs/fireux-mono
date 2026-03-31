@@ -67,7 +67,9 @@ const primaryCtaIcon = computed(() =>
 )
 
 const roleLabel = computed(() => {
-  // Note: this is runtime “app role” (global/tenant), not app membership role.
-  return cfg.role === 'tenant' ? 'Tenant' : 'Global'
+  // Note: this is runtime app posture, not app membership role.
+  if (cfg.role === 'tenant') return 'Tenant'
+  if (cfg.role === 'standalone') return 'Standalone'
+  return 'Global'
 })
 </script>

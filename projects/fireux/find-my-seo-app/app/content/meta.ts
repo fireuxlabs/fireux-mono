@@ -14,7 +14,7 @@ const sourceMeta = {
     secondaryCtaLabel: 'Browse SEO providers',
     secondaryCtaTo: '/seo-providers',
     consoleBridgeLine:
-      'A standalone FireUX app for <strong>discovery</strong>, <strong>profile trust</strong>, and <strong>better-fit enquiries</strong> without heavy console weight.',
+      'A standalone FireUX-hosted product app for <strong>discovery</strong>, <strong>profile trust</strong>, and <strong>better-fit enquiries</strong> without heavy console weight.',
     heroBullets: [
       'Search by specialism, sector, and project type',
       'Structured profiles with proof and case studies',
@@ -105,14 +105,15 @@ const sourceMeta = {
       },
       {
         title: 'Standalone app',
-        description: 'This is a child app under FireUX, but it is not a tenant app and not a new ecosystem.',
+        description:
+          'This is a standalone FireUX-hosted product app inside the fireux ecosystem. It is not a tenant child and it is not the global ecosystem app.',
       },
     ],
     appSpec: {
       name: 'Find My SEO',
       tagline: 'Trust-First Marketplace for SEO Professionals',
       description:
-        'Find My SEO is a standalone FireUX app for discovering and contacting credible SEO providers through searchable profiles, proof of results, and lean lead capture.',
+        'Find My SEO is a standalone FireUX-hosted product app for discovering and contacting credible SEO providers through searchable profiles, proof of results, and lean lead capture.',
       modules: [
         {
           name: 'Public directory',

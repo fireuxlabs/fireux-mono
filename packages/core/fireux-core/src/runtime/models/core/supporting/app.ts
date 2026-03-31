@@ -3,7 +3,7 @@
 /**
  * App role defines scope and permissions.
  */
-export type AppRole = 'global' | 'tenant' | 'ecosystem' | 'system'
+export type AppRole = 'global' | 'tenant' | 'standalone' | 'ecosystem' | 'system'
 
 /**
  * Social links grouped for safety and extensibility.

@@ -1,12 +1,7 @@
-<!-- FILE: projects/fireux/tenant/app/pages/index.vue -->
 <template>
   <MissingBrandAssetsFlag />
   <TenantPlaceholderFlag />
-
-  <!-- Background effect -->
   <EffectsStars />
-
-  <!-- Hero row -->
   <LandingShell>
     <template #left>
       <LandingHero
@@ -23,15 +18,11 @@
       <LandingQuickPeek :items="quickPeek" :footer-badge="footerBadge" />
     </template>
   </LandingShell>
-
-  <!-- Minimal tenant actions -->
   <LandingSolutions
     :title="solutions.title"
     :subtitle="solutions.subtitle"
     :items="solutions.items"
   />
-
-  <!-- Lightweight sections that don’t require tenant-specific objects -->
   <LandingFuel />
   <LandingFeatures first />
   <LandingSkillsIcons />
@@ -51,15 +42,15 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'FireUX Tenant — Sandbox',
+  title: 'FireUX Tenant',
   description:
-    'A minimal tenant sandbox to test authentication, app initialization, and user membership in FireUX.',
+    'Thin FireUX tenant child app for runtime setup, onboarding, and member access.',
 })
 
-const title = 'Tenant Sandbox'
-const accent = 'FireUX Runtime'
+const title = 'FireUX Tenant'
+const accent = 'Thin child-app runtime'
 const paragraph =
-  'A super-lean tenant for validating <span class="text-primary">auth</span>, <span class="text-primary">app init</span>, and <span class="text-primary">membership</span> — without extra domain objects.'
+  'A minimal child app for validating <span class="text-primary">auth</span>, <span class="text-primary">app setup</span>, and <span class="text-primary">membership</span> inside FireUX without tenant-local architecture drift.'
 
 const badges = [
   { src: '/img/stack/nuxt-white.png', alt: 'Nuxt' },
@@ -74,8 +65,8 @@ const hero = {
 const bullets = [
   { icon: 'i-lucide-shield-check', text: 'Auth + profile ensure flow' },
   { icon: 'i-lucide-app-window', text: 'Runtime app initialization' },
-  { icon: 'i-lucide-users', text: 'Tenant user overlays & roles' },
-  { icon: 'i-lucide-bolt', text: 'Zero extra objects by default' },
+  { icon: 'i-lucide-users', text: 'Shared tenant membership overlays' },
+  { icon: 'i-lucide-bolt', text: 'No tenant-local domain surfaces by default' },
 ]
 
 const quickPeek = [
@@ -90,8 +81,8 @@ const quickPeek = [
     icon: 'i-lucide-users',
   },
   {
-    title: 'No objects',
-    copy: 'Keep it lean; add Notes later if needed.',
+    title: 'Thin by default',
+    copy: 'Start with shell, onboarding, and membership before adding anything else.',
     icon: 'i-lucide-minimize-2',
   },
 ]
@@ -100,7 +91,7 @@ const footerBadge = 'Nuxt · Firebase · Firestore'
 
 const solutions = {
   title: 'Tenant Console',
-  subtitle: 'Start with just the essentials.',
+  subtitle: 'Keep the child app lean and shared-first.',
   items: [
     {
       title: 'App',
@@ -116,14 +107,6 @@ const solutions = {
       cta: 'Browse',
       icon: 'i-lucide-users',
     },
-    // Optional: enable later when you add a tiny CRUD object
-    // {
-    //   title: 'Notes',
-    //   description: 'Add a minimal object for CRUD testing.',
-    //   to: '/notes',
-    //   cta: 'Try',
-    //   icon: 'i-lucide-notebook-text',
-    // },
   ],
 }
 </script>

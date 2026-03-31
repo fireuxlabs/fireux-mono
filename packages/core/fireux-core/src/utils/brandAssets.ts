@@ -1,4 +1,4 @@
-export type FireuxBrandRole = 'global' | 'tenant'
+export type FireuxBrandRole = 'global' | 'tenant' | 'standalone'
 
 export type ResolvedFireuxBrandAssets = {
   logo: string
@@ -57,7 +57,12 @@ function normalizeAsset(
 export function resolveFireuxBrandAssets(
   input: ResolveBrandAssetInput = {}
 ): ResolvedFireuxBrandAssets {
-  const role = input.role === 'tenant' ? 'tenant' : 'global'
+  const role =
+    input.role === 'tenant'
+      ? 'tenant'
+      : input.role === 'standalone'
+        ? 'standalone'
+        : 'global'
   const base =
     role === 'tenant'
       ? TENANT_PLACEHOLDER_BRAND_ASSETS

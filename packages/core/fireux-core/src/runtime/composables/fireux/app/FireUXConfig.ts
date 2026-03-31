@@ -1,6 +1,6 @@
 import { useRuntimeConfig } from '#imports'
 
-export type FireUXRole = 'global' | 'tenant'
+export type FireUXRole = 'global' | 'tenant' | 'standalone'
 
 export interface FireUXConfig {
   devMode: boolean
@@ -29,6 +29,7 @@ export interface FireUXConfig {
   // derived
   isTenant: boolean
   isGlobal: boolean
+  isStandalone: boolean
 }
 
 type AnyRecord = Record<string, unknown>
@@ -64,9 +65,9 @@ function toStringArray(v: unknown): string[] {
 
 function reqRole(src: AnyRecord): FireUXRole {
   const raw = reqString(src, 'role').toLowerCase()
-  if (raw !== 'global' && raw !== 'tenant') {
+  if (raw !== 'global' && raw !== 'tenant' && raw !== 'standalone') {
     throw new Error(
-      `[fireux] runtimeConfig.public.fireux.role must be "global" or "tenant".`
+      `[fireux] runtimeConfig.public.fireux.role must be "global", "tenant", or "standalone".`
     )
   }
   return raw
@@ -77,13 +78,20 @@ function buildConfig(): Readonly<FireUXConfig> {
   const fireux = (pub.fireux ?? {}) as AnyRecord
 
   const devMode = import.meta.dev
+  const ecosystem = reqString(fireux, 'ecosystem')
   const role = reqRole(fireux)
+
+  if (role === 'standalone' && ecosystem !== 'fireux') {
+    throw new Error(
+      '[fireux] runtimeConfig.public.fireux.role "standalone" is currently only valid when ecosystem is "fireux".'
+    )
+  }
 
   const cfg: FireUXConfig = {
     devMode,
     role,
 
-    ecosystem: reqString(fireux, 'ecosystem'),
+    ecosystem,
     appId: reqString(fireux, 'id'),
     appName: reqString(fireux, 'name'),
     appShortName: reqString(fireux, 'shortName'),
@@ -106,6 +114,7 @@ function buildConfig(): Readonly<FireUXConfig> {
 
     isTenant: role === 'tenant',
     isGlobal: role === 'global',
+    isStandalone: role === 'standalone',
   }
 
   return Object.freeze(cfg)

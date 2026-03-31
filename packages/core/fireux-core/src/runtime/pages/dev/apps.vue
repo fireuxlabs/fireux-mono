@@ -10,7 +10,7 @@
         <div class="text-xs text-gray-500 dark:text-gray-400">
           Mode:
           <span class="font-mono">
-            {{ isTenant ? 'tenant (single app)' : 'global (all apps)' }}
+            {{ modeLabel }}
           </span>
         </div>
       </UCard>
@@ -81,10 +81,15 @@ const appModelRuntime = AppModelRuntime
 const { apps } = useAppCollection()
 const { app: activeApp } = useApp()
 
-const { appId: configAppId, isTenant } = useFireUXConfig()
+const { appId: configAppId, isTenant, role } = useFireUXConfig()
 const appCollection = computed(() =>
   isTenant ? (activeApp.value ? [activeApp.value] : []) : apps.value ?? []
 )
+const modeLabel = computed(() => {
+  if (role === 'tenant') return 'tenant (single app)'
+  if (role === 'standalone') return 'standalone (all apps)'
+  return 'global (all apps)'
+})
 
 const bindingAppId = computed(() => configAppId ?? '')
 const bindingApp = computed(() =>

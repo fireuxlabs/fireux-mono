@@ -2,6 +2,8 @@
 import type { NuxtConfig } from '@nuxt/schema'
 import type { FireuxSeoConfig } from './seo'
 
+export type RuntimeAppRole = 'global' | 'tenant' | 'standalone'
+
 export type RuntimeApp = {
   id: string
   name: string
@@ -15,7 +17,7 @@ export type RuntimeApp = {
   domain: string
   /** Optional canonical origin used for SEO surfaces (e.g. https://fireux.app). */
   siteUrl?: string
-  role: 'global' | 'tenant'
+  role: RuntimeAppRole
   ecosystem: string
   modules: readonly string[]
   consoleFamilies?: readonly string[]

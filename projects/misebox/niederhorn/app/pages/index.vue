@@ -1,45 +1,37 @@
 <template>
-  <div class="landing-page">
-    <MissingBrandAssetsFlag />
-    <TenantPlaceholderFlag />
+  <MissingBrandAssetsFlag />
+  <TenantPlaceholderFlag />
+  <EffectsStars />
 
-    <EffectsStars />
+  <LandingShell>
+    <template #left>
+      <LandingHero
+        :title="title"
+        :accent="accent"
+        :paragraph="paragraph"
+        :badges="badges"
+        :primary="hero.primary"
+        :secondary="hero.secondary"
+        :bullets="bullets"
+      />
+    </template>
+    <template #right>
+      <LandingQuickPeek :items="quickPeek" :footer-badge="footerBadge" />
+    </template>
+  </LandingShell>
 
-    <LandingShell>
-      <template #left>
-        <LandingHero
-          :title="heroContent.title"
-          :accent="heroContent.accent"
-          :paragraph="heroContent.paragraph"
-          :badges="heroContent.badges"
-          :primary="heroContent.primary"
-          :secondary="heroContent.secondary"
-          :bullets="heroContent.bullets"
-        />
-      </template>
+  <LandingSolutions
+    :title="solutions.title"
+    :subtitle="solutions.subtitle"
+    :items="solutions.items"
+  />
 
-      <template #right>
-        <LandingQuickPeek :items="quickPeek" :footer-badge="quickPeekFooter" />
-      </template>
-    </LandingShell>
-
-    <LandingSolutions :cards="solutionCards" />
-
-    <LandingFuel
-      :meters="fuelMeters"
-      @bookTour="handleBookTour"
-      @downloadSpecs="handleDownloadSpecs"
-    />
-
-    <LandingFeatures :features="featureList" />
-
-    <LandingSkillsIcons :skills="skillTags" />
-  </div>
+  <LandingFuel />
+  <LandingFeatures first />
+  <LandingSkillsIcons />
 </template>
 
 <script setup lang="ts">
-const router = useRouter()
-
 definePageMeta({
   layout: 'landing',
   nav: {
@@ -53,127 +45,71 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Niederhorn — MiseBox Kitchens',
+  title: 'Niederhorn — Tenant',
   description:
-    'Alpine hospitality kitchens that sync mise en place, production, and service windows with MiseBox.',
+    'Niederhorn tenant child app for runtime setup, team access, and thin shared operations inside Misebox.',
 })
 
-const heroContent = {
-  title: 'Niederhorn Kitchens',
-  accent: 'Alpine mise en place, on tempo',
-  paragraph:
-    'Run altitude-ready production, sync pantry replenishment, and keep every <span class="text-primary">service window</span> prepared before the gondola arrives.',
-  badges: [
-    { src: '/img/ecosystem/wordmark-light.svg', alt: 'MiseBox' },
-    { src: '/img/stack/firebase-white.png', alt: 'Firebase' },
-  ],
-  primary: { label: 'Open kitchen console', to: '/apps' },
-  secondary: { label: 'Invite brigade', to: '/users' },
-  bullets: [
-    {
-      icon: 'i-lucide-thermometer-sun',
-      text: 'Altitude calibrated prep plans',
-    },
-    { icon: 'i-lucide-gauge', text: 'Real-time production meters' },
-    { icon: 'i-lucide-truck', text: 'Supply runs synced to gondola drops' },
-    { icon: 'i-lucide-sparkles', text: 'Sanitation routines automated' },
-  ],
+const title = 'Niederhorn'
+const accent = 'Misebox tenant runtime'
+const paragraph =
+  'A thin tenant child app for <span class="text-primary">app setup</span>, <span class="text-primary">team access</span>, and <span class="text-primary">shared Misebox runtime</span> without carrying a tenant-local kitchen architecture.'
+
+const badges = [
+  { src: '/img/ecosystem/wordmark-light.svg', alt: 'Misebox' },
+  { src: '/img/stack/firebase-white.png', alt: 'Firebase' },
+]
+
+const hero = {
+  primary: { label: 'Open App', to: '/apps' },
+  secondary: { label: 'View Team', to: '/users' },
 }
+
+const bullets = [
+  { icon: 'i-lucide-app-window', text: 'Shared child-app shell' },
+  { icon: 'i-lucide-shield-check', text: 'Auth and membership flow' },
+  { icon: 'i-lucide-users', text: 'Tenant user overlays and access' },
+  { icon: 'i-lucide-minimize-2', text: 'No tenant-specific console family' },
+]
 
 const quickPeek = [
   {
-    title: "Tonight's service",
-    copy: 'Plated menu locked. 6 covers flagged VIP.',
-    icon: 'i-lucide-calendar-clock',
+    title: 'Tenant status',
+    copy: 'Check app setup, placeholder branding, and runtime posture.',
+    icon: 'i-lucide-badge-check',
   },
   {
-    title: 'Pantry hold',
-    copy: 'Protein pulls complete · pastry freezer restocked.',
-    icon: 'i-lucide-ice-cream',
+    title: 'App',
+    copy: 'Inspect the child app surface and shared overlays.',
+    icon: 'i-lucide-app-window',
   },
   {
-    title: 'Brigade',
-    copy: 'Sous, garde manger, and steward synced to tasks.',
+    title: 'Team',
+    copy: 'Review users and access in this tenant.',
     icon: 'i-lucide-users',
   },
 ]
 
-const quickPeekFooter = 'MiseBox · Firestore · IoT sensors'
+const footerBadge = 'Misebox · Firebase · Firestore'
 
-const solutionCards = [
-  {
-    title: 'Station planner',
-    copy: 'Configure pass, garde manger, and pastry to match your service.',
-    href: '/console/kitchen/stations',
-    cta: 'Plan stations',
-    icon: 'i-lucide-layers',
-  },
-  {
-    title: 'Production log',
-    copy: 'Audit prep yields, variance, and temp logs straight from the line.',
-    href: '/console/kitchen/mise',
-    cta: 'View log',
-    icon: 'i-lucide-clipboard-check',
-  },
-  {
-    title: 'Crew roster',
-    copy: 'Update roles, availability, and onboarding for each service week.',
-    href: '/users',
-    cta: 'Manage crew',
-    icon: 'i-lucide-users',
-  },
-]
-
-const fuelMeters = [
-  { label: 'Prep complete', value: 86, icon: 'i-lucide-utensils-crossed' },
-  { label: 'Service readiness', value: 92, icon: 'i-lucide-badge-check' },
-  { label: 'Inventory sync', value: 74, icon: 'i-lucide-package-search' },
-]
-
-const featureList = [
-  {
-    title: 'Altitude smart timers',
-    copy: 'Automatic adjustments for simmer, proof, and rest at 1960 m.',
-  },
-  {
-    title: 'Prep-to-pass sync',
-    copy: 'Line consoles align mise en place with pass tickets in real time.',
-  },
-  {
-    title: 'Supplier cadence',
-    copy: 'Purchasing schedules anchored to lift and road access windows.',
-  },
-  {
-    title: 'Safety + HACCP logs',
-    copy: 'Document temp checks, sanitation, and hold times without clipboards.',
-  },
-]
-
-const skillTags = [
-  { label: 'Sous chef', icon: 'i-lucide-sparkles' },
-  { label: 'Garde manger', icon: 'i-lucide-leaf' },
-  { label: 'Pastry lead', icon: 'i-lucide-cookie' },
-  { label: 'Steward', icon: 'i-lucide-droplets' },
-  { label: 'Sommelier', icon: 'i-lucide-wine' },
-  { label: 'Service captain', icon: 'i-lucide-badge-check' },
-]
-
-const handleBookTour = () => {
-  router.push('/contact')
-}
-
-const handleDownloadSpecs = () => {
-  router.push('/docs/niederhorn-stations')
+const solutions = {
+  title: 'Tenant Console',
+  subtitle: 'Use the shared child-app surfaces before adding domain-specific depth.',
+  items: [
+    {
+      title: 'Apps',
+      description: 'Inspect tenant app settings and runtime state.',
+      to: '/apps',
+      cta: 'Open',
+      icon: 'i-lucide-app-window',
+    },
+    {
+      title: 'Users',
+      description: 'Manage team members and role visibility.',
+      to: '/users',
+      cta: 'Browse',
+      icon: 'i-lucide-users',
+    },
+  ],
 }
 </script>
-
-<style scoped>
-.landing-page {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: clamp(2.5rem, 6vw, 4rem);
-  padding: clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 5vw, 3rem)
-    clamp(4rem, 8vw, 6rem);
-}
-</style>

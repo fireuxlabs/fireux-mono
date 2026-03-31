@@ -64,7 +64,7 @@ export const APP_REGISTRY = {
     role: 'tenant',
     workspace: './projects/misebox/niederhorn',
     port: 3003,
-    consoleFamilies: ['kitchen'],
+    consoleFamilies: [],
     launchOrder: 4,
   },
   richies: {
@@ -109,7 +109,7 @@ export const APP_REGISTRY = {
     appId: 'find-my-seo-app',
     ecosystem: 'fireux',
     databaseId: 'fireux',
-    role: 'global',
+    role: 'standalone',
     workspace: './projects/fireux/find-my-seo-app',
     port: 3010,
     consoleFamilies: [],
@@ -136,7 +136,7 @@ export const APP_REGISTRY = {
     role: 'tenant',
     workspace: './projects/misebox/la-tap-berne',
     port: 3008,
-    consoleFamilies: ['kitchen'],
+    consoleFamilies: [],
     launchOrder: 10,
   },
 }

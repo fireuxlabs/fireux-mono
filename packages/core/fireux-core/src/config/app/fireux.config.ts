@@ -3,7 +3,7 @@ import type { NuxtConfig } from '@nuxt/schema'
 
 import { configNitroFirebase } from './nitro'
 import { configPwa } from './pwa'
-import { setRuntime } from './runtime'
+import { setRuntime, type RuntimeAppRole } from './runtime'
 import type { FireuxSeoConfig } from './seo'
 import { configViteWorkspace } from './vite'
 import { resolveFireuxBrandAssets } from '../../utils/brandAssets'
@@ -30,7 +30,7 @@ export type FireuxAppConfig = {
   appLogo?: string
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
-  role: 'global' | 'tenant'
+  role: RuntimeAppRole
   modules?: NonNullable<NuxtConfig['modules']>
   consoleFamilies?: string[]
   seo?: FireuxSeoConfig
@@ -111,7 +111,17 @@ function optEnv(name: string): string | undefined {
   return trimmed ? trimmed : undefined
 }
 
+function validateFireuxAppConfig(app: FireuxAppConfig): void {
+  if (app.role === 'standalone' && app.ecosystem !== 'fireux') {
+    throw new Error(
+      '[fireux] role "standalone" is currently only supported inside the "fireux" ecosystem.'
+    )
+  }
+}
+
 export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
+  validateFireuxAppConfig(app)
+
   const nuxt: NuxtConfig = {}
   const brandAssets = resolveFireuxBrandAssets({
     role: app.role,
