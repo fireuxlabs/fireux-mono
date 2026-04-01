@@ -60,6 +60,6 @@ fireux-core-useUserInterface.mirror.ts
 
 Current working set
 
-- The mirror currently targets the FireUX project console and the Misebox kitchen console comparison set.
+- The mirror currently targets only the `useRuntimeXConsole` family across project, kitchen, portfolio, and supplier.
 - The source list lives in `mirror/mirror.txt`.
 - After changing the list, run `pnpm mirror:sync` to rebuild the symlinks.

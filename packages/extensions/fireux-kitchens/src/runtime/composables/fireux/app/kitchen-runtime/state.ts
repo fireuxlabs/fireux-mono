@@ -21,14 +21,14 @@ const normalizeSelectionState = (value: unknown): RuntimeKitchenSelectionState =
   const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
   return {
     selectedId: normalizeString(source.selectedId ?? source.kitchenId),
-    mode: normalizeMode(source.mode) ?? 'live',
+    mode: normalizeMode(source.mode) ?? 'read-only',
   }
 }
 
 export function useRuntimeKitchenSelection() {
   const selection = useRuntimeSelection<RuntimeKitchenSelectionState>({
     cookieKey: COOKIE_KEY,
-    defaultState: () => ({ selectedId: '', mode: 'live' }),
+    defaultState: () => ({ selectedId: '', mode: 'read-only' }),
     normalizeState: normalizeSelectionState,
   })
 
@@ -52,7 +52,7 @@ export function useRuntimeKitchenSelection() {
   }
 
   const selectedId = selectionKey(selection, 'selectedId')
-  const mode = computed(() => normalizeMode(selection.state.value.mode) ?? 'live')
+  const mode = computed(() => normalizeMode(selection.state.value.mode) ?? 'read-only')
 
   return {
     selectedId,

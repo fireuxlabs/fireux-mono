@@ -27,8 +27,6 @@ export function useConsoleEntryState() {
   const isSignedIn = computed(() => authPhase.value === 'signed-in')
   const isGuest = computed(() => authPhase.value === 'guest')
   const isLoading = computed(() => authPhase.value === 'loading')
-  const showAuthSplit = computed(() => authPhase.value === 'guest')
-
   const waitForAuthResolution = async (timeoutMs = AUTH_WAIT_TIMEOUT_MS) => {
     if (import.meta.server) return
     await waitFor(() => hasAuthState.value, timeoutMs)
@@ -41,7 +39,6 @@ export function useConsoleEntryState() {
     isSignedIn,
     isGuest,
     isLoading,
-    showAuthSplit,
     waitForAuthResolution,
   }
 }

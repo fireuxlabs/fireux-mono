@@ -19,8 +19,7 @@ const normalizeString = (value: unknown): string => String(value || '').trim()
 const normalizeMode = (value: unknown): RuntimeSupplierMode => {
   const normalized = normalizeString(value).toLowerCase()
   if (normalized === 'dummy' || normalized === 'readonly') return 'read-only'
-  if (normalized === 'read-only' || normalized === 'live') return normalized
-  return 'live'
+  return 'read-only'
 }
 
 const normalizeSelectionState = (value: unknown): RuntimeSupplierSelectionState => {
@@ -34,7 +33,7 @@ const normalizeSelectionState = (value: unknown): RuntimeSupplierSelectionState 
 export function useRuntimeSupplierSelection() {
   const selection = useRuntimeSelection<RuntimeSupplierSelectionState>({
     cookieKey: COOKIE_KEY,
-    defaultState: () => ({ selectedId: '', mode: 'live' }),
+    defaultState: () => ({ selectedId: '', mode: 'read-only' }),
     normalizeState: normalizeSelectionState,
   })
 

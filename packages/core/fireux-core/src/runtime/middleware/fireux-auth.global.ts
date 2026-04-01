@@ -37,8 +37,8 @@ function allowsGuestNonLiveConsole(path: string): boolean {
     }
 
     const cookie = useCookie<Record<string, unknown> | null>(entry.cookieKey)
-    const mode = normalizeRuntimeMode(cookie.value?.mode, { defaultMode: 'live' })
-    return mode !== 'live'
+    const mode = normalizeRuntimeMode(cookie.value?.mode, { defaultMode: 'read-only' })
+    return mode === 'read-only'
   }
 
   return false

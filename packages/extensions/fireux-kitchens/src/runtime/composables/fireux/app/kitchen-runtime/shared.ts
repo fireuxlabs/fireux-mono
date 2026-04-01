@@ -17,7 +17,7 @@ export const normalizeString = (value: unknown): string =>
 export const normalizeMode = (value: unknown): RuntimeKitchenMode | null => {
   const normalized = normalizeString(value).toLowerCase()
   if (normalized === 'dummy' || normalized === 'readonly') return 'read-only'
-  if (normalized === 'read-only' || normalized === 'live') {
+  if (normalized === 'read-only') {
     return normalized
   }
   return null

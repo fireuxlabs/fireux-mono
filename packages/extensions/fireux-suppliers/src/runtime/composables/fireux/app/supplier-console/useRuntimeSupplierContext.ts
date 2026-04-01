@@ -25,7 +25,7 @@ export function useRuntimeSupplierContext(
   const mode = computed<RuntimeSupplierMode>(() => {
     const normalized = normalizeString(modeSource.value).toLowerCase()
     if (normalized === 'dummy' || normalized === 'readonly') return 'read-only'
-    return normalized === 'read-only' ? 'read-only' : 'live'
+    return 'read-only'
   })
   const isReadOnly = computed(() => mode.value === 'read-only')
 

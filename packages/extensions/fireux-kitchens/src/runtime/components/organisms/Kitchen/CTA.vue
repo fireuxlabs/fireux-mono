@@ -1,104 +1,30 @@
 <template>
   <ConsoleEntityCTA
     title="Kitchen console"
-    entity="kitchen"
     console-to="/console/kitchen/overview"
-    my-label=""
-    :read-only-label="showBundledReadOnly ? '' : 'Demo Kitchens'"
-    :collapse-secondary-modes="collapseSecondaryModes"
+    read-only-label="Demo Kitchens"
     learn-more-to="/kitchens/learn-more"
   >
-    <template #myNote>
-      <li>Requires sign-in.</li>
-      <li>The live list only includes kitchens you can operate.</li>
-      <li>{{ createActionNote }}</li>
-      <li>{{ createActionMeaning }}</li>
-    </template>
-
-    <template #my>
-      <div class="space-y-2">
-        <template v-if="isSignedIn">
-          <div v-if="showBundledLive && bundledLiveKitchenPill" class="space-y-2">
-            <ConsoleBundleEntry
-              v-bind="bundledLiveKitchenPill"
-              @action="goToKitchen('live')"
-              @secondary-action="createKitchen"
-            />
-          </div>
-          <template v-else-if="liveKitchenPills.length">
-            <KitchenCardsPill
-              v-for="item in liveKitchenPills"
-              :key="item.id"
-              v-bind="item"
-              :link="false"
-              :action="true"
-              :show-badges="false"
-              class="cursor-pointer"
-              @action="goToKitchen('live', item.id)"
-            />
-          </template>
-          <p v-else class="text-sm text-dimmed">
-            No kitchen consoles yet.
-          </p>
-        </template>
-        <p v-else class="text-sm text-dimmed">
-          Sign in to see your kitchen consoles and create one.
-        </p>
-        <UButton
-          v-if="!showBundledLive || !bundledLiveKitchenPill"
-          block
-          variant="subtle"
-          color="primary"
-          :icon="createCopy.limitReached ? 'i-lucide-lock' : (isSignedIn ? 'i-lucide-plus' : 'i-lucide-log-in')"
-          :disabled="createCopy.disabled"
-          :loading="isSignedIn ? isEnsuringLiveKitchen : false"
-          @click="createKitchen"
-        >
-          {{ createCopy.label }}
-        </UButton>
-      </div>
+    <template #readOnlyNote>
+      <li>Uses bundled kitchen demo scenarios only.</li>
     </template>
 
     <template #readOnly>
-          <div
-            v-if="showPremiumPreviewToggle"
-            class="flex items-center justify-between gap-3 rounded-lg border border-default px-3 py-2"
-          >
-            <div class="space-y-1">
-              <p class="text-sm font-medium">View as premium</p>
-              <p class="text-xs text-dimmed">
-                Preview the grouped premium operator view for demo kitchens.
-              </p>
-            </div>
-            <USwitch v-model="premiumPreviewEnabled" />
-          </div>
-          <div v-if="showBundledReadOnly && bundledReadOnlyPill" class="space-y-2">
-            <ConsoleBundleEntry
-              v-bind="bundledReadOnlyPill"
-              @action="goToKitchen('read-only')"
-            />
-          </div>
-          <div v-else-if="readOnlyPills.length" class="space-y-2">
-            <KitchenCardsPill
-              v-for="item in readOnlyPills"
-              :key="item.id"
-              v-bind="item"
-              :link="false"
-              :action="true"
-              :show-badges="false"
-              class="cursor-pointer"
-              @action="goToKitchen('read-only', item.id)"
-            />
-          </div>
-          <p v-else class="text-sm text-dimmed">
-            No demo kitchens.
-          </p>
-    </template>
-
-    <template #readOnlyNote>
-      <li>Uses a selected demo scenario id.</li>
-      <li>Available without sign-in.</li>
-      <li>Scenarios do not require live kitchen console authority.</li>
+      <div v-if="scenarioCards.length" class="space-y-2">
+        <KitchenCardsPill
+          v-for="item in scenarioCards"
+          :key="item.id"
+          v-bind="item"
+          :link="false"
+          :action="true"
+          :show-badges="false"
+          class="cursor-pointer"
+          @action="openScenario(item.id)"
+        />
+      </div>
+      <p v-else class="text-sm text-dimmed">
+        No demo kitchens.
+      </p>
     </template>
 
     <template #default>
@@ -115,253 +41,29 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute, useRouter } from '#imports'
-import { computed, ref } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import {
-  resolveConsoleEntryPath,
-} from 'fireux-core/runtime/composables/fireux/app/ui/console-entry-routing'
-import { resolveConsoleCreateCopy } from 'fireux-core/runtime/composables/fireux/app/ui/console-create-copy'
-import { useConsoleFamilyAccess } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleFamilyAccess'
-import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import ConsoleBundleEntry from 'fireux-core/runtime/components/entities/console/ConsoleBundleEntry.vue'
-import ConsoleEntityCTA from 'fireux-core/runtime/components/entities/console/ConsoleEntityCTA.vue'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useRouter } from '#imports'
+import { computed } from 'vue'
 import { getReadOnlyKitchenScenarioList } from '../../../composables/fireux/app/kitchen-runtime/read-only-scenarios'
-import type { RuntimeKitchenMode } from '../../../composables/fireux/app/kitchen-runtime/shared'
 import { useRuntimeKitchenSelection } from '../../../composables/fireux/app/kitchen-runtime/state'
-import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
-import { useChefCreate } from '../../../composables/fireux/firestore/profiles/Chef/main/useChefCreate'
-import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import type { ConsoleKitchen } from '../../../models/kitchen.model'
-import KitchenCardsPill from './Cards/Pill.vue'
 
-const props = withDefaults(defineProps<{
-  createSurface?: 'public' | 'console'
-}>(), {
-  createSurface: 'public',
-})
+const router = useRouter()
+const { setRuntimeKitchen } = useRuntimeKitchenSelection()
 
-const { kitchens } = useKitchenFetch()
-const { pill: kitchenPill } = useKitchenInterface()
-const { currentUser, avatarSrc, canOwnMultipleConsoles } = useUser()
-const { uid, isSignedIn } = useConsoleEntryState()
-const { appId, appLogo, appThumbnail } = useFireUXConfig()
-const { firestoreFetchCollection } = useFirestoreRead()
-
-const kitchenOverlays = appId
-  ? firestoreFetchCollection<ConsoleKitchen>(`apps/${appId}/kitchens`)
-  : null
-
-const accessibleKitchenIds = computed(() => {
-  const currentUid = String(uid.value || '').trim()
-  if (!currentUid) return new Set<string>()
-
-  const ids = new Set<string>()
-
-  for (const overlay of kitchenOverlays?.value ?? []) {
-    const id = String((overlay as any)?.id || '').trim()
-    if (!id) continue
-    if ((overlay as any)?.console_enabled === false) continue
-
-    const adminIds = Array.isArray((overlay as any)?.admin_ids)
-      ? (overlay as any).admin_ids
-          .map((value: unknown) => String(value || '').trim())
-          .filter(Boolean)
-      : []
-
-    if (adminIds.includes(currentUid)) {
-      ids.add(id)
-    }
-  }
-
-  for (const kitchen of kitchens.value ?? []) {
-    const id = String((kitchen as any)?.id || '').trim()
-    const claimedBy = String((kitchen as any)?.claimed_by || '').trim()
-    if (id && claimedBy === currentUid) {
-      ids.add(id)
-    }
-  }
-
-  return ids
-})
-
-const liveKitchenPills = computed(() =>
-  (kitchens.value ?? [])
-    .filter((entry) =>
-      accessibleKitchenIds.value.has(String((entry as any)?.id || '').trim())
-    )
-    .map((entry) => kitchenPill(entry))
-    .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
-)
-
-const readOnlyScenarios = computed(() =>
-  getReadOnlyKitchenScenarioList()
-    .map((entry) => ({
-      id: String(entry.id || '').trim(),
-      name: String(entry.name || '').trim(),
-      subtitle: String(entry.address_label || '').trim(),
-      imageUrl: String(entry.image_url || '').trim(),
-    }))
-    .filter((entry) => Boolean(entry.id))
-)
-
-const readOnlyPills = computed(() =>
-  readOnlyScenarios.value.map((entry) => ({
-    id: entry.id,
-    to: '',
-    title: entry.name,
-    subtitle: entry.subtitle,
-    imageUrl: entry.imageUrl,
+const scenarioCards = computed(() =>
+  getReadOnlyKitchenScenarioList().map((entry) => ({
+    id: String(entry.id || '').trim(),
+    title: String(entry.name || '').trim(),
+    subtitle: String(entry.address_label || '').trim(),
+    imageUrl: String(entry.image_url || '').trim(),
+    badges: [],
   }))
 )
 
-const {
-  premiumPreviewEnabled,
-  showPremiumPreviewToggle,
-  showBundledLive,
-  liveBundleTitle,
-  liveBundleSubtitle,
-  showBundledReadOnly,
-  readOnlyBundleTitle,
-  readOnlyBundleSubtitle,
-} = useConsoleFamilyAccess({
-  entityKey: 'kitchen',
-  singularNoun: 'kitchen',
-  pluralNoun: 'kitchens',
-  ownerName: computed(() => currentUser.value?.display_name),
-  signedIn: isSignedIn,
-  isPremium: canOwnMultipleConsoles,
-  liveCount: computed(() => liveKitchenPills.value.length),
-  readOnlyCount: computed(() => readOnlyPills.value.length),
-})
-const collapseSecondaryModes = computed(
-  () => canOwnMultipleConsoles.value && liveKitchenPills.value.length > 0
-)
-
-const bundledLiveKitchenPill = computed(() => {
-  if (!showBundledLive.value) return null
-
-  const firstKitchen = liveKitchenPills.value[0]
-
-  return {
-    id: 'my-live-kitchens',
-    title: liveBundleTitle.value,
-    subtitle: liveBundleSubtitle.value,
-    imageUrl: String(avatarSrc.value || '').trim(),
-    secondaryActionLabel:
-      createCopy.value.disabled ? '' : createCopy.value.label,
-    previewItems: liveKitchenPills.value.slice(0, 4).map((item) => ({
-      title: item.title,
-      imageUrl: item.imageUrl,
-    })),
-  }
-})
-
-const bundledReadOnlyPill = computed(() => {
-  if (!showBundledReadOnly.value) return null
-
-  const firstScenario = readOnlyScenarios.value[0]
-
-  return {
-    id: 'my-read-only-kitchens',
-    title: readOnlyBundleTitle.value,
-    subtitle: readOnlyBundleSubtitle.value,
-    imageUrl: String(appLogo || appThumbnail || '/img/app/logo.png').trim(),
-    previewItems: readOnlyScenarios.value.slice(0, 4).map((item) => ({
-      title: item.name,
-      imageUrl: item.imageUrl,
-    })),
-  }
-})
-
-const router = useRouter()
-const route = useRoute()
-const { setRuntimeKitchen } = useRuntimeKitchenSelection()
-const { ensureChefProfile } = useChefCreate()
-const isEnsuringLiveKitchen = ref(false)
-const createCopy = computed(() =>
-  resolveConsoleCreateCopy({
-    entityLabel: 'kitchen',
-    createSurface: props.createSurface,
-    signedIn: isSignedIn.value,
-    ownedCount: liveKitchenPills.value.length,
-    canOwnMultipleConsoles: canOwnMultipleConsoles.value,
-    publicPath: '/kitchens/create',
-    consolePath: '/console/kitchen/create',
-  })
-)
-const signInPath = computed(() => `/auth?redirect=${encodeURIComponent(route.fullPath)}`)
-const createActionNote = computed(() =>
-  isSignedIn.value
-    ? `${createCopy.value.label} ensures a Chef profile, then routes to ${createCopy.value.createPath}.`
-    : createCopy.value.note
-)
-const createActionMeaning = computed(() => createCopy.value.meaning)
-
-const ensureAuthenticated = async () => {
-  if (String(uid.value || '').trim()) return true
-  await router.push(`/auth?redirect=${encodeURIComponent(route.fullPath)}`)
-  return false
-}
-
-const ensureLiveKitchenProfile = async () => {
-  const isSignedIn = await ensureAuthenticated()
-  if (!isSignedIn) return false
-
-  if (isEnsuringLiveKitchen.value) return false
-  isEnsuringLiveKitchen.value = true
-
-  try {
-    await ensureChefProfile()
-    return true
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error ?? '')
-
-    if (message.includes('[ensure] Missing authenticated user')) {
-      await router.push(`/auth?redirect=${encodeURIComponent(route.fullPath)}`)
-      return false
-    }
-
-    if (import.meta.dev) {
-      console.error('[KitchenCTA] failed to ensure chef profile before live kitchen entry', error)
-    }
-    return false
-  } finally {
-    isEnsuringLiveKitchen.value = false
-  }
-}
-
-const goToKitchen = async (mode: RuntimeKitchenMode, kitchenId?: string) => {
-  if (mode === 'read-only') {
-    const resolvedId = String(kitchenId || '').trim()
-    setRuntimeKitchen({ mode: 'read-only', kitchenId: resolvedId })
-    await router.push(resolveConsoleEntryPath('/console/kitchen', 'read-only', resolvedId))
-    return
-  }
-
-  if (mode === 'live') {
-    const ready = await ensureLiveKitchenProfile()
-    if (!ready) return
-  }
-
+const openScenario = async (kitchenId: string) => {
   const resolvedId = String(kitchenId || '').trim()
-  setRuntimeKitchen({ mode, kitchenId: resolvedId })
+  if (!resolvedId) return
+
+  setRuntimeKitchen({ kitchenId: resolvedId, mode: 'read-only' })
   await router.push('/console/kitchen/overview')
 }
-
-const createKitchen = async () => {
-  if (!isSignedIn.value) {
-    await router.push(signInPath.value)
-    return
-  }
-
-  if (createCopy.value.disabled) return
-
-  const ready = await ensureLiveKitchenProfile()
-  if (!ready) return
-  await router.push(createCopy.value.createPath)
-}
-
 </script>

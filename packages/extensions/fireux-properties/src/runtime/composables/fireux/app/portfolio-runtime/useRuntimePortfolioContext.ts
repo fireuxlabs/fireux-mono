@@ -22,7 +22,7 @@ export function useRuntimePortfolioContext(
   )
 
   const id = computed(() => normalizeString(portfolioIdSource.value) || '')
-  const mode = computed<RuntimePortfolioMode>(() => normalizeMode(modeSource.value) ?? 'live')
+  const mode = computed<RuntimePortfolioMode>(() => normalizeMode(modeSource.value) ?? 'read-only')
   const isReadOnly = computed(() => mode.value === 'read-only')
 
   return { id, mode, isReadOnly }

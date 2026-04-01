@@ -2,7 +2,6 @@ import type { ComputedRef, Ref } from 'vue'
 
 /**
  * Canon runtime modes (shared across all entities).
- * - live      => Firestore live data
  * - read-only => scenario only (NO Firestore)
  */
 export type RuntimeMode = 'live' | 'read-only'

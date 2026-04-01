@@ -11,7 +11,7 @@
           color="neutral"
           variant="soft"
           title="No project selected"
-          description="Select a project on /console/projects/overview before managing ecosystems."
+          description="Select a project on /console/projects/overview before viewing ecosystems."
           :actions="[
             {
               label: 'Go to projects',
@@ -23,32 +23,48 @@
 
         <template v-else>
           <UCard>
-          <template #header>
-            <div class="text-sm font-semibold">Ecosystem management</div>
-          </template>
+            <template #header>
+              <div class="text-sm font-semibold">Ecosystems in this demo project</div>
+            </template>
 
-          <div class="flex flex-wrap gap-2">
-            <UButton
-              v-if="isWritableMode"
-              :to="actions.createEcosystemTo"
-              icon="i-lucide-plus"
-              variant="soft"
-              color="primary"
-            >
-              Create ecosystem
-            </UButton>
-            <UButton
-              to="/ecosystems"
-              icon="i-lucide-orbit"
-              variant="ghost"
-              color="neutral"
-            >
-              Open public index
-            </UButton>
-          </div>
+            <div class="flex flex-wrap gap-2">
+              <UButton
+                to="/ecosystems"
+                icon="i-lucide-orbit"
+                variant="ghost"
+                color="neutral"
+              >
+                Open public index
+              </UButton>
+            </div>
           </UCard>
 
-          <EcosystemCollectionManager :collection="projectEcosystems" />
+          <UAlert
+            v-if="!ecosystemRows.length"
+            color="neutral"
+            variant="soft"
+            title="No ecosystems found"
+          />
+
+          <UCard
+            v-for="ecosystem in ecosystemRows"
+            :key="ecosystem.id"
+          >
+            <template #header>
+              <div class="flex items-start justify-between gap-3">
+                <div class="space-y-1">
+                  <div class="text-sm font-semibold">{{ ecosystem.name }}</div>
+                  <div class="text-xs font-mono text-dimmed">{{ ecosystem.id }}</div>
+                </div>
+                <UBadge variant="soft">{{ ecosystem.appCount }} apps</UBadge>
+              </div>
+            </template>
+
+            <div class="text-sm text-dimmed">
+              Team:
+              <span class="font-medium text-default">{{ ecosystem.team || 'unassigned' }}</span>
+            </div>
+          </UCard>
         </template>
       </section>
     </template>
@@ -57,7 +73,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRuntimeProjectConsole } from 'fireux-core/runtime/composables/fireux/app/runtime-project/useRuntimeProjectConsole'
+import { useRuntimeProject } from '~/composables/console/project/useRuntimeProject'
 
 definePageMeta({
   layout: 'console',
@@ -74,6 +90,23 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, projectEcosystems, actions } = useRuntimeProjectConsole()
-const isWritableMode = computed(() => runtime.mode.value === 'live')
+const runtime = useRuntimeProject()
+
+const normalizeString = (value: unknown): string => String(value || '').trim()
+
+const ecosystemRows = computed(() =>
+  (runtime.readOnlyScenario.value?.ecosystems ?? []).map((entry) => {
+    const id = normalizeString((entry as any).id)
+    const name = normalizeString((entry as any).name) || id || 'Untitled ecosystem'
+    const team = normalizeString((entry as any).team)
+    const rawApps = Array.isArray((entry as any).apps) ? (entry as any).apps : []
+
+    return {
+      id,
+      name,
+      team,
+      appCount: rawApps.length,
+    }
+  })
+)
 </script>

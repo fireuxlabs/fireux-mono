@@ -20,7 +20,7 @@ export function useRuntimeKitchenContext(
   )
 
   const id = computed(() => normalizeString(kitchenIdSource.value) || '')
-  const mode = computed<RuntimeKitchenMode>(() => normalizeMode(modeSource.value) ?? 'live')
+  const mode = computed<RuntimeKitchenMode>(() => normalizeMode(modeSource.value) ?? 'read-only')
   const isReadOnly = computed(() => mode.value === 'read-only')
 
   return { id, mode, isReadOnly }
