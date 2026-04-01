@@ -47,7 +47,7 @@
             />
 
             <div class="pt-3">
-              <LayoutsConsoleSidebarFooterActions
+              <LayoutsSharedSideBarFooter
                 :collapsed="collapsed ?? false"
               />
             </div>
@@ -57,7 +57,7 @@
 
       <template #footer="{ collapsed }">
         <div class="hidden lg:flex">
-          <LayoutsConsoleSidebarFooterActions
+          <LayoutsSharedSideBarFooter
             :collapsed="collapsed ?? false"
             compact-profile
           />
@@ -65,12 +65,12 @@
       </template>
     </UDashboardSidebar>
 
-    <div class="w-full h-screen overflow-y-auto p-0 lg:p-4 bg-elevated/50">
+    <div class="h-screen w-full overflow-y-auto bg-elevated/50 p-0 lg:p-4">
       <NuxtPage />
     </div>
   </UDashboardGroup>
 
-  <LayoutsConsoleNotificationsSlideover
+  <LayoutsSharedNotificationsSlideover
     v-model:open="isNotificationsSlideoverOpen"
   />
 </template>

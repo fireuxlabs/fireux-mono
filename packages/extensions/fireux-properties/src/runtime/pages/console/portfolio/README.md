@@ -12,7 +12,6 @@ This README only explains the portfolio-console delta.
 ## Current Routes
 
 - `index.vue`
-- `overview.vue`
 - `create.vue`
 - `read-only/index.vue`
 - `read-only/[scenarioId].vue`
@@ -27,8 +26,8 @@ This README only explains the portfolio-console delta.
 - `Portfolio` owns the console route family because it is the portfolio domain runtime anchor
 - apps must opt into portfolio visibility through `consoleFamilies`
 - `index.vue` is the family-specific chooser in console shell
+- `index.vue` is the canon portfolio console root
 - `create.vue` belongs to the console create family
-- `overview.vue` is workspace delivery
 - child routes stay portfolio-scoped even when Granite adds branding and shell framing around them
 
 Portfolio-console delta:
