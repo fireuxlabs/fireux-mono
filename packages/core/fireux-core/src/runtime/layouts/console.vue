@@ -79,36 +79,10 @@ import { useConsoleNotifications } from '../composables/fireux/app/ui/useConsole
 
 defineOptions({ name: 'console' })
 
-function normalizePath(value: unknown): string {
-  return String(value || '').trim().replace(/\/+$/, '')
-}
-
 const open = ref(false)
 const route = useRoute()
 const { isOpen: isNotificationsSlideoverOpen } = useConsoleNotifications()
 const { desktop } = useConsoleNav()
 const isConsoleEntryPage = computed(() => Boolean(route.meta?.consoleEntry))
-
-const consoleNav = computed(() => {
-  const currentPath = normalizePath(route.path)
-  const scopeMatch = currentPath.match(/^\/console\/([^/]+)(?:\/.*)?$/)
-  if (!scopeMatch) return desktop.value
-
-  const scopeRoot = `/console/${scopeMatch[1]}`
-  const createPath = `${scopeRoot}/create`
-  const isScopeRoot = currentPath === scopeRoot
-  const isCreateRoute = currentPath === createPath
-
-  return desktop.value.filter((item) => {
-    const path = normalizePath(item.to)
-    if (!path.startsWith('/console/')) return true
-    if (path === scopeRoot) return false
-    if (!path.startsWith(`${scopeRoot}/`)) return false
-    if (isScopeRoot) return path === createPath
-    if (isCreateRoute) return path === createPath
-    return true
-  })
-})
-
-const { topNav, middleNav, bottomNav } = useNavGrouping(consoleNav)
+const { topNav, middleNav, bottomNav } = useNavGrouping(desktop)
 </script>

@@ -1,7 +1,19 @@
 <template>
   <UDashboardPanel id="console-project-home">
     <template #header>
-      <LayoutsConsoleNavbar title="Project Overview" />
+      <LayoutsConsoleNavbar title="Project Overview">
+        <template #right>
+          <UButton
+            v-if="runtime.id"
+            color="neutral"
+            variant="ghost"
+            icon="i-lucide-x"
+            @click="clearSelection"
+          >
+            Clear
+          </UButton>
+        </template>
+      </LayoutsConsoleNavbar>
     </template>
 
     <template #body>
@@ -47,6 +59,7 @@
 
 <script setup lang="ts">
 import { watchEffect } from 'vue'
+import { useRuntimeProjectSelection } from '~/composables/console/project/state'
 import { useRuntimeProjectConsole } from '~/composables/console/project/useRuntimeProjectConsole'
 
 definePageMeta({
@@ -62,6 +75,7 @@ const {
   showSelector,
   setActiveScenario,
 } = useRuntimeProjectConsole()
+const { clearRuntimeProject } = useRuntimeProjectSelection()
 
 if (import.meta.client) {
   watchEffect(() => {
@@ -73,5 +87,9 @@ if (import.meta.client) {
 
 const selectScenario = (projectId: string) => {
   setActiveScenario(projectId)
+}
+
+const clearSelection = () => {
+  clearRuntimeProject()
 }
 </script>
