@@ -30,6 +30,6 @@ if (!resolvedScenarioId) {
     mode: 'read-only',
     kitchenId: resolvedScenarioId,
   })
-  await navigateTo('/console/kitchen/overview', { replace: true })
+  await navigateTo('/console/kitchen', { replace: true })
 }
 </script>

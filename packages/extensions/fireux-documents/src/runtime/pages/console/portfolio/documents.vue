@@ -11,8 +11,8 @@
           color="warning"
           variant="soft"
           title="No portfolio selected"
-          description="Select a portfolio on /console/portfolio/overview before using the document vault."
-          :actions="[{ label: 'Go to portfolios', to: '/console/portfolio/overview', icon: 'i-lucide-arrow-right' }]"
+          description="Select a portfolio on /console/portfolio before using the document vault."
+          :actions="[{ label: 'Go to portfolios', to: '/console/portfolio', icon: 'i-lucide-arrow-right' }]"
         />
 
         <template v-else>

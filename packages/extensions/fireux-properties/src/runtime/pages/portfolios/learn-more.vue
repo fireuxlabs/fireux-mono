@@ -33,7 +33,7 @@
 
       <div class="flex flex-wrap gap-2">
         <UButton to="/portfolios" color="primary" icon="i-lucide-building">Open portfolios</UButton>
-        <UButton to="/console/portfolio/overview" color="neutral" variant="soft" icon="i-lucide-layout-dashboard">Enter Portfolio Console</UButton>
+        <UButton to="/console/portfolio" color="neutral" variant="soft" icon="i-lucide-layout-dashboard">Enter Portfolio Console</UButton>
       </div>
     </UPageBody>
   </UPage>

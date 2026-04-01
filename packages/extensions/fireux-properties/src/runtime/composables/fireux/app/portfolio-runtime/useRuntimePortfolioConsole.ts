@@ -15,13 +15,22 @@ export function useRuntimePortfolioConsole() {
   const scenarios = computed(() => getReadOnlyPortfolioScenarios())
   const scenarioPills = computed(() =>
     scenarios.value
-      .map((entry) =>
-        pill({
+      .map((entry) => {
+        const card = pill({
           ...entry.portfolio,
           id: entry.id,
         } as Portfolio)
-      )
-      .filter((entry): entry is NonNullable<ReturnType<typeof pill>> => Boolean(entry))
+
+        if (!card) return null
+
+        return {
+          ...card,
+          imageUrl:
+            String((entry as any)?.manager?.avatar_url || '').trim() ||
+            String((entry as any)?.image_url || '').trim(),
+        }
+      })
+      .filter((entry): entry is NonNullable<ReturnType<typeof pill>> & { imageUrl: string } => Boolean(entry))
   )
 
   const activePortfolio = computed<Portfolio | null>(() => {

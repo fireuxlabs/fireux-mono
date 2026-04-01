@@ -9,7 +9,7 @@
         </p>
         <div class="flex flex-wrap gap-2">
           <UButton to="/learn-more" color="primary" icon="i-lucide-book-open">Public learn more</UButton>
-          <UButton to="/console/kitchen/overview" color="neutral" variant="soft" icon="i-lucide-terminal">Kitchen console</UButton>
+          <UButton to="/console/kitchen" color="neutral" variant="soft" icon="i-lucide-terminal">Kitchen console</UButton>
         </div>
       </UContainer>
     </section>

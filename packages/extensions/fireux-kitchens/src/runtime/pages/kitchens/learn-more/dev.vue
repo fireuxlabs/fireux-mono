@@ -30,7 +30,7 @@
             <p class="text-dimmed">Public runtime index for kitchen records.</p>
           </div>
           <div class="rounded border border-default p-3">
-            <p class="font-mono">/console/kitchen/overview</p>
+            <p class="font-mono">/console/kitchen</p>
             <p class="text-dimmed">Canonical kitchen console entry point.</p>
           </div>
           <div class="rounded border border-default p-3">

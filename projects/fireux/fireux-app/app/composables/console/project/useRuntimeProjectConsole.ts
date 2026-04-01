@@ -18,12 +18,19 @@ export function useRuntimeProjectConsole() {
 
   const scenarioPills = computed(() =>
     scenarios.value
-      .map((entry) =>
-        projectInterface({
+      .map((entry) => {
+        const pill = projectInterface({
           ...(entry.project ?? {}),
           id: entry.id,
         } as Project)
-      )
+
+        if (!pill) return null
+
+        return {
+          ...pill,
+          imageUrl: pill.imageUrl || normalizeString((entry as any).image_url),
+        }
+      })
       .filter((entry): entry is NonNullable<ReturnType<typeof projectInterface>> => Boolean(entry))
   )
 

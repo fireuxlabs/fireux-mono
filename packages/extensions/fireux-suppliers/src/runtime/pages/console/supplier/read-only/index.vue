@@ -16,5 +16,5 @@ setRuntimeSupplier({
   mode: 'read-only',
   supplierId: '',
 })
-await navigateTo('/console/supplier/overview', { replace: true })
+await navigateTo('/console/supplier', { replace: true })
 </script>

@@ -30,6 +30,6 @@ if (!resolvedScenarioId) {
     mode: 'read-only',
     portfolioId: resolvedScenarioId,
   })
-  await navigateTo('/console/portfolio/overview', { replace: true })
+  await navigateTo('/console/portfolio', { replace: true })
 }
 </script>

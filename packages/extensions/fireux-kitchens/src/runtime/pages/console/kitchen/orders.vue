@@ -11,11 +11,11 @@
           color="neutral"
           variant="soft"
           title="No kitchen selected"
-          description="Select a kitchen on /console/kitchen/overview before viewing incoming orders."
+          description="Select a kitchen on /console/kitchen before viewing incoming orders."
           :actions="[
             {
               label: 'Go to kitchens',
-              to: '/console/kitchen/overview',
+              to: '/console/kitchen',
               icon: 'i-lucide-arrow-right',
             },
           ]"

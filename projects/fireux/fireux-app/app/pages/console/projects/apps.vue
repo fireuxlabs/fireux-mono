@@ -11,11 +11,11 @@
           color="neutral"
           variant="soft"
           title="No project selected"
-          description="Select a project on /console/projects/overview before viewing apps."
+          description="Select a project on /console/projects before viewing apps."
           :actions="[
             {
               label: 'Go to projects',
-              to: '/console/projects/overview',
+              to: '/console/projects',
               icon: 'i-lucide-arrow-right',
             },
           ]"

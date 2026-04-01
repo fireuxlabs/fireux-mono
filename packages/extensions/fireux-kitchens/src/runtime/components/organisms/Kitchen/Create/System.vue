@@ -41,7 +41,7 @@
           <li v-else>Does not create the app-hosted kitchen console overlay.</li>
           <li v-if="isConsoleMode">
             Success routes to
-            <code>/console/kitchen/overview</code>.
+            <code>/console/kitchen</code>.
           </li>
           <li v-else>
             Success routes to
@@ -150,7 +150,7 @@ const headerDescription = computed(() =>
 )
 const primarySuccessTo = computed(() =>
   isConsoleMode.value
-    ? '/console/kitchen/overview'
+    ? '/console/kitchen'
     : `/kitchens/${encodeURIComponent(successResult.value?.id || '')}`
 )
 const primarySuccessLabel = computed(() =>

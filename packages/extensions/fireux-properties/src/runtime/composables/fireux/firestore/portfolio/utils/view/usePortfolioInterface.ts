@@ -34,7 +34,7 @@ export function usePortfolioInterface() {
 
     return {
       id,
-      to: id ? `/console/portfolio/overview` : '',
+      to: id ? `/console/portfolio` : '',
       avatarUrl: '',
       title: name,
       subtitle: regionLabel,

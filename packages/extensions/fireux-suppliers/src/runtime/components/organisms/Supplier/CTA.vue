@@ -1,7 +1,7 @@
 <template>
   <ConsoleEntityCTA
     title="Supplier console"
-    console-to="/console/supplier/overview"
+    console-to="/console/supplier"
     read-only-label="Demo Suppliers"
     learn-more-to="/suppliers/learn-more"
   >
@@ -64,6 +64,6 @@ const openScenario = async (supplierId: string) => {
   if (!resolvedId) return
 
   setRuntimeSupplier({ supplierId: resolvedId, mode: 'read-only' })
-  await router.push('/console/supplier/overview')
+  await router.push('/console/supplier')
 }
 </script>

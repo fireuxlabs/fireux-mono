@@ -16,5 +16,5 @@ setRuntimePortfolio({
   mode: 'read-only',
   portfolioId: '',
 })
-await navigateTo('/console/portfolio/overview', { replace: true })
+await navigateTo('/console/portfolio', { replace: true })
 </script>

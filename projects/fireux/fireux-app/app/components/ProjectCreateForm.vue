@@ -158,7 +158,7 @@ const resolvedReturnTo = computed(() => {
   if (explicit.startsWith('/')) return explicit
   const queryValue = String(route.query.returnTo || '').trim()
   if (queryValue.startsWith('/')) return queryValue
-  return props.mode === 'public' ? '/projects' : '/console/projects/overview'
+  return props.mode === 'public' ? '/projects' : '/console/projects'
 })
 
 watch(endpointUrl, () => {

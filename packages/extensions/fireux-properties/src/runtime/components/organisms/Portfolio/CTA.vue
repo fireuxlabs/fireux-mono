@@ -1,7 +1,7 @@
 <template>
   <ConsoleEntityCTA
     title="Portfolio console"
-    console-to="/console/portfolio/overview"
+    console-to="/console/portfolio"
     read-only-label="Demo Portfolios"
     learn-more-to="/portfolios/learn-more"
   >
@@ -64,6 +64,6 @@ const openScenario = async (portfolioId: string) => {
   if (!resolvedId) return
 
   setRuntimePortfolio({ portfolioId: resolvedId, mode: 'read-only' })
-  await router.push('/console/portfolio/overview')
+  await router.push('/console/portfolio')
 }
 </script>

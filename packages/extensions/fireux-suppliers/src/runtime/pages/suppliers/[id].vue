@@ -18,7 +18,7 @@
           size="xs"
           color="neutral"
           variant="soft"
-          @click="navigateTo('/console/supplier/overview')"
+          @click="navigateTo('/console/supplier')"
         >
           Manage supplier
         </UButton>

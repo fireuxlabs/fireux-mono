@@ -48,7 +48,7 @@ const actions = [
   {
     label: 'Project',
     cta: 'Open Project Console',
-    to: '/console/projects/overview',
+    to: '/console/projects',
     icon: 'i-lucide-layout-dashboard',
   },
   {

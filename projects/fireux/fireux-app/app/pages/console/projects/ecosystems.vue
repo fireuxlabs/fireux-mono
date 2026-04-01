@@ -11,11 +11,11 @@
           color="neutral"
           variant="soft"
           title="No project selected"
-          description="Select a project on /console/projects/overview before viewing ecosystems."
+          description="Select a project on /console/projects before viewing ecosystems."
           :actions="[
             {
               label: 'Go to projects',
-              to: '/console/projects/overview',
+              to: '/console/projects',
               icon: 'i-lucide-arrow-right',
             },
           ]"

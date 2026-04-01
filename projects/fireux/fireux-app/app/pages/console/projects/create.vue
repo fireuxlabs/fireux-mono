@@ -7,8 +7,8 @@
     <template #body>
       <ProjectCreateSystem
         mode="console"
-        return-to="/console/projects/overview"
-        cancel-to="/console/projects/overview"
+        return-to="/console/projects"
+        cancel-to="/console/projects"
       />
     </template>
   </UDashboardPanel>

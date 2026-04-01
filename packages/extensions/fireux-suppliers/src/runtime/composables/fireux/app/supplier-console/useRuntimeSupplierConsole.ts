@@ -15,12 +15,19 @@ export function useRuntimeSupplierConsole() {
   const scenarios = computed(() => getReadOnlySupplierScenarios())
   const scenarioPills = computed(() =>
     scenarios.value
-      .map((entry) =>
-        supplierInterface({
+      .map((entry) => {
+        const pill = supplierInterface({
           ...(entry.supplier ?? {}),
           id: String((entry.supplier as any)?.id || '').trim() || String(entry.id || '').trim(),
         } as Supplier)
-      )
+
+        if (!pill) return null
+
+        return {
+          ...pill,
+          avatarUrl: pill.avatarUrl || String((entry as any)?.image_url || '').trim(),
+        }
+      })
       .filter((entry): entry is NonNullable<ReturnType<typeof supplierInterface>> => Boolean(entry))
   )
 

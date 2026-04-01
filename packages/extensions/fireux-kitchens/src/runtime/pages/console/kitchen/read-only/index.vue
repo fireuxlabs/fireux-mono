@@ -16,5 +16,5 @@ setRuntimeKitchen({
   mode: 'read-only',
   kitchenId: '',
 })
-await navigateTo('/console/kitchen/overview', { replace: true })
+await navigateTo('/console/kitchen', { replace: true })
 </script>

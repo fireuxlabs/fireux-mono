@@ -106,7 +106,7 @@ const resolvedReturnTo = computed(() => {
   if (explicit.startsWith('/')) return explicit
   const queryValue = String(route.query.returnTo || '').trim()
   if (queryValue.startsWith('/')) return queryValue
-  return props.mode === 'public' ? '/portfolios' : '/console/portfolio/overview'
+  return props.mode === 'public' ? '/portfolios' : '/console/portfolio'
 })
 
 const submit = async () => {

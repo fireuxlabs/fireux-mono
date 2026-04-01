@@ -30,6 +30,6 @@ if (!resolvedScenarioId) {
     mode: 'read-only',
     projectId: resolvedScenarioId,
   })
-  await navigateTo('/console/projects/overview', { replace: true })
+  await navigateTo('/console/projects', { replace: true })
 }
 </script>

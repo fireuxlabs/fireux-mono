@@ -15,12 +15,22 @@ export function useRuntimeKitchenConsole() {
   const scenarios = computed(() => getReadOnlyKitchenScenarios())
   const scenarioPills = computed(() =>
     scenarios.value
-      .map((entry) =>
-        kitchenInterface({
+      .map((entry) => {
+        const pill = kitchenInterface({
           ...(entry.kitchen ?? {}),
           id: String((entry.kitchen as any)?.id || '').trim() || String((entry as any)?.id || '').trim(),
         } as Kitchen)
-      )
+
+        if (!pill) return null
+
+        return {
+          ...pill,
+          imageUrl:
+            pill.imageUrl ||
+            String((entry.kitchen as any)?.image_url || '').trim() ||
+            String((entry as any)?.image_url || '').trim(),
+        }
+      })
       .filter((entry): entry is NonNullable<ReturnType<typeof kitchenInterface>> => Boolean(entry))
   )
 

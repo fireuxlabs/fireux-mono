@@ -7,8 +7,8 @@
     <template #body>
       <SupplierCreateSystem
         mode="console"
-        return-to="/console/supplier/overview"
-        cancel-to="/console/supplier/overview"
+        return-to="/console/supplier"
+        cancel-to="/console/supplier"
       />
     </template>
   </UDashboardPanel>

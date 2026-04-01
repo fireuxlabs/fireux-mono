@@ -16,5 +16,5 @@ setRuntimeProject({
   mode: 'read-only',
   projectId: '',
 })
-await navigateTo('/console/projects/overview', { replace: true })
+await navigateTo('/console/projects', { replace: true })
 </script>

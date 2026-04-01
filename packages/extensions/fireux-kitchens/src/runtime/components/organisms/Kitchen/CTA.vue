@@ -1,7 +1,7 @@
 <template>
   <ConsoleEntityCTA
     title="Kitchen console"
-    console-to="/console/kitchen/overview"
+    console-to="/console/kitchen"
     read-only-label="Demo Kitchens"
     learn-more-to="/kitchens/learn-more"
   >
@@ -64,6 +64,6 @@ const openScenario = async (kitchenId: string) => {
   if (!resolvedId) return
 
   setRuntimeKitchen({ kitchenId: resolvedId, mode: 'read-only' })
-  await router.push('/console/kitchen/overview')
+  await router.push('/console/kitchen')
 }
 </script>

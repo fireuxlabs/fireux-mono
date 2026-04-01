@@ -138,7 +138,7 @@ const headerDescription = computed(() =>
 const successTo = computed(() => {
   const explicit = String(props.returnTo || '').trim()
   if (explicit.startsWith('/')) return explicit
-  return resolvedMode.value === 'public' ? '/suppliers' : '/console/supplier/overview'
+  return resolvedMode.value === 'public' ? '/suppliers' : '/console/supplier'
 })
 
 const handleCreate = async () => {
@@ -157,7 +157,7 @@ const handleCreate = async () => {
     const fallbackTo =
       resolvedMode.value === 'public'
         ? `/suppliers/${encodeURIComponent(result.id)}`
-        : '/console/supplier/overview'
+        : '/console/supplier'
     await router.push(props.returnTo || fallbackTo)
   } catch (error) {
     const message =

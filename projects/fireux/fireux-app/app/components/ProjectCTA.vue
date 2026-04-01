@@ -1,7 +1,7 @@
 <template>
   <ConsoleEntityCTA
     title="Project console"
-    console-to="/console/projects/overview"
+    console-to="/console/projects"
     read-only-label="Demo Projects"
     learn-more-to="/projects/learn-more"
   >
@@ -64,6 +64,6 @@ const openScenario = async (projectId: string) => {
   if (!resolvedId) return
 
   setRuntimeProject({ projectId: resolvedId, mode: 'read-only' })
-  await router.push('/console/projects/overview')
+  await router.push('/console/projects')
 }
 </script>

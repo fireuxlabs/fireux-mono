@@ -7,8 +7,8 @@
     <template #body>
       <PortfolioCreateSystem
         mode="console"
-        return-to="/console/portfolio/overview"
-        cancel-to="/console/portfolio/overview"
+        return-to="/console/portfolio"
+        cancel-to="/console/portfolio"
       />
     </template>
   </UDashboardPanel>

@@ -11,11 +11,11 @@
           color="warning"
           variant="soft"
           title="No portfolio selected"
-          description="Select a portfolio on /console/portfolio/overview before using incidents."
+          description="Select a portfolio on /console/portfolio before using incidents."
           :actions="[
             {
               label: 'Go to portfolios',
-              to: '/console/portfolio/overview',
+              to: '/console/portfolio',
               icon: 'i-lucide-arrow-right'
             }
           ]"

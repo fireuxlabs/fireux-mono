@@ -30,7 +30,7 @@
             <p class="text-dimmed">Public project index sourced from <code>db.collections.projects</code>.</p>
           </div>
           <div class="rounded border border-default p-3">
-            <p class="font-mono">/console/projects/overview</p>
+            <p class="font-mono">/console/projects</p>
             <p class="text-dimmed">Project console home.</p>
           </div>
           <div class="rounded border border-default p-3">
