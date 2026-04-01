@@ -1,4 +1,3 @@
-<!-- packages/core/fireux-core/src/runtime/layouts/dashboard.vue -->
 <template>
   <UDashboardGroup unit="rem">
     <UDashboardSidebar
@@ -21,9 +20,7 @@
             orientation="vertical"
           />
 
-          <USeparator
-            v-if="topNav.length && (middleNav.length || bottomNav.length)"
-          />
+          <USeparator v-if="topNav.length && (middleNav.length || bottomNav.length)" />
 
           <UNavigationMenu
             v-if="middleNav.length"
@@ -42,14 +39,10 @@
           />
 
           <div class="lg:hidden">
-            <USeparator
-              v-if="topNav.length || middleNav.length || bottomNav.length"
-            />
+            <USeparator v-if="topNav.length || middleNav.length || bottomNav.length" />
 
             <div class="pt-3">
-              <LayoutsSharedSideBarFooter
-                :collapsed="collapsed ?? false"
-              />
+              <LayoutsSharedSideBarFooter :collapsed="collapsed ?? false" />
             </div>
           </div>
         </div>
