@@ -11,6 +11,7 @@ export function filterConsoleScopeNavItems(items: NavItem[], routePath: string) 
 
   const scopeRoot = `/console/${scopeMatch[1]}`
   const createPath = `${scopeRoot}/create`
+  const isScopeRoot = currentPath === scopeRoot
   const isCreateRoute = currentPath === createPath
 
   return items.filter((item) => {
@@ -18,6 +19,7 @@ export function filterConsoleScopeNavItems(items: NavItem[], routePath: string) 
     if (!path.startsWith('/console/')) return true
     if (path === scopeRoot) return false
     if (path !== scopeRoot && !path.startsWith(`${scopeRoot}/`)) return false
+    if (isScopeRoot) return path === createPath
     if (!isCreateRoute) return true
     return path === createPath
   })
