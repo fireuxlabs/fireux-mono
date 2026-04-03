@@ -18,10 +18,12 @@
           />
 
           <div v-else class="flex min-h-11 items-center px-1">
-            <AppBrandWordmark
-              size="card"
-              alt="FireUX"
-            />
+            <NuxtLink to="/" class="inline-flex" aria-label="Home">
+              <AppBrandWordmark
+                size="card"
+                alt="FireUX"
+              />
+            </NuxtLink>
           </div>
         </div>
       </template>
