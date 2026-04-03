@@ -18,6 +18,26 @@
 
     <template #body>
       <section class="space-y-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-[11px] font-semibold uppercase tracking-[0.16em] text-toned">
+            Mode
+          </span>
+
+          <div class="inline-flex items-center gap-1 rounded-lg border border-default bg-default/60 p-1">
+            <UButton
+              v-for="option in modeOptions"
+              :key="option.value"
+              size="xs"
+              :color="selectedMode === option.value ? 'primary' : 'neutral'"
+              :variant="selectedMode === option.value ? 'solid' : 'ghost'"
+              :aria-pressed="selectedMode === option.value"
+              @click="selectMode(option.value)"
+            >
+              {{ option.label }}
+            </UButton>
+          </div>
+        </div>
+
         <UAlert
           v-if="activeProjectPill"
           color="primary"
@@ -27,22 +47,22 @@
         />
 
         <UAlert
-          v-else-if="showSelector"
+          v-else-if="availableProjectPills.length"
           color="neutral"
           variant="soft"
-          title="Select a demo project"
+          :title="selectTitle"
         />
 
         <UAlert
           v-else
           color="neutral"
           variant="soft"
-          title="No demo projects"
+          :title="emptyTitle"
         />
 
-        <div v-if="showSelector" class="space-y-2">
+        <div v-if="availableProjectPills.length" class="space-y-2">
           <ProjectCardsPill
-            v-for="item in projectPills"
+            v-for="item in availableProjectPills"
             :key="item.id"
             v-bind="item"
             :link="false"
@@ -67,6 +87,7 @@
 
 <script setup lang="ts">
 import { useState } from '#imports'
+import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useProjectInterface } from 'fireux-core/runtime/composables/fireux/firestore/system/project/utils/view/useProjectInterface'
 import type { Project } from 'fireux-core/runtime/models/system/project.model'
@@ -93,14 +114,23 @@ type ConsoleHeaderPill = {
   props: Record<string, unknown>
 }
 
+const modeOptions = [
+  { value: 'read-only', label: 'Demo' },
+  { value: 'live', label: 'Real' },
+  { value: 'test', label: 'Test' },
+] as const
+
 const normalizeString = (value: unknown): string => String(value || '').trim()
 
-const { runtime, scenarios, setActiveProject } = useRuntimeProjectConsole()
-const { clearRuntimeProject } = useRuntimeProjectSelection()
+const { runtime, scenarios } = useRuntimeProjectConsole()
+const projectSelection = useRuntimeProjectSelection()
 const { currentUser } = useUser()
 const { interface: toProjectCard } = useProjectInterface()
+const { projects: liveProjects } = useProjectCollection('projects')
+const { projects: testProjects } = useProjectCollection('test-projects')
 
 type ProjectPill = NonNullable<ReturnType<typeof toProjectCard>>
+type ConsoleMode = (typeof modeOptions)[number]['value']
 
 const buildProjectPill = (
   target?: Project | null,
@@ -120,14 +150,33 @@ const buildProjectPill = (
   }
 }
 
-const projectPills = computed(() =>
+const demoProjectPills = computed(() =>
   scenarios.value
     .map((entry) => buildProjectPill(entry.project as Project, entry.image_url, entry.id))
     .filter((entry): entry is ProjectPill => Boolean(entry))
 )
 
+const liveProjectPills = computed(() =>
+  liveProjects.value
+    .map((entry) => buildProjectPill(entry as Project))
+    .filter((entry): entry is ProjectPill => Boolean(entry))
+)
+
+const testProjectPills = computed(() =>
+  testProjects.value
+    .map((entry) => buildProjectPill(entry as Project))
+    .filter((entry): entry is ProjectPill => Boolean(entry))
+)
+
+const selectedMode = projectSelection.mode
+const availableProjectPills = computed(() => {
+  if (selectedMode.value === 'live') return liveProjectPills.value
+  if (selectedMode.value === 'test') return testProjectPills.value
+  return demoProjectPills.value
+})
+
 const activeProjectPill = computed(() =>
-  projectPills.value.find((item) => item.id === runtime.id.value) ??
+  availableProjectPills.value.find((item) => item.id === runtime.id.value) ??
   buildProjectPill(
     runtime.project.value as Project | null,
     runtime.scenario.value?.image_url,
@@ -135,11 +184,20 @@ const activeProjectPill = computed(() =>
   )
 )
 
-const showSelector = computed(() => scenarios.value.length > 1)
 const projectHeaderPill = useState<ConsoleHeaderPill | null>(
   'console-header-pill-project',
   () => null
 )
+const selectTitle = computed(() => {
+  if (selectedMode.value === 'live') return 'Select a real project'
+  if (selectedMode.value === 'test') return 'Select a test project'
+  return 'Select a demo project'
+})
+const emptyTitle = computed(() => {
+  if (selectedMode.value === 'live') return 'No real projects'
+  if (selectedMode.value === 'test') return 'No test projects'
+  return 'No demo projects'
+})
 
 watchEffect(() => {
   const pill = activeProjectPill.value
@@ -163,30 +221,48 @@ onScopeDispose(() => {
 if (import.meta.client) {
   watchEffect(() => {
     if (runtime.id.value) return
-    if (scenarios.value.length !== 1) return
-    setActiveProject(String(scenarios.value[0]?.id || ''))
+    if (availableProjectPills.value.length !== 1) return
+    selectProject(String(availableProjectPills.value[0]?.id || ''))
   })
 }
 
 const selectProject = (projectId: string) => {
-  setActiveProject(projectId)
+  const resolvedId = normalizeString(projectId)
+  if (!resolvedId) return
+  projectSelection.setRuntimeProject({
+    projectId: resolvedId,
+    mode: selectedMode.value,
+  })
+}
+
+const selectMode = (mode: ConsoleMode) => {
+  projectSelection.setRuntimeProject({
+    selectedId: '',
+    mode,
+  })
 }
 
 const clearSelection = () => {
-  clearRuntimeProject()
+  projectSelection.setRuntimeProject({
+    selectedId: '',
+    mode: selectedMode.value,
+  })
 }
 
 const debugJson = computed(() => ({
+  mode: selectedMode.value,
   selectedProject: runtime.project.value ?? null,
   availableProjects: runtime.project.value
     ? null
-    : scenarios.value.map((entry) => ({
-        id: entry.id,
-        name: entry.name,
-        label: entry.label,
-        image_url: entry.image_url,
-        project: entry.project,
-      })),
+    : selectedMode.value === 'read-only'
+      ? scenarios.value.map((entry) => ({
+          id: entry.id,
+          name: entry.name,
+          label: entry.label,
+          image_url: entry.image_url,
+          project: entry.project,
+        }))
+      : (selectedMode.value === 'test' ? testProjects.value : liveProjects.value),
   user: currentUser.value ?? null,
 }))
 </script>

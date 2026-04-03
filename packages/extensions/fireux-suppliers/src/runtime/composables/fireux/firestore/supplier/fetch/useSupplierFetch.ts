@@ -4,12 +4,17 @@ import { useCollection, useFirestore } from 'fireux-core/runtime/composables/fir
 import { computed } from 'vue'
 import type { Supplier } from '../../../../../models/supplier/Supplier.model'
 
+type UseSupplierFetchOptions = {
+  collectionPath?: string
+}
+
 const supplierCollection = 'suppliers'
 // Hydrated supplier records for UI use.
-export function useSupplierFetch() {
+export function useSupplierFetch(options: UseSupplierFetchOptions = {}) {
   const db = useFirestore()
+  const collectionPath = String(options.collectionPath || supplierCollection).trim() || supplierCollection
   const coreSuppliersRef = useCollection<Supplier>(
-    collection(db, supplierCollection) as any,
+    collection(db, collectionPath) as any,
     { idField: 'id' } as any
   )
 

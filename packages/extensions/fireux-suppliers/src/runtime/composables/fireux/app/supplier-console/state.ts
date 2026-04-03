@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { selectionKey, useRuntimeSelection } from 'fireux-core/runtime/composables/fireux/runtime/useRuntimeSelection'
 
-export type RuntimeSupplierMode = 'live' | 'read-only'
+export type RuntimeSupplierMode = 'live' | 'read-only' | 'test'
 
 type RuntimeSupplierSelectionState = {
   selectedId: string
@@ -18,7 +18,11 @@ const normalizeString = (value: unknown): string => String(value || '').trim()
 
 const normalizeMode = (value: unknown): RuntimeSupplierMode => {
   const normalized = normalizeString(value).toLowerCase()
-  if (normalized === 'dummy' || normalized === 'readonly') return 'read-only'
+  if (normalized === 'demo' || normalized === 'dummy' || normalized === 'readonly') {
+    return 'read-only'
+  }
+  if (normalized === 'real') return 'live'
+  if (normalized === 'live' || normalized === 'test') return normalized
   return 'read-only'
 }
 

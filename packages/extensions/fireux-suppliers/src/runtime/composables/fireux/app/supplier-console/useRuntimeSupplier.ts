@@ -11,11 +11,16 @@ export function useRuntimeSupplier() {
   const selection = useRuntimeSupplierSelection()
   const id = selection.selectedId
   const readOnly = computed(() => selection.mode.value === 'read-only')
+  const supplierCollectionPath = computed(() =>
+    selection.mode.value === 'test' ? 'test-suppliers' : 'suppliers'
+  )
   const liveSupplierId = computed(() => (readOnly.value ? '' : id.value))
   const {
     supplier: liveSupplier,
     pending: livePending,
-  } = useSupplierRecord(liveSupplierId)
+  } = useSupplierRecord(liveSupplierId, {
+    collectionPath: supplierCollectionPath,
+  })
 
   const scenario = computed(() =>
     readOnly.value ? getReadOnlySupplierScenario(id.value) : null

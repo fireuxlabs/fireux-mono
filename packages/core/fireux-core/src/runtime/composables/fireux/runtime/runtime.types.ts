@@ -2,9 +2,11 @@ import type { ComputedRef, Ref } from 'vue'
 
 /**
  * Canon runtime modes (shared across all entities).
- * - read-only => scenario only (NO Firestore)
+ * - read-only => scenario/demo only (NO Firestore)
+ * - live => production Firestore
+ * - test => test Firestore
  */
-export type RuntimeMode = 'live' | 'read-only'
+export type RuntimeMode = 'live' | 'read-only' | 'test'
 
 export type RuntimeRefBase = {
   id: ComputedRef<string>

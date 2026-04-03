@@ -11,19 +11,24 @@ type RuntimeProject = Partial<Project> & Record<string, unknown> & {
   project_name?: string
 }
 
+const resolveProjectCollectionPath = (mode: string) =>
+  mode === 'test' ? 'test-projects' : 'projects'
+
 /**
  * Canon project console seam.
  */
 export function useRuntimeProject() {
   const selection = useRuntimeProjectSelection()
   const id = selection.selectedId
+  const mode = selection.mode
   const readOnly = computed(() => selection.mode.value === 'read-only')
+  const documentCollectionPath = computed(() => resolveProjectCollectionPath(mode.value))
 
   const db = import.meta.server ? null : useFirestore()
   const liveDocRef = computed(() => {
     if (!db) return null
     if (!id.value || readOnly.value) return null
-    return doc(db, 'projects', id.value)
+    return doc(db, documentCollectionPath.value, id.value)
   })
 
   const liveProject =

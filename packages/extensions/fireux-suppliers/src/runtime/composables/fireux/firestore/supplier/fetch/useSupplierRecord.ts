@@ -36,10 +36,17 @@ export type SupplierRefs = {
 }
 
 export function useSupplierRecord(
-  id: string | null | undefined | Ref<string | null | undefined>
+  id: string | null | undefined | Ref<string | null | undefined>,
+  options: {
+    collectionPath?: string | Ref<string | null | undefined>
+  } = {}
 ) {
   const { appId } = useFireUXConfig()
   const supplierId = computed(() => (isRef(id) ? id.value : id))
+  const collectionPath = computed(() =>
+    String(isRef(options.collectionPath) ? options.collectionPath.value : options.collectionPath || supplierCollection).trim() ||
+    supplierCollection
+  )
 
   if (import.meta.server) {
     const supplier = computed<Supplier | null>(() => null)
@@ -52,7 +59,7 @@ export function useSupplierRecord(
   const db = useFirestore()
 
   const coreDoc = computed(() =>
-    supplierId.value ? (doc(db, supplierCollection, supplierId.value) as any) : null
+    supplierId.value ? (doc(db, collectionPath.value, supplierId.value) as any) : null
   )
 
   const appDoc = computed(() =>

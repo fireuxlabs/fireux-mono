@@ -1,4 +1,4 @@
-export type RuntimeKitchenMode = 'read-only' | 'live'
+export type RuntimeKitchenMode = 'read-only' | 'live' | 'test'
 
 export type RuntimeKitchenSelection = {
   kitchenId?: string | null | undefined
@@ -16,8 +16,11 @@ export const normalizeString = (value: unknown): string =>
 
 export const normalizeMode = (value: unknown): RuntimeKitchenMode | null => {
   const normalized = normalizeString(value).toLowerCase()
-  if (normalized === 'dummy' || normalized === 'readonly') return 'read-only'
-  if (normalized === 'read-only') {
+  if (normalized === 'demo' || normalized === 'dummy' || normalized === 'readonly') {
+    return 'read-only'
+  }
+  if (normalized === 'real') return 'live'
+  if (normalized === 'read-only' || normalized === 'live' || normalized === 'test') {
     return normalized
   }
   return null
@@ -56,12 +59,12 @@ export const resolveKitchenRuntimeChildCollectionPath = (input: {
 
 export const resolveRuntimeKitchenDocumentCollectionPath = (
   mode: RuntimeKitchenMode
-): string => ROOT_KITCHEN_COLLECTION_PATH
+): string => (mode === 'test' ? 'test-kitchens' : ROOT_KITCHEN_COLLECTION_PATH)
 
 export const resolveRuntimeKitchenDataCollectionPath = (
   mode: RuntimeKitchenMode,
   appId?: unknown
-): string => resolveKitchenConsoleCollectionPath(appId)
+): string => (mode === 'test' ? 'test-kitchens' : resolveKitchenConsoleCollectionPath(appId))
 
 export const resolveRuntimeKitchenCollectionPath =
   resolveRuntimeKitchenDocumentCollectionPath
