@@ -15,7 +15,7 @@
     "deploy:hosting": "pnpm build && pnpm prepare:firebase-output && pnpm dlx firebase-tools@15.8.0 deploy --project fireux-2005 --config firebase.json",
     "check:env": "node ../../../scripts/check-env.mjs",
     "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
-    "clean": "rimraf .nuxt dist"
+    "clean": "rimraf .nuxt app/.nuxt dist"
   },
   "dependencies": {
     "@nuxt/content": "3.6.3",

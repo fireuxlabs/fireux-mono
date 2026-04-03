@@ -42,14 +42,14 @@
 
         <div v-if="showSelector" class="space-y-2">
           <ProjectCardsPill
-            v-for="item in scenarioPills"
+            v-for="item in projectPills"
             :key="item.id"
             v-bind="item"
             :link="false"
             :action="true"
             :show-badges="false"
             class="cursor-pointer"
-            @action="selectScenario(item.id)"
+            @action="selectProject(item.id)"
           />
         </div>
 
@@ -66,37 +66,110 @@
 </template>
 
 <script setup lang="ts">
-import { computed, watchEffect } from 'vue'
+import { useState } from '#imports'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useProjectInterface } from 'fireux-core/runtime/composables/fireux/firestore/system/project/utils/view/useProjectInterface'
+import type { Project } from 'fireux-core/runtime/models/system/project.model'
+import { computed, onScopeDispose, watchEffect } from 'vue'
 import { useRuntimeProjectSelection } from '~/composables/console/project/state'
 import { useRuntimeProjectConsole } from '~/composables/console/project/useRuntimeProjectConsole'
 
 definePageMeta({
   layout: 'console',
+  nav: {
+    key: 'console-projects',
+    label: 'Projects',
+    icon: 'i-lucide-briefcase-business',
+    order: 10,
+    desktop: true,
+    mobile: true,
+    layouts: ['console'],
+  },
   requiresAuth: true,
 })
 
-const {
-  runtime,
-  scenarios,
-  scenarioPills,
-  activeProjectPill,
-  showSelector,
-  setActiveScenario,
-} = useRuntimeProjectConsole()
+type ConsoleHeaderPill = {
+  component: string
+  props: Record<string, unknown>
+}
+
+const normalizeString = (value: unknown): string => String(value || '').trim()
+
+const { runtime, scenarios, setActiveProject } = useRuntimeProjectConsole()
 const { clearRuntimeProject } = useRuntimeProjectSelection()
 const { currentUser } = useUser()
+const { interface: toProjectCard } = useProjectInterface()
+
+type ProjectPill = NonNullable<ReturnType<typeof toProjectCard>>
+
+const buildProjectPill = (
+  target?: Project | null,
+  imageUrl?: unknown,
+  id?: unknown
+): ProjectPill | null => {
+  const pill = toProjectCard({
+    ...(target ?? {}),
+    id: normalizeString(id) || normalizeString(target?.id),
+  } as Project)
+
+  if (!pill) return null
+
+  return {
+    ...pill,
+    imageUrl: pill.imageUrl || normalizeString(imageUrl),
+  }
+}
+
+const projectPills = computed(() =>
+  scenarios.value
+    .map((entry) => buildProjectPill(entry.project as Project, entry.image_url, entry.id))
+    .filter((entry): entry is ProjectPill => Boolean(entry))
+)
+
+const activeProjectPill = computed(() =>
+  projectPills.value.find((item) => item.id === runtime.id.value) ??
+  buildProjectPill(
+    runtime.project.value as Project | null,
+    runtime.scenario.value?.image_url,
+    runtime.id.value
+  )
+)
+
+const showSelector = computed(() => scenarios.value.length > 1)
+const projectHeaderPill = useState<ConsoleHeaderPill | null>(
+  'console-header-pill-project',
+  () => null
+)
+
+watchEffect(() => {
+  const pill = activeProjectPill.value
+
+  projectHeaderPill.value = pill
+    ? {
+        component: 'ProjectCardsPill',
+        props: {
+          ...pill,
+          link: false,
+          showBadges: false,
+        },
+      }
+    : null
+})
+
+onScopeDispose(() => {
+  projectHeaderPill.value = null
+})
 
 if (import.meta.client) {
   watchEffect(() => {
     if (runtime.id.value) return
     if (scenarios.value.length !== 1) return
-    setActiveScenario(String(scenarios.value[0]?.id || ''))
+    setActiveProject(String(scenarios.value[0]?.id || ''))
   })
 }
 
-const selectScenario = (projectId: string) => {
-  setActiveScenario(projectId)
+const selectProject = (projectId: string) => {
+  setActiveProject(projectId)
 }
 
 const clearSelection = () => {

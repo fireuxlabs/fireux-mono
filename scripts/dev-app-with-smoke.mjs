@@ -14,6 +14,7 @@ function usage() {
 }
 
 const args = parseArgs(process.argv.slice(2))
+const rawArgs = process.argv.slice(2)
 const appKey = typeof args.app === 'string' ? args.app : ''
 
 if (!appKey) {
@@ -25,6 +26,44 @@ const app = getDevApp(appKey)
 const skipPrepare = args['skip-prepare'] === true
 const skipSmoke = args['skip-smoke'] === true
 
+function collectPassthroughArgs(argv) {
+  const passthrough = []
+  const handled = new Set(['app', 'skip-prepare', 'skip-smoke'])
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const token = argv[i]
+    if (!token || !token.startsWith('--')) {
+      passthrough.push(token)
+      continue
+    }
+
+    const [rawKey, rawValue] = token.split('=')
+    const key = rawKey.slice(2)
+
+    if (handled.has(key)) {
+      if (rawValue === undefined) {
+        const next = argv[i + 1]
+        if (next && !next.startsWith('--')) i += 1
+      }
+      continue
+    }
+
+    passthrough.push(token)
+
+    if (rawValue === undefined) {
+      const next = argv[i + 1]
+      if (next && !next.startsWith('--')) {
+        passthrough.push(next)
+        i += 1
+      }
+    }
+  }
+
+  return passthrough.filter(Boolean)
+}
+
+const passthroughArgs = collectPassthroughArgs(rawArgs)
+
 const freePort = spawnSync('node', ['scripts/free-port.mjs', String(app.port)], {
   stdio: 'inherit',
 })
@@ -35,7 +74,7 @@ if (!skipPrepare) {
 }
 
 console.log(`[dev] Starting ${app.name} on ${app.baseUrl}`)
-const child = spawn('pnpm', ['--filter', app.filter, 'dev'], {
+const child = spawn('pnpm', ['--filter', app.filter, 'dev', ...passthroughArgs], {
   stdio: 'inherit',
   env: process.env,
 })

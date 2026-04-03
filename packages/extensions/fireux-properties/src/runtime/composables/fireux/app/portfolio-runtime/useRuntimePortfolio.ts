@@ -1,4 +1,4 @@
-import { computed, unref, type Ref } from 'vue'
+import { computed, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRuntimePortfolioSelection } from './state'
 import {
@@ -6,9 +6,7 @@ import {
   resolveRuntimePortfolioDocumentCollectionPath,
   resolveRuntimePortfolioPath,
 } from './shared'
-import { useRuntimePortfolioContext, type UseRuntimePortfolioParams } from './useRuntimePortfolioContext'
 import { useRuntimePortfolioDocument } from './useRuntimePortfolioDocument'
-import { useRuntimePortfolioData } from './useRuntimePortfolioData'
 
 export { useRuntimePortfolioSelection } from './state'
 export type { RuntimePortfolioMode } from './shared'
@@ -19,17 +17,15 @@ export type { RuntimePortfolioMode } from './shared'
  * Root portfolio identity stays at `/portfolios/<id>`.
  * Console-owned data lives under the app-hosted portfolio scope.
  */
-export function useRuntimePortfolio(params?: UseRuntimePortfolioParams) {
+export function useRuntimePortfolio() {
   const { appId } = useFireUXConfig()
   const selection = useRuntimePortfolioSelection()
-  const { id, mode, isReadOnly } = useRuntimePortfolioContext(params, selection)
-  const documentCollectionPath = computed(() => {
-    if (params?.collectionPath !== undefined) {
-      const explicitPath = String(unref(params.collectionPath) || '').trim()
-      if (explicitPath) return explicitPath
-    }
-    return resolveRuntimePortfolioDocumentCollectionPath(mode.value)
-  })
+  const id = selection.selectedId
+  const mode = selection.mode
+  const isReadOnly = computed(() => mode.value === 'read-only')
+  const documentCollectionPath = computed(() =>
+    resolveRuntimePortfolioDocumentCollectionPath(mode.value)
+  )
   const portfolioCollectionPath = computed(() =>
     resolveRuntimePortfolioDataCollectionPath(mode.value, appId)
   )
@@ -38,14 +34,12 @@ export function useRuntimePortfolio(params?: UseRuntimePortfolioParams) {
     isReadOnly,
     documentCollectionPath,
   })
-  const data = useRuntimePortfolioData({
-    id,
-    pending,
-    doc,
-    scenario,
+  const isLoading = computed(() => Boolean(pending.value))
+  const isReady = computed(() => {
+    if (!id.value) return false
+    if (isLoading.value) return false
+    return Boolean(doc.value)
   })
-  const isLoading = computed(() => data.isLoading.value)
-  const isReady = computed(() => data.isReady.value)
 
   return {
     id,
@@ -59,7 +53,6 @@ export function useRuntimePortfolio(params?: UseRuntimePortfolioParams) {
     pending,
     isLoading,
     isReady,
-    data,
 
     portfolio: doc,
     scenario,

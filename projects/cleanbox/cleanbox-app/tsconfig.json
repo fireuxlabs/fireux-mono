@@ -7,14 +7,14 @@
     "moduleResolution": "Bundler",
     "paths": {
       "#pwa": ["@vite-pwa/nuxt/dist/runtime/composables/index"],
-      "#imports": ["app/.nuxt/imports.d.ts", ".nuxt/imports.d.ts"],
-      "#build/*": ["app/.nuxt/*", ".nuxt/*"],
+      "#imports": [".nuxt/imports.d.ts", "app/.nuxt/imports.d.ts"],
+      "#build/*": [".nuxt/*", "app/.nuxt/*"],
       "fireux-core/runtime/*": ["../../../packages/core/fireux-core/src/runtime/*"]
       // Do NOT override ~/*, @/*, ~~/* here; Nuxt sets them to srcDir (app/)
     },
     "skipLibCheck": true
   },
-  "include": ["./app/.nuxt/nuxt.d.ts", "./.nuxt/nuxt.d.ts", "./**/*", "../../../types/**/*.d.ts"],
+  "include": ["./.nuxt/nuxt.d.ts", "./app/.nuxt/nuxt.d.ts", "./**/*", "../../../types/**/*.d.ts"],
   "exclude": [
     "node_modules",
     "**/node_modules/**/@vite-pwa/nuxt/dist/runtime/components/*.vue"

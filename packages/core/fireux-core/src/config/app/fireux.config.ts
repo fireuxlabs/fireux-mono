@@ -111,6 +111,10 @@ function optEnv(name: string): string | undefined {
   return trimmed ? trimmed : undefined
 }
 
+function isNuxtDevRuntime(): boolean {
+  return process.env.NODE_ENV === 'development' || process.env.NUXT_DEV === 'true'
+}
+
 function validateFireuxAppConfig(app: FireuxAppConfig): void {
   if (app.role === 'standalone' && app.ecosystem !== 'fireux') {
     throw new Error(
@@ -155,9 +159,10 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   }
 
   nuxt.srcDir = 'app'
-  // Keep Nuxt build output inside the allowed app tree.
-  // FireUX project apps forbid L1 build artifacts like `.nuxt`.
-  nuxt.buildDir = 'app/.nuxt'
+  // In live dev, keep generated output out of `app/` so Vite/Nuxt do not watch
+  // their own build artifacts as source files. This stabilizes HMR.
+  // Outside dev we keep the existing app-local build output shape.
+  nuxt.buildDir = isNuxtDevRuntime() ? '.nuxt' : 'app/.nuxt'
   nuxt.imports = { dirs: ['composables/**', 'utils/**'] }
 
   nuxt.modules = [
