@@ -22,6 +22,16 @@
       :disabled="!menu.length"
     />
   </UDropdownMenu>
+
+  <div v-else class="px-2 py-2">
+    <div class="flex min-h-11 items-center px-1">
+      <AppBrandWordmark
+        size="card"
+        alt="FireUX"
+        class="opacity-70"
+      />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">

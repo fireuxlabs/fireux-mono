@@ -14,38 +14,35 @@ export function useRuntimeProjectConsole() {
   const runtime = useRuntimeProject()
   const { setRuntimeProject } = useRuntimeProjectSelection()
   const { interface: projectInterface } = useProjectInterface()
-  const scenarios = computed(() => getReadOnlyProjectScenarios())
+  const scenarios = computed(getReadOnlyProjectScenarios)
+
+  const toProjectPill = (
+    project: Partial<Project> | null | undefined,
+    options: { id?: string; imageUrl?: unknown } = {}
+  ) => {
+    const pill = projectInterface({
+      ...(project ?? {}),
+      ...(options.id ? { id: options.id } : {}),
+    } as Project)
+
+    if (!pill) return null
+
+    const imageUrl = normalizeString(options.imageUrl)
+    return imageUrl && !pill.imageUrl ? { ...pill, imageUrl } : pill
+  }
 
   const scenarioPills = computed(() =>
     scenarios.value
-      .map((entry) => {
-        const pill = projectInterface({
-          ...(entry.project ?? {}),
+      .map((entry) =>
+        toProjectPill(entry.project, {
           id: entry.id,
-        } as Project)
-
-        if (!pill) return null
-
-        return {
-          ...pill,
-          imageUrl: pill.imageUrl || normalizeString((entry as any).image_url),
-        }
-      })
+          imageUrl: (entry as any).image_url,
+        })
+      )
       .filter((entry): entry is NonNullable<ReturnType<typeof projectInterface>> => Boolean(entry))
   )
 
-  const activeProject = computed<Project | null>(() => {
-    const currentId = normalizeString(runtime.id.value)
-    if (!currentId) return null
-
-    const scenario = scenarios.value.find((entry) => normalizeString(entry.id) === currentId)
-    return scenario?.project ?? null
-  })
-
-  const activeProjectPill = computed(() =>
-    activeProject.value ? projectInterface(activeProject.value as Project) : null
-  )
-  const hasActiveProject = computed(() => activeProject.value !== null)
+  const activeProjectPill = computed(() => toProjectPill(runtime.project.value))
   const showSelector = computed(() => scenarios.value.length > 1)
 
   const setActiveScenario = (projectId: string) => {
@@ -61,11 +58,8 @@ export function useRuntimeProjectConsole() {
     runtime,
     scenarios,
     scenarioPills,
-    activeProject,
     activeProjectPill,
-    hasActiveProject,
     showSelector,
-    pending: computed(() => false),
     setActiveScenario,
   }
 }

@@ -95,7 +95,7 @@ const runtime = useRuntimeProject()
 const normalizeString = (value: unknown): string => String(value || '').trim()
 
 const appRows = computed(() =>
-  (runtime.readOnlyScenario.value?.apps ?? []).map((entry) => {
+  (runtime.scenario.value?.apps ?? []).map((entry) => {
     const id = normalizeString((entry as any).id)
     const name =
       normalizeString((entry as any).app_name) ||

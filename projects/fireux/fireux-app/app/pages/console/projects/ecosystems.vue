@@ -95,7 +95,7 @@ const runtime = useRuntimeProject()
 const normalizeString = (value: unknown): string => String(value || '').trim()
 
 const ecosystemRows = computed(() =>
-  (runtime.readOnlyScenario.value?.ecosystems ?? []).map((entry) => {
+  (runtime.scenario.value?.ecosystems ?? []).map((entry) => {
     const id = normalizeString((entry as any).id)
     const name = normalizeString((entry as any).name) || id || 'Untitled ecosystem'
     const team = normalizeString((entry as any).team)

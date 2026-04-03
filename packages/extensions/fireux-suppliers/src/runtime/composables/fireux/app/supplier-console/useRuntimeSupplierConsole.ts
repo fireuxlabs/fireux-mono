@@ -12,36 +12,37 @@ export function useRuntimeSupplierConsole() {
   const runtime = useRuntimeSupplier()
   const { setRuntimeSupplier } = useRuntimeSupplierSelection()
   const { interface: supplierInterface } = useSupplierInterface()
-  const scenarios = computed(() => getReadOnlySupplierScenarios())
+  const scenarios = computed(getReadOnlySupplierScenarios)
+
+  const toSupplierPill = (
+    supplier: Partial<Supplier> | null | undefined,
+    options: { id?: string; avatarUrl?: unknown } = {}
+  ) => {
+    const pill = supplierInterface({
+      ...(supplier ?? {}),
+      ...(options.id ? { id: options.id } : {}),
+    } as Supplier)
+
+    if (!pill) return null
+
+    const avatarUrl = String(options.avatarUrl || '').trim()
+    return avatarUrl && !pill.avatarUrl ? { ...pill, avatarUrl } : pill
+  }
+
   const scenarioPills = computed(() =>
     scenarios.value
-      .map((entry) => {
-        const pill = supplierInterface({
-          ...(entry.supplier ?? {}),
+      .map((entry) =>
+        toSupplierPill(entry.supplier, {
           id: String((entry.supplier as any)?.id || '').trim() || String(entry.id || '').trim(),
-        } as Supplier)
-
-        if (!pill) return null
-
-        return {
-          ...pill,
-          avatarUrl: pill.avatarUrl || String((entry as any)?.image_url || '').trim(),
-        }
-      })
+          avatarUrl: String((entry as any)?.image_url || '').trim(),
+        })
+      )
       .filter((entry): entry is NonNullable<ReturnType<typeof supplierInterface>> => Boolean(entry))
   )
 
-  const activeSupplier = computed<Supplier | null>(() => {
-    const currentId = String(runtime.id.value || '').trim()
-    if (!currentId) return null
-
-    const scenario = scenarios.value.find((entry) => String(entry.id || '').trim() === currentId)
-    return scenario?.supplier ?? null
-  })
   const activeSupplierPill = computed(() =>
-    activeSupplier.value ? supplierInterface(activeSupplier.value as Supplier) : null
+    toSupplierPill(runtime.supplier.value)
   )
-  const hasActiveSupplier = computed(() => activeSupplier.value !== null)
   const showSelector = computed(() => scenarios.value.length > 1)
 
   const setActiveScenario = (supplierId: string) => {
@@ -57,11 +58,8 @@ export function useRuntimeSupplierConsole() {
     runtime,
     scenarios,
     scenarioPills,
-    activeSupplier,
     activeSupplierPill,
-    hasActiveSupplier,
     showSelector,
-    pending: computed(() => false),
     setActiveScenario,
   }
 }

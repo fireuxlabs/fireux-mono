@@ -12,43 +12,39 @@ export function useRuntimeKitchenConsole() {
   const runtime = useRuntimeKitchen()
   const { interface: kitchenInterface } = useKitchenInterface()
   const { setRuntimeKitchen } = useRuntimeKitchenSelection()
-  const scenarios = computed(() => getReadOnlyKitchenScenarios())
+  const scenarios = computed(getReadOnlyKitchenScenarios)
+
+  const toKitchenPill = (
+    kitchen: Partial<Kitchen> | null | undefined,
+    options: { id?: string; imageUrl?: unknown } = {}
+  ) => {
+    const pill = kitchenInterface({
+      ...(kitchen ?? {}),
+      ...(options.id ? { id: options.id } : {}),
+    } as Kitchen)
+
+    if (!pill) return null
+
+    const imageUrl = String(options.imageUrl || '').trim()
+    return imageUrl && !pill.imageUrl ? { ...pill, imageUrl } : pill
+  }
+
   const scenarioPills = computed(() =>
     scenarios.value
-      .map((entry) => {
-        const pill = kitchenInterface({
-          ...(entry.kitchen ?? {}),
+      .map((entry) =>
+        toKitchenPill(entry.kitchen, {
           id: String((entry.kitchen as any)?.id || '').trim() || String((entry as any)?.id || '').trim(),
-        } as Kitchen)
-
-        if (!pill) return null
-
-        return {
-          ...pill,
           imageUrl:
-            pill.imageUrl ||
             String((entry.kitchen as any)?.image_url || '').trim() ||
             String((entry as any)?.image_url || '').trim(),
-        }
-      })
+        })
+      )
       .filter((entry): entry is NonNullable<ReturnType<typeof kitchenInterface>> => Boolean(entry))
   )
 
-  const activeKitchen = computed<Kitchen | null>(() => {
-    const currentId = String(runtime.id.value || '').trim()
-    if (!currentId) return null
-
-    const scenario = scenarios.value.find((entry) => {
-      const scenarioId = String((entry.kitchen as any)?.id || entry.id || '').trim()
-      return scenarioId === currentId
-    })
-
-    return scenario?.kitchen ?? null
-  })
   const activeKitchenPill = computed(() =>
-    activeKitchen.value ? kitchenInterface(activeKitchen.value as Kitchen) : null
+    toKitchenPill(runtime.kitchen.value)
   )
-  const hasActiveKitchen = computed(() => activeKitchen.value !== null)
   const showSelector = computed(() => scenarios.value.length > 1)
 
   const setActiveScenario = (kitchenId: string) => {
@@ -64,11 +60,8 @@ export function useRuntimeKitchenConsole() {
     runtime,
     scenarios,
     scenarioPills,
-    activeKitchen,
     activeKitchenPill,
-    hasActiveKitchen,
     showSelector,
-    pending: computed(() => false),
     setActiveScenario,
   }
 }

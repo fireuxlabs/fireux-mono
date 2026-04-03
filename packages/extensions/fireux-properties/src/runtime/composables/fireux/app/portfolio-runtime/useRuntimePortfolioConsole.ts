@@ -12,38 +12,39 @@ export function useRuntimePortfolioConsole() {
   const runtime = useRuntimePortfolio()
   const { setRuntimePortfolio } = useRuntimePortfolioSelection()
   const { pill } = usePortfolioInterface()
-  const scenarios = computed(() => getReadOnlyPortfolioScenarios())
+  const scenarios = computed(getReadOnlyPortfolioScenarios)
+
+  const toPortfolioPill = (
+    portfolio: Partial<Portfolio> | null | undefined,
+    options: { id?: string; imageUrl?: unknown } = {}
+  ) => {
+    const card = pill({
+      ...(portfolio ?? {}),
+      ...(options.id ? { id: options.id } : {}),
+    } as Portfolio)
+
+    if (!card) return null
+
+    const imageUrl = String(options.imageUrl || '').trim()
+    return imageUrl ? { ...card, imageUrl } : card
+  }
+
   const scenarioPills = computed(() =>
     scenarios.value
-      .map((entry) => {
-        const card = pill({
-          ...entry.portfolio,
+      .map((entry) =>
+        toPortfolioPill(entry.portfolio, {
           id: entry.id,
-        } as Portfolio)
-
-        if (!card) return null
-
-        return {
-          ...card,
           imageUrl:
             String((entry as any)?.manager?.avatar_url || '').trim() ||
             String((entry as any)?.image_url || '').trim(),
-        }
-      })
+        })
+      )
       .filter((entry): entry is NonNullable<ReturnType<typeof pill>> & { imageUrl: string } => Boolean(entry))
   )
 
-  const activePortfolio = computed<Portfolio | null>(() => {
-    const currentId = String(runtime.id.value || '').trim()
-    if (!currentId) return null
-
-    const scenario = scenarios.value.find((entry) => String(entry.id || '').trim() === currentId)
-    return scenario?.portfolio ?? null
-  })
   const activePortfolioPill = computed(() =>
-    activePortfolio.value ? pill(activePortfolio.value) : null
+    toPortfolioPill(runtime.portfolio.value)
   )
-  const hasActivePortfolio = computed(() => activePortfolio.value !== null)
   const showSelector = computed(() => scenarios.value.length > 1)
 
   const setActiveScenario = (portfolioId: string) => {
@@ -59,11 +60,8 @@ export function useRuntimePortfolioConsole() {
     runtime,
     scenarios,
     scenarioPills,
-    activePortfolio,
     activePortfolioPill,
-    hasActivePortfolio,
     showSelector,
-    pending: computed(() => false),
     setActiveScenario,
   }
 }

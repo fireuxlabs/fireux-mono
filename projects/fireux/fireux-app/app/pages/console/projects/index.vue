@@ -52,13 +52,22 @@
             @action="selectScenario(item.id)"
           />
         </div>
+
+        <DevJson
+          title="Project Console (JSON)"
+          context="console/projects · selection snapshot"
+          :data="debugJson"
+          :default-open="false"
+          :hide-when-empty="false"
+        />
       </section>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { watchEffect } from 'vue'
+import { computed, watchEffect } from 'vue'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useRuntimeProjectSelection } from '~/composables/console/project/state'
 import { useRuntimeProjectConsole } from '~/composables/console/project/useRuntimeProjectConsole'
 
@@ -76,6 +85,7 @@ const {
   setActiveScenario,
 } = useRuntimeProjectConsole()
 const { clearRuntimeProject } = useRuntimeProjectSelection()
+const { currentUser } = useUser()
 
 if (import.meta.client) {
   watchEffect(() => {
@@ -92,4 +102,18 @@ const selectScenario = (projectId: string) => {
 const clearSelection = () => {
   clearRuntimeProject()
 }
+
+const debugJson = computed(() => ({
+  selectedProject: runtime.project.value ?? null,
+  availableProjects: runtime.project.value
+    ? null
+    : scenarios.value.map((entry) => ({
+        id: entry.id,
+        name: entry.name,
+        label: entry.label,
+        image_url: entry.image_url,
+        project: entry.project,
+      })),
+  user: currentUser.value ?? null,
+}))
 </script>
