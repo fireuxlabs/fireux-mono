@@ -1,6 +1,7 @@
 import type { Project } from '../../../../../../../models/system/project.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
+const DEFAULT_PROJECT_IMAGE = '/img/core/brand/logo.png'
 const labelize = (value: string) =>
   safeString(value)
     .split(/[-_]+/)
@@ -34,7 +35,7 @@ export function useProjectInterface() {
     const status = safeString(target.status) || 'active'
     const description = safeString(target.description)
     const projectType = safeString(target.project_type)
-    const imageUrl = safeString(target.image_url)
+    const imageUrl = safeString(target.image_url) || DEFAULT_PROJECT_IMAGE
     const resolvedId = id || key || name
 
     if (!resolvedId || !(key || name)) return null

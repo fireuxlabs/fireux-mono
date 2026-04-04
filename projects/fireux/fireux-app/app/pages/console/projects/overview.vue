@@ -22,12 +22,17 @@
         />
 
         <template v-else>
-          <ProjectCardsPill
-            v-if="activeProjectPill"
-            v-bind="activeProjectPill"
-            :link="false"
-            :show-badges="false"
-          />
+          <div class="flex flex-wrap items-center gap-3">
+            <ProjectCardsPill
+              v-if="activeProjectPill"
+              v-bind="activeProjectPill"
+              :link="false"
+              :show-badges="false"
+            />
+            <UBadge color="neutral" variant="soft" size="lg">
+              {{ modeLabel }} Mode
+            </UBadge>
+          </div>
 
           <UCard>
             <template #header>
@@ -83,6 +88,7 @@
 <script setup lang="ts">
 import { useState } from '#imports'
 import { computed, watchEffect } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useProjectInterface } from 'fireux-core/runtime/composables/fireux/firestore/system/project/utils/view/useProjectInterface'
 import type { Project } from 'fireux-core/runtime/models/system/project.model'
 import { useRuntimeProjectSelection } from '~/composables/console/project/state'
@@ -103,8 +109,11 @@ definePageMeta({
 })
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
+const stripTestProjectSuffix = (value: unknown): string =>
+  normalizeString(value).replace(/\s+test project$/i, '').trim()
 const runtime = useRuntimeProject()
 const projectSelection = useRuntimeProjectSelection()
+const { currentUser: authUser } = useAuth()
 const { interface: toProjectCard } = useProjectInterface()
 
 type ProjectPill = NonNullable<ReturnType<typeof toProjectCard>>
@@ -123,7 +132,17 @@ const buildProjectPill = (
 
   return {
     ...pill,
-    imageUrl: pill.imageUrl || normalizeString(imageUrl),
+    imageUrl: normalizeString(imageUrl) || pill.imageUrl,
+    title:
+      projectSelection.mode.value === 'test'
+        ? normalizeString(authUser.value?.displayName) ||
+          stripTestProjectSuffix(target?.name) ||
+          'Your'
+        : pill.title,
+    subtitle:
+      projectSelection.mode.value === 'test'
+        ? 'Test Project'
+        : pill.subtitle,
   }
 }
 

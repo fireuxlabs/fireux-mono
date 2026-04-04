@@ -78,12 +78,14 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo, useState } from '#imports'
+import { useState } from '#imports'
 import type { Kitchen } from '../../../models/kitchen.model'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
+import { useKitchenCreate } from '../../../composables/fireux/firestore/kitchen/mutations/useKitchenCreate'
 import { useRuntimeKitchenSelection } from '../../../composables/fireux/app/kitchen-runtime/state'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { computed, watchEffect } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 import { useRuntimeKitchenConsole } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchenConsole'
 
 definePageMeta({
@@ -109,6 +111,8 @@ const modeOptions = [
 
 const { runtime, scenarios } = useRuntimeKitchenConsole()
 const kitchenSelection = useRuntimeKitchenSelection()
+const { uid, isAuthenticated, hasAuthState } = useAuth()
+const { ensureKitchen } = useKitchenCreate({ test: true, ensurePlace: false })
 const { interface: toKitchenCard } = useKitchenInterface()
 const { kitchens: liveKitchens } = useKitchenFetch()
 const { kitchens: testKitchens } = useKitchenFetch({ collectionPath: 'test-kitchens' })
@@ -131,8 +135,14 @@ const liveKitchenPills = computed(() =>
     .filter((entry): entry is KitchenPill => Boolean(entry))
 )
 
+const ownedTestKitchens = computed(() => {
+  const currentUid = String(uid.value || '').trim()
+  if (!currentUid) return []
+  return testKitchens.value.filter((entry) => String(entry?.id || '').trim() === currentUid)
+})
+
 const testKitchenPills = computed(() =>
-  testKitchens.value
+  ownedTestKitchens.value
     .map((entry) => buildKitchenPill(entry as Kitchen))
     .filter((entry): entry is KitchenPill => Boolean(entry))
 )
@@ -178,21 +188,46 @@ watchEffect(() => {
 })
 
 if (import.meta.client) {
-  watchEffect(() => {
-    if (runtime.id.value) return
-    if (availableKitchenPills.value.length !== 1) return
-    selectKitchen(String(availableKitchenPills.value[0]?.id || ''))
-  })
+  const ensuringTestKitchen = ref(false)
+  const ensuredTestKitchenUid = ref('')
+
+  watch(
+    [selectedMode, hasAuthState, isAuthenticated, uid],
+    async ([mode, authReady, authenticated, currentUid]) => {
+      const resolvedUid = String(currentUid || '').trim()
+      if (mode !== 'test') return
+      if (!authReady || !authenticated || !resolvedUid) return
+      if (ensuringTestKitchen.value) return
+      if (ensuredTestKitchenUid.value === resolvedUid) return
+
+      ensuringTestKitchen.value = true
+      try {
+        await ensureKitchen(
+          {
+            id: resolvedUid,
+            is_test_kitchen: true,
+          } as any,
+          {
+            mode: 'public',
+            existingRootId: resolvedUid,
+          }
+        )
+        ensuredTestKitchenUid.value = resolvedUid
+      } finally {
+        ensuringTestKitchen.value = false
+      }
+    },
+    { immediate: true }
+  )
 }
 
-const selectKitchen = (kitchenId: string, openOverview = true) => {
+const selectKitchen = (kitchenId: string) => {
   const resolvedId = String(kitchenId || '').trim()
   if (!resolvedId) return
   kitchenSelection.setRuntimeKitchen({
     kitchenId: resolvedId,
     mode: selectedMode.value,
   })
-  if (openOverview) void navigateTo('/console/kitchen/overview')
 }
 
 const selectMode = (mode: ConsoleMode) => {

@@ -39,9 +39,10 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
       ? 'test-projects'
       : String(options.collectionPath || 'projects').trim() || 'projects'
 
-  async function createProject(
+  async function runProjectCreate(
     input: ProjectCreateInput,
-    ensureOptions: EnsureProjectOptions = {}
+    ensureOptions: EnsureProjectOptions = {},
+    defaultMode: ConsoleCreateMode
   ): Promise<ConsoleEnsureResult> {
     const user = await useRequireUser()
     const requestedRootId = normalizeString(ensureOptions.existingRootId || input?.id)
@@ -134,8 +135,7 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
 
     return ensureConsole<ConsoleProject>({
       type: 'project',
-      mode: ensureOptions.mode ?? 'console',
-      existingRootId: requestedRootId || undefined,
+      mode: ensureOptions.mode ?? defaultMode,
       ensureRoot,
       createOverlay: async () =>
         ({
@@ -146,5 +146,19 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
     })
   }
 
-  return { createProject }
+  async function createProject(
+    input: ProjectCreateInput,
+    ensureOptions: EnsureProjectOptions = {}
+  ): Promise<ConsoleEnsureResult> {
+    return runProjectCreate(input, ensureOptions, 'public')
+  }
+
+  async function ensureProject(
+    input: ProjectCreateInput,
+    ensureOptions: EnsureProjectOptions = {}
+  ): Promise<ConsoleEnsureResult> {
+    return runProjectCreate(input, ensureOptions, 'console')
+  }
+
+  return { createProject, ensureProject }
 }

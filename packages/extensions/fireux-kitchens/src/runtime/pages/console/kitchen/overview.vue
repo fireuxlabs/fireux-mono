@@ -22,12 +22,17 @@
         />
 
         <template v-else>
-          <KitchenCardsPill
-            v-if="activeKitchenPill"
-            v-bind="activeKitchenPill"
-            :link="false"
-            :show-badges="false"
-          />
+          <div class="flex flex-wrap items-center gap-3">
+            <KitchenCardsPill
+              v-if="activeKitchenPill"
+              v-bind="activeKitchenPill"
+              :link="false"
+              :show-badges="false"
+            />
+            <UBadge color="neutral" variant="soft" size="lg">
+              {{ modeLabel }} Mode
+            </UBadge>
+          </div>
 
           <UCard>
             <template #header>

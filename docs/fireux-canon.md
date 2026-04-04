@@ -47,6 +47,21 @@ Updated: 2026-04-04
 - Real-mode target visibility should come from explicit overlay governance and only use root hints where the family contract allows it.
 - Shared placeholder branding for tenant apps is allowed because it does not decide selection, routing, or identity.
 
+## Create vs Ensure Canon
+- `createX` means intentional creation of a real target.
+- `ensureX` means bootstrap/setup-if-missing.
+- `createX` belongs to explicit user actions:
+  - create forms
+  - create systems
+  - intentional creation buttons
+- `ensureX` belongs to:
+  - test target entry
+  - repair/recovery
+  - setup flows that must be safe to run repeatedly
+- Do not hide creation behind auth/bootstrap.
+- Sign-in establishes identity; it does not create domain records by itself.
+- When a family canon says test mode is one target per signed-in user, the family entry page may call `ensureX` on entry to `test` mode.
+
 ## Endpoint Canon
 - Entity index pages that are rendered through `Index.vue` + `CollectionManager` are client-side Firestore surfaces.
 - Canon examples:

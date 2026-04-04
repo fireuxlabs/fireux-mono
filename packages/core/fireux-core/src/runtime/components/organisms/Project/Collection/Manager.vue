@@ -37,10 +37,24 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <ProjectCardsPill v-bind="card" :link="linkEnabled" />
+        <ProjectCardsPill
+          v-bind="card"
+          :link="linkEnabled"
+          :action="actionEnabled"
+          :show-subtitle="showSubtitle"
+          :show-badges="showBadges"
+          @action="emit('select', card.id)"
+        />
       </template>
       <template #cell="{ card }">
-        <ProjectCardsCell v-bind="card" :link="linkEnabled" />
+        <ProjectCardsCell
+          v-bind="card"
+          :link="linkEnabled"
+          :action="actionEnabled"
+          :show-subtitle="showSubtitle"
+          :show-badges="showBadges"
+          @action="emit('select', card.id)"
+        />
       </template>
     </ProjectCollectionList>
 
@@ -74,6 +88,9 @@ const props = withDefaults(defineProps<{
   title?: string
   description?: string
   link?: boolean
+  action?: boolean
+  showSubtitle?: boolean
+  showBadges?: boolean
   searchPlaceholder?: string
   showSearch?: boolean
   showVariantToggle?: boolean
@@ -86,6 +103,9 @@ const props = withDefaults(defineProps<{
   title: 'Projects',
   description: 'Browse project records available in this workspace.',
   link: false,
+  action: false,
+  showSubtitle: true,
+  showBadges: true,
   searchPlaceholder: 'Search projects…',
   showSearch: true,
   showVariantToggle: true,
@@ -95,11 +115,18 @@ const props = withDefaults(defineProps<{
   devJsonContext: 'collection manager · projects · raw collection',
 })
 
+const emit = defineEmits<{
+  (event: 'select', projectId: string): void
+}>()
+
 const rawCollection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Projects'))
 const description = computed(() => String(props.description || '').trim())
 const linkEnabled = computed(() => props.link !== false)
+const actionEnabled = computed(() => props.action === true)
+const showSubtitle = computed(() => props.showSubtitle !== false)
+const showBadges = computed(() => props.showBadges !== false)
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search projects…'))
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)

@@ -32,6 +32,10 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `read-only`: curated demo suppliers
   - `test`: Firestore-backed test suppliers
   - `live`: my real suppliers for this app
+- `test` canon is one personal supplier per signed-in user:
+  - `test-suppliers/{uid}`
+  - ensured on entry to `/console/supplier` in `test` mode
+  - not created during auth
 - `my real suppliers` means suppliers the current user can operate through the app overlay:
   - `apps/{appId}/suppliers/{supplierId}`
   - `admin_ids` contains the user and `console_enabled` is not false
@@ -53,6 +57,8 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `useSupplierQuickCreate`
 - `useSupplierUpdate`
 - `useSupplierDelete`
+- `createSupplier` = intentional supplier creation
+- `ensureSupplier` = test/bootstrap/setup-if-missing
 
 ## 10) Non-goals / prohibited fallbacks
 - No silent fallback to alternate supplier ids or legacy owner modules for canonical selection.

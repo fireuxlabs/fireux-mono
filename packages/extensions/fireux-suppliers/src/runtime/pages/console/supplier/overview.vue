@@ -22,12 +22,17 @@
         />
 
         <template v-else>
-          <SupplierCardsPill
-            v-if="activeSupplierPill"
-            v-bind="activeSupplierPill"
-            :link="false"
-            :show-badges="false"
-          />
+          <div class="flex flex-wrap items-center gap-3">
+            <SupplierCardsPill
+              v-if="activeSupplierPill"
+              v-bind="activeSupplierPill"
+              :link="false"
+              :show-badges="false"
+            />
+            <UBadge color="neutral" variant="soft" size="lg">
+              {{ modeLabel }} Mode
+            </UBadge>
+          </div>
 
           <UCard>
             <template #header>

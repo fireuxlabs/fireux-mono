@@ -125,7 +125,7 @@ const props = withDefaults(defineProps<{
   mode: 'console',
 })
 
-const { ensureKitchen } = useKitchenCreate()
+const { createKitchen } = useKitchenCreate()
 const { ensurePlaceExists } = usePlaceSave()
 const { coreProfile, updateCoreProfile } = useChef()
 const { notesVisible } = useDevUi()
@@ -221,7 +221,7 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
       }
     }
 
-    const result = await ensureKitchen(
+    const result = await createKitchen(
       {
         id,
         place: placeForRecord,

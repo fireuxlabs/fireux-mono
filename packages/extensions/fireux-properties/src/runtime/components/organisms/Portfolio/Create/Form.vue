@@ -91,7 +91,7 @@ const emit = defineEmits<{
 const route = useRoute()
 const router = useRouter()
 const { setRuntimePortfolio } = useRuntimePortfolioSelection()
-const { ensurePortfolio } = usePortfolioCreate()
+const { createPortfolio } = usePortfolioCreate()
 
 const name = ref('')
 const ownerLabel = ref('')
@@ -116,7 +116,7 @@ const submit = async () => {
   submitting.value = true
 
   try {
-    const result = await ensurePortfolio({
+    const result = await createPortfolio({
       name: name.value,
       owner_label: ownerLabel.value,
       region_label: regionLabel.value,

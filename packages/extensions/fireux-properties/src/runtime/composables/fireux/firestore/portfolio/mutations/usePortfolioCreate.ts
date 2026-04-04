@@ -39,7 +39,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
   const collectionPath =
     options.test === true ? 'test-portfolios' : String(options.collectionPath || 'portfolios').trim() || 'portfolios'
 
-  async function createPortfolio(input: PortfolioCreateInput): Promise<string> {
+  async function createPortfolioRoot(input: PortfolioCreateInput): Promise<string> {
     const name = String(input?.name || '').trim()
     const slug = toSlug(String(input?.slug || '').trim() || name)
 
@@ -82,9 +82,10 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     return slug
   }
 
-  async function ensurePortfolio(
+  async function runPortfolioCreate(
     input: PortfolioCreateInput,
-    ensureOptions: EnsurePortfolioOptions = {}
+    ensureOptions: EnsurePortfolioOptions = {},
+    defaultMode: ConsoleCreateMode
   ): Promise<ConsoleEnsureResult> {
     const requestedRootId = String(ensureOptions.existingRootId || '').trim()
 
@@ -135,8 +136,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
 
     return ensureConsole<ConsolePortfolio>({
       type: 'portfolio',
-      mode: ensureOptions.mode ?? 'console',
-      existingRootId: requestedRootId || undefined,
+      mode: ensureOptions.mode ?? defaultMode,
       ensureRoot,
       createOverlay: async () =>
         ({
@@ -147,5 +147,19 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     })
   }
 
-  return { createPortfolio, ensurePortfolio }
+  async function createPortfolio(
+    input: PortfolioCreateInput,
+    ensureOptions: EnsurePortfolioOptions = {}
+  ): Promise<ConsoleEnsureResult> {
+    return runPortfolioCreate(input, ensureOptions, 'public')
+  }
+
+  async function ensurePortfolio(
+    input: PortfolioCreateInput,
+    ensureOptions: EnsurePortfolioOptions = {}
+  ): Promise<ConsoleEnsureResult> {
+    return runPortfolioCreate(input, ensureOptions, 'console')
+  }
+
+  return { createPortfolio, ensurePortfolio, createPortfolioRoot }
 }

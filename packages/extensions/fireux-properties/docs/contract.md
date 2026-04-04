@@ -34,6 +34,10 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `read-only`: curated demo portfolios
   - `test`: Firestore-backed test portfolios
   - `live`: my real portfolios for this app
+- `test` canon is one personal portfolio per signed-in user:
+  - `test-portfolios/{uid}`
+  - ensured on entry to `/console/portfolio` in `test` mode
+  - not created during auth
 - `my real portfolios` means portfolios the current user can operate through the app overlay:
   - `apps/{appId}/portfolios/{portfolioId}`
   - `admin_ids` contains the user and `console_enabled` is not false
@@ -58,6 +62,8 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 9) Mutation entrypoints (write composables)
 - `usePortfolioCreate`
 - other portfolio-owned mutation seams as the family evolves
+- `createPortfolio` = intentional portfolio creation
+- `ensurePortfolio` = test/bootstrap/setup-if-missing
 
 ## 10) Non-goals / prohibited fallbacks
 - No silent fallback selection of active portfolio inside console flows.

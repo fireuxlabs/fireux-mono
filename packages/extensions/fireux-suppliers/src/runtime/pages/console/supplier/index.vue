@@ -78,10 +78,12 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo, useState } from '#imports'
-import { computed, watchEffect } from 'vue'
+import { useState } from '#imports'
+import { computed, ref, watch, watchEffect } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { Supplier } from '../../../models/supplier/Supplier.model'
 import { useSupplierCollection } from '../../../composables/fireux/firestore/supplier/fetch/useSupplierCollection'
+import { useSupplierCreate } from '../../../composables/fireux/firestore/supplier/mutations/useSupplierCreate'
 import { useRuntimeSupplierSelection } from '../../../composables/fireux/app/supplier-console/state'
 import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 import { useRuntimeSupplierConsole } from '../../../composables/fireux/app/supplier-console/useRuntimeSupplierConsole'
@@ -111,6 +113,8 @@ const normalizeString = (value: unknown): string => String(value || '').trim()
 
 const { runtime, scenarios } = useRuntimeSupplierConsole()
 const supplierSelection = useRuntimeSupplierSelection()
+const { uid, isAuthenticated, hasAuthState } = useAuth()
+const { ensureSupplier } = useSupplierCreate({ test: true })
 const { interface: toSupplierCard } = useSupplierInterface()
 const { coreSuppliers: liveSuppliers } = useSupplierCollection()
 const { coreSuppliers: testSuppliers } = useSupplierCollection({ collectionPath: 'test-suppliers' })
@@ -143,8 +147,14 @@ const liveSupplierPills = computed(() =>
     .filter((entry): entry is SupplierPill => Boolean(entry))
 )
 
+const ownedTestSuppliers = computed(() => {
+  const currentUid = normalizeString(uid.value)
+  if (!currentUid) return []
+  return testSuppliers.value.filter((entry) => normalizeString(entry?.id) === currentUid)
+})
+
 const testSupplierPills = computed(() =>
-  testSuppliers.value
+  ownedTestSuppliers.value
     .map((entry) => buildSupplierPill(entry as Supplier))
     .filter((entry): entry is SupplierPill => Boolean(entry))
 )
@@ -193,21 +203,40 @@ watchEffect(() => {
 })
 
 if (import.meta.client) {
-  watchEffect(() => {
-    if (runtime.id.value) return
-    if (availableSupplierPills.value.length !== 1) return
-    selectSupplier(String(availableSupplierPills.value[0]?.id || ''))
-  })
+  const ensuringTestSupplier = ref(false)
+  const ensuredTestSupplierUid = ref('')
+
+  watch(
+    [selectedMode, hasAuthState, isAuthenticated, uid],
+    async ([mode, authReady, authenticated, currentUid]) => {
+      const resolvedUid = normalizeString(currentUid)
+      if (mode !== 'test') return
+      if (!authReady || !authenticated || !resolvedUid) return
+      if (ensuringTestSupplier.value) return
+      if (ensuredTestSupplierUid.value === resolvedUid) return
+
+      ensuringTestSupplier.value = true
+      try {
+        await ensureSupplier({
+          mode: 'public',
+          existingRootId: resolvedUid,
+        })
+        ensuredTestSupplierUid.value = resolvedUid
+      } finally {
+        ensuringTestSupplier.value = false
+      }
+    },
+    { immediate: true }
+  )
 }
 
-const selectSupplier = (supplierId: string, openOverview = true) => {
+const selectSupplier = (supplierId: string) => {
   const resolvedId = normalizeString(supplierId)
   if (!resolvedId) return
   supplierSelection.setRuntimeSupplier({
     supplierId: resolvedId,
     mode: selectedMode.value,
   })
-  if (openOverview) void navigateTo('/console/supplier/overview')
 }
 
 const selectMode = (mode: ConsoleMode) => {

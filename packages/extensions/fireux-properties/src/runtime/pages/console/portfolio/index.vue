@@ -78,12 +78,14 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo, useState } from '#imports'
+import { useState } from '#imports'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { Portfolio } from '../../../models/portfolio.model'
 import { usePortfolioCollection } from '../../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
+import { usePortfolioCreate } from '../../../composables/fireux/firestore/portfolio/mutations/usePortfolioCreate'
 import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
 import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
-import { computed, watchEffect } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 import { useRuntimePortfolioConsole } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolioConsole'
 
 definePageMeta({
@@ -111,6 +113,8 @@ const normalizeString = (value: unknown): string => String(value || '').trim()
 
 const { runtime, scenarios } = useRuntimePortfolioConsole()
 const portfolioSelection = useRuntimePortfolioSelection()
+const { uid, currentUser, isAuthenticated, hasAuthState } = useAuth()
+const { ensurePortfolio } = usePortfolioCreate({ test: true })
 const { pill: toPortfolioCard } = usePortfolioInterface()
 const { collection: livePortfolios } = usePortfolioCollection()
 const { collection: testPortfolios } = usePortfolioCollection({ collectionPath: 'test-portfolios' })
@@ -145,8 +149,14 @@ const livePortfolioPills = computed(() =>
     .filter((entry): entry is PortfolioPill => Boolean(entry))
 )
 
+const ownedTestPortfolios = computed(() => {
+  const currentUid = normalizeString(uid.value)
+  if (!currentUid) return []
+  return testPortfolios.value.filter((entry) => normalizeString(entry?.id) === currentUid)
+})
+
 const testPortfolioPills = computed(() =>
-  testPortfolios.value
+  ownedTestPortfolios.value
     .map((entry) => buildPortfolioPill(entry as Portfolio))
     .filter((entry): entry is PortfolioPill => Boolean(entry))
 )
@@ -195,21 +205,52 @@ watchEffect(() => {
 })
 
 if (import.meta.client) {
-  watchEffect(() => {
-    if (runtime.id.value) return
-    if (availablePortfolioPills.value.length !== 1) return
-    selectPortfolio(String(availablePortfolioPills.value[0]?.id || ''))
-  })
+  const ensuringTestPortfolio = ref(false)
+  const ensuredTestPortfolioUid = ref('')
+
+  watch(
+    [selectedMode, hasAuthState, isAuthenticated, uid],
+    async ([mode, authReady, authenticated, currentUid]) => {
+      const resolvedUid = normalizeString(currentUid)
+      if (mode !== 'test') return
+      if (!authReady || !authenticated || !resolvedUid) return
+      if (ensuringTestPortfolio.value) return
+      if (ensuredTestPortfolioUid.value === resolvedUid) return
+
+      ensuringTestPortfolio.value = true
+      try {
+        const ownerName = normalizeString(currentUser.value?.displayName) || 'Your'
+        await ensurePortfolio(
+          {
+            name: `${ownerName} Test Portfolio`,
+            slug: resolvedUid,
+            owner_label: ownerName,
+            status: 'active',
+            strategy_label: '',
+            region_label: '',
+            notes: '',
+          },
+          {
+            mode: 'public',
+            existingRootId: resolvedUid,
+          }
+        )
+        ensuredTestPortfolioUid.value = resolvedUid
+      } finally {
+        ensuringTestPortfolio.value = false
+      }
+    },
+    { immediate: true }
+  )
 }
 
-const selectPortfolio = (portfolioId: string, openOverview = true) => {
+const selectPortfolio = (portfolioId: string) => {
   const resolvedId = normalizeString(portfolioId)
   if (!resolvedId) return
   portfolioSelection.setRuntimePortfolio({
     portfolioId: resolvedId,
     mode: selectedMode.value,
   })
-  if (openOverview) void navigateTo('/console/portfolio/overview')
 }
 
 const selectMode = (mode: ConsoleMode) => {

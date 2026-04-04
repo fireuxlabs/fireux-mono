@@ -22,12 +22,17 @@
         />
 
         <template v-else>
-          <PortfolioCardsPill
-            v-if="activePortfolioPill"
-            v-bind="activePortfolioPill"
-            :link="false"
-            :show-badges="false"
-          />
+          <div class="flex flex-wrap items-center gap-3">
+            <PortfolioCardsPill
+              v-if="activePortfolioPill"
+              v-bind="activePortfolioPill"
+              :link="false"
+              :show-badges="false"
+            />
+            <UBadge color="neutral" variant="soft" size="lg">
+              {{ modeLabel }} Mode
+            </UBadge>
+          </div>
 
           <UCard>
             <template #header>

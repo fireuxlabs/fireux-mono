@@ -50,6 +50,10 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `read-only`: curated demo kitchens
   - `test`: Firestore-backed test kitchens
   - `live`: my real kitchens for this app
+- `test` canon is one personal kitchen per signed-in user:
+  - `test-kitchens/{uid}`
+  - ensured on entry to `/console/kitchen` in `test` mode
+  - not created during auth
 - `my real kitchens` means kitchens the current user can operate through the app overlay:
   - `apps/{appId}/kitchens/{kitchenId}`
   - `admin_ids` contains the user and `console_enabled` is not false
@@ -77,6 +81,8 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `useKitchenMenuStackCreate`
 - `useKitchenOrderCreate`
 - `useChefCreate`, `useChefUpdate`, `useChefDelete`
+- `createKitchen` = intentional kitchen creation
+- `ensureKitchen` = test/bootstrap/setup-if-missing
 
 ## 10) Non-goals / prohibited fallbacks
 - No silent fallback switching between live/read-only.

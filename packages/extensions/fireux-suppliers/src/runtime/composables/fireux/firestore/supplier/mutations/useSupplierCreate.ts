@@ -9,24 +9,37 @@ import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/
 import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { ConsoleSupplier, Supplier, SupplierCreateInput } from '../../../../../models/supplier/Supplier.model'
 
-const supplierCollection = 'suppliers'
+export type SupplierCreateOptions = {
+  collectionPath?: string
+  test?: boolean
+}
+
 export type EnsureSupplierOptions = {
   mode?: ConsoleCreateMode
   existingRootId?: string | null
 }
 
-export function useSupplierCreate() {
+export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
   const { ensureUser } = useUserEnsure()
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
   const { ensureConsole } = useConsoleEnsure()
+  const { currentUser } = useAuth()
+  const supplierCollection =
+    options.test === true
+      ? 'test-suppliers'
+      : String(options.collectionPath || 'suppliers').trim() || 'suppliers'
+  const isTestSupplierCollection =
+    options.test === true || supplierCollection === 'test-suppliers'
 
-  async function ensureSupplier(
-    options: EnsureSupplierOptions = {}
+  async function runSupplierCreate(
+    options: EnsureSupplierOptions = {},
+    defaultMode: ConsoleCreateMode
   ): Promise<ConsoleEnsureResult> {
     await ensureUser()
     const { uid } = await requireUid()
@@ -45,8 +58,12 @@ export function useSupplierCreate() {
         }
       }
 
+      const defaultName = isTestSupplierCollection
+        ? `${String(currentUser.value?.displayName || '').trim() || 'Your'} Test Supplier`
+        : ''
+
       const payload: SupplierCreateInput = {
-        supplier_organization_name: '',
+        supplier_organization_name: defaultName,
         supplier_headline: '',
         summary: '',
         supplier_bio: '',
@@ -72,8 +89,7 @@ export function useSupplierCreate() {
 
     const result = await ensureConsole<ConsoleSupplier>({
       type: 'supplier',
-      mode: options.mode ?? 'console',
-      existingRootId: requestedRootId || undefined,
+      mode: options.mode ?? defaultMode,
       ensureRoot,
       createOverlay: async () => {
         const payload: Omit<ConsoleSupplier, 'created' | 'updated' | 'id'> = {
@@ -85,15 +101,30 @@ export function useSupplierCreate() {
       },
     })
 
-    await upsertSeoIndexDoc('seo_index_suppliers', result.id, {
-      path: `/suppliers/${result.id}`,
-      isPublic: true,
-    })
+    if (!isTestSupplierCollection) {
+      await upsertSeoIndexDoc('seo_index_suppliers', result.id, {
+        path: `/suppliers/${result.id}`,
+        isPublic: true,
+      })
+    }
 
     return result
   }
 
+  async function createSupplier(
+    options: EnsureSupplierOptions = {}
+  ): Promise<ConsoleEnsureResult> {
+    return runSupplierCreate(options, 'public')
+  }
+
+  async function ensureSupplier(
+    options: EnsureSupplierOptions = {}
+  ): Promise<ConsoleEnsureResult> {
+    return runSupplierCreate(options, 'console')
+  }
+
   return {
+    createSupplier,
     ensureSupplier,
   }
 }

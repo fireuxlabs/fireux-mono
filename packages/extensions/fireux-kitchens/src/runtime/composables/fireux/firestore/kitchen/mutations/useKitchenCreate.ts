@@ -41,7 +41,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
   const { ensurePlaceExists } = usePlaceSave()
   const { ensureConsole } = useConsoleEnsure()
-  const { uid } = useAuth()
+  const { uid, currentUser } = useAuth()
   const db = useFirestore()
   const collectionPath =
     options.test ? 'test-kitchens' : options.collectionPath ?? 'kitchens'
@@ -49,9 +49,9 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     options.test === true || collectionPath === 'test-kitchens'
   const shouldEnsurePlace = options.ensurePlace ?? !isTestKitchenCollection
 
-  async function createKitchen(
+  async function ensureKitchenRoot(
     input: KitchenCreateInput & { place?: PlaceUpsertInput }
-  ): Promise<string> {
+  ): Promise<ConsoleRootEnsureResult> {
     const resolvedId = String(input?.id || '').trim()
     if (!resolvedId) {
       throw new Error('Kitchen id is required')
@@ -78,19 +78,36 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       }
     }
 
-    const resolvedPayload: Kitchen = {
+    const explicitName = String((input as any)?.name || '').trim()
+    const explicitShortName = String((input as any)?.short_name || '').trim()
+    const defaultTestName = isTestKitchenCollection
+      ? `${String(currentUser.value?.displayName || '').trim() || 'Your'} Test Kitchen`
+      : ''
+
+    const resolvedPayload: Record<string, unknown> = {
       id: resolvedId,
       is_test_kitchen: isTestKitchenCollection,
-    } as Kitchen
+    }
+
+    const resolvedName = explicitName || defaultTestName
+    if (resolvedName) {
+      resolvedPayload.name = resolvedName
+    }
+
+    if (explicitShortName) {
+      resolvedPayload.short_name = explicitShortName
+    }
 
     const ref = doc(db, collectionPath, resolvedId)
     const snap = await getDoc(ref)
     if (snap.exists()) {
-      await upsertSeoIndexDoc('seo_index_kitchens', resolvedId, {
-        path: `/kitchens/${resolvedId}`,
-        isPublic: true,
-      })
-      return resolvedId
+      if (!isTestKitchenCollection) {
+        await upsertSeoIndexDoc('seo_index_kitchens', resolvedId, {
+          path: `/kitchens/${resolvedId}`,
+          isPublic: true,
+        })
+      }
+      return { id: resolvedId, created: false }
     }
 
     await setDocument<Kitchen>(
@@ -101,45 +118,33 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
         creator: false,
       }
     )
-    await upsertSeoIndexDoc('seo_index_kitchens', resolvedId, {
-      path: `/kitchens/${resolvedId}`,
-      isPublic: true,
-    })
+    if (!isTestKitchenCollection) {
+      await upsertSeoIndexDoc('seo_index_kitchens', resolvedId, {
+        path: `/kitchens/${resolvedId}`,
+        isPublic: true,
+      })
+    }
 
-    return resolvedId
+    return { id: resolvedId, created: true }
   }
 
-  async function ensureKitchen(
+  async function runKitchenCreate(
     input: KitchenCreateInput & { place?: PlaceUpsertInput },
-    ensureOptions: EnsureKitchenOptions = {}
+    ensureOptions: EnsureKitchenOptions = {},
+    defaultMode: ConsoleCreateMode
   ): Promise<ConsoleEnsureResult> {
     const resolvedId = String(
       ensureOptions.existingRootId || input?.id || ''
     ).trim()
 
-    const ensureRoot = async (): Promise<ConsoleRootEnsureResult> => {
-      if (!resolvedId) {
-        throw new Error('Kitchen id is required')
-      }
-
-      const rootRef = doc(db, collectionPath, resolvedId)
-      const rootSnap = await getDoc(rootRef)
-      if (rootSnap.exists()) {
-        return { id: resolvedId, created: false }
-      }
-
-      await createKitchen({
-        ...input,
-        id: resolvedId,
-      })
-
-      return { id: resolvedId, created: true }
-    }
-
     return ensureConsole<ConsoleKitchen>({
       type: 'kitchen',
-      mode: ensureOptions.mode ?? 'console',
-      ensureRoot,
+      mode: ensureOptions.mode ?? defaultMode,
+      ensureRoot: async () =>
+        ensureKitchenRoot({
+          ...input,
+          id: resolvedId,
+        }),
       createOverlay: async () =>
         ({
           admin_ids: uid.value ? [uid.value] : ([] as string[]),
@@ -147,6 +152,20 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
           console_enabled: true,
         }) as ConsoleKitchen,
     })
+  }
+
+  async function createKitchen(
+    input: KitchenCreateInput & { place?: PlaceUpsertInput },
+    ensureOptions: EnsureKitchenOptions = {}
+  ): Promise<ConsoleEnsureResult> {
+    return runKitchenCreate(input, ensureOptions, 'public')
+  }
+
+  async function ensureKitchen(
+    input: KitchenCreateInput & { place?: PlaceUpsertInput },
+    ensureOptions: EnsureKitchenOptions = {}
+  ): Promise<ConsoleEnsureResult> {
+    return runKitchenCreate(input, ensureOptions, 'console')
   }
 
   return { createKitchen, ensureKitchen }

@@ -159,6 +159,30 @@ Updated: 2026-04-04
   - `Real`
   - `Test`
 
+## Mutation Entry Canon (`createX` vs `ensureX`)
+- `createX` is the intentional creation entrypoint for a real target.
+- `createX` is used by user-facing create flows such as:
+  - create forms
+  - create systems
+  - other explicit "make a new X" actions
+- `createX` may run in:
+  - `public` mode: create the root record only
+  - `console` mode: create the root record and the app-hosted console overlay
+- `ensureX` is the idempotent bootstrap/setup-if-missing entrypoint.
+- `ensureX` is used for:
+  - `test` mode entry
+  - repair/recovery
+  - setup/bootstrap flows that must tolerate "already exists"
+- Auth must stay identity-only.
+- Auth must not auto-create domain records on sign-in.
+- Family entry pages may call `ensureX` when the canon says the family has one personal test target per signed-in user.
+- Current family-entry test canon:
+  - `projects/test` ensures one `test-projects/{uid}`
+  - `kitchen/test` ensures one `test-kitchens/{uid}`
+  - `portfolio/test` ensures one `test-portfolios/{uid}`
+  - `supplier/test` ensures one `test-suppliers/{uid}`
+- Test target creation happens on entry to that family's console page in `test` mode, not in auth/bootstrap middleware.
+
 ## Read-only Data Policy
 - Runtime read-only data must come from domain `read-only-scenarios/` registries.
 - Dev fixture files under repo `dummy/**` are optional developer tooling only.

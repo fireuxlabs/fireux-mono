@@ -116,7 +116,7 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
-const { ensureSupplier } = useSupplierCreate()
+const { createSupplier } = useSupplierCreate()
 const { setRuntimeSupplier } = useRuntimeSupplierSelection()
 const { notesVisible } = useDevUi()
 
@@ -144,7 +144,7 @@ const successTo = computed(() => {
 const handleCreate = async () => {
   if (isCreating.value) return
 
-  const create = props.create ?? (() => ensureSupplier({ mode: resolvedMode.value }))
+  const create = props.create ?? (() => createSupplier({ mode: resolvedMode.value }))
   isCreating.value = true
   errorMessage.value = null
 
