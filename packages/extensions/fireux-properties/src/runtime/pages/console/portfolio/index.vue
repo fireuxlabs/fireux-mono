@@ -110,6 +110,8 @@ const modeOptions = [
 ] as const
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
+const stripTestPortfolioSuffix = (value: unknown): string =>
+  normalizeString(value).replace(/\s+test portfolio$/i, '').trim()
 
 const { runtime, scenarios } = useRuntimePortfolioConsole()
 const portfolioSelection = useRuntimePortfolioSelection()
@@ -118,6 +120,7 @@ const { ensurePortfolio } = usePortfolioCreate({ test: true })
 const { pill: toPortfolioCard } = usePortfolioInterface()
 const { collection: livePortfolios } = usePortfolioCollection()
 const { collection: testPortfolios } = usePortfolioCollection({ collectionPath: 'test-portfolios' })
+const selectedMode = portfolioSelection.mode
 
 type PortfolioPill = NonNullable<ReturnType<typeof toPortfolioCard>> & {
   imageUrl?: string
@@ -133,7 +136,17 @@ const buildPortfolioPill = (
 
   return {
     ...pill,
-    imageUrl: pill.avatarUrl || normalizeString(imageUrl),
+    imageUrl: normalizeString(imageUrl) || pill.avatarUrl,
+    title:
+      selectedMode.value === 'test'
+        ? normalizeString(currentUser.value?.displayName) ||
+          stripTestPortfolioSuffix(target?.name) ||
+          'Your'
+        : pill.title,
+    subtitle:
+      selectedMode.value === 'test'
+        ? 'Test Portfolio'
+        : pill.subtitle,
   }
 }
 
@@ -161,7 +174,6 @@ const testPortfolioPills = computed(() =>
     .filter((entry): entry is PortfolioPill => Boolean(entry))
 )
 
-const selectedMode = portfolioSelection.mode
 const availablePortfolioPills = computed(() => {
   if (selectedMode.value === 'live') return livePortfolioPills.value
   if (selectedMode.value === 'test') return testPortfolioPills.value
@@ -255,7 +267,6 @@ const selectPortfolio = (portfolioId: string) => {
 
 const selectMode = (mode: ConsoleMode) => {
   portfolioSelection.setRuntimePortfolio({
-    selectedId: '',
     mode,
   })
 }

@@ -110,14 +110,17 @@ const modeOptions = [
 ] as const
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
+const stripTestSupplierSuffix = (value: unknown): string =>
+  normalizeString(value).replace(/\s+test supplier$/i, '').trim()
 
 const { runtime, scenarios } = useRuntimeSupplierConsole()
 const supplierSelection = useRuntimeSupplierSelection()
-const { uid, isAuthenticated, hasAuthState } = useAuth()
+const { uid, currentUser, isAuthenticated, hasAuthState } = useAuth()
 const { ensureSupplier } = useSupplierCreate({ test: true })
 const { interface: toSupplierCard } = useSupplierInterface()
 const { coreSuppliers: liveSuppliers } = useSupplierCollection()
 const { coreSuppliers: testSuppliers } = useSupplierCollection({ collectionPath: 'test-suppliers' })
+const selectedMode = supplierSelection.mode
 
 type SupplierPill = NonNullable<ReturnType<typeof toSupplierCard>>
 type ConsoleMode = (typeof modeOptions)[number]['value']
@@ -131,7 +134,18 @@ const buildSupplierPill = (
 
   return {
     ...pill,
-    avatarUrl: pill.avatarUrl || normalizeString(imageUrl),
+    avatarUrl: normalizeString(imageUrl) || pill.avatarUrl,
+    title:
+      selectedMode.value === 'test'
+        ? normalizeString(currentUser.value?.displayName) ||
+          stripTestSupplierSuffix(target?.supplier_organization_name) ||
+          stripTestSupplierSuffix((target as any)?.name) ||
+          'Your'
+        : pill.title,
+    subtitle:
+      selectedMode.value === 'test'
+        ? 'Test Supplier'
+        : pill.subtitle,
   }
 }
 
@@ -159,7 +173,6 @@ const testSupplierPills = computed(() =>
     .filter((entry): entry is SupplierPill => Boolean(entry))
 )
 
-const selectedMode = supplierSelection.mode
 const availableSupplierPills = computed(() => {
   if (selectedMode.value === 'live') return liveSupplierPills.value
   if (selectedMode.value === 'test') return testSupplierPills.value
@@ -241,7 +254,6 @@ const selectSupplier = (supplierId: string) => {
 
 const selectMode = (mode: ConsoleMode) => {
   supplierSelection.setRuntimeSupplier({
-    selectedId: '',
     mode,
   })
 }

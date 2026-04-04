@@ -111,17 +111,37 @@ const modeOptions = [
 
 const { runtime, scenarios } = useRuntimeKitchenConsole()
 const kitchenSelection = useRuntimeKitchenSelection()
-const { uid, isAuthenticated, hasAuthState } = useAuth()
+const { uid, currentUser, isAuthenticated, hasAuthState } = useAuth()
 const { ensureKitchen } = useKitchenCreate({ test: true, ensurePlace: false })
 const { interface: toKitchenCard } = useKitchenInterface()
 const { kitchens: liveKitchens } = useKitchenFetch()
 const { kitchens: testKitchens } = useKitchenFetch({ collectionPath: 'test-kitchens' })
+const selectedMode = kitchenSelection.mode
 
 type KitchenPill = NonNullable<ReturnType<typeof toKitchenCard>>
 type ConsoleMode = (typeof modeOptions)[number]['value']
 
-const buildKitchenPill = (target?: Kitchen | null): KitchenPill | null =>
-  toKitchenCard(target as Kitchen | null)
+const stripTestKitchenSuffix = (value: unknown): string =>
+  String(value || '').trim().replace(/\s+test kitchen$/i, '').trim()
+
+const buildKitchenPill = (target?: Kitchen | null): KitchenPill | null => {
+  const pill = toKitchenCard(target as Kitchen | null)
+  if (!pill) return null
+
+  return {
+    ...pill,
+    title:
+      selectedMode.value === 'test'
+        ? String(currentUser.value?.displayName || '').trim() ||
+          stripTestKitchenSuffix(target?.name) ||
+          'Your'
+        : pill.title,
+    subtitle:
+      selectedMode.value === 'test'
+        ? 'Test Kitchen'
+        : pill.subtitle,
+  }
+}
 
 const demoKitchenPills = computed(() =>
   scenarios.value
@@ -147,7 +167,6 @@ const testKitchenPills = computed(() =>
     .filter((entry): entry is KitchenPill => Boolean(entry))
 )
 
-const selectedMode = kitchenSelection.mode
 const availableKitchenPills = computed(() => {
   if (selectedMode.value === 'live') return liveKitchenPills.value
   if (selectedMode.value === 'test') return testKitchenPills.value
@@ -232,7 +251,6 @@ const selectKitchen = (kitchenId: string) => {
 
 const selectMode = (mode: ConsoleMode) => {
   kitchenSelection.setRuntimeKitchen({
-    selectedId: '',
     mode,
   })
 }

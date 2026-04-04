@@ -360,7 +360,6 @@ const selectProject = (projectId: string) => {
 
 const selectMode = (mode: ConsoleMode) => {
   projectSelection.setRuntimeProject({
-    selectedId: '',
     mode,
   })
 }

@@ -86,6 +86,7 @@
 <script setup lang="ts">
 import { useState } from '#imports'
 import { computed, watchEffect } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { Supplier } from '../../../models/supplier/Supplier.model'
 import { useRuntimeSupplier } from '../../../composables/fireux/app/supplier-console/useRuntimeSupplier'
 import { useRuntimeSupplierSelection } from '../../../composables/fireux/app/supplier-console/state'
@@ -107,8 +108,11 @@ definePageMeta({
 })
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
+const stripTestSupplierSuffix = (value: unknown): string =>
+  normalizeString(value).replace(/\s+test supplier$/i, '').trim()
 const runtime = useRuntimeSupplier()
 const supplierSelection = useRuntimeSupplierSelection()
+const { currentUser } = useAuth()
 const { interface: toSupplierCard } = useSupplierInterface()
 
 type SupplierPill = NonNullable<ReturnType<typeof toSupplierCard>>
@@ -122,7 +126,18 @@ const buildSupplierPill = (
 
   return {
     ...pill,
-    avatarUrl: pill.avatarUrl || normalizeString(imageUrl),
+    avatarUrl: normalizeString(imageUrl) || pill.avatarUrl,
+    title:
+      supplierSelection.mode.value === 'test'
+        ? normalizeString(currentUser.value?.displayName) ||
+          stripTestSupplierSuffix(target?.supplier_organization_name) ||
+          stripTestSupplierSuffix((target as any)?.name) ||
+          'Your'
+        : pill.title,
+    subtitle:
+      supplierSelection.mode.value === 'test'
+        ? 'Test Supplier'
+        : pill.subtitle,
   }
 }
 

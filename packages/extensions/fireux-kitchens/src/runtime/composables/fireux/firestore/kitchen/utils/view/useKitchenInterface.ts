@@ -10,6 +10,8 @@ import type {
 } from 'fireux-places/runtime/models/place.model'
 import type { Kitchen } from '../../../../../../models/kitchen.model'
 
+const DEFAULT_KITCHEN_IMAGE = '/img/core/brand/logo.png'
+
 export namespace KitchenCard {
   export type Card = {
     id: string
@@ -95,7 +97,7 @@ export function useKitchenInterface() {
     const displayTitle = isTestKitchen
       ? shortName || name
       : shortName || stripLocationFromTitle(name, shortAddress || formattedAddress)
-    const imageUrl = safeString((kitchen as any)?.image_url)
+    const imageUrl = safeString((kitchen as any)?.image_url) || DEFAULT_KITCHEN_IMAGE
 
     return {
       id,

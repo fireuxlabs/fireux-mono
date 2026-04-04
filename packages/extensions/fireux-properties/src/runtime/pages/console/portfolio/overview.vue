@@ -89,6 +89,7 @@
 <script setup lang="ts">
 import { useState } from '#imports'
 import { computed, watchEffect } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { Portfolio } from '../../../models/portfolio.model'
 import { useRuntimePortfolio } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
@@ -110,8 +111,11 @@ definePageMeta({
 })
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
+const stripTestPortfolioSuffix = (value: unknown): string =>
+  normalizeString(value).replace(/\s+test portfolio$/i, '').trim()
 const runtime = useRuntimePortfolio()
 const portfolioSelection = useRuntimePortfolioSelection()
+const { currentUser } = useAuth()
 const { pill: toPortfolioCard } = usePortfolioInterface()
 
 type PortfolioPill = NonNullable<ReturnType<typeof toPortfolioCard>> & {
@@ -127,7 +131,17 @@ const buildPortfolioPill = (
 
   return {
     ...pill,
-    imageUrl: pill.avatarUrl || normalizeString(imageUrl),
+    imageUrl: normalizeString(imageUrl) || pill.avatarUrl,
+    title:
+      portfolioSelection.mode.value === 'test'
+        ? normalizeString(currentUser.value?.displayName) ||
+          stripTestPortfolioSuffix(target?.name) ||
+          'Your'
+        : pill.title,
+    subtitle:
+      portfolioSelection.mode.value === 'test'
+        ? 'Test Portfolio'
+        : pill.subtitle,
   }
 }
 

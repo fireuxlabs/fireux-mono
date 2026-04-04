@@ -13,6 +13,7 @@ import type { Supplier } from '../../../../../../models/supplier/Supplier.model'
 import type { SupplierRefs } from '../../fetch/useSupplierRecord'
 
 const supplierCollection = 'suppliers'
+const DEFAULT_SUPPLIER_IMAGE = '/img/core/brand/logo.png'
 type UserLike = Pick<User, 'avatar'>
 type SupplierTarget = SupplierSurface & { user?: UserLike | null }
 
@@ -90,7 +91,7 @@ export function useSupplierInterface(
       target.logo_url,
       target.avatar_url,
       user?.avatar,
-    ])
+    ]) || DEFAULT_SUPPLIER_IMAGE
     const categoriesCsv = csv(badges)
     const locationsLabel = deliveryAreas.join(', ')
     const categoryLabel = firstNonEmptyString([

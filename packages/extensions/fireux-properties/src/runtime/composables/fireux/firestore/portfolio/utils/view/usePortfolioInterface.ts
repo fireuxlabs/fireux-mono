@@ -1,6 +1,7 @@
 import type { Portfolio } from '../../../../../../models/portfolio.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
+const DEFAULT_PORTFOLIO_IMAGE = '/img/core/brand/logo.png'
 
 export namespace PortfolioCard {
   export type Card = {
@@ -35,7 +36,7 @@ export function usePortfolioInterface() {
     return {
       id,
       to: id ? `/console/portfolio` : '',
-      avatarUrl: '',
+      avatarUrl: DEFAULT_PORTFOLIO_IMAGE,
       title: name,
       subtitle: regionLabel,
       badges: [],

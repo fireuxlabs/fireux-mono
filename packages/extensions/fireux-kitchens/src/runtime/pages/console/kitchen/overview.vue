@@ -92,6 +92,7 @@
 <script setup lang="ts">
 import { useState } from '#imports'
 import { computed, watchEffect } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { Kitchen } from '../../../models/kitchen.model'
 import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
 import { useRuntimeKitchenSelection } from '../../../composables/fireux/app/kitchen-runtime/state'
@@ -114,11 +115,30 @@ definePageMeta({
 
 const runtime = useRuntimeKitchen()
 const kitchenSelection = useRuntimeKitchenSelection()
+const { currentUser } = useAuth()
 const { interface: toKitchenCard } = useKitchenInterface()
 
-const activeKitchenPill = computed(() =>
-  toKitchenCard(runtime.kitchen.value as Kitchen | null)
-)
+const stripTestKitchenSuffix = (value: unknown): string =>
+  String(value || '').trim().replace(/\s+test kitchen$/i, '').trim()
+
+const activeKitchenPill = computed(() => {
+  const pill = toKitchenCard(runtime.kitchen.value as Kitchen | null)
+  if (!pill) return null
+
+  return {
+    ...pill,
+    title:
+      kitchenSelection.mode.value === 'test'
+        ? String(currentUser.value?.displayName || '').trim() ||
+          stripTestKitchenSuffix(runtime.kitchen.value?.name) ||
+          'Your'
+        : pill.title,
+    subtitle:
+      kitchenSelection.mode.value === 'test'
+        ? 'Test Kitchen'
+        : pill.subtitle,
+  }
+})
 
 const modeLabel = computed(() => {
   if (kitchenSelection.mode.value === 'live') return 'Real'
