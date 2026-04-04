@@ -1,6 +1,6 @@
 # fireux-suppliers Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-03-25
+Updated: 2026-04-04
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -28,6 +28,14 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `/console/supplier/*`
   - `/suppliers/admin/[id]`
   - `/dashboard/supplier/*`
+- `/console/supplier` is the family entry page:
+  - `read-only`: curated demo suppliers
+  - `test`: Firestore-backed test suppliers
+  - `live`: my real suppliers for this app
+- `my real suppliers` means suppliers the current user can operate through the app overlay:
+  - `apps/{appId}/suppliers/{supplierId}`
+  - `admin_ids` contains the user and `console_enabled` is not false
+- Supplier relationship or operator linkage may inform onboarding or claiming, but it is not the access rule by itself.
 
 ## 6) Surfaces supported
 - `Pill`, `Cell`, `Preview`, `Profile` supported for supplier cards/profile views.

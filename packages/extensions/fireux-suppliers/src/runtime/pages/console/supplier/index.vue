@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="console-supplier-home">
     <template #header>
-      <LayoutsConsoleNavbar title="Supplier Overview">
+      <LayoutsConsoleNavbar title="Supplier">
         <template #right>
           <UButton
             v-if="runtime.id"
@@ -78,8 +78,9 @@
 </template>
 
 <script setup lang="ts">
-import { useState } from '#imports'
-import { computed, onScopeDispose, watchEffect } from 'vue'
+import { navigateTo } from '#imports'
+import { useConsoleHeaderPill } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleHeaderPill'
+import { computed, watchEffect } from 'vue'
 import type { Supplier } from '../../../models/supplier/Supplier.model'
 import { useSupplierCollection } from '../../../composables/fireux/firestore/supplier/fetch/useSupplierCollection'
 import { useRuntimeSupplierSelection } from '../../../composables/fireux/app/supplier-console/state'
@@ -100,11 +101,6 @@ definePageMeta({
   },
   requiresAuth: true,
 })
-
-type ConsoleHeaderPill = {
-  component: string
-  props: Record<string, unknown>
-}
 
 const modeOptions = [
   { value: 'read-only', label: 'Demo' },
@@ -168,11 +164,6 @@ const activeSupplierPill = computed(() =>
     runtime.scenario.value?.image_url
   )
 )
-
-const supplierHeaderPill = useState<ConsoleHeaderPill | null>(
-  'console-header-pill-supplier',
-  () => null
-)
 const selectTitle = computed(() => {
   if (selectedMode.value === 'live') return 'Select a real supplier'
   if (selectedMode.value === 'test') return 'Select a test supplier'
@@ -184,24 +175,7 @@ const emptyTitle = computed(() => {
   return 'No demo suppliers'
 })
 
-watchEffect(() => {
-  const pill = activeSupplierPill.value
-
-  supplierHeaderPill.value = pill
-    ? {
-        component: 'SupplierCardsPill',
-        props: {
-          ...pill,
-          link: false,
-          showBadges: false,
-        },
-      }
-    : null
-})
-
-onScopeDispose(() => {
-  supplierHeaderPill.value = null
-})
+useConsoleHeaderPill('console-header-pill-supplier', 'SupplierCardsPill', activeSupplierPill)
 
 if (import.meta.client) {
   watchEffect(() => {
@@ -211,13 +185,14 @@ if (import.meta.client) {
   })
 }
 
-const selectSupplier = (supplierId: string) => {
+const selectSupplier = (supplierId: string, openOverview = true) => {
   const resolvedId = normalizeString(supplierId)
   if (!resolvedId) return
   supplierSelection.setRuntimeSupplier({
     supplierId: resolvedId,
     mode: selectedMode.value,
   })
+  if (openOverview) void navigateTo('/console/supplier/overview')
 }
 
 const selectMode = (mode: ConsoleMode) => {

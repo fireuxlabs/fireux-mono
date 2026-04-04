@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="console-project-home">
     <template #header>
-      <LayoutsConsoleNavbar title="Project Overview">
+      <LayoutsConsoleNavbar title="Projects">
         <template #right>
           <UButton
             v-if="runtime.id"
@@ -86,12 +86,13 @@
 </template>
 
 <script setup lang="ts">
-import { useState } from '#imports'
+import { navigateTo } from '#imports'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useConsoleHeaderPill } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleHeaderPill'
 import { useProjectInterface } from 'fireux-core/runtime/composables/fireux/firestore/system/project/utils/view/useProjectInterface'
 import type { Project } from 'fireux-core/runtime/models/system/project.model'
-import { computed, onScopeDispose, watchEffect } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { useRuntimeProjectSelection } from '~/composables/console/project/state'
 import { useRuntimeProjectConsole } from '~/composables/console/project/useRuntimeProjectConsole'
 
@@ -108,11 +109,6 @@ definePageMeta({
   },
   requiresAuth: true,
 })
-
-type ConsoleHeaderPill = {
-  component: string
-  props: Record<string, unknown>
-}
 
 const modeOptions = [
   { value: 'read-only', label: 'Demo' },
@@ -183,11 +179,6 @@ const activeProjectPill = computed(() =>
     runtime.id.value
   )
 )
-
-const projectHeaderPill = useState<ConsoleHeaderPill | null>(
-  'console-header-pill-project',
-  () => null
-)
 const selectTitle = computed(() => {
   if (selectedMode.value === 'live') return 'Select a real project'
   if (selectedMode.value === 'test') return 'Select a test project'
@@ -199,24 +190,7 @@ const emptyTitle = computed(() => {
   return 'No demo projects'
 })
 
-watchEffect(() => {
-  const pill = activeProjectPill.value
-
-  projectHeaderPill.value = pill
-    ? {
-        component: 'ProjectCardsPill',
-        props: {
-          ...pill,
-          link: false,
-          showBadges: false,
-        },
-      }
-    : null
-})
-
-onScopeDispose(() => {
-  projectHeaderPill.value = null
-})
+useConsoleHeaderPill('console-header-pill-project', 'ProjectCardsPill', activeProjectPill)
 
 if (import.meta.client) {
   watchEffect(() => {
@@ -226,13 +200,14 @@ if (import.meta.client) {
   })
 }
 
-const selectProject = (projectId: string) => {
+const selectProject = (projectId: string, openOverview = true) => {
   const resolvedId = normalizeString(projectId)
   if (!resolvedId) return
   projectSelection.setRuntimeProject({
     projectId: resolvedId,
     mode: selectedMode.value,
   })
+  if (openOverview) void navigateTo('/console/projects/overview')
 }
 
 const selectMode = (mode: ConsoleMode) => {

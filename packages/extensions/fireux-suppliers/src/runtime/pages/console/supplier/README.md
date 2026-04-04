@@ -12,6 +12,7 @@ This README only explains the supplier-console delta.
 ## Current Routes
 
 - `index.vue`
+- `overview.vue`
 - `create.vue`
 - `read-only/index.vue`
 - `read-only/[scenarioId].vue`
@@ -21,7 +22,7 @@ This README only explains the supplier-console delta.
 - this folder is operational, not public
 - apps must opt into supplier visibility through `consoleFamilies`
 - `index.vue` is the family-specific chooser in console shell
-- `index.vue` is the canon supplier console root
+- `overview.vue` is the first selected-supplier workspace page
 - `create.vue` belongs to the console create family
 - read-only entry stays route-driven through the shared console runtime helpers
 

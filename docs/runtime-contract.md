@@ -1,6 +1,6 @@
 # Runtime Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-03-31
+Updated: 2026-04-04
 ## Purpose
 - Define runtime selection, mode, collection path, and route policy across FireUX domains.
 
@@ -75,18 +75,89 @@ Updated: 2026-03-31
   - Do not auto-switch entities/modes when required state is missing.
   - Surface missing selection explicitly.
 
+## Console Vocabulary
+- `console family` = the top-level console bucket exposed by app config.
+  - Current canon:
+    - `projects`
+    - `kitchen`
+    - `portfolio`
+    - `supplier`
+- `runtime target` = the selected root entity inside a console family.
+  - Example:
+    - selected `Project`
+    - selected `Kitchen`
+    - selected `Portfolio`
+    - selected `Supplier`
+- `console workspace` = the console shell plus runtime mode around a selected target.
+- `child records` = records beneath the selected runtime target.
+- Cardinality does not introduce a new architecture layer.
+  - A family may often resolve to one target (`supplier`) or many (`kitchen`, `portfolio`, `projects`).
+  - The canon remains:
+    - choose family
+    - select target
+    - enter workspace
+    - operate on child records
+- `collection` is a storage term and must not be used as the primary business/runtime term for this console model.
+
+## Family Entry Semantics
+- `/console` = choose family.
+- `/console/X` = family entry page for that family.
+- `/console/X` is not the operational overview of one already-selected target.
+- `/console/X` is the overview of available targets for the active family in the active mode.
+- `/console/X/overview` = selected-target workspace overview for that family.
+- `/console/X/overview` is only meaningful once a runtime target has been selected.
+- Meaning by mode:
+  - `read-only`: show curated demo/read-only targets for that family.
+  - `test`: show Firestore-backed test targets for that family.
+  - `live`: show the current user's real targets for that family.
+- The family entry page answers:
+  - which mode is active
+  - which targets are available in that mode
+  - which target should be entered
+  - whether the user needs to create or claim a target
+- The overview page answers:
+  - which target is active
+  - which workspace sections are available for that target
+  - where the operator should go next
+
+## Real Mode Access Rule
+- `live` family entry must show `my Xs`, not all documents in the backing collection.
+- `my Xs` means targets the current user can operate through the app-hosted console overlay.
+- Canon authority source for real-mode access is the overlay governance shape:
+  - `admin_ids`
+  - `console_enabled`
+  - and any family-specific canonical claim rule explicitly allowed in a Tier1 extension contract
+- Root ownership and relationship fields may support discovery or migration, but they do not replace overlay governance unless the Tier1 family contract explicitly says so.
+- Family-specific guidance:
+  - `projects`: overlay governance is primary; `owner_user_id` is a root ownership hint only.
+  - `kitchen`: overlay governance or allowed claim rules; chef/profile linkage is not enough.
+  - `portfolio`: overlay governance is primary; `owner_label` is presentation only.
+  - `supplier`: overlay governance is primary; supplier/operator relationship is not enough.
+
 ## Runtime Mode Rules (Console Runtimes)
 - Supported modes:
   - `live`
   - `read-only`
+  - `test`
 - Mode behavior:
   - `live`: Firestore-backed production collections.
   - `read-only`: scenario/data-pack mode with no Firestore writes.
+  - `test`: Firestore-backed test collections.
 
 ### Legacy Input Alias
 - `dummy` is not a canonical runtime mode.
-- Runtime normalizers may accept `dummy` as backward-compatible input and map it to `read-only`.
-- New state, routes, and UI labels must only use `live`, `read-only`.
+- Runtime normalizers may accept:
+  - `dummy` -> `read-only`
+  - `demo` -> `read-only`
+  - `real` -> `live`
+- New state and internal contracts must use only:
+  - `live`
+  - `read-only`
+  - `test`
+- UI labels may still say:
+  - `Demo`
+  - `Real`
+  - `Test`
 
 ## Read-only Data Policy
 - Runtime read-only data must come from domain `read-only-scenarios/` registries.

@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="console-portfolio-home">
     <template #header>
-      <LayoutsConsoleNavbar title="Portfolio Overview">
+      <LayoutsConsoleNavbar title="Portfolio">
         <template #right>
           <UButton
             v-if="runtime.id"
@@ -78,12 +78,13 @@
 </template>
 
 <script setup lang="ts">
-import { useState } from '#imports'
+import { navigateTo } from '#imports'
+import { useConsoleHeaderPill } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleHeaderPill'
 import type { Portfolio } from '../../../models/portfolio.model'
 import { usePortfolioCollection } from '../../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
 import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
 import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
-import { computed, onScopeDispose, watchEffect } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { useRuntimePortfolioConsole } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolioConsole'
 
 definePageMeta({
@@ -100,11 +101,6 @@ definePageMeta({
   },
   requiresAuth: true,
 })
-
-type ConsoleHeaderPill = {
-  component: string
-  props: Record<string, unknown>
-}
 
 const modeOptions = [
   { value: 'read-only', label: 'Demo' },
@@ -170,11 +166,6 @@ const activePortfolioPill = computed(() =>
     runtime.scenario.value?.manager.avatar_url
   )
 )
-
-const portfolioHeaderPill = useState<ConsoleHeaderPill | null>(
-  'console-header-pill-portfolio',
-  () => null
-)
 const selectTitle = computed(() => {
   if (selectedMode.value === 'live') return 'Select a real portfolio'
   if (selectedMode.value === 'test') return 'Select a test portfolio'
@@ -186,24 +177,11 @@ const emptyTitle = computed(() => {
   return 'No demo portfolios'
 })
 
-watchEffect(() => {
-  const pill = activePortfolioPill.value
-
-  portfolioHeaderPill.value = pill
-    ? {
-        component: 'PortfolioCardsPill',
-        props: {
-          ...pill,
-          link: false,
-          showBadges: false,
-        },
-      }
-    : null
-})
-
-onScopeDispose(() => {
-  portfolioHeaderPill.value = null
-})
+useConsoleHeaderPill(
+  'console-header-pill-portfolio',
+  'PortfolioCardsPill',
+  activePortfolioPill
+)
 
 if (import.meta.client) {
   watchEffect(() => {
@@ -213,13 +191,14 @@ if (import.meta.client) {
   })
 }
 
-const selectPortfolio = (portfolioId: string) => {
+const selectPortfolio = (portfolioId: string, openOverview = true) => {
   const resolvedId = normalizeString(portfolioId)
   if (!resolvedId) return
   portfolioSelection.setRuntimePortfolio({
     portfolioId: resolvedId,
     mode: selectedMode.value,
   })
+  if (openOverview) void navigateTo('/console/portfolio/overview')
 }
 
 const selectMode = (mode: ConsoleMode) => {

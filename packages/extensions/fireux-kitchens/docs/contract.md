@@ -1,6 +1,6 @@
 # fireux-kitchens Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-03-28
+Updated: 2026-04-04
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -46,6 +46,15 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `/console/kitchen/*`
 - Console selection is runtime-state based, not query-param selection.
 - The console hosts operations; it is not the same thing as the public kitchen page.
+- `/console/kitchen` is the family entry page:
+  - `read-only`: curated demo kitchens
+  - `test`: Firestore-backed test kitchens
+  - `live`: my real kitchens for this app
+- `my real kitchens` means kitchens the current user can operate through the app overlay:
+  - `apps/{appId}/kitchens/{kitchenId}`
+  - `admin_ids` contains the user and `console_enabled` is not false
+  - or a family-specific canonical claim rule allows entry
+- Chef linkage, workplace history, or profile association may support prerequisites or presentation, but they are not the console-access rule.
 
 ## 6) Surfaces supported
 - `Pill`, `Cell`, `Preview`, `Profile` supported across kitchen operation entities.

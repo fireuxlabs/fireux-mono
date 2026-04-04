@@ -88,6 +88,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute, useState } from '#imports'
+import { consoleFamilyFromPath } from '../composables/fireux/app/routing/consoleRoutes'
 import { useConsoleNav } from '../composables/fireux/app/routing/useConsoleNav'
 import { useNavGrouping } from '../composables/fireux/app/ui/nav/useNavGrouping'
 import { useConsoleNotifications } from '../composables/fireux/app/ui/useConsoleNotifications'
@@ -124,7 +125,7 @@ const supplierHeaderPill = useState<ConsoleHeaderPill | null>(
 )
 
 const selectedConsole = computed(() => {
-  const scope = String(route.path || '').match(/^\/console\/([^/]+)/)?.[1] || ''
+  const scope = consoleFamilyFromPath(String(route.path || ''))
 
   if (scope === 'projects') return projectHeaderPill.value
   if (scope === 'kitchen') return kitchenHeaderPill.value

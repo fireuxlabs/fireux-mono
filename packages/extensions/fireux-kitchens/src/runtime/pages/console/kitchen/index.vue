@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="console-kitchen-home">
     <template #header>
-      <LayoutsConsoleNavbar title="Kitchen Overview">
+      <LayoutsConsoleNavbar title="Kitchen">
         <template #right>
           <UButton
             v-if="runtime.id"
@@ -78,12 +78,13 @@
 </template>
 
 <script setup lang="ts">
-import { useState } from '#imports'
+import { navigateTo } from '#imports'
+import { useConsoleHeaderPill } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleHeaderPill'
 import type { Kitchen } from '../../../models/kitchen.model'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { useRuntimeKitchenSelection } from '../../../composables/fireux/app/kitchen-runtime/state'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { computed, onScopeDispose, watchEffect } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { useRuntimeKitchenConsole } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchenConsole'
 
 definePageMeta({
@@ -100,11 +101,6 @@ definePageMeta({
   },
   requiresAuth: true,
 })
-
-type ConsoleHeaderPill = {
-  component: string
-  props: Record<string, unknown>
-}
 
 const modeOptions = [
   { value: 'read-only', label: 'Demo' },
@@ -153,11 +149,6 @@ const activeKitchenPill = computed(() =>
   availableKitchenPills.value.find((item) => item.id === runtime.id.value) ??
   buildKitchenPill(runtime.kitchen.value as Kitchen | null)
 )
-
-const kitchenHeaderPill = useState<ConsoleHeaderPill | null>(
-  'console-header-pill-kitchen',
-  () => null
-)
 const selectTitle = computed(() => {
   if (selectedMode.value === 'live') return 'Select a real kitchen'
   if (selectedMode.value === 'test') return 'Select a test kitchen'
@@ -169,24 +160,7 @@ const emptyTitle = computed(() => {
   return 'No demo kitchens'
 })
 
-watchEffect(() => {
-  const pill = activeKitchenPill.value
-
-  kitchenHeaderPill.value = pill
-    ? {
-        component: 'KitchenCardsPill',
-        props: {
-          ...pill,
-          link: false,
-          showBadges: false,
-        },
-      }
-    : null
-})
-
-onScopeDispose(() => {
-  kitchenHeaderPill.value = null
-})
+useConsoleHeaderPill('console-header-pill-kitchen', 'KitchenCardsPill', activeKitchenPill)
 
 if (import.meta.client) {
   watchEffect(() => {
@@ -196,13 +170,14 @@ if (import.meta.client) {
   })
 }
 
-const selectKitchen = (kitchenId: string) => {
+const selectKitchen = (kitchenId: string, openOverview = true) => {
   const resolvedId = String(kitchenId || '').trim()
   if (!resolvedId) return
   kitchenSelection.setRuntimeKitchen({
     kitchenId: resolvedId,
     mode: selectedMode.value,
   })
+  if (openOverview) void navigateTo('/console/kitchen/overview')
 }
 
 const selectMode = (mode: ConsoleMode) => {

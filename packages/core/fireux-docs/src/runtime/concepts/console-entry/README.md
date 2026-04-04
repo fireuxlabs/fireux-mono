@@ -1,7 +1,7 @@
 # Console Entry Concept
 
 Authority: Operational
-Updated: 2026-03-30
+Updated: 2026-04-04
 Scope: console-backed entry flow across `pages/`, `components/`, `composables/`, and `models`.
 
 Learn how FireUX console-backed families are entered, where family choice happens, and how public entry differs from console entry.
@@ -43,7 +43,7 @@ Visibility source of truth:
 - `/console` does not infer visible families by scanning every registered console route
 - an app with `consoleFamilies: []` should not expose console entry at all
 
-### 2) Choose Instance Or Mode
+### 2) Choose Target In A Mode
 
 `/console/X`
 
@@ -51,30 +51,44 @@ This is the family-specific chooser.
 
 Meaning:
 - enter the family
-- choose a live instance when needed
-- choose create
-- set runtime mode when coming from demo entry seams
+- choose a target in the active mode
+- switch runtime mode when needed
+- choose create or claim when appropriate
 
 This route is console entry, not yet the operational workspace.
 
-### 2b) Shared Overview
+Vocabulary at this layer:
+- family = `projects`, `kitchen`, `portfolio`, `supplier`
+- target = the selected root entity in that family
+- workspace = the console shell once a target is selected
 
-`/console/X/overview`
+Do not add another business layer here.
+If a family often has one target versus many, that is cardinality, not a new console architecture.
 
-This is the shared console overview seam.
-
-Meaning:
-- if one target is available, auto-select it
-- if many targets are available, show the all-target overview
-- if zero live targets exist, fall through to create
-- keep the same overview route whether the runtime mode is `live` or `read-only`
+Meaning by mode:
+- `read-only`: show curated demo targets
+- `test`: show test targets
+- `live`: show the current user's real targets for that family
 
 The route answers:
 - which console family is active
+- which mode is active
+- which targets are available in that mode
+- which target should be entered next
 
-Runtime state answers:
-- which target or scenario is selected
-- whether the console is writable
+### 2b) Selected Target Overview
+
+`/console/X/overview`
+
+This is the first child page inside the selected workspace.
+
+Meaning:
+- one target is already selected in runtime state
+- the operator is now inside that target's workspace
+- the page gives a stable overview and jump-off point for child pages
+
+This route is not the family chooser.
+It is the overview of the selected target inside the workspace.
 
 ### 3) Public Family Surface
 
@@ -128,8 +142,8 @@ The route context carries the real meaning:
 
 The canonical shape is:
 - `/console` = choose family
-- `/console/X` = family entry and selection seam
-- `/console/X/overview` = shared operator overview
+- `/console/X` = family entry and target selection seam
+- `/console/X/overview` = selected-target workspace overview
 - `/X` = public discovery plus the same chooser when useful
 - `/X/create` = public facade create
 - `/console/X/create` = console create
@@ -169,7 +183,8 @@ The concept doc should explain:
 - family choice
 - family chooser
 - runtime mode choice
-- shared overview behavior
+- family-entry behavior across demo/test/real
+- selected-target workspace overview
 - public create versus console create
 
 The local family docs should explain only the delta.
@@ -193,7 +208,8 @@ Console-backed families all follow one entry pattern.
 The shared concept is:
 - choose family
 - enter the family and resolve mode in runtime
-- use overview as the shared operator seam
+- choose the target from that family entry seam
+- land in the selected target overview
 - split public create from console create
 
 Kitchen is the current reference implementation of that pattern.

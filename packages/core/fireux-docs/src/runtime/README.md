@@ -89,7 +89,11 @@ Recent repo truth:
 - console family visibility is now an app-config concern through `consoleFamilies`
 - main console page ownership is now explicit: system consoles in core, domain consoles in their domain package
 - console-backed runtime now treats `live` and `read-only` as runtime modes rather than separate console architectures
-- `/console/X/overview` is now the shared operator seam: one target auto-selects, many targets show an all-target overview, and zero live targets fall through to create
+- `/console/X` is now the shared family entry seam:
+  - `read-only` shows demo targets
+  - `test` shows test targets
+  - `live` shows the current user's real targets for that family
+- `/console/X/overview` is the selected-target workspace overview seam
 - the runtime model layer is now normalized around simple stored-shape contracts:
   - root, system, domain-root, and scoped families use `XModel`, `X`, `XCreateInput`, `XUpdateInput`
   - identity overlays use `AppXModel` and `AppX`

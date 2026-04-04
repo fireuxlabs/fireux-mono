@@ -1,34 +1,39 @@
 import { computed } from 'vue'
-import { CONSOLE_ROOT } from './consoleRoutes'
+import {
+  CONSOLE_ROOT,
+  normalizeConsoleFamily,
+  toConsoleFamilyPath,
+  type ConsoleFamilyRoute,
+} from './consoleRoutes'
 import { useFireUXConfig } from '../FireUXConfig'
 
 export function useConsoleEntryCta() {
   const fireux = useFireUXConfig()
-  const consoleChildren = computed(() =>
+  const consoleFamilies = computed<ConsoleFamilyRoute[]>(() =>
     Array.from(
       new Set(
         (fireux.consoleFamilies || [])
-          .map((value) => String(value || '').trim().toLowerCase())
+          .map((value) => normalizeConsoleFamily(value))
           .filter(Boolean)
       )
     )
       .map((key) => ({
         key,
-        path: `${CONSOLE_ROOT}/${key}`,
+        path: toConsoleFamilyPath(key),
       }))
   )
 
-  const hasConsoleChildren = computed(() => consoleChildren.value.length > 0)
-  const hasConsoleEntry = computed(() => hasConsoleChildren.value)
+  const hasConsoleFamilies = computed(() => consoleFamilies.value.length > 0)
+  const hasConsoleEntry = computed(() => hasConsoleFamilies.value)
   const consoleEntryPath = computed(() =>
-    consoleChildren.value[0]?.path || '/'
+    consoleFamilies.value[0]?.path || '/'
   )
 
   return {
-    hasConsoleChildren,
+    hasConsoleFamilies,
     hasConsoleEntry,
     consoleEntryPath,
-    consolePath: CONSOLE_ROOT,
-    consoleChildren,
+    consoleRootPath: CONSOLE_ROOT,
+    consoleFamilies,
   }
 }

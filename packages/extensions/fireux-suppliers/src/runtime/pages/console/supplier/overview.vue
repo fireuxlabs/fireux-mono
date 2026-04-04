@@ -1,0 +1,144 @@
+<template>
+  <UDashboardPanel id="console-supplier-overview">
+    <template #header>
+      <LayoutsConsoleNavbar title="Supplier Overview" />
+    </template>
+
+    <template #body>
+      <section class="space-y-6">
+        <UAlert
+          v-if="!runtime.id"
+          color="neutral"
+          variant="soft"
+          title="No supplier selected"
+          description="Select a supplier on /console/supplier before opening the supplier overview."
+          :actions="[
+            {
+              label: 'Go to suppliers',
+              to: '/console/supplier',
+              icon: 'i-lucide-arrow-right',
+            },
+          ]"
+        />
+
+        <template v-else>
+          <SupplierCardsPill
+            v-if="activeSupplierPill"
+            v-bind="activeSupplierPill"
+            :link="false"
+            :show-badges="false"
+          />
+
+          <UCard>
+            <template #header>
+              <div class="text-sm font-semibold">Workspace Summary</div>
+            </template>
+
+            <div class="grid gap-3 sm:grid-cols-3">
+              <div class="space-y-1">
+                <div class="text-xs uppercase tracking-[0.16em] text-toned">Mode</div>
+                <div class="text-sm font-medium">{{ modeLabel }}</div>
+              </div>
+
+              <div class="space-y-1">
+                <div class="text-xs uppercase tracking-[0.16em] text-toned">Source</div>
+                <div class="text-sm font-medium">{{ sourceLabel }}</div>
+              </div>
+
+              <div class="space-y-1">
+                <div class="text-xs uppercase tracking-[0.16em] text-toned">Supplier Id</div>
+                <div class="font-mono text-sm">{{ runtime.id }}</div>
+              </div>
+            </div>
+          </UCard>
+
+          <UCard>
+            <template #header>
+              <div class="text-sm font-semibold">Workspace Actions</div>
+            </template>
+
+            <div class="flex flex-wrap gap-2">
+              <UButton
+                v-if="activeSupplierPill?.to"
+                :to="activeSupplierPill.to"
+                color="neutral"
+                variant="soft"
+                icon="i-lucide-external-link"
+              >
+                Open public supplier
+              </UButton>
+              <UButton to="/console/supplier" color="neutral" variant="ghost" icon="i-lucide-refresh-cw">
+                Switch supplier
+              </UButton>
+            </div>
+          </UCard>
+        </template>
+      </section>
+    </template>
+  </UDashboardPanel>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useConsoleHeaderPill } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleHeaderPill'
+import type { Supplier } from '../../../models/supplier/Supplier.model'
+import { useRuntimeSupplier } from '../../../composables/fireux/app/supplier-console/useRuntimeSupplier'
+import { useRuntimeSupplierSelection } from '../../../composables/fireux/app/supplier-console/state'
+import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
+
+definePageMeta({
+  layout: 'console',
+  nav: {
+    visibility: { modules: ['fireux-suppliers'] },
+    key: 'console-supplier-overview',
+    label: 'Overview',
+    icon: 'i-lucide-house',
+    order: 15,
+    desktop: true,
+    mobile: true,
+    layouts: ['console'],
+  },
+  requiresAuth: true,
+})
+
+const normalizeString = (value: unknown): string => String(value || '').trim()
+const runtime = useRuntimeSupplier()
+const supplierSelection = useRuntimeSupplierSelection()
+const { interface: toSupplierCard } = useSupplierInterface()
+
+type SupplierPill = NonNullable<ReturnType<typeof toSupplierCard>>
+
+const buildSupplierPill = (
+  target?: Supplier | null,
+  imageUrl?: unknown
+): SupplierPill | null => {
+  const pill = toSupplierCard(target as Supplier | null)
+  if (!pill) return null
+
+  return {
+    ...pill,
+    avatarUrl: pill.avatarUrl || normalizeString(imageUrl),
+  }
+}
+
+const activeSupplierPill = computed(() =>
+  buildSupplierPill(
+    runtime.supplier.value as Supplier | null,
+    runtime.scenario.value?.image_url
+  )
+)
+
+const modeLabel = computed(() => {
+  if (supplierSelection.mode.value === 'live') return 'Real'
+  if (supplierSelection.mode.value === 'test') return 'Test'
+  return 'Demo'
+})
+
+const sourceLabel = computed(() => {
+  if (supplierSelection.mode.value === 'live') return 'Firestore production data'
+  if (supplierSelection.mode.value === 'test') return 'Firestore test data'
+  return 'Curated demo scenario'
+})
+
+useConsoleHeaderPill('console-header-pill-supplier', 'SupplierCardsPill', activeSupplierPill)
+</script>

@@ -162,7 +162,7 @@ Console-backed families should be read in this order:
 - `/console/X`
   - family entry and selector surface
 - `/console/X/overview`
-  - shared operator overview for one, many, or demo targets
+  - selected-target workspace overview
 - `/X`
   - public discovery plus the same chooser when useful
 - `/X/create`
@@ -179,10 +179,11 @@ Console visibility is now app-config driven:
 
 Mode is now a runtime concern rather than a second page tree:
 - `live`, `read-only`, and `test` should reuse the same main console pages
-- `/console/X/overview` is the shared seam that decides:
-  - one target -> auto-select it
-  - many targets -> show all-target overview
-  - zero live targets -> create
+- `/console/X` is the shared family-entry seam that decides:
+  - which mode is active
+  - which targets are available in that mode
+  - whether the user should select, create, or claim a target
+- `/console/X/overview` is the stable first child page after selection
 - legacy `/read-only` routes may still exist as convenience seams, but they should only set runtime mode and enter the normal console pages
 
 Main console page ownership is now read like this:

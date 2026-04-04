@@ -167,7 +167,7 @@ import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireuxBrandAssets } from 'fireux-core/runtime/composables/fireux/app/useFireuxBrandAssets'
 import { useConsoleEntryCta } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleEntryCta'
-import { toConsoleScopeLabel } from 'fireux-core/runtime/composables/fireux/app/routing/consoleRoutes'
+import { toConsoleFamilyLabel } from 'fireux-core/runtime/composables/fireux/app/routing/consoleRoutes'
 import { useKeyEntityTags } from 'fireux-core/runtime/composables/fireux/app/routing/useKeyEntityTags'
 
 type RightPanelItem = {
@@ -245,25 +245,25 @@ const rightPanelTagsResolved = computed<RightPanelTagItem[]>(() =>
         }))
 )
 
-const { hasConsoleEntry, consolePath, consoleChildren } = useConsoleEntryCta()
+const { hasConsoleEntry, consoleRootPath, consoleFamilies } = useConsoleEntryCta()
 
 const consoleCtas = computed(() => {
   if (!hasConsoleEntry.value) return []
 
-  if (!consoleChildren.value.length) {
+  if (!consoleFamilies.value.length) {
     return [
       {
         key: 'console',
-        path: consolePath,
+        path: consoleRootPath,
         label: 'Open Console',
       },
     ]
   }
 
-  return consoleChildren.value.map((entry) => ({
+  return consoleFamilies.value.map((entry) => ({
     key: entry.key,
     path: entry.path,
-    label: `${toConsoleScopeLabel(entry.key) || 'Console'} Console`,
+    label: `${toConsoleFamilyLabel(entry.key) || 'Console'} Console`,
   }))
 })
 const auth = import.meta.client ? useAuth() : null

@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-03-31
+Updated: 2026-04-04
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -9,6 +9,13 @@ Updated: 2026-03-31
 - Extensions own domain logic and contracts.
 - Apps consume extension domains; apps do not fork extension canon behavior.
 - Runtime state is the single source of truth for active selection context.
+- Console families are route buckets, not stored entities.
+- Runtime targets are the selected root entities inside those families.
+- Console workspaces are operational shells around runtime targets; the workspace itself is not a root entity.
+- Do not introduce an extra abstract `collection` layer when `family`, `target`, and `child records` already explain the model.
+- `/console/X` is the family entry page, not the operational home of one already-selected target.
+- `/console/X/overview` is the workspace overview for the selected runtime target.
+- In `live` mode, `/console/X` should show the current user's real targets for that family.
 - Canon docs override operational docs and tooling/history docs on conflict.
 - App pages do not justify app-local storage on their own.
 - Root-first entities may be filtered by explicit scope fields instead of being duplicated under app paths.
@@ -36,6 +43,8 @@ Updated: 2026-03-31
 - Writes must be explicit through mutation composables.
 - Missing required state/data must be surfaced explicitly, not inferred.
 - App/ecosystem ownership filtering must be explicit through stored fields, not implied by collection path alone.
+- Real-mode family entry must not behave like a raw collection browser.
+- Real-mode target visibility should come from explicit overlay governance and only use root hints where the family contract allows it.
 - Shared placeholder branding for tenant apps is allowed because it does not decide selection, routing, or identity.
 
 ## Endpoint Canon

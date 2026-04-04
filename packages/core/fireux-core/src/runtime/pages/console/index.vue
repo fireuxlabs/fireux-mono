@@ -51,7 +51,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
-import { toConsoleScopeLabel } from '../../composables/fireux/app/routing/consoleRoutes'
+import { toConsoleFamilyLabel } from '../../composables/fireux/app/routing/consoleRoutes'
 import { useConsoleEntryCta } from '../../composables/fireux/app/routing/useConsoleEntryCta'
 
 definePageMeta({
@@ -61,7 +61,7 @@ definePageMeta({
 })
 
 const { appName } = useFireUXConfig()
-const { consoleChildren } = useConsoleEntryCta()
+const { consoleFamilies } = useConsoleEntryCta()
 
 function iconForFamily(key: string) {
   if (key === 'projects') return 'i-lucide-briefcase-business'
@@ -72,9 +72,9 @@ function iconForFamily(key: string) {
 }
 
 const families = computed(() =>
-  consoleChildren.value.map((family) => ({
+  consoleFamilies.value.map((family) => ({
     ...family,
-    label: toConsoleScopeLabel(family.key),
+    label: toConsoleFamilyLabel(family.key),
     icon: iconForFamily(family.key),
   }))
 )

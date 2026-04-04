@@ -12,6 +12,7 @@ This README only explains the kitchen-console delta.
 ## Current Routes
 
 - `index.vue`
+- `overview.vue`
 - `create.vue`
 - `menu.vue`
 - `recipes.vue`
@@ -26,7 +27,7 @@ This README only explains the kitchen-console delta.
 - this folder is operational, not public
 - apps must opt into kitchen visibility through `consoleFamilies`
 - `index.vue` is the family-specific chooser in console shell
-- `index.vue` is the canon kitchen console root
+- `overview.vue` is the first selected-kitchen workspace page
 - `create.vue` is the kitchen console create page
 - the rest of the routes are kitchen-owned operational delivery
 
@@ -41,7 +42,8 @@ Kitchen-specific delta:
 Kitchen is currently the reference implementation of the shared console-entry pattern.
 It proves:
 - `/console` -> choose family
-- `/console/kitchen` -> choose kitchen instance or create console
+- `/console/kitchen` -> choose kitchen instance by mode
+- `/console/kitchen/overview` -> selected kitchen workspace overview
 - `/kitchens` -> public discovery plus the same chooser
 - `/kitchens/create` -> public create
 - `/console/kitchen/create` -> console create
