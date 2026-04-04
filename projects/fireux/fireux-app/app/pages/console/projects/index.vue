@@ -131,7 +131,7 @@ definePageMeta({
     key: 'console-projects',
     label: 'Projects',
     icon: 'i-lucide-briefcase-business',
-    order: 10,
+    order: 900,
     desktop: true,
     mobile: true,
     layouts: ['console'],

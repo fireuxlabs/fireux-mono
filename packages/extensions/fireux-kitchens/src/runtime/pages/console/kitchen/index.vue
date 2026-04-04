@@ -95,7 +95,7 @@ definePageMeta({
     key: 'console-kitchen',
     label: 'Kitchen',
     icon: 'i-lucide-chef-hat',
-    order: 10,
+    order: 900,
     desktop: true,
     mobile: true,
     layouts: ['console'],

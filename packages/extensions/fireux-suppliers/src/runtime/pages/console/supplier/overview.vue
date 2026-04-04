@@ -99,7 +99,7 @@ definePageMeta({
     key: 'console-supplier-overview',
     label: 'Overview',
     icon: 'i-lucide-house',
-    order: 15,
+    order: 0,
     desktop: true,
     mobile: true,
     layouts: ['console'],

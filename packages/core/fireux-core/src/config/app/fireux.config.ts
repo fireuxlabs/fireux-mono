@@ -156,9 +156,9 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
 
   nuxt.srcDir = 'app'
   // Keep one generated output location for both `nuxi prepare` and `nuxi dev`.
-  // When these diverge, Nuxt UI/Tailwind can look for generated assets like
-  // `.nuxt/ui.css` in the wrong place and crash hot-reload.
-  nuxt.buildDir = '.nuxt'
+  // We keep it under /app so project-app guards do not delete the live dev
+  // output at the repo root during save/push flows.
+  nuxt.buildDir = 'app/.nuxt'
   nuxt.imports = { dirs: ['composables/**', 'utils/**'] }
 
   nuxt.modules = [
