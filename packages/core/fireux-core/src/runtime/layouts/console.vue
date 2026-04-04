@@ -49,14 +49,25 @@
           <USeparator v-if="middleNav.length && bottomNav.length" />
 
           <UNavigationMenu
-            v-if="bottomNav.length"
+            v-if="regularBottomNav.length"
             :collapsed="collapsed ?? false"
-            :items="bottomNav"
+            :items="regularBottomNav"
             orientation="vertical"
           />
 
           <div class="lg:hidden">
-            <USeparator v-if="topNav.length || middleNav.length || bottomNav.length" />
+            <USeparator
+              v-if="topNav.length || middleNav.length || regularBottomNav.length || familyRootNav.length"
+            />
+
+            <UNavigationMenu
+              v-if="familyRootNav.length"
+              :collapsed="collapsed ?? false"
+              :items="familyRootNav"
+              orientation="vertical"
+            />
+
+            <USeparator v-if="familyRootNav.length" />
 
             <div class="pt-3">
               <LayoutsSharedSideBarFooter :collapsed="collapsed ?? false" />
@@ -66,7 +77,16 @@
       </template>
 
       <template #footer="{ collapsed }">
-        <div class="hidden lg:flex">
+        <div class="hidden flex-col gap-3 lg:flex">
+          <UNavigationMenu
+            v-if="familyRootNav.length"
+            :collapsed="collapsed ?? false"
+            :items="familyRootNav"
+            orientation="vertical"
+          />
+
+          <USeparator v-if="familyRootNav.length" />
+
           <LayoutsSharedSideBarFooter
             :collapsed="collapsed ?? false"
             compact-profile
@@ -91,6 +111,7 @@ import { useRoute, useState } from '#imports'
 import {
   consoleFamilyFromPath,
   createDefaultRuntimeSelectionState,
+  toConsoleFamilyPath,
   toConsoleSelectionStateKey,
 } from '../composables/fireux/app/routing/consoleRoutes'
 import { useConsoleNav } from '../composables/fireux/app/routing/useConsoleNav'
@@ -120,7 +141,16 @@ const activeSelection = computed(() => {
     createDefaultRuntimeSelectionState
   ).value
 })
+const activeFamilyPath = computed(() =>
+  activeFamily.value ? toConsoleFamilyPath(activeFamily.value) : ''
+)
 const selectedConsole = computed(() =>
   String(activeSelection.value?.selectedId || '').trim() ? consoleHeader.value : null
+)
+const familyRootNav = computed(() =>
+  bottomNav.value.filter((item) => item.to === activeFamilyPath.value)
+)
+const regularBottomNav = computed(() =>
+  bottomNav.value.filter((item) => item.to !== activeFamilyPath.value)
 )
 </script>
