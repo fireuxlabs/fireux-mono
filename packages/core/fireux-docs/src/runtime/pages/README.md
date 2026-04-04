@@ -388,13 +388,13 @@ These are the clearest current family for operational console creation pages:
 - `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/create.vue`
 - `packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier/create.vue`
 - `packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/create.vue`
-- `packages/core/fireux-core/src/runtime/pages/console/projects/create.vue`
+- `projects/fireux/fireux-app/app/pages/console/projects/index.vue`
 
 Shared pattern:
 - `layout: 'console'`
 - `UDashboardPanel`
 - `LayoutsConsoleNavbar`
-- a `*CreateSystem` surface in the panel body
+- a `*CreateSystem` surface in the panel body, or temporarily embedded in the family root page
 
 Behavioral rule:
 - ensure the app-scoped console overlay

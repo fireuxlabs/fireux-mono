@@ -63,19 +63,11 @@ definePageMeta({
 const { appName } = useFireUXConfig()
 const { consoleFamilies } = useConsoleEntryCta()
 
-function iconForFamily(key: string) {
-  if (key === 'projects') return 'i-lucide-briefcase-business'
-  if (key === 'kitchen') return 'i-lucide-chef-hat'
-  if (key === 'portfolio') return 'i-lucide-layout-dashboard'
-  if (key === 'supplier') return 'i-lucide-truck'
-  return 'i-lucide-layout-panel-left'
-}
-
 const families = computed(() =>
   consoleFamilies.value.map((family) => ({
     ...family,
     label: toConsoleFamilyLabel(family.key),
-    icon: iconForFamily(family.key),
+    icon: 'i-lucide-layout-panel-left',
   }))
 )
 </script>

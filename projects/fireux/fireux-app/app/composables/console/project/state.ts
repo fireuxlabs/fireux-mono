@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import { normalizeRuntimeMode, normalizeString } from 'fireux-core/runtime/composables/fireux/runtime/runtime.normalize'
+import { toConsoleSelectionStateKey } from 'fireux-core/runtime/composables/fireux/app/routing/consoleRoutes'
 import type { RuntimeMode } from 'fireux-core/runtime/composables/fireux/runtime/runtime.types'
 import { selectionKey, useRuntimeSelection } from 'fireux-core/runtime/composables/fireux/runtime/useRuntimeSelection'
 
@@ -12,7 +13,7 @@ type RuntimeProjectSelectionInput = Partial<RuntimeProjectSelectionState> & {
   projectId?: string
 }
 
-const COOKIE_KEY = 'fireux_runtime_project'
+const COOKIE_KEY = toConsoleSelectionStateKey('projects')
 
 const normalizeSelectionState = (value: unknown): RuntimeProjectSelectionState => {
   const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}

@@ -1,22 +1,13 @@
-import { defineNuxtRouteMiddleware, navigateTo, useCookie } from '#imports'
+import { defineNuxtRouteMiddleware, navigateTo } from '#imports'
 import { useAuth } from '../composables/fireux/firebase/useAuth'
 import { useUser } from '../composables/fireux/firestore/core/user/useUser'
-import { normalizeRuntimeMode } from '../composables/fireux/runtime/runtime.normalize'
 
 const AUTH_WAIT_TIMEOUT_MS = 2500
 const USER_WAIT_TIMEOUT_MS = 1500
-const CONSOLE_RUNTIME_COOKIES = [
-  { prefix: '/console/kitchen', cookieKey: 'fireux_runtime_kitchen' },
-  { prefix: '/console/portfolio', cookieKey: 'fireux_runtime_portfolio' },
-  { prefix: '/console/supplier', cookieKey: 'fireux_runtime_supplier' },
-  { prefix: '/console/projects', cookieKey: 'fireux_runtime_project' },
-] as const
-const GUEST_CONSOLE_ROUTE_PREFIXES = [
-  '/console/kitchen/read-only',
-  '/console/portfolio/read-only',
-  '/console/supplier/read-only',
-  '/console/projects/read-only',
-] as const
+
+function isConsolePath(path: string) {
+  return path === '/console' || path.startsWith('/console/')
+}
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
@@ -29,29 +20,11 @@ async function waitFor(ready: () => boolean, timeoutMs: number) {
   }
 }
 
-function allowsGuestNonLiveConsole(path: string): boolean {
-  for (const entry of CONSOLE_RUNTIME_COOKIES) {
-    if (!path.startsWith(entry.prefix)) continue
-    if (path === `${entry.prefix}/create` || path.startsWith(`${entry.prefix}/create/`)) {
-      return false
-    }
-
-    const cookie = useCookie<Record<string, unknown> | null>(entry.cookieKey)
-    const mode = normalizeRuntimeMode(cookie.value?.mode, { defaultMode: 'read-only' })
-    return mode === 'read-only'
-  }
-
-  return false
-}
-
-function allowsGuestConsoleRoute(path: string): boolean {
-  return GUEST_CONSOLE_ROUTE_PREFIXES.some((prefix) =>
-    path === prefix || path.startsWith(`${prefix}/`)
-  )
-}
-
 export default defineNuxtRouteMiddleware(async (to) => {
   if (import.meta.server) return
+
+  const path = String(to.path || '')
+  if (isConsolePath(path)) return
 
   const meta = to.meta as Record<string, unknown>
   const requiresAuth = Boolean(meta.requiresAuth)
@@ -59,12 +32,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const { isAuthenticated, hasAuthState } = useAuth()
   await waitFor(() => hasAuthState.value, AUTH_WAIT_TIMEOUT_MS)
-  const path = String(to.path || '')
-  const allowsGuestConsole =
-    allowsGuestConsoleRoute(path) || allowsGuestNonLiveConsole(path)
 
   if (!isAuthenticated.value) {
-    if (allowsGuestConsole) return
     return navigateTo(`/auth?redirect=${encodeURIComponent(to.fullPath)}`)
   }
 

@@ -73,6 +73,25 @@
           />
         </div>
 
+        <template v-if="selectedMode === 'live'">
+          <USeparator />
+
+          <section class="space-y-3">
+            <div class="space-y-1">
+              <p class="text-sm font-medium text-highlighted">Create Project</p>
+              <p class="text-sm text-dimmed">
+                Keep creation here for now while we simplify the console flow.
+              </p>
+            </div>
+
+            <ProjectCreateSystem
+              mode="console"
+              return-to="/console/projects"
+              cancel-to="/console/projects"
+            />
+          </section>
+        </template>
+
         <DevJson
           title="Project Console (JSON)"
           context="console/projects · selection snapshot"
@@ -86,10 +105,9 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
+import { navigateTo, useState } from '#imports'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useConsoleHeaderPill } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleHeaderPill'
 import { useProjectInterface } from 'fireux-core/runtime/composables/fireux/firestore/system/project/utils/view/useProjectInterface'
 import type { Project } from 'fireux-core/runtime/models/system/project.model'
 import { computed, watchEffect } from 'vue'
@@ -190,7 +208,23 @@ const emptyTitle = computed(() => {
   return 'No demo projects'
 })
 
-useConsoleHeaderPill('console-header-pill-project', 'ProjectCardsPill', activeProjectPill)
+const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
+  'console-header-pill',
+  () => null
+)
+
+watchEffect(() => {
+  consoleHeader.value = activeProjectPill.value
+    ? {
+        component: 'ProjectCardsPill',
+        props: {
+          ...activeProjectPill.value,
+          link: false,
+          showBadges: false,
+        },
+      }
+    : null
+})
 
 if (import.meta.client) {
   watchEffect(() => {

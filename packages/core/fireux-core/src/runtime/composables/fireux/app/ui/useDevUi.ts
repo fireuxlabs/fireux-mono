@@ -22,7 +22,6 @@ export function useDevUi() {
       '/projects',
       '/projects/create',
       '/console/projects',
-      '/console/projects/create',
     ].includes(route.path)
   )
 

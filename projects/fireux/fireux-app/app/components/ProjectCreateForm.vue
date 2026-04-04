@@ -38,7 +38,7 @@
     <DevJson
       v-if="isDev"
       title="Project Create Debug"
-      context="console/projects/create · endpoint fetch"
+      context="console/projects · endpoint fetch"
       :data="debugState"
       :default-open="true"
     />

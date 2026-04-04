@@ -82,8 +82,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useConsoleHeaderPill } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleHeaderPill'
+import { useState } from '#imports'
+import { computed, watchEffect } from 'vue'
 import type { Portfolio } from '../../../models/portfolio.model'
 import { useRuntimePortfolio } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
@@ -145,9 +145,21 @@ const sourceLabel = computed(() => {
   return 'Curated demo scenario'
 })
 
-useConsoleHeaderPill(
-  'console-header-pill-portfolio',
-  'PortfolioCardsPill',
-  activePortfolioPill
+const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
+  'console-header-pill',
+  () => null
 )
+
+watchEffect(() => {
+  consoleHeader.value = activePortfolioPill.value
+    ? {
+        component: 'PortfolioCardsPill',
+        props: {
+          ...activePortfolioPill.value,
+          link: false,
+          showBadges: false,
+        },
+      }
+    : null
+})
 </script>

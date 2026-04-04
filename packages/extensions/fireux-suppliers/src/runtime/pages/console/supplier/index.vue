@@ -78,8 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
-import { useConsoleHeaderPill } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleHeaderPill'
+import { navigateTo, useState } from '#imports'
 import { computed, watchEffect } from 'vue'
 import type { Supplier } from '../../../models/supplier/Supplier.model'
 import { useSupplierCollection } from '../../../composables/fireux/firestore/supplier/fetch/useSupplierCollection'
@@ -175,7 +174,23 @@ const emptyTitle = computed(() => {
   return 'No demo suppliers'
 })
 
-useConsoleHeaderPill('console-header-pill-supplier', 'SupplierCardsPill', activeSupplierPill)
+const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
+  'console-header-pill',
+  () => null
+)
+
+watchEffect(() => {
+  consoleHeader.value = activeSupplierPill.value
+    ? {
+        component: 'SupplierCardsPill',
+        props: {
+          ...activeSupplierPill.value,
+          link: false,
+          showBadges: false,
+        },
+      }
+    : null
+})
 
 if (import.meta.client) {
   watchEffect(() => {

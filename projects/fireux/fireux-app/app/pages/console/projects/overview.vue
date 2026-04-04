@@ -81,8 +81,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useConsoleHeaderPill } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleHeaderPill'
+import { useState } from '#imports'
+import { computed, watchEffect } from 'vue'
 import { useProjectInterface } from 'fireux-core/runtime/composables/fireux/firestore/system/project/utils/view/useProjectInterface'
 import type { Project } from 'fireux-core/runtime/models/system/project.model'
 import { useRuntimeProjectSelection } from '~/composables/console/project/state'
@@ -147,5 +147,21 @@ const sourceLabel = computed(() => {
   return 'Curated demo scenario'
 })
 
-useConsoleHeaderPill('console-header-pill-project', 'ProjectCardsPill', activeProjectPill)
+const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
+  'console-header-pill',
+  () => null
+)
+
+watchEffect(() => {
+  consoleHeader.value = activeProjectPill.value
+    ? {
+        component: 'ProjectCardsPill',
+        props: {
+          ...activeProjectPill.value,
+          link: false,
+          showBadges: false,
+        },
+      }
+    : null
+})
 </script>

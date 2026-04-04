@@ -1,14 +1,15 @@
 import { computed } from 'vue'
 import { useRoute, useState } from '#imports'
 import { useNav } from '../ui/nav/useNav'
-import { consoleFamilyFromPath } from './consoleRoutes'
+import {
+  consoleFamilyFromPath,
+  createDefaultRuntimeSelectionState,
+  toConsoleSelectionStateKey,
+} from './consoleRoutes'
+import type { RuntimeSelectionState } from '../../runtime/runtime.types'
 
 function normalizePath(value: unknown): string {
   return String(value || '').trim().replace(/\/+$/, '')
-}
-
-function normalizeString(value: unknown): string {
-  return String(value || '').trim()
 }
 
 function isConsoleRootPath(path: string) {
@@ -19,31 +20,17 @@ export const useConsoleNav = () => {
   const nav = useNav(['console'])
   const route = useRoute()
   const activeFamily = computed(() => consoleFamilyFromPath(normalizePath(route.path)))
-  const projectSelection = useState<Record<string, unknown>>('fireux_runtime_project', () => ({
-    selectedId: '',
-    mode: 'read-only',
-  }))
-  const kitchenSelection = useState<Record<string, unknown>>('fireux_runtime_kitchen', () => ({
-    selectedId: '',
-    mode: 'read-only',
-  }))
-  const portfolioSelection = useState<Record<string, unknown>>('fireux_runtime_portfolio', () => ({
-    selectedId: '',
-    mode: 'read-only',
-  }))
-  const supplierSelection = useState<Record<string, unknown>>('fireux_runtime_supplier', () => ({
-    selectedId: '',
-    mode: 'read-only',
-  }))
-
-  const hasSelectedTarget = computed(() => {
+  const activeSelection = computed(() => {
     const family = activeFamily.value
-    if (family === 'projects') return Boolean(normalizeString(projectSelection.value?.selectedId))
-    if (family === 'kitchen') return Boolean(normalizeString(kitchenSelection.value?.selectedId))
-    if (family === 'portfolio') return Boolean(normalizeString(portfolioSelection.value?.selectedId))
-    if (family === 'supplier') return Boolean(normalizeString(supplierSelection.value?.selectedId))
-    return false
+    if (!family) return null
+    return useState<RuntimeSelectionState>(
+      toConsoleSelectionStateKey(family),
+      createDefaultRuntimeSelectionState
+    ).value
   })
+  const hasSelectedTarget = computed(() =>
+    Boolean(String(activeSelection.value?.selectedId || '').trim())
+  )
 
   const filterItems = (items: typeof nav.items.value) => {
     return items.filter((item) => {
@@ -63,7 +50,6 @@ export const useConsoleNav = () => {
       const family = activeFamily.value
       if (!family) return false
       if (itemFamily !== family) return false
-
       return hasSelectedTarget.value
     })
   }

@@ -1,6 +1,6 @@
 import type { ComputedRef, Ref } from 'vue'
 
-export type ConsoleFamily = 'projects' | 'kitchen' | 'portfolio' | 'supplier'
+export type ConsoleFamily = string
 
 /**
  * Canon runtime modes (shared across all entities).
@@ -28,6 +28,11 @@ export type RuntimeSelectionApi<TState extends Record<string, any>> = {
   state: Ref<TState>
   set: (patch?: Partial<TState>) => void
   clear: () => void
+}
+
+export type RuntimeSelectionState = {
+  selectedId: string
+  mode: RuntimeMode
 }
 
 export type RuntimeTarget = {

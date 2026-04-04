@@ -79,8 +79,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useConsoleHeaderPill } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleHeaderPill'
+import { useState } from '#imports'
+import { computed, watchEffect } from 'vue'
 import type { Supplier } from '../../../models/supplier/Supplier.model'
 import { useRuntimeSupplier } from '../../../composables/fireux/app/supplier-console/useRuntimeSupplier'
 import { useRuntimeSupplierSelection } from '../../../composables/fireux/app/supplier-console/state'
@@ -140,5 +140,21 @@ const sourceLabel = computed(() => {
   return 'Curated demo scenario'
 })
 
-useConsoleHeaderPill('console-header-pill-supplier', 'SupplierCardsPill', activeSupplierPill)
+const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
+  'console-header-pill',
+  () => null
+)
+
+watchEffect(() => {
+  consoleHeader.value = activeSupplierPill.value
+    ? {
+        component: 'SupplierCardsPill',
+        props: {
+          ...activeSupplierPill.value,
+          link: false,
+          showBadges: false,
+        },
+      }
+    : null
+})
 </script>

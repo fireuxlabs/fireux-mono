@@ -88,10 +88,15 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRoute, useState } from '#imports'
-import { consoleFamilyFromPath } from '../composables/fireux/app/routing/consoleRoutes'
+import {
+  consoleFamilyFromPath,
+  createDefaultRuntimeSelectionState,
+  toConsoleSelectionStateKey,
+} from '../composables/fireux/app/routing/consoleRoutes'
 import { useConsoleNav } from '../composables/fireux/app/routing/useConsoleNav'
 import { useNavGrouping } from '../composables/fireux/app/ui/nav/useNavGrouping'
 import { useConsoleNotifications } from '../composables/fireux/app/ui/useConsoleNotifications'
+import type { RuntimeSelectionState } from '../composables/fireux/runtime/runtime.types'
 
 defineOptions({ name: 'console' })
 
@@ -102,36 +107,20 @@ const { desktop } = useConsoleNav()
 const isConsoleEntryPage = computed(() => Boolean(route.meta?.consoleEntry))
 const { topNav, middleNav, bottomNav } = useNavGrouping(desktop)
 
-type ConsoleHeaderPill = {
-  component: string
-  props: Record<string, unknown>
-}
-
-const projectHeaderPill = useState<ConsoleHeaderPill | null>(
-  'console-header-pill-project',
+const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
+  'console-header-pill',
   () => null
 )
-const kitchenHeaderPill = useState<ConsoleHeaderPill | null>(
-  'console-header-pill-kitchen',
-  () => null
-)
-const portfolioHeaderPill = useState<ConsoleHeaderPill | null>(
-  'console-header-pill-portfolio',
-  () => null
-)
-const supplierHeaderPill = useState<ConsoleHeaderPill | null>(
-  'console-header-pill-supplier',
-  () => null
-)
-
-const selectedConsole = computed(() => {
-  const scope = consoleFamilyFromPath(String(route.path || ''))
-
-  if (scope === 'projects') return projectHeaderPill.value
-  if (scope === 'kitchen') return kitchenHeaderPill.value
-  if (scope === 'portfolio') return portfolioHeaderPill.value
-  if (scope === 'supplier') return supplierHeaderPill.value
-
-  return null
+const activeFamily = computed(() => consoleFamilyFromPath(String(route.path || '')))
+const activeSelection = computed(() => {
+  const family = activeFamily.value
+  if (!family) return null
+  return useState<RuntimeSelectionState>(
+    toConsoleSelectionStateKey(family),
+    createDefaultRuntimeSelectionState
+  ).value
 })
+const selectedConsole = computed(() =>
+  String(activeSelection.value?.selectedId || '').trim() ? consoleHeader.value : null
+)
 </script>

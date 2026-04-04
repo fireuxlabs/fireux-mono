@@ -78,8 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
-import { useConsoleHeaderPill } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleHeaderPill'
+import { navigateTo, useState } from '#imports'
 import type { Portfolio } from '../../../models/portfolio.model'
 import { usePortfolioCollection } from '../../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
 import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
@@ -177,11 +176,23 @@ const emptyTitle = computed(() => {
   return 'No demo portfolios'
 })
 
-useConsoleHeaderPill(
-  'console-header-pill-portfolio',
-  'PortfolioCardsPill',
-  activePortfolioPill
+const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
+  'console-header-pill',
+  () => null
 )
+
+watchEffect(() => {
+  consoleHeader.value = activePortfolioPill.value
+    ? {
+        component: 'PortfolioCardsPill',
+        props: {
+          ...activePortfolioPill.value,
+          link: false,
+          showBadges: false,
+        },
+      }
+    : null
+})
 
 if (import.meta.client) {
   watchEffect(() => {

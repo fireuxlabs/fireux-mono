@@ -1,24 +1,16 @@
-import type { ConsoleFamily } from '../../runtime/runtime.types'
-
-export type ConsoleFamilyRoute = {
-  key: ConsoleFamily
-  path: string
-}
+import type { ConsoleFamily, RuntimeSelectionState } from '../../runtime/runtime.types'
 
 export const CONSOLE_ROOT = '/console'
 
-export const CONSOLE_FAMILIES = [
-  'projects',
-  'kitchen',
-  'portfolio',
-  'supplier',
-] as const satisfies readonly ConsoleFamily[]
+export function createDefaultRuntimeSelectionState(): RuntimeSelectionState {
+  return {
+    selectedId: '',
+    mode: 'read-only',
+  }
+}
 
 export function normalizeConsoleFamily(value: unknown): ConsoleFamily | '' {
-  const normalized = String(value || '').trim().toLowerCase()
-  return (CONSOLE_FAMILIES as readonly string[]).includes(normalized)
-    ? (normalized as ConsoleFamily)
-    : ''
+  return String(value || '').trim().toLowerCase()
 }
 
 export function consoleFamilyFromPath(path: string): ConsoleFamily | '' {
@@ -26,13 +18,17 @@ export function consoleFamilyFromPath(path: string): ConsoleFamily | '' {
 }
 
 export function toConsoleFamilyPath(family: ConsoleFamily | string) {
-  return `${CONSOLE_ROOT}/${String(family || '').trim()}`
+  return `${CONSOLE_ROOT}/${normalizeConsoleFamily(family) || String(family || '').trim()}`
 }
 
 export function toConsoleFamilyLabel(key: ConsoleFamily | string) {
-  return key
+  return String(key || '')
     .split(/[-_]+/)
     .filter(Boolean)
     .map((part) => part[0]?.toUpperCase() + part.slice(1))
     .join(' ')
+}
+
+export function toConsoleSelectionStateKey(family: ConsoleFamily | string) {
+  return `fireux_runtime_${normalizeConsoleFamily(family)}`
 }

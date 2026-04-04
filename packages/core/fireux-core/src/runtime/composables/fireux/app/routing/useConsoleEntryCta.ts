@@ -1,15 +1,20 @@
 import { computed } from 'vue'
+import type { ConsoleFamily } from '../../runtime/runtime.types'
 import {
   CONSOLE_ROOT,
   normalizeConsoleFamily,
   toConsoleFamilyPath,
-  type ConsoleFamilyRoute,
 } from './consoleRoutes'
 import { useFireUXConfig } from '../FireUXConfig'
 
+type ConsoleEntryFamily = {
+  key: ConsoleFamily
+  path: string
+}
+
 export function useConsoleEntryCta() {
   const fireux = useFireUXConfig()
-  const consoleFamilies = computed<ConsoleFamilyRoute[]>(() =>
+  const consoleFamilies = computed<ConsoleEntryFamily[]>(() =>
     Array.from(
       new Set(
         (fireux.consoleFamilies || [])

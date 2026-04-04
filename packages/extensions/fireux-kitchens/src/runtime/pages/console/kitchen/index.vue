@@ -78,8 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
-import { useConsoleHeaderPill } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleHeaderPill'
+import { navigateTo, useState } from '#imports'
 import type { Kitchen } from '../../../models/kitchen.model'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { useRuntimeKitchenSelection } from '../../../composables/fireux/app/kitchen-runtime/state'
@@ -160,7 +159,23 @@ const emptyTitle = computed(() => {
   return 'No demo kitchens'
 })
 
-useConsoleHeaderPill('console-header-pill-kitchen', 'KitchenCardsPill', activeKitchenPill)
+const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
+  'console-header-pill',
+  () => null
+)
+
+watchEffect(() => {
+  consoleHeader.value = activeKitchenPill.value
+    ? {
+        component: 'KitchenCardsPill',
+        props: {
+          ...activeKitchenPill.value,
+          link: false,
+          showBadges: false,
+        },
+      }
+    : null
+})
 
 if (import.meta.client) {
   watchEffect(() => {
