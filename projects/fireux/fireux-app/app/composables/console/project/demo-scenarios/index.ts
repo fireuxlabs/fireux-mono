@@ -3,7 +3,6 @@ import { cedarLoopScenario } from './cedar-loop'
 import { harborGridScenario } from './harbor-grid'
 import { northstarWorksScenario } from './northstar-works'
 import type { DemoProjectScenario, DemoProjectScenarioListItem } from './_shared/types'
-export type { DemoProjectScenario, DemoProjectScenarioListItem } from './_shared/types'
 
 type ScenarioKey =
   | 'northstar-works'

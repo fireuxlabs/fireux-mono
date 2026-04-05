@@ -6,8 +6,6 @@ import type { DemoSupplierScenario, DemoSupplierScenarioListItem } from './_shar
 export type {
   DemoSupplierApp,
   DemoSupplierCore,
-  DemoSupplierScenario,
-  DemoSupplierScenarioListItem,
 } from './_shared/types'
 
 export type ScenarioKey = 'harbor-provisions' | 'supply-loop-distribution'

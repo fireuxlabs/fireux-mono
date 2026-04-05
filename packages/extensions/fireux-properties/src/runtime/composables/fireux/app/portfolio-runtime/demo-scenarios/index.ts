@@ -15,8 +15,7 @@ export type {
   DemoMaintenanceTicket,
   DemoTask,
   DemoTenant,
-  DemoPortfolioScenario,
-  DemoPortfolioScenarioListItem,
+  DemoPortfolioManager,
 } from './_shared/types'
 
 export type ScenarioKey =

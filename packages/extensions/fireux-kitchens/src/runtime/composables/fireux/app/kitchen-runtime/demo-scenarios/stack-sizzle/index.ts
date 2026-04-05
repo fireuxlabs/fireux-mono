@@ -14,11 +14,11 @@ import {
   buildDemoSuppliers,
   buildDemoTrainingModules,
 } from '../_shared/builders'
-import { createReadOnlyKitchen } from '../_shared/kitchen'
+import { createDemoKitchen } from '../_shared/kitchen'
 import type { DemoRecipe, DemoScenario } from '../_shared/types'
 
 export const stackSizzleScenario = (): DemoScenario => {
-  const kitchen = createReadOnlyKitchen({
+  const kitchen = createDemoKitchen({
     id: 'stack-sizzle',
     name: 'Stack & Sizzle',
     shortAddress: 'High Street',

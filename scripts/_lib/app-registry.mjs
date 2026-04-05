@@ -11,7 +11,7 @@ function consoleRoutes(families = []) {
 
   for (const family of families) {
     routes.push(`/console/${family}`)
-    routes.push(`/console/${family}/read-only`)
+    routes.push(`/console/${family}/demo`)
   }
 
   return routes

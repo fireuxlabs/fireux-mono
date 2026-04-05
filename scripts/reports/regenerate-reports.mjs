@@ -20,7 +20,7 @@ const SKIP_DIRS = new Set([
   'dist',
   'coverage',
   'tmp',
-  'dummy',
+  'demo',
   'mirror',
   'temp',
 ])

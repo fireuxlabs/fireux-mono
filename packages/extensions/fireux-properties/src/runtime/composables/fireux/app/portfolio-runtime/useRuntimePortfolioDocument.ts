@@ -2,10 +2,8 @@ import { doc as firestoreDoc, type DocumentSnapshot } from 'firebase/firestore'
 import { computed, type Ref } from 'vue'
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Portfolio } from '../../../../models/portfolio.model'
-import {
-  getDemoPortfolioScenario,
-  type DemoPortfolioScenario,
-} from './demo-scenarios'
+import { getDemoPortfolioScenario } from './demo-scenarios'
+import type { DemoPortfolioScenario } from './demo-scenarios/_shared/types'
 
 export function useRuntimePortfolioDocument(params: {
   id: Ref<string>

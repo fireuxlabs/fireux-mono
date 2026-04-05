@@ -14,11 +14,11 @@ import {
   buildDemoSuppliers,
   buildDemoTrainingModules,
 } from '../_shared/builders'
-import { createReadOnlyKitchen } from '../_shared/kitchen'
+import { createDemoKitchen } from '../_shared/kitchen'
 import type { DemoRecipe, DemoScenario } from '../_shared/types'
 
 export const takumiRamenScenario = (): DemoScenario => {
-  const kitchen = createReadOnlyKitchen({
+  const kitchen = createDemoKitchen({
     id: 'takumi-ramen',
     name: 'Takumi Ramen-ya',
     shortName: 'Takumi',
