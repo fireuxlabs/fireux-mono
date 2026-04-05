@@ -14,8 +14,8 @@ This README only explains the portfolio-console delta.
 - `index.vue`
 - `overview.vue`
 - `create.vue`
-- `read-only/index.vue`
-- `read-only/[scenarioId].vue`
+- `demo/index.vue`
+- `demo/[scenarioId].vue`
 - `clients.vue`
 - `finance.vue`
 - `incidents.vue`

@@ -6,16 +6,16 @@ import { useKitchenMiseCollection } from '../../firestore/runtime-kitchen/mise/f
 import { useKitchenOrderFetch } from '../../firestore/runtime-kitchen/orders/fetch/useKitchenOrderFetch'
 import { useKitchenRecipeCollection } from '../../firestore/runtime-kitchen/recipe/fetch/useKitchenRecipeCollection'
 import { useKitchenSupplierFetch } from '../../firestore/runtime-kitchen/suppliers/fetch/useKitchenSupplierFetch'
-import { getReadOnlyKitchenScenario } from './read-only-scenarios'
+import { getDemoKitchenScenario } from './demo-scenarios'
 
 export function useRuntimeKitchenData(params: {
   id: Ref<string>
-  isReadOnly: Ref<boolean>
+  isDemo: Ref<boolean>
   kitchenCollectionPath: Ref<string>
 }) {
-  // Prevent Firestore queries in read-only mode.
-  const firestoreKitchenId = computed(() => (params.isReadOnly.value ? '' : params.id.value))
-  const enabled = computed(() => !params.isReadOnly.value)
+  // Prevent Firestore queries in demo mode.
+  const firestoreKitchenId = computed(() => (params.isDemo.value ? '' : params.id.value))
+  const enabled = computed(() => !params.isDemo.value)
 
   const { ingredients: firestoreKitchenIngredients } = useKitchenIngredientFetch(
     firestoreKitchenId,
@@ -48,7 +48,7 @@ export function useRuntimeKitchenData(params: {
   })
 
   return computed(() => {
-    if (params.isReadOnly.value) {
+    if (params.isDemo.value) {
       if (!params.id.value) {
         return {
           kitchenIngredients: [],
@@ -68,7 +68,7 @@ export function useRuntimeKitchenData(params: {
         }
       }
 
-      const scenario = getReadOnlyKitchenScenario(params.id.value)
+      const scenario = getDemoKitchenScenario(params.id.value)
       if (!scenario) {
         return {
           kitchenIngredients: [],

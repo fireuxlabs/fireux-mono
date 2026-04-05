@@ -5,11 +5,11 @@ import {
   useRuntimePortfolioPath,
 } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import type { ComplianceRecord } from '../../../../../models/compliance-record.model'
-import type { ReadOnlyComplianceRecord } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/read-only-scenarios'
+import type { DemoComplianceRecord } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
 
-const toComplianceRecord = (entry: ReadOnlyComplianceRecord): ComplianceRecord => ({
+const toComplianceRecord = (entry: DemoComplianceRecord): ComplianceRecord => ({
   id: normalizeId(entry.id),
   portfolio_id: normalizeId(entry.portfolio_id),
   property_id: normalizeId(entry.property_id),
@@ -33,7 +33,7 @@ export function usePortfolioComplianceRecordCollection(runtimePortfolio = useRun
   watch(
     collectionPath,
     (nextPath) => {
-      if (!nextPath || runtimePortfolio.isReadOnly.value) {
+      if (!nextPath || runtimePortfolio.isDemo.value) {
         sourceRef.value = null
         return
       }
@@ -43,7 +43,7 @@ export function usePortfolioComplianceRecordCollection(runtimePortfolio = useRun
   )
 
   const collection = computed<ComplianceRecord[]>(() => {
-    if (runtimePortfolio.isReadOnly.value) {
+    if (runtimePortfolio.isDemo.value) {
       const records = runtimePortfolio.scenario.value?.complianceRecords ?? []
       return records.map((entry) => toComplianceRecord(entry))
     }

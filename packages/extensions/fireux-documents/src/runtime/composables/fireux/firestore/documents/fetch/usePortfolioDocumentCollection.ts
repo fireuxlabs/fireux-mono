@@ -4,12 +4,12 @@ import {
   useRuntimePortfolio,
   useRuntimePortfolioPath,
 } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
-import type { ReadOnlyDocument } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/read-only-scenarios'
+import type { DemoDocument } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios'
 import type { Document } from '../../../../../models/document.model'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
 
-const toDocument = (entry: ReadOnlyDocument): Document => ({
+const toDocument = (entry: DemoDocument): Document => ({
   id: normalizeId(entry.id),
   portfolio_id: normalizeId(entry.portfolio_id),
   file_name: normalizeId(entry.file_name),
@@ -31,7 +31,7 @@ export function usePortfolioDocumentCollection(runtimePortfolio = useRuntimePort
   watch(
     collectionPath,
     (nextPath) => {
-      if (!nextPath || runtimePortfolio.isReadOnly.value) {
+      if (!nextPath || runtimePortfolio.isDemo.value) {
         sourceRef.value = null
         return
       }
@@ -41,7 +41,7 @@ export function usePortfolioDocumentCollection(runtimePortfolio = useRuntimePort
   )
 
   const collection = computed<Document[]>(() => {
-    if (runtimePortfolio.isReadOnly.value) {
+    if (runtimePortfolio.isDemo.value) {
       return (runtimePortfolio.scenario.value?.documents ?? []).map((entry) => toDocument(entry))
     }
     return sourceRef.value?.value ?? []

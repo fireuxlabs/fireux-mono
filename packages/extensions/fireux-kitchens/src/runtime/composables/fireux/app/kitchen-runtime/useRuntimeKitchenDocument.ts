@@ -1,23 +1,23 @@
 import { computed, type Ref } from 'vue'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
-import { getReadOnlyKitchenScenario } from './read-only-scenarios'
+import { getDemoKitchenScenario } from './demo-scenarios'
 
 export function useRuntimeKitchenDocument(params: {
   id: Ref<string>
-  isReadOnly: Ref<boolean>
+  isDemo: Ref<boolean>
   documentCollectionPath: Ref<string>
 }) {
   const { kitchen: fetchKitchen } = useKitchenFetch()
   const liveKitchen = fetchKitchen(params.id, params.documentCollectionPath, {
     hydrate: true,
   })
-  const readOnlyScenario = computed(() => {
-    if (!params.isReadOnly.value || !params.id.value) return null
-    return getReadOnlyKitchenScenario(params.id.value)
+  const demoScenario = computed(() => {
+    if (!params.isDemo.value || !params.id.value) return null
+    return getDemoKitchenScenario(params.id.value)
   })
 
   const doc = computed(() => {
-    if (params.isReadOnly.value) return readOnlyScenario.value?.kitchen ?? null
+    if (params.isDemo.value) return demoScenario.value?.kitchen ?? null
     if (!params.id.value) return null
 
     return liveKitchen.value ?? null
@@ -25,7 +25,7 @@ export function useRuntimeKitchenDocument(params: {
 
   const pending = computed(() => {
     if (!params.id.value) return false
-    if (params.isReadOnly.value) return false
+    if (params.isDemo.value) return false
     return liveKitchen.value === undefined
   })
 

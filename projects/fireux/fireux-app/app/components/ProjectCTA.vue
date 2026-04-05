@@ -2,14 +2,14 @@
   <ConsoleEntityCTA
     title="Project console"
     console-to="/console/projects"
-    read-only-label="Demo Projects"
+    demo-label="Demo Projects"
     learn-more-to="/projects/learn-more"
   >
-    <template #readOnlyNote>
+    <template #demoNote>
       <li>Uses bundled project demo scenarios only.</li>
     </template>
 
-    <template #readOnly>
+    <template #demo>
       <div v-if="scenarioCards.length" class="space-y-2">
         <ProjectCardsPill
           v-for="item in scenarioCards"
@@ -43,14 +43,14 @@
 <script setup lang="ts">
 import { useRouter } from '#imports'
 import { computed } from 'vue'
-import { getReadOnlyProjectScenarioList } from '~/composables/console/project/read-only-scenarios'
+import { getDemoProjectScenarioList } from '~/composables/console/project/demo-scenarios'
 import { useRuntimeProjectSelection } from '~/composables/console/project/state'
 
 const router = useRouter()
 const { setRuntimeProject } = useRuntimeProjectSelection()
 
 const scenarioCards = computed(() =>
-  getReadOnlyProjectScenarioList().map((entry) => ({
+  getDemoProjectScenarioList().map((entry) => ({
     id: String(entry.id || '').trim(),
     title: String(entry.name || '').trim(),
     subtitle: String(entry.label || '').trim(),
@@ -63,7 +63,7 @@ const openScenario = async (projectId: string) => {
   const resolvedId = String(projectId || '').trim()
   if (!resolvedId) return
 
-  setRuntimeProject({ projectId: resolvedId, mode: 'read-only' })
+  setRuntimeProject({ projectId: resolvedId, mode: 'demo' })
   await router.push('/console/projects')
 }
 </script>

@@ -47,7 +47,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Console selection is runtime-state based, not query-param selection.
 - The console hosts operations; it is not the same thing as the public kitchen page.
 - `/console/kitchen` is the family entry page:
-  - `read-only`: curated demo kitchens
+  - `demo`: curated demo kitchens
   - `test`: Firestore-backed test kitchens
   - `live`: my real kitchens for this app
 - `test` canon is one personal kitchen per signed-in user:
@@ -66,8 +66,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 
 ## 7) Runtime dependencies
 - Runtime kitchen selection state (`runtimeKitchenId`, `runtimeKitchenMode`).
-- Mode-aware data loading (`live`, `read-only`).
-- Legacy input alias `dummy` may be accepted by normalizers and maps to `read-only`.
+- Mode-aware data loading (`live`, `demo`).
 
 ## 8) SEO hooks
 - Public kitchen/menu pages should provide:
@@ -85,6 +84,6 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `ensureKitchen` = test/bootstrap/setup-if-missing
 
 ## 10) Non-goals / prohibited fallbacks
-- No silent fallback switching between live/read-only.
+- No silent fallback switching between live/demo.
 - No silent fallback selection of active kitchen inside console flows.
 - No treating profile linkage or workplace history as console permission.

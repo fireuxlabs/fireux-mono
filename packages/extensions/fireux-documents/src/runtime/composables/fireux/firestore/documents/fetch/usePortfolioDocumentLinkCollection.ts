@@ -4,12 +4,12 @@ import {
   useRuntimePortfolio,
   useRuntimePortfolioPath,
 } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
-import type { ReadOnlyDocumentLink } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/read-only-scenarios'
+import type { DemoDocumentLink } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios'
 import type { DocumentLink } from '../../../../../models/document-link.model'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
 
-const toDocumentLink = (entry: ReadOnlyDocumentLink): DocumentLink => ({
+const toDocumentLink = (entry: DemoDocumentLink): DocumentLink => ({
   id: normalizeId(entry.id),
   portfolio_id: normalizeId(entry.portfolio_id),
   document_id: normalizeId(entry.document_id),
@@ -28,7 +28,7 @@ export function usePortfolioDocumentLinkCollection(runtimePortfolio = useRuntime
   watch(
     collectionPath,
     (nextPath) => {
-      if (!nextPath || runtimePortfolio.isReadOnly.value) {
+      if (!nextPath || runtimePortfolio.isDemo.value) {
         sourceRef.value = null
         return
       }
@@ -38,7 +38,7 @@ export function usePortfolioDocumentLinkCollection(runtimePortfolio = useRuntime
   )
 
   const collection = computed<DocumentLink[]>(() => {
-    if (runtimePortfolio.isReadOnly.value) {
+    if (runtimePortfolio.isDemo.value) {
       return (runtimePortfolio.scenario.value?.documentLinks ?? []).map((entry) =>
         toDocumentLink(entry)
       )

@@ -85,7 +85,7 @@ const isReady = computed(() => runtimePortfolio.isReady.value)
 const runtimeSnapshot = computed(() => ({
   id: runtimePortfolio.id.value,
   mode: runtimePortfolio.mode.value,
-  isReadOnly: runtimePortfolio.isReadOnly.value,
+  isDemo: runtimePortfolio.isDemo.value,
   documentCollectionPath: runtimePortfolio.documentCollectionPath.value,
   collectionPath: runtimePortfolio.collectionPath.value,
   pending: runtimePortfolio.pending.value,

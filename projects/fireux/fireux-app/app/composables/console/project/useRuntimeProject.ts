@@ -2,7 +2,7 @@ import { doc, type DocumentSnapshot } from 'firebase/firestore'
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, ref } from 'vue'
 import type { Project } from 'fireux-core/runtime/models/system/project.model'
-import { getReadOnlyProjectScenario } from './read-only-scenarios'
+import { getDemoProjectScenario } from './demo-scenarios'
 import { useRuntimeProjectSelection } from './state'
 
 type RuntimeProject = Partial<Project> & Record<string, unknown> & {
@@ -21,13 +21,14 @@ export function useRuntimeProject() {
   const selection = useRuntimeProjectSelection()
   const id = selection.selectedId
   const mode = selection.mode
-  const readOnly = computed(() => selection.mode.value === 'read-only')
+  const activity = computed<'static'>(() => 'static')
+  const isDemo = computed(() => selection.mode.value === 'demo')
   const documentCollectionPath = computed(() => resolveProjectCollectionPath(mode.value))
 
   const db = import.meta.server ? null : useFirestore()
   const liveDocRef = computed(() => {
     if (!db) return null
-    if (!id.value || readOnly.value) return null
+    if (!id.value || isDemo.value) return null
     return doc(db, documentCollectionPath.value, id.value)
   })
 
@@ -46,19 +47,22 @@ export function useRuntimeProject() {
         } as any)
 
   const scenario = computed(() =>
-    readOnly.value ? getReadOnlyProjectScenario(id.value) : null
+    isDemo.value ? getDemoProjectScenario(id.value) : null
   )
 
   const project = computed<RuntimeProject | null>(() => {
     if (!id.value) return null
-    if (readOnly.value) return (scenario.value?.project as RuntimeProject) ?? null
+    if (isDemo.value) return (scenario.value?.project as RuntimeProject) ?? null
     return liveProject.data?.value ?? null
   })
 
-  const pending = computed(() => !readOnly.value && Boolean(liveProject.pending?.value))
+  const pending = computed(() => !isDemo.value && Boolean(liveProject.pending?.value))
 
   return {
     id,
+    mode,
+    activity,
+    isDemo,
     pending,
     scenario,
     project,

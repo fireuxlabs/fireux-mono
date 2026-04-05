@@ -66,7 +66,7 @@ Do not add another business layer here.
 If a family often has one target versus many, that is cardinality, not a new console architecture.
 
 Meaning by mode:
-- `read-only`: show curated demo targets
+- `demo`: show curated demo targets
 - `test`: show test targets
 - `live`: show the current user's real targets for that family
 
@@ -149,8 +149,8 @@ The canonical shape is:
 - `/console/X/create` = console create
 
 The canonical mode rule is:
-- `live` and `read-only` are runtime modes, not separate console architectures
-- explicit `/read-only` routes may still exist as transitional or convenience seams
+- `live` and `demo` are runtime modes, not separate console architectures
+- explicit `/demo` routes may still exist as transitional or convenience seams
 - those seams should only set runtime mode and then enter the normal console routes
 
 The canonical visibility rule is:
@@ -193,7 +193,7 @@ Examples:
 - `Kitchen`
   - Chef profile gating
   - runtime kitchen mode and kitchen id
-  - read-only kitchen scenario ids
+  - demo kitchen scenario ids
 - `Supplier`
   - company/operator assumptions
 - `Portfolio`

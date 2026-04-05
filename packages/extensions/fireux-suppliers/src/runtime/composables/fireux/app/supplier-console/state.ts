@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { selectionKey, useRuntimeSelection } from 'fireux-core/runtime/composables/fireux/runtime/useRuntimeSelection'
 
-export type RuntimeSupplierMode = 'live' | 'read-only' | 'test'
+export type RuntimeSupplierMode = 'live' | 'demo' | 'test'
 
 type RuntimeSupplierSelectionState = {
   selectedId: string
@@ -18,12 +18,9 @@ const normalizeString = (value: unknown): string => String(value || '').trim()
 
 const normalizeMode = (value: unknown): RuntimeSupplierMode => {
   const normalized = normalizeString(value).toLowerCase()
-  if (normalized === 'demo' || normalized === 'dummy' || normalized === 'readonly') {
-    return 'read-only'
-  }
-  if (normalized === 'real') return 'live'
+  if (normalized === 'demo') return 'demo'
   if (normalized === 'live' || normalized === 'test') return normalized
-  return 'read-only'
+  return 'demo'
 }
 
 const normalizeSelectionState = (value: unknown): RuntimeSupplierSelectionState => {
@@ -37,7 +34,7 @@ const normalizeSelectionState = (value: unknown): RuntimeSupplierSelectionState 
 export function useRuntimeSupplierSelection() {
   const selection = useRuntimeSelection<RuntimeSupplierSelectionState>({
     cookieKey: COOKIE_KEY,
-    defaultState: () => ({ selectedId: '', mode: 'read-only' }),
+    defaultState: () => ({ selectedId: '', mode: 'demo' }),
     normalizeState: normalizeSelectionState,
   })
 

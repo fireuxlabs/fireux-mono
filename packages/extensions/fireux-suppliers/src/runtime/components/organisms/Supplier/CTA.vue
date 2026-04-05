@@ -2,14 +2,14 @@
   <ConsoleEntityCTA
     title="Supplier console"
     console-to="/console/supplier"
-    read-only-label="Demo Suppliers"
+    demo-label="Demo Suppliers"
     learn-more-to="/suppliers/learn-more"
   >
-    <template #readOnlyNote>
+    <template #demoNote>
       <li>Uses bundled supplier demo scenarios only.</li>
     </template>
 
-    <template #readOnly>
+    <template #demo>
       <div v-if="scenarioCards.length" class="space-y-2">
         <SupplierCardsPill
           v-for="item in scenarioCards"
@@ -43,14 +43,14 @@
 <script setup lang="ts">
 import { useRouter } from '#imports'
 import { computed } from 'vue'
-import { getReadOnlySupplierScenarioList } from '../../../composables/fireux/app/supplier-console/read-only-scenarios'
+import { getDemoSupplierScenarioList } from '../../../composables/fireux/app/supplier-console/demo-scenarios'
 import { useRuntimeSupplierSelection } from '../../../composables/fireux/app/supplier-console/state'
 
 const router = useRouter()
 const { setRuntimeSupplier } = useRuntimeSupplierSelection()
 
 const scenarioCards = computed(() =>
-  getReadOnlySupplierScenarioList().map((entry) => ({
+  getDemoSupplierScenarioList().map((entry) => ({
     id: String(entry.id || '').trim(),
     title: String(entry.name || '').trim(),
     subtitle: String(entry.label || '').trim(),
@@ -63,7 +63,7 @@ const openScenario = async (supplierId: string) => {
   const resolvedId = String(supplierId || '').trim()
   if (!resolvedId) return
 
-  setRuntimeSupplier({ supplierId: resolvedId, mode: 'read-only' })
+  setRuntimeSupplier({ supplierId: resolvedId, mode: 'demo' })
   await router.push('/console/supplier')
 }
 </script>

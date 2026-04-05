@@ -26,7 +26,7 @@
             <div class="text-xs text-dimmed">
               Mode: <span class="font-medium">{{ runtimeMode }}</span>
               · Source:
-              <code>{{ isReadOnly ? 'read-only scenario' : clientsPath }}</code>
+              <code>{{ isDemo ? 'demo scenario' : clientsPath }}</code>
             </div>
           </UCard>
 
@@ -105,7 +105,7 @@ const clientsPath = useRuntimePortfolioPath(runtimePortfolio, 'clients')
 
 const runtimeId = computed(() => String(runtimePortfolio.id.value || '').trim())
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
-const isReadOnly = computed(() => runtimePortfolio.isReadOnly.value)
+const isDemo = computed(() => runtimePortfolio.isDemo.value)
 const clients = computed(() => clientCollection.value)
 const currency = computed(
   () => String(clients.value[0]?.currency || runtimePortfolio.scenario.value?.financials?.currency || 'GBP').trim() || 'GBP'
@@ -144,7 +144,7 @@ const summary = computed(() => {
 const runtimeSnapshot = computed(() => ({
   id: runtimePortfolio.id.value,
   mode: runtimePortfolio.mode.value,
-  isReadOnly: runtimePortfolio.isReadOnly.value,
+  isDemo: runtimePortfolio.isDemo.value,
   documentCollectionPath: runtimePortfolio.documentCollectionPath.value,
   collectionPath: runtimePortfolio.collectionPath.value,
   scenario: runtimePortfolio.scenario.value,

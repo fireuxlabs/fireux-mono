@@ -1,6 +1,6 @@
 <template>
   <section class="space-y-10">
-    <DevIngredientDummy />
+    <DevIngredientDemo />
 
     <UCard>
       <DevModel
@@ -46,7 +46,7 @@ import {
     type Ingredient as IngredientType,
 } from '../../../models/ingredient.model'
 import IngredientCollectionManager from '../../organisms/Ingredient/Collection/Manager.vue'
-import DevIngredientDummy from './Dummy.vue'
+import DevIngredientDemo from './Demo.vue'
 
 defineOptions({ name: 'DevIngredientSystem' })
 

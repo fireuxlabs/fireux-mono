@@ -19,14 +19,14 @@ const normalizeSelectionState = (value: unknown): RuntimeProjectSelectionState =
   const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
   return {
     selectedId: normalizeString(source.selectedId ?? source.projectId),
-    mode: normalizeRuntimeMode(source.mode) ?? 'read-only',
+    mode: normalizeRuntimeMode(source.mode) ?? 'demo',
   }
 }
 
 export function useRuntimeProjectSelection() {
   const selection = useRuntimeSelection<RuntimeProjectSelectionState>({
     cookieKey: COOKIE_KEY,
-    defaultState: () => ({ selectedId: '', mode: 'read-only' }),
+    defaultState: () => ({ selectedId: '', mode: 'demo' }),
     normalizeState: normalizeSelectionState,
   })
 
@@ -50,7 +50,7 @@ export function useRuntimeProjectSelection() {
   }
 
   const selectedId = selectionKey(selection, 'selectedId')
-  const mode = computed(() => normalizeRuntimeMode(selection.state.value.mode) ?? 'read-only')
+  const mode = computed(() => normalizeRuntimeMode(selection.state.value.mode) ?? 'demo')
 
   return {
     selectedId,

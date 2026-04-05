@@ -94,29 +94,29 @@ async function handleCreate() {
     const hasNoPrices = !prices.value?.length
 
     if (isDev && isBlankPayload && hasNoPrices) {
-      let dummyList: any[] = []
+      let demoList: any[] = []
       try {
         const mod = await import(
-          '../../../../../../../../dummy/product.dummy'
+          '../../../../../../../../demo/product.demo'
         )
-        dummyList = Array.isArray(mod?.dummyProductList)
-          ? mod.dummyProductList
+        demoList = Array.isArray(mod?.demoProductList)
+          ? mod.demoProductList
           : []
       } catch (error) {
-        throw new Error('Dummy module list not found for bulk create')
+        throw new Error('Demo module list not found for bulk create')
       }
 
-      if (!dummyList.length) {
-        throw new Error('No dummy products found for bulk create')
+      if (!demoList.length) {
+        throw new Error('No demo products found for bulk create')
       }
 
       const results = await Promise.all(
-        dummyList.map(async (dummy) => {
-          const priceInputs = Array.isArray(dummy?.prices)
-            ? dummy.prices.map(({ id: _id, ...rest }: any) => rest)
+        demoList.map(async (demo) => {
+          const priceInputs = Array.isArray(demo?.prices)
+            ? demo.prices.map(({ id: _id, ...rest }: any) => rest)
             : []
           return createProductFromInput({
-            payload: dummy as any,
+            payload: demo as any,
             priceInputs: priceInputs as StripePriceInput[],
           })
         })
@@ -128,7 +128,7 @@ async function handleCreate() {
       if (toast) {
         toast.add({
           title: 'Bulk create complete',
-          description: `${successCount}/${dummyList.length} created`,
+          description: `${successCount}/${demoList.length} created`,
           icon:
             failed.length > 0
               ? 'i-heroicons-exclamation-triangle'

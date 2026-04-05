@@ -161,7 +161,7 @@ Composable update seams should answer:
 - how do we resolve the canonical id?
 - which collection or overlay path is writable?
 - what patch function is valid?
-- what layer is read-only or derived?
+- what layer is demo-backed or derived?
 
 Update composables should prefer:
 - explicit patch helpers

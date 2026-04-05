@@ -30,8 +30,8 @@ export function linkDocumentToEntity(runtimePortfolio = useRuntimePortfolio()) {
       throw new Error('[fireux-documents] runtimePortfolioId is required for linking.')
     }
 
-    if (runtimePortfolio.isReadOnly.value) {
-      throw new Error('[fireux-documents] read-only runtime does not allow writes.')
+    if (runtimePortfolio.isDemo.value) {
+      throw new Error('[fireux-documents] demo runtime does not allow writes.')
     }
 
     const documentId = normalize(input.documentId)

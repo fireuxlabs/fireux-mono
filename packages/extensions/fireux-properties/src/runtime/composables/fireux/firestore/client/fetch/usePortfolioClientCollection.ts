@@ -5,7 +5,7 @@ import {
   useRuntimePortfolioPath,
 } from '../../../app/portfolio-runtime/useRuntimePortfolio'
 import type { Client } from '../../../../../models/client.model'
-import type { ReadOnlyLease, ReadOnlyPortfolioScenario } from '../../../app/portfolio-runtime/read-only-scenarios'
+import type { DemoLease, DemoPortfolioScenario } from '../../../app/portfolio-runtime/demo-scenarios'
 
 const clientAvatarPlaceholder = (seed: string) =>
   `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(`fireux-client-${seed || 'placeholder'}`)}`
@@ -16,7 +16,7 @@ const isArray = (value: unknown): value is unknown[] => Array.isArray(value)
 const uniqueStrings = (values: unknown[]) =>
   Array.from(new Set(values.map((value) => safeString(value)).filter(Boolean)))
 
-type ReadOnlyClientSeed = {
+type DemoClientSeed = {
   slug: string
   legal_name: string
   trading_name: string
@@ -25,7 +25,7 @@ type ReadOnlyClientSeed = {
   website_url: string
 }
 
-const READ_ONLY_CLIENT_SEEDS: ReadOnlyClientSeed[] = [
+const DEMO_CLIENT_SEEDS: DemoClientSeed[] = [
   {
     slug: 'rivergate-holdings',
     legal_name: 'Rivergate Holdings Ltd',
@@ -78,11 +78,11 @@ const hashString = (value: string) => {
   return Math.abs(hash)
 }
 
-const pickReadOnlyClientSeeds = (scenarioId: string, count: number) => {
-  const pool = READ_ONLY_CLIENT_SEEDS
+const pickDemoClientSeeds = (scenarioId: string, count: number) => {
+  const pool = DEMO_CLIENT_SEEDS
   const requested = Math.max(1, Math.min(count, pool.length))
   const start = hashString(scenarioId) % pool.length
-  return Array.from({ length: requested }).map((_, offset) => pool[(start + offset) % pool.length] as ReadOnlyClientSeed)
+  return Array.from({ length: requested }).map((_, offset) => pool[(start + offset) % pool.length] as DemoClientSeed)
 }
 
 const normalizeStatus = (value: unknown): Client['status'] => {
@@ -167,7 +167,7 @@ const normalizeClient = (value: Partial<Client>): Client => {
   }
 }
 
-const buildReadOnlyClients = (scenario: ReadOnlyPortfolioScenario): Client[] => {
+const buildDemoClients = (scenario: DemoPortfolioScenario): Client[] => {
   const portfolioId = safeString(scenario.id)
   const portfolioName = safeString(scenario.portfolio?.name) || portfolioId
   const properties = scenario.properties ?? []
@@ -204,7 +204,7 @@ const buildReadOnlyClients = (scenario: ReadOnlyPortfolioScenario): Client[] => 
         currency,
         avatar_url: clientAvatarPlaceholder(fallbackName),
         notes: 'Read-only entity client.',
-        tags: ['read-only', 'entity-client'],
+        tags: ['demo', 'entity-client'],
       }),
     ]
   }
@@ -215,8 +215,8 @@ const buildReadOnlyClients = (scenario: ReadOnlyPortfolioScenario): Client[] => 
       : properties.length >= 4
         ? 2
         : 1
-  const seeds = pickReadOnlyClientSeeds(portfolioId, groupCount)
-  const leaseById = new Map<string, ReadOnlyLease>(
+  const seeds = pickDemoClientSeeds(portfolioId, groupCount)
+  const leaseById = new Map<string, DemoLease>(
     leases
       .map((lease) => [safeString(lease.id), lease] as const)
       .filter(([id]) => Boolean(id))
@@ -283,7 +283,7 @@ const buildReadOnlyClients = (scenario: ReadOnlyPortfolioScenario): Client[] => 
       avatar_url: clientAvatarPlaceholder(seed.slug),
       website_url: seed.website_url,
       notes: `Read-only client entity assigned to ${propertyLabel}.`,
-      tags: ['read-only', 'entity-client', portfolioId],
+      tags: ['demo', 'entity-client', portfolioId],
     })
   })
 
@@ -300,7 +300,7 @@ export function usePortfolioClientCollection(runtimePortfolio = useRuntimePortfo
   watch(
     collectionPath,
     (nextPath) => {
-      if (!nextPath || runtimePortfolio.isReadOnly.value) {
+      if (!nextPath || runtimePortfolio.isDemo.value) {
         sourceRef.value = null
         return
       }
@@ -310,7 +310,7 @@ export function usePortfolioClientCollection(runtimePortfolio = useRuntimePortfo
   )
 
   const collection = computed<Client[]>(() => {
-    if (runtimePortfolio.isReadOnly.value) {
+    if (runtimePortfolio.isDemo.value) {
       const scenario = runtimePortfolio.scenario.value
       if (!scenario) return []
 
@@ -319,7 +319,7 @@ export function usePortfolioClientCollection(runtimePortfolio = useRuntimePortfo
         return scenarioClients.map((entry: Partial<Client>) => normalizeClient(entry))
       }
 
-      return buildReadOnlyClients(scenario)
+      return buildDemoClients(scenario)
     }
 
     return (sourceRef.value?.value ?? []).map((entry) => normalizeClient(entry))

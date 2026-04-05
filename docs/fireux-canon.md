@@ -42,6 +42,16 @@ Updated: 2026-04-04
 - Interface composables are view-only (format/mapping for UI surfaces).
 - Writes must be explicit through mutation composables.
 - Missing required state/data must be surfaced explicitly, not inferred.
+- Runtime source canon is:
+  - `live`
+  - `test`
+  - `demo`
+- Runtime activity canon is:
+  - `static`
+  - `simulation`
+- Console showcase flows are currently:
+  - source: `demo`
+  - activity: `static`
 - App/ecosystem ownership filtering must be explicit through stored fields, not implied by collection path alone.
 - Real-mode family entry must not behave like a raw collection browser.
 - Real-mode target visibility should come from explicit overlay governance and only use root hints where the family contract allows it.

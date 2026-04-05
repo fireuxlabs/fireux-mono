@@ -43,15 +43,15 @@
             :title="selectedDish ? 'Linked ingredients' : 'My ingredients'"
             :description="selectedDish
               ? 'Ingredients linked to the selected dish.'
-              : mode === 'read-only'
+              : mode === 'demo'
                 ? 'Ingredients attached to this kitchen.'
                 : 'Ingredients attached to this kitchen. Click to remove.'"
-            :link="mode === 'read-only'"
+            :link="mode === 'demo'"
             @select="handleRemoveFromKitchen"
           />
 
           <IngredientCollectionManager
-            v-if="mode !== 'read-only' && !selectedDish"
+            v-if="mode !== 'demo' && !selectedDish"
             :collection="globalIngredientsAvailable"
             title="Global library"
             description="Shared ingredient catalog. Click to add to this kitchen."
@@ -171,7 +171,7 @@ const globalIngredientsAvailable = computed(() =>
 )
 
 const resolveRuntimeKitchenWriteContext = () => {
-  if (mode.value === 'read-only') {
+  if (mode.value === 'demo') {
     throw new Error('Read-only kitchen cannot be modified')
   }
 

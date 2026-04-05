@@ -1,17 +1,18 @@
 import { computed, unref, type Ref } from 'vue'
 import { normalizeRuntimeMode, normalizeString } from './runtime.normalize'
-import type { RuntimeContextRef, RuntimeMode } from './runtime.types'
+import type { RuntimeActivity, RuntimeContextRef, RuntimeMode } from './runtime.types'
 
 export type UseRuntimeContextParams = {
   id?: string | Ref<string | null | undefined>
   mode?: RuntimeMode | Ref<RuntimeMode | null | undefined>
+  activity?: RuntimeActivity | Ref<RuntimeActivity | null | undefined>
 }
 
 /**
  * Shared context resolver:
  * - supports params override
  * - otherwise uses selection getters
- * - always returns { id, mode, isReadOnly }
+ * - always returns { id, mode, activity, isDemo }
  */
 export function useRuntimeContext(params: UseRuntimeContextParams | undefined, selection: {
   runtimeId: Ref<string> | { value: string }
@@ -27,7 +28,11 @@ export function useRuntimeContext(params: UseRuntimeContextParams | undefined, s
 
   const id = computed(() => normalizeString(idSource.value) || '')
   const mode = computed<RuntimeMode>(() => normalizeRuntimeMode(modeSource.value))
-  const isReadOnly = computed(() => mode.value === 'read-only')
+  const activity = computed<RuntimeActivity>(() => {
+    const value = params?.activity !== undefined ? unref(params.activity) : 'static'
+    return value === 'simulation' ? 'simulation' : 'static'
+  })
+  const isDemo = computed(() => mode.value === 'demo')
 
-  return { id, mode, isReadOnly }
+  return { id, mode, activity, isDemo }
 }

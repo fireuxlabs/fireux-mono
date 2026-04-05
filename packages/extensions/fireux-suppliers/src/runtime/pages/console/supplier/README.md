@@ -14,8 +14,8 @@ This README only explains the supplier-console delta.
 - `index.vue`
 - `overview.vue`
 - `create.vue`
-- `read-only/index.vue`
-- `read-only/[scenarioId].vue`
+- `demo/index.vue`
+- `demo/[scenarioId].vue`
 
 ## Local Contract
 
@@ -24,7 +24,7 @@ This README only explains the supplier-console delta.
 - `index.vue` is the family-specific chooser in console shell
 - `overview.vue` is the first selected-supplier workspace page
 - `create.vue` belongs to the console create family
-- read-only entry stays route-driven through the shared console runtime helpers
+- demo entry stays route-driven through the shared console runtime helpers
 
 Supplier-console delta:
 - console create ensures `apps/<appId>/suppliers/<supplierId>`
@@ -34,4 +34,4 @@ Supplier-console delta:
 ## Short Version
 
 This folder is the supplier-console half of the shared console-entry concept.
-Treat Supplier like the other console families: owned live targets plus shared read-only entry.
+Treat Supplier like the other console families: owned live targets plus shared demo entry.

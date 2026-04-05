@@ -22,7 +22,7 @@
                 <div class="text-sm font-semibold">Document vault</div>
                 <div class="text-xs text-dimmed">
                   Mode: <span class="font-medium">{{ runtimeMode }}</span>
-                  · Source: <code>{{ isReadOnly ? 'read-only scenario' : documentsPath }}</code>
+                  · Source: <code>{{ isDemo ? 'demo scenario' : documentsPath }}</code>
                 </div>
               </div>
             </div>
@@ -41,7 +41,7 @@
             </div>
           </UCard>
 
-          <UCard v-if="!isReadOnly">
+          <UCard v-if="!isDemo">
             <template #header>
               <div class="text-sm font-semibold">Upload document</div>
             </template>
@@ -50,16 +50,16 @@
               <input
                 type="file"
                 class="block w-full rounded border border-default p-2 text-sm"
-                :disabled="isReadOnly"
+                :disabled="isDemo"
                 @change="handleFileInput"
               />
 
-              <UInput v-model="uploadNotes" :disabled="isReadOnly" placeholder="Optional notes" />
+              <UInput v-model="uploadNotes" :disabled="isDemo" placeholder="Optional notes" />
 
               <UButton
                 size="sm"
                 icon="i-lucide-upload"
-                :disabled="!selectedFile || isReadOnly || uploadBusy"
+                :disabled="!selectedFile || isDemo || uploadBusy"
                 :loading="uploadBusy"
                 @click="uploadSelectedFile"
               >
@@ -72,23 +72,23 @@
             </div>
           </UCard>
 
-          <UCard v-if="!isReadOnly">
+          <UCard v-if="!isDemo">
             <template #header>
               <div class="text-sm font-semibold">Link document to entity</div>
             </template>
 
             <div class="grid gap-3 sm:grid-cols-2">
-              <UInput v-model="linkDocumentId" :disabled="isReadOnly" placeholder="Document id" />
-              <UInput v-model="linkTargetType" :disabled="isReadOnly" placeholder="Target type (property, compliance-record, tenancy, ...)" />
-              <UInput v-model="linkTargetId" :disabled="isReadOnly" placeholder="Target id" />
-              <UInput v-model="linkTargetLabel" :disabled="isReadOnly" placeholder="Target label (optional)" />
+              <UInput v-model="linkDocumentId" :disabled="isDemo" placeholder="Document id" />
+              <UInput v-model="linkTargetType" :disabled="isDemo" placeholder="Target type (property, compliance-record, tenancy, ...)" />
+              <UInput v-model="linkTargetId" :disabled="isDemo" placeholder="Target id" />
+              <UInput v-model="linkTargetLabel" :disabled="isDemo" placeholder="Target label (optional)" />
             </div>
 
             <div class="mt-3 flex items-center gap-2">
               <UButton
                 size="sm"
                 icon="i-lucide-link"
-                :disabled="isReadOnly || linkBusy"
+                :disabled="isDemo || linkBusy"
                 :loading="linkBusy"
                 @click="createLink"
               >
@@ -99,7 +99,7 @@
                 size="sm"
                 variant="soft"
                 icon="i-lucide-list-checks"
-                :disabled="isReadOnly || linkBusy"
+                :disabled="isDemo || linkBusy"
                 @click="createLink(true)"
               >
                 Link + create task
@@ -183,7 +183,7 @@ definePageMeta({
 const runtimePortfolio = useRuntimePortfolio()
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
-const isReadOnly = computed(() => runtimePortfolio.isReadOnly.value)
+const isDemo = computed(() => runtimePortfolio.isDemo.value)
 const documentsPath = useRuntimePortfolioPath(runtimePortfolio, 'documents')
 
 const { collection: documentCollection } = usePortfolioDocumentCollection(runtimePortfolio)
@@ -231,7 +231,7 @@ const handleFileInput = (event: Event) => {
 }
 
 const uploadSelectedFile = async () => {
-  if (!selectedFile.value || isReadOnly.value || !runtimeId.value) return
+  if (!selectedFile.value || isDemo.value || !runtimeId.value) return
 
   uploadBusy.value = true
   try {
@@ -260,7 +260,7 @@ const uploadSelectedFile = async () => {
 }
 
 const createLink = async (createTask = false) => {
-  if (isReadOnly.value) return
+  if (isDemo.value) return
 
   linkBusy.value = true
   try {

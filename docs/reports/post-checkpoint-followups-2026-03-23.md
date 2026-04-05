@@ -50,7 +50,7 @@ Purpose: short follow-up list after the broad runtime checkpoint commit.
 ## 5. Remaining Entity Followups
 
 - `Project` still needs a focused pass across runtime model, runtime project composables, and console expectations:
-  - `packages/core/fireux-core/src/runtime/composables/fireux/app/runtime-project/read-only-scenarios/index.ts`
+  - `packages/core/fireux-core/src/runtime/composables/fireux/app/runtime-project/demo-scenarios/index.ts`
   - `packages/core/fireux-core/src/runtime/composables/fireux/app/runtime-project/useRuntimeProject.ts`
   - `packages/core/fireux-core/src/runtime/models/system/project.model.ts`
 - `Profile` core still needs a second look after the supplier de-profile pass:

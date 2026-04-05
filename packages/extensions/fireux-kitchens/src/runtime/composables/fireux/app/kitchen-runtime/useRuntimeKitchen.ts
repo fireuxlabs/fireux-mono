@@ -22,7 +22,8 @@ export function useRuntimeKitchen() {
   const selection = useRuntimeKitchenSelection()
   const id = selection.selectedId
   const mode = selection.mode
-  const isReadOnly = computed(() => mode.value === 'read-only')
+  const activity = computed<'static'>(() => 'static')
+  const isDemo = computed(() => mode.value === 'demo')
   const documentCollectionPath = computed(() =>
     resolveRuntimeKitchenDocumentCollectionPath(mode.value)
   )
@@ -32,12 +33,12 @@ export function useRuntimeKitchen() {
 
   const { doc, pending } = useRuntimeKitchenDocument({
     id,
-    isReadOnly,
+    isDemo: isDemo,
     documentCollectionPath,
   })
   const data = useRuntimeKitchenData({
     id,
-    isReadOnly,
+    isDemo: isDemo,
     kitchenCollectionPath,
   })
   const isLoading = computed(() => Boolean(pending.value))
@@ -50,7 +51,8 @@ export function useRuntimeKitchen() {
   return {
     id,
     mode,
-    isReadOnly,
+    activity,
+    isDemo,
     collectionPath: kitchenCollectionPath,
     documentCollectionPath,
     kitchenCollectionPath,

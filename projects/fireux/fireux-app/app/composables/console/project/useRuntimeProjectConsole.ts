@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { getReadOnlyProjectScenarios } from './read-only-scenarios'
+import { getDemoProjectScenarios } from './demo-scenarios'
 import { useRuntimeProject } from './useRuntimeProject'
 
 /**
@@ -7,7 +7,7 @@ import { useRuntimeProject } from './useRuntimeProject'
  */
 export function useRuntimeProjectConsole() {
   const runtime = useRuntimeProject()
-  const scenarios = computed(getReadOnlyProjectScenarios)
+  const scenarios = computed(getDemoProjectScenarios)
 
   return {
     runtime,

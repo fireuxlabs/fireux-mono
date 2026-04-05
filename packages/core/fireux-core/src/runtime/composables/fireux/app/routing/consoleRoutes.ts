@@ -5,7 +5,7 @@ export const CONSOLE_ROOT = '/console'
 export function createDefaultRuntimeSelectionState(): RuntimeSelectionState {
   return {
     selectedId: '',
-    mode: 'read-only',
+    mode: 'demo',
   }
 }
 

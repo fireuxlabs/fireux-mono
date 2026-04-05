@@ -107,7 +107,7 @@ Updated: 2026-04-04
 - `/console/X/overview` = selected-target workspace overview for that family.
 - `/console/X/overview` is only meaningful once a runtime target has been selected.
 - Meaning by mode:
-  - `read-only`: show curated demo/read-only targets for that family.
+  - `demo`: show curated demo targets for that family.
   - `test`: show Firestore-backed test targets for that family.
   - `live`: show the current user's real targets for that family.
 - The family entry page answers:
@@ -137,23 +137,25 @@ Updated: 2026-04-04
 ## Runtime Mode Rules (Console Runtimes)
 - Supported modes:
   - `live`
-  - `read-only`
+  - `demo`
   - `test`
 - Mode behavior:
   - `live`: Firestore-backed production collections.
-  - `read-only`: scenario/data-pack mode with no Firestore writes.
+  - `demo`: scenario/data-pack mode with no Firestore writes.
   - `test`: Firestore-backed test collections.
-
-### Legacy Input Alias
-- `dummy` is not a canonical runtime mode.
-- Runtime normalizers may accept:
-  - `dummy` -> `read-only`
-  - `demo` -> `read-only`
-  - `real` -> `live`
-- New state and internal contracts must use only:
+- Runtime source canon is:
   - `live`
-  - `read-only`
+  - `demo`
   - `test`
+- Runtime activity canon is:
+  - `static`
+  - `simulation`
+- Current console showcase scenarios are:
+  - source: `demo`
+  - activity: `static`
+- Future time-based demo systems, such as service playback, are:
+  - source: `demo`
+  - activity: `simulation`
 - UI labels may still say:
   - `Demo`
   - `Real`
@@ -183,14 +185,14 @@ Updated: 2026-04-04
   - `supplier/test` ensures one `test-suppliers/{uid}`
 - Test target creation happens on entry to that family's console page in `test` mode, not in auth/bootstrap middleware.
 
-## Read-only Data Policy
-- Runtime read-only data must come from domain `read-only-scenarios/` registries.
-- Dev fixture files under repo `dummy/**` are optional developer tooling only.
-- Console/runtime behavior must never depend on `dummy/**`.
+## Demo Data Policy
+- Runtime demo data must come from domain `demo-scenarios/` registries.
+- Dev fixture files under repo `demo/**` are optional developer tooling only.
+- Console/runtime behavior must never depend on `demo/**`.
 
 ## Collection Path Policy (Kitchen Runtime)
 - `live` -> `kitchens/{kitchenId}`
-- `read-only` -> no Firestore collection path (scenario-backed)
+- `demo` -> no Firestore collection path (scenario-backed)
 
 ## Route Policy (ID vs Slug)
 - Internal routes may use `[id]`.
@@ -239,7 +241,7 @@ Updated: 2026-04-04
 
 ## Conflicts Resolved
 - Previous broad “[id] for all object pages” guidance is replaced by the mixed route policy above (public slug, internal id).
-- Kitchen live/read-only split is canonicalized here and supersedes ambiguous one-collection summaries.
+- Kitchen live/demo split is canonicalized here and supersedes ambiguous one-collection summaries.
 - Runtime selection canon is state-based for consoles; query-selection statements in Tier3 history docs are non-authoritative.
 
 ## TBD Decisions (Deano)

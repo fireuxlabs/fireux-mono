@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { getReadOnlyKitchenScenarios } from './read-only-scenarios'
+import { getDemoKitchenScenarios } from './demo-scenarios'
 import { useRuntimeKitchen } from './useRuntimeKitchen'
 
 /**
@@ -7,7 +7,7 @@ import { useRuntimeKitchen } from './useRuntimeKitchen'
  */
 export function useRuntimeKitchenConsole() {
   const runtime = useRuntimeKitchen()
-  const scenarios = computed(getReadOnlyKitchenScenarios)
+  const scenarios = computed(getDemoKitchenScenarios)
 
   return {
     runtime,

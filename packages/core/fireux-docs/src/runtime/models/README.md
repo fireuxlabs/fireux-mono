@@ -294,7 +294,7 @@ Current child-dir notes:
 
 - canonical runtime entity models
 - stored overlay models where scoped truth is real
-- console facades where managed state is read-only or derived
+- console facades where managed state is demo-backed or derived
 - scoped runtime entity models owned by a console
 - model-adjacent runtime types that belong with their model
 - shared runtime model support like stamps or small reusable protocols

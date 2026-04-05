@@ -2,14 +2,14 @@
   <ConsoleEntityCTA
     title="Portfolio console"
     console-to="/console/portfolio"
-    read-only-label="Demo Portfolios"
+    demo-label="Demo Portfolios"
     learn-more-to="/portfolios/learn-more"
   >
-    <template #readOnlyNote>
+    <template #demoNote>
       <li>Uses bundled portfolio demo scenarios only.</li>
     </template>
 
-    <template #readOnly>
+    <template #demo>
       <div v-if="scenarioCards.length" class="space-y-2">
         <PortfolioCardsPill
           v-for="item in scenarioCards"
@@ -43,14 +43,14 @@
 <script setup lang="ts">
 import { useRouter } from '#imports'
 import { computed } from 'vue'
-import { getReadOnlyPortfolioScenarioList } from '../../../composables/fireux/app/portfolio-runtime/read-only-scenarios'
+import { getDemoPortfolioScenarioList } from '../../../composables/fireux/app/portfolio-runtime/demo-scenarios'
 import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
 
 const router = useRouter()
 const { setRuntimePortfolio } = useRuntimePortfolioSelection()
 
 const scenarioCards = computed(() =>
-  getReadOnlyPortfolioScenarioList().map((entry) => ({
+  getDemoPortfolioScenarioList().map((entry) => ({
     id: String(entry.id || '').trim(),
     title: String(entry.name || '').trim(),
     subtitle: String(entry.manager_display_name || entry.label || '').trim(),
@@ -63,7 +63,7 @@ const openScenario = async (portfolioId: string) => {
   const resolvedId = String(portfolioId || '').trim()
   if (!resolvedId) return
 
-  setRuntimePortfolio({ portfolioId: resolvedId, mode: 'read-only' })
+  setRuntimePortfolio({ portfolioId: resolvedId, mode: 'demo' })
   await router.push('/console/portfolio')
 }
 </script>

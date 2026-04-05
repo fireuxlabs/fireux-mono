@@ -58,7 +58,7 @@ const actions = [
   {
     label: 'Manage',
     cta: 'Manage ecosystems',
-    to: '/console/projects/ecosystems',
+    to: '/console/projects/ecosystem',
     icon: 'i-lucide-orbit',
   },
   {

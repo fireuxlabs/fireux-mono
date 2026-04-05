@@ -41,12 +41,12 @@ function allowsGuestNonLiveConsole(path: string): boolean {
     toConsoleSelectionStateKey(family),
     { default: createDefaultRuntimeSelectionState }
   )
-  const mode = normalizeRuntimeMode(cookie.value?.mode, { defaultMode: 'read-only' })
-  return mode === 'read-only'
+  const mode = normalizeRuntimeMode(cookie.value?.mode, { defaultMode: 'demo' })
+  return mode === 'demo'
 }
 
 function allowsGuestConsoleRoute(path: string): boolean {
-  return /^\/console\/[^/]+\/read-only(?:\/|$)/.test(path)
+  return /^\/console\/[^/]+\/demo(?:\/|$)/.test(path)
 }
 
 export default defineNuxtRouteMiddleware(async (to) => {

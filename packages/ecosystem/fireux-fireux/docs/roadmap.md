@@ -27,7 +27,7 @@ Updated: 2026-03-16
 - Track for each app:
   - `id`, `name`, `ecosystem`, `status`, `owner`
   - `kind` (`internal`, `public`, `tenant`, `external`)
-  - `runtime` (`live`, `test`, `read-only`)
+  - `runtime` (`live`, `test`, `demo`)
   - `seo` (`indexable`, `noindex`)
 - Add CI check that fails when an app exists but is missing from the ecosystem index.
 
@@ -46,14 +46,14 @@ Updated: 2026-03-16
 - Define a connector model for external ecosystems:
   - ingestion adapters
   - normalized status model
-  - capability flags per connector (read-only vs managed)
+  - capability flags per connector (view-only vs managed)
 
 ## Wave 4 — `fireux-tenant` Sandbox
 - Treat `fireux-tenant` as an experimentation sandbox:
   - test extension wiring
   - test theme/system variants
   - run safe workflow experiments before promotion
-- Default sandbox runtime to `test`/`read-only` strategies until explicitly promoted.
+- Default sandbox runtime to `test`/`demo` strategies until explicitly promoted.
 
 ## Wave 5 — Central SEO Operations
 - Run SEO governance from the FireUX ecosystem layer:

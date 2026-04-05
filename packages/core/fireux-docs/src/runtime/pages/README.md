@@ -178,13 +178,13 @@ Console visibility is now app-config driven:
 - route registration alone is not the visibility contract
 
 Mode is now a runtime concern rather than a second page tree:
-- `live`, `read-only`, and `test` should reuse the same main console pages
+- `live`, `demo`, and `test` should reuse the same main console pages
 - `/console/X` is the shared family-entry seam that decides:
   - which mode is active
   - which targets are available in that mode
   - whether the user should select, create, or claim a target
 - `/console/X/overview` is the stable first child page after selection
-- legacy `/read-only` routes may still exist as convenience seams, but they should only set runtime mode and enter the normal console pages
+- legacy `/demo` routes may still exist as convenience seams, but they should only set runtime mode and enter the normal console pages
 
 Main console page ownership is now read like this:
 - `Project` main console pages are core-owned

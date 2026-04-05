@@ -23,7 +23,7 @@ export function usePropertyUnitCollection(
   watch(
     [propertiesPath, normalizedPropertyId],
     ([nextPropertiesPath, nextPropertyId]) => {
-      if (!nextPropertiesPath || !nextPropertyId || runtimePortfolio.isReadOnly.value) {
+      if (!nextPropertiesPath || !nextPropertyId || runtimePortfolio.isDemo.value) {
         sourceRef.value = null
         return
       }
@@ -35,7 +35,7 @@ export function usePropertyUnitCollection(
   const collection = computed<Unit[]>(() => {
     if (!normalizedPropertyId.value) return []
 
-    if (runtimePortfolio.isReadOnly.value) {
+    if (runtimePortfolio.isDemo.value) {
       return (runtimePortfolio.scenario.value?.units ?? []).filter(
         (entry) => normalizeId(entry.property_id) === normalizedPropertyId.value
       )

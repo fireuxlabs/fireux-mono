@@ -29,7 +29,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `/suppliers/admin/[id]`
   - `/dashboard/supplier/*`
 - `/console/supplier` is the family entry page:
-  - `read-only`: curated demo suppliers
+  - `demo`: curated demo suppliers
   - `test`: Firestore-backed test suppliers
   - `live`: my real suppliers for this app
 - `test` canon is one personal supplier per signed-in user:

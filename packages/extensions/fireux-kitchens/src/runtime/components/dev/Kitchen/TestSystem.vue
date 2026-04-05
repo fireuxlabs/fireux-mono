@@ -4,10 +4,10 @@
       <template #header>
         <div class="space-y-2">
           <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            Read-only -> Test sync
+            Demo -> Test sync
           </p>
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            Build in read-only mode first, then sync this exact stack into a test kitchen.
+            Build in demo mode first, then sync this exact stack into a test kitchen.
           </p>
         </div>
       </template>
@@ -32,9 +32,9 @@
             size="sm"
             :loading="isSyncing"
             icon="i-lucide-refresh-cw"
-            @click="syncReadOnlyToTestKitchen"
+            @click="syncDemoToTestKitchen"
           >
-            Sync Read-only -> Test
+            Sync Demo -> Test
           </UButton>
         </div>
 
@@ -106,7 +106,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore'
 import { computed, ref } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { getDefaultReadOnlyKitchenScenario } from '../../../composables/fireux/app/kitchen-runtime/read-only-scenarios'
+import { getDefaultDemoKitchenScenario } from '../../../composables/fireux/app/kitchen-runtime/demo-scenarios'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { KitchenIngredientModel } from '../../../models/ingredient.model'
 import type { Kitchen } from '../../../models/kitchen.model'
@@ -115,7 +115,7 @@ import { KitchenModel as KitchenModelRuntime } from '../../../models/kitchen.mod
 defineOptions({ name: 'DevTestKitchenSystem' })
 
 const kitchenModelRuntime = KitchenModelRuntime
-const readOnlyKitchenScenario = getDefaultReadOnlyKitchenScenario()
+const demoKitchenScenario = getDefaultDemoKitchenScenario()
 const db = useFirestore()
 const { setDocument } = useFirestoreCreate()
 
@@ -183,22 +183,22 @@ type KitchenCollectionName =
   | 'purchases'
   | 'orders'
 
-const targetKitchenId = ref(String(readOnlyKitchenScenario.kitchen?.id || '').trim())
+const targetKitchenId = ref(String(demoKitchenScenario.kitchen?.id || '').trim())
 const pruneMissing = ref(true)
 const isSyncing = ref(false)
 const syncError = ref('')
 const syncSummary = ref<{ kitchenId: string; written: number; pruned: number } | null>(null)
 
 const syncCounts = computed(() => ({
-  ingredients: readOnlyKitchenScenario.kitchenIngredients.length,
-  mise: readOnlyKitchenScenario.menuStack.miseTasks.length,
-  recipes: readOnlyKitchenScenario.menuStack.recipes.length,
-  dishes: readOnlyKitchenScenario.menuStack.dishes.length,
-  menus: readOnlyKitchenScenario.menuStack.menus.length,
-  suppliers: readOnlyKitchenScenario.procurementStack.suppliers.length,
-  supplierIngredients: readOnlyKitchenScenario.procurementStack.supplierIngredients.length,
-  purchases: readOnlyKitchenScenario.procurementStack.purchases.length,
-  orders: readOnlyKitchenScenario.serviceStack.incomingOrders.length,
+  ingredients: demoKitchenScenario.kitchenIngredients.length,
+  mise: demoKitchenScenario.menuStack.miseTasks.length,
+  recipes: demoKitchenScenario.menuStack.recipes.length,
+  dishes: demoKitchenScenario.menuStack.dishes.length,
+  menus: demoKitchenScenario.menuStack.menus.length,
+  suppliers: demoKitchenScenario.procurementStack.suppliers.length,
+  supplierIngredients: demoKitchenScenario.procurementStack.supplierIngredients.length,
+  purchases: demoKitchenScenario.procurementStack.purchases.length,
+  orders: demoKitchenScenario.serviceStack.incomingOrders.length,
 }))
 
 const resolveCollectionPath = (kitchenId: string, name: KitchenCollectionName) =>
@@ -225,7 +225,7 @@ const buildKitchenIngredientsForSync = () => {
     })
   }
 
-  for (const ingredient of readOnlyKitchenScenario.kitchenIngredients) {
+  for (const ingredient of demoKitchenScenario.kitchenIngredients) {
     push(ingredient as unknown as Record<string, unknown>)
   }
 
@@ -269,7 +269,7 @@ const pruneCollection = async (collectionPath: string, keepIds: Set<string>) => 
   return removed
 }
 
-const syncReadOnlyToTestKitchen = async () => {
+const syncDemoToTestKitchen = async () => {
   if (isSyncing.value) return
 
   const kitchenId = String(targetKitchenId.value || '').trim()
@@ -283,7 +283,7 @@ const syncReadOnlyToTestKitchen = async () => {
 
   try {
     const kitchenDoc: Kitchen = {
-      ...(readOnlyKitchenScenario.kitchen as Kitchen),
+      ...(demoKitchenScenario.kitchen as Kitchen),
       id: kitchenId,
       is_test_kitchen: true,
     }
@@ -295,17 +295,17 @@ const syncReadOnlyToTestKitchen = async () => {
 
     const collections: Record<KitchenCollectionName, Record<string, unknown>[]> = {
       ingredients: buildKitchenIngredientsForSync(),
-      mise: withKitchenId(asDocs(readOnlyKitchenScenario.menuStack.miseTasks), kitchenId),
-      recipes: withKitchenId(asDocs(readOnlyKitchenScenario.menuStack.recipes), kitchenId),
-      dishes: withKitchenId(asDocs(readOnlyKitchenScenario.menuStack.dishes), kitchenId),
-      menus: withKitchenId(asDocs(readOnlyKitchenScenario.menuStack.menus), kitchenId),
-      suppliers: withKitchenId(asDocs(readOnlyKitchenScenario.procurementStack.suppliers), kitchenId),
+      mise: withKitchenId(asDocs(demoKitchenScenario.menuStack.miseTasks), kitchenId),
+      recipes: withKitchenId(asDocs(demoKitchenScenario.menuStack.recipes), kitchenId),
+      dishes: withKitchenId(asDocs(demoKitchenScenario.menuStack.dishes), kitchenId),
+      menus: withKitchenId(asDocs(demoKitchenScenario.menuStack.menus), kitchenId),
+      suppliers: withKitchenId(asDocs(demoKitchenScenario.procurementStack.suppliers), kitchenId),
       supplierIngredients: withKitchenId(
-        asDocs(readOnlyKitchenScenario.procurementStack.supplierIngredients),
+        asDocs(demoKitchenScenario.procurementStack.supplierIngredients),
         kitchenId
       ),
-      purchases: withKitchenId(asDocs(readOnlyKitchenScenario.procurementStack.purchases), kitchenId),
-      orders: withKitchenId(asDocs(readOnlyKitchenScenario.serviceStack.incomingOrders), kitchenId),
+      purchases: withKitchenId(asDocs(demoKitchenScenario.procurementStack.purchases), kitchenId),
+      orders: withKitchenId(asDocs(demoKitchenScenario.serviceStack.incomingOrders), kitchenId),
     }
 
     let totalWritten = 0
@@ -340,7 +340,7 @@ const syncReadOnlyToTestKitchen = async () => {
       pruned: totalPruned,
     }
   } catch (error: any) {
-    syncError.value = String(error?.message || error || 'Failed to sync read-only scenario to test kitchen.')
+    syncError.value = String(error?.message || error || 'Failed to sync demo scenario to test kitchen.')
   } finally {
     isSyncing.value = false
   }

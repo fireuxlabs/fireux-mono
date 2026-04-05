@@ -22,7 +22,7 @@
                 <div class="text-sm font-semibold">Compliance monitor</div>
                 <div class="text-xs text-dimmed">
                   Mode: <span class="font-medium">{{ runtimeMode }}</span>
-                  · Source: <code>{{ isReadOnly ? 'read-only scenario' : compliancePath }}</code>
+                  · Source: <code>{{ isDemo ? 'demo scenario' : compliancePath }}</code>
                 </div>
               </div>
             </div>
@@ -70,11 +70,11 @@
                       {{ statusLabel(item.status) }}
                     </UBadge>
                     <UButton
-                      v-if="!isReadOnly"
+                      v-if="!isDemo"
                       size="xs"
                       variant="ghost"
                       icon="i-lucide-list-checks"
-                      :disabled="isReadOnly"
+                      :disabled="isDemo"
                       @click="createTaskFromCompliance(item.id)"
                     >
                       Create task
@@ -133,7 +133,7 @@ const compliancePath = useRuntimePortfolioPath(runtimePortfolio, 'compliance-rec
 
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
-const isReadOnly = computed(() => runtimePortfolio.isReadOnly.value)
+const isDemo = computed(() => runtimePortfolio.isDemo.value)
 
 const cards = computed(() =>
   collection.value
@@ -171,7 +171,7 @@ const statusColor = (status: 'ok' | 'dueSoon' | 'overdue' | null) => {
 }
 
 const createTaskFromCompliance = async (complianceId: string) => {
-  if (isReadOnly.value) return
+  if (isDemo.value) return
 
   const record = collection.value.find((entry) => String(entry.id || '').trim() === String(complianceId || '').trim())
   if (!record) return

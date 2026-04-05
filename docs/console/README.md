@@ -15,8 +15,8 @@ This file defines shared console behavior for `/console/**` surfaces.
 
 ## Runtime Contract Alignment
 Console pages must follow `docs/runtime-contract.md`:
-- Modes: `live`, `test`, `read-only`
-- Read-only uses scenario registries
+- Modes: `live`, `test`, `demo`
+- Demo uses scenario registries
 - Console selection is state-based, not query-based
 
 ## Ownership Pattern
@@ -38,7 +38,7 @@ Visibility rule:
 
 ## Implementation Notes
 - Keep nav labels aligned with domain language.
-- Hide write actions when mode is `read-only`.
+- Hide write actions when mode is `demo`.
 - Keep runtime selection cookies path-scoped to `/` for refresh continuity.
 
 ## Rule

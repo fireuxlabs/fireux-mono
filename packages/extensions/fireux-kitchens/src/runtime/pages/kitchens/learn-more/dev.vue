@@ -15,7 +15,7 @@
         <ul class="list-disc space-y-2 pl-5 text-sm">
           <li>Live runtime path: <code>kitchens/&lt;kitchenId&gt;</code>.</li>
           <li>Test runtime path: <code>test-kitchens/&lt;kitchenId&gt;</code>.</li>
-          <li>Read-only mode is scenario-backed and does not write to Firestore.</li>
+          <li>Demo mode is scenario-backed and does not write to Firestore.</li>
         </ul>
       </UCard>
 

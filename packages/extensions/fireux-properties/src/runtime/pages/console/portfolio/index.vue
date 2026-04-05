@@ -104,7 +104,7 @@ definePageMeta({
 })
 
 const modeOptions = [
-  { value: 'read-only', label: 'Demo' },
+  { value: 'demo', label: 'Demo' },
   { value: 'live', label: 'Real' },
   { value: 'test', label: 'Test' },
 ] as const

@@ -113,7 +113,7 @@ These are shared, lightly edited system entities used by other objects.
 
 ### Canon rule (page modes)
 
-- `/<entity>/[id-or-slug]` read-only route identity follows `docs/runtime-contract.md`.
+- `/<entity>/[id-or-slug]` public/detail route identity follows `docs/runtime-contract.md`.
 - `/<entity>/edit/[id]` is the mutation surface for operational objects.
 - Inline editing is reserved for workspace consoles.
 

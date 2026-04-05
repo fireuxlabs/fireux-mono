@@ -22,7 +22,7 @@
                 <div class="text-sm font-semibold">Task tracker</div>
                 <div class="text-xs text-dimmed">
                   Mode: <span class="font-medium">{{ runtimeMode }}</span>
-                  · Source: <code>{{ isReadOnly ? 'read-only scenario' : tasksPath }}</code>
+                  · Source: <code>{{ isDemo ? 'demo scenario' : tasksPath }}</code>
                 </div>
               </div>
             </div>
@@ -45,22 +45,22 @@
             </div>
           </UCard>
 
-          <UCard v-if="!isReadOnly">
+          <UCard v-if="!isDemo">
             <template #header>
               <div class="text-sm font-semibold">Create task</div>
             </template>
 
             <div class="grid gap-3 sm:grid-cols-2">
-              <UInput v-model="newTaskTitle" :disabled="isReadOnly" placeholder="Task title" />
-              <UInput v-model="newTaskDueDate" :disabled="isReadOnly" placeholder="Due date (YYYY-MM-DD)" />
-              <UInput v-model="newTaskDescription" :disabled="isReadOnly" placeholder="Description" class="sm:col-span-2" />
+              <UInput v-model="newTaskTitle" :disabled="isDemo" placeholder="Task title" />
+              <UInput v-model="newTaskDueDate" :disabled="isDemo" placeholder="Due date (YYYY-MM-DD)" />
+              <UInput v-model="newTaskDescription" :disabled="isDemo" placeholder="Description" class="sm:col-span-2" />
             </div>
 
             <div class="mt-3">
               <UButton
                 size="sm"
                 icon="i-lucide-plus"
-                :disabled="isReadOnly || !newTaskTitle.trim() || createBusy"
+                :disabled="isDemo || !newTaskTitle.trim() || createBusy"
                 :loading="createBusy"
                 @click="createManualTask"
               >
@@ -91,10 +91,10 @@
                       {{ item.status }}
                     </UBadge>
 
-                    <div v-if="!isReadOnly" class="flex gap-1">
-                      <UButton size="xs" variant="ghost" :disabled="isReadOnly" @click="setStatus(item.id, 'open')">Open</UButton>
-                      <UButton size="xs" variant="ghost" :disabled="isReadOnly" @click="setStatus(item.id, 'in_progress')">In progress</UButton>
-                      <UButton size="xs" variant="ghost" :disabled="isReadOnly" @click="setStatus(item.id, 'done')">Done</UButton>
+                    <div v-if="!isDemo" class="flex gap-1">
+                      <UButton size="xs" variant="ghost" :disabled="isDemo" @click="setStatus(item.id, 'open')">Open</UButton>
+                      <UButton size="xs" variant="ghost" :disabled="isDemo" @click="setStatus(item.id, 'in_progress')">In progress</UButton>
+                      <UButton size="xs" variant="ghost" :disabled="isDemo" @click="setStatus(item.id, 'done')">Done</UButton>
                     </div>
                   </div>
                 </div>
@@ -145,7 +145,7 @@ definePageMeta({
 const runtimePortfolio = useRuntimePortfolio()
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
-const isReadOnly = computed(() => runtimePortfolio.isReadOnly.value)
+const isDemo = computed(() => runtimePortfolio.isDemo.value)
 const tasksPath = useRuntimePortfolioPath(runtimePortfolio, 'tasks')
 
 const { collection } = usePortfolioTaskCollection(runtimePortfolio)
@@ -187,7 +187,7 @@ const statusColor = (status: Task['status']) => {
 }
 
 const createManualTask = async () => {
-  if (isReadOnly.value) return
+  if (isDemo.value) return
 
   createBusy.value = true
   try {
@@ -210,7 +210,7 @@ const createManualTask = async () => {
 }
 
 const setStatus = async (taskId: string, status: Task['status']) => {
-  if (isReadOnly.value) return
+  if (isDemo.value) return
   await updateTask(taskId, { status })
 }
 </script>

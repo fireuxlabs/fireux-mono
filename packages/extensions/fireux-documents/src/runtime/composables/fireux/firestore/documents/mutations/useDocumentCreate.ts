@@ -17,8 +17,8 @@ export function useDocumentCreate(runtimePortfolio = useRuntimePortfolio()) {
       throw new Error('[fireux-documents] runtimePortfolioId is required.')
     }
 
-    if (runtimePortfolio.isReadOnly.value) {
-      throw new Error('[fireux-documents] read-only runtime does not allow writes.')
+    if (runtimePortfolio.isDemo.value) {
+      throw new Error('[fireux-documents] demo runtime does not allow writes.')
     }
 
     const payload: Omit<Document, 'id'> = {

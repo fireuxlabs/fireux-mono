@@ -3,19 +3,19 @@ import { computed, type Ref } from 'vue'
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Portfolio } from '../../../../models/portfolio.model'
 import {
-  getReadOnlyPortfolioScenario,
-  type ReadOnlyPortfolioScenario,
-} from './read-only-scenarios'
+  getDemoPortfolioScenario,
+  type DemoPortfolioScenario,
+} from './demo-scenarios'
 
 export function useRuntimePortfolioDocument(params: {
   id: Ref<string>
-  isReadOnly: Ref<boolean>
+  isDemo: Ref<boolean>
   documentCollectionPath: Ref<string>
 }) {
   const db = useFirestore()
 
   const docRef = computed(() => {
-    if (params.isReadOnly.value) return null
+    if (params.isDemo.value) return null
     if (!params.id.value) return null
     const path = String(params.documentCollectionPath.value || '').trim()
     if (!path) return null
@@ -30,20 +30,20 @@ export function useRuntimePortfolioDocument(params: {
     },
   } as any)
 
-  const scenario = computed<ReadOnlyPortfolioScenario | null>(() => {
-    if (!params.isReadOnly.value || !params.id.value) return null
-    return getReadOnlyPortfolioScenario(params.id.value)
+  const scenario = computed<DemoPortfolioScenario | null>(() => {
+    if (!params.isDemo.value || !params.id.value) return null
+    return getDemoPortfolioScenario(params.id.value)
   })
 
   const doc = computed<Portfolio | null>(() => {
     if (!params.id.value) return null
-    if (params.isReadOnly.value) return scenario.value?.portfolio ?? null
+    if (params.isDemo.value) return scenario.value?.portfolio ?? null
     return liveDoc.value ?? null
   })
 
   const pending = computed(() => {
     if (!params.id.value) return false
-    if (params.isReadOnly.value) return false
+    if (params.isDemo.value) return false
     return liveDoc.value === undefined
   })
 

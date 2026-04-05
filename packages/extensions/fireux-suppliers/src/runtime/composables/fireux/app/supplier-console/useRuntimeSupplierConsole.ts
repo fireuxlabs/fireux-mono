@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { getReadOnlySupplierScenarios } from './read-only-scenarios'
+import { getDemoSupplierScenarios } from './demo-scenarios'
 import { useRuntimeSupplier } from './useRuntimeSupplier'
 
 /**
@@ -7,7 +7,7 @@ import { useRuntimeSupplier } from './useRuntimeSupplier'
  */
 export function useRuntimeSupplierConsole() {
   const runtime = useRuntimeSupplier()
-  const scenarios = computed(getReadOnlySupplierScenarios)
+  const scenarios = computed(getDemoSupplierScenarios)
 
   return {
     runtime,

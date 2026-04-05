@@ -68,10 +68,10 @@ Relationship files that already bind recipe into the kitchen system:
 - packages/extensions/fireux-kitchens/src/runtime/models/profiles/Chef/Chef.model.ts
 
 Read-only scenario recipe support:
-- packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-runtime/read-only-scenarios/_shared/types.ts
-- packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-runtime/read-only-scenarios/stack-sizzle/index.ts
-- packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-runtime/read-only-scenarios/broth-bloom/index.ts
-- packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-runtime/read-only-scenarios/takumi-ramen/index.ts
+- packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-runtime/demo-scenarios/_shared/types.ts
+- packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-runtime/demo-scenarios/stack-sizzle/index.ts
+- packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-runtime/demo-scenarios/broth-bloom/index.ts
+- packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-runtime/demo-scenarios/takumi-ramen/index.ts
 
 ### Confirmed recipe-related files in fireux-misebox
 

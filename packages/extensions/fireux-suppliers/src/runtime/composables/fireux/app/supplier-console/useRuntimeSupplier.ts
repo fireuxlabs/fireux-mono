@@ -2,7 +2,7 @@ import { computed } from 'vue'
 import { useSupplierRecord } from '../../firestore/supplier/fetch/useSupplierRecord'
 import type { Supplier } from '../../../models/supplier/Supplier.model'
 import { useRuntimeSupplierSelection } from './state'
-import { getReadOnlySupplierScenario } from './read-only-scenarios'
+import { getDemoSupplierScenario } from './demo-scenarios'
 
 /**
  * Canon supplier console seam.
@@ -10,11 +10,13 @@ import { getReadOnlySupplierScenario } from './read-only-scenarios'
 export function useRuntimeSupplier() {
   const selection = useRuntimeSupplierSelection()
   const id = selection.selectedId
-  const readOnly = computed(() => selection.mode.value === 'read-only')
+  const mode = selection.mode
+  const activity = computed<'static'>(() => 'static')
+  const isDemo = computed(() => selection.mode.value === 'demo')
   const supplierCollectionPath = computed(() =>
     selection.mode.value === 'test' ? 'test-suppliers' : 'suppliers'
   )
-  const liveSupplierId = computed(() => (readOnly.value ? '' : id.value))
+  const liveSupplierId = computed(() => (isDemo.value ? '' : id.value))
   const {
     supplier: liveSupplier,
     pending: livePending,
@@ -23,19 +25,22 @@ export function useRuntimeSupplier() {
   })
 
   const scenario = computed(() =>
-    readOnly.value ? getReadOnlySupplierScenario(id.value) : null
+    isDemo.value ? getDemoSupplierScenario(id.value) : null
   )
 
   const supplier = computed<Supplier | null>(() => {
     if (!id.value) return null
-    if (readOnly.value) return scenario.value?.supplier ?? null
+    if (isDemo.value) return scenario.value?.supplier ?? null
     return liveSupplier.value ?? null
   })
 
-  const pending = computed(() => !readOnly.value && Boolean(livePending.value))
+  const pending = computed(() => !isDemo.value && Boolean(livePending.value))
 
   return {
     id,
+    mode,
+    activity,
+    isDemo,
     pending,
     scenario,
     supplier,

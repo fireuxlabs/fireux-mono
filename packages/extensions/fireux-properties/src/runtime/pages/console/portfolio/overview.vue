@@ -39,7 +39,7 @@
               <div class="text-sm font-semibold">Workspace Summary</div>
             </template>
 
-            <div class="grid gap-3 sm:grid-cols-3">
+            <div class="grid gap-3 sm:grid-cols-4">
               <div class="space-y-1">
                 <div class="text-xs uppercase tracking-[0.16em] text-toned">Mode</div>
                 <div class="text-sm font-medium">{{ modeLabel }}</div>
@@ -54,6 +54,52 @@
                 <div class="text-xs uppercase tracking-[0.16em] text-toned">Portfolio Id</div>
                 <div class="font-mono text-sm">{{ runtime.id }}</div>
               </div>
+
+              <div class="space-y-1">
+                <div class="text-xs uppercase tracking-[0.16em] text-toned">Is Premium</div>
+                <div class="text-sm font-medium">{{ isPremium ? 'true' : 'false' }}</div>
+              </div>
+            </div>
+          </UCard>
+
+          <UCard v-if="showDemoPremiumPreviewToggle">
+            <div class="flex items-center justify-between gap-4">
+              <div class="space-y-1">
+                <div class="text-sm font-semibold">Preview Premium Real Summary</div>
+                <p class="text-sm text-dimmed">
+                  Show what premium real portfolio collection insights can look like.
+                </p>
+              </div>
+
+              <USwitch v-model="showPremiumPreview" />
+            </div>
+          </UCard>
+
+          <UCard v-if="showPremiumCollectionSummary">
+            <template #header>
+              <div class="text-sm font-semibold">Premium Collection Summary</div>
+            </template>
+
+            <div class="space-y-1">
+              <div class="text-xs uppercase tracking-[0.16em] text-toned">Total Portfolios</div>
+              <div class="text-sm font-medium">{{ livePortfolioCount }}</div>
+            </div>
+          </UCard>
+
+          <UCard v-else-if="showDemoPremiumCollectionPreview">
+            <template #header>
+              <div class="text-sm font-semibold">Premium Real Preview</div>
+            </template>
+
+            <div class="space-y-3">
+              <div class="space-y-1">
+                <div class="text-xs uppercase tracking-[0.16em] text-toned">Total Portfolios</div>
+                <div class="text-sm font-medium">{{ demoPortfolioCount }}</div>
+              </div>
+
+              <p class="text-sm text-dimmed">
+                Preview only. Premium real mode can surface live collection summaries like this.
+              </p>
             </div>
           </UCard>
 
@@ -88,11 +134,14 @@
 
 <script setup lang="ts">
 import { useState } from '#imports'
-import { computed, watchEffect } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import type { Portfolio } from '../../../models/portfolio.model'
+import { useRuntimePortfolioConsole } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolioConsole'
 import { useRuntimePortfolio } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
+import { usePortfolioCollection } from '../../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
 import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
 
 definePageMeta({
@@ -113,9 +162,12 @@ definePageMeta({
 const normalizeString = (value: unknown): string => String(value || '').trim()
 const stripTestPortfolioSuffix = (value: unknown): string =>
   normalizeString(value).replace(/\s+test portfolio$/i, '').trim()
+const { scenarios } = useRuntimePortfolioConsole()
 const runtime = useRuntimePortfolio()
 const portfolioSelection = useRuntimePortfolioSelection()
 const { currentUser } = useAuth()
+const { isPremium } = useUser()
+const { count: livePortfolioCount } = usePortfolioCollection()
 const { pill: toPortfolioCard } = usePortfolioInterface()
 
 type PortfolioPill = NonNullable<ReturnType<typeof toPortfolioCard>> & {
@@ -163,6 +215,18 @@ const sourceLabel = computed(() => {
   if (portfolioSelection.mode.value === 'test') return 'Firestore test data'
   return 'Curated demo scenario'
 })
+const showPremiumPreview = ref(false)
+const demoPortfolioCount = computed(() => scenarios.value.length)
+const showPremiumCollectionSummary = computed(() =>
+  portfolioSelection.mode.value === 'live' && isPremium.value
+)
+const showDemoPremiumPreviewToggle = computed(() =>
+  portfolioSelection.mode.value === 'demo' && !isPremium.value
+)
+const showDemoPremiumCollectionPreview = computed(() =>
+  portfolioSelection.mode.value === 'demo' &&
+  (isPremium.value || showPremiumPreview.value)
+)
 
 const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
   'console-header-pill',

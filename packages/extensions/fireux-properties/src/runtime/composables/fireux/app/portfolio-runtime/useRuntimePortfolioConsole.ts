@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { getReadOnlyPortfolioScenarios } from './read-only-scenarios'
+import { getDemoPortfolioScenarios } from './demo-scenarios'
 import { useRuntimePortfolio } from './useRuntimePortfolio'
 
 /**
@@ -7,7 +7,7 @@ import { useRuntimePortfolio } from './useRuntimePortfolio'
  */
 export function useRuntimePortfolioConsole() {
   const runtime = useRuntimePortfolio()
-  const scenarios = computed(getReadOnlyPortfolioScenarios)
+  const scenarios = computed(getDemoPortfolioScenarios)
 
   return {
     runtime,

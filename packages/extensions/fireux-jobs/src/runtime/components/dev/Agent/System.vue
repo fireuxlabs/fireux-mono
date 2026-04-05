@@ -1,6 +1,6 @@
 <template>
   <section class="space-y-10">
-    <DevAgentDummy />
+    <DevAgentDemo />
 
     <UCard>
       <DevModel

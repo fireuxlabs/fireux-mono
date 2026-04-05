@@ -4,12 +4,12 @@ import {
   useRuntimePortfolio,
   useRuntimePortfolioPath,
 } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
-import type { ReadOnlyTask } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/read-only-scenarios'
+import type { DemoTask } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios'
 import type { Task } from '../../../../../models/task.model'
 
 const normalize = (value: unknown) => String(value || '').trim()
 
-const toTask = (entry: ReadOnlyTask): Task => ({
+const toTask = (entry: DemoTask): Task => ({
   id: normalize(entry.id),
   portfolio_id: normalize(entry.portfolio_id),
   title: normalize(entry.title),
@@ -31,7 +31,7 @@ export function usePortfolioTaskCollection(runtimePortfolio = useRuntimePortfoli
   watch(
     collectionPath,
     (nextPath) => {
-      if (!nextPath || runtimePortfolio.isReadOnly.value) {
+      if (!nextPath || runtimePortfolio.isDemo.value) {
         sourceRef.value = null
         return
       }
@@ -41,7 +41,7 @@ export function usePortfolioTaskCollection(runtimePortfolio = useRuntimePortfoli
   )
 
   const collection = computed<Task[]>(() => {
-    if (runtimePortfolio.isReadOnly.value) {
+    if (runtimePortfolio.isDemo.value) {
       return (runtimePortfolio.scenario.value?.tasks ?? []).map((entry) => toTask(entry))
     }
     return sourceRef.value?.value ?? []

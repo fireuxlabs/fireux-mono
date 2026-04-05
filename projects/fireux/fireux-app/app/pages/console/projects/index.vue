@@ -140,7 +140,7 @@ definePageMeta({
 })
 
 const modeOptions = [
-  { value: 'read-only', label: 'Demo' },
+  { value: 'demo', label: 'Demo' },
   { value: 'live', label: 'Real' },
   { value: 'test', label: 'Test' },
 ] as const
@@ -274,7 +274,7 @@ const modeDevNote = computed(() => {
 
   return {
     title: 'Projects Console · Demo',
-    summary: 'Demo mode is the read-only scenario layer.',
+    summary: 'Demo mode is the demo scenario layer.',
     auth: authLabel,
     items: [
       'Uses curated scenario data, not Firestore project docs.',
@@ -376,7 +376,7 @@ const debugJson = computed(() => ({
   selectedProject: runtime.project.value ?? null,
   availableProjects: runtime.project.value
     ? null
-    : selectedMode.value === 'read-only'
+    : selectedMode.value === 'demo'
       ? scenarios.value.map((entry) => ({
           id: entry.id,
           name: entry.name,

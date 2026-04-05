@@ -81,6 +81,6 @@ const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const properties = computed(() => collection.value)
 const portfolioPill = computed(() => pill(runtimePortfolio.portfolio.value))
 const workspaceDescription = computed(
-  () => `Portfolio-scoped properties from ${propertiesPath.value || 'read-only scenario'}.`
+  () => `Portfolio-scoped properties from ${propertiesPath.value || 'demo scenario'}.`
 )
 </script>

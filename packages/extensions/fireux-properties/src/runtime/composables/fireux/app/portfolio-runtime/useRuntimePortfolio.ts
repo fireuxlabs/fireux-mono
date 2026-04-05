@@ -22,7 +22,8 @@ export function useRuntimePortfolio() {
   const selection = useRuntimePortfolioSelection()
   const id = selection.selectedId
   const mode = selection.mode
-  const isReadOnly = computed(() => mode.value === 'read-only')
+  const activity = computed<'static'>(() => 'static')
+  const isDemo = computed(() => mode.value === 'demo')
   const documentCollectionPath = computed(() =>
     resolveRuntimePortfolioDocumentCollectionPath(mode.value)
   )
@@ -31,7 +32,7 @@ export function useRuntimePortfolio() {
   )
   const { doc, pending, scenario } = useRuntimePortfolioDocument({
     id,
-    isReadOnly,
+    isDemo: isDemo,
     documentCollectionPath,
   })
   const isLoading = computed(() => Boolean(pending.value))
@@ -44,7 +45,8 @@ export function useRuntimePortfolio() {
   return {
     id,
     mode,
-    isReadOnly,
+    activity,
+    isDemo,
     collectionPath: portfolioCollectionPath,
     documentCollectionPath,
     portfolioCollectionPath,
@@ -67,7 +69,7 @@ export function useRuntimePortfolioPath(
 ): Ref<string> {
   return computed(() => {
     const portfolioId = String(portfolioConsole.id.value || '').trim()
-    if (!portfolioId || portfolioConsole.isReadOnly.value) return ''
+    if (!portfolioId || portfolioConsole.isDemo.value) return ''
     return resolveRuntimePortfolioPath(
       portfolioConsole.collectionPath.value,
       portfolioId,

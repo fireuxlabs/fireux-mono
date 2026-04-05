@@ -34,7 +34,7 @@
             <p class="text-dimmed">Project console home.</p>
           </div>
           <div class="rounded border border-default p-3">
-            <p class="font-mono">/console/projects/ecosystems</p>
+            <p class="font-mono">/console/projects/ecosystem</p>
             <p class="text-dimmed">Project console section for ecosystems.</p>
           </div>
           <div class="rounded border border-default p-3">

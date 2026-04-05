@@ -88,9 +88,9 @@ Recent repo truth:
 - collection managers remain component-owned, but direct subcollection discovery is now a runtime server concern
 - console family visibility is now an app-config concern through `consoleFamilies`
 - main console page ownership is now explicit: system consoles in core, domain consoles in their domain package
-- console-backed runtime now treats `live` and `read-only` as runtime modes rather than separate console architectures
+- console-backed runtime now treats `live` and `demo` as runtime modes rather than separate console architectures
 - `/console/X` is now the shared family entry seam:
-  - `read-only` shows demo targets
+  - `demo` shows demo targets
   - `test` shows test targets
   - `live` shows the current user's real targets for that family
 - `/console/X/overview` is the selected-target workspace overview seam

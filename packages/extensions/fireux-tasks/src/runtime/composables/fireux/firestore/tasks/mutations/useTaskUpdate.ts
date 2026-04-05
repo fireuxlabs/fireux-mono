@@ -17,8 +17,8 @@ export function useTaskUpdate(runtimePortfolio = useRuntimePortfolio()) {
       throw new Error('[fireux-tasks] runtimePortfolioId is required.')
     }
 
-    if (runtimePortfolio.isReadOnly.value) {
-      throw new Error('[fireux-tasks] read-only runtime does not allow writes.')
+    if (runtimePortfolio.isDemo.value) {
+      throw new Error('[fireux-tasks] demo runtime does not allow writes.')
     }
 
     const normalizedTaskId = normalize(taskId)

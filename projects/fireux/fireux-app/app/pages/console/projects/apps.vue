@@ -54,15 +54,23 @@
               <div class="flex items-start justify-between gap-3">
                 <div class="space-y-1">
                   <div class="text-sm font-semibold">{{ app.name }}</div>
-                  <div class="text-xs font-mono text-dimmed">{{ app.id }}</div>
+                  <p v-if="app.description" class="text-sm text-dimmed">
+                    {{ app.description }}
+                  </p>
                 </div>
                 <UBadge variant="soft">{{ app.status }}</UBadge>
               </div>
             </template>
 
-            <div class="text-sm text-dimmed">
-              Ecosystem:
-              <span class="font-medium text-default">{{ app.ecosystemId || 'unassigned' }}</span>
+            <div class="space-y-2 text-sm text-dimmed">
+              <div>
+                Ecosystem:
+                <span class="font-medium text-default">{{ app.ecosystemName || 'Unassigned' }}</span>
+              </div>
+              <div v-if="app.focusLabel">
+                Focus:
+                <span class="font-medium text-default">{{ app.focusLabel }}</span>
+              </div>
             </div>
           </UCard>
         </template>
@@ -93,6 +101,20 @@ definePageMeta({
 const runtime = useRuntimeProject()
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
+const labelize = (value: unknown): string =>
+  normalizeString(value)
+    .split(/[-_]+/)
+    .filter(Boolean)
+    .map((part) => part[0]?.toUpperCase() + part.slice(1))
+    .join(' ')
+
+const ecosystemNameById = computed(() =>
+  new Map(
+    (runtime.scenario.value?.ecosystems ?? [])
+      .map((entry) => [normalizeString((entry as any).id), normalizeString((entry as any).name)] as const)
+      .filter(([id]) => Boolean(id))
+  )
+)
 
 const appRows = computed(() =>
   (runtime.scenario.value?.apps ?? []).map((entry) => {
@@ -109,11 +131,16 @@ const appRows = computed(() =>
       normalizeString((entry as any).status) ||
       normalizeString((entry as any).moderation_state) ||
       'active'
+    const description =
+      normalizeString((entry as any).description) ||
+      `${name} helps the ${normalizeString(runtime.project.value?.name) || 'selected project'} team operate this lane.`
 
     return {
       id,
       name,
-      ecosystemId,
+      description,
+      ecosystemName: ecosystemNameById.value.get(ecosystemId) || labelize(ecosystemId),
+      focusLabel: labelize((entry as any).team),
       status,
     }
   })

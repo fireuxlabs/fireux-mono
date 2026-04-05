@@ -3,16 +3,16 @@
     <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
       <div class="space-y-4">
         <div class="space-y-1">
-          <p v-if="readOnlyLabel" class="text-xs font-semibold uppercase tracking-[0.16em] text-dimmed">
-            {{ readOnlyLabel }}
+          <p v-if="demoLabel" class="text-xs font-semibold uppercase tracking-[0.16em] text-dimmed">
+            {{ demoLabel }}
           </p>
           <h2 class="text-2xl font-semibold text-highlighted sm:text-3xl">
             {{ title }}
           </h2>
         </div>
 
-        <slot name="readOnlyNote" />
-        <slot name="readOnly" />
+        <slot name="demoNote" />
+        <slot name="demo" />
 
         <UButton
           v-if="learnMoreTo"
@@ -36,7 +36,7 @@
 defineProps<{
   title: string
   consoleTo?: string
-  readOnlyLabel?: string
+  demoLabel?: string
   learnMoreTo?: string
 }>()
 </script>

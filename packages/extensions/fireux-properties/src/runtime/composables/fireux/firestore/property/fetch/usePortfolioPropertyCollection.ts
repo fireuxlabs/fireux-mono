@@ -14,7 +14,7 @@ export function usePortfolioPropertyCollection(runtimePortfolio = useRuntimePort
   watch(
     collectionPath,
     (nextPath) => {
-      if (!nextPath || runtimePortfolio.isReadOnly.value) {
+      if (!nextPath || runtimePortfolio.isDemo.value) {
         sourceRef.value = null
         return
       }
@@ -24,7 +24,7 @@ export function usePortfolioPropertyCollection(runtimePortfolio = useRuntimePort
   )
 
   const collection = computed<Property[]>(() => {
-    if (runtimePortfolio.isReadOnly.value) {
+    if (runtimePortfolio.isDemo.value) {
       return runtimePortfolio.scenario.value?.properties ?? []
     }
     return sourceRef.value?.value ?? []

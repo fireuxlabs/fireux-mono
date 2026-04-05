@@ -31,7 +31,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `/portfolios/[id]`
   - `/console/portfolio/*`
 - `/console/portfolio` is the family entry page:
-  - `read-only`: curated demo portfolios
+  - `demo`: curated demo portfolios
   - `test`: Firestore-backed test portfolios
   - `live`: my real portfolios for this app
 - `test` canon is one personal portfolio per signed-in user:
@@ -50,7 +50,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Runtime portfolio selection state.
 - Mode-aware loading for:
   - `live`
-  - `read-only`
+  - `demo`
   - `test`
 - Runtime mode mapping follows `docs/runtime-contract.md`.
 

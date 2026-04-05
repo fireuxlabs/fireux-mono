@@ -4,16 +4,18 @@ export type ConsoleFamily = string
 
 /**
  * Canon runtime modes (shared across all entities).
- * - read-only => scenario/demo only (NO Firestore)
+ * - demo => sample/demo data source
  * - live => production Firestore
  * - test => test Firestore
  */
-export type RuntimeMode = 'live' | 'read-only' | 'test'
+export type RuntimeMode = 'live' | 'demo' | 'test'
+export type RuntimeActivity = 'static' | 'simulation'
 
 export type RuntimeRefBase = {
   id: ComputedRef<string>
   mode: ComputedRef<RuntimeMode>
-  isReadOnly: ComputedRef<boolean>
+  activity: ComputedRef<RuntimeActivity>
+  isDemo: ComputedRef<boolean>
   isLoading: ComputedRef<boolean>
   isReady: ComputedRef<boolean>
 }
@@ -21,7 +23,8 @@ export type RuntimeRefBase = {
 export type RuntimeContextRef = {
   id: ComputedRef<string>
   mode: ComputedRef<RuntimeMode>
-  isReadOnly: ComputedRef<boolean>
+  activity: ComputedRef<RuntimeActivity>
+  isDemo: ComputedRef<boolean>
 }
 
 export type RuntimeSelectionApi<TState extends Record<string, any>> = {

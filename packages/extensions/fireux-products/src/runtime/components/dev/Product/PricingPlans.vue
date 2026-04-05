@@ -6,7 +6,7 @@
           Pricing plans
         </p>
         <p class="text-xs text-gray-500 dark:text-gray-400">
-          Dummy plans rendered from `dummy/product.dummy.ts` using Nuxt UI PricingPlan(s).
+          Demo plans rendered from `demo/product.demo.ts` using Nuxt UI PricingPlan(s).
         </p>
       </div>
     </template>
@@ -19,7 +19,7 @@
 defineOptions({ name: 'DevProductPricingPlans' })
 
 import { computed } from 'vue'
-import { dummyProductList } from '../../../../../../../../dummy/product.dummy'
+import { demoProductList } from '../../../../../../../../demo/product.demo'
 import type { FirebaseProduct, Price } from '../../../models/product.model'
 
 const props = defineProps<{
@@ -43,9 +43,9 @@ const findMonthlyPrice = (prices: Price[]) =>
   )
 
 const selectedProducts = computed(() => {
-  if (!props.selectedId) return dummyProductList
-  const match = dummyProductList.filter((product) => product.id === props.selectedId)
-  return match.length ? match : dummyProductList
+  if (!props.selectedId) return demoProductList
+  const match = demoProductList.filter((product) => product.id === props.selectedId)
+  return match.length ? match : demoProductList
 })
 
 const plans = computed(() =>

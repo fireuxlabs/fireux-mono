@@ -79,7 +79,7 @@ const runtimeSnapshot = computed(() => {
   return {
     id: runtime.id.value,
     mode: runtime.mode.value,
-    isReadOnly: runtime.isReadOnly.value,
+    isDemo: runtime.isDemo.value,
     documentCollectionPath: runtime.documentCollectionPath.value,
     collectionPath: runtime.collectionPath.value,
     pending: runtime.pending.value,

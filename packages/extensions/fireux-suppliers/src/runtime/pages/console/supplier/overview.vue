@@ -39,7 +39,7 @@
               <div class="text-sm font-semibold">Workspace Summary</div>
             </template>
 
-            <div class="grid gap-3 sm:grid-cols-3">
+            <div class="grid gap-3 sm:grid-cols-4">
               <div class="space-y-1">
                 <div class="text-xs uppercase tracking-[0.16em] text-toned">Mode</div>
                 <div class="text-sm font-medium">{{ modeLabel }}</div>
@@ -54,6 +54,52 @@
                 <div class="text-xs uppercase tracking-[0.16em] text-toned">Supplier Id</div>
                 <div class="font-mono text-sm">{{ runtime.id }}</div>
               </div>
+
+              <div class="space-y-1">
+                <div class="text-xs uppercase tracking-[0.16em] text-toned">Is Premium</div>
+                <div class="text-sm font-medium">{{ isPremium ? 'true' : 'false' }}</div>
+              </div>
+            </div>
+          </UCard>
+
+          <UCard v-if="showDemoPremiumPreviewToggle">
+            <div class="flex items-center justify-between gap-4">
+              <div class="space-y-1">
+                <div class="text-sm font-semibold">Preview Premium Real Summary</div>
+                <p class="text-sm text-dimmed">
+                  Show what premium real supplier collection insights can look like.
+                </p>
+              </div>
+
+              <USwitch v-model="showPremiumPreview" />
+            </div>
+          </UCard>
+
+          <UCard v-if="showPremiumCollectionSummary">
+            <template #header>
+              <div class="text-sm font-semibold">Premium Collection Summary</div>
+            </template>
+
+            <div class="space-y-1">
+              <div class="text-xs uppercase tracking-[0.16em] text-toned">Total Suppliers</div>
+              <div class="text-sm font-medium">{{ liveSupplierCount }}</div>
+            </div>
+          </UCard>
+
+          <UCard v-else-if="showDemoPremiumCollectionPreview">
+            <template #header>
+              <div class="text-sm font-semibold">Premium Real Preview</div>
+            </template>
+
+            <div class="space-y-3">
+              <div class="space-y-1">
+                <div class="text-xs uppercase tracking-[0.16em] text-toned">Total Suppliers</div>
+                <div class="text-sm font-medium">{{ demoSupplierCount }}</div>
+              </div>
+
+              <p class="text-sm text-dimmed">
+                Preview only. Premium real mode can surface live collection summaries like this.
+              </p>
             </div>
           </UCard>
 
@@ -85,11 +131,14 @@
 
 <script setup lang="ts">
 import { useState } from '#imports'
-import { computed, watchEffect } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import type { Supplier } from '../../../models/supplier/Supplier.model'
+import { useRuntimeSupplierConsole } from '../../../composables/fireux/app/supplier-console/useRuntimeSupplierConsole'
 import { useRuntimeSupplier } from '../../../composables/fireux/app/supplier-console/useRuntimeSupplier'
 import { useRuntimeSupplierSelection } from '../../../composables/fireux/app/supplier-console/state'
+import { useSupplierCollection } from '../../../composables/fireux/firestore/supplier/fetch/useSupplierCollection'
 import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
 definePageMeta({
@@ -110,9 +159,12 @@ definePageMeta({
 const normalizeString = (value: unknown): string => String(value || '').trim()
 const stripTestSupplierSuffix = (value: unknown): string =>
   normalizeString(value).replace(/\s+test supplier$/i, '').trim()
+const { scenarios } = useRuntimeSupplierConsole()
 const runtime = useRuntimeSupplier()
 const supplierSelection = useRuntimeSupplierSelection()
 const { currentUser } = useAuth()
+const { isPremium } = useUser()
+const { coreSuppliers: liveSuppliers } = useSupplierCollection()
 const { interface: toSupplierCard } = useSupplierInterface()
 
 type SupplierPill = NonNullable<ReturnType<typeof toSupplierCard>>
@@ -159,6 +211,19 @@ const sourceLabel = computed(() => {
   if (supplierSelection.mode.value === 'test') return 'Firestore test data'
   return 'Curated demo scenario'
 })
+const showPremiumPreview = ref(false)
+const demoSupplierCount = computed(() => scenarios.value.length)
+const liveSupplierCount = computed(() => liveSuppliers.value.length)
+const showPremiumCollectionSummary = computed(() =>
+  supplierSelection.mode.value === 'live' && isPremium.value
+)
+const showDemoPremiumPreviewToggle = computed(() =>
+  supplierSelection.mode.value === 'demo' && !isPremium.value
+)
+const showDemoPremiumCollectionPreview = computed(() =>
+  supplierSelection.mode.value === 'demo' &&
+  (isPremium.value || showPremiumPreview.value)
+)
 
 const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
   'console-header-pill',

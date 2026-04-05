@@ -1,5 +1,5 @@
 import type { ComputedRef, Ref } from 'vue'
-import type { RuntimeMode } from './runtime.types'
+import type { RuntimeActivity, RuntimeMode } from './runtime.types'
 
 /**
  * FireUX Runtime Contract (Console v1)
@@ -29,7 +29,8 @@ export type RuntimeData = {
 export type RuntimeEntity<TPublic, TPrivate = never> = {
   id: ComputedRef<string>
   mode: ComputedRef<RuntimeMode>
-  isReadOnly: ComputedRef<boolean>
+  activity: ComputedRef<RuntimeActivity>
+  isDemo: ComputedRef<boolean>
   collectionPath: ComputedRef<string>
 
   pending: Ref<boolean> | ComputedRef<boolean>

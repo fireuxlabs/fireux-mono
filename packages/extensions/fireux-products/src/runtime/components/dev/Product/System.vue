@@ -1,6 +1,6 @@
 <template>
   <section class="space-y-10">
-    <DevProductDummy v-model:selected-id="selectedProductId" />
+    <DevProductDemo v-model:selected-id="selectedProductId" />
     <DevProductPricingPlans :selected-id="selectedProductId" />
 
     <UCard>
@@ -46,12 +46,12 @@ import {
   FirebaseProduct as ProductModelRuntime,
   type FirebaseProduct,
 } from '../../../models/product.model'
-import { dummyProductList } from '../../../../../../../../dummy/product.dummy'
+import { demoProductList } from '../../../../../../../../demo/product.demo'
 
 defineOptions({ name: 'DevProductSystem' })
 
 const productModelRuntime = ProductModelRuntime
-const selectedProductId = ref(dummyProductList[0]?.id ?? '')
+const selectedProductId = ref(demoProductList[0]?.id ?? '')
 
 const { products } = useProductCollection()
 

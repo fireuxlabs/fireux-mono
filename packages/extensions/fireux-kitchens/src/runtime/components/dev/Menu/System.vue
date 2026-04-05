@@ -3,7 +3,7 @@
     <UCard>
       <template #header>
         <div class="space-y-2">
-          <div class="text-sm font-semibold">Menu stack (read-only scenario)</div>
+          <div class="text-sm font-semibold">Menu stack (demo scenario)</div>
           <p class="text-xs text-gray-500 dark:text-gray-400">
             Canon kitchen scenario for ingredients, mise, recipes, dishes, and menus.
           </p>
@@ -32,26 +32,26 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { getDefaultReadOnlyKitchenScenario } from '../../../composables/fireux/app/kitchen-runtime/read-only-scenarios';
+import { getDefaultDemoKitchenScenario } from '../../../composables/fireux/app/kitchen-runtime/demo-scenarios';
 
 defineOptions({ name: 'DevMenuStackSystem' })
 
-const readOnlyKitchenScenario = getDefaultReadOnlyKitchenScenario()
+const demoKitchenScenario = getDefaultDemoKitchenScenario()
 
 const counts = computed(() => ({
-  ingredients: readOnlyKitchenScenario.globalIngredients.length,
-  mise: readOnlyKitchenScenario.menuStack.miseTasks.length,
-  recipes: readOnlyKitchenScenario.menuStack.recipes.length,
-  dishes: readOnlyKitchenScenario.menuStack.dishes.length,
-  menus: readOnlyKitchenScenario.menuStack.menus.length,
+  ingredients: demoKitchenScenario.globalIngredients.length,
+  mise: demoKitchenScenario.menuStack.miseTasks.length,
+  recipes: demoKitchenScenario.menuStack.recipes.length,
+  dishes: demoKitchenScenario.menuStack.dishes.length,
+  menus: demoKitchenScenario.menuStack.menus.length,
 }))
 
 const menuStackDevJson = computed(() => ({
-  ingredients: [...readOnlyKitchenScenario.globalIngredients],
-  mise: readOnlyKitchenScenario.menuStack.miseTasks,
-  recipes: readOnlyKitchenScenario.menuStack.recipes,
-  dishes: readOnlyKitchenScenario.menuStack.dishes,
-  menus: readOnlyKitchenScenario.menuStack.menus,
-  stations: readOnlyKitchenScenario.menuStack.stations,
+  ingredients: [...demoKitchenScenario.globalIngredients],
+  mise: demoKitchenScenario.menuStack.miseTasks,
+  recipes: demoKitchenScenario.menuStack.recipes,
+  dishes: demoKitchenScenario.menuStack.dishes,
+  menus: demoKitchenScenario.menuStack.menus,
+  stations: demoKitchenScenario.menuStack.stations,
 }))
 </script>

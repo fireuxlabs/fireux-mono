@@ -2,14 +2,14 @@
   <ConsoleEntityCTA
     title="Kitchen console"
     console-to="/console/kitchen"
-    read-only-label="Demo Kitchens"
+    demo-label="Demo Kitchens"
     learn-more-to="/kitchens/learn-more"
   >
-    <template #readOnlyNote>
+    <template #demoNote>
       <li>Uses bundled kitchen demo scenarios only.</li>
     </template>
 
-    <template #readOnly>
+    <template #demo>
       <div v-if="scenarioCards.length" class="space-y-2">
         <KitchenCardsPill
           v-for="item in scenarioCards"
@@ -43,14 +43,14 @@
 <script setup lang="ts">
 import { useRouter } from '#imports'
 import { computed } from 'vue'
-import { getReadOnlyKitchenScenarioList } from '../../../composables/fireux/app/kitchen-runtime/read-only-scenarios'
+import { getDemoKitchenScenarioList } from '../../../composables/fireux/app/kitchen-runtime/demo-scenarios'
 import { useRuntimeKitchenSelection } from '../../../composables/fireux/app/kitchen-runtime/state'
 
 const router = useRouter()
 const { setRuntimeKitchen } = useRuntimeKitchenSelection()
 
 const scenarioCards = computed(() =>
-  getReadOnlyKitchenScenarioList().map((entry) => ({
+  getDemoKitchenScenarioList().map((entry) => ({
     id: String(entry.id || '').trim(),
     title: String(entry.name || '').trim(),
     subtitle: String(entry.address_label || '').trim(),
@@ -63,7 +63,7 @@ const openScenario = async (kitchenId: string) => {
   const resolvedId = String(kitchenId || '').trim()
   if (!resolvedId) return
 
-  setRuntimeKitchen({ kitchenId: resolvedId, mode: 'read-only' })
+  setRuntimeKitchen({ kitchenId: resolvedId, mode: 'demo' })
   await router.push('/console/kitchen')
 }
 </script>

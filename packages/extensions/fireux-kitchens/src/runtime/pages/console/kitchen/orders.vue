@@ -75,7 +75,7 @@ const { orders: firestoreOrders } = useKitchenOrdersFetch(kitchenId, {
   kitchenCollectionPath: runtime.kitchenCollectionPath,
 })
 const orders = computed(() =>
-  runtime.isReadOnly.value
+  runtime.isDemo.value
     ? ((runtime.data.value.incomingOrders ?? []) as Array<Record<string, unknown>>)
     : (firestoreOrders.value as Array<Record<string, unknown>>)
 )

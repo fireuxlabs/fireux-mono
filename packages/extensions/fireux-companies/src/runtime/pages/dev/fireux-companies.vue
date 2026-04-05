@@ -9,17 +9,17 @@
       <div class="space-y-4">
         <UCard>
           <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">Dummy</div>
+            <div class="text-sm font-semibold">Demo</div>
             <UButton
               variant="ghost"
               size="xs"
-              @click="toggleSection('dummy')"
+              @click="toggleSection('demo')"
             >
-              {{ openSections.dummy ? 'Hide' : 'Show' }}
+              {{ openSections.demo ? 'Hide' : 'Show' }}
             </UButton>
           </div>
-          <div v-show="openSections.dummy" class="mt-4">
-            <DevCompanyDummy />
+          <div v-show="openSections.demo" class="mt-4">
+            <DevCompanyDemo />
           </div>
         </UCard>
 
@@ -106,7 +106,7 @@ definePageMeta({
 })
 
 const openSections = reactive({
-  dummy: false,
+  demo: false,
   model: false,
   collection: false,
 })
