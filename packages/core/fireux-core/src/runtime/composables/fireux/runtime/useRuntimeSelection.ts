@@ -24,17 +24,30 @@ export function useRuntimeSelection<TState extends Record<string, any>>(
 
   const state = useState<TState>(params.cookieKey, () => params.normalizeState(cookie.value))
 
+  const normalize = (value: unknown) => params.normalizeState(value)
+  const sameState = (left: unknown, right: unknown) =>
+    JSON.stringify(normalize(left)) === JSON.stringify(normalize(right))
+
+  // On full page reload, Nuxt can hydrate useState from a server-side cookie view that
+  // differs from the browser cookie already holding the current console selection.
+  // Rehydrate only when the normalized browser cookie and hydrated state diverge.
+  if (import.meta.client && !sameState(state.value, cookie.value)) {
+    state.value = normalize(cookie.value)
+  }
+
   // keep cookie in sync with normalized state
-  cookie.value = params.normalizeState(state.value)
+  if (!sameState(cookie.value, state.value)) {
+    cookie.value = normalize(state.value)
+  }
 
   const set = (patch: Partial<TState> = {}) => {
-    const next = params.normalizeState({ ...(state.value as any), ...(patch as any) })
+    const next = normalize({ ...(state.value as any), ...(patch as any) })
     state.value = next
     cookie.value = next
   }
 
   const clear = () => {
-    const next = params.normalizeState(params.defaultState())
+    const next = normalize(params.defaultState())
     state.value = next
     cookie.value = next
   }
