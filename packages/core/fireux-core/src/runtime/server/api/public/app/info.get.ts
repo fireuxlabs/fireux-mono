@@ -46,6 +46,7 @@ export default defineEventHandler((event: H3Event) => {
     package: pkg,
     endpoints: {
       info: '/api/public/app/info',
+      meta: '/api/public/app/meta',
       envCheck: '/api/internal/app/env-check',
     },
     now: new Date().toISOString(),

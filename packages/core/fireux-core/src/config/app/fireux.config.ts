@@ -7,6 +7,7 @@ import { setRuntime, type RuntimeAppRole } from './runtime'
 import type { FireuxSeoConfig } from './seo'
 import { configViteWorkspace } from './vite'
 import { resolveFireuxBrandAssets } from '../../utils/brandAssets'
+import type { FireuxMetaContent } from '../../runtime/models/system/meta-content.model'
 
 declare module '@nuxt/schema' {
   interface NuxtConfig {
@@ -34,6 +35,7 @@ export type FireuxAppConfig = {
   modules?: NonNullable<NuxtConfig['modules']>
   consoleFamilies?: string[]
   seo?: FireuxSeoConfig
+  meta?: FireuxMetaContent
 }
 
 function moduleName(entry: unknown): string | undefined {
@@ -238,6 +240,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     private: {
       developerPin: envPin,
       ...(app.seo ? { seo: app.seo } : {}),
+      ...(app.meta ? { meta: app.meta } : {}),
     },
   })
 

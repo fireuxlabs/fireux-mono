@@ -1,6 +1,7 @@
 // FILE: packages/core/fireux-core/config/app/runtime.ts
 import type { NuxtConfig } from '@nuxt/schema'
 import type { FireuxSeoConfig } from './seo'
+import type { FireuxMetaContent } from '../../runtime/models/system/meta-content.model'
 
 export type RuntimeAppRole = 'global' | 'tenant' | 'standalone'
 
@@ -45,6 +46,7 @@ export type RuntimeFirebaseApp = {
 export type RuntimePrivate = {
   developerPin?: string
   seo?: FireuxSeoConfig
+  meta?: FireuxMetaContent
 }
 
 export type RuntimeShape = {
