@@ -1,16 +1,18 @@
-import { addComponentsDir, type Resolver } from '@nuxt/kit'
-import { registerComponentAliases } from 'fireux-core/config/module/module-helpers'
-import { existsSync } from 'node:fs'
+import type { Resolver } from '@nuxt/kit'
+import {
+  registerComponentAliases,
+  registerComponentsDir,
+} from 'fireux-core/config/module/module-helpers'
 
 export function configureComponents(resolver: Resolver) {
-  const dir = resolver.resolve('./runtime/components')
-  if (!existsSync(dir)) return
-
-  addComponentsDir({
-    path: dir,
-    pattern: '**/*.vue',
+  registerComponentsDir(resolver, './runtime/components', {
     global: false,
     pathPrefix: true,
+  })
+
+  registerComponentsDir(resolver, './runtime/components/molecules', {
+    global: false,
+    pathPrefix: false,
   })
 
   registerComponentAliases(resolver, './runtime/components/organisms/App', 'App', {

@@ -83,8 +83,6 @@ export function registerComponentAliases(
   prefix: string,
   options: { global?: boolean } = {}
 ) {
-  if (!prefix) return null
-
   const dir = resolver.resolve(relativePath)
   if (!existsSync(dir)) return null
 
@@ -96,4 +94,19 @@ export function registerComponentAliases(
   }
 
   return dir
+}
+
+export function registerComponentAlias(
+  resolver: Resolver,
+  relativePath: string,
+  name: string,
+  options: { global?: boolean } = {}
+) {
+  if (!name) return null
+
+  const filePath = resolver.resolve(relativePath)
+  if (!existsSync(filePath)) return null
+
+  addComponent({ name, filePath, global: options.global ?? true })
+  return filePath
 }

@@ -18,7 +18,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <MoleculesSegmentedToggle
+        <SegmentedToggle
           :model-value="selectedMode"
           :options="modeOptions"
           label="Mode"
