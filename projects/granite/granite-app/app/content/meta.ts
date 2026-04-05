@@ -463,13 +463,36 @@ export const metaContent = defineFireuxMeta({
   copy: {
     big_personality: appMeta.brand.bigPersonality,
     headline: appMeta.brand.headline,
+    highlight_terms: [
+      'operating system',
+      'portfolio control',
+      'compliance exposure',
+      'financial signals',
+    ],
     positioning_html: appMeta.heroPrimaryHtml,
     promise_html: appMeta.aboutSupportingCopy,
     console_bridge_html: appMeta.consoleBridgeHtml,
     about_p1: appMeta.description,
     about_p2: appMeta.aboutSupportingCopy,
-    seo_title: appMeta.seoHome.title,
-    seo_description: appMeta.seoHome.description,
+  },
+  seo: {
+    title: appMeta.seoHome.title,
+    description: appMeta.seoHome.description,
+    keywords: [
+      'property portfolio management',
+      'landlord operations software',
+      'property compliance tracking',
+      'portfolio incident management',
+      'property finance oversight',
+      'asset management platform',
+    ],
+    audience: ['landlords', 'portfolio managers', 'property agencies'],
+    categories: [
+      'property management software',
+      'portfolio operations platform',
+      'compliance management',
+    ],
+    primary_topic: 'property portfolio management',
   },
   cta: {
     primary: {

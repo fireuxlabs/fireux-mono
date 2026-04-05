@@ -367,13 +367,36 @@ export const metaContent = defineFireuxMeta({
   copy: {
     big_personality: appMeta.brand.bigPersonality,
     headline: appMeta.brand.headline,
+    highlight_terms: [
+      'operating system',
+      'streamlined console',
+      'verified',
+      'proof',
+    ],
     positioning_html: appMeta.heroPrimaryHtml,
     promise_html: appMeta.aboutSupportingCopy,
     console_bridge_html: appMeta.consoleBridgeHtml,
     about_p1: appMeta.description,
     about_p2: appMeta.aboutSupportingCopy,
-    seo_title: appMeta.seoHome.title,
-    seo_description: appMeta.seoHome.description,
+  },
+  seo: {
+    title: appMeta.seoHome.title,
+    description: appMeta.seoHome.description,
+    keywords: [
+      'cleaning operations software',
+      'cleaning company scheduling',
+      'cleaning qa proof',
+      'cleaning service billing',
+      'recurring cleaning management',
+      'crew scheduling app',
+    ],
+    audience: ['cleaning companies', 'operations managers', 'cleaning crews'],
+    categories: [
+      'cleaning operations software',
+      'service management platform',
+      'field service workflow',
+    ],
+    primary_topic: 'cleaning operations software',
   },
   cta: {
     primary: {

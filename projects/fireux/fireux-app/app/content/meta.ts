@@ -416,13 +416,39 @@ export const metaContent = defineFireuxMeta({
   copy: {
     big_personality: appMeta.brand.bigPersonality,
     headline: appMeta.brand.headline,
+    highlight_terms: [
+      'console architecture',
+      'responsive',
+      'scalable',
+      'data-driven',
+      'Nuxt 4',
+      'Firebase',
+      'extensible core',
+    ],
     positioning_html: appMeta.heroPrimaryHtml,
     promise_html: appMeta.aboutSupportingCopy,
     console_bridge_html: appMeta.consoleBridgeHtml,
     about_p1: appMeta.description,
     about_p2: appMeta.aboutSupportingCopy,
-    seo_title: appMeta.seoHome.title,
-    seo_description: appMeta.seoHome.description,
+  },
+  seo: {
+    title: appMeta.seoHome.title,
+    description: appMeta.seoHome.description,
+    keywords: [
+      'nuxt firebase platform',
+      'low-code app ecosystem',
+      'console architecture',
+      'multi-tenant app framework',
+      'firebase app builder',
+      'nuxt 4 firebase',
+    ],
+    audience: ['developers', 'product teams', 'operators', 'founders'],
+    categories: [
+      'app platform',
+      'console architecture',
+      'firebase framework',
+    ],
+    primary_topic: 'nuxt firebase app platform',
   },
   cta: {
     primary: {

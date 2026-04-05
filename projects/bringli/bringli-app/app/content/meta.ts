@@ -368,13 +368,36 @@ export const metaContent = defineFireuxMeta({
   copy: {
     big_personality: appMeta.brand.bigPersonality,
     headline: appMeta.brand.headline,
+    highlight_terms: [
+      'operating system',
+      'simple order and drop flow',
+      'Drop',
+      'delivery execution',
+    ],
     positioning_html: appMeta.heroPrimaryHtml,
     promise_html: appMeta.aboutSupportingCopy,
     console_bridge_html: appMeta.consoleBridgeHtml,
     about_p1: appMeta.description,
     about_p2: appMeta.aboutSupportingCopy,
-    seo_title: appMeta.seoHome.title,
-    seo_description: appMeta.seoHome.description,
+  },
+  seo: {
+    title: appMeta.seoHome.title,
+    description: appMeta.seoHome.description,
+    keywords: [
+      'local producer delivery',
+      'local food delivery platform',
+      'supplier delivery marketplace',
+      'producer logistics app',
+      'local supply operations',
+      'last mile producer delivery',
+    ],
+    audience: ['local producers', 'households', 'business buyers', 'operators'],
+    categories: [
+      'local delivery platform',
+      'supplier marketplace',
+      'supply operations software',
+    ],
+    primary_topic: 'local producer delivery platform',
   },
   cta: {
     primary: {

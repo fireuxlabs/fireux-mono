@@ -367,13 +367,39 @@ export const metaContent = defineFireuxMeta({
   copy: {
     big_personality: appMeta.brand.bigPersonality,
     headline: appMeta.brand.headline,
+    highlight_terms: [
+      'trust-first hiring app',
+      'sector fit',
+      'delivery proof',
+      'case studies',
+      'discovery',
+      'profile trust',
+      'better-fit enquiries',
+    ],
     positioning_html: appMeta.heroPrimaryHtml,
     promise_html: appMeta.aboutSupportingCopy,
     console_bridge_html: appMeta.consoleBridgeHtml,
     about_p1: appMeta.description,
     about_p2: appMeta.aboutSupportingCopy,
-    seo_title: appMeta.seoHome.title,
-    seo_description: appMeta.seoHome.description,
+  },
+  seo: {
+    title: appMeta.seoHome.title,
+    description: appMeta.seoHome.description,
+    keywords: [
+      'seo hiring platform',
+      'seo consultant directory',
+      'seo agency marketplace',
+      'seo case studies',
+      'find seo specialist',
+      'seo lead generation',
+    ],
+    audience: ['business owners', 'marketing teams', 'seo buyers'],
+    categories: [
+      'seo marketplace',
+      'seo hiring platform',
+      'professional directory',
+    ],
+    primary_topic: 'seo hiring platform',
   },
   cta: {
     primary: {

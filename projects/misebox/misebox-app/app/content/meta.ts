@@ -516,13 +516,41 @@ export const metaContent = defineFireuxMeta({
   copy: {
     big_personality: appMeta.brand.bigPersonality,
     headline: appMeta.brand.headline,
+    highlight_terms: [
+      'operating system',
+      'kitchens',
+      'professionals',
+      'ops',
+      'team',
+      'service',
+      'roles',
+      'Misebox ecosystem',
+      'connected console',
+    ],
     positioning_html: appMeta.heroPrimaryHtml,
     promise_html: appMeta.aboutSupportingCopy,
     console_bridge_html: appMeta.consoleBridgeHtml,
     about_p1: appMeta.description,
     about_p2: appMeta.aboutSupportingCopy,
-    seo_title: appMeta.seoHome.title,
-    seo_description: appMeta.seoHome.description,
+  },
+  seo: {
+    title: appMeta.seoHome.title,
+    description: appMeta.seoHome.description,
+    keywords: [
+      'kitchen operations software',
+      'restaurant kitchen management',
+      'chef job platform',
+      'hospitality recruitment platform',
+      'kitchen supplier workflow',
+      'menu recipe operations',
+    ],
+    audience: ['kitchen operators', 'restaurant owners', 'chefs', 'hospitality teams'],
+    categories: [
+      'kitchen operations software',
+      'hospitality platform',
+      'restaurant recruitment',
+    ],
+    primary_topic: 'kitchen operations software',
   },
   cta: {
     primary: {

@@ -35,6 +35,9 @@ export type FireuxMetaCopy = {
   /** Secondary headline. */
   headline?: string
 
+  /** Brand/UI emphasis words or short phrases used in hero and landing surfaces. */
+  highlight_terms?: string[]
+
   /** Reusable positioning line(s) (can include HTML). */
   positioning_html?: string
   /** Reusable promise line(s) (can include HTML). */
@@ -47,10 +50,21 @@ export type FireuxMetaCopy = {
   about_p1?: string
   /** About hero paragraph 2. */
   about_p2?: string
+}
 
-  /** Optional SEO snippets. */
-  seo_title?: string
-  seo_description?: string
+export type FireuxMetaSeo = {
+  /** Primary app/home SEO title. */
+  title?: string
+  /** Primary app/home SEO description. */
+  description?: string
+  /** Structured search-intent phrases for SEO/export tooling. */
+  keywords?: string[]
+  /** Who the app is for. */
+  audience?: string[]
+  /** Product/category labels for grouping and discovery. */
+  categories?: string[]
+  /** Single main topic anchor for the app. */
+  primary_topic?: string
 }
 
 export type FireuxMetaLists = {
@@ -87,6 +101,7 @@ export type FireuxMetaRoutes = {
 export type FireuxMetaContent = {
   app: FireuxMetaAppIdentity
   copy?: FireuxMetaCopy
+  seo?: FireuxMetaSeo
 
   /**
    * Canonical CTA map used across landing/about/road-map.
