@@ -1,7 +1,7 @@
 # Pages Directory
 
 Authority: Operational
-Updated: 2026-03-30
+Updated: 2026-04-05
 Scope: `packages/*/fireux-*/src/runtime/pages` and child directories under `pages/*`.
 
 Learn how FireUX runtime pages are grouped, which create surfaces matter first, and which entity buckets are still being deferred.
@@ -187,7 +187,8 @@ Mode is now a runtime concern rather than a second page tree:
 - legacy `/demo` routes may still exist as convenience seams, but they should only set runtime mode and enter the normal console pages
 
 Main console page ownership is now read like this:
-- `Project` main console pages are core-owned
+- the shared console layout and runtime seam are core-owned
+- `Project` main console pages are app-owned
 - `Kitchen`, `Portfolio`, and `Supplier` main console pages are domain-owned
 - app and ecosystem packages may still own child pages when those are delivery-specific
 

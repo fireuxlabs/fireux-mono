@@ -1,7 +1,7 @@
 # Layouts Directory
 
-Authority: Operational  
-Updated: 2026-03-25  
+Authority: Operational
+Updated: 2026-04-05
 Scope: `packages/*/fireux-*/src/runtime/layouts` and actual runtime layout usage across `packages/` and `projects/`.
 
 This directory documents the real runtime layout system, not an abstract ideal.
@@ -111,7 +111,16 @@ Current role:
 - console shell for kitchen, portfolio, supplier, project, product, and admin console surfaces
 - entry-mode support via `route.meta.consoleEntry`
 - scoped console nav
+- generic sidebar header driven by `useRuntimeConsole()`
 - shared footer actions and notifications
+
+Current contract:
+- the layout renders one shared header pill from simple runtime data:
+  - `imageUrl`
+  - `title`
+  - `subtitle`
+- the layout does not inject family-specific pill components
+- family-specific `useRuntimeXConsole()` adapters publish header data into the shared runtime console seam
 
 Used by:
 - kitchen console

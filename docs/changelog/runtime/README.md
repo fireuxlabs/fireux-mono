@@ -1,12 +1,39 @@
 # Runtime Changelog
 Authority: Tier2 (Operational history)
-Updated: 2026-03-28
+Updated: 2026-04-05
 
 Tracks meaningful changes in the runtime branch system, especially when behavior shifts across pages, components, composables, models, and server seams.
 
 Use this together with:
 - `packages/core/fireux-docs/src/runtime/README.md`
 - sibling runtime branch READMEs under `packages/core/fireux-docs/src/runtime/*/README.md`
+
+## 2026-04-05 - Console layout now runs through one generic runtime seam
+
+Previous:
+- the console layout depended on a looser sidebar-pill contract
+- family pages and child mode components still had to push header state in multiple places
+- docs still described `Project` main console pages as core-owned
+
+Now:
+- the console layout consumes `useRuntimeConsole()` as its generic shell contract
+- the sidebar header uses one simple data shape:
+  - `imageUrl`
+  - `title`
+  - `subtitle`
+- each `useRuntimeXConsole()` family adapter projects its own selected entity into that shared contract
+- `Project` main console pages are documented as app-owned, while the shared layout/runtime seam stays in core
+
+Why:
+- keep the layout generic and small
+- stop rebuilding console-shell behavior in every family page
+- make ownership read the same way the live repo is actually structured
+
+Affected:
+- runtime layout docs
+- runtime composables docs
+- runtime pages and console-entry docs
+- family console adapters and shared console layout code
 
 ## 2026-03-28 - Console entry visibility and ownership became explicit
 

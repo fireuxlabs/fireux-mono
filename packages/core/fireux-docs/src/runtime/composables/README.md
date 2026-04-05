@@ -1,7 +1,7 @@
 # Composables Directory
 
 Authority: Operational
-Updated: 2026-03-28
+Updated: 2026-04-05
 Scope: `packages/*/fireux-*/src/runtime/composables` only.
 
 Learn how `runtime/composables/` is used across FireUX module packages.
@@ -52,6 +52,36 @@ Use:
 - `packages/core/fireux-docs/src/runtime/server/README.md`
 
 to understand the full collection-manager dev inspection path.
+
+## Current Shared Console Runtime Seam
+
+One generic console runtime seam is now real:
+
+- `packages/core/fireux-core/src/runtime/composables/fireux/runtime/useRuntimeConsole.ts`
+
+Purpose:
+
+- give the console layout one small shared contract
+- keep sidebar/header/nav state generic
+- let each `useRuntimeXConsole()` adapt its own domain state into that contract
+
+Shared shape:
+
+- active family
+- selected id
+- mode
+- mode options
+- clear selection
+- simple header data:
+  - `imageUrl`
+  - `title`
+  - `subtitle`
+
+That means:
+
+- the layout should not know project, kitchen, portfolio, or supplier internals
+- family adapters should keep domain loading and title/subtitle shaping local
+- root and overview pages should usually opt into header publishing once through their family adapter, not from child mode components
 
 ## Roadmap To Reconciliation
 

@@ -159,8 +159,9 @@ The canonical visibility rule is:
 - route presence alone does not make a family visible in a given app
 
 The canonical ownership rule is:
-- system console main pages live in core
-- domain console main pages live with their domain package
+- the shared console layout and generic runtime seam live in core
+- `Project` main console pages may live in the consuming app
+- domain console main pages live with their domain package when the domain owns the route family
 - app and ecosystem packages may still own branded child pages or delivery wrappers when needed
 
 ## Kitchen As Reference Variant

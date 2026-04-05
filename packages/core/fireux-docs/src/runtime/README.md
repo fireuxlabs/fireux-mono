@@ -1,7 +1,7 @@
 # Runtime Directory
 
 Authority: Operational
-Updated: 2026-03-30
+Updated: 2026-04-05
 Scope: `packages/*/fireux-*/src/runtime` only.
 Does not apply to consuming app `app/`, `server/`, or root `public/` directories.
 
@@ -87,7 +87,13 @@ Recent repo truth:
 - runtime drift inspection now uses a dev-only server seam for collection snapshotting
 - collection managers remain component-owned, but direct subcollection discovery is now a runtime server concern
 - console family visibility is now an app-config concern through `consoleFamilies`
-- main console page ownership is now explicit: system consoles in core, domain consoles in their domain package
+- the generic console shell now lives in the runtime seam:
+  - `useRuntimeConsole()` is the shared console-layout contract
+  - `useRuntimeXConsole()` adapts each family into that shared contract
+- main console page ownership is now explicit:
+  - the shared console layout and generic runtime seam live in core
+  - `Project` main console pages are app-owned
+  - `Kitchen`, `Portfolio`, and `Supplier` main console pages are domain-owned
 - console-backed runtime now treats `live` and `demo` as runtime modes rather than separate console architectures
 - `/console/X` is now the shared family entry seam:
   - `demo` shows demo targets
