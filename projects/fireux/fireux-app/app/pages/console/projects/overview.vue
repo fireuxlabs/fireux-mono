@@ -158,8 +158,10 @@ definePageMeta({
 })
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
+
 const stripTestProjectSuffix = (value: unknown): string =>
   normalizeString(value).replace(/\s+test project$/i, '').trim()
+
 const { scenarios } = useRuntimeProjectConsole()
 const runtime = useRuntimeProject()
 const projectSelection = useRuntimeProjectSelection()

@@ -1,5 +1,5 @@
 {
-  // tsconfig for FireUX app — do not override Nuxt aliases (~, @, ~~)
+  // App-local TypeScript config. Mirror the Nuxt app aliases explicitly for editor resolution.
   "extends": "../tsconfig.app.base.json",
   "compilerOptions": {
     "composite": false,
@@ -9,6 +9,10 @@
       "#pwa": ["@vite-pwa/nuxt/dist/runtime/composables/index"],
       "#imports": [".nuxt/imports.d.ts", "app/.nuxt/imports.d.ts", "../../../types/nuxt-shims.d.ts"],
       "#build/*": [".nuxt/*", "app/.nuxt/*"],
+      "~": ["app"],
+      "~/*": ["app/*"],
+      "@": ["app"],
+      "@/*": ["app/*"],
 
       "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
@@ -24,8 +28,6 @@
       "fireux-products/*": ["../../../packages/extensions/fireux-products/src/*"],
       "fireux-products/runtime/*": ["../../../packages/extensions/fireux-products/src/runtime/*"],
       "@fireux-products/*": ["../../../packages/extensions/fireux-products/src/*"]
-
-      // Do NOT override ~/*, @/*, ~~/* here; Nuxt sets them to srcDir (app/)
     },
     "skipLibCheck": true
   },

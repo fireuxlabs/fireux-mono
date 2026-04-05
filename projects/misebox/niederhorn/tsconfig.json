@@ -1,5 +1,5 @@
 {
-  // tsconfig for Niederhorn app — do not override Nuxt aliases (~, @, ~~)
+  // App-local TypeScript config. Mirror the Nuxt app aliases explicitly for editor resolution.
   "extends": "../tsconfig.app.base.json",
   "compilerOptions": {
     "composite": false,
@@ -9,6 +9,10 @@
       "#pwa": ["@vite-pwa/nuxt/dist/runtime/composables/index"],
       "#imports": [".nuxt/imports.d.ts", "app/.nuxt/imports.d.ts", "../../../types/nuxt-shims.d.ts"],
       "#build/*": [".nuxt/*", "app/.nuxt/*"],
+      "~": ["app"],
+      "~/*": ["app/*"],
+      "@": ["app"],
+      "@/*": ["app/*"],
       "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
       "fireux-core/runtime/*": ["../../../packages/core/fireux-core/src/runtime/*"],
@@ -27,7 +31,6 @@
       "fireux-suppliers": ["../../../packages/extensions/fireux-suppliers/src/module.ts"],
       "fireux-suppliers/*": ["../../../packages/extensions/fireux-suppliers/src/*"],
       "fireux-suppliers/runtime/*": ["../../../packages/extensions/fireux-suppliers/src/runtime/*"]
-      // Do NOT override ~/*, @/*, ~~/* here; Nuxt sets them to srcDir (app/)
     },
     "skipLibCheck": true
   },

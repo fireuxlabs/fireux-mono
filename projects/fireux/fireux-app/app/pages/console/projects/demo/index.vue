@@ -14,7 +14,6 @@ definePageMeta({
 const { setRuntimeProject } = useRuntimeProjectSelection()
 setRuntimeProject({
   mode: 'demo',
-  projectId: '',
 })
 await navigateTo('/console/projects', { replace: true })
 </script>

@@ -1,5 +1,5 @@
 {
-  // tsconfig for Richies Reinigung app — do not override Nuxt aliases (~, @, ~~)
+  // App-local TypeScript config. Mirror the Nuxt app aliases explicitly for editor resolution.
   "extends": "../tsconfig.app.base.json",
   "compilerOptions": {
     "composite": false,
@@ -8,8 +8,11 @@
     "paths": {
       "#pwa": ["@vite-pwa/nuxt/dist/runtime/composables/index"],
       "#imports": [".nuxt/imports.d.ts", "app/.nuxt/imports.d.ts"],
-      "#build/*": [".nuxt/*", "app/.nuxt/*"]
-      // Do NOT override ~/*, @/*, ~~/* here; Nuxt sets them to srcDir (app/)
+      "#build/*": [".nuxt/*", "app/.nuxt/*"],
+      "~": ["app"],
+      "~/*": ["app/*"],
+      "@": ["app"],
+      "@/*": ["app/*"]
     },
     "skipLibCheck": true
   },
