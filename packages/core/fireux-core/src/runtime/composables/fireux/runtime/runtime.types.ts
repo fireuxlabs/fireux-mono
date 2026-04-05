@@ -11,6 +11,17 @@ export type ConsoleFamily = string
 export type RuntimeMode = 'live' | 'demo' | 'test'
 export type RuntimeActivity = 'static' | 'simulation'
 
+export type RuntimeConsoleHeaderData = {
+  imageUrl?: string
+  title: string
+  subtitle?: string
+} | null
+
+export type RuntimeModeOption = {
+  value: RuntimeMode
+  label: string
+}
+
 export type RuntimeRefBase = {
   id: ComputedRef<string>
   mode: ComputedRef<RuntimeMode>
@@ -36,6 +47,17 @@ export type RuntimeSelectionApi<TState extends Record<string, any>> = {
 export type RuntimeSelectionState = {
   selectedId: string
   mode: RuntimeMode
+}
+
+export type RuntimeConsoleApi = {
+  family: ConsoleFamily
+  selectedId: ComputedRef<string>
+  mode: ComputedRef<RuntimeMode>
+  modeOptions: readonly RuntimeModeOption[]
+  hasSelection: ComputedRef<boolean>
+  header: ComputedRef<RuntimeConsoleHeaderData>
+  selectMode: (value: string) => void
+  clearSelection: () => void
 }
 
 export type RuntimeTarget = {

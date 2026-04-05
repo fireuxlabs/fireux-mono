@@ -34,7 +34,6 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimeProjectSelection } from '~/composables/console/project/state'
 import { useRuntimeProjectConsole } from '~/composables/console/project/useRuntimeProjectConsole'
 
 definePageMeta({
@@ -51,33 +50,9 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const modeOptions = [
-  { value: 'demo', label: 'Demo' },
-  { value: 'live', label: 'Real' },
-  { value: 'test', label: 'Test' },
-] as const
-
-type ConsoleMode = (typeof modeOptions)[number]['value']
-
-const { runtime } = useRuntimeProjectConsole()
-const projectSelection = useRuntimeProjectSelection()
-const selectedMode = projectSelection.mode
-
-const isConsoleMode = (value: string): value is ConsoleMode =>
-  modeOptions.some((option) => option.value === value)
-
-const selectMode = (value: string) => {
-  if (!isConsoleMode(value)) return
-
-  projectSelection.setRuntimeProject({
-    mode: value,
-  })
-}
-
-const clearSelection = () => {
-  projectSelection.setRuntimeProject({
-    selectedId: '',
-    mode: selectedMode.value,
-  })
-}
+const { runtime, console } = useRuntimeProjectConsole({ publishHeader: true })
+const selectedMode = console.mode
+const modeOptions = console.modeOptions
+const selectMode = console.selectMode
+const clearSelection = console.clearSelection
 </script>

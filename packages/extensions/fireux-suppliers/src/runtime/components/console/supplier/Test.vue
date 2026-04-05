@@ -32,8 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { useState } from '#imports'
-import { computed, ref, watch, watchEffect } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { Supplier } from '../../../models/supplier/Supplier.model'
 import { useSupplierCollection } from '../../../composables/fireux/firestore/supplier/fetch/useSupplierCollection'
@@ -44,14 +43,18 @@ import { useRuntimeSupplierConsole } from '../../../composables/fireux/app/suppl
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
 const stripTestSupplierSuffix = (value: unknown): string =>
-  normalizeString(value).replace(/\s+test supplier$/i, '').trim()
+  normalizeString(value)
+    .replace(/\s+test supplier$/i, '')
+    .trim()
 
 const { runtime } = useRuntimeSupplierConsole()
 const supplierSelection = useRuntimeSupplierSelection()
 const { uid, currentUser, isAuthenticated, hasAuthState } = useAuth()
 const { ensureSupplier } = useSupplierCreate({ test: true })
 const { interface: toSupplierCard } = useSupplierInterface()
-const { coreSuppliers: testSuppliers } = useSupplierCollection({ collectionPath: 'test-suppliers' })
+const { coreSuppliers: testSuppliers } = useSupplierCollection({
+  collectionPath: 'test-suppliers',
+})
 
 type SupplierPill = NonNullable<ReturnType<typeof toSupplierCard>>
 
@@ -76,7 +79,9 @@ const buildSupplierPill = (
 const ownedTestSuppliers = computed(() => {
   const currentUid = normalizeString(uid.value)
   if (!currentUid) return []
-  return testSuppliers.value.filter((entry) => normalizeString(entry?.id) === currentUid)
+  return testSuppliers.value.filter(
+    (entry) => normalizeString(entry?.id) === currentUid
+  )
 })
 
 const testSupplierPills = computed(() =>
@@ -85,28 +90,14 @@ const testSupplierPills = computed(() =>
     .filter((entry): entry is SupplierPill => Boolean(entry))
 )
 
-const activeSupplierPill = computed(() =>
-  testSupplierPills.value.find((item) => item.id === runtime.id.value) ??
-  buildSupplierPill(runtime.supplier.value as Supplier | null, runtime.scenario.value?.image_url)
+const activeSupplierPill = computed(
+  () =>
+    testSupplierPills.value.find((item) => item.id === runtime.id.value) ??
+    buildSupplierPill(
+      runtime.supplier.value as Supplier | null,
+      runtime.scenario.value?.image_url
+    )
 )
-
-const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
-  'console-header-pill',
-  () => null
-)
-
-watchEffect(() => {
-  consoleHeader.value = activeSupplierPill.value
-    ? {
-        component: 'SupplierCardsPill',
-        props: {
-          ...activeSupplierPill.value,
-          link: false,
-          showBadges: false,
-        },
-      }
-    : null
-})
 
 if (import.meta.client) {
   const ensuringTestSupplier = ref(false)

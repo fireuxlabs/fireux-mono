@@ -11,18 +11,16 @@
     >
       <template #header>
         <div class="px-2 py-2">
-          <component
-            :is="selectedConsole.component"
-            v-if="selectedConsole"
-            v-bind="selectedConsole.props"
+          <LayoutsConsoleHeaderPill
+            v-if="hasSelection && header"
+            :image-url="header.imageUrl"
+            :title="header.title"
+            :subtitle="header.subtitle"
           />
 
           <div v-else class="flex min-h-11 items-center px-1">
             <NuxtLink to="/" class="inline-flex" aria-label="Home">
-              <AppBrandWordmark
-                size="card"
-                alt="FireUX"
-              />
+              <AppBrandWordmark size="card" alt="FireUX" />
             </NuxtLink>
           </div>
         </div>
@@ -37,7 +35,11 @@
             orientation="vertical"
           />
 
-          <USeparator v-if="topNav.length && (middleNav.length || bottomNav.length)" />
+          <USeparator
+            v-if="
+              topNav.length && (middleNav.length || regularBottomNav.length)
+            "
+          />
 
           <UNavigationMenu
             v-if="middleNav.length"
@@ -46,7 +48,7 @@
             orientation="vertical"
           />
 
-          <USeparator v-if="middleNav.length && bottomNav.length" />
+          <USeparator v-if="middleNav.length && regularBottomNav.length" />
 
           <UNavigationMenu
             v-if="regularBottomNav.length"
@@ -57,7 +59,12 @@
 
           <div class="lg:hidden">
             <USeparator
-              v-if="topNav.length || middleNav.length || regularBottomNav.length || familyRootNav.length"
+              v-if="
+                topNav.length ||
+                middleNav.length ||
+                regularBottomNav.length ||
+                familyRootNav.length
+              "
             />
 
             <UNavigationMenu
@@ -106,51 +113,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useRoute, useState } from '#imports'
-import {
-  consoleFamilyFromPath,
-  createDefaultRuntimeSelectionState,
-  toConsoleFamilyPath,
-  toConsoleSelectionStateKey,
-} from '../composables/fireux/app/routing/consoleRoutes'
-import { useConsoleNav } from '../composables/fireux/app/routing/useConsoleNav'
-import { useNavGrouping } from '../composables/fireux/app/ui/nav/useNavGrouping'
-import { useConsoleNotifications } from '../composables/fireux/app/ui/useConsoleNotifications'
-import type { RuntimeSelectionState } from '../composables/fireux/runtime/runtime.types'
+import { useRuntimeConsole } from '../composables/fireux/runtime/useRuntimeConsole'
 
 defineOptions({ name: 'console' })
 
-const open = ref(false)
-const route = useRoute()
-const { isOpen: isNotificationsSlideoverOpen } = useConsoleNotifications()
-const { desktop } = useConsoleNav()
-const isConsoleEntryPage = computed(() => Boolean(route.meta?.consoleEntry))
-const { topNav, middleNav, bottomNav } = useNavGrouping(desktop)
-
-const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
-  'console-header-pill',
-  () => null
-)
-const activeFamily = computed(() => consoleFamilyFromPath(String(route.path || '')))
-const activeSelection = computed(() => {
-  const family = activeFamily.value
-  if (!family) return null
-  return useState<RuntimeSelectionState>(
-    toConsoleSelectionStateKey(family),
-    createDefaultRuntimeSelectionState
-  ).value
-})
-const activeFamilyPath = computed(() =>
-  activeFamily.value ? toConsoleFamilyPath(activeFamily.value) : ''
-)
-const selectedConsole = computed(() =>
-  String(activeSelection.value?.selectedId || '').trim() ? consoleHeader.value : null
-)
-const familyRootNav = computed(() =>
-  bottomNav.value.filter((item) => item.to === activeFamilyPath.value)
-)
-const regularBottomNav = computed(() =>
-  bottomNav.value.filter((item) => item.to !== activeFamilyPath.value)
-)
+const {
+  open,
+  isConsoleEntryPage,
+  isNotificationsSlideoverOpen,
+  hasSelection,
+  header,
+  topNav,
+  middleNav,
+  familyRootNav,
+  regularBottomNav,
+} = useRuntimeConsole()
 </script>

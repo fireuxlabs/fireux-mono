@@ -18,7 +18,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <SegmentedToggle
+        <MoleculesSegmentedToggle
           :model-value="selectedMode"
           :options="modeOptions"
           label="Mode"
@@ -34,7 +34,6 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
 import { useRuntimePortfolioConsole } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolioConsole'
 
 definePageMeta({
@@ -52,33 +51,9 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const modeOptions = [
-  { value: 'demo', label: 'Demo' },
-  { value: 'live', label: 'Real' },
-  { value: 'test', label: 'Test' },
-] as const
-
-const { runtime } = useRuntimePortfolioConsole()
-const portfolioSelection = useRuntimePortfolioSelection()
-const selectedMode = portfolioSelection.mode
-
-type ConsoleMode = (typeof modeOptions)[number]['value']
-
-const isConsoleMode = (value: string): value is ConsoleMode =>
-  modeOptions.some((option) => option.value === value)
-
-const selectMode = (value: string) => {
-  if (!isConsoleMode(value)) return
-
-  portfolioSelection.setRuntimePortfolio({
-    mode: value,
-  })
-}
-
-const clearSelection = () => {
-  portfolioSelection.setRuntimePortfolio({
-    selectedId: '',
-    mode: selectedMode.value,
-  })
-}
+const { runtime, console } = useRuntimePortfolioConsole({ publishHeader: true })
+const selectedMode = console.mode
+const modeOptions = console.modeOptions
+const selectMode = console.selectMode
+const clearSelection = console.clearSelection
 </script>

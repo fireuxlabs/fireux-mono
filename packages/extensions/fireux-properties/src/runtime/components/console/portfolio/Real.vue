@@ -32,8 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { useState } from '#imports'
-import { computed, watchEffect } from 'vue'
+import { computed } from 'vue'
 import type { Portfolio } from '../../../models/portfolio.model'
 import { usePortfolioCollection } from '../../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
 import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
@@ -47,7 +46,9 @@ const portfolioSelection = useRuntimePortfolioSelection()
 const { pill: toPortfolioCard } = usePortfolioInterface()
 const { collection: livePortfolios } = usePortfolioCollection()
 
-type PortfolioPill = NonNullable<ReturnType<typeof toPortfolioCard>> & { imageUrl?: string }
+type PortfolioPill = NonNullable<ReturnType<typeof toPortfolioCard>> & {
+  imageUrl?: string
+}
 
 const buildPortfolioPill = (
   target?: Portfolio | null,
@@ -67,28 +68,11 @@ const livePortfolioPills = computed(() =>
     .filter((entry): entry is PortfolioPill => Boolean(entry))
 )
 
-const activePortfolioPill = computed(() =>
-  livePortfolioPills.value.find((item) => item.id === runtime.id.value) ??
-  buildPortfolioPill(runtime.portfolio.value as Portfolio | null)
+const activePortfolioPill = computed(
+  () =>
+    livePortfolioPills.value.find((item) => item.id === runtime.id.value) ??
+    buildPortfolioPill(runtime.portfolio.value as Portfolio | null)
 )
-
-const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
-  'console-header-pill',
-  () => null
-)
-
-watchEffect(() => {
-  consoleHeader.value = activePortfolioPill.value
-    ? {
-        component: 'PortfolioCardsPill',
-        props: {
-          ...activePortfolioPill.value,
-          link: false,
-          showBadges: false,
-        },
-      }
-    : null
-})
 
 const selectPortfolio = (portfolioId: string) => {
   const resolvedId = normalizeString(portfolioId)

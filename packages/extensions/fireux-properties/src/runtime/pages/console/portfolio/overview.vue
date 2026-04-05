@@ -34,8 +34,8 @@
             </UBadge>
           </div>
 
-          <ConsolePortfolioOverviewDemo v-if="portfolioSelection.mode.value === 'demo'" />
-          <ConsolePortfolioOverviewReal v-else-if="portfolioSelection.mode.value === 'live'" />
+          <ConsolePortfolioOverviewDemo v-if="runtimeMode === 'demo'" />
+          <ConsolePortfolioOverviewReal v-else-if="runtimeMode === 'live'" />
           <ConsolePortfolioOverviewTest v-else />
 
           <UCard>
@@ -44,19 +44,44 @@
             </template>
 
             <div class="flex flex-wrap gap-2">
-              <UButton to="/console/portfolio/properties" color="neutral" variant="soft" icon="i-lucide-building">
+              <UButton
+                to="/console/portfolio/properties"
+                color="neutral"
+                variant="soft"
+                icon="i-lucide-building"
+              >
                 Properties
               </UButton>
-              <UButton to="/console/portfolio/clients" color="neutral" variant="soft" icon="i-lucide-users">
+              <UButton
+                to="/console/portfolio/clients"
+                color="neutral"
+                variant="soft"
+                icon="i-lucide-users"
+              >
                 Clients
               </UButton>
-              <UButton to="/console/portfolio/incidents" color="neutral" variant="soft" icon="i-lucide-triangle-alert">
+              <UButton
+                to="/console/portfolio/incidents"
+                color="neutral"
+                variant="soft"
+                icon="i-lucide-triangle-alert"
+              >
                 Incidents
               </UButton>
-              <UButton to="/console/portfolio/finance" color="neutral" variant="soft" icon="i-lucide-wallet">
+              <UButton
+                to="/console/portfolio/finance"
+                color="neutral"
+                variant="soft"
+                icon="i-lucide-wallet"
+              >
                 Finance
               </UButton>
-              <UButton to="/console/portfolio" color="neutral" variant="ghost" icon="i-lucide-refresh-cw">
+              <UButton
+                to="/console/portfolio"
+                color="neutral"
+                variant="ghost"
+                icon="i-lucide-refresh-cw"
+              >
                 Switch portfolio
               </UButton>
             </div>
@@ -68,13 +93,8 @@
 </template>
 
 <script setup lang="ts">
-import { useState } from '#imports'
-import { computed, watchEffect } from 'vue'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import type { Portfolio } from '../../../models/portfolio.model'
-import { useRuntimePortfolio } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
-import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
-import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
+import { computed } from 'vue'
+import { useRuntimePortfolioConsole } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolioConsole'
 
 definePageMeta({
   layout: 'console',
@@ -91,65 +111,14 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const normalizeString = (value: unknown): string => String(value || '').trim()
-const stripTestPortfolioSuffix = (value: unknown): string =>
-  normalizeString(value).replace(/\s+test portfolio$/i, '').trim()
-
-const runtime = useRuntimePortfolio()
-const portfolioSelection = useRuntimePortfolioSelection()
-const { currentUser } = useAuth()
-const { pill: toPortfolioCard } = usePortfolioInterface()
-
-type PortfolioPill = NonNullable<ReturnType<typeof toPortfolioCard>> & { imageUrl?: string }
-
-const buildPortfolioPill = (
-  target?: Portfolio | null,
-  imageUrl?: unknown
-): PortfolioPill | null => {
-  const pill = toPortfolioCard(target as Portfolio | null)
-  if (!pill) return null
-
-  return {
-    ...pill,
-    imageUrl: normalizeString(imageUrl) || pill.avatarUrl,
-    title:
-      portfolioSelection.mode.value === 'test'
-        ? normalizeString(currentUser.value?.displayName) ||
-          stripTestPortfolioSuffix(target?.name) ||
-          'Your'
-        : pill.title,
-    subtitle: portfolioSelection.mode.value === 'test' ? 'Test Portfolio' : pill.subtitle,
-  }
-}
-
-const activePortfolioPill = computed(() =>
-  buildPortfolioPill(
-    runtime.portfolio.value as Portfolio | null,
-    runtime.scenario.value?.manager.avatar_url
-  )
-)
+const { runtime, console, activePortfolioPill } = useRuntimePortfolioConsole({
+  publishHeader: true,
+})
+const runtimeMode = console.mode
 
 const modeLabel = computed(() => {
-  if (portfolioSelection.mode.value === 'live') return 'Real'
-  if (portfolioSelection.mode.value === 'test') return 'Test'
+  if (runtimeMode.value === 'live') return 'Real'
+  if (runtimeMode.value === 'test') return 'Test'
   return 'Demo'
-})
-
-const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
-  'console-header-pill',
-  () => null
-)
-
-watchEffect(() => {
-  consoleHeader.value = activePortfolioPill.value
-    ? {
-        component: 'PortfolioCardsPill',
-        props: {
-          ...activePortfolioPill.value,
-          link: false,
-          showBadges: false,
-        },
-      }
-    : null
 })
 </script>

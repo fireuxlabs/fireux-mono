@@ -32,8 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { useState } from '#imports'
-import { computed, watchEffect } from 'vue'
+import { computed } from 'vue'
 import type { Portfolio } from '../../../models/portfolio.model'
 import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
 import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
@@ -45,7 +44,9 @@ const { runtime, scenarios } = useRuntimePortfolioConsole()
 const portfolioSelection = useRuntimePortfolioSelection()
 const { pill: toPortfolioCard } = usePortfolioInterface()
 
-type PortfolioPill = NonNullable<ReturnType<typeof toPortfolioCard>> & { imageUrl?: string }
+type PortfolioPill = NonNullable<ReturnType<typeof toPortfolioCard>> & {
+  imageUrl?: string
+}
 
 const buildPortfolioPill = (
   target?: Portfolio | null,
@@ -61,35 +62,20 @@ const buildPortfolioPill = (
 
 const demoPortfolioPills = computed(() =>
   scenarios.value
-    .map((entry) => buildPortfolioPill(entry.portfolio as Portfolio, entry.manager.avatar_url))
+    .map((entry) =>
+      buildPortfolioPill(entry.portfolio as Portfolio, entry.manager.avatar_url)
+    )
     .filter((entry): entry is PortfolioPill => Boolean(entry))
 )
 
-const activePortfolioPill = computed(() =>
-  demoPortfolioPills.value.find((item) => item.id === runtime.id.value) ??
-  buildPortfolioPill(
-    runtime.portfolio.value as Portfolio | null,
-    runtime.scenario.value?.manager.avatar_url
-  )
+const activePortfolioPill = computed(
+  () =>
+    demoPortfolioPills.value.find((item) => item.id === runtime.id.value) ??
+    buildPortfolioPill(
+      runtime.portfolio.value as Portfolio | null,
+      runtime.scenario.value?.manager.avatar_url
+    )
 )
-
-const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
-  'console-header-pill',
-  () => null
-)
-
-watchEffect(() => {
-  consoleHeader.value = activePortfolioPill.value
-    ? {
-        component: 'PortfolioCardsPill',
-        props: {
-          ...activePortfolioPill.value,
-          link: false,
-          showBadges: false,
-        },
-      }
-    : null
-})
 
 const selectPortfolio = (portfolioId: string) => {
   const resolvedId = normalizeString(portfolioId)

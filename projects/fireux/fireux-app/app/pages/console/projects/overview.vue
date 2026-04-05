@@ -34,8 +34,8 @@
             </UBadge>
           </div>
 
-          <ConsoleProjectOverviewDemo v-if="projectSelection.mode.value === 'demo'" />
-          <ConsoleProjectOverviewReal v-else-if="projectSelection.mode.value === 'live'" />
+          <ConsoleProjectOverviewDemo v-if="runtimeMode === 'demo'" />
+          <ConsoleProjectOverviewReal v-else-if="runtimeMode === 'live'" />
           <ConsoleProjectOverviewTest v-else />
 
           <UCard>
@@ -44,7 +44,12 @@
             </template>
 
             <div class="flex flex-wrap gap-2">
-              <UButton to="/console/projects/apps" color="neutral" variant="soft" icon="i-lucide-app-window">
+              <UButton
+                to="/console/projects/apps"
+                color="neutral"
+                variant="soft"
+                icon="i-lucide-app-window"
+              >
                 Apps
               </UButton>
               <UButton
@@ -55,7 +60,12 @@
               >
                 Ecosystem
               </UButton>
-              <UButton to="/console/projects" color="neutral" variant="ghost" icon="i-lucide-refresh-cw">
+              <UButton
+                to="/console/projects"
+                color="neutral"
+                variant="ghost"
+                icon="i-lucide-refresh-cw"
+              >
                 Switch project
               </UButton>
             </div>
@@ -67,13 +77,8 @@
 </template>
 
 <script setup lang="ts">
-import { useState } from '#imports'
-import { computed, watchEffect } from 'vue'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useProjectInterface } from 'fireux-core/runtime/composables/fireux/firestore/system/project/utils/view/useProjectInterface'
-import type { Project } from 'fireux-core/runtime/models/system/project.model'
-import { useRuntimeProjectSelection } from '~/composables/console/project/state'
-import { useRuntimeProject } from '~/composables/console/project/useRuntimeProject'
+import { computed } from 'vue'
+import { useRuntimeProjectConsole } from '~/composables/console/project/useRuntimeProjectConsole'
 
 definePageMeta({
   layout: 'console',
@@ -89,71 +94,14 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const normalizeString = (value: unknown): string => String(value || '').trim()
-const stripTestProjectSuffix = (value: unknown): string =>
-  normalizeString(value).replace(/\s+test project$/i, '').trim()
-
-const runtime = useRuntimeProject()
-const projectSelection = useRuntimeProjectSelection()
-const { currentUser: authUser } = useAuth()
-const { interface: toProjectCard } = useProjectInterface()
-
-type ProjectPill = NonNullable<ReturnType<typeof toProjectCard>>
-
-const buildProjectPill = (
-  target?: Project | null,
-  imageUrl?: unknown,
-  id?: unknown
-): ProjectPill | null => {
-  const pill = toProjectCard({
-    ...(target ?? {}),
-    id: normalizeString(id) || normalizeString(target?.id),
-  } as Project)
-
-  if (!pill) return null
-
-  return {
-    ...pill,
-    imageUrl: normalizeString(imageUrl) || pill.imageUrl,
-    title:
-      projectSelection.mode.value === 'test'
-        ? normalizeString(authUser.value?.displayName) ||
-          stripTestProjectSuffix(target?.name) ||
-          'Your'
-        : pill.title,
-    subtitle: projectSelection.mode.value === 'test' ? 'Test Project' : pill.subtitle,
-  }
-}
-
-const activeProjectPill = computed(() =>
-  buildProjectPill(
-    runtime.project.value as Project | null,
-    runtime.scenario.value?.image_url,
-    runtime.id.value
-  )
-)
+const { runtime, console, activeProjectPill } = useRuntimeProjectConsole({
+  publishHeader: true,
+})
+const runtimeMode = console.mode
 
 const modeLabel = computed(() => {
-  if (projectSelection.mode.value === 'live') return 'Real'
-  if (projectSelection.mode.value === 'test') return 'Test'
+  if (runtimeMode.value === 'live') return 'Real'
+  if (runtimeMode.value === 'test') return 'Test'
   return 'Demo'
-})
-
-const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
-  'console-header-pill',
-  () => null
-)
-
-watchEffect(() => {
-  consoleHeader.value = activeProjectPill.value
-    ? {
-        component: 'ProjectCardsPill',
-        props: {
-          ...activeProjectPill.value,
-          link: false,
-          showBadges: false,
-        },
-      }
-    : null
 })
 </script>

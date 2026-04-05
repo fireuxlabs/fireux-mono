@@ -32,8 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { useState } from '#imports'
-import { computed, watchEffect } from 'vue'
+import { computed } from 'vue'
 import type { Kitchen } from '../../../models/kitchen.model'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { useRuntimeKitchenSelection } from '../../../composables/fireux/app/kitchen-runtime/state'
@@ -58,28 +57,11 @@ const liveKitchenPills = computed(() =>
     .filter((entry): entry is KitchenPill => Boolean(entry))
 )
 
-const activeKitchenPill = computed(() =>
-  liveKitchenPills.value.find((item) => item.id === runtime.id.value) ??
-  buildKitchenPill(runtime.kitchen.value as Kitchen | null)
+const activeKitchenPill = computed(
+  () =>
+    liveKitchenPills.value.find((item) => item.id === runtime.id.value) ??
+    buildKitchenPill(runtime.kitchen.value as Kitchen | null)
 )
-
-const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
-  'console-header-pill',
-  () => null
-)
-
-watchEffect(() => {
-  consoleHeader.value = activeKitchenPill.value
-    ? {
-        component: 'KitchenCardsPill',
-        props: {
-          ...activeKitchenPill.value,
-          link: false,
-          showBadges: false,
-        },
-      }
-    : null
-})
 
 const selectKitchen = (kitchenId: string) => {
   const resolvedId = String(kitchenId || '').trim()

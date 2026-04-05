@@ -34,8 +34,8 @@
             </UBadge>
           </div>
 
-          <ConsoleKitchenOverviewDemo v-if="kitchenSelection.mode.value === 'demo'" />
-          <ConsoleKitchenOverviewReal v-else-if="kitchenSelection.mode.value === 'live'" />
+          <ConsoleKitchenOverviewDemo v-if="runtimeMode === 'demo'" />
+          <ConsoleKitchenOverviewReal v-else-if="runtimeMode === 'live'" />
           <ConsoleKitchenOverviewTest v-else />
 
           <UCard>
@@ -44,22 +44,52 @@
             </template>
 
             <div class="flex flex-wrap gap-2">
-              <UButton to="/console/kitchen/menu" color="neutral" variant="soft" icon="i-lucide-book-open">
+              <UButton
+                to="/console/kitchen/menu"
+                color="neutral"
+                variant="soft"
+                icon="i-lucide-book-open"
+              >
                 Menu
               </UButton>
-              <UButton to="/console/kitchen/recipes" color="neutral" variant="soft" icon="i-lucide-notebook-pen">
+              <UButton
+                to="/console/kitchen/recipes"
+                color="neutral"
+                variant="soft"
+                icon="i-lucide-notebook-pen"
+              >
                 Recipes
               </UButton>
-              <UButton to="/console/kitchen/ingredients" color="neutral" variant="soft" icon="i-lucide-carrot">
+              <UButton
+                to="/console/kitchen/ingredients"
+                color="neutral"
+                variant="soft"
+                icon="i-lucide-carrot"
+              >
                 Ingredients
               </UButton>
-              <UButton to="/console/kitchen/orders" color="neutral" variant="soft" icon="i-lucide-clipboard-list">
+              <UButton
+                to="/console/kitchen/orders"
+                color="neutral"
+                variant="soft"
+                icon="i-lucide-clipboard-list"
+              >
                 Orders
               </UButton>
-              <UButton to="/console/kitchen/team" color="neutral" variant="soft" icon="i-lucide-users">
+              <UButton
+                to="/console/kitchen/team"
+                color="neutral"
+                variant="soft"
+                icon="i-lucide-users"
+              >
                 Team
               </UButton>
-              <UButton to="/console/kitchen" color="neutral" variant="ghost" icon="i-lucide-refresh-cw">
+              <UButton
+                to="/console/kitchen"
+                color="neutral"
+                variant="ghost"
+                icon="i-lucide-refresh-cw"
+              >
                 Switch kitchen
               </UButton>
             </div>
@@ -71,14 +101,8 @@
 </template>
 
 <script setup lang="ts">
-import { useState } from '#imports'
-import { computed, watchEffect } from 'vue'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import type { Kitchen } from '../../../models/kitchen.model'
-import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
-import { useRuntimeKitchenSelection } from '../../../composables/fireux/app/kitchen-runtime/state'
-import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
+import { computed } from 'vue'
+import { useRuntimeKitchenConsole } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchenConsole'
 
 definePageMeta({
   layout: 'console',
@@ -95,51 +119,14 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const runtime = useRuntimeKitchen()
-const kitchenSelection = useRuntimeKitchenSelection()
-const { currentUser } = useAuth()
-const { interface: toKitchenCard } = useKitchenInterface()
-
-const stripTestKitchenSuffix = (value: unknown): string =>
-  String(value || '').trim().replace(/\s+test kitchen$/i, '').trim()
-
-const activeKitchenPill = computed(() => {
-  const pill = toKitchenCard(runtime.kitchen.value as Kitchen | null)
-  if (!pill) return null
-
-  return {
-    ...pill,
-    title:
-      kitchenSelection.mode.value === 'test'
-        ? String(currentUser.value?.displayName || '').trim() ||
-          stripTestKitchenSuffix(runtime.kitchen.value?.name) ||
-          'Your'
-        : pill.title,
-    subtitle: kitchenSelection.mode.value === 'test' ? 'Test Kitchen' : pill.subtitle,
-  }
+const { runtime, console, activeKitchenPill } = useRuntimeKitchenConsole({
+  publishHeader: true,
 })
+const runtimeMode = console.mode
 
 const modeLabel = computed(() => {
-  if (kitchenSelection.mode.value === 'live') return 'Real'
-  if (kitchenSelection.mode.value === 'test') return 'Test'
+  if (runtimeMode.value === 'live') return 'Real'
+  if (runtimeMode.value === 'test') return 'Test'
   return 'Demo'
-})
-
-const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
-  'console-header-pill',
-  () => null
-)
-
-watchEffect(() => {
-  consoleHeader.value = activeKitchenPill.value
-    ? {
-        component: 'KitchenCardsPill',
-        props: {
-          ...activeKitchenPill.value,
-          link: false,
-          showBadges: false,
-        },
-      }
-    : null
 })
 </script>

@@ -18,7 +18,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <SegmentedToggle
+        <MoleculesSegmentedToggle
           :model-value="selectedMode"
           :options="modeOptions"
           label="Mode"
@@ -34,7 +34,6 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimeSupplierSelection } from '../../../composables/fireux/app/supplier-console/state'
 import { useRuntimeSupplierConsole } from '../../../composables/fireux/app/supplier-console/useRuntimeSupplierConsole'
 
 definePageMeta({
@@ -52,33 +51,9 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const modeOptions = [
-  { value: 'demo', label: 'Demo' },
-  { value: 'live', label: 'Real' },
-  { value: 'test', label: 'Test' },
-] as const
-
-const { runtime } = useRuntimeSupplierConsole()
-const supplierSelection = useRuntimeSupplierSelection()
-const selectedMode = supplierSelection.mode
-
-type ConsoleMode = (typeof modeOptions)[number]['value']
-
-const isConsoleMode = (value: string): value is ConsoleMode =>
-  modeOptions.some((option) => option.value === value)
-
-const selectMode = (value: string) => {
-  if (!isConsoleMode(value)) return
-
-  supplierSelection.setRuntimeSupplier({
-    mode: value,
-  })
-}
-
-const clearSelection = () => {
-  supplierSelection.setRuntimeSupplier({
-    selectedId: '',
-    mode: selectedMode.value,
-  })
-}
+const { runtime, console } = useRuntimeSupplierConsole({ publishHeader: true })
+const selectedMode = console.mode
+const modeOptions = console.modeOptions
+const selectMode = console.selectMode
+const clearSelection = console.clearSelection
 </script>

@@ -32,8 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { useState } from '#imports'
-import { computed, watchEffect } from 'vue'
+import { computed } from 'vue'
 import type { Supplier } from '../../../models/supplier/Supplier.model'
 import { useRuntimeSupplierSelection } from '../../../composables/fireux/app/supplier-console/state'
 import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
@@ -61,32 +60,20 @@ const buildSupplierPill = (
 
 const demoSupplierPills = computed(() =>
   scenarios.value
-    .map((entry) => buildSupplierPill(entry.supplier as Supplier, entry.image_url))
+    .map((entry) =>
+      buildSupplierPill(entry.supplier as Supplier, entry.image_url)
+    )
     .filter((entry): entry is SupplierPill => Boolean(entry))
 )
 
-const activeSupplierPill = computed(() =>
-  demoSupplierPills.value.find((item) => item.id === runtime.id.value) ??
-  buildSupplierPill(runtime.supplier.value as Supplier | null, runtime.scenario.value?.image_url)
+const activeSupplierPill = computed(
+  () =>
+    demoSupplierPills.value.find((item) => item.id === runtime.id.value) ??
+    buildSupplierPill(
+      runtime.supplier.value as Supplier | null,
+      runtime.scenario.value?.image_url
+    )
 )
-
-const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
-  'console-header-pill',
-  () => null
-)
-
-watchEffect(() => {
-  consoleHeader.value = activeSupplierPill.value
-    ? {
-        component: 'SupplierCardsPill',
-        props: {
-          ...activeSupplierPill.value,
-          link: false,
-          showBadges: false,
-        },
-      }
-    : null
-})
 
 const selectSupplier = (supplierId: string) => {
   const resolvedId = normalizeString(supplierId)

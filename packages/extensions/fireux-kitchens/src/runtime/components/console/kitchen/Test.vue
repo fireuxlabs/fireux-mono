@@ -32,8 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { useState } from '#imports'
-import { computed, ref, watch, watchEffect } from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { Kitchen } from '../../../models/kitchen.model'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
@@ -47,12 +46,17 @@ const kitchenSelection = useRuntimeKitchenSelection()
 const { uid, currentUser, isAuthenticated, hasAuthState } = useAuth()
 const { ensureKitchen } = useKitchenCreate({ test: true, ensurePlace: false })
 const { interface: toKitchenCard } = useKitchenInterface()
-const { kitchens: testKitchens } = useKitchenFetch({ collectionPath: 'test-kitchens' })
+const { kitchens: testKitchens } = useKitchenFetch({
+  collectionPath: 'test-kitchens',
+})
 
 type KitchenPill = NonNullable<ReturnType<typeof toKitchenCard>>
 
 const stripTestKitchenSuffix = (value: unknown): string =>
-  String(value || '').trim().replace(/\s+test kitchen$/i, '').trim()
+  String(value || '')
+    .trim()
+    .replace(/\s+test kitchen$/i, '')
+    .trim()
 
 const buildKitchenPill = (target?: Kitchen | null): KitchenPill | null => {
   const pill = toKitchenCard(target as Kitchen | null)
@@ -70,7 +74,9 @@ const buildKitchenPill = (target?: Kitchen | null): KitchenPill | null => {
 const ownedTestKitchens = computed(() => {
   const currentUid = String(uid.value || '').trim()
   if (!currentUid) return []
-  return testKitchens.value.filter((entry) => String(entry?.id || '').trim() === currentUid)
+  return testKitchens.value.filter(
+    (entry) => String(entry?.id || '').trim() === currentUid
+  )
 })
 
 const testKitchenPills = computed(() =>
@@ -79,28 +85,11 @@ const testKitchenPills = computed(() =>
     .filter((entry): entry is KitchenPill => Boolean(entry))
 )
 
-const activeKitchenPill = computed(() =>
-  testKitchenPills.value.find((item) => item.id === runtime.id.value) ??
-  buildKitchenPill(runtime.kitchen.value as Kitchen | null)
+const activeKitchenPill = computed(
+  () =>
+    testKitchenPills.value.find((item) => item.id === runtime.id.value) ??
+    buildKitchenPill(runtime.kitchen.value as Kitchen | null)
 )
-
-const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
-  'console-header-pill',
-  () => null
-)
-
-watchEffect(() => {
-  consoleHeader.value = activeKitchenPill.value
-    ? {
-        component: 'KitchenCardsPill',
-        props: {
-          ...activeKitchenPill.value,
-          link: false,
-          showBadges: false,
-        },
-      }
-    : null
-})
 
 if (import.meta.client) {
   const ensuringTestKitchen = ref(false)

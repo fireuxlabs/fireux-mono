@@ -32,8 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { useState } from '#imports'
-import { computed, ref, watch, watchEffect } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { Portfolio } from '../../../models/portfolio.model'
 import { usePortfolioCollection } from '../../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
@@ -44,16 +43,22 @@ import { useRuntimePortfolioConsole } from '../../../composables/fireux/app/port
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
 const stripTestPortfolioSuffix = (value: unknown): string =>
-  normalizeString(value).replace(/\s+test portfolio$/i, '').trim()
+  normalizeString(value)
+    .replace(/\s+test portfolio$/i, '')
+    .trim()
 
 const { runtime } = useRuntimePortfolioConsole()
 const portfolioSelection = useRuntimePortfolioSelection()
 const { uid, currentUser, isAuthenticated, hasAuthState } = useAuth()
 const { ensurePortfolio } = usePortfolioCreate({ test: true })
 const { pill: toPortfolioCard } = usePortfolioInterface()
-const { collection: testPortfolios } = usePortfolioCollection({ collectionPath: 'test-portfolios' })
+const { collection: testPortfolios } = usePortfolioCollection({
+  collectionPath: 'test-portfolios',
+})
 
-type PortfolioPill = NonNullable<ReturnType<typeof toPortfolioCard>> & { imageUrl?: string }
+type PortfolioPill = NonNullable<ReturnType<typeof toPortfolioCard>> & {
+  imageUrl?: string
+}
 
 const buildPortfolioPill = (
   target?: Portfolio | null,
@@ -75,7 +80,9 @@ const buildPortfolioPill = (
 const ownedTestPortfolios = computed(() => {
   const currentUid = normalizeString(uid.value)
   if (!currentUid) return []
-  return testPortfolios.value.filter((entry) => normalizeString(entry?.id) === currentUid)
+  return testPortfolios.value.filter(
+    (entry) => normalizeString(entry?.id) === currentUid
+  )
 })
 
 const testPortfolioPills = computed(() =>
@@ -84,28 +91,11 @@ const testPortfolioPills = computed(() =>
     .filter((entry): entry is PortfolioPill => Boolean(entry))
 )
 
-const activePortfolioPill = computed(() =>
-  testPortfolioPills.value.find((item) => item.id === runtime.id.value) ??
-  buildPortfolioPill(runtime.portfolio.value as Portfolio | null)
+const activePortfolioPill = computed(
+  () =>
+    testPortfolioPills.value.find((item) => item.id === runtime.id.value) ??
+    buildPortfolioPill(runtime.portfolio.value as Portfolio | null)
 )
-
-const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
-  'console-header-pill',
-  () => null
-)
-
-watchEffect(() => {
-  consoleHeader.value = activePortfolioPill.value
-    ? {
-        component: 'PortfolioCardsPill',
-        props: {
-          ...activePortfolioPill.value,
-          link: false,
-          showBadges: false,
-        },
-      }
-    : null
-})
 
 if (import.meta.client) {
   const ensuringTestPortfolio = ref(false)
@@ -121,7 +111,8 @@ if (import.meta.client) {
 
       ensuringTestPortfolio.value = true
       try {
-        const ownerName = normalizeString(currentUser.value?.displayName) || 'Your'
+        const ownerName =
+          normalizeString(currentUser.value?.displayName) || 'Your'
         await ensurePortfolio(
           {
             name: `${ownerName} Test Portfolio`,

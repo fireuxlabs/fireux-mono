@@ -34,8 +34,8 @@
             </UBadge>
           </div>
 
-          <ConsoleSupplierOverviewDemo v-if="supplierSelection.mode.value === 'demo'" />
-          <ConsoleSupplierOverviewReal v-else-if="supplierSelection.mode.value === 'live'" />
+          <ConsoleSupplierOverviewDemo v-if="runtimeMode === 'demo'" />
+          <ConsoleSupplierOverviewReal v-else-if="runtimeMode === 'live'" />
           <ConsoleSupplierOverviewTest v-else />
 
           <UCard>
@@ -53,7 +53,12 @@
               >
                 Open public supplier
               </UButton>
-              <UButton to="/console/supplier" color="neutral" variant="ghost" icon="i-lucide-refresh-cw">
+              <UButton
+                to="/console/supplier"
+                color="neutral"
+                variant="ghost"
+                icon="i-lucide-refresh-cw"
+              >
                 Switch supplier
               </UButton>
             </div>
@@ -65,13 +70,8 @@
 </template>
 
 <script setup lang="ts">
-import { useState } from '#imports'
-import { computed, watchEffect } from 'vue'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import type { Supplier } from '../../../models/supplier/Supplier.model'
-import { useRuntimeSupplier } from '../../../composables/fireux/app/supplier-console/useRuntimeSupplier'
-import { useRuntimeSupplierSelection } from '../../../composables/fireux/app/supplier-console/state'
-import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
+import { computed } from 'vue'
+import { useRuntimeSupplierConsole } from '../../../composables/fireux/app/supplier-console/useRuntimeSupplierConsole'
 
 definePageMeta({
   layout: 'console',
@@ -88,63 +88,14 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const normalizeString = (value: unknown): string => String(value || '').trim()
-const stripTestSupplierSuffix = (value: unknown): string =>
-  normalizeString(value).replace(/\s+test supplier$/i, '').trim()
-
-const runtime = useRuntimeSupplier()
-const supplierSelection = useRuntimeSupplierSelection()
-const { currentUser } = useAuth()
-const { interface: toSupplierCard } = useSupplierInterface()
-
-type SupplierPill = NonNullable<ReturnType<typeof toSupplierCard>>
-
-const buildSupplierPill = (
-  target?: Supplier | null,
-  imageUrl?: unknown
-): SupplierPill | null => {
-  const pill = toSupplierCard(target as Supplier | null)
-  if (!pill) return null
-
-  return {
-    ...pill,
-    avatarUrl: normalizeString(imageUrl) || pill.avatarUrl,
-    title:
-      supplierSelection.mode.value === 'test'
-        ? normalizeString(currentUser.value?.displayName) ||
-          stripTestSupplierSuffix(target?.supplier_organization_name) ||
-          stripTestSupplierSuffix((target as any)?.name) ||
-          'Your'
-        : pill.title,
-    subtitle: supplierSelection.mode.value === 'test' ? 'Test Supplier' : pill.subtitle,
-  }
-}
-
-const activeSupplierPill = computed(() =>
-  buildSupplierPill(runtime.supplier.value as Supplier | null, runtime.scenario.value?.image_url)
-)
+const { runtime, console, activeSupplierPill } = useRuntimeSupplierConsole({
+  publishHeader: true,
+})
+const runtimeMode = console.mode
 
 const modeLabel = computed(() => {
-  if (supplierSelection.mode.value === 'live') return 'Real'
-  if (supplierSelection.mode.value === 'test') return 'Test'
+  if (runtimeMode.value === 'live') return 'Real'
+  if (runtimeMode.value === 'test') return 'Test'
   return 'Demo'
-})
-
-const consoleHeader = useState<{ component: string; props: Record<string, unknown> } | null>(
-  'console-header-pill',
-  () => null
-)
-
-watchEffect(() => {
-  consoleHeader.value = activeSupplierPill.value
-    ? {
-        component: 'SupplierCardsPill',
-        props: {
-          ...activeSupplierPill.value,
-          link: false,
-          showBadges: false,
-        },
-      }
-    : null
 })
 </script>

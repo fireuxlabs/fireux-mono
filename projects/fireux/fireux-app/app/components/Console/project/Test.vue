@@ -61,7 +61,9 @@ import { useRuntimeProjectConsole } from '~/composables/console/project/useRunti
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
 const stripTestProjectSuffix = (value: unknown): string =>
-  normalizeString(value).replace(/\s+test project$/i, '').trim()
+  normalizeString(value)
+    .replace(/\s+test project$/i, '')
+    .trim()
 
 const { runtime } = useRuntimeProjectConsole()
 const projectSelection = useRuntimeProjectSelection()
@@ -111,7 +113,8 @@ const ownedTestProjects = computed<ProjectInterfaceInput[]>(() => {
   if (!currentUid) return []
 
   return testProjects.value.filter(
-    (entry) => normalizeString((entry as Record<string, unknown>)?.id) === currentUid
+    (entry) =>
+      normalizeString((entry as Record<string, unknown>)?.id) === currentUid
   ) as ProjectInterfaceInput[]
 })
 

@@ -1,4 +1,7 @@
-import type { ConsoleFamily, RuntimeSelectionState } from '../../runtime/runtime.types'
+import type {
+  ConsoleFamily,
+  RuntimeSelectionState,
+} from '../../runtime/runtime.types'
 
 export const CONSOLE_ROOT = '/console'
 
@@ -10,7 +13,9 @@ export function createDefaultRuntimeSelectionState(): RuntimeSelectionState {
 }
 
 export function normalizeConsoleFamily(value: unknown): ConsoleFamily | '' {
-  return String(value || '').trim().toLowerCase()
+  return String(value || '')
+    .trim()
+    .toLowerCase()
 }
 
 export function consoleFamilyFromPath(path: string): ConsoleFamily | '' {
@@ -31,4 +36,8 @@ export function toConsoleFamilyLabel(key: ConsoleFamily | string) {
 
 export function toConsoleSelectionStateKey(family: ConsoleFamily | string) {
   return `fireux_runtime_${normalizeConsoleFamily(family)}`
+}
+
+export function toConsoleHeaderStateKey(family: ConsoleFamily | string) {
+  return `${toConsoleSelectionStateKey(family)}_header`
 }
