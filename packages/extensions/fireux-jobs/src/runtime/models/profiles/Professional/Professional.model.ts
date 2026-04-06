@@ -56,6 +56,10 @@ export type Professional = {
   [K in keyof typeof ProfessionalModel]: (typeof ProfessionalModel)[K]
 }
 
+// Compatibility aliases retained while call sites are still being migrated.
+export const ProfessionalCore = ProfessionalModel
+export type ProfessionalCore = Professional
+
 export const AppProfessionalModel = {
   id: '',
   created: {
@@ -71,6 +75,10 @@ export const AppProfessionalModel = {
 export type AppProfessional = {
   [K in keyof typeof AppProfessionalModel]: (typeof AppProfessionalModel)[K]
 }
+
+// Compatibility aliases retained while call sites are still being migrated.
+export const ProfessionalApp = AppProfessionalModel
+export type ProfessionalApp = AppProfessional
 
 export type ProfessionalCreateInput = Omit<Professional, 'id' | 'created' | 'updated'>
 export type ProfessionalUpdateInput = Partial<Omit<Professional, 'id' | 'created' | 'updated'>>
