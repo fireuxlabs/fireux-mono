@@ -2,7 +2,6 @@
 import type { NuxtConfig } from '@nuxt/schema'
 import type { FireuxSeoConfig } from './seo'
 import type { FireuxMetaContent } from '../../runtime/models/system/meta-content.model'
-import type { FireuxPublicContentBootstrap } from '../../runtime/models/system/public-app-content.model'
 
 export type RuntimeAppRole = 'global' | 'tenant' | 'standalone'
 
@@ -48,7 +47,6 @@ export type RuntimePrivate = {
   developerPin?: string
   seo?: FireuxSeoConfig
   meta?: FireuxMetaContent
-  publicContent?: FireuxPublicContentBootstrap
 }
 
 export type RuntimeShape = {

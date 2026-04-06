@@ -8,7 +8,6 @@ import type { FireuxSeoConfig } from './seo'
 import { configViteWorkspace } from './vite'
 import { resolveFireuxBrandAssets } from '../../utils/brandAssets'
 import type { FireuxMetaContent } from '../../runtime/models/system/meta-content.model'
-import type { FireuxPublicContentBootstrap } from '../../runtime/models/system/public-app-content.model'
 
 declare module '@nuxt/schema' {
   interface NuxtConfig {
@@ -37,7 +36,6 @@ export type FireuxAppConfig = {
   consoleFamilies?: string[]
   seo?: FireuxSeoConfig
   meta?: FireuxMetaContent
-  publicContent?: FireuxPublicContentBootstrap
 }
 
 function moduleName(entry: unknown): string | undefined {
@@ -243,7 +241,6 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       developerPin: envPin,
       ...(app.seo ? { seo: app.seo } : {}),
       ...(app.meta ? { meta: app.meta } : {}),
-      ...(app.publicContent ? { publicContent: app.publicContent } : {}),
     },
   })
 
