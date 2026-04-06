@@ -2,7 +2,7 @@
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import type { FireuxStamped } from './meta.model'
-import type { AppRole, AppSocialLinks } from './supporting/app'
+import type { AppDerived, AppMedia, AppRole, AppSocialLinks } from './supporting/app'
 
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
@@ -19,6 +19,14 @@ import type { AppRole, AppSocialLinks } from './supporting/app'
  */
 
 export type AppStatus = 'draft' | 'active' | 'paused' | 'archived'
+
+type WidenLiteral<T> =
+  T extends string ? string
+  : T extends number ? number
+  : T extends boolean ? boolean
+  : T extends readonly (infer U)[] ? WidenLiteral<U>[]
+  : T extends Record<string, unknown> ? { [K in keyof T]: WidenLiteral<T[K]> }
+  : T
 
 export const AppModel = {
   id: '',
@@ -44,20 +52,20 @@ export const AppModel = {
   social_links: {} as AppSocialLinks,
   derived: {
     user_count: 0,
-  },
+  } as AppDerived,
   media: {
     thumbnail_url: '',
     logo_url: '',
     wordmark_light_url: '',
     wordmark_dark_url: '',
     cover_url: '',
-  },
+  } as AppMedia,
 
   // Governance + runtime flags
-  join_requests: [],
-  admin_ids: [],
+  join_requests: [] as string[],
+  admin_ids: [] as string[],
   moderation_state: '',
-  ban_reasons: [],
+  ban_reasons: [] as string[],
   console_enabled: true,
 
   created: {
@@ -71,9 +79,8 @@ export const AppModel = {
   },
 } as const
 
-export type App = {
-  [K in keyof typeof AppModel]: (typeof AppModel)[K]
-}
+export type AppModel = WidenLiteral<typeof AppModel>
+export type App = AppModel
 
 export type AppCreateInput = Omit<App, 'id' | 'created' | 'updated'>
 export type AppUpdateInput = Partial<Omit<App, 'id' | 'created' | 'updated'>>

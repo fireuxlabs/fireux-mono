@@ -58,6 +58,9 @@ export const demoAppList: App[] = [
       github: '',
       twitter: '',
       linkedin: 'https://linkedin.com/company/rank-lens-demo',
+      facebook: '',
+      youtube: '',
+      email: '',
     },
     derived: {
       user_count: 6,
@@ -72,9 +75,11 @@ export const demoAppList: App[] = [
     created: {
       at: ts(1761565481, 831000000),
       by: 'uid_demo_northstar_admin',
+      app_id: 'rank-lens',
     },
     updated: {
       at: ts(1770309146, 296000000),
+      by: 'uid_demo_northstar_admin',
     },
   }),
   makeApp({
@@ -104,9 +109,11 @@ export const demoAppList: App[] = [
     created: {
       at: ts(1762777006, 64000000),
       by: 'uid_demo_harbor_admin',
+      app_id: 'line-pass',
     },
     updated: {
       at: ts(1767606233, 131000000),
+      by: 'uid_demo_harbor_admin',
     },
   }),
   makeApp({
@@ -128,6 +135,9 @@ export const demoAppList: App[] = [
       github: '',
       twitter: '',
       linkedin: '',
+      facebook: '',
+      youtube: '',
+      email: '',
     },
     derived: {
       user_count: 4,
@@ -142,9 +152,11 @@ export const demoAppList: App[] = [
     created: {
       at: ts(1761379153, 222000000),
       by: 'uid_demo_cedar_admin',
+      app_id: 'site-ledger',
     },
     updated: {
       at: ts(1767563278, 742000000),
+      by: 'uid_demo_cedar_admin',
     },
   }),
 ]
