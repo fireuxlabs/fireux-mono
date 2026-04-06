@@ -14,10 +14,10 @@
       />
 
       <div class="min-w-0 flex-1 space-y-1">
-        <p class="truncate text-sm font-medium text-highlighted">
+        <p class="truncate text-sm font-medium text-default">
           {{ title }}
         </p>
-        <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
+        <p v-if="showSubtitle && subtitle" class="truncate text-xs text-dimmed">
           {{ subtitle }}
         </p>
         <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
@@ -44,10 +44,10 @@
       />
 
       <div class="min-w-0 flex-1 space-y-1">
-        <p class="truncate text-sm font-medium text-highlighted">
+        <p class="truncate text-sm font-medium text-default">
           {{ title }}
         </p>
-        <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
+        <p v-if="showSubtitle && subtitle" class="truncate text-xs text-dimmed">
           {{ subtitle }}
         </p>
         <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">

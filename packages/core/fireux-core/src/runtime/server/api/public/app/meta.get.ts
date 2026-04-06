@@ -2,6 +2,7 @@ import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import type { FireuxMetaContent } from '../../../../models/system/meta-content.model'
+import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value)
@@ -51,10 +52,17 @@ function toAbsoluteUrl(input: unknown, siteOrigin?: string): string | undefined 
   return undefined
 }
 
-export default defineEventHandler((event: H3Event) => {
+export default defineEventHandler(async (event: H3Event) => {
   const cfg = useFireUXConfig()
   const runtimeConfig = useRuntimeConfig()
   const meta = runtimeConfig.fireux?.meta
+  const appDoc = await getRuntimeFirestore()
+    .collection('apps')
+    .doc(cfg.appId)
+    .get()
+    .catch(() => null)
+  const appData = appDoc?.exists ? (appDoc.data() as Record<string, unknown>) : {}
+  const media = isRecord(appData.media) ? appData.media : {}
   const siteOrigin =
     normalizeSiteUrl(runtimeConfig.public?.fireux?.siteUrl) ||
     normalizeSiteUrl(cfg.siteUrl) ||
@@ -62,7 +70,10 @@ export default defineEventHandler((event: H3Event) => {
       (runtimeConfig.public?.fireux as Record<string, unknown> | undefined)?.domain
     )
   const socialImageUrl =
-    toAbsoluteUrl(cfg.appThumbnail, siteOrigin) || toAbsoluteUrl(cfg.appLogo, siteOrigin)
+    toAbsoluteUrl(media.thumbnail_url, siteOrigin) ||
+    toAbsoluteUrl(media.logo_url, siteOrigin) ||
+    toAbsoluteUrl(cfg.appThumbnail, siteOrigin) ||
+    toAbsoluteUrl(cfg.appLogo, siteOrigin)
 
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',

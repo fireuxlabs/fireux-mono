@@ -2,11 +2,9 @@
   <NuxtLink
     v-if="link && to"
     :to="to"
-    class="block w-full"
+    class="card card--cell"
   >
-    <div
-      class="flex w-full items-start gap-3 rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800/60 dark:bg-gray-900/40"
-    >
+    <div class="card__media">
       <UAvatar
         :src="imageUrl || undefined"
         :alt="title"
@@ -16,16 +14,16 @@
         class="shrink-0"
       />
 
-      <div class="min-w-0 flex-1 space-y-1">
-        <div class="flex items-start justify-between gap-2">
+      <div class="card__content card__stack">
+        <div class="card__header">
           <div class="min-w-0">
-            <div class="truncate text-sm font-semibold">{{ title }}</div>
-            <div v-if="showSubtitle && subtitle" class="truncate text-xs text-dimmed">
+            <div class="card__title">{{ title }}</div>
+            <div v-if="showSubtitle && subtitle" class="card__subtitle">
               {{ subtitle }}
             </div>
           </div>
 
-          <div v-if="showBadges && badges.length" class="flex shrink-0 flex-wrap items-center gap-1">
+          <div v-if="showBadges && badges.length" class="card__badges">
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -38,7 +36,7 @@
           </div>
         </div>
 
-        <div v-if="showMeta" class="truncate text-xs text-dimmed">
+        <div v-if="showMeta" class="card__tagline">
           <span v-if="meta">{{ meta }}</span>
           <span v-else class="italic">missing</span>
         </div>
@@ -48,12 +46,10 @@
 
   <div
     v-else
-    class="block w-full"
+    class="card card--cell"
     @click="onClick"
   >
-    <div
-      class="flex w-full items-start gap-3 rounded-lg border border-gray-200/60 bg-white/70 p-3 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800/60 dark:bg-gray-900/40"
-    >
+    <div class="card__media">
       <UAvatar
         :src="imageUrl || undefined"
         :alt="title"
@@ -63,16 +59,16 @@
         class="shrink-0"
       />
 
-      <div class="min-w-0 flex-1 space-y-1">
-        <div class="flex items-start justify-between gap-2">
+      <div class="card__content card__stack">
+        <div class="card__header">
           <div class="min-w-0">
-            <div class="truncate text-sm font-semibold">{{ title }}</div>
-            <div v-if="showSubtitle && subtitle" class="truncate text-xs text-dimmed">
+            <div class="card__title">{{ title }}</div>
+            <div v-if="showSubtitle && subtitle" class="card__subtitle">
               {{ subtitle }}
             </div>
           </div>
 
-          <div v-if="showBadges && badges.length" class="flex shrink-0 flex-wrap items-center gap-1">
+          <div v-if="showBadges && badges.length" class="card__badges">
             <UBadge
               v-for="badge in badges"
               :key="badge"
@@ -85,7 +81,7 @@
           </div>
         </div>
 
-        <div v-if="showMeta" class="truncate text-xs text-dimmed">
+        <div v-if="showMeta" class="card__tagline">
           <span v-if="meta">{{ meta }}</span>
           <span v-else class="italic">missing</span>
         </div>

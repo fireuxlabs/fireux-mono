@@ -20,11 +20,25 @@ type FireuxConsoleApp = {
   name: string
   slug: string
   ecosystem_id: string
+  website: string
+  image_url: string
+  logo_url: string
+  thumbnail_url: string
 }
 
 type FireuxConsoleDatabase = {
   name: string
   apps: FireuxConsoleApp[]
+}
+
+type FireuxConsoleEcosystem = {
+  id: string
+  name: string
+  slug: string
+  description: string
+  team: string
+  status: string
+  apps: string[]
 }
 
 type FireuxConsoleProjectControl = {
@@ -181,7 +195,48 @@ async function listDatabaseApps(databaseId: string) {
         name: firstString(data, ['app_name', 'name', 'app_short_name']),
         slug: firstString(data, ['slug']),
         ecosystem_id: firstString(data, ['ecosystem_id', 'ecosystem']),
+        website:
+          firstString(data, ['source_url', 'site_url', 'app_url', 'url']) ||
+          readNestedString(data, [['social_links', 'website']]),
+        image_url:
+          firstString(data, ['image_url', 'logo_url', 'icon_url']) ||
+          readNestedString(data, [
+            ['media', 'logo_url'],
+            ['media', 'thumbnail_url'],
+            ['media', 'cover_url'],
+            ['media', 'wordmark_light_url'],
+            ['media', 'wordmark_dark_url'],
+          ]),
+        logo_url:
+          firstString(data, ['logo_url']) ||
+          readNestedString(data, [['media', 'logo_url']]),
+        thumbnail_url:
+          firstString(data, ['thumbnail_url']) ||
+          readNestedString(data, [['media', 'thumbnail_url']]),
       }
+    })
+    .sort((a, b) => a.id.localeCompare(b.id))
+}
+
+async function listEcosystems() {
+  const db = getFirestore(getAdminApp())
+  const snapshot = await db.collection('ecosystems').get()
+
+  return snapshot.docs
+    .map((doc) => {
+      const data = doc.data() as Record<string, unknown>
+
+      return {
+        id: doc.id,
+        name: firstString(data, ['name']),
+        slug: firstString(data, ['slug']),
+        description: firstString(data, ['description']),
+        team: firstString(data, ['team']),
+        status: firstString(data, ['status']),
+        apps: Array.isArray(data.apps)
+          ? data.apps.map((entry) => normalizeString(entry)).filter(Boolean)
+          : [],
+      } satisfies FireuxConsoleEcosystem
     })
     .sort((a, b) => a.id.localeCompare(b.id))
 }
@@ -277,6 +332,7 @@ export async function buildFireuxConsoleResponse(firebaseProjectId: string) {
   }
 
   const control = await readProjectControl(projectId)
+  const ecosystems = await listEcosystems()
   const databaseNames = await listFirestoreDatabaseNames(projectId)
   const databases: FireuxConsoleDatabase[] = []
 
@@ -312,6 +368,7 @@ export async function buildFireuxConsoleResponse(firebaseProjectId: string) {
       main_ecosystem_id: control.main_ecosystem_id,
     },
     project_meta,
+    ecosystems,
     ecosystem_apps,
     databases,
   }

@@ -1,6 +1,7 @@
 import { useRuntimeConfig } from '#imports'
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
+import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
 
 function asString(value: unknown): string {
   return typeof value === 'string' ? value.trim() : ''
@@ -62,17 +63,33 @@ function labelize(input: string): string {
     .join(' ')
 }
 
-export default defineEventHandler((event: H3Event) => {
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {}
+}
+
+export default defineEventHandler(async (event: H3Event) => {
   const cfg = useFireUXConfig()
   const runtime = useRuntimeConfig()
+  const appDoc = await getRuntimeFirestore()
+    .collection('apps')
+    .doc(cfg.appId)
+    .get()
+    .catch(() => null)
+  const appData = appDoc?.exists ? asRecord(appDoc.data()) : {}
+  const media = asRecord(appData.media)
   const siteOrigin =
     normalizeSiteUrl(runtime.public?.fireux?.siteUrl) ||
     normalizeSiteUrl(cfg.siteUrl) ||
     normalizeSiteUrl((runtime.public?.fireux as Record<string, unknown> | undefined)?.domain)
   const ecosystemSlug = toSlug(cfg.ecosystem)
   const appSlug = appSlugFromId(cfg.appId)
-  const logoUrl = toAbsoluteUrl(cfg.appLogo, siteOrigin)
-  const thumbnailUrl = toAbsoluteUrl(cfg.appThumbnail, siteOrigin)
+  const logoUrl =
+    toAbsoluteUrl(media.logo_url, siteOrigin) || toAbsoluteUrl(cfg.appLogo, siteOrigin)
+  const thumbnailUrl =
+    toAbsoluteUrl(media.thumbnail_url, siteOrigin) ||
+    toAbsoluteUrl(cfg.appThumbnail, siteOrigin)
   const ecosystemName =
     cfg.isGlobal && appSlug === ecosystemSlug
       ? cfg.appName

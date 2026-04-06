@@ -171,15 +171,16 @@
 	border-radius: 0.75rem;
 	padding: 0.75rem;
 	border: 1px solid var(--ui-border);
+	background: var(--ui-bg);
 	transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease,
 		transform 160ms ease;
 }
 
 :where(.card.card--cell:hover, .fx-card--cell:hover) {
 	background: var(--ui-bg-muted);
-	border-color: color-mix(in srgb, var(--ui-border) 60%, var(--ui-primary) 40%);
-	box-shadow: 0 10px 24px rgba(15, 23, 42, 0.16);
-	transform: translateY(-1px);
+	border-color: var(--ui-border);
+	box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+	transform: none;
 }
 
 :where(.card__media, .fx-card__media) {
