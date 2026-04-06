@@ -1,29 +1,90 @@
+import { useRuntimeConfig } from '#imports'
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 
-type PackageInfo = {
-  name?: string
-  version?: string
+function asString(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : ''
 }
 
-function readPackageInfo(): PackageInfo {
+function normalizeSiteUrl(input: unknown): string | undefined {
+  const raw = asString(input)
+  if (!raw) return undefined
+
+  const withProtocol = /^https?:\/\//i.test(raw)
+    ? raw
+    : `${isLocalHost(raw) ? 'http' : 'https'}://${raw}`
+
   try {
-    const raw = readFileSync(join(process.cwd(), 'package.json'), 'utf8')
-    const parsed = JSON.parse(raw) as { name?: unknown; version?: unknown }
-    return {
-      name: typeof parsed.name === 'string' ? parsed.name : undefined,
-      version: typeof parsed.version === 'string' ? parsed.version : undefined,
-    }
+    return new URL(withProtocol).origin
   } catch {
-    return {}
+    return undefined
   }
+}
+
+function isLocalHost(value: string): boolean {
+  const host = value.replace(/^https?:\/\//i, '').split('/')[0].toLowerCase()
+  return (
+    host === 'localhost' ||
+    host.startsWith('localhost:') ||
+    host === '127.0.0.1' ||
+    host.startsWith('127.0.0.1:')
+  )
+}
+
+function toAbsoluteUrl(input: unknown, siteOrigin?: string): string | undefined {
+  const value = asString(input)
+  if (!value) return undefined
+  if (/^https?:\/\//i.test(value)) return value
+  if (value.startsWith('/') && siteOrigin) return `${siteOrigin}${value}`
+  return undefined
+}
+
+function toSlug(input: string): string {
+  return asString(input)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
+function appSlugFromId(appId: string): string {
+  return toSlug(appId.replace(/-app$/i, ''))
+}
+
+function ecosystemIdFromSlug(slug: string): string {
+  return slug.startsWith('fireux-') ? slug : `fireux-${slug}`
+}
+
+function labelize(input: string): string {
+  return asString(input)
+    .split(/[-_]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
 }
 
 export default defineEventHandler((event: H3Event) => {
   const cfg = useFireUXConfig()
-  const pkg = readPackageInfo()
+  const runtime = useRuntimeConfig()
+  const siteOrigin =
+    normalizeSiteUrl(runtime.public?.fireux?.siteUrl) ||
+    normalizeSiteUrl(cfg.siteUrl) ||
+    normalizeSiteUrl((runtime.public?.fireux as Record<string, unknown> | undefined)?.domain)
+  const ecosystemSlug = toSlug(cfg.ecosystem)
+  const appSlug = appSlugFromId(cfg.appId)
+  const logoUrl = toAbsoluteUrl(cfg.appLogo, siteOrigin)
+  const thumbnailUrl = toAbsoluteUrl(cfg.appThumbnail, siteOrigin)
+  const ecosystemName =
+    cfg.isGlobal && appSlug === ecosystemSlug
+      ? cfg.appName
+      : labelize(ecosystemSlug) || cfg.ecosystem
+  const parentApp =
+    cfg.isTenant && cfg.globalAppId
+      ? {
+          id: cfg.globalAppId,
+          slug: appSlugFromId(cfg.globalAppId),
+          name: labelize(cfg.globalAppId.replace(/-app$/i, '')) || cfg.globalAppId,
+        }
+      : undefined
 
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
@@ -33,21 +94,25 @@ export default defineEventHandler((event: H3Event) => {
 
   return {
     ok: true,
+    ecosystem: {
+      id: ecosystemIdFromSlug(ecosystemSlug),
+      slug: ecosystemSlug,
+      name: ecosystemName,
+    },
     app: {
       id: cfg.appId,
+      slug: appSlug,
       name: cfg.appName,
-      shortName: cfg.appShortName,
-      ecosystem: cfg.ecosystem,
-      role: cfg.role,
-      modules: cfg.modules,
-      logo: cfg.appLogo || cfg.appThumbnail,
-      appThumbnail: cfg.appThumbnail,
-    },
-    package: pkg,
-    endpoints: {
-      info: '/api/public/app/info',
-      meta: '/api/public/app/meta',
-      envCheck: '/api/internal/app/env-check',
+      short_name: cfg.appShortName,
+      ...(logoUrl || thumbnailUrl
+        ? {
+            media: {
+              ...(logoUrl ? { logo_url: logoUrl } : {}),
+              ...(thumbnailUrl ? { thumbnail_url: thumbnailUrl } : {}),
+            },
+          }
+        : {}),
+      ...(parentApp ? { parent_app: parentApp } : {}),
     },
     now: new Date().toISOString(),
   }
