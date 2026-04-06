@@ -13,7 +13,7 @@
 </template>
 <script setup lang="ts">
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useRuntimePortfolio } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import { useRuntimePortfolio } from '../../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
 const runtime = useRuntimePortfolio()
 const { isPremium } = useUser()
 </script>
