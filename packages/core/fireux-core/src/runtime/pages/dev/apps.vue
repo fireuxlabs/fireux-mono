@@ -59,7 +59,7 @@ import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useAppCollection } from '../../composables/fireux/firestore/core/app/fetch/useAppCollection'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
-import { AppCore as AppModelRuntime } from '../../models/core/app.model'
+import { AppModel as AppModelRuntime } from '../../models/core/app.model'
 
 definePageMeta({
   layout: 'dev',

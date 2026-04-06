@@ -3,13 +3,13 @@
 //
 // FILE: demo/app.demo.ts
 
-import { AppCore as AppModelRuntime, type AppModel } from 'fireux-core/runtime/models/core/app.model'
+import { AppModel as AppModelRuntime, type App } from 'fireux-core/runtime/models/core/app.model'
 import { createEmptyAppSocialLinks } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/factories/createEmptyAppSocialLinks'
 
 const ts = (seconds: number, nanoseconds = 0) =>
   ({ seconds, nanoseconds } as any)
 
-function makeApp(partial: Partial<AppModel>): AppModel {
+function makeApp(partial: Partial<App>): App {
   return {
     ...AppModelRuntime,
     ...partial,
@@ -38,7 +38,7 @@ function makeApp(partial: Partial<AppModel>): AppModel {
   }
 }
 
-export const demoAppList: AppModel[] = [
+export const demoAppList: App[] = [
   makeApp({
     id: 'rank-lens',
     app_name: 'Rank Lens',
