@@ -1,9 +1,9 @@
 import { arrayUnion, doc, getDoc, serverTimestamp } from 'firebase/firestore'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
-    createProfileAppSeed,
-    createProfileCoreSeed,
-    type ProfileConfig,
+  createAppProfileSeed,
+  createProfileSeed,
+  type ProfileConfig,
 } from '../../../../../../models/core/profile.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useFirestoreManager } from '../../../operations/useFirestoreManager'
@@ -34,7 +34,7 @@ export function useProfileEnsure(config: ProfileConfig) {
     const coreRef = doc(db, config.collectionName, uid)
     const coreSnapshot = await getDoc(coreRef)
     if (!coreSnapshot.exists()) {
-      const seed = createProfileCoreSeed()
+      const seed = createProfileSeed()
       await setDocument(config.collectionName, uid, {
         title: seed.title,
         subtitle: seed.subtitle,
@@ -63,7 +63,7 @@ export function useProfileEnsure(config: ProfileConfig) {
       const appRef = doc(db, 'apps', appId, config.collectionName, uid)
       const appSnapshot = await getDoc(appRef)
       if (!appSnapshot.exists()) {
-        const seed = createProfileAppSeed()
+        const seed = createAppProfileSeed()
         await setDocument(appCollection, uid, {
           created: seed.created,
           updated: seed.updated,
