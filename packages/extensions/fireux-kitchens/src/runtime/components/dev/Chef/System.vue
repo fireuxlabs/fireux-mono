@@ -82,11 +82,11 @@ import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDri
 import { computed } from 'vue'
 import { useChefFetch } from '../../../composables/fireux/firestore/profiles/Chef/main/useChefFetch'
 import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
-import { ChefCore as ChefCoreModelRuntime } from '../../../models/profiles/Chef/Chef.model'
+import { ChefModel as ChefModelRuntime } from '../../../models/profiles/Chef/Chef.model'
 
 defineOptions({ name: 'DevChefSystem' })
 
-const chefCoreModelRuntime = ChefCoreModelRuntime
+const chefCoreModelRuntime = ChefModelRuntime
 
 const { coreChefs, appChefs, pending } = useChefFetch()
 const { interface: makeChefCard } = useChefInterface()

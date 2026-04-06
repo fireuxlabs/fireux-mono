@@ -1,6 +1,7 @@
 import { defineNuxtConfig } from 'nuxt/config'
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 import { metaContent } from './app/content/meta'
+import { fireuxPublicContentBootstrap } from './app/content/public-content.bootstrap'
 
 const fireuxConfig = defineFireuxConfig({
   ecosystem: 'fireux',
@@ -8,6 +9,7 @@ const fireuxConfig = defineFireuxConfig({
   name: 'FireUX',
   shortName: 'FireUX',
   meta: metaContent,
+  publicContent: fireuxPublicContentBootstrap,
   role: 'global',
   consoleFamilies: ['projects'],
   modules: [

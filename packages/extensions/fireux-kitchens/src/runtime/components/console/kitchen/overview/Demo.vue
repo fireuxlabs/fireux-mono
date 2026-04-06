@@ -27,8 +27,8 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
-import { useRuntimeKitchenConsole } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchenConsole'
+import { useRuntimeKitchen } from '../../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
+import { useRuntimeKitchenConsole } from '../../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchenConsole'
 const runtime = useRuntimeKitchen()
 const { scenarios } = useRuntimeKitchenConsole()
 const { isPremium } = useUser()

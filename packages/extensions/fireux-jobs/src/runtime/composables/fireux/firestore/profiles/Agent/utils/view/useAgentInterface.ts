@@ -10,13 +10,13 @@ import {
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
-import type { AgentCore } from 'fireux-jobs/runtime/models/profiles/Agent/Agent.model'
+import type { Agent } from 'fireux-jobs/runtime/models/profiles/Agent/Agent.model'
 import type { Ref } from 'vue'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &
   Partial<Pick<User, 'id' | 'handle' | 'email'>>
 
-type AgentTarget = AgentCore & { user?: UserLike | null }
+type AgentTarget = Agent & { user?: UserLike | null }
 
 export namespace AgentCard {
   export type Card = {
@@ -47,7 +47,7 @@ export namespace AgentCard {
 }
 
 export function useAgentInterface(
-  profile?: ProfileRefs<AgentCore> | null,
+  profile?: ProfileRefs<Agent> | null,
   userRef?: Ref<User | null | undefined>
 ) {
   type AgentPill = AgentCard.Card
@@ -73,7 +73,7 @@ export function useAgentInterface(
     return userRef?.value ?? null
   }
 
-  function map(p: AgentCore, u?: UserLike | null): AgentCard.Card {
+  function map(p: Agent, u?: UserLike | null): AgentCard.Card {
     const id =
       safeString((p as any).id).trim() ||
       safeString((p as any).owner_uid).trim() ||
@@ -82,7 +82,7 @@ export function useAgentInterface(
     const summary = resolveProfileSummary([p.summary, p.agent_bio])
     const placementTypes = resolveProfileBadges([p.agent_placement_types, p.tags])
     const profileImage = resolveProfileImage([
-      (p as AgentCore & { image?: string }).image,
+      (p as Agent & { image?: string }).image,
       p.agent_image,
     ])
     const userAvatar = resolveUserAvatar(u)

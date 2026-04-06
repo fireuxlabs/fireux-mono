@@ -9,7 +9,7 @@ import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { AgentApp, AgentCore } from '../../../../../../models/profiles/Agent/Agent.model'
+import type { AppAgent, Agent } from '../../../../../../models/profiles/Agent/Agent.model'
 import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
 
 export function useAgentCreate() {
@@ -49,9 +49,9 @@ export function useAgentCreate() {
         contact_email: '',
         contact_phone: '',
         website_url: '',
-      } satisfies Omit<AgentCore, 'created' | 'updated' | 'id'>
+      } satisfies Omit<Agent, 'created' | 'updated' | 'id'>
 
-      await setDocument<AgentCore>(agentConfig.collectionName, uid, payload as AgentCore, {
+      await setDocument<Agent>(agentConfig.collectionName, uid, payload as Agent, {
         creator: true,
       })
       createdCore = true
@@ -62,9 +62,9 @@ export function useAgentCreate() {
       const appRef = doc(db, 'apps', appId, agentConfig.collectionName, uid)
       const appSnap = await getDoc(appRef)
       if (!appSnap.exists()) {
-        const payload = {} satisfies Omit<AgentApp, 'created' | 'updated' | 'id'>
+        const payload = {} satisfies Omit<AppAgent, 'created' | 'updated' | 'id'>
 
-        await setDocument<AgentApp>(appCollection, uid, payload as AgentApp, {
+        await setDocument<AppAgent>(appCollection, uid, payload as AppAgent, {
           creator: true,
         })
         createdApp = true

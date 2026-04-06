@@ -62,9 +62,9 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
 import { useAgentInterface } from '../../../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface';
-import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model';
+import type { Agent } from '../../../../../models/profiles/Agent/Agent.model';
 
-type AgentEntry = AgentCore & { user?: unknown }
+type AgentEntry = Agent & { user?: unknown }
 
 const props = withDefaults(
   defineProps<{

@@ -2,12 +2,12 @@ import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/fir
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import { computed } from 'vue'
 import { chefConfig } from '../config/chefConfig'
-import type { ChefCore } from '../../../../../../models/profiles/Chef/Chef.model'
+import type { Chef } from '../../../../../../models/profiles/Chef/Chef.model'
 
 // Hydrated (user-attached) chef profiles for UI use.
 export function useChefFetch() {
   const { globalProfilesWithUser, localProfilesWithUser } =
-    useProfileCollection<ChefCore>(chefConfig)
+    useProfileCollection<Chef>(chefConfig)
 
   const coreChefsHydrated = globalProfilesWithUser
   const appChefsHydrated = localProfilesWithUser

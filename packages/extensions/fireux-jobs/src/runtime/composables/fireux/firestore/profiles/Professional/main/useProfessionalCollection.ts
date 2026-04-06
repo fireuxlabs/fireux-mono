@@ -2,13 +2,13 @@
 
 import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection'
 import { professionalConfig } from '../config/professionalConfig'
-import type { ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
+import type { Professional } from '../../../../../../models/profiles/Professional/Professional.model'
 
 export function useProfessionalCollection() {
   const {
     globalProfiles,
     localProfiles,
-  } = useProfileCollection<ProfessionalCore>(professionalConfig)
+  } = useProfileCollection<Professional>(professionalConfig)
 
   return {
     coreProfessionals: globalProfiles,

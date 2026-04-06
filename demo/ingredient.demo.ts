@@ -2,7 +2,7 @@
 // These files are for dev-only UI prototyping and are not part of the repo.
 
 import type { Ingredient } from 'fireux-kitchens/runtime/models/ingredient.model'
-import { Ingredient as IngredientModelRuntime } from 'fireux-kitchens/runtime/models/ingredient.model'
+import { IngredientModel as IngredientModelRuntime } from 'fireux-kitchens/runtime/models/ingredient.model'
 
 const baseIngredient: Ingredient = {
   ...IngredientModelRuntime,

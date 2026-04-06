@@ -1,5 +1,5 @@
 import type {
-    ChefCore,
+    Chef,
 } from '../../../../../models/profiles/Chef/Chef.model';
 
 export function useChefValidation() {
@@ -209,7 +209,7 @@ export function useChefValidation() {
 
   // Comprehensive chef data validation
   const validateChefData = (
-    chefData: Partial<ChefCore>
+    chefData: Partial<Chef>
   ): { isValid: boolean; errors: string[] } => {
     const errors: string[] = []
 

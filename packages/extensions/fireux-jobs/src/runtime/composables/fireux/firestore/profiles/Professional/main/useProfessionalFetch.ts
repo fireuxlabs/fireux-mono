@@ -2,12 +2,12 @@ import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/fir
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import { computed } from 'vue'
 import { professionalConfig } from '../config/professionalConfig'
-import type { ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
+import type { Professional } from '../../../../../../models/profiles/Professional/Professional.model'
 
 // Hydrated (user-attached) professional profiles for UI use.
 export function useProfessionalFetch() {
   const { globalProfilesWithUser, localProfilesWithUser } =
-    useProfileCollection<ProfessionalCore>(professionalConfig)
+    useProfileCollection<Professional>(professionalConfig)
 
   const coreProfessionalsHydrated = globalProfilesWithUser
   const appProfessionalsHydrated = localProfilesWithUser

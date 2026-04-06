@@ -4,28 +4,28 @@ import { computed } from 'vue'
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { agentConfig } from './config/agentConfig'
-import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model'
+import type { Agent } from '../../../../../models/profiles/Agent/Agent.model'
 import { useAgentComputed } from './main/useAgentComputed'
 import { useAgentInterface, type AgentCard } from './utils/view/useAgentInterface'
 import { useAgentUpdate } from './main/useAgentUpdate'
 import { useAgentCreate } from './main/useAgentCreate'
 
-export type Agent = {
+export type AgentState = {
   user: unknown | null
-  core: AgentCore | null
-  app: Partial<AgentCore> | null
+  core: Agent | null
+  app: Partial<Agent> | null
 }
 
-export type { AgentCore as AgentProfile, AgentCard }
+export type { Agent, AgentCard }
 
 export function useAgent() {
-  const { profile: refs, pending } = useProfile<AgentCore>(agentConfig)
+  const { profile: refs, pending } = useProfile<Agent>(agentConfig)
   const { coreProfile, appProfile } = refs
 
   // canonical user for UI layer
   const { coreUser } = useUser()
 
-  const agent = computed<Agent>(() => ({
+  const agent = computed<AgentState>(() => ({
     user: (coreUser.value ?? null) as unknown,
     core: coreProfile.value ?? null,
     app: appProfile.value ?? null,

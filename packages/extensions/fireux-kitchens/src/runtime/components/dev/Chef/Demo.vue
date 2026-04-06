@@ -58,7 +58,7 @@ import { computed, ref, watch } from 'vue'
 import { demoChefSurfaceList } from '../../../../../../../../demo/chef.demo'
 import type { ChefCard } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
 import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
-import type { ChefCore } from '../../../models/profiles/Chef/Chef.model'
+import type { Chef } from '../../../models/profiles/Chef/Chef.model'
 
 defineOptions({ name: 'DevChefDemo' })
 
@@ -87,7 +87,7 @@ const selectedChef = computed(() =>
   surfaceChefs.value.find((surface) => String(surface.chef.id) === selectedId.value) ?? null
 )
 
-const selectChef = (chef: ChefCore) => {
+const selectChef = (chef: Chef) => {
   selectedId.value = String(chef.id)
 }
 
@@ -109,18 +109,18 @@ const toUserLike = (
 const pillItems = computed(() =>
   surfaceChefs.value
     .map((surface) => {
-      const card = toCard(surface.chef as ChefCore, toUserLike(surface.user))
+      const card = toCard(surface.chef as Chef, toUserLike(surface.user))
       if (!card) return null
       return { chef: surface.chef, card }
     })
     .filter(
-      (item): item is { chef: ChefCore; card: NonNullable<ChefCard.Card> } => Boolean(item)
+      (item): item is { chef: Chef; card: NonNullable<ChefCard.Card> } => Boolean(item)
     )
 )
 
 const selectedCard = computed(() =>
   selectedChef.value
-    ? toCard(selectedChef.value.chef as ChefCore, toUserLike(selectedChef.value.user))
+    ? toCard(selectedChef.value.chef as Chef, toUserLike(selectedChef.value.user))
     : null
 )
 </script>

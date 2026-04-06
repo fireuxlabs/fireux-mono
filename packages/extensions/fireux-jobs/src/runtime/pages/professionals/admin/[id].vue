@@ -83,7 +83,7 @@ import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProfessionalComputed } from '../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalComputed'
 import { useProfessionalInterface } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
-import type { ProfessionalApp, ProfessionalCore } from '../../../models/profiles/Professional/Professional.model'
+import type { AppProfessional, Professional } from '../../../models/profiles/Professional/Professional.model'
 
 definePageMeta({
   layout: 'default',
@@ -101,7 +101,7 @@ const userId = computed(() => {
 })
 
 const userRefs = useUserFetch(userId)
-const { profile, pending } = useProfileFetch<ProfessionalCore, ProfessionalApp>(
+const { profile, pending } = useProfileFetch<Professional, AppProfessional>(
   userId,
   professionalConfig
 )
@@ -121,7 +121,7 @@ const professionalCard = computed(() => {
     ? ({
         ...resolvedCoreProfile.value,
         user: userRefs.user.value,
-      } as ProfessionalCore & { user: typeof userRefs.user.value })
+      } as Professional & { user: typeof userRefs.user.value })
     : resolvedCoreProfile.value
   return makeCard(resolved)
 })

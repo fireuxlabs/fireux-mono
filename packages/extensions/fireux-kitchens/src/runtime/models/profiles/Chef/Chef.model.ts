@@ -57,10 +57,6 @@ export type Chef = {
   [K in keyof typeof ChefModel]: (typeof ChefModel)[K]
 }
 
-// Compatibility aliases retained while call sites are still being migrated.
-export const ChefCore = ChefModel
-export type ChefCore = Chef
-
 export const AppChefModel = {
   id: '' as string,
 
@@ -78,10 +74,6 @@ export const AppChefModel = {
 export type AppChef = {
   [K in keyof typeof AppChefModel]: (typeof AppChefModel)[K]
 }
-
-// Compatibility aliases retained while call sites are still being migrated.
-export const ChefApp = AppChefModel
-export type ChefApp = AppChef
 
 export type ChefCreateInput = Omit<Chef, 'id' | 'created' | 'updated'>
 export type ChefUpdateInput = Partial<Omit<Chef, 'id' | 'created' | 'updated'>>

@@ -65,9 +65,9 @@
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify';
 import { computed } from 'vue';
 import { useChefUpdate } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefUpdate';
-import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model';
+import type { Chef } from '../../../../../models/profiles/Chef/Chef.model';
 
-const props = defineProps<{ chef: ChefCore | null }>()
+const props = defineProps<{ chef: Chef | null }>()
 
 const chef = computed(() => props.chef ?? null)
 const { updateTitle, updateSummary, updateBio, updateImage, updateSignatureDishes } = useChefUpdate()

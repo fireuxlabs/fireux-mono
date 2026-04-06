@@ -47,10 +47,6 @@ export type Agent = {
   [K in keyof typeof AgentModel]: (typeof AgentModel)[K]
 }
 
-// Compatibility aliases retained while call sites are still being migrated.
-export const AgentCore = AgentModel
-export type AgentCore = Agent
-
 export const AppAgentModel = {
   id: '',
   created: {
@@ -66,10 +62,6 @@ export const AppAgentModel = {
 export type AppAgent = {
   [K in keyof typeof AppAgentModel]: (typeof AppAgentModel)[K]
 }
-
-// Compatibility aliases retained while call sites are still being migrated.
-export const AgentApp = AppAgentModel
-export type AgentApp = AppAgent
 
 export type AgentCreateInput = Omit<Agent, 'id' | 'created' | 'updated'>
 export type AgentUpdateInput = Partial<Omit<Agent, 'id' | 'created' | 'updated'>>

@@ -4,11 +4,11 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import type { AgentCore } from '../../../../../../models/profiles/Agent/Agent.model'
+import type { Agent } from '../../../../../../models/profiles/Agent/Agent.model'
 
 type DeleteScope = 'auto' | 'core' | 'app' | 'both'
 
-export function useAgentDelete(_profile: ProfileRefs<AgentCore>) {
+export function useAgentDelete(_profile: ProfileRefs<Agent>) {
   const db = useFirestore()
   const { deleteSeoIndexDoc } = useSeoIndexWrite()
   const { role, appId } = useFireUXConfig()

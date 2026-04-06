@@ -100,9 +100,9 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useUserFormattingAndValidation } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/validation/useUserFormatting'
 import { computed } from 'vue'
 import { useAgentUpdate } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentUpdate'
-import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model'
+import type { Agent } from '../../../../../models/profiles/Agent/Agent.model'
 
-const props = defineProps<{ agent: AgentCore | null }>()
+const props = defineProps<{ agent: Agent | null }>()
 
 const agent = computed(() => props.agent ?? null)
 

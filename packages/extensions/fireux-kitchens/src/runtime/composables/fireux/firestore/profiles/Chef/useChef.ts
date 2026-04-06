@@ -2,14 +2,14 @@
 
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
 import { chefConfig } from './config/chefConfig'
-import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model'
+import type { Chef } from '../../../../../models/profiles/Chef/Chef.model'
 import { useChefComputed } from './main/useChefComputed'
 import { useChefCreate } from './main/useChefCreate'
 import { useChefUpdate } from './main/useChefUpdate'
 import type { ChefCard } from './utils/view/useChefInterface'
 import { useChefInterface } from './utils/view/useChefInterface'
 
-export type { ChefCard, ChefCore }
+export type { ChefCard, Chef }
 
 /**
  * useChef
@@ -21,7 +21,7 @@ export type { ChefCard, ChefCore }
  *   - update helpers
  */
 export function useChef() {
-  const { profile: refs, pending } = useProfile<ChefCore>(chefConfig)
+  const { profile: refs, pending } = useProfile<Chef>(chefConfig)
   const { coreProfile, appProfile } = refs
 
   const computed = useChefComputed(refs, pending)

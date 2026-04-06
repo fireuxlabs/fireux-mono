@@ -70,7 +70,7 @@ import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
-import type { ChefApp, ChefCore } from '../../../models/profiles/Chef/Chef.model'
+import type { AppChef, Chef } from '../../../models/profiles/Chef/Chef.model'
 
 definePageMeta({
   layout: 'default',
@@ -88,7 +88,7 @@ const userId = computed(() => {
 })
 
 const userRefs = useUserFetch(userId)
-const { profile, pending } = useProfileFetch<ChefCore, ChefApp>(
+const { profile, pending } = useProfileFetch<Chef, AppChef>(
   userId,
   chefConfig
 )

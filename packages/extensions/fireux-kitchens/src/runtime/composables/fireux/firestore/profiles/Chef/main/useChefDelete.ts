@@ -4,11 +4,11 @@ import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { ChefCore } from '../../../../../../models/profiles/Chef/Chef.model'
+import type { Chef } from '../../../../../../models/profiles/Chef/Chef.model'
 
 type DeleteScope = 'auto' | 'core' | 'app' | 'both'
 
-export function useChefDelete(_profile: ProfileRefs<ChefCore>) {
+export function useChefDelete(_profile: ProfileRefs<Chef>) {
   const db = useFirestore()
   const { deleteSeoIndexDoc } = useSeoIndexWrite()
   const { role, appId } = useFireUXConfig()

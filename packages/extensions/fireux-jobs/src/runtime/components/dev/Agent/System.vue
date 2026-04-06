@@ -72,11 +72,11 @@ import { computed } from 'vue'
 import { useAgentCollection } from '../../../composables/fireux/firestore/profiles/Agent/main/useAgentCollection'
 import { useAgentFetch } from '../../../composables/fireux/firestore/profiles/Agent/main/useAgentFetch'
 import { useAgentInterface } from '../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
-import { AgentCore as AgentCoreRuntime } from '../../../models/profiles/Agent/Agent.model'
+import { AgentModel as AgentModelRuntime } from '../../../models/profiles/Agent/Agent.model'
 
 defineOptions({ name: 'DevAgentSystem' })
 
-const agentModelRuntime = AgentCoreRuntime
+const agentModelRuntime = AgentModelRuntime
 
 useAgentFetch()
 const { coreAgents: rawCoreAgents, appAgents: rawAppAgents } = useAgentCollection()

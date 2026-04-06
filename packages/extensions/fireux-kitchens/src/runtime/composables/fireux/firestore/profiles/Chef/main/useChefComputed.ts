@@ -1,5 +1,5 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import type { ChefCore } from '../../../../../../models/profiles/Chef/Chef.model'
+import type { Chef } from '../../../../../../models/profiles/Chef/Chef.model'
 
 /**
  * useChefComputed
@@ -8,7 +8,7 @@ import type { ChefCore } from '../../../../../../models/profiles/Chef/Chef.model
  * - Safe to spread into useChef() return
  */
 export function useChefComputed(
-  refs: ProfileRefs<ChefCore>,
+  refs: ProfileRefs<Chef>,
   pending: unknown
 ) {
   // Stub: keep args for future use, avoid TS “unused” warnings

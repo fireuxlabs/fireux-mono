@@ -72,12 +72,12 @@ import { computed } from 'vue'
 import { useProfessionalCollection } from '../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection'
 import { useProfessionalFetch } from '../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalFetch'
 import { useProfessionalInterface } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
-import { ProfessionalCore as ProfessionalCoreRuntime } from '../../../models/profiles/Professional/Professional.model'
+import { ProfessionalModel as ProfessionalModelRuntime } from '../../../models/profiles/Professional/Professional.model'
 
 defineOptions({ name: 'DevProfessionalSystem' })
 
 const professionalModelRuntime = {
-  ...ProfessionalCoreRuntime,
+  ...ProfessionalModelRuntime,
   experience_month_format: 'enum:short',
 }
 

@@ -9,7 +9,7 @@ import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { ChefApp, ChefCore } from '../../../../../../models/profiles/Chef/Chef.model'
+import type { AppChef, Chef } from '../../../../../../models/profiles/Chef/Chef.model'
 import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 
 export function useChefCreate() {
@@ -48,9 +48,9 @@ export function useChefCreate() {
         locations: [] as string[],
         organization_name: '',
         kitchen_ids: [] as string[],
-      } satisfies Omit<ChefCore, 'created' | 'updated' | 'id'>
+      } satisfies Omit<Chef, 'created' | 'updated' | 'id'>
 
-      await setDocument<ChefCore>(chefConfig.collectionName, uid, payload as ChefCore, {
+      await setDocument<Chef>(chefConfig.collectionName, uid, payload as Chef, {
         creator: true,
       })
       createdCore = true
@@ -61,9 +61,9 @@ export function useChefCreate() {
       const appRef = doc(db, 'apps', appId, chefConfig.collectionName, uid)
       const appSnap = await getDoc(appRef)
       if (!appSnap.exists()) {
-        const payload = {} satisfies Omit<ChefApp, 'created' | 'updated' | 'id'>
+        const payload = {} satisfies Omit<AppChef, 'created' | 'updated' | 'id'>
 
-        await setDocument<ChefApp>(appCollection, uid, payload as ChefApp, {
+        await setDocument<AppChef>(appCollection, uid, payload as AppChef, {
           creator: true,
         })
         createdApp = true

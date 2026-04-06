@@ -26,9 +26,9 @@
 </template>
 
 <script setup lang="ts">
-import type { AgentCore } from '../../../../../models/profiles/Agent/Agent.model';
+import type { Agent } from '../../../../../models/profiles/Agent/Agent.model';
 
 defineProps<{
-  agent: Partial<AgentCore> | null | undefined
+  agent: Partial<Agent> | null | undefined
 }>()
 </script>

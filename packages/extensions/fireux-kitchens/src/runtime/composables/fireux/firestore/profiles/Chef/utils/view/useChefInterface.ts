@@ -10,11 +10,11 @@ import {
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
-import type { ChefCore } from 'fireux-kitchens/runtime/models/profiles/Chef/Chef.model'
+import type { Chef } from 'fireux-kitchens/runtime/models/profiles/Chef/Chef.model'
 import type { Ref } from 'vue'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> & Partial<Pick<User, 'id'>>
-type ChefTarget = ChefCore & { user?: UserLike | null }
+type ChefTarget = Chef & { user?: UserLike | null }
 
 export namespace ChefCard {
   export type Card = {
@@ -34,7 +34,7 @@ export namespace ChefCard {
 }
 
 export function useChefInterface(
-  profile?: ProfileRefs<ChefCore> | null,
+  profile?: ProfileRefs<Chef> | null,
   userRef?: Ref<User | null | undefined>
 ) {
   type ChefPill = ChefCard.Card
@@ -55,22 +55,22 @@ export function useChefInterface(
     return safeString(authUser.value?.photoURL).trim()
   }
 
-  function map(p: ChefCore, u?: UserLike | null): ChefCard.Card {
+  function map(p: Chef, u?: UserLike | null): ChefCard.Card {
     const id =
       safeString((p as any).owner_uid).trim() ||
       safeString(u?.id).trim() ||
       safeString((p as any).id).trim()
     const profileImage = resolveProfileImage([
-      (p as ChefCore & { image?: string }).image,
+      (p as Chef & { image?: string }).image,
       (p as any).chef_image,
     ])
     const summary = resolveProfileSummary([
-      (p as ChefCore & { summary?: string }).summary,
+      (p as Chef & { summary?: string }).summary,
       (p as any).chef_bio,
     ])
     const userAvatar = resolveUserAvatar(u)
     const avatarUrl = profileImage || userAvatar
-    const badges = resolveProfileBadges([(p as ChefCore & { tags?: string[] }).tags])
+    const badges = resolveProfileBadges([(p as Chef & { tags?: string[] }).tags])
     const secondaryAvatarUrl = resolveSecondaryAvatarUrl(avatarUrl, userAvatar)
 
     return {
@@ -120,7 +120,7 @@ export function useChefInterface(
   function searchText(target: ChefTarget): string {
     const mapped = map(target, target.user ?? userRef?.value ?? null)
     const summary = resolveProfileSummary([
-      (target as ChefCore & { summary?: string }).summary,
+      (target as Chef & { summary?: string }).summary,
       (target as any).chef_bio,
     ])
 

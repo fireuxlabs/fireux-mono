@@ -62,9 +62,9 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
 import { computed } from 'vue';
 import { useChefInterface } from '../../../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface';
-import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model';
+import type { Chef } from '../../../../../models/profiles/Chef/Chef.model';
 
-type ChefEntry = ChefCore & { user?: unknown }
+type ChefEntry = Chef & { user?: unknown }
 
 const props = withDefaults(
   defineProps<{
@@ -108,7 +108,7 @@ const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
   useCollectionSearch<ChefEntry, ReturnType<typeof makeCard>>({
     items: collection,
     searchText: (entry) => searchText(entry as ChefEntry),
-    makeCard: (entry) => makeCard(entry as ChefCore, (entry as any)?.user ?? null),
+    makeCard: (entry) => makeCard(entry as Chef, (entry as any)?.user ?? null),
     initialVariant: props.initialVariant,
   })
 

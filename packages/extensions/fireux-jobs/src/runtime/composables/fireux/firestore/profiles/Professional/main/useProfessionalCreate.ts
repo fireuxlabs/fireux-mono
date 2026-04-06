@@ -9,7 +9,7 @@ import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { ProfessionalApp, ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
+import type { AppProfessional, Professional } from '../../../../../../models/profiles/Professional/Professional.model'
 import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
 
 export function useProfessionalCreate() {
@@ -49,9 +49,9 @@ export function useProfessionalCreate() {
         education: [],
         volunteering: [],
         projects: [],
-      } satisfies Omit<ProfessionalCore, 'created' | 'updated' | 'id'>
+      } satisfies Omit<Professional, 'created' | 'updated' | 'id'>
 
-      await setDocument<ProfessionalCore>(professionalConfig.collectionName, uid, payload as unknown as ProfessionalCore, {
+      await setDocument<Professional>(professionalConfig.collectionName, uid, payload as unknown as Professional, {
         creator: true,
       })
       createdCore = true
@@ -62,9 +62,9 @@ export function useProfessionalCreate() {
       const appRef = doc(db, 'apps', appId, professionalConfig.collectionName, uid)
       const appSnap = await getDoc(appRef)
       if (!appSnap.exists()) {
-        const payload = {} satisfies Omit<ProfessionalApp, 'created' | 'updated' | 'id'>
+        const payload = {} satisfies Omit<AppProfessional, 'created' | 'updated' | 'id'>
 
-        await setDocument<ProfessionalApp>(appCollection, uid, payload as unknown as ProfessionalApp, {
+        await setDocument<AppProfessional>(appCollection, uid, payload as unknown as AppProfessional, {
           creator: true,
         })
         createdApp = true

@@ -4,12 +4,12 @@ import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
+import type { Professional } from '../../../../../../models/profiles/Professional/Professional.model'
 
 type DeleteScope = 'auto' | 'core' | 'app' | 'both'
 
 export function useProfessionalDelete(
-  _profile: ProfileRefs<ProfessionalCore>
+  _profile: ProfileRefs<Professional>
 ) {
   const db = useFirestore()
   const { deleteSeoIndexDoc } = useSeoIndexWrite()

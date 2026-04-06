@@ -1,7 +1,7 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
-import type { ChefCore } from '../../../../../../models/profiles/Chef/Chef.model'
+import type { Chef } from '../../../../../../models/profiles/Chef/Chef.model'
 
 /**
  * useChefUpdate
@@ -11,8 +11,8 @@ import type { ChefCore } from '../../../../../../models/profiles/Chef/Chef.model
  *
  * Shared update surface for v1 scoped fields.
  */
-export function useChefUpdate(profile?: ProfileRefs<ChefCore> | null) {
-  const base = useProfileUpdateBase<ChefCore>('chefs', profile)
+export function useChefUpdate(profile?: ProfileRefs<Chef> | null) {
+  const base = useProfileUpdateBase<Chef>('chefs', profile)
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
   type UpdateOptions = { id?: string | null; scope?: 'core' | 'app' }
 
@@ -29,7 +29,7 @@ export function useChefUpdate(profile?: ProfileRefs<ChefCore> | null) {
   }
 
   const updateCoreProfile = async (
-    patch: Partial<ChefCore>,
+    patch: Partial<Chef>,
     options: { id?: string | null } = {}
   ) => {
     await base.updateCoreProfile(patch, options)
@@ -42,7 +42,7 @@ export function useChefUpdate(profile?: ProfileRefs<ChefCore> | null) {
    */
   const updateAppProfile = base.updateAppProfile
   const commitUpdate = async (
-    patch: Partial<ChefCore>,
+    patch: Partial<Chef>,
     options: UpdateOptions = {}
   ) => {
     await base.commitUpdate(patch, options)

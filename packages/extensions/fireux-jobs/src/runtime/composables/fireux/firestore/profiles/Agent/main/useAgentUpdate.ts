@@ -1,7 +1,7 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
-import type { AgentCore } from '../../../../../../models/profiles/Agent/Agent.model'
+import type { Agent } from '../../../../../../models/profiles/Agent/Agent.model'
 
 /**
  * useAgentUpdate
@@ -11,8 +11,8 @@ import type { AgentCore } from '../../../../../../models/profiles/Agent/Agent.mo
  *
  * Shared update surface for v1 scoped fields.
  */
-export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
-  const base = useProfileUpdateBase<AgentCore>('agents', profile)
+export function useAgentUpdate(profile?: ProfileRefs<Agent> | null) {
+  const base = useProfileUpdateBase<Agent>('agents', profile)
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
   type UpdateOptions = { id?: string | null; scope?: 'core' | 'app' }
 
@@ -29,7 +29,7 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
   }
 
   const updateCoreProfile = async (
-    patch: Partial<AgentCore>,
+    patch: Partial<Agent>,
     options: { id?: string | null } = {}
   ) => {
     await base.updateCoreProfile(patch, options)
@@ -42,7 +42,7 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
    */
   const updateAppProfile = base.updateAppProfile
   const commitUpdate = async (
-    patch: Partial<AgentCore>,
+    patch: Partial<Agent>,
     options: UpdateOptions = {}
   ) => {
     await base.commitUpdate(patch, options)
@@ -52,7 +52,7 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
   }
 
   const updateCore = async (
-    patch: Partial<AgentCore>,
+    patch: Partial<Agent>,
     _id?: string | null
   ): Promise<'success'> => {
     await updateCoreProfile(patch)
@@ -60,7 +60,7 @@ export function useAgentUpdate(profile?: ProfileRefs<AgentCore> | null) {
   }
 
   const updateApp = async (
-    patch: Partial<AgentCore>,
+    patch: Partial<Agent>,
     _id?: string | null
   ): Promise<'success'> => {
     await updateAppProfile(patch)

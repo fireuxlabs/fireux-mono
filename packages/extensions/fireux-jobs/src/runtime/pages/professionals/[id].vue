@@ -95,7 +95,7 @@ import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/fires
 import { computed, ref } from 'vue'
 import { useProfessionalComputed } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalComputed'
 import { useProfessionalInterface } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
-import type { ProfessionalApp, ProfessionalCore } from '../../models/profiles/Professional/Professional.model'
+import type { AppProfessional, Professional } from '../../models/profiles/Professional/Professional.model'
 
 const route = useRoute()
 const professionalId = computed(() => {
@@ -103,7 +103,7 @@ const professionalId = computed(() => {
   return String(raw ?? '').trim() || null
 })
 
-const { profile, pending } = useProfileFetch<ProfessionalCore, ProfessionalApp>(
+const { profile, pending } = useProfileFetch<Professional, AppProfessional>(
   professionalId,
   professionalConfig
 )
@@ -119,7 +119,7 @@ const { interface: professionalInterface } = useProfessionalInterface(profile)
 const professionalCard = computed(() => {
   if (!professionalProfile.value) return null
   const resolved = user.value
-    ? ({ ...professionalProfile.value, user: user.value } as ProfessionalCore & { user: typeof user.value })
+    ? ({ ...professionalProfile.value, user: user.value } as Professional & { user: typeof user.value })
     : professionalProfile.value
   return professionalInterface(resolved)
 })

@@ -5,14 +5,14 @@ import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/c
 import { computed } from 'vue'
 
 import { professionalConfig } from './config/professionalConfig'
-import type { ProfessionalCore } from '../../../../../models/profiles/Professional/Professional.model'
+import type { Professional } from '../../../../../models/profiles/Professional/Professional.model'
 
 import { useProfessionalComputed } from './main/useProfessionalComputed'
 import { useProfessionalCreate } from './main/useProfessionalCreate'
 import { useProfessionalUpdate } from './main/useProfessionalUpdate'
 import { useProfessionalInterface, type ProfessionalCard } from './utils/view/useProfessionalInterface'
 
-export type { ProfessionalCard, ProfessionalCore as ProfessionalProfile }
+export type { ProfessionalCard, Professional }
 
 /**
  * useProfessional
@@ -25,7 +25,7 @@ export type { ProfessionalCard, ProfessionalCore as ProfessionalProfile }
  */
 export function useProfessional() {
   const { profile: refs, pending } =
-    useProfile<ProfessionalCore>(professionalConfig)
+    useProfile<Professional>(professionalConfig)
 
   const { coreProfile, appProfile } = refs
 

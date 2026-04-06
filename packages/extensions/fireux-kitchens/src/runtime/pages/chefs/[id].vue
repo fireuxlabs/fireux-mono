@@ -78,7 +78,7 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 import { computed, ref } from 'vue'
 import { useChefInterface } from '../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
-import type { ChefApp, ChefCore } from '../../models/profiles/Chef/Chef.model'
+import type { AppChef, Chef } from '../../models/profiles/Chef/Chef.model'
 
 useSeoMeta({
   title: 'Chef Profile',
@@ -95,11 +95,11 @@ const docId = computed(() => {
 const { user, coreUser, appUser } = useUser()
 const userRefs = useUserFetch(docId)
 
-const { profile: profileRefs, pending } = useProfileFetch<ChefCore, ChefApp>(
+const { profile: profileRefs, pending } = useProfileFetch<Chef, AppChef>(
   docId,
   chefConfig
 )
-const profile = computed<ChefCore | null>(() => profileRefs.coreProfile.value ?? null)
+const profile = computed<Chef | null>(() => profileRefs.coreProfile.value ?? null)
 const loading = computed(() => pending.value)
 const { interface: chefInterface } = useChefInterface(profileRefs, userRefs.user)
 const chefCard = computed(() =>

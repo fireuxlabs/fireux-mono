@@ -5,7 +5,7 @@ import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firesto
 import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
-import type { ProfessionalCore } from '../../../../../../models/profiles/Professional/Professional.model'
+import type { Professional } from '../../../../../../models/profiles/Professional/Professional.model'
 import type {
   CertificationItem,
   EducationItem,
@@ -33,8 +33,8 @@ const normalizePlaceId = (value?: unknown) => {
   return raw.replace(/^places\//, '') // tolerate legacy "places/<id>"
 }
 
-export function useProfessionalUpdate(profile?: ProfileRefs<ProfessionalCore> | null) {
-  const base = useProfileUpdateBase<ProfessionalCore>('professionals', profile)
+export function useProfessionalUpdate(profile?: ProfileRefs<Professional> | null) {
+  const base = useProfileUpdateBase<Professional>('professionals', profile)
   const { uploadImage } = useImageStorage()
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
 
@@ -47,7 +47,7 @@ export function useProfessionalUpdate(profile?: ProfileRefs<ProfessionalCore> | 
   }
 
   const updateCoreProfile = async (
-    patch: Partial<ProfessionalCore>,
+    patch: Partial<Professional>,
     options: { id?: string | null } = {}
   ) => {
     await base.updateCoreProfile(patch, options)
@@ -55,7 +55,7 @@ export function useProfessionalUpdate(profile?: ProfileRefs<ProfessionalCore> | 
   }
   const updateAppProfile = base.updateAppProfile
   const commitUpdate = async (
-    patch: Partial<ProfessionalCore>,
+    patch: Partial<Professional>,
     options: UpdateOptions = {}
   ) => {
     await base.commitUpdate(patch, options)
@@ -64,35 +64,35 @@ export function useProfessionalUpdate(profile?: ProfileRefs<ProfessionalCore> | 
     }
   }
 
-  const updateStringField = async <K extends keyof ProfessionalCore>(
+  const updateStringField = async <K extends keyof Professional>(
     key: K,
     value: string,
     options: UpdateOptions = {}
   ) => {
     await commitUpdate(
-      { [key]: base.cleanString(value) ?? '' } as unknown as Partial<ProfessionalCore>,
+      { [key]: base.cleanString(value) ?? '' } as unknown as Partial<Professional>,
       options
     )
   }
 
-  const updateStringArrayField = async <K extends keyof ProfessionalCore>(
+  const updateStringArrayField = async <K extends keyof Professional>(
     key: K,
     csvOrList: string | string[],
     options: UpdateOptions = {}
   ) => {
     await commitUpdate(
-      { [key]: base.toStringArray(csvOrList) } as unknown as Partial<ProfessionalCore>,
+      { [key]: base.toStringArray(csvOrList) } as unknown as Partial<Professional>,
       options
     )
   }
 
-  const updateTypedArrayField = async <K extends keyof ProfessionalCore, T>(
+  const updateTypedArrayField = async <K extends keyof Professional, T>(
     key: K,
     items: T[],
     options: UpdateOptions = {}
   ) => {
     await commitUpdate(
-      { [key]: items ?? [] } as unknown as Partial<ProfessionalCore>,
+      { [key]: items ?? [] } as unknown as Partial<Professional>,
       options
     )
   }

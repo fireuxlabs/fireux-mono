@@ -70,7 +70,7 @@ import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/pr
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAgentInterface } from '../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
-import type { AgentApp, AgentCore } from '../../../models/profiles/Agent/Agent.model'
+import type { AppAgent, Agent } from '../../../models/profiles/Agent/Agent.model'
 
 definePageMeta({
   layout: 'default',
@@ -88,7 +88,7 @@ const userId = computed(() => {
 })
 
 const userRefs = useUserFetch(userId)
-const { profile, pending } = useProfileFetch<AgentCore, AgentApp>(
+const { profile, pending } = useProfileFetch<Agent, AppAgent>(
   userId,
   agentConfig
 )

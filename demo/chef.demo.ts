@@ -1,7 +1,8 @@
 // Local demo payloads for Chefs (git-ignored).
 // These files are for dev-only UI prototyping and are not part of the repo.
 
-import type { ChefCore } from '../packages/extensions/fireux-kitchens/src/runtime/models/profiles/Chef/Chef.model'
+import type { Chef } from '../packages/extensions/fireux-kitchens/src/runtime/models/profiles/Chef/Chef.model'
+import { ChefModel } from '../packages/extensions/fireux-kitchens/src/runtime/models/profiles/Chef/Chef.model'
 import { demoUserList } from './user.demo'
 
 type ChefBase = {
@@ -57,26 +58,16 @@ const demoChefBaseList: ChefBase[] = [
   },
 ]
 
-const buildChefCore = (base: ChefBase): ChefCore => ({
+const buildChefCore = (base: ChefBase): Chef => ({
+  ...ChefModel,
   id: base.id,
-  chef_headline: base.chefHeadline,
+  title: base.chefHeadline,
   summary: base.summary,
-  chef_bio: '',
   chef_image: base.chefImage,
   chef_signature_dishes: base.signatureDishes,
   kitchen_ids: [base.kitchenId],
   chef_organization_name: base.organizationName,
-  title: '',
-  subtitle: '',
-  tagline: '',
-  tags: [],
-  bio_long: '',
-  specialties: [],
   locations: base.locations,
-  organization_name: '',
-  creator_id: undefined,
-  created_at: {} as ChefCore['created_at'],
-  updated_at: {} as ChefCore['updated_at'],
 })
 
 export const demoChefSurfaceList = demoChefBaseList.map((base) => {

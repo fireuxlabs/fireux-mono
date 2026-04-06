@@ -113,7 +113,7 @@ import { computed, ref } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useJobsConfig } from '../../../../../composables/fireux/app/useJobsConfig'
 import { useProfessionalUpdate } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalUpdate'
-import type { ProfessionalCore } from '../../../../../models/profiles/Professional/Professional.model'
+import type { Professional } from '../../../../../models/profiles/Professional/Professional.model'
 import type {
   CertificationItem,
   EducationItem,
@@ -124,7 +124,7 @@ import type {
   VolunteeringItem,
 } from '../../../../../models/profiles/Professional/Professional.model'
 
-const props = defineProps<{ professional: ProfessionalCore | null }>()
+const props = defineProps<{ professional: Professional | null }>()
 
 const toast = useToastify()
 

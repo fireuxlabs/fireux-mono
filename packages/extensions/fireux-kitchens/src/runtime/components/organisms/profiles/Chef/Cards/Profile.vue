@@ -40,11 +40,11 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import type { ChefCard } from '../../../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface';
-import type { ChefCore } from '../../../../../models/profiles/Chef/Chef.model';
+import type { Chef } from '../../../../../models/profiles/Chef/Chef.model';
 
 const props = defineProps<{
   card: ChefCard.Card
-  profile?: ChefCore | null
+  profile?: Chef | null
   prop?: string
 }>()
 

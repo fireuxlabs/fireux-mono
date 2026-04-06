@@ -184,11 +184,11 @@ import type { Place } from 'fireux-places/runtime/models/place.model'
 import type { Ref } from 'vue'
 import { computed, shallowRef, toRefs, watch } from 'vue'
 import type { ProfessionalCard } from '../../../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
-import type { ProfessionalCore } from '../../../../../models/profiles/Professional/Professional.model'
+import type { Professional } from '../../../../../models/profiles/Professional/Professional.model'
 
 const props = defineProps<{
   card: ProfessionalCard.Card
-  profile?: ProfessionalCore | null
+  profile?: Professional | null
   computed?: Record<string, unknown> | null
   prop?: string
 }>()

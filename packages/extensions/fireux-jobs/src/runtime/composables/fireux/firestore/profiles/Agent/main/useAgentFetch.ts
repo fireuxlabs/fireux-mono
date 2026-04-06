@@ -2,12 +2,12 @@ import { useProfileCollection } from 'fireux-core/runtime/composables/fireux/fir
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import { computed } from 'vue'
 import { agentConfig } from '../config/agentConfig'
-import type { AgentCore } from '../../../../../../models/profiles/Agent/Agent.model'
+import type { Agent } from '../../../../../../models/profiles/Agent/Agent.model'
 
 // Hydrated (user-attached) agent profiles for UI use.
 export function useAgentFetch() {
   const { globalProfilesWithUser, localProfilesWithUser } =
-    useProfileCollection<AgentCore>(agentConfig)
+    useProfileCollection<Agent>(agentConfig)
 
   const coreAgentsHydrated = globalProfilesWithUser
   const appAgentsHydrated = localProfilesWithUser
