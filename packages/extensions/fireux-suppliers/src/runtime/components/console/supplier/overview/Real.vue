@@ -18,8 +18,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useRuntimeSupplier } from '../../../composables/fireux/app/supplier-console/useRuntimeSupplier'
-import { useSupplierCollection } from '../../../composables/fireux/firestore/supplier/fetch/useSupplierCollection'
+import { useRuntimeSupplier } from '../../../../composables/fireux/app/supplier-console/useRuntimeSupplier'
+import { useSupplierCollection } from '../../../../composables/fireux/firestore/supplier/fetch/useSupplierCollection'
 const runtime = useRuntimeSupplier()
 const { isPremium } = useUser()
 const { coreSuppliers: liveSuppliers } = useSupplierCollection()
