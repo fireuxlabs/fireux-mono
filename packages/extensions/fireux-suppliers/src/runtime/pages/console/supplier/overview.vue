@@ -38,7 +38,6 @@
 
 <script setup lang="ts">
 import { useSupplierConsole } from '../../../composables/fireux/app/supplier-console/useSupplierConsole'
-import { useSupplierSelection } from '../../../composables/fireux/app/supplier-console/useSupplierSelection'
 
 definePageMeta({
   layout: 'console',
@@ -54,11 +53,6 @@ definePageMeta({
   },
   requiresAuth: true,
 })
-
-const supplierSelection = useSupplierSelection()
-if (supplierSelection.mode.value !== 'live') {
-  supplierSelection.setRuntimeSupplier({ mode: 'live' })
-}
 
 const { runtime, activeSupplierPill } = useSupplierConsole({
   publishHeader: true,

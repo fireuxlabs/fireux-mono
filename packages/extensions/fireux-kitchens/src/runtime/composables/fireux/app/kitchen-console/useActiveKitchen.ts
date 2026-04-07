@@ -1,68 +1,27 @@
 import { computed } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useKitchenSelection } from './useKitchenSelection'
-import { useRuntimeKitchenDocument } from './useRuntimeKitchenDocument'
-import { useRuntimeKitchenData } from './useRuntimeKitchenData'
-import {
-  resolveRuntimeKitchenDataCollectionPath,
-  resolveRuntimeKitchenDocumentCollectionPath,
-} from './shared'
+import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 
 export { useKitchenSelection } from './useKitchenSelection'
 export type { RuntimeKitchenMode } from './shared'
 
 /**
- * Canon kitchen console seam.
- *
- * Root kitchen identity stays at `/kitchens/<id>`.
- * Console-owned data lives under the app-hosted kitchen scope.
+ * Live kitchen loader.
+ * Loads the selected kitchen document from `kitchens/<id>`.
  */
 export function useActiveKitchen() {
-  const { appId } = useFireUXConfig()
-  const selection = useKitchenSelection()
-  const id = selection.selectedId
-  const mode = selection.mode
-  const activity = computed<'static'>(() => 'static')
-  const isDemo = computed(() => mode.value === 'demo')
-  const documentCollectionPath = computed(() =>
-    resolveRuntimeKitchenDocumentCollectionPath(mode.value)
-  )
-  const kitchenCollectionPath = computed(() =>
-    resolveRuntimeKitchenDataCollectionPath(mode.value, appId)
-  )
-
-  const { doc, pending } = useRuntimeKitchenDocument({
-    id,
-    isDemo: isDemo,
-    documentCollectionPath,
+  const { selectedId: id } = useKitchenSelection()
+  const { kitchen: fetchKitchen } = useKitchenFetch()
+  const liveKitchen = fetchKitchen(id, 'kitchens', { hydrate: true })
+  const kitchen = computed(() => {
+    if (!id.value) return null
+    return liveKitchen.value ?? null
   })
-  const data = useRuntimeKitchenData({
-    id,
-    isDemo: isDemo,
-    kitchenCollectionPath,
-  })
-  const isLoading = computed(() => Boolean(pending.value))
-  const isReady = computed(() => {
-    if (!id.value) return false
-    if (isLoading.value) return false
-    return Boolean(doc.value)
-  })
+  const pending = computed(() => Boolean(id.value) && liveKitchen.value === undefined)
 
   return {
     id,
-    mode,
-    activity,
-    isDemo,
-    collectionPath: kitchenCollectionPath,
-    documentCollectionPath,
-    kitchenCollectionPath,
-
-    doc,
+    kitchen,
     pending,
-    isLoading,
-    isReady,
-    data,
-
-    kitchen: doc,
   }
 }

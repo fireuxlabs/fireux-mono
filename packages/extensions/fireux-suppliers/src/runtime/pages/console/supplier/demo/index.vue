@@ -1,20 +1,23 @@
 <template>
-  <div />
+  <UDashboardPanel id="parked-console-route">
+    <template #header>
+      <LayoutsConsoleNavbar title="Supplier" />
+    </template>
+
+    <template #body>
+      <UAlert
+        color="neutral"
+        variant="soft"
+        title="Not wired yet"
+        description="This supplier console route is parked while the live-only supplier seam is normalized."
+      />
+    </template>
+  </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
-import { useSupplierSelection } from '../../../../composables/fireux/app/supplier-console/useSupplierSelection'
-
 definePageMeta({
   layout: 'console',
-  consoleEntry: true,
+  requiresAuth: true,
 })
-
-const { setRuntimeSupplier } = useSupplierSelection()
-setRuntimeSupplier({
-  mode: 'demo',
-  supplierId: '',
-})
-await navigateTo('/console/supplier', { replace: true })
 </script>

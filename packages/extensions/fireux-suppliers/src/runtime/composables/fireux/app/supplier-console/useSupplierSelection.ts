@@ -1,46 +1,54 @@
-import { createConsoleEntitySelection } from 'fireux-core/runtime/composables/fireux/console/useConsoleSelection'
+import { computed } from 'vue'
+import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/console/console.types'
+import {
+  selectionKey,
+  useConsoleSelection,
+} from 'fireux-core/runtime/composables/fireux/console/useConsoleSelection'
 
-export type RuntimeSupplierMode = 'live' | 'demo' | 'test'
-
-type RuntimeSupplierSelectionState = {
+type SupplierSelectionState = {
   selectedId: string
-  mode: RuntimeSupplierMode
 }
 
-type RuntimeSupplierSelectionInput = Partial<RuntimeSupplierSelectionState> & {
+type RuntimeSupplierSelectionInput = Partial<SupplierSelectionState> & {
   supplierId?: string
+  mode?: ConsoleMode
 }
 
 const COOKIE_KEY = 'fireux_runtime_supplier'
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
 
-const normalizeMode = (value: unknown): RuntimeSupplierMode => {
-  const normalized = normalizeString(value).toLowerCase()
-  if (normalized === 'demo') return 'demo'
-  if (normalized === 'live' || normalized === 'test') return normalized
-  return 'demo'
-}
-
-const useSupplierSelectionBase = createConsoleEntitySelection<RuntimeSupplierMode, 'supplierId'>({
-  cookieKey: COOKIE_KEY,
-  aliasKey: 'supplierId',
-  defaultMode: 'demo',
-  normalizeMode,
-  normalizeId: normalizeString,
-})
-
-export function useSupplierSelection() {
-  const selection = useSupplierSelectionBase()
-  const setRuntimeSupplier = (selectionPatch: RuntimeSupplierSelectionInput = {}) =>
-    selection.setSelection(selectionPatch)
-  const clearRuntimeSupplier = () => selection.clearSelection()
+const normalizeSelectionState = (value: unknown): SupplierSelectionState => {
+  const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
 
   return {
-    selectedId: selection.selectedId,
-    mode: selection.mode,
-    runtimeSupplierId: selection.selectedId,
-    runtimeSupplierMode: selection.mode,
+    selectedId: normalizeString(source.selectedId ?? source.supplierId),
+  }
+}
+
+export function useSupplierSelection() {
+  const selection = useConsoleSelection<SupplierSelectionState>({
+    cookieKey: COOKIE_KEY,
+    defaultState: () => ({ selectedId: '' }),
+    normalizeState: normalizeSelectionState,
+  })
+  const selectedId = selectionKey(selection, 'selectedId')
+  const mode = computed<ConsoleMode>(() => 'live')
+
+  const setRuntimeSupplier = (selectionPatch: RuntimeSupplierSelectionInput = {}) =>
+    selection.set({
+      selectedId:
+        selectionPatch.selectedId !== undefined || selectionPatch.supplierId !== undefined
+          ? normalizeString(selectionPatch.selectedId ?? selectionPatch.supplierId)
+          : selectedId.value,
+    })
+  const clearRuntimeSupplier = () => selection.clear()
+
+  return {
+    selectedId,
+    mode,
+    runtimeSupplierId: selectedId,
+    runtimeSupplierMode: mode,
     setRuntimeSupplier,
     clearRuntimeSupplier,
   }

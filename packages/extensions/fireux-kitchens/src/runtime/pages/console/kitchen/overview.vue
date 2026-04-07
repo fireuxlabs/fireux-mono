@@ -38,7 +38,6 @@
 
 <script setup lang="ts">
 import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
-import { useKitchenSelection } from '../../../composables/fireux/app/kitchen-console/useKitchenSelection'
 
 definePageMeta({
   layout: 'console',
@@ -54,11 +53,6 @@ definePageMeta({
   },
   requiresAuth: true,
 })
-
-const kitchenSelection = useKitchenSelection()
-if (kitchenSelection.mode.value !== 'live') {
-  kitchenSelection.setRuntimeKitchen({ mode: 'live' })
-}
 
 const { runtime, activeKitchenPill } = useKitchenConsole({
   publishHeader: true,
