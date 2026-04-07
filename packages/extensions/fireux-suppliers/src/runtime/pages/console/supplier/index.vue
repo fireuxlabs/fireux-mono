@@ -18,16 +18,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <MoleculesSegmentedToggle
-          :model-value="selectedMode"
-          :options="modeOptions"
-          label="Mode"
-          @update:model-value="selectMode"
-        />
-
-        <ConsoleSupplierDemo v-if="selectedMode === 'demo'" />
-        <ConsoleSupplierReal v-else-if="selectedMode === 'live'" />
-        <ConsoleSupplierTest v-else />
+        <ConsoleSupplierReal />
       </section>
     </template>
   </UDashboardPanel>
@@ -35,6 +26,7 @@
 
 <script setup lang="ts">
 import { useSupplierConsole } from '../../../composables/fireux/app/supplier-console/useSupplierConsole'
+import { useSupplierSelection } from '../../../composables/fireux/app/supplier-console/useSupplierSelection'
 
 definePageMeta({
   layout: 'console',
@@ -51,9 +43,11 @@ definePageMeta({
   requiresAuth: true,
 })
 
+const supplierSelection = useSupplierSelection()
+if (supplierSelection.mode.value !== 'live') {
+  supplierSelection.setRuntimeSupplier({ mode: 'live' })
+}
+
 const { runtime, console: consoleState } = useSupplierConsole({ publishHeader: true })
-const selectedMode = consoleState.mode
-const modeOptions = consoleState.modeOptions
-const selectMode = consoleState.selectMode
 const clearSelection = consoleState.clearSelection
 </script>

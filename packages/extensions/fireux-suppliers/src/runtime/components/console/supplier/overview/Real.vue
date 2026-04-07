@@ -1,27 +1,81 @@
 <template>
-  <section class="space-y-6">
-    <UCard>
-      <template #header><div class="text-sm font-semibold">Workspace Summary</div></template>
-      <div class="grid gap-3 sm:grid-cols-4">
-        <div class="space-y-1"><div class="text-xs uppercase tracking-[0.16em] text-toned">Mode</div><div class="text-sm font-medium">Real</div></div>
-        <div class="space-y-1"><div class="text-xs uppercase tracking-[0.16em] text-toned">Source</div><div class="text-sm font-medium">Firestore production data</div></div>
-        <div class="space-y-1"><div class="text-xs uppercase tracking-[0.16em] text-toned">Supplier Id</div><div class="font-mono text-sm">{{ runtime.id }}</div></div>
-        <div class="space-y-1"><div class="text-xs uppercase tracking-[0.16em] text-toned">Is Premium</div><div class="text-sm font-medium">{{ isPremium ? 'true' : 'false' }}</div></div>
+  <UCard>
+    <template #header>
+      <div class="space-y-1">
+        <div class="text-sm font-semibold">Supplier Summary</div>
+        <p class="text-sm text-dimmed">
+          Live details for the currently selected supplier.
+        </p>
       </div>
-    </UCard>
-    <UCard v-if="isPremium">
-      <template #header><div class="text-sm font-semibold">Premium Collection Summary</div></template>
-      <div class="space-y-1"><div class="text-xs uppercase tracking-[0.16em] text-toned">Total Suppliers</div><div class="text-sm font-medium">{{ liveSupplierCount }}</div></div>
-    </UCard>
-  </section>
+    </template>
+
+    <div v-if="supplier" class="grid gap-3 text-sm text-dimmed sm:grid-cols-2">
+      <div>
+        Supplier ID:
+        <span class="font-medium text-default">{{ supplierId }}</span>
+      </div>
+      <div v-if="organizationName">
+        Organization:
+        <span class="font-medium text-default">{{ organizationName }}</span>
+      </div>
+      <div v-if="supplierHeadline" class="sm:col-span-2">
+        Headline:
+        <span class="font-medium text-default">{{ supplierHeadline }}</span>
+      </div>
+      <div v-if="deliveryAreas">
+        Delivery Areas:
+        <span class="font-medium text-default">{{ deliveryAreas }}</span>
+      </div>
+      <div v-if="productCategories">
+        Categories:
+        <span class="font-medium text-default">{{ productCategories }}</span>
+      </div>
+      <div v-if="supplierSummary" class="sm:col-span-2">
+        Summary:
+        <span class="font-medium text-default">{{ supplierSummary }}</span>
+      </div>
+      <div v-if="supplierBio" class="sm:col-span-2">
+        Bio:
+        <span class="font-medium text-default">{{ supplierBio }}</span>
+      </div>
+    </div>
+
+    <p v-else class="text-sm text-dimmed">
+      No live supplier is currently selected.
+    </p>
+  </UCard>
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useActiveSupplier } from '../../../../composables/fireux/app/supplier-console/useActiveSupplier'
-import { useSupplierCollection } from '../../../../composables/fireux/firestore/supplier/fetch/useSupplierCollection'
+
 const runtime = useActiveSupplier()
-const { isPremium } = useUser()
-const { coreSuppliers: liveSuppliers } = useSupplierCollection()
-const liveSupplierCount = computed(() => liveSuppliers.value.length)
+const supplier = computed(
+  () => runtime.supplier.value as Record<string, unknown> | null
+)
+
+const normalizeString = (value: unknown): string => String(value || '').trim()
+const normalizeList = (value: unknown): string =>
+  Array.isArray(value)
+    ? value
+        .map((entry) => normalizeString(entry))
+        .filter(Boolean)
+        .join(', ')
+    : ''
+
+const supplierId = computed(() => runtime.id.value)
+const organizationName = computed(() =>
+  normalizeString(supplier.value?.supplier_organization_name || supplier.value?.name)
+)
+const supplierHeadline = computed(() =>
+  normalizeString(supplier.value?.supplier_headline)
+)
+const deliveryAreas = computed(() =>
+  normalizeList(supplier.value?.supplier_delivery_areas)
+)
+const productCategories = computed(() =>
+  normalizeList(supplier.value?.supplier_product_categories)
+)
+const supplierSummary = computed(() => normalizeString(supplier.value?.summary))
+const supplierBio = computed(() => normalizeString(supplier.value?.supplier_bio))
 </script>

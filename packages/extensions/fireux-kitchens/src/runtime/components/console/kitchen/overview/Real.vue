@@ -1,27 +1,61 @@
 <template>
-  <section class="space-y-6">
-    <UCard>
-      <template #header><div class="text-sm font-semibold">Workspace Summary</div></template>
-      <div class="grid gap-3 sm:grid-cols-4">
-        <div class="space-y-1"><div class="text-xs uppercase tracking-[0.16em] text-toned">Mode</div><div class="text-sm font-medium">Real</div></div>
-        <div class="space-y-1"><div class="text-xs uppercase tracking-[0.16em] text-toned">Source</div><div class="text-sm font-medium">Firestore production data</div></div>
-        <div class="space-y-1"><div class="text-xs uppercase tracking-[0.16em] text-toned">Kitchen Id</div><div class="font-mono text-sm">{{ runtime.id }}</div></div>
-        <div class="space-y-1"><div class="text-xs uppercase tracking-[0.16em] text-toned">Is Premium</div><div class="text-sm font-medium">{{ isPremium ? 'true' : 'false' }}</div></div>
+  <UCard>
+    <template #header>
+      <div class="space-y-1">
+        <div class="text-sm font-semibold">Kitchen Summary</div>
+        <p class="text-sm text-dimmed">
+          Live details for the currently selected kitchen.
+        </p>
       </div>
-    </UCard>
-    <UCard v-if="isPremium">
-      <template #header><div class="text-sm font-semibold">Premium Collection Summary</div></template>
-      <div class="space-y-1"><div class="text-xs uppercase tracking-[0.16em] text-toned">Total Kitchens</div><div class="text-sm font-medium">{{ liveKitchenCount }}</div></div>
-    </UCard>
-  </section>
+    </template>
+
+    <div v-if="kitchen" class="grid gap-3 text-sm text-dimmed sm:grid-cols-2">
+      <div>
+        Kitchen ID:
+        <span class="font-medium text-default">{{ kitchenId }}</span>
+      </div>
+      <div v-if="kitchenName">
+        Name:
+        <span class="font-medium text-default">{{ kitchenName }}</span>
+      </div>
+      <div v-if="kitchenShortName">
+        Short Name:
+        <span class="font-medium text-default">{{ kitchenShortName }}</span>
+      </div>
+      <div v-if="kitchenAddress">
+        Address:
+        <span class="font-medium text-default">{{ kitchenAddress }}</span>
+      </div>
+      <div v-if="kitchenWebsite" class="sm:col-span-2">
+        Website:
+        <span class="font-medium text-default break-all">{{ kitchenWebsite }}</span>
+      </div>
+      <div v-if="kitchenTagline" class="sm:col-span-2">
+        Tagline:
+        <span class="font-medium text-default">{{ kitchenTagline }}</span>
+      </div>
+    </div>
+
+    <p v-else class="text-sm text-dimmed">
+      No live kitchen is currently selected.
+    </p>
+  </UCard>
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useActiveKitchen } from '../../../../composables/fireux/app/kitchen-console/useActiveKitchen'
-import { useKitchenFetch } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
+
 const runtime = useActiveKitchen()
-const { isPremium } = useUser()
-const { kitchens: liveKitchens } = useKitchenFetch()
-const liveKitchenCount = computed(() => liveKitchens.value.length)
+const kitchen = computed(() => runtime.kitchen.value as Record<string, unknown> | null)
+
+const normalizeString = (value: unknown): string => String(value || '').trim()
+
+const kitchenId = computed(() => runtime.id.value)
+const kitchenName = computed(() => normalizeString(kitchen.value?.name))
+const kitchenShortName = computed(() => normalizeString(kitchen.value?.short_name))
+const kitchenAddress = computed(() =>
+  normalizeString(kitchen.value?.formatted_address || kitchen.value?.short_address)
+)
+const kitchenWebsite = computed(() => normalizeString(kitchen.value?.website))
+const kitchenTagline = computed(() => normalizeString(kitchen.value?.brand_tagline))
 </script>

@@ -22,78 +22,14 @@
         />
 
         <template v-else>
-          <div class="flex flex-wrap items-center gap-3">
-            <KitchenCardsPill
-              v-if="activeKitchenPill"
-              v-bind="activeKitchenPill"
-              :link="false"
-              :show-badges="false"
-            />
-            <UBadge color="neutral" variant="soft" size="lg">
-              {{ modeLabel }} Mode
-            </UBadge>
-          </div>
+          <KitchenCardsPill
+            v-if="activeKitchenPill"
+            v-bind="activeKitchenPill"
+            :link="false"
+            :show-badges="false"
+          />
 
-          <ConsoleKitchenOverviewDemo v-if="runtimeMode === 'demo'" />
-          <ConsoleKitchenOverviewReal v-else-if="runtimeMode === 'live'" />
-          <ConsoleKitchenOverviewTest v-else />
-
-          <UCard>
-            <template #header>
-              <div class="text-sm font-semibold">Kitchen Areas</div>
-            </template>
-
-            <div class="flex flex-wrap gap-2">
-              <UButton
-                to="/console/kitchen/menu"
-                color="neutral"
-                variant="soft"
-                icon="i-lucide-book-open"
-              >
-                Menu
-              </UButton>
-              <UButton
-                to="/console/kitchen/recipes"
-                color="neutral"
-                variant="soft"
-                icon="i-lucide-notebook-pen"
-              >
-                Recipes
-              </UButton>
-              <UButton
-                to="/console/kitchen/ingredients"
-                color="neutral"
-                variant="soft"
-                icon="i-lucide-carrot"
-              >
-                Ingredients
-              </UButton>
-              <UButton
-                to="/console/kitchen/orders"
-                color="neutral"
-                variant="soft"
-                icon="i-lucide-clipboard-list"
-              >
-                Orders
-              </UButton>
-              <UButton
-                to="/console/kitchen/team"
-                color="neutral"
-                variant="soft"
-                icon="i-lucide-users"
-              >
-                Team
-              </UButton>
-              <UButton
-                to="/console/kitchen"
-                color="neutral"
-                variant="ghost"
-                icon="i-lucide-refresh-cw"
-              >
-                Switch kitchen
-              </UButton>
-            </div>
-          </UCard>
+          <ConsoleKitchenOverviewReal />
         </template>
       </section>
     </template>
@@ -101,8 +37,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
+import { useKitchenSelection } from '../../../composables/fireux/app/kitchen-console/useKitchenSelection'
 
 definePageMeta({
   layout: 'console',
@@ -119,14 +55,12 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, console: consoleState, activeKitchenPill } = useKitchenConsole({
-  publishHeader: true,
-})
-const runtimeMode = consoleState.mode
+const kitchenSelection = useKitchenSelection()
+if (kitchenSelection.mode.value !== 'live') {
+  kitchenSelection.setRuntimeKitchen({ mode: 'live' })
+}
 
-const modeLabel = computed(() => {
-  if (runtimeMode.value === 'live') return 'Real'
-  if (runtimeMode.value === 'test') return 'Test'
-  return 'Demo'
+const { runtime, activeKitchenPill } = useKitchenConsole({
+  publishHeader: true,
 })
 </script>

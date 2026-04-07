@@ -22,47 +22,14 @@
         />
 
         <template v-else>
-          <div class="flex flex-wrap items-center gap-3">
-            <SupplierCardsPill
-              v-if="activeSupplierPill"
-              v-bind="activeSupplierPill"
-              :link="false"
-              :show-badges="false"
-            />
-            <UBadge color="neutral" variant="soft" size="lg">
-              {{ modeLabel }} Mode
-            </UBadge>
-          </div>
+          <SupplierCardsPill
+            v-if="activeSupplierPill"
+            v-bind="activeSupplierPill"
+            :link="false"
+            :show-badges="false"
+          />
 
-          <ConsoleSupplierOverviewDemo v-if="runtimeMode === 'demo'" />
-          <ConsoleSupplierOverviewReal v-else-if="runtimeMode === 'live'" />
-          <ConsoleSupplierOverviewTest v-else />
-
-          <UCard>
-            <template #header>
-              <div class="text-sm font-semibold">Workspace Actions</div>
-            </template>
-
-            <div class="flex flex-wrap gap-2">
-              <UButton
-                v-if="activeSupplierPill?.to"
-                :to="activeSupplierPill.to"
-                color="neutral"
-                variant="soft"
-                icon="i-lucide-external-link"
-              >
-                Open public supplier
-              </UButton>
-              <UButton
-                to="/console/supplier"
-                color="neutral"
-                variant="ghost"
-                icon="i-lucide-refresh-cw"
-              >
-                Switch supplier
-              </UButton>
-            </div>
-          </UCard>
+          <ConsoleSupplierOverviewReal />
         </template>
       </section>
     </template>
@@ -70,8 +37,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useSupplierConsole } from '../../../composables/fireux/app/supplier-console/useSupplierConsole'
+import { useSupplierSelection } from '../../../composables/fireux/app/supplier-console/useSupplierSelection'
 
 definePageMeta({
   layout: 'console',
@@ -88,14 +55,12 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, console: consoleState, activeSupplierPill } = useSupplierConsole({
-  publishHeader: true,
-})
-const runtimeMode = consoleState.mode
+const supplierSelection = useSupplierSelection()
+if (supplierSelection.mode.value !== 'live') {
+  supplierSelection.setRuntimeSupplier({ mode: 'live' })
+}
 
-const modeLabel = computed(() => {
-  if (runtimeMode.value === 'live') return 'Real'
-  if (runtimeMode.value === 'test') return 'Test'
-  return 'Demo'
+const { runtime, activeSupplierPill } = useSupplierConsole({
+  publishHeader: true,
 })
 </script>

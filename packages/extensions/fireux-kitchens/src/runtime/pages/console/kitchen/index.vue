@@ -18,16 +18,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <MoleculesSegmentedToggle
-          :model-value="selectedMode"
-          :options="modeOptions"
-          label="Mode"
-          @update:model-value="selectMode"
-        />
-
-        <ConsoleKitchenDemo v-if="selectedMode === 'demo'" />
-        <ConsoleKitchenReal v-else-if="selectedMode === 'live'" />
-        <ConsoleKitchenTest v-else />
+        <ConsoleKitchenReal />
       </section>
     </template>
   </UDashboardPanel>
@@ -35,6 +26,7 @@
 
 <script setup lang="ts">
 import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
+import { useKitchenSelection } from '../../../composables/fireux/app/kitchen-console/useKitchenSelection'
 
 definePageMeta({
   layout: 'console',
@@ -51,9 +43,11 @@ definePageMeta({
   requiresAuth: true,
 })
 
+const kitchenSelection = useKitchenSelection()
+if (kitchenSelection.mode.value !== 'live') {
+  kitchenSelection.setRuntimeKitchen({ mode: 'live' })
+}
+
 const { runtime, console: consoleState } = useKitchenConsole({ publishHeader: true })
-const selectedMode = consoleState.mode
-const modeOptions = consoleState.modeOptions
-const selectMode = consoleState.selectMode
 const clearSelection = consoleState.clearSelection
 </script>

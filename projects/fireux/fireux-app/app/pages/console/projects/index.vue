@@ -19,14 +19,6 @@
     <template #body>
       <section class="space-y-4">
         <ConsoleProjectReal />
-
-        <DevJson
-          title="Project Console Debug"
-          context="console/projects"
-          :data="{ runtime, consoleState }"
-          :default-open="true"
-          :hide-when-empty="false"
-        />
       </section>
     </template>
   </UDashboardPanel>

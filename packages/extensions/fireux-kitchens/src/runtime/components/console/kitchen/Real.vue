@@ -1,32 +1,51 @@
 <template>
-  <section class="space-y-4">
-    <ConsoleRootSelectionStatus
-      :has-selection="Boolean(activeKitchenPill)"
-      :has-options="liveKitchenPills.length > 0"
-      select-title="Select a real kitchen"
-      empty-title="No real kitchens"
-    >
-      <template #selected>
-        <UAlert
-          color="primary"
-          variant="soft"
-          :title="activeKitchenPill?.title || ''"
-          :description="activeKitchenPill?.subtitle || ''"
-        />
-      </template>
-    </ConsoleRootSelectionStatus>
+  <section class="space-y-6">
+    <UAlert
+      v-if="!kitchenCards.length"
+      color="neutral"
+      variant="soft"
+      title="No live kitchens found"
+      description="No live kitchens are currently available in this workspace."
+    />
 
-    <div v-if="liveKitchenPills.length" class="space-y-2">
-      <KitchenCardsPill
-        v-for="item in liveKitchenPills"
-        :key="item.id"
-        v-bind="item"
-        :link="false"
-        :action="true"
-        :show-badges="false"
-        class="cursor-pointer"
-        @action="selectKitchen(item.id)"
-      />
+    <div v-else class="space-y-6">
+      <div class="space-y-2">
+        <div class="text-xs uppercase tracking-[0.16em] text-toned">Selected Kitchen</div>
+
+        <KitchenCardsPill
+          v-if="activeKitchenPill"
+          v-bind="activeKitchenPill"
+          :link="false"
+        />
+
+        <p v-else class="text-sm text-dimmed">
+          Choose a kitchen below to load it into the console.
+        </p>
+      </div>
+
+      <UCard>
+        <template #header>
+          <div class="space-y-1">
+            <div class="text-sm font-semibold">Choose Kitchen</div>
+            <p class="text-sm text-dimmed">
+              Select the live kitchen you want to work on.
+            </p>
+          </div>
+        </template>
+
+        <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          <UButton
+            v-for="entry in kitchenCards"
+            :key="entry.id"
+            color="neutral"
+            :variant="entry.id === selectedId ? 'solid' : 'soft'"
+            class="justify-start"
+            @click="selectKitchen(entry.id)"
+          >
+            <span class="truncate">{{ entry.title }}</span>
+          </UButton>
+        </div>
+      </UCard>
     </div>
   </section>
 </template>
@@ -39,36 +58,20 @@ import { useKitchenSelection } from '../../../composables/fireux/app/kitchen-con
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
 
-const { runtime } = useKitchenConsole()
-const kitchenSelection = useKitchenSelection()
+const { activeKitchenPill } = useKitchenConsole()
+const { selectedId, setRuntimeKitchen } = useKitchenSelection()
 const { interface: toKitchenCard } = useKitchenInterface()
 const { kitchens: liveKitchens } = useKitchenFetch()
 
 type KitchenPill = NonNullable<ReturnType<typeof toKitchenCard>>
 
-const buildKitchenPill = (target?: Kitchen | null): KitchenPill | null => {
-  const pill = toKitchenCard(target as Kitchen | null)
-  return pill ? { ...pill } : null
-}
-
-const liveKitchenPills = computed(() =>
+const kitchenCards = computed(() =>
   liveKitchens.value
-    .map((entry) => buildKitchenPill(entry as Kitchen))
+    .map((entry) => toKitchenCard(entry as Kitchen))
     .filter((entry): entry is KitchenPill => Boolean(entry))
 )
 
-const activeKitchenPill = computed(
-  () =>
-    liveKitchenPills.value.find((item) => item.id === runtime.id.value) ??
-    buildKitchenPill(runtime.kitchen.value as Kitchen | null)
-)
-
 const selectKitchen = (kitchenId: string) => {
-  const resolvedId = String(kitchenId || '').trim()
-  if (!resolvedId) return
-  kitchenSelection.setRuntimeKitchen({
-    kitchenId: resolvedId,
-    mode: 'live',
-  })
+  setRuntimeKitchen({ kitchenId })
 }
 </script>
