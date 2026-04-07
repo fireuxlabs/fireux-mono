@@ -1,40 +1,45 @@
 import { computed } from 'vue'
 import { useConsoleState } from 'fireux-core/runtime/composables/fireux/console/useConsoleState'
-import type { Supplier } from '../../../models/supplier/Supplier.model'
+import type { Supplier } from '../../../../models/supplier/Supplier.model'
 import { useSupplierSelection } from './useSupplierSelection'
 import { useActiveSupplier } from './useActiveSupplier'
 import { useSupplierInterface } from '../../firestore/supplier/utils/view/useSupplierInterface'
 
-type UseRuntimeSupplierConsoleOptions = {
+type UseSupplierConsoleOptions = {
   publishHeader?: boolean
 }
 
+const normalizeString = (value: unknown): string => String(value || '').trim()
+
 /**
- * Root supplier console inputs.
+ * Supplier console adapter.
+ * Keeps only the active pill, header data, and shared console-state wiring.
  */
 export function useSupplierConsole(
-  options: UseRuntimeSupplierConsoleOptions = {}
+  options: UseSupplierConsoleOptions = {}
 ) {
-  const runtime = useActiveSupplier()
+  const supplierState = useActiveSupplier()
   const supplierSelection = useSupplierSelection()
   const { interface: toSupplierCard } = useSupplierInterface()
-  const activeSupplierPill = computed(() =>
-    toSupplierCard(runtime.supplier.value as Supplier | null)
+  const supplier = computed(() =>
+    toSupplierCard(supplierState.supplier.value as Supplier | null)
   )
 
   const headerData = computed(() =>
-    activeSupplierPill.value
+    supplier.value
       ? {
-          imageUrl: activeSupplierPill.value.avatarUrl,
-          title: activeSupplierPill.value.title,
-          subtitle: activeSupplierPill.value.subtitle,
+          imageUrl: supplier.value.avatarUrl,
+          title: supplier.value.title,
+          subtitle:
+            normalizeString(supplier.value.subtitle) ||
+            normalizeString(supplierState.supplier.value?.id),
         }
       : null
   )
 
   const consoleState = useConsoleState({
     family: 'supplier',
-    selectedId: runtime.id,
+    selectedId: supplierState.id,
     mode: computed(() => 'live'),
     setMode: () => {},
     clearSelection: supplierSelection.clearRuntimeSupplier,
@@ -44,8 +49,8 @@ export function useSupplierConsole(
   })
 
   return {
-    runtime,
-    activeSupplierPill,
+    supplierState,
+    supplier,
     headerData,
     consoleState,
   }

@@ -45,12 +45,12 @@
 import { computed } from 'vue'
 import { useActiveKitchen } from '../../../../composables/fireux/app/kitchen-console/useActiveKitchen'
 
-const runtime = useActiveKitchen()
-const kitchen = computed(() => runtime.kitchen.value as Record<string, unknown> | null)
+const kitchenState = useActiveKitchen()
+const kitchen = computed(() => kitchenState.kitchen.value as Record<string, unknown> | null)
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
 
-const kitchenId = computed(() => runtime.id.value)
+const kitchenId = computed(() => kitchenState.id.value)
 const kitchenName = computed(() => normalizeString(kitchen.value?.name))
 const kitchenShortName = computed(() => normalizeString(kitchen.value?.short_name))
 const kitchenAddress = computed(() =>

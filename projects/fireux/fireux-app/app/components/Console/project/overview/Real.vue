@@ -46,12 +46,12 @@
 import { computed } from 'vue'
 import { useActiveProject } from '~/composables/console/project/useActiveProject'
 
-const runtime = useActiveProject()
-const project = computed(() => runtime.project.value as Record<string, unknown> | null)
+const projectState = useActiveProject()
+const project = computed(() => projectState.project.value as Record<string, unknown> | null)
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
 
-const projectId = computed(() => runtime.id.value)
+const projectId = computed(() => projectState.id.value)
 const projectName = computed(() => normalizeString(project.value?.name))
 const projectSlug = computed(() => normalizeString(project.value?.slug))
 const projectStatus = computed(() => normalizeString(project.value?.status))

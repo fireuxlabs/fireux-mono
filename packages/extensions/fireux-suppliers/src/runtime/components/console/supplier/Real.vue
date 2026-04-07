@@ -13,8 +13,8 @@
         <div class="text-xs uppercase tracking-[0.16em] text-toned">Selected Supplier</div>
 
         <SupplierCardsPill
-          v-if="activeSupplierPill"
-          v-bind="activeSupplierPill"
+          v-if="supplier"
+          v-bind="supplier"
           :link="false"
         />
 
@@ -58,7 +58,7 @@ import { useSupplierSelection } from '../../../composables/fireux/app/supplier-c
 import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 import { useSupplierConsole } from '../../../composables/fireux/app/supplier-console/useSupplierConsole'
 
-const { activeSupplierPill } = useSupplierConsole()
+const { supplier } = useSupplierConsole()
 const { selectedId, setRuntimeSupplier } = useSupplierSelection()
 const { interface: toSupplierCard } = useSupplierInterface()
 const { coreSuppliers: liveSuppliers } = useSupplierCollection()

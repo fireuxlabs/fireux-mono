@@ -7,7 +7,7 @@
     <template #body>
       <section class="space-y-6">
         <UAlert
-          v-if="!runtime.id"
+          v-if="!projectState.id"
           color="neutral"
           variant="soft"
           title="No project selected"
@@ -23,8 +23,8 @@
 
         <template v-else>
           <ProjectCardsPill
-            v-if="activeProjectPill"
-            v-bind="activeProjectPill"
+            v-if="project"
+            v-bind="project"
             :link="false"
             :show-badges="false"
           />
@@ -53,7 +53,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, activeProjectPill } = useProjectConsole({
+const { projectState, project } = useProjectConsole({
   publishHeader: true,
 })
 </script>

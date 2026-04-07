@@ -4,7 +4,7 @@
       <LayoutsConsoleNavbar title="Supplier">
         <template #right>
           <UButton
-            v-if="runtime.id"
+            v-if="supplierState.id"
             color="neutral"
             variant="ghost"
             icon="i-lucide-x"
@@ -42,6 +42,6 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, consoleState } = useSupplierConsole({ publishHeader: true })
+const { supplierState, consoleState } = useSupplierConsole({ publishHeader: true })
 const clearSelection = consoleState.clearSelection
 </script>

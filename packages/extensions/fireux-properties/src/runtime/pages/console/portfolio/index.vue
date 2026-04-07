@@ -4,7 +4,7 @@
       <LayoutsConsoleNavbar title="Portfolio">
         <template #right>
           <UButton
-            v-if="runtime.id"
+            v-if="portfolioState.id"
             color="neutral"
             variant="ghost"
             icon="i-lucide-x"
@@ -42,6 +42,6 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, consoleState } = usePortfolioConsole({ publishHeader: true })
+const { portfolioState, consoleState } = usePortfolioConsole({ publishHeader: true })
 const clearSelection = consoleState.clearSelection
 </script>

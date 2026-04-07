@@ -7,7 +7,7 @@
     <template #body>
       <section class="space-y-6">
         <UAlert
-          v-if="!runtime.id"
+          v-if="!portfolioState.id"
           color="neutral"
           variant="soft"
           title="No portfolio selected"
@@ -23,8 +23,8 @@
 
         <template v-else>
           <PortfolioCardsPill
-            v-if="activePortfolioPill"
-            v-bind="activePortfolioPill"
+            v-if="portfolio"
+            v-bind="portfolio"
             :link="false"
             :show-badges="false"
           />
@@ -54,7 +54,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, activePortfolioPill } = usePortfolioConsole({
+const { portfolioState, portfolio } = usePortfolioConsole({
   publishHeader: true,
 })
 </script>

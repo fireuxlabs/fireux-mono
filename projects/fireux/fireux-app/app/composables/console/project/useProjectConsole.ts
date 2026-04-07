@@ -4,7 +4,6 @@ import {
   useProjectInterface,
   type ProjectInterfaceInput,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/project/utils/view/useProjectInterface'
-import type { Project } from 'fireux-core/runtime/models/system/project.model'
 import { useProjectSelection } from './useProjectSelection'
 import { useActiveProject } from './useActiveProject'
 
@@ -21,29 +20,29 @@ const normalizeString = (value: unknown): string => String(value || '').trim()
 export function useProjectConsole(
   options: UseProjectConsoleOptions = {}
 ) {
-  const runtime = useActiveProject()
+  const projectState = useActiveProject()
   const projectSelection = useProjectSelection()
   const { interface: toProjectCard } = useProjectInterface()
 
-  const activeProjectPill = computed(() =>
-    toProjectCard(runtime.project.value as ProjectInterfaceInput | null)
+  const project = computed(() =>
+    toProjectCard(projectState.project.value as ProjectInterfaceInput | null)
   )
 
   const headerData = computed(() =>
-    activeProjectPill.value
+    project.value
       ? {
-          imageUrl: activeProjectPill.value.imageUrl,
-          title: activeProjectPill.value.title,
+          imageUrl: project.value.imageUrl,
+          title: project.value.title,
           subtitle:
-            normalizeString(activeProjectPill.value.subtitle) ||
-            normalizeString(runtime.project.value?.id),
+            normalizeString(project.value.subtitle) ||
+            normalizeString(projectState.project.value?.id),
         }
       : null
   )
 
   const consoleState = useConsoleState({
     family: 'projects',
-    selectedId: runtime.id,
+    selectedId: projectState.id,
     mode: computed(() => 'live'),
     setMode: () => {},
     clearSelection: projectSelection.clearRuntimeProject,
@@ -53,8 +52,8 @@ export function useProjectConsole(
   })
 
   return {
-    runtime,
-    activeProjectPill,
+    projectState,
+    project,
     headerData,
     consoleState,
   }

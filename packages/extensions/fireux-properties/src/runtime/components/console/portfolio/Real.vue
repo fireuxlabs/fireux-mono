@@ -13,8 +13,8 @@
         <div class="text-xs uppercase tracking-[0.16em] text-toned">Selected Portfolio</div>
 
         <PortfolioCardsPill
-          v-if="activePortfolioPill"
-          v-bind="activePortfolioPill"
+          v-if="portfolio"
+          v-bind="portfolio"
           :link="false"
         />
 
@@ -58,7 +58,7 @@ import { usePortfolioSelection } from '../../../composables/fireux/app/portfolio
 import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
 import { usePortfolioConsole } from '../../../composables/fireux/app/portfolio-console/usePortfolioConsole'
 
-const { activePortfolioPill } = usePortfolioConsole()
+const { portfolio } = usePortfolioConsole()
 const { selectedId, setRuntimePortfolio } = usePortfolioSelection()
 const { pill: toPortfolioCard } = usePortfolioInterface()
 const { collection: livePortfolios } = usePortfolioCollection()

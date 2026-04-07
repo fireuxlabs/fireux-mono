@@ -4,7 +4,7 @@
       <LayoutsConsoleNavbar title="Kitchen">
         <template #right>
           <UButton
-            v-if="runtime.id"
+            v-if="kitchenState.id"
             color="neutral"
             variant="ghost"
             icon="i-lucide-x"
@@ -42,6 +42,6 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, consoleState } = useKitchenConsole({ publishHeader: true })
+const { kitchenState, consoleState } = useKitchenConsole({ publishHeader: true })
 const clearSelection = consoleState.clearSelection
 </script>

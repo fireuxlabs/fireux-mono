@@ -54,14 +54,14 @@
 import { computed } from 'vue'
 import { useActivePortfolio } from '../../../../composables/fireux/app/portfolio-console/useActivePortfolio'
 
-const runtime = useActivePortfolio()
+const portfolioState = useActivePortfolio()
 const portfolio = computed(
-  () => runtime.portfolio.value as Record<string, unknown> | null
+  () => portfolioState.portfolio.value as Record<string, unknown> | null
 )
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
 
-const portfolioId = computed(() => runtime.id.value)
+const portfolioId = computed(() => portfolioState.id.value)
 const portfolioName = computed(() => normalizeString(portfolio.value?.name))
 const portfolioSlug = computed(() => normalizeString(portfolio.value?.slug))
 const portfolioStatus = computed(() => normalizeString(portfolio.value?.status))

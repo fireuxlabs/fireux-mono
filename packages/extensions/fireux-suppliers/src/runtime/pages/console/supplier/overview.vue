@@ -7,7 +7,7 @@
     <template #body>
       <section class="space-y-6">
         <UAlert
-          v-if="!runtime.id"
+          v-if="!supplierState.id"
           color="neutral"
           variant="soft"
           title="No supplier selected"
@@ -23,8 +23,8 @@
 
         <template v-else>
           <SupplierCardsPill
-            v-if="activeSupplierPill"
-            v-bind="activeSupplierPill"
+            v-if="supplier"
+            v-bind="supplier"
             :link="false"
             :show-badges="false"
           />
@@ -54,7 +54,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, activeSupplierPill } = useSupplierConsole({
+const { supplierState, supplier } = useSupplierConsole({
   publishHeader: true,
 })
 </script>

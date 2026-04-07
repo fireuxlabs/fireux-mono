@@ -2,7 +2,7 @@ import { doc as firestoreDoc, type DocumentSnapshot } from 'firebase/firestore'
 import { computed, ref, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { Portfolio } from '../../../models/portfolio.model'
+import type { Portfolio } from '../../../../models/portfolio.model'
 import { usePortfolioSelection } from './usePortfolioSelection'
 import {
   ROOT_PORTFOLIO_COLLECTION_PATH,

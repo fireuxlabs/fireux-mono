@@ -49,9 +49,9 @@
 import { computed } from 'vue'
 import { useActiveSupplier } from '../../../../composables/fireux/app/supplier-console/useActiveSupplier'
 
-const runtime = useActiveSupplier()
+const supplierState = useActiveSupplier()
 const supplier = computed(
-  () => runtime.supplier.value as Record<string, unknown> | null
+  () => supplierState.supplier.value as Record<string, unknown> | null
 )
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
@@ -63,7 +63,7 @@ const normalizeList = (value: unknown): string =>
         .join(', ')
     : ''
 
-const supplierId = computed(() => runtime.id.value)
+const supplierId = computed(() => supplierState.id.value)
 const organizationName = computed(() =>
   normalizeString(supplier.value?.supplier_organization_name || supplier.value?.name)
 )

@@ -13,8 +13,8 @@
         <div class="text-xs uppercase tracking-[0.16em] text-toned">Selected Kitchen</div>
 
         <KitchenCardsPill
-          v-if="activeKitchenPill"
-          v-bind="activeKitchenPill"
+          v-if="kitchen"
+          v-bind="kitchen"
           :link="false"
         />
 
@@ -58,7 +58,7 @@ import { useKitchenSelection } from '../../../composables/fireux/app/kitchen-con
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
 
-const { activeKitchenPill } = useKitchenConsole()
+const { kitchen } = useKitchenConsole()
 const { selectedId, setRuntimeKitchen } = useKitchenSelection()
 const { interface: toKitchenCard } = useKitchenInterface()
 const { kitchens: liveKitchens } = useKitchenFetch()

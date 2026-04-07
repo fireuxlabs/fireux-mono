@@ -7,7 +7,7 @@
     <template #body>
       <section class="space-y-6">
         <UAlert
-          v-if="!runtime.id"
+          v-if="!kitchenState.id"
           color="neutral"
           variant="soft"
           title="No kitchen selected"
@@ -23,8 +23,8 @@
 
         <template v-else>
           <KitchenCardsPill
-            v-if="activeKitchenPill"
-            v-bind="activeKitchenPill"
+            v-if="kitchen"
+            v-bind="kitchen"
             :link="false"
             :show-badges="false"
           />
@@ -54,7 +54,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, activeKitchenPill } = useKitchenConsole({
+const { kitchenState, kitchen } = useKitchenConsole({
   publishHeader: true,
 })
 </script>

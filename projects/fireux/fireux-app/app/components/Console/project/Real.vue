@@ -13,8 +13,8 @@
         <div class="text-xs uppercase tracking-[0.16em] text-toned">Selected Project</div>
 
         <ProjectCardsPill
-          v-if="activeProjectPill"
-          v-bind="activeProjectPill"
+          v-if="project"
+          v-bind="project"
           :link="false"
         />
 
@@ -58,7 +58,7 @@ import { useProjectInterface } from 'fireux-core/runtime/composables/fireux/fire
 import { useProjectConsole } from '~/composables/console/project/useProjectConsole'
 import { useProjectSelection } from '~/composables/console/project/useProjectSelection'
 
-const { activeProjectPill } = useProjectConsole()
+const { project } = useProjectConsole()
 const { selectedId, setRuntimeProject } = useProjectSelection()
 const { projects } = useProjectCollection('projects')
 const { interface: toProjectCard } = useProjectInterface()

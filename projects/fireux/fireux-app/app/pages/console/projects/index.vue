@@ -4,7 +4,7 @@
       <LayoutsConsoleNavbar title="Projects">
         <template #right>
           <UButton
-            v-if="runtime.id"
+            v-if="projectState.id"
             color="neutral"
             variant="ghost"
             icon="i-lucide-x"
@@ -41,9 +41,8 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const projectConsole = useProjectConsole({
+const { projectState, consoleState } = useProjectConsole({
   publishHeader: true,
 })
-const { runtime, consoleState } = projectConsole
 const clearSelection = consoleState.clearSelection
 </script>

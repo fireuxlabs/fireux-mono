@@ -1,11 +1,11 @@
 import { computed } from 'vue'
 import { useConsoleState } from 'fireux-core/runtime/composables/fireux/console/useConsoleState'
-import type { Portfolio } from '../../../models/portfolio.model'
+import type { Portfolio } from '../../../../models/portfolio.model'
 import { usePortfolioSelection } from './usePortfolioSelection'
 import { useActivePortfolio } from './useActivePortfolio'
 import { usePortfolioInterface } from '../../firestore/portfolio/utils/view/usePortfolioInterface'
 
-type UseRuntimePortfolioConsoleOptions = {
+type UsePortfolioConsoleOptions = {
   publishHeader?: boolean
 }
 
@@ -16,31 +16,31 @@ const normalizeString = (value: unknown): string => String(value || '').trim()
  * Keeps only the active pill, header data, and shared console-state wiring.
  */
 export function usePortfolioConsole(
-  options: UseRuntimePortfolioConsoleOptions = {}
+  options: UsePortfolioConsoleOptions = {}
 ) {
-  const runtime = useActivePortfolio()
+  const portfolioState = useActivePortfolio()
   const portfolioSelection = usePortfolioSelection()
   const { pill: toPortfolioCard } = usePortfolioInterface()
 
-  const activePortfolioPill = computed(() =>
-    toPortfolioCard(runtime.portfolio.value as Portfolio | null)
+  const portfolio = computed(() =>
+    toPortfolioCard(portfolioState.portfolio.value as Portfolio | null)
   )
 
   const headerData = computed(() =>
-    activePortfolioPill.value
+    portfolio.value
       ? {
-          imageUrl: activePortfolioPill.value.avatarUrl,
-          title: activePortfolioPill.value.title,
+          imageUrl: portfolio.value.avatarUrl,
+          title: portfolio.value.title,
           subtitle:
-            normalizeString(activePortfolioPill.value.subtitle) ||
-            normalizeString(runtime.portfolio.value?.id),
+            normalizeString(portfolio.value.subtitle) ||
+            normalizeString(portfolioState.portfolio.value?.id),
         }
       : null
   )
 
   const consoleState = useConsoleState({
     family: 'portfolio',
-    selectedId: runtime.id,
+    selectedId: portfolioState.id,
     mode: computed(() => 'live'),
     setMode: () => {},
     clearSelection: portfolioSelection.clearRuntimePortfolio,
@@ -50,8 +50,8 @@ export function usePortfolioConsole(
   })
 
   return {
-    runtime,
-    activePortfolioPill,
+    portfolioState,
+    portfolio,
     headerData,
     consoleState,
   }
