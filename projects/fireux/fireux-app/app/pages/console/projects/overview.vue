@@ -22,54 +22,14 @@
         />
 
         <template v-else>
-          <div class="flex flex-wrap items-center gap-3">
-            <ProjectCardsPill
-              v-if="activeProjectPill"
-              v-bind="activeProjectPill"
-              :link="false"
-              :show-badges="false"
-            />
-            <UBadge color="neutral" variant="soft" size="lg">
-              {{ modeLabel }} Mode
-            </UBadge>
-          </div>
+          <ProjectCardsPill
+            v-if="activeProjectPill"
+            v-bind="activeProjectPill"
+            :link="false"
+            :show-badges="false"
+          />
 
-          <ConsoleProjectOverviewDemo v-if="runtimeMode === 'demo'" />
-          <ConsoleProjectOverviewReal v-else-if="runtimeMode === 'live'" />
-          <ConsoleProjectOverviewTest v-else />
-
-          <UCard>
-            <template #header>
-              <div class="text-sm font-semibold">Project Areas</div>
-            </template>
-
-            <div class="flex flex-wrap gap-2">
-              <UButton
-                to="/console/projects/apps"
-                color="neutral"
-                variant="soft"
-                icon="i-lucide-app-window"
-              >
-                Apps
-              </UButton>
-              <UButton
-                to="/console/projects/ecosystem"
-                color="neutral"
-                variant="soft"
-                icon="i-lucide-network"
-              >
-                Ecosystem
-              </UButton>
-              <UButton
-                to="/console/projects"
-                color="neutral"
-                variant="ghost"
-                icon="i-lucide-refresh-cw"
-              >
-                Switch project
-              </UButton>
-            </div>
-          </UCard>
+          <ConsoleProjectOverviewReal />
         </template>
       </section>
     </template>
@@ -77,7 +37,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useProjectConsole } from '~/composables/console/project/useProjectConsole'
 
 definePageMeta({
@@ -94,14 +53,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, console, activeProjectPill } = useProjectConsole({
+const { runtime, activeProjectPill } = useProjectConsole({
   publishHeader: true,
-})
-const runtimeMode = console.mode
-
-const modeLabel = computed(() => {
-  if (runtimeMode.value === 'live') return 'Real'
-  if (runtimeMode.value === 'test') return 'Test'
-  return 'Demo'
 })
 </script>

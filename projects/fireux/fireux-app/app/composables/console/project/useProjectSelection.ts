@@ -1,37 +1,60 @@
-import { normalizeConsoleMode, normalizeString } from 'fireux-core/runtime/composables/fireux/console/console.normalize'
-import { toConsoleSelectionStateKey } from 'fireux-core/runtime/composables/fireux/app/routing/consoleRoutes'
+import { computed } from 'vue'
+import { normalizeString } from 'fireux-core/runtime/composables/fireux/console/console.normalize'
 import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/console/console.types'
-import { createConsoleEntitySelection } from 'fireux-core/runtime/composables/fireux/console/useConsoleSelection'
+import {
+  selectionKey,
+  useConsoleSelection,
+} from 'fireux-core/runtime/composables/fireux/console/useConsoleSelection'
+import { toConsoleSelectionStateKey } from 'fireux-core/runtime/composables/fireux/app/routing/consoleRoutes'
 
-export type RuntimeProjectSelectionState = {
+type ProjectSelectionState = {
   selectedId: string
-  mode: ConsoleMode
 }
 
-type RuntimeProjectSelectionInput = Partial<RuntimeProjectSelectionState> & {
+type RuntimeProjectSelectionInput = {
+  selectedId?: string
   projectId?: string
+  mode?: ConsoleMode
 }
 
 const COOKIE_KEY = toConsoleSelectionStateKey('projects')
-const useProjectSelectionBase = createConsoleEntitySelection<ConsoleMode, 'projectId'>({
-  cookieKey: COOKIE_KEY,
-  aliasKey: 'projectId',
-  defaultMode: 'live',
-  normalizeMode: (value) => normalizeConsoleMode(value) ?? 'live',
-  normalizeId: normalizeString,
-})
 
-export function useProjectSelection() {
-  const selection = useProjectSelectionBase()
-  const setRuntimeProject = (selectionPatch: RuntimeProjectSelectionInput = {}) =>
-    selection.setSelection(selectionPatch)
-  const clearRuntimeProject = () => selection.clearSelection()
+const normalizeSelectionState = (value: unknown): ProjectSelectionState => {
+  const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
 
   return {
-    selectedId: selection.selectedId,
-    mode: selection.mode,
-    runtimeProjectId: selection.selectedId,
-    runtimeProjectMode: selection.mode,
+    selectedId: normalizeString(source.selectedId ?? source.projectId),
+  }
+}
+
+export function useProjectSelection() {
+  const selection = useConsoleSelection<ProjectSelectionState>({
+    cookieKey: COOKIE_KEY,
+    defaultState: () => ({ selectedId: '' }),
+    normalizeState: normalizeSelectionState,
+  })
+
+  const selectedId = selectionKey(selection, 'selectedId')
+  const mode = computed<ConsoleMode>(() => 'live')
+
+  const setRuntimeProject = (selectionPatch: RuntimeProjectSelectionInput = {}) => {
+    const nextId =
+      selectionPatch.selectedId !== undefined || selectionPatch.projectId !== undefined
+        ? normalizeString(selectionPatch.selectedId ?? selectionPatch.projectId)
+        : selectedId.value
+
+    selection.set({ selectedId: nextId })
+  }
+
+  const clearRuntimeProject = () => {
+    selection.clear()
+  }
+
+  return {
+    selectedId,
+    mode,
+    runtimeProjectId: selectedId,
+    runtimeProjectMode: mode,
     setRuntimeProject,
     clearRuntimeProject,
   }

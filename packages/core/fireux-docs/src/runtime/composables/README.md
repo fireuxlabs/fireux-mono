@@ -1,94 +1,236 @@
 # Composables Directory
 
 Authority: Operational
-Updated: 2026-04-05
+Updated: 2026-04-07
 Scope: `packages/*/fireux-*/src/runtime/composables` only.
 
 Learn how `runtime/composables/` is used across FireUX module packages.
 
-## Composables Directory
+## Purpose
 
-`composables/` contains runtime composables shipped by the package.
+`runtime/composables/` contains composables shipped by the package at runtime.
 
-## What Belongs Here
+Use this tree for:
 
-- runtime feature composables
-- package-owned logic used by pages, components, and runtime flows
-- composables that belong to delivery rather than setup support
+- delivered runtime logic
+- app-facing hooks used by pages and components
+- Firestore reads, writes, and view adapters
+- console state and entity state
 
-## Aligned In Repo
+Do not use this tree for:
 
-- `runtime/composables/` is one of the strongest shared runtime patterns in the repo
-- extensions and ecosystems already use it for delivered logic, hooks, and runtime behavior
+- static config that belongs in `config/`
+- build tooling
+- one-off scripts
 
-## Not Aligned Yet
+## Core Structure
 
-- grouping still varies by package
-- runtime-local types and helpers still need to stay close to the features that own them
+Core canon now uses this top-level split:
 
-## Current Shared Dev Helper
+```text
+runtime/composables/
+  dev/
+  shared/
+  fireux/
+    app/
+    console/
+    firebase/
+    firestore/
+```
 
-One new repo-wide composable seam is now real:
+## Top-Level Meaning
 
-- `runtime/composables/dev/useDevCollectionJson.ts`
+### `dev/`
 
-Purpose:
+Developer-only helpers.
 
-- preserve raw collection-manager dev JSON
-- augment each item with direct Firestore subcollections in dev
-- give drift inspection one shared behavior across entities
+Use for:
 
-This helper is not an entity read contract.
-It is a developer inspection helper.
+- drift inspection
+- raw collection inspection
+- developer support utilities
 
-That means:
+Do not treat `dev/` composables as product/entity canon.
 
-- it should stay out of entity interface canon
-- it should stay shared only because the behavior is truly repo-wide
-- it depends on collection docs carrying collection-path metadata from the shared Firestore read layer
+### `shared/`
 
-Use:
-- `packages/core/fireux-docs/src/runtime/components/README.md`
-- `packages/core/fireux-docs/src/runtime/server/README.md`
+Truly generic helpers that are not FireUX-domain specific.
 
-to understand the full collection-manager dev inspection path.
+Use for:
 
-## Current Shared Console Runtime Seam
+- generic collection helpers
+- generic card/search/view toggles
+- composables that could be reused outside a specific FireUX domain
 
-One generic console runtime seam is now real:
+If a helper is clearly about FireUX app, console, Firebase, or Firestore behavior, it does not belong here.
 
-- `packages/core/fireux-core/src/runtime/composables/fireux/console/useConsoleState.ts`
+### `fireux/`
 
-Purpose:
+FireUX-specific runtime composables.
 
-- give the console layout one small shared contract
-- keep sidebar/header/nav state generic
-- let each `useRuntimeXConsole()` adapt its own domain state into that contract
+This is the main product tree.
 
-Shared shape:
+## `fireux/` Structure
 
-- active family
-- selected id
-- mode
-- mode options
-- clear selection
-- simple header data:
-  - `imageUrl`
-  - `title`
-  - `subtitle`
+```text
+fireux/
+  app/
+    forms/
+    routing/
+    ui/
+    utils/
+  console/
+  firebase/
+  firestore/
+    core/
+    operations/
+    seo/
+    system/
+    utils/
+```
 
-That means:
+### `fireux/app/`
 
-- the layout should not know project, kitchen, portfolio, or supplier internals
-- family adapters should keep domain loading and title/subtitle shaping local
-- root and overview pages should usually opt into header publishing once through their family adapter, not from child mode components
+Current-app concerns.
 
-## Roadmap To Reconciliation
+Use for:
 
-1. Keep composables delivery-first.
-2. Keep setup support in `config/`, not here.
-3. Keep feature-local details close to their composables when that is clearer.
+- app config access
+- app routing helpers
+- app UI helpers
+- app forms
+- app utility helpers
+
+Examples:
+
+- `FireUXConfig`
+- console route helpers
+- auth redirect helpers
+- console notification helpers
+
+Page/head SEO belongs with app concerns, not in a separate top-level SEO tree.
+
+### `fireux/console/`
+
+Shared console state.
+
+Use for:
+
+- console selection state
+- console mode normalization
+- console layout/header/nav state
+- shared console types
+- demo scenario registry helpers
+
+This is the shared console seam, not entity data loading.
+
+Core examples:
+
+- `useConsoleState.ts`
+- `useConsoleSelection.ts`
+- `console.normalize.ts`
+- `console.types.ts`
+
+### `fireux/firebase/`
+
+Firebase SDK-facing helpers.
+
+Use for:
+
+- auth
+- storage
+- user requirement guards
+- low-level Firebase service access
+
+### `fireux/firestore/`
+
+Firestore reads, writes, entity seams, and view adapters.
+
+Use for:
+
+- collection/document fetch composables
+- mutation composables
+- Firestore operation helpers
+- Firestore utility helpers
+- Firestore-backed SEO indexing
+
+Subtree meaning:
+
+- `core/` = core entities such as app, user, profile
+- `system/` = system entities such as project, ecosystem, console
+- `operations/` = generic Firestore CRUD helpers
+- `utils/` = shared Firestore helpers
+- `seo/` = Firestore SEO indexing helpers
+
+## Console And Entity Seam Pattern
+
+For console-driven entities, prefer this three-part pattern:
+
+1. selection
+2. active entity
+3. console adapter
+
+Current naming canon:
+
+- `useProjectSelection`
+- `useActiveProject`
+- `useProjectConsole`
+
+- `usePortfolioSelection`
+- `useActivePortfolio`
+- `usePortfolioConsole`
+
+- `useKitchenSelection`
+- `useActiveKitchen`
+- `useKitchenConsole`
+
+- `useSupplierSelection`
+- `useActiveSupplier`
+- `useSupplierConsole`
+
+Meaning:
+
+- `useXSelection`
+  - remembers which entity is selected
+- `useActiveX`
+  - resolves the active entity and its runtime data path
+- `useXConsole`
+  - adapts the active entity into console-facing UI state
+
+The shared console layout should consume only the generic console contract from `fireux/console/`.
+It should not know project, portfolio, kitchen, or supplier internals.
+
+## What Belongs Close To The Entity
+
+Keep entity-local helpers close to the entity family when they are not generic enough for core console reuse.
+
+Examples:
+
+- `useRuntimePortfolioPath`
+- `useRuntimeKitchenDocument`
+- `useRuntimeKitchenData`
+
+These are local entity/runtime helpers, not shared console helpers.
+
+## Current Repo Direction
+
+Aligned:
+
+- core now uses `fireux/console/` instead of nested `fireux/runtime/`
+- Firestore SEO indexing lives under `fireux/firestore/seo/`
+- project, portfolio, kitchen, and supplier console wrappers now follow the same public naming shape
+
+Still allowed:
+
+- entity-local helper names may still contain `Runtime` where they describe active entity/runtime behavior rather than shared console behavior
 
 ## Short Version
 
-Delivered runtime composables belong here.
+Use:
+
+- `dev/` for developer helpers
+- `shared/` for truly generic helpers
+- `fireux/app/` for current-app helpers
+- `fireux/console/` for shared console state
+- `fireux/firebase/` for Firebase SDK helpers
+- `fireux/firestore/` for Firestore reads, writes, and entity adapters

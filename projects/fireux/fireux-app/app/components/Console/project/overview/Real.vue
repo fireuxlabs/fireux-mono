@@ -1,52 +1,62 @@
 <template>
-  <section class="space-y-6">
-    <UCard>
-      <template #header>
-        <div class="text-sm font-semibold">Workspace Summary</div>
-      </template>
-
-      <div class="grid gap-3 sm:grid-cols-4">
-        <div class="space-y-1">
-          <div class="text-xs uppercase tracking-[0.16em] text-toned">Mode</div>
-          <div class="text-sm font-medium">Real</div>
-        </div>
-
-        <div class="space-y-1">
-          <div class="text-xs uppercase tracking-[0.16em] text-toned">Source</div>
-          <div class="text-sm font-medium">Firestore production data</div>
-        </div>
-
-        <div class="space-y-1">
-          <div class="text-xs uppercase tracking-[0.16em] text-toned">Project Id</div>
-          <div class="font-mono text-sm">{{ runtime.id }}</div>
-        </div>
-
-        <div class="space-y-1">
-          <div class="text-xs uppercase tracking-[0.16em] text-toned">Is Premium</div>
-          <div class="text-sm font-medium">{{ isPremium ? 'true' : 'false' }}</div>
-        </div>
-      </div>
-    </UCard>
-
-    <UCard v-if="isPremium">
-      <template #header>
-        <div class="text-sm font-semibold">Premium Collection Summary</div>
-      </template>
-
+  <UCard>
+    <template #header>
       <div class="space-y-1">
-        <div class="text-xs uppercase tracking-[0.16em] text-toned">Total Projects</div>
-        <div class="text-sm font-medium">{{ liveProjectCount }}</div>
+        <div class="text-sm font-semibold">Project Summary</div>
+        <p class="text-sm text-dimmed">
+          Live details for the currently selected project.
+        </p>
       </div>
-    </UCard>
-  </section>
+    </template>
+
+    <div v-if="project" class="grid gap-3 text-sm text-dimmed sm:grid-cols-2">
+      <div>
+        Project ID:
+        <span class="font-medium text-default">{{ projectId }}</span>
+      </div>
+      <div v-if="projectName">
+        Name:
+        <span class="font-medium text-default">{{ projectName }}</span>
+      </div>
+      <div v-if="projectSlug">
+        Slug:
+        <span class="font-medium text-default">{{ projectSlug }}</span>
+      </div>
+      <div v-if="projectStatus">
+        Status:
+        <span class="font-medium text-default">{{ projectStatus }}</span>
+      </div>
+      <div v-if="consoleEndpoint" class="sm:col-span-2">
+        Console Endpoint:
+        <span class="font-medium text-default break-all">{{ consoleEndpoint }}</span>
+      </div>
+      <div v-if="projectDescription" class="sm:col-span-2">
+        Description:
+        <span class="font-medium text-default">{{ projectDescription }}</span>
+      </div>
+    </div>
+
+    <p v-else class="text-sm text-dimmed">
+      No live project is currently selected.
+    </p>
+  </UCard>
 </template>
 
 <script setup lang="ts">
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
+import { computed } from 'vue'
 import { useActiveProject } from '~/composables/console/project/useActiveProject'
 
 const runtime = useActiveProject()
-const { isPremium } = useUser()
-const { count: liveProjectCount } = useProjectCollection('projects')
+const project = computed(() => runtime.project.value as Record<string, unknown> | null)
+
+const normalizeString = (value: unknown): string => String(value || '').trim()
+
+const projectId = computed(() => runtime.id.value)
+const projectName = computed(() => normalizeString(project.value?.name))
+const projectSlug = computed(() => normalizeString(project.value?.slug))
+const projectStatus = computed(() => normalizeString(project.value?.status))
+const projectDescription = computed(() => normalizeString(project.value?.description))
+const consoleEndpoint = computed(() =>
+  normalizeString(project.value?.console_endpoint_url || project.value?.source_url)
+)
 </script>

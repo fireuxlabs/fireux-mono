@@ -18,16 +18,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <MoleculesSegmentedToggle
-          :model-value="selectedMode"
-          :options="modeOptions"
-          label="Mode"
-          @update:model-value="selectMode"
-        />
-
-        <ConsoleProjectDemo v-if="selectedMode === 'demo'" />
-        <ConsoleProjectReal v-else-if="selectedMode === 'live'" />
-        <ConsoleProjectTest v-else />
+        <ConsoleProjectReal />
       </section>
     </template>
   </UDashboardPanel>
@@ -51,8 +42,5 @@ definePageMeta({
 })
 
 const { runtime, console } = useProjectConsole({ publishHeader: true })
-const selectedMode = console.mode
-const modeOptions = console.modeOptions
-const selectMode = console.selectMode
 const clearSelection = console.clearSelection
 </script>
