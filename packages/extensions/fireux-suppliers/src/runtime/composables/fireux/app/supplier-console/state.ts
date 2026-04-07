@@ -1,5 +1,4 @@
-import { computed } from 'vue'
-import { selectionKey, useRuntimeSelection } from 'fireux-core/runtime/composables/fireux/runtime/useRuntimeSelection'
+import { createRuntimeEntitySelection } from 'fireux-core/runtime/composables/fireux/runtime/useRuntimeSelection'
 
 export type RuntimeSupplierMode = 'live' | 'demo' | 'test'
 
@@ -23,50 +22,25 @@ const normalizeMode = (value: unknown): RuntimeSupplierMode => {
   return 'demo'
 }
 
-const normalizeSelectionState = (value: unknown): RuntimeSupplierSelectionState => {
-  const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
-  return {
-    selectedId: normalizeString(source.selectedId ?? source.supplierId),
-    mode: normalizeMode(source.mode),
-  }
-}
+const useSupplierSelectionBase = createRuntimeEntitySelection<RuntimeSupplierMode, 'supplierId'>({
+  cookieKey: COOKIE_KEY,
+  aliasKey: 'supplierId',
+  defaultMode: 'demo',
+  normalizeMode,
+  normalizeId: normalizeString,
+})
 
 export function useRuntimeSupplierSelection() {
-  const selection = useRuntimeSelection<RuntimeSupplierSelectionState>({
-    cookieKey: COOKIE_KEY,
-    defaultState: () => ({ selectedId: '', mode: 'demo' }),
-    normalizeState: normalizeSelectionState,
-  })
-
-  const setRuntimeSupplier = (selectionPatch: RuntimeSupplierSelectionInput = {}) => {
-    const next: RuntimeSupplierSelectionState = {
-      selectedId:
-        selectionPatch.selectedId !== undefined || selectionPatch.supplierId !== undefined
-          ? normalizeString(selectionPatch.selectedId ?? selectionPatch.supplierId)
-          : selection.state.value.selectedId,
-      mode:
-        selectionPatch.mode !== undefined
-          ? normalizeMode(selectionPatch.mode)
-          : selection.state.value.mode,
-    }
-
-    selection.set(next)
-  }
-
-  const clearRuntimeSupplier = () => {
-    selection.clear()
-  }
-
-  const selectedId = selectionKey(selection, 'selectedId')
-  const mode = computed<RuntimeSupplierMode>(() =>
-    normalizeMode(selection.state.value.mode)
-  )
+  const selection = useSupplierSelectionBase()
+  const setRuntimeSupplier = (selectionPatch: RuntimeSupplierSelectionInput = {}) =>
+    selection.setSelection(selectionPatch)
+  const clearRuntimeSupplier = () => selection.clearSelection()
 
   return {
-    selectedId,
-    mode,
-    runtimeSupplierId: selectedId,
-    runtimeSupplierMode: mode,
+    selectedId: selection.selectedId,
+    mode: selection.mode,
+    runtimeSupplierId: selection.selectedId,
+    runtimeSupplierMode: selection.mode,
     setRuntimeSupplier,
     clearRuntimeSupplier,
   }

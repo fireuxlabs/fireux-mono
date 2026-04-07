@@ -69,3 +69,81 @@ export function selectionKey<TState extends Record<string, any>, K extends keyof
 ) {
   return computed(() => selection.state.value[key])
 }
+
+type RuntimeEntitySelectionState<TMode extends string> = {
+  selectedId: string
+  mode: TMode
+}
+
+type CreateRuntimeEntitySelectionParams<TMode extends string, TAlias extends string> = {
+  cookieKey: string
+  aliasKey: TAlias
+  defaultMode: TMode
+  normalizeMode: (value: unknown) => TMode | undefined
+  normalizeId?: (value: unknown) => string
+}
+
+type RuntimeEntitySelectionInput<TMode extends string, TAlias extends string> =
+  Partial<RuntimeEntitySelectionState<TMode>> & {
+    [K in TAlias]?: string
+  }
+
+/**
+ * Small factory for entity-specific runtime selectors.
+ * Wrappers keep their domain names but share the same implementation.
+ */
+export function createRuntimeEntitySelection<TMode extends string, TAlias extends string>(
+  params: CreateRuntimeEntitySelectionParams<TMode, TAlias>
+) {
+  type SelectionState = RuntimeEntitySelectionState<TMode>
+  type SelectionInput = RuntimeEntitySelectionInput<TMode, TAlias>
+
+  const normalizeId = params.normalizeId ?? ((value: unknown) => String(value ?? '').trim())
+
+  const normalizeState = (value: unknown): SelectionState => {
+    const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
+    return {
+      selectedId: normalizeId(source.selectedId ?? source[params.aliasKey]),
+      mode: params.normalizeMode(source.mode) ?? params.defaultMode,
+    }
+  }
+
+  return function useRuntimeEntitySelection() {
+    const selection = useRuntimeSelection<SelectionState>({
+      cookieKey: params.cookieKey,
+      defaultState: () => ({ selectedId: '', mode: params.defaultMode }),
+      normalizeState,
+    })
+
+    const setSelection = (selectionPatch: SelectionInput = {} as SelectionInput) => {
+      const aliasValue = selectionPatch[params.aliasKey]
+
+      const next: SelectionState = {
+        selectedId:
+          selectionPatch.selectedId !== undefined || aliasValue !== undefined
+            ? normalizeId(selectionPatch.selectedId ?? aliasValue)
+            : selection.state.value.selectedId,
+        mode:
+          selectionPatch.mode !== undefined
+            ? params.normalizeMode(selectionPatch.mode) ?? selection.state.value.mode
+            : selection.state.value.mode,
+      }
+
+      selection.set(next)
+    }
+
+    const clearSelection = () => {
+      selection.clear()
+    }
+
+    const selectedId = selectionKey(selection, 'selectedId')
+    const mode = computed(() => params.normalizeMode(selection.state.value.mode) ?? params.defaultMode)
+
+    return {
+      selectedId,
+      mode,
+      setSelection,
+      clearSelection,
+    }
+  }
+}

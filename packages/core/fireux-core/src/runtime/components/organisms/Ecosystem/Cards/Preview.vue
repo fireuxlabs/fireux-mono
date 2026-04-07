@@ -2,8 +2,8 @@
   <UCard class="space-y-3">
     <div class="flex items-start gap-3">
       <UAvatar
-        :src="imageUrl || undefined"
-        :alt="name"
+        :src="item.imageUrl || undefined"
+        :alt="item.name"
         :text="avatarText"
         icon="i-lucide-orbit"
         size="sm"
@@ -13,32 +13,32 @@
         <div class="flex flex-wrap items-start justify-between gap-2">
           <div class="min-w-0">
             <div class="truncate text-sm font-semibold text-default">
-              {{ name }}
+              {{ item.name }}
             </div>
             <div class="truncate text-xs text-dimmed">
-              <span v-if="slug">{{ slug }}</span>
+              <span v-if="item.slug">{{ item.slug }}</span>
               <span v-else class="italic">missing slug</span>
             </div>
           </div>
 
           <div class="flex flex-wrap gap-1">
-            <UBadge v-if="status" variant="soft" color="neutral" size="xs">
-              {{ status }}
+            <UBadge v-if="item.status" variant="soft" color="neutral" size="xs">
+              {{ item.status }}
             </UBadge>
             <UBadge variant="soft" color="neutral" size="xs">
-              {{ appCount }} app{{ appCount === 1 ? '' : 's' }}
+              {{ item.appCount }} app{{ item.appCount === 1 ? '' : 's' }}
             </UBadge>
           </div>
         </div>
 
         <div class="text-sm text-dimmed">
-          <span v-if="description">{{ description }}</span>
+          <span v-if="item.description">{{ item.description }}</span>
           <span v-else class="italic">missing</span>
         </div>
 
         <div class="flex flex-wrap items-center gap-2 text-xs text-dimmed">
-          <span v-if="team">team: {{ team }}</span>
-          <span v-if="id" class="font-mono break-all">{{ id }}</span>
+          <span v-if="item.team">team: {{ item.team }}</span>
+          <span v-if="item.id" class="font-mono break-all">{{ item.id }}</span>
         </div>
       </div>
     </div>
@@ -48,7 +48,7 @@
 <script setup lang="ts">
 import { computed } from '#imports'
 
-const props = withDefaults(defineProps<{
+type EcosystemPreviewItem = {
   id?: string
   slug?: string
   name?: string
@@ -57,16 +57,33 @@ const props = withDefaults(defineProps<{
   team?: string
   appCount?: number
   imageUrl?: string
+}
+
+const props = withDefaults(defineProps<{
+  item?: EcosystemPreviewItem
 }>(), {
-  id: '',
-  slug: '',
-  name: '',
-  description: '',
-  status: '',
-  team: '',
-  appCount: 0,
-  imageUrl: '',
+  item: () => ({
+    id: '',
+    slug: '',
+    name: '',
+    description: '',
+    status: '',
+    team: '',
+    appCount: 0,
+    imageUrl: '',
+  }),
 })
 
-const avatarText = computed(() => props.name || props.slug || props.id || 'E')
+const item = computed(() => ({
+  id: props.item?.id || '',
+  slug: props.item?.slug || '',
+  name: props.item?.name || '',
+  description: props.item?.description || '',
+  status: props.item?.status || '',
+  team: props.item?.team || '',
+  appCount: props.item?.appCount || 0,
+  imageUrl: props.item?.imageUrl || '',
+}))
+
+const avatarText = computed(() => item.value.name || item.value.slug || item.value.id || 'E')
 </script>

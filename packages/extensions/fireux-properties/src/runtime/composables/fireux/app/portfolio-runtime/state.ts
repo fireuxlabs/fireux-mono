@@ -1,6 +1,5 @@
-import { computed } from 'vue'
 import { normalizeMode, normalizeString, type RuntimePortfolioMode } from './shared'
-import { selectionKey, useRuntimeSelection } from 'fireux-core/runtime/composables/fireux/runtime/useRuntimeSelection'
+import { createRuntimeEntitySelection } from 'fireux-core/runtime/composables/fireux/runtime/useRuntimeSelection'
 
 type RuntimePortfolioSelectionState = {
   selectedId: string
@@ -12,49 +11,25 @@ type RuntimePortfolioSelectionInput = Partial<RuntimePortfolioSelectionState> & 
 }
 
 const COOKIE_KEY = 'fireux_runtime_portfolio'
-
-const normalizeSelectionState = (value: unknown): RuntimePortfolioSelectionState => {
-  const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
-  return {
-    selectedId: normalizeString(source.selectedId ?? source.portfolioId),
-    mode: normalizeMode(source.mode) ?? 'demo',
-  }
-}
+const usePortfolioSelectionBase = createRuntimeEntitySelection<RuntimePortfolioMode, 'portfolioId'>({
+  cookieKey: COOKIE_KEY,
+  aliasKey: 'portfolioId',
+  defaultMode: 'demo',
+  normalizeMode: (value) => normalizeMode(value) ?? 'demo',
+  normalizeId: normalizeString,
+})
 
 export function useRuntimePortfolioSelection() {
-  const selection = useRuntimeSelection<RuntimePortfolioSelectionState>({
-    cookieKey: COOKIE_KEY,
-    defaultState: () => ({ selectedId: '', mode: 'demo' }),
-    normalizeState: normalizeSelectionState,
-  })
-
-  const setRuntimePortfolio = (selectionPatch: RuntimePortfolioSelectionInput = {}) => {
-    const next: RuntimePortfolioSelectionState = {
-      selectedId:
-        selectionPatch.selectedId !== undefined || selectionPatch.portfolioId !== undefined
-          ? normalizeString(selectionPatch.selectedId ?? selectionPatch.portfolioId)
-          : selection.state.value.selectedId,
-      mode:
-        selectionPatch.mode !== undefined
-          ? normalizeMode(selectionPatch.mode) ?? selection.state.value.mode
-          : selection.state.value.mode,
-    }
-
-    selection.set(next)
-  }
-
-  const clearRuntimePortfolio = () => {
-    selection.clear()
-  }
-
-  const selectedId = selectionKey(selection, 'selectedId')
-  const mode = computed(() => normalizeMode(selection.state.value.mode) ?? 'demo')
+  const selection = usePortfolioSelectionBase()
+  const setRuntimePortfolio = (selectionPatch: RuntimePortfolioSelectionInput = {}) =>
+    selection.setSelection(selectionPatch)
+  const clearRuntimePortfolio = () => selection.clearSelection()
 
   return {
-    selectedId,
-    mode,
-    runtimePortfolioId: selectedId,
-    runtimePortfolioMode: mode,
+    selectedId: selection.selectedId,
+    mode: selection.mode,
+    runtimePortfolioId: selection.selectedId,
+    runtimePortfolioMode: selection.mode,
     setRuntimePortfolio,
     clearRuntimePortfolio,
   }

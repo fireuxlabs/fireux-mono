@@ -1,10 +1,9 @@
-import { computed } from 'vue'
 import {
   normalizeMode,
   normalizeString,
   type RuntimeKitchenMode,
 } from './shared'
-import { selectionKey, useRuntimeSelection } from 'fireux-core/runtime/composables/fireux/runtime/useRuntimeSelection'
+import { createRuntimeEntitySelection } from 'fireux-core/runtime/composables/fireux/runtime/useRuntimeSelection'
 
 type RuntimeKitchenSelectionState = {
   selectedId: string
@@ -16,49 +15,25 @@ type RuntimeKitchenSelectionInput = Partial<RuntimeKitchenSelectionState> & {
 }
 
 const COOKIE_KEY = 'fireux_runtime_kitchen'
-
-const normalizeSelectionState = (value: unknown): RuntimeKitchenSelectionState => {
-  const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
-  return {
-    selectedId: normalizeString(source.selectedId ?? source.kitchenId),
-    mode: normalizeMode(source.mode) ?? 'demo',
-  }
-}
+const useKitchenSelectionBase = createRuntimeEntitySelection<RuntimeKitchenMode, 'kitchenId'>({
+  cookieKey: COOKIE_KEY,
+  aliasKey: 'kitchenId',
+  defaultMode: 'demo',
+  normalizeMode: (value) => normalizeMode(value) ?? 'demo',
+  normalizeId: normalizeString,
+})
 
 export function useRuntimeKitchenSelection() {
-  const selection = useRuntimeSelection<RuntimeKitchenSelectionState>({
-    cookieKey: COOKIE_KEY,
-    defaultState: () => ({ selectedId: '', mode: 'demo' }),
-    normalizeState: normalizeSelectionState,
-  })
-
-  const setRuntimeKitchen = (selectionPatch: RuntimeKitchenSelectionInput = {}) => {
-    const next: RuntimeKitchenSelectionState = {
-      selectedId:
-        selectionPatch.selectedId !== undefined || selectionPatch.kitchenId !== undefined
-          ? normalizeString(selectionPatch.selectedId ?? selectionPatch.kitchenId)
-          : selection.state.value.selectedId,
-      mode:
-        selectionPatch.mode !== undefined
-          ? normalizeMode(selectionPatch.mode) ?? selection.state.value.mode
-          : selection.state.value.mode,
-    }
-
-    selection.set(next)
-  }
-
-  const clearRuntimeKitchen = () => {
-    selection.clear()
-  }
-
-  const selectedId = selectionKey(selection, 'selectedId')
-  const mode = computed(() => normalizeMode(selection.state.value.mode) ?? 'demo')
+  const selection = useKitchenSelectionBase()
+  const setRuntimeKitchen = (selectionPatch: RuntimeKitchenSelectionInput = {}) =>
+    selection.setSelection(selectionPatch)
+  const clearRuntimeKitchen = () => selection.clearSelection()
 
   return {
-    selectedId,
-    mode,
-    runtimeKitchenId: selectedId,
-    runtimeKitchenMode: mode,
+    selectedId: selection.selectedId,
+    mode: selection.mode,
+    runtimeKitchenId: selection.selectedId,
+    runtimeKitchenMode: selection.mode,
     setRuntimeKitchen,
     clearRuntimeKitchen,
   }

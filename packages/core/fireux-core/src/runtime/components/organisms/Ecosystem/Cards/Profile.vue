@@ -4,8 +4,8 @@
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div class="flex min-w-0 items-center gap-3">
           <UAvatar
-            :src="imageUrl || undefined"
-            :alt="name"
+            :src="item.imageUrl || undefined"
+            :alt="item.name"
             :text="avatarText"
             icon="i-lucide-orbit"
             size="md"
@@ -13,24 +13,24 @@
 
           <div class="min-w-0">
             <div class="truncate text-sm font-semibold text-default">
-              {{ name }}
+              {{ item.name }}
             </div>
             <div class="truncate text-xs text-dimmed">
-              <span v-if="slug">{{ slug }}</span>
+              <span v-if="item.slug">{{ item.slug }}</span>
               <span v-else class="italic">missing slug</span>
             </div>
           </div>
         </div>
 
         <div class="flex flex-wrap items-center gap-1">
-          <UBadge v-if="status" variant="soft" color="neutral" size="xs">
-            {{ status }}
+          <UBadge v-if="item.status" variant="soft" color="neutral" size="xs">
+            {{ item.status }}
           </UBadge>
-          <UBadge v-if="team" variant="soft" color="neutral" size="xs">
-            {{ team }}
+          <UBadge v-if="item.team" variant="soft" color="neutral" size="xs">
+            {{ item.team }}
           </UBadge>
           <UBadge variant="soft" color="neutral" size="xs">
-            {{ appCount }} app{{ appCount === 1 ? '' : 's' }}
+            {{ item.appCount }} app{{ item.appCount === 1 ? '' : 's' }}
           </UBadge>
         </div>
       </div>
@@ -40,7 +40,7 @@
       <section class="space-y-1">
         <div class="text-xs uppercase tracking-[0.16em] text-toned">Description</div>
         <div class="text-sm text-default">
-          <span v-if="description">{{ description }}</span>
+          <span v-if="item.description">{{ item.description }}</span>
           <span v-else class="italic text-dimmed">missing</span>
         </div>
       </section>
@@ -49,7 +49,7 @@
         <div class="space-y-1">
           <div class="text-xs uppercase tracking-[0.16em] text-toned">Ecosystem ID</div>
           <div class="font-mono text-xs break-all text-default">
-            <span v-if="id">{{ id }}</span>
+            <span v-if="item.id">{{ item.id }}</span>
             <span v-else class="italic text-dimmed">missing</span>
           </div>
         </div>
@@ -57,7 +57,7 @@
         <div class="space-y-1">
           <div class="text-xs uppercase tracking-[0.16em] text-toned">Slug</div>
           <div class="text-sm text-default">
-            <span v-if="slug">{{ slug }}</span>
+            <span v-if="item.slug">{{ item.slug }}</span>
             <span v-else class="italic text-dimmed">missing</span>
           </div>
         </div>
@@ -65,7 +65,7 @@
         <div class="space-y-1">
           <div class="text-xs uppercase tracking-[0.16em] text-toned">Team</div>
           <div class="text-sm text-default">
-            <span v-if="team">{{ team }}</span>
+            <span v-if="item.team">{{ item.team }}</span>
             <span v-else class="italic text-dimmed">missing</span>
           </div>
         </div>
@@ -73,9 +73,9 @@
 
       <section class="space-y-2">
         <div class="text-xs uppercase tracking-[0.16em] text-toned">Connected Apps</div>
-        <div v-if="appLabels.length" class="flex flex-wrap gap-2">
+        <div v-if="item.appLabels.length" class="flex flex-wrap gap-2">
           <UBadge
-            v-for="app in appLabels"
+            v-for="app in item.appLabels"
             :key="app"
             color="neutral"
             variant="soft"
@@ -95,7 +95,7 @@
 <script setup lang="ts">
 import { computed } from '#imports'
 
-const props = withDefaults(defineProps<{
+type EcosystemProfileItem = {
   id?: string
   slug?: string
   name?: string
@@ -105,17 +105,35 @@ const props = withDefaults(defineProps<{
   appCount?: number
   appLabels?: string[]
   imageUrl?: string
+}
+
+const props = withDefaults(defineProps<{
+  item?: EcosystemProfileItem
 }>(), {
-  id: '',
-  slug: '',
-  name: '',
-  description: '',
-  status: '',
-  team: '',
-  appCount: 0,
-  appLabels: () => [],
-  imageUrl: '',
+  item: () => ({
+    id: '',
+    slug: '',
+    name: '',
+    description: '',
+    status: '',
+    team: '',
+    appCount: 0,
+    appLabels: [],
+    imageUrl: '',
+  }),
 })
 
-const avatarText = computed(() => props.name || props.slug || props.id || 'E')
+const item = computed(() => ({
+  id: props.item?.id || '',
+  slug: props.item?.slug || '',
+  name: props.item?.name || '',
+  description: props.item?.description || '',
+  status: props.item?.status || '',
+  team: props.item?.team || '',
+  appCount: props.item?.appCount || 0,
+  appLabels: props.item?.appLabels || [],
+  imageUrl: props.item?.imageUrl || '',
+}))
+
+const avatarText = computed(() => item.value.name || item.value.slug || item.value.id || 'E')
 </script>
