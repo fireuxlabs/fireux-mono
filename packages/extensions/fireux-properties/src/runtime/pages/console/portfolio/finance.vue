@@ -161,9 +161,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import {
-  useRuntimePortfolio,
+  useActivePortfolio,
   useRuntimePortfolioPath,
-} from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+} from '../../../composables/fireux/app/portfolio-console/useActivePortfolio'
 import { usePortfolioPropertyCollection } from '../../../composables/fireux/firestore/property/fetch/usePortfolioPropertyCollection'
 
 definePageMeta({
@@ -181,7 +181,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const runtimePortfolio = useRuntimePortfolio()
+const runtimePortfolio = useActivePortfolio()
 const { collection: propertyCollection } = usePortfolioPropertyCollection(runtimePortfolio)
 const isDev = import.meta.dev
 const financialsPath = useRuntimePortfolioPath(runtimePortfolio, 'financials')

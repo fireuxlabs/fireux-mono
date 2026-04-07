@@ -9,7 +9,7 @@ import {
 } from 'vue'
 import {
   consoleFamilyFromPath,
-  createDefaultRuntimeSelectionState,
+  createDefaultConsoleSelectionState,
   toConsoleFamilyPath,
   toConsoleHeaderStateKey,
   toConsoleSelectionStateKey,
@@ -17,55 +17,55 @@ import {
 import { useConsoleNav } from '../app/routing/useConsoleNav'
 import { useNavGrouping } from '../app/ui/nav/useNavGrouping'
 import { useConsoleNotifications } from '../app/ui/useConsoleNotifications'
-import { normalizeRuntimeMode, normalizeString } from './runtime.normalize'
+import { normalizeConsoleMode, normalizeString } from './console.normalize'
 import type {
   ConsoleFamily,
-  RuntimeConsoleApi,
-  RuntimeConsoleHeaderData,
-  RuntimeMode,
-  RuntimeModeOption,
-  RuntimeSelectionState,
-} from './runtime.types'
+  ConsoleStateApi,
+  ConsoleHeaderData,
+  ConsoleMode,
+  ConsoleModeOption,
+  ConsoleSelectionState,
+} from './console.types'
 
 type HeaderRef =
-  | Ref<RuntimeConsoleHeaderData>
-  | ComputedRef<RuntimeConsoleHeaderData>
+  | Ref<ConsoleHeaderData>
+  | ComputedRef<ConsoleHeaderData>
 type IdRef = Ref<string> | ComputedRef<string>
-type ModeRef = Ref<RuntimeMode> | ComputedRef<RuntimeMode>
+type ModeRef = Ref<ConsoleMode> | ComputedRef<ConsoleMode>
 
-type UseRuntimeConsoleParams = {
+type UseConsoleStateParams = {
   family: ConsoleFamily
   selectedId: IdRef
   mode: ModeRef
-  setMode: (mode: RuntimeMode) => void
+  setMode: (mode: ConsoleMode) => void
   clearSelection: () => void
   header: HeaderRef
   publishHeader?: boolean
-  modeOptions?: readonly RuntimeModeOption[]
+  modeOptions?: readonly ConsoleModeOption[]
 }
 
-type RuntimeConsoleLayoutApi = {
+type ConsoleLayoutApi = {
   open: Ref<boolean>
   isConsoleEntryPage: ComputedRef<boolean>
   isNotificationsSlideoverOpen: Ref<boolean>
   family: ComputedRef<ConsoleFamily | ''>
   selectedId: ComputedRef<string>
-  mode: ComputedRef<RuntimeMode>
+  mode: ComputedRef<ConsoleMode>
   hasSelection: ComputedRef<boolean>
-  header: ComputedRef<RuntimeConsoleHeaderData>
+  header: ComputedRef<ConsoleHeaderData>
   topNav: ComputedRef<any[]>
   middleNav: ComputedRef<any[]>
   familyRootNav: ComputedRef<any[]>
   regularBottomNav: ComputedRef<any[]>
 }
 
-const DEFAULT_RUNTIME_MODE_OPTIONS = [
+const DEFAULT_CONSOLE_MODE_OPTIONS = [
   { value: 'demo', label: 'Demo' },
   { value: 'live', label: 'Real' },
   { value: 'test', label: 'Test' },
-] as const satisfies readonly RuntimeModeOption[]
+] as const satisfies readonly ConsoleModeOption[]
 
-const normalizeHeader = (value: unknown): RuntimeConsoleHeaderData => {
+const normalizeHeader = (value: unknown): ConsoleHeaderData => {
   if (!value || typeof value !== 'object') return null
 
   const source = value as Record<string, unknown>
@@ -82,18 +82,18 @@ const normalizeHeader = (value: unknown): RuntimeConsoleHeaderData => {
   }
 }
 
-function useRuntimeConsoleHeaderState(family: ConsoleFamily | string) {
-  return useState<RuntimeConsoleHeaderData>(
+function useConsoleHeaderState(family: ConsoleFamily | string) {
+  return useState<ConsoleHeaderData>(
     toConsoleHeaderStateKey(family),
     () => null
   )
 }
 
-function usePublishRuntimeConsoleHeader(
+function usePublishConsoleHeader(
   family: ConsoleFamily | string,
   header: HeaderRef
 ) {
-  const state = useRuntimeConsoleHeaderState(family)
+  const state = useConsoleHeaderState(family)
   const normalizedHeader = computed(() => normalizeHeader(unref(header)))
 
   watchEffect(() => {
@@ -103,7 +103,7 @@ function usePublishRuntimeConsoleHeader(
   return state
 }
 
-function useActiveRuntimeConsole(): RuntimeConsoleLayoutApi {
+function useActiveConsoleState(): ConsoleLayoutApi {
   const open = ref(false)
   const route = useRoute()
   const { isOpen: isNotificationsSlideoverOpen } = useConsoleNotifications()
@@ -115,22 +115,22 @@ function useActiveRuntimeConsole(): RuntimeConsoleLayoutApi {
   const activeSelection = computed(() => {
     if (!family.value) return null
 
-    return useState<RuntimeSelectionState>(
+    return useState<ConsoleSelectionState>(
       toConsoleSelectionStateKey(family.value),
-      createDefaultRuntimeSelectionState
+      createDefaultConsoleSelectionState
     ).value
   })
 
   const selectedId = computed(() =>
     normalizeString(activeSelection.value?.selectedId)
   )
-  const mode = computed<RuntimeMode>(() =>
-    normalizeRuntimeMode(activeSelection.value?.mode)
+  const mode = computed<ConsoleMode>(() =>
+    normalizeConsoleMode(activeSelection.value?.mode)
   )
   const hasSelection = computed(() => Boolean(selectedId.value))
-  const header = computed<RuntimeConsoleHeaderData>(() => {
+  const header = computed<ConsoleHeaderData>(() => {
     if (!family.value) return null
-    return normalizeHeader(useRuntimeConsoleHeaderState(family.value).value)
+    return normalizeHeader(useConsoleHeaderState(family.value).value)
   })
 
   const activeFamilyPath = computed(() =>
@@ -159,30 +159,30 @@ function useActiveRuntimeConsole(): RuntimeConsoleLayoutApi {
   }
 }
 
-export function useRuntimeConsole(): RuntimeConsoleLayoutApi
-export function useRuntimeConsole(
-  params: UseRuntimeConsoleParams
-): RuntimeConsoleApi
-export function useRuntimeConsole(params?: UseRuntimeConsoleParams) {
-  if (!params) return useActiveRuntimeConsole()
+export function useConsoleState(): ConsoleLayoutApi
+export function useConsoleState(
+  params: UseConsoleStateParams
+): ConsoleStateApi
+export function useConsoleState(params?: UseConsoleStateParams) {
+  if (!params) return useActiveConsoleState()
 
   const family = normalizeString(params.family) as ConsoleFamily
   const selectedId = computed(() => normalizeString(unref(params.selectedId)))
-  const mode = computed<RuntimeMode>(() =>
-    normalizeRuntimeMode(unref(params.mode))
+  const mode = computed<ConsoleMode>(() =>
+    normalizeConsoleMode(unref(params.mode))
   )
-  const header = computed<RuntimeConsoleHeaderData>(() =>
+  const header = computed<ConsoleHeaderData>(() =>
     normalizeHeader(unref(params.header))
   )
   const hasSelection = computed(() => Boolean(selectedId.value))
-  const modeOptions = params.modeOptions ?? DEFAULT_RUNTIME_MODE_OPTIONS
+  const modeOptions = params.modeOptions ?? DEFAULT_CONSOLE_MODE_OPTIONS
 
   if (params.publishHeader) {
-    usePublishRuntimeConsoleHeader(family, header)
+    usePublishConsoleHeader(family, header)
   }
 
   const selectMode = (value: string) => {
-    const nextMode = normalizeRuntimeMode(value, { defaultMode: mode.value })
+    const nextMode = normalizeConsoleMode(value, { defaultMode: mode.value })
     if (nextMode === mode.value) return
     params.setMode(nextMode)
   }

@@ -51,7 +51,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import OrderCard from '../../../components/organisms/Order/Card.vue'
-import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
+import { useActiveKitchen } from '../../../composables/fireux/app/kitchen-console/useActiveKitchen'
 import { useKitchenOrdersFetch } from '../../../composables/fireux/firestore/runtime-kitchen/orders/fetch/useKitchenOrdersFetch'
 
 definePageMeta({
@@ -69,7 +69,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const runtime = useRuntimeKitchen()
+const runtime = useActiveKitchen()
 const kitchenId = computed(() => String(runtime.id.value || '').trim())
 const { orders: firestoreOrders } = useKitchenOrdersFetch(kitchenId, {
   kitchenCollectionPath: runtime.kitchenCollectionPath,

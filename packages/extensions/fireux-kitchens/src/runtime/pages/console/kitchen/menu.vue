@@ -294,7 +294,7 @@
 import { computed, ref, watch } from 'vue'
 import MenuCollectionManager from '../../../components/organisms/Menu/Collection/Manager.vue'
 import QRManager from '../../../components/runtimeKitchen/QRManager.vue'
-import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
+import { useActiveKitchen } from '../../../composables/fireux/app/kitchen-console/useActiveKitchen'
 import {
   resolveMenuItemView,
   type ResolvedMenuItemView,
@@ -317,7 +317,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const runtime = useRuntimeKitchen()
+const runtime = useActiveKitchen()
 const kitchenId = computed(() => String(runtime.id.value || '').trim())
 const menus = computed(() => runtime.data.value.menus ?? [])
 const dishes = computed(() => runtime.data.value.dishes ?? [])

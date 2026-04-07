@@ -1,4 +1,4 @@
-import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import { useActivePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
 import type { TaskCreateInput } from '../../../../../models/task.model'
 
 const normalize = (value: unknown) => String(value || '').trim()
@@ -10,7 +10,7 @@ const fallbackDueDateFromExpiry = (expiryDate: unknown) => {
   return normalized || todayIso()
 }
 
-export function useTaskProjection(runtimePortfolio = useRuntimePortfolio()) {
+export function useTaskProjection(runtimePortfolio = useActivePortfolio()) {
   const runtimeId = () => normalize(runtimePortfolio.id.value)
 
   function fromComplianceRecord(record: {

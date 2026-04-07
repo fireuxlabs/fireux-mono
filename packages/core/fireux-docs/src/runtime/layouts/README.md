@@ -111,7 +111,7 @@ Current role:
 - console shell for kitchen, portfolio, supplier, project, product, and admin console surfaces
 - entry-mode support via `route.meta.consoleEntry`
 - scoped console nav
-- generic sidebar header driven by `useRuntimeConsole()`
+- generic sidebar header driven by `useConsoleState()`
 - shared footer actions and notifications
 
 Current contract:

@@ -43,11 +43,11 @@
 <script setup lang="ts">
 import { useRouter } from '#imports'
 import { computed } from 'vue'
-import { getDemoPortfolioScenarioList } from '../../../composables/fireux/app/portfolio-runtime/demo-scenarios'
-import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
+import { getDemoPortfolioScenarioList } from '../../../composables/fireux/app/portfolio-console/demo-scenarios'
+import { usePortfolioSelection } from '../../../composables/fireux/app/portfolio-console/usePortfolioSelection'
 
 const router = useRouter()
-const { setRuntimePortfolio } = useRuntimePortfolioSelection()
+const { setRuntimePortfolio } = usePortfolioSelection()
 
 const scenarioCards = computed(() =>
   getDemoPortfolioScenarioList().map((entry) => ({

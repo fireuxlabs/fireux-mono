@@ -37,12 +37,12 @@ import type { Kitchen } from '../../../models/kitchen.model'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenCreate } from '../../../composables/fireux/firestore/kitchen/mutations/useKitchenCreate'
-import { useRuntimeKitchenSelection } from '../../../composables/fireux/app/kitchen-runtime/state'
+import { useKitchenSelection } from '../../../composables/fireux/app/kitchen-console/useKitchenSelection'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { useRuntimeKitchenConsole } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchenConsole'
+import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
 
-const { runtime } = useRuntimeKitchenConsole()
-const kitchenSelection = useRuntimeKitchenSelection()
+const { runtime } = useKitchenConsole()
+const kitchenSelection = useKitchenSelection()
 const { uid, currentUser, isAuthenticated, hasAuthState } = useAuth()
 const { ensureKitchen } = useKitchenCreate({ test: true, ensurePlace: false })
 const { interface: toKitchenCard } = useKitchenInterface()

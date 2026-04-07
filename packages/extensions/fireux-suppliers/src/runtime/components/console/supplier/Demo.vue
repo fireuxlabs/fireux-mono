@@ -34,14 +34,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Supplier } from '../../../models/supplier/Supplier.model'
-import { useRuntimeSupplierSelection } from '../../../composables/fireux/app/supplier-console/state'
+import { useSupplierSelection } from '../../../composables/fireux/app/supplier-console/useSupplierSelection'
 import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
-import { useRuntimeSupplierConsole } from '../../../composables/fireux/app/supplier-console/useRuntimeSupplierConsole'
+import { useSupplierConsole } from '../../../composables/fireux/app/supplier-console/useSupplierConsole'
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
 
-const { runtime, scenarios } = useRuntimeSupplierConsole()
-const supplierSelection = useRuntimeSupplierSelection()
+const { runtime, scenarios } = useSupplierConsole()
+const supplierSelection = useSupplierSelection()
 const { interface: toSupplierCard } = useSupplierInterface()
 
 type SupplierPill = NonNullable<ReturnType<typeof toSupplierCard>>

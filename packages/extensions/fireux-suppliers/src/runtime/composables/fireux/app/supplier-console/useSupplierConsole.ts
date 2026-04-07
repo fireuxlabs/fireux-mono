@@ -1,10 +1,10 @@
 import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useRuntimeConsole } from 'fireux-core/runtime/composables/fireux/runtime/useRuntimeConsole'
+import { useConsoleState } from 'fireux-core/runtime/composables/fireux/console/useConsoleState'
 import type { Supplier } from '../../../models/supplier/Supplier.model'
 import { getDemoSupplierScenarios } from './demo-scenarios'
-import { useRuntimeSupplierSelection } from './state'
-import { useRuntimeSupplier } from './useRuntimeSupplier'
+import { useSupplierSelection } from './useSupplierSelection'
+import { useActiveSupplier } from './useActiveSupplier'
 import { useSupplierCollection } from '../../firestore/supplier/fetch/useSupplierCollection'
 import { useSupplierInterface } from '../../firestore/supplier/utils/view/useSupplierInterface'
 
@@ -21,11 +21,11 @@ const stripTestSupplierSuffix = (value: unknown): string =>
 /**
  * Root supplier console inputs.
  */
-export function useRuntimeSupplierConsole(
+export function useSupplierConsole(
   options: UseRuntimeSupplierConsoleOptions = {}
 ) {
-  const runtime = useRuntimeSupplier()
-  const supplierSelection = useRuntimeSupplierSelection()
+  const runtime = useActiveSupplier()
+  const supplierSelection = useSupplierSelection()
   const { uid, currentUser } = useAuth()
   const { interface: toSupplierCard } = useSupplierInterface()
   const { coreSuppliers: liveSuppliers } = useSupplierCollection()
@@ -109,7 +109,7 @@ export function useRuntimeSupplierConsole(
       : null
   )
 
-  const console = useRuntimeConsole({
+  const console = useConsoleState({
     family: 'supplier',
     selectedId: runtime.id,
     mode: selectedMode,

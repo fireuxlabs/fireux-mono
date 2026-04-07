@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useRuntimeConsole } from 'fireux-core/runtime/composables/fireux/runtime/useRuntimeConsole'
+import { useConsoleState } from 'fireux-core/runtime/composables/fireux/console/useConsoleState'
 import {
   useProjectInterface,
   type ProjectInterfaceInput,
@@ -11,9 +11,9 @@ import {
   type EcosystemInterfaceCard,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/ecosystem/utils/view/useEcosystemInterface'
 import type { Project } from 'fireux-core/runtime/models/system/project.model'
-import { useRuntimeProjectSelection } from './state'
+import { useProjectSelection } from './useProjectSelection'
 import { getDemoProjectScenarios } from './demo-scenarios'
-import { useRuntimeProject } from './useRuntimeProject'
+import { useActiveProject } from './useActiveProject'
 
 type UseRuntimeProjectConsoleOptions = {
   publishHeader?: boolean
@@ -105,7 +105,7 @@ const deriveEcosystemTeam = (value: unknown): string => {
   return normalizeString(raw.split('-')[0])
 }
 
-function createProjectEcosystemState(runtime: ReturnType<typeof useRuntimeProject>) {
+function createProjectEcosystemState(runtime: ReturnType<typeof useActiveProject>) {
   const { interface: toEcosystemCard } = useEcosystemInterface()
 
   const resolveConsoleEndpoint = () => {
@@ -347,11 +347,11 @@ function createProjectEcosystemState(runtime: ReturnType<typeof useRuntimeProjec
 /**
  * Root project console inputs.
  */
-export function useRuntimeProjectConsole(
+export function useProjectConsole(
   options: UseRuntimeProjectConsoleOptions = {}
 ) {
-  const runtime = useRuntimeProject()
-  const projectSelection = useRuntimeProjectSelection()
+  const runtime = useActiveProject()
+  const projectSelection = useProjectSelection()
   const { currentUser: authUser, uid } = useAuth()
   const { projects: liveProjects } = useProjectCollection('projects')
   const { projects: testProjects } = useProjectCollection('test-projects')
@@ -442,7 +442,7 @@ export function useRuntimeProjectConsole(
       : null
   )
 
-  const console = useRuntimeConsole({
+  const console = useConsoleState({
     family: 'projects',
     selectedId: runtime.id,
     mode: selectedMode,

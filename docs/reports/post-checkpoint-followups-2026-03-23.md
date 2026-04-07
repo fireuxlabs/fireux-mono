@@ -51,7 +51,7 @@ Purpose: short follow-up list after the broad runtime checkpoint commit.
 
 - `Project` still needs a focused pass across runtime model, runtime project composables, and console expectations:
   - `packages/core/fireux-core/src/runtime/composables/fireux/app/runtime-project/demo-scenarios/index.ts`
-  - `packages/core/fireux-core/src/runtime/composables/fireux/app/runtime-project/useRuntimeProject.ts`
+  - `packages/core/fireux-core/src/runtime/composables/fireux/app/runtime-project/useActiveProject.ts`
   - `packages/core/fireux-core/src/runtime/models/system/project.model.ts`
 - `Profile` core still needs a second look after the supplier de-profile pass:
   - `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/fetch/useProfileCollection.ts`
@@ -64,7 +64,7 @@ Purpose: short follow-up list after the broad runtime checkpoint commit.
   - `packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Cards/Profile.vue`
   - `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/main/useProfessionalCreate.ts`
   - `packages/extensions/fireux-jobs/src/runtime/pages/jobs/[id].vue`
-  - `packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolioConsole.ts`
+  - `packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/usePortfolioConsole.ts`
   - `packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/recipe/useRecipes.ts`
 
 ## 6. General Naming Debt

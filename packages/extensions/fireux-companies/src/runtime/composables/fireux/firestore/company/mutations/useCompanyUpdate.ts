@@ -1,5 +1,5 @@
 import { useDocumentUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/operations/useDocumentUpdateBase'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
+import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import type { Company, CompanyUpdateInput } from 'fireux-companies/runtime/models/company.model'
 
 const COLLECTION_PATH = 'companies'

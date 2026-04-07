@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import { usePortfolioComplianceRecordCollection } from 'fireux-compliance/runtime/composables/fireux/firestore/compliance/fetch/usePortfolioComplianceRecordCollection'
 import { usePortfolioDocumentLinkCollection } from 'fireux-documents/runtime/composables/fireux/firestore/documents/fetch/usePortfolioDocumentLinkCollection'
-import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import { useActivePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
 import { usePortfolioPropertyCollection } from 'fireux-properties/runtime/composables/fireux/firestore/property/fetch/usePortfolioPropertyCollection'
 import { usePortfolioTaskCollection } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/fetch/usePortfolioTaskCollection'
 import { computed } from 'vue'
@@ -70,7 +70,7 @@ definePageMeta({
   name: 'ConsolePortfolioDevPage',
 })
 
-const runtimePortfolio = useRuntimePortfolio()
+const runtimePortfolio = useActivePortfolio()
 const { collection: properties } = usePortfolioPropertyCollection(runtimePortfolio)
 const { collection: complianceRecords } = usePortfolioComplianceRecordCollection(runtimePortfolio)
 const { collection: documentLinks } = usePortfolioDocumentLinkCollection(runtimePortfolio)

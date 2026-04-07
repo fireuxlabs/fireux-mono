@@ -1,6 +1,6 @@
 import { computed, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useRuntimePortfolioSelection } from './state'
+import { usePortfolioSelection } from './usePortfolioSelection'
 import {
   resolveRuntimePortfolioDataCollectionPath,
   resolveRuntimePortfolioDocumentCollectionPath,
@@ -8,7 +8,7 @@ import {
 } from './shared'
 import { useRuntimePortfolioDocument } from './useRuntimePortfolioDocument'
 
-export { useRuntimePortfolioSelection } from './state'
+export { usePortfolioSelection } from './usePortfolioSelection'
 export type { RuntimePortfolioMode } from './shared'
 
 /**
@@ -17,9 +17,9 @@ export type { RuntimePortfolioMode } from './shared'
  * Root portfolio identity stays at `/portfolios/<id>`.
  * Console-owned data lives under the app-hosted portfolio scope.
  */
-export function useRuntimePortfolio() {
+export function useActivePortfolio() {
   const { appId } = useFireUXConfig()
-  const selection = useRuntimePortfolioSelection()
+  const selection = usePortfolioSelection()
   const id = selection.selectedId
   const mode = selection.mode
   const activity = computed<'static'>(() => 'static')
@@ -61,7 +61,7 @@ export function useRuntimePortfolio() {
   }
 }
 
-export type RuntimePortfolioRef = ReturnType<typeof useRuntimePortfolio>
+export type RuntimePortfolioRef = ReturnType<typeof useActivePortfolio>
 
 export function useRuntimePortfolioPath(
   portfolioConsole: RuntimePortfolioRef,

@@ -18,9 +18,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useRuntimeKitchen } from '../../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
+import { useActiveKitchen } from '../../../../composables/fireux/app/kitchen-console/useActiveKitchen'
 import { useKitchenFetch } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
-const runtime = useRuntimeKitchen()
+const runtime = useActiveKitchen()
 const { isPremium } = useUser()
 const { kitchens: liveKitchens } = useKitchenFetch()
 const liveKitchenCount = computed(() => liveKitchens.value.length)

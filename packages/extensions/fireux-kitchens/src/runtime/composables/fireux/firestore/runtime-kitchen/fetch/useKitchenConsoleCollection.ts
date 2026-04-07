@@ -6,7 +6,7 @@ import {
   normalizeString,
   resolveKitchenRuntimeChildCollectionPath,
   resolveKitchenRuntimeCollectionBasePath,
-} from '../../../app/kitchen-runtime/shared'
+} from '../../../app/kitchen-console/shared'
 
 type UseKitchenConsoleCollectionOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

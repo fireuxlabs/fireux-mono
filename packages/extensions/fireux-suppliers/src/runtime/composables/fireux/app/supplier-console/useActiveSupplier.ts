@@ -1,14 +1,14 @@
 import { computed } from 'vue'
 import { useSupplierRecord } from '../../firestore/supplier/fetch/useSupplierRecord'
 import type { Supplier } from '../../../models/supplier/Supplier.model'
-import { useRuntimeSupplierSelection } from './state'
+import { useSupplierSelection } from './useSupplierSelection'
 import { getDemoSupplierScenario } from './demo-scenarios'
 
 /**
  * Canon supplier console seam.
  */
-export function useRuntimeSupplier() {
-  const selection = useRuntimeSupplierSelection()
+export function useActiveSupplier() {
+  const selection = useSupplierSelection()
   const id = selection.selectedId
   const mode = selection.mode
   const activity = computed<'static'>(() => 'static')

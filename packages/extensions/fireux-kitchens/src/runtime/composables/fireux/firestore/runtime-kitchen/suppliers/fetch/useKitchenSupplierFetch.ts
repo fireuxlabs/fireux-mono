@@ -2,7 +2,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Ref, ShallowRef } from 'vue'
 import { computed, shallowRef, unref, watch } from 'vue'
-import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-runtime/shared'
+import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-console/shared'
 
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
   `${basePath}/${kitchenId}/suppliers`

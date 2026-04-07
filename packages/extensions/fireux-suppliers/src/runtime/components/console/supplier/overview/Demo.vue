@@ -27,10 +27,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useRuntimeSupplierConsole } from '../../../../composables/fireux/app/supplier-console/useRuntimeSupplierConsole'
-import { useRuntimeSupplier } from '../../../../composables/fireux/app/supplier-console/useRuntimeSupplier'
-const runtime = useRuntimeSupplier()
-const { scenarios } = useRuntimeSupplierConsole()
+import { useSupplierConsole } from '../../../../composables/fireux/app/supplier-console/useSupplierConsole'
+import { useActiveSupplier } from '../../../../composables/fireux/app/supplier-console/useActiveSupplier'
+const runtime = useActiveSupplier()
+const { scenarios } = useSupplierConsole()
 const { isPremium } = useUser()
 const showPremiumPreview = ref(false)
 const demoSupplierCount = computed(() => scenarios.value.length)

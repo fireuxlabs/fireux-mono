@@ -94,7 +94,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRuntimePortfolioConsole } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolioConsole'
+import { usePortfolioConsole } from '../../../composables/fireux/app/portfolio-console/usePortfolioConsole'
 
 definePageMeta({
   layout: 'console',
@@ -111,7 +111,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, console, activePortfolioPill } = useRuntimePortfolioConsole({
+const { runtime, console, activePortfolioPill } = usePortfolioConsole({
   publishHeader: true,
 })
 const runtimeMode = console.mode

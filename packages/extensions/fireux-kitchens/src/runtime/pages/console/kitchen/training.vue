@@ -54,7 +54,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
+import { useActiveKitchen } from '../../../composables/fireux/app/kitchen-console/useActiveKitchen'
 
 definePageMeta({
   layout: 'console',
@@ -71,7 +71,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const runtime = useRuntimeKitchen()
+const runtime = useActiveKitchen()
 const mode = runtime.mode
 const trainingModules = computed(() =>
   (runtime.data.value.trainingModules ?? []).map((module: any, index: number) => ({

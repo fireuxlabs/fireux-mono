@@ -1,4 +1,4 @@
-import { createDemoScenarioRegistry } from 'fireux-core/runtime/composables/fireux/runtime/createDemoScenarioRegistry'
+import { createDemoScenarioRegistry } from 'fireux-core/runtime/composables/fireux/console/createDemoScenarioRegistry'
 import { harborProvisionsScenario } from './harbor-provisions'
 import { supplyLoopDistributionScenario } from './supply-loop-distribution'
 import type { DemoSupplierScenario, DemoSupplierScenarioListItem } from './_shared/types'

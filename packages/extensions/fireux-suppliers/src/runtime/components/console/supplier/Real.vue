@@ -35,12 +35,12 @@
 import { computed } from 'vue'
 import type { Supplier } from '../../../models/supplier/Supplier.model'
 import { useSupplierCollection } from '../../../composables/fireux/firestore/supplier/fetch/useSupplierCollection'
-import { useRuntimeSupplierSelection } from '../../../composables/fireux/app/supplier-console/state'
+import { useSupplierSelection } from '../../../composables/fireux/app/supplier-console/useSupplierSelection'
 import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
-import { useRuntimeSupplierConsole } from '../../../composables/fireux/app/supplier-console/useRuntimeSupplierConsole'
+import { useSupplierConsole } from '../../../composables/fireux/app/supplier-console/useSupplierConsole'
 
-const { runtime } = useRuntimeSupplierConsole()
-const supplierSelection = useRuntimeSupplierSelection()
+const { runtime } = useSupplierConsole()
+const supplierSelection = useSupplierSelection()
 const { interface: toSupplierCard } = useSupplierInterface()
 const { coreSuppliers: liveSuppliers } = useSupplierCollection()
 

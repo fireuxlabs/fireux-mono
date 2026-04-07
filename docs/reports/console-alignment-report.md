@@ -170,10 +170,10 @@ Project runtime state:
 - `packages/core/fireux-core/src/runtime/composables/fireux/app/runtime-project/state.ts`
 
 Kitchen runtime state:
-- `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-runtime/state.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-console/useKitchenSelection.ts`
 
 Portfolio runtime state:
-- `packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/state.ts`
+- `packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/usePortfolioSelection.ts`
 
 Supplier runtime model:
 - Supplier is more profile-driven than explicit scope-state, so it is similar in intent but not yet shaped exactly like the other runtime-state files.

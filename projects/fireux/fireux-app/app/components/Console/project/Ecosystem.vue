@@ -132,7 +132,7 @@
 <script setup lang="ts">
 type EcosystemSurfaceKey = 'pill' | 'profile' | 'preview' | 'cell'
 
-const { ecosystem } = useRuntimeProjectConsole()
+const { ecosystem } = useProjectConsole()
 const {
   runtime,
   pending,

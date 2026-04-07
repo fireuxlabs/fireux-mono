@@ -9,8 +9,8 @@ import {
     type Recipe,
     type RecipeUpdateInput,
 } from '../../../../../../models/recipe.model'
-import { useRuntimeKitchenSelection } from '../../../../app/kitchen-runtime/state'
-import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-runtime/shared'
+import { useKitchenSelection } from '../../../../app/kitchen-console/useKitchenSelection'
+import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-console/shared'
 
 const trim = (value: unknown) => String(value || '').trim()
 const optional = (value: unknown) => {
@@ -25,7 +25,7 @@ const stringArray = (value: unknown) =>
 export function useRecipeUpdate(options: { kitchenCollectionPath?: string | Ref<string | null | undefined> } = {}) {
   const { updateDocument } = useFirestoreUpdate()
   const { appId } = useFireUXConfig()
-  const { runtimeKitchenId } = useRuntimeKitchenSelection()
+  const { runtimeKitchenId } = useKitchenSelection()
 
   const kitchenCollectionPath = computed(() =>
     String(unref(options.kitchenCollectionPath) || '').trim() ||

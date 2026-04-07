@@ -44,10 +44,10 @@
 import { useRouter } from '#imports'
 import { computed } from 'vue'
 import { getDemoProjectScenarioList } from '~/composables/console/project/demo-scenarios'
-import { useRuntimeProjectSelection } from '~/composables/console/project/state'
+import { useProjectSelection } from '~/composables/console/project/useProjectSelection'
 
 const router = useRouter()
-const { setRuntimeProject } = useRuntimeProjectSelection()
+const { setRuntimeProject } = useProjectSelection()
 
 const scenarioCards = computed(() =>
   getDemoProjectScenarioList().map((entry) => ({

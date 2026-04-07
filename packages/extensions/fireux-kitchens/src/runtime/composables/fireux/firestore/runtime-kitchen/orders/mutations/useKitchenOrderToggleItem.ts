@@ -1,7 +1,7 @@
 import { doc, serverTimestamp, updateDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-runtime/shared'
+import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-console/shared'
 
 type CloseKitchenOrderInput = {
   kitchenId: string

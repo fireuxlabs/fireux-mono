@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimeKitchenConsole } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchenConsole'
+import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
 
 definePageMeta({
   layout: 'console',
@@ -51,7 +51,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, console } = useRuntimeKitchenConsole({ publishHeader: true })
+const { runtime, console } = useKitchenConsole({ publishHeader: true })
 const selectedMode = console.mode
 const modeOptions = console.modeOptions
 const selectMode = console.selectMode

@@ -1,31 +1,31 @@
-import type { RuntimeMode } from './runtime.types'
+import type { ConsoleMode } from './console.types'
 
 const toSingleValue = (value: unknown): unknown => (Array.isArray(value) ? value[0] : value)
 
 export const normalizeString = (value: unknown): string =>
   String(toSingleValue(value) ?? '').trim()
 
-export const normalizeRuntimeMode = (
+export const normalizeConsoleMode = (
   value: unknown,
   options?: {
-    defaultMode?: RuntimeMode
-    aliases?: Record<string, RuntimeMode>
-    allowed?: RuntimeMode[]
+    defaultMode?: ConsoleMode
+    aliases?: Record<string, ConsoleMode>
+    allowed?: ConsoleMode[]
   }
-): RuntimeMode => {
+): ConsoleMode => {
   const normalized = normalizeString(value).toLowerCase()
 
-  const allowed: RuntimeMode[] = options?.allowed?.length
+  const allowed: ConsoleMode[] = options?.allowed?.length
     ? options.allowed
     : ['demo', 'live', 'test']
 
-  const aliases: Record<string, RuntimeMode> = options?.aliases ?? {
+  const aliases: Record<string, ConsoleMode> = options?.aliases ?? {
     demo: 'demo',
   }
 
   if (normalized in aliases) return aliases[normalized]
 
-  if (allowed.includes(normalized as RuntimeMode)) return normalized as RuntimeMode
+  if (allowed.includes(normalized as ConsoleMode)) return normalized as ConsoleMode
 
   return options?.defaultMode ?? 'demo'
 }

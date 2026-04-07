@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Dish } from '../../../models/dish.model'
-import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
+import { useActiveKitchen } from '../../../composables/fireux/app/kitchen-console/useActiveKitchen'
 
 definePageMeta({
   layout: 'console',
@@ -56,7 +56,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const runtime = useRuntimeKitchen()
+const runtime = useActiveKitchen()
 const mode = runtime.mode
 const miseTasks = computed(() => runtime.data.value.miseTasks ?? [])
 const dishes = computed(() => runtime.data.value.dishes ?? [])

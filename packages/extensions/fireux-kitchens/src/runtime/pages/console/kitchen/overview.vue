@@ -102,7 +102,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRuntimeKitchenConsole } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchenConsole'
+import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
 
 definePageMeta({
   layout: 'console',
@@ -119,7 +119,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, console, activeKitchenPill } = useRuntimeKitchenConsole({
+const { runtime, console, activeKitchenPill } = useKitchenConsole({
   publishHeader: true,
 })
 const runtimeMode = console.mode

@@ -245,7 +245,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
-import { resolveKitchenConsoleCollectionPath } from '../../../../composables/fireux/app/kitchen-runtime/shared'
+import { resolveKitchenConsoleCollectionPath } from '../../../../composables/fireux/app/kitchen-console/shared'
 import { useKitchenFetch } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import type { Menu, MenuSection, MenuServiceMode } from '../../../../models/menu.model'
 import {

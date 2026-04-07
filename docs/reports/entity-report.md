@@ -100,11 +100,11 @@ Cleanup priority used in this report:
 | Property | runtime entity | property record within a portfolio | runtime child | portfolios/{portfolioId}/properties/{propertyId} | packages/extensions/fireux-properties/src/runtime/models/property.model.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/fetch/usePropertyCollection.ts | missing | packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/utils/view/usePropertyInterface.ts | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/properties.vue | no | optional place link | yes | no | no | medium | medium |
 | Unit | runtime entity | property unit record | runtime child | portfolios/{portfolioId}/properties/{propertyId}/units/{unitId} | packages/extensions/fireux-properties/src/runtime/models/unit.model.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/unit/fetch/useUnitCollection.ts | missing | packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/unit/utils/view/useUnitInterface.ts | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/properties.vue | no | property parent only | yes | no | no | medium | medium |
 | Client | runtime entity | portfolio stakeholder and account record | runtime child | portfolios/{portfolioId}/clients/{clientId} and demo scenario derivation | packages/extensions/fireux-properties/src/runtime/models/client.model.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/client/fetch/useClientCollection.ts | missing | packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/client/utils/view/useClientInterface.ts | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/clients.vue | no | optional property link | yes | no | no | medium | high |
-| Tenant | scenario entity | demo tenant record for portfolio sandbox mode | scenario-only | demo scenario only | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio.ts | n/a | n/a | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/clients.vue | no | optional property link | no | yes | no | weak | high |
-| Lease | scenario entity | demo lease record for portfolio sandbox mode | scenario-only | demo scenario only | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio.ts | n/a | n/a | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/finance.vue | no | property parent only | no | yes | no | weak | high |
-| MaintenanceTicket | scenario entity | demo maintenance incident record | scenario-only | demo scenario only | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio.ts | n/a | n/a | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/incidents.vue | no | property parent only | no | yes | no | weak | high |
-| FinancialSignals | scenario aggregate | demo finance dashboard aggregate | scenario-only | demo scenario only | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio.ts | n/a | n/a | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/finance.vue | no | portfolio parent only | no | yes | no | weak | high |
-| FinancialTransaction | scenario entity | demo financial line item | scenario-only | demo scenario only | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio.ts | n/a | n/a | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/finance.vue | no | portfolio parent only | no | yes | no | weak | high |
+| Tenant | scenario entity | demo tenant record for portfolio sandbox mode | scenario-only | demo scenario only | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/useActivePortfolio.ts | n/a | n/a | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/clients.vue | no | optional property link | no | yes | no | weak | high |
+| Lease | scenario entity | demo lease record for portfolio sandbox mode | scenario-only | demo scenario only | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/useActivePortfolio.ts | n/a | n/a | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/finance.vue | no | property parent only | no | yes | no | weak | high |
+| MaintenanceTicket | scenario entity | demo maintenance incident record | scenario-only | demo scenario only | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/useActivePortfolio.ts | n/a | n/a | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/incidents.vue | no | property parent only | no | yes | no | weak | high |
+| FinancialSignals | scenario aggregate | demo finance dashboard aggregate | scenario-only | demo scenario only | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/useActivePortfolio.ts | n/a | n/a | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/finance.vue | no | portfolio parent only | no | yes | no | weak | high |
+| FinancialTransaction | scenario entity | demo financial line item | scenario-only | demo scenario only | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/useActivePortfolio.ts | n/a | n/a | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/finance.vue | no | portfolio parent only | no | yes | no | weak | high |
 | Recipe | ecosystem-specific scaffold | recipe surface in Misebox with unresolved model ownership | ecosystem-specific | not confirmed | missing in current runtime models tree; components import ../../../../../models/Recipe.model from ecosystem package but no matching file was found | packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/recipe/useRecipes.ts | packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/recipe/useRecipeCreate.ts | packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/recipe/utils/view/useRecipeInterface.ts | packages/ecosystem/fireux-misebox/src/runtime/pages/recipes/index.vue | missing | no | no | no | unresolved and unsafe | weak | high |
 
 ## Exact Entity Matrix
@@ -445,8 +445,8 @@ Cleanup priority used in this report:
 ### Tenant
 - Type and class: scenario entity; scenario-only.
 - Purpose: demo tenant record for portfolio sandbox mode.
-- Residence: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios/_shared/types.ts only.
-- Fetch: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio.ts.
+- Residence: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/demo-scenarios/_shared/types.ts only.
+- Fetch: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/useActivePortfolio.ts.
 - Create, interface, public page: not applicable.
 - Console surface: packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/clients.vue consumes scenario-derived tenant context indirectly.
 - Flags: scenario-only.
@@ -455,8 +455,8 @@ Cleanup priority used in this report:
 ### Lease
 - Type and class: scenario entity; scenario-only.
 - Purpose: demo lease record for portfolio sandbox mode.
-- Residence: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios/_shared/types.ts only.
-- Fetch: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio.ts.
+- Residence: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/demo-scenarios/_shared/types.ts only.
+- Fetch: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/useActivePortfolio.ts.
 - Create, interface, public page: not applicable.
 - Console surface: packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/finance.vue.
 - Flags: scenario-only.
@@ -465,8 +465,8 @@ Cleanup priority used in this report:
 ### MaintenanceTicket
 - Type and class: scenario entity; scenario-only.
 - Purpose: demo maintenance incident record.
-- Residence: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios/_shared/types.ts only.
-- Fetch: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio.ts.
+- Residence: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/demo-scenarios/_shared/types.ts only.
+- Fetch: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/useActivePortfolio.ts.
 - Create, interface, public page: not applicable.
 - Console surface: packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/incidents.vue.
 - Flags: scenario-only.
@@ -475,8 +475,8 @@ Cleanup priority used in this report:
 ### FinancialSignals
 - Type and class: scenario aggregate; scenario-only.
 - Purpose: demo financial dashboard aggregate.
-- Residence: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios/_shared/types.ts only.
-- Fetch: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio.ts.
+- Residence: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/demo-scenarios/_shared/types.ts only.
+- Fetch: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/useActivePortfolio.ts.
 - Create, interface, public page: not applicable.
 - Console surface: packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/finance.vue.
 - Flags: scenario-only aggregate, not a full production entity.
@@ -485,8 +485,8 @@ Cleanup priority used in this report:
 ### FinancialTransaction
 - Type and class: scenario entity; scenario-only.
 - Purpose: demo financial line item.
-- Residence: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios/_shared/types.ts only.
-- Fetch: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio.ts.
+- Residence: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/demo-scenarios/_shared/types.ts only.
+- Fetch: packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/useActivePortfolio.ts.
 - Create, interface, public page: not applicable.
 - Console surface: packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/finance.vue.
 - Flags: scenario-only.
@@ -509,8 +509,8 @@ Cleanup priority used in this report:
 | Supplier model | packages/extensions/fireux-suppliers/src/runtime/models/supplier/Supplier.model.ts | packages/extensions/fireux-suppliers/src/runtime/models/profiles/Supplier/Supplier.model.ts | secondary path is export-only re-export | safe | keep one visible canonical model path and leave wrapper path temporary and thin |
 | Supplier fetch and write composables | packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/* | none | canonical tree now owns the visible supplier firestore surface | aligned | keep supplier firestore composables under one entity path family |
 | Supplier config and helper wrappers | packages/extensions/fireux-suppliers/src/runtime/composables/fireux/app/supplier-console/* and packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/* | none | app runtime and firestore entity seams are now separated clearly | aligned | keep runtime console state under app and entity access under firestore |
-| Document scenario mirror | packages/extensions/fireux-documents/src/runtime/models/document.model.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios/_shared/types.ts | scenario type mirrors production concept | safe if clearly labeled | keep scenario-only types fenced from production canon |
-| DocumentLink scenario mirror | packages/extensions/fireux-documents/src/runtime/models/document-link.model.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios/_shared/types.ts | scenario type mirrors production concept | safe if clearly labeled | keep scenario-only types fenced from production canon |
+| Document scenario mirror | packages/extensions/fireux-documents/src/runtime/models/document.model.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/demo-scenarios/_shared/types.ts | scenario type mirrors production concept | safe if clearly labeled | keep scenario-only types fenced from production canon |
+| DocumentLink scenario mirror | packages/extensions/fireux-documents/src/runtime/models/document-link.model.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/demo-scenarios/_shared/types.ts | scenario type mirrors production concept | safe if clearly labeled | keep scenario-only types fenced from production canon |
 | Recipe model import | no confirmed canonical model residence | packages/ecosystem/fireux-misebox/src/runtime/components/organisms/Recipe/* and recipe interface files import ../../../../../models/Recipe.model | unresolved import target, not a safe wrapper | unsafe | either add the missing model in one clear runtime models location or remove/defer the current recipe stack |
 
 ## Entity Shape Comparison
@@ -549,7 +549,7 @@ Cleanup priority used in this report:
 | CTA | medium | kitchen-specific action surfaces, not normalized through EntityIndexCta | usable but not yet fully standardized |
 | public index | full | packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/index.vue | present |
 | admin/edit | full | packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/overview.vue | present |
-| console runtime | full | packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-runtime/state.ts | normalized runtime state present |
+| console runtime | full | packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-console/useKitchenSelection.ts | normalized runtime state present |
 
 ### Portfolio stack
 
@@ -567,7 +567,7 @@ Cleanup priority used in this report:
 | CTA | medium | mostly local CTA, not fully normalized around EntityIndexCta | usable but mixed |
 | public index | full | packages/extensions/fireux-properties/src/runtime/pages/portfolios/index.vue | present |
 | admin/edit | full | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/overview.vue | present |
-| console runtime | full | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/state.ts | normalized runtime state present |
+| console runtime | full | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/usePortfolioSelection.ts | normalized runtime state present |
 
 ### Supplier stack
 
@@ -585,7 +585,7 @@ Cleanup priority used in this report:
 | CTA | full | packages/extensions/fireux-suppliers/src/runtime/components/organisms/Supplier/CTA.vue | present |
 | public index | full | packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/index.vue | present |
 | admin/edit | full | packages/extensions/fireux-suppliers/src/runtime/pages/dashboard/supplier/profile.vue | usable profile-edit surface |
-| console runtime | partial | packages/extensions/fireux-suppliers/src/runtime/composables/fireux/app/supplier-console/useRuntimeSupplierConsole.ts | not normalized like project, kitchen, and portfolio |
+| console runtime | partial | packages/extensions/fireux-suppliers/src/runtime/composables/fireux/app/supplier-console/useSupplierConsole.ts | not normalized like project, kitchen, and portfolio |
 
 ### Chef, Agent, and Professional profile stack
 
@@ -606,12 +606,12 @@ Cleanup priority used in this report:
 
 | Entity | Model | Fetch | Create | Interface | Public index | Console/admin | Runtime model | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Client | packages/extensions/fireux-properties/src/runtime/models/client.model.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/client/fetch/useClientCollection.ts | missing | packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/client/utils/view/useClientInterface.ts | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/clients.vue | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/state.ts | live data and scenario data are mixed in one fetch path |
-| Tenant | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio.ts | n/a | n/a | missing | indirect via clients page | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/state.ts | scenario-only, not production canon |
-| Lease | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio.ts | n/a | n/a | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/finance.vue | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/state.ts | scenario-only, not production canon |
-| MaintenanceTicket | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio.ts | n/a | n/a | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/incidents.vue | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/state.ts | scenario-only, not production canon |
-| FinancialSignals | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio.ts | n/a | n/a | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/finance.vue | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/state.ts | scenario-only aggregate, not production canon |
-| FinancialTransaction | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio.ts | n/a | n/a | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/finance.vue | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-runtime/state.ts | scenario-only, not production canon |
+| Client | packages/extensions/fireux-properties/src/runtime/models/client.model.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/client/fetch/useClientCollection.ts | missing | packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/client/utils/view/useClientInterface.ts | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/clients.vue | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/usePortfolioSelection.ts | live data and scenario data are mixed in one fetch path |
+| Tenant | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/useActivePortfolio.ts | n/a | n/a | missing | indirect via clients page | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/usePortfolioSelection.ts | scenario-only, not production canon |
+| Lease | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/useActivePortfolio.ts | n/a | n/a | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/finance.vue | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/usePortfolioSelection.ts | scenario-only, not production canon |
+| MaintenanceTicket | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/useActivePortfolio.ts | n/a | n/a | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/incidents.vue | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/usePortfolioSelection.ts | scenario-only, not production canon |
+| FinancialSignals | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/useActivePortfolio.ts | n/a | n/a | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/finance.vue | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/usePortfolioSelection.ts | scenario-only aggregate, not production canon |
+| FinancialTransaction | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/demo-scenarios/_shared/types.ts | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/useActivePortfolio.ts | n/a | n/a | missing | packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/finance.vue | packages/extensions/fireux-properties/src/runtime/composables/fireux/app/portfolio-console/usePortfolioSelection.ts | scenario-only, not production canon |
 
 ### Recipe stack
 
@@ -650,7 +650,7 @@ Model exists, but the visible UI stack is weak.
 ### Runtime behavior without a normalized runtime state model
 
 1. Supplier.
-The supplier console works, but it is still profile-console driven through packages/extensions/fireux-suppliers/src/runtime/composables/fireux/app/supplier-console/useRuntimeSupplierConsole.ts rather than a state.ts family parallel to Project, Kitchen, and Portfolio.
+The supplier console works, but it is still profile-console driven through packages/extensions/fireux-suppliers/src/runtime/composables/fireux/app/supplier-console/useSupplierConsole.ts rather than a state.ts family parallel to Project, Kitchen, and Portfolio.
 2. Recipe.
 Recipe has runtime-ish pages and CRUD naming but no normalized runtime state family and no confirmed model residence.
 

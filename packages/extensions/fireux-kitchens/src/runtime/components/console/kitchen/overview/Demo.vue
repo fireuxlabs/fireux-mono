@@ -27,10 +27,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useRuntimeKitchen } from '../../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
-import { useRuntimeKitchenConsole } from '../../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchenConsole'
-const runtime = useRuntimeKitchen()
-const { scenarios } = useRuntimeKitchenConsole()
+import { useActiveKitchen } from '../../../../composables/fireux/app/kitchen-console/useActiveKitchen'
+import { useKitchenConsole } from '../../../../composables/fireux/app/kitchen-console/useKitchenConsole'
+const runtime = useActiveKitchen()
+const { scenarios } = useKitchenConsole()
 const { isPremium } = useUser()
 const showPremiumPreview = ref(false)
 const demoKitchenCount = computed(() => scenarios.value.length)

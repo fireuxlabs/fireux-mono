@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { navigateTo, useRoute } from '#imports'
-import { useRuntimeSupplierSelection } from '../../../../composables/fireux/app/supplier-console/state'
+import { useSupplierSelection } from '../../../../composables/fireux/app/supplier-console/useSupplierSelection'
 import {
   getDemoSupplierScenario,
   getDemoSupplierScenarioList,
@@ -16,7 +16,7 @@ definePageMeta({
 })
 
 const route = useRoute()
-const { setRuntimeSupplier } = useRuntimeSupplierSelection()
+const { setRuntimeSupplier } = useSupplierSelection()
 const requestedScenarioId = String(route.params.scenarioId || '').trim()
 const fallbackScenarioId = String(getDemoSupplierScenarioList()[0]?.id || '').trim()
 const resolvedScenarioId = getDemoSupplierScenario(requestedScenarioId)

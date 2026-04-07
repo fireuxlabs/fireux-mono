@@ -1,7 +1,7 @@
 import { collection, doc, limit as fslimit, query as fsq, getDoc, getDocs, where } from 'firebase/firestore'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
+import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { canonicalPlaceId, fetchPlaceDetails } from '../fetch/google/usePlacesGoogle'

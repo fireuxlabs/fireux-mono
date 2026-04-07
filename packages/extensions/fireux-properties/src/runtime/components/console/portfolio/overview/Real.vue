@@ -17,9 +17,9 @@
 </template>
 <script setup lang="ts">
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useRuntimePortfolio } from '../../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import { useActivePortfolio } from '../../../../composables/fireux/app/portfolio-console/useActivePortfolio'
 import { usePortfolioCollection } from '../../../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
-const runtime = useRuntimePortfolio()
+const runtime = useActivePortfolio()
 const { isPremium } = useUser()
 const { count: livePortfolioCount } = usePortfolioCollection()
 </script>

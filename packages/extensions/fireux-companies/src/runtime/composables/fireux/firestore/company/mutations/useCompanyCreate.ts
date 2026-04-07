@@ -1,5 +1,5 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
+import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import type { Company, CompanyCreateInput } from 'fireux-companies/runtime/models/company.model'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 

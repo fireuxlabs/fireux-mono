@@ -78,9 +78,9 @@
 import { computed } from 'vue'
 import ClientCollectionManager from '../../../components/organisms/Client/Collection/Manager.vue'
 import {
-  useRuntimePortfolio,
+  useActivePortfolio,
   useRuntimePortfolioPath,
-} from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+} from '../../../composables/fireux/app/portfolio-console/useActivePortfolio'
 import { usePortfolioClientCollection } from '../../../composables/fireux/firestore/client/fetch/usePortfolioClientCollection'
 
 definePageMeta({
@@ -98,7 +98,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const runtimePortfolio = useRuntimePortfolio()
+const runtimePortfolio = useActivePortfolio()
 const { collection: clientCollection } = usePortfolioClientCollection(runtimePortfolio)
 const isDev = import.meta.dev
 const clientsPath = useRuntimePortfolioPath(runtimePortfolio, 'clients')

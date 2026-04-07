@@ -3,10 +3,10 @@ import { useRoute, useState } from '#imports'
 import { useNav } from '../ui/nav/useNav'
 import {
   consoleFamilyFromPath,
-  createDefaultRuntimeSelectionState,
+  createDefaultConsoleSelectionState,
   toConsoleSelectionStateKey,
 } from './consoleRoutes'
-import type { RuntimeSelectionState } from '../../runtime/runtime.types'
+import type { ConsoleSelectionState } from '../../console/console.types'
 
 function normalizePath(value: unknown): string {
   return String(value || '').trim().replace(/\/+$/, '')
@@ -23,9 +23,9 @@ export const useConsoleNav = () => {
   const activeSelection = computed(() => {
     const family = activeFamily.value
     if (!family) return null
-    return useState<RuntimeSelectionState>(
+    return useState<ConsoleSelectionState>(
       toConsoleSelectionStateKey(family),
-      createDefaultRuntimeSelectionState
+      createDefaultConsoleSelectionState
     ).value
   })
   const hasSelectedTarget = computed(() =>

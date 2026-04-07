@@ -64,7 +64,7 @@
 <script setup lang="ts">
 import { toDataURL } from 'qrcode'
 import { computed, ref, watch } from 'vue'
-import { useRuntimeKitchen } from '../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
+import { useActiveKitchen } from '../../composables/fireux/app/kitchen-console/useActiveKitchen'
 
 type QrItem = {
   label: string
@@ -77,7 +77,7 @@ const props = withDefaults(defineProps<{
   size: 84,
 })
 
-const runtime = useRuntimeKitchen()
+const runtime = useActiveKitchen()
 
 const sizePx = computed(() => {
   const n = Number(props.size || 84)

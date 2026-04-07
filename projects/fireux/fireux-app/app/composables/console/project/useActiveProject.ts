@@ -4,7 +4,7 @@ import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireu
 import { computed, ref } from 'vue'
 import type { Project } from 'fireux-core/runtime/models/system/project.model'
 import { getDemoProjectScenario } from './demo-scenarios'
-import { useRuntimeProjectSelection } from './state'
+import { useProjectSelection } from './useProjectSelection'
 
 type RuntimeProject = Partial<Project> & Record<string, unknown> & {
   id?: string
@@ -30,9 +30,9 @@ const resolveRuntimeProjectDataCollectionPath = (
 /**
  * Canon project console seam.
  */
-export function useRuntimeProject() {
+export function useActiveProject() {
   const { appId } = useFireUXConfig()
-  const selection = useRuntimeProjectSelection()
+  const selection = useProjectSelection()
   const id = selection.selectedId
   const mode = selection.mode
   const activity = computed<'static'>(() => 'static')

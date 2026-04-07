@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimeProjectConsole } from '~/composables/console/project/useRuntimeProjectConsole'
+import { useProjectConsole } from '~/composables/console/project/useProjectConsole'
 
 definePageMeta({
   layout: 'console',
@@ -50,7 +50,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, console } = useRuntimeProjectConsole({ publishHeader: true })
+const { runtime, console } = useProjectConsole({ publishHeader: true })
 const selectedMode = console.mode
 const modeOptions = console.modeOptions
 const selectMode = console.selectMode

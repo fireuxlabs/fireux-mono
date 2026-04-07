@@ -1,13 +1,13 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import {
-  useRuntimePortfolio,
+  useActivePortfolio,
   useRuntimePortfolioPath,
-} from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+} from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
 import type { Document, DocumentCreateInput } from '../../../../../models/document.model'
 
 const normalize = (value: unknown) => String(value || '').trim()
 
-export function useDocumentCreate(runtimePortfolio = useRuntimePortfolio()) {
+export function useDocumentCreate(runtimePortfolio = useActivePortfolio()) {
   const { createDocument } = useFirestoreCreate()
   const collectionPath = useRuntimePortfolioPath(runtimePortfolio, 'documents')
 

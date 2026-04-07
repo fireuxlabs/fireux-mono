@@ -1,10 +1,10 @@
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import {
-  useRuntimePortfolio,
+  useActivePortfolio,
   useRuntimePortfolioPath,
-} from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
-import type { DemoDocumentLink } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios'
+} from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
+import type { DemoDocumentLink } from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/demo-scenarios'
 import type { DocumentLink } from '../../../../../models/document-link.model'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
@@ -20,7 +20,7 @@ const toDocumentLink = (entry: DemoDocumentLink): DocumentLink => ({
   updated: { at: {} as any, by: undefined },
 })
 
-export function usePortfolioDocumentLinkCollection(runtimePortfolio = useRuntimePortfolio()) {
+export function usePortfolioDocumentLinkCollection(runtimePortfolio = useActivePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<DocumentLink[] | undefined> | null>
   const collectionPath = useRuntimePortfolioPath(runtimePortfolio, 'document-links')

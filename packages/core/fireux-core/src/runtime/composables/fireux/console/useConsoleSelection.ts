@@ -1,9 +1,9 @@
 import { useCookie, useState } from '#imports'
 import type { Ref } from 'vue'
 import { computed } from 'vue'
-import type { RuntimeSelectionApi } from './runtime.types'
+import type { ConsoleSelectionApi } from './console.types'
 
-type UseRuntimeSelectionParams<TState extends Record<string, any>> = {
+type UseConsoleSelectionParams<TState extends Record<string, any>> = {
   cookieKey: string
   defaultState: () => TState
   normalizeState: (value: unknown) => TState
@@ -11,12 +11,12 @@ type UseRuntimeSelectionParams<TState extends Record<string, any>> = {
 
 /**
  * Shared cookie+state selection store.
- * Entity wrappers keep their own naming (useRuntimeKitchenSelection, etc.)
+ * Entity wrappers keep their own naming (useKitchenSelection, etc.)
  * but call this internally.
  */
-export function useRuntimeSelection<TState extends Record<string, any>>(
-  params: UseRuntimeSelectionParams<TState>
-): RuntimeSelectionApi<TState> & { state: Ref<TState> } {
+export function useConsoleSelection<TState extends Record<string, any>>(
+  params: UseConsoleSelectionParams<TState>
+): ConsoleSelectionApi<TState> & { state: Ref<TState> } {
   const cookie = useCookie<TState>(params.cookieKey, {
     default: params.defaultState,
     sameSite: 'lax',
@@ -70,12 +70,12 @@ export function selectionKey<TState extends Record<string, any>, K extends keyof
   return computed(() => selection.state.value[key])
 }
 
-type RuntimeEntitySelectionState<TMode extends string> = {
+type ConsoleEntitySelectionState<TMode extends string> = {
   selectedId: string
   mode: TMode
 }
 
-type CreateRuntimeEntitySelectionParams<TMode extends string, TAlias extends string> = {
+type CreateConsoleEntitySelectionParams<TMode extends string, TAlias extends string> = {
   cookieKey: string
   aliasKey: TAlias
   defaultMode: TMode
@@ -83,8 +83,8 @@ type CreateRuntimeEntitySelectionParams<TMode extends string, TAlias extends str
   normalizeId?: (value: unknown) => string
 }
 
-type RuntimeEntitySelectionInput<TMode extends string, TAlias extends string> =
-  Partial<RuntimeEntitySelectionState<TMode>> & {
+type ConsoleEntitySelectionInput<TMode extends string, TAlias extends string> =
+  Partial<ConsoleEntitySelectionState<TMode>> & {
     [K in TAlias]?: string
   }
 
@@ -92,11 +92,11 @@ type RuntimeEntitySelectionInput<TMode extends string, TAlias extends string> =
  * Small factory for entity-specific runtime selectors.
  * Wrappers keep their domain names but share the same implementation.
  */
-export function createRuntimeEntitySelection<TMode extends string, TAlias extends string>(
-  params: CreateRuntimeEntitySelectionParams<TMode, TAlias>
+export function createConsoleEntitySelection<TMode extends string, TAlias extends string>(
+  params: CreateConsoleEntitySelectionParams<TMode, TAlias>
 ) {
-  type SelectionState = RuntimeEntitySelectionState<TMode>
-  type SelectionInput = RuntimeEntitySelectionInput<TMode, TAlias>
+  type SelectionState = ConsoleEntitySelectionState<TMode>
+  type SelectionInput = ConsoleEntitySelectionInput<TMode, TAlias>
 
   const normalizeId = params.normalizeId ?? ((value: unknown) => String(value ?? '').trim())
 
@@ -108,8 +108,8 @@ export function createRuntimeEntitySelection<TMode extends string, TAlias extend
     }
   }
 
-  return function useRuntimeEntitySelection() {
-    const selection = useRuntimeSelection<SelectionState>({
+  return function useEntitySelection() {
+    const selection = useConsoleSelection<SelectionState>({
       cookieKey: params.cookieKey,
       defaultState: () => ({ selectedId: '', mode: params.defaultMode }),
       normalizeState,

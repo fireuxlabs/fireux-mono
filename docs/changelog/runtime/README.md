@@ -16,7 +16,7 @@ Previous:
 - docs still described `Project` main console pages as core-owned
 
 Now:
-- the console layout consumes `useRuntimeConsole()` as its generic shell contract
+- the console layout consumes `useConsoleState()` as its generic shell contract
 - the sidebar header uses one simple data shape:
   - `imageUrl`
   - `title`

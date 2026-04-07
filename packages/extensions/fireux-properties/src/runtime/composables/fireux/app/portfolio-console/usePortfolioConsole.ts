@@ -1,10 +1,10 @@
 import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useRuntimeConsole } from 'fireux-core/runtime/composables/fireux/runtime/useRuntimeConsole'
+import { useConsoleState } from 'fireux-core/runtime/composables/fireux/console/useConsoleState'
 import type { Portfolio } from '../../../models/portfolio.model'
 import { getDemoPortfolioScenarios } from './demo-scenarios'
-import { useRuntimePortfolioSelection } from './state'
-import { useRuntimePortfolio } from './useRuntimePortfolio'
+import { usePortfolioSelection } from './usePortfolioSelection'
+import { useActivePortfolio } from './useActivePortfolio'
 import { usePortfolioCollection } from '../../firestore/portfolio/fetch/usePortfolioCollection'
 import { usePortfolioInterface } from '../../firestore/portfolio/utils/view/usePortfolioInterface'
 
@@ -21,11 +21,11 @@ const stripTestPortfolioSuffix = (value: unknown): string =>
 /**
  * Root portfolio console inputs.
  */
-export function useRuntimePortfolioConsole(
+export function usePortfolioConsole(
   options: UseRuntimePortfolioConsoleOptions = {}
 ) {
-  const runtime = useRuntimePortfolio()
-  const portfolioSelection = useRuntimePortfolioSelection()
+  const runtime = useActivePortfolio()
+  const portfolioSelection = usePortfolioSelection()
   const { uid, currentUser } = useAuth()
   const { pill: toPortfolioCard } = usePortfolioInterface()
   const { collection: livePortfolios } = usePortfolioCollection()
@@ -114,7 +114,7 @@ export function useRuntimePortfolioConsole(
       : null
   )
 
-  const console = useRuntimeConsole({
+  const console = useConsoleState({
     family: 'portfolio',
     selectedId: runtime.id,
     mode: selectedMode,

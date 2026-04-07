@@ -27,10 +27,10 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useRuntimePortfolioConsole } from '../../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolioConsole'
-import { useRuntimePortfolio } from '../../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
-const runtime = useRuntimePortfolio()
-const { scenarios } = useRuntimePortfolioConsole()
+import { usePortfolioConsole } from '../../../../composables/fireux/app/portfolio-console/usePortfolioConsole'
+import { useActivePortfolio } from '../../../../composables/fireux/app/portfolio-console/useActivePortfolio'
+const runtime = useActivePortfolio()
+const { scenarios } = usePortfolioConsole()
 const { isPremium } = useUser()
 const showPremiumPreview = ref(false)
 const demoPortfolioCount = computed(() => scenarios.value.length)

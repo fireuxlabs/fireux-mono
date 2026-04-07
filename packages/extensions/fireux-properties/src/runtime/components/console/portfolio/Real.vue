@@ -35,14 +35,14 @@
 import { computed } from 'vue'
 import type { Portfolio } from '../../../models/portfolio.model'
 import { usePortfolioCollection } from '../../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
-import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
+import { usePortfolioSelection } from '../../../composables/fireux/app/portfolio-console/usePortfolioSelection'
 import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
-import { useRuntimePortfolioConsole } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolioConsole'
+import { usePortfolioConsole } from '../../../composables/fireux/app/portfolio-console/usePortfolioConsole'
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
 
-const { runtime } = useRuntimePortfolioConsole()
-const portfolioSelection = useRuntimePortfolioSelection()
+const { runtime } = usePortfolioConsole()
+const portfolioSelection = usePortfolioSelection()
 const { pill: toPortfolioCard } = usePortfolioInterface()
 const { collection: livePortfolios } = usePortfolioCollection()
 

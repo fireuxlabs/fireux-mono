@@ -63,11 +63,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useRuntimeProjectConsole } from '~/composables/console/project/useRuntimeProjectConsole'
-import { useRuntimeProject } from '~/composables/console/project/useRuntimeProject'
+import { useProjectConsole } from '~/composables/console/project/useProjectConsole'
+import { useActiveProject } from '~/composables/console/project/useActiveProject'
 
-const runtime = useRuntimeProject()
-const { scenarios } = useRuntimeProjectConsole()
+const runtime = useActiveProject()
+const { scenarios } = useProjectConsole()
 const { isPremium } = useUser()
 
 const showPremiumPreview = ref(false)

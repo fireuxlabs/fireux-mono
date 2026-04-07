@@ -67,7 +67,7 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed } from 'vue'
-import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
+import { useActiveKitchen } from '../../../composables/fireux/app/kitchen-console/useActiveKitchen'
 import { useIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
 import { useKitchenIngredientAdd } from '../../../composables/fireux/firestore/runtime-kitchen/ingredients/mutations/useKitchenIngredientAdd'
 import { useKitchenIngredientRemove } from '../../../composables/fireux/firestore/runtime-kitchen/ingredients/mutations/useKitchenIngredientRemove'
@@ -88,7 +88,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const runtime = useRuntimeKitchen()
+const runtime = useActiveKitchen()
 const { ingredients: globalIngredients } = useIngredientFetch()
 const { addIngredientToKitchen } = useKitchenIngredientAdd()
 const { removeIngredientFromKitchen } = useKitchenIngredientRemove()

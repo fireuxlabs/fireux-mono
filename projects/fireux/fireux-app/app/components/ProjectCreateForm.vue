@@ -69,7 +69,7 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from '#imports'
 import { computed, ref, watch } from 'vue'
-import { useRuntimeProjectSelection } from '~/composables/console/project/state'
+import { useProjectSelection } from '~/composables/console/project/useProjectSelection'
 import { useProjectCreate } from 'fireux-core/runtime/composables/fireux/firestore/system/project/mutations/useProjectCreate'
 import type {
   ConsoleCreateMode,
@@ -93,7 +93,7 @@ const emit = defineEmits<{
 
 const route = useRoute()
 const router = useRouter()
-const { setRuntimeProject } = useRuntimeProjectSelection()
+const { setRuntimeProject } = useProjectSelection()
 const { createProject } = useProjectCreate()
 
 type FireuxConsoleApp = {

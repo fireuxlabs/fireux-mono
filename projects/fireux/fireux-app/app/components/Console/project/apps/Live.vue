@@ -178,7 +178,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRuntimeProject } from '~/composables/console/project/useRuntimeProject'
+import { useActiveProject } from '~/composables/console/project/useActiveProject'
 
 type FireuxConsoleApp = {
   id: string
@@ -248,7 +248,7 @@ type LiveAppRow = {
   metaUrl: string
 }
 
-const runtime = useRuntimeProject()
+const runtime = useActiveProject()
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
 const labelize = (value: unknown): string =>

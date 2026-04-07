@@ -3,12 +3,12 @@ import { useAuth } from '../composables/fireux/firebase/useAuth'
 import { useUser } from '../composables/fireux/firestore/core/user/useUser'
 import {
   consoleFamilyFromPath,
-  createDefaultRuntimeSelectionState,
+  createDefaultConsoleSelectionState,
   toConsoleFamilyPath,
   toConsoleSelectionStateKey,
 } from '../composables/fireux/app/routing/consoleRoutes'
-import { normalizeRuntimeMode } from '../composables/fireux/runtime/runtime.normalize'
-import type { RuntimeSelectionState } from '../composables/fireux/runtime/runtime.types'
+import { normalizeConsoleMode } from '../composables/fireux/console/console.normalize'
+import type { ConsoleSelectionState } from '../composables/fireux/console/console.types'
 
 const AUTH_WAIT_TIMEOUT_MS = 2500
 const USER_WAIT_TIMEOUT_MS = 1500
@@ -37,11 +37,11 @@ function allowsGuestNonLiveConsole(path: string): boolean {
     return false
   }
 
-  const cookie = useCookie<RuntimeSelectionState | null>(
+  const cookie = useCookie<ConsoleSelectionState | null>(
     toConsoleSelectionStateKey(family),
-    { default: createDefaultRuntimeSelectionState }
+    { default: createDefaultConsoleSelectionState }
   )
-  const mode = normalizeRuntimeMode(cookie.value?.mode, { defaultMode: 'demo' })
+  const mode = normalizeConsoleMode(cookie.value?.mode, { defaultMode: 'demo' })
   return mode === 'demo'
 }
 

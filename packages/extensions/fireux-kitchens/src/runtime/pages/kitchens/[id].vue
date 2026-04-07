@@ -180,7 +180,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceClaim'
 import { computed, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
-import { resolveKitchenConsoleCollectionPath } from '../../composables/fireux/app/kitchen-runtime/shared'
+import { resolveKitchenConsoleCollectionPath } from '../../composables/fireux/app/kitchen-console/shared'
 import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenInterface } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { Kitchen } from '../../models/kitchen.model'

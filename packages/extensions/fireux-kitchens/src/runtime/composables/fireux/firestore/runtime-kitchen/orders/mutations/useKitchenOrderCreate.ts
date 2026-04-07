@@ -1,7 +1,7 @@
 import { collection, doc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-runtime/shared'
+import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-console/shared'
 import type { KitchenOrder, KitchenOrderItem } from '../../../../../../models/order.model'
 
 type CreateKitchenOrderInput = {

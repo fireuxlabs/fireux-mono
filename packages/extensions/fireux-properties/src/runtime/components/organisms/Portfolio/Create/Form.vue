@@ -71,7 +71,7 @@ import type {
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { computed, ref } from 'vue'
 import { useRoute, useRouter } from '#imports'
-import { useRuntimePortfolioSelection } from '../../../../composables/fireux/app/portfolio-runtime/state'
+import { usePortfolioSelection } from '../../../../composables/fireux/app/portfolio-console/usePortfolioSelection'
 import { usePortfolioCreate } from '../../../../composables/fireux/firestore/portfolio/mutations/usePortfolioCreate'
 
 const props = withDefaults(defineProps<{
@@ -90,7 +90,7 @@ const emit = defineEmits<{
 
 const route = useRoute()
 const router = useRouter()
-const { setRuntimePortfolio } = useRuntimePortfolioSelection()
+const { setRuntimePortfolio } = usePortfolioSelection()
 const { createPortfolio } = usePortfolioCreate()
 
 const name = ref('')

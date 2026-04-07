@@ -1,4 +1,4 @@
-import { createRuntimeEntitySelection } from 'fireux-core/runtime/composables/fireux/runtime/useRuntimeSelection'
+import { createConsoleEntitySelection } from 'fireux-core/runtime/composables/fireux/console/useConsoleSelection'
 
 export type RuntimeSupplierMode = 'live' | 'demo' | 'test'
 
@@ -22,7 +22,7 @@ const normalizeMode = (value: unknown): RuntimeSupplierMode => {
   return 'demo'
 }
 
-const useSupplierSelectionBase = createRuntimeEntitySelection<RuntimeSupplierMode, 'supplierId'>({
+const useSupplierSelectionBase = createConsoleEntitySelection<RuntimeSupplierMode, 'supplierId'>({
   cookieKey: COOKIE_KEY,
   aliasKey: 'supplierId',
   defaultMode: 'demo',
@@ -30,7 +30,7 @@ const useSupplierSelectionBase = createRuntimeEntitySelection<RuntimeSupplierMod
   normalizeId: normalizeString,
 })
 
-export function useRuntimeSupplierSelection() {
+export function useSupplierSelection() {
   const selection = useSupplierSelectionBase()
   const setRuntimeSupplier = (selectionPatch: RuntimeSupplierSelectionInput = {}) =>
     selection.setSelection(selectionPatch)

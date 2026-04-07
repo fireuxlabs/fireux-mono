@@ -1,10 +1,10 @@
 import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useRuntimeConsole } from 'fireux-core/runtime/composables/fireux/runtime/useRuntimeConsole'
+import { useConsoleState } from 'fireux-core/runtime/composables/fireux/console/useConsoleState'
 import type { Kitchen } from '../../../models/kitchen.model'
 import { getDemoKitchenScenarios } from './demo-scenarios'
-import { useRuntimeKitchenSelection } from './state'
-import { useRuntimeKitchen } from './useRuntimeKitchen'
+import { useKitchenSelection } from './useKitchenSelection'
+import { useActiveKitchen } from './useActiveKitchen'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenInterface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 
@@ -21,11 +21,11 @@ const stripTestKitchenSuffix = (value: unknown): string =>
 /**
  * Root kitchen console inputs.
  */
-export function useRuntimeKitchenConsole(
+export function useKitchenConsole(
   options: UseRuntimeKitchenConsoleOptions = {}
 ) {
-  const runtime = useRuntimeKitchen()
-  const kitchenSelection = useRuntimeKitchenSelection()
+  const runtime = useActiveKitchen()
+  const kitchenSelection = useKitchenSelection()
   const { uid, currentUser } = useAuth()
   const { interface: toKitchenCard } = useKitchenInterface()
   const { kitchens: liveKitchens } = useKitchenFetch()
@@ -99,7 +99,7 @@ export function useRuntimeKitchenConsole(
       : null
   )
 
-  const console = useRuntimeConsole({
+  const console = useConsoleState({
     family: 'kitchen',
     selectedId: runtime.id,
     mode: selectedMode,

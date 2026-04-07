@@ -17,8 +17,8 @@ import {
   type RecipeVisibility,
   type WorkflowStatus,
 } from '../../../../../../models/recipe.model'
-import { useRuntimeKitchenSelection } from '../../../../app/kitchen-runtime/state'
-import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-runtime/shared'
+import { useKitchenSelection } from '../../../../app/kitchen-console/useKitchenSelection'
+import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-console/shared'
 
 type RecipeCreateDraft = Partial<RecipeCreateInput> & {
   name: string
@@ -122,7 +122,7 @@ export function useRecipeCreate(options: { kitchenCollectionPath?: string | Ref<
   const { createDocument } = useFirestoreCreate()
   const { appId } = useFireUXConfig()
   const currentUser = useCurrentUser()
-  const { runtimeKitchenId } = useRuntimeKitchenSelection()
+  const { runtimeKitchenId } = useKitchenSelection()
 
   const kitchenCollectionPath = computed(() =>
     String(unref(options.kitchenCollectionPath) || '').trim() ||

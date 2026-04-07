@@ -1,5 +1,5 @@
 import { normalizeMode, normalizeString, type RuntimePortfolioMode } from './shared'
-import { createRuntimeEntitySelection } from 'fireux-core/runtime/composables/fireux/runtime/useRuntimeSelection'
+import { createConsoleEntitySelection } from 'fireux-core/runtime/composables/fireux/console/useConsoleSelection'
 
 type RuntimePortfolioSelectionState = {
   selectedId: string
@@ -11,7 +11,7 @@ type RuntimePortfolioSelectionInput = Partial<RuntimePortfolioSelectionState> & 
 }
 
 const COOKIE_KEY = 'fireux_runtime_portfolio'
-const usePortfolioSelectionBase = createRuntimeEntitySelection<RuntimePortfolioMode, 'portfolioId'>({
+const usePortfolioSelectionBase = createConsoleEntitySelection<RuntimePortfolioMode, 'portfolioId'>({
   cookieKey: COOKIE_KEY,
   aliasKey: 'portfolioId',
   defaultMode: 'live',
@@ -19,7 +19,7 @@ const usePortfolioSelectionBase = createRuntimeEntitySelection<RuntimePortfolioM
   normalizeId: normalizeString,
 })
 
-export function useRuntimePortfolioSelection() {
+export function usePortfolioSelection() {
   const selection = usePortfolioSelectionBase()
   const setRuntimePortfolio = (selectionPatch: RuntimePortfolioSelectionInput = {}) =>
     selection.setSelection(selectionPatch)

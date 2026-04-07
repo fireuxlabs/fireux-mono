@@ -1,11 +1,11 @@
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import {
-  useRuntimePortfolio,
+  useActivePortfolio,
   useRuntimePortfolioPath,
-} from '../../../app/portfolio-runtime/useRuntimePortfolio'
+} from '../../../app/portfolio-console/useActivePortfolio'
 import type { Client } from '../../../../../models/client.model'
-import type { DemoLease, DemoPortfolioScenario } from '../../../app/portfolio-runtime/demo-scenarios'
+import type { DemoLease, DemoPortfolioScenario } from '../../../app/portfolio-console/demo-scenarios'
 
 const clientAvatarPlaceholder = (seed: string) =>
   `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(`fireux-client-${seed || 'placeholder'}`)}`
@@ -292,7 +292,7 @@ const buildDemoClients = (scenario: DemoPortfolioScenario): Client[] => {
 
 const roundToMoney = (value: number) => Math.round(Number(value || 0))
 
-export function usePortfolioClientCollection(runtimePortfolio = useRuntimePortfolio()) {
+export function usePortfolioClientCollection(runtimePortfolio = useActivePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<Client[] | undefined> | null>
   const collectionPath = useRuntimePortfolioPath(runtimePortfolio, 'clients')

@@ -98,7 +98,7 @@
 import { computed, ref, watch } from 'vue'
 import { useKitchenBuyListSelection } from 'fireux-suppliers/runtime/composables/fireux/firestore/supplier/utils/view/useKitchenBuyListSelection'
 import { useSupplierCatalogueForKitchen } from 'fireux-suppliers/runtime/composables/fireux/firestore/supplier/utils/view/useSupplierCatalogueForKitchen'
-import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
+import { useActiveKitchen } from '../../../composables/fireux/app/kitchen-console/useActiveKitchen'
 import { useIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
 import SupplierCollectionManager from '../../../components/organisms/Supplier/Collection/Manager.vue'
 
@@ -117,7 +117,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const runtime = useRuntimeKitchen()
+const runtime = useActiveKitchen()
 const mode = runtime.mode
 const kitchenId = computed(() => String(runtime.id.value || '').trim())
 const kitchen = runtime.kitchen

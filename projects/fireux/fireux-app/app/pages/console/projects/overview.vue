@@ -78,7 +78,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRuntimeProjectConsole } from '~/composables/console/project/useRuntimeProjectConsole'
+import { useProjectConsole } from '~/composables/console/project/useProjectConsole'
 
 definePageMeta({
   layout: 'console',
@@ -94,7 +94,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, console, activeProjectPill } = useRuntimeProjectConsole({
+const { runtime, console, activeProjectPill } = useProjectConsole({
   publishHeader: true,
 })
 const runtimeMode = console.mode

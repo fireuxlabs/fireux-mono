@@ -113,7 +113,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimeConsole } from '../composables/fireux/runtime/useRuntimeConsole'
+import { useConsoleState } from '../composables/fireux/console/useConsoleState'
 
 defineOptions({ name: 'console' })
 
@@ -127,5 +127,5 @@ const {
   middleNav,
   familyRootNav,
   regularBottomNav,
-} = useRuntimeConsole()
+} = useConsoleState()
 </script>

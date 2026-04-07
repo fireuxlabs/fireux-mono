@@ -34,14 +34,14 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Portfolio } from '../../../models/portfolio.model'
-import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
+import { usePortfolioSelection } from '../../../composables/fireux/app/portfolio-console/usePortfolioSelection'
 import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
-import { useRuntimePortfolioConsole } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolioConsole'
+import { usePortfolioConsole } from '../../../composables/fireux/app/portfolio-console/usePortfolioConsole'
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
 
-const { runtime, scenarios } = useRuntimePortfolioConsole()
-const portfolioSelection = useRuntimePortfolioSelection()
+const { runtime, scenarios } = usePortfolioConsole()
+const portfolioSelection = usePortfolioSelection()
 const { pill: toPortfolioCard } = usePortfolioInterface()
 
 type PortfolioPill = NonNullable<ReturnType<typeof toPortfolioCard>> & {

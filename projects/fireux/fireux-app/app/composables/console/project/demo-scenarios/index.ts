@@ -1,4 +1,4 @@
-import { createDemoScenarioRegistry } from 'fireux-core/runtime/composables/fireux/runtime/createDemoScenarioRegistry'
+import { createDemoScenarioRegistry } from 'fireux-core/runtime/composables/fireux/console/createDemoScenarioRegistry'
 import { cedarLoopScenario } from './cedar-loop'
 import { harborGridScenario } from './harbor-grid'
 import { northstarWorksScenario } from './northstar-works'

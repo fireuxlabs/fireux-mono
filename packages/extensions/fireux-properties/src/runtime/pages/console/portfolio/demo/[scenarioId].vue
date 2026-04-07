@@ -4,11 +4,11 @@
 
 <script setup lang="ts">
 import { navigateTo, useRoute } from '#imports'
-import { useRuntimePortfolioSelection } from '../../../../composables/fireux/app/portfolio-runtime/state'
+import { usePortfolioSelection } from '../../../../composables/fireux/app/portfolio-console/usePortfolioSelection'
 import {
   getDemoPortfolioScenario,
   getDemoPortfolioScenarioList,
-} from '../../../../composables/fireux/app/portfolio-runtime/demo-scenarios'
+} from '../../../../composables/fireux/app/portfolio-console/demo-scenarios'
 
 definePageMeta({
   layout: 'console',
@@ -16,7 +16,7 @@ definePageMeta({
 })
 
 const route = useRoute()
-const { setRuntimePortfolio } = useRuntimePortfolioSelection()
+const { setRuntimePortfolio } = usePortfolioSelection()
 const requestedScenarioId = String(route.params.scenarioId || '').trim()
 const fallbackScenarioId = String(getDemoPortfolioScenarioList()[0]?.id || '').trim()
 const resolvedScenarioId = getDemoPortfolioScenario(requestedScenarioId)

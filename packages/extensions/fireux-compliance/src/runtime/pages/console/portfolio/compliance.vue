@@ -100,9 +100,9 @@
 
 <script setup lang="ts">
 import {
-  useRuntimePortfolio,
+  useActivePortfolio,
   useRuntimePortfolioPath,
-} from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+} from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
 import { useTaskCreate } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/mutations/useTaskCreate'
 import { useTaskProjection } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/utils/projection/useTaskProjection'
 import { computed } from 'vue'
@@ -124,7 +124,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const runtimePortfolio = useRuntimePortfolio()
+const runtimePortfolio = useActivePortfolio()
 const { collection } = usePortfolioComplianceRecordCollection(runtimePortfolio)
 const { interface: complianceInterface } = useComplianceInterface()
 const { createTask } = useTaskCreate(runtimePortfolio)

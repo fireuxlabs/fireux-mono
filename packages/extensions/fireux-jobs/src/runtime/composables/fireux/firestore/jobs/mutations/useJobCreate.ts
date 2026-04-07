@@ -1,5 +1,5 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
+import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { ref } from 'vue'
 import type { JobStatus } from '../../../../../models/job.model'
 import { useFireuxJobsConfig } from '../../../../config/useFireuxJobsConfig'

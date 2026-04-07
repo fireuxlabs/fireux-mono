@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { getDefaultDemoKitchenScenario } from '../../../composables/fireux/app/kitchen-runtime/demo-scenarios';
+import { getDefaultDemoKitchenScenario } from '../../../composables/fireux/app/kitchen-console/demo-scenarios';
 
 defineOptions({ name: 'DevConsoleSystem' })
 

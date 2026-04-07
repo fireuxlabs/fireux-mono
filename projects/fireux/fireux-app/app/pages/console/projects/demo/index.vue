@@ -4,14 +4,14 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import { useRuntimeProjectSelection } from '~/composables/console/project/state'
+import { useProjectSelection } from '~/composables/console/project/useProjectSelection'
 
 definePageMeta({
   layout: 'console',
   consoleEntry: true,
 })
 
-const { setRuntimeProject } = useRuntimeProjectSelection()
+const { setRuntimeProject } = useProjectSelection()
 setRuntimeProject({
   mode: 'demo',
 })

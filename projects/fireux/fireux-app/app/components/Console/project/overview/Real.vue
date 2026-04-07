@@ -44,9 +44,9 @@
 <script setup lang="ts">
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
-import { useRuntimeProject } from '~/composables/console/project/useRuntimeProject'
+import { useActiveProject } from '~/composables/console/project/useActiveProject'
 
-const runtime = useRuntimeProject()
+const runtime = useActiveProject()
 const { isPremium } = useUser()
 const { count: liveProjectCount } = useProjectCollection('projects')
 </script>

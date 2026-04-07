@@ -1,11 +1,11 @@
 import type {
   ConsoleFamily,
-  RuntimeSelectionState,
-} from '../../runtime/runtime.types'
+  ConsoleSelectionState,
+} from '../../console/console.types'
 
 export const CONSOLE_ROOT = '/console'
 
-export function createDefaultRuntimeSelectionState(): RuntimeSelectionState {
+export function createDefaultConsoleSelectionState(): ConsoleSelectionState {
   return {
     selectedId: '',
     mode: 'demo',

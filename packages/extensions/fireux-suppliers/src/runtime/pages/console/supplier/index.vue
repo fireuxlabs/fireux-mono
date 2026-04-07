@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimeSupplierConsole } from '../../../composables/fireux/app/supplier-console/useRuntimeSupplierConsole'
+import { useSupplierConsole } from '../../../composables/fireux/app/supplier-console/useSupplierConsole'
 
 definePageMeta({
   layout: 'console',
@@ -51,7 +51,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, console } = useRuntimeSupplierConsole({ publishHeader: true })
+const { runtime, console } = useSupplierConsole({ publishHeader: true })
 const selectedMode = console.mode
 const modeOptions = console.modeOptions
 const selectMode = console.selectMode

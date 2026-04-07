@@ -43,11 +43,11 @@
 <script setup lang="ts">
 import { useRouter } from '#imports'
 import { computed } from 'vue'
-import { getDemoKitchenScenarioList } from '../../../composables/fireux/app/kitchen-runtime/demo-scenarios'
-import { useRuntimeKitchenSelection } from '../../../composables/fireux/app/kitchen-runtime/state'
+import { getDemoKitchenScenarioList } from '../../../composables/fireux/app/kitchen-console/demo-scenarios'
+import { useKitchenSelection } from '../../../composables/fireux/app/kitchen-console/useKitchenSelection'
 
 const router = useRouter()
-const { setRuntimeKitchen } = useRuntimeKitchenSelection()
+const { setRuntimeKitchen } = useKitchenSelection()
 
 const scenarioCards = computed(() =>
   getDemoKitchenScenarioList().map((entry) => ({

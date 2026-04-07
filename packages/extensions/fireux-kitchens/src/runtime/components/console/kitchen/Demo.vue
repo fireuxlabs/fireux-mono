@@ -35,11 +35,11 @@
 import { computed } from 'vue'
 import type { Kitchen } from '../../../models/kitchen.model'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { useRuntimeKitchenSelection } from '../../../composables/fireux/app/kitchen-runtime/state'
-import { useRuntimeKitchenConsole } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchenConsole'
+import { useKitchenSelection } from '../../../composables/fireux/app/kitchen-console/useKitchenSelection'
+import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
 
-const { runtime, scenarios } = useRuntimeKitchenConsole()
-const kitchenSelection = useRuntimeKitchenSelection()
+const { runtime, scenarios } = useKitchenConsole()
+const kitchenSelection = useKitchenSelection()
 const { interface: toKitchenCard } = useKitchenInterface()
 
 type KitchenPill = NonNullable<ReturnType<typeof toKitchenCard>>

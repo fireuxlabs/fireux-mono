@@ -4,14 +4,14 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import { useRuntimePortfolioSelection } from '../../../../composables/fireux/app/portfolio-runtime/state'
+import { usePortfolioSelection } from '../../../../composables/fireux/app/portfolio-console/usePortfolioSelection'
 
 definePageMeta({
   layout: 'console',
   consoleEntry: true,
 })
 
-const { setRuntimePortfolio } = useRuntimePortfolioSelection()
+const { setRuntimePortfolio } = usePortfolioSelection()
 setRuntimePortfolio({
   mode: 'demo',
   portfolioId: '',

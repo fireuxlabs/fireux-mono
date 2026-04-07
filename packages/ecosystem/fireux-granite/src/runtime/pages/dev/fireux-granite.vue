@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRuntimePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+import { useActivePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
 
 definePageMeta({
   layout: 'dev',
@@ -31,7 +31,7 @@ definePageMeta({
   },
 })
 
-const runtimePortfolio = useRuntimePortfolio()
+const runtimePortfolio = useActivePortfolio()
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
 </script>

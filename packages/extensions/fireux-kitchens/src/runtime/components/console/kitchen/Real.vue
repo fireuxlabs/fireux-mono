@@ -35,12 +35,12 @@
 import { computed } from 'vue'
 import type { Kitchen } from '../../../models/kitchen.model'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
-import { useRuntimeKitchenSelection } from '../../../composables/fireux/app/kitchen-runtime/state'
+import { useKitchenSelection } from '../../../composables/fireux/app/kitchen-console/useKitchenSelection'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { useRuntimeKitchenConsole } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchenConsole'
+import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
 
-const { runtime } = useRuntimeKitchenConsole()
-const kitchenSelection = useRuntimeKitchenSelection()
+const { runtime } = useKitchenConsole()
+const kitchenSelection = useKitchenSelection()
 const { interface: toKitchenCard } = useKitchenInterface()
 const { kitchens: liveKitchens } = useKitchenFetch()
 

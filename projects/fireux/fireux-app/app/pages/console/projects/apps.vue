@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimeProject } from '~/composables/console/project/useRuntimeProject'
+import { useActiveProject } from '~/composables/console/project/useActiveProject'
 
 definePageMeta({
   layout: 'console',
@@ -46,5 +46,5 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const runtime = useRuntimeProject()
+const runtime = useActiveProject()
 </script>

@@ -1,8 +1,8 @@
 import { computed } from 'vue'
-import { useRuntimeKitchen } from './useRuntimeKitchen'
+import { useActiveKitchen } from './useActiveKitchen'
 
 export function useRuntimeKitchenComputed(
-  runtimeKitchen = useRuntimeKitchen()
+  runtimeKitchen = useActiveKitchen()
 ) {
   const hasActiveMenu = computed(() =>
     (runtimeKitchen.data.value.menus ?? []).some((menu) => Boolean(menu?.active))

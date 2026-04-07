@@ -153,9 +153,9 @@
 
 <script setup lang="ts">
 import {
-  useRuntimePortfolio,
+  useActivePortfolio,
   useRuntimePortfolioPath,
-} from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+} from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
 import { computed, ref } from 'vue'
 import { usePortfolioDocumentCollection } from '../../../composables/fireux/firestore/documents/fetch/usePortfolioDocumentCollection'
 import { usePortfolioDocumentLinkCollection } from '../../../composables/fireux/firestore/documents/fetch/usePortfolioDocumentLinkCollection'
@@ -180,7 +180,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const runtimePortfolio = useRuntimePortfolio()
+const runtimePortfolio = useActivePortfolio()
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const isDemo = computed(() => runtimePortfolio.isDemo.value)

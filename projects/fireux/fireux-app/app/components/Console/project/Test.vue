@@ -56,8 +56,8 @@ import {
   type ProjectInterfaceInput,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/project/utils/view/useProjectInterface'
 import type { Project } from 'fireux-core/runtime/models/system/project.model'
-import { useRuntimeProjectSelection } from '~/composables/console/project/state'
-import { useRuntimeProjectConsole } from '~/composables/console/project/useRuntimeProjectConsole'
+import { useProjectSelection } from '~/composables/console/project/useProjectSelection'
+import { useProjectConsole } from '~/composables/console/project/useProjectConsole'
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
 const stripTestProjectSuffix = (value: unknown): string =>
@@ -65,8 +65,8 @@ const stripTestProjectSuffix = (value: unknown): string =>
     .replace(/\s+test project$/i, '')
     .trim()
 
-const { runtime } = useRuntimeProjectConsole()
-const projectSelection = useRuntimeProjectSelection()
+const { runtime } = useProjectConsole()
+const projectSelection = useProjectSelection()
 const { appId, ecosystem } = useFireUXConfig()
 const { notesVisible } = useDevUi()
 const { currentUser: authUser, uid, isAuthenticated, hasAuthState } = useAuth()

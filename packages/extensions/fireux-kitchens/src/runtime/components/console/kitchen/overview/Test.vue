@@ -13,7 +13,7 @@
 </template>
 <script setup lang="ts">
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useRuntimeKitchen } from '../../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
-const runtime = useRuntimeKitchen()
+import { useActiveKitchen } from '../../../../composables/fireux/app/kitchen-console/useActiveKitchen'
+const runtime = useActiveKitchen()
 const { isPremium } = useUser()
 </script>

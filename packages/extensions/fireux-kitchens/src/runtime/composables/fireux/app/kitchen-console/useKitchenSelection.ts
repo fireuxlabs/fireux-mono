@@ -3,7 +3,7 @@ import {
   normalizeString,
   type RuntimeKitchenMode,
 } from './shared'
-import { createRuntimeEntitySelection } from 'fireux-core/runtime/composables/fireux/runtime/useRuntimeSelection'
+import { createConsoleEntitySelection } from 'fireux-core/runtime/composables/fireux/console/useConsoleSelection'
 
 type RuntimeKitchenSelectionState = {
   selectedId: string
@@ -15,7 +15,7 @@ type RuntimeKitchenSelectionInput = Partial<RuntimeKitchenSelectionState> & {
 }
 
 const COOKIE_KEY = 'fireux_runtime_kitchen'
-const useKitchenSelectionBase = createRuntimeEntitySelection<RuntimeKitchenMode, 'kitchenId'>({
+const useKitchenSelectionBase = createConsoleEntitySelection<RuntimeKitchenMode, 'kitchenId'>({
   cookieKey: COOKIE_KEY,
   aliasKey: 'kitchenId',
   defaultMode: 'demo',
@@ -23,7 +23,7 @@ const useKitchenSelectionBase = createRuntimeEntitySelection<RuntimeKitchenMode,
   normalizeId: normalizeString,
 })
 
-export function useRuntimeKitchenSelection() {
+export function useKitchenSelection() {
   const selection = useKitchenSelectionBase()
   const setRuntimeKitchen = (selectionPatch: RuntimeKitchenSelectionInput = {}) =>
     selection.setSelection(selectionPatch)

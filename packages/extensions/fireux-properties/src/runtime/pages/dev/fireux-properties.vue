@@ -127,8 +127,8 @@ import {
   ROOT_PORTFOLIO_COLLECTION_PATH,
   resolvePortfolioConsoleCollectionPath,
   resolveRuntimePortfolioPath,
-} from '../../composables/fireux/app/portfolio-runtime/shared'
-import { useRuntimePortfolio } from '../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+} from '../../composables/fireux/app/portfolio-console/shared'
+import { useActivePortfolio } from '../../composables/fireux/app/portfolio-console/useActivePortfolio'
 import { usePortfolioCollection } from '../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
 import type { ConsolePortfolio, Portfolio } from '../../models/portfolio.model'
 import { PortfolioModel as PortfolioModelRuntime } from '../../models/portfolio.model'
@@ -145,7 +145,7 @@ definePageMeta({
   },
 })
 
-const runtime = useRuntimePortfolio()
+const runtime = useActivePortfolio()
 const runtimePortfolio = computed(() => ({
   id: runtime.id.value || null,
   mode: runtime.mode.value,

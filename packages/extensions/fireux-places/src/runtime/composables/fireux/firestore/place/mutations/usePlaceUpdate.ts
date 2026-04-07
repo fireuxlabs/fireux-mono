@@ -2,7 +2,7 @@
 // flag
 
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/seo/useSeoIndexWrite'
+import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import type { Place, PlaceImageShade } from 'fireux-places/runtime/models/place.model'
 
 type UpdateCtx = { id: string | null | undefined }

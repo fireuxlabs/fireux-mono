@@ -50,9 +50,9 @@
 import { computed } from 'vue'
 import PropertyCollectionManager from '../../../components/organisms/Property/Collection/Manager.vue'
 import {
-  useRuntimePortfolio,
+  useActivePortfolio,
   useRuntimePortfolioPath,
-} from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+} from '../../../composables/fireux/app/portfolio-console/useActivePortfolio'
 import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
 import { usePortfolioPropertyCollection } from '../../../composables/fireux/firestore/property/fetch/usePortfolioPropertyCollection'
 
@@ -71,7 +71,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const runtimePortfolio = useRuntimePortfolio()
+const runtimePortfolio = useActivePortfolio()
 const { collection } = usePortfolioPropertyCollection(runtimePortfolio)
 const { pill } = usePortfolioInterface()
 const propertiesPath = useRuntimePortfolioPath(runtimePortfolio, 'properties')

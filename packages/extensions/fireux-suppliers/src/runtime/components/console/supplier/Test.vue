@@ -37,9 +37,9 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import type { Supplier } from '../../../models/supplier/Supplier.model'
 import { useSupplierCollection } from '../../../composables/fireux/firestore/supplier/fetch/useSupplierCollection'
 import { useSupplierCreate } from '../../../composables/fireux/firestore/supplier/mutations/useSupplierCreate'
-import { useRuntimeSupplierSelection } from '../../../composables/fireux/app/supplier-console/state'
+import { useSupplierSelection } from '../../../composables/fireux/app/supplier-console/useSupplierSelection'
 import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
-import { useRuntimeSupplierConsole } from '../../../composables/fireux/app/supplier-console/useRuntimeSupplierConsole'
+import { useSupplierConsole } from '../../../composables/fireux/app/supplier-console/useSupplierConsole'
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
 const stripTestSupplierSuffix = (value: unknown): string =>
@@ -47,8 +47,8 @@ const stripTestSupplierSuffix = (value: unknown): string =>
     .replace(/\s+test supplier$/i, '')
     .trim()
 
-const { runtime } = useRuntimeSupplierConsole()
-const supplierSelection = useRuntimeSupplierSelection()
+const { runtime } = useSupplierConsole()
+const supplierSelection = useSupplierSelection()
 const { uid, currentUser, isAuthenticated, hasAuthState } = useAuth()
 const { ensureSupplier } = useSupplierCreate({ test: true })
 const { interface: toSupplierCard } = useSupplierInterface()

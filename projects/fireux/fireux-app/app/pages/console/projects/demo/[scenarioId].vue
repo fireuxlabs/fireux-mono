@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { navigateTo, useRoute } from '#imports'
-import { useRuntimeProjectSelection } from '~/composables/console/project/state'
+import { useProjectSelection } from '~/composables/console/project/useProjectSelection'
 import {
   getDemoProjectScenario,
   getDemoProjectScenarioList,
@@ -16,7 +16,7 @@ definePageMeta({
 })
 
 const route = useRoute()
-const { setRuntimeProject } = useRuntimeProjectSelection()
+const { setRuntimeProject } = useProjectSelection()
 const requestedScenarioId = String(route.params.scenarioId || '').trim()
 const fallbackScenarioId = String(getDemoProjectScenarioList()[0]?.id || '').trim()
 const resolvedScenarioId = getDemoProjectScenario(requestedScenarioId)

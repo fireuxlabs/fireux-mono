@@ -100,7 +100,7 @@ import type {
   ConsoleEnsureResult,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { useDevUi } from 'fireux-core/runtime/composables/fireux/app/ui/useDevUi'
-import { useRuntimeSupplierSelection } from '../../../../composables/fireux/app/supplier-console/state'
+import { useSupplierSelection } from '../../../../composables/fireux/app/supplier-console/useSupplierSelection'
 import { useSupplierCreate } from '../../../../composables/fireux/firestore/supplier/mutations/useSupplierCreate'
 
 const props = defineProps<{
@@ -117,7 +117,7 @@ const emit = defineEmits<{
 
 const router = useRouter()
 const { createSupplier } = useSupplierCreate()
-const { setRuntimeSupplier } = useRuntimeSupplierSelection()
+const { setRuntimeSupplier } = useSupplierSelection()
 const { notesVisible } = useDevUi()
 
 const isCreating = ref(false)

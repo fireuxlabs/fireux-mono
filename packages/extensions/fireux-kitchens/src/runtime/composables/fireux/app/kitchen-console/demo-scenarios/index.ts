@@ -1,4 +1,4 @@
-import { createDemoScenarioRegistry } from 'fireux-core/runtime/composables/fireux/runtime/createDemoScenarioRegistry'
+import { createDemoScenarioRegistry } from 'fireux-core/runtime/composables/fireux/console/createDemoScenarioRegistry'
 import type { DemoScenario } from './_shared/types'
 import { brothBloomScenario } from './broth-bloom'
 import { stackSizzleScenario } from './stack-sizzle'

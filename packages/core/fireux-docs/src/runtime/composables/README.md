@@ -57,7 +57,7 @@ to understand the full collection-manager dev inspection path.
 
 One generic console runtime seam is now real:
 
-- `packages/core/fireux-core/src/runtime/composables/fireux/runtime/useRuntimeConsole.ts`
+- `packages/core/fireux-core/src/runtime/composables/fireux/console/useConsoleState.ts`
 
 Purpose:
 

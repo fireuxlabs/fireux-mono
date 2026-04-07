@@ -111,7 +111,7 @@ import { useKitchenConsoleCollection } from '../../../composables/fireux/firesto
 import {
   ROOT_KITCHEN_COLLECTION_PATH,
   resolveKitchenConsoleCollectionPath,
-} from '../../../composables/fireux/app/kitchen-runtime/shared'
+} from '../../../composables/fireux/app/kitchen-console/shared'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import type { ConsoleKitchen, Kitchen } from '../../../models/kitchen.model'
 import { KitchenModel as KitchenModelRuntime } from '../../../models/kitchen.model'

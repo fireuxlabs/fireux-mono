@@ -1,13 +1,13 @@
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import {
-  useRuntimePortfolio,
+  useActivePortfolio,
   useRuntimePortfolioPath,
-} from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+} from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
 import type { Task } from '../../../../../models/task.model'
 
 const normalize = (value: unknown) => String(value || '').trim()
 
-export function useTaskUpdate(runtimePortfolio = useRuntimePortfolio()) {
+export function useTaskUpdate(runtimePortfolio = useActivePortfolio()) {
   const { updateDocument } = useFirestoreUpdate()
   const collectionPath = useRuntimePortfolioPath(runtimePortfolio, 'tasks')
 

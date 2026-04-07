@@ -88,7 +88,7 @@ Recent repo truth:
 - collection managers remain component-owned, but direct subcollection discovery is now a runtime server concern
 - console family visibility is now an app-config concern through `consoleFamilies`
 - the generic console shell now lives in the runtime seam:
-  - `useRuntimeConsole()` is the shared console-layout contract
+  - `useConsoleState()` is the shared console-layout contract
   - `useRuntimeXConsole()` adapts each family into that shared contract
 - main console page ownership is now explicit:
   - the shared console layout and generic runtime seam live in core

@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useRuntimeKitchenSelection } from './state'
+import { useKitchenSelection } from './useKitchenSelection'
 import { useRuntimeKitchenDocument } from './useRuntimeKitchenDocument'
 import { useRuntimeKitchenData } from './useRuntimeKitchenData'
 import {
@@ -8,7 +8,7 @@ import {
   resolveRuntimeKitchenDocumentCollectionPath,
 } from './shared'
 
-export { useRuntimeKitchenSelection } from './state'
+export { useKitchenSelection } from './useKitchenSelection'
 export type { RuntimeKitchenMode } from './shared'
 
 /**
@@ -17,9 +17,9 @@ export type { RuntimeKitchenMode } from './shared'
  * Root kitchen identity stays at `/kitchens/<id>`.
  * Console-owned data lives under the app-hosted kitchen scope.
  */
-export function useRuntimeKitchen() {
+export function useActiveKitchen() {
   const { appId } = useFireUXConfig()
-  const selection = useRuntimeKitchenSelection()
+  const selection = useKitchenSelection()
   const id = selection.selectedId
   const mode = selection.mode
   const activity = computed<'static'>(() => 'static')

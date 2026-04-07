@@ -3,7 +3,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import type { Ref, ShallowRef } from 'vue'
 import { computed, shallowRef, unref, watch } from 'vue'
-import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-runtime/shared'
+import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-console/shared'
 import type {
     Ingredient,
     KitchenIngredient,

@@ -13,7 +13,7 @@
 </template>
 <script setup lang="ts">
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useRuntimeSupplier } from '../../../../composables/fireux/app/supplier-console/useRuntimeSupplier'
-const runtime = useRuntimeSupplier()
+import { useActiveSupplier } from '../../../../composables/fireux/app/supplier-console/useActiveSupplier'
+const runtime = useActiveSupplier()
 const { isPremium } = useUser()
 </script>

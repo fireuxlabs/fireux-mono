@@ -9,7 +9,7 @@ import {
     type Recipe as RecipeDoc,
     type RecipeIngredientLine,
 } from '../../../../../../models/recipe.model'
-import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-runtime/shared'
+import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-console/shared'
 const resolveCollectionPath = (
   kitchenCollectionPath: string,
   kitchenId: string,

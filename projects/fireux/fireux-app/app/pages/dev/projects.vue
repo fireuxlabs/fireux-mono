@@ -103,7 +103,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useRuntimeProjectSelection } from '~/composables/console/project/state'
+import { useProjectSelection } from '~/composables/console/project/useProjectSelection'
 import { useDevStorageCollection } from 'fireux-core/runtime/composables/dev/useDevStorageCollection'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
 import type { ConsoleProject, Project } from 'fireux-core/runtime/models/system/project.model'
@@ -125,7 +125,7 @@ definePageMeta({
 
 const projectModelRuntime = ProjectModelRuntime
 const { appId } = useFireUXConfig()
-const { runtimeProjectId, runtimeProjectMode } = useRuntimeProjectSelection()
+const { runtimeProjectId, runtimeProjectMode } = useProjectSelection()
 const resolvedAppId = computed(() => String(appId || '').trim())
 
 const { projects } = useProjectCollection()

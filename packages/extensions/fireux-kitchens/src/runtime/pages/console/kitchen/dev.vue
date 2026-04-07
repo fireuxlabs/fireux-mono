@@ -48,7 +48,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
+import { useActiveKitchen } from '../../../composables/fireux/app/kitchen-console/useActiveKitchen'
 
 definePageMeta({
   layout: 'console',
@@ -66,7 +66,7 @@ definePageMeta({
   name: 'ConsoleKitchenDevPage',
 })
 
-const runtime = useRuntimeKitchen()
+const runtime = useActiveKitchen()
 
 const runtimeId = computed(() => String(runtime.id.value || '').trim())
 const runtimeMode = computed(() => runtime.mode.value)

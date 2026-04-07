@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimePortfolioConsole } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolioConsole'
+import { usePortfolioConsole } from '../../../composables/fireux/app/portfolio-console/usePortfolioConsole'
 
 definePageMeta({
   layout: 'console',
@@ -51,7 +51,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, console } = useRuntimePortfolioConsole({ publishHeader: true })
+const { runtime, console } = usePortfolioConsole({ publishHeader: true })
 const selectedMode = console.mode
 const modeOptions = console.modeOptions
 const selectMode = console.selectMode

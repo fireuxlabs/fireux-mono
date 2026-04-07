@@ -109,13 +109,13 @@ import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/fires
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
 import { useProjectInterface } from 'fireux-core/runtime/composables/fireux/firestore/system/project/utils/view/useProjectInterface'
 import type { Project } from 'fireux-core/runtime/models/system/project.model'
-import { useRuntimeProjectSelection } from '~/composables/console/project/state'
-import { useRuntimeProjectConsole } from '~/composables/console/project/useRuntimeProjectConsole'
+import { useProjectSelection } from '~/composables/console/project/useProjectSelection'
+import { useProjectConsole } from '~/composables/console/project/useProjectConsole'
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
 
-const { runtime } = useRuntimeProjectConsole()
-const projectSelection = useRuntimeProjectSelection()
+const { runtime } = useProjectConsole()
+const projectSelection = useProjectSelection()
 const { notesVisible } = useDevUi()
 const { currentUser: authUser, isAuthenticated } = useAuth()
 const { updateDocument } = useFirestoreUpdate()

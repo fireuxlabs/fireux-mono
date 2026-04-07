@@ -5,7 +5,7 @@ export function registerAppServerHandler(
   resolver: Resolver,
   route = '/api/app'
 ) {
-  const appGet = resolver.resolve('../runtime/server/api/app.get.ts')
+  const appGet = resolver.resolve('../console/server/api/app.get.ts')
   if (existsSync(appGet)) {
     addServerHandler({ route, handler: appGet })
   }

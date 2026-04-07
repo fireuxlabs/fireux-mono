@@ -4,14 +4,14 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import { useRuntimeSupplierSelection } from '../../../../composables/fireux/app/supplier-console/state'
+import { useSupplierSelection } from '../../../../composables/fireux/app/supplier-console/useSupplierSelection'
 
 definePageMeta({
   layout: 'console',
   consoleEntry: true,
 })
 
-const { setRuntimeSupplier } = useRuntimeSupplierSelection()
+const { setRuntimeSupplier } = useSupplierSelection()
 setRuntimeSupplier({
   mode: 'demo',
   supplierId: '',

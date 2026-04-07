@@ -1,11 +1,11 @@
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import {
-  useRuntimePortfolio,
+  useActivePortfolio,
   useRuntimePortfolioPath,
-} from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+} from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
 import type { ComplianceRecord } from '../../../../../models/compliance-record.model'
-import type { DemoComplianceRecord } from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/demo-scenarios'
+import type { DemoComplianceRecord } from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/demo-scenarios'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
 
@@ -25,7 +25,7 @@ const toComplianceRecord = (entry: DemoComplianceRecord): ComplianceRecord => ({
   updated: { at: {} as any, by: undefined },
 })
 
-export function usePortfolioComplianceRecordCollection(runtimePortfolio = useRuntimePortfolio()) {
+export function usePortfolioComplianceRecordCollection(runtimePortfolio = useActivePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<ComplianceRecord[] | undefined> | null>
   const collectionPath = useRuntimePortfolioPath(runtimePortfolio, 'compliance-records')

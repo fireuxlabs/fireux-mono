@@ -1,8 +1,8 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import {
-  useRuntimePortfolio,
+  useActivePortfolio,
   useRuntimePortfolioPath,
-} from 'fireux-properties/runtime/composables/fireux/app/portfolio-runtime/useRuntimePortfolio'
+} from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
 import { useTaskCreate } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/mutations/useTaskCreate'
 import { useTaskProjection } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/utils/projection/useTaskProjection'
 import type { DocumentLink, DocumentLinkTargetType } from '../../../../../models/document-link.model'
@@ -18,7 +18,7 @@ export type LinkDocumentToEntityInput = {
 
 const normalize = (value: unknown) => String(value || '').trim()
 
-export function linkDocumentToEntity(runtimePortfolio = useRuntimePortfolio()) {
+export function linkDocumentToEntity(runtimePortfolio = useActivePortfolio()) {
   const { createDocument } = useFirestoreCreate()
   const { createTask } = useTaskCreate(runtimePortfolio)
   const { fromDocumentLink } = useTaskProjection(runtimePortfolio)

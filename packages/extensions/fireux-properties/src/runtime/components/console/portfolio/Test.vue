@@ -37,9 +37,9 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import type { Portfolio } from '../../../models/portfolio.model'
 import { usePortfolioCollection } from '../../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
 import { usePortfolioCreate } from '../../../composables/fireux/firestore/portfolio/mutations/usePortfolioCreate'
-import { useRuntimePortfolioSelection } from '../../../composables/fireux/app/portfolio-runtime/state'
+import { usePortfolioSelection } from '../../../composables/fireux/app/portfolio-console/usePortfolioSelection'
 import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
-import { useRuntimePortfolioConsole } from '../../../composables/fireux/app/portfolio-runtime/useRuntimePortfolioConsole'
+import { usePortfolioConsole } from '../../../composables/fireux/app/portfolio-console/usePortfolioConsole'
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
 const stripTestPortfolioSuffix = (value: unknown): string =>
@@ -47,8 +47,8 @@ const stripTestPortfolioSuffix = (value: unknown): string =>
     .replace(/\s+test portfolio$/i, '')
     .trim()
 
-const { runtime } = useRuntimePortfolioConsole()
-const portfolioSelection = useRuntimePortfolioSelection()
+const { runtime } = usePortfolioConsole()
+const portfolioSelection = usePortfolioSelection()
 const { uid, currentUser, isAuthenticated, hasAuthState } = useAuth()
 const { ensurePortfolio } = usePortfolioCreate({ test: true })
 const { pill: toPortfolioCard } = usePortfolioInterface()

@@ -4,11 +4,11 @@
 
 <script setup lang="ts">
 import { navigateTo, useRoute } from '#imports'
-import { useRuntimeKitchenSelection } from '../../../../composables/fireux/app/kitchen-runtime/state'
+import { useKitchenSelection } from '../../../../composables/fireux/app/kitchen-console/useKitchenSelection'
 import {
   getDemoKitchenScenario,
   getDemoKitchenScenarioList,
-} from '../../../../composables/fireux/app/kitchen-runtime/demo-scenarios'
+} from '../../../../composables/fireux/app/kitchen-console/demo-scenarios'
 
 definePageMeta({
   layout: 'console',
@@ -16,7 +16,7 @@ definePageMeta({
 })
 
 const route = useRoute()
-const { setRuntimeKitchen } = useRuntimeKitchenSelection()
+const { setRuntimeKitchen } = useKitchenSelection()
 const requestedScenarioId = String(route.params.scenarioId || '').trim()
 const fallbackScenarioId = String(getDemoKitchenScenarioList()[0]?.id || '').trim()
 const resolvedScenarioId = getDemoKitchenScenario(requestedScenarioId)

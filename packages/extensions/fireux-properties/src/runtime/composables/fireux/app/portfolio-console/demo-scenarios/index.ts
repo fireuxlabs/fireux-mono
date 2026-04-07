@@ -1,4 +1,4 @@
-import { createDemoScenarioRegistry } from 'fireux-core/runtime/composables/fireux/runtime/createDemoScenarioRegistry'
+import { createDemoScenarioRegistry } from 'fireux-core/runtime/composables/fireux/console/createDemoScenarioRegistry'
 import { cedarLoopCoreScenario } from './cedar-loop-core'
 import { lakesideStabilityScenario } from './lakeside-stability'
 import { citylineMomentumScenario } from './cityline-momentum'

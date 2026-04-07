@@ -56,7 +56,7 @@ Core model and runtime loading:
 - packages/extensions/fireux-kitchens/src/runtime/models/kitchen-recipe.model.ts
 - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/stack/fetch/useKitchenMenuStackFetch.ts
 - packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/stack/mutations/useKitchenMenuStackCreate.ts
-- packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-runtime/useRuntimeKitchenData.ts
+- packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-console/useRuntimeKitchenData.ts
 
 Console and dashboard surfaces:
 - packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/recipes.vue
@@ -68,10 +68,10 @@ Relationship files that already bind recipe into the kitchen system:
 - packages/extensions/fireux-kitchens/src/runtime/models/profiles/Chef/Chef.model.ts
 
 Read-only scenario recipe support:
-- packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-runtime/demo-scenarios/_shared/types.ts
-- packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-runtime/demo-scenarios/stack-sizzle/index.ts
-- packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-runtime/demo-scenarios/broth-bloom/index.ts
-- packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-runtime/demo-scenarios/takumi-ramen/index.ts
+- packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-console/demo-scenarios/_shared/types.ts
+- packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-console/demo-scenarios/stack-sizzle/index.ts
+- packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-console/demo-scenarios/broth-bloom/index.ts
+- packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-console/demo-scenarios/takumi-ramen/index.ts
 
 ### Confirmed recipe-related files in fireux-misebox
 

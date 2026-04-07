@@ -130,7 +130,7 @@
 import type { Dish } from '../../../models/dish.model'
 import { computed, ref, watch } from 'vue'
 import DishCollectionManager from '../../../components/organisms/Dish/Collection/Manager.vue'
-import { useRuntimeKitchen } from '../../../composables/fireux/app/kitchen-runtime/useRuntimeKitchen'
+import { useActiveKitchen } from '../../../composables/fireux/app/kitchen-console/useActiveKitchen'
 
 definePageMeta({
   layout: 'console',
@@ -147,7 +147,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const runtime = useRuntimeKitchen()
+const runtime = useActiveKitchen()
 const mode = runtime.mode
 const kitchenId = runtime.id
 const dishes = computed(() => runtime.data.value.dishes ?? [])

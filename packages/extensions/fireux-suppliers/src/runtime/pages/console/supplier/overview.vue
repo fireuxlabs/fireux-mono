@@ -71,7 +71,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRuntimeSupplierConsole } from '../../../composables/fireux/app/supplier-console/useRuntimeSupplierConsole'
+import { useSupplierConsole } from '../../../composables/fireux/app/supplier-console/useSupplierConsole'
 
 definePageMeta({
   layout: 'console',
@@ -88,7 +88,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, console, activeSupplierPill } = useRuntimeSupplierConsole({
+const { runtime, console, activeSupplierPill } = useSupplierConsole({
   publishHeader: true,
 })
 const runtimeMode = console.mode

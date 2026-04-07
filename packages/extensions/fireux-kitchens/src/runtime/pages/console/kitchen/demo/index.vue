@@ -4,14 +4,14 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import { useRuntimeKitchenSelection } from '../../../../composables/fireux/app/kitchen-runtime/state'
+import { useKitchenSelection } from '../../../../composables/fireux/app/kitchen-console/useKitchenSelection'
 
 definePageMeta({
   layout: 'console',
   consoleEntry: true,
 })
 
-const { setRuntimeKitchen } = useRuntimeKitchenSelection()
+const { setRuntimeKitchen } = useKitchenSelection()
 setRuntimeKitchen({
   mode: 'demo',
   kitchenId: '',

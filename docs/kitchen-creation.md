@@ -106,7 +106,7 @@ Relationship is not console authority.
   - Kitchen patch mutation.
 
 ### 7) Runtime Selection/Data Context (Console Side)
-- `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/runtime-kitchen/useRuntimeKitchen.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/runtime-kitchen/useActiveKitchen.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/runtime-kitchen/state.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/runtime-kitchen/useRuntimeKitchenDocument.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/runtime-kitchen/useRuntimeKitchenData.ts`
