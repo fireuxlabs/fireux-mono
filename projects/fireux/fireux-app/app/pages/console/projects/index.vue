@@ -19,6 +19,14 @@
     <template #body>
       <section class="space-y-4">
         <ConsoleProjectReal />
+
+        <DevJson
+          title="Project Console Debug"
+          context="console/projects"
+          :data="{ runtime, console }"
+          :default-open="true"
+          :hide-when-empty="false"
+        />
       </section>
     </template>
   </UDashboardPanel>
@@ -41,6 +49,9 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, console } = useProjectConsole({ publishHeader: true })
+const projectConsole = useProjectConsole({
+  publishHeader: true,
+})
+const { runtime, console } = projectConsole
 const clearSelection = console.clearSelection
 </script>

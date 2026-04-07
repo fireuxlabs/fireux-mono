@@ -68,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, isRef, ref, unref } from 'vue'
 import { useDevClipboard } from '../../composables/dev/useDevClipboard'
 
 defineOptions({ name: 'Json' })
@@ -90,8 +90,72 @@ const props = withDefaults(defineProps<JsonPanelProps>(), {
 
 const expanded = ref(props.defaultOpen)
 const panelVisible = ref(props.defaultOpen)
+const normalizeForJson = (value: unknown, seen = new WeakSet<object>()): unknown => {
+  const source = isRef(value) ? unref(value) : value
+
+  if (source === null || source === undefined) return source
+  if (typeof source === 'function') return undefined
+  if (typeof source === 'bigint') return source.toString()
+  if (
+    typeof source === 'string' ||
+    typeof source === 'number' ||
+    typeof source === 'boolean'
+  ) {
+    return source
+  }
+
+  if (source instanceof Date) return source.toISOString()
+  if (source instanceof Error) {
+    return {
+      name: source.name,
+      message: source.message,
+      stack: source.stack,
+    }
+  }
+
+  if (Array.isArray(source)) {
+    return source.map((entry) => normalizeForJson(entry, seen))
+  }
+
+  if (typeof source === 'object') {
+    const objectSource = source as Record<string, unknown>
+
+    if (seen.has(objectSource)) {
+      return '[Circular]'
+    }
+
+    seen.add(objectSource)
+
+    if (source instanceof Map) {
+      return Array.from(source.entries()).map(([key, entry]) => ({
+        key: normalizeForJson(key, seen),
+        value: normalizeForJson(entry, seen),
+      }))
+    }
+
+    if (source instanceof Set) {
+      return Array.from(source.values()).map((entry) => normalizeForJson(entry, seen))
+    }
+
+    const normalized: Record<string, unknown> = {}
+
+    for (const [key, entry] of Object.entries(objectSource)) {
+      const nextValue = normalizeForJson(entry, seen)
+      if (nextValue !== undefined) {
+        normalized[key] = nextValue
+      }
+    }
+
+    return normalized
+  }
+
+  return String(source)
+}
+
+const normalizedData = computed(() => normalizeForJson(props.data))
+
 const isEmpty = computed(() => {
-  const value = props.data as any
+  const value = normalizedData.value as any
   if (value === null || value === undefined) return true
   if (Array.isArray(value)) return value.length === 0
   if (typeof value === 'object') return Object.keys(value).length === 0
@@ -102,8 +166,8 @@ const isEmpty = computed(() => {
 const shouldRender = computed(() => !props.hideWhenEmpty || !isEmpty.value)
 const dataKind = computed<'array' | 'object' | 'primitive' | 'empty'>(() => {
   if (isEmpty.value) return 'empty'
-  if (Array.isArray(props.data)) return 'array'
-  if (typeof props.data === 'object' && props.data !== null) return 'object'
+  if (Array.isArray(normalizedData.value)) return 'array'
+  if (typeof normalizedData.value === 'object' && normalizedData.value !== null) return 'object'
   return 'primitive'
 })
 const dataKindLabel = computed(() => {
@@ -113,8 +177,8 @@ const dataKindLabel = computed(() => {
   return 'Empty'
 })
 const dataSizeLabel = computed(() => {
-  if (dataKind.value === 'array') return `${(props.data as unknown[]).length} items`
-  if (dataKind.value === 'object') return `${Object.keys(props.data as Record<string, unknown>).length} keys`
+  if (dataKind.value === 'array') return `${(normalizedData.value as unknown[]).length} items`
+  if (dataKind.value === 'object') return `${Object.keys(normalizedData.value as Record<string, unknown>).length} keys`
   if (dataKind.value === 'primitive') return '1 value'
   return '0'
 })
@@ -137,7 +201,7 @@ const summarizeValue = (value: unknown): string => {
 
 const objectPreviewEntries = computed(() => {
   if (dataKind.value !== 'object') return [] as Array<{ key: string; value: string }>
-  const source = props.data as Record<string, unknown>
+  const source = normalizedData.value as Record<string, unknown>
   return Object.keys(source)
     .slice(0, 18)
     .map((key) => ({
@@ -151,7 +215,7 @@ const showObjectPreview = computed(
 
 const jsonString = computed(() => {
   try {
-    return JSON.stringify(props.data, null, 2)
+    return JSON.stringify(normalizedData.value, null, 2)
   } catch {
     return '[Json] Unable to stringify data'
   }
