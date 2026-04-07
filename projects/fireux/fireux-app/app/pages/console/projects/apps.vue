@@ -21,8 +21,7 @@
           ]"
         />
 
-        <ConsoleProjectAppsLive v-else-if="runtime.mode === 'live'" />
-        <ConsoleProjectAppsStatic v-else />
+        <ConsoleProjectAppsLive v-else />
       </section>
     </template>
   </UDashboardPanel>

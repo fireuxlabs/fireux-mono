@@ -3,7 +3,6 @@ import { useConsoleState } from 'fireux-core/runtime/composables/fireux/console/
 import type { Portfolio } from '../../../models/portfolio.model'
 import { usePortfolioSelection } from './usePortfolioSelection'
 import { useActivePortfolio } from './useActivePortfolio'
-import { usePortfolioCollection } from '../../firestore/portfolio/fetch/usePortfolioCollection'
 import { usePortfolioInterface } from '../../firestore/portfolio/utils/view/usePortfolioInterface'
 
 type UseRuntimePortfolioConsoleOptions = {
@@ -14,7 +13,7 @@ const normalizeString = (value: unknown): string => String(value || '').trim()
 
 /**
  * Portfolio console adapter.
- * Keeps only the active pill, header data, live collection, and shared console-state wiring.
+ * Keeps only the active pill, header data, and shared console-state wiring.
  */
 export function usePortfolioConsole(
   options: UseRuntimePortfolioConsoleOptions = {}
@@ -22,7 +21,6 @@ export function usePortfolioConsole(
   const runtime = useActivePortfolio()
   const portfolioSelection = usePortfolioSelection()
   const { pill: toPortfolioCard } = usePortfolioInterface()
-  const { collection: livePortfolios } = usePortfolioCollection()
 
   const activePortfolioPill = computed(() =>
     toPortfolioCard(runtime.portfolio.value as Portfolio | null)
@@ -40,7 +38,7 @@ export function usePortfolioConsole(
       : null
   )
 
-  const console = useConsoleState({
+  const consoleState = useConsoleState({
     family: 'portfolio',
     selectedId: runtime.id,
     mode: computed(() => 'live'),
@@ -53,10 +51,8 @@ export function usePortfolioConsole(
 
   return {
     runtime,
-    portfolios: livePortfolios,
     activePortfolioPill,
     headerData,
-    console,
-    scenarios: computed(() => [] as any[]),
+    consoleState,
   }
 }

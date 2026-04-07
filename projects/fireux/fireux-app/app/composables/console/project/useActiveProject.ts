@@ -13,11 +13,10 @@ type ActiveProjectRecord = Partial<Project> & Record<string, unknown> & {
  * Loads the selected project document from `projects/<id>`.
  */
 export function useActiveProject() {
-  const selection = useProjectSelection()
-  const id = selection.selectedId
+  const { selectedId: id } = useProjectSelection()
   const db = import.meta.server ? null : useFirestore()
 
-  const liveDocRef = computed(() => {
+  const projectRef = computed(() => {
     if (!db || !id.value) return null
     return doc(db, 'projects', id.value)
   })
@@ -28,7 +27,7 @@ export function useActiveProject() {
           data: ref<ActiveProjectRecord | null>(null),
           pending: ref(false),
         }
-      : useDocument<ActiveProjectRecord | null>(liveDocRef as any, {
+      : useDocument<ActiveProjectRecord | null>(projectRef as any, {
           transform: (docSnap: DocumentSnapshot<ActiveProjectRecord>) => {
             const raw = docSnap.data()
             if (!raw) return null
@@ -46,11 +45,6 @@ export function useActiveProject() {
   return {
     id,
     project,
-    doc: project,
     pending,
-    mode: selection.mode,
-    runtimeProjectMode: selection.mode,
-    scenario: computed(() => null),
-    isDemo: computed(() => false),
   }
 }

@@ -88,10 +88,10 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, console, activeSupplierPill } = useSupplierConsole({
+const { runtime, console: consoleState, activeSupplierPill } = useSupplierConsole({
   publishHeader: true,
 })
-const runtimeMode = console.mode
+const runtimeMode = consoleState.mode
 
 const modeLabel = computed(() => {
   if (runtimeMode.value === 'live') return 'Real'

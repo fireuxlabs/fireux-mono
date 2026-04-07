@@ -119,10 +119,10 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, console, activeKitchenPill } = useKitchenConsole({
+const { runtime, console: consoleState, activeKitchenPill } = useKitchenConsole({
   publishHeader: true,
 })
-const runtimeMode = console.mode
+const runtimeMode = consoleState.mode
 
 const modeLabel = computed(() => {
   if (runtimeMode.value === 'live') return 'Real'

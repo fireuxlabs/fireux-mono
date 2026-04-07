@@ -12,50 +12,7 @@ type UseProjectConsoleOptions = {
   publishHeader?: boolean
 }
 
-type ProjectEcosystemCompatibilityState = {
-  runtime: ReturnType<typeof useActiveProject>
-  pending: Readonly<ReturnType<typeof computed<boolean>>>
-  refresh: () => Promise<void>
-  resolvedError: Readonly<ReturnType<typeof computed<string>>>
-  ecosystemRows: Readonly<ReturnType<typeof computed<any[]>>>
-  ecosystemViews: Readonly<ReturnType<typeof computed<any[]>>>
-  databaseRows: Readonly<ReturnType<typeof computed<any[]>>>
-  totalAppCount: Readonly<ReturnType<typeof computed<number>>>
-  projectSummary: Readonly<
-    ReturnType<
-      typeof computed<{
-        id: string
-        mainAppId: string
-        mainEcosystemId: string
-      }>
-    >
-  >
-  debugData: Readonly<ReturnType<typeof computed<Record<string, unknown>>>>
-}
-
 const normalizeString = (value: unknown): string => String(value || '').trim()
-
-const createEcosystemCompatibilityState = (
-  runtime: ReturnType<typeof useActiveProject>
-): ProjectEcosystemCompatibilityState => ({
-  runtime,
-  pending: computed(() => false),
-  refresh: async () => {},
-  resolvedError: computed(() => ''),
-  ecosystemRows: computed(() => []),
-  ecosystemViews: computed(() => []),
-  databaseRows: computed(() => []),
-  totalAppCount: computed(() => 0),
-  projectSummary: computed(() => ({
-    id: '',
-    mainAppId: '',
-    mainEcosystemId: '',
-  })),
-  debugData: computed(() => ({
-    disabled: true,
-    reason: 'Ecosystem inspector is outside the live-only core reduction.',
-  })),
-})
 
 /**
  * Project console adapter.
@@ -84,7 +41,7 @@ export function useProjectConsole(
       : null
   )
 
-  const console = useConsoleState({
+  const consoleState = useConsoleState({
     family: 'projects',
     selectedId: runtime.id,
     mode: computed(() => 'live'),
@@ -95,20 +52,10 @@ export function useProjectConsole(
     modeOptions: [{ value: 'live', label: 'Real' }],
   })
 
-  let ecosystemState: ProjectEcosystemCompatibilityState | null = null
-
   return {
     runtime,
     activeProjectPill,
     headerData,
-    console,
-    scenarios: computed(() => [] as any[]),
-    get ecosystem() {
-      if (!ecosystemState) {
-        ecosystemState = createEcosystemCompatibilityState(runtime)
-      }
-
-      return ecosystemState
-    },
+    consoleState,
   }
 }

@@ -13,8 +13,8 @@
             <span class="font-mono">{{ runtimePortfolio.id }}</span>
           </div>
           <div>
-            runtimePortfolioMode:
-            <span class="font-mono">{{ runtimePortfolio.mode }}</span>
+            runtimePortfolioCollectionPath:
+            <span class="font-mono">{{ runtimePortfolio.collectionPath }}</span>
           </div>
           <div>
             appId:
@@ -148,7 +148,7 @@ definePageMeta({
 const runtime = useActivePortfolio()
 const runtimePortfolio = computed(() => ({
   id: runtime.id.value || null,
-  mode: runtime.mode.value,
+  collectionPath: runtime.collectionPath.value || null,
 }))
 
 const portfolioModelRuntime = PortfolioModelRuntime

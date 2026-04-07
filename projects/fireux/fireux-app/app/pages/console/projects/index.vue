@@ -23,7 +23,7 @@
         <DevJson
           title="Project Console Debug"
           context="console/projects"
-          :data="{ runtime, console }"
+          :data="{ runtime, consoleState }"
           :default-open="true"
           :hide-when-empty="false"
         />
@@ -52,6 +52,6 @@ definePageMeta({
 const projectConsole = useProjectConsole({
   publishHeader: true,
 })
-const { runtime, console } = projectConsole
-const clearSelection = console.clearSelection
+const { runtime, consoleState } = projectConsole
+const clearSelection = consoleState.clearSelection
 </script>

@@ -18,16 +18,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <MoleculesSegmentedToggle
-          :model-value="selectedMode"
-          :options="modeOptions"
-          label="Mode"
-          @update:model-value="selectMode"
-        />
-
-        <ConsolePortfolioDemo v-if="selectedMode === 'demo'" />
-        <ConsolePortfolioReal v-else-if="selectedMode === 'live'" />
-        <ConsolePortfolioTest v-else />
+        <ConsolePortfolioReal />
       </section>
     </template>
   </UDashboardPanel>
@@ -51,9 +42,6 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, console } = usePortfolioConsole({ publishHeader: true })
-const selectedMode = console.mode
-const modeOptions = console.modeOptions
-const selectMode = console.selectMode
-const clearSelection = console.clearSelection
+const { runtime, consoleState } = usePortfolioConsole({ publishHeader: true })
+const clearSelection = consoleState.clearSelection
 </script>

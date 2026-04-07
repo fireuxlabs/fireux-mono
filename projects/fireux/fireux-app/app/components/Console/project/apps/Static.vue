@@ -1,108 +1,12 @@
 <template>
-  <section class="space-y-6">
-    <UCard>
-      <template #header>
-        <div class="text-sm font-semibold">Apps in this project</div>
-      </template>
-
-      <div class="flex flex-wrap gap-2">
-        <UButton
-          to="/apps"
-          icon="i-lucide-app-window"
-          variant="ghost"
-          color="neutral"
-        >
-          Open public index
-        </UButton>
-      </div>
-    </UCard>
-
+  <section class="space-y-4">
     <UAlert
-      v-if="!appRows.length"
       color="neutral"
       variant="soft"
-      title="No apps found"
+      title="Static app scenarios are not wired yet"
+      description="The project apps area now follows the live project seam only. Static scenario data can be added back later as an explicit separate layer."
     />
-
-    <UCard
-      v-for="app in appRows"
-      :key="app.id"
-    >
-      <template #header>
-        <div class="flex items-start justify-between gap-3">
-          <div class="space-y-1">
-            <div class="text-sm font-semibold">{{ app.name }}</div>
-            <p v-if="app.description" class="text-sm text-dimmed">
-              {{ app.description }}
-            </p>
-          </div>
-          <UBadge variant="soft">{{ app.status }}</UBadge>
-        </div>
-      </template>
-
-      <div class="space-y-2 text-sm text-dimmed">
-        <div>
-          Ecosystem:
-          <span class="font-medium text-default">{{ app.ecosystemName || 'Unassigned' }}</span>
-        </div>
-        <div v-if="app.focusLabel">
-          Focus:
-          <span class="font-medium text-default">{{ app.focusLabel }}</span>
-        </div>
-      </div>
-    </UCard>
   </section>
 </template>
 
-<script setup lang="ts">
-import { computed } from 'vue'
-import { useActiveProject } from '~/composables/console/project/useActiveProject'
-
-const runtime = useActiveProject()
-
-const normalizeString = (value: unknown): string => String(value || '').trim()
-const labelize = (value: unknown): string =>
-  normalizeString(value)
-    .split(/[-_]+/)
-    .filter(Boolean)
-    .map((part) => part[0]?.toUpperCase() + part.slice(1))
-    .join(' ')
-
-const ecosystemNameById = computed(() =>
-  new Map(
-    (runtime.scenario.value?.ecosystems ?? [])
-      .map((entry) => [normalizeString((entry as any).id), normalizeString((entry as any).name)] as const)
-      .filter(([id]) => Boolean(id))
-  )
-)
-
-const appRows = computed(() =>
-  (runtime.scenario.value?.apps ?? []).map((entry) => {
-    const id = normalizeString((entry as any).id)
-    const name =
-      normalizeString((entry as any).app_name) ||
-      normalizeString((entry as any).app_short_name) ||
-      id ||
-      'Untitled app'
-    const ecosystemId =
-      normalizeString((entry as any).ecosystem_id) ||
-      normalizeString((entry as any).ecosystem)
-    const status =
-      normalizeString((entry as any).status) ||
-      normalizeString((entry as any).moderation_state) ||
-      'active'
-    const description =
-      normalizeString((entry as any).description) ||
-      `${name} helps the ${normalizeString(runtime.project.value?.name) || 'selected project'} team operate this lane.`
-
-    return {
-      id,
-      name,
-      description,
-      ecosystemName: ecosystemNameById.value.get(ecosystemId) || labelize(ecosystemId),
-      focusLabel: labelize((entry as any).team),
-      status,
-    }
-  })
-)
-</script>
+<script setup lang="ts"></script>

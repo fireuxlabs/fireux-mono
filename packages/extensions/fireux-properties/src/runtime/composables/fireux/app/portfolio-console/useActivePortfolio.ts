@@ -23,11 +23,10 @@ export { usePortfolioSelection } from './usePortfolioSelection'
  */
 export function useActivePortfolio() {
   const { appId } = useFireUXConfig()
-  const selection = usePortfolioSelection()
-  const id = selection.selectedId
+  const { selectedId: id } = usePortfolioSelection()
   const db = import.meta.server ? null : useFirestore()
 
-  const liveDocRef = computed(() => {
+  const portfolioRef = computed(() => {
     if (!db || !id.value) return null
     return firestoreDoc(db, ROOT_PORTFOLIO_COLLECTION_PATH, id.value)
   })
@@ -38,7 +37,7 @@ export function useActivePortfolio() {
           data: ref<ActivePortfolioRecord | null>(null),
           pending: ref(false),
         }
-      : useDocument<ActivePortfolioRecord | null>(liveDocRef as any, {
+      : useDocument<ActivePortfolioRecord | null>(portfolioRef as any, {
           transform: (docSnap: DocumentSnapshot<ActivePortfolioRecord>) => {
             const raw = docSnap.data()
             if (!raw) return null
@@ -52,21 +51,13 @@ export function useActivePortfolio() {
   })
 
   const pending = computed(() => Boolean(livePortfolio.pending?.value))
-  const documentCollectionPath = computed(() => ROOT_PORTFOLIO_COLLECTION_PATH)
   const collectionPath = computed(() => resolvePortfolioConsoleCollectionPath(appId))
 
   return {
     id,
     portfolio,
-    doc: portfolio,
     pending,
-    mode: selection.mode,
-    runtimePortfolioMode: selection.mode,
-    isDemo: computed(() => false),
-    scenario: computed(() => null),
     collectionPath,
-    documentCollectionPath,
-    portfolioCollectionPath: collectionPath,
   }
 }
 
@@ -78,7 +69,7 @@ export function useRuntimePortfolioPath(
 ): Ref<string> {
   return computed(() => {
     const portfolioId = String(portfolioConsole.id.value || '').trim()
-    if (!portfolioId || portfolioConsole.isDemo.value) return ''
+    if (!portfolioId) return ''
     return resolveRuntimePortfolioPath(
       portfolioConsole.collectionPath.value,
       portfolioId,

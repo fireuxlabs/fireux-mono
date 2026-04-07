@@ -51,9 +51,9 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { runtime, console } = useKitchenConsole({ publishHeader: true })
-const selectedMode = console.mode
-const modeOptions = console.modeOptions
-const selectMode = console.selectMode
-const clearSelection = console.clearSelection
+const { runtime, console: consoleState } = useKitchenConsole({ publishHeader: true })
+const selectedMode = consoleState.mode
+const modeOptions = consoleState.modeOptions
+const selectMode = consoleState.selectMode
+const clearSelection = consoleState.clearSelection
 </script>
