@@ -1,3 +1,4 @@
+// useConsoleState.ts
 import { useRoute, useState } from '#imports'
 import {
   computed,
@@ -27,9 +28,7 @@ import type {
   ConsoleSelectionState,
 } from './console.types'
 
-type HeaderRef =
-  | Ref<ConsoleHeaderData>
-  | ComputedRef<ConsoleHeaderData>
+type HeaderRef = Ref<ConsoleHeaderData> | ComputedRef<ConsoleHeaderData>
 type IdRef = Ref<string> | ComputedRef<string>
 type ModeRef = Ref<ConsoleMode> | ComputedRef<ConsoleMode>
 
@@ -60,9 +59,7 @@ type ConsoleLayoutApi = {
 }
 
 const DEFAULT_CONSOLE_MODE_OPTIONS = [
-  { value: 'demo', label: 'Demo' },
   { value: 'live', label: 'Real' },
-  { value: 'test', label: 'Test' },
 ] as const satisfies readonly ConsoleModeOption[]
 
 const normalizeHeader = (value: unknown): ConsoleHeaderData => {
@@ -83,10 +80,7 @@ const normalizeHeader = (value: unknown): ConsoleHeaderData => {
 }
 
 function useConsoleHeaderState(family: ConsoleFamily | string) {
-  return useState<ConsoleHeaderData>(
-    toConsoleHeaderStateKey(family),
-    () => null
-  )
+  return useState<ConsoleHeaderData>(toConsoleHeaderStateKey(family), () => null)
 }
 
 function usePublishConsoleHeader(
@@ -103,6 +97,10 @@ function usePublishConsoleHeader(
   return state
 }
 
+/**
+ * Layout reader branch.
+ * Reads the active console shell state for the current route family.
+ */
 function useActiveConsoleState(): ConsoleLayoutApi {
   const open = ref(false)
   const route = useRoute()
@@ -124,10 +122,13 @@ function useActiveConsoleState(): ConsoleLayoutApi {
   const selectedId = computed(() =>
     normalizeString(activeSelection.value?.selectedId)
   )
+
   const mode = computed<ConsoleMode>(() =>
-    normalizeConsoleMode(activeSelection.value?.mode)
+    normalizeConsoleMode(activeSelection.value?.mode, { defaultMode: 'live' })
   )
+
   const hasSelection = computed(() => Boolean(selectedId.value))
+
   const header = computed<ConsoleHeaderData>(() => {
     if (!family.value) return null
     return normalizeHeader(useConsoleHeaderState(family.value).value)
@@ -136,9 +137,11 @@ function useActiveConsoleState(): ConsoleLayoutApi {
   const activeFamilyPath = computed(() =>
     family.value ? toConsoleFamilyPath(family.value) : ''
   )
+
   const familyRootNav = computed(() =>
     bottomNav.value.filter((item) => item.to === activeFamilyPath.value)
   )
+
   const regularBottomNav = computed(() =>
     bottomNav.value.filter((item) => item.to !== activeFamilyPath.value)
   )
@@ -160,16 +163,19 @@ function useActiveConsoleState(): ConsoleLayoutApi {
 }
 
 export function useConsoleState(): ConsoleLayoutApi
-export function useConsoleState(
-  params: UseConsoleStateParams
-): ConsoleStateApi
+export function useConsoleState(params: UseConsoleStateParams): ConsoleStateApi
+
+/**
+ * Entity adapter branch.
+ * Adapts entity-specific selection and header state into the shared console shell contract.
+ */
 export function useConsoleState(params?: UseConsoleStateParams) {
   if (!params) return useActiveConsoleState()
 
   const family = normalizeString(params.family) as ConsoleFamily
   const selectedId = computed(() => normalizeString(unref(params.selectedId)))
   const mode = computed<ConsoleMode>(() =>
-    normalizeConsoleMode(unref(params.mode))
+    normalizeConsoleMode(unref(params.mode), { defaultMode: 'live' })
   )
   const header = computed<ConsoleHeaderData>(() =>
     normalizeHeader(unref(params.header))

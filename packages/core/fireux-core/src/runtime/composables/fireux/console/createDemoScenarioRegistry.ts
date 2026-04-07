@@ -8,8 +8,8 @@ export type DemoScenarioRegistry<TScenario, TKey extends string, TListItem> = {
 const normalize = (value: unknown) => String(value ?? '').trim()
 
 /**
- * Shared demo scenario registry (pattern only).
- * Scenario DATA remains in the extension package.
+ * Optional demo scenario registry.
+ * This supports parked demo scenario modules and is not part of the live console core.
  */
 export function createDemoScenarioRegistry<
   TScenario,
@@ -39,11 +39,12 @@ export function createDemoScenarioRegistry<
       return params.allowEmptyId ? cache.get(defaultKey) ?? null : null
     }
 
-    const key = isKey(candidate) ? (candidate as TKey) : defaultKey
+    const key = isKey(candidate) ? candidate : defaultKey
     return cache.get(key) ?? cache.get(defaultKey) ?? null
   }
 
-  const getList = () => keys.map((key) => params.toListItem(cache.get(key) ?? builders[key](), key))
+  const getList = () =>
+    keys.map((key) => params.toListItem(cache.get(key) ?? builders[key](), key))
 
   return {
     keys,
