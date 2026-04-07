@@ -21,7 +21,7 @@
           ]"
         />
 
-        <ConsoleProjectAppsLive v-else />
+        <ConsoleProjectApps v-else />
       </section>
     </template>
   </UDashboardPanel>

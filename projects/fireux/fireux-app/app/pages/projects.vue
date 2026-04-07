@@ -7,7 +7,6 @@
     />
 
     <UPageBody class="pagebody">
-      <ProjectCTA />
       <ProjectCollectionManager :collection="projects" />
     </UPageBody>
   </UPage>

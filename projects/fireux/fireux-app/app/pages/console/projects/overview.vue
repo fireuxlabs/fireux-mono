@@ -29,7 +29,7 @@
             :show-badges="false"
           />
 
-          <ConsoleProjectOverviewReal />
+          <ConsoleProjectOverview />
         </template>
       </section>
     </template>
