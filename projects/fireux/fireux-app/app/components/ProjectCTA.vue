@@ -44,7 +44,7 @@
 import { useRouter } from '#imports'
 import { computed } from 'vue'
 import { getDemoProjectScenarioList } from '~/composables/console/project/demo-scenarios'
-import { useProjectSelection } from '~/composables/console/project/useProjectSelection'
+import { useProjectSelection } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectSelection'
 
 const router = useRouter()
 const { setRuntimeProject } = useProjectSelection()

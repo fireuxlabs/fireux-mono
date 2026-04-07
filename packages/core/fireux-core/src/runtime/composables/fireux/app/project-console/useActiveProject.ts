@@ -1,7 +1,7 @@
 import { doc, type DocumentSnapshot } from 'firebase/firestore'
 import { computed, ref } from 'vue'
-import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { Project } from 'fireux-core/runtime/models/system/project.model'
+import { useDocument, useFirestore } from '../../firestore/vuefire'
+import type { Project } from '../../../../models/system/project.model'
 import { useProjectSelection } from './useProjectSelection'
 
 type ActiveProjectRecord = Partial<Project> & Record<string, unknown> & {

@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useActiveProject } from '~/composables/console/project/useActiveProject'
+import { useActiveProject } from 'fireux-core/runtime/composables/fireux/app/project-console/useActiveProject'
 
 const projectState = useActiveProject()
 const project = computed(() => projectState.project.value as Record<string, unknown> | null)

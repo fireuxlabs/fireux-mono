@@ -1,9 +1,9 @@
 import { computed } from 'vue'
-import { useConsoleState } from 'fireux-core/runtime/composables/fireux/console/useConsoleState'
+import { useConsoleState } from '../../console/useConsoleState'
 import {
   useProjectInterface,
   type ProjectInterfaceInput,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/project/utils/view/useProjectInterface'
+} from '../../firestore/system/project/utils/view/useProjectInterface'
 import { useProjectSelection } from './useProjectSelection'
 import { useActiveProject } from './useActiveProject'
 

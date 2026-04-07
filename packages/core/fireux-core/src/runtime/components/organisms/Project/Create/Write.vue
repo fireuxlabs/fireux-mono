@@ -69,13 +69,13 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from '#imports'
 import { computed, ref, watch } from 'vue'
-import { useProjectSelection } from '~/composables/console/project/useProjectSelection'
-import { useProjectCreate } from 'fireux-core/runtime/composables/fireux/firestore/system/project/mutations/useProjectCreate'
+import { useProjectSelection } from '../../../../composables/fireux/app/project-console/useProjectSelection'
+import { useProjectCreate } from '../../../../composables/fireux/firestore/system/project/mutations/useProjectCreate'
 import type {
   ConsoleCreateMode,
   ConsoleEnsureResult,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
-import type { FireuxProjectType } from 'fireux-core/runtime/models/system/project.model'
+} from '../../../../composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
+import type { FireuxProjectType } from '../../../../models/system/project.model'
 
 const props = withDefaults(defineProps<{
   mode?: ConsoleCreateMode

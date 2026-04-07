@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { navigateTo, useRoute } from '#imports'
-import { useProjectSelection } from '~/composables/console/project/useProjectSelection'
+import { useProjectSelection } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectSelection'
 import {
   getDemoProjectScenario,
   getDemoProjectScenarioList,

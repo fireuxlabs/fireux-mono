@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useActiveProject } from '~/composables/console/project/useActiveProject'
+import { useActiveProject } from 'fireux-core/runtime/composables/fireux/app/project-console/useActiveProject'
 
 const runtime = useActiveProject()
 const { isPremium } = useUser()

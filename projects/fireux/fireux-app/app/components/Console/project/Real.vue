@@ -1,7 +1,7 @@
 <template>
   <section class="space-y-6">
     <UAlert
-      v-if="!projectCards.length"
+      v-if="!projects.length"
       color="neutral"
       variant="soft"
       title="No live projects found"
@@ -23,58 +23,26 @@
         </p>
       </div>
 
-      <UCard>
-        <template #header>
-          <div class="space-y-1">
-            <div class="text-sm font-semibold">Choose Project</div>
-            <p class="text-sm text-dimmed">
-              Select the live project you want to work on.
-            </p>
-          </div>
-        </template>
-
-        <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          <UButton
-            v-for="entry in projectCards"
-            :key="entry.id"
-            color="neutral"
-            :variant="entry.id === selectedId ? 'solid' : 'soft'"
-            class="justify-start"
-            @click="selectProject(entry.id)"
-          >
-            <span class="truncate">{{ entry.title }}</span>
-          </UButton>
-        </div>
-      </UCard>
+      <ProjectCollectionManager
+        :collection="projects"
+        title="Choose Project"
+        description="Select the live project you want to work on."
+        :link="false"
+        :action="true"
+        @select="selectProject"
+      />
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { Project } from 'fireux-core/runtime/models/system/project.model'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
-import { useProjectInterface } from 'fireux-core/runtime/composables/fireux/firestore/system/project/utils/view/useProjectInterface'
-import { useProjectConsole } from '~/composables/console/project/useProjectConsole'
-import { useProjectSelection } from '~/composables/console/project/useProjectSelection'
+import { useProjectConsole } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectConsole'
+import { useProjectSelection } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectSelection'
 
 const { project } = useProjectConsole()
-const { selectedId, setRuntimeProject } = useProjectSelection()
+const { setRuntimeProject } = useProjectSelection()
 const { projects } = useProjectCollection('projects')
-const { interface: toProjectCard } = useProjectInterface()
-
-const projectCards = computed(() =>
-  (projects.value ?? [])
-    .map((project) => toProjectCard(project as Project))
-    .filter(
-      (
-        card
-      ): card is {
-        id: string
-        title: string
-      } => Boolean(card?.id && card?.title)
-    )
-)
 
 const selectProject = (projectId: string) => {
   setRuntimeProject({ projectId })

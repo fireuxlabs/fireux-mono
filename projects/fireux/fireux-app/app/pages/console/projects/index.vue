@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProjectConsole } from '~/composables/console/project/useProjectConsole'
+import { useProjectConsole } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectConsole'
 
 definePageMeta({
   layout: 'console',
