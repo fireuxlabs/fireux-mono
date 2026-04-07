@@ -16,8 +16,8 @@ const COOKIE_KEY = toConsoleSelectionStateKey('projects')
 const useProjectSelectionBase = createRuntimeEntitySelection<RuntimeMode, 'projectId'>({
   cookieKey: COOKIE_KEY,
   aliasKey: 'projectId',
-  defaultMode: 'demo',
-  normalizeMode: (value) => normalizeRuntimeMode(value) ?? 'demo',
+  defaultMode: 'live',
+  normalizeMode: (value) => normalizeRuntimeMode(value) ?? 'live',
   normalizeId: normalizeString,
 })
 

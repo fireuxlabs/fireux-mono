@@ -14,8 +14,8 @@ const COOKIE_KEY = 'fireux_runtime_portfolio'
 const usePortfolioSelectionBase = createRuntimeEntitySelection<RuntimePortfolioMode, 'portfolioId'>({
   cookieKey: COOKIE_KEY,
   aliasKey: 'portfolioId',
-  defaultMode: 'demo',
-  normalizeMode: (value) => normalizeMode(value) ?? 'demo',
+  defaultMode: 'live',
+  normalizeMode: (value) => normalizeMode(value) ?? 'live',
   normalizeId: normalizeString,
 })
 

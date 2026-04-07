@@ -463,6 +463,7 @@ export function useRuntimeProjectConsole(
 
   return {
     runtime,
+    projects: liveProjects,
     scenarios,
     activeProjectPill,
     headerData,

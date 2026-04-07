@@ -133,6 +133,7 @@ export function useRuntimePortfolioConsole(
 
   return {
     runtime,
+    portfolios: livePortfolios,
     scenarios,
     activePortfolioPill,
     headerData,

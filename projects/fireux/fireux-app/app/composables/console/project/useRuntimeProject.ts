@@ -1,4 +1,5 @@
 import { doc, type DocumentSnapshot } from 'firebase/firestore'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, ref } from 'vue'
 import type { Project } from 'fireux-core/runtime/models/system/project.model'
@@ -11,19 +12,37 @@ type RuntimeProject = Partial<Project> & Record<string, unknown> & {
   project_name?: string
 }
 
-const resolveProjectCollectionPath = (mode: string) =>
+const normalizeString = (value: unknown): string => String(value || '').trim()
+
+const resolveRuntimeProjectDocumentCollectionPath = (mode: string) =>
   mode === 'test' ? 'test-projects' : 'projects'
+
+const resolveProjectConsoleCollectionPath = (appId?: unknown) => {
+  const resolvedAppId = normalizeString(appId)
+  return resolvedAppId ? `apps/${resolvedAppId}/projects` : 'projects'
+}
+
+const resolveRuntimeProjectDataCollectionPath = (
+  mode: string,
+  appId?: unknown
+) => (mode === 'test' ? 'test-projects' : resolveProjectConsoleCollectionPath(appId))
 
 /**
  * Canon project console seam.
  */
 export function useRuntimeProject() {
+  const { appId } = useFireUXConfig()
   const selection = useRuntimeProjectSelection()
   const id = selection.selectedId
   const mode = selection.mode
   const activity = computed<'static'>(() => 'static')
   const isDemo = computed(() => selection.mode.value === 'demo')
-  const documentCollectionPath = computed(() => resolveProjectCollectionPath(mode.value))
+  const documentCollectionPath = computed(() =>
+    resolveRuntimeProjectDocumentCollectionPath(mode.value)
+  )
+  const projectCollectionPath = computed(() =>
+    resolveRuntimeProjectDataCollectionPath(mode.value, appId)
+  )
 
   const db = import.meta.server ? null : useFirestore()
   const liveDocRef = computed(() => {
@@ -57,13 +76,25 @@ export function useRuntimeProject() {
   })
 
   const pending = computed(() => !isDemo.value && Boolean(liveProject.pending?.value))
+  const isLoading = computed(() => Boolean(pending.value))
+  const isReady = computed(() => {
+    if (!id.value) return false
+    if (isLoading.value) return false
+    return Boolean(project.value)
+  })
 
   return {
     id,
     mode,
     activity,
     isDemo,
+    collectionPath: projectCollectionPath,
+    documentCollectionPath,
+    projectCollectionPath,
+    doc: project,
     pending,
+    isLoading,
+    isReady,
     scenario,
     project,
   }
