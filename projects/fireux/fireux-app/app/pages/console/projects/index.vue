@@ -18,7 +18,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <ConsoleProject />
+        <ConsoleProjectIndex />
       </section>
     </template>
   </UDashboardPanel>

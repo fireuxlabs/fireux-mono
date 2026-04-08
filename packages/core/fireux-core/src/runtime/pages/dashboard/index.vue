@@ -5,18 +5,12 @@
     </template>
 
     <template #body>
-      <div class="panels-stack">
-        <div class="panels-grid-3">
-          <ConsoleOverviewCore class="console-item" />
-          <ConsoleOverviewEcosystem class="console-item" />
-          <ConsoleOverviewApp class="console-item" />
-        </div>
-
-        <div class="panels-grid-2">
-          <ConsoleOverviewDomainEcosystem class="console-item" />
-          <ConsoleOverviewDomainApp class="console-item" />
-        </div>
-      </div>
+      <UAlert
+        color="neutral"
+        variant="soft"
+        title="Overview is not wired"
+        description="Shared overview panels have been cleared out of core while console ownership is being simplified."
+      />
     </template>
   </UDashboardPanel>
 </template>
