@@ -27,12 +27,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useRequiredBrandAssetsStatus } from '../../composables/fireux/app/useRequiredBrandAssetsStatus'
 
-const config = useFireUXConfig()
 const { pending, hasMissingAssets, missingPaths } = useRequiredBrandAssetsStatus()
 const showFlag = computed(
-  () => import.meta.dev && !config.isTenant && !pending.value && hasMissingAssets.value
+  () => import.meta.dev && !pending.value && hasMissingAssets.value
 )
 </script>

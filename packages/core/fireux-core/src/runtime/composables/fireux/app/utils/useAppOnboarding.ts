@@ -1,19 +1,13 @@
 import { computed, ref, watch } from 'vue'
 import type { Ref } from 'vue'
 import { useFireUXConfig } from '../FireUXConfig'
+import { useToastify } from '../ui/useToastify'
+import { useAuth } from '../../firebase/useAuth'
 import { useUser } from '../../firestore/core/user/useUser'
 import { useAppEnsure } from '../../firestore/core/app/mutations/useAppEnsure'
 import { ensureUserAppMembership } from '../../firestore/core/user/utils/ensureHelpers'
 import type { EnvCheckResponse } from './env-check.types'
 import { useAppEnvCheck } from './useAppEnvCheck'
-import { useImageStorage } from '../../firebase/useImageStorage'
-import { useFirestoreUpdate } from '../../firestore/operations/useFirestoreUpdate'
-import { deleteField } from 'firebase/firestore'
-import {
-  appImageFirestoreField,
-  appImageStoragePath,
-  type AppImageKind,
-} from '../../firestore/core/app/utils/appMedia'
 
 export interface AppOnboardingState {
   coreUser: Ref<ReturnType<typeof useUser>['coreUser']['value'] | null>
@@ -25,8 +19,10 @@ export interface AppOnboardingState {
   env: Ref<EnvCheckResponse | null>
   envError: Ref<string | null>
   pending: Ref<boolean>
+  actionPending: Ref<boolean>
   canProceed: Ref<boolean>
   bypassWarning: Ref<boolean>
+  proceedError: Ref<string | null>
   checkPin: () => void
   onRefreshEnv: () => void
   onProceed: () => Promise<void>
@@ -45,12 +41,16 @@ export function useAppOnboarding(): AppOnboardingState {
 
   const pinLength = computed(() => expectedPin.value.length)
 
+  const { uid } = useAuth()
   const { coreUser: coreUserRef } = useUser()
   const coreUser = computed(() => coreUserRef.value ?? null)
+  const toast = useToastify()
 
   const pin = ref<number[]>([])
   const pinError = ref<string | null>(null)
   const isUnlocked = ref(false)
+  const actionPending = ref(false)
+  const proceedError = ref<string | null>(null)
 
   const resetPin = () => {
     pin.value = []
@@ -96,68 +96,50 @@ export function useAppOnboarding(): AppOnboardingState {
   )
   const bypassWarning = computed(() => !env.value?.isValid && Boolean(devMode))
 
-  const { ensureApp } = useAppEnsure()
-  const { uploadImage } = useImageStorage()
-  const { updateDocument } = useFirestoreUpdate()
-
-  function cacheBust(url: string): string {
-    const stamp = Date.now().toString(36)
-    return url.includes('?') ? `${url}&v=${stamp}` : `${url}?v=${stamp}`
-  }
-
-  const syncNewAppImages = async (appId: string) => {
-    // Only sync when env-check says local assets are present/valid.
-    // This keeps the onboarding flow safe when devMode bypass is used.
-    if (!env.value?.isValid) return
-
-    const uploads: Array<{ kind: AppImageKind; localPath: string }> = [
-      { kind: 'logo', localPath: '/img/app/logo.png' },
-      { kind: 'wordmarkLight', localPath: '/img/app/wordmark-light.png' },
-      { kind: 'wordmarkDark', localPath: '/img/app/wordmark-dark.png' },
-      { kind: 'thumbnail', localPath: '/img/app/thumbnail.png' },
-    ]
-
-    const patch: Record<string, string> = {}
-    for (const item of uploads) {
-      const storagePath = appImageStoragePath(appId, item.kind)
-      const field = appImageFirestoreField(item.kind)
-      const url = await uploadImage(storagePath, item.localPath)
-      patch[field] = cacheBust(url)
-    }
-
-    await updateDocument('apps', appId, {
-      ...patch,
-      // Ensure no legacy wordmark field can linger.
-      wordmark_url: deleteField(),
-      // Ensure legacy thumbnail field is removed.
-      avatar_url: '',
-    })
-  }
+  const { ensureApp, syncAppMedia } = useAppEnsure()
 
   const onRefreshEnv = () => {
     void refreshEnv()
   }
 
   const onProceed = async () => {
-    if (!canProceed.value) return
+    if (!canProceed.value || actionPending.value) return
+    actionPending.value = true
+    proceedError.value = null
     try {
       const ensured = await ensureApp()
       console.log('[proceed] ensureApp result', ensured)
 
       // Self-heal existing apps stuck in "not initialized" when admin mirrors are empty.
       // After PIN, the current signed-in user becomes the app admin for onboarding.
-      const currentUid = String(coreUser.value?.id ?? '').trim()
-      if (currentUid && appId) {
-        await ensureUserAppMembership(appId, currentUid, 'admin')
+      const currentUid = String(uid.value ?? coreUser.value?.id ?? '').trim()
+      if (!currentUid || !appId) {
+        throw new Error('Authenticated user is not ready yet. Please try again.')
       }
+      await ensureUserAppMembership(appId, currentUid, 'admin')
 
-      // For newly-created apps, push the canonical local brand assets to Storage
-      // and persist the corresponding URLs in Firestore.
-      if (ensured?.created) {
-        await syncNewAppImages(ensured.id)
+      const syncResult = await syncAppMedia(ensured.id)
+      await refreshEnv()
+
+      if (syncResult.failed.length) {
+        const detail = syncResult.failed
+          .map((entry) => `${entry.kind}: ${entry.message}`)
+          .join(' | ')
+        proceedError.value = `App initialized, but some brand assets failed to sync to Storage. ${detail}`
+        toast.warn(proceedError.value)
+      } else {
+        toast.success(ensured.created ? 'App initialized.' : 'App repaired.')
       }
     } catch (e) {
+      const message =
+        e instanceof Error && e.message.trim()
+          ? e.message.trim()
+          : 'Failed to continue onboarding.'
+      proceedError.value = message
+      toast.error(message)
       console.error('[proceed] ensureApp failed', e)
+    } finally {
+      actionPending.value = false
     }
   }
 
@@ -170,8 +152,10 @@ export function useAppOnboarding(): AppOnboardingState {
     env,
     envError,
     pending: envPending,
+    actionPending,
     canProceed,
     bypassWarning,
+    proceedError,
     expectedPin,
     checkPin,
     onRefreshEnv,

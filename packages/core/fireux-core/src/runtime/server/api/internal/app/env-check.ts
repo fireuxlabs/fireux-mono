@@ -1,4 +1,5 @@
 // FILE: packages/core/fireux-core/src/runtime/server/api/internal/app/env-check.ts
+import { useAppConfig, useRuntimeConfig } from '#imports'
 import { defineEventHandler, type H3Event } from 'h3'
 import {
   join,
@@ -7,10 +8,9 @@ import {
   resolve as pathResolve,
   dirname,
 } from 'node:path'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, statSync } from 'node:fs'
 import imageSize from 'image-size'
 import { fileURLToPath } from 'node:url'
-import { resolveFireuxBrandAssets } from '../../../../../utils/brandAssets'
 
 type ISizeCalculationResult = ReturnType<typeof imageSize>
 
@@ -132,8 +132,30 @@ function checkBrandImage(
     return result
   }
 
-  const buf = readFileSync(absPath)
-  const dim = imageSize(buf)
+  const stat = statSync(absPath)
+  if (!stat.isFile()) {
+    result.reason = `Invalid asset path: /public/${relativePath} is not a file`
+    return result
+  }
+
+  if (stat.size <= 0) {
+    result.reason = `Empty file: /public/${relativePath}`
+    return result
+  }
+
+  let dim: ISizeCalculationResult
+  try {
+    const buf = readFileSync(absPath)
+    dim = imageSize(buf)
+  } catch (error) {
+    const message =
+      error instanceof Error && error.message.trim()
+        ? error.message.trim()
+        : 'Unable to read image metadata'
+    result.reason = `Invalid image file: ${message}`
+    return result
+  }
+
   result.width = dim.width
   result.height = dim.height
 
@@ -225,13 +247,11 @@ interface EnvCheckResponse {
   optionalClient: EnvVarEntry[]
   server: {
     adminAuth: AdminAuthStatus
-    optional: EnvVarEntry[]
   }
   missingRequired: string[]
   summary: {
     required: string
     optionalClient: string
-    optionalServer: string
     brandAssets: string
   }
   warnings: string[]
@@ -239,46 +259,96 @@ interface EnvCheckResponse {
   brandAssets: BrandAssetCheck[]
 }
 
-export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
+export default defineEventHandler<EnvCheckResponse>((_event: H3Event) => {
   const env = process.env as Record<string, string | undefined>
-  const runtimeConfig = (
-    event.context as {
-      runtimeConfig?: { public?: Record<string, any> }
-    }
-  ).runtimeConfig
-  const ecosystem = runtimeConfig?.public?.ecosystem as string | undefined
-  const role = runtimeConfig?.public?.fireux?.role as string | undefined
-  const appNamespace = env.APP_ID?.trim()
+  const runtimeConfig = useRuntimeConfig()
+  const appConfig = useAppConfig() as Record<string, any>
+  const publicRuntime = (runtimeConfig?.public ?? {}) as Record<string, any>
+  const fireux = (publicRuntime.fireux ?? {}) as Record<string, any>
+  const runtimeFireux = (runtimeConfig?.fireux ?? {}) as Record<string, any>
+  const firebaseEcosystem = (publicRuntime.firebaseEcosystem?.firebase ?? {}) as Record<
+    string,
+    any
+  >
+  const firebaseApp = (publicRuntime.firebaseApp ?? {}) as Record<string, any>
+  const appConfigColors = (appConfig?.ui?.colors ?? {}) as Record<string, any>
+  const ecosystem = fireux.ecosystem as string | undefined
+  const role = fireux.role as string | undefined
+  const appNamespace =
+    (typeof fireux.id === 'string' ? fireux.id.trim() : '') ||
+    env.APP_ID?.trim()
   const here = dirname(fileURLToPath(import.meta.url))
   const repoRoot = findRepoRoot(here)
 
   const requiredClient = [
-    'NUXT_FIREBASE_API_KEY',
-    'NUXT_FIREBASE_AUTH_DOMAIN',
-    'NUXT_FIREBASE_PROJECT_ID',
-    'NUXT_FIREBASE_STORAGE_BUCKET',
-    'NUXT_FIREBASE_MESSAGING_SENDER_ID',
-    'NUXT_FIREBASE_APP_ID',
-    'APP_ID',
-    'APP_NAME',
-    'APP_SHORT_NAME',
-    'APP_PRIMARY_COLOR',
-    'APP_NEUTRAL_COLOR',
-    'APP_ICON',
-    'APP_DOMAIN',
+    {
+      key: 'firebaseEcosystem.apiKey',
+      present: !!String(firebaseEcosystem.apiKey || '').trim(),
+    },
+    {
+      key: 'firebaseEcosystem.authDomain',
+      present: !!String(firebaseEcosystem.authDomain || '').trim(),
+    },
+    {
+      key: 'firebaseEcosystem.projectId',
+      present: !!String(firebaseEcosystem.projectId || '').trim(),
+    },
+    {
+      key: 'firebaseEcosystem.storageBucket',
+      present: !!String(firebaseEcosystem.storageBucket || '').trim(),
+    },
+    {
+      key: 'firebaseEcosystem.messagingSenderId',
+      present: !!String(firebaseEcosystem.messagingSenderId || '').trim(),
+    },
+    {
+      key: 'firebaseApp.appId',
+      present: !!String(firebaseApp.appId || '').trim(),
+    },
+    {
+      key: 'fireux.id',
+      present: !!String(fireux.id || '').trim(),
+    },
+    {
+      key: 'fireux.name',
+      present: !!String(fireux.name || '').trim(),
+    },
+    {
+      key: 'fireux.shortName',
+      present: !!String(fireux.shortName || '').trim(),
+    },
+    {
+      key: 'fireux.domain',
+      present: !!String(fireux.domain || '').trim(),
+    },
   ]
 
   const optionalClient = [
-    'NUXT_FIREBASE_MEASUREMENT_ID',
-    'NUXT_FIREBASE_RECAPTCHA_V3_KEY',
-    'GOOGLE_PLACES_API_KEY',
-    'APP_SECONDARY_COLOR',
-  ]
-
-  const optionalServer = [
-    'STRIPE_PUBLISHABLE_KEY',
-    'STRIPE_SECRET_KEY',
-    'STRIPE_WEBHOOK_SECRET',
+    {
+      key: 'firebaseApp.measurementId',
+      present: !!String(firebaseApp.measurementId || '').trim(),
+    },
+    {
+      key: 'fireux.primaryColor',
+      present:
+        !!String(fireux.primaryColor || '').trim() ||
+        !!String(publicRuntime.primaryColor || '').trim() ||
+        !!String(appConfigColors.primary || '').trim(),
+    },
+    {
+      key: 'fireux.neutralColor',
+      present:
+        !!String(fireux.neutralColor || '').trim() ||
+        !!String(publicRuntime.neutralColor || '').trim() ||
+        !!String(appConfigColors.neutral || '').trim(),
+    },
+    {
+      key: 'fireux.secondaryColor',
+      present:
+        !!String(fireux.secondaryColor || '').trim() ||
+        !!String(publicRuntime.secondaryColor || '').trim() ||
+        !!String(appConfigColors.secondary || '').trim(),
+    },
   ]
 
   // Admin auth detection (either JSON blob or split keys)
@@ -295,6 +365,30 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
     serviceAccountPaths.add(env.GOOGLE_APPLICATION_CREDENTIALS)
   }
   if (ecosystem) {
+    serviceAccountPaths.add(
+      join(
+        repoRoot,
+        'packages',
+        'ecosystem',
+        `fireux-${ecosystem}`,
+        'src',
+        'config',
+        'firebase',
+        'service-account.json'
+      )
+    )
+    serviceAccountPaths.add(
+      join(
+        repoRoot,
+        'packages',
+        'ecosystem',
+        ecosystem,
+        'src',
+        'config',
+        'firebase',
+        'service-account.json'
+      )
+    )
     serviceAccountPaths.add(
       join(
         repoRoot,
@@ -360,9 +454,10 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
     serverAuthJson || serverAuthSplit || serverAuthFile
 
   // Compute presence
-  const missingRequired = requiredClient.filter((k) => !env[k])
-  const presentOptionalClient = optionalClient.filter((k) => !!env[k])
-  const presentOptionalServer = optionalServer.filter((k) => !!env[k])
+  const missingRequired = requiredClient
+    .filter((entry) => !entry.present)
+    .map((entry) => entry.key)
+  const presentOptionalClient = optionalClient.filter((entry) => entry.present)
 
   // Brand asset checks
   const resolveBrandAsset = createBrandAssetResolver(
@@ -371,7 +466,6 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
     appNamespace
   )
   const brandNamespace = (appNamespace || ecosystem || 'fireux').trim()
-  const tenantBrandAssets = resolveFireuxBrandAssets({ role: 'tenant' })
   const brandRequirements: Array<{
     name: string
     path: string
@@ -404,37 +498,6 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
             minAspect: 3,
           },
         ]
-      : role === 'tenant'
-        ? [
-            {
-              name: 'logo',
-              path: tenantBrandAssets.logo.replace(/^\//, ''),
-              width: 512,
-              height: 512,
-            },
-            {
-              name: 'cover',
-              path: tenantBrandAssets.cover.replace(/^\//, ''),
-            },
-            {
-              name: 'thumbnail',
-              path: tenantBrandAssets.thumbnail.replace(/^\//, ''),
-            },
-            {
-              name: 'wordmark-light',
-              path: 'img/core/brand/wordmark-light.png',
-              minWidth: 256,
-              minHeight: 64,
-              minAspect: 3,
-            },
-            {
-              name: 'wordmark-dark',
-              path: 'img/core/brand/wordmark-dark.png',
-              minWidth: 256,
-              minHeight: 64,
-              minAspect: 3,
-            },
-          ]
       : [
           {
             name: 'logo',
@@ -502,16 +565,16 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
   const warnings: string[] = []
   if (!serverAuthConfigured) {
     warnings.push(
-      'Firebase Admin not configured (FIREBASE_SERVICE_ACCOUNT or split keys). SSR/admin features will be limited.'
+      'Firebase Admin not configured (FIREBASE_SERVICE_ACCOUNT, split keys, or ecosystem service-account file). SSR/admin features will be limited.'
     )
   }
   // Stripe warnings removed for core onboarding; handled in products module.
 
   // Helpers to render masked entries
-  const mask = (k: string): EnvVarEntry => ({
-    key: k,
-    present: !!env[k],
-    value: env[k] ? '***' : undefined,
+  const mask = (entry: EnvVarEntry): EnvVarEntry => ({
+    key: entry.key,
+    present: entry.present,
+    value: entry.present ? '***' : undefined,
   })
 
   const isValid =
@@ -536,7 +599,6 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
         file: serverAuthFile,
         configured: serverAuthConfigured,
       },
-      optional: optionalServer.map(mask),
     },
 
     missingRequired,
@@ -546,7 +608,6 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
         requiredClient.length
       }`,
       optionalClient: `${presentOptionalClient.length}/${optionalClient.length}`,
-      optionalServer: `${presentOptionalServer.length}/${optionalServer.length}`,
       brandAssets: `${passedBrandCount}/${brandAssets.length}`,
     },
 
@@ -554,16 +615,14 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
 
     notes: [
       'Role is enforced by Nuxt config (createFireuxConfig) and is not checked here.',
-      'Env vars are fixed and non-editable via UI.',
+      'Runtime config and env values are fixed and non-editable via UI.',
       brandNamespace === 'fireux'
         ? 'Brand asset validation checks /img/core/brand/ for required files and dimensions.'
-        : role === 'tenant'
-          ? 'Brand asset validation checks shared tenant placeholder assets from /img/core/brand/ and /img/core/defaults/.'
         : 'Brand asset validation checks /img/app/ for required files and dimensions.',
       ...(detectedServiceAccountPath
         ? [`Service account file detected at ${detectedServiceAccountPath}.`]
         : [
-            'Admin SDK detection checks FIREBASE_SERVICE_ACCOUNT(_FILE) or a service-account.json under packages/ecosystem/fireux-<ecosystem>/config/.',
+            'Admin SDK detection checks FIREBASE_SERVICE_ACCOUNT(_FILE), legacy project paths, or packages/ecosystem/fireux-<ecosystem>/src/config/firebase/service-account.json.',
           ]),
     ],
 

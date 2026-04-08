@@ -29,12 +29,11 @@ export interface EnvCheckResponse {
   required: EnvVarEntry[]
   optionalClient: EnvVarEntry[]
   optional?: EnvVarEntry[]
-  server: { adminAuth: AdminAuthStatus; optional: EnvVarEntry[] }
+  server: { adminAuth: AdminAuthStatus }
   missingRequired: string[]
   summary: {
     required: string
     optionalClient: string
-    optionalServer: string
     brandAssets?: string
   }
   warnings: string[]

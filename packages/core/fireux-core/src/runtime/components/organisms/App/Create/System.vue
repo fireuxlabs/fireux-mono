@@ -40,7 +40,13 @@
         />
 
         <div class="pt-2">
-          <UButton block size="lg" :disabled="!canProceed" @click="onProceed">
+          <UButton
+            block
+            size="lg"
+            :loading="actionPending"
+            :disabled="!canProceed || actionPending"
+            @click="onProceed"
+          >
             Continue
           </UButton>
           <p
@@ -51,6 +57,9 @@
           </p>
           <p v-else-if="bypassWarning" class="mt-2 text-xs text-amber-500">
             Continuing in dev mode without required environment variables.
+          </p>
+          <p v-if="proceedError" class="mt-2 text-xs text-red-500">
+            {{ proceedError }}
           </p>
         </div>
       </div>
@@ -70,8 +79,10 @@ const {
   env,
   envError,
   pending,
+  actionPending,
   canProceed,
   bypassWarning,
+  proceedError,
   checkPin,
   onRefreshEnv,
   onProceed,

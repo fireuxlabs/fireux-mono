@@ -53,8 +53,8 @@ Updated: 2026-04-04
   - light dashboard only when explicitly needed
   - no console family by default
 - Tenant apps must consume shared runtime/app contracts rather than defining tenant-local project control behavior.
-- Tenant placeholder branding/assets are canonical bootstrapping behavior until tenant-specific assets are supplied.
-- Placeholder tenant assets must come from shared core asset paths, not ad hoc tenant-local exceptions.
+- Tenant apps must ship and use their own local app assets under `/public/img/app`.
+- Shared core brand assets may act as runtime fallback visuals, but they are not the canonical tenant branding path.
 
 ## Standalone App Contract
 - Standalone apps are FireUX-hosted product apps inside the `fireux` ecosystem.

@@ -1,7 +1,9 @@
 import {
   arrayRemove,
   arrayUnion,
+  collection,
   doc,
+  getCountFromServer,
   getDoc,
   increment,
   serverTimestamp,
@@ -160,14 +162,22 @@ export async function ensureUserAppMembership(
   const actor = await useRequireUser()
   const db = useFirestore()
 
+  const appUsersRef = collection(db, 'apps', appId, 'users')
   const appUserRef = doc(db, 'apps', appId, 'users', uid)
   const appRef = doc(db, 'apps', appId)
   const userRef = doc(db, 'users', uid)
 
-  const [appUserSnap, userSnap] = await Promise.all([
+  const [appUserSnap, appSnap, userSnap] = await Promise.all([
     getDoc(appUserRef),
+    getDoc(appRef),
     getDoc(userRef),
   ])
+
+  if (!appSnap.exists()) {
+    throw new Error(
+      `[ensureUserAppMembership] Missing app doc for appId=${appId}; call ensureApp first`
+    )
+  }
 
   if (!userSnap.exists()) {
     throw new Error(
@@ -176,6 +186,29 @@ export async function ensureUserAppMembership(
   }
 
   const created = !appUserSnap.exists()
+  const appData = (appSnap.data() as Record<string, any> | undefined) ?? {}
+  const existingCount = Number(appData?.derived?.user_count)
+  const countLooksBroken =
+    !Number.isFinite(existingCount) || existingCount < (created ? 0 : 1)
+  let repairedUserCount: number | null = null
+
+  if (countLooksBroken) {
+    try {
+      repairedUserCount = Math.max(
+        (await getCountFromServer(appUsersRef)).data().count,
+        created ? 0 : 1
+      )
+    } catch (error) {
+      repairedUserCount = created ? 0 : 1
+      if (import.meta.dev) {
+        console.warn('[ensureUserAppMembership] failed to repair user count exactly', {
+          appId,
+          uid,
+          error,
+        })
+      }
+    }
+  }
   const batch = writeBatch(db)
 
   // 1) Canonical membership overlay
@@ -229,20 +262,7 @@ export async function ensureUserAppMembership(
   }
 
   // 2) App mirrors
-  if (created) {
-    batch.update(appRef, {
-      'derived.user_count': increment(1),
-      updated: {
-        at: serverTimestamp(),
-        by: actor.uid,
-      },
-    })
-  }
-
-  // Keep all admin mirrors in sync with the app-scoped role.
-  // Canon: AppUser.role (apps/{appId}/users/{uid})
-  // Mirrors: apps/{appId}.admin_ids[], users/{uid}.adminOf[]
-  batch.update(appRef, {
+  const appPatch: Record<string, unknown> = {
     admin_ids: (membershipRole === 'admin'
       ? arrayUnion(uid)
       : arrayRemove(uid)) as unknown as string[],
@@ -250,7 +270,19 @@ export async function ensureUserAppMembership(
       at: serverTimestamp(),
       by: actor.uid,
     },
-  })
+  }
+
+  if (created) {
+    appPatch['derived.user_count'] =
+      repairedUserCount === null ? increment(1) : repairedUserCount + 1
+  } else if (repairedUserCount !== null) {
+    appPatch['derived.user_count'] = repairedUserCount
+  }
+
+  // Keep all admin mirrors in sync with the app-scoped role.
+  // Canon: AppUser.role (apps/{appId}/users/{uid})
+  // Mirrors: apps/{appId}.admin_ids[], users/{uid}.adminOf[]
+  batch.update(appRef, appPatch as any)
 
   // 3) Core user mirrors (and ensure core user exists)
   const membershipUpdates: any = {

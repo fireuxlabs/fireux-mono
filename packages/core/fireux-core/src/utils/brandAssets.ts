@@ -15,24 +15,12 @@ export const GLOBAL_BRAND_ASSETS: ResolvedFireuxBrandAssets = Object.freeze({
   logo: '/img/app/logo.png',
   thumbnail: '/img/app/thumbnail.png',
   cover: '/img/app/cover.png',
-  favicon: '/favicon.ico',
+  favicon: '/img/app/favicon.ico',
   wordmarkLight: '/img/app/wordmark-light.svg',
   wordmarkDark: '/img/app/wordmark-dark.png',
   pwaIcon192: '/img/app/pwa/icon-192.png',
   pwaIcon512: '/img/app/pwa/icon-512.png',
 })
-
-export const TENANT_PLACEHOLDER_BRAND_ASSETS: ResolvedFireuxBrandAssets =
-  Object.freeze({
-    logo: '/img/core/brand/logo.png',
-    thumbnail: '/img/core/defaults/default-thumbnail.png',
-    cover: '/img/core/defaults/default-cover.png',
-    favicon: '/img/core/brand/logo.png',
-    wordmarkLight: '/img/core/brand/wordmark-light.svg',
-    wordmarkDark: '/img/core/brand/wordmark-dark.png',
-    pwaIcon192: '/img/core/brand/logo.png',
-    pwaIcon512: '/img/core/brand/logo.png',
-  })
 
 export const CORE_BRAND_FALLBACK_ASSETS = Object.freeze({
   logo: '/img/core/brand/logo.png',
@@ -57,16 +45,7 @@ function normalizeAsset(
 export function resolveFireuxBrandAssets(
   input: ResolveBrandAssetInput = {}
 ): ResolvedFireuxBrandAssets {
-  const role =
-    input.role === 'tenant'
-      ? 'tenant'
-      : input.role === 'standalone'
-        ? 'standalone'
-        : 'global'
-  const base =
-    role === 'tenant'
-      ? TENANT_PLACEHOLDER_BRAND_ASSETS
-      : GLOBAL_BRAND_ASSETS
+  const base = GLOBAL_BRAND_ASSETS
 
   return {
     ...base,

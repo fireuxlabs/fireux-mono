@@ -1,17 +1,39 @@
 // Canonical app media naming:
-// - Storage objects: apps/<appId>/media/{thumbnail|logo|wordmark-light|wordmark-dark}
-// - Firestore fields: {media.thumbnail_url|media.logo_url|media.wordmark_light_url|media.wordmark_dark_url}
+// - Storage objects: apps/<appId>/media/{thumbnail|logo|wordmark-light|wordmark-dark|cover}
+// - Firestore fields:
+//   {media.thumbnail_url|media.logo_url|media.wordmark_light_url|media.wordmark_dark_url|media.cover_url}
 export type AppImageKind =
   | 'thumbnail'
   | 'logo'
   | 'wordmarkLight'
   | 'wordmarkDark'
+  | 'cover'
+
+export const APP_IMAGE_SYNC_KINDS = [
+  'thumbnail',
+  'logo',
+  'wordmarkLight',
+  'wordmarkDark',
+  'cover',
+] as const satisfies readonly AppImageKind[]
+
+export type AppMediaSyncFailure = {
+  kind: AppImageKind
+  message: string
+}
+
+export type AppMediaSyncResponse = {
+  appId: string
+  uploaded: Partial<Record<AppImageKind, string>>
+  failed: AppMediaSyncFailure[]
+}
 
 type AppMediaRecordLike = {
   thumbnail_url?: string
   logo_url?: string
   wordmark_light_url?: string
   wordmark_dark_url?: string
+  cover_url?: string
 }
 
 type AppImageFirestoreField =
@@ -19,6 +41,7 @@ type AppImageFirestoreField =
   | 'media.logo_url'
   | 'media.wordmark_light_url'
   | 'media.wordmark_dark_url'
+  | 'media.cover_url'
 
 export function appImageStoragePath(appId: string, kind: AppImageKind): string {
   // "Public bucket" convention: a stable object path that can be overwritten.
@@ -32,6 +55,8 @@ export function appImageStoragePath(appId: string, kind: AppImageKind): string {
       return `apps/${appId}/media/wordmark-light`
     case 'wordmarkDark':
       return `apps/${appId}/media/wordmark-dark`
+    case 'cover':
+      return `apps/${appId}/media/cover`
   }
 }
 
@@ -45,6 +70,8 @@ export function appImageLocalPublicPath(kind: AppImageKind): string {
       return '/img/app/wordmark-light.png'
     case 'wordmarkDark':
       return '/img/app/wordmark-dark.png'
+    case 'cover':
+      return '/img/app/cover.png'
   }
 }
 
@@ -58,6 +85,8 @@ export function appImageFirestoreField(kind: AppImageKind): AppImageFirestoreFie
       return 'media.wordmark_light_url'
     case 'wordmarkDark':
       return 'media.wordmark_dark_url'
+    case 'cover':
+      return 'media.cover_url'
   }
 }
 
@@ -99,10 +128,15 @@ export function resolveAppMediaForView(
     safeUrl(media?.wordmark_dark_url) ||
     (devLocalFallback ? appImageLocalPublicPath('wordmarkDark') : '')
 
+  const coverUrl =
+    safeUrl(media?.cover_url) ||
+    (devLocalFallback ? appImageLocalPublicPath('cover') : '')
+
   return {
     thumbnailUrl,
     logoUrl,
     wordmarkLightUrl,
     wordmarkDarkUrl,
+    coverUrl,
   }
 }

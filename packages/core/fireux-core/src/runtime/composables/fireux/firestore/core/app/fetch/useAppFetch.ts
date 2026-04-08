@@ -73,8 +73,17 @@ export function useAppFetch(
       pending: ref(false),
     }
 
-  const app = docState.data ?? ref<App | undefined>(undefined)
+  const appSource = docState.data ?? ref<App | undefined>(undefined)
   const pending = docState.pending ?? ref(false)
+  const app = computed<App | null | undefined>(() => {
+    if (!targetId.value) return undefined
+    if (pending.value) return undefined
+
+    const raw = appSource.value
+    if (!raw) return null
+
+    return raw
+  })
   guardDocumentPromise(
     docState as any,
     `${collectionPath.value}/${targetId.value ?? ''}`

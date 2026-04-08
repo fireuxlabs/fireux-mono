@@ -12,7 +12,7 @@ export function useAppComputed(
 
   const isResolved = computed(() => {
     if (isPending.value) return false
-    return hasAppDoc.value
+    return app.value !== undefined
   })
 
   const adminIds = computed(() => {
@@ -31,6 +31,7 @@ export function useAppComputed(
 
   const isInitialized = computed(() => {
     if (!isResolved.value) return false
+    if (!hasAppDoc.value) return false
     return adminIds.value.length > 0
   })
 

@@ -1,17 +1,12 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/mutations/useAppEnsure.ts
 
-import { doc, getDoc } from 'firebase/firestore'
+import { deleteField, doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useImageStorage } from '../../../../firebase/useImageStorage'
+import { $fetch } from 'ofetch'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import { useFirestoreProjectEnsure } from '../../../system/project/mutations/useFirestoreProjectEnsure'
-import {
-    appImageFirestoreField,
-    appImageStoragePath,
-    type AppImageKind,
-} from '../utils/appMedia'
-import { createEmptyAppSocialLinks } from '../utils/factories/createEmptyAppSocialLinks'
+import type { AppMediaSyncResponse } from '../utils/appMedia'
 import { useAppCreate, type CreateAppInput } from './useAppCreate'
 
 type EnsureAppResult = {
@@ -19,43 +14,152 @@ type EnsureAppResult = {
   id: string
 }
 
+function asTrimmedString(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : ''
+}
+
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+}
+
+function pruneEmptyBootstrapValue(value: unknown): unknown {
+  if (value == null) return undefined
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    return trimmed ? trimmed : undefined
+  }
+
+  if (Array.isArray(value)) {
+    const next = value
+      .map((entry) => pruneEmptyBootstrapValue(entry))
+      .filter((entry) => entry !== undefined)
+    return next.length ? next : undefined
+  }
+
+  if (isPlainRecord(value)) {
+    const nextEntries = Object.entries(value).flatMap(([key, entry]) => {
+      const pruned = pruneEmptyBootstrapValue(entry)
+      return pruned === undefined ? [] : [[key, pruned] as const]
+    })
+
+    return nextEntries.length ? Object.fromEntries(nextEntries) : undefined
+  }
+
+  return value
+}
+
+function buildCreatePayload(fireux: ReturnType<typeof useFireUXConfig>): CreateAppInput {
+  const payload = pruneEmptyBootstrapValue({
+    id: fireux.appId,
+    ecosystem_id: fireux.ecosystem,
+    slug: fireux.appId,
+    status: 'active',
+    app_name: fireux.appName,
+    app_short_name: fireux.appShortName,
+    role: fireux.role,
+    ecosystem: fireux.ecosystem,
+    console_enabled: true,
+    derived: {
+      user_count: 0,
+    },
+  })
+
+  return (payload ?? {}) as CreateAppInput
+}
+
+function buildRepairPatch(
+  existing: Record<string, unknown>,
+  fireux: ReturnType<typeof useFireUXConfig>
+) {
+  const patch: Record<string, unknown> = {}
+
+  const ensureStringFields: Record<string, string> = {
+    ecosystem_id: fireux.ecosystem,
+    slug: fireux.appId,
+    status: 'active',
+    app_name: fireux.appName,
+    app_short_name: fireux.appShortName,
+    role: fireux.role,
+    ecosystem: fireux.ecosystem,
+  }
+
+  for (const [key, value] of Object.entries(ensureStringFields)) {
+    if (!asTrimmedString(existing[key])) {
+      patch[key] = value
+    }
+  }
+
+  if (typeof existing.console_enabled !== 'boolean') {
+    patch.console_enabled = true
+  }
+
+  const media = isPlainRecord(existing.media) ? existing.media : {}
+  for (const key of [
+    'thumbnail_url',
+    'logo_url',
+    'wordmark_light_url',
+    'wordmark_dark_url',
+    'cover_url',
+  ]) {
+    const current = asTrimmedString(media[key])
+    if (current.startsWith('/img/')) {
+      patch[`media.${key}`] = deleteField()
+    }
+  }
+
+  const deleteIfEmpty = [
+    'project_id',
+    'team',
+    'tagline',
+    'description',
+    'short_bio',
+    'long_bio',
+    'moderation_state',
+  ]
+
+  for (const key of deleteIfEmpty) {
+    if (key in existing && !asTrimmedString(existing[key])) {
+      patch[key] = deleteField()
+    }
+  }
+
+  const deleteEmptyArrays = ['join_requests', 'ban_reasons']
+  for (const key of deleteEmptyArrays) {
+    if (Array.isArray(existing[key]) && existing[key].length === 0) {
+      patch[key] = deleteField()
+    }
+  }
+
+  if (isPlainRecord(existing.social_links)) {
+    const hasAnySocialValue = Object.values(existing.social_links).some((value) =>
+      Boolean(asTrimmedString(value))
+    )
+    if (!hasAnySocialValue) {
+      patch.social_links = deleteField()
+    }
+  }
+
+  return patch
+}
+
 export function useAppEnsure() {
   const db = useFirestore()
   const { createApp } = useAppCreate()
   const { updateDocument } = useFirestoreUpdate()
-  const { uploadImage } = useImageStorage()
   const { ensureFirestoreProjectDoc } = useFirestoreProjectEnsure()
 
-  async function syncNewAppImages(appId: string) {
-    const uploads: Array<{ kind: AppImageKind; localPath: string }> = [
-      { kind: 'logo', localPath: '/img/app/logo.png' },
-      { kind: 'wordmarkLight', localPath: '/img/app/wordmark-light.png' },
-      { kind: 'wordmarkDark', localPath: '/img/app/wordmark-dark.png' },
-      { kind: 'thumbnail', localPath: '/img/app/thumbnail.png' },
-    ]
-
-    const patch: Record<string, string> = {}
-
-    for (const item of uploads) {
-      try {
-        const storagePath = appImageStoragePath(appId, item.kind)
-        const field = appImageFirestoreField(item.kind)
-        const url = await uploadImage(storagePath, item.localPath)
-        patch[field] = url
-      } catch (error) {
-        if (import.meta.dev) {
-          console.warn('[useAppEnsure] media upload failed', {
-            appId,
-            kind: item.kind,
-            error,
-          })
-        }
-      }
+  async function syncAppMedia(appId?: string): Promise<AppMediaSyncResponse> {
+    const fireux = useFireUXConfig()
+    const targetAppId = String(appId || fireux.appId || '').trim()
+    if (!targetAppId) {
+      throw new Error('[useAppEnsure] Missing appId for media sync')
     }
 
-    if (!Object.keys(patch).length) return
-
-    await updateDocument('apps', appId, patch)
+    return await $fetch<AppMediaSyncResponse>('/api/internal/app/sync-media', {
+      method: 'POST',
+      body: { appId: targetAppId },
+    })
   }
 
   async function ensureApp(): Promise<EnsureAppResult> {
@@ -65,59 +169,25 @@ export function useAppEnsure() {
     const ref = doc(db, 'apps', fireux.appId)
     const snap = await getDoc(ref)
 
-    // Already exists → nothing to do
     if (snap.exists()) {
+      const repairPatch = buildRepairPatch(
+        (snap.data() as Record<string, unknown>) ?? {},
+        fireux
+      )
+
+      if (Object.keys(repairPatch).length) {
+        await updateDocument('apps', fireux.appId, repairPatch)
+      }
       return { created: false, id: fireux.appId }
     }
 
     // NOTE: App creation does NOT imply user membership.
     // User ↔ App binding is handled explicitly elsewhere.
 
-    const input: CreateAppInput = {
-      id: fireux.appId,
-      project_id: '',
-      ecosystem_id: fireux.ecosystem,
-      slug: fireux.appId,
-      status: 'active',
-      team: '',
-
-      app_name: fireux.appName,
-      app_short_name: fireux.appShortName,
-      role: fireux.role,
-      ecosystem: fireux.ecosystem,
-
-      join_requests: [],
-      admin_ids: [],
-      moderation_state: '',
-      ban_reasons: [],
-      console_enabled: true,
-
-      tagline: '',
-      description: '',
-      short_bio: '',
-      long_bio: '',
-
-      social_links: createEmptyAppSocialLinks(),
-
-      derived: {
-        user_count: 0,
-      },
-
-      media: {
-        thumbnail_url: '',
-        logo_url: '',
-        wordmark_light_url: '',
-        wordmark_dark_url: '',
-        cover_url: '',
-      },
-    }
-
-    await createApp(input)
-
-    await syncNewAppImages(fireux.appId)
+    await createApp(buildCreatePayload(fireux))
 
     return { created: true, id: fireux.appId }
   }
 
-  return { ensureApp }
+  return { ensureApp, syncAppMedia }
 }

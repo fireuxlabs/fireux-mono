@@ -55,7 +55,8 @@ Updated: 2026-04-04
 - App/ecosystem ownership filtering must be explicit through stored fields, not implied by collection path alone.
 - Real-mode family entry must not behave like a raw collection browser.
 - Real-mode target visibility should come from explicit overlay governance and only use root hints where the family contract allows it.
-- Shared placeholder branding for tenant apps is allowed because it does not decide selection, routing, or identity.
+- App branding is app-local for every app role.
+- The canonical brand asset path is `/public/img/app/*` for global, tenant, and standalone apps.
 
 ## Create vs Ensure Canon
 - `createX` means intentional creation of a real target.

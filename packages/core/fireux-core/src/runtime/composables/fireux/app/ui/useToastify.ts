@@ -3,12 +3,7 @@ import { useToast } from '#imports'
 const TOAST_TIMEOUT = 3000
 
 type ToastApi = {
-  add?: (options: {
-    title?: string
-    description?: string
-    color?: string
-    timeout?: number
-  }) => void
+  add?: (options: any) => unknown
   success?: (message: string, options?: { timeout?: number }) => void
   error?: (message: string, options?: { timeout?: number }) => void
   warn?: (message: string, options?: { timeout?: number }) => void
@@ -77,7 +72,7 @@ function buildToastOptions(type: 'success' | 'error' | 'warn', message: string) 
     actions: [
       {
         label: 'Copy',
-        click: () => copyToClipboard(message),
+        onClick: () => copyToClipboard(message),
       },
     ],
   }
@@ -98,7 +93,7 @@ function buildCustomToastOptions(options: {
       ? [
           {
             label: 'Copy',
-            click: () => copyToClipboard(message),
+            onClick: () => copyToClipboard(message),
           },
         ]
       : undefined,

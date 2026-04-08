@@ -1,7 +1,7 @@
 # Apps Pages
 
 Authority: Operational
-Updated: 2026-03-21
+Updated: 2026-04-08
 Scope: `packages/core/fireux-core/src/runtime/pages/apps/*`.
 
 This folder owns the public app index and the current ensure-first app create surface.
@@ -15,12 +15,39 @@ This folder owns the public app index and the current ensure-first app create su
 
 - `index.vue` is the canonical app index
 - `create.vue` is an ensure-first bootstrap page, not ordinary app CRUD
+- every app scaffold should include `app/app.config.ts`
+- the minimal app theme contract is `ui.colors.primary` plus `ui.colors.neutral`
+- custom palettes should add `ui.safelistColors` when `primary` is not a stock Nuxt UI color
 
 `create.vue` should:
 - read runtime config first
 - create `/apps/<appId>` only when missing
 - re-run onboarding and bootstrap state safely
 - stay safe to run multiple times
+
+## Brand Asset Prep
+
+Before running app onboarding, prepare the local app asset bucket from the
+matching Figma export:
+
+- source: `figma-export/apps/<app-id>/`
+- target: `projects/<ecosystem>/<app-id>/public/img/app/`
+
+Expected onboarding asset set:
+- `logo.png`
+- `cover.png`
+- `thumbnail.png`
+- `wordmark-light.png`
+- `wordmark-light.svg`
+- `wordmark-dark.png`
+- `pwa/icon-192.png`
+- `pwa/icon-512.png`
+- `favicon.ico`
+
+Operational rule:
+- drag and drop or copy the exported assets into the local app bucket before initializing onboarding
+- if `figma-export/apps/<app-id>/` is empty during local-only console work, you may temporarily loan another app's export to unblock development
+- replace any loaned assets with the real app export before release
 
 ## Family
 

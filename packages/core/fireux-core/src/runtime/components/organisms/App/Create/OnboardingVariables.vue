@@ -5,8 +5,8 @@
       color="primary"
       variant="soft"
       icon="i-ph-spinner"
-      title="Checking environment variables"
-      description="Hang tight while we verify your configuration."
+      title="Checking app configuration"
+      description="Hang tight while we verify the active runtime configuration."
     />
 
     <template v-else-if="envData">
@@ -25,9 +25,6 @@
         <UBadge color="primary" variant="subtle">
           Optional (client): {{ summaryOptionalClient }}
         </UBadge>
-        <UBadge color="primary" variant="subtle">
-          Optional (server): {{ summaryOptionalServer }}
-        </UBadge>
         <UBadge :color="adminBadgeColor" variant="soft">
           Admin SDK:
           {{ envData.server?.adminAuth?.configured ? 'configured' : 'missing' }}
@@ -40,10 +37,21 @@
       <UCard v-if="requiredVars.length">
         <template #header>
           <div class="flex items-center justify-between">
-            <span class="font-medium">🔐 Required Variables</span>
-            <UBadge color="primary" variant="subtle">{{
-              summaryRequired
-            }}</UBadge>
+            <span class="font-medium">🔐 Required Configuration</span>
+            <div class="flex items-center gap-2">
+              <UButton
+                size="xs"
+                variant="soft"
+                color="neutral"
+                :icon="copiedRequired ? 'i-lucide-check' : 'i-lucide-copy'"
+                @click="copyRequiredStatus"
+              >
+                {{ copiedRequired ? 'Copied' : 'Copy status' }}
+              </UButton>
+              <UBadge color="primary" variant="subtle">{{
+                summaryRequired
+              }}</UBadge>
+            </div>
           </div>
         </template>
         <div class="space-y-2">
@@ -66,7 +74,7 @@
       <UCard v-if="optionalClientVars.length">
         <template #header>
           <div class="flex items-center justify-between">
-            <span class="font-medium">⚙️ Optional Variables (Client)</span>
+            <span class="font-medium">⚙️ Optional Configuration (Client)</span>
             <UBadge color="primary" variant="subtle">{{
               summaryOptionalClient
             }}</UBadge>
@@ -75,32 +83,6 @@
         <div class="space-y-2">
           <div
             v-for="envVar in optionalClientVars"
-            :key="envVar.key"
-            class="flex items-center justify-between rounded-lg border border-[var(--ui-border)] px-3 py-2"
-          >
-            <span class="font-mono text-sm">{{ envVar.key }}</span>
-            <UBadge
-              :color="envVar.present ? 'success' : 'warning'"
-              variant="soft"
-            >
-              {{ envVar.present ? 'Set' : 'Not set' }}
-            </UBadge>
-          </div>
-        </div>
-      </UCard>
-
-      <UCard v-if="optionalServerVars.length">
-        <template #header>
-          <div class="flex items-center justify-between">
-            <span class="font-medium">🛠 Optional Variables (Server)</span>
-            <UBadge color="primary" variant="subtle">{{
-              summaryOptionalServer
-            }}</UBadge>
-          </div>
-        </template>
-        <div class="space-y-2">
-          <div
-            v-for="envVar in optionalServerVars"
             :key="envVar.key"
             class="flex items-center justify-between rounded-lg border border-[var(--ui-border)] px-3 py-2"
           >
@@ -159,8 +141,11 @@
           </div>
         </div>
         <p class="text-sm text-[var(--ui-text-muted)]">
-          Replace files in <code>/public/img/brand</code> or update storage URLs
-          to resolve issues.
+          Copy the exported app assets from
+          <code>figma-export/apps/&lt;app-id&gt;/</code> into
+          <code>/public/img/app</code> before onboarding. For temporary local
+          console work, you may loan another app's export if the target app
+          export folder is still empty.
         </p>
       </UCard>
 
@@ -193,7 +178,7 @@
         title="Next steps"
       >
         <ol class="list-decimal space-y-1 pl-5 text-sm">
-          <li>Update your <code>.env</code> file with the missing entries.</li>
+          <li>Update the missing configuration in ecosystem config, app config, or local <code>.env</code>.</li>
           <li>Restart the development server: <code>pnpm dev</code>.</li>
           <li>Refresh this page to re-run the check.</li>
         </ol>
@@ -205,14 +190,14 @@
       color="error"
       variant="soft"
       icon="i-ph-x-circle"
-      title="Failed to check environment"
+      title="Failed to check configuration"
       :description="error"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { EnvCheckResponse } from '../../../../composables/fireux/app/utils/env-check.types'
 
 const props = withDefaults(
@@ -238,7 +223,6 @@ const optionalClientVars = computed(() => {
   if (envData.value.optionalClient?.length) return envData.value.optionalClient
   return envData.value.optional ?? []
 })
-const optionalServerVars = computed(() => envData.value?.server?.optional ?? [])
 const brandAssets = computed(() => {
   const assets = envData.value?.brandAssets ?? []
   for (const asset of assets) {
@@ -253,6 +237,7 @@ const brandAssets = computed(() => {
 
 const warnings = computed(() => envData.value?.warnings ?? [])
 const notes = computed(() => envData.value?.notes ?? [])
+const copiedRequired = ref(false)
 
 const missingRequiredCount = computed(
   () => envData.value?.missingRequired?.length ?? 0
@@ -329,6 +314,23 @@ const assetPreviewSrc = (asset: { path: string }) => {
   return '/img/core/brand/wordmark-light.png'
 }
 
+const requiredStatusText = computed(() =>
+  requiredVars.value
+    .map((envVar) => `${envVar.key}${envVar.present ? 'Set' : 'Missing'}`)
+    .join('\n')
+)
+
+async function copyRequiredStatus() {
+  if (!import.meta.client) return
+  if (!requiredStatusText.value) return
+
+  await navigator.clipboard.writeText(requiredStatusText.value)
+  copiedRequired.value = true
+  window.setTimeout(() => {
+    copiedRequired.value = false
+  }, 1500)
+}
+
 const summaryRequired = computed(
   () => envData.value?.summary?.required ?? '0/0'
 )
@@ -337,9 +339,6 @@ const summaryOptionalClient = computed(
     envData.value?.summary?.optionalClient ??
     envData.value?.summary?.optional ??
     '0/0'
-)
-const summaryOptionalServer = computed(
-  () => envData.value?.summary?.optionalServer ?? '0/0'
 )
 const summaryBrand = computed(
   () => envData.value?.summary?.brandAssets ?? '0/0'
