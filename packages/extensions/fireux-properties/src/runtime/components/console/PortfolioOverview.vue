@@ -52,7 +52,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useActivePortfolio } from '../../../../composables/fireux/app/portfolio-console/useActivePortfolio'
+import { useActivePortfolio } from '../../composables/fireux/app/portfolio-console/useActivePortfolio'
 
 const portfolioState = useActivePortfolio()
 const portfolio = computed(

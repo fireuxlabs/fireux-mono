@@ -18,7 +18,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <ConsoleSupplierReal />
+        <ConsoleSupplier />
       </section>
     </template>
   </UDashboardPanel>

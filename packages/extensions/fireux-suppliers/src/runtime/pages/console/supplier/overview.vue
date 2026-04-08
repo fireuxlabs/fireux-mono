@@ -29,7 +29,7 @@
             :show-badges="false"
           />
 
-          <ConsoleSupplierOverviewReal />
+          <ConsoleSupplierOverview />
         </template>
       </section>
     </template>

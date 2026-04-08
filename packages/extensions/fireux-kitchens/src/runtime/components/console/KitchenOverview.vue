@@ -43,7 +43,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useActiveKitchen } from '../../../../composables/fireux/app/kitchen-console/useActiveKitchen'
+import { useActiveKitchen } from '../../composables/fireux/app/kitchen-console/useActiveKitchen'
 
 const kitchenState = useActiveKitchen()
 const kitchen = computed(() => kitchenState.kitchen.value as Record<string, unknown> | null)

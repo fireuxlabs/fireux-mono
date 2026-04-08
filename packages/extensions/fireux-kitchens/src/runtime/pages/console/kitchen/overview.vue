@@ -29,7 +29,7 @@
             :show-badges="false"
           />
 
-          <ConsoleKitchenOverviewReal />
+          <ConsoleKitchenOverview />
         </template>
       </section>
     </template>
