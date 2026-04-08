@@ -1,14 +1,6 @@
-import { defineNuxtRouteMiddleware, navigateTo, useCookie } from '#imports'
+import { defineNuxtRouteMiddleware, navigateTo } from '#imports'
 import { useAuth } from '../composables/fireux/firebase/useAuth'
 import { useUser } from '../composables/fireux/firestore/core/user/useUser'
-import {
-  consoleFamilyFromPath,
-  createDefaultConsoleSelectionState,
-  toConsoleFamilyPath,
-  toConsoleSelectionStateKey,
-} from '../composables/fireux/app/routing/consoleRoutes'
-import { normalizeConsoleMode } from '../composables/fireux/console/console.normalize'
-import type { ConsoleSelectionState } from '../composables/fireux/console/console.types'
 
 const AUTH_WAIT_TIMEOUT_MS = 2500
 const USER_WAIT_TIMEOUT_MS = 1500
@@ -28,27 +20,6 @@ async function waitFor(ready: () => boolean, timeoutMs: number) {
   }
 }
 
-function allowsGuestNonLiveConsole(path: string): boolean {
-  const family = consoleFamilyFromPath(path)
-  if (!family) return false
-
-  const familyPath = toConsoleFamilyPath(family)
-  if (path === `${familyPath}/create` || path.startsWith(`${familyPath}/create/`)) {
-    return false
-  }
-
-  const cookie = useCookie<ConsoleSelectionState | null>(
-    toConsoleSelectionStateKey(family),
-    { default: createDefaultConsoleSelectionState }
-  )
-  const mode = normalizeConsoleMode(cookie.value?.mode, { defaultMode: 'demo' })
-  return mode === 'demo'
-}
-
-function allowsGuestConsoleRoute(path: string): boolean {
-  return /^\/console\/[^/]+\/demo(?:\/|$)/.test(path)
-}
-
 export default defineNuxtRouteMiddleware(async (to) => {
   if (import.meta.server) return
 
@@ -62,11 +33,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const { isAuthenticated, hasAuthState } = useAuth()
   await waitFor(() => hasAuthState.value, AUTH_WAIT_TIMEOUT_MS)
 
-  const allowsGuestConsole =
-    allowsGuestConsoleRoute(path) || allowsGuestNonLiveConsole(path)
-
   if (!isAuthenticated.value) {
-    if (allowsGuestConsole) return
     return navigateTo(`/auth?redirect=${encodeURIComponent(to.fullPath)}`)
   }
 

@@ -46,7 +46,6 @@ export function usePortfolioConsole(
     clearSelection: portfolioSelection.clearRuntimePortfolio,
     header: headerData,
     publishHeader: options.publishHeader,
-    modeOptions: [{ value: 'live', label: 'Real' }],
   })
 
   return {

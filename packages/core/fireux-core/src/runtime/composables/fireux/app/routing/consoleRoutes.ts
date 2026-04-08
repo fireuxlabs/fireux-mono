@@ -8,7 +8,7 @@ export const CONSOLE_ROOT = '/console'
 export function createDefaultConsoleSelectionState(): ConsoleSelectionState {
   return {
     selectedId: '',
-    mode: 'demo',
+    mode: 'live',
   }
 }
 

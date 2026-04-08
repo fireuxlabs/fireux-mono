@@ -45,7 +45,6 @@ export function useSupplierConsole(
     clearSelection: supplierSelection.clearRuntimeSupplier,
     header: headerData,
     publishHeader: options.publishHeader,
-    modeOptions: [{ value: 'live', label: 'Real' }],
   })
 
   return {

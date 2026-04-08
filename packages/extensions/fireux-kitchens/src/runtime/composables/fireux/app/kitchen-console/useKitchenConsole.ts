@@ -46,7 +46,6 @@ export function useKitchenConsole(
     clearSelection: kitchenSelection.clearRuntimeKitchen,
     header: headerData,
     publishHeader: options.publishHeader,
-    modeOptions: [{ value: 'live', label: 'Real' }],
   })
 
   return {

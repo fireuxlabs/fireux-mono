@@ -48,7 +48,6 @@ export function useProjectConsole(
     clearSelection: projectSelection.clearRuntimeProject,
     header: headerData,
     publishHeader: options.publishHeader,
-    modeOptions: [{ value: 'live', label: 'Real' }],
   })
 
   return {
