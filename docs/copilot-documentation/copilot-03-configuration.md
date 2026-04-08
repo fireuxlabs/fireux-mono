@@ -60,7 +60,6 @@ See: `docs/copilot-documentation/copilot-appendices/seo-indexing-playbook.md`.
 {
   "extends": "../tsconfig.app.base.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "moduleResolution": "Bundler",
     "paths": {
       "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],

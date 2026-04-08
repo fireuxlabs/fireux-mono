@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "typeRoots": [
       "./types",
       "./node_modules/@types"
@@ -25,221 +24,221 @@
     ],
     "paths": {
       "vite/client": [
-        "types/vite/client.d.ts"
+        "./types/vite/client.d.ts"
       ],
       "fireux-core": [
-        "packages/core/fireux-core/src/module.ts"
+        "./packages/core/fireux-core/src/module.ts"
       ],
       "fireux-core/*": [
-        "packages/core/fireux-core/src/*"
+        "./packages/core/fireux-core/src/*"
       ],
       "fireux-core/runtime/*": [
-        "packages/core/fireux-core/src/runtime/*"
+        "./packages/core/fireux-core/src/runtime/*"
       ],
       "fireux-jobs": [
-        "packages/extensions/fireux-jobs/src/module.ts"
+        "./packages/extensions/fireux-jobs/src/module.ts"
       ],
       "fireux-jobs/*": [
-        "packages/extensions/fireux-jobs/src/*"
+        "./packages/extensions/fireux-jobs/src/*"
       ],
       "fireux-jobs/runtime/*": [
-        "packages/extensions/fireux-jobs/src/runtime/*"
+        "./packages/extensions/fireux-jobs/src/runtime/*"
       ],
       "fireux-kitchens": [
-        "packages/extensions/fireux-kitchens/src/module.ts"
+        "./packages/extensions/fireux-kitchens/src/module.ts"
       ],
       "fireux-kitchens/*": [
-        "packages/extensions/fireux-kitchens/src/*"
+        "./packages/extensions/fireux-kitchens/src/*"
       ],
       "fireux-kitchens/runtime/*": [
-        "packages/extensions/fireux-kitchens/src/runtime/*"
+        "./packages/extensions/fireux-kitchens/src/runtime/*"
       ],
       "fireux-companies": [
-        "packages/extensions/fireux-companies/src/module.ts"
+        "./packages/extensions/fireux-companies/src/module.ts"
       ],
       "fireux-companies/*": [
-        "packages/extensions/fireux-companies/src/*"
+        "./packages/extensions/fireux-companies/src/*"
       ],
       "fireux-companies/runtime/*": [
-        "packages/extensions/fireux-companies/src/runtime/*"
+        "./packages/extensions/fireux-companies/src/runtime/*"
       ],
       "fireux-compliance": [
-        "packages/extensions/fireux-compliance/src/module.ts"
+        "./packages/extensions/fireux-compliance/src/module.ts"
       ],
       "fireux-compliance/*": [
-        "packages/extensions/fireux-compliance/src/*"
+        "./packages/extensions/fireux-compliance/src/*"
       ],
       "fireux-compliance/runtime/*": [
-        "packages/extensions/fireux-compliance/src/runtime/*"
+        "./packages/extensions/fireux-compliance/src/runtime/*"
       ],
       "fireux-documents": [
-        "packages/extensions/fireux-documents/src/module.ts"
+        "./packages/extensions/fireux-documents/src/module.ts"
       ],
       "fireux-documents/*": [
-        "packages/extensions/fireux-documents/src/*"
+        "./packages/extensions/fireux-documents/src/*"
       ],
       "fireux-documents/runtime/*": [
-        "packages/extensions/fireux-documents/src/runtime/*"
+        "./packages/extensions/fireux-documents/src/runtime/*"
       ],
       "fireux-places": [
-        "packages/extensions/fireux-places/src/module.ts"
+        "./packages/extensions/fireux-places/src/module.ts"
       ],
       "fireux-places/*": [
-        "packages/extensions/fireux-places/src/*"
+        "./packages/extensions/fireux-places/src/*"
       ],
       "fireux-places/runtime/*": [
-        "packages/extensions/fireux-places/src/runtime/*"
+        "./packages/extensions/fireux-places/src/runtime/*"
       ],
       "fireux-orders": [
-        "packages/extensions/fireux-orders/src/module.ts"
+        "./packages/extensions/fireux-orders/src/module.ts"
       ],
       "fireux-orders/*": [
-        "packages/extensions/fireux-orders/src/*"
+        "./packages/extensions/fireux-orders/src/*"
       ],
       "fireux-orders/runtime/*": [
-        "packages/extensions/fireux-orders/src/runtime/*"
+        "./packages/extensions/fireux-orders/src/runtime/*"
       ],
       "fireux-properties": [
-        "packages/extensions/fireux-properties/src/module.ts"
+        "./packages/extensions/fireux-properties/src/module.ts"
       ],
       "fireux-properties/*": [
-        "packages/extensions/fireux-properties/src/*"
+        "./packages/extensions/fireux-properties/src/*"
       ],
       "fireux-properties/runtime/*": [
-        "packages/extensions/fireux-properties/src/runtime/*"
+        "./packages/extensions/fireux-properties/src/runtime/*"
       ],
       "fireux-tasks": [
-        "packages/extensions/fireux-tasks/src/module.ts"
+        "./packages/extensions/fireux-tasks/src/module.ts"
       ],
       "fireux-tasks/*": [
-        "packages/extensions/fireux-tasks/src/*"
+        "./packages/extensions/fireux-tasks/src/*"
       ],
       "fireux-tasks/runtime/*": [
-        "packages/extensions/fireux-tasks/src/runtime/*"
+        "./packages/extensions/fireux-tasks/src/runtime/*"
       ],
       "fireux-misebox": [
-        "packages/ecosystem/fireux-misebox/src/module.ts"
+        "./packages/ecosystem/fireux-misebox/src/module.ts"
       ],
       "fireux-misebox/*": [
-        "packages/ecosystem/fireux-misebox/src/*"
+        "./packages/ecosystem/fireux-misebox/src/*"
       ],
       "fireux-bringli": [
-        "packages/ecosystem/fireux-bringli/src/module.ts"
+        "./packages/ecosystem/fireux-bringli/src/module.ts"
       ],
       "fireux-bringli/*": [
-        "packages/ecosystem/fireux-bringli/src/*"
+        "./packages/ecosystem/fireux-bringli/src/*"
       ],
       "fireux-cleanbox": [
-        "packages/ecosystem/fireux-cleanbox/src/module.ts"
+        "./packages/ecosystem/fireux-cleanbox/src/module.ts"
       ],
       "fireux-cleanbox/*": [
-        "packages/ecosystem/fireux-cleanbox/src/*"
+        "./packages/ecosystem/fireux-cleanbox/src/*"
       ],
       "fireux-fireux": [
-        "packages/ecosystem/fireux-fireux/src/module.ts"
+        "./packages/ecosystem/fireux-fireux/src/module.ts"
       ],
       "fireux-fireux/*": [
-        "packages/ecosystem/fireux-fireux/src/*"
+        "./packages/ecosystem/fireux-fireux/src/*"
       ],
       "@fireux-core/*": [
-        "packages/core/fireux-core/src/*"
+        "./packages/core/fireux-core/src/*"
       ],
       "@fireux-jobs/*": [
-        "packages/extensions/fireux-jobs/src/*"
+        "./packages/extensions/fireux-jobs/src/*"
       ],
       "@fireux-kitchens/*": [
-        "packages/extensions/fireux-kitchens/src/*"
+        "./packages/extensions/fireux-kitchens/src/*"
       ],
       "@fireux-companies/*": [
-        "packages/extensions/fireux-companies/src/*"
+        "./packages/extensions/fireux-companies/src/*"
       ],
       "@fireux-compliance/*": [
-        "packages/extensions/fireux-compliance/src/*"
+        "./packages/extensions/fireux-compliance/src/*"
       ],
       "@fireux-documents/*": [
-        "packages/extensions/fireux-documents/src/*"
+        "./packages/extensions/fireux-documents/src/*"
       ],
       "@fireux-places/*": [
-        "packages/extensions/fireux-places/src/*"
+        "./packages/extensions/fireux-places/src/*"
       ],
       "@fireux-orders/*": [
-        "packages/extensions/fireux-orders/src/*"
+        "./packages/extensions/fireux-orders/src/*"
       ],
       "@fireux-properties/*": [
-        "packages/extensions/fireux-properties/src/*"
+        "./packages/extensions/fireux-properties/src/*"
       ],
       "@fireux-tasks/*": [
-        "packages/extensions/fireux-tasks/src/*"
+        "./packages/extensions/fireux-tasks/src/*"
       ],
       "@fireux-misebox/*": [
-        "packages/ecosystem/fireux-misebox/src/*"
+        "./packages/ecosystem/fireux-misebox/src/*"
       ],
       "@fireux-bringli/*": [
-        "packages/ecosystem/fireux-bringli/src/*"
+        "./packages/ecosystem/fireux-bringli/src/*"
       ],
       "@fireux-cleanbox/*": [
-        "packages/ecosystem/fireux-cleanbox/src/*"
+        "./packages/ecosystem/fireux-cleanbox/src/*"
       ],
       "@fireux-fireux/*": [
-        "packages/ecosystem/fireux-fireux/src/*"
+        "./packages/ecosystem/fireux-fireux/src/*"
       ],
       "~/*": [
-        "projects/fireux/fireux-app/app/*",
-        "projects/fireux/tenant/app/*",
-        "projects/bringli/bringli-app/app/*",
-        "projects/granite/granite-app/app/*",
-        "projects/misebox/misebox-app/app/*",
-        "projects/misebox/niederhorn/app/*",
-        "projects/cleanbox/cleanbox-app/app/*",
-        "projects/cleanbox/richies-reinigung/app/*"
+        "./projects/fireux/fireux-app/app/*",
+        "./projects/fireux/tenant/app/*",
+        "./projects/bringli/bringli-app/app/*",
+        "./projects/granite/granite-app/app/*",
+        "./projects/misebox/misebox-app/app/*",
+        "./projects/misebox/niederhorn/app/*",
+        "./projects/cleanbox/cleanbox-app/app/*",
+        "./projects/cleanbox/richies-reinigung/app/*"
       ],
       "@/*": [
-        "projects/fireux/fireux-app/app/*",
-        "projects/fireux/tenant/app/*",
-        "projects/bringli/bringli-app/app/*",
-        "projects/granite/granite-app/app/*",
-        "projects/misebox/misebox-app/app/*",
-        "projects/misebox/niederhorn/app/*",
-        "projects/cleanbox/cleanbox-app/app/*",
-        "projects/cleanbox/richies-reinigung/app/*"
+        "./projects/fireux/fireux-app/app/*",
+        "./projects/fireux/tenant/app/*",
+        "./projects/bringli/bringli-app/app/*",
+        "./projects/granite/granite-app/app/*",
+        "./projects/misebox/misebox-app/app/*",
+        "./projects/misebox/niederhorn/app/*",
+        "./projects/cleanbox/cleanbox-app/app/*",
+        "./projects/cleanbox/richies-reinigung/app/*"
       ],
       "~~/*": [
-        "projects/fireux/fireux-app/*",
-        "projects/fireux/tenant/*",
-        "projects/bringli/bringli-app/*",
-        "projects/granite/granite-app/*",
-        "projects/misebox/misebox-app/*",
-        "projects/misebox/niederhorn/*",
-        "projects/cleanbox/cleanbox-app/*",
-        "projects/cleanbox/richies-reinigung/*"
+        "./projects/fireux/fireux-app/*",
+        "./projects/fireux/tenant/*",
+        "./projects/bringli/bringli-app/*",
+        "./projects/granite/granite-app/*",
+        "./projects/misebox/misebox-app/*",
+        "./projects/misebox/niederhorn/*",
+        "./projects/cleanbox/cleanbox-app/*",
+        "./projects/cleanbox/richies-reinigung/*"
       ],
       "@@/*": [
-        "projects/fireux/fireux-app/*",
-        "projects/fireux/tenant/*",
-        "projects/bringli/bringli-app/*",
-        "projects/granite/granite-app/*",
-        "projects/misebox/misebox-app/*",
-        "projects/misebox/niederhorn/*",
-        "projects/cleanbox/cleanbox-app/*",
-        "projects/cleanbox/richies-reinigung/*"
+        "./projects/fireux/fireux-app/*",
+        "./projects/fireux/tenant/*",
+        "./projects/bringli/bringli-app/*",
+        "./projects/granite/granite-app/*",
+        "./projects/misebox/misebox-app/*",
+        "./projects/misebox/niederhorn/*",
+        "./projects/cleanbox/cleanbox-app/*",
+        "./projects/cleanbox/richies-reinigung/*"
       ],
       "#imports": [
-        "types/nuxt-shims.d.ts"
+        "./types/nuxt-shims.d.ts"
       ],
       "#pwa": [
-        "types/pwa.d.ts"
+        "./types/pwa.d.ts"
       ],
       "vuefire/server": [
-        "types/vuefire-server.d.ts"
+        "./types/vuefire-server.d.ts"
       ],
       "fireux-granite": [
-        "packages/ecosystem/fireux-granite/src/module.ts"
+        "./packages/ecosystem/fireux-granite/src/module.ts"
       ],
       "fireux-granite/*": [
-        "packages/ecosystem/fireux-granite/src/*"
+        "./packages/ecosystem/fireux-granite/src/*"
       ],
       "@fireux-granite/*": [
-        "packages/ecosystem/fireux-granite/src/*"
+        "./packages/ecosystem/fireux-granite/src/*"
       ]
     }
   }

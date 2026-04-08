@@ -3,16 +3,15 @@
   "extends": "../tsconfig.app.base.json",
   "compilerOptions": {
     "composite": false,
-    "baseUrl": ".",
     "moduleResolution": "Bundler",
     "paths": {
-      "#pwa": ["@vite-pwa/nuxt/dist/runtime/composables/index"],
-      "#imports": [".nuxt/imports.d.ts", "app/.nuxt/imports.d.ts"],
-      "#build/*": [".nuxt/*", "app/.nuxt/*"],
-      "~": ["app"],
-      "~/*": ["app/*"],
-      "@": ["app"],
-      "@/*": ["app/*"],
+      "#pwa": ["../../../node_modules/@vite-pwa/nuxt/dist/runtime/composables/index"],
+      "#imports": ["./.nuxt/imports.d.ts", "./app/.nuxt/imports.d.ts"],
+      "#build/*": ["./.nuxt/*", "./app/.nuxt/*"],
+      "~": ["./app"],
+      "~/*": ["./app/*"],
+      "@": ["./app"],
+      "@/*": ["./app/*"],
       "fireux-core/runtime/*": ["../../../packages/core/fireux-core/src/runtime/*"]
     },
     "skipLibCheck": true
