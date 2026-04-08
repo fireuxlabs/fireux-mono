@@ -9,12 +9,18 @@
     >
       <template #header>
         <div class="px-2 py-2">
-          <LayoutsConsoleHeaderPill
-            v-if="hasSelection && header"
-            :image-url="header.imageUrl"
-            :title="header.title"
-            :subtitle="header.subtitle"
-          />
+          <div v-if="hasSelection && header" class="flex min-h-11 items-center gap-3 px-1">
+            <UAvatar :src="header.imageUrl || undefined" :alt="header.title" size="sm" />
+
+            <div class="min-w-0">
+              <div class="truncate text-sm font-semibold text-highlighted">
+                {{ header.title }}
+              </div>
+              <div v-if="header.subtitle" class="truncate text-xs text-toned">
+                {{ header.subtitle }}
+              </div>
+            </div>
+          </div>
 
           <div v-else class="flex min-h-11 items-center px-1">
             <NuxtLink to="/" class="inline-flex" aria-label="Home">
