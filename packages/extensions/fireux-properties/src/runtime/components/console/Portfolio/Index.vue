@@ -16,6 +16,7 @@
           v-if="portfolio"
           v-bind="portfolio"
           :link="false"
+          :show-badges="false"
         />
 
         <p v-else class="text-sm text-dimmed">
@@ -29,6 +30,7 @@
         description="Select the live portfolio you want to work on."
         :link="false"
         :action="true"
+        :show-badges="false"
         @select="selectPortfolio"
       />
     </div>
@@ -36,9 +38,9 @@
 </template>
 
 <script setup lang="ts">
-import { usePortfolioCollection } from '../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
-import { usePortfolioSelection } from '../../composables/fireux/app/portfolio-console/usePortfolioSelection'
-import { usePortfolioConsole } from '../../composables/fireux/app/portfolio-console/usePortfolioConsole'
+import { usePortfolioCollection } from '../../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
+import { usePortfolioSelection } from '../../../composables/fireux/app/portfolio-console/usePortfolioSelection'
+import { usePortfolioConsole } from '../../../composables/fireux/app/portfolio-console/usePortfolioConsole'
 
 const { portfolio } = usePortfolioConsole()
 const { setRuntimePortfolio } = usePortfolioSelection()

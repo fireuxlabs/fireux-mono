@@ -47,7 +47,7 @@
 </template>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useActiveSupplier } from '../../composables/fireux/app/supplier-console/useActiveSupplier'
+import { useActiveSupplier } from '../../../composables/fireux/app/supplier-console/useActiveSupplier'
 
 const supplierState = useActiveSupplier()
 const supplier = computed(

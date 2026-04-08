@@ -37,10 +37,22 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <PortfolioCardsPill v-bind="card" :link="linkEnabled" />
+        <PortfolioCardsPill
+          v-bind="card"
+          :link="linkEnabled"
+          :action="actionEnabled"
+          :show-badges="showBadges"
+          @action="emit('select', card.id)"
+        />
       </template>
       <template #cell="{ card }">
-        <PortfolioCardsCell v-bind="card" :link="linkEnabled" />
+        <PortfolioCardsCell
+          v-bind="card"
+          :link="linkEnabled"
+          :action="actionEnabled"
+          :show-badges="showBadges"
+          @action="emit('select', card.id)"
+        />
       </template>
     </PortfolioCollectionList>
 
@@ -75,6 +87,8 @@ const props = withDefaults(
     title?: string
     description?: string
     link?: boolean
+    action?: boolean
+    showBadges?: boolean
     searchPlaceholder?: string
     showSearch?: boolean
     showVariantToggle?: boolean
@@ -87,6 +101,8 @@ const props = withDefaults(
     title: 'Available Portfolios',
     description: 'Browse portfolios available in this workspace.',
     link: false,
+    action: false,
+    showBadges: true,
     searchPlaceholder: 'Search portfolios…',
     showSearch: true,
     showVariantToggle: true,
@@ -97,12 +113,18 @@ const props = withDefaults(
   }
 )
 
+const emit = defineEmits<{
+  (event: 'select', portfolioId: string): void
+}>()
+
 const { interface: makeCard, searchText } = usePortfolioInterface()
 const collection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Available Portfolios'))
 const description = computed(() => String(props.description || '').trim())
 const linkEnabled = computed(() => props.link !== false)
+const actionEnabled = computed(() => props.action === true)
+const showBadges = computed(() => props.showBadges !== false)
 const totalCount = computed(() => collection.value.length)
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search portfolios…'))
 const showSearch = computed(() => props.showSearch !== false)

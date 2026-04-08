@@ -16,6 +16,7 @@
           v-if="project"
           v-bind="project"
           :link="false"
+          :show-badges="false"
         />
 
         <p v-else class="text-sm text-dimmed">
@@ -29,6 +30,7 @@
         description="Select the live project you want to work on."
         :link="false"
         :action="true"
+        :show-badges="false"
         @select="selectProject"
       />
     </div>

@@ -37,10 +37,22 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <SupplierCardsPill v-bind="card" :link="linkEnabled" />
+        <SupplierCardsPill
+          v-bind="card"
+          :link="linkEnabled"
+          :action="actionEnabled"
+          :show-badges="showBadges"
+          @action="emit('select', card.id)"
+        />
       </template>
       <template #cell="{ card }">
-        <SupplierCardsCell v-bind="card" :link="linkEnabled" />
+        <SupplierCardsCell
+          v-bind="card"
+          :link="linkEnabled"
+          :action="actionEnabled"
+          :show-badges="showBadges"
+          @action="emit('select', card.id)"
+        />
       </template>
     </SupplierCollectionList>
 
@@ -72,6 +84,8 @@ const props = withDefaults(
     title?: string
     description?: string
     link?: boolean
+    action?: boolean
+    showBadges?: boolean
     searchPlaceholder?: string
     showSearch?: boolean
     showVariantToggle?: boolean
@@ -84,6 +98,8 @@ const props = withDefaults(
     title: 'Suppliers',
     description: 'Browse supplier records available to this runtime.',
     link: true,
+    action: false,
+    showBadges: true,
     searchPlaceholder: 'Search suppliers…',
     showSearch: true,
     showVariantToggle: true,
@@ -94,6 +110,10 @@ const props = withDefaults(
   }
 )
 
+const emit = defineEmits<{
+  (event: 'select', supplierId: string): void
+}>()
+
 const collection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Suppliers'))
@@ -101,6 +121,8 @@ const description = computed(
   () => String(props.description || 'Browse supplier records available to this runtime.')
 )
 const linkEnabled = computed(() => props.link !== false)
+const actionEnabled = computed(() => props.action === true)
+const showBadges = computed(() => props.showBadges !== false)
 const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search suppliers…'))
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)

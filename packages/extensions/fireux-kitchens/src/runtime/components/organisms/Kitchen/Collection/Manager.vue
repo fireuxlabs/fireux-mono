@@ -36,10 +36,22 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <KitchenCardsPill v-bind="card" :link="linkEnabled" />
+        <KitchenCardsPill
+          v-bind="card"
+          :link="linkEnabled"
+          :action="actionEnabled"
+          :show-badges="showBadges"
+          @action="emit('select', card.id)"
+        />
       </template>
       <template #cell="{ card }">
-        <KitchenCardsCell v-bind="card" :link="linkEnabled" />
+        <KitchenCardsCell
+          v-bind="card"
+          :link="linkEnabled"
+          :action="actionEnabled"
+          :show-source="showBadges"
+          @action="emit('select', card.id)"
+        />
       </template>
     </KitchenCollectionList>
 
@@ -76,6 +88,8 @@ const props = withDefaults(
     showCount?: boolean
     initialVariant?: 'pill' | 'cell'
     link?: boolean
+    action?: boolean
+    showBadges?: boolean
     devJsonTitle?: string
     devJsonContext?: string
   }>(),
@@ -88,10 +102,16 @@ const props = withDefaults(
     showCount: true,
     initialVariant: 'pill',
     link: true,
+    action: false,
+    showBadges: true,
     devJsonTitle: 'Kitchens (JSON)',
     devJsonContext: 'collection manager · kitchens',
   }
 )
+
+const emit = defineEmits<{
+  (event: 'select', kitchenId: string): void
+}>()
 
 const collection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
@@ -102,6 +122,8 @@ const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
+const actionEnabled = computed(() => props.action === true)
+const showBadges = computed(() => props.showBadges !== false)
 const devJsonTitle = computed(() => String(props.devJsonTitle || 'Kitchens (JSON)').trim())
 const devJsonContext = computed(() => String(props.devJsonContext || 'collection manager · kitchens').trim())
 const { interface: makeCard, searchText } = useKitchenInterface()

@@ -16,6 +16,7 @@
           v-if="kitchen"
           v-bind="kitchen"
           :link="false"
+          :show-badges="false"
         />
 
         <p v-else class="text-sm text-dimmed">
@@ -29,6 +30,7 @@
         description="Select the live kitchen you want to work on."
         :link="false"
         :action="true"
+        :show-badges="false"
         @select="selectKitchen"
       />
     </div>
@@ -36,9 +38,9 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
-import { useKitchenSelection } from '../../composables/fireux/app/kitchen-console/useKitchenSelection'
-import { useKitchenConsole } from '../../composables/fireux/app/kitchen-console/useKitchenConsole'
+import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
+import { useKitchenSelection } from '../../../composables/fireux/app/kitchen-console/useKitchenSelection'
+import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
 
 const { kitchen } = useKitchenConsole()
 const { setRuntimeKitchen } = useKitchenSelection()
