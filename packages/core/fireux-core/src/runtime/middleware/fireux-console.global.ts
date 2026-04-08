@@ -1,4 +1,9 @@
 import { defineNuxtRouteMiddleware, navigateTo } from '#imports'
+import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
+import {
+  normalizeConsoleFamily,
+  toConsoleFamilyPath,
+} from '../composables/fireux/app/routing/consoleRoutes'
 import { useAuth } from '../composables/fireux/firebase/useAuth'
 import { useUser } from '../composables/fireux/firestore/core/user/useUser'
 
@@ -7,6 +12,10 @@ const USER_WAIT_TIMEOUT_MS = 1500
 
 function isConsolePath(path: string) {
   return path === '/console' || path.startsWith('/console/')
+}
+
+function isConsoleRootPath(path: string) {
+  return path === '/console' || path === '/console/'
 }
 
 function sleep(ms: number) {
@@ -25,6 +34,19 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   const path = String(to.path || '')
   if (!isConsolePath(path)) return
+
+  if (isConsoleRootPath(path)) {
+    const { consoleFamilies } = useFireUXConfig()
+    const firstFamily = Array.from(
+      new Set(
+        (consoleFamilies || [])
+          .map((value) => normalizeConsoleFamily(value))
+          .filter(Boolean)
+      )
+    )[0]
+
+    return navigateTo(firstFamily ? toConsoleFamilyPath(firstFamily) : '/')
+  }
 
   const meta = to.meta as Record<string, unknown>
   const requiresAuth = Boolean(meta.requiresAuth)

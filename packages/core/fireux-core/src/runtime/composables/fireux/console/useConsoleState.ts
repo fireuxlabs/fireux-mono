@@ -45,7 +45,6 @@ type UseConsoleStateParams = {
 
 type ConsoleLayoutApi = {
   open: Ref<boolean>
-  isConsoleEntryPage: ComputedRef<boolean>
   isNotificationsSlideoverOpen: Ref<boolean>
   family: ComputedRef<ConsoleFamily | ''>
   selectedId: ComputedRef<string>
@@ -106,7 +105,6 @@ function useActiveConsoleState(): ConsoleLayoutApi {
   const route = useRoute()
   const { isOpen: isNotificationsSlideoverOpen } = useConsoleNotifications()
   const { desktop } = useConsoleNav()
-  const isConsoleEntryPage = computed(() => Boolean(route.meta?.consoleEntry))
   const { topNav, middleNav, bottomNav } = useNavGrouping(desktop)
 
   const family = computed(() => consoleFamilyFromPath(String(route.path || '')))
@@ -148,7 +146,6 @@ function useActiveConsoleState(): ConsoleLayoutApi {
 
   return {
     open,
-    isConsoleEntryPage,
     isNotificationsSlideoverOpen,
     family,
     selectedId,

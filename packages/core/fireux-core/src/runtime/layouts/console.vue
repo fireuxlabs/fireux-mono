@@ -1,7 +1,5 @@
 <template>
-  <NuxtPage v-if="isConsoleEntryPage" />
-
-  <UDashboardGroup v-else unit="rem">
+  <UDashboardGroup unit="rem">
     <UDashboardSidebar
       id="core-console"
       v-model:open="open"
@@ -119,7 +117,6 @@ defineOptions({ name: 'console' })
 
 const {
   open,
-  isConsoleEntryPage,
   isNotificationsSlideoverOpen,
   hasSelection,
   header,
