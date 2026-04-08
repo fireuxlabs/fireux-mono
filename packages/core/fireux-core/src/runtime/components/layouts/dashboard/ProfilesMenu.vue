@@ -1,4 +1,3 @@
-<!-- packages/core/fireux-core/src/runtime/components/layouts/console/ProfilesMenu.vue -->
 <template>
   <UDropdownMenu
     v-if="menu.length"
@@ -35,14 +34,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { useState } from '#imports'
 import type { DropdownMenuItem } from '@nuxt/ui'
+import { useState } from '#imports'
+import { computed, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useDashboardNav } from '../../../composables/fireux/app/routing/useDashboardNav'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
-defineOptions({ name: 'LayoutsConsoleProfilesMenu' })
+defineOptions({ name: 'LayoutsDashboardProfilesMenu' })
 defineProps<{ collapsed?: boolean }>()
 
 const { desktop } = useDashboardNav()

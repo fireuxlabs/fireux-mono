@@ -8,7 +8,7 @@
       class="bg-elevated/25"
     >
       <template #header>
-        <LayoutsConsoleProfilesMenu />
+        <LayoutsDashboardProfilesMenu />
       </template>
 
       <template #default="{ collapsed }">

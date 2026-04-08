@@ -47,7 +47,7 @@
 
         <!-- Main panels -->
         <ClientOnly v-else>
-          <LayoutsConsoleProfileEdit class="panels-masonry">
+          <LayoutsDashboardProfileEdit class="panels-masonry">
             <template #preview>
               <UserCardsProfile
                 v-if="resolvedUser"
@@ -63,7 +63,7 @@
             <template #app>
               <UserEditApp :user="resolvedUser" />
             </template>
-          </LayoutsConsoleProfileEdit>
+          </LayoutsDashboardProfileEdit>
         </ClientOnly>
       </div>
     </template>

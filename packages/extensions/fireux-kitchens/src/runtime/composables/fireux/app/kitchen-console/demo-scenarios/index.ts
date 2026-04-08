@@ -1,4 +1,3 @@
-import { createDemoScenarioRegistry } from 'fireux-core/runtime/composables/fireux/console/createDemoScenarioRegistry'
 import type { DemoScenario } from './_shared/types'
 import { brothBloomScenario } from './broth-bloom'
 import { stackSizzleScenario } from './stack-sizzle'
@@ -31,30 +30,36 @@ const normalize = (value: unknown) => String(value || '').trim()
 const isScenarioKey = (value: string): value is ScenarioKey =>
   scenarioKeys.includes(value as ScenarioKey)
 
-const registry = createDemoScenarioRegistry<
-  DemoKitchenScenario,
-  ScenarioKey,
-  DemoKitchenScenarioListItem
->({
-  keys: scenarioKeys,
-  defaultKey: defaultScenarioKey,
-  builders: scenarioBuilders,
-  toListItem: (scenario, fallbackKey) => {
-    const kitchen = (scenario.kitchen ?? {}) as Record<string, unknown>
-    const id = normalize(kitchen.id) || fallbackKey
-    const name = normalize(kitchen.name) || id
-    const addressLabel = normalize(kitchen.short_address) || normalize(kitchen.formatted_address)
-    const imageUrl = normalize(kitchen.image_url)
+const cache = new Map<ScenarioKey, DemoKitchenScenario>(
+  scenarioKeys.map((key) => [key, scenarioBuilders[key]()] as const)
+)
 
-    return {
-      id,
-      name,
-      address_label: addressLabel,
-      image_url: imageUrl,
-      mode: 'demo',
-    }
+const registry = {
+  resolve: (key: ScenarioKey): DemoKitchenScenario => scenarioBuilders[key](),
+  get: (id?: string): DemoKitchenScenario | null => {
+    const candidate = normalize(id)
+    if (!candidate) return null
+    const key = isScenarioKey(candidate) ? candidate : defaultScenarioKey
+    return cache.get(key) ?? cache.get(defaultScenarioKey) ?? null
   },
-})
+  getList: (): DemoKitchenScenarioListItem[] =>
+    scenarioKeys.map((key) => {
+      const scenario = cache.get(key) ?? scenarioBuilders[key]()
+      const kitchen = (scenario.kitchen ?? {}) as Record<string, unknown>
+      const id = normalize(kitchen.id) || key
+      const name = normalize(kitchen.name) || id
+      const addressLabel = normalize(kitchen.short_address) || normalize(kitchen.formatted_address)
+      const imageUrl = normalize(kitchen.image_url)
+
+      return {
+        id,
+        name,
+        address_label: addressLabel,
+        image_url: imageUrl,
+        mode: 'demo',
+      }
+    }),
+}
 
 export const resolveDemoKitchenScenario = (key: ScenarioKey): DemoKitchenScenario =>
   registry.resolve(key)
