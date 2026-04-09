@@ -1,19 +1,21 @@
 FireUX AI context refresh
-Updated: 2026-03-31
+Authority: Tier3 automation context (Non-authoritative)
+Updated: 2026-04-09
+Audience: Operational checklist for AI context refreshes.
 
 Goal:
 - Keep Tier3 AI context aligned with the latest repo changes without creating a second documentation authority.
 
 Status:
-- Refreshed implementation thread notes for the March 28 to March 31 commit window.
-- Generated a new consolidated bundle for 2026-03-31.
+- Refreshed implementation thread notes for the March 31 to April 9 commit window.
+- Generated a new consolidated bundle for 2026-04-09.
 
 Next checks:
-- Re-scan after the next successful save touching console runtime flows, supplier scope, or root-first model decisions.
+- Re-scan after the next successful save touching console runtime flows, public app metadata, or route/selection helpers.
 - Keep `docs/ai/**` non-authoritative and defer rule changes to Tier1 canon docs.
 - Decide later whether older historical bundles should be pruned to a rolling window.
 
 Notes:
-- Current repo signals are dominated by console runtime flow alignment, root-first model scope, supplier normalization, and drift tooling.
+- Current repo signals are dominated by console runtime seam cleanup, public app metadata/SEO groundwork, and shared runtime selection normalization.
 
 #end

@@ -5,11 +5,13 @@
     </template>
 
     <template #body>
-      <SupplierCreateSystem
-        mode="console"
-        return-to="/console/supplier"
-        cancel-to="/console/supplier"
-      />
+      <section class="space-y-4">
+        <SupplierCreateSystem
+          mode="console"
+          return-to="/console/supplier"
+          cancel-to="/console/supplier"
+        />
+      </section>
     </template>
   </UDashboardPanel>
 </template>

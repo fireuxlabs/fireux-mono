@@ -1,6 +1,6 @@
 # FireUX - Products and Revenue (Codex)
 Authority: Tier3 automation context (Non-authoritative)
-Updated: 2026-03-31
+Updated: 2026-04-09
 Audience: Implementation context for Codex agents.
 
 ## Scope
@@ -9,23 +9,25 @@ Audience: Implementation context for Codex agents.
 - Priority: preserve Tier1 runtime and SEO canon alignment while keeping diffs minimal.
 
 ## Commit Window
-- Start: 2026-03-28T00:00:00+01:00
-- End: 2026-03-31T12:39:27+02:00
-- Source: manual_refresh_2026-03-31
+- Start: 2026-03-31T00:00:00+02:00
+- End: 2026-04-09T10:10:07+02:00
+- Source: manual_refresh_2026-04-09
 
 ## Recent Signals
-- 965976673 refactor: canonicalize entity interface and supplier paths (2026-03-28)
-- 82062f2a5 feat: add repo-wide drift inspection tooling (2026-03-28)
-- 34a1bd6f0 docs: clarify app-config console visibility (2026-03-28)
-- 819be6332 refactor: normalize root-first model scope (2026-03-29)
-- 242002cae refactor: normalize runtime drift and supplier model (2026-03-29)
-- a5547052f feat: align console runtime flows (2026-03-30)
+- 740abf1b5 refresh: runtime console docs and docs alignment (2026-04-05)
+- 8bdd11705 refine: app meta SEO structure and public app metadata direction (2026-04-06)
+- 022b7fd50 feat: add public app meta endpoint (2026-04-06)
+- 2f7f96be2 fix: app model typing drift and profile compatibility edges (2026-04-06)
+- 76931a7d0 refactor: route runtime selection wrappers through shared factory (2026-04-07)
+- 29b77e105 refactor: clean up project console wrappers and shared CTA (2026-04-07)
+- 95d428e18 docs/runtime: canon and app onboarding/media rules updated (2026-04-08)
+- 23de0e524 chore: console index, collection managers, and registry follow-up alignment (2026-04-08)
 
 ## Working Guidance
-- Map each change to Tier1 canon before touching callers or route behavior.
-- Prefer shared package and composable fixes over project-local divergence.
-- Keep runtime drift, supplier scope, and console-flow changes aligned across core, extensions, and apps.
-- Treat this file as Tier3 continuity context only.
+- Map runtime selection, console routing, and public metadata changes back to Tier1 canon before editing callers.
+- Prefer shared core fixes over project-local divergence, especially for console seams and app metadata.
+- Treat supplier, kitchen, property, and project console surfaces as one aligned runtime family when touching collection managers or overview pages.
+- Keep this file as continuity context only; do not promote Tier3 notes into canon.
 
 ## Next Run Checklist
 - Continue from the next successful scan timestamp.

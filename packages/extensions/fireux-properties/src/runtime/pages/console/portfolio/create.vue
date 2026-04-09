@@ -5,11 +5,13 @@
     </template>
 
     <template #body>
-      <PortfolioCreateSystem
-        mode="console"
-        return-to="/console/portfolio"
-        cancel-to="/console/portfolio"
-      />
+      <section class="space-y-4">
+        <PortfolioCreateSystem
+          mode="console"
+          return-to="/console/portfolio"
+          cancel-to="/console/portfolio"
+        />
+      </section>
     </template>
   </UDashboardPanel>
 </template>
