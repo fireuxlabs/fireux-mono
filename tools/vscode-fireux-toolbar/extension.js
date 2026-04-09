@@ -642,6 +642,14 @@ function activate(context) {
     }
   })
 
+  register('fireuxToolbar.gitSave', async () => {
+    const ranTask = await runTaskIfPresent('Git Save')
+    if (!ranTask) {
+      const terminal = ensureNamedTerminal('Git Save', { cwd })
+      terminal.sendText('pnpm gitsave')
+    }
+  })
+
   register('fireuxToolbar.mirrorSync', async () => {
     ensureTerminal('Mirror Sync', 'pnpm mirror:sync')
   })
@@ -910,11 +918,11 @@ function activate(context) {
     101
   )
 
-  // Compact server management button.
+  // Quick Git save button.
   makeBtn(
-    '$(server-process) Servers',
-    'Open FireUX Servers panel',
-    'fireuxToolbar.openServersView',
+    '$(cloud-upload) Git Save',
+    'Run pnpm gitsave',
+    'fireuxToolbar.gitSave',
     100
   )
 

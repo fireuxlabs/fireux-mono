@@ -123,6 +123,12 @@
         "title": "Git Q Preview",
         "icon": "$(git-commit)",
         "category": "FireUX"
+      },
+      {
+        "command": "fireuxToolbar.gitSave",
+        "title": "Git Save",
+        "icon": "$(cloud-upload)",
+        "category": "FireUX"
       }
     ],
     "views": {
@@ -163,7 +169,7 @@
           "when": "true"
         },
         {
-          "command": "fireuxToolbar.openServersView",
+          "command": "fireuxToolbar.gitSave",
           "group": "navigation@3",
           "when": "true"
         }
@@ -180,7 +186,7 @@
           "when": "true"
         },
         {
-          "command": "fireuxToolbar.openServersView",
+          "command": "fireuxToolbar.gitSave",
           "group": "navigation@3",
           "when": "true"
         }
