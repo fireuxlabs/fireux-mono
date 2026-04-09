@@ -5,9 +5,10 @@ import { definePageMeta } from '#imports'
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'console-followers',
+    key: 'dashboard-followers',
     label: 'Followers',
     icon: 'i-lucide-users',
+    position: 'bottom',
     desktop: true,
     layouts: ['dashboard'],
   },

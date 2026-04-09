@@ -88,9 +88,10 @@ definePageMeta({
   layout: 'dashboard',
   nav: {
     visibility: { modules: ['fireux-kitchens'] },
-    key: 'console-chef-profile',
+    key: 'dashboard-chef-profile',
     label: navLabel,
     icon: navIcon,
+    position: 'middle',
     desktop: true,
     layouts: ['dashboard'],
     group: 'profiles',

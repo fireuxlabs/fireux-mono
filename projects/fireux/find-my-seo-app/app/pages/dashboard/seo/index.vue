@@ -1,10 +1,11 @@
 <template>
-  <UDashboardPanel>
-    <template #header>
-      <LayoutsConsoleNavbar title="SEO dashboard" />
-    </template>
+  <UPage>
+    <UPageHeader
+      title="SEO dashboard"
+      description="Editorial operations for providers, case studies, and leads."
+    />
 
-    <template #body>
+    <UPageBody>
       <section class="grid gap-4 md:grid-cols-3">
         <UCard v-for="item in items" :key="item.title">
           <div class="space-y-3">
@@ -14,13 +15,13 @@
           </div>
         </UCard>
       </section>
-    </template>
-  </UDashboardPanel>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'default',
   requiresAuth: true,
 })
 

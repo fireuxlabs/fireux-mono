@@ -108,9 +108,10 @@ const userCard = computed(() => userToCard(user.value))
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'admin',
+    key: 'dashboard-admin',
     label: 'Admin',
     icon: 'i-lucide-badge-check',
+    position: 'top',
     order: 10,
     desktop: true,
     layouts: ['dashboard'],

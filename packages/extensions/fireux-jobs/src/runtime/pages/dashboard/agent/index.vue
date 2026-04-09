@@ -107,9 +107,10 @@ definePageMeta({
   layout: 'dashboard',
   nav: {
     visibility: { modules: ['fireux-jobs'] },
-    key: 'console-agent-home',
+    key: 'dashboard-agent-home',
     label: 'Agent',
     icon: 'i-lucide-shield-user',
+    position: 'middle',
     desktop: false,
     mobile: false,
     group: 'profiles',

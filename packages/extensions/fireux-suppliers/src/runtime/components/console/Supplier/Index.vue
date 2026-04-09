@@ -10,8 +10,21 @@
 
     <div v-else class="space-y-6">
       <div class="space-y-2">
-        <div class="text-xs uppercase tracking-[0.16em] text-toned">
-          {{ supplier ? 'Selected Supplier' : 'Select a supplier' }}
+        <div class="flex items-center justify-between gap-3">
+          <div class="text-xs uppercase tracking-[0.16em] text-toned">
+            {{ supplier ? 'Selected Supplier' : 'Select a supplier' }}
+          </div>
+
+          <UButton
+            v-if="supplier"
+            color="neutral"
+            variant="ghost"
+            size="sm"
+            icon="i-lucide-x"
+            @click="clearSelection"
+          >
+            Clear
+          </UButton>
         </div>
 
         <SupplierCardsPill
@@ -68,10 +81,11 @@ import { useSupplierCollection } from '../../../composables/fireux/firestore/sup
 import { useSupplierSelection } from '../../../composables/fireux/app/supplier-console/useSupplierSelection'
 import { useSupplierConsole } from '../../../composables/fireux/app/supplier-console/useSupplierConsole'
 
-const { supplier } = useSupplierConsole()
+const { supplier, consoleState } = useSupplierConsole()
 const { setRuntimeSupplier } = useSupplierSelection()
 const { coreSuppliers: suppliers } = useSupplierCollection()
 const showSimulations = ref(false)
+const clearSelection = consoleState.clearSelection
 
 const selectSupplier = (supplierId: string) => {
   setRuntimeSupplier({ supplierId })

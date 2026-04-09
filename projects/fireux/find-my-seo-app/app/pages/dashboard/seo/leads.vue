@@ -1,10 +1,11 @@
 <template>
-  <UDashboardPanel>
-    <template #header>
-      <LayoutsConsoleNavbar title="Leads" />
-    </template>
+  <UPage>
+    <UPageHeader
+      title="Leads"
+      description="Review inbound enquiries and update their delivery state."
+    />
 
-    <template #body>
+    <UPageBody>
       <div class="space-y-4">
         <UCard v-for="lead in leads" :key="lead.id">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -27,13 +28,13 @@
           </div>
         </UCard>
       </div>
-    </template>
-  </UDashboardPanel>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'default',
   requiresAuth: true,
 })
 

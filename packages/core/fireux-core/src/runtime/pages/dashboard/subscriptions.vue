@@ -30,9 +30,10 @@ import { definePageMeta } from '#imports'
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'console-subscriptions',
+    key: 'dashboard-subscriptions',
     label: 'Subscriptions',
     icon: 'i-lucide-credit-card',
+    position: 'bottom',
     desktop: true,
     layouts: ['dashboard'],
   },

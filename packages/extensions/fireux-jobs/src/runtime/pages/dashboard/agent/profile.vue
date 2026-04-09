@@ -89,9 +89,10 @@ definePageMeta({
   layout: 'dashboard',
   nav: {
     visibility: { modules: ['fireux-jobs'] },
-    key: 'console-agent-profile',
+    key: 'dashboard-agent-profile',
     label: navLabel,
     icon: navIcon,
+    position: 'middle',
     desktop: true,
     layouts: ['dashboard'],
     group: 'profiles',

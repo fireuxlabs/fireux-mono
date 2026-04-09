@@ -78,9 +78,10 @@ import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'console-user-profile',
+    key: 'dashboard-user-profile',
     label: 'Profile',
     icon: 'i-lucide-user',
+    position: 'top',
     order: 30,
     desktop: true,
     layouts: ['dashboard'],

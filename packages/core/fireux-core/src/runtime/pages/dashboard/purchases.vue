@@ -4,9 +4,10 @@ import { definePageMeta } from '#imports'
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'console-purchases',
+    key: 'dashboard-purchases',
     label: 'Purchases',
     icon: 'i-lucide-shopping-cart',
+    position: 'bottom',
     desktop: true,
     layouts: ['dashboard'],
   },

@@ -24,6 +24,7 @@ definePageMeta({
     key: 'dashboard-kitchens',
     label: 'Kitchens',
     icon: 'i-lucide-chef-hat',
+    position: 'bottom',
     order: 55,
     desktop: true,
     mobile: true,

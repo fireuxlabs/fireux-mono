@@ -10,8 +10,21 @@
 
     <div v-else class="space-y-6">
       <div class="space-y-2">
-        <div class="text-xs uppercase tracking-[0.16em] text-toned">
-          {{ portfolio ? 'Selected Portfolio' : 'Select a portfolio' }}
+        <div class="flex items-center justify-between gap-3">
+          <div class="text-xs uppercase tracking-[0.16em] text-toned">
+            {{ portfolio ? 'Selected Portfolio' : 'Select a portfolio' }}
+          </div>
+
+          <UButton
+            v-if="portfolio"
+            color="neutral"
+            variant="ghost"
+            size="sm"
+            icon="i-lucide-x"
+            @click="clearSelection"
+          >
+            Clear
+          </UButton>
         </div>
 
         <PortfolioCardsPill
@@ -68,10 +81,11 @@ import { usePortfolioCollection } from '../../../composables/fireux/firestore/po
 import { usePortfolioSelection } from '../../../composables/fireux/app/portfolio-console/usePortfolioSelection'
 import { usePortfolioConsole } from '../../../composables/fireux/app/portfolio-console/usePortfolioConsole'
 
-const { portfolio } = usePortfolioConsole()
+const { portfolio, consoleState } = usePortfolioConsole()
 const { setRuntimePortfolio } = usePortfolioSelection()
 const { collection: portfolios } = usePortfolioCollection()
 const showSimulations = ref(false)
+const clearSelection = consoleState.clearSelection
 
 const selectPortfolio = (portfolioId: string) => {
   setRuntimePortfolio({ portfolioId })

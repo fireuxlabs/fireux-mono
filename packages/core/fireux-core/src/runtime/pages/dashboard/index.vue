@@ -20,9 +20,10 @@ import { definePageMeta } from '#imports';
 
 definePageMeta({
   nav: {
-    key: 'console-home',
+    key: 'dashboard-home',
     label: 'Overview',
     icon: 'i-lucide-terminal',
+    position: 'top',
     order: 20,
     desktop: true,
     mobile: true,

@@ -4,11 +4,14 @@ import { useUser } from '../../../firestore/core/user/useUser'
 import { useNav } from './useNav'
 
 const canShowDashboardItem = (item: NavItem, isAdmin: boolean, isDev: boolean) => {
-  if (item.key === 'admin' || item.to === '/dashboard/admin') {
+  if (item.key === 'dashboard-admin' || item.to === '/dashboard/admin') {
     return isAdmin
   }
 
-  if (item.key === 'console-developer' || item.to === '/dashboard/developer') {
+  if (
+    item.key === 'dashboard-developer' ||
+    item.to === '/dashboard/developer'
+  ) {
     return isDev
   }
 
@@ -21,10 +24,10 @@ export const useDashboardNav = () => {
   const isDev = computed(() => import.meta.dev)
 
   const topPriority = [
-    { key: 'console-developer', to: '/dashboard/developer' },
-    { key: 'admin', to: '/dashboard/admin' },
-    { key: 'console-home', to: '/dashboard' },
-    { key: 'console-user-profile', to: '/dashboard/user-profile' },
+    { key: 'dashboard-developer', to: '/dashboard/developer' },
+    { key: 'dashboard-admin', to: '/dashboard/admin' },
+    { key: 'dashboard-home', to: '/dashboard' },
+    { key: 'dashboard-user-profile', to: '/dashboard/user-profile' },
   ]
 
   const baseNavFilter = (item: NavItem) =>
@@ -34,6 +37,10 @@ export const useDashboardNav = () => {
 
   const resolveItemPosition = (item: NavItem): NavPosition => {
     if (item.position) return item.position
+
+    if (item.group === 'profiles' || item.profileId) {
+      return 'middle'
+    }
 
     return topPriority.some(
       (priority) =>

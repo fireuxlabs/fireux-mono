@@ -1,10 +1,11 @@
 <template>
-  <UDashboardPanel>
-    <template #header>
-      <LayoutsConsoleNavbar title="Case studies" />
-    </template>
+  <UPage>
+    <UPageHeader
+      title="Case studies"
+      description="Review and maintain structured proof for provider outcomes."
+    />
 
-    <template #body>
+    <UPageBody>
       <div class="space-y-4">
         <UCard v-for="study in seoCaseStudies" :key="study.id">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -22,15 +23,15 @@
 
         <UButton color="primary">Add case study</UButton>
       </div>
-    </template>
-  </UDashboardPanel>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
 import { seoCaseStudies, seoProviders } from '../../../content/findMySeo'
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'default',
   requiresAuth: true,
 })
 

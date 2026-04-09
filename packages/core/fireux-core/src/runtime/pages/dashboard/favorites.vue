@@ -23,9 +23,10 @@ import { definePageMeta } from '#imports'
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'console-favorites',
+    key: 'dashboard-favorites',
     label: 'Favorites',
     icon: 'i-lucide-heart',
+    position: 'bottom',
     desktop: true,
     layouts: ['dashboard'],
   },

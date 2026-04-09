@@ -12,7 +12,7 @@
       </template>
 
       <template #default="{ collapsed }">
-        <div class="flex flex-col gap-3">
+        <div class="flex h-full min-h-full flex-col gap-3">
           <UNavigationMenu
             v-if="topNav.length"
             :collapsed="collapsed ?? false"
@@ -38,7 +38,7 @@
             orientation="vertical"
           />
 
-          <div class="lg:hidden">
+          <div class="mt-auto lg:hidden">
             <USeparator v-if="topNav.length || middleNav.length || bottomNav.length" />
 
             <div class="pt-3">

@@ -1,19 +1,7 @@
 <template>
   <UDashboardPanel id="console-portfolio-home">
     <template #header>
-      <LayoutsConsoleNavbar title="Portfolio">
-        <template #right>
-          <UButton
-            v-if="portfolioState.id"
-            color="neutral"
-            variant="ghost"
-            icon="i-lucide-x"
-            @click="clearSelection"
-          >
-            Clear
-          </UButton>
-        </template>
-      </LayoutsConsoleNavbar>
+      <LayoutsConsoleNavbar title="Portfolio" />
     </template>
 
     <template #body>
@@ -25,8 +13,6 @@
 </template>
 
 <script setup lang="ts">
-import { usePortfolioConsole } from '../../../composables/fireux/app/portfolio-console/usePortfolioConsole'
-
 definePageMeta({
   layout: 'console',
   nav: {
@@ -43,7 +29,4 @@ definePageMeta({
   },
   requiresAuth: true,
 })
-
-const { portfolioState, consoleState } = usePortfolioConsole({ publishHeader: true })
-const clearSelection = consoleState.clearSelection
 </script>

@@ -10,8 +10,21 @@
 
     <div v-else class="space-y-6">
       <div class="space-y-2">
-        <div class="text-xs uppercase tracking-[0.16em] text-toned">
-          {{ kitchen ? 'Selected Kitchen' : 'Select a kitchen' }}
+        <div class="flex items-center justify-between gap-3">
+          <div class="text-xs uppercase tracking-[0.16em] text-toned">
+            {{ kitchen ? 'Selected Kitchen' : 'Select a kitchen' }}
+          </div>
+
+          <UButton
+            v-if="kitchen"
+            color="neutral"
+            variant="ghost"
+            size="sm"
+            icon="i-lucide-x"
+            @click="clearSelection"
+          >
+            Clear
+          </UButton>
         </div>
 
         <KitchenCardsPill
@@ -68,10 +81,11 @@ import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/f
 import { useKitchenSelection } from '../../../composables/fireux/app/kitchen-console/useKitchenSelection'
 import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
 
-const { kitchen } = useKitchenConsole()
+const { kitchen, consoleState } = useKitchenConsole()
 const { setRuntimeKitchen } = useKitchenSelection()
 const { kitchens } = useKitchenFetch()
 const showSimulations = ref(false)
+const clearSelection = consoleState.clearSelection
 
 const selectKitchen = (kitchenId: string) => {
   setRuntimeKitchen({ kitchenId })

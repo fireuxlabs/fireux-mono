@@ -1,19 +1,7 @@
 <template>
   <UDashboardPanel id="console-supplier-home">
     <template #header>
-      <LayoutsConsoleNavbar title="Supplier">
-        <template #right>
-          <UButton
-            v-if="supplierState.id"
-            color="neutral"
-            variant="ghost"
-            icon="i-lucide-x"
-            @click="clearSelection"
-          >
-            Clear
-          </UButton>
-        </template>
-      </LayoutsConsoleNavbar>
+      <LayoutsConsoleNavbar title="Supplier" />
     </template>
 
     <template #body>
@@ -25,8 +13,6 @@
 </template>
 
 <script setup lang="ts">
-import { useSupplierConsole } from '../../../composables/fireux/app/supplier-console/useSupplierConsole'
-
 definePageMeta({
   layout: 'console',
   nav: {
@@ -43,7 +29,4 @@ definePageMeta({
   },
   requiresAuth: true,
 })
-
-const { supplierState, consoleState } = useSupplierConsole({ publishHeader: true })
-const clearSelection = consoleState.clearSelection
 </script>

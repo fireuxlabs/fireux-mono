@@ -1,10 +1,11 @@
 <template>
-  <UDashboardPanel>
-    <template #header>
-      <LayoutsConsoleNavbar title="Providers" />
-    </template>
+  <UPage>
+    <UPageHeader
+      title="Providers"
+      description="Review and edit provider listings."
+    />
 
-    <template #body>
+    <UPageBody>
       <div class="space-y-4">
         <UCard v-for="provider in seoProviders" :key="provider.id">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -27,15 +28,15 @@
 
         <UButton color="primary">Add provider</UButton>
       </div>
-    </template>
-  </UDashboardPanel>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
 import { providerLabel, seoProviders } from '../../../content/findMySeo'
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'default',
   requiresAuth: true,
 })
 </script>

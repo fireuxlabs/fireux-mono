@@ -6,9 +6,10 @@ import { useColorMode } from '../../composables/fireux/app/useColorMode'
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'console-settings',
+    key: 'dashboard-settings',
     label: 'Settings',
     icon: 'i-lucide-settings',
+    position: 'bottom',
     order: 1000,
     desktop: true,
     layouts: ['dashboard'],

@@ -1,10 +1,11 @@
 <template>
-  <UDashboardPanel>
-    <template #header>
-      <LayoutsConsoleNavbar title="Provider editor" />
-    </template>
+  <UPage>
+    <UPageHeader
+      title="Provider editor"
+      description="Review and update provider listing content."
+    />
 
-    <template #body>
+    <UPageBody>
       <div class="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
         <UCard v-if="provider">
           <form class="space-y-4">
@@ -46,8 +47,8 @@
 
         <FindmyseoProviderCard v-if="provider" :provider="provider" />
       </div>
-    </template>
-  </UDashboardPanel>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
@@ -55,7 +56,7 @@ import { computed } from 'vue'
 import { seoProviders } from '../../../content/findMySeo'
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'default',
   requiresAuth: true,
 })
 

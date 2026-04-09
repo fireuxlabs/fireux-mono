@@ -1,19 +1,7 @@
 <template>
   <UDashboardPanel id="console-kitchen-home">
     <template #header>
-      <LayoutsConsoleNavbar title="Kitchen">
-        <template #right>
-          <UButton
-            v-if="kitchenState.id"
-            color="neutral"
-            variant="ghost"
-            icon="i-lucide-x"
-            @click="clearSelection"
-          >
-            Clear
-          </UButton>
-        </template>
-      </LayoutsConsoleNavbar>
+      <LayoutsConsoleNavbar title="Kitchen" />
     </template>
 
     <template #body>
@@ -25,8 +13,6 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
-
 definePageMeta({
   layout: 'console',
   nav: {
@@ -43,7 +29,4 @@ definePageMeta({
   },
   requiresAuth: true,
 })
-
-const { kitchenState, consoleState } = useKitchenConsole({ publishHeader: true })
-const clearSelection = consoleState.clearSelection
 </script>

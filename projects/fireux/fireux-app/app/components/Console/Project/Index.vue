@@ -10,8 +10,21 @@
 
     <div v-else class="space-y-6">
       <div class="space-y-2">
-        <div class="text-xs uppercase tracking-[0.16em] text-toned">
-          {{ project ? 'Selected Project' : 'Select a project' }}
+        <div class="flex items-center justify-between gap-3">
+          <div class="text-xs uppercase tracking-[0.16em] text-toned">
+            {{ project ? 'Selected Project' : 'Select a project' }}
+          </div>
+
+          <UButton
+            v-if="project"
+            color="neutral"
+            variant="ghost"
+            size="sm"
+            icon="i-lucide-x"
+            @click="clearSelection"
+          >
+            Clear
+          </UButton>
         </div>
 
         <ProjectCardsPill
@@ -68,10 +81,11 @@ import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/fir
 import { useProjectConsole } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectConsole'
 import { useProjectSelection } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectSelection'
 
-const { project } = useProjectConsole()
+const { project, consoleState } = useProjectConsole()
 const { setRuntimeProject } = useProjectSelection()
 const { projects } = useProjectCollection('projects')
 const showSimulations = ref(false)
+const clearSelection = consoleState.clearSelection
 
 const selectProject = (projectId: string) => {
   setRuntimeProject({ projectId })

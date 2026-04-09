@@ -54,9 +54,10 @@ const previewCard = computed(() => (appSnapshot ? appInterface(appSnapshot) : nu
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'console-developer',
+    key: 'dashboard-developer',
     label: 'Developer',
     icon: 'i-lucide-code',
+    position: 'top',
     order: 11,
     desktop: true,
     layouts: ['dashboard'],
