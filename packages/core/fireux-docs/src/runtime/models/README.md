@@ -306,7 +306,7 @@ Each real model file should state:
 - storage mode
 - path or scope
 - owner app scope where relevant
-- why the current choice is root, overlay, facade, or scoped
+- why the current choice is root, app-scoped, facade, or scoped
 
 Each file should point back to this README so future changes can be made in one place first.
 

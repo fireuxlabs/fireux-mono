@@ -43,7 +43,7 @@ export type FireuxMetaCopy = {
   /** Reusable promise line(s) (can include HTML). */
   promise_html?: string
 
-  /** Line above console buttons (can include HTML). */
+  /** Line above operational buttons (can include HTML). */
   console_bridge_html?: string
 
   /** About hero paragraph 1. */
@@ -92,7 +92,7 @@ export type FireuxMetaExamples = Record<string, unknown>
 export type FireuxMetaRoutes = {
   /** Public or SEO-safe routes. */
   public?: string[]
-  /** Console or operational routes. */
+  /** Operational routes. */
   console?: string[]
   /** Optional route groupings. */
   [key: string]: string[] | undefined
