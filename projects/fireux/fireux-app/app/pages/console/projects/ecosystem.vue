@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="console-projects-ecosystem">
     <template #header>
-      <LayoutsConsoleNavbar title="Project Ecosystems" />
+      <LayoutsConsoleNavbar title="Project Ecosystem" />
     </template>
 
     <template #body>
@@ -16,7 +16,7 @@ definePageMeta({
   nav: {
     visibility: { ecosystems: ['fireux'] },
     key: 'console-projects-ecosystem',
-    label: 'Ecosystems',
+    label: 'Ecosystem',
     icon: 'i-lucide-orbit',
     order: 20,
     desktop: true,
