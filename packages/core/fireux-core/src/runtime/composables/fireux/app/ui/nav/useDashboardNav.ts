@@ -1,7 +1,7 @@
 import { computed } from 'vue'
-import type { NavItem } from '../nav.types'
-import { useUser } from '../../firestore/core/user/useUser'
-import { useNav } from '../ui/nav/useNav'
+import type { NavItem, NavPosition } from '../../nav.types'
+import { useUser } from '../../../firestore/core/user/useUser'
+import { useNav } from './useNav'
 
 const canShowDashboardItem = (item: NavItem, isAdmin: boolean, isDev: boolean) => {
   if (item.key === 'admin' || item.to === '/dashboard/admin') {
@@ -32,9 +32,22 @@ export const useDashboardNav = () => {
     !item.profileId &&
     canShowDashboardItem(item, isAdmin.value, isDev.value)
 
+  const resolveItemPosition = (item: NavItem): NavPosition => {
+    if (item.position) return item.position
+
+    return topPriority.some(
+      (priority) =>
+        (priority.key && item.key === priority.key) ||
+        (priority.to && item.to === priority.to)
+    )
+      ? 'top'
+      : 'bottom'
+  }
+
   return {
     ...nav,
     topPriority,
     baseNavFilter,
+    resolveItemPosition,
   }
 }

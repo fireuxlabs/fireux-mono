@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useDevNav } from '../../../composables/fireux/app/routing/useDevNav';
+import { useDevNav } from '../../../composables/fireux/app/ui/nav/useDevNav';
 
 withDefaults(
   defineProps<{

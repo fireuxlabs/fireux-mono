@@ -166,7 +166,7 @@
 import { computed } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFireuxBrandAssets } from 'fireux-core/runtime/composables/fireux/app/useFireuxBrandAssets'
-import { useConsoleEntryCta } from 'fireux-core/runtime/composables/fireux/app/routing/useConsoleEntryCta'
+import { useConsoleEntryCta } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useConsoleEntryCta'
 import { toConsoleFamilyLabel } from 'fireux-core/runtime/composables/fireux/app/routing/consoleRoutes'
 import { useKeyEntityTags } from 'fireux-core/runtime/composables/fireux/app/routing/useKeyEntityTags'
 

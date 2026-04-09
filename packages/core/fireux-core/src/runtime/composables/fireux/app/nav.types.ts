@@ -5,13 +5,17 @@ export interface NavVisibility {
   modulesAny?: string[]
 }
 
+export type NavPosition = 'top' | 'middle' | 'bottom'
+
 export interface NavMeta {
   key?: string
   label?: string
   icon?: string
   group?: string
+  position?: NavPosition
   order?: number | string
   profileId?: string
+  requiresSelection?: boolean
   desktop?: boolean
   mobile?: boolean
   layouts?: string[]
@@ -24,12 +28,14 @@ export interface NavItem {
   icon?: string
   to: string
   group?: string
+  position?: NavPosition
   profileId?: string
   order: number
   desktop: boolean
   mobile: boolean
   layouts: string[]
   requiresAuth?: boolean
+  requiresSelection?: boolean
   roles?: string[]
   tenant?: string
   visibility?: NavVisibility

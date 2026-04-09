@@ -1,7 +1,7 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
 import { useFireUXConfig } from '../../FireUXConfig'
-import type { NavItem, NavMeta } from '../../nav.types'
+import type { NavItem, NavMeta, NavPosition } from '../../nav.types'
 import {
   isNavVisibleForScope,
   normaliseNavVisibility,
@@ -42,6 +42,12 @@ function normaliseOrder(value: unknown): number {
     if (Number.isFinite(parsed)) return parsed
   }
   return DEFAULT_ORDER
+}
+
+function normalisePosition(value: unknown): NavPosition | undefined {
+  return value === 'top' || value === 'middle' || value === 'bottom'
+    ? value
+    : undefined
 }
 
 function resolveLayouts(nav: NavMeta): string[] {
@@ -97,12 +103,17 @@ function buildNavItem(
     icon: typeof nav.icon === 'string' ? nav.icon : undefined,
     to,
     group: typeof nav.group === 'string' ? nav.group : undefined,
+    position: normalisePosition(nav.position),
     profileId: typeof nav.profileId === 'string' ? nav.profileId : undefined,
     order: normaliseOrder(nav.order),
     desktop: nav.desktop !== false,
     mobile: nav.mobile !== false,
     layouts,
     requiresAuth: Boolean((route.meta as RouteMetaLike).requiresAuth),
+    requiresSelection:
+      typeof nav.requiresSelection === 'boolean'
+        ? nav.requiresSelection
+        : undefined,
     roles: normaliseRoles((route.meta as RouteMetaLike).roles),
     tenant:
       typeof (route.meta as RouteMetaLike).tenant === 'string'

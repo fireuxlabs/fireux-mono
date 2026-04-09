@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useConsoleEntryCta } from '../../composables/fireux/app/routing/useConsoleEntryCta'
+import { useConsoleEntryCta } from '../../composables/fireux/app/ui/nav/useConsoleEntryCta'
 
 type HeroBadge = {
   src: string

@@ -22,6 +22,8 @@ definePageMeta({
     key: 'console-kitchen-create',
     label: 'Create',
     icon: 'i-lucide-plus',
+    position: 'bottom',
+    requiresSelection: false,
     order: 5,
     desktop: true,
     mobile: true,

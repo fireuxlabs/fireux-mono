@@ -34,6 +34,8 @@ definePageMeta({
     key: 'console-kitchen',
     label: 'Kitchen',
     icon: 'i-lucide-chef-hat',
+    position: 'bottom',
+    requiresSelection: false,
     order: 900,
     desktop: true,
     mobile: true,

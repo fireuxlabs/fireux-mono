@@ -34,6 +34,8 @@ definePageMeta({
     key: 'console-supplier',
     label: 'Supplier',
     icon: 'i-lucide-truck',
+    position: 'bottom',
+    requiresSelection: false,
     order: 900,
     desktop: true,
     mobile: true,

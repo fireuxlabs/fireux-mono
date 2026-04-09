@@ -11,11 +11,10 @@ import {
 import {
   consoleFamilyFromPath,
   createDefaultConsoleSelectionState,
-  toConsoleFamilyPath,
   toConsoleHeaderStateKey,
   toConsoleSelectionStateKey,
 } from '../app/routing/consoleRoutes'
-import { useConsoleNav } from '../app/routing/useConsoleNav'
+import { useConsoleNav } from '../app/ui/nav/useConsoleNav'
 import { useNavGrouping } from '../app/ui/nav/useNavGrouping'
 import { useConsoleNotifications } from '../app/ui/useConsoleNotifications'
 import { normalizeConsoleMode, normalizeString } from './console.normalize'
@@ -54,7 +53,6 @@ type ConsoleLayoutApi = {
   topNav: ComputedRef<any[]>
   middleNav: ComputedRef<any[]>
   familyRootNav: ComputedRef<any[]>
-  regularBottomNav: ComputedRef<any[]>
 }
 
 const DEFAULT_CONSOLE_MODE_OPTIONS = [
@@ -104,8 +102,10 @@ function useActiveConsoleState(): ConsoleLayoutApi {
   const open = ref(false)
   const route = useRoute()
   const { isOpen: isNotificationsSlideoverOpen } = useConsoleNotifications()
-  const { desktop } = useConsoleNav()
-  const { topNav, middleNav, bottomNav } = useNavGrouping(desktop)
+  const { desktop, resolveItemPosition } = useConsoleNav()
+  const { topNav, middleNav, bottomNav } = useNavGrouping(desktop, {
+    position: resolveItemPosition,
+  })
 
   const family = computed(() => consoleFamilyFromPath(String(route.path || '')))
   const activeSelection = computed(() => {
@@ -132,17 +132,7 @@ function useActiveConsoleState(): ConsoleLayoutApi {
     return normalizeHeader(useConsoleHeaderState(family.value).value)
   })
 
-  const activeFamilyPath = computed(() =>
-    family.value ? toConsoleFamilyPath(family.value) : ''
-  )
-
-  const familyRootNav = computed(() =>
-    bottomNav.value.filter((item) => item.to === activeFamilyPath.value)
-  )
-
-  const regularBottomNav = computed(() =>
-    bottomNav.value.filter((item) => item.to !== activeFamilyPath.value)
-  )
+  const familyRootNav = bottomNav
 
   return {
     open,
@@ -155,7 +145,6 @@ function useActiveConsoleState(): ConsoleLayoutApi {
     topNav,
     middleNav,
     familyRootNav,
-    regularBottomNav,
   }
 }
 

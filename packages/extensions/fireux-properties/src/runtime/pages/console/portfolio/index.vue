@@ -34,6 +34,8 @@ definePageMeta({
     key: 'console-portfolio',
     label: 'Portfolio',
     icon: 'i-lucide-layout-dashboard',
+    position: 'bottom',
+    requiresSelection: false,
     order: 900,
     desktop: true,
     mobile: true,

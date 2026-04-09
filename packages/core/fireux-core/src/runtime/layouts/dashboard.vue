@@ -72,7 +72,7 @@
 import { useState } from '#imports'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useDashboardNav } from '../composables/fireux/app/routing/useDashboardNav'
+import { useDashboardNav } from '../composables/fireux/app/ui/nav/useDashboardNav'
 import { useNavGrouping } from '../composables/fireux/app/ui/nav/useNavGrouping'
 import { useAuthRedirect } from '../composables/fireux/app/ui/useAuthRedirect'
 import { useConsoleNotifications } from '../composables/fireux/app/ui/useConsoleNotifications'
@@ -87,7 +87,7 @@ const activeProfileState = useState<string | null>(
 )
 
 const { isOpen: isNotificationsSlideoverOpen } = useConsoleNotifications()
-const { desktop, topPriority, baseNavFilter } = useDashboardNav()
+const { desktop, baseNavFilter, resolveItemPosition } = useDashboardNav()
 
 useAuthRedirect()
 
@@ -116,8 +116,8 @@ const profileExtras = computed(() => {
 })
 
 const { topNav, middleNav, bottomNav } = useNavGrouping(desktop, {
-  topPriority,
   filter: baseNavFilter,
   extras: profileExtras,
+  position: resolveItemPosition,
 })
 </script>

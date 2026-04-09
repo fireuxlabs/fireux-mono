@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import type { NavItem } from '../../nav.types'
+import type { NavItem, NavPosition } from '../../nav.types'
 
 type NavPriority = {
   key?: string
@@ -10,6 +10,7 @@ type NavGroupingOptions = {
   topPriority?: NavPriority[]
   filter?: (item: NavItem) => boolean
   extras?: Ref<NavItem[]>
+  position?: (item: NavItem) => NavPosition
 }
 
 const sortNavItems = (items: NavItem[]) =>
@@ -22,16 +23,54 @@ const isPriorityMatch = (item: NavItem, priority: NavPriority) =>
   (priority.key && item.key === priority.key) ||
   (priority.to && item.to === priority.to)
 
+const uniqueNavItems = (items: NavItem[]) => {
+  const seen = new Set<string>()
+
+  return items.filter((item) => {
+    const key = item.key ?? item.to ?? item.label
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
+}
+
 export function useNavGrouping(
   items: Ref<NavItem[]>,
   options: NavGroupingOptions = {}
 ) {
   const topPriority = options.topPriority ?? []
   const allowItem = options.filter ?? (() => true)
+  const position = options.position
 
   const baseNav = computed(() =>
     sortNavItems(items.value.filter((item) => allowItem(item)))
   )
+
+  if (position) {
+    const topNav = computed(() =>
+      baseNav.value.filter((item) => position(item) === 'top')
+    )
+
+    const middleNav = computed(() =>
+      sortNavItems(
+        uniqueNavItems([
+          ...baseNav.value.filter((item) => position(item) === 'middle'),
+          ...(options.extras?.value ?? []),
+        ])
+      )
+    )
+
+    const bottomNav = computed(() =>
+      baseNav.value.filter((item) => position(item) === 'bottom')
+    )
+
+    return {
+      baseNav,
+      topNav,
+      middleNav,
+      bottomNav,
+    }
+  }
 
   const isTopNavItem = (item: NavItem) =>
     topPriority.some((priority) => isPriorityMatch(item, priority))
@@ -51,7 +90,7 @@ export function useNavGrouping(
   )
 
   const middleNav = computed(() =>
-    options.extras ? sortNavItems(options.extras.value) : []
+    options.extras ? sortNavItems(uniqueNavItems(options.extras.value)) : []
   )
 
   return {

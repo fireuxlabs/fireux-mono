@@ -1,11 +1,11 @@
 import { computed } from 'vue'
-import type { ConsoleFamily } from '../../console/console.types'
+import type { ConsoleFamily } from '../../../console/console.types'
 import {
   CONSOLE_ROOT,
   normalizeConsoleFamily,
   toConsoleFamilyPath,
-} from './consoleRoutes'
-import { useFireUXConfig } from '../FireUXConfig'
+} from '../../routing/consoleRoutes'
+import { useFireUXConfig } from '../../FireUXConfig'
 
 type ConsoleEntryFamily = {
   key: ConsoleFamily

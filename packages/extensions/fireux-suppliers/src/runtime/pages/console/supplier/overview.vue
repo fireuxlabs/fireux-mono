@@ -46,6 +46,8 @@ definePageMeta({
     key: 'console-supplier-overview',
     label: 'Overview',
     icon: 'i-lucide-house',
+    position: 'top',
+    requiresSelection: true,
     order: 0,
     desktop: true,
     mobile: true,

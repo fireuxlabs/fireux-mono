@@ -39,11 +39,7 @@
             orientation="vertical"
           />
 
-          <USeparator
-            v-if="
-              topNav.length && (middleNav.length || regularBottomNav.length)
-            "
-          />
+          <USeparator v-if="topNav.length && middleNav.length" />
 
           <UNavigationMenu
             v-if="middleNav.length"
@@ -52,21 +48,11 @@
             orientation="vertical"
           />
 
-          <USeparator v-if="middleNav.length && regularBottomNav.length" />
-
-          <UNavigationMenu
-            v-if="regularBottomNav.length"
-            :collapsed="collapsed ?? false"
-            :items="regularBottomNav"
-            orientation="vertical"
-          />
-
           <div class="lg:hidden">
             <USeparator
               v-if="
                 topNav.length ||
                 middleNav.length ||
-                regularBottomNav.length ||
                 familyRootNav.length
               "
             />
@@ -129,6 +115,5 @@ const {
   topNav,
   middleNav,
   familyRootNav,
-  regularBottomNav,
 } = useConsoleState()
 </script>
