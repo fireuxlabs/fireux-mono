@@ -10,6 +10,7 @@ export function useActiveSupplier() {
   const { selectedId: id } = useSupplierSelection()
   const { supplier: fetchSupplier, pending } = useSupplierFetch()
   const liveSupplier = fetchSupplier(id)
+
   const supplier = computed(() => {
     if (!id.value) return null
     return liveSupplier.value ?? null

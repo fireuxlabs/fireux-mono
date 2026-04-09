@@ -90,6 +90,8 @@ export function useKitchenFetch(options: UseKitchenFetchOptions = {}) {
         }))
       )
 
+  const pending = computed(() => kitchensCollection.value === undefined)
+
   // ✅ hydrated single doc (UI-ready)
   const fetchDocRef = <T>(
     collectionRef: Ref<string>,
@@ -165,5 +167,6 @@ export function useKitchenFetch(options: UseKitchenFetchOptions = {}) {
   return {
     kitchens,
     kitchen,
+    pending,
   }
 }

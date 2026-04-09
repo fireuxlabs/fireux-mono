@@ -1,9 +1,6 @@
 import { computed } from 'vue'
-import { useKitchenSelection } from './useKitchenSelection'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
-
-export { useKitchenSelection } from './useKitchenSelection'
-export type { RuntimeKitchenMode } from './shared'
+import { useKitchenSelection } from './useKitchenSelection'
 
 /**
  * Live kitchen loader.
@@ -11,13 +8,13 @@ export type { RuntimeKitchenMode } from './shared'
  */
 export function useActiveKitchen() {
   const { selectedId: id } = useKitchenSelection()
-  const { kitchen: fetchKitchen } = useKitchenFetch()
-  const liveKitchen = fetchKitchen(id, 'kitchens', { hydrate: true })
+  const { kitchen: fetchKitchen, pending } = useKitchenFetch()
+  const liveKitchen = fetchKitchen(id)
+
   const kitchen = computed(() => {
     if (!id.value) return null
     return liveKitchen.value ?? null
   })
-  const pending = computed(() => Boolean(id.value) && liveKitchen.value === undefined)
 
   return {
     id,

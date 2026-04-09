@@ -10,6 +10,7 @@ export function useActiveProject() {
   const { selectedId: id } = useProjectSelection()
   const { project: fetchProject, pending } = useProjectFetch()
   const liveProject = fetchProject(id)
+
   const project = computed(() => {
     if (!id.value) return null
     return liveProject.value ?? null
