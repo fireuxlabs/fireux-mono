@@ -65,6 +65,20 @@ function buildTasks() {
         },
         problemMatcher: [],
       },
+      {
+        label: 'Git Save',
+        type: 'shell',
+        command: 'pnpm',
+        args: ['gitsave'],
+        options: { cwd: '${workspaceFolder}' },
+        presentation: {
+          echo: true,
+          reveal: 'always',
+          focus: false,
+          panel: 'dedicated',
+        },
+        problemMatcher: [],
+      },
       ...apps.map((app) => ({
         label: `pnpm dev:${app.key}`,
         type: 'shell',
