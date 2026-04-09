@@ -1,5 +1,5 @@
 import {
-  ConsoleSupplierModel,
+  AppSupplierModel,
   SupplierModel,
 } from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
 import type { DemoSupplierScenario } from '../_shared/types'
@@ -23,8 +23,8 @@ export const harborProvisionsScenario = (): DemoSupplierScenario => ({
     supplier_product_categories: ['Produce', 'Seafood', 'Dry Goods'],
     supplier_delivery_areas: ['Zurich', 'Basel', 'Lucerne'],
   },
-  consoleSupplier: {
-    ...ConsoleSupplierModel,
+  appSupplier: {
+    ...AppSupplierModel,
     id: 'harbor-provisions',
     admin_ids: ['ops-harbor'],
     join_requests: [],

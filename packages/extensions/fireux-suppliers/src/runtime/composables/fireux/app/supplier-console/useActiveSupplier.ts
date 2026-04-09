@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useSupplierRecord } from '../../firestore/supplier/fetch/useSupplierRecord'
+import { useSupplierFetch } from '../../firestore/supplier/fetch/useSupplierFetch'
 import { useSupplierSelection } from './useSupplierSelection'
 
 /**
@@ -8,7 +8,8 @@ import { useSupplierSelection } from './useSupplierSelection'
  */
 export function useActiveSupplier() {
   const { selectedId: id } = useSupplierSelection()
-  const { supplier: liveSupplier, pending } = useSupplierRecord(id)
+  const { supplier: fetchSupplier, pending } = useSupplierFetch()
+  const liveSupplier = fetchSupplier(id)
   const supplier = computed(() => {
     if (!id.value) return null
     return liveSupplier.value ?? null
@@ -16,7 +17,7 @@ export function useActiveSupplier() {
 
   return {
     id,
-    pending,
     supplier,
+    pending,
   }
 }

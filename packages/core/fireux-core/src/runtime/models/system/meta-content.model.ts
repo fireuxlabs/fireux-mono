@@ -2,7 +2,7 @@
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
  * Family: System support
- * Storage: runtime content model, not a console overlay
+ * Storage: runtime content model, not an app-scoped record
  * Scope: ecosystem app narrative and informational content
  *
  * Decision note:

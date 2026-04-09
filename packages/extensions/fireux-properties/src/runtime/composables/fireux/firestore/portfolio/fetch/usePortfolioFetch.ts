@@ -3,7 +3,7 @@ import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCol
 import { usePortfolioCollection } from './usePortfolioCollection'
 
 export function usePortfolioFetch(options: { collectionPath?: string } = {}) {
-  const { collection } = usePortfolioCollection(options)
+  const { collection, pending } = usePortfolioCollection(options)
 
   const portfolios = computed(() => collection.value ?? [])
   const { byId: portfolio } = useCollectionById(portfolios)
@@ -11,5 +11,6 @@ export function usePortfolioFetch(options: { collectionPath?: string } = {}) {
   return {
     portfolios,
     portfolio,
+    pending,
   }
 }

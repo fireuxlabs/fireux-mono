@@ -1,5 +1,5 @@
 import {
-  ConsoleSupplierModel,
+  AppSupplierModel,
   SupplierModel,
 } from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
 import type { DemoSupplierScenario } from '../_shared/types'
@@ -23,8 +23,8 @@ export const supplyLoopDistributionScenario = (): DemoSupplierScenario => ({
     supplier_product_categories: ['Proteins', 'Oils', 'Kitchen Essentials'],
     supplier_delivery_areas: ['Bern', 'Zurich', 'St. Gallen'],
   },
-  consoleSupplier: {
-    ...ConsoleSupplierModel,
+  appSupplier: {
+    ...AppSupplierModel,
     id: 'supply-loop-distribution',
     admin_ids: ['ops-supply-loop'],
     join_requests: [],

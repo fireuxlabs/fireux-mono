@@ -12,7 +12,7 @@ import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type {
-  ConsoleKitchen,
+  AppKitchen,
   Kitchen,
   KitchenCreateInput,
 } from '../../../../../models/kitchen.model'
@@ -137,7 +137,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       ensureOptions.existingRootId || input?.id || ''
     ).trim()
 
-    return ensureConsole<ConsoleKitchen>({
+    return ensureConsole<AppKitchen>({
       type: 'kitchen',
       mode: ensureOptions.mode ?? defaultMode,
       ensureRoot: async () =>
@@ -150,7 +150,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
           admin_ids: uid.value ? [uid.value] : ([] as string[]),
           join_requests: [] as string[],
           console_enabled: true,
-        }) as ConsoleKitchen,
+        }) as AppKitchen,
     })
   }
 

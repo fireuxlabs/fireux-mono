@@ -60,12 +60,6 @@ fireux-core-useUserInterface.mirror.ts
 
 Current working set
 
-- The mirror currently targets the console entry `index.vue` pages for project, kitchen, portfolio, and supplier.
-- Source files:
-  - `projects/fireux/fireux-app/app/pages/console/projects/index.vue`
-  - `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/index.vue`
-  - `packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/index.vue`
-  - `packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier/index.vue`
-- `misebox` supplier and `bringli` supplier both resolve through the same shared supplier index file above.
+- The mirror currently targets all runtime model files matching `packages/**/*.model.ts`.
 - The source list lives in `mirror/mirror.txt`.
 - After changing the list, run `pnpm mirror:sync` to rebuild the symlinks.

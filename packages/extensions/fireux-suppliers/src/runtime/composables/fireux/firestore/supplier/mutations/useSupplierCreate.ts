@@ -11,7 +11,7 @@ import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/fires
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { ConsoleSupplier, Supplier, SupplierCreateInput } from '../../../../../models/supplier/Supplier.model'
+import type { AppSupplier, Supplier, SupplierCreateInput } from '../../../../../models/supplier/Supplier.model'
 
 export type SupplierCreateOptions = {
   collectionPath?: string
@@ -87,17 +87,17 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
       }
     }
 
-    const result = await ensureConsole<ConsoleSupplier>({
+    const result = await ensureConsole<AppSupplier>({
       type: 'supplier',
       mode: options.mode ?? defaultMode,
       ensureRoot,
       createOverlay: async () => {
-        const payload: Omit<ConsoleSupplier, 'created' | 'updated' | 'id'> = {
+        const payload: Omit<AppSupplier, 'created' | 'updated' | 'id'> = {
           admin_ids: uid ? [uid] : ([] as string[]),
           join_requests: [] as string[],
           console_enabled: true,
         }
-        return payload as ConsoleSupplier
+        return payload as AppSupplier
       },
     })
 

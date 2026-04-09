@@ -1,7 +1,7 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type {
-  ConsoleProject,
+  AppProject,
   Project,
   ProjectCreateInput,
   ProjectStatus,
@@ -133,7 +133,7 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
       return { id, created: true }
     }
 
-    return ensureConsole<ConsoleProject>({
+    return ensureConsole<AppProject>({
       type: 'project',
       mode: ensureOptions.mode ?? defaultMode,
       ensureRoot,
@@ -142,7 +142,7 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
           admin_ids: [user.uid],
           join_requests: [] as string[],
           console_enabled: true,
-        }) as ConsoleProject,
+        }) as AppProject,
     })
   }
 

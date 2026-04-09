@@ -10,11 +10,11 @@ import type { AppDerived, AppMedia, AppRole, AppSocialLinks } from './supporting
  * Family: System
  * Storage: root canonical model
  * Root path: /apps/<appId>
- * Console face: project-console facade when apps are being managed inside a project console
+ * Runtime face: project-managed facade when apps are being handled inside a project runtime surface
  *
  * Decision note:
  * - App is stored once as canonical system truth.
- * - A console may manage App through a runtime facade, but that does not justify a second stored overlay yet.
+ * - A runtime surface may manage App through a facade, but that does not justify a second stored app-scoped record yet.
  * - If real scoped stored state appears later, update the models README first, then this file.
  */
 

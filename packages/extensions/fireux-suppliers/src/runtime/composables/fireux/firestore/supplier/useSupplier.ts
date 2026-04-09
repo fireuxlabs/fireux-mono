@@ -1,7 +1,7 @@
 // FILE: packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/useSupplier.ts
 
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import type { ConsoleSupplier, Supplier } from '../../../../models/supplier/Supplier.model'
+import type { AppSupplier, Supplier } from '../../../../models/supplier/Supplier.model'
 import type { SupplierCard } from './utils/view/useSupplierInterface'
 import { useSupplierInterface } from './utils/view/useSupplierInterface'
 import { useSupplierCreate } from './mutations/useSupplierCreate'
@@ -12,7 +12,7 @@ import { useSupplierComputed } from './utils/useSupplierComputed'
 export type {
   SupplierCard,
   Supplier as SupplierRecord,
-  ConsoleSupplier as SupplierWorkspace,
+  AppSupplier as SupplierWorkspace,
 }
 
 /**

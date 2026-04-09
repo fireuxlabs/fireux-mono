@@ -7,9 +7,9 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
  * Family: Kitchen-scoped
- * Storage: console-owned operational record
+ * Storage: scoped operational record
  * Path: /kitchens/<kitchenId>/team/<memberId>
- * Owner console: Kitchen
+ * Owner app scope: Kitchen
  *
  * Decision note:
  * - Team membership is operational kitchen state even when it links back to root user or chef identities.

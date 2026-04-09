@@ -13,9 +13,11 @@ export function usePortfolioCollection(options: UsePortfolioCollectionOptions = 
 
   const collection = computed(() => source.value ?? [])
   const count = computed(() => collection.value.length)
+  const pending = computed(() => source.value === undefined)
 
   return {
     collection,
     count,
+    pending,
   }
 }

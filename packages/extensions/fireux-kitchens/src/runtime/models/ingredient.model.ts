@@ -9,7 +9,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Family: Domain Root
  * Storage: root canonical model
  * Root path: /ingredients/<ingredientId>
- * Console use: kitchens may own scoped usage records that link back through `ingredient_id`
+ * Scoped use: kitchens may own scoped usage records that link back through `ingredient_id`
  *
  * Decision note:
  * - Ingredient is reusable shared truth at root.
@@ -45,9 +45,9 @@ export type IngredientUpdateInput = Partial<Omit<Ingredient, 'id' | 'created' | 
 
 /**
  * Family: Kitchen-scoped
- * Storage: console-owned operational record
+ * Storage: scoped operational record
  * Path: /kitchens/<kitchenId>/ingredients/<kitchenIngredientId>
- * Owner console: Kitchen
+ * Owner app scope: Kitchen
  *
  * Decision note:
  * - KitchenIngredient is the kitchen-owned usage record for a root Ingredient.
@@ -84,9 +84,9 @@ export type KitchenIngredientUpdateInput = Partial<
 
 /**
  * Family: Kitchen-scoped
- * Storage: console-owned operational record
+ * Storage: scoped operational record
  * Path: /kitchens/<kitchenId>/supplier-ingredients/<supplierIngredientId>
- * Owner console: Kitchen
+ * Owner app scope: Kitchen
  *
  * Decision note:
  * - This is a kitchen-owned supplier linkage record, not a root entity.

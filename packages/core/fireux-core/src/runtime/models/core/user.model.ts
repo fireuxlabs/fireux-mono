@@ -8,14 +8,14 @@ import type { UserNotification } from './supporting/user'
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
  * Family: Identity
- * Storage: root canonical record plus app overlay
+ * Storage: root canonical record plus app-scoped record
  * Root path: /users/<userId>
- * Overlay path: /apps/<appId>/users/<userId>
+ * App path: /apps/<appId>/users/<userId>
  *
  * Decision note:
  * - User identity is global first, with app-scoped stored truth only where operational state is genuinely app-specific.
- * - AppUser is a real stored overlay, not just a console facade.
- * - If the identity overlay rule changes later, update the models README first, then this file.
+ * - AppUser is a real app-scoped record, not just a runtime facade.
+ * - If the identity app-scoped rule changes later, update the models README first, then this file.
  */
 
 export const UserModel = {
@@ -46,7 +46,7 @@ export type User = {
 }
 
 /**
- * App-specific user membership overlay.
+ * App-specific user membership record.
  */
 export const AppUserModel = {
   id: '',

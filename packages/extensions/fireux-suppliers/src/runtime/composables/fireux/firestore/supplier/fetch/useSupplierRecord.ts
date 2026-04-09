@@ -3,7 +3,7 @@ import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireu
 import type { Ref } from 'vue'
 import { computed, isRef } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import type { ConsoleSupplier, Supplier } from '../../../../../models/supplier/Supplier.model'
+import type { AppSupplier, Supplier } from '../../../../../models/supplier/Supplier.model'
 
 const supplierCollection = 'suppliers'
 function asStringArray(value: unknown): string[] {
@@ -18,7 +18,7 @@ function normalizeSupplier(raw: Supplier, fallbackId: string): Supplier {
   }
 }
 
-function normalizeConsoleSupplier(raw: ConsoleSupplier, fallbackId: string): ConsoleSupplier {
+function normalizeAppSupplier(raw: AppSupplier, fallbackId: string): AppSupplier {
   const anyRaw = raw as any
   return {
     ...raw,
@@ -32,7 +32,7 @@ function normalizeConsoleSupplier(raw: ConsoleSupplier, fallbackId: string): Con
 
 export type SupplierRefs = {
   coreSupplier: Ref<Supplier | null | undefined>
-  appSupplier: Ref<ConsoleSupplier | null | undefined>
+  appSupplier: Ref<AppSupplier | null | undefined>
 }
 
 export function useSupplierRecord(
@@ -51,7 +51,7 @@ export function useSupplierRecord(
   if (import.meta.server) {
     const supplier = computed<Supplier | null>(() => null)
     const coreSupplier = computed<Supplier | null | undefined>(() => null)
-    const appSupplier = computed<ConsoleSupplier | null | undefined>(() => null)
+    const appSupplier = computed<AppSupplier | null | undefined>(() => null)
     const pending = computed(() => false)
     return { supplier, coreSupplier, appSupplier, pending }
   }
@@ -69,7 +69,7 @@ export function useSupplierRecord(
   )
 
   const coreState = useDocument<Supplier | undefined>(coreDoc as any)
-  const appState = useDocument<ConsoleSupplier | undefined>(appDoc as any)
+  const appState = useDocument<AppSupplier | undefined>(appDoc as any)
 
   const coreSupplier = computed<Supplier | null | undefined>(() => {
     if (coreState.pending.value) return undefined
@@ -80,14 +80,14 @@ export function useSupplierRecord(
     return normalizeSupplier(raw as Supplier, supplierId.value ?? '')
   })
 
-  const appSupplier = computed<ConsoleSupplier | null | undefined>(() => {
+  const appSupplier = computed<AppSupplier | null | undefined>(() => {
     if (!appDoc.value) return null
     if (appState.pending.value) return undefined
 
     const raw = appState.data.value
     if (!raw) return null
 
-    return normalizeConsoleSupplier(raw as ConsoleSupplier, supplierId.value ?? '')
+    return normalizeAppSupplier(raw as AppSupplier, supplierId.value ?? '')
   })
 
   const supplier = computed<Supplier | null>(() => coreSupplier.value ?? null)

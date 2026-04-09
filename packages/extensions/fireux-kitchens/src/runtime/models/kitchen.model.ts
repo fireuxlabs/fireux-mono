@@ -1,22 +1,22 @@
-import { FireuxConsoleOverlay, type FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import { FireuxAppOverlayModel, type FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Family: Console
- * Storage: root canonical record plus app overlay
+ * Family: Domain
+ * Storage: root canonical record plus app-scoped record
  * Root path: /kitchens/<kitchenId>
- * Overlay path: /apps/<appId>/kitchens/<kitchenId>
+ * App path: /apps/<appId>/kitchens/<kitchenId>
  * Child scope: /apps/<appId>/kitchens/<kitchenId>/<childCollection>/<childId>
  *
  * Decision note:
- * - Kitchen is one domain entity with a root public entity and an app-hosted kitchen console overlay.
- * - The root record stays thin and canonical; the overlay carries governance and private operational state.
- * - Public facade depth can vary by family; Kitchen is expected to have a richer public face than some other console-backed entities.
+ * - Kitchen is one domain entity with a root public entity and an app-hosted scoped record.
+ * - The root record stays thin and canonical; the app-scoped record carries governance and private operational state.
+ * - Public facade depth can vary by family; Kitchen is expected to have a richer public face than some other app-scoped entities.
  * - If Kitchen needs a richer public or operational read shape, that should be built in fetch/runtime/interface layers, not by complicating the stored model file.
- * - Console authority stays user-based in the overlay; Chef is a family-specific prerequisite or presentation layer, not the ownership model.
- * - Kitchen-owned operational children should live beneath the app-hosted overlay.
+ * - App authority stays user-based in the app-scoped record; Chef is a family-specific prerequisite or presentation layer, not the ownership model.
+ * - Kitchen-owned operational children should live beneath the app-hosted record.
  * - If that rule changes later, update the models README first, then this file.
  */
 export const KitchenModel = {
@@ -38,12 +38,12 @@ export type Kitchen = {
   [K in keyof typeof KitchenModel]: (typeof KitchenModel)[K]
 }
 
-export const ConsoleKitchenModel = {
-  ...FireuxConsoleOverlay,
+export const AppKitchenModel = {
+  ...FireuxAppOverlayModel,
 } as const
 
-export type ConsoleKitchen = {
-  [K in keyof typeof ConsoleKitchenModel]: (typeof ConsoleKitchenModel)[K]
+export type AppKitchen = {
+  [K in keyof typeof AppKitchenModel]: (typeof AppKitchenModel)[K]
 }
 
 export type KitchenCreateInput = Omit<Kitchen, 'created' | 'updated'> & {

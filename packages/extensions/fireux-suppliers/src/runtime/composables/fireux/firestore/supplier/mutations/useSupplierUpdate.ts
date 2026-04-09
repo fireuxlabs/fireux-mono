@@ -2,7 +2,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import type { ConsoleSupplier, Supplier } from '../../../../../models/supplier/Supplier.model'
+import type { AppSupplier, Supplier } from '../../../../../models/supplier/Supplier.model'
 import type { SupplierRefs } from '../fetch/useSupplierRecord'
 
 const supplierCollection = 'suppliers'
@@ -82,7 +82,7 @@ export function useSupplierUpdate(
   }
 
   const updateAppSupplier = async (
-    patch: Partial<ConsoleSupplier>,
+    patch: Partial<AppSupplier>,
     options: { id?: string | null } = {}
   ) => {
     if (!isTenant || !appId) {
@@ -90,7 +90,7 @@ export function useSupplierUpdate(
     }
 
     const resolvedId = await resolveId(options.id)
-    await updateDocument<ConsoleSupplier>(
+    await updateDocument<AppSupplier>(
       `apps/${appId}/${supplierCollection}`,
       resolvedId,
       pruneUndefined(patch)
@@ -102,7 +102,7 @@ export function useSupplierUpdate(
     options: UpdateOptions = {}
   ) => {
     if (options.scope === 'app') {
-      await updateAppSupplier(patch as Partial<ConsoleSupplier>, options)
+      await updateAppSupplier(patch as Partial<AppSupplier>, options)
       return
     }
 

@@ -7,11 +7,11 @@ import type { FireuxStamped } from '../core/meta.model'
  * Family: System
  * Storage: root canonical model
  * Root path: /modules/<moduleId>
- * Console face: optional project-console facade if humans are managing module composition
+ * Runtime face: optional project-managed facade if humans are managing module composition
  *
  * Decision note:
  * - Module stays root-only until real scoped stored state appears.
- * - A console can compose or inspect modules through a facade without inventing a second stored model.
+ * - A runtime surface can compose or inspect modules through a facade without inventing a second stored model.
  * - If that decision changes later, update the models README first, then this file.
  */
 export const ModuleModel = {

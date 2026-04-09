@@ -142,7 +142,7 @@ import { useDevStorageCollection } from 'fireux-core/runtime/composables/dev/use
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed, reactive, ref, watch } from 'vue'
 import { useSupplierCollection } from '../../composables/fireux/firestore/supplier/fetch/useSupplierCollection'
-import type { ConsoleSupplier, Supplier } from '../../models/supplier/Supplier.model'
+import type { AppSupplier, Supplier } from '../../models/supplier/Supplier.model'
 import { SupplierModel as SupplierModelRuntime } from '../../models/supplier/Supplier.model'
 
 definePageMeta({
@@ -175,7 +175,7 @@ const resolvedAppId = computed(() => String(appId || '').trim())
 const overlaySupplierCollectionPath = computed(() =>
   resolvedAppId.value ? `apps/${resolvedAppId.value}/suppliers` : ''
 )
-const supplierAppsState = useDevStorageCollection<ConsoleSupplier>(overlaySupplierCollectionPath)
+const supplierAppsState = useDevStorageCollection<AppSupplier>(overlaySupplierCollectionPath)
 const supplierApps = computed(() => supplierAppsState.items.value)
 
 const suppliersCollection = computed(() => coreSuppliers.value ?? [])
@@ -190,7 +190,7 @@ const rootSupplierById = computed(() => {
 })
 
 const appSupplierById = computed(() => {
-  const map = new Map<string, ConsoleSupplier>()
+  const map = new Map<string, AppSupplier>()
   for (const supplier of supplierApps.value) {
     const id = String(supplier?.id || '').trim()
     if (!id) continue

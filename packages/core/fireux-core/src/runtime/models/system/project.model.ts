@@ -1,5 +1,5 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
-import { FireuxConsoleOverlay, type FireuxStamped } from '../core/meta.model'
+import { FireuxAppOverlayModel, type FireuxStamped } from '../core/meta.model'
 
 export type ProjectStatus = 'draft' | 'active' | 'paused' | 'archived'
 export type ProjectType = 'standalone_app' | 'ecosystem_app'
@@ -7,20 +7,19 @@ export type ProjectType = 'standalone_app' | 'ecosystem_app'
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Family: Console
- * Storage: root canonical record plus app overlay
+ * Family: System
+ * Storage: root canonical record plus app-scoped record
  * Root path: /projects/<projectId>
- * Overlay path: /apps/<appId>/projects/<projectId>
- * Console face: project console hosted inside an app over the root project entity plus overlay
+ * App path: /apps/<appId>/projects/<projectId>
  *
  * Decision note:
- * - Project now follows the shared console-backed canon used by Kitchen, Portfolio, and Supplier.
+ * - Project follows the shared root-plus-app canon used by Kitchen, Portfolio, and Supplier.
  * - Public project creation should create the root project record.
- * - Console project creation should ensure the app-scoped project overlay and may create root first when missing.
- * - Console authority stays user-based in the overlay; `owner_user_id` is a canonical root ownership hint, not a replacement for overlay admin authority.
- * - Public facade depth can vary by family; Project may stay relatively thin publicly while still using the same root-plus-overlay pattern.
+ * - App-scoped project creation should ensure the app-scoped project record and may create root first when missing.
+ * - App authority stays user-based in the app-scoped record; `owner_user_id` is a canonical root ownership hint, not a replacement for app admin authority.
+ * - Public facade depth can vary by family; Project may stay relatively thin publicly while still using the same root-plus-app pattern.
  * - If Project later grows operational child records, they should live under /apps/<appId>/projects/<projectId>/...
- * - Project still remains a system-console special case because endpoint enrichment and system metadata are central to its runtime.
+ * - Project still remains a system-level special case because endpoint enrichment and system metadata are central to its runtime.
  * - If this decision changes, update the models README first, then this file.
  */
 export const ProjectModel = {
@@ -60,12 +59,12 @@ export type Project = {
   [K in keyof typeof ProjectModel]: (typeof ProjectModel)[K]
 }
 
-export const ConsoleProjectModel = {
-  ...FireuxConsoleOverlay,
+export const AppProjectModel = {
+  ...FireuxAppOverlayModel,
 } as const
 
-export type ConsoleProject = {
-  [K in keyof typeof ConsoleProjectModel]: (typeof ConsoleProjectModel)[K]
+export type AppProject = {
+  [K in keyof typeof AppProjectModel]: (typeof AppProjectModel)[K]
 }
 
 export type ProjectCreateInput = Omit<Project, 'created' | 'updated' | 'owner_user_id'> & {

@@ -1,21 +1,21 @@
-import { FireuxConsoleOverlay, type FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import { FireuxAppOverlayModel, type FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Family: Console
- * Storage: root canonical record plus app overlay
+ * Family: Domain
+ * Storage: root canonical record plus app-scoped record
  * Root path: /portfolios/<portfolioId>
- * Overlay path: /apps/<appId>/portfolios/<portfolioId>
+ * App path: /apps/<appId>/portfolios/<portfolioId>
  * Child scope: /apps/<appId>/portfolios/<portfolioId>/<childCollection>/<childId>
  *
  * Decision note:
- * - Portfolio is one domain entity with a root public entity and an app-hosted portfolio console overlay.
+ * - Portfolio is one domain entity with a root public entity and an app-hosted portfolio record.
  * - Public facade depth can vary by family; Portfolio can stay intentionally minimal in public while still using the same root-plus-overlay pattern.
- * - The overlay exists because real governance and console state can differ by app.
- * - Console authority stays user-based in the overlay; if a future operator profile appears, it should remain a prerequisite or presentation layer over the same overlay pattern.
- * - Portfolio-owned operational children should live beneath the app-hosted overlay.
+ * - The app-scoped record exists because real governance and operational state can differ by app.
+ * - App authority stays user-based in the app-scoped record; if a future operator profile appears, it should remain a prerequisite or presentation layer over the same app-scoped pattern.
+ * - Portfolio-owned operational children should live beneath the app-hosted record.
  * - If that changes later, update the models README first, then this file.
  */
 
@@ -46,12 +46,12 @@ export type Portfolio = {
   [K in keyof typeof PortfolioModel]: (typeof PortfolioModel)[K]
 }
 
-export const ConsolePortfolioModel = {
-  ...FireuxConsoleOverlay,
+export const AppPortfolioModel = {
+  ...FireuxAppOverlayModel,
 } as const
 
-export type ConsolePortfolio = {
-  [K in keyof typeof ConsolePortfolioModel]: (typeof ConsolePortfolioModel)[K]
+export type AppPortfolio = {
+  [K in keyof typeof AppPortfolioModel]: (typeof AppPortfolioModel)[K]
 }
 
 export type PortfolioCreateInput = Omit<Portfolio, 'id' | 'created' | 'updated'> & {

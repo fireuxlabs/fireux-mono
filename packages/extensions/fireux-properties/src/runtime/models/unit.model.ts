@@ -5,8 +5,8 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
  * Family: Portfolio-scoped
- * Storage: console-owned operational record
- * Owner console: Portfolio
+ * Storage: scoped operational record
+ * Owner app scope: Portfolio
  * Scope: units owned inside a portfolio property hierarchy
  *
  * Decision note:

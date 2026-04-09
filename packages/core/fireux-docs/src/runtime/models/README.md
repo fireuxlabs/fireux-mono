@@ -17,9 +17,9 @@ Current repo truth:
 
 This directory can contain:
 - canonical root entities
-- stored overlays for entities that genuinely have scoped truth
-- app-hosted console overlays over root entities
-- scoped operational entities owned by a console
+- stored app-scoped records for entities that genuinely have scoped truth
+- app-scoped records over root entities
+- scoped operational entities owned by an app-scoped domain
 - model support contracts that belong with runtime models
 
 ## Model Families
@@ -34,9 +34,9 @@ Examples:
 - `Agent`
 - `Professional`
 
-Identity models normally use root plus overlay storage:
+Identity models normally use root plus app-scoped storage:
 - root canonical record
-- app-scoped overlay only when real scoped stored state exists
+- app-scoped record only when real scoped stored state exists
 
 Preferred model-file shape for identity models:
 - `XModel`
@@ -58,7 +58,7 @@ Typical app-user capability fields include:
 - `console_enabled`
 - `console_scopes`
 
-### Console-backed Domain
+### App-Scoped Domain
 
 Where people operate.
 
@@ -68,21 +68,21 @@ Examples:
 - `Supplier`
 - `Project`
 
-Console-backed canon:
+App-scoped canon:
 - root public entity
-- app-scoped operational console overlay
-- app-owned child records beneath that overlay when operational children exist
+- app-scoped operational record
+- app-owned child records beneath that record when operational children exist
 
 Public create creates the root public entity.
-Console create ensures the app overlay and may create root first when missing.
+App-scoped create ensures the app record and may create root first when missing.
 
 Useful simplifier:
 - `root` = the canonical public entity
-- `not root` = either the app overlay or app-owned child records under it
+- `not root` = either the app-scoped record or app-owned child records under it
 
 Important:
-- the console itself is not a root entity
-- the app hosts a console over the public entity
+- the app-scoped record is not a root entity
+- the app hosts operational state over the public entity
 - public richness can vary by family:
   - `Kitchen` can be rich and public-facing
   - `Portfolio` can be intentionally thin because much of its data is confidential
@@ -101,19 +101,19 @@ Examples:
 - `projects/<projectId>`
 - `apps/<appId>/projects/<projectId>`
 
-This is the current console canon.
+This is the current root-plus-app canon.
 
-### Console Ownership And Operator Profiles
+### App-Scoped Ownership And Operator Profiles
 
-For console-backed domains, the stored console ownership pattern is shared:
+For app-scoped domains, the stored ownership pattern is shared:
 
-- the app-hosted overlay is the console record
-- console authority is user-based through:
+- the app-hosted record is the scoped record
+- app authority is user-based through:
   - `admin_ids`
   - `join_requests`
   - `console_enabled`
 
-Optional family-specific operator profiles do not replace that overlay pattern.
+Optional family-specific operator profiles do not replace that app-scoped pattern.
 
 Examples:
 - `Kitchen` may require or prefer `Chef` for live operation and presentation
@@ -122,13 +122,13 @@ Examples:
 
 Current rule:
 - operator profiles are prerequisites, enrichment, or presentation layers
-- operator profiles are not the primary stored ownership model for the console overlay
+- operator profiles are not the primary stored ownership model for the app-scoped record
 
 Root ownership hints may still exist where useful:
 - `Project.owner_user_id`
 - domain claim fields such as `Place.claimed_by`
 
-Those do not replace app-hosted overlay authority.
+Those do not replace app-hosted scoped authority.
 
 ### System
 
@@ -140,7 +140,7 @@ Examples:
 - `Module`
 
 System models are usually stored once at root.
-If a console manages them, it should normally do so through a facade first, not by inventing a second stored overlay.
+If a runtime surface manages them, it should normally do so through a facade first, not by inventing a second stored app-scoped record.
 
 Preferred model-file shape for system models:
 - `XModel`
@@ -150,7 +150,7 @@ Preferred model-file shape for system models:
 
 ### Domain Root
 
-What exists independently of a console.
+What exists independently of an app-scoped record.
 
 Examples:
 - `Place`
@@ -179,12 +179,12 @@ Important:
 
 ### Scoped
 
-What only exists because a console owns it.
+What only exists because an app-scoped domain owns it.
 
 A scoped model must declare:
-- what console owns it
+- what app-scoped domain owns it
 - whether it links to a root entity
-- whether it is purely local to the console
+- whether it is purely local to the app scope
 
 Examples:
 - Kitchen-scoped under `apps/<appId>/kitchens/<kitchenId>/...`:
@@ -206,26 +206,26 @@ Examples:
 
 ## Overlay Versus Facade
 
-### Overlay
+### App-Scoped Record
 
 A second stored scoped model.
 
-Use an overlay only when scoped truth really exists.
+Use an app-scoped record only when scoped truth really exists.
 
-For console-backed domains, the overlay is the app-hosted console for that root public entity.
+For app-scoped domains, the app-scoped record is the app-hosted stored layer for that root public entity.
 
 Examples:
 - `User` + `AppUser`
-- `Kitchen` + `ConsoleKitchen`
-- `Portfolio` + `ConsolePortfolio`
-- `Supplier` + `ConsoleSupplier`
-- `Project` + `ConsoleProject`
+- `Kitchen` + `AppKitchen`
+- `Portfolio` + `AppPortfolio`
+- `Supplier` + `AppSupplier`
+- `Project` + `AppProject`
 
-Preferred model-file shape for console-backed domains:
+Preferred model-file shape for app-scoped domains:
 - `XModel`
-- `ConsoleXModel`
+- `AppXModel`
 - `X`
-- `ConsoleX`
+- `AppX`
 - `XCreateInput`
 - `XUpdateInput`
 
@@ -233,14 +233,14 @@ The `User` model is the current reference pattern:
 - `User`
 - `AppUser`
 
-Console-backed domain entities should use the same simple dual-model idea as `User`, but with console wording:
+App-scoped domain entities should use the same simple dual-model idea as `User`:
 - one root canonical model
-- one console overlay model
+- one app-scoped model
 - no hydrated/read-time composite type in the model file
 
 Field-discipline rule:
 - keep the root model honest and compact
-- keep the console overlay focused on app-hosted governance and access
+- keep the app-scoped model focused on app-hosted governance and access
 - if a root model still carries legacy or confidential fields, simplify that in a focused cleanup pass rather than adding extra structural layers
 - if a family needs a richer combined read shape, build that in fetch/runtime/interface layers rather than in the model file
 
@@ -254,9 +254,9 @@ Do not merge `meta` and `meta-content`.
 
 ### Facade
 
-A runtime, read, or console face of the same root entity.
+A runtime, read, or app surface over the same root entity.
 
-Use a facade when a console is managing the entity but there is not yet a second stored scoped truth.
+Use a facade when a runtime surface is managing the entity but there is not yet a second stored scoped truth.
 
 Examples for now:
 - `App`
@@ -293,9 +293,9 @@ Current child-dir notes:
 ## What Belongs Here
 
 - canonical runtime entity models
-- stored overlay models where scoped truth is real
-- console facades where managed state is demo-backed or derived
-- scoped runtime entity models owned by a console
+- stored app-scoped models where scoped truth is real
+- runtime facades where managed state is demo-backed or derived
+- scoped runtime entity models owned by an app-scoped domain
 - model-adjacent runtime types that belong with their model
 - shared runtime model support like stamps or small reusable protocols
 
@@ -305,7 +305,7 @@ Each real model file should state:
 - family
 - storage mode
 - path or scope
-- owner console where relevant
+- owner app scope where relevant
 - why the current choice is root, overlay, facade, or scoped
 
 Each file should point back to this README so future changes can be made in one place first.
@@ -313,11 +313,11 @@ Each file should point back to this README so future changes can be made in one 
 ## Aligned In Repo
 
 - `runtime/models/` is already the normal home for FireUX runtime models
-- root, overlay, facade, and scoped models already coexist in runtime delivery space
-- the repo already supports `User` and `Kitchen` as root plus overlay patterns
-- the repo already supports `App`, `Ecosystem`, and `Module` as root models that may have console facades
-- console canon now treats `Kitchen`, `Portfolio`, `Supplier`, and `Project` as root plus overlay entities
-- console canon now also treats those overlays as user-owned by default, with optional family-specific operator profile prerequisites on top
+- root, app-scoped, facade, and scoped models already coexist in runtime delivery space
+- the repo already supports `User` and `Kitchen` as root plus app-scoped patterns
+- the repo already supports `App`, `Ecosystem`, and `Module` as root models that may have runtime facades
+- the current canon treats `Kitchen`, `Portfolio`, `Supplier`, and `Project` as root plus app-scoped entities
+- app-scoped authority defaults to user-owned, with optional family-specific operator profile prerequisites on top
 
 ## Not Aligned Yet
 
@@ -325,15 +325,15 @@ Each file should point back to this README so future changes can be made in one 
 - `shared/` and `supporting/` still need tighter boundaries
 - some models still mix legacy flat stamps with newer nested stamps
 - some paths are still implicit in implementation rather than clearly documented in the file header
-- `Project` remains a system-console special case, even though it now follows the shared root-plus-overlay rule
+- `Project` remains a system-level special case, even though it now follows the shared root-plus-app rule
 
 ## Roadmap To Reconciliation
 
 1. Keep runtime models in `runtime/models/`.
 2. Use this README as the decision point before changing model families or storage mode.
 3. Update touched model files to explain family, storage mode, owner, and path.
-4. Use overlays only when stored scoped truth is real.
-5. Use facades when a console is managing a root entity without a second stored model.
+4. Use app-scoped records only when stored scoped truth is real.
+5. Use facades when a runtime surface is managing a root entity without a second stored model.
 6. Normalize the active shipping slice first, not the whole repo at once.
 
 ## Short Version
@@ -342,11 +342,11 @@ Runtime models belong here.
 
 Each model should clearly say:
 - what family it belongs to
-- whether it is root, overlay, facade, or scoped
+- whether it is root, app-scoped, facade, or scoped
 - who owns it
 - why that decision was made
 
-For console-backed domains, the clean storage rule is:
+For app-scoped domains, the clean storage rule is:
 - root public entity
-- app-hosted console overlay
-- app-owned child records beneath that overlay
+- app-hosted scoped record
+- app-owned child records beneath that record

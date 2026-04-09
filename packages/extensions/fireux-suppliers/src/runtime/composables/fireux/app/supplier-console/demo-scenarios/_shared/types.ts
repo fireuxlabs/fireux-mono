@@ -1,11 +1,11 @@
 import type {
-  ConsoleSupplier,
+  AppSupplier,
   Supplier,
 } from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
 
 export type DemoSupplierCore = Supplier
 
-export type DemoSupplierApp = ConsoleSupplier
+export type DemoSupplierApp = AppSupplier
 
 export type DemoSupplierScenario = {
   id: string
@@ -13,7 +13,7 @@ export type DemoSupplierScenario = {
   label: string
   image_url: string
   supplier: DemoSupplierCore
-  consoleSupplier: DemoSupplierApp
+  appSupplier: DemoSupplierApp
 }
 
 export type DemoSupplierScenarioListItem = {

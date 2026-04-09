@@ -7,7 +7,7 @@ import type { FirebaseTimestamp } from '../../../types/firebase'
  *
  * Family: Model support
  * Storage: shared runtime model support, not a persisted entity
- * Used by: canonical root, overlay, facade, and scoped runtime models
+ * Used by: canonical root, app-scoped, facade, and scoped runtime models
  *
  * Decision note:
  * - Stamps live with runtime models because they define persisted model shape across the repo.
@@ -64,14 +64,14 @@ export type FireuxRootScope = {
 }
 
 /**
- * Canonical app-hosted console overlay support shape.
+ * Canonical app-scoped support shape.
  *
  * Ownership and authority rule:
- * - console authority is user-based through `admin_ids`, `join_requests`, and `console_enabled`
+ * - app-scoped authority is user-based through `admin_ids`, `join_requests`, and `console_enabled`
  * - operator profiles such as Chef are optional family-specific prerequisites or presentation layers
- * - operator profiles do not replace user-based console ownership in the stored overlay shape
+ * - operator profiles do not replace user-based app ownership in the stored scoped shape
  */
-export const FireuxConsoleOverlay = {
+export const FireuxAppOverlayModel = {
   id: '' as string,
   admin_ids: [] as string[],
   join_requests: [] as string[],
@@ -87,8 +87,8 @@ export const FireuxConsoleOverlay = {
   },
 } as const
 
-export type FireuxConsoleOverlay = {
-  [K in keyof typeof FireuxConsoleOverlay]: (typeof FireuxConsoleOverlay)[K]
+export type FireuxAppOverlay = {
+  [K in keyof typeof FireuxAppOverlayModel]: (typeof FireuxAppOverlayModel)[K]
 }
 
 /**

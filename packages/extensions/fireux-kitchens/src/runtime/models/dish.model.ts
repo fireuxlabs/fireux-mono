@@ -7,9 +7,9 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
  * Family: Kitchen-scoped
- * Storage: console-owned operational record
+ * Storage: scoped operational record
  * Path: /kitchens/<kitchenId>/dishes/<dishId>
- * Owner console: Kitchen
+ * Owner app scope: Kitchen
  *
  * Decision note:
  * - Dish exists because a kitchen owns and publishes it.

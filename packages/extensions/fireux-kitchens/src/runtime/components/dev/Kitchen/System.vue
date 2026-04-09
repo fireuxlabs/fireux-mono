@@ -113,7 +113,7 @@ import {
   resolveKitchenConsoleCollectionPath,
 } from '../../../composables/fireux/app/kitchen-console/shared'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
-import type { ConsoleKitchen, Kitchen } from '../../../models/kitchen.model'
+import type { AppKitchen, Kitchen } from '../../../models/kitchen.model'
 import { KitchenModel as KitchenModelRuntime } from '../../../models/kitchen.model'
 
 defineOptions({ name: 'DevKitchenSystem' })
@@ -133,12 +133,12 @@ const overlayKitchenCollectionPath = computed(() =>
   resolvedAppId.value ? resolveKitchenConsoleCollectionPath(resolvedAppId.value) : ''
 )
 
-const kitchenAppsRef = shallowRef<Ref<ConsoleKitchen[] | undefined> | null>(null)
+const kitchenAppsRef = shallowRef<Ref<AppKitchen[] | undefined> | null>(null)
 
 watch(
   overlayKitchenCollectionPath,
   (nextPath) => {
-    kitchenAppsRef.value = nextPath ? firestoreFetchCollection<ConsoleKitchen>(nextPath) : null
+    kitchenAppsRef.value = nextPath ? firestoreFetchCollection<AppKitchen>(nextPath) : null
   },
   { immediate: true }
 )
@@ -186,7 +186,7 @@ const placeById = computed(() => {
 })
 
 const kitchenAppById = computed(() => {
-  const map = new Map<string, ConsoleKitchen>()
+  const map = new Map<string, AppKitchen>()
   for (const kitchenApp of kitchenApps.value) {
     if (kitchenApp?.id) map.set(String(kitchenApp.id), kitchenApp)
   }
