@@ -57,18 +57,18 @@
         </div>
 
         <div class="space-y-2">
-          <div class="text-sm font-medium text-highlighted">Try a simulation</div>
+          <div class="text-sm font-medium text-highlighted">Try a portfolio simulation</div>
 
           <USwitch
             v-model="showSimulations"
             unchecked-icon="i-lucide-x"
             checked-icon="i-lucide-check"
-            label="Show simulations"
+            label="Show portfolio simulations"
           />
         </div>
 
         <div v-if="showSimulations" class="text-sm text-dimmed">
-          Simulations
+          Portfolio Simulations
         </div>
       </section>
     </div>
