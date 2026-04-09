@@ -1,12 +1,11 @@
 import { computed } from 'vue'
-import { useRoute, useState } from '#imports'
+import { useRoute } from '#imports'
 import { useNav } from './useNav'
 import {
   consoleFamilyFromPath,
-  createDefaultConsoleSelectionState,
   toConsoleSelectionStateKey,
 } from '../../routing/consoleRoutes'
-import type { ConsoleSelectionState } from '../../../console/console.types'
+import { useSharedConsoleSelectionState } from '../../../console/useConsoleSelection'
 import type { NavItem, NavPosition } from '../../nav.types'
 
 function normalizePath(value: unknown): string {
@@ -28,10 +27,7 @@ export const useConsoleNav = () => {
   const activeSelection = computed(() => {
     const family = activeFamily.value
     if (!family) return null
-    return useState<ConsoleSelectionState>(
-      toConsoleSelectionStateKey(family),
-      createDefaultConsoleSelectionState
-    ).value
+    return useSharedConsoleSelectionState(toConsoleSelectionStateKey(family)).value
   })
   const hasSelectedTarget = computed(() =>
     Boolean(String(activeSelection.value?.selectedId || '').trim())

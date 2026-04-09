@@ -1,4 +1,3 @@
-// useConsoleState.ts
 import { useRoute, useState } from '#imports'
 import {
   computed,
@@ -10,7 +9,6 @@ import {
 } from 'vue'
 import {
   consoleFamilyFromPath,
-  createDefaultConsoleSelectionState,
   toConsoleHeaderStateKey,
   toConsoleSelectionStateKey,
 } from '../app/routing/consoleRoutes'
@@ -18,13 +16,13 @@ import { useConsoleNav } from '../app/ui/nav/useConsoleNav'
 import { useNavGrouping } from '../app/ui/nav/useNavGrouping'
 import { useConsoleNotifications } from '../app/ui/useConsoleNotifications'
 import { normalizeConsoleMode, normalizeString } from './console.normalize'
+import { useSharedConsoleSelectionState } from './useConsoleSelection'
 import type {
   ConsoleFamily,
   ConsoleStateApi,
   ConsoleHeaderData,
   ConsoleMode,
   ConsoleModeOption,
-  ConsoleSelectionState,
 } from './console.types'
 
 type HeaderRef = Ref<ConsoleHeaderData> | ComputedRef<ConsoleHeaderData>
@@ -111,10 +109,7 @@ function useActiveConsoleState(): ConsoleLayoutApi {
   const activeSelection = computed(() => {
     if (!family.value) return null
 
-    return useState<ConsoleSelectionState>(
-      toConsoleSelectionStateKey(family.value),
-      createDefaultConsoleSelectionState
-    ).value
+    return useSharedConsoleSelectionState(toConsoleSelectionStateKey(family.value)).value
   })
 
   const selectedId = computed(() =>

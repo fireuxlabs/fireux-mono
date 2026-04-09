@@ -1,16 +1,8 @@
 import type {
   ConsoleFamily,
-  ConsoleSelectionState,
 } from '../../console/console.types'
 
 export const CONSOLE_ROOT = '/console'
-
-export function createDefaultConsoleSelectionState(): ConsoleSelectionState {
-  return {
-    selectedId: '',
-    mode: 'live',
-  }
-}
 
 export function normalizeConsoleFamily(value: unknown): ConsoleFamily | '' {
   return String(value || '')

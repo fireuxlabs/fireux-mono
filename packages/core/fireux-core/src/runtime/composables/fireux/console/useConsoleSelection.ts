@@ -1,8 +1,8 @@
-// useConsoleSelection.ts
 import { useCookie, useState } from '#imports'
 import type { Ref } from 'vue'
 import { computed } from 'vue'
-import type { ConsoleSelectionApi } from './console.types'
+import { normalizeConsoleMode, normalizeString } from './console.normalize'
+import type { ConsoleSelectionApi, ConsoleSelectionState } from './console.types'
 
 type UseConsoleSelectionParams<TState extends Record<string, any>> = {
   cookieKey: string
@@ -19,6 +19,7 @@ export function useConsoleSelection<TState extends Record<string, any>>(
 ): ConsoleSelectionApi<TState> & { state: Ref<TState> } {
   const cookie = useCookie<TState>(params.cookieKey, {
     default: params.defaultState,
+    path: '/',
     sameSite: 'lax',
   })
 
@@ -56,6 +57,26 @@ export function useConsoleSelection<TState extends Record<string, any>>(
     set,
     clear,
   }
+}
+
+const normalizeConsoleSelectionState = (value: unknown): ConsoleSelectionState => {
+  const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
+
+  return {
+    selectedId: normalizeString(source.selectedId),
+    mode: normalizeConsoleMode(source.mode, { defaultMode: 'live' }),
+  }
+}
+
+export function useSharedConsoleSelectionState(cookieKey: string) {
+  return useConsoleSelection<ConsoleSelectionState>({
+    cookieKey,
+    defaultState: () => ({
+      selectedId: '',
+      mode: 'live',
+    }),
+    normalizeState: normalizeConsoleSelectionState,
+  }).state
 }
 
 export function selectionKey<TState extends Record<string, any>, K extends keyof TState>(
