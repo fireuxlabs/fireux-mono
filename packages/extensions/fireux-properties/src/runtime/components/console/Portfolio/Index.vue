@@ -81,7 +81,7 @@ import { usePortfolioCollection } from '../../../composables/fireux/firestore/po
 import { usePortfolioSelection } from '../../../composables/fireux/app/portfolio-console/usePortfolioSelection'
 import { usePortfolioConsole } from '../../../composables/fireux/app/portfolio-console/usePortfolioConsole'
 
-const { portfolio, consoleState } = usePortfolioConsole()
+const { portfolio, consoleState } = usePortfolioConsole({ publishHeader: true })
 const { setRuntimePortfolio } = usePortfolioSelection()
 const { collection: portfolios } = usePortfolioCollection()
 const showSimulations = ref(false)

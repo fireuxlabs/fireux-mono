@@ -81,7 +81,7 @@ import { useSupplierCollection } from '../../../composables/fireux/firestore/sup
 import { useSupplierSelection } from '../../../composables/fireux/app/supplier-console/useSupplierSelection'
 import { useSupplierConsole } from '../../../composables/fireux/app/supplier-console/useSupplierConsole'
 
-const { supplier, consoleState } = useSupplierConsole()
+const { supplier, consoleState } = useSupplierConsole({ publishHeader: true })
 const { setRuntimeSupplier } = useSupplierSelection()
 const { coreSuppliers: suppliers } = useSupplierCollection()
 const showSimulations = ref(false)

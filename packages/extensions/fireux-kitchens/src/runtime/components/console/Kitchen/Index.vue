@@ -81,7 +81,7 @@ import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/f
 import { useKitchenSelection } from '../../../composables/fireux/app/kitchen-console/useKitchenSelection'
 import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
 
-const { kitchen, consoleState } = useKitchenConsole()
+const { kitchen, consoleState } = useKitchenConsole({ publishHeader: true })
 const { setRuntimeKitchen } = useKitchenSelection()
 const { kitchens } = useKitchenFetch()
 const showSimulations = ref(false)
