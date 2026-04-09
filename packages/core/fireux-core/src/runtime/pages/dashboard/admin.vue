@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="admin">
     <template #header>
-      <LayoutsConsoleNavbar title="Admin" />
+      <LayoutsDashboardNavbar title="Admin" />
     </template>
 
     <template #body>

@@ -2,7 +2,7 @@
 <template>
   <UDashboardPanel id="console-professional-my-jobs">
     <template #header>
-      <LayoutsConsoleNavbar title="My Jobs" />
+      <LayoutsDashboardNavbar title="My Jobs" />
     </template>
 
     <template #body>

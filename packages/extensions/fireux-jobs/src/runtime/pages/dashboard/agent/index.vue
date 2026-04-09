@@ -2,7 +2,7 @@
 <template>
   <UDashboardPanel id="console-agent-home">
     <template #header>
-      <LayoutsConsoleNavbar title="Agent" />
+      <LayoutsDashboardNavbar title="Agent" />
     </template>
 
     <template #body>

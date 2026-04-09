@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="console-developer">
     <template #header>
-      <LayoutsConsoleNavbar title="Developer Settings" />
+      <LayoutsDashboardNavbar title="Developer Settings" />
     </template>
 
     <template #body>

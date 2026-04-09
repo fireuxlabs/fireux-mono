@@ -19,7 +19,7 @@ definePageMeta({
 <template>
   <UDashboardPanel id="console-followers">
     <template #header>
-      <LayoutsConsoleNavbar title="Followers" />
+      <LayoutsDashboardNavbar title="Followers" />
     </template>
 
     <template #body>

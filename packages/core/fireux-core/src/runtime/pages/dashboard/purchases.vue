@@ -18,7 +18,7 @@ definePageMeta({
   <!-- Note: If billing/subscription details are reintroduced, mirror archived cards from dash-old/dashboard/subscriptions.vue. -->
   <UDashboardPanel id="console-purchases">
     <template #header>
-      <LayoutsConsoleNavbar title="Purchases" />
+      <LayoutsDashboardNavbar title="Purchases" />
     </template>
 
     <template #body>

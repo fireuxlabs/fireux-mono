@@ -2,7 +2,7 @@
 <template>
   <UDashboardPanel id="console-agent-my-gigs">
     <template #header>
-      <LayoutsConsoleNavbar title="My Gigs" />
+      <LayoutsDashboardNavbar title="My Gigs" />
     </template>
 
     <template #body>

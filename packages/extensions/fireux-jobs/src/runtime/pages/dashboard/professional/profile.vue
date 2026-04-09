@@ -5,7 +5,7 @@
     :ui="{ body: 'flex flex-col gap-4 flex-1 overflow-y-auto p-2 sm:p-4' }"
   >
     <template #header>
-      <LayoutsConsoleNavbar :title="navTitle">
+      <LayoutsDashboardNavbar :title="navTitle">
         <template #right>
           <UButton
             :icon="viewIcon"
@@ -16,7 +16,7 @@
             @click="toggleView"
           />
         </template>
-      </LayoutsConsoleNavbar>
+      </LayoutsDashboardNavbar>
     </template>
 
     <template #body>

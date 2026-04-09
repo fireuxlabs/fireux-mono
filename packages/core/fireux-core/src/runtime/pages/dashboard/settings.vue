@@ -48,7 +48,7 @@ const savePreferences = async () => {
 <template>
   <UDashboardPanel id="console-settings">
     <template #header>
-      <LayoutsConsoleNavbar title="Settings" />
+      <LayoutsDashboardNavbar title="Settings" />
     </template>
 
     <template #body>

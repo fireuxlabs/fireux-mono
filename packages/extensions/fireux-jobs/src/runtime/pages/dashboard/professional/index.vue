@@ -2,7 +2,7 @@
 <template>
   <UDashboardPanel id="console-professional-home">
     <template #header>
-      <LayoutsConsoleNavbar title="Professional" />
+      <LayoutsDashboardNavbar title="Professional" />
     </template>
 
     <template #body>

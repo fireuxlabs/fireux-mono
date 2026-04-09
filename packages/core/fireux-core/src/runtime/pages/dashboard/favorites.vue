@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="console-favorites">
     <template #header>
-      <LayoutsConsoleNavbar title="Favorites" />
+      <LayoutsDashboardNavbar title="Favorites" />
     </template>
 
     <template #body>

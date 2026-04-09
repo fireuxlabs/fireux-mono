@@ -2,7 +2,7 @@
 <template>
   <UDashboardPanel id="console-supplier-my-stock">
     <template #header>
-      <LayoutsConsoleNavbar title="My Stock" />
+      <LayoutsDashboardNavbar title="My Stock" />
     </template>
 
     <template #body>

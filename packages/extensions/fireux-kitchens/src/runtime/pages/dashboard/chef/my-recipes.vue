@@ -2,7 +2,7 @@
 <template>
   <UDashboardPanel id="console-chef-my-recipes">
     <template #header>
-      <LayoutsConsoleNavbar title="My Recipes" />
+      <LayoutsDashboardNavbar title="My Recipes" />
     </template>
 
     <template #body>

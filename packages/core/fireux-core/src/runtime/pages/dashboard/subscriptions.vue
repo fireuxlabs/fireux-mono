@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="console-subscriptions">
     <template #header>
-      <LayoutsConsoleNavbar title="Subscriptions" />
+      <LayoutsDashboardNavbar title="Subscriptions" />
     </template>
 
     <template #body>

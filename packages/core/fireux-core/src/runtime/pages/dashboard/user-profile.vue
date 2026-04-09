@@ -2,7 +2,7 @@
 <template>
   <UDashboardPanel id="user-profile">
     <template #header>
-      <LayoutsConsoleNavbar title="Profile" />
+      <LayoutsDashboardNavbar title="Profile" />
     </template>
 
     <template #body>
