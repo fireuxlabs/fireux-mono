@@ -7,6 +7,7 @@ export namespace PortfolioCard {
   export type Card = {
     id: string
     to: string
+    imageUrl: string
     avatarUrl: string
     title: string
     subtitle: string
@@ -36,6 +37,7 @@ export function usePortfolioInterface() {
     return {
       id,
       to: id ? `/console/portfolio` : '',
+      imageUrl: DEFAULT_PORTFOLIO_IMAGE,
       avatarUrl: DEFAULT_PORTFOLIO_IMAGE,
       title: name,
       subtitle: regionLabel,

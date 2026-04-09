@@ -203,5 +203,12 @@ export function useKitchenInterface() {
     return `${name} ${website} ${shortAddress || formattedAddress} ${id}`.trim().toLowerCase()
   }
 
-  return { interface: buildInterface, searchText }
+  return {
+    interface: buildInterface,
+    pill,
+    cell,
+    preview,
+    profile,
+    searchText,
+  }
 }

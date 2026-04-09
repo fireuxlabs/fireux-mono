@@ -19,11 +19,13 @@ export namespace ProfessionalCard {
   export type Card = {
     id: string
     to: string
+    imageUrl: string
     avatarUrl: string
     secondaryAvatarUrl?: string
     image: string
     displayName: string
     title: string
+    subtitle: string
     summary: string
     badges: string[]
     handle: string
@@ -78,11 +80,13 @@ export function useProfessionalInterface(
     return {
       id,
       to: `/${professionalConfig.collectionName}/${encodeURIComponent(id)}`,
+      imageUrl: image || avatar,
       avatarUrl: avatar,
       secondaryAvatarUrl,
       image,
       displayName: resolveProfileDisplayName([user?.display_name]),
       title: safeString(p.title),
+      subtitle: safeString(user?.handle).trim(),
       summary,
       badges,
       handle: safeString(user?.handle).trim(),
@@ -136,5 +140,12 @@ export function useProfessionalInterface(
       .toLowerCase()
   }
 
-  return { interface: buildInterface, searchText }
+  return {
+    interface: buildInterface,
+    pill,
+    cell,
+    preview,
+    profile,
+    searchText,
+  }
 }

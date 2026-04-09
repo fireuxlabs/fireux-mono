@@ -40,7 +40,7 @@ const pageDescription =
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 
-const { coreSuppliers } = useSupplierFetch()
-const collection = computed(() => coreSuppliers.value ?? [])
+const { suppliers } = useSupplierFetch()
+const collection = computed(() => suppliers.value ?? [])
 
 </script>

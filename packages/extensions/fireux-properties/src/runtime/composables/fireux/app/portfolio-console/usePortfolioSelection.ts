@@ -1,10 +1,11 @@
 import { computed } from 'vue'
+import { normalizeString } from 'fireux-core/runtime/composables/fireux/console/console.normalize'
 import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/console/console.types'
 import {
   selectionKey,
   useConsoleSelection,
 } from 'fireux-core/runtime/composables/fireux/console/useConsoleSelection'
-import { normalizeString } from './shared'
+import { toConsoleSelectionStateKey } from 'fireux-core/runtime/composables/fireux/app/routing/consoleRoutes'
 
 type PortfolioSelectionState = {
   selectedId: string
@@ -16,7 +17,7 @@ type RuntimePortfolioSelectionInput = {
   mode?: ConsoleMode
 }
 
-const COOKIE_KEY = 'fireux_runtime_portfolio'
+const COOKIE_KEY = toConsoleSelectionStateKey('portfolio')
 
 const normalizeSelectionState = (value: unknown): PortfolioSelectionState => {
   const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}

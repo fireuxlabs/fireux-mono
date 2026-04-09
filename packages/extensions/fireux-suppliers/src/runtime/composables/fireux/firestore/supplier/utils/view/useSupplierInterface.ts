@@ -21,6 +21,7 @@ export namespace SupplierCard {
   export type Card = {
     id: string
     to: string
+    imageUrl: string
     avatarUrl: string
     title: string
     subtitle: string
@@ -104,6 +105,7 @@ export function useSupplierInterface(
     return {
       id,
       to: id ? `/${supplierCollection}/${encodeURIComponent(id)}` : '',
+      imageUrl: primaryAvatar,
       avatarUrl: primaryAvatar,
       title,
       subtitle,
@@ -180,5 +182,12 @@ export function useSupplierInterface(
       .toLowerCase()
   }
 
-  return { interface: buildInterface, searchText }
+  return {
+    interface: buildInterface,
+    pill,
+    cell,
+    preview,
+    profile,
+    searchText,
+  }
 }

@@ -1,11 +1,11 @@
 import { computed } from 'vue'
-import { normalizeString } from '../../console/console.normalize'
-import type { ConsoleMode } from '../../console/console.types'
+import { normalizeString } from 'fireux-core/runtime/composables/fireux/console/console.normalize'
+import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/console/console.types'
 import {
   selectionKey,
   useConsoleSelection,
-} from '../../console/useConsoleSelection'
-import { toConsoleSelectionStateKey } from '../routing/consoleRoutes'
+} from 'fireux-core/runtime/composables/fireux/console/useConsoleSelection'
+import { toConsoleSelectionStateKey } from 'fireux-core/runtime/composables/fireux/app/routing/consoleRoutes'
 
 type ProjectSelectionState = {
   selectedId: string

@@ -1,22 +1,41 @@
-import { computed } from 'vue'
+import { computed, isRef, type Ref } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Portfolio } from '../../../../../models/portfolio.model'
 
+type PortfolioCollectionDoc = Partial<Portfolio> & { id?: string }
+
 type UsePortfolioCollectionOptions = {
-  collectionPath?: string
+  collectionPath?: string | Ref<string>
+  hydrate?: boolean
 }
 
-export function usePortfolioCollection(options: UsePortfolioCollectionOptions = {}) {
-  const collectionPath = String(options.collectionPath || 'portfolios').trim() || 'portfolios'
-  const { firestoreFetchCollection } = useFirestoreRead()
-  const source = firestoreFetchCollection<Portfolio>(collectionPath)
+const DEFAULT_COLLECTION_PATH = 'portfolios'
 
-  const collection = computed(() => source.value ?? [])
-  const count = computed(() => collection.value.length)
-  const pending = computed(() => source.value === undefined)
+export function usePortfolioCollection(options: UsePortfolioCollectionOptions = {}) {
+  const { firestoreFetchCollection } = useFirestoreRead()
+  const pathRef = isRef(options.collectionPath)
+    ? options.collectionPath
+    : computed(() => String(options.collectionPath || DEFAULT_COLLECTION_PATH).trim())
+
+  const source = computed(() => {
+    const collectionPath = String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
+    return firestoreFetchCollection<PortfolioCollectionDoc>(collectionPath)
+  })
+
+  const portfolios = computed(() =>
+    (source.value?.value ?? [])
+      .map((portfolio) => ({
+        ...portfolio,
+        id: String(portfolio?.id || '').trim(),
+      }))
+      .filter((portfolio) => Boolean(portfolio.id))
+  )
+
+  const count = computed(() => portfolios.value.length)
+  const pending = computed(() => source.value?.value === undefined)
 
   return {
-    collection,
+    portfolios,
     count,
     pending,
   }

@@ -1,5 +1,5 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
-import { FireuxAppOverlayModel, type FireuxStamped } from '../core/meta.model'
+import type { FireuxStamped } from '../core/meta.model'
 
 export type ProjectStatus = 'draft' | 'active' | 'paused' | 'archived'
 export type ProjectType = 'standalone_app' | 'ecosystem_app'
@@ -16,7 +16,7 @@ export type ProjectType = 'standalone_app' | 'ecosystem_app'
  * - Project follows the shared root-plus-app canon used by Kitchen, Portfolio, and Supplier.
  * - Public project creation should create the root project record.
  * - App-scoped project creation should ensure the app-scoped project record and may create root first when missing.
- * - App authority stays user-based in the app-scoped record; `owner_user_id` is a canonical root ownership hint, not a replacement for app admin authority.
+ * - `owner_user_id` is a canonical root ownership hint, not a replacement for any app-level authority system.
  * - Public facade depth can vary by family; Project may stay relatively thin publicly while still using the same root-plus-app pattern.
  * - If Project later grows operational child records, they should live under /apps/<appId>/projects/<projectId>/...
  * - Project still remains a system-level special case because endpoint enrichment and system metadata are central to its runtime.
@@ -60,7 +60,16 @@ export type Project = {
 }
 
 export const AppProjectModel = {
-  ...FireuxAppOverlayModel,
+  id: '',
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['updated']['by'],
+  },
 } as const
 
 export type AppProject = {

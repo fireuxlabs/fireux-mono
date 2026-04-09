@@ -7,8 +7,8 @@ export function useRuntimeKitchenDocument(params: {
   isDemo: Ref<boolean>
   documentCollectionPath: Ref<string>
 }) {
-  const { kitchen: fetchKitchen } = useKitchenFetch()
-  const liveKitchen = fetchKitchen(params.id, params.documentCollectionPath, {
+  const { kitchen: liveKitchen, pending: liveKitchenPending } = useKitchenFetch(params.id, {
+    collectionPath: params.documentCollectionPath,
     hydrate: true,
   })
   const demoScenario = computed(() => {
@@ -26,7 +26,7 @@ export function useRuntimeKitchenDocument(params: {
   const pending = computed(() => {
     if (!params.id.value) return false
     if (params.isDemo.value) return false
-    return liveKitchen.value === undefined
+    return liveKitchenPending.value
   })
 
   return {

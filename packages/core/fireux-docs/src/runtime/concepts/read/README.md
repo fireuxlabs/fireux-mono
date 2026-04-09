@@ -52,6 +52,31 @@ Do not confuse:
 
 with the stored record that actually exists in Firestore.
 
+## Canon Spine
+
+Current canon for domain/entity reads:
+
+- `useXFetch.ts`
+  - fetch one root `X`
+- `useXCollection.ts`
+  - fetch many root `X`
+- `useXInterface.ts`
+  - shape fetched truth for UI use
+
+Important:
+- `useXDocument.ts` is not a generic cross-repo canon seam
+- if a domain keeps a `useXDocument.ts` file, treat it as a local helper, not as the primary read primitive
+- the primary cross-repo read primitives are `useXFetch`, `useXCollection`, and `useXInterface`
+
+Hydration rule:
+- hydration is a read concern, never a model concern
+- root models store root fields and explicit links such as `place_id`
+- `useXFetch` and `useXCollection` stay plain by default
+- hydration is allowed only when a root entity is explicitly backed by another root entity
+- current declared example:
+  - `Kitchen` may hydrate from `Place`
+- future entities may do the same only when the dependency is explicit and documented
+
 ## Read Primitives
 
 ### Single Read
@@ -65,11 +90,8 @@ Contract:
 - fetch one thing
 - make the truth layer clear
 - return a stable detail surface for the consumer
-
-Important:
-- not every `use*Fetch.ts` in the repo is a direct one-doc reader
-- some older `use*Fetch.ts` files are collection-backed or composite read facades
-- when that happens, the file must make its fetch family explicit rather than pretending to be a direct doc fetch
+- optionally hydrate only when that domain has an explicitly declared linked-root dependency
+- do not use this seam for collection reads
 
 ### Collection Read
 
@@ -77,12 +99,12 @@ Read many records for browse, search, list, or manager surfaces.
 
 Common seams:
 - `use*Collection.ts`
-- some plural `use*Fetch.ts` helpers where the repo has older naming
 
 Contract:
 - browse many things
 - stay clear about collection scope
 - do not pretend a collection fetch is a detail fetch
+- optionally hydrate only when that domain has an explicitly declared linked-root dependency
 
 ### Interface / View Read
 
@@ -171,81 +193,53 @@ Examples:
 - `Project`
 - `Ecosystem`
 
-## Current `use*Fetch` Implementation Families
+## Current Read Families
 
-The top-level pressure is still sameness:
-- `use*Fetch.ts` should feel like one team wrote it
+Canon read families are now simpler:
 
-But repeated differences in the repo prove a few real implementation families.
-
-### Direct Single Fetch
+### Canon Single Fetch
 
 Behavior:
-- bind or fetch one canonical record
-- expose a single resolved record ref
-- usually exposes `pending`, sometimes `error`
+- fetch one root record
+- expose one resolved record ref
+- expose `pending`
 
-Examples:
-- `useAppFetch`
-- `useUserFetch`
-- `useUserByHandleFetch`
-- `useRecipeFetch`
-- `usePlacesFetch`
+Common seam:
+- `useXFetch.ts`
 
-### Collection-backed Selector Fetch
+### Canon Collection Fetch
 
 Behavior:
-- read a collection once
+- fetch many root records
 - expose the plural collection
-- also expose a singular selector seam so callers do not all `find()` locally
+- expose `count`
+- expose `pending`
 
-Expected pattern:
-- plural collection surface such as `products` or `orders`
-- singular selector such as `product(id)` or `order(id)`
+Common seam:
+- `useXCollection.ts`
 
-Examples:
-- `usePortfolioFetch`
-- `useSupplierFetch`
-- `useIngredientFetch`
-- `useKitchenIngredientFetch`
-- `useKitchenOrderFetch`
-- `useKitchenOrdersFetch`
-- `useOrdersForKitchenFetch`
-
-### Dual Read Facade
+### Interface / View Shaping
 
 Behavior:
-- expose both collection and single-record read seams
-- often hydrates a canonical record with linked truth
-- used where one entity already has a stable list-plus-detail read contract
+- shape fetched truth for UI use
+- normalize titles, images, pills, cards, and search text
 
-Examples:
-- `useCompanyFetch`
-- `useKitchenFetch`
-- `useBlogFetch`
+Common seam:
+- `useXInterface.ts`
 
-### Identity Overlay Fetch
+### Explicit Hydration Helper
 
 Behavior:
-- read both core identity truth and app overlay truth
-- expose core and overlay collections separately
-- when using collection-backed identity reads, expose core and app selectors explicitly
+- perform extra linked reads where a root entity is explicitly backed by another root entity
+- stay visibly special
+- do not redefine the canon seam
 
 Examples:
-- `useChefFetch`
-- `useAgentFetch`
-- `useProfessionalFetch`
-- generic base seam: `useProfileFetch`
+- kitchen helpers that hydrate `Kitchen` from `Place`
 
-### Composite Scoped Reader
-
-Behavior:
-- read multiple scoped child collections or merge multiple read paths
-- return a resolved operational surface rather than pretending to be a single doc
-
-Examples:
-- `useKitchenMenuStackFetch`
-- `useKitchenSupplierFetch`
+Important:
+- generic `useXDocument.ts` is not part of the canon spine
+- if such helpers exist, they should be treated as local read helpers, not as the standard pattern
 
 ## Current `use*Fetch` Matrix
 
@@ -261,7 +255,8 @@ Examples:
 | `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Agent/main/useAgentFetch.ts` | Identity overlay fetch | Identity | Core and app agent collections plus selectors |
 | `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/main/useProfessionalFetch.ts` | Identity overlay fetch | Identity | Core and app professional collections plus selectors |
 | `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/ingredient/fetch/useIngredientFetch.ts` | Collection-backed selector fetch | Scoped child | Global ingredient collection plus selector |
-| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenFetch.ts` | Dual read facade | Public entity | Place-backed list and single hydrated kitchen |
+| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenFetch.ts` | Canon single fetch + allowed hydration | Public entity | Single kitchen fetch; may hydrate from `Place` because kitchen root is place-backed |
+| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenCollection.ts` | Canon collection fetch + allowed hydration | Public entity | Kitchen collection; may hydrate from `Place` because kitchen root is place-backed |
 | `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/profiles/Chef/main/useChefFetch.ts` | Identity overlay fetch | Identity | Core and app chef collections plus selectors |
 | `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/ingredients/fetch/useKitchenIngredientFetch.ts` | Collection-backed selector fetch | Scoped child | Kitchen ingredient collection plus selector |
 | `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/orders/fetch/useKitchenOrderFetch.ts` | Collection-backed selector fetch | Scoped child | Kitchen-scoped order collection plus selector |
@@ -272,8 +267,10 @@ Examples:
 | `packages/extensions/fireux-orders/src/runtime/composables/useOrdersForKitchenFetch.ts` | Collection-backed selector fetch | Scoped child | Scope-aware kitchen orders plus legacy merge and selector |
 | `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/fetch/usePlacesFetch.ts` | Direct single fetch | Public entity | Singular place helper despite plural filename |
 | `packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/fetch/useProductFetch.ts` | Collection-backed selector fetch | Public entity / managed | Product collection plus selector |
-| `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/fetch/usePortfolioFetch.ts` | Collection-backed selector fetch | Public entity / workspace | Portfolio collection plus selector |
-| `packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/fetch/useSupplierFetch.ts` | Collection-backed selector fetch | Public entity / workspace | Hydrated supplier collection plus selector |
+| `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/fetch/usePortfolioFetch.ts` | Canon single fetch | Public entity / workspace | Single portfolio fetch |
+| `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/fetch/usePortfolioCollection.ts` | Canon collection fetch | Public entity / workspace | Portfolio collection |
+| `packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/fetch/useSupplierFetch.ts` | Canon single fetch | Public entity / workspace | Single supplier fetch |
+| `packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/fetch/useSupplierCollection.ts` | Canon collection fetch | Public entity / workspace | Supplier collection |
 
 ## Alignment Strategy
 
@@ -283,11 +280,11 @@ Read alignment follows the same pressure pattern as the rest of CRUD:
 - once a family is real, keep it internally consistent
 
 So the baseline goal is not:
-- every entity must look identical
+- every file must be byte-for-byte identical
 
 The actual goal is:
-- every entity should start from the same read contract pressure
-- every repeated presentation nuance should become a family
+- every entity should start from the same canon seam
+- every repeated hydration nuance should be declared explicitly
 - no entity should be special alone without a reason
 
 This is especially true for `use*Interface.ts`.

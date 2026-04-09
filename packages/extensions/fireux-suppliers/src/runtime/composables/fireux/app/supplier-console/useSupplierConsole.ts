@@ -10,6 +10,10 @@ type UseSupplierConsoleOptions = {
 }
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
+const family = 'supplier' as const
+const resolveHeaderImageUrl = (
+  value: { imageUrl?: string; avatarUrl?: string } | null | undefined
+) => normalizeString(value?.imageUrl ?? value?.avatarUrl) || undefined
 
 /**
  * Supplier console adapter.
@@ -28,7 +32,7 @@ export function useSupplierConsole(
   const headerData = computed(() =>
     supplier.value
       ? {
-          imageUrl: supplier.value.avatarUrl,
+          imageUrl: resolveHeaderImageUrl(supplier.value),
           title: supplier.value.title,
           subtitle:
             normalizeString(supplier.value.subtitle) ||
@@ -38,7 +42,7 @@ export function useSupplierConsole(
   )
 
   const consoleState = useConsoleState({
-    family: 'supplier',
+    family,
     selectedId: supplierState.id,
     mode: computed(() => 'live'),
     setMode: () => {},

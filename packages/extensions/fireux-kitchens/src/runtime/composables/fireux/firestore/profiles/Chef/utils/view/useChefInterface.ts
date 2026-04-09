@@ -20,10 +20,12 @@ export namespace ChefCard {
   export type Card = {
     id: string
     to: string
+    imageUrl: string
     avatarUrl: string
     secondaryAvatarUrl?: string
     displayName: string
     title: string
+    subtitle: string
     summary: string
     badges: string[]
     handle: string
@@ -76,6 +78,7 @@ export function useChefInterface(
     return {
       id,
       to: id ? `/${chefConfig.collectionName}/${encodeURIComponent(id)}` : '',
+      imageUrl: avatarUrl,
       avatarUrl,
       secondaryAvatarUrl,
       displayName: resolveProfileDisplayName([
@@ -84,6 +87,7 @@ export function useChefInterface(
         safeString((p as any).name).trim(),
       ]),
       title: safeString((p as any).title).trim(),
+      subtitle: '',
       summary,
       badges,
       handle: '',
@@ -136,5 +140,12 @@ export function useChefInterface(
       .toLowerCase()
   }
 
-  return { interface: buildInterface, searchText }
+  return {
+    interface: buildInterface,
+    pill,
+    cell,
+    preview,
+    profile,
+    searchText,
+  }
 }

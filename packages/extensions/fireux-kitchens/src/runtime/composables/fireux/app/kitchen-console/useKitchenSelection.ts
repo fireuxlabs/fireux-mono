@@ -1,21 +1,23 @@
 import { computed } from 'vue'
+import { normalizeString } from 'fireux-core/runtime/composables/fireux/console/console.normalize'
 import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/console/console.types'
 import {
   selectionKey,
   useConsoleSelection,
 } from 'fireux-core/runtime/composables/fireux/console/useConsoleSelection'
-import { normalizeString } from './shared'
+import { toConsoleSelectionStateKey } from 'fireux-core/runtime/composables/fireux/app/routing/consoleRoutes'
 
 type KitchenSelectionState = {
   selectedId: string
 }
 
-type RuntimeKitchenSelectionInput = Partial<KitchenSelectionState> & {
+type RuntimeKitchenSelectionInput = {
+  selectedId?: string
   kitchenId?: string
   mode?: ConsoleMode
 }
 
-const COOKIE_KEY = 'fireux_runtime_kitchen'
+const COOKIE_KEY = toConsoleSelectionStateKey('kitchen')
 
 const normalizeSelectionState = (value: unknown): KitchenSelectionState => {
   const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
@@ -31,17 +33,22 @@ export function useKitchenSelection() {
     defaultState: () => ({ selectedId: '' }),
     normalizeState: normalizeSelectionState,
   })
+
   const selectedId = selectionKey(selection, 'selectedId')
   const mode = computed<ConsoleMode>(() => 'live')
 
-  const setRuntimeKitchen = (selectionPatch: RuntimeKitchenSelectionInput = {}) =>
-    selection.set({
-      selectedId:
-        selectionPatch.selectedId !== undefined || selectionPatch.kitchenId !== undefined
-          ? normalizeString(selectionPatch.selectedId ?? selectionPatch.kitchenId)
-          : selectedId.value,
-    })
-  const clearRuntimeKitchen = () => selection.clear()
+  const setRuntimeKitchen = (selectionPatch: RuntimeKitchenSelectionInput = {}) => {
+    const nextId =
+      selectionPatch.selectedId !== undefined || selectionPatch.kitchenId !== undefined
+        ? normalizeString(selectionPatch.selectedId ?? selectionPatch.kitchenId)
+        : selectedId.value
+
+    selection.set({ selectedId: nextId })
+  }
+
+  const clearRuntimeKitchen = () => {
+    selection.clear()
+  }
 
   return {
     selectedId,

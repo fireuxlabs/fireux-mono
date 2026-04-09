@@ -10,6 +10,10 @@ type UsePortfolioConsoleOptions = {
 }
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
+const family = 'portfolio' as const
+const resolveHeaderImageUrl = (
+  value: { imageUrl?: string; avatarUrl?: string } | null | undefined
+) => normalizeString(value?.imageUrl ?? value?.avatarUrl) || undefined
 
 /**
  * Portfolio console adapter.
@@ -20,7 +24,7 @@ export function usePortfolioConsole(
 ) {
   const portfolioState = useActivePortfolio()
   const portfolioSelection = usePortfolioSelection()
-  const { pill: toPortfolioCard } = usePortfolioInterface()
+  const { interface: toPortfolioCard } = usePortfolioInterface()
 
   const portfolio = computed(() =>
     toPortfolioCard(portfolioState.portfolio.value as Portfolio | null)
@@ -29,7 +33,7 @@ export function usePortfolioConsole(
   const headerData = computed(() =>
     portfolio.value
       ? {
-          imageUrl: portfolio.value.avatarUrl,
+          imageUrl: resolveHeaderImageUrl(portfolio.value),
           title: portfolio.value.title,
           subtitle:
             normalizeString(portfolio.value.subtitle) ||
@@ -39,7 +43,7 @@ export function usePortfolioConsole(
   )
 
   const consoleState = useConsoleState({
-    family: 'portfolio',
+    family,
     selectedId: portfolioState.id,
     mode: computed(() => 'live'),
     setMode: () => {},

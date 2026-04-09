@@ -24,6 +24,11 @@ export type ProjectInterfaceCard = {
 }
 
 export function useProjectInterface() {
+  type ProjectPill = ProjectInterfaceCard
+  type ProjectCell = ProjectInterfaceCard
+  type ProjectPreview = ProjectInterfaceCard
+  type ProjectProfile = ProjectInterfaceCard
+
   function buildInterface(
     target?: ProjectInterfaceInput | null | undefined
   ): ProjectInterfaceCard | null {
@@ -73,8 +78,28 @@ export function useProjectInterface() {
       .toLowerCase()
   }
 
+  function pill(target?: ProjectInterfaceInput | null | undefined): ProjectPill | null {
+    return buildInterface(target)
+  }
+
+  function cell(target?: ProjectInterfaceInput | null | undefined): ProjectCell | null {
+    return buildInterface(target)
+  }
+
+  function preview(target?: ProjectInterfaceInput | null | undefined): ProjectPreview | null {
+    return buildInterface(target)
+  }
+
+  function profile(target?: ProjectInterfaceInput | null | undefined): ProjectProfile | null {
+    return buildInterface(target)
+  }
+
   return {
     interface: buildInterface,
+    pill,
+    cell,
+    preview,
+    profile,
     searchText,
   }
 }

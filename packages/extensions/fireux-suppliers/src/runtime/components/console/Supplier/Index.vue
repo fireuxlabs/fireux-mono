@@ -83,7 +83,7 @@ import { useSupplierConsole } from '../../../composables/fireux/app/supplier-con
 
 const { supplier, consoleState } = useSupplierConsole({ publishHeader: true })
 const { setRuntimeSupplier } = useSupplierSelection()
-const { coreSuppliers: suppliers } = useSupplierCollection()
+const { suppliers } = useSupplierCollection()
 const showSimulations = ref(false)
 const clearSelection = consoleState.clearSelection
 

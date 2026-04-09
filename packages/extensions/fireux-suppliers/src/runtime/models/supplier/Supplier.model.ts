@@ -1,4 +1,4 @@
-import { FireuxAppOverlayModel, type FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -14,7 +14,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Supplier is treated as a domain entity with a root public entity and an app-hosted supplier record, not as a user profile.
  * - The path should read as supplier identity rather than user identity.
  * - Public facade depth can vary by family; Supplier may expose only the fields that make sense for its marketplace/public role.
- * - App authority stays user-based in the app-scoped record; any future supplier operator profile should remain a prerequisite or presentation layer, not a second ownership model.
+ * - Any future supplier operator profile should remain a prerequisite or presentation layer, not a second ownership model.
  * - Supplier operational state belongs to the app-hosted supplier record.
  * - Supplier-owned child records, if they become real, should live beneath that record.
  * - Supplier v1 stays intentionally small: organization name, headline, summary, bio, image, categories, and delivery areas.
@@ -49,7 +49,16 @@ export type Supplier = {
 }
 
 export const AppSupplierModel = {
-  ...FireuxAppOverlayModel,
+  id: '',
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['updated']['by'],
+  },
 } as const
 
 export type AppSupplier = {

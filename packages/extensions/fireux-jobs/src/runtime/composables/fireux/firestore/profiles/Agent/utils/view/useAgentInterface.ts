@@ -24,12 +24,14 @@ export namespace AgentCard {
     to: string
 
     // Media (empty string means unset)
+    imageUrl: string
     avatarUrl: string
     secondaryAvatarUrl?: string
 
     // Primary display fields
     displayName: string
     title: string
+    subtitle: string
 
     // Status/label chips
     badges: string[]
@@ -92,11 +94,13 @@ export function useAgentInterface(
       id,
       to: id ? `/${agentConfig.collectionName}/${encodeURIComponent(id)}` : '',
 
+      imageUrl: profileImage || userAvatar,
       avatarUrl: profileImage || userAvatar,
       secondaryAvatarUrl,
 
       displayName: resolveProfileDisplayName([u?.display_name]),
       title: headline,
+      subtitle: safeString(u?.handle).trim(),
       badges: placementTypes,
 
       summary,
@@ -155,5 +159,12 @@ export function useAgentInterface(
       .toLowerCase()
   }
 
-  return { interface: buildInterface, searchText }
+  return {
+    interface: buildInterface,
+    pill,
+    cell,
+    preview,
+    profile,
+    searchText,
+  }
 }

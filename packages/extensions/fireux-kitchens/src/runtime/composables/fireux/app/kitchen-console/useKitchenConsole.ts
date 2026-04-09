@@ -10,6 +10,10 @@ type UseKitchenConsoleOptions = {
 }
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
+const family = 'kitchen' as const
+const resolveHeaderImageUrl = (
+  value: { imageUrl?: string; avatarUrl?: string } | null | undefined
+) => normalizeString(value?.imageUrl ?? value?.avatarUrl) || undefined
 
 /**
  * Kitchen console adapter.
@@ -29,7 +33,7 @@ export function useKitchenConsole(
   const headerData = computed(() =>
     kitchen.value
       ? {
-          imageUrl: kitchen.value.imageUrl,
+          imageUrl: resolveHeaderImageUrl(kitchen.value),
           title: kitchen.value.title,
           subtitle:
             normalizeString(kitchen.value.subtitle) ||
@@ -39,7 +43,7 @@ export function useKitchenConsole(
   )
 
   const consoleState = useConsoleState({
-    family: 'kitchen',
+    family,
     selectedId: kitchenState.id,
     mode: computed(() => 'live'),
     setMode: () => {},

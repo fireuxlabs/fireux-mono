@@ -34,9 +34,7 @@
             <code>kitchens/&lt;id&gt;</code>.
           </li>
           <li v-if="isConsoleMode">
-            Seeds console authority with the current user in
-            <code>admin_ids</code>
-            and links the kitchen to the chef profile association.
+            Ensures the app-scoped kitchen record and links the kitchen to the chef profile association.
           </li>
           <li v-else>Does not create the app-hosted kitchen console overlay.</li>
           <li v-if="isConsoleMode">

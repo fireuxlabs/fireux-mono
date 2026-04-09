@@ -1,37 +1,50 @@
-import { collection } from 'firebase/firestore'
-import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
-import { useCollection, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { computed } from 'vue'
+import { computed, isRef, type Ref } from 'vue'
 import type { Supplier } from '../../../../../models/supplier/Supplier.model'
+import { useFirestoreRead } from '../../../operations/useFirestoreRead'
+
+type SupplierFetchDoc = Partial<Supplier> & { id?: string }
 
 type UseSupplierFetchOptions = {
-  collectionPath?: string
+  collectionPath?: string | Ref<string>
+  hydrate?: boolean
 }
 
-const supplierCollection = 'suppliers'
-// Hydrated supplier records for UI use.
-export function useSupplierFetch(options: UseSupplierFetchOptions = {}) {
-  const db = useFirestore()
-  const collectionPath = String(options.collectionPath || supplierCollection).trim() || supplierCollection
-  const coreSuppliersRef = useCollection<Supplier>(
-    collection(db, collectionPath) as any,
-    { idField: 'id' } as any
-  )
+const DEFAULT_COLLECTION_PATH = 'suppliers'
 
-  const coreSuppliers = computed(() =>
-    (coreSuppliersRef.value ?? [])
-      .map((supplier) => ({
-        ...supplier,
-        id: String(supplier?.id || '').trim(),
-      }))
-      .filter((supplier) => Boolean(supplier.id))
-  )
+export function useSupplierFetch(
+  id: string | Ref<string>,
+  options: UseSupplierFetchOptions = {}
+) {
+  const { firestoreFetchDoc } = useFirestoreRead()
+  const idRef = isRef(id) ? id : computed(() => String(id || '').trim())
+  const pathRef = isRef(options.collectionPath)
+    ? options.collectionPath
+    : computed(() => String(options.collectionPath || DEFAULT_COLLECTION_PATH).trim())
 
-  const { byId: supplier } = useCollectionById(coreSuppliers)
-  const pending = computed(() => coreSuppliersRef.value === undefined)
+  const source = computed(() => {
+    const collectionPath = String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
+    const docId = String(idRef.value || '').trim()
+    if (!docId) return null
+    return firestoreFetchDoc<SupplierFetchDoc>(collectionPath, docId)
+  })
+
+  const supplier = computed<SupplierFetchDoc | null>(() => {
+    const docId = String(idRef.value || '').trim()
+    const entry = source.value?.value
+    if (!docId || !entry) return null
+    return {
+      ...entry,
+      id: String(entry?.id || docId).trim(),
+    }
+  })
+
+  const pending = computed(() => {
+    const docId = String(idRef.value || '').trim()
+    if (!docId) return false
+    return source.value?.value === undefined
+  })
 
   return {
-    coreSuppliers,
     supplier,
     pending,
   }

@@ -169,7 +169,7 @@ const toggleSection = (key: keyof typeof openSections) => {
 
 const supplierModelRuntime = SupplierModelRuntime
 
-const { coreSuppliers } = useSupplierCollection()
+const { suppliers } = useSupplierCollection()
 const { appId } = useFireUXConfig()
 const resolvedAppId = computed(() => String(appId || '').trim())
 const overlaySupplierCollectionPath = computed(() =>
@@ -178,7 +178,7 @@ const overlaySupplierCollectionPath = computed(() =>
 const supplierAppsState = useDevStorageCollection<AppSupplier>(overlaySupplierCollectionPath)
 const supplierApps = computed(() => supplierAppsState.items.value)
 
-const suppliersCollection = computed(() => coreSuppliers.value ?? [])
+const suppliersCollection = computed(() => suppliers.value ?? [])
 const rootSupplierById = computed(() => {
   const map = new Map<string, Supplier & { user?: unknown }>()
   for (const supplier of suppliersCollection.value) {

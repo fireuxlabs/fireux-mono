@@ -1,22 +1,23 @@
 import { computed } from 'vue'
+import { normalizeString } from 'fireux-core/runtime/composables/fireux/console/console.normalize'
 import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/console/console.types'
 import {
   selectionKey,
   useConsoleSelection,
 } from 'fireux-core/runtime/composables/fireux/console/useConsoleSelection'
+import { toConsoleSelectionStateKey } from 'fireux-core/runtime/composables/fireux/app/routing/consoleRoutes'
 
 type SupplierSelectionState = {
   selectedId: string
 }
 
-type RuntimeSupplierSelectionInput = Partial<SupplierSelectionState> & {
+type RuntimeSupplierSelectionInput = {
+  selectedId?: string
   supplierId?: string
   mode?: ConsoleMode
 }
 
-const COOKIE_KEY = 'fireux_runtime_supplier'
-
-const normalizeString = (value: unknown): string => String(value || '').trim()
+const COOKIE_KEY = toConsoleSelectionStateKey('supplier')
 
 const normalizeSelectionState = (value: unknown): SupplierSelectionState => {
   const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
@@ -32,17 +33,22 @@ export function useSupplierSelection() {
     defaultState: () => ({ selectedId: '' }),
     normalizeState: normalizeSelectionState,
   })
+
   const selectedId = selectionKey(selection, 'selectedId')
   const mode = computed<ConsoleMode>(() => 'live')
 
-  const setRuntimeSupplier = (selectionPatch: RuntimeSupplierSelectionInput = {}) =>
-    selection.set({
-      selectedId:
-        selectionPatch.selectedId !== undefined || selectionPatch.supplierId !== undefined
-          ? normalizeString(selectionPatch.selectedId ?? selectionPatch.supplierId)
-          : selectedId.value,
-    })
-  const clearRuntimeSupplier = () => selection.clear()
+  const setRuntimeSupplier = (selectionPatch: RuntimeSupplierSelectionInput = {}) => {
+    const nextId =
+      selectionPatch.selectedId !== undefined || selectionPatch.supplierId !== undefined
+        ? normalizeString(selectionPatch.selectedId ?? selectionPatch.supplierId)
+        : selectedId.value
+
+    selection.set({ selectedId: nextId })
+  }
+
+  const clearRuntimeSupplier = () => {
+    selection.clear()
+  }
 
   return {
     selectedId,

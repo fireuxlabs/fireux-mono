@@ -1,36 +1,50 @@
-import { computed } from 'vue'
-import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
+import { computed, isRef, type Ref } from 'vue'
 import type { Project } from '../../../../../../models/system/project.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
 type ProjectFetchDoc = Partial<Project> & { id?: string }
 
 type UseProjectFetchOptions = {
-  collectionPath?: string
+  collectionPath?: string | Ref<string>
+  hydrate?: boolean
 }
 
-const projectCollection = 'projects'
+const DEFAULT_COLLECTION_PATH = 'projects'
 
-export function useProjectFetch(options: UseProjectFetchOptions = {}) {
-  const collectionPath =
-    String(options.collectionPath || projectCollection).trim() || projectCollection
-  const { firestoreFetchCollection } = useFirestoreRead()
-  const source = firestoreFetchCollection<ProjectFetchDoc>(collectionPath)
+export function useProjectFetch(
+  id: string | Ref<string>,
+  options: UseProjectFetchOptions = {}
+) {
+  const { firestoreFetchDoc } = useFirestoreRead()
+  const idRef = isRef(id) ? id : computed(() => String(id || '').trim())
+  const pathRef = isRef(options.collectionPath)
+    ? options.collectionPath
+    : computed(() => String(options.collectionPath || DEFAULT_COLLECTION_PATH).trim())
 
-  const projects = computed(() =>
-    (source.value ?? [])
-      .map((project) => ({
-        ...project,
-        id: String(project?.id || '').trim(),
-      }))
-      .filter((project) => Boolean(project.id))
-  )
+  const source = computed(() => {
+    const collectionPath = String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
+    const docId = String(idRef.value || '').trim()
+    if (!docId) return null
+    return firestoreFetchDoc<ProjectFetchDoc>(collectionPath, docId)
+  })
 
-  const { byId: project } = useCollectionById(projects)
-  const pending = computed(() => source.value === undefined)
+  const project = computed<ProjectFetchDoc | null>(() => {
+    const docId = String(idRef.value || '').trim()
+    const entry = source.value?.value
+    if (!docId || !entry) return null
+    return {
+      ...entry,
+      id: String(entry?.id || docId).trim(),
+    }
+  })
+
+  const pending = computed(() => {
+    const docId = String(idRef.value || '').trim()
+    if (!docId) return false
+    return source.value?.value === undefined
+  })
 
   return {
-    projects,
     project,
     pending,
   }

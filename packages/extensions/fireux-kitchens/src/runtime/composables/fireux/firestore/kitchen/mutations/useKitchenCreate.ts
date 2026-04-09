@@ -146,11 +146,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
           id: resolvedId,
         }),
       createOverlay: async () =>
-        ({
-          admin_ids: uid.value ? [uid.value] : ([] as string[]),
-          join_requests: [] as string[],
-          console_enabled: true,
-        }) as AppKitchen,
+        ({}) as AppKitchen,
     })
   }
 

@@ -11,6 +11,7 @@ export namespace AppCard {
     to: string
 
     // Media (empty string means unset)
+    imageUrl: string
     avatarUrl: string
     thumbnailUrl: string
 
@@ -88,6 +89,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       id,
       to: id ? `/apps/${encodeURIComponent(id)}` : '',
 
+      imageUrl: safeString(media.thumbnailUrl) || safeString(media.logoUrl),
       avatarUrl: safeString(media.thumbnailUrl) || safeString(media.logoUrl),
       thumbnailUrl: safeString(media.thumbnailUrl),
 
@@ -151,5 +153,12 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
     return `${name} ${shortName} ${ecosystem} ${id}`.trim().toLowerCase()
   }
 
-  return { interface: buildInterface, searchText }
+  return {
+    interface: buildInterface,
+    pill,
+    cell,
+    preview,
+    profile,
+    searchText,
+  }
 }

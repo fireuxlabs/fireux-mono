@@ -60,6 +60,6 @@ fireux-core-useUserInterface.mirror.ts
 
 Current working set
 
-- The mirror currently targets all runtime model files matching `packages/**/*.model.ts`.
+- The mirror currently targets all runtime interface files matching `packages/**/use*Interface.ts`.
 - The source list lives in `mirror/mirror.txt`.
 - After changing the list, run `pnpm mirror:sync` to rebuild the symlinks.

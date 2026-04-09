@@ -11,11 +11,13 @@ export namespace UserCard {
     to: string
 
     // Media (empty string means unset)
+    imageUrl: string
     avatarUrl: string
     secondaryAvatarUrl?: string
 
     displayName: string
     title: string
+    subtitle: string
     summary: string
 
     // Public handle (empty string means unset)
@@ -64,10 +66,12 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
       id,
       to: handle ? `/users/${encodeURIComponent(handle)}` : '',
 
+      imageUrl: resolveAvatarUrl(user),
       avatarUrl: resolveAvatarUrl(user),
       secondaryAvatarUrl: '',
       displayName: safeString(user.display_name).trim(),
       title: profiles[0] || '',
+      subtitle: handle ? `@${handle}` : '',
       summary: safeString(user.bio),
 
       handle: handle ? `@${handle}` : '',
@@ -113,5 +117,12 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
     return `${displayName} ${handle} ${id}`.trim().toLowerCase()
   }
 
-  return { interface: buildInterface, searchText }
+  return {
+    interface: buildInterface,
+    pill,
+    cell,
+    preview,
+    profile,
+    searchText,
+  }
 }

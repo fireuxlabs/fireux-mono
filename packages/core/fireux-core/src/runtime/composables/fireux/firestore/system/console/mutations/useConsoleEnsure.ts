@@ -48,6 +48,8 @@ export function useConsoleEnsure() {
     type: ConsoleEntityType,
     overlayId: string
   ) {
+    if (type === 'kitchen') return
+
     const currentUid = normalizeId(uid.value)
     const currentAppId = normalizeId(appId)
     if (!currentUid || !currentAppId) return

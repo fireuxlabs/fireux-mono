@@ -1,8 +1,8 @@
 import { computed } from 'vue'
 import { useConsoleState } from '../../console/useConsoleState'
+import type { Project } from '../../../../models/system/project.model'
 import {
   useProjectInterface,
-  type ProjectInterfaceInput,
 } from '../../firestore/system/project/utils/view/useProjectInterface'
 import { useProjectSelection } from './useProjectSelection'
 import { useActiveProject } from './useActiveProject'
@@ -12,6 +12,10 @@ type UseProjectConsoleOptions = {
 }
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
+const family = 'projects' as const
+const resolveHeaderImageUrl = (
+  value: { imageUrl?: string; avatarUrl?: string } | null | undefined
+) => normalizeString(value?.imageUrl ?? value?.avatarUrl) || undefined
 
 /**
  * Project console adapter.
@@ -25,13 +29,13 @@ export function useProjectConsole(
   const { interface: toProjectCard } = useProjectInterface()
 
   const project = computed(() =>
-    toProjectCard(projectState.project.value as ProjectInterfaceInput | null)
+    toProjectCard(projectState.project.value as Project | null)
   )
 
   const headerData = computed(() =>
     project.value
       ? {
-          imageUrl: project.value.imageUrl,
+          imageUrl: resolveHeaderImageUrl(project.value),
           title: project.value.title,
           subtitle:
             normalizeString(project.value.subtitle) ||
@@ -41,7 +45,7 @@ export function useProjectConsole(
   )
 
   const consoleState = useConsoleState({
-    family: 'projects',
+    family,
     selectedId: projectState.id,
     mode: computed(() => 'live'),
     setMode: () => {},
