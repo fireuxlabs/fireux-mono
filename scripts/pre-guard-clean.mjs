@@ -9,10 +9,30 @@ import path from 'node:path'
 import process from 'node:process'
 
 const repoRoot = process.cwd()
+const PROJECT_ROOT_FORBIDDEN_DIRS = [
+  '.firebase',
+  '.output',
+  '.nuxt',
+  '.nitro',
+  '.cache',
+  '.data',
+  'dist',
+]
+const PROJECT_ROOT_FORBIDDEN_FILES = [
+  'firebase-debug.log',
+  'tsconfig.tsbuildinfo',
+  '.firebaserc',
+]
 
 async function removeDirIfExists(dirPath) {
   if (!existsSync(dirPath)) return false
   await rm(dirPath, { recursive: true, force: true })
+  return true
+}
+
+async function removeFileIfExists(filePath) {
+  if (!existsSync(filePath)) return false
+  await rm(filePath, { force: true })
   return true
 }
 
@@ -35,7 +55,7 @@ for (const group of ['core', 'ecosystem', 'extensions']) {
   }
 }
 
-// Remove .data at app roots: projects/*/*/.data
+// Remove guard-forbidden artifacts at app roots: projects/*/*/{.firebase,.output,...}
 {
   const projectsRoot = path.join(repoRoot, 'projects')
   const ecosystems = await listChildDirs(projectsRoot)
@@ -45,8 +65,21 @@ for (const group of ['core', 'ecosystem', 'extensions']) {
     const apps = await listChildDirs(ecoRoot)
 
     for (const appName of apps) {
-      const dataPath = path.join(ecoRoot, appName, '.data')
-      if (await removeDirIfExists(dataPath)) removed.push(path.relative(repoRoot, dataPath))
+      const appRoot = path.join(ecoRoot, appName)
+
+      for (const dirName of PROJECT_ROOT_FORBIDDEN_DIRS) {
+        const dirPath = path.join(appRoot, dirName)
+        if (await removeDirIfExists(dirPath)) {
+          removed.push(path.relative(repoRoot, dirPath))
+        }
+      }
+
+      for (const fileName of PROJECT_ROOT_FORBIDDEN_FILES) {
+        const filePath = path.join(appRoot, fileName)
+        if (await removeFileIfExists(filePath)) {
+          removed.push(path.relative(repoRoot, filePath))
+        }
+      }
     }
   }
 }

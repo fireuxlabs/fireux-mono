@@ -24,6 +24,8 @@ const deep = argv.has('--deep') || argv.has('--all')
 const ALWAYS_REMOVE_DIRS = new Set(['dist', '.output', '.nitro', '.cache', '.data'])
 const DEEP_REMOVE_DIRS = new Set(['.nuxt'])
 const ALWAYS_REMOVE_FILES = new Set(['tsconfig.tsbuildinfo'])
+const PROJECT_ONLY_REMOVE_DIRS = new Set(['.firebase'])
+const PROJECT_ONLY_REMOVE_FILES = new Set(['firebase-debug.log', '.firebaserc'])
 
 let removedCount = 0
 let removedNuxtArtifacts = false
@@ -75,7 +77,9 @@ function cleanProjects() {
           if (d === '.data' || d === '.output' || d === '.nitro') removedNuxtArtifacts = true
         }
       }
+      for (const d of PROJECT_ONLY_REMOVE_DIRS) removeIfExists(path.join(root, d), 'dir')
       for (const f of ALWAYS_REMOVE_FILES) removeIfExists(path.join(root, f), 'file')
+      for (const f of PROJECT_ONLY_REMOVE_FILES) removeIfExists(path.join(root, f), 'file')
       if (deep) {
         for (const d of DEEP_REMOVE_DIRS) {
           if (removeIfExists(path.join(root, d), 'dir')) removedNuxtArtifacts = true
