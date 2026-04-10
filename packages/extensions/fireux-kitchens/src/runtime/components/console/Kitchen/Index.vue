@@ -77,13 +77,13 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
+import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenSelection } from '../../../composables/fireux/app/kitchen-console/useKitchenSelection'
 import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
 
 const { kitchen, consoleState } = useKitchenConsole({ publishHeader: true })
 const { setRuntimeKitchen } = useKitchenSelection()
-const { kitchens } = useKitchenFetch()
+const { kitchens } = useKitchenCollection()
 const showSimulations = ref(false)
 const clearSelection = consoleState.clearSelection
 

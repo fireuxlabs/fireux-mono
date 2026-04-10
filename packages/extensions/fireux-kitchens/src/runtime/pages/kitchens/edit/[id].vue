@@ -107,11 +107,8 @@ const route = useRoute()
 const raw = route.params.id
 const kitchenId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
-const { kitchen: fetchKitchen } = useKitchenFetch()
-const docRef = kitchenId ? fetchKitchen(kitchenId) : null
-
-const kitchen = computed<Kitchen | null>(() => docRef?.value ?? null)
-const loading = computed(() => Boolean(kitchenId) && docRef?.value === undefined)
+const { kitchen, pending } = useKitchenFetch(kitchenId)
+const loading = computed(() => Boolean(kitchenId) && pending.value)
 
 const { currentUser, isAdmin } = useUser()
 const claimedBy = computed(() => String(kitchen.value?.claimed_by ?? '').trim())

@@ -8,8 +8,7 @@ import { useSupplierSelection } from './useSupplierSelection'
  */
 export function useActiveSupplier() {
   const { selectedId: id } = useSupplierSelection()
-  const { supplier: fetchSupplier, pending } = useSupplierFetch()
-  const liveSupplier = fetchSupplier(id)
+  const { supplier: liveSupplier, pending } = useSupplierFetch(id)
 
   const supplier = computed(() => {
     if (!id.value) return null

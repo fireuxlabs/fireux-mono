@@ -104,25 +104,31 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useActiveProject } from 'fireux-core/runtime/composables/fireux/app/project-console/useActiveProject'
+import { useProjectConsole } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectConsole'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
 
-const projectState = useActiveProject()
-const { count: totalProjects } = useProjectCollection('projects')
-const project = computed(() => projectState.project.value as Record<string, unknown> | null)
+const { projectState, project } = useProjectConsole()
+const { count: totalProjects } = useProjectCollection()
+const selectedProject = computed(
+  () => projectState.project.value as Record<string, unknown> | null
+)
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
 
 const projectId = computed(() => projectState.id.value)
-const projectName = computed(() => normalizeString(project.value?.name))
-const projectSlug = computed(() => normalizeString(project.value?.slug))
-const projectStatus = computed(() => normalizeString(project.value?.status))
-const projectDescription = computed(() => normalizeString(project.value?.description))
+const projectName = computed(() => normalizeString(selectedProject.value?.name))
+const projectSlug = computed(() => normalizeString(selectedProject.value?.slug))
+const projectStatus = computed(() => normalizeString(selectedProject.value?.status))
+const projectDescription = computed(() => normalizeString(selectedProject.value?.description))
 const consoleEndpoint = computed(() =>
-  normalizeString(project.value?.console_endpoint_url || project.value?.source_url)
+  normalizeString(
+    selectedProject.value?.console_endpoint_url || selectedProject.value?.source_url
+  )
 )
 
-const projectTitle = computed(() => projectName.value || projectSlug.value || projectId.value || 'Selected Project')
+const projectTitle = computed(
+  () => project.value?.title || projectName.value || projectSlug.value || projectId.value || 'Selected Project'
+)
 const focusUsersValue = computed(() => '—')
 const allUsersValue = computed(() => '—')
 const totalProjectsLabel = computed(() => String(totalProjects.value || 0))

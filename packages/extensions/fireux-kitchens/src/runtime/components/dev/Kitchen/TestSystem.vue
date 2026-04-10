@@ -107,7 +107,7 @@ import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore'
 import { computed, ref } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { getDefaultDemoKitchenScenario } from '../../../composables/fireux/app/kitchen-console/demo-scenarios'
-import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
+import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { KitchenIngredientModel } from '../../../models/ingredient.model'
 import type { Kitchen } from '../../../models/kitchen.model'
 import { KitchenModel as KitchenModelRuntime } from '../../../models/kitchen.model'
@@ -121,7 +121,7 @@ const { setDocument } = useFirestoreCreate()
 
 const { firestoreFetchCollection } = useFirestoreRead()
 const kitchensCollection = firestoreFetchCollection<Kitchen>('test-kitchens')
-const { kitchens: hydratedKitchens } = useKitchenFetch({
+const { kitchens: hydratedKitchens } = useKitchenCollection({
   collectionPath: 'test-kitchens',
 })
 

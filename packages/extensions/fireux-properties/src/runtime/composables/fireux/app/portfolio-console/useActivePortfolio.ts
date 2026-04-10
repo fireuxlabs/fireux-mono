@@ -13,8 +13,7 @@ import {
  */
 export function useActivePortfolio() {
   const { selectedId: id } = usePortfolioSelection()
-  const { portfolio: fetchPortfolio, pending } = usePortfolioFetch()
-  const livePortfolio = fetchPortfolio(id)
+  const { portfolio: livePortfolio, pending } = usePortfolioFetch(id)
 
   const portfolio = computed(() => {
     if (!id.value) return null

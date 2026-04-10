@@ -83,7 +83,7 @@ import { useProjectSelection } from 'fireux-core/runtime/composables/fireux/app/
 
 const { project, consoleState } = useProjectConsole({ publishHeader: true })
 const { setRuntimeProject } = useProjectSelection()
-const { projects } = useProjectCollection('projects')
+const { projects } = useProjectCollection()
 const showSimulations = ref(false)
 const clearSelection = consoleState.clearSelection
 

@@ -181,7 +181,7 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceClaim'
 import { computed, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { resolveKitchenConsoleCollectionPath } from '../../composables/fireux/app/kitchen-console/shared'
-import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
+import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenInterface } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { Kitchen } from '../../models/kitchen.model'
 import type { Menu } from '../../models/menu.model'
@@ -208,7 +208,7 @@ const kitchenRouteKey = computed(() => {
     : String(raw ?? '').trim()
 })
 
-const { kitchens } = useKitchenFetch()
+const { kitchens, pending: kitchensPending } = useKitchenCollection()
 const kitchen = computed<Kitchen | null>(() => {
   const key = kitchenRouteKey.value
   if (!key) return null
@@ -223,7 +223,7 @@ const kitchen = computed<Kitchen | null>(() => {
 })
 
 const kitchenId = computed(() => String(kitchen.value?.id ?? '').trim())
-const loading = computed(() => Boolean(kitchenRouteKey.value) && kitchens.value === undefined)
+const loading = computed(() => Boolean(kitchenRouteKey.value) && kitchensPending.value)
 
 const { firestoreFetchCollection } = useFirestoreRead()
 const menusRef = shallowRef(null) as ShallowRef<Ref<Menu[] | undefined> | null>

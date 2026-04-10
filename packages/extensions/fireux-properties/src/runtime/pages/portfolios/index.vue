@@ -12,7 +12,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { usePortfolioFetch } from '../../composables/fireux/firestore/portfolio/fetch/usePortfolioFetch'
+import { usePortfolioCollection } from '../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
 
 definePageMeta({
   tag: 'portfolios',
@@ -35,6 +35,6 @@ const pageTitle = 'Portfolios'
 const pageDescription = 'Select a portfolio runtime for the current workspace.'
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
-const { portfolios } = usePortfolioFetch()
-const collection = computed(() => portfolios.value ?? [])
+const { portfolios } = usePortfolioCollection()
+const collection = computed(() => portfolios.value)
 </script>

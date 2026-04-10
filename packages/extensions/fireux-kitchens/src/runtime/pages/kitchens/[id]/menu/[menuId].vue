@@ -246,7 +246,7 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { resolveKitchenConsoleCollectionPath } from '../../../../composables/fireux/app/kitchen-console/shared'
-import { useKitchenFetch } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
+import { useKitchenCollection } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import type { Menu, MenuSection, MenuServiceMode } from '../../../../models/menu.model'
 import {
   resolveMenuItemView,
@@ -314,7 +314,7 @@ const requestedModeLabel = computed(() => {
   return ''
 })
 
-const { kitchens } = useKitchenFetch()
+const { kitchens, pending: kitchensPending } = useKitchenCollection()
 const { appId } = useFireUXConfig()
 const resolvedKitchen = computed(() => {
   const key = routeId.value
@@ -341,7 +341,7 @@ const kitchenAddress = computed(() =>
   ).trim()
 )
 
-const loading = computed(() => Boolean(routeId.value) && kitchens.value === undefined)
+const loading = computed(() => Boolean(routeId.value) && kitchensPending.value)
 
 const { firestoreFetchCollection } = useFirestoreRead()
 const menusRef = shallowRef(null) as ShallowRef<Ref<Menu[] | undefined> | null>

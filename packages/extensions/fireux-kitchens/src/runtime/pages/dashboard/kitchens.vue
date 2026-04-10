@@ -16,7 +16,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
+import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 
 definePageMeta({
   nav: {
@@ -42,6 +42,6 @@ const pageTitle = 'Kitchens'
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 
-const { kitchens } = useKitchenFetch()
-const collection = computed(() => kitchens.value ?? [])
+const { kitchens } = useKitchenCollection()
+const collection = computed(() => kitchens.value)
 </script>

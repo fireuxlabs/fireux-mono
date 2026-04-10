@@ -104,28 +104,37 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useActiveKitchen } from '../../../composables/fireux/app/kitchen-console/useActiveKitchen'
-import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
+import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
+import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 
-const kitchenState = useActiveKitchen()
-const { kitchens } = useKitchenFetch()
-const kitchen = computed(() => kitchenState.kitchen.value as Record<string, unknown> | null)
+const { kitchenState, kitchen } = useKitchenConsole()
+const { count: totalKitchens } = useKitchenCollection()
+const selectedKitchen = computed(
+  () => kitchenState.kitchen.value as Record<string, unknown> | null
+)
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
 
 const kitchenId = computed(() => kitchenState.id.value)
-const kitchenName = computed(() => normalizeString(kitchen.value?.name))
-const kitchenShortName = computed(() => normalizeString(kitchen.value?.short_name))
+const kitchenName = computed(() => normalizeString(selectedKitchen.value?.name))
+const kitchenShortName = computed(() => normalizeString(selectedKitchen.value?.short_name))
 const kitchenAddress = computed(() =>
-  normalizeString(kitchen.value?.formatted_address || kitchen.value?.short_address)
+  normalizeString(
+    selectedKitchen.value?.formatted_address || selectedKitchen.value?.short_address
+  )
 )
-const kitchenWebsite = computed(() => normalizeString(kitchen.value?.website))
-const kitchenTagline = computed(() => normalizeString(kitchen.value?.brand_tagline))
+const kitchenWebsite = computed(() => normalizeString(selectedKitchen.value?.website))
+const kitchenTagline = computed(() => normalizeString(selectedKitchen.value?.brand_tagline))
 
 const kitchenTitle = computed(
-  () => kitchenName.value || kitchenShortName.value || kitchenId.value || 'Selected Kitchen'
+  () =>
+    kitchen.value?.title ||
+    kitchenName.value ||
+    kitchenShortName.value ||
+    kitchenId.value ||
+    'Selected Kitchen'
 )
 const focusUsersValue = computed(() => '—')
 const allUsersValue = computed(() => '—')
-const totalKitchensLabel = computed(() => String(kitchens.value?.length || 0))
+const totalKitchensLabel = computed(() => String(totalKitchens.value || 0))
 </script>

@@ -71,6 +71,7 @@
 <script setup lang="ts">
 import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/company/fetch/useCompanyFetch';
 import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/company/utils/view/useCompanyInterface';
+import { useKitchenCollection } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenCollection';
 import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenFetch';
 import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface';
 import { computed, defineComponent } from 'vue';
@@ -82,8 +83,8 @@ import type { JobCreateForm } from '../../../../composables/fireux/firestore/job
 const KitchenPill = defineComponent({
   props: { id: String },
   setup(props) {
-    const { kitchen } = useKitchenFetch();
-    const kitchenData = computed(() => props.id ? kitchen(props.id).value : null);
+    const kitchenId = computed(() => String(props.id || '').trim());
+    const { kitchen: kitchenData } = useKitchenFetch(kitchenId);
     const kitchenInterface = useKitchenInterface();
     const kitchenCard = computed(() => kitchenInterface.interface(kitchenData.value));
     return { kitchenCard };
@@ -93,7 +94,7 @@ const KitchenPill = defineComponent({
       <UUser
         :name="kitchenCard.title"
         :description="kitchenCard.subtitle"
-        :avatar="{ src: kitchenCard.avatarUrl, alt: kitchenCard.title }"
+        :avatar="{ src: kitchenCard.imageUrl, alt: kitchenCard.title }"
         size="sm"
       />
     </div>
@@ -136,7 +137,7 @@ const workplaceLabel = computed(() => props.form.workplace_label.trim())
 const companyId = computed(() => props.form.company_id.trim())
 const statusLabel = computed(() => (props.form.status === 'closed' ? 'Closed' : 'Open'))
 
-const { kitchens } = useKitchenFetch()
+const { kitchens } = useKitchenCollection()
 const { companies } = useCompanyFetch()
 
 const selectedKitchen = computed(() =>

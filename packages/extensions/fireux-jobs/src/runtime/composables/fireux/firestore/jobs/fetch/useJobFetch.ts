@@ -21,15 +21,17 @@ export function useJobFetch(
   )
 
   const { data, pending, error } = useDocument<Job | undefined>(docRef as any)
-  const { kitchens } = useKitchenFetch()
-
-  const kitchenById = computed(() => {
-    const map = new Map<string, any>()
-    for (const kitchen of kitchens.value ?? []) {
-      if (kitchen?.id) map.set(String(kitchen.id), kitchen)
-    }
-    return map
+  const workplaceKitchenId = computed(() => {
+    const current = data.value ?? null
+    if (!current) return ''
+    const legacyKitchenId = String((current as any)?.kitchen_id ?? '')
+    const workplaceId = String((current as any)?.workplace_id ?? '') || legacyKitchenId
+    const workplaceType = String((current as any)?.workplace_type ?? '') ||
+      (legacyKitchenId ? 'kitchen' : '')
+    if (workplaceType !== 'kitchen' || !workplaceId) return ''
+    return String(workplaceId)
   })
+  const { kitchen: workplaceKitchen } = useKitchenFetch(workplaceKitchenId)
 
   const job = computed<MiseboxJobResolved | null>(() => {
     const current = data.value ?? null
@@ -42,11 +44,11 @@ export function useJobFetch(
       ...current,
       workplace:
         workplaceType === 'kitchen' && workplaceId
-          ? kitchenById.value.get(String(workplaceId)) ?? null
+          ? workplaceKitchen.value ?? null
           : null,
       kitchen:
         workplaceType === 'kitchen' && workplaceId
-          ? kitchenById.value.get(String(workplaceId)) ?? null
+          ? workplaceKitchen.value ?? null
           : null,
     }
   })

@@ -112,30 +112,35 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useActivePortfolio } from '../../../composables/fireux/app/portfolio-console/useActivePortfolio'
+import { usePortfolioConsole } from '../../../composables/fireux/app/portfolio-console/usePortfolioConsole'
 import { usePortfolioCollection } from '../../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
 
-const portfolioState = useActivePortfolio()
+const { portfolioState, portfolio } = usePortfolioConsole()
 const { count: totalPortfolios } = usePortfolioCollection()
-const portfolio = computed(
+const selectedPortfolio = computed(
   () => portfolioState.portfolio.value as Record<string, unknown> | null
 )
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
 
 const portfolioId = computed(() => portfolioState.id.value)
-const portfolioName = computed(() => normalizeString(portfolio.value?.name))
-const portfolioSlug = computed(() => normalizeString(portfolio.value?.slug))
-const portfolioStatus = computed(() => normalizeString(portfolio.value?.status))
-const ownerLabel = computed(() => normalizeString(portfolio.value?.owner_label))
-const regionLabel = computed(() => normalizeString(portfolio.value?.region_label))
+const portfolioName = computed(() => normalizeString(selectedPortfolio.value?.name))
+const portfolioSlug = computed(() => normalizeString(selectedPortfolio.value?.slug))
+const portfolioStatus = computed(() => normalizeString(selectedPortfolio.value?.status))
+const ownerLabel = computed(() => normalizeString(selectedPortfolio.value?.owner_label))
+const regionLabel = computed(() => normalizeString(selectedPortfolio.value?.region_label))
 const strategyLabel = computed(() =>
-  normalizeString(portfolio.value?.strategy_label)
+  normalizeString(selectedPortfolio.value?.strategy_label)
 )
-const portfolioNotes = computed(() => normalizeString(portfolio.value?.notes))
+const portfolioNotes = computed(() => normalizeString(selectedPortfolio.value?.notes))
 
 const portfolioTitle = computed(
-  () => portfolioName.value || portfolioSlug.value || portfolioId.value || 'Selected Portfolio'
+  () =>
+    portfolio.value?.title ||
+    portfolioName.value ||
+    portfolioSlug.value ||
+    portfolioId.value ||
+    'Selected Portfolio'
 )
 const focusUsersValue = computed(() => '—')
 const allUsersValue = computed(() => '—')

@@ -146,21 +146,19 @@ definePageMeta({
 })
 
 const runtime = useActivePortfolio()
-const runtimePortfolio = computed(() => ({
-  id: runtime.id.value || null,
-  collectionPath: runtime.collectionPath.value || null,
-}))
 
 const portfolioModelRuntime = PortfolioModelRuntime
 const { appId } = useFireUXConfig()
 const resolvedAppId = computed(() => String(appId || '').trim())
-
-const { collection } = usePortfolioCollection()
-const portfolios = computed(() => collection.value ?? [])
-
 const overlayPortfolioCollectionPath = computed(() =>
   resolvedAppId.value ? resolvePortfolioConsoleCollectionPath(resolvedAppId.value) : ''
 )
+const runtimePortfolio = computed(() => ({
+  id: runtime.id.value || null,
+  collectionPath: overlayPortfolioCollectionPath.value || null,
+}))
+
+const { portfolios } = usePortfolioCollection()
 
 const portfolioAppsState = useDevStorageCollection<AppPortfolio>(overlayPortfolioCollectionPath)
 const portfolioApps = computed(() => portfolioAppsState.items.value)

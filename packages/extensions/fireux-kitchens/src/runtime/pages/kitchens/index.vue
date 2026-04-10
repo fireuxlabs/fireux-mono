@@ -40,7 +40,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useDevUi } from 'fireux-core/runtime/composables/fireux/app/ui/useDevUi'
 import { computed } from 'vue'
 import KitchenCTA from '../../components/organisms/Kitchen/CTA.vue'
-import { useKitchenFetch } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
+import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 
 definePageMeta({
   tag: 'kitchens',
@@ -67,6 +67,6 @@ const showDevNotes = computed(() => import.meta.dev && notesVisible.value)
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 
-const { kitchens } = useKitchenFetch()
-const collection = computed(() => kitchens.value ?? [])
+const { kitchens } = useKitchenCollection()
+const collection = computed(() => kitchens.value)
 </script>

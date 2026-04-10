@@ -8,8 +8,7 @@ import { useProjectSelection } from './useProjectSelection'
  */
 export function useActiveProject() {
   const { selectedId: id } = useProjectSelection()
-  const { project: fetchProject, pending } = useProjectFetch()
-  const liveProject = fetchProject(id)
+  const { project: liveProject, pending } = useProjectFetch(id)
 
   const project = computed(() => {
     if (!id.value) return null

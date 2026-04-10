@@ -83,7 +83,7 @@ import { usePortfolioConsole } from '../../../composables/fireux/app/portfolio-c
 
 const { portfolio, consoleState } = usePortfolioConsole({ publishHeader: true })
 const { setRuntimePortfolio } = usePortfolioSelection()
-const { collection: portfolios } = usePortfolioCollection()
+const { portfolios } = usePortfolioCollection()
 const showSimulations = ref(false)
 const clearSelection = consoleState.clearSelection
 

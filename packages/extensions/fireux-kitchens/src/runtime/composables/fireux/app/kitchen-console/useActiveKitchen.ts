@@ -8,8 +8,7 @@ import { useKitchenSelection } from './useKitchenSelection'
  */
 export function useActiveKitchen() {
   const { selectedId: id } = useKitchenSelection()
-  const { kitchen: fetchKitchen, pending } = useKitchenFetch()
-  const liveKitchen = fetchKitchen(id)
+  const { kitchen: liveKitchen, pending } = useKitchenFetch(id)
 
   const kitchen = computed(() => {
     if (!id.value) return null

@@ -144,8 +144,8 @@ const { interface: jobCardFactory } = useJobInterface()
 const KitchenPill = defineComponent({
   props: { id: String },
   setup(props) {
-    const { kitchen } = useKitchenFetch()
-    const kitchenData = computed(() => props.id ? kitchen(props.id).value : null)
+    const kitchenId = computed(() => String(props.id || '').trim())
+    const { kitchen: kitchenData } = useKitchenFetch(kitchenId)
     const kitchenInterface = useKitchenInterface()
     const kitchenCard = computed(() => kitchenInterface.interface(kitchenData.value))
     return { kitchenCard }
