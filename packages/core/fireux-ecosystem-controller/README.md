@@ -1,19 +1,11 @@
 # Ecosystem Controller
 
-Owned by fireux.
+Shared runtime for global ecosystem apps.
 
-Describe what this module ships, its guardrails, and how consumers should enable it.
+This module currently provides:
+- the shared `/api/fireux-console` endpoint for global ecosystem apps
+- ecosystem-controller runtime pages like `/apps/[id]`
 
-## Quick start
-
-1. Enable in your Nuxt app:
-   ```ts
-   export default defineNuxtConfig({
-     modules: ['fireux-ecosystem-controller'],
-   })
-   ```
-2. Update `registry.json` before committing (name, team, runtime notes).
-3. Publish to FireUX registry:
-   ```bash
-   pnpm registry:register packages/core/fireux-ecosystem-controller/registry.json
-   ```
+`defineFireuxConfig({ role: 'global' })` already enables this module automatically, so
+ecosystem apps should not need their own duplicated `server/api/fireux-console.get.ts`
+route files.

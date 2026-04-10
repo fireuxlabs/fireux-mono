@@ -1,10 +1,8 @@
 import { useRuntimeConfig } from '#imports'
-import { buildFireuxConsoleResponse } from 'fireux-core/runtime/server/utils/fireux-console.ts'
 import {
-    createError,
-    defineEventHandler,
-    setResponseHeaders,
-} from 'h3'
+  buildFireuxEcosystemConsoleResponse,
+} from '../utils/fireux-console'
+import { createError, defineEventHandler, setResponseHeaders } from 'h3'
 
 export default defineEventHandler(async (event) => {
   const runtimeConfig = useRuntimeConfig()
@@ -31,5 +29,5 @@ export default defineEventHandler(async (event) => {
     'Access-Control-Allow-Origin': '*',
   })
 
-  return buildFireuxConsoleResponse(firebaseProjectId)
+  return buildFireuxEcosystemConsoleResponse(firebaseProjectId)
 })

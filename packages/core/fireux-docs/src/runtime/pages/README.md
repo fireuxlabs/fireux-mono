@@ -1,7 +1,7 @@
 # Pages Directory
 
 Authority: Operational
-Updated: 2026-04-05
+Updated: 2026-04-10
 Scope: `packages/*/fireux-*/src/runtime/pages` and child directories under `pages/*`.
 
 Learn how FireUX runtime pages are grouped, which create surfaces matter first, and which entity buckets are still being deferred.
@@ -44,6 +44,27 @@ Use `packages/core/fireux-docs/src/runtime/concepts/create/README.md` for create
 Use `packages/core/fireux-docs/src/runtime/concepts/connect/README.md` for relationship and authority canon.
 Use `packages/core/fireux-docs/src/runtime/concepts/console-entry/README.md` for family-entry canon.
 Use `packages/core/fireux-docs/src/runtime/components/README.md` to understand current create-system families.
+
+## Near-term Surface Roadmap
+
+The next surface split should be read like this:
+
+- `/console/**`
+  runtime-scoped operational workspaces for selected entities
+- `/dashboard/**`
+  personal or role-based workspaces that are not app-management surfaces
+- `/admin/**`
+  app-management and environment-management surfaces
+
+Planned direction:
+
+- keep FireUX project console read-only across external ecosystem databases
+- introduce a dedicated `admin` workspace for app management
+- move current app-management, environment-management, and developer/admin controls out of `dashboard` into `admin`
+- keep `console` focused on selected runtime entities and their operational child surfaces
+
+This is a roadmap note only.
+It does not require the `admin` surface split to be implemented yet.
 
 ## CRUD Lens
 
