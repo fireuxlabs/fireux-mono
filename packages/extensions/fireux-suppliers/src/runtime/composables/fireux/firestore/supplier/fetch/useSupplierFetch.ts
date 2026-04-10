@@ -1,6 +1,6 @@
 import { computed, isRef, type Ref } from 'vue'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Supplier } from '../../../../../models/supplier/Supplier.model'
-import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
 type SupplierFetchDoc = Partial<Supplier> & { id?: string }
 

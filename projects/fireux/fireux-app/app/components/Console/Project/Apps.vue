@@ -191,14 +191,23 @@ type FireuxConsoleApp = {
   thumbnail_url: string
 }
 
+type FireuxConsoleEcosystem = {
+  id: string
+  slug: string
+  name: string
+}
+
 type FireuxConsolePayload = {
   project: {
     id: string
     main_app_id: string
+    main_ecosystem_id: string
   }
   project_meta: {
     source_url: string
   }
+  ecosystem?: FireuxConsoleEcosystem | null
+  ecosystems?: FireuxConsoleEcosystem[]
   databases: Array<{
     name: string
     apps: FireuxConsoleApp[]
@@ -258,6 +267,35 @@ const labelize = (value: unknown): string =>
     .map((part) => part[0]?.toUpperCase() + part.slice(1))
     .join(' ')
 
+const resolvePayloadEcosystem = (
+  payload: FireuxConsolePayload,
+  ecosystemId: string
+): FireuxConsoleEcosystem | null => {
+  const key = normalizeString(ecosystemId)
+  const current = payload.ecosystem
+
+  if (current && typeof current === 'object') {
+    if (
+      normalizeString(current.id) === key ||
+      normalizeString(current.slug) === key ||
+      (!key &&
+        normalizeString(current.id) === normalizeString(payload.project.main_ecosystem_id))
+    ) {
+      return current
+    }
+  }
+
+  const ecosystems = Array.isArray(payload.ecosystems) ? payload.ecosystems : []
+  return (
+    ecosystems.find((entry) => {
+      return (
+        normalizeString(entry.id) === key ||
+        normalizeString(entry.slug) === key
+      )
+    }) ?? null
+  )
+}
+
 const resolveConsoleEndpoint = () => {
   const raw =
     normalizeString((runtime.project.value as any)?.console_endpoint_url) ||
@@ -298,6 +336,7 @@ const {
 
     return await Promise.all(
       allApps.map(async (app): Promise<LiveAppRow> => {
+        const ecosystem = resolvePayloadEcosystem(payload, app.ecosystem_id)
         const website =
           normalizeString(app.website) ||
           (app.id === normalizeString(payload.project.main_app_id)
@@ -324,6 +363,7 @@ const {
               normalizeString(meta.messaging?.summary),
             ecosystemName:
               normalizeString(info.ecosystem?.name) ||
+              normalizeString(ecosystem?.name) ||
               labelize(app.ecosystem_id),
             status: 'live',
             imageUrl:
@@ -349,7 +389,9 @@ const {
             id: app.id,
             name: normalizeString(app.name) || labelize(app.slug || app.id) || app.id,
             description: 'Public endpoint refresh failed for this app.',
-            ecosystemName: labelize(app.ecosystem_id),
+            ecosystemName:
+              normalizeString(ecosystem?.name) ||
+              labelize(app.ecosystem_id),
             status: 'flagged',
             imageUrl:
               normalizeString(app.logo_url) ||

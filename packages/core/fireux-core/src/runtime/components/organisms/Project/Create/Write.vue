@@ -116,6 +116,15 @@ type FireuxConsoleProjectMeta = {
   firebase_project_id: string
 }
 
+type FireuxConsoleEcosystem = {
+  id: string
+  slug: string
+  name: string
+  description: string
+  image_url: string
+  source_url: string
+}
+
 type FireuxConsolePayload = {
   project: {
     id: string
@@ -123,6 +132,8 @@ type FireuxConsolePayload = {
     main_ecosystem_id: string
   }
   project_meta: FireuxConsoleProjectMeta
+  ecosystem?: FireuxConsoleEcosystem | null
+  ecosystems?: FireuxConsoleEcosystem[]
   databases: Array<{
     name: string
     apps: FireuxConsoleApp[]
@@ -197,6 +208,7 @@ function readProjectMeta(payload: unknown, normalizedUrl: string) {
   }
 
   const meta = next.project_meta
+  const ecosystem = next.ecosystem
   const firebaseProjectId = String(meta.firebase_project_id || next.project.id || '').trim()
   if (!firebaseProjectId) {
     throw new Error('Project endpoint did not return a project id')
@@ -206,15 +218,23 @@ function readProjectMeta(payload: unknown, normalizedUrl: string) {
 
   return {
     name: String(meta.name || '').trim(),
-    description: String(meta.description || '').trim(),
+    description: String(meta.description || ecosystem?.description || '').trim(),
     slug: String(meta.slug || firebaseProjectId).trim(),
-    image_url: String(meta.image_url || '').trim(),
+    image_url: String(meta.image_url || ecosystem?.image_url || '').trim(),
     primary_project: true,
     project_type: String(meta.project_type || '').trim() as FireuxProjectType,
-    source_url: String(meta.source_url || new URL(normalizedEndpoint).origin).trim(),
+    source_url: String(
+      meta.source_url || ecosystem?.source_url || new URL(normalizedEndpoint).origin
+    ).trim(),
     console_endpoint_url: String(meta.console_endpoint_url || normalizedEndpoint).trim(),
     app_id: String(meta.app_id || next.project.main_app_id || '').trim(),
-    ecosystem_id: String(meta.ecosystem_id || next.project.main_ecosystem_id || '').trim(),
+    ecosystem_id: String(
+      meta.ecosystem_id ||
+      ecosystem?.slug ||
+      ecosystem?.id ||
+      next.project.main_ecosystem_id ||
+      ''
+    ).trim(),
     firebase_project_id: firebaseProjectId,
   }
 }

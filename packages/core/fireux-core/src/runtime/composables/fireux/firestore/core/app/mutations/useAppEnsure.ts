@@ -5,6 +5,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { $fetch } from 'ofetch'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
+import { useFirestoreEcosystemEnsure } from '../../../system/ecosystem/mutations/useFirestoreEcosystemEnsure'
 import { useFirestoreProjectEnsure } from '../../../system/project/mutations/useFirestoreProjectEnsure'
 import type { AppMediaSyncResponse } from '../utils/appMedia'
 import { useAppCreate, type CreateAppInput } from './useAppCreate'
@@ -148,6 +149,7 @@ export function useAppEnsure() {
   const { createApp } = useAppCreate()
   const { updateDocument } = useFirestoreUpdate()
   const { ensureFirestoreProjectDoc } = useFirestoreProjectEnsure()
+  const { ensureFirestoreEcosystemDoc } = useFirestoreEcosystemEnsure()
 
   async function syncAppMedia(appId?: string): Promise<AppMediaSyncResponse> {
     const fireux = useFireUXConfig()
@@ -165,6 +167,7 @@ export function useAppEnsure() {
   async function ensureApp(): Promise<EnsureAppResult> {
     const fireux = useFireUXConfig()
     await ensureFirestoreProjectDoc()
+    await ensureFirestoreEcosystemDoc()
 
     const ref = doc(db, 'apps', fireux.appId)
     const snap = await getDoc(ref)

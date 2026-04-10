@@ -7,7 +7,7 @@ import {
 } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 import { createError } from 'h3'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 
 type FirestoreDatabasesResponse = {
   databases?: Array<{
@@ -223,7 +223,7 @@ async function listDatabaseApps(databaseId: string) {
 
 async function listEcosystems() {
   const db = getFirestore(getAdminApp())
-  const snapshot = await db.collection('ecosystems').get()
+  const snapshot = await db.collection('ecosystem').get()
 
   return snapshot.docs
     .map((doc) => {

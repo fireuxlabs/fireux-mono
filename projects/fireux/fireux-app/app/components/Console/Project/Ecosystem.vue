@@ -242,6 +242,7 @@ type FireuxConsolePayload = {
   ok?: boolean
   project?: Record<string, unknown>
   project_meta?: Record<string, unknown>
+  ecosystem?: Record<string, unknown> | null
   ecosystems?: unknown[]
   ecosystem_apps?: unknown[]
   databases?: unknown[]
@@ -344,10 +345,40 @@ const consoleCompareErrorMessage = computed(() => {
   return 'Unable to load the live console payload.'
 })
 
+const normalizedLiveEcosystem = computed<Record<string, unknown> | null>(() => {
+  const payload = liveConsoleData.value
+  if (!payload) return null
+
+  if (payload.ecosystem && typeof payload.ecosystem === 'object' && !Array.isArray(payload.ecosystem)) {
+    return payload.ecosystem as Record<string, unknown>
+  }
+
+  const ecosystems = Array.isArray(payload.ecosystems) ? payload.ecosystems : []
+  const liveControl = (payload.project ?? {}) as Record<string, unknown>
+  const meta = (payload.project_meta ?? {}) as Record<string, unknown>
+  const ecosystemKey =
+    normalizeString(liveControl.main_ecosystem_id) ||
+    normalizeString(meta.ecosystem_id)
+
+  const matched = ecosystems.find((entry) => {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return false
+    const record = entry as Record<string, unknown>
+    return (
+      normalizeString(record.id) === ecosystemKey ||
+      normalizeString(record.slug) === ecosystemKey
+    )
+  })
+
+  return matched && typeof matched === 'object' && !Array.isArray(matched)
+    ? (matched as Record<string, unknown>)
+    : null
+})
+
 const normalizedLiveProject = computed<ProjectUpdateInput | null>(() => {
   const payload = liveConsoleData.value
   const meta = (payload?.project_meta ?? {}) as Record<string, unknown>
   const liveControl = (payload?.project ?? {}) as Record<string, unknown>
+  const liveEcosystem = normalizedLiveEcosystem.value
   const endpoint = consoleEndpoint.value
 
   if (!payload || !endpoint) return null
@@ -364,14 +395,27 @@ const normalizedLiveProject = computed<ProjectUpdateInput | null>(() => {
     normalizeString(liveControl.id)
 
   return {
-    name: normalizeString(meta.name),
-    slug: normalizeString(meta.slug) || firebaseProjectId,
-    description: normalizeString(meta.description),
-    image_url: normalizeString(meta.image_url),
+    name:
+      normalizeString(meta.name) ||
+      normalizeString(liveEcosystem?.name),
+    slug:
+      normalizeString(meta.slug) ||
+      normalizeString(liveEcosystem?.slug) ||
+      firebaseProjectId,
+    description:
+      normalizeString(meta.description) ||
+      normalizeString(liveEcosystem?.description),
+    image_url:
+      normalizeString(meta.image_url) ||
+      normalizeString(liveEcosystem?.image_url),
+    status: normalizeString(liveEcosystem?.status) as ProjectUpdateInput['status'],
     project_type:
       normalizeProjectType(meta.project_type) ||
       normalizeProjectType(project.value?.project_type),
-    source_url: normalizeString(meta.source_url) || endpointOrigin,
+    source_url:
+      normalizeString(meta.source_url) ||
+      normalizeString(liveEcosystem?.source_url) ||
+      endpointOrigin,
     console_endpoint_url:
       normalizeString(meta.console_endpoint_url) || endpoint,
     app_id:
@@ -379,6 +423,8 @@ const normalizedLiveProject = computed<ProjectUpdateInput | null>(() => {
       normalizeString(liveControl.main_app_id),
     ecosystem_id:
       normalizeString(meta.ecosystem_id) ||
+      normalizeString(liveEcosystem?.slug) ||
+      normalizeString(liveEcosystem?.id) ||
       normalizeString(liveControl.main_ecosystem_id),
     firebase_project_id: firebaseProjectId,
   }
@@ -403,6 +449,7 @@ const projectRefreshPatch = computed<ProjectUpdateInput | null>(() => {
   assignIfChanged('slug', live.slug)
   assignIfChanged('description', live.description)
   assignIfChanged('image_url', live.image_url)
+  assignIfChanged('status', live.status)
   assignIfChanged('project_type', live.project_type)
   assignIfChanged('source_url', live.source_url)
   assignIfChanged('console_endpoint_url', live.console_endpoint_url)

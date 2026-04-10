@@ -33,9 +33,12 @@ type FireuxConsoleDatabase = {
 
 type FireuxConsoleEcosystem = {
   id: string
+  project_id: string
   name: string
   slug: string
   description: string
+  image_url: string
+  source_url: string
   team: string
   status: string
   apps: string[]
@@ -220,7 +223,7 @@ async function listDatabaseApps(databaseId: string) {
 
 async function listEcosystems() {
   const db = getFirestore(getAdminApp())
-  const snapshot = await db.collection('ecosystems').get()
+  const snapshot = await db.collection('ecosystem').get()
 
   return snapshot.docs
     .map((doc) => {
@@ -228,9 +231,12 @@ async function listEcosystems() {
 
       return {
         id: doc.id,
+        project_id: firstString(data, ['project_id']),
         name: firstString(data, ['name']),
         slug: firstString(data, ['slug']),
         description: firstString(data, ['description']),
+        image_url: firstString(data, ['image_url']),
+        source_url: firstString(data, ['source_url']),
         team: firstString(data, ['team']),
         status: firstString(data, ['status']),
         apps: Array.isArray(data.apps)
@@ -321,6 +327,44 @@ function buildProjectMeta(
   }
 }
 
+function resolveCurrentEcosystem(
+  projectId: string,
+  control: FireuxConsoleProjectControl,
+  projectMeta: FireuxConsoleProjectMeta,
+  ecosystems: FireuxConsoleEcosystem[],
+  databases: FireuxConsoleDatabase[]
+) {
+  const ecosystemKey = normalizeString(control.main_ecosystem_id || projectMeta.ecosystem_id)
+  const matched =
+    ecosystems.find((entry) => entry.id === ecosystemKey) ||
+    ecosystems.find((entry) => entry.slug === ecosystemKey)
+
+  if (matched) {
+    return {
+      ...matched,
+      project_id: matched.project_id || projectId,
+      image_url: matched.image_url || projectMeta.image_url,
+      source_url: matched.source_url || projectMeta.source_url,
+    }
+  }
+
+  if (!ecosystemKey && !projectMeta.name) return null
+
+  return {
+    id: ecosystemKey || projectMeta.ecosystem_id || projectMeta.slug,
+    project_id: projectId,
+    name: projectMeta.name,
+    slug: ecosystemKey || projectMeta.ecosystem_id || projectMeta.slug,
+    description: projectMeta.description,
+    image_url: projectMeta.image_url,
+    source_url: projectMeta.source_url,
+    team: '',
+    status: 'active',
+    apps:
+      databases.find((db) => db.name === ecosystemKey)?.apps.map((app) => app.id) ?? [],
+  } satisfies FireuxConsoleEcosystem
+}
+
 export async function buildFireuxConsoleResponse(firebaseProjectId: string) {
   const projectId = normalizeString(firebaseProjectId)
 
@@ -356,6 +400,13 @@ export async function buildFireuxConsoleResponse(firebaseProjectId: string) {
   }
 
   const project_meta = buildProjectMeta(projectId, control, appData)
+  const ecosystem = resolveCurrentEcosystem(
+    projectId,
+    control,
+    project_meta,
+    ecosystems,
+    databases
+  )
 
   const ecosystem_apps =
     databases.find((db) => db.name === control.main_ecosystem_id)?.apps ?? []
@@ -368,6 +419,7 @@ export async function buildFireuxConsoleResponse(firebaseProjectId: string) {
       main_ecosystem_id: control.main_ecosystem_id,
     },
     project_meta,
+    ecosystem,
     ecosystems,
     ecosystem_apps,
     databases,
