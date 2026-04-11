@@ -1,4 +1,7 @@
-import type { Ecosystem } from '../../../../../../../models/system/ecosystem.model'
+import type {
+  Ecosystem,
+  EcosystemStatus,
+} from '../../../../../../../models/system/ecosystem.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 const labelize = (value: string) =>
@@ -8,13 +11,27 @@ const labelize = (value: string) =>
     .map((part) => part[0]?.toUpperCase() + part.slice(1))
     .join(' ')
 
-export type EcosystemInterfaceInput = Omit<Partial<Ecosystem>, 'apps'> & {
+export type EcosystemSurface = {
+  id?: string
+  project_id?: string
+  name?: string
+  slug?: string
+  description?: string
+  image_url?: string
+  source_url?: string
+  status?: EcosystemStatus | string
+  team?: string
+  apps?: string[] | number | unknown[]
+  created?: Ecosystem['created']
+  updated?: Ecosystem['updated']
+}
+
+export type EcosystemInterfaceInput = EcosystemSurface & {
   key?: string
   src?: string
   text?: string
   href?: string
   appCount?: number
-  apps?: number | unknown[]
 }
 
 export type EcosystemInterfaceCard = {

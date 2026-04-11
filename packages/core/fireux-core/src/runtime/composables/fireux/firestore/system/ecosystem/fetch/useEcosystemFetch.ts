@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import type { Ecosystem } from '../../../../../../models/system/ecosystem.model'
+import type { EcosystemSurface } from '../utils/view/useEcosystemInterface'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
 export function useEcosystemFetch(id: string | { value: string }) {
@@ -11,7 +11,7 @@ export function useEcosystemFetch(id: string | { value: string }) {
 
   const source = computed(() => {
     if (!ecosystemId.value) return null
-    return firestoreFetchDoc<Partial<Ecosystem> & { id?: string }>('ecosystems', ecosystemId.value)
+    return firestoreFetchDoc<EcosystemSurface>('ecosystems', ecosystemId.value)
   })
 
   const ecosystem = computed(() => {

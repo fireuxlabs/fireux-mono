@@ -1,8 +1,8 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/mutations/useAppEnsure.ts
 
-import { deleteField, doc, getDoc } from 'firebase/firestore'
+import { deleteField, doc, getDoc, getFirestore, serverTimestamp, setDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useFirebaseApp, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { $fetch } from 'ofetch'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import { useFirestoreEcosystemEnsure } from '../../../system/ecosystem/mutations/useFirestoreEcosystemEnsure'
@@ -53,6 +53,7 @@ function pruneEmptyBootstrapValue(value: unknown): unknown {
 function buildCreatePayload(fireux: ReturnType<typeof useFireUXConfig>): CreateAppInput {
   const payload = pruneEmptyBootstrapValue({
     id: fireux.appId,
+    project_id: fireux.ecosystem,
     ecosystem_id: fireux.ecosystem,
     slug: fireux.appId,
     status: 'active',
@@ -61,6 +62,13 @@ function buildCreatePayload(fireux: ReturnType<typeof useFireUXConfig>): CreateA
     role: fireux.role,
     ecosystem: fireux.ecosystem,
     console_enabled: true,
+    social_links: {
+      website: fireux.siteUrl,
+    },
+    media: {
+      thumbnail_url: fireux.appThumbnail,
+      logo_url: fireux.appLogo,
+    },
     derived: {
       user_count: 0,
     },
@@ -76,6 +84,8 @@ function buildRepairPatch(
   const patch: Record<string, unknown> = {}
 
   const ensureStringFields: Record<string, string> = {
+    id: fireux.appId,
+    project_id: fireux.ecosystem,
     ecosystem_id: fireux.ecosystem,
     slug: fireux.appId,
     status: 'active',
@@ -95,7 +105,25 @@ function buildRepairPatch(
     patch.console_enabled = true
   }
 
+  const websiteUrl = asTrimmedString(fireux.siteUrl)
+  const socialLinks = isPlainRecord(existing.social_links) ? existing.social_links : {}
+  if (websiteUrl && !asTrimmedString(socialLinks.website)) {
+    patch['social_links.website'] = websiteUrl
+  }
+
   const media = isPlainRecord(existing.media) ? existing.media : {}
+  const mediaDefaults: Record<string, string> = {
+    thumbnail_url: asTrimmedString(fireux.appThumbnail),
+    logo_url: asTrimmedString(fireux.appLogo),
+  }
+
+  for (const [key, value] of Object.entries(mediaDefaults)) {
+    if (!value) continue
+    if (!asTrimmedString(media[key])) {
+      patch[`media.${key}`] = value
+    }
+  }
+
   for (const key of [
     'thumbnail_url',
     'logo_url',
@@ -110,7 +138,6 @@ function buildRepairPatch(
   }
 
   const deleteIfEmpty = [
-    'project_id',
     'team',
     'tagline',
     'description',
@@ -136,7 +163,7 @@ function buildRepairPatch(
     const hasAnySocialValue = Object.values(existing.social_links).some((value) =>
       Boolean(asTrimmedString(value))
     )
-    if (!hasAnySocialValue) {
+    if (!hasAnySocialValue && !('social_links.website' in patch)) {
       patch.social_links = deleteField()
     }
   }
@@ -145,7 +172,9 @@ function buildRepairPatch(
 }
 
 export function useAppEnsure() {
+  const firebaseApp = useFirebaseApp()
   const db = useFirestore()
+  const defaultDb = getFirestore(firebaseApp)
   const { createApp } = useAppCreate()
   const { updateDocument } = useFirestoreUpdate()
   const { ensureFirestoreProjectDoc } = useFirestoreProjectEnsure()
@@ -169,6 +198,49 @@ export function useAppEnsure() {
     await ensureFirestoreProjectDoc()
     await ensureFirestoreEcosystemDoc()
 
+    const createPayload = buildCreatePayload(fireux)
+
+    const defaultRef = doc(defaultDb, 'apps', fireux.appId)
+    const defaultSnap = await getDoc(defaultRef)
+
+    if (defaultSnap.exists()) {
+      const repairPatch = buildRepairPatch(
+        (defaultSnap.data() as Record<string, unknown>) ?? {},
+        fireux
+      )
+
+      const defaultData = (defaultSnap.data() as Record<string, unknown>) ?? {}
+      if (!isPlainRecord(defaultData.created)) {
+        repairPatch.created = {
+          at: serverTimestamp(),
+          by: fireux.appId,
+          app_id: fireux.appId,
+        }
+      }
+
+      repairPatch.updated = {
+        at: serverTimestamp(),
+        by: fireux.appId,
+      }
+
+      if (Object.keys(repairPatch).length) {
+        await setDoc(defaultRef, repairPatch, { merge: true })
+      }
+    } else {
+      await setDoc(defaultRef, {
+        ...createPayload,
+        created: {
+          at: serverTimestamp(),
+          by: fireux.appId,
+          app_id: fireux.appId,
+        },
+        updated: {
+          at: serverTimestamp(),
+          by: fireux.appId,
+        },
+      })
+    }
+
     const ref = doc(db, 'apps', fireux.appId)
     const snap = await getDoc(ref)
 
@@ -187,7 +259,7 @@ export function useAppEnsure() {
     // NOTE: App creation does NOT imply user membership.
     // User ↔ App binding is handled explicitly elsewhere.
 
-    await createApp(buildCreatePayload(fireux))
+    await createApp(createPayload)
 
     return { created: true, id: fireux.appId }
   }

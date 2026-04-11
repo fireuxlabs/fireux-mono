@@ -1,8 +1,8 @@
 import { computed } from 'vue'
-import type { Ecosystem } from '../../../../../../models/system/ecosystem.model'
+import type { EcosystemSurface } from '../utils/view/useEcosystemInterface'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
-type EcosystemCollectionDoc = Partial<Ecosystem> & { id?: string }
+type EcosystemCollectionDoc = EcosystemSurface
 
 export function useEcosystemCollection(collectionPath: string | { value?: string } = 'ecosystems') {
   const { firestoreFetchCollection } = useFirestoreRead()

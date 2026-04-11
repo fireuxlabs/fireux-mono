@@ -71,11 +71,16 @@ import { useRoute, useRouter } from '#imports'
 import { computed, ref, watch } from 'vue'
 import { useProjectSelection } from '../../../../composables/fireux/app/project-console/useProjectSelection'
 import { useProjectCreate } from '../../../../composables/fireux/firestore/system/project/mutations/useProjectCreate'
+import {
+  normalizeFireuxConsoleEndpoint,
+  readProjectPublicFacade,
+  type FireuxConsolePayload,
+  type ProjectPublicFacade,
+} from '../../../../composables/fireux/firestore/system/project/utils/fireuxConsoleProjectFacade'
 import type {
   ConsoleCreateMode,
   ConsoleEnsureResult,
 } from '../../../../composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
-import type { FireuxProjectType } from '../../../../models/system/project.model'
 
 const props = withDefaults(defineProps<{
   mode?: ConsoleCreateMode
@@ -96,62 +101,8 @@ const router = useRouter()
 const { setRuntimeProject } = useProjectSelection()
 const { createProject } = useProjectCreate()
 
-type FireuxConsoleApp = {
-  id: string
-  name: string
-  slug: string
-  ecosystem_id: string
-}
-
-type FireuxConsoleProjectMeta = {
-  name: string
-  slug: string
-  description: string
-  image_url: string
-  project_type: FireuxProjectType
-  source_url: string
-  console_endpoint_url: string
-  app_id: string
-  ecosystem_id: string
-  firebase_project_id: string
-}
-
-type FireuxConsoleEcosystem = {
-  id: string
-  slug: string
-  name: string
-  description: string
-  image_url: string
-  source_url: string
-}
-
-type FireuxConsolePayload = {
-  project: {
-    id: string
-    main_app_id: string
-    main_ecosystem_id: string
-  }
-  project_meta: FireuxConsoleProjectMeta
-  ecosystem?: FireuxConsoleEcosystem | null
-  ecosystems?: FireuxConsoleEcosystem[]
-  databases: Array<{
-    name: string
-    apps: FireuxConsoleApp[]
-  }>
-}
-
-type ProjectMeta = {
-  name: string
-  description: string
-  slug: string
-  image_url: string
+type ProjectMeta = ProjectPublicFacade & {
   primary_project: boolean
-  project_type: FireuxProjectType
-  source_url: string
-  console_endpoint_url: string
-  app_id: string
-  ecosystem_id: string
-  firebase_project_id: string
 }
 
 const endpointUrl = ref('')
@@ -176,66 +127,11 @@ watch(endpointUrl, () => {
   projectMeta.value = null
 })
 
-function normalizeFireuxConsoleEndpoint(value: string) {
-  const raw = String(value || '').trim()
-  if (!raw) {
-    throw new Error('Project endpoint URL is required')
-  }
-
-  let url: URL
-  try {
-    url = new URL(raw)
-  } catch {
-    throw new Error('Enter a valid project endpoint URL')
-  }
-
-  if (url.pathname === '' || url.pathname === '/') {
-    url.pathname = '/api/fireux-console'
-    return url.toString()
-  }
-
-  if (url.pathname === '/api/fireux-console') {
-    return url.toString()
-  }
-
-  throw new Error('Use the app URL or the full /api/fireux-console endpoint')
-}
-
 function readProjectMeta(payload: unknown, normalizedUrl: string) {
-  const next = payload as FireuxConsolePayload | null
-  if (!next?.project || !next?.project_meta || !Array.isArray(next.databases)) {
-    throw new Error('Project endpoint did not return the required console data')
-  }
-
-  const meta = next.project_meta
-  const ecosystem = next.ecosystem
-  const firebaseProjectId = String(meta.firebase_project_id || next.project.id || '').trim()
-  if (!firebaseProjectId) {
-    throw new Error('Project endpoint did not return a project id')
-  }
-
-  const normalizedEndpoint = normalizeFireuxConsoleEndpoint(normalizedUrl)
-
+  const facade = readProjectPublicFacade(payload as FireuxConsolePayload, normalizedUrl)
   return {
-    name: String(meta.name || '').trim(),
-    description: String(meta.description || ecosystem?.description || '').trim(),
-    slug: String(meta.slug || firebaseProjectId).trim(),
-    image_url: String(meta.image_url || ecosystem?.image_url || '').trim(),
+    ...facade,
     primary_project: true,
-    project_type: String(meta.project_type || '').trim() as FireuxProjectType,
-    source_url: String(
-      meta.source_url || ecosystem?.source_url || new URL(normalizedEndpoint).origin
-    ).trim(),
-    console_endpoint_url: String(meta.console_endpoint_url || normalizedEndpoint).trim(),
-    app_id: String(meta.app_id || next.project.main_app_id || '').trim(),
-    ecosystem_id: String(
-      meta.ecosystem_id ||
-      ecosystem?.slug ||
-      ecosystem?.id ||
-      next.project.main_ecosystem_id ||
-      ''
-    ).trim(),
-    firebase_project_id: firebaseProjectId,
   }
 }
 
