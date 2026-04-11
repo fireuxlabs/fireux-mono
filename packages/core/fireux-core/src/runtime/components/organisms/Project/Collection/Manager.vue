@@ -80,11 +80,11 @@ import { useCollectionSearch } from '../../../../composables/shared/useCollectio
 import {
   useProjectInterface,
   type ProjectInterfaceCard,
-  type ProjectInterfaceInput,
+  type ProjectSurface,
 } from '../../../../composables/fireux/firestore/system/project/utils/view/useProjectInterface'
 
 const props = withDefaults(defineProps<{
-  collection?: ProjectInterfaceInput[]
+  collection?: ProjectSurface[]
   title?: string
   description?: string
   link?: boolean
@@ -137,8 +137,8 @@ const devJsonContext = computed(
 )
 const { interface: makeCard, searchText } = useProjectInterface()
 
-const collection = computed<ProjectInterfaceInput[]>(() =>
-  rawCollection.value.filter((row): row is ProjectInterfaceInput => Boolean(makeCard(row)))
+const collection = computed<ProjectSurface[]>(() =>
+  rawCollection.value.filter((row): row is ProjectSurface => Boolean(makeCard(row)))
 )
 
 const {
@@ -147,7 +147,7 @@ const {
   toggleVariant,
   cards: cardsFiltered,
   visibleCount,
-} = useCollectionSearch<ProjectInterfaceInput, ProjectInterfaceCard>({
+} = useCollectionSearch<ProjectSurface, ProjectInterfaceCard>({
   items: collection,
   searchText: (row) => searchText(row),
   makeCard: (row) => makeCard(row),

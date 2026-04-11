@@ -1,4 +1,8 @@
-import type { Project } from '../../../../../../../models/system/project.model'
+import type {
+  Project,
+  ProjectStatus,
+  ProjectType,
+} from '../../../../../../../models/system/project.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 const DEFAULT_PROJECT_IMAGE = '/img/core/brand/logo.png'
@@ -9,8 +13,24 @@ const labelize = (value: string) =>
     .map((part) => part[0]?.toUpperCase() + part.slice(1))
     .join(' ')
 
-export type ProjectInterfaceInput = Partial<Project> & {
+export type ProjectSurface = {
+  id?: string
   key?: string
+  name?: string
+  slug?: string
+  description?: string
+  image_url?: string
+  status?: ProjectStatus | string
+  source_url?: string
+  primary_project?: boolean
+  project_type?: ProjectType | string
+  console_endpoint_url?: string
+  app_id?: string
+  ecosystem_id?: string
+  firebase_project_id?: string
+  owner_user_id?: string
+  created?: Project['created']
+  updated?: Project['updated']
 }
 
 export type ProjectInterfaceCard = {
@@ -30,7 +50,7 @@ export function useProjectInterface() {
   type ProjectProfile = ProjectInterfaceCard
 
   function buildInterface(
-    target?: ProjectInterfaceInput | null | undefined
+    target?: ProjectSurface | null | undefined
   ): ProjectInterfaceCard | null {
     if (!target) return null
 
@@ -63,7 +83,7 @@ export function useProjectInterface() {
     }
   }
 
-  function searchText(target: ProjectInterfaceInput): string {
+  function searchText(target: ProjectSurface): string {
     const key = safeString(target.key) || safeString(target.id) || safeString(target.slug)
 
     return [
@@ -78,19 +98,19 @@ export function useProjectInterface() {
       .toLowerCase()
   }
 
-  function pill(target?: ProjectInterfaceInput | null | undefined): ProjectPill | null {
+  function pill(target?: ProjectSurface | null | undefined): ProjectPill | null {
     return buildInterface(target)
   }
 
-  function cell(target?: ProjectInterfaceInput | null | undefined): ProjectCell | null {
+  function cell(target?: ProjectSurface | null | undefined): ProjectCell | null {
     return buildInterface(target)
   }
 
-  function preview(target?: ProjectInterfaceInput | null | undefined): ProjectPreview | null {
+  function preview(target?: ProjectSurface | null | undefined): ProjectPreview | null {
     return buildInterface(target)
   }
 
-  function profile(target?: ProjectInterfaceInput | null | undefined): ProjectProfile | null {
+  function profile(target?: ProjectSurface | null | undefined): ProjectProfile | null {
     return buildInterface(target)
   }
 

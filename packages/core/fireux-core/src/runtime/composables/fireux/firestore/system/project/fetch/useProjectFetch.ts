@@ -1,8 +1,8 @@
 import { computed, isRef, type Ref } from 'vue'
-import type { Project } from '../../../../../../models/system/project.model'
+import type { ProjectSurface } from '../utils/view/useProjectInterface'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
-type ProjectFetchDoc = Partial<Project> & { id?: string }
+type ProjectFetchDoc = ProjectSurface
 
 type UseProjectFetchOptions = {
   collectionPath?: string | Ref<string>
