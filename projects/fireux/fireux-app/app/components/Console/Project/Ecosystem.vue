@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-6">
+  <section class="console-surface">
     <UAlert
       v-if="!projectId"
       color="neutral"
@@ -19,63 +19,69 @@
     <template v-else>
       <UCard>
         <template #header>
-          <div class="space-y-1">
-            <div class="text-sm font-semibold">Project Context</div>
-            <p class="text-sm text-dimmed">
+          <div class="console-card-header">
+            <div class="console-card-header__title">Project Context</div>
+            <p class="console-card-header__description">
               The selected project and the ecosystem id it currently points to.
             </p>
           </div>
         </template>
 
-        <div class="grid gap-3 text-sm text-dimmed sm:grid-cols-2">
-          <div>
+        <div class="console-summary-grid">
+          <div class="console-summary-field">
             Project ID:
-            <span class="font-medium text-default">{{ projectId }}</span>
+            <span class="console-summary-value">{{ projectId }}</span>
           </div>
 
-          <div v-if="projectName">
+          <div v-if="projectName" class="console-summary-field">
             Name:
-            <span class="font-medium text-default">{{ projectName }}</span>
+            <span class="console-summary-value">{{ projectName }}</span>
           </div>
 
-          <div v-if="projectSlug">
+          <div v-if="projectSlug" class="console-summary-field">
             Slug:
-            <span class="font-medium text-default">{{ projectSlug }}</span>
+            <span class="console-summary-value">{{ projectSlug }}</span>
           </div>
 
-          <div>
+          <div class="console-summary-field">
             Ecosystem ID:
-            <span class="font-medium text-default">{{ ecosystemId }}</span>
+            <span class="console-summary-value">{{ ecosystemId }}</span>
           </div>
 
-          <div v-if="projectStatus">
+          <div v-if="projectStatus" class="console-summary-field">
             Status:
-            <span class="font-medium text-default">{{ projectStatus }}</span>
+            <span class="console-summary-value">{{ projectStatus }}</span>
           </div>
 
-          <div v-if="consoleEndpoint" class="sm:col-span-2">
+          <div
+            v-if="consoleEndpoint"
+            class="console-summary-field console-summary-field--full"
+          >
             Console Endpoint:
-            <span class="font-medium text-default break-all">{{ consoleEndpoint }}</span>
+            <span class="console-summary-value break-all">{{ consoleEndpoint }}</span>
           </div>
 
-          <div v-if="projectDescription" class="sm:col-span-2">
+          <div
+            v-if="projectDescription"
+            class="console-summary-field console-summary-field--full"
+          >
             Description:
-            <span class="font-medium text-default">{{ projectDescription }}</span>
+            <span class="console-summary-value">{{ projectDescription }}</span>
           </div>
         </div>
       </UCard>
 
       <UCard>
         <template #header>
-          <div class="space-y-1">
-            <div class="text-sm font-semibold">Public Ecosystem Facade</div>
-            <p class="text-sm text-dimmed">
+          <div class="console-card-header">
+            <div class="console-card-header__title">Public Ecosystem Facade</div>
+            <p class="console-card-header__description">
               Root ecosystem data fetched from the canonical public collection.
             </p>
           </div>
         </template>
 
-        <div v-if="ecosystemPending" class="text-sm text-dimmed">
+        <div v-if="ecosystemPending" class="console-card-header__description">
           Loading ecosystem facade...
         </div>
 
@@ -86,75 +92,81 @@
             :link="false"
           />
 
-          <div class="grid gap-3 text-sm text-dimmed sm:grid-cols-2">
-            <div>
+          <div class="console-summary-grid">
+            <div class="console-summary-field">
               Ecosystem ID:
-              <span class="font-medium text-default">{{ ecosystemRecordId }}</span>
+              <span class="console-summary-value">{{ ecosystemRecordId }}</span>
             </div>
 
-            <div v-if="ecosystemName">
+            <div v-if="ecosystemName" class="console-summary-field">
               Name:
-              <span class="font-medium text-default">{{ ecosystemName }}</span>
+              <span class="console-summary-value">{{ ecosystemName }}</span>
             </div>
 
-            <div v-if="ecosystemSlug">
+            <div v-if="ecosystemSlug" class="console-summary-field">
               Slug:
-              <span class="font-medium text-default">{{ ecosystemSlug }}</span>
+              <span class="console-summary-value">{{ ecosystemSlug }}</span>
             </div>
 
-            <div v-if="ecosystemProjectId">
+            <div v-if="ecosystemProjectId" class="console-summary-field">
               Project ID:
-              <span class="font-medium text-default">{{ ecosystemProjectId }}</span>
+              <span class="console-summary-value">{{ ecosystemProjectId }}</span>
             </div>
 
-            <div v-if="ecosystemStatus">
+            <div v-if="ecosystemStatus" class="console-summary-field">
               Status:
-              <span class="font-medium text-default">{{ ecosystemStatus }}</span>
+              <span class="console-summary-value">{{ ecosystemStatus }}</span>
             </div>
 
-            <div v-if="ecosystemTeam">
+            <div v-if="ecosystemTeam" class="console-summary-field">
               Team:
-              <span class="font-medium text-default">{{ ecosystemTeam }}</span>
+              <span class="console-summary-value">{{ ecosystemTeam }}</span>
             </div>
 
-            <div>
+            <div class="console-summary-field">
               Apps:
-              <span class="font-medium text-default">{{ ecosystemAppCount }}</span>
+              <span class="console-summary-value">{{ ecosystemAppCount }}</span>
             </div>
 
-            <div v-if="ecosystemSourceUrl" class="sm:col-span-2">
+            <div
+              v-if="ecosystemSourceUrl"
+              class="console-summary-field console-summary-field--full"
+            >
               Source URL:
-              <span class="font-medium text-default break-all">{{ ecosystemSourceUrl }}</span>
+              <span class="console-summary-value break-all">{{ ecosystemSourceUrl }}</span>
             </div>
 
-            <div v-if="ecosystemDescription" class="sm:col-span-2">
+            <div
+              v-if="ecosystemDescription"
+              class="console-summary-field console-summary-field--full"
+            >
               Description:
-              <span class="font-medium text-default">{{ ecosystemDescription }}</span>
+              <span class="console-summary-value">{{ ecosystemDescription }}</span>
             </div>
           </div>
         </div>
 
-        <p v-else class="text-sm text-dimmed">
+        <p v-else class="console-card-header__description">
           No public ecosystem facade was found for
-          <span class="font-medium text-default">{{ ecosystemId }}</span>.
+          <span class="console-summary-value">{{ ecosystemId }}</span>.
         </p>
       </UCard>
 
-      <div class="grid gap-4 xl:grid-cols-2">
+      <div class="console-surface__grid console-surface__grid--2">
         <UCard>
           <template #header>
-            <div class="text-sm font-semibold">Project JSON</div>
+            <div class="console-card-header__title">Project JSON</div>
           </template>
 
-          <pre class="overflow-auto text-xs">{{ projectDump }}</pre>
+          <pre class="console-code">{{ projectDump }}</pre>
         </UCard>
 
         <UCard>
           <template #header>
-            <div class="text-sm font-semibold">Ecosystem JSON</div>
+            <div class="console-card-header__title">Ecosystem JSON</div>
           </template>
 
-          <pre class="overflow-auto text-xs">{{ ecosystemDump }}</pre>
+          <pre class="console-code">{{ ecosystemDump }}</pre>
         </UCard>
       </div>
     </template>

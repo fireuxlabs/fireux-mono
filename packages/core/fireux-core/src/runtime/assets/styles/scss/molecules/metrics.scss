@@ -1,1 +1,23 @@
+/*
+Console and summary metrics:
+- keep these light so Nuxt UI cards still do the visual heavy lifting
+- only define the small amount of structure/typography we want repeated everywhere
+*/
 
+.console-metric {
+	display: grid;
+	gap: 0.25rem;
+	min-width: 0;
+}
+
+.console-metric__value {
+	font-size: 1.875rem;
+	line-height: 1;
+	font-weight: 600;
+	color: var(--ui-text, currentColor);
+}
+
+.console-metric__label {
+	font-size: 0.875rem;
+	color: var(--ui-text-muted, var(--ui-text));
+}

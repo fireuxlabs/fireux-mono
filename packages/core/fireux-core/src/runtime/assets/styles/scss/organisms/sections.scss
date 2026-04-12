@@ -14,6 +14,98 @@
 }
 
 /*
+Minimal console shell helpers:
+- layout and rhythm only
+- visual polish should mostly come from Nuxt UI components and shared cards
+*/
+.console-surface {
+	display: flex;
+	flex-direction: column;
+	gap: 1.5rem;
+	min-width: 0;
+}
+
+.console-surface__grid {
+	display: grid;
+	gap: 1rem;
+	min-width: 0;
+}
+
+.console-surface__grid--2 {
+	grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 1024px) {
+	.console-surface__grid--2 {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+.console-card-header {
+	display: grid;
+	gap: 0.25rem;
+	min-width: 0;
+}
+
+.console-card-header__title {
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--ui-text, currentColor);
+}
+
+.console-card-header__description {
+	margin: 0;
+	font-size: 0.875rem;
+	line-height: 1.45;
+	color: var(--ui-text-muted, var(--ui-text));
+}
+
+.console-focus {
+	display: grid;
+	gap: 0.75rem;
+	min-width: 0;
+}
+
+.console-focus__title {
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: var(--ui-text, currentColor);
+}
+
+.console-summary-grid {
+	display: grid;
+	gap: 0.75rem 1rem;
+	font-size: 0.875rem;
+	color: var(--ui-text-muted, var(--ui-text));
+	min-width: 0;
+}
+
+@media (min-width: 640px) {
+	.console-summary-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+.console-summary-field {
+	min-width: 0;
+}
+
+.console-summary-field--full {
+	grid-column: 1 / -1;
+}
+
+.console-summary-value {
+	font-weight: 500;
+	color: var(--ui-text, currentColor);
+}
+
+.console-code {
+	overflow: auto;
+	font-size: 0.75rem;
+	line-height: 1.5;
+}
+
+/*
 Usage-state CTAs (showing a current item) should feel compact.
 Onboarding / action CTAs keep default UPageCTA spacing.
 */

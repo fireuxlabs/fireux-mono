@@ -1,29 +1,29 @@
 <template>
-  <section class="space-y-6">
-    <div v-if="project" class="grid gap-4 lg:grid-cols-2">
+  <section class="console-surface">
+    <div v-if="project" class="console-surface__grid console-surface__grid--2">
       <UCard>
         <template #header>
-          <div class="space-y-1">
-            <div class="text-sm font-semibold">Focus</div>
-            <p class="text-sm text-dimmed">
+          <div class="console-card-header">
+            <div class="console-card-header__title">Focus</div>
+            <p class="console-card-header__description">
               Metrics for the selected project.
             </p>
           </div>
         </template>
 
-        <div class="space-y-3">
-          <div class="text-sm font-medium text-highlighted">
+        <div class="console-focus">
+          <div class="console-focus__title">
             {{ projectTitle }}
           </div>
 
-          <div class="space-y-1">
-            <div class="text-3xl font-semibold text-default">
+          <div class="console-metric">
+            <div class="console-metric__value">
               {{ focusUsersValue }}
             </div>
-            <div class="text-sm text-dimmed">Users</div>
+            <div class="console-metric__label">Users</div>
           </div>
 
-          <p class="text-sm text-dimmed">
+          <p class="console-card-header__description">
             User totals for the selected project are not wired yet.
           </p>
         </div>
@@ -31,27 +31,27 @@
 
       <UCard>
         <template #header>
-          <div class="space-y-1">
-            <div class="text-sm font-semibold">All</div>
-            <p class="text-sm text-dimmed">
+          <div class="console-card-header">
+            <div class="console-card-header__title">All</div>
+            <p class="console-card-header__description">
               Metrics across every project in the collection.
             </p>
           </div>
         </template>
 
-        <div class="space-y-3">
-          <div class="text-sm font-medium text-highlighted">
+        <div class="console-focus">
+          <div class="console-focus__title">
             All Projects
           </div>
 
-          <div class="space-y-1">
-            <div class="text-3xl font-semibold text-default">
+          <div class="console-metric">
+            <div class="console-metric__value">
               {{ allUsersValue }}
             </div>
-            <div class="text-sm text-dimmed">Users</div>
+            <div class="console-metric__label">Users</div>
           </div>
 
-          <p class="text-sm text-dimmed">
+          <p class="console-card-header__description">
             Total projects in scope: {{ totalProjectsLabel }}.
           </p>
         </div>
@@ -60,42 +60,42 @@
 
     <UCard>
       <template #header>
-        <div class="space-y-1">
-          <div class="text-sm font-semibold">Project Summary</div>
-          <p class="text-sm text-dimmed">
+        <div class="console-card-header">
+          <div class="console-card-header__title">Project Summary</div>
+          <p class="console-card-header__description">
             Live details for the currently selected project.
           </p>
         </div>
       </template>
 
-      <div v-if="project" class="grid gap-3 text-sm text-dimmed sm:grid-cols-2">
-        <div>
+      <div v-if="project" class="console-summary-grid">
+        <div class="console-summary-field">
           Project ID:
-          <span class="font-medium text-default">{{ projectId }}</span>
+          <span class="console-summary-value">{{ projectId }}</span>
         </div>
-        <div v-if="projectName">
+        <div v-if="projectName" class="console-summary-field">
           Name:
-          <span class="font-medium text-default">{{ projectName }}</span>
+          <span class="console-summary-value">{{ projectName }}</span>
         </div>
-        <div v-if="projectSlug">
+        <div v-if="projectSlug" class="console-summary-field">
           Slug:
-          <span class="font-medium text-default">{{ projectSlug }}</span>
+          <span class="console-summary-value">{{ projectSlug }}</span>
         </div>
-        <div v-if="projectStatus">
+        <div v-if="projectStatus" class="console-summary-field">
           Status:
-          <span class="font-medium text-default">{{ projectStatus }}</span>
+          <span class="console-summary-value">{{ projectStatus }}</span>
         </div>
-        <div v-if="consoleEndpoint" class="sm:col-span-2">
+        <div v-if="consoleEndpoint" class="console-summary-field console-summary-field--full">
           Console Endpoint:
-          <span class="font-medium text-default break-all">{{ consoleEndpoint }}</span>
+          <span class="console-summary-value break-all">{{ consoleEndpoint }}</span>
         </div>
-        <div v-if="projectDescription" class="sm:col-span-2">
+        <div v-if="projectDescription" class="console-summary-field console-summary-field--full">
           Description:
-          <span class="font-medium text-default">{{ projectDescription }}</span>
+          <span class="console-summary-value">{{ projectDescription }}</span>
         </div>
       </div>
 
-      <p v-else class="text-sm text-dimmed">
+      <p v-else class="console-card-header__description">
         No live project is currently selected.
       </p>
     </UCard>

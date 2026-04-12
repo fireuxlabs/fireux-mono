@@ -1,5 +1,5 @@
 <template>
-  <section class="space-y-6">
+  <section class="console-surface">
     <UAlert
       v-if="!project"
       color="neutral"
@@ -18,9 +18,9 @@
 
     <UCard v-else>
       <template #header>
-        <div class="space-y-1">
-          <div class="text-sm font-semibold">Project Apps</div>
-          <p class="text-sm text-dimmed">
+        <div class="console-card-header">
+          <div class="console-card-header__title">Project Apps</div>
+          <p class="console-card-header__description">
             App refs come from the selected project endpoint, then each app resolves its own public
             app facade.
           </p>
@@ -28,26 +28,26 @@
       </template>
 
       <div class="space-y-4">
-        <div class="grid gap-3 text-sm text-dimmed sm:grid-cols-2">
-          <div>
+        <div class="console-summary-grid">
+          <div class="console-summary-field">
             Project ID:
-            <span class="font-medium text-default">{{ projectId }}</span>
+            <span class="console-summary-value">{{ projectId }}</span>
           </div>
-          <div>
+          <div class="console-summary-field">
             App refs:
-            <span class="font-medium text-default">{{ appRefCount }}</span>
+            <span class="console-summary-value">{{ appRefCount }}</span>
           </div>
-          <div>
+          <div class="console-summary-field">
             Resolved apps:
-            <span class="font-medium text-default">{{ apps.length }}</span>
+            <span class="console-summary-value">{{ apps.length }}</span>
           </div>
-          <div>
+          <div class="console-summary-field">
             Endpoint:
-            <span class="font-medium text-default break-all">{{ endpoint }}</span>
+            <span class="console-summary-value break-all">{{ endpoint }}</span>
           </div>
         </div>
 
-        <div v-if="pendingRefs || pendingApps" class="text-sm text-dimmed">
+        <div v-if="pendingRefs || pendingApps" class="console-card-header__description">
           Loading app facades...
         </div>
 
@@ -58,11 +58,14 @@
             description="Apps belonging to the selected project."
           />
 
-          <div v-if="focusedApp && focusedPreview && focusedProfile" class="space-y-4 border-t border-default/40 pt-4">
+          <div
+            v-if="focusedApp && focusedPreview && focusedProfile"
+            class="space-y-4 border-t border-default/40 pt-4"
+          >
             <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-              <div class="space-y-1">
-                <div class="text-sm font-semibold">App Focus</div>
-                <p class="text-sm text-dimmed">
+              <div class="console-card-header">
+                <div class="console-card-header__title">App Focus</div>
+                <p class="console-card-header__description">
                   Spotlight the selected app using the app&rsquo;s own public facade.
                 </p>
               </div>
@@ -113,7 +116,7 @@
               />
             </div>
 
-            <div class="grid gap-4 xl:grid-cols-[320px_minmax(0,1fr)]">
+            <div class="console-surface__grid xl:grid-cols-[320px_minmax(0,1fr)]">
               <AppCardsPreview v-bind="focusedPreview" />
 
               <AppCardsProfile
@@ -128,10 +131,10 @@
 
     <UCard>
       <template #header>
-        <div class="text-sm font-semibold">Apps JSON</div>
+        <div class="console-card-header__title">Apps JSON</div>
       </template>
 
-      <pre class="overflow-auto text-xs">{{ dump }}</pre>
+      <pre class="console-code">{{ dump }}</pre>
     </UCard>
   </section>
 </template>
