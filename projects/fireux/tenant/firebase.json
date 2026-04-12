@@ -8,7 +8,7 @@
     }
   ],
   "hosting": {
-    "site": "tenant",
+    "site": "tennant",
     "public": ".output/public",
     "cleanUrls": true,
     "ignore": [

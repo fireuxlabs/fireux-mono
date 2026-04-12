@@ -1,7 +1,7 @@
 # Read Concept
 
 Authority: Operational
-Updated: 2026-03-23
+Updated: 2026-04-11
 Scope: runtime read behaviour across `pages/`, `components/`, and `composables/`.
 
 Learn how FireUX read behaviour works at runtime, what kind of truth is being read, and how resolved read shapes should be exposed.
@@ -192,6 +192,15 @@ Examples:
 - `App`
 - `Project`
 - `Ecosystem`
+
+For ecosystem apps with a registry split:
+
+- read `project` and `ecosystem` from `(default)`
+- read canonical `apps` and ordinary operational collections from the named operational database
+
+Do not blur:
+- registry/public-mirror reads
+- operational domain reads
 
 ## Current Read Families
 

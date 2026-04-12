@@ -11,7 +11,7 @@ export function useEcosystemFetch(id: string | { value: string }) {
 
   const source = computed(() => {
     if (!ecosystemId.value) return null
-    return firestoreFetchDoc<EcosystemSurface>('ecosystems', ecosystemId.value)
+    return firestoreFetchDoc<EcosystemSurface>('ecosystem', ecosystemId.value)
   })
 
   const ecosystem = computed(() => {

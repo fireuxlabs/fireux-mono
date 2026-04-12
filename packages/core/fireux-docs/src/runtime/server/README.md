@@ -1,7 +1,7 @@
 # Server Directory
 
 Authority: Operational
-Updated: 2026-03-28
+Updated: 2026-04-11
 Scope: `packages/*/fireux-*/src/runtime/server` only.
 
 Learn how `runtime/server/` is used across FireUX module packages.
@@ -15,6 +15,13 @@ Learn how `runtime/server/` is used across FireUX module packages.
 - package-owned API handlers
 - server routes or handlers that the package genuinely delivers
 - server-only support code that belongs to delivered server behavior
+
+For ecosystem apps with a registry split, `runtime/server/` is also the right home for API seams that expose:
+
+- `project` and `ecosystem` from `(default)`
+- `apps` from the named operational database when app truth is required
+
+Those handlers should not pretend the named operational database is the same thing as the registry database.
 
 ## Aligned In Repo
 

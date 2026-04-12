@@ -1,4 +1,4 @@
-import type { ProjectStatus, ProjectType } from '../../../../../../../models/system/project.model'
+import type { ProjectStatus, ProjectType } from '../../../../../../models/system/project.model'
 import type { EcosystemSurface } from '../../ecosystem/utils/view/useEcosystemInterface'
 import type { ProjectSurface } from './view/useProjectInterface'
 

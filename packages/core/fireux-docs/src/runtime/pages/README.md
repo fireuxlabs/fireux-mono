@@ -1,7 +1,7 @@
 # Pages Directory
 
 Authority: Operational
-Updated: 2026-04-10
+Updated: 2026-04-11
 Scope: `packages/*/fireux-*/src/runtime/pages` and child directories under `pages/*`.
 
 Learn how FireUX runtime pages are grouped, which create surfaces matter first, and which entity buckets are still being deferred.
@@ -44,6 +44,20 @@ Use `packages/core/fireux-docs/src/runtime/concepts/create/README.md` for create
 Use `packages/core/fireux-docs/src/runtime/concepts/connect/README.md` for relationship and authority canon.
 Use `packages/core/fireux-docs/src/runtime/concepts/console-entry/README.md` for family-entry canon.
 Use `packages/core/fireux-docs/src/runtime/components/README.md` to understand current create-system families.
+
+## Ecosystem Registry Surfaces
+
+For ecosystem apps with both `(default)` and a named operational database:
+
+- `(default)` exposes the registry/public-mirror records:
+  - `project`
+  - `ecosystem`
+- the named ecosystem database remains the operational database, including canonical `apps`
+
+Page implication:
+
+- FireUX project-console pages should treat external ecosystem registry data as read-only
+- ordinary operational pages should not assume `(default)` is the home for domain collections
 
 ## Near-term Surface Roadmap
 

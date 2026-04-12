@@ -1,7 +1,7 @@
 # Create Concept
 
 Authority: Operational
-Updated: 2026-03-25
+Updated: 2026-04-11
 Scope: runtime create behaviour across `pages/`, `components/`, and `composables/`.
 
 Learn how FireUX create behaviour works at runtime, which create modes exist, and how console creation is supposed to behave.
@@ -44,6 +44,19 @@ Examples:
 - profile setup flows that ensure a missing identity record
 
 This mode is for bootstrap, recovery, and setup-if-missing behaviour.
+
+### Ecosystem App Bootstrap Registry
+
+For ecosystem apps with both `(default)` and a named operational database, onboarding should ensure the registry in `(default)`:
+
+- singular `project`
+- singular `ecosystem`
+
+This bootstrap registry is not the operational domain layer.
+
+Rule:
+- `(default)` holds registry/public-mirror records for `project` and `ecosystem`
+- the named ecosystem database holds canonical `apps` and ordinary operational collections
 
 ### Payload Create
 

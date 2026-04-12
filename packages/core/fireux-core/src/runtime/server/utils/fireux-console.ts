@@ -11,6 +11,7 @@ import type { ProjectStatus, ProjectType } from '../../models/system/project.mod
 import type { EcosystemSurface } from '../../composables/fireux/firestore/system/ecosystem/utils/view/useEcosystemInterface'
 import type { ProjectSurface } from '../../composables/fireux/firestore/system/project/utils/view/useProjectInterface'
 import { normalizeSlug } from '../../utils/slug/normalizeSlug'
+import { getRuntimeFirestore } from './getRuntimeFirestore'
 import { getFirestore } from 'firebase-admin/firestore'
 
 type FireuxConsoleProject = Pick<
@@ -239,8 +240,8 @@ function normalizeApp(docId: string, data: Record<string, unknown>): DefaultAppR
   }
 }
 
-async function listDefaultApps() {
-  const db = getFirestore(getAdminApp())
+async function listOperationalApps() {
+  const db = getRuntimeFirestore()
   const snapshot = await db.collection('apps').get()
 
   return snapshot.docs
@@ -366,7 +367,7 @@ export async function buildFireuxConsoleResponse(
   }
 
   const control = await readProjectControl(projectId)
-  const apps = await listDefaultApps()
+  const apps = await listOperationalApps()
   const ecosystem = await readCurrentEcosystem(control)
 
   const mainApp =

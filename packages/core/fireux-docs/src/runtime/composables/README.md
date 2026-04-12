@@ -1,7 +1,7 @@
 # Composables Directory
 
 Authority: Operational
-Updated: 2026-04-07
+Updated: 2026-04-11
 Scope: `packages/*/fireux-*/src/runtime/composables` only.
 
 Learn how `runtime/composables/` is used across FireUX module packages.
@@ -161,6 +161,12 @@ Subtree meaning:
 - `operations/` = generic Firestore CRUD helpers
 - `utils/` = shared Firestore helpers
 - `seo/` = Firestore SEO indexing helpers
+
+For ecosystem apps with a registry split:
+
+- system composables may read or write `(default)` for `project` and `ecosystem`
+- app composables and operational entity composables should target the named operational database
+- keep registry concerns and operational concerns explicit instead of hiding the database choice inside UI code
 
 ## Console And Entity Seam Pattern
 

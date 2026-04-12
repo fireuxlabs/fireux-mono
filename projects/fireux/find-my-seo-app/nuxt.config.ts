@@ -10,6 +10,9 @@ const fireuxConfig = defineFireuxConfig({
   meta: metaContent,
   role: 'standalone',
   consoleFamilies: [],
+  seo: {
+    siteUrl: 'https://stitch-seo.web.app',
+  },
   modules: [],
 })
 

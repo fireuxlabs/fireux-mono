@@ -69,6 +69,19 @@ function asRecord(value: unknown): Record<string, unknown> {
     : {}
 }
 
+function asNonNegativeInt(value: unknown): number {
+  const n = typeof value === 'number' ? value : Number(value)
+  return Number.isFinite(n) ? Math.max(0, Math.trunc(n)) : 0
+}
+
+function normalizeStatus(value: unknown): 'draft' | 'active' | 'paused' | 'archived' {
+  const raw = asString(value)
+  if (raw === 'draft' || raw === 'active' || raw === 'paused' || raw === 'archived') {
+    return raw
+  }
+  return 'active'
+}
+
 export default defineEventHandler(async (event: H3Event) => {
   const cfg = useFireUXConfig()
   const runtime = useRuntimeConfig()
@@ -79,6 +92,8 @@ export default defineEventHandler(async (event: H3Event) => {
     .catch(() => null)
   const appData = appDoc?.exists ? asRecord(appDoc.data()) : {}
   const media = asRecord(appData.media)
+  const socialLinks = asRecord(appData.social_links)
+  const derived = asRecord(appData.derived)
   const siteOrigin =
     normalizeSiteUrl(runtime.public?.fireux?.siteUrl) ||
     normalizeSiteUrl(cfg.siteUrl) ||
@@ -118,17 +133,42 @@ export default defineEventHandler(async (event: H3Event) => {
     },
     app: {
       id: cfg.appId,
+      project_id: asString(appData.project_id) || ecosystemSlug,
+      ecosystem_id: asString(appData.ecosystem_id) || ecosystemSlug,
       slug: appSlug,
-      name: cfg.appName,
-      short_name: cfg.appShortName,
-      ...(logoUrl || thumbnailUrl
-        ? {
-            media: {
-              ...(logoUrl ? { logo_url: logoUrl } : {}),
-              ...(thumbnailUrl ? { thumbnail_url: thumbnailUrl } : {}),
-            },
-          }
-        : {}),
+      status: normalizeStatus(appData.status),
+      team: asString(appData.team),
+      app_name: asString(appData.app_name) || cfg.appName,
+      app_short_name: asString(appData.app_short_name) || cfg.appShortName || cfg.appName,
+      role: asString(appData.role),
+      ecosystem: asString(appData.ecosystem) || ecosystemSlug,
+      tagline: asString(appData.tagline),
+      description: asString(appData.description),
+      short_bio: asString(appData.short_bio),
+      long_bio: asString(appData.long_bio),
+      social_links: {
+        website:
+          toAbsoluteUrl(socialLinks.website, siteOrigin) ||
+          normalizeSiteUrl(cfg.siteUrl) ||
+          '',
+        twitter: asString(socialLinks.twitter),
+        github: asString(socialLinks.github),
+        linkedin: asString(socialLinks.linkedin),
+        instagram: asString(socialLinks.instagram),
+        facebook: asString(socialLinks.facebook),
+        youtube: asString(socialLinks.youtube),
+        email: asString(socialLinks.email),
+      },
+      derived: {
+        user_count: asNonNegativeInt(derived.user_count),
+      },
+      media: {
+        thumbnail_url: thumbnailUrl || '',
+        logo_url: logoUrl || '',
+        wordmark_light_url: toAbsoluteUrl(media.wordmark_light_url, siteOrigin) || '',
+        wordmark_dark_url: toAbsoluteUrl(media.wordmark_dark_url, siteOrigin) || '',
+        cover_url: toAbsoluteUrl(media.cover_url, siteOrigin) || '',
+      },
       ...(parentApp ? { parent_app: parentApp } : {}),
     },
     now: new Date().toISOString(),

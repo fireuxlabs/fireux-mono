@@ -1,8 +1,8 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/mutations/useAppEnsure.ts
 
-import { deleteField, doc, getDoc, getFirestore, serverTimestamp, setDoc } from 'firebase/firestore'
+import { deleteField, doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useFirebaseApp, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { $fetch } from 'ofetch'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import { useFirestoreEcosystemEnsure } from '../../../system/ecosystem/mutations/useFirestoreEcosystemEnsure'
@@ -172,9 +172,7 @@ function buildRepairPatch(
 }
 
 export function useAppEnsure() {
-  const firebaseApp = useFirebaseApp()
   const db = useFirestore()
-  const defaultDb = getFirestore(firebaseApp)
   const { createApp } = useAppCreate()
   const { updateDocument } = useFirestoreUpdate()
   const { ensureFirestoreProjectDoc } = useFirestoreProjectEnsure()
@@ -199,47 +197,6 @@ export function useAppEnsure() {
     await ensureFirestoreEcosystemDoc()
 
     const createPayload = buildCreatePayload(fireux)
-
-    const defaultRef = doc(defaultDb, 'apps', fireux.appId)
-    const defaultSnap = await getDoc(defaultRef)
-
-    if (defaultSnap.exists()) {
-      const repairPatch = buildRepairPatch(
-        (defaultSnap.data() as Record<string, unknown>) ?? {},
-        fireux
-      )
-
-      const defaultData = (defaultSnap.data() as Record<string, unknown>) ?? {}
-      if (!isPlainRecord(defaultData.created)) {
-        repairPatch.created = {
-          at: serverTimestamp(),
-          by: fireux.appId,
-          app_id: fireux.appId,
-        }
-      }
-
-      repairPatch.updated = {
-        at: serverTimestamp(),
-        by: fireux.appId,
-      }
-
-      if (Object.keys(repairPatch).length) {
-        await setDoc(defaultRef, repairPatch, { merge: true })
-      }
-    } else {
-      await setDoc(defaultRef, {
-        ...createPayload,
-        created: {
-          at: serverTimestamp(),
-          by: fireux.appId,
-          app_id: fireux.appId,
-        },
-        updated: {
-          at: serverTimestamp(),
-          by: fireux.appId,
-        },
-      })
-    }
 
     const ref = doc(db, 'apps', fireux.appId)
     const snap = await getDoc(ref)

@@ -8,7 +8,7 @@
     }
   ],
   "hosting": {
-    "site": "find-my-seo",
+    "site": "stitch-seo",
     "public": ".output/public",
     "cleanUrls": true,
     "ignore": [

@@ -8,6 +8,9 @@ const fireuxConfig = defineFireuxConfig({
   shortName: 'Tenant',
   role: 'tenant',
   consoleFamilies: [],
+  seo: {
+    siteUrl: 'https://tennant.web.app',
+  },
   modules: [],
 })
 

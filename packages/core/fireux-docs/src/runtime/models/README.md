@@ -1,7 +1,7 @@
 # Models Directory
 
 Authority: Operational
-Updated: 2026-03-29
+Updated: 2026-04-11
 Scope: `packages/*/fireux-*/src/runtime/models` and child directories under `models/*`.
 
 Learn how FireUX runtime models are classified, how they are stored, and how future model decisions should be explained.
@@ -141,6 +141,18 @@ Examples:
 
 System models are usually stored once at root.
 If a runtime surface manages them, it should normally do so through a facade first, not by inventing a second stored app-scoped record.
+
+For ecosystem apps that keep both `(default)` and a named operational database, the current storage split is:
+
+- `(default)` = system registry and public mirror
+  - singular `project`
+  - singular `ecosystem`
+- named ecosystem database = operational collections and canonical `apps`
+
+Important:
+- do not treat `(default)` as the home for ordinary operational domain collections
+- `App` stays canonical at `/apps/<appId>` in the named operational database
+- the named operational database should carry the day-to-day domain collections
 
 Preferred model-file shape for system models:
 - `XModel`

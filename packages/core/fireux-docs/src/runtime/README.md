@@ -1,7 +1,7 @@
 # Runtime Directory
 
 Authority: Operational
-Updated: 2026-04-05
+Updated: 2026-04-11
 Scope: `packages/*/fireux-*/src/runtime` only.
 Does not apply to consuming app `app/`, `server/`, or root `public/` directories.
 
@@ -87,6 +87,9 @@ Recent repo truth:
 - runtime drift inspection now uses a dev-only server seam for collection snapshotting
 - collection managers remain component-owned, but direct subcollection discovery is now a runtime server concern
 - console family visibility is now an app-config concern through `consoleFamilies`
+- ecosystem apps now use a clear database split:
+  - `(default)` is the registry/public-mirror database for `project` and `ecosystem`
+  - the named ecosystem database is the operational database, including canonical `apps`
 - the generic console shell now lives in the runtime seam:
   - `useConsoleState()` is the shared console-layout contract
   - `useRuntimeXConsole()` adapts each family into that shared contract
