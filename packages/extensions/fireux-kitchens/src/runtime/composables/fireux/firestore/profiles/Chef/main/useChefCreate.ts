@@ -25,7 +25,7 @@ export function useChefCreate() {
   }> {
     await ensureUser()
     const { uid } = await requireUid()
-    const { appId, isTenant } = useFireUXConfig()
+    const { appId } = useFireUXConfig()
 
     let createdCore = false
     let createdApp = false
@@ -56,7 +56,7 @@ export function useChefCreate() {
       createdCore = true
     }
 
-    if (isTenant && appId) {
+    if (appId) {
       const appCollection = `apps/${appId}/${chefConfig.collectionName}`
       const appRef = doc(db, 'apps', appId, chefConfig.collectionName, uid)
       const appSnap = await getDoc(appRef)
@@ -64,6 +64,7 @@ export function useChefCreate() {
         const payload = {} satisfies Omit<AppChef, 'created' | 'updated' | 'id'>
 
         await setDocument<AppChef>(appCollection, uid, payload as AppChef, {
+          app: true,
           creator: true,
         })
         createdApp = true

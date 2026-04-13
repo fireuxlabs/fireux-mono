@@ -100,6 +100,10 @@ export default defineEventHandler(async (event: H3Event) => {
     normalizeSiteUrl((runtime.public?.fireux as Record<string, unknown> | undefined)?.domain)
   const ecosystemSlug = toSlug(cfg.ecosystem)
   const appSlug = appSlugFromId(cfg.appId)
+  const runtimeProjectId = asString(
+    (runtime.public?.firebaseEcosystem as Record<string, any> | undefined)?.firebase
+      ?.projectId
+  )
   const logoUrl =
     toAbsoluteUrl(media.logo_url, siteOrigin) || toAbsoluteUrl(cfg.appLogo, siteOrigin)
   const thumbnailUrl =
@@ -133,7 +137,7 @@ export default defineEventHandler(async (event: H3Event) => {
     },
     app: {
       id: cfg.appId,
-      project_id: asString(appData.project_id) || ecosystemSlug,
+      project_id: asString(appData.project_id) || runtimeProjectId,
       ecosystem_id: asString(appData.ecosystem_id) || ecosystemSlug,
       slug: appSlug,
       status: normalizeStatus(appData.status),

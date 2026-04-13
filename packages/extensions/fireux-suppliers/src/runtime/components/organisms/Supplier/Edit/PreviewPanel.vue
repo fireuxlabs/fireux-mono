@@ -51,7 +51,7 @@
 import { computed, ref } from 'vue'
 import { useSupplier } from '../../../../composables/fireux/firestore/supplier/useSupplier'
 
-const { coreSupplier, pending, pill: supplierInterface } = useSupplier()
+const { coreSupplier, pending, preview: supplierInterface } = useSupplier()
 
 const previewCard = computed(() => (coreSupplier.value ? supplierInterface(coreSupplier.value) : null))
 const isLoading = computed(() => Boolean(pending.value))

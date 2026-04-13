@@ -55,8 +55,10 @@ if (help) {
   console.log('  - places-backfill-short-name')
   console.log('  - places-backfill-place-type')
   console.log('  - apps-canonical-shape')
+  console.log('  - ecosystem-project-id-fix')
   console.log('  - app-users-canonical-shape')
   console.log('  - app-user-mirrors-rebuild')
+  console.log('  - profile-app-overlays-backfill')
   console.log('  - users-canonical-shape')
   console.log('  - users-delete-root')
   console.log('  - ingredients-canonical-shape')
@@ -893,22 +895,38 @@ function asBoolean(value, fallback = false) {
   return fallback
 }
 
+function pruneStoredRecord(value) {
+  if (value == null) return undefined
+
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    return trimmed ? trimmed : undefined
+  }
+
+  if (Array.isArray(value)) {
+    const next = value
+      .map((entry) => pruneStoredRecord(entry))
+      .filter((entry) => entry !== undefined)
+    return next.length ? next : undefined
+  }
+
+  if (typeof value === 'object') {
+    const nextEntries = Object.entries(value).flatMap(([key, entry]) => {
+      const pruned = pruneStoredRecord(entry)
+      return pruned === undefined ? [] : [[key, pruned]]
+    })
+    return nextEntries.length ? Object.fromEntries(nextEntries) : undefined
+  }
+
+  return value
+}
+
 function normalizeStatus(value) {
   const raw = asString(value, '').trim()
   if (raw === 'draft' || raw === 'active' || raw === 'paused' || raw === 'archived') {
     return raw
   }
   return 'active'
-}
-
-function isFirebaseLikeId(value) {
-  const text = asString(value, '').trim()
-  if (!text) return false
-
-  return (
-    /^fireux-[a-z0-9-]+$/i.test(text) ||
-    /-[a-z0-9]{4,}$/i.test(text)
-  )
 }
 
 function deriveCanonicalEcosystemId(data) {
@@ -921,14 +939,25 @@ function deriveCanonicalEcosystemId(data) {
 }
 
 function deriveCanonicalProjectId(data) {
-  const projectId = asString(data.project_id, '').trim()
+  const storedProjectId = asString(data.project_id, '').trim()
+  const firebaseProjectId = asString(data.firebase_project_id, '').trim()
   const ecosystem = asString(data.ecosystem, '').trim()
   const ecosystemId = deriveCanonicalEcosystemId(data)
+  const activeProjectId = asString(projectId ?? '', '').trim()
 
-  if (projectId && !isFirebaseLikeId(projectId)) return projectId
+  if (
+    storedProjectId &&
+    storedProjectId !== ecosystem &&
+    storedProjectId !== ecosystemId
+  ) {
+    return storedProjectId
+  }
+  if (firebaseProjectId) return firebaseProjectId
+  if (activeProjectId) return activeProjectId
+  if (storedProjectId) return storedProjectId
   if (ecosystem) return ecosystem
   if (ecosystemId) return ecosystemId
-  return projectId
+  return storedProjectId
 }
 
 function normalizeUserHandle(value) {
@@ -1030,7 +1059,6 @@ function buildCanonicalUser(docId, data) {
   if (updatedBy) updated.by = updatedBy
 
   return {
-    id: asString(data.id, '').trim() || docId,
     display_name: displayName,
     avatar: asString(data.avatar, '').trim(),
     handle,
@@ -1077,7 +1105,6 @@ function buildCanonicalAppUser(docId, data, appId) {
   if (updatedBy) updated.by = updatedBy
 
   return {
-    id: asString(data.id, '').trim() || docId,
     role: normalizeAppUserRole(data.role),
     is_premium: asBoolean(data.is_premium ?? data.isPremium, false),
     console_enabled: asBoolean(data.console_enabled ?? data.consoleEnabled, false),
@@ -1149,39 +1176,51 @@ function buildCanonicalApp(docId, data) {
   if (createdBy) created.by = createdBy
   if (updatedBy) updated.by = updatedBy
 
+  const optionalFields =
+    pruneStoredRecord({
+      team: asString(data.team, ''),
+      join_requests: asStringArray(data.join_requests),
+      admin_ids: asStringArray(data.admin_ids),
+      moderation_state: asString(data.moderation_state, ''),
+      ban_reasons: asStringArray(data.ban_reasons),
+      tagline: asString(data.tagline, ''),
+      description: asString(data.description, ''),
+      short_bio: asString(data.short_bio, ''),
+      long_bio: asString(data.long_bio, ''),
+      social_links: {
+        website:
+          asString(socialLinks.website, '') ||
+          asString(data['social_links.website'], '') ||
+          asString(data.source_url, ''),
+        twitter: asString(socialLinks.twitter, ''),
+        github: asString(socialLinks.github, ''),
+        linkedin: asString(socialLinks.linkedin, ''),
+        instagram: asString(socialLinks.instagram, ''),
+        facebook: asString(socialLinks.facebook, ''),
+        youtube: asString(socialLinks.youtube, ''),
+        email: asString(socialLinks.email, ''),
+      },
+      media: {
+        thumbnail_url: asString(media.thumbnail_url, '') || asString(data.thumbnail_url, ''),
+        logo_url: asString(media.logo_url, '') || asString(data.logo_url, ''),
+        wordmark_light_url:
+          asString(media.wordmark_light_url, '') || asString(data.wordmark_light_url, ''),
+        wordmark_dark_url:
+          asString(media.wordmark_dark_url, '') || asString(data.wordmark_dark_url, ''),
+        cover_url: asString(media.cover_url, '') || asString(data.cover_url, ''),
+      },
+    }) || {}
+
   return {
-    id: asString(data.id, '').trim() || docId,
     project_id: projectIdValue,
     ecosystem_id: ecosystemIdValue,
     slug: asString(data.slug, ''),
     status: normalizeStatus(data.status),
-    team: asString(data.team, ''),
     app_name: asString(data.app_name, ''),
     app_short_name: asString(data.app_short_name, ''),
     role: asString(data.role, ''),
     ecosystem,
-    join_requests: asStringArray(data.join_requests),
-    admin_ids: asStringArray(data.admin_ids),
-    moderation_state: asString(data.moderation_state, ''),
-    ban_reasons: asStringArray(data.ban_reasons),
     console_enabled: asBoolean(data.console_enabled, true),
-    tagline: asString(data.tagline, ''),
-    description: asString(data.description, ''),
-    short_bio: asString(data.short_bio, ''),
-    long_bio: asString(data.long_bio, ''),
-    social_links: {
-      website:
-        asString(socialLinks.website, '') ||
-        asString(data['social_links.website'], '') ||
-        asString(data.source_url, ''),
-      twitter: asString(socialLinks.twitter, ''),
-      github: asString(socialLinks.github, ''),
-      linkedin: asString(socialLinks.linkedin, ''),
-      instagram: asString(socialLinks.instagram, ''),
-      facebook: asString(socialLinks.facebook, ''),
-      youtube: asString(socialLinks.youtube, ''),
-      email: asString(socialLinks.email, ''),
-    },
     derived: {
       user_count:
         typeof derived.user_count === 'number' && Number.isFinite(derived.user_count)
@@ -1190,15 +1229,7 @@ function buildCanonicalApp(docId, data) {
               ? data.user_count
               : 0),
     },
-    media: {
-      thumbnail_url: asString(media.thumbnail_url, '') || asString(data.thumbnail_url, ''),
-      logo_url: asString(media.logo_url, '') || asString(data.logo_url, ''),
-      wordmark_light_url:
-        asString(media.wordmark_light_url, '') || asString(data.wordmark_light_url, ''),
-      wordmark_dark_url:
-        asString(media.wordmark_dark_url, '') || asString(data.wordmark_dark_url, ''),
-      cover_url: asString(media.cover_url, '') || asString(data.cover_url, ''),
-    },
+    ...optionalFields,
     created,
     updated,
   }
@@ -1284,6 +1315,56 @@ async function runAppsCanonicalShape() {
   }
 
   console.log('[migrate] apps-canonical-shape done', { processed, updated, skipped, commit })
+}
+
+async function runEcosystemProjectIdFix() {
+  console.log('[migrate] ecosystem-project-id-fix start', {
+    projectId,
+    databaseId: databaseId || '(default)',
+    commit,
+  })
+
+  const targetProjectId = asString(projectId, '').trim()
+  if (!targetProjectId) {
+    throw new Error('[migrate] ecosystem-project-id-fix requires a project id')
+  }
+
+  const now = Timestamp.now()
+  const migrationBy = 'system:migration'
+  const ecosystemSnap = await db.collection('ecosystem').orderBy(FieldPath.documentId()).get()
+  let processed = 0
+  let updated = 0
+
+  for (const docSnap of ecosystemSnap.docs) {
+    processed += 1
+    const currentProjectId = asString(docSnap.data()?.project_id, '').trim()
+    if (currentProjectId === targetProjectId) continue
+
+    updated += 1
+
+    if (commit) {
+      await docSnap.ref.set(
+        {
+          project_id: targetProjectId,
+          updated: {
+            at: now,
+            by: migrationBy,
+          },
+        },
+        { merge: true }
+      )
+    } else {
+      console.log('[dry-run]', docSnap.ref.path, {
+        project_id: targetProjectId,
+      })
+    }
+  }
+
+  console.log('[migrate] ecosystem-project-id-fix done', {
+    processed,
+    updated,
+    commit,
+  })
 }
 
 async function runAppsDeleteRoot() {
@@ -1532,6 +1613,23 @@ function sortedUniqueStrings(value) {
   return [...new Set(asStringArray(value))].sort((a, b) => a.localeCompare(b))
 }
 
+const APP_PROFILE_COLLECTIONS = ['agents', 'professionals', 'chefs']
+
+function buildAppProfileOverlay(appId) {
+  const now = Timestamp.now()
+  return {
+    created: {
+      at: now,
+      by: 'system:migration',
+      app_id: appId,
+    },
+    updated: {
+      at: now,
+      by: 'system:migration',
+    },
+  }
+}
+
 async function runAppUserMirrorsRebuild() {
   console.log('[migrate] app-user-mirrors-rebuild start', {
     projectId,
@@ -1686,6 +1784,87 @@ async function runAppUserMirrorsRebuild() {
     touchedUsers,
     updatedUsers,
     missingRootUsers: [...missingRootUsers].sort((a, b) => a.localeCompare(b)),
+    commit,
+  })
+}
+
+async function runProfileAppOverlaysBackfill() {
+  console.log('[migrate] profile-app-overlays-backfill start', {
+    projectId,
+    databaseId: databaseId || '(default)',
+    commit,
+    app: targetAppId || null,
+  })
+
+  let touchedApps = 0
+  let touchedMemberships = 0
+  let createdOverlays = 0
+  let existingOverlays = 0
+  let missingCoreProfiles = 0
+
+  const appDocs = targetAppId
+    ? [await db.collection('apps').doc(targetAppId).get()].filter((docSnap) => docSnap.exists)
+    : (await db.collection('apps').orderBy(FieldPath.documentId()).get()).docs
+
+  for (const appDoc of appDocs) {
+    touchedApps += 1
+
+    const appUsersSnap = await appDoc.ref.collection('users').get()
+    let batch = db.batch()
+    let batchOps = 0
+
+    for (const userDoc of appUsersSnap.docs) {
+      const uid = asString(userDoc.id).trim()
+      if (!uid) continue
+
+      touchedMemberships += 1
+
+      for (const collectionName of APP_PROFILE_COLLECTIONS) {
+        const coreRef = db.collection(collectionName).doc(uid)
+        const coreSnap = await coreRef.get()
+
+        if (!coreSnap.exists) {
+          missingCoreProfiles += 1
+          continue
+        }
+
+        const overlayRef = appDoc.ref.collection(collectionName).doc(uid)
+        const overlaySnap = await overlayRef.get()
+
+        if (overlaySnap.exists) {
+          existingOverlays += 1
+          continue
+        }
+
+        const payload = buildAppProfileOverlay(appDoc.id)
+        createdOverlays += 1
+
+        if (commit) {
+          batch.set(overlayRef, payload)
+          batchOps += 1
+        } else {
+          console.log('[dry-run]', overlayRef.path, payload)
+        }
+
+        if (commit && batchOps >= 400) {
+          await batch.commit()
+          batch = db.batch()
+          batchOps = 0
+        }
+      }
+    }
+
+    if (commit && batchOps > 0) {
+      await batch.commit()
+    }
+  }
+
+  console.log('[migrate] profile-app-overlays-backfill done', {
+    touchedApps,
+    touchedMemberships,
+    createdOverlays,
+    existingOverlays,
+    missingCoreProfiles,
     commit,
   })
 }
@@ -2730,8 +2909,10 @@ const recipes = {
   'apps-delete-root': runAppsDeleteRoot,
   'apps-content-cleanup': runAppsContentCleanup,
   'apps-canonical-shape': runAppsCanonicalShape,
+  'ecosystem-project-id-fix': runEcosystemProjectIdFix,
   'app-users-canonical-shape': runAppUsersCanonicalShape,
   'app-user-mirrors-rebuild': runAppUserMirrorsRebuild,
+  'profile-app-overlays-backfill': runProfileAppOverlaysBackfill,
   'users-delete-root': runUsersDeleteRoot,
   'users-canonical-shape': runUsersCanonicalShape,
   'jobs-backfill-id': runJobsBackfillId,

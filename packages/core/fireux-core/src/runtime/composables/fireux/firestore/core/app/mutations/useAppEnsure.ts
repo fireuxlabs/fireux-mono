@@ -1,6 +1,7 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/mutations/useAppEnsure.ts
 
 import { deleteField, doc, getDoc } from 'firebase/firestore'
+import { useRuntimeConfig } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { $fetch } from 'ofetch'
@@ -21,6 +22,11 @@ function asTrimmedString(value: unknown): string {
 
 function isPlainRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+}
+
+function resolveRuntimeProjectId(): string {
+  const runtime = useRuntimeConfig()
+  return String(runtime.public?.firebaseEcosystem?.firebase?.projectId || '').trim()
 }
 
 function pruneEmptyBootstrapValue(value: unknown): unknown {
@@ -51,9 +57,10 @@ function pruneEmptyBootstrapValue(value: unknown): unknown {
 }
 
 function buildCreatePayload(fireux: ReturnType<typeof useFireUXConfig>): CreateAppInput {
+  const runtimeProjectId = resolveRuntimeProjectId()
   const payload = pruneEmptyBootstrapValue({
     id: fireux.appId,
-    project_id: fireux.ecosystem,
+    project_id: runtimeProjectId,
     ecosystem_id: fireux.ecosystem,
     slug: fireux.appId,
     status: 'active',
@@ -82,10 +89,10 @@ function buildRepairPatch(
   fireux: ReturnType<typeof useFireUXConfig>
 ) {
   const patch: Record<string, unknown> = {}
+  const runtimeProjectId = resolveRuntimeProjectId()
 
   const ensureStringFields: Record<string, string> = {
     id: fireux.appId,
-    project_id: fireux.ecosystem,
     ecosystem_id: fireux.ecosystem,
     slug: fireux.appId,
     status: 'active',
@@ -99,6 +106,14 @@ function buildRepairPatch(
     if (!asTrimmedString(existing[key])) {
       patch[key] = value
     }
+  }
+
+  const existingProjectId = asTrimmedString(existing.project_id)
+  if (
+    runtimeProjectId &&
+    (!existingProjectId || existingProjectId === fireux.ecosystem)
+  ) {
+    patch.project_id = runtimeProjectId
   }
 
   if (typeof existing.console_enabled !== 'boolean') {

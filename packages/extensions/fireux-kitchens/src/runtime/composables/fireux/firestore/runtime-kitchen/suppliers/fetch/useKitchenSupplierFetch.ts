@@ -41,7 +41,7 @@ export function useKitchenSupplierFetch(
   options: UseKitchenSupplierFetchOptions = {}
 ) {
   const { firestoreFetchCollection } = useFirestoreRead()
-  const { isTenant, appId } = useFireUXConfig()
+  const { appId } = useFireUXConfig()
 
   const isEnabled = computed(() => unref(options.enabled) !== false)
 
@@ -63,7 +63,7 @@ export function useKitchenSupplierFetch(
   const canonicalCorePath = computed(() => (isEnabled.value ? 'suppliers' : ''))
 
   const canonicalAppPath = computed(() =>
-    isEnabled.value && isTenant && appId ? `apps/${appId}/suppliers` : ''
+    isEnabled.value && appId ? `apps/${appId}/suppliers` : ''
   )
 
   const supplierLinksRef = shallowRef(null) as ShallowRef<Ref<SupplierRecord[] | undefined> | null>

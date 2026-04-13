@@ -1,4 +1,8 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import type {
+  FireuxAppOverlay,
+  FireuxStamped,
+} from 'fireux-core/runtime/models/core/meta.model'
+import { FireuxAppOverlayModel } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -47,21 +51,10 @@ export type Portfolio = {
 }
 
 export const AppPortfolioModel = {
-  id: '',
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-    app_id: undefined as FireuxStamped['created']['app_id'],
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
-  },
+  ...FireuxAppOverlayModel,
 } as const
 
-export type AppPortfolio = {
-  [K in keyof typeof AppPortfolioModel]: (typeof AppPortfolioModel)[K]
-}
+export type AppPortfolio = FireuxAppOverlay
 
 export type PortfolioCreateInput = Omit<Portfolio, 'id' | 'created' | 'updated'> & {
   slug?: string

@@ -94,7 +94,7 @@ const { profile, pending } = useProfileFetch<Chef, AppChef>(
 )
 const { coreProfile, appProfile } = profile
 
-const { pill: makeCard } = useChefInterface(profile, userRefs.user)
+const { profile: makeCard } = useChefInterface(profile, userRefs.user)
 
 const isProfileLoading = computed(
   () => pending.value || coreProfile.value === undefined

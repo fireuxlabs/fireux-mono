@@ -11,8 +11,8 @@ type DeleteScope = 'auto' | 'core' | 'app' | 'both'
 export function useAgentDelete(_profile: ProfileRefs<Agent>) {
   const db = useFirestore()
   const { deleteSeoIndexDoc } = useSeoIndexWrite()
-  const { role, appId } = useFireUXConfig()
-  const isTenant = role === 'tenant' && !!appId
+  const { appId } = useFireUXConfig()
+  const hasAppScope = Boolean(appId)
 
   const resolveUid = async (explicitId?: string) => {
     if (explicitId) return explicitId
@@ -35,23 +35,23 @@ export function useAgentDelete(_profile: ProfileRefs<Agent>) {
     if (
       scope === 'core' ||
       scope === 'both' ||
-      (!isTenant && scope === 'auto')
+      (!hasAppScope && scope === 'auto')
     ) {
       await deleteAtPath('agents', id)
       await deleteSeoIndexDoc('seo_index_agents', id)
     }
 
     const deleteAppScope =
-      scope === 'app' || scope === 'both' || (isTenant && scope === 'auto')
+      scope === 'app' || scope === 'both' || (hasAppScope && scope === 'auto')
 
     if (deleteAppScope) {
-      if (!appId) throw new Error('Missing appId for tenant-scoped delete')
+      if (!appId) throw new Error('Missing appId for app-scoped delete')
       await deleteAtPath(`apps/${appId}/agents`, id)
     }
 
     let effectiveScope: DeleteScope = scope
     if (scope === 'auto') {
-      effectiveScope = isTenant ? 'app' : 'core'
+      effectiveScope = hasAppScope ? 'app' : 'core'
     }
 
     return { id, scope: effectiveScope }

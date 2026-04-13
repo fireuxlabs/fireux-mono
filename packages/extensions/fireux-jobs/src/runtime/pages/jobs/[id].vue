@@ -139,7 +139,7 @@ const jobId = computed(() => {
 const { job } = useJobFetch(jobId)
 const { updateJob } = useJobUpdate()
 const { withToast } = useToastify()
-const { pill: jobCardFactory } = useJobInterface()
+const { profile: jobCardFactory } = useJobInterface()
 
 const KitchenPill = defineComponent({
   props: { id: String },

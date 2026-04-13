@@ -13,8 +13,8 @@ export function useProfessionalDelete(
 ) {
   const db = useFirestore()
   const { deleteSeoIndexDoc } = useSeoIndexWrite()
-  const { role, appId } = useFireUXConfig()
-  const isTenant = role === 'tenant' && !!appId
+  const { appId } = useFireUXConfig()
+  const hasAppScope = Boolean(appId)
 
   const resolveUid = async (explicitId?: string) => {
     if (explicitId) return explicitId
@@ -37,23 +37,23 @@ export function useProfessionalDelete(
     if (
       scope === 'core' ||
       scope === 'both' ||
-      (!isTenant && scope === 'auto')
+      (!hasAppScope && scope === 'auto')
     ) {
       await deleteAtPath('professionals', id)
       await deleteSeoIndexDoc('seo_index_professionals', id)
     }
 
     const deleteAppScope =
-      scope === 'app' || scope === 'both' || (isTenant && scope === 'auto')
+      scope === 'app' || scope === 'both' || (hasAppScope && scope === 'auto')
 
     if (deleteAppScope) {
-      if (!appId) throw new Error('Missing appId for tenant-scoped delete')
+      if (!appId) throw new Error('Missing appId for app-scoped delete')
       await deleteAtPath(`apps/${appId}/professionals`, id)
     }
 
     let effectiveScope: DeleteScope = scope
     if (scope === 'auto') {
-      effectiveScope = isTenant ? 'app' : 'core'
+      effectiveScope = hasAppScope ? 'app' : 'core'
     }
 
     return { id, scope: effectiveScope }

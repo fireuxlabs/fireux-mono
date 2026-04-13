@@ -182,7 +182,7 @@ import { useEcosystemInterface } from 'fireux-core/runtime/composables/fireux/fi
 const { id: projectId, project, pending: projectPending } = useActiveProject()
 const ecosystemId = computed(() => String(project.value?.ecosystem_id || '').trim())
 const { ecosystem, pending: ecosystemPending } = useEcosystemFetch(ecosystemId)
-const { interface: makeEcosystemCard } = useEcosystemInterface()
+const { pill: makeEcosystemCard } = useEcosystemInterface()
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 const toDebugJson = (value: unknown) => JSON.stringify(value, null, 2)

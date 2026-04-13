@@ -1,4 +1,8 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import type {
+  FireuxAppOverlay,
+  FireuxStamped,
+} from 'fireux-core/runtime/models/core/meta.model'
+import { FireuxAppOverlayModel } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -49,21 +53,10 @@ export type Supplier = {
 }
 
 export const AppSupplierModel = {
-  id: '',
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-    app_id: undefined as FireuxStamped['created']['app_id'],
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
-  },
+  ...FireuxAppOverlayModel,
 } as const
 
-export type AppSupplier = {
-  [K in keyof typeof AppSupplierModel]: (typeof AppSupplierModel)[K]
-}
+export type AppSupplier = FireuxAppOverlay
 
 export type SupplierCreateInput = Omit<Supplier, 'id' | 'created' | 'updated'>
 

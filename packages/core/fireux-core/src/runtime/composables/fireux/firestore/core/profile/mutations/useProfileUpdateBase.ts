@@ -12,6 +12,7 @@ export function useProfileUpdateBase<TCore extends CoreProfileBase>(
 ) {
   const { updateDocument } = useFirestoreUpdate()
   const { appId, role } = useFireUXConfig()
+  const hasAppScope = Boolean(appId)
   const isTenant = role === 'tenant' && Boolean(appId)
 
   const pruneUndefined = <T extends Record<string, any>>(
@@ -66,9 +67,9 @@ export function useProfileUpdateBase<TCore extends CoreProfileBase>(
     patch: Partial<TCore>,
     options: { id?: string | null } = {}
   ): Promise<void> => {
-    if (!isTenant || !appId) {
+    if (!hasAppScope || !appId) {
       throw new Error(
-        `[useProfileUpdateBase] Tenant context required for app updates (${collectionName})`
+        `[useProfileUpdateBase] App context required for app updates (${collectionName})`
       )
     }
 
@@ -92,6 +93,7 @@ export function useProfileUpdateBase<TCore extends CoreProfileBase>(
   return {
     appId,
     role,
+    hasAppScope,
     isTenant,
 
     pruneUndefined,

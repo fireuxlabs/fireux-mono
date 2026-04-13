@@ -25,7 +25,7 @@ export function useAgentCreate() {
   }> {
     await ensureUser()
     const { uid } = await requireUid()
-    const { appId, isTenant } = useFireUXConfig()
+    const { appId } = useFireUXConfig()
 
     let createdCore = false
     let createdApp = false
@@ -57,7 +57,7 @@ export function useAgentCreate() {
       createdCore = true
     }
 
-    if (isTenant && appId) {
+    if (appId) {
       const appCollection = `apps/${appId}/${agentConfig.collectionName}`
       const appRef = doc(db, 'apps', appId, agentConfig.collectionName, uid)
       const appSnap = await getDoc(appRef)
@@ -65,6 +65,7 @@ export function useAgentCreate() {
         const payload = {} satisfies Omit<AppAgent, 'created' | 'updated' | 'id'>
 
         await setDocument<AppAgent>(appCollection, uid, payload as AppAgent, {
+          app: true,
           creator: true,
         })
         createdApp = true

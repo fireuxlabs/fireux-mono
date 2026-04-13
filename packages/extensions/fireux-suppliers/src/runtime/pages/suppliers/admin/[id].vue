@@ -88,7 +88,7 @@ const userId = computed(() => {
 const userRefs = useUserFetch(userId)
 const { coreSupplier, appSupplier, pending } = useSupplierRecord(userId)
 
-const { pill: makeCard } = useSupplierInterface(
+const { profile: makeCard } = useSupplierInterface(
   {
     coreSupplier,
     appSupplier,

@@ -25,7 +25,7 @@ export function useProfessionalCreate() {
   }> {
     await ensureUser()
     const { uid } = await requireUid()
-    const { appId, isTenant } = useFireUXConfig()
+    const { appId } = useFireUXConfig()
 
     let createdCore = false
     let createdApp = false
@@ -57,7 +57,7 @@ export function useProfessionalCreate() {
       createdCore = true
     }
 
-    if (isTenant && appId) {
+    if (appId) {
       const appCollection = `apps/${appId}/${professionalConfig.collectionName}`
       const appRef = doc(db, 'apps', appId, professionalConfig.collectionName, uid)
       const appSnap = await getDoc(appRef)
@@ -65,6 +65,7 @@ export function useProfessionalCreate() {
         const payload = {} satisfies Omit<AppProfessional, 'created' | 'updated' | 'id'>
 
         await setDocument<AppProfessional>(appCollection, uid, payload as unknown as AppProfessional, {
+          app: true,
           creator: true,
         })
         createdApp = true

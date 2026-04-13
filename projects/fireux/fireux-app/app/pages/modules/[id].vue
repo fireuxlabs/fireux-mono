@@ -153,7 +153,7 @@ const route = useRoute()
 const slug = computed(() => String(route.params.id || '').trim())
 
 const { products } = useProductFetch()
-const { card: toCard } = useProductInterface()
+const { preview: toCard } = useProductInterface()
 
 const moduleProduct = computed(() => {
   const items = products.value ?? []

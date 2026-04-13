@@ -51,7 +51,7 @@
 import { computed, ref } from 'vue'
 import { useProfessional } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
 
-const { coreProfile, pending, pill: professionalInterface } = useProfessional()
+const { coreProfile, pending, preview: professionalInterface } = useProfessional()
 
 const previewCard = computed(() => (coreProfile.value ? professionalInterface(coreProfile.value) : null))
 const isLoading = computed(() => Boolean(pending.value))

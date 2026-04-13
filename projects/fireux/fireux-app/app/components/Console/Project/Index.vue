@@ -25,7 +25,7 @@
     />
 
     <UAlert
-      v-if="!projects.length"
+      v-if="!projectsList.length"
       color="neutral"
       variant="soft"
       title="No live projects found"
@@ -64,7 +64,7 @@
       </div>
 
       <ProjectCollectionManager
-        :collection="projects"
+        :collection="projectsList"
         title="Choose Project"
         description="Select the live project you want to work on."
         :link="false"
@@ -100,7 +100,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
 import { useProjectConsole } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectConsole'
 import { useProjectSelection } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectSelection'
@@ -125,6 +125,7 @@ const syncState = ref<{
   synced: number
   failed: number
 } | null>(null)
+const projectsList = computed(() => projects.value ?? [])
 
 const selectProject = (projectId: string) => {
   setRuntimeProject({ projectId })
@@ -167,7 +168,7 @@ async function syncProjectFacade(projectRow: ProjectSurface) {
 async function syncAllProjects() {
   if (syncingProjects.value) return
 
-  const rows = [...(projects.value ?? [])]
+  const rows = [...projectsList.value]
   if (!rows.length) return
 
   syncingProjects.value = true
@@ -205,7 +206,7 @@ onMounted(() => {
 })
 
 watch(
-  projects,
+  projectsList,
   (rows) => {
     if (!canStartMountedSync.value) return
     if (hasTriggeredMountedSync.value) return

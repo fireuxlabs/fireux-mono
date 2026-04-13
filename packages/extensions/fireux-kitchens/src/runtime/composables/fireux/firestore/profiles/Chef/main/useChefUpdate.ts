@@ -7,7 +7,7 @@ import type { Chef } from '../../../../../../models/profiles/Chef/Chef.model'
  * useChefUpdate
  * - Split update surface:
  *   - updateCoreProfile: global Chef profile
- *   - updateAppProfile: tenant-scoped Chef profile
+ *   - updateAppProfile: app-scoped Chef profile
  *
  * Shared update surface for v1 scoped fields.
  */
@@ -37,7 +37,7 @@ export function useChefUpdate(profile?: ProfileRefs<Chef> | null) {
   }
 
   /**
-   * Update the APP (tenant) Chef profile
+   * Update the APP Chef profile
    * - app-specific document (e.g. apps/{appId}/chefs/{uid})
    */
   const updateAppProfile = base.updateAppProfile

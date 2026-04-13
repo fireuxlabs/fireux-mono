@@ -83,6 +83,26 @@ export function useProjectInterface() {
     }
   }
 
+  function pill(target?: ProjectSurface | null | undefined): ProjectPill | null {
+    return buildInterface(target)
+  }
+
+  function cell(target?: ProjectSurface | null | undefined): ProjectCell | null {
+    return buildInterface(target)
+  }
+
+  function preview(
+    target?: ProjectSurface | null | undefined
+  ): ProjectPreview | null {
+    return buildInterface(target)
+  }
+
+  function profile(
+    target?: ProjectSurface | null | undefined
+  ): ProjectProfile | null {
+    return buildInterface(target)
+  }
+
   return {
     pill,
     cell,

@@ -1,6 +1,8 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Agent/Agent.model.ts
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model'
+import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -49,19 +51,10 @@ export type Agent = {
 
 export const AppAgentModel = {
   id: '',
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
-  },
+  ...AppProfileStamps,
 } as const
 
-export type AppAgent = {
-  [K in keyof typeof AppAgentModel]: (typeof AppAgentModel)[K]
-}
+export type AppAgent = AppProfileBase
 
 export type AgentCreateInput = Omit<Agent, 'id' | 'created' | 'updated'>
 export type AgentUpdateInput = Partial<Omit<Agent, 'id' | 'created' | 'updated'>>

@@ -1,5 +1,9 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
-import type { FireuxStamped } from '../core/meta.model'
+import type {
+  FireuxAppOverlay,
+  FireuxStamped,
+} from '../core/meta.model'
+import { FireuxAppOverlayModel } from '../core/meta.model'
 
 export type ProjectStatus = 'draft' | 'active' | 'paused' | 'archived'
 export type ProjectType = 'standalone_app' | 'ecosystem_app'
@@ -60,21 +64,10 @@ export type Project = {
 }
 
 export const AppProjectModel = {
-  id: '',
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-    app_id: undefined as FireuxStamped['created']['app_id'],
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
-  },
+  ...FireuxAppOverlayModel,
 } as const
 
-export type AppProject = {
-  [K in keyof typeof AppProjectModel]: (typeof AppProjectModel)[K]
-}
+export type AppProject = FireuxAppOverlay
 
 export type ProjectCreateInput = Omit<Project, 'created' | 'updated' | 'owner_user_id'> & {
   owner_user_id?: string

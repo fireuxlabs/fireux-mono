@@ -84,7 +84,7 @@ export type ProfileBase = FireuxStamped & {
 }
 
 /**
- * App profile overlay base shape (tenant truth)
+ * App profile overlay base shape (app-scoped truth)
  * Example path: /apps/<appId>/<collection>/<uid>
  *
  * Delta-only by design.

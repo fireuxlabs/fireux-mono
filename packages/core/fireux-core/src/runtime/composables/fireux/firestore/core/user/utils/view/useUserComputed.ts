@@ -31,30 +31,31 @@ export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
   const appUser = user.appUser as { value: AppUser | null | undefined }
 
   const { uid, isAuthenticated, currentUser: authUserRef } = useAuth()
-  const { isTenant, appId } = useFireUXConfig()
+  const { appId } = useFireUXConfig()
   const { getProxiedAvatarUrl } = useAvatarProxy()
   const permissions = useUserPermissions(user)
+  const requiresAppOverlay = computed(() => Boolean(String(appId || '').trim()))
 
   const isPending = computed(() => Boolean(pending?.value))
   const isLoading = computed(
     () =>
       isPending.value ||
       coreUser.value === undefined ||
-      (isTenant && appUser.value === undefined)
+      (requiresAppOverlay.value && appUser.value === undefined)
   )
 
   const isResolved = computed(
     () =>
       !isPending.value &&
       coreUser.value !== undefined &&
-      (!isTenant || appUser.value !== undefined)
+      (!requiresAppOverlay.value || appUser.value !== undefined)
   )
   const hasCoreUser = computed(() => coreUser.value !== null && coreUser.value !== undefined)
   const hasAppUser = computed(() => appUser.value !== null && appUser.value !== undefined)
   const isInitialized = computed(() => {
     if (!isResolved.value) return false
     if (!hasCoreUser.value) return false
-    if (isTenant && !hasAppUser.value) return false
+    if (requiresAppOverlay.value && !hasAppUser.value) return false
     return true
   })
   const currentUser = computed(() => coreUser.value ?? null)
@@ -63,7 +64,7 @@ export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
     if (!isAuthenticated.value || !uid.value) return CTA_SIGN_IN
     if (!isResolved.value) return CTA_AVATAR
     if (!hasCoreUser.value) return CTA_CREATE_CORE
-    if (isTenant && !hasAppUser.value) return CTA_JOIN_APP
+    if (requiresAppOverlay.value && !hasAppUser.value) return CTA_JOIN_APP
     return CTA_AVATAR
   })
 

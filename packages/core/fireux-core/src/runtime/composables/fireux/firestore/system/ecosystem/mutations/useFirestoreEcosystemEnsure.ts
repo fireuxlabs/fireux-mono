@@ -74,7 +74,7 @@ export function useFirestoreEcosystemEnsure() {
     if (!snap.exists()) {
       await setDoc(ref, {
         id: ref.id,
-        project_id: ecosystemId,
+        project_id: firebaseProjectId,
         name,
         slug: ecosystemId,
         description: '',
@@ -103,8 +103,11 @@ export function useFirestoreEcosystemEnsure() {
       patch.id = ref.id
     }
 
-    if (!normalizeString(data.project_id)) {
-      patch.project_id = ecosystemId
+    if (
+      !normalizeString(data.project_id) ||
+      normalizeString(data.project_id) === ecosystemId
+    ) {
+      patch.project_id = firebaseProjectId
     }
 
     if (!normalizeString(data.name)) {

@@ -82,7 +82,6 @@ export function useConsoleEnsure() {
   async function ensureConsole<TOverlay>(
     options: ConsoleEnsureOptions<TOverlay>
   ): Promise<ConsoleEnsureResult> {
-    const mode = options.mode ?? 'console'
     const collectionName = consoleCollectionByType[options.type]
 
     let id = ''
@@ -120,17 +119,11 @@ export function useConsoleEnsure() {
       }
     }
 
-    if (mode === 'public') {
-      return {
-        id,
-        createdRoot,
-        createdOverlay: false,
-      }
-    }
-
-    // Console-backed overlays are app-hosted, not tenant-only.
-    // A global app like misebox-app can still host /apps/<appId>/... console state.
-    if (!appId) {
+    // App-hosted overlays are canonical for any app context, including global apps.
+    // "Public" versus "console" affects the route flow, not whether the app-scoped
+    // overlay should exist.
+    const currentAppId = normalizeId(appId)
+    if (!currentAppId) {
       return {
         id,
         createdRoot,
@@ -145,14 +138,14 @@ export function useConsoleEnsure() {
     }
 
     const resolvedOverlayId = normalizeId(options.overlayId) || id
-    const overlayRef = doc(db, 'apps', appId, collectionName, resolvedOverlayId)
+    const overlayRef = doc(db, 'apps', currentAppId, collectionName, resolvedOverlayId)
     const overlaySnap = await getDoc(overlayRef)
 
     if (!overlaySnap.exists()) {
       await assertCanCreateAdditionalConsole(options.type, resolvedOverlayId)
       const overlayPayload = await options.createOverlay(id)
       await setDocument<TOverlay>(
-        `apps/${appId}/${collectionName}`,
+        `apps/${currentAppId}/${collectionName}`,
         resolvedOverlayId,
         overlayPayload,
         {

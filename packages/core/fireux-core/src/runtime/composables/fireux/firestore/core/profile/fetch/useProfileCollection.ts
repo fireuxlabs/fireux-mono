@@ -25,7 +25,7 @@ export function useProfileCollection<
 >(config: ProfileConfig) {
   const db = useFirestore()
   const nuxtApp = useNuxtApp()
-  const { isTenant, appId } = useFireUXConfig()
+  const { appId } = useFireUXConfig()
   const { firestoreFetchDoc } = useFirestoreRead()
 
   const idFieldOptions = { idField: 'id' } as Record<string, unknown>
@@ -36,7 +36,7 @@ export function useProfileCollection<
   )
 
   const localProfiles =
-    isTenant && appId
+    appId
       ? useCollection<Partial<TProfile>>(
           collection(db, 'apps', appId, config.collectionName) as any,
           idFieldOptions as any

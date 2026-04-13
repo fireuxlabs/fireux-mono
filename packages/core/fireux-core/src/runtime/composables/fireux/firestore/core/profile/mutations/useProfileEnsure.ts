@@ -17,12 +17,12 @@ type EnsureResult = {
 /**
  * Minimal profile ensure.
  * - Upserts the core profile document `<collection>/<uid>`
- * - When tenant scoped, also upserts `apps/<appId>/<collection>/<uid>`
+ * - When an app id exists, also upserts `apps/<appId>/<collection>/<uid>`
  */
 export function useProfileEnsure(config: ProfileConfig) {
   const db = useFirestore()
   const { setDocument, updateDocument } = useFirestoreManager()
-  const { isTenant, appId } = useFireUXConfig()
+  const { appId } = useFireUXConfig()
 
   const ensure = async (overrideUid?: string | null): Promise<EnsureResult> => {
     const { uid: authedUid } = await requireUid()
@@ -40,7 +40,9 @@ export function useProfileEnsure(config: ProfileConfig) {
         subtitle: seed.subtitle,
         tagline: seed.tagline,
         tags: [...seed.tags],
-      } as any)
+      } as any, {
+        creator: true,
+      })
       createdCore = true
     } else {
       // Backfill required fields for older docs.
@@ -58,7 +60,7 @@ export function useProfileEnsure(config: ProfileConfig) {
       }
     }
 
-    if (isTenant && appId) {
+    if (appId) {
       const appCollection = `apps/${appId}/${config.collectionName}`
       const appRef = doc(db, 'apps', appId, config.collectionName, uid)
       const appSnapshot = await getDoc(appRef)
@@ -67,13 +69,19 @@ export function useProfileEnsure(config: ProfileConfig) {
         await setDocument(appCollection, uid, {
           created: seed.created,
           updated: seed.updated,
-        } as any)
+        } as any, {
+          creator: true,
+          app: true,
+        })
         createdApp = true
       } else {
         const existing = appSnapshot.data() as any
         const patch: any = {}
         if (!(existing?.created && existing?.created.at)) {
           patch['created.at'] = existing?.created_at ?? serverTimestamp()
+        }
+        if (!String(existing?.created?.app_id || '').trim()) {
+          patch['created.app_id'] = appId
         }
         if (Object.keys(patch).length) {
           await updateDocument(appCollection, uid, patch)

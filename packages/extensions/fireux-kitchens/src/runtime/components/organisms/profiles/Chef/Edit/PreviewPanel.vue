@@ -51,7 +51,7 @@
 import { computed, ref } from 'vue'
 import { useChef } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef.ts'
 
-const { coreProfile, pending, pill: chefInterface } = useChef()
+const { coreProfile, pending, preview: chefInterface } = useChef()
 
 const previewCard = computed(() => (coreProfile.value ? chefInterface(coreProfile.value) : null))
 const isLoading = computed(() => Boolean(pending.value))

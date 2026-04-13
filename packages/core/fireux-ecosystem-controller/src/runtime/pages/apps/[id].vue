@@ -96,7 +96,7 @@ const appId = computed(() => {
 
 const { app: currentApp } = useAppFetch(appId)
 
-const { pill: appInterface } = useAppInterface()
+const { profile: appInterface } = useAppInterface()
 
 const appProfile = computed(() => (currentApp.value ? appInterface(currentApp.value) : null))
 

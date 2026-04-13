@@ -37,7 +37,7 @@ export function useProfileFetch<
   config: ProfileConfig
 ) {
   const db = useFirestore()
-  const { isTenant, appId } = useFireUXConfig()
+  const { appId } = useFireUXConfig()
 
   const uid = computed(() => (isRef(id) ? id.value : id))
 
@@ -46,16 +46,14 @@ export function useProfileFetch<
   )
 
   /**
-   * Canon: Tenant profile overlay (domain deltas)
+   * Canon: App profile overlay (domain deltas)
    * - Path: `apps/{appId}/{domainCollection}/{uid}` (e.g. `apps/niederhorn/chefs/{uid}`)
-   * - This IS a tenant delta layer for domain profiles (Chef/Agent/Supplier/Professional).
-   * - We only read/write it when `isTenant === true` to avoid operator apps (e.g. `misebox-app`)
-   *   accidentally behaving like a tenant.
-   * - If you need to admin-fetch a specific tenant’s overlay while in ecosystem mode,
-   *   do it via an explicit targetAppId/path (not via “current app hydration”).
+   * - This is the app-scoped domain profile layer for the current app, including global apps.
+   * - The first scoped facade should usually live in the global app, then migrate or extend later
+   *   when a dedicated app becomes real.
    */
   const appDoc = computed(() =>
-    uid.value && isTenant && appId
+    uid.value && appId
       ? (doc(db, 'apps', appId, config.collectionName, uid.value) as any)
       : null
   )

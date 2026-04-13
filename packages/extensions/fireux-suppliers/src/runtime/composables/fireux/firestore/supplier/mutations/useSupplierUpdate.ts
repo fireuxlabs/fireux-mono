@@ -17,9 +17,9 @@ export function useSupplierUpdate(
   supplier?: SupplierRefs | null
 ) {
   const { updateDocument } = useFirestoreUpdate()
-  const { appId, role } = useFireUXConfig()
+  const { appId } = useFireUXConfig()
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
-  const isTenant = role === 'tenant' && Boolean(appId)
+  const hasAppScope = Boolean(appId)
   type UpdateOptions = { id?: string | null; scope?: 'core' | 'app' }
 
   const pruneUndefined = <T extends Record<string, any>>(payload: Partial<T>) => {
@@ -85,8 +85,8 @@ export function useSupplierUpdate(
     patch: Partial<AppSupplier>,
     options: { id?: string | null } = {}
   ) => {
-    if (!isTenant || !appId) {
-      throw new Error('[useSupplierUpdate] Tenant context required for supplier overlay updates')
+    if (!hasAppScope || !appId) {
+      throw new Error('[useSupplierUpdate] App context required for supplier overlay updates')
     }
 
     const resolvedId = await resolveId(options.id)

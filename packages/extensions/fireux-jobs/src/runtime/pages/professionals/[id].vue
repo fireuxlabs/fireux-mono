@@ -115,7 +115,7 @@ const professionalProfile = computed(() => profile.coreProfile.value ?? null)
 const { user } = useUserFetch(professionalId)
 const { coreUser, appUser, user: sessionUser } = useUser()
 
-const { pill: professionalInterface } = useProfessionalInterface(profile)
+const { profile: professionalInterface } = useProfessionalInterface(profile)
 const professionalCard = computed(() => {
   if (!professionalProfile.value) return null
   const resolved = user.value

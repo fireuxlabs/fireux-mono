@@ -1,6 +1,8 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model'
+import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type {
     CertificationItem,
@@ -58,19 +60,10 @@ export type Professional = {
 
 export const AppProfessionalModel = {
   id: '',
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
-  },
+  ...AppProfileStamps,
 } as const
 
-export type AppProfessional = {
-  [K in keyof typeof AppProfessionalModel]: (typeof AppProfessionalModel)[K]
-}
+export type AppProfessional = AppProfileBase
 
 export type ProfessionalCreateInput = Omit<Professional, 'id' | 'created' | 'updated'>
 export type ProfessionalUpdateInput = Partial<Omit<Professional, 'id' | 'created' | 'updated'>>

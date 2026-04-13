@@ -1,6 +1,8 @@
 // FILE: packages/extensions/fireux-kitchens/src/runtime/models/profiles/Chef/Chef.model.ts
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model'
+import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -61,19 +63,10 @@ export const AppChefModel = {
   id: '' as string,
 
   // Stamps
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
-  },
+  ...AppProfileStamps,
 } as const
 
-export type AppChef = {
-  [K in keyof typeof AppChefModel]: (typeof AppChefModel)[K]
-}
+export type AppChef = AppProfileBase
 
 export type ChefCreateInput = Omit<Chef, 'id' | 'created' | 'updated'>
 export type ChefUpdateInput = Partial<Omit<Chef, 'id' | 'created' | 'updated'>>

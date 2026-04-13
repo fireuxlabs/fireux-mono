@@ -7,7 +7,7 @@ import type { Agent } from '../../../../../../models/profiles/Agent/Agent.model'
  * useAgentUpdate
  * - Split update surface:
  *   - updateCoreProfile: global Agent profile
- *   - updateAppProfile: tenant-scoped Agent profile
+ *   - updateAppProfile: app-scoped Agent profile
  *
  * Shared update surface for v1 scoped fields.
  */
@@ -37,7 +37,7 @@ export function useAgentUpdate(profile?: ProfileRefs<Agent> | null) {
   }
 
   /**
-   * Update the APP (tenant) Agent profile
+   * Update the APP Agent profile
    * - app-specific document (e.g. apps/{appId}/agents/{uid})
    */
   const updateAppProfile = base.updateAppProfile
