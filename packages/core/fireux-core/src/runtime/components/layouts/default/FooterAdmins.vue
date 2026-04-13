@@ -33,7 +33,7 @@ import { useAppUserCollection } from '../../../composables/fireux/firestore/core
 import type { UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 const { pending, fulfilled } = useAppUserCollection()
-const { interface: userInterface } = useUserInterface()
+const { pill: userInterface } = useUserInterface()
 
 const adminEntries = computed(() =>
   (fulfilled?.value ?? []).filter(

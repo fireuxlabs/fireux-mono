@@ -103,11 +103,10 @@ const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
-const { interface: makeCard, searchText } = useAgentInterface()
+const { pill: makeCard } = useAgentInterface()
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
   useCollectionSearch<AgentEntry, ReturnType<typeof makeCard>>({
     items: collection,
-    searchText: (entry) => searchText(entry as any),
     makeCard: (entry) => makeCard(entry as any),
     initialVariant: props.initialVariant,
   })

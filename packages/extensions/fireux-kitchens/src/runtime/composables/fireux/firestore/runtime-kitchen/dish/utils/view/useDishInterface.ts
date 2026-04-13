@@ -159,20 +159,5 @@ export function useDishInterface() {
     }
   }
 
-  function searchText(dish: Dish): string {
-    const mapped = map(dish)
-    return [
-      mapped.name,
-      mapped.active ? 'active' : 'inactive',
-      mapped.recipeIds.join(' '),
-      mapped.ingredientIds.join(' '),
-      mapped.miseIds.join(' '),
-      mapped.id,
-    ]
-      .join(' ')
-      .trim()
-      .toLowerCase()
-  }
-
-  return { interface: buildInterface, searchText }
+  return { pill, cell, preview, profile }
 }

@@ -126,7 +126,7 @@ definePageMeta({
 
 const runtimePortfolio = useActivePortfolio()
 const { collection } = usePortfolioComplianceRecordCollection(runtimePortfolio)
-const { interface: complianceInterface } = useComplianceInterface()
+const { pill: complianceInterface } = useComplianceInterface()
 const { createTask } = useTaskCreate(runtimePortfolio)
 const { fromComplianceRecord } = useTaskProjection(runtimePortfolio)
 const compliancePath = useRuntimePortfolioPath(runtimePortfolio, 'compliance-records')

@@ -194,21 +194,10 @@ export function useKitchenInterface() {
     }
   }
 
-  function searchText(kitchen: Kitchen): string {
-    const name = safeString(kitchen.name)
-    const website = safeString((kitchen as any)?.website)
-    const shortAddress = sanitizeShortAddress((kitchen as any)?.short_address)
-    const formattedAddress = safeString((kitchen as any)?.formatted_address)
-    const id = safeString(kitchen.id)
-    return `${name} ${website} ${shortAddress || formattedAddress} ${id}`.trim().toLowerCase()
-  }
-
   return {
-    interface: buildInterface,
     pill,
     cell,
     preview,
     profile,
-    searchText,
   }
 }

@@ -156,23 +156,5 @@ export function useMiseEnPlaceInterface() {
     }
   }
 
-  function searchText(task: KitchenMiseTask): string {
-    const mapped = map(task)
-    return [
-      mapped.name,
-      mapped.category,
-      mapped.unit,
-      mapped.status,
-      mapped.tags.join(' '),
-      safeString(task.menu_id).trim(),
-      safeString(task.recipe_id).trim(),
-      safeStringArray(task.ingredient_ids).join(' '),
-      mapped.id,
-    ]
-      .join(' ')
-      .trim()
-      .toLowerCase()
-  }
-
-  return { interface: buildInterface, searchText }
+  return { pill, cell, preview, profile }
 }

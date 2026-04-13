@@ -103,10 +103,10 @@ const {
   setAppUserAdmin,
 } = useAppUpdate(appRef)
 const { memberships: users, fulfilled: hydratedUsers } = useAppUserCollection()
-const { interface: userCard } = useUserInterface()
+const { pill: userCard } = useUserInterface()
 
 const appInterface = useAppInterface(appRef)
-const appCard = computed(() => appInterface.interface())
+const appCard = computed(() => appInterface.pill())
 
 const withToast =
   <T>(operation: (value: T) => Promise<unknown>, ok: string, fail: string) =>

@@ -72,20 +72,5 @@ export function useComplianceInterface() {
     return buildInterface(target)
   }
 
-  function searchText(target: ComplianceRecord): string {
-    return [
-      target.id,
-      target.type_label,
-      target.type_id,
-      target.provider,
-      target.property_id,
-      target.expiry_date,
-    ]
-      .map((value) => safeString(value))
-      .join(' ')
-      .trim()
-      .toLowerCase()
-  }
-
-  return { interface: buildInterface, searchText }
+  return { pill, cell, preview, profile }
 }

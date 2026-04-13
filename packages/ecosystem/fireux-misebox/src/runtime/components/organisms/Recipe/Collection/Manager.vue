@@ -100,7 +100,7 @@ const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
-const { interface: makeCard, searchText } = useRecipeInterface()
+const { pill: makeCard } = useRecipeInterface()
 
 const {
   query,
@@ -110,7 +110,6 @@ const {
   visibleCount,
 } = useCollectionSearch<Recipe, ReturnType<typeof makeCard>>({
   items: collection,
-  searchText: (recipe: Recipe) => searchText(recipe),
   makeCard: (recipe: Recipe) => makeCard(recipe),
   initialVariant: props.initialVariant,
 })

@@ -103,11 +103,10 @@ const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
-const { interface: makeCard, searchText } = useChefInterface()
+const { pill: makeCard } = useChefInterface()
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
   useCollectionSearch<ChefEntry, ReturnType<typeof makeCard>>({
     items: collection,
-    searchText: (entry) => searchText(entry as ChefEntry),
     makeCard: (entry) => makeCard(entry as Chef, (entry as any)?.user ?? null),
     initialVariant: props.initialVariant,
   })

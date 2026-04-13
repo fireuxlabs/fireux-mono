@@ -29,7 +29,7 @@ import { useAgent } from '../../../../composables/fireux/firestore/profiles/Agen
 
 const router = useRouter()
 const { appName } = useFireUXConfig()
-const { interface: agentInterface } = useAgent()
+const { pill: agentInterface } = useAgent()
 
 const profileCard = computed(() => agentInterface())
 const hasProfile = computed(() => Boolean(profileCard.value?.id))

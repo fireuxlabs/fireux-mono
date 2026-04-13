@@ -145,20 +145,10 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
     return buildInterface(target)
   }
 
-  function searchText(app: App): string {
-    const name = safeString(app.app_name)
-    const shortName = safeString(app.app_short_name)
-    const ecosystem = safeString(app.ecosystem)
-    const id = safeString(app.id)
-    return `${name} ${shortName} ${ecosystem} ${id}`.trim().toLowerCase()
-  }
-
   return {
-    interface: buildInterface,
     pill,
     cell,
     preview,
     profile,
-    searchText,
   }
 }

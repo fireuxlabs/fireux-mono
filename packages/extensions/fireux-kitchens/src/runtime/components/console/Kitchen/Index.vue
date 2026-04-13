@@ -76,16 +76,64 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenSelection } from '../../../composables/fireux/app/kitchen-console/useKitchenSelection'
 import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
+import type { AppKitchen, Kitchen } from '../../../models/kitchen.model'
+import { normalizeString, resolveKitchenConsoleCollectionPath } from '../../../composables/fireux/app/kitchen-console/shared'
 
 const { kitchen, consoleState } = useKitchenConsole({ publishHeader: true })
 const { setRuntimeKitchen } = useKitchenSelection()
-const { kitchens } = useKitchenCollection()
+const { appId } = useFireUXConfig()
+const { uid } = useAuth()
+const { firestoreFetchCollection } = useFirestoreRead()
+const { kitchens: hydratedKitchens } = useKitchenCollection()
 const showSimulations = ref(false)
 const clearSelection = consoleState.clearSelection
+
+const overlayCollectionPath = computed(() =>
+  resolveKitchenConsoleCollectionPath(appId)
+)
+
+const kitchenOverlays = computed(() => {
+  const collectionPath = normalizeString(overlayCollectionPath.value)
+  return collectionPath ? firestoreFetchCollection<AppKitchen>(collectionPath) : null
+})
+
+const kitchens = computed(() => {
+  const kitchensById = new Map<string, Kitchen>()
+  for (const entry of hydratedKitchens.value ?? []) {
+    const kitchenId = normalizeString(entry?.id)
+    if (kitchenId) kitchensById.set(kitchenId, entry)
+  }
+
+  const currentUid = normalizeString(uid.value)
+
+  return (kitchenOverlays.value?.value ?? [])
+    .filter((overlay) => overlay?.console_enabled !== false)
+    .filter((overlay) => {
+      const adminIds = Array.isArray(overlay?.admin_ids)
+        ? overlay.admin_ids.map((value) => normalizeString(value)).filter(Boolean)
+        : []
+
+      if (!currentUid) return adminIds.length === 0
+      return adminIds.length === 0 || adminIds.includes(currentUid)
+    })
+    .map((overlay) => {
+      const kitchenId = normalizeString(overlay?.id)
+      const rootKitchen = kitchensById.get(kitchenId)
+      return {
+        ...(rootKitchen ?? {}),
+        ...(overlay ?? {}),
+        id: kitchenId,
+      }
+    })
+    .filter((entry) => Boolean(entry.id)) as Kitchen[]
+})
 
 const selectKitchen = (kitchenId: string) => {
   setRuntimeKitchen({ kitchenId })

@@ -86,7 +86,7 @@ const config = useFireUXConfig()
 const ecosystemLabel = config.ecosystem
 
 const { currentUser } = useUser()
-const { interface: userInterface } = useUserInterface()
+const { pill: userInterface } = useUserInterface()
 const currentUserPill = computed(() =>
   currentUser.value ? userInterface(currentUser.value) : null
 )

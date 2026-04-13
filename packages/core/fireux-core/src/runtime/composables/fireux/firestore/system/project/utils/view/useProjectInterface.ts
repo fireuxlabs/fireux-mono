@@ -83,43 +83,10 @@ export function useProjectInterface() {
     }
   }
 
-  function searchText(target: ProjectSurface): string {
-    const key = safeString(target.key) || safeString(target.id) || safeString(target.slug)
-
-    return [
-      key,
-      safeString(target.name),
-      safeString(target.status),
-      safeString(target.project_type),
-      safeString(target.description),
-    ]
-      .join(' ')
-      .trim()
-      .toLowerCase()
-  }
-
-  function pill(target?: ProjectSurface | null | undefined): ProjectPill | null {
-    return buildInterface(target)
-  }
-
-  function cell(target?: ProjectSurface | null | undefined): ProjectCell | null {
-    return buildInterface(target)
-  }
-
-  function preview(target?: ProjectSurface | null | undefined): ProjectPreview | null {
-    return buildInterface(target)
-  }
-
-  function profile(target?: ProjectSurface | null | undefined): ProjectProfile | null {
-    return buildInterface(target)
-  }
-
   return {
-    interface: buildInterface,
     pill,
     cell,
     preview,
     profile,
-    searchText,
   }
 }

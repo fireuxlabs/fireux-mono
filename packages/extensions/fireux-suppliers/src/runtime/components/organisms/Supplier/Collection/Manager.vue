@@ -131,11 +131,10 @@ const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
 const devJsonTitle = computed(() => String(props.devJsonTitle || 'Suppliers (JSON)').trim())
 const devJsonContext = computed(() => String(props.devJsonContext || 'collection manager · suppliers').trim())
-const { interface: makeCard, searchText } = useSupplierInterface()
+const { pill: makeCard } = useSupplierInterface()
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
   useCollectionSearch<SupplierEntry, ReturnType<typeof makeCard>>({
     items: collection,
-    searchText: (entry) => searchText(entry as Supplier),
     makeCard: (entry) => makeCard(entry as Supplier, (entry as any)?.user ?? null),
     initialVariant: props.initialVariant,
   })

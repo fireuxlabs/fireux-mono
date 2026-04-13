@@ -147,19 +147,5 @@ export function useIngredientInterface() {
     }
   }
 
-  function searchText(ingredient: IngredientInterfaceItem): string {
-    const mapped = map(ingredient)
-    return [
-      mapped.name,
-      mapped.slug,
-      mapped.status,
-      mapped.supplierName,
-      mapped.id,
-    ]
-      .join(' ')
-      .trim()
-      .toLowerCase()
-  }
-
-  return { interface: buildInterface, searchText }
+  return { pill, cell, preview, profile }
 }

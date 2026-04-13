@@ -92,7 +92,7 @@ const props = withDefaults(
   }
 )
 
-const { interface: makeCard, searchText } = useMiseEnPlaceInterface()
+const { pill: makeCard } = useMiseEnPlaceInterface()
 
 const collection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
@@ -112,7 +112,6 @@ const {
   visibleCount,
 } = useCollectionSearch<KitchenMiseTask, ReturnType<typeof makeCard>>({
   items: collection,
-  searchText: (task: KitchenMiseTask) => searchText(task),
   makeCard: (task: KitchenMiseTask) => makeCard(task),
   initialVariant: props.initialVariant,
 })

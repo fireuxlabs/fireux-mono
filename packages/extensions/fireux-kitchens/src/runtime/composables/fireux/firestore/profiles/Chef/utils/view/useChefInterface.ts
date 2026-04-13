@@ -121,31 +121,10 @@ export function useChefInterface(
     return buildInterface(target, userOverride)
   }
 
-  function searchText(target: ChefTarget): string {
-    const mapped = map(target, target.user ?? userRef?.value ?? null)
-    const summary = resolveProfileSummary([
-      (target as Chef & { summary?: string }).summary,
-      (target as any).chef_bio,
-    ])
-
-    return [
-      mapped.id,
-      mapped.displayName,
-      mapped.title,
-      summary,
-      ...mapped.badges,
-    ]
-      .join(' ')
-      .trim()
-      .toLowerCase()
-  }
-
   return {
-    interface: buildInterface,
     pill,
     cell,
     preview,
     profile,
-    searchText,
   }
 }

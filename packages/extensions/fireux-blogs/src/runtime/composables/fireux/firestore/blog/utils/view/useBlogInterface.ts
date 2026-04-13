@@ -86,12 +86,5 @@ export function useBlogInterface() {
     return buildInterface(target)
   }
 
-  function searchText(post: BlogPost): string {
-    const title = safeString(post.title)
-    const slug = safeString(post.slug)
-    const author = safeString((post.author as any)?.display_name)
-    return `${title} ${slug} ${author}`.trim().toLowerCase()
-  }
-
-  return { interface: buildInterface, searchText }
+  return { pill, cell, preview, profile }
 }

@@ -126,7 +126,7 @@ const actionEnabled = computed(() => props.action === true)
 const showBadges = computed(() => props.showBadges !== false)
 const devJsonTitle = computed(() => String(props.devJsonTitle || 'Kitchens (JSON)').trim())
 const devJsonContext = computed(() => String(props.devJsonContext || 'collection manager · kitchens').trim())
-const { interface: makeCard, searchText } = useKitchenInterface()
+const { pill: makeCard } = useKitchenInterface()
 
 const {
   query,
@@ -136,7 +136,6 @@ const {
   visibleCount,
 } = useCollectionSearch<Kitchen, ReturnType<typeof makeCard>>({
   items: collection,
-  searchText: (kitchen: Kitchen) => searchText(kitchen),
   makeCard: (kitchen: Kitchen) => makeCard(kitchen),
   initialVariant: props.initialVariant,
 })

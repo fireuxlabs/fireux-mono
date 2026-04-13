@@ -95,13 +95,5 @@ export function usePropertyInterface() {
     return buildInterface(target)
   }
 
-  function searchText(target: Property): string {
-    return [target.id, target.name, target.address_line, target.city, target.postcode]
-      .map((value) => safeString(value))
-      .join(' ')
-      .toLowerCase()
-      .trim()
-  }
-
-  return { interface: buildInterface, searchText }
+  return { pill, cell, preview, profile }
 }

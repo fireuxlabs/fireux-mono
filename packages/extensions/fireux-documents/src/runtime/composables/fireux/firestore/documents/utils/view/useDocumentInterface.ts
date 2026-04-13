@@ -57,19 +57,5 @@ export function useDocumentInterface() {
     return buildInterface(target)
   }
 
-  function searchText(target: Document): string {
-    return [
-      target.id,
-      target.file_name,
-      target.file_type,
-      target.storage_path,
-      target.uploaded_at,
-    ]
-      .map((value) => safeString(value))
-      .join(' ')
-      .trim()
-      .toLowerCase()
-  }
-
-  return { interface: buildInterface, searchText }
+  return { pill, cell, preview, profile }
 }

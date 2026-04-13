@@ -49,7 +49,7 @@ const props = withDefaults(
 
 const fireux = useFireUXConfig()
 const { isAuthenticated, signOutUser } = useAuth()
-const { currentUser, interface: userInterface, isLoading } = useUser()
+const { currentUser, pill: userInterface, isLoading } = useUser()
 
 const signOutLoading = ref(false)
 

@@ -183,21 +183,10 @@ export function useCompanyInterface() {
     }
   }
 
-  function searchText(company: CompanyHydrated): string {
-    const name = safeString(company.name)
-    const website = safeString((company as any)?.website)
-    const shortAddress = sanitizeShortAddress((company as any)?.short_address)
-    const formattedAddress = safeString((company as any)?.formatted_address)
-    const id = safeString(company.id)
-    return `${name} ${website} ${shortAddress || formattedAddress} ${id}`.trim().toLowerCase()
-  }
-
   return {
-    interface: buildInterface,
     pill,
     cell,
     preview,
     profile,
-    searchText,
   }
 }

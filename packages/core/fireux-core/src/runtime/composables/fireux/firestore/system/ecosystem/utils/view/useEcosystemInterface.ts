@@ -82,18 +82,26 @@ export function useEcosystemInterface() {
     }
   }
 
-  function searchText(target: EcosystemInterfaceInput): string {
-    const key = safeString(target.key) || safeString(target.id) || safeString(target.slug)
-    const name = safeString(target.name)
+  function pill(target?: EcosystemInterfaceInput | null | undefined): EcosystemInterfaceCard | null {
+    return buildInterface(target)
+  }
 
-    return [key, name, safeString(target.status), safeString(target.team), safeString(target.description)]
-      .join(' ')
-      .trim()
-      .toLowerCase()
+  function cell(target?: EcosystemInterfaceInput | null | undefined): EcosystemInterfaceCard | null {
+    return buildInterface(target)
+  }
+
+  function preview(target?: EcosystemInterfaceInput | null | undefined): EcosystemInterfaceCard | null {
+    return buildInterface(target)
+  }
+
+  function profile(target?: EcosystemInterfaceInput | null | undefined): EcosystemInterfaceCard | null {
+    return buildInterface(target)
   }
 
   return {
-    interface: buildInterface,
-    searchText,
+    pill,
+    cell,
+    preview,
+    profile,
   }
 }

@@ -102,7 +102,7 @@ const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
-const { interface: makeCard, searchText } = useCompanyInterface()
+const { pill: makeCard } = useCompanyInterface()
 
 const {
   query,
@@ -112,7 +112,6 @@ const {
   visibleCount,
 } = useCollectionSearch<CompanyHydrated, ReturnType<typeof makeCard>>({
   items: collection,
-  searchText: (company: CompanyHydrated) => searchText(company),
   makeCard: (company: CompanyHydrated) => makeCard(company),
   initialVariant: props.initialVariant,
 })

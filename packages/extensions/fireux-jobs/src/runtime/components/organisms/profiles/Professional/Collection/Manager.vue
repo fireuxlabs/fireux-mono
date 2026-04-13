@@ -105,11 +105,10 @@ const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
-const { interface: makeCard, searchText } = useProfessionalInterface()
+const { pill: makeCard } = useProfessionalInterface()
 const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
   useCollectionSearch<ProfessionalEntry, ReturnType<typeof makeCard>>({
     items: collection,
-    searchText: (entry) => searchText(entry as any),
     makeCard: (entry) => makeCard(entry as Professional, (entry as any)?.user ?? null),
     initialVariant: props.initialVariant,
   })

@@ -82,7 +82,7 @@ const agentProfile = computed(() => profile.coreProfile.value ?? null)
 
 const userRefs = useUserFetch(agentId)
 const { coreUser, appUser, user: sessionUser } = useUser()
-const { interface: agentInterface } = useAgentInterface(profile, userRefs.user)
+const { pill: agentInterface } = useAgentInterface(profile, userRefs.user)
 const agentCard = computed(() => agentInterface(agentProfile.value))
 
 const resolveName = (p: any) =>

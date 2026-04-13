@@ -103,7 +103,7 @@ const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
-const { interface: makeCard, searchText } = useAppInterface()
+const { pill: makeCard } = useAppInterface()
 const {
   query,
   variant,
@@ -112,7 +112,6 @@ const {
   visibleCount,
 } = useCollectionSearch<AppModel, ReturnType<typeof makeCard>>({
   items: collection,
-  searchText: (app) => searchText(app),
   makeCard: (app) => makeCard(app),
   initialVariant: props.initialVariant,
 })

@@ -62,7 +62,7 @@ import type { Chef } from '../../../models/profiles/Chef/Chef.model'
 
 defineOptions({ name: 'DevChefDemo' })
 
-const { interface: toCard } = useChefInterface()
+const { pill: toCard } = useChefInterface()
 
 type ChefSurface = (typeof demoChefSurfaceList)[number]
 

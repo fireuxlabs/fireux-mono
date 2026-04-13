@@ -112,7 +112,7 @@ const confirmLabel = computed(() =>
   selectedSource.value === 'google' ? `Add ${typeLabel.value}` : `Use ${typeLabel.value}`
 )
 
-const { interface: placeInterface } = usePlacesInterface()
+const { pill: placeInterface } = usePlacesInterface()
 const selectedCell = computed(() =>
   selectedPlace.value ? placeInterface(selectedPlace.value as any) : null
 )

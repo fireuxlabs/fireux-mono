@@ -110,19 +110,10 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
     return buildInterface(target)
   }
 
-  function searchText(user: User): string {
-    const displayName = safeString(user.display_name)
-    const handle = safeString(user.handle)
-    const id = safeString(user.id)
-    return `${displayName} ${handle} ${id}`.trim().toLowerCase()
-  }
-
   return {
-    interface: buildInterface,
     pill,
     cell,
     preview,
     profile,
-    searchText,
   }
 }

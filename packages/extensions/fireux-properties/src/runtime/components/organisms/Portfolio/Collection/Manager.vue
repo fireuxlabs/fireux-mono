@@ -117,7 +117,7 @@ const emit = defineEmits<{
   (event: 'select', portfolioId: string): void
 }>()
 
-const { interface: makeCard, searchText } = usePortfolioInterface()
+const { pill: makeCard } = usePortfolioInterface()
 const collection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Available Portfolios'))
@@ -144,7 +144,6 @@ const {
   visibleCount,
 } = useCollectionSearch<Portfolio, NonNullable<ReturnType<typeof makeCard>>>({
   items: collection,
-  searchText: (portfolio) => searchText(portfolio),
   makeCard: (portfolio) => makeCard(portfolio),
   initialVariant: props.initialVariant,
 })

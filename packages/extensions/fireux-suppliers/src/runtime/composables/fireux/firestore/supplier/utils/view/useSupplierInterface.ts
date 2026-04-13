@@ -160,34 +160,10 @@ export function useSupplierInterface(
     return buildInterface(target, userOverride)
   }
 
-  function searchText(target: SupplierSurface): string {
-    const mapped = map(target, resolveUser(target as SupplierTarget))
-
-    return [
-      mapped.id,
-      mapped.title,
-      mapped.subtitle,
-      mapped.summary,
-      mapped.organizationName,
-      mapped.locationsLabel,
-      mapped.categoriesCsv ?? '',
-      safeString(target.short_name),
-      safeString(target.supplier_headline),
-      safeString(target.supplier_organization_name),
-      safeStringArray(target.supplier_product_categories).join(' '),
-      safeStringArray(target.supplier_delivery_areas).join(' '),
-    ]
-      .join(' ')
-      .trim()
-      .toLowerCase()
-  }
-
   return {
-    interface: buildInterface,
     pill,
     cell,
     preview,
     profile,
-    searchText,
   }
 }

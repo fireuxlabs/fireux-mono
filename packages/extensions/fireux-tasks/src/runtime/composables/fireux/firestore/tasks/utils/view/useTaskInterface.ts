@@ -62,21 +62,5 @@ export function useTaskInterface() {
     return buildInterface(target)
   }
 
-  function searchText(target: Task): string {
-    return [
-      target.id,
-      target.title,
-      target.description,
-      target.source,
-      target.due_date,
-      target.linked_entity_type,
-      target.linked_entity_id,
-    ]
-      .map((value) => safeString(value))
-      .join(' ')
-      .trim()
-      .toLowerCase()
-  }
-
-  return { interface: buildInterface, searchText }
+  return { pill, cell, preview, profile }
 }

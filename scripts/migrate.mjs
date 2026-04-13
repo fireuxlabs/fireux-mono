@@ -3,10 +3,11 @@
   Firestore migration runner (generic)
 
   Usage:
-    node scripts/migrate.mjs --project <projectId> --recipe <name> [--commit] [--app <appId>] [--limit N] [--pageSize N]
+    node scripts/migrate.mjs --service-account <path> --project <projectId> --recipe <name> [--database <databaseId>] [--commit] [--app <appId>] [--limit N] [--pageSize N]
     node scripts/migrate.mjs --project <projectId> --recipe apply-drift-payload [--commit] [--payload <json> | --payloadFile <path>]
 
   Auth (one required):
+    - --service-account <path>
     - GOOGLE_APPLICATION_CREDENTIALS (path to JSON)
     - FIREBASE_SERVICE_ACCOUNT (JSON string)
     - Or Google ADC (gcloud): application-default login
@@ -31,13 +32,17 @@ const pageSize = Math.min(Number(args.pageSize || 250), 500)
 const limit = args.limit ? Number(args.limit) : null
 const targetAppId = typeof args.app === 'string' ? args.app : null
 const recipe = typeof args.recipe === 'string' ? args.recipe : null
+const databaseId = typeof args.database === 'string' ? args.database.trim() : ''
+const serviceAccountPath = typeof args['service-account'] === 'string'
+  ? args['service-account'].trim()
+  : ''
 const payloadArg = typeof args.payload === 'string' ? args.payload : null
 const payloadFile = typeof args.payloadFile === 'string' ? args.payloadFile : null
 
 if (help) {
   console.log(`\nFirestore migration runner\n`)
   console.log('Usage:')
-  console.log('  node scripts/migrate.mjs --project <projectId> --recipe <name> [--commit] [--app <appId>] [--limit N] [--pageSize N]')
+  console.log('  node scripts/migrate.mjs --service-account <path> --project <projectId> --recipe <name> [--database <databaseId>] [--commit] [--app <appId>] [--limit N] [--pageSize N]')
   console.log('  node scripts/migrate.mjs --project <projectId> --recipe apply-drift-payload [--commit] [--payload <json> | --payloadFile <path>]')
   console.log('\nRecipes:')
   console.log('  - app-media-flatten')
@@ -50,13 +55,17 @@ if (help) {
   console.log('  - places-backfill-short-name')
   console.log('  - places-backfill-place-type')
   console.log('  - apps-canonical-shape')
+  console.log('  - app-users-canonical-shape')
+  console.log('  - app-user-mirrors-rebuild')
   console.log('  - users-canonical-shape')
+  console.log('  - users-delete-root')
   console.log('  - ingredients-canonical-shape')
   console.log('  - ingredients-normalize-id-shape')
   console.log('  - ingredients-assign-images')
   console.log('  - ingredients-upsert-payload')
   console.log('  - apply-drift-payload')
   console.log('\nAuth (one required):')
+  console.log('  - --service-account <path>')
   console.log('  - GOOGLE_APPLICATION_CREDENTIALS (path to JSON)')
   console.log('  - FIREBASE_SERVICE_ACCOUNT (JSON string)')
   console.log('  - Or Google ADC (gcloud): application-default login')
@@ -79,6 +88,11 @@ async function resolveCredential() {
     return cert(json)
   }
 
+  if (serviceAccountPath) {
+    const raw = await readFile(serviceAccountPath, 'utf8')
+    return cert(JSON.parse(raw))
+  }
+
   const saPath = process.env.GOOGLE_APPLICATION_CREDENTIALS
   if (saPath) {
     const raw = await readFile(saPath, 'utf8')
@@ -88,8 +102,8 @@ async function resolveCredential() {
   return applicationDefault()
 }
 
-initializeApp({ credential: await resolveCredential(), projectId })
-const db = getFirestore()
+const adminApp = initializeApp({ credential: await resolveCredential(), projectId })
+const db = databaseId ? getFirestore(adminApp, databaseId) : getFirestore(adminApp)
 
 async function runAppMediaFlatten() {
   const mediaFields = [
@@ -187,6 +201,34 @@ async function runAppMediaFlatten() {
   }
 
   console.log('[migrate] app-media-flatten done', { processed, updated, skipped, commit })
+}
+
+async function deleteCollectionTree(collectionRef) {
+  let lastDoc = null
+
+  while (true) {
+    let q = collectionRef.orderBy(FieldPath.documentId()).limit(pageSize)
+    if (lastDoc) q = q.startAfter(lastDoc)
+
+    const snap = await q.get()
+    if (snap.empty) break
+
+    for (const docSnap of snap.docs) {
+      await deleteDocumentTree(docSnap.ref)
+    }
+
+    lastDoc = snap.docs[snap.docs.length - 1]
+  }
+}
+
+async function deleteDocumentTree(docRef) {
+  const subcollections = await docRef.listCollections()
+
+  for (const subcollection of subcollections) {
+    await deleteCollectionTree(subcollection)
+  }
+
+  await docRef.delete()
 }
 
 function toShortAddress(value) {
@@ -851,6 +893,44 @@ function asBoolean(value, fallback = false) {
   return fallback
 }
 
+function normalizeStatus(value) {
+  const raw = asString(value, '').trim()
+  if (raw === 'draft' || raw === 'active' || raw === 'paused' || raw === 'archived') {
+    return raw
+  }
+  return 'active'
+}
+
+function isFirebaseLikeId(value) {
+  const text = asString(value, '').trim()
+  if (!text) return false
+
+  return (
+    /^fireux-[a-z0-9-]+$/i.test(text) ||
+    /-[a-z0-9]{4,}$/i.test(text)
+  )
+}
+
+function deriveCanonicalEcosystemId(data) {
+  const ecosystem = asString(data.ecosystem, '').trim()
+  const ecosystemId = asString(data.ecosystem_id, '').trim()
+
+  if (ecosystem) return ecosystem
+  if (ecosystemId.startsWith('fireux-')) return ecosystemId.replace(/^fireux-/, '')
+  return ecosystemId
+}
+
+function deriveCanonicalProjectId(data) {
+  const projectId = asString(data.project_id, '').trim()
+  const ecosystem = asString(data.ecosystem, '').trim()
+  const ecosystemId = deriveCanonicalEcosystemId(data)
+
+  if (projectId && !isFirebaseLikeId(projectId)) return projectId
+  if (ecosystem) return ecosystem
+  if (ecosystemId) return ecosystemId
+  return projectId
+}
+
 function normalizeUserHandle(value) {
   let candidate = asString(value, '')
     .trim()
@@ -863,6 +943,19 @@ function normalizeUserHandle(value) {
   candidate = candidate.replace(/^-+|-+$/g, '')
 
   return candidate.slice(0, 30)
+}
+
+function makeCanonicalUserHandle(displayName, uid, explicitHandle = '') {
+  const normalizedExplicit = normalizeUserHandle(explicitHandle)
+  if (normalizedExplicit) return normalizedExplicit
+
+  const cleaned = asString(displayName, '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
+  const suffix = asString(uid, '').slice(0, 8).toLowerCase()
+  const combined = `${cleaned}${suffix}`.slice(0, 30)
+  return normalizeUserHandle(combined)
 }
 
 function sanitizePublicDisplayName(value) {
@@ -927,7 +1020,9 @@ function buildCanonicalUser(docId, data) {
 
   const createdBy = resolveCreatorId(data)
   const updatedBy = asString(data?.updated?.by, '').trim()
-  const handle = normalizeUserHandle(asString(data.handle, '').trim())
+  const displayName =
+    sanitizePublicDisplayName(data.display_name) || sanitizePublicDisplayName(data.displayName)
+  const handle = makeCanonicalUserHandle(displayName, docId, asString(data.handle, '').trim())
 
   const created = { at: createdAt }
   const updated = { at: updatedAt }
@@ -936,8 +1031,7 @@ function buildCanonicalUser(docId, data) {
 
   return {
     id: asString(data.id, '').trim() || docId,
-    display_name:
-      sanitizePublicDisplayName(data.display_name) || sanitizePublicDisplayName(data.displayName),
+    display_name: displayName,
     avatar: asString(data.avatar, '').trim(),
     handle,
     email: asString(data.email, '').trim(),
@@ -949,6 +1043,64 @@ function buildCanonicalUser(docId, data) {
     created,
     updated,
   }
+}
+
+function normalizeAppUserRole(value) {
+  return asString(value, '').trim().toLowerCase() === 'admin' ? 'admin' : 'user'
+}
+
+function buildCanonicalAppUser(docId, data, appId) {
+  const createdAt =
+    resolveTimestamp(data?.created?.at) ??
+    resolveTimestamp(data.created_at) ??
+    resolveTimestamp(data.createdAt) ??
+    resolveTimestamp(data?.updated?.at) ??
+    resolveTimestamp(data.updated_at) ??
+    resolveTimestamp(data.updatedAt) ??
+    Timestamp.now()
+
+  const updatedAt =
+    resolveTimestamp(data?.updated?.at) ??
+    resolveTimestamp(data.updated_at) ??
+    resolveTimestamp(data.updatedAt) ??
+    createdAt
+
+  const createdBy = resolveCreatorId(data)
+  const updatedBy = asString(data?.updated?.by, '').trim()
+  const created = {
+    at: createdAt,
+    app_id: asString(data?.created?.app_id, '').trim() || asString(appId, '').trim(),
+  }
+  const updated = { at: updatedAt }
+
+  if (createdBy) created.by = createdBy
+  if (updatedBy) updated.by = updatedBy
+
+  return {
+    id: asString(data.id, '').trim() || docId,
+    role: normalizeAppUserRole(data.role),
+    is_premium: asBoolean(data.is_premium ?? data.isPremium, false),
+    console_enabled: asBoolean(data.console_enabled ?? data.consoleEnabled, false),
+    console_scopes: asStringArray(data.console_scopes ?? data.consoleScopes),
+    notifications: normalizeUserNotificationArray(data.notifications, createdAt),
+    created,
+    updated,
+  }
+}
+
+function needsAppUserRewrite(data, canonical) {
+  const canonicalKeys = Object.keys(canonical)
+  const dataKeys = Object.keys(data || {})
+
+  for (const key of canonicalKeys) {
+    if (!valuesEqual(data?.[key], canonical[key])) return true
+  }
+
+  for (const key of dataKeys) {
+    if (!canonicalKeys.includes(key)) return true
+  }
+
+  return false
 }
 
 function needsUserRewrite(data, canonical) {
@@ -970,6 +1122,9 @@ function buildCanonicalApp(docId, data) {
   const media = asRecord(data.media)
   const derived = asRecord(data.derived)
   const socialLinks = asRecord(data.social_links)
+  const ecosystem = asString(data.ecosystem, '')
+  const projectIdValue = deriveCanonicalProjectId(data)
+  const ecosystemIdValue = deriveCanonicalEcosystemId(data)
 
   const createdAt =
     resolveTimestamp(data?.created?.at) ??
@@ -996,17 +1151,37 @@ function buildCanonicalApp(docId, data) {
 
   return {
     id: asString(data.id, '').trim() || docId,
+    project_id: projectIdValue,
+    ecosystem_id: ecosystemIdValue,
+    slug: asString(data.slug, ''),
+    status: normalizeStatus(data.status),
+    team: asString(data.team, ''),
     app_name: asString(data.app_name, ''),
     app_short_name: asString(data.app_short_name, ''),
     role: asString(data.role, ''),
-    ecosystem: asString(data.ecosystem, ''),
+    ecosystem,
     join_requests: asStringArray(data.join_requests),
     admin_ids: asStringArray(data.admin_ids),
+    moderation_state: asString(data.moderation_state, ''),
+    ban_reasons: asStringArray(data.ban_reasons),
+    console_enabled: asBoolean(data.console_enabled, true),
     tagline: asString(data.tagline, ''),
     description: asString(data.description, ''),
     short_bio: asString(data.short_bio, ''),
     long_bio: asString(data.long_bio, ''),
-    social_links: socialLinks,
+    social_links: {
+      website:
+        asString(socialLinks.website, '') ||
+        asString(data['social_links.website'], '') ||
+        asString(data.source_url, ''),
+      twitter: asString(socialLinks.twitter, ''),
+      github: asString(socialLinks.github, ''),
+      linkedin: asString(socialLinks.linkedin, ''),
+      instagram: asString(socialLinks.instagram, ''),
+      facebook: asString(socialLinks.facebook, ''),
+      youtube: asString(socialLinks.youtube, ''),
+      email: asString(socialLinks.email, ''),
+    },
     derived: {
       user_count:
         typeof derived.user_count === 'number' && Number.isFinite(derived.user_count)
@@ -1022,7 +1197,7 @@ function buildCanonicalApp(docId, data) {
         asString(media.wordmark_light_url, '') || asString(data.wordmark_light_url, ''),
       wordmark_dark_url:
         asString(media.wordmark_dark_url, '') || asString(data.wordmark_dark_url, ''),
-      cover_url: asString(media.cover_url, ''),
+      cover_url: asString(media.cover_url, '') || asString(data.cover_url, ''),
     },
     created,
     updated,
@@ -1047,6 +1222,7 @@ function needsAppRewrite(data, canonical) {
 async function runAppsCanonicalShape() {
   console.log('[migrate] apps-canonical-shape start', {
     projectId,
+    databaseId: databaseId || '(default)',
     commit,
     pageSize,
     limit,
@@ -1108,6 +1284,99 @@ async function runAppsCanonicalShape() {
   }
 
   console.log('[migrate] apps-canonical-shape done', { processed, updated, skipped, commit })
+}
+
+async function runAppsDeleteRoot() {
+  console.log('[migrate] apps-delete-root start', {
+    projectId,
+    databaseId: databaseId || '(default)',
+    commit,
+  })
+
+  const snap = await db.collection('apps').get()
+  const liveDocIds = snap.docs.map((docSnap) => docSnap.id)
+  const appIds = new Set(liveDocIds)
+
+  const ecosystemSnap = await db.collection('ecosystem').get()
+  for (const docSnap of ecosystemSnap.docs) {
+    const apps = Array.isArray(docSnap.data()?.apps) ? docSnap.data().apps : []
+    for (const appId of apps) {
+      const normalized = asString(appId).trim()
+      if (normalized) appIds.add(normalized)
+    }
+  }
+
+  if (targetAppId) {
+    appIds.add(targetAppId)
+  }
+
+  const subcollectionsByDoc = {}
+  const orphanDocIds = []
+
+  for (const appId of [...appIds].sort((a, b) => a.localeCompare(b))) {
+    const docRef = db.collection('apps').doc(appId)
+    const subcollections = await docRef.listCollections()
+    subcollectionsByDoc[appId] = subcollections.map((entry) => entry.id)
+
+    if (!liveDocIds.includes(appId) && subcollections.length) {
+      orphanDocIds.push(appId)
+    }
+  }
+
+  if (!commit) {
+    console.log('[dry-run] apps-delete-root summary', {
+      docCount: liveDocIds.length,
+      docIds: liveDocIds,
+      orphanDocIds,
+      subcollectionsByDoc,
+    })
+    return
+  }
+
+  for (const appId of [...appIds].sort((a, b) => a.localeCompare(b))) {
+    await deleteDocumentTree(db.collection('apps').doc(appId))
+  }
+
+  console.log('[migrate] apps-delete-root done', {
+    docCount: liveDocIds.length,
+    deletedDocIds: [...appIds].sort((a, b) => a.localeCompare(b)),
+    orphanDocIds,
+  })
+}
+
+async function runUsersDeleteRoot() {
+  console.log('[migrate] users-delete-root start', {
+    projectId,
+    databaseId: databaseId || '(default)',
+    commit,
+  })
+
+  const snap = await db.collection('users').get()
+  const docCount = snap.size
+  const subcollectionsByDoc = {}
+
+  for (const docSnap of snap.docs) {
+    const subcollections = await docSnap.ref.listCollections()
+    subcollectionsByDoc[docSnap.id] = subcollections.map((entry) => entry.id)
+  }
+
+  if (!commit) {
+    console.log('[dry-run] users-delete-root summary', {
+      docCount,
+      docIds: snap.docs.map((doc) => doc.id),
+      subcollectionsByDoc,
+    })
+    return
+  }
+
+  for (const docSnap of snap.docs) {
+    await deleteDocumentTree(docSnap.ref)
+  }
+
+  console.log('[migrate] users-delete-root done', {
+    docCount,
+    deletedDocIds: snap.docs.map((doc) => doc.id),
+  })
 }
 
 async function runUsersCanonicalShape() {
@@ -1178,6 +1447,247 @@ async function runUsersCanonicalShape() {
   }
 
   console.log('[migrate] users-canonical-shape done', { processed, updated, skipped, commit })
+}
+
+async function runAppUsersCanonicalShape() {
+  console.log('[migrate] app-users-canonical-shape start', {
+    projectId,
+    databaseId: databaseId || '(default)',
+    commit,
+    pageSize,
+    limit,
+    app: targetAppId || null,
+  })
+
+  let processed = 0
+  let updated = 0
+  let skipped = 0
+
+  const appDocs = targetAppId
+    ? [await db.collection('apps').doc(targetAppId).get()].filter((docSnap) => docSnap.exists)
+    : (await db.collection('apps').orderBy(FieldPath.documentId()).get()).docs
+
+  for (const appDoc of appDocs) {
+    let lastDoc = null
+
+    while (true) {
+      if (limit && processed >= limit) break
+
+      let q = appDoc.ref.collection('users').orderBy(FieldPath.documentId()).limit(pageSize)
+      if (lastDoc) q = q.startAfter(lastDoc)
+
+      const snap = await q.get()
+      if (snap.empty) break
+
+      let batch = db.batch()
+      let batchOps = 0
+
+      for (const docSnap of snap.docs) {
+        if (limit && processed >= limit) break
+
+        processed += 1
+        const data = docSnap.data() || {}
+        const canonical = buildCanonicalAppUser(docSnap.id, data, appDoc.id)
+
+        if (!needsAppUserRewrite(data, canonical)) {
+          skipped += 1
+          continue
+        }
+
+        updated += 1
+
+        if (commit) {
+          batch.set(docSnap.ref, canonical)
+          batchOps += 1
+        } else {
+          console.log('[dry-run]', docSnap.ref.path, canonical)
+        }
+
+        if (commit && batchOps >= 400) {
+          await batch.commit()
+          batch = db.batch()
+          batchOps = 0
+        }
+      }
+
+      if (commit && batchOps > 0) {
+        await batch.commit()
+      }
+
+      lastDoc = snap.docs[snap.docs.length - 1]
+    }
+
+    if (limit && processed >= limit) break
+  }
+
+  console.log('[migrate] app-users-canonical-shape done', {
+    processed,
+    updated,
+    skipped,
+    commit,
+  })
+}
+
+function sortedUniqueStrings(value) {
+  return [...new Set(asStringArray(value))].sort((a, b) => a.localeCompare(b))
+}
+
+async function runAppUserMirrorsRebuild() {
+  console.log('[migrate] app-user-mirrors-rebuild start', {
+    projectId,
+    databaseId: databaseId || '(default)',
+    commit,
+    app: targetAppId || null,
+  })
+
+  const now = Timestamp.now()
+  const migrationBy = 'system:migration'
+  const membershipByUserId = new Map()
+  const missingRootUsers = new Set()
+  let touchedApps = 0
+  let updatedApps = 0
+  let touchedUsers = 0
+  let updatedUsers = 0
+
+  const appDocs = targetAppId
+    ? [await db.collection('apps').doc(targetAppId).get()].filter((docSnap) => docSnap.exists)
+    : (await db.collection('apps').orderBy(FieldPath.documentId()).get()).docs
+
+  for (const appDoc of appDocs) {
+    touchedApps += 1
+
+    const appUsersSnap = await appDoc.ref.collection('users').get()
+    const adminIds = []
+
+    for (const userDoc of appUsersSnap.docs) {
+      const canonical = buildCanonicalAppUser(userDoc.id, userDoc.data() || {}, appDoc.id)
+      const uid = canonical.id || userDoc.id
+      const existing =
+        membershipByUserId.get(uid) || {
+          userOf: new Set(),
+          adminOf: new Set(),
+        }
+
+      existing.userOf.add(appDoc.id)
+      if (canonical.role === 'admin') {
+        existing.adminOf.add(appDoc.id)
+        adminIds.push(uid)
+      }
+
+      membershipByUserId.set(uid, existing)
+    }
+
+    const nextAdminIds = sortedUniqueStrings(adminIds)
+    const nextUserCount = appUsersSnap.size
+    const current = appDoc.data() || {}
+    const currentAdminIds = sortedUniqueStrings(current.admin_ids)
+    const currentUserCount = Number(asRecord(current.derived).user_count || 0)
+
+    if (
+      !valuesEqual(currentAdminIds, nextAdminIds) ||
+      !valuesEqual(currentUserCount, nextUserCount)
+    ) {
+      updatedApps += 1
+
+      if (commit) {
+        await appDoc.ref.update({
+          admin_ids: nextAdminIds,
+          'derived.user_count': nextUserCount,
+          updated: {
+            at: now,
+            by: migrationBy,
+          },
+        })
+      } else {
+        console.log('[dry-run]', appDoc.ref.path, {
+          admin_ids: nextAdminIds,
+          'derived.user_count': nextUserCount,
+        })
+      }
+    }
+  }
+
+  const rootUsersSnap = await db.collection('users').orderBy(FieldPath.documentId()).get()
+  const existingRootUserIds = new Set(rootUsersSnap.docs.map((docSnap) => docSnap.id))
+
+  for (const uid of membershipByUserId.keys()) {
+    if (!existingRootUserIds.has(uid)) missingRootUsers.add(uid)
+  }
+
+  let batch = db.batch()
+  let batchOps = 0
+
+  for (const userDoc of rootUsersSnap.docs) {
+    touchedUsers += 1
+
+    const current = userDoc.data() || {}
+    const currentUserOf = sortedUniqueStrings(current.userOf)
+    const currentAdminOf = sortedUniqueStrings(current.adminOf)
+    const membership = membershipByUserId.get(userDoc.id)
+
+    const membershipUserOf = membership ? [...membership.userOf].sort((a, b) => a.localeCompare(b)) : []
+    const membershipAdminOf = membership ? [...membership.adminOf].sort((a, b) => a.localeCompare(b)) : []
+
+    const nextUserOf = targetAppId
+      ? sortedUniqueStrings([
+          ...currentUserOf.filter((entry) => entry !== targetAppId),
+          ...(membershipUserOf.includes(targetAppId) ? [targetAppId] : []),
+        ])
+      : membershipUserOf
+
+    const nextAdminOf = targetAppId
+      ? sortedUniqueStrings([
+          ...currentAdminOf.filter((entry) => entry !== targetAppId),
+          ...(membershipAdminOf.includes(targetAppId) ? [targetAppId] : []),
+        ])
+      : membershipAdminOf
+
+    if (valuesEqual(currentUserOf, nextUserOf) && valuesEqual(currentAdminOf, nextAdminOf)) {
+      continue
+    }
+
+    updatedUsers += 1
+
+    if (commit) {
+      batch.set(
+        userDoc.ref,
+        {
+          userOf: nextUserOf,
+          adminOf: nextAdminOf,
+          updated: {
+            at: now,
+            by: migrationBy,
+          },
+        },
+        { merge: true }
+      )
+      batchOps += 1
+    } else {
+      console.log('[dry-run]', userDoc.ref.path, {
+        userOf: nextUserOf,
+        adminOf: nextAdminOf,
+      })
+    }
+
+    if (commit && batchOps >= 400) {
+      await batch.commit()
+      batch = db.batch()
+      batchOps = 0
+    }
+  }
+
+  if (commit && batchOps > 0) {
+    await batch.commit()
+  }
+
+  console.log('[migrate] app-user-mirrors-rebuild done', {
+    touchedApps,
+    updatedApps,
+    touchedUsers,
+    updatedUsers,
+    missingRootUsers: [...missingRootUsers].sort((a, b) => a.localeCompare(b)),
+    commit,
+  })
 }
 
 function buildCanonicalIngredient(docId, data) {
@@ -2074,7 +2584,16 @@ function buildDefaultAppDescription(docId, data, nextAppName, nextRole, nextEcos
 }
 
 function buildAppContentCleanupPatch(docId, data) {
-  const requiredSocialKeys = ['website', 'twitter', 'github', 'linkedin', 'instagram']
+  const requiredSocialKeys = [
+    'website',
+    'twitter',
+    'github',
+    'linkedin',
+    'instagram',
+    'facebook',
+    'youtube',
+    'email',
+  ]
   const social = asRecord(data.social_links)
 
   const appName = asString(data.app_name, '').trim()
@@ -2141,6 +2660,7 @@ function buildAppContentCleanupPatch(docId, data) {
 async function runAppsContentCleanup() {
   console.log('[migrate] apps-content-cleanup start', {
     projectId,
+    databaseId: databaseId || '(default)',
     commit,
     pageSize,
     limit,
@@ -2207,8 +2727,12 @@ async function runAppsContentCleanup() {
 const recipes = {
   'app-media-flatten': runAppMediaFlatten,
   'app-social-links-normalize': runAppSocialLinksNormalize,
+  'apps-delete-root': runAppsDeleteRoot,
   'apps-content-cleanup': runAppsContentCleanup,
   'apps-canonical-shape': runAppsCanonicalShape,
+  'app-users-canonical-shape': runAppUsersCanonicalShape,
+  'app-user-mirrors-rebuild': runAppUserMirrorsRebuild,
+  'users-delete-root': runUsersDeleteRoot,
   'users-canonical-shape': runUsersCanonicalShape,
   'jobs-backfill-id': runJobsBackfillId,
   'places-normalize-image-shade': runPlacesNormalizeImageShade,

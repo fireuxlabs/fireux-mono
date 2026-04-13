@@ -198,21 +198,10 @@ export function usePlacesInterface() {
     }
   }
 
-  function searchText(place: BasePlace): string {
-    const name = safeString(place.name)
-    const shortName = safeString((place as any)?.short_name)
-    const address = safeString((place as any)?.formatted_address)
-    const shortAddress = sanitizeShortAddress((place as any)?.short_address)
-    const id = safeString(place.id)
-    return `${name} ${shortName} ${shortAddress || address} ${id}`.trim().toLowerCase()
-  }
-
   return {
-    interface: buildInterface,
     pill,
     cell,
     preview,
     profile,
-    searchText,
   }
 }

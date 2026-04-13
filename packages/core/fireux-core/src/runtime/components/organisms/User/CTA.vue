@@ -40,6 +40,6 @@
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 import { useCardViewToggle } from '../../../composables/shared/useCardViewToggle'
 
-const { isResolved, isInitialized, currentUser, interface: userInterface } = useUser()
+const { isResolved, isInitialized, currentUser, pill: userInterface } = useUser()
 const { view, toggleView } = useCardViewToggle(() => Boolean(currentUser.value))
 </script>

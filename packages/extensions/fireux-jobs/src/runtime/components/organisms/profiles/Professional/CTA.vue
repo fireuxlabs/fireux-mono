@@ -28,7 +28,7 @@ import { useRouter } from 'vue-router'
 import { useProfessional } from '../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
 
 const router = useRouter()
-const { interface: professionalInterface } = useProfessional()
+const { pill: professionalInterface } = useProfessional()
 const { appName } = useFireUXConfig()
 
 const profileCard = computed(() => professionalInterface())

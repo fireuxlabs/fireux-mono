@@ -91,8 +91,8 @@ definePageMeta({
 
 useHead({ title: 'Profile' })
 
-const { currentUser, isLoading, interface: userInterface } = useUser()
-const { app, interface: appToCard } = useApp()
+const { currentUser, isLoading, pill: userInterface } = useUser()
+const { app, pill: appToCard } = useApp()
 
 const resolvedUser = computed(() => currentUser.value ?? null)
 

@@ -68,20 +68,5 @@ export function useRecipeInterface() {
     return buildInterface(target)
   }
 
-  function searchText(recipe: Recipe): string {
-    const mapped = map(recipe)
-    return [
-      mapped.title,
-      mapped.status,
-      mapped.subtitle,
-      safeStringArray(recipe.tags).join(' '),
-      safeString(recipe.id).trim(),
-      safeString(recipe.slug).trim(),
-    ]
-      .join(' ')
-      .trim()
-      .toLowerCase()
-  }
-
-  return { interface: buildInterface, searchText }
+  return { pill, cell, preview, profile }
 }

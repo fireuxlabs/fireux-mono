@@ -24,7 +24,7 @@ export function useKitchenConsole(
 ) {
   const kitchenState = useActiveKitchen()
   const kitchenSelection = useKitchenSelection()
-  const { interface: toKitchenCard } = useKitchenInterface()
+  const { pill: toKitchenCard } = useKitchenInterface()
 
   const kitchen = computed(() =>
     toKitchenCard(kitchenState.kitchen.value as Kitchen | null)

@@ -23,7 +23,7 @@ const props = defineProps<{
   recipe?: Recipe | null
   prop?: string
 }>()
-const { interface: toRecipeCard } = useRecipeInterface()
+const { pill: toRecipeCard } = useRecipeInterface()
 
 const resolved = computed(() => toRecipeCard(props.recipe ?? null))
 

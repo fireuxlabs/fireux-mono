@@ -92,7 +92,7 @@ const props = withDefaults(
   }
 )
 
-const { interface: makeCard, searchText } = useSupplierInterface()
+const { pill: makeCard } = useSupplierInterface()
 
 const collection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
@@ -111,7 +111,6 @@ const {
   visibleCount,
 } = useCollectionSearch<SupplierCollectionEntry, ReturnType<typeof makeCard>>({
   items: collection,
-  searchText: (supplier: SupplierCollectionEntry) => searchText(supplier),
   makeCard: (supplier: SupplierCollectionEntry) => makeCard(supplier),
   initialVariant: props.initialVariant,
 })

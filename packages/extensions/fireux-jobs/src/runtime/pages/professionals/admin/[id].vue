@@ -108,7 +108,7 @@ const { profile, pending } = useProfileFetch<Professional, AppProfessional>(
 const { coreProfile, appProfile } = profile
 const { computed: professionalComputed } = useProfessionalComputed(profile, pending)
 
-const { interface: makeCard } = useProfessionalInterface(profile)
+const { pill: makeCard } = useProfessionalInterface(profile)
 
 const isProfileLoading = computed(
   () => pending.value || coreProfile.value === undefined

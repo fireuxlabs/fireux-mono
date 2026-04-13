@@ -188,7 +188,7 @@ const documentsPath = useRuntimePortfolioPath(runtimePortfolio, 'documents')
 
 const { collection: documentCollection } = usePortfolioDocumentCollection(runtimePortfolio)
 const { collection: linkCollection } = usePortfolioDocumentLinkCollection(runtimePortfolio)
-const { interface: documentInterface } = useDocumentInterface()
+const { pill: documentInterface } = useDocumentInterface()
 
 const documents = computed(() => documentCollection.value)
 const links = computed(() => linkCollection.value)

@@ -80,7 +80,7 @@ const agentModelRuntime = AgentModelRuntime
 
 useAgentFetch()
 const { coreAgents: rawCoreAgents, appAgents: rawAppAgents } = useAgentCollection()
-const { interface: makeAgentCard } = useAgentInterface()
+const { pill: makeAgentCard } = useAgentInterface()
 
 const agentsCollection = computed(() => [
   ...(rawAppAgents?.value ?? []),

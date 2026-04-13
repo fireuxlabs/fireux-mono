@@ -92,7 +92,7 @@ const props = withDefaults(
   }
 )
 
-const { interface: makeCard, searchText } = useMenuInterface()
+const { pill: makeCard } = useMenuInterface()
 
 const collection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
@@ -121,7 +121,6 @@ const {
   visibleCount,
 } = useCollectionSearch<Menu, ReturnType<typeof makeCard>>({
   items: collectionVisible,
-  searchText: (menu: Menu) => searchText(menu),
   makeCard: (menu: Menu) => makeCard(menu),
   initialVariant: props.initialVariant,
 })

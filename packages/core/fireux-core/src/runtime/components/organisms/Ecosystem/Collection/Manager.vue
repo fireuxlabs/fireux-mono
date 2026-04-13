@@ -100,7 +100,7 @@ const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Sear
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
-const { interface: makeCard, searchText } = useEcosystemInterface()
+const { pill: makeCard } = useEcosystemInterface()
 
 const collection = computed<EcosystemInterfaceInput[]>(() =>
   rawCollection.value.filter((row): row is EcosystemInterfaceInput => Boolean(makeCard(row)))
@@ -114,7 +114,6 @@ const {
   visibleCount,
 } = useCollectionSearch<EcosystemInterfaceInput, EcosystemInterfaceCard>({
   items: collection,
-  searchText: (row) => searchText(row),
   makeCard: (row) => makeCard(row),
   initialVariant: props.initialVariant,
 })

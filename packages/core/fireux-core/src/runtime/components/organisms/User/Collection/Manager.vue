@@ -101,7 +101,7 @@ const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
-const { interface: makeCard, searchText } = useUserInterface()
+const { pill: makeCard } = useUserInterface()
 
 const {
   query,
@@ -111,7 +111,6 @@ const {
   visibleCount,
 } = useCollectionSearch<User, ReturnType<typeof makeCard>>({
   items: collection,
-  searchText: (user) => searchText(user),
   makeCard: (user) => makeCard(user),
   initialVariant: props.initialVariant,
 })

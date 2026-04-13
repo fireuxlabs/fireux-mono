@@ -110,27 +110,5 @@ export function useClientInterface() {
     return buildInterface(target)
   }
 
-  function searchText(target: Client): string {
-    return [
-      target.id,
-      target.display_name,
-      target.legal_name,
-      target.trading_name,
-      target.entity_kind,
-      target.entity_type,
-      target.registration_number,
-      target.jurisdiction,
-      target.property_label,
-      target.property_id,
-      target.unit_id,
-      target.status,
-      target.email,
-    ]
-      .map((value) => safeString(value))
-      .join(' ')
-      .toLowerCase()
-      .trim()
-  }
-
-  return { interface: buildInterface, searchText }
+  return { pill, cell, preview, profile }
 }

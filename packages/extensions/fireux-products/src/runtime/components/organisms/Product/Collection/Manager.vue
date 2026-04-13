@@ -103,7 +103,7 @@ const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
-const { interface: makeCard, searchText } = useProductInterface()
+const { pill: makeCard } = useProductInterface()
 
 const {
   query,
@@ -113,7 +113,6 @@ const {
   visibleCount,
 } = useCollectionSearch<FirebaseProduct, ReturnType<typeof makeCard>>({
   items: collection,
-  searchText: (product: FirebaseProduct) => searchText(product),
   makeCard: (product: FirebaseProduct) => makeCard(product),
   initialVariant: props.initialVariant,
 })

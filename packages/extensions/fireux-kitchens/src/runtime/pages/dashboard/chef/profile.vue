@@ -100,7 +100,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { coreProfile, appProfile, interface: chefCardFromProfile } = useChef()
+const { coreProfile, appProfile, pill: chefCardFromProfile } = useChef()
 
 const { ensure } = useProfileEnsure(chefConfig)
 const isCreating = ref(false)

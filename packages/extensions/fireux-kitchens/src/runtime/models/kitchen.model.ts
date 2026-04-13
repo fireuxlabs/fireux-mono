@@ -41,6 +41,9 @@ export type Kitchen = {
 
 export const AppKitchenModel = {
   id: '',
+  admin_ids: [] as string[],
+  join_requests: [] as string[],
+  console_enabled: false,
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['created']['by'],

@@ -24,7 +24,7 @@ export function useSupplierConsole(
 ) {
   const supplierState = useActiveSupplier()
   const supplierSelection = useSupplierSelection()
-  const { interface: toSupplierCard } = useSupplierInterface()
+  const { pill: toSupplierCard } = useSupplierInterface()
   const supplier = computed(() =>
     toSupplierCard(supplierState.supplier.value as Supplier | null)
   )

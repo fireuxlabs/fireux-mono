@@ -101,7 +101,7 @@ const { profile: profileRefs, pending } = useProfileFetch<Chef, AppChef>(
 )
 const profile = computed<Chef | null>(() => profileRefs.coreProfile.value ?? null)
 const loading = computed(() => pending.value)
-const { interface: chefInterface } = useChefInterface(profileRefs, userRefs.user)
+const { pill: chefInterface } = useChefInterface(profileRefs, userRefs.user)
 const chefCard = computed(() =>
   profile.value ? chefInterface(profile.value, userRefs.user.value ?? null) : null
 )

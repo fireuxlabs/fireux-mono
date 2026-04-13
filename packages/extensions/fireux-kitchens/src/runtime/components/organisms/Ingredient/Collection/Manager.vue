@@ -96,7 +96,7 @@ const props = withDefaults(
   }
 )
 
-const { interface: makeCard, searchText } = useIngredientInterface()
+const { pill: makeCard } = useIngredientInterface()
 
 const collection = computed(() => props.collection ?? [])
 const sourceDevJsonCollection = computed(() =>
@@ -119,7 +119,6 @@ const {
   visibleCount,
 } = useCollectionSearch<IngredientInterfaceItem, ReturnType<typeof makeCard>>({
   items: collection,
-  searchText: (ingredient: IngredientInterfaceItem) => searchText(ingredient),
   makeCard: (ingredient: IngredientInterfaceItem) => makeCard(ingredient),
   initialVariant: props.initialVariant,
 })

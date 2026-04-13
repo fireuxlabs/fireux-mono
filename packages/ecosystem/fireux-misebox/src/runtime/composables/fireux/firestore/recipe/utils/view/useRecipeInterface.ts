@@ -71,12 +71,5 @@ export function useRecipeInterface() {
     return buildInterface(target)
   }
 
-  function searchText(recipe: Recipe): string {
-    const title = safeString(recipe.published_summary?.title || recipe.name)
-    const status = safeString(recipe.workflow_status || '')
-    const slug = safeString(recipe.slug)
-    return `${title} ${status} ${slug}`.trim().toLowerCase()
-  }
-
-  return { interface: buildInterface, searchText }
+  return { pill, cell, preview, profile }
 }

@@ -128,7 +128,7 @@ const {
   currentUser,
   appUser,
   avatarSrc,
-  interface: userInterface,
+  pill: userInterface,
   isPremium,
   canOwnMultipleConsoles,
 } = useUser()

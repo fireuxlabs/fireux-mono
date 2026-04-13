@@ -1,6 +1,6 @@
 <template>
-  <MissingBrandAssetsFlag />
-  <TenantPlaceholderFlag />
+  <LandingMissingBrandAssetsFlag />
+  <LandingTenantPlaceholderFlag />
 
   <EffectsStars />
 

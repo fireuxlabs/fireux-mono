@@ -102,7 +102,7 @@ const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
-const { interface: makeCard, searchText } = useJobInterface()
+const { pill: makeCard } = useJobInterface()
 
 const {
   query,
@@ -112,7 +112,6 @@ const {
   visibleCount,
 } = useCollectionSearch<Job, ReturnType<typeof makeCard>>({
   items: collection,
-  searchText: (job: Job) => searchText(job),
   makeCard: (job: Job) => makeCard(job),
   initialVariant: props.initialVariant,
 })

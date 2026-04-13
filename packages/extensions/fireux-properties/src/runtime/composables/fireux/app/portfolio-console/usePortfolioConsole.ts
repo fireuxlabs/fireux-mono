@@ -24,7 +24,7 @@ export function usePortfolioConsole(
 ) {
   const portfolioState = useActivePortfolio()
   const portfolioSelection = usePortfolioSelection()
-  const { interface: toPortfolioCard } = usePortfolioInterface()
+  const { pill: toPortfolioCard } = usePortfolioInterface()
 
   const portfolio = computed(() =>
     toPortfolioCard(portfolioState.portfolio.value as Portfolio | null)

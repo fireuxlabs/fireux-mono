@@ -99,7 +99,7 @@ const props = withDefaults(
   }
 )
 
-const { interface: makeCard, searchText } = useClientInterface()
+const { pill: makeCard } = useClientInterface()
 
 const collection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
@@ -121,7 +121,6 @@ const {
   visibleCount,
 } = useCollectionSearch<Client, ReturnType<typeof makeCard>>({
   items: collection,
-  searchText: (client: Client) => searchText(client),
   makeCard: (client: Client) => makeCard(client),
   initialVariant: props.initialVariant,
 })

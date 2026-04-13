@@ -124,28 +124,10 @@ export function useProfessionalInterface(
     return buildInterface(target, userOverride)
   }
 
-  function searchText(target: ProfessionalTarget): string {
-    const mapped = buildInterface(target, target.user ?? userRef?.value ?? null)
-
-    return [
-      mapped?.id ?? '',
-      mapped?.displayName ?? '',
-      mapped?.title ?? '',
-      mapped?.summary ?? '',
-      mapped?.handle ?? '',
-      ...(mapped?.badges ?? []),
-    ]
-      .join(' ')
-      .trim()
-      .toLowerCase()
-  }
-
   return {
-    interface: buildInterface,
     pill,
     cell,
     preview,
     profile,
-    searchText,
   }
 }

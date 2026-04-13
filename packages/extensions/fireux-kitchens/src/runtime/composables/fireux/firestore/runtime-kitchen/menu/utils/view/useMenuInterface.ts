@@ -166,26 +166,10 @@ export function useMenuInterface() {
     }
   }
 
-  function searchText(menu: Menu): string {
-    const mapped = map(menu)
-    return [
-      mapped.name,
-      mapped.active ? 'active' : 'inactive',
-      mapped.dishCount,
-      mapped.windowLabel,
-      mapped.id,
-    ]
-      .join(' ')
-      .trim()
-      .toLowerCase()
-  }
-
   return {
-    interface: buildInterface,
     pill,
     cell,
     preview,
     profile,
-    searchText,
   }
 }

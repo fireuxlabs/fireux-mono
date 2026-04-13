@@ -26,7 +26,7 @@ export function useProjectConsole(
 ) {
   const projectState = useActiveProject()
   const projectSelection = useProjectSelection()
-  const { interface: toProjectCard } = useProjectInterface()
+  const { pill: toProjectCard } = useProjectInterface()
 
   const project = computed(() =>
     toProjectCard(projectState.project.value as Project | null)

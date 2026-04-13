@@ -245,7 +245,7 @@ if (import.meta.client) {
 }
 
 const toPlaceBase = mapPlaceToBasePlace()
-const { interface: toPlaceCard } = usePlacesInterface()
+const { pill: toPlaceCard } = usePlacesInterface()
 
 const placeCardLookup = computed(() => {
   const map = new Map<string, PlaceCard.Card | null>()

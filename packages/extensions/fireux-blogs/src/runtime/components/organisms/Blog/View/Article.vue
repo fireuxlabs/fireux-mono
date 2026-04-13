@@ -43,8 +43,21 @@ import { useBlogInterface } from '../../../../composables/fireux/firestore/blog/
 
 const props = defineProps<{ post: BlogPost }>()
 
-const { teaserProps } = useBlogInterface()
-const card = computed(() => teaserProps(props.post))
+const { preview: toPreview } = useBlogInterface()
+const card = computed(() => {
+  const preview = toPreview(props.post)
+
+  return {
+    to: preview?.to || '',
+    avatar: preview?.avatarUrl || '',
+    image: preview?.imageUrl || '',
+    author: preview?.author || preview?.subtitle || '',
+    readingTime: null as number | null,
+    badge: preview?.badges?.[0] || '',
+    title: preview?.title || '',
+    excerpt: preview?.excerpt || preview?.summary || '',
+  }
+})
 
 const thumbStyle = {
   width: '7rem',

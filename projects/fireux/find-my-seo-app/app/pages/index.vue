@@ -1,6 +1,6 @@
 <template>
   <div>
-    <MissingBrandAssetsFlag />
+    <LandingMissingBrandAssetsFlag />
     <LandingHeroSection
       :app-name="appMeta.brand.appName"
       :big-personality="appMeta.brand.bigPersonality"

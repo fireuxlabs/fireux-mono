@@ -73,24 +73,10 @@ export function usePortfolioInterface() {
     return buildInterface(target)
   }
 
-  function searchText(target: Portfolio): string {
-    return [
-      safeString(target.name),
-      safeString(target.owner_label),
-      safeString(target.region_label),
-      safeString(target.id),
-    ]
-      .join(' ')
-      .trim()
-      .toLowerCase()
-  }
-
   return {
-    interface: buildInterface,
     pill,
     cell,
     preview,
     profile,
-    searchText,
   }
 }

@@ -140,31 +140,10 @@ export function useAgentInterface(
     return buildInterface(target)
   }
 
-  function searchText(target: AgentTarget): string {
-    const mapped = map(target, resolveUser(target))
-
-    return [
-      mapped.id,
-      mapped.displayName,
-      mapped.title,
-      mapped.summary,
-      mapped.handle,
-      mapped.contactEmail,
-      mapped.contactPhone,
-      mapped.websiteUrl,
-      ...mapped.badges,
-    ]
-      .join(' ')
-      .trim()
-      .toLowerCase()
-  }
-
   return {
-    interface: buildInterface,
     pill,
     cell,
     preview,
     profile,
-    searchText,
   }
 }

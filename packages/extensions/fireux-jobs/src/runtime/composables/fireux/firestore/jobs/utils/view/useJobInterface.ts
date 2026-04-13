@@ -91,14 +91,5 @@ export function useJobInterface() {
     return buildInterface(target)
   }
 
-  function searchText(job: JobView): string {
-    // keep it simple; add company/place names later once jobs are hydrated
-    const title = safeString(job.title)
-    const status = safeString(job.status)
-    const location = safeString((job as any)?.workplace_label)
-    const id = safeString(job.id)
-    return `${title} ${status} ${location} ${id}`.trim().toLowerCase()
-  }
-
-  return { interface: buildInterface, searchText }
+  return { pill, cell, preview, profile }
 }

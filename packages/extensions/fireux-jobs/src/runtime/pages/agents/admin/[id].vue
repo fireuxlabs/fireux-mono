@@ -94,7 +94,7 @@ const { profile, pending } = useProfileFetch<Agent, AppAgent>(
 )
 const { coreProfile, appProfile } = profile
 
-const { interface: makeCard } = useAgentInterface(profile, userRefs.user)
+const { pill: makeCard } = useAgentInterface(profile, userRefs.user)
 
 const isProfileLoading = computed(
   () => pending.value || coreProfile.value === undefined

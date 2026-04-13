@@ -135,7 +135,7 @@ const devJsonTitle = computed(() => String(props.devJsonTitle || 'Projects (JSON
 const devJsonContext = computed(
   () => String(props.devJsonContext || 'collection manager · projects · raw collection').trim()
 )
-const { interface: makeCard, searchText } = useProjectInterface()
+const { pill: makeCard } = useProjectInterface()
 
 const collection = computed<ProjectSurface[]>(() =>
   rawCollection.value.filter((row): row is ProjectSurface => Boolean(makeCard(row)))
@@ -149,7 +149,6 @@ const {
   visibleCount,
 } = useCollectionSearch<ProjectSurface, ProjectInterfaceCard>({
   items: collection,
-  searchText: (row) => searchText(row),
   makeCard: (row) => makeCard(row),
   initialVariant: props.initialVariant,
 })

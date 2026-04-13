@@ -128,12 +128,5 @@ export function useProductInterface() {
     return buildInterface(target)
   }
 
-  function searchText(product: FirebaseProduct): string {
-    const name = safeString(product.name)
-    const id = safeString(product.id)
-    const slug = safeString(product.slug)
-    return `${name} ${slug} ${id}`.trim().toLowerCase()
-  }
-
-  return { interface: buildInterface, searchText }
+  return { pill, cell, preview, profile }
 }

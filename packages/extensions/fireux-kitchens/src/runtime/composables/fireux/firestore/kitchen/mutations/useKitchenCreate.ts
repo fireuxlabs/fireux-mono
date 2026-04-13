@@ -87,6 +87,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     const resolvedPayload: Record<string, unknown> = {
       id: resolvedId,
       is_test_kitchen: isTestKitchenCollection,
+      place_id: resolvedId,
     }
 
     const resolvedName = explicitName || defaultTestName
@@ -146,7 +147,11 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
           id: resolvedId,
         }),
       createOverlay: async () =>
-        ({}) as AppKitchen,
+        ({
+          admin_ids: uid.value ? [String(uid.value).trim()] : [],
+          join_requests: [],
+          console_enabled: true,
+        }) as AppKitchen,
     })
   }
 

@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-16 pb-20">
-    <MissingBrandAssetsFlag />
+    <LandingMissingBrandAssetsFlag />
     <section
       class="border-b border-gray-200/60 bg-white/70 py-16 dark:border-gray-800/50 dark:bg-gray-900/40"
     >

@@ -151,7 +151,7 @@ const tasksPath = useRuntimePortfolioPath(runtimePortfolio, 'tasks')
 const { collection } = usePortfolioTaskCollection(runtimePortfolio)
 const { createTask } = useTaskCreate(runtimePortfolio)
 const { updateTask } = useTaskUpdate(runtimePortfolio)
-const { interface: taskInterface } = useTaskInterface()
+const { pill: taskInterface } = useTaskInterface()
 
 const cards = computed(() =>
   collection.value
