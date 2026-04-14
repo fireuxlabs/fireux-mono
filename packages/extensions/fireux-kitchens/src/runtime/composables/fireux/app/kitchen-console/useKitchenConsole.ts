@@ -10,7 +10,7 @@ type UseKitchenConsoleOptions = {
 }
 
 const normalizeString = (value: unknown): string => String(value || '').trim()
-const family = 'kitchen' as const
+const family = 'kitchens' as const
 const resolveHeaderImageUrl = (
   value: { imageUrl?: string; avatarUrl?: string } | null | undefined
 ) => normalizeString(value?.imageUrl ?? value?.avatarUrl) || undefined

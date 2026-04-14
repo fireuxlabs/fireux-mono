@@ -35,7 +35,7 @@
                 <div class="console-card-header">
                   <div class="console-card-header__title">Menu Stack</div>
                   <p class="console-card-header__description">
-                    Live operational menu data for the selected kitchen.
+                    Published menus and dishes stay rooted on the kitchen. Recipes and mise stay app-scoped.
                   </p>
                 </div>
               </template>
@@ -74,8 +74,16 @@
                   <span class="console-summary-value">{{ menuItemsCount }}</span>
                 </div>
                 <div class="console-summary-field console-summary-field--full">
-                  Operational Path:
+                  Published Menu Path:
                   <span class="console-summary-value break-all">{{ menuCollectionPath }}</span>
+                </div>
+                <div class="console-summary-field console-summary-field--full">
+                  Published Dish Path:
+                  <span class="console-summary-value break-all">{{ dishCollectionPath }}</span>
+                </div>
+                <div class="console-summary-field console-summary-field--full">
+                  Operational Kitchen Path:
+                  <span class="console-summary-value break-all">{{ operationalKitchenPath }}</span>
                 </div>
               </div>
             </UCard>
@@ -85,7 +93,7 @@
                 <div class="console-card-header">
                   <div class="console-card-header__title">Featured Menu</div>
                   <p class="console-card-header__description">
-                    Spotlight the current menu shape before we build deeper menu flows.
+                    Preview the current customer-facing menu for this kitchen.
                   </p>
                 </div>
               </template>
@@ -125,7 +133,10 @@
 import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
-import { resolveKitchenConsoleCollectionPath } from '../../../composables/fireux/app/kitchen-console/shared'
+import {
+  resolveKitchenConsoleCollectionPath,
+  resolveKitchenRuntimeChildCollectionPath,
+} from '../../../composables/fireux/app/kitchen-console/shared'
 import { useKitchenMenuStackFetch } from '../../../composables/fireux/firestore/runtime-kitchen/stack/fetch/useKitchenMenuStackFetch'
 import { useMenuInterface } from '../../../composables/fireux/firestore/runtime-kitchen/menu/utils/view/useMenuInterface'
 
@@ -152,7 +163,23 @@ const { kitchenState, kitchen } = useKitchenConsole({
 })
 const kitchenCollectionPath = computed(() => resolveKitchenConsoleCollectionPath(appId))
 const menuCollectionPath = computed(() =>
-  kitchenState.id.value ? `${kitchenCollectionPath.value}/${kitchenState.id.value}/menus` : ''
+  resolveKitchenRuntimeChildCollectionPath({
+    kitchenCollectionPath: kitchenCollectionPath.value,
+    kitchenId: kitchenState.id.value,
+    collectionName: 'menus',
+    appId,
+  })
+)
+const dishCollectionPath = computed(() =>
+  resolveKitchenRuntimeChildCollectionPath({
+    kitchenCollectionPath: kitchenCollectionPath.value,
+    kitchenId: kitchenState.id.value,
+    collectionName: 'dishes',
+    appId,
+  })
+)
+const operationalKitchenPath = computed(() =>
+  kitchenState.id.value ? `${kitchenCollectionPath.value}/${kitchenState.id.value}` : ''
 )
 const { menus, counts } = useKitchenMenuStackFetch(kitchenState.id, {
   kitchenCollectionPath,

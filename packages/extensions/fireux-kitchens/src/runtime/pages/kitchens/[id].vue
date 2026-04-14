@@ -96,9 +96,9 @@
         <UCard>
               <template #header>
                 <div class="space-y-1">
-                  <div class="text-sm font-semibold">Permissions</div>
+                  <div class="text-sm font-semibold">Kitchen Claim</div>
                   <p class="text-xs text-dimmed">
-                    Edit access follows kitchen claim ownership and app admin role.
+                    Claiming controls who can update this public kitchen record.
                   </p>
                 </div>
               </template>
@@ -116,7 +116,7 @@
                     Owner
                   </UBadge>
                   <UBadge v-else-if="isAdmin" size="xs" variant="soft" color="primary">
-                    Admin override
+                    Support access
                   </UBadge>
                   <UBadge
                     v-if="claimedByLabel"
@@ -180,7 +180,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceClaim'
 import { computed, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
-import { resolveKitchenConsoleCollectionPath } from '../../composables/fireux/app/kitchen-console/shared'
+import { resolveKitchenRuntimeChildCollectionPath } from '../../composables/fireux/app/kitchen-console/shared'
 import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenInterface } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { Kitchen } from '../../models/kitchen.model'
@@ -194,7 +194,7 @@ definePageMeta({
   name: 'KitchensDetailPage',
 })
 
-const { appId, appName } = useFireUXConfig()
+const { appName } = useFireUXConfig()
 const route = useRoute()
 const hasChildRoute = computed(() => {
   const path = String(route.path || '').trim()
@@ -231,8 +231,10 @@ const menusRef = shallowRef(null) as ShallowRef<Ref<Menu[] | undefined> | null>
 watch(
   kitchenId,
   (nextKitchenId) => {
-    const basePath = resolveKitchenConsoleCollectionPath(appId)
-    const path = nextKitchenId ? `${basePath}/${nextKitchenId}/menus` : ''
+    const path = resolveKitchenRuntimeChildCollectionPath({
+      kitchenId: nextKitchenId,
+      collectionName: 'menus',
+    })
     menusRef.value = path ? firestoreFetchCollection<Menu>(path) : null
   },
   { immediate: true }
@@ -268,12 +270,12 @@ const canEdit = computed(() => {
 
 const permissionMessage = computed(() => {
   if (canEdit.value) {
-    return 'You can edit this kitchen.'
+    return 'You can edit this kitchen record.'
   }
   if (!claimedBy.value) {
-    return 'This kitchen is not claimed yet. Claim it to unlock console tools, edit access, and team features.'
+    return 'This kitchen is not claimed yet. Claim it if this is your kitchen.'
   }
-  return 'This kitchen is claimed by another user. You can view details but cannot edit.'
+  return 'This kitchen is already claimed. You can still browse its public details and menus.'
 })
 
 const { claimPlace } = usePlaceClaim()

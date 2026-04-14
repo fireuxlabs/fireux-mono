@@ -4,7 +4,7 @@ import type { Ref, ShallowRef } from 'vue'
 import { computed, shallowRef, unref, watch } from 'vue'
 import { normalizeRecipe, type Recipe } from '../../../../../../models/recipe.model'
 import { useKitchenSelection } from '../../../../app/kitchen-console/useKitchenSelection'
-import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-console/shared'
+import { resolveKitchenChildCollectionBasePath } from '../../../../app/kitchen-console/shared'
 
 const resolveRecipesPath = (kitchenCollectionPath: string, kitchenId: string) =>
   `${kitchenCollectionPath}/${kitchenId}/recipes`
@@ -25,8 +25,11 @@ export function useKitchenRecipeCollection(
     String(unref(kitchenId) || runtimeKitchenId.value || '').trim()
   )
   const kitchenCollectionPath = computed(() =>
-    String(unref(options.kitchenCollectionPath) || '').trim() ||
-    resolveKitchenConsoleCollectionPath(appId)
+    resolveKitchenChildCollectionBasePath({
+      kitchenCollectionPath: unref(options.kitchenCollectionPath),
+      collectionName: 'recipes',
+      appId,
+    })
   )
   const collectionPath = computed(() =>
     resolvedKitchenId.value

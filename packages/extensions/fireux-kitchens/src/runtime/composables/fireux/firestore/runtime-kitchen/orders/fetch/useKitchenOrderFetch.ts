@@ -3,7 +3,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import type { Ref, ShallowRef } from 'vue'
 import { computed, shallowRef, unref, watch } from 'vue'
-import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-console/shared'
+import { resolveKitchenChildCollectionBasePath } from '../../../../app/kitchen-console/shared'
 import type { KitchenOrder } from '../../../../../../models/order.model'
 
 type UseKitchenOrderFetchOptions = {
@@ -25,8 +25,11 @@ export function useKitchenOrderFetch(
 	)
 
 	const kitchenCollectionPath = computed(() =>
-		String(unref(options.kitchenCollectionPath) || '').trim() ||
-    resolveKitchenConsoleCollectionPath(appId)
+		resolveKitchenChildCollectionBasePath({
+      kitchenCollectionPath: unref(options.kitchenCollectionPath),
+      collectionName: 'orders',
+      appId,
+    })
 	)
 
 	const ordersPath = computed(() =>

@@ -60,6 +60,7 @@ if (help) {
   console.log('  - app-user-mirrors-rebuild')
   console.log('  - profile-app-overlays-backfill')
   console.log('  - console-entity-teams')
+  console.log('  - kitchen-storage-normalize')
   console.log('  - users-canonical-shape')
   console.log('  - users-delete-root')
   console.log('  - ingredients-canonical-shape')
@@ -2761,6 +2762,108 @@ async function runConsoleEntityTeams() {
   })
 }
 
+async function runKitchenStorageNormalize() {
+  if (!targetAppId) {
+    console.error('kitchen-storage-normalize requires --app <appId>.')
+    process.exit(1)
+  }
+
+  const operationalCollections = [
+    'ingredients',
+    'supplier-ingredients',
+    'recipes',
+    'mise',
+    'orders',
+    'team',
+    'costs',
+    'suppliers',
+    'purchase-orders',
+    'incoming-orders',
+  ]
+
+  console.log('[migrate] kitchen-storage-normalize start', {
+    projectId,
+    databaseId: databaseId || '(default)',
+    commit,
+    app: targetAppId,
+  })
+
+  const kitchensSnap = await db.collection('kitchens').orderBy(FieldPath.documentId()).get()
+  let kitchensScanned = 0
+  let kitchensWithOverlay = 0
+  let kitchensSkippedNoOverlay = 0
+  let movedCollections = 0
+  let movedDocs = 0
+
+  let batch = db.batch()
+  let batchOps = 0
+
+  for (const kitchenDoc of kitchensSnap.docs) {
+    kitchensScanned += 1
+    const kitchenId = kitchenDoc.id
+    const targetKitchenRef = db
+      .collection('apps')
+      .doc(targetAppId)
+      .collection('kitchens')
+      .doc(kitchenId)
+
+    const targetKitchenSnap = await targetKitchenRef.get()
+    if (!targetKitchenSnap.exists) {
+      kitchensSkippedNoOverlay += 1
+      continue
+    }
+
+    kitchensWithOverlay += 1
+    const subcollections = await kitchenDoc.ref.listCollections()
+
+    for (const subcollection of subcollections) {
+      const collectionName = subcollection.id
+      if (!operationalCollections.includes(collectionName)) continue
+
+      const sourceDocsSnap = await subcollection.get()
+      if (sourceDocsSnap.empty) continue
+
+      movedCollections += 1
+
+      for (const sourceDoc of sourceDocsSnap.docs) {
+        movedDocs += 1
+        const targetDocRef = targetKitchenRef.collection(collectionName).doc(sourceDoc.id)
+        const payload = sourceDoc.data() || {}
+
+        if (commit) {
+          batch.set(targetDocRef, payload)
+          batch.delete(sourceDoc.ref)
+          batchOps += 2
+        } else {
+          console.log('[dry-run][move]', {
+            from: sourceDoc.ref.path,
+            to: targetDocRef.path,
+          })
+        }
+
+        if (commit && batchOps >= 400) {
+          await batch.commit()
+          batch = db.batch()
+          batchOps = 0
+        }
+      }
+    }
+  }
+
+  if (commit && batchOps > 0) {
+    await batch.commit()
+  }
+
+  console.log('[migrate] kitchen-storage-normalize done', {
+    kitchensScanned,
+    kitchensWithOverlay,
+    kitchensSkippedNoOverlay,
+    movedCollections,
+    movedDocs,
+    commit,
+  })
+}
+
 async function runAppSocialLinksNormalize() {
   console.log('[migrate] app-social-links-normalize start', {
     projectId,
@@ -3008,6 +3111,7 @@ const recipes = {
   'app-user-mirrors-rebuild': runAppUserMirrorsRebuild,
   'profile-app-overlays-backfill': runProfileAppOverlaysBackfill,
   'console-entity-teams': runConsoleEntityTeams,
+  'kitchen-storage-normalize': runKitchenStorageNormalize,
   'users-delete-root': runUsersDeleteRoot,
   'users-canonical-shape': runUsersCanonicalShape,
   'jobs-backfill-id': runJobsBackfillId,

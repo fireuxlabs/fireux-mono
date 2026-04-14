@@ -1,6 +1,6 @@
 # fireux-kitchens Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-04-04
+Updated: 2026-04-14
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -20,20 +20,26 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 3) Identity rule
 - Live kitchen identity is place-backed and id-based; console runtime selection is state-based.
 - Chef association (`chef.kitchen_ids`) and workplace/profile links are relationship signals only.
-- Kitchen console authority comes from user-based console governance (`admin_ids`, `console_enabled`) or allowed canonical claim rules, not from profile association alone.
-- `Chef` is currently a live-operation prerequisite and presentation layer, not a separate stored console ownership model.
+- Kitchen console authority is user-based:
+  - a user can operate a kitchen when their uid is in the scoped kitchen `team_ids`
+  - profile association alone does not grant console access
+- `Chef` is a kitchen-domain profile extension of `User`, not a separate console owner.
 
 ## 4) Collections + paths
 - Live: `kitchens/{kitchenId}`
 - Live kitchen console: `apps/{appId}/kitchens/{kitchenId}`
 - Global ingredients: `ingredients/{ingredientId}`
-- Kitchen-owned operational children:
+- Root public kitchen children:
+  - `kitchens/{kitchenId}/menus/{menuId}`
+  - `kitchens/{kitchenId}/dishes/{dishId}`
+- App-scoped operational kitchen children:
   - `apps/{appId}/kitchens/{kitchenId}/ingredients/{ingredientId}`
+  - `apps/{appId}/kitchens/{kitchenId}/supplier-ingredients/{ingredientId}`
   - `apps/{appId}/kitchens/{kitchenId}/recipes/{recipeId}`
-  - `apps/{appId}/kitchens/{kitchenId}/dishes/{dishId}`
-  - `apps/{appId}/kitchens/{kitchenId}/menus/{menuId}`
   - `apps/{appId}/kitchens/{kitchenId}/mise/{taskId}`
   - `apps/{appId}/kitchens/{kitchenId}/orders/{orderId}`
+  - `apps/{appId}/kitchens/{kitchenId}/team/{memberId}`
+  - `apps/{appId}/kitchens/{kitchenId}/costs/{costId}`
 - Runtime kitchen mode mapping follows `docs/runtime-contract.md`.
 
 ## 5) Routes (public vs internal; slug vs id)
@@ -56,8 +62,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - not created during auth
 - `my real kitchens` means kitchens the current user can operate through the app overlay:
   - `apps/{appId}/kitchens/{kitchenId}`
-  - `admin_ids` contains the user and `console_enabled` is not false
-  - or a family-specific canonical claim rule allows entry
+  - `team_ids` contains the user
 - Chef linkage, workplace history, or profile association may support prerequisites or presentation, but they are not the console-access rule.
 
 ## 6) Surfaces supported
