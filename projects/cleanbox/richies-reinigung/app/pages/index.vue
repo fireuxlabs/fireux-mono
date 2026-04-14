@@ -1,34 +1,40 @@
 <template>
-  <LandingMissingBrandAssetsFlag />
-  <LandingTenantPlaceholderFlag />
-  <EffectsStars />
+  <div class="brand-landing">
+    <EffectsStars />
 
-  <LandingShell>
-    <template #left>
-      <LandingHero
-        :title="title"
-        :accent="accent"
-        :paragraph="paragraph"
-        :badges="badges"
-        :primary="hero.primary"
-        :secondary="hero.secondary"
-        :bullets="bullets"
+    <section class="brand-card" aria-labelledby="richies-brand">
+      <img
+        class="brand-avatar"
+        src="/img/app/logo.png"
+        alt="Richies Reinigung logo"
+        width="120"
+        height="120"
       />
-    </template>
-    <template #right>
-      <LandingQuickPeek :items="quickPeek" :footer-badge="footerBadge" />
-    </template>
-  </LandingShell>
 
-  <LandingSolutions
-    :title="solutions.title"
-    :subtitle="solutions.subtitle"
-    :items="solutions.items"
-  />
+      <img
+        class="brand-wordmark"
+        src="/img/app/wordmark-light.png"
+        srcset="/img/app/wordmark-light.png 1x, /img/app/wordmark-light-2x.png 2x"
+        alt="Richies Reinigung wordmark"
+        width="320"
+        height="80"
+      />
 
-  <LandingFuel />
-  <LandingFeatures first />
-  <LandingSkillsIcons />
+      <p id="richies-brand" class="lede">
+        Richie’s Reinigung provides reliable, professional cleaning services for homes and businesses in Interlaken, Lauterbrunnen, and Wengen.
+      </p>
+
+      <div class="cta-actions">
+        <NuxtLink class="btn primary" to="mailto:hello@richiesreinigung.ch">
+          Hire Richie
+        </NuxtLink>
+        <NuxtLink class="btn outline" to="tel:+41789520500">
+          <Icon name="i-lucide-phone" class="w-5 h-5" />
+          +41 78 952 05 00
+        </NuxtLink>
+      </div>
+    </section>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -45,71 +51,113 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Richies Reinigung — Tenant',
+  title: 'Richies Reinigung — Freelance cleaning partner',
   description:
-    'Richies Reinigung tenant child app for app setup, membership, and thin shared operations inside Cleanbox.',
+    'Independent Zürich cleaner for recurring apartments, offices, and pop-up projects. Upcoming availability and contact info.',
 })
-
-const title = 'Richies Reinigung'
-const accent = 'Cleanbox tenant runtime'
-const paragraph =
-  'A thin tenant child app for <span class="text-primary">app setup</span>, <span class="text-primary">team access</span>, and <span class="text-primary">shared Cleanbox runtime</span> without a bespoke tenant landing architecture.'
-
-const badges = [
-  { src: '/img/ecosystem/wordmark-light.svg', alt: 'Cleanbox' },
-  { src: '/img/stack/firebase-white.png', alt: 'Firebase' },
-]
-
-const hero = {
-  primary: { label: 'Open App', to: '/apps' },
-  secondary: { label: 'View Team', to: '/users' },
-}
-
-const bullets = [
-  { icon: 'i-lucide-app-window', text: 'Shared child-app shell' },
-  { icon: 'i-lucide-shield-check', text: 'Auth and membership flow' },
-  { icon: 'i-lucide-users', text: 'Tenant user overlays and access' },
-  { icon: 'i-lucide-image-off', text: 'Placeholder branding until real assets arrive' },
-]
-
-const quickPeek = [
-  {
-    title: 'Tenant status',
-    copy: 'Check app setup, placeholder branding, and runtime posture.',
-    icon: 'i-lucide-badge-check',
-  },
-  {
-    title: 'App',
-    copy: 'Inspect the child app surface and shared overlays.',
-    icon: 'i-lucide-app-window',
-  },
-  {
-    title: 'Team',
-    copy: 'Review users and access in this tenant.',
-    icon: 'i-lucide-users',
-  },
-]
-
-const footerBadge = 'Cleanbox · Firebase · Firestore'
-
-const solutions = {
-  title: 'Tenant Console',
-  subtitle: 'Use the shared child-app surfaces before adding anything domain-specific.',
-  items: [
-    {
-      title: 'Apps',
-      description: 'Inspect tenant app settings and runtime state.',
-      to: '/apps',
-      cta: 'Open',
-      icon: 'i-lucide-app-window',
-    },
-    {
-      title: 'Users',
-      description: 'Manage team members and role visibility.',
-      to: '/users',
-      cta: 'Browse',
-      icon: 'i-lucide-users',
-    },
-  ],
-}
 </script>
+
+<style scoped>
+.brand-landing {
+  position: relative;
+  min-height: 100%;
+  padding: 4rem clamp(2rem, 6vw, 5rem);
+}
+
+.brand-card {
+  width: min(640px, 100%);
+  margin: 0 auto;
+  padding: clamp(2rem, 4vw, 3.5rem);
+  border-radius: 28px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(15, 23, 42, 0.7);
+  box-shadow: 0 30px 80px rgba(2, 6, 23, 0.7);
+  text-align: center;
+  color: #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.brand-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  margin: 0 auto;
+  background: #0f172a;
+}
+
+.brand-wordmark {
+  width: min(360px, 80vw);
+  margin: 0 auto;
+  display: block;
+}
+
+.lede {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: rgba(248, 250, 252, 0.9);
+}
+
+.cta-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.85rem 1.8rem;
+  border-radius: 999px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.btn.primary {
+  background: #2563eb;
+  border-color: #3b82f6;
+  color: white;
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.35);
+}
+
+.btn.primary:hover {
+  background: #3b82f6;
+}
+
+.btn.outline {
+  background: transparent;
+  border-color: rgba(226, 232, 240, 0.4);
+  color: #e2e8f0;
+}
+
+.btn.outline:hover {
+  border-color: rgba(255, 255, 255, 0.7);
+  color: white;
+}
+
+@media (max-width: 640px) {
+  .brand-card {
+    border-radius: 24px;
+  }
+
+  .brand-wordmark {
+    width: min(260px, 90vw);
+  }
+}
+</style>
+
+<style global>
+body {
+  background: radial-gradient(
+      circle at top,
+      rgba(37, 99, 235, 0.35),
+      transparent 55%
+    ),
+    linear-gradient(135deg, #020617, #0f172a 60%, #1e1b4b);
+}
+</style>
