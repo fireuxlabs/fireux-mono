@@ -13,6 +13,9 @@ Status legend: ✅ done · ⚙️ in progress · ❌ missing · 🧩 dependency
 - [ ] Replace temporary dev-open rules with proper auth-, role-, and membership-based read/write rules.
 - [ ] Document the minimum required rules for core collections such as `apps`, `users`, `project`, and app membership subcollections.
 - [ ] Add a setup check that fails when a new named database exists without aligned rules and indexes.
+- [ ] Add a release preflight that checks runtime `databaseId`, deployed rules target, and index target all match before shipping.
+- [ ] Add a public-surface contract: signed-out tenant pages must not require protected Firestore client reads to render.
+- [ ] Capture the Cleanbox/Richies rules incident as the canonical warning against shipping named databases before rules are deployed.
 
 ## Wave 0 — Foundations
 

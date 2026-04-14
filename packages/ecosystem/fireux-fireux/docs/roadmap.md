@@ -7,6 +7,9 @@ Updated: 2026-03-16
 - [ ] Ensure new ecosystem databases do not launch with missing rules or temporary `allow read, write: if true` fallbacks.
 - [ ] Define the canonical secure access model for ecosystem app records, user records, and app membership reads.
 - [ ] Add deployment automation and verification for rules on `fireux`, `misebox`, and future named databases.
+- [ ] Add a release preflight that proves the live app is reading the intended named database and that rules are deployed there.
+- [ ] Add a tenant public-surface rule: signed-out landings must use safe public endpoints or public-safe data, not protected client reads.
+- [ ] Document the Richie/Cleanbox incident as the example failure mode for missing named-database rules before ship.
 
 ## Scope
 - Focus this package on the FireUX ecosystem control plane, not `fireux-core`.
@@ -73,3 +76,4 @@ Updated: 2026-03-16
 - Define app index schema in this package.
 - Implement app registration automation + CI guard.
 - Draft first `fireux-app` dashboard widgets against the app index.
+- Add a shared deployment checklist covering Firestore rules, indexes, and public landing read paths for every ecosystem app.
