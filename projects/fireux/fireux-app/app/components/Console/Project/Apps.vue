@@ -244,10 +244,6 @@ const { data: appsResolved, pending: pendingApps } = useAsyncData(
               wordmark_dark_url: String((app as any)?.media?.wordmark_dark_url || '').trim(),
               cover_url: String((app as any)?.media?.cover_url || '').trim(),
             },
-            console_enabled:
-              typeof (app as any)?.console_enabled === 'boolean'
-                ? (app as any).console_enabled
-                : true,
             join_requests: [],
             admin_ids: [],
             moderation_state: '',

@@ -66,16 +66,15 @@ export type FireuxRootScope = {
 /**
  * Canonical app-scoped support shape.
  *
- * Ownership and authority rule:
- * - app-scoped authority is user-based through `admin_ids`, `join_requests`, and `console_enabled`
- * - operator profiles such as Chef are optional family-specific prerequisites or presentation layers
- * - operator profiles do not replace user-based app ownership in the stored scoped shape
+ * Console entity rule:
+ * - users operate console entities through `team_ids`
+ * - join requests remain optional workflow state
+ * - profiles such as Chef are domain extensions, not the stored access principal
  */
 export const FireuxAppOverlayModel = {
   id: '' as string,
-  admin_ids: [] as string[],
+  team_ids: [] as string[],
   join_requests: [] as string[],
-  console_enabled: true as boolean,
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['created']['by'],

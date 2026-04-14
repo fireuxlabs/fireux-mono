@@ -61,12 +61,11 @@ export const AppModel = {
     cover_url: '',
   } as AppMedia,
 
-  // Governance + runtime flags
+  // Governance
   join_requests: [] as string[],
   admin_ids: [] as string[],
   moderation_state: '',
   ban_reasons: [] as string[],
-  console_enabled: true,
 
   created: {
     at: {} as FirebaseTimestamp,

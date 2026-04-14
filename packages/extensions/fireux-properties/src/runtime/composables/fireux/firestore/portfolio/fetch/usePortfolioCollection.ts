@@ -1,4 +1,6 @@
 import { computed, isRef, type Ref } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Portfolio } from '../../../../../models/portfolio.model'
 
@@ -13,26 +15,71 @@ const DEFAULT_COLLECTION_PATH = 'portfolios'
 
 export function usePortfolioCollection(options: UsePortfolioCollectionOptions = {}) {
   const { firestoreFetchCollection } = useFirestoreRead()
+  const { appId } = useFireUXConfig()
+  const { uid } = useAuth()
   const pathRef = isRef(options.collectionPath)
     ? options.collectionPath
     : computed(() => String(options.collectionPath || DEFAULT_COLLECTION_PATH).trim())
 
-  const source = computed(() => {
+  const rootSource = computed(() => {
     const collectionPath = String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
     return firestoreFetchCollection<PortfolioCollectionDoc>(collectionPath)
   })
 
+  const overlaySource = computed(() => {
+    const resolvedAppId = String(appId || '').trim()
+    if (!resolvedAppId) return null
+    return firestoreFetchCollection<
+      PortfolioCollectionDoc & { team_ids?: string[]; admin_ids?: string[] }
+    >(`apps/${resolvedAppId}/${DEFAULT_COLLECTION_PATH}`)
+  })
+
   const portfolios = computed(() =>
-    (source.value?.value ?? [])
-      .map((portfolio) => ({
-        ...portfolio,
-        id: String(portfolio?.id || '').trim(),
-      }))
-      .filter((portfolio) => Boolean(portfolio.id))
+    {
+      const portfoliosById = new Map<string, PortfolioCollectionDoc>()
+      for (const portfolio of rootSource.value?.value ?? []) {
+        const id = String(portfolio?.id || '').trim()
+        if (!id) continue
+        portfoliosById.set(id, {
+          ...portfolio,
+          id,
+        })
+      }
+
+      const currentUid = String(uid.value || '').trim()
+      if (!currentUid) return []
+
+      return (overlaySource.value?.value ?? [])
+        .map((overlay) => {
+          const id = String(overlay?.id || '').trim()
+          const teamIds = Array.isArray((overlay as any)?.team_ids)
+            ? (overlay as any).team_ids
+            : Array.isArray((overlay as any)?.admin_ids)
+              ? (overlay as any).admin_ids
+              : []
+
+          return {
+            id,
+            teamIds: teamIds
+              .map((value: unknown) => String(value || '').trim())
+              .filter(Boolean),
+            overlay,
+          }
+        })
+        .filter((entry) => Boolean(entry.id) && entry.teamIds.includes(currentUid))
+        .map((entry) => ({
+          ...(portfoliosById.get(entry.id) ?? {}),
+          ...(entry.overlay ?? {}),
+          id: entry.id,
+        }))
+        .filter((portfolio) => Boolean(portfolio.id))
+    }
   )
 
   const count = computed(() => portfolios.value.length)
-  const pending = computed(() => source.value?.value === undefined)
+  const pending = computed(
+    () => rootSource.value?.value === undefined || overlaySource.value?.value === undefined
+  )
 
   return {
     portfolios,

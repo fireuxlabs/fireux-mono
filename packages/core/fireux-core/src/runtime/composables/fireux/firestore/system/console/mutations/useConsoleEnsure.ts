@@ -62,12 +62,11 @@ export function useConsoleEnsure() {
     const collectionName = consoleCollectionByType[type]
     const overlaysQuery = query(
       collection(db, 'apps', currentAppId, collectionName),
-      where('admin_ids', 'array-contains', currentUid)
+      where('team_ids', 'array-contains', currentUid)
     )
     const overlaysSnap = await getDocs(overlaysQuery)
 
     const accessibleOverlayIds = overlaysSnap.docs
-      .filter((snap) => snap.get('console_enabled') !== false)
       .map((snap) => normalizeId(snap.id))
       .filter(Boolean)
 
@@ -75,7 +74,7 @@ export function useConsoleEnsure() {
     if (accessibleOverlayIds.includes(overlayId)) return
 
     throw new Error(
-      `Standard users can only own one live ${type} console per app. Premium unlocks multiple.`
+      `Standard users can only be on one live ${type} team per app. Premium unlocks multiple.`
     )
   }
 

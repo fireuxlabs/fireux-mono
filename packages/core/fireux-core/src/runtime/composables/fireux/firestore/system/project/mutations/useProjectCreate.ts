@@ -139,9 +139,8 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
       ensureRoot,
       createOverlay: async () =>
         ({
-          admin_ids: [user.uid],
+          team_ids: [user.uid],
           join_requests: [] as string[],
-          console_enabled: true,
         }) as AppProject,
     })
   }

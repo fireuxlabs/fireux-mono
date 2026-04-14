@@ -148,9 +148,8 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
         }),
       createOverlay: async () =>
         ({
-          admin_ids: uid.value ? [String(uid.value).trim()] : [],
+          team_ids: uid.value ? [String(uid.value).trim()] : [],
           join_requests: [],
-          console_enabled: true,
         }) as AppKitchen,
     })
   }

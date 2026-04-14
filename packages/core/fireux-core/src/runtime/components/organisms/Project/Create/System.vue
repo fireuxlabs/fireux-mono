@@ -30,8 +30,8 @@
           <code>projects/&lt;id&gt;</code>.
         </li>
         <li v-if="isConsoleMode">
-          Seeds console authority with the current user in
-          <code>admin_ids</code>.
+          Adds the current user to the project
+          <code>team_ids</code>.
         </li>
         <li v-else>Does not create the app-hosted project console overlay.</li>
         <li>

@@ -140,9 +140,8 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       ensureRoot,
       createOverlay: async () =>
         ({
-          admin_ids: uid.value ? [uid.value] : ([] as string[]),
+          team_ids: uid.value ? [uid.value] : ([] as string[]),
           join_requests: [] as string[],
-          console_enabled: true,
         }) as AppPortfolio,
     })
   }

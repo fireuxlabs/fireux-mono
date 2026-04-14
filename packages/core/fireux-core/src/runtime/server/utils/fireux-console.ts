@@ -227,8 +227,6 @@ function normalizeApp(docId: string, data: Record<string, unknown>): DefaultAppR
     admin_ids: toStringArray(data.admin_ids),
     moderation_state: firstString(data, ['moderation_state']),
     ban_reasons: toStringArray(data.ban_reasons),
-    console_enabled:
-      typeof data.console_enabled === 'boolean' ? data.console_enabled : true,
     created:
       data.created && typeof data.created === 'object' && !Array.isArray(data.created)
         ? (data.created as App['created'])

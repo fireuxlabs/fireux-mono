@@ -68,7 +68,6 @@ function buildCreatePayload(fireux: ReturnType<typeof useFireUXConfig>): CreateA
     app_short_name: fireux.appShortName,
     role: fireux.role,
     ecosystem: fireux.ecosystem,
-    console_enabled: true,
     social_links: {
       website: fireux.siteUrl,
     },
@@ -114,10 +113,6 @@ function buildRepairPatch(
     (!existingProjectId || existingProjectId === fireux.ecosystem)
   ) {
     patch.project_id = runtimeProjectId
-  }
-
-  if (typeof existing.console_enabled !== 'boolean') {
-    patch.console_enabled = true
   }
 
   const websiteUrl = asTrimmedString(fireux.siteUrl)

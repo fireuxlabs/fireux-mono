@@ -23,10 +23,8 @@ function normalizeAppSupplier(raw: AppSupplier, fallbackId: string): AppSupplier
   return {
     ...raw,
     id: raw.id ?? fallbackId,
-    admin_ids: asStringArray(anyRaw.admin_ids),
+    team_ids: asStringArray(anyRaw.team_ids ?? anyRaw.admin_ids),
     join_requests: asStringArray(anyRaw.join_requests),
-    console_enabled:
-      typeof anyRaw.console_enabled === 'boolean' ? anyRaw.console_enabled : false,
   }
 }
 

@@ -30,8 +30,8 @@
           <code>portfolios/&lt;id&gt;</code>.
         </li>
         <li v-if="isConsoleMode">
-          Seeds console authority with the current user in
-          <code>admin_ids</code>.
+          Adds the current user to the portfolio
+          <code>team_ids</code>.
         </li>
         <li v-else>Does not create the app-hosted portfolio console overlay.</li>
         <li>

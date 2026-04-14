@@ -114,14 +114,17 @@ const kitchens = computed(() => {
   const currentUid = normalizeString(uid.value)
 
   return (kitchenOverlays.value?.value ?? [])
-    .filter((overlay) => overlay?.console_enabled !== false)
     .filter((overlay) => {
-      const adminIds = Array.isArray(overlay?.admin_ids)
-        ? overlay.admin_ids.map((value) => normalizeString(value)).filter(Boolean)
+      const teamIds = Array.isArray((overlay as any)?.team_ids)
+        ? (overlay as any).team_ids.map((value: unknown) => normalizeString(value)).filter(Boolean)
+        : Array.isArray((overlay as any)?.admin_ids)
+          ? (overlay as any).admin_ids
+              .map((value: unknown) => normalizeString(value))
+              .filter(Boolean)
         : []
 
-      if (!currentUid) return adminIds.length === 0
-      return adminIds.length === 0 || adminIds.includes(currentUid)
+      if (!currentUid) return false
+      return teamIds.includes(currentUid)
     })
     .map((overlay) => {
       const kitchenId = normalizeString(overlay?.id)

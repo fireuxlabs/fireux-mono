@@ -26,8 +26,7 @@ export const harborProvisionsScenario = (): DemoSupplierScenario => ({
   appSupplier: {
     ...AppSupplierModel,
     id: 'harbor-provisions',
-    admin_ids: ['ops-harbor'],
+    team_ids: ['ops-harbor'],
     join_requests: [],
-    console_enabled: true,
   },
 })

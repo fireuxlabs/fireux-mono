@@ -93,9 +93,8 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
       ensureRoot,
       createOverlay: async () => {
         const payload: Omit<AppSupplier, 'created' | 'updated' | 'id'> = {
-          admin_ids: uid ? [uid] : ([] as string[]),
+          team_ids: uid ? [uid] : ([] as string[]),
           join_requests: [] as string[],
-          console_enabled: true,
         }
         return payload as AppSupplier
       },

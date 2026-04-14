@@ -59,6 +59,7 @@ if (help) {
   console.log('  - app-users-canonical-shape')
   console.log('  - app-user-mirrors-rebuild')
   console.log('  - profile-app-overlays-backfill')
+  console.log('  - console-entity-teams')
   console.log('  - users-canonical-shape')
   console.log('  - users-delete-root')
   console.log('  - ingredients-canonical-shape')
@@ -1220,7 +1221,6 @@ function buildCanonicalApp(docId, data) {
     app_short_name: asString(data.app_short_name, ''),
     role: asString(data.role, ''),
     ecosystem,
-    console_enabled: asBoolean(data.console_enabled, true),
     derived: {
       user_count:
         typeof derived.user_count === 'number' && Number.isFinite(derived.user_count)
@@ -2667,6 +2667,100 @@ async function runApplyDriftPayload() {
   console.log('[migrate] apply-drift-payload done', { processed, updated, skipped, commit })
 }
 
+async function runConsoleEntityTeams() {
+  console.log('[migrate] console-entity-teams start', {
+    projectId,
+    databaseId: databaseId || '(default)',
+    commit,
+    app: targetAppId || '(all)',
+  })
+
+  const families = ['projects', 'kitchens', 'suppliers', 'portfolios']
+  const appDocs = targetAppId
+    ? [await db.collection('apps').doc(targetAppId).get()].filter((docSnap) => docSnap.exists)
+    : (await db.collection('apps').orderBy(FieldPath.documentId()).get()).docs
+
+  let processedApps = 0
+  let processedDocs = 0
+  let updatedDocs = 0
+  let skippedDocs = 0
+
+  let batch = db.batch()
+  let batchOps = 0
+
+  for (const appDoc of appDocs) {
+    processedApps += 1
+
+    for (const family of families) {
+      const overlaysSnap = await appDoc.ref.collection(family).get()
+
+      for (const overlayDoc of overlaysSnap.docs) {
+        processedDocs += 1
+        const data = overlayDoc.data() || {}
+        const currentTeamIds = sortedUniqueStrings(data.team_ids)
+        const nextTeamIds = sortedUniqueStrings([
+          ...asStringArray(data.team_ids),
+          ...asStringArray(data.admin_ids),
+        ])
+        const patch = {}
+        let needs = false
+
+        if (!valuesEqual(currentTeamIds, nextTeamIds)) {
+          patch.team_ids = nextTeamIds
+          needs = true
+        }
+
+        if (!Array.isArray(data.team_ids)) {
+          patch.team_ids = nextTeamIds
+          needs = true
+        }
+
+        if (Object.prototype.hasOwnProperty.call(data, 'admin_ids')) {
+          patch.admin_ids = FieldValue.delete()
+          needs = true
+        }
+
+        if (Object.prototype.hasOwnProperty.call(data, 'console_enabled')) {
+          patch.console_enabled = FieldValue.delete()
+          needs = true
+        }
+
+        if (!needs) {
+          skippedDocs += 1
+          continue
+        }
+
+        updatedDocs += 1
+
+        if (commit) {
+          batch.update(overlayDoc.ref, patch)
+          batchOps += 1
+        } else {
+          console.log('[dry-run]', overlayDoc.ref.path, patch)
+        }
+
+        if (commit && batchOps >= 400) {
+          await batch.commit()
+          batch = db.batch()
+          batchOps = 0
+        }
+      }
+    }
+  }
+
+  if (commit && batchOps > 0) {
+    await batch.commit()
+  }
+
+  console.log('[migrate] console-entity-teams done', {
+    processedApps,
+    processedDocs,
+    updatedDocs,
+    skippedDocs,
+    commit,
+  })
+}
+
 async function runAppSocialLinksNormalize() {
   console.log('[migrate] app-social-links-normalize start', {
     projectId,
@@ -2913,6 +3007,7 @@ const recipes = {
   'app-users-canonical-shape': runAppUsersCanonicalShape,
   'app-user-mirrors-rebuild': runAppUserMirrorsRebuild,
   'profile-app-overlays-backfill': runProfileAppOverlaysBackfill,
+  'console-entity-teams': runConsoleEntityTeams,
   'users-delete-root': runUsersDeleteRoot,
   'users-canonical-shape': runUsersCanonicalShape,
   'jobs-backfill-id': runJobsBackfillId,

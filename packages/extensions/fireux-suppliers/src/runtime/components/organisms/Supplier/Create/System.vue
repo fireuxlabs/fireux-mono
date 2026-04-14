@@ -38,8 +38,8 @@
             <code>suppliers/&lt;id&gt;</code>.
           </li>
           <li v-if="isConsoleMode">
-            Seeds console authority with the current operator in
-            <code>admin_ids</code>.
+            Adds the current operator to the supplier
+            <code>team_ids</code>.
           </li>
           <li v-else>Does not create the app-hosted supplier console overlay.</li>
           <li>

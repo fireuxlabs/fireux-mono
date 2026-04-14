@@ -26,8 +26,7 @@ export const supplyLoopDistributionScenario = (): DemoSupplierScenario => ({
   appSupplier: {
     ...AppSupplierModel,
     id: 'supply-loop-distribution',
-    admin_ids: ['ops-supply-loop'],
+    team_ids: ['ops-supply-loop'],
     join_requests: [],
-    console_enabled: true,
   },
 })
