@@ -138,13 +138,12 @@ const { kitchenState, kitchen } = useKitchenConsole()
 const { appId } = useFireUXConfig()
 const { count: totalKitchens } = useKitchenCollection()
 const selectedKitchen = computed(
-  () => kitchenState.kitchen.value as Record<string, unknown> | null
+  () => kitchenState.entity.value as Record<string, unknown> | null
 )
-const isDemo = computed(() => false)
 const kitchenCollectionPath = computed(() => resolveKitchenConsoleCollectionPath(appId))
 const runtimeData = useRuntimeKitchenData({
   id: kitchenState.id,
-  isDemo,
+  isDemo: kitchenState.isDemo,
   kitchenCollectionPath,
 })
 

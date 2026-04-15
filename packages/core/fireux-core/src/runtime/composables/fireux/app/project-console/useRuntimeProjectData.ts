@@ -12,7 +12,7 @@ import {
 
 type UseRuntimeProjectDataParams = {
   id: Ref<string> | string
-  project: Ref<Project | null | undefined>
+  entity: Ref<Project | null | undefined>
   isDemo?: Ref<boolean>
   scenario?: Ref<DemoProjectScenario | null | undefined>
 }
@@ -93,17 +93,17 @@ export function useRuntimeProjectData(params: UseRuntimeProjectDataParams) {
   const projectId = computed(() =>
     typeof params.id === 'string' ? safeString(params.id) : safeString(params.id.value)
   )
-  const project = computed(() => params.project.value ?? null)
+  const entity = computed(() => params.entity.value ?? null)
   const isDemo = computed(() => Boolean(params.isDemo?.value))
   const scenario = computed(() => params.scenario?.value ?? null)
-  const mainAppId = computed(() => safeString(project.value?.app_id))
-  const ecosystemId = computed(() => safeString(project.value?.ecosystem_id))
+  const mainAppId = computed(() => safeString(entity.value?.app_id))
+  const ecosystemId = computed(() => safeString(entity.value?.ecosystem_id))
   const endpoint = computed(() => {
     if (isDemo.value) return `demo://project/${projectId.value}`
-    if (!project.value) return ''
+    if (!entity.value) return ''
 
     try {
-      return resolveFireuxConsoleEndpoint(project.value)
+      return resolveFireuxConsoleEndpoint(entity.value)
     } catch {
       return ''
     }

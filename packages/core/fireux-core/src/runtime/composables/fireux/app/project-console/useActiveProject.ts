@@ -41,7 +41,7 @@ export function useActiveProject() {
     )
   })
 
-  const project = computed(() => {
+  const entity = computed(() => {
     if (!id.value) return null
     if (isDemo.value) return scenario.value?.project ?? null
 
@@ -65,7 +65,7 @@ export function useActiveProject() {
     id,
     mode,
     isDemo,
-    project,
+    entity,
     scenario,
     pending,
   }

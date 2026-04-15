@@ -1,8 +1,8 @@
-import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
+import { computed } from 'vue'
 import type { AppKitchen, Kitchen } from '../../../models/kitchen.model'
+import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 import { resolveKitchenConsoleCollectionPath } from './shared'
 import { useKitchenSelection } from './useKitchenSelection'
 
@@ -14,8 +14,9 @@ import { useKitchenSelection } from './useKitchenSelection'
 export function useActiveKitchen() {
   const { appId } = useFireUXConfig()
   const { firestoreFetchCollection } = useFirestoreRead()
-  const { selectedId: id } = useKitchenSelection()
-  const { kitchen: liveKitchen, pending } = useKitchenFetch(id)
+  const { selectedId: id, mode } = useKitchenSelection()
+  const isDemo = computed(() => mode.value === 'demo')
+  const { kitchen: liveKitchen, pending: livePending } = useKitchenFetch(id)
   const overlayCollectionPath = computed(() => resolveKitchenConsoleCollectionPath(appId))
   const overlayCollection = computed(() => {
     const collectionPath = String(overlayCollectionPath.value || '').trim()
@@ -32,7 +33,9 @@ export function useActiveKitchen() {
     )
   })
 
-  const kitchen = computed(() => {
+  const scenario = computed(() => null)
+
+  const entity = computed(() => {
     if (!id.value) return null
 
     const rootKitchen = liveKitchen.value ?? null
@@ -45,14 +48,17 @@ export function useActiveKitchen() {
     } as Kitchen
   })
 
-  const activePending = computed(() => {
+  const pending = computed(() => {
     if (!id.value) return false
-    return pending.value || overlayCollection.value?.value === undefined
+    return livePending.value || overlayCollection.value?.value === undefined
   })
 
   return {
     id,
-    kitchen,
-    pending: activePending,
+    mode,
+    isDemo,
+    entity,
+    scenario,
+    pending,
   }
 }

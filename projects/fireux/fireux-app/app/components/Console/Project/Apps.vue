@@ -149,7 +149,7 @@ import type { App } from 'fireux-core/runtime/models/core/app.model'
 const { projectState, project } = useProjectConsole()
 const runtimeData = useRuntimeProjectData({
   id: projectState.id,
-  project: projectState.project,
+  entity: projectState.entity,
   isDemo: projectState.isDemo,
   scenario: projectState.scenario,
 })

@@ -119,13 +119,13 @@ import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/fir
 const { projectState, project } = useProjectConsole()
 const runtimeData = useRuntimeProjectData({
   id: projectState.id,
-  project: projectState.project,
+  entity: projectState.entity,
   isDemo: projectState.isDemo,
   scenario: projectState.scenario,
 })
 const { count: totalProjects } = useProjectCollection()
 const selectedProject = computed(
-  () => projectState.project.value as Record<string, unknown> | null
+  () => projectState.entity.value as Record<string, unknown> | null
 )
 
 const normalizeString = (value: unknown): string => String(value || '').trim()

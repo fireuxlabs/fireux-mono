@@ -182,7 +182,7 @@ import { useEcosystemInterface } from 'fireux-core/runtime/composables/fireux/fi
 const { projectState, project } = useProjectConsole()
 const runtimeData = useRuntimeProjectData({
   id: projectState.id,
-  project: projectState.project,
+  entity: projectState.entity,
   isDemo: projectState.isDemo,
   scenario: projectState.scenario,
 })

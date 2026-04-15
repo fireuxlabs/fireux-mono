@@ -29,7 +29,7 @@ export function useProjectConsole(
   const { pill: toProjectCard } = useProjectInterface()
 
   const project = computed(() =>
-    toProjectCard(projectState.project.value as Project | null)
+    toProjectCard(projectState.entity.value as Project | null)
   )
 
   const headerData = computed(() =>
@@ -39,7 +39,7 @@ export function useProjectConsole(
           title: project.value.title,
           subtitle:
             normalizeString(project.value.subtitle) ||
-            normalizeString(projectState.project.value?.id),
+            normalizeString(projectState.entity.value?.id),
         }
       : null
   )

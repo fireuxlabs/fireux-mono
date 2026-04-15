@@ -27,7 +27,7 @@ export function useKitchenConsole(
   const { pill: toKitchenCard } = useKitchenInterface()
 
   const kitchen = computed(() =>
-    toKitchenCard(kitchenState.kitchen.value as Kitchen | null)
+    toKitchenCard(kitchenState.entity.value as Kitchen | null)
   )
 
   const headerData = computed(() =>
@@ -37,7 +37,7 @@ export function useKitchenConsole(
           title: kitchen.value.title,
           subtitle:
             normalizeString(kitchen.value.subtitle) ||
-            normalizeString(kitchenState.kitchen.value?.id),
+            normalizeString(kitchenState.entity.value?.id),
         }
       : null
   )
@@ -45,7 +45,7 @@ export function useKitchenConsole(
   const consoleState = useConsoleState({
     family,
     selectedId: kitchenState.id,
-    mode: computed(() => 'live'),
+    mode: kitchenState.mode,
     setMode: () => {},
     clearSelection: kitchenSelection.clearRuntimeKitchen,
     header: headerData,
