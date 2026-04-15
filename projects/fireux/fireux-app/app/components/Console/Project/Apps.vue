@@ -9,7 +9,7 @@
     />
 
     <UAlert
-      v-else-if="!endpoint"
+      v-else-if="!runtimeData.endpoint"
       color="warning"
       variant="soft"
       title="No console endpoint"
@@ -35,25 +35,25 @@
           </div>
           <div class="console-summary-field">
             App refs:
-            <span class="console-summary-value">{{ appRefCount }}</span>
+            <span class="console-summary-value">{{ runtimeData.appRefCount }}</span>
           </div>
           <div class="console-summary-field">
             Resolved apps:
-            <span class="console-summary-value">{{ apps.length }}</span>
+            <span class="console-summary-value">{{ runtimeData.apps.length }}</span>
           </div>
           <div class="console-summary-field">
             Endpoint:
-            <span class="console-summary-value break-all">{{ endpoint }}</span>
+            <span class="console-summary-value break-all">{{ runtimeData.endpoint }}</span>
           </div>
         </div>
 
-        <div v-if="pendingRefs || pendingApps" class="console-card-header__description">
+        <div v-if="runtimeData.pendingRefs || runtimeData.pendingApps" class="console-card-header__description">
           Loading app facades...
         </div>
 
         <template v-else>
           <AppCollectionManager
-            :collection="apps"
+            :collection="runtimeData.apps"
             title="Apps"
             description="Apps belonging to the selected project."
           />
@@ -141,148 +141,22 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { useActiveProject } from 'fireux-core/runtime/composables/fireux/app/project-console/useActiveProject'
+import { useProjectConsole } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectConsole'
+import { useRuntimeProjectData } from 'fireux-core/runtime/composables/fireux/app/project-console/useRuntimeProjectData'
 import { useAppInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface'
-import {
-  resolveFireuxConsoleEndpoint,
-  type FireuxConsolePayload,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/project/utils/fireuxConsoleProjectFacade'
 import type { App } from 'fireux-core/runtime/models/core/app.model'
 
-const { project } = useActiveProject()
-const endpoint = computed(() => {
-  if (!project.value) return ''
-
-  try {
-    return resolveFireuxConsoleEndpoint(project.value)
-  } catch {
-    return ''
-  }
+const { projectState, project } = useProjectConsole()
+const runtimeData = useRuntimeProjectData({
+  id: projectState.id,
+  project: projectState.project,
 })
-const projectId = computed(() => String(project.value?.id || '').trim())
-const mainAppId = computed(() => String(project.value?.app_id || '').trim())
-
-type PublicAppInfoPayload = {
-  app?: Partial<App> | null
-}
-
-function normalizeAppInfoUrl(url: string) {
-  const raw = String(url || '').trim()
-  if (!raw) return ''
-
-  try {
-    const parsed = new URL(raw)
-    parsed.pathname = '/api/public/app/info'
-    parsed.search = ''
-    parsed.hash = ''
-    return parsed.toString()
-  } catch {
-    return ''
-  }
-}
-
-const { data: payload, pending: pendingRefs } = useAsyncData(
-  'fireux-project-apps',
-  async () => {
-    if (!endpoint.value) return null
-    return await $fetch<FireuxConsolePayload>(endpoint.value)
-  },
-  {
-    server: false,
-    watch: [endpoint],
-    default: () => null,
-  }
-)
-
-const appRefs = computed(() => payload.value?.apps ?? [])
-const appRefCount = computed(() => appRefs.value.length)
-
-const { data: appsResolved, pending: pendingApps } = useAsyncData(
-  'fireux-project-app-info',
-  async () => {
-    if (!appRefs.value.length) return []
-
-    const rows = await Promise.all(
-      appRefs.value.map(async (ref) => {
-        const infoUrl = normalizeAppInfoUrl(ref.url)
-        if (!infoUrl) return null
-
-        try {
-          const payload = await $fetch<PublicAppInfoPayload>(infoUrl)
-          const app = payload?.app
-          if (!app) return null
-
-          return {
-            id: String(app.id || ref.id || '').trim(),
-            project_id: String((app as any).project_id || projectId.value || '').trim(),
-            ecosystem_id: String((app as any).ecosystem_id || project.value?.ecosystem_id || '').trim(),
-            slug: String(app.slug || ref.id || '').trim(),
-            status: String(app.status || 'active').trim(),
-            team: String((app as any).team || '').trim(),
-            app_name: String((app as any).app_name || ref.id || '').trim(),
-            app_short_name: String((app as any).app_short_name || '').trim(),
-            role: String((app as any).role || '').trim(),
-            ecosystem: String((app as any).ecosystem || project.value?.ecosystem_id || '').trim(),
-            tagline: String((app as any).tagline || '').trim(),
-            description: String((app as any).description || '').trim(),
-            short_bio: String((app as any).short_bio || '').trim(),
-            long_bio: String((app as any).long_bio || '').trim(),
-            social_links: {
-              website:
-                String((app as any)?.social_links?.website || ref.url || '').trim(),
-            },
-            derived: {
-              user_count:
-                typeof (app as any)?.derived?.user_count === 'number'
-                  ? (app as any).derived.user_count
-                  : 0,
-            },
-            media: {
-              thumbnail_url: String((app as any)?.media?.thumbnail_url || '').trim(),
-              logo_url: String((app as any)?.media?.logo_url || '').trim(),
-              wordmark_light_url: String((app as any)?.media?.wordmark_light_url || '').trim(),
-              wordmark_dark_url: String((app as any)?.media?.wordmark_dark_url || '').trim(),
-              cover_url: String((app as any)?.media?.cover_url || '').trim(),
-            },
-            join_requests: [],
-            admin_ids: [],
-            moderation_state: '',
-            ban_reasons: [],
-          } as App
-        } catch {
-          return null
-        }
-      })
-    )
-
-    return rows.filter((entry): entry is App => Boolean(entry?.id))
-  },
-  {
-    server: false,
-    watch: [appRefs],
-    default: () => [],
-  }
-)
-
-const apps = computed(() => {
-  const rows = [...(appsResolved.value ?? [])]
-  const preferredId = mainAppId.value
-
-  if (!preferredId) return rows
-
-  rows.sort((a, b) => {
-    if (a.id === preferredId && b.id !== preferredId) return -1
-    if (b.id === preferredId && a.id !== preferredId) return 1
-    return a.id.localeCompare(b.id)
-  })
-
-  return rows
-})
+const projectId = computed(() => projectState.id.value)
 const focusedAppId = ref('')
 const { pill: toAppPill, preview: toAppPreview, profile: toAppProfile } = useAppInterface()
 
 watch(
-  apps,
+  () => runtimeData.value.apps,
   (rows) => {
     if (!rows.length) {
       focusedAppId.value = ''
@@ -291,7 +165,7 @@ watch(
 
     if (!rows.some((row) => row.id === focusedAppId.value)) {
       focusedAppId.value =
-        rows.find((row) => row.id === mainAppId.value)?.id ||
+        rows.find((row) => row.id === String(project.value?.app_id || '').trim())?.id ||
         rows[0]?.id ||
         ''
     }
@@ -300,17 +174,24 @@ watch(
 )
 
 const focusedApp = computed(() => {
-  if (!apps.value.length) return null
-  return apps.value.find((row) => row.id === focusedAppId.value) ?? apps.value[0] ?? null
+  if (!runtimeData.value.apps.length) return null
+  return (
+    runtimeData.value.apps.find((row) => row.id === focusedAppId.value) ??
+    runtimeData.value.apps[0] ??
+    null
+  )
 })
 
 const focusOptions = computed(() =>
-  apps.value
+  runtimeData.value.apps
     .map((app) => {
       const card = toAppPill(app)
       return card ? { app, card } : null
     })
-    .filter((entry): entry is { app: App; card: NonNullable<ReturnType<typeof toAppPill>> } => Boolean(entry))
+    .filter(
+      (entry): entry is { app: App; card: NonNullable<ReturnType<typeof toAppPill>> } =>
+        Boolean(entry)
+    )
 )
 
 const focusedPreview = computed(() =>
@@ -325,15 +206,28 @@ const focusedSiteUrl = computed(() =>
   String(focusedApp.value?.social_links?.website || '').trim()
 )
 
-const focusedInfoUrl = computed(() => normalizeAppInfoUrl(focusedSiteUrl.value))
+const focusedInfoUrl = computed(() => {
+  const raw = String(focusedSiteUrl.value || '').trim()
+  if (!raw) return ''
+
+  try {
+    const parsed = new URL(raw)
+    parsed.pathname = '/api/public/app/info'
+    parsed.search = ''
+    parsed.hash = ''
+    return parsed.toString()
+  } catch {
+    return ''
+  }
+})
 
 const dump = computed(() =>
   JSON.stringify(
     {
-      endpoint: endpoint.value,
+      endpoint: runtimeData.value.endpoint,
       projectId: projectId.value,
-      appRefs: appRefs.value,
-      apps: apps.value,
+      appRefs: runtimeData.value.appRefs,
+      apps: runtimeData.value.apps,
       focusedAppId: focusedAppId.value,
     },
     null,

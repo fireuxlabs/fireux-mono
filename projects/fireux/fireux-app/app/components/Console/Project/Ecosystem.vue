@@ -9,7 +9,7 @@
     />
 
     <UAlert
-      v-else-if="!ecosystemId"
+      v-else-if="!runtimeData.ecosystemId"
       color="warning"
       variant="soft"
       title="No ecosystem linked"
@@ -45,7 +45,7 @@
 
           <div class="console-summary-field">
             Ecosystem ID:
-            <span class="console-summary-value">{{ ecosystemId }}</span>
+            <span class="console-summary-value">{{ runtimeData.ecosystemId }}</span>
           </div>
 
           <div v-if="projectStatus" class="console-summary-field">
@@ -81,11 +81,11 @@
           </div>
         </template>
 
-        <div v-if="ecosystemPending" class="console-card-header__description">
+        <div v-if="runtimeData.ecosystemPending" class="console-card-header__description">
           Loading ecosystem facade...
         </div>
 
-        <div v-else-if="ecosystem" class="space-y-4">
+        <div v-else-if="runtimeData.ecosystem" class="space-y-4">
           <EcosystemCardsPill
             v-if="ecosystemCard"
             v-bind="ecosystemCard"
@@ -148,7 +148,7 @@
 
         <p v-else class="console-card-header__description">
           No public ecosystem facade was found for
-          <span class="console-summary-value">{{ ecosystemId }}</span>.
+          <span class="console-summary-value">{{ runtimeData.ecosystemId }}</span>.
         </p>
       </UCard>
 
@@ -175,18 +175,21 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useActiveProject } from 'fireux-core/runtime/composables/fireux/app/project-console/useActiveProject'
-import { useEcosystemFetch } from 'fireux-core/runtime/composables/fireux/firestore/system/ecosystem/fetch/useEcosystemFetch'
+import { useProjectConsole } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectConsole'
+import { useRuntimeProjectData } from 'fireux-core/runtime/composables/fireux/app/project-console/useRuntimeProjectData'
 import { useEcosystemInterface } from 'fireux-core/runtime/composables/fireux/firestore/system/ecosystem/utils/view/useEcosystemInterface'
 
-const { id: projectId, project, pending: projectPending } = useActiveProject()
-const ecosystemId = computed(() => String(project.value?.ecosystem_id || '').trim())
-const { ecosystem, pending: ecosystemPending } = useEcosystemFetch(ecosystemId)
+const { projectState, project } = useProjectConsole()
+const runtimeData = useRuntimeProjectData({
+  id: projectState.id,
+  project: projectState.project,
+})
 const { pill: makeEcosystemCard } = useEcosystemInterface()
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 const toDebugJson = (value: unknown) => JSON.stringify(value, null, 2)
 
+const projectId = computed(() => projectState.id.value)
 const projectName = computed(() => safeString(project.value?.name))
 const projectSlug = computed(() => safeString(project.value?.slug))
 const projectStatus = computed(() => safeString(project.value?.status))
@@ -195,24 +198,24 @@ const consoleEndpoint = computed(() =>
   safeString(project.value?.console_endpoint_url || project.value?.source_url)
 )
 
-const ecosystemRecordId = computed(() => safeString(ecosystem.value?.id))
-const ecosystemProjectId = computed(() => safeString(ecosystem.value?.project_id))
-const ecosystemName = computed(() => safeString(ecosystem.value?.name))
-const ecosystemSlug = computed(() => safeString(ecosystem.value?.slug))
-const ecosystemStatus = computed(() => safeString(ecosystem.value?.status))
-const ecosystemTeam = computed(() => safeString(ecosystem.value?.team))
-const ecosystemDescription = computed(() => safeString(ecosystem.value?.description))
-const ecosystemSourceUrl = computed(() => safeString(ecosystem.value?.source_url))
+const ecosystemRecordId = computed(() => safeString(runtimeData.value.ecosystem?.id))
+const ecosystemProjectId = computed(() => safeString(runtimeData.value.ecosystem?.project_id))
+const ecosystemName = computed(() => safeString(runtimeData.value.ecosystem?.name))
+const ecosystemSlug = computed(() => safeString(runtimeData.value.ecosystem?.slug))
+const ecosystemStatus = computed(() => safeString(runtimeData.value.ecosystem?.status))
+const ecosystemTeam = computed(() => safeString(runtimeData.value.ecosystem?.team))
+const ecosystemDescription = computed(() => safeString(runtimeData.value.ecosystem?.description))
+const ecosystemSourceUrl = computed(() => safeString(runtimeData.value.ecosystem?.source_url))
 const ecosystemAppCount = computed(() => {
-  const apps = ecosystem.value?.apps
+  const apps = runtimeData.value.ecosystem?.apps
   return Array.isArray(apps) ? String(apps.length) : '0'
 })
 
 const ecosystemCard = computed(() =>
-  ecosystem.value
+  runtimeData.value.ecosystem
     ? makeEcosystemCard({
-        ...ecosystem.value,
-        src: safeString(ecosystem.value.image_url),
+        ...runtimeData.value.ecosystem,
+        src: safeString(runtimeData.value.ecosystem.image_url),
         text: ecosystemName.value || ecosystemSlug.value || ecosystemRecordId.value,
         href: '',
       })
@@ -221,17 +224,17 @@ const ecosystemCard = computed(() =>
 
 const projectDump = computed(() =>
   toDebugJson({
-    pending: projectPending.value,
+    pending: projectState.pending.value,
     id: projectId.value,
-    ecosystemId: ecosystemId.value,
+    ecosystemId: runtimeData.value.ecosystemId,
     project: project.value,
   })
 )
 
 const ecosystemDump = computed(() =>
   toDebugJson({
-    pending: ecosystemPending.value,
-    ecosystem: ecosystem.value,
+    pending: runtimeData.value.ecosystemPending,
+    ecosystem: runtimeData.value.ecosystem,
   })
 )
 </script>

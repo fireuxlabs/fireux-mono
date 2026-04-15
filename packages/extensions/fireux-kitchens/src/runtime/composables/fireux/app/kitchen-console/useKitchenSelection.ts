@@ -17,7 +17,7 @@ type RuntimeKitchenSelectionInput = {
   mode?: ConsoleMode
 }
 
-const COOKIE_KEY = toConsoleSelectionStateKey('kitchen')
+const COOKIE_KEY = toConsoleSelectionStateKey('kitchens')
 
 const normalizeSelectionState = (value: unknown): KitchenSelectionState => {
   const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
