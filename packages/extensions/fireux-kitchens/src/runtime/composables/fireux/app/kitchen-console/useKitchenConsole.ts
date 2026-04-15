@@ -1,19 +1,13 @@
 import { computed } from 'vue'
-import { useConsoleState } from 'fireux-core/runtime/composables/fireux/console/useConsoleState'
 import type { Kitchen } from '../../../../models/kitchen.model'
 import { useKitchenSelection } from './useKitchenSelection'
 import { useActiveKitchen } from './useActiveKitchen'
 import { useKitchenInterface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
+import { useConsoleEntityAdapter } from 'fireux-core/runtime/composables/fireux/console/useConsoleEntityAdapter'
 
 type UseKitchenConsoleOptions = {
   publishHeader?: boolean
 }
-
-const normalizeString = (value: unknown): string => String(value || '').trim()
-const family = 'kitchens' as const
-const resolveHeaderImageUrl = (
-  value: { imageUrl?: string; avatarUrl?: string } | null | undefined
-) => normalizeString(value?.imageUrl ?? value?.avatarUrl) || undefined
 
 /**
  * Kitchen console adapter.
@@ -30,25 +24,13 @@ export function useKitchenConsole(
     toKitchenCard(kitchenState.entity.value as Kitchen | null)
   )
 
-  const headerData = computed(() =>
-    kitchen.value
-      ? {
-          imageUrl: resolveHeaderImageUrl(kitchen.value),
-          title: kitchen.value.title,
-          subtitle:
-            normalizeString(kitchen.value.subtitle) ||
-            normalizeString(kitchenState.entity.value?.id),
-        }
-      : null
-  )
-
-  const consoleState = useConsoleState({
-    family,
+  const { headerData, consoleState } = useConsoleEntityAdapter({
+    family: 'kitchens',
     selectedId: kitchenState.id,
     mode: kitchenState.mode,
-    setMode: () => {},
+    setMode: (mode) => kitchenSelection.setRuntimeKitchen({ mode }),
     clearSelection: kitchenSelection.clearRuntimeKitchen,
-    header: headerData,
+    card: kitchen,
     publishHeader: options.publishHeader,
   })
 

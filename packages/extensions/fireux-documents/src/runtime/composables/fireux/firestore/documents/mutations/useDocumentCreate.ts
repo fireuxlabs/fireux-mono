@@ -14,7 +14,7 @@ export function useDocumentCreate(runtimePortfolio = useActivePortfolio()) {
   async function createDocumentRecord(input: DocumentCreateInput): Promise<string> {
     const portfolioId = normalize(runtimePortfolio.id.value)
     if (!portfolioId) {
-      throw new Error('[fireux-documents] runtimePortfolioId is required.')
+      throw new Error('[fireux-documents] portfolio id is required.')
     }
 
     if (runtimePortfolio.isDemo.value) {

@@ -1,19 +1,13 @@
 import { computed } from 'vue'
-import { useConsoleState } from 'fireux-core/runtime/composables/fireux/console/useConsoleState'
 import type { Supplier } from '../../../../models/supplier/Supplier.model'
 import { useSupplierSelection } from './useSupplierSelection'
 import { useActiveSupplier } from './useActiveSupplier'
 import { useSupplierInterface } from '../../firestore/supplier/utils/view/useSupplierInterface'
+import { useConsoleEntityAdapter } from 'fireux-core/runtime/composables/fireux/console/useConsoleEntityAdapter'
 
 type UseSupplierConsoleOptions = {
   publishHeader?: boolean
 }
-
-const normalizeString = (value: unknown): string => String(value || '').trim()
-const family = 'supplier' as const
-const resolveHeaderImageUrl = (
-  value: { imageUrl?: string; avatarUrl?: string } | null | undefined
-) => normalizeString(value?.imageUrl ?? value?.avatarUrl) || undefined
 
 /**
  * Supplier console adapter.
@@ -26,28 +20,16 @@ export function useSupplierConsole(
   const supplierSelection = useSupplierSelection()
   const { pill: toSupplierCard } = useSupplierInterface()
   const supplier = computed(() =>
-    toSupplierCard(supplierState.supplier.value as Supplier | null)
+    toSupplierCard(supplierState.entity.value as Supplier | null)
   )
 
-  const headerData = computed(() =>
-    supplier.value
-      ? {
-          imageUrl: resolveHeaderImageUrl(supplier.value),
-          title: supplier.value.title,
-          subtitle:
-            normalizeString(supplier.value.subtitle) ||
-            normalizeString(supplierState.supplier.value?.id),
-        }
-      : null
-  )
-
-  const consoleState = useConsoleState({
-    family,
+  const { headerData, consoleState } = useConsoleEntityAdapter({
+    family: 'suppliers',
     selectedId: supplierState.id,
-    mode: computed(() => 'live'),
-    setMode: () => {},
+    mode: supplierState.mode,
+    setMode: (mode) => supplierSelection.setRuntimeSupplier({ mode }),
     clearSelection: supplierSelection.clearRuntimeSupplier,
-    header: headerData,
+    card: supplier,
     publishHeader: options.publishHeader,
   })
 

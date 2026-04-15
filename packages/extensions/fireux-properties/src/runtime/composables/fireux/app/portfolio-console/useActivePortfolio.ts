@@ -1,6 +1,6 @@
 import { computed, type Ref } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { usePortfolioFetch } from '../../firestore/portfolio/fetch/usePortfolioFetch'
+import { getDemoPortfolioScenario } from './demo-scenarios'
 import { usePortfolioSelection } from './usePortfolioSelection'
 import {
   resolvePortfolioConsoleCollectionPath,
@@ -8,21 +8,41 @@ import {
 } from './shared'
 
 /**
- * Live portfolio loader.
- * Loads the selected portfolio document from `portfolios/<id>`.
+ * Portfolio loader.
+ * Resolves the selected portfolio as the console uses it:
+ * - demo scenario when in demo mode
+ * - otherwise live portfolio document
  */
 export function useActivePortfolio() {
-  const { selectedId: id } = usePortfolioSelection()
-  const { portfolio: livePortfolio, pending } = usePortfolioFetch(id)
+  const { selectedId: id, mode } = usePortfolioSelection()
+  const isDemo = computed(() => mode.value === 'demo')
+  const firestorePortfolioId = computed(() => (isDemo.value ? '' : id.value))
+  const { portfolio: livePortfolio, pending: livePending } =
+    usePortfolioFetch(firestorePortfolioId)
 
-  const portfolio = computed(() => {
+  const scenario = computed(() => {
+    if (!isDemo.value || !id.value) return null
+    return getDemoPortfolioScenario(id.value)
+  })
+
+  const entity = computed(() => {
     if (!id.value) return null
+    if (isDemo.value) return scenario.value?.portfolio ?? null
     return livePortfolio.value ?? null
+  })
+
+  const pending = computed(() => {
+    if (!id.value) return false
+    if (isDemo.value) return false
+    return livePending.value
   })
 
   return {
     id,
-    portfolio,
+    mode,
+    isDemo,
+    entity,
+    scenario,
     pending,
   }
 }

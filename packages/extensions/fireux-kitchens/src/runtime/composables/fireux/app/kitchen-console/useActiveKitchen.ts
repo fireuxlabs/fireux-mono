@@ -3,25 +3,34 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { computed } from 'vue'
 import type { AppKitchen, Kitchen } from '../../../models/kitchen.model'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
+import { getDemoKitchenScenario } from './demo-scenarios'
 import { resolveKitchenConsoleCollectionPath } from './shared'
 import { useKitchenSelection } from './useKitchenSelection'
 
 /**
  * Active kitchen loader.
  * Resolves the selected kitchen as the console uses it:
- * root kitchen + app-scoped overlay merged together.
+ * - demo scenario when in demo mode
+ * - otherwise root kitchen + app-scoped overlay merged together
  */
 export function useActiveKitchen() {
   const { appId } = useFireUXConfig()
   const { firestoreFetchCollection } = useFirestoreRead()
   const { selectedId: id, mode } = useKitchenSelection()
   const isDemo = computed(() => mode.value === 'demo')
-  const { kitchen: liveKitchen, pending: livePending } = useKitchenFetch(id)
-  const overlayCollectionPath = computed(() => resolveKitchenConsoleCollectionPath(appId))
+  const firestoreKitchenId = computed(() => (isDemo.value ? '' : id.value))
+  const { kitchen: liveKitchen, pending: livePending } = useKitchenFetch(firestoreKitchenId)
+  const overlayCollectionPath = computed(() =>
+    isDemo.value ? '' : resolveKitchenConsoleCollectionPath(appId)
+  )
   const overlayCollection = computed(() => {
     const collectionPath = String(overlayCollectionPath.value || '').trim()
     if (!collectionPath) return null
     return firestoreFetchCollection<AppKitchen>(collectionPath)
+  })
+  const scenario = computed(() => {
+    if (!isDemo.value || !id.value) return null
+    return getDemoKitchenScenario(id.value)
   })
   const overlay = computed(() => {
     const docId = String(id.value || '').trim()
@@ -33,10 +42,9 @@ export function useActiveKitchen() {
     )
   })
 
-  const scenario = computed(() => null)
-
   const entity = computed(() => {
     if (!id.value) return null
+    if (isDemo.value) return scenario.value?.kitchen ?? null
 
     const rootKitchen = liveKitchen.value ?? null
     if (!rootKitchen) return null
@@ -50,6 +58,7 @@ export function useActiveKitchen() {
 
   const pending = computed(() => {
     if (!id.value) return false
+    if (isDemo.value) return false
     return livePending.value || overlayCollection.value?.value === undefined
   })
 

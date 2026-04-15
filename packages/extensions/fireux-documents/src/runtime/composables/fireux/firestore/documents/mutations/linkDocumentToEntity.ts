@@ -27,7 +27,7 @@ export function linkDocumentToEntity(runtimePortfolio = useActivePortfolio()) {
   async function mutate(input: LinkDocumentToEntityInput): Promise<string> {
     const portfolioId = normalize(runtimePortfolio.id.value)
     if (!portfolioId) {
-      throw new Error('[fireux-documents] runtimePortfolioId is required for linking.')
+      throw new Error('[fireux-documents] portfolio id is required for linking.')
     }
 
     if (runtimePortfolio.isDemo.value) {

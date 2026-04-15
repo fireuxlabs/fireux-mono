@@ -9,7 +9,7 @@ const trim = (value: unknown) => String(value || '').trim()
 export function useRecipeDelete(options: { kitchenCollectionPath?: string | Ref<string | null | undefined> } = {}) {
   const { deleteDocument } = useFirestoreDelete()
   const { appId } = useFireUXConfig()
-  const { runtimeKitchenId } = useKitchenSelection()
+  const { selectedId } = useKitchenSelection()
 
   const kitchenCollectionPath = computed(() =>
     String(unref(options.kitchenCollectionPath) || '').trim() ||
@@ -23,7 +23,7 @@ export function useRecipeDelete(options: { kitchenCollectionPath?: string | Ref<
     const resolvedRecipeId = trim(recipeId)
     if (!resolvedRecipeId) throw new Error('Recipe id is required')
 
-    const kitchenId = trim(overrides.kitchenId || runtimeKitchenId.value)
+    const kitchenId = trim(overrides.kitchenId || selectedId.value)
     if (!kitchenId) throw new Error('Kitchen id is required')
 
     await deleteDocument(`${kitchenCollectionPath.value}/${kitchenId}/recipes`, resolvedRecipeId)

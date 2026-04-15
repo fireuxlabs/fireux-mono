@@ -1,14 +1,17 @@
 import { toConsoleSelectionStateKey } from 'fireux-core/runtime/composables/fireux/app/routing/consoleRoutes'
-import { normalizeString } from 'fireux-core/runtime/composables/fireux/console/console.normalize'
+import {
+  normalizeConsoleMode,
+  normalizeString,
+} from 'fireux-core/runtime/composables/fireux/console/console.normalize'
 import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/console/console.types'
 import {
   selectionKey,
   useConsoleSelection,
 } from 'fireux-core/runtime/composables/fireux/console/useConsoleSelection'
-import { computed } from 'vue'
 
 type KitchenSelectionState = {
   selectedId: string
+  mode: ConsoleMode
 }
 
 type RuntimeKitchenSelectionInput = {
@@ -24,26 +27,31 @@ const normalizeSelectionState = (value: unknown): KitchenSelectionState => {
 
   return {
     selectedId: normalizeString(source.selectedId ?? source.kitchenId),
+    mode: normalizeConsoleMode(source.mode, { defaultMode: 'live' }),
   }
 }
 
 export function useKitchenSelection() {
   const selection = useConsoleSelection<KitchenSelectionState>({
     cookieKey: COOKIE_KEY,
-    defaultState: () => ({ selectedId: '' }),
+    defaultState: () => ({ selectedId: '', mode: 'live' }),
     normalizeState: normalizeSelectionState,
   })
 
   const selectedId = selectionKey(selection, 'selectedId')
-  const mode = computed<ConsoleMode>(() => 'live')
+  const mode = selectionKey(selection, 'mode')
 
   const setRuntimeKitchen = (selectionPatch: RuntimeKitchenSelectionInput = {}) => {
     const nextId =
       selectionPatch.selectedId !== undefined || selectionPatch.kitchenId !== undefined
         ? normalizeString(selectionPatch.selectedId ?? selectionPatch.kitchenId)
         : selectedId.value
+    const nextMode =
+      selectionPatch.mode !== undefined
+        ? normalizeConsoleMode(selectionPatch.mode, { defaultMode: mode.value })
+        : mode.value
 
-    selection.set({ selectedId: nextId })
+    selection.set({ selectedId: nextId, mode: nextMode })
   }
 
   const clearRuntimeKitchen = () => {
@@ -53,8 +61,6 @@ export function useKitchenSelection() {
   return {
     selectedId,
     mode,
-    runtimeKitchenId: selectedId,
-    runtimeKitchenMode: mode,
     setRuntimeKitchen,
     clearRuntimeKitchen,
   }

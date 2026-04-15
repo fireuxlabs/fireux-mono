@@ -14,7 +14,7 @@ export function useTaskCreate(runtimePortfolio = useActivePortfolio()) {
   async function createTask(input: TaskCreateInput): Promise<string> {
     const portfolioId = normalize(runtimePortfolio.id.value)
     if (!portfolioId) {
-      throw new Error('[fireux-tasks] runtimePortfolioId is required.')
+      throw new Error('[fireux-tasks] portfolio id is required.')
     }
 
     if (runtimePortfolio.isDemo.value) {

@@ -55,6 +55,7 @@ type ConsoleLayoutApi = {
 
 const DEFAULT_CONSOLE_MODE_OPTIONS = [
   { value: 'live', label: 'Live' },
+  { value: 'demo', label: 'Demo' },
 ] as const satisfies readonly ConsoleModeOption[]
 
 const normalizeHeader = (value: unknown): ConsoleHeaderData => {

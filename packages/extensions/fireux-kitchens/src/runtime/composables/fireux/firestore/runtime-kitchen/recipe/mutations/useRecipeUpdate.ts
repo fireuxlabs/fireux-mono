@@ -25,7 +25,7 @@ const stringArray = (value: unknown) =>
 export function useRecipeUpdate(options: { kitchenCollectionPath?: string | Ref<string | null | undefined> } = {}) {
   const { updateDocument } = useFirestoreUpdate()
   const { appId } = useFireUXConfig()
-  const { runtimeKitchenId } = useKitchenSelection()
+  const { selectedId } = useKitchenSelection()
 
   const kitchenCollectionPath = computed(() =>
     String(unref(options.kitchenCollectionPath) || '').trim() ||
@@ -40,7 +40,7 @@ export function useRecipeUpdate(options: { kitchenCollectionPath?: string | Ref<
     const resolvedRecipeId = trim(recipeId)
     if (!resolvedRecipeId) throw new Error('Recipe id is required')
 
-    const kitchenId = trim(overrides.kitchenId || runtimeKitchenId.value)
+    const kitchenId = trim(overrides.kitchenId || selectedId.value)
     if (!kitchenId) throw new Error('Kitchen id is required')
 
     const next: Partial<Recipe> & Record<string, unknown> = { ...patch }

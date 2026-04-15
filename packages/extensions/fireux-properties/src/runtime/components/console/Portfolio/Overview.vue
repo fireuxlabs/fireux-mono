@@ -118,7 +118,7 @@ import { usePortfolioCollection } from '../../../composables/fireux/firestore/po
 const { portfolioState, portfolio } = usePortfolioConsole()
 const { count: totalPortfolios } = usePortfolioCollection()
 const selectedPortfolio = computed(
-  () => portfolioState.portfolio.value as Record<string, unknown> | null
+  () => portfolioState.entity.value as Record<string, unknown> | null
 )
 
 const normalizeString = (value: unknown): string => String(value || '').trim()

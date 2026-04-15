@@ -61,8 +61,6 @@ export function useProjectSelection() {
   return {
     selectedId,
     mode,
-    runtimeProjectId: selectedId,
-    runtimeProjectMode: mode,
     setRuntimeProject,
     clearRuntimeProject,
   }

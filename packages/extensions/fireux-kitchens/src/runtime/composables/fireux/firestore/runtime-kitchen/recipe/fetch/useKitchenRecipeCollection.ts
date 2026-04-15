@@ -17,12 +17,12 @@ export function useKitchenRecipeCollection(
   kitchenId?: string | Ref<string | null | undefined>,
   options: UseKitchenRecipeCollectionOptions = {}
 ) {
-  const { runtimeKitchenId } = useKitchenSelection()
+  const { selectedId } = useKitchenSelection()
   const { firestoreFetchCollection } = useFirestoreRead()
   const { appId } = useFireUXConfig()
 
   const resolvedKitchenId = computed(() =>
-    String(unref(kitchenId) || runtimeKitchenId.value || '').trim()
+    String(unref(kitchenId) || selectedId.value || '').trim()
   )
   const kitchenCollectionPath = computed(() =>
     resolveKitchenChildCollectionBasePath({

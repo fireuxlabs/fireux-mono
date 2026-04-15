@@ -70,7 +70,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Treated as a core entity surface set.
 
 ## 7) Runtime dependencies
-- Runtime kitchen selection state (`runtimeKitchenId`, `runtimeKitchenMode`).
+- Runtime kitchen selection state (`selectedId`, `mode`).
 - Mode-aware data loading (`live`, `demo`).
 
 ## 8) SEO hooks

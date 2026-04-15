@@ -122,7 +122,7 @@ export function useRecipeCreate(options: { kitchenCollectionPath?: string | Ref<
   const { createDocument } = useFirestoreCreate()
   const { appId } = useFireUXConfig()
   const currentUser = useCurrentUser()
-  const { runtimeKitchenId } = useKitchenSelection()
+  const { selectedId } = useKitchenSelection()
 
   const kitchenCollectionPath = computed(() =>
     String(unref(options.kitchenCollectionPath) || '').trim() ||
@@ -133,7 +133,7 @@ export function useRecipeCreate(options: { kitchenCollectionPath?: string | Ref<
     draft: RecipeCreateDraft,
     overrides: { kitchenId?: string } = {}
   ) => {
-    const kitchenId = trim(overrides.kitchenId || runtimeKitchenId.value)
+    const kitchenId = trim(overrides.kitchenId || selectedId.value)
     if (!kitchenId) throw new Error('Kitchen id is required')
 
     const name = trim(draft.name)

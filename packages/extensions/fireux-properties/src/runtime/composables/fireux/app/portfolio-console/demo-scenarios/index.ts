@@ -1,3 +1,4 @@
+import { createDemoScenarioRegistry } from 'fireux-core/runtime/composables/fireux/console/createDemoScenarioRegistry'
 import { cedarLoopCoreScenario } from './cedar-loop-core'
 import { lakesideStabilityScenario } from './lakeside-stability'
 import { citylineMomentumScenario } from './cityline-momentum'
@@ -39,46 +40,34 @@ const scenarioBuilders: Record<ScenarioKey, () => DemoPortfolioScenario> = {
 }
 
 const normalize = (value: unknown) => String(value || '').trim()
-
-const isScenarioKey = (value: string): value is ScenarioKey =>
-  scenarioKeys.includes(value as ScenarioKey)
-
-const cache = new Map<ScenarioKey, DemoPortfolioScenario>(
-  scenarioKeys.map((key) => [key, scenarioBuilders[key]()] as const)
-)
-
-const registry = {
-  resolve: (key: ScenarioKey): DemoPortfolioScenario => scenarioBuilders[key](),
-  get: (id?: string): DemoPortfolioScenario | null => {
-    const candidate = normalize(id)
-    if (!candidate) return null
-    const key = isScenarioKey(candidate) ? candidate : defaultScenarioKey
-    return cache.get(key) ?? cache.get(defaultScenarioKey) ?? null
-  },
-  getList: (): DemoPortfolioScenarioListItem[] =>
-    scenarioKeys.map((key) => {
-      const scenario = cache.get(key) ?? scenarioBuilders[key]()
-      return {
-        id: scenario.id,
-        name: scenario.name || scenario.portfolio.name,
-        label: scenario.label || scenario.portfolio.region_label || 'Demo showcase',
-        image_url: normalize(scenario.manager.avatar_url),
-        manager_display_name: normalize(scenario.manager.display_name),
-        manager_avatar_url: normalize(scenario.manager.avatar_url),
-        mode: 'demo',
-        property_count: Array.isArray(scenario.properties) ? scenario.properties.length : 0,
-        unit_count: Array.isArray(scenario.units) ? scenario.units.length : 0,
-        task_count: Array.isArray(scenario.tasks) ? scenario.tasks.length : 0,
-      }
-    }),
-}
+const registry = createDemoScenarioRegistry<
+  DemoPortfolioScenario,
+  ScenarioKey,
+  DemoPortfolioScenarioListItem
+>({
+  keys: scenarioKeys,
+  defaultKey: defaultScenarioKey,
+  builders: scenarioBuilders,
+  toListItem: (scenario) => ({
+    id: scenario.id,
+    name: scenario.name || scenario.portfolio.name,
+    label: scenario.label || scenario.portfolio.region_label || 'Demo showcase',
+    image_url: normalize(scenario.manager.avatar_url),
+    manager_display_name: normalize(scenario.manager.display_name),
+    manager_avatar_url: normalize(scenario.manager.avatar_url),
+    mode: 'demo',
+    property_count: Array.isArray(scenario.properties) ? scenario.properties.length : 0,
+    unit_count: Array.isArray(scenario.units) ? scenario.units.length : 0,
+    task_count: Array.isArray(scenario.tasks) ? scenario.tasks.length : 0,
+  }),
+})
 
 export const getDemoPortfolioScenario = (
   portfolioId?: string
 ): DemoPortfolioScenario | null => {
   const candidate = normalize(portfolioId)
-  if (!candidate || !isScenarioKey(candidate)) return null
-  return registry.get(candidate)
+  if (!candidate) return null
+  return registry.get(candidate as ScenarioKey) ?? registry.resolve(defaultScenarioKey)
 }
 
 export const getDefaultDemoPortfolioScenario = (): DemoPortfolioScenario =>

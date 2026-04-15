@@ -20,11 +20,11 @@ export function useRecipeFetch(
 ) {
   const db = useFirestore()
   const { appId } = useFireUXConfig()
-  const { runtimeKitchenId } = useKitchenSelection()
+  const { selectedId } = useKitchenSelection()
 
   const resolvedRecipeId = computed(() => String(unref(recipeId) || '').trim())
   const resolvedKitchenId = computed(() =>
-    String(unref(options.kitchenId) || runtimeKitchenId.value || '').trim()
+    String(unref(options.kitchenId) || selectedId.value || '').trim()
   )
   const kitchenCollectionPath = computed(() =>
     String(unref(options.kitchenCollectionPath) || '').trim() ||

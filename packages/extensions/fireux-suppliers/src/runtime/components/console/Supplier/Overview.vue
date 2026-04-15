@@ -113,7 +113,7 @@ import { useSupplierCollection } from '../../../composables/fireux/firestore/sup
 const { supplierState, supplier } = useSupplierConsole()
 const { count: totalSuppliers } = useSupplierCollection()
 const selectedSupplier = computed(
-  () => supplierState.supplier.value as Record<string, unknown> | null
+  () => supplierState.entity.value as Record<string, unknown> | null
 )
 
 const normalizeString = (value: unknown): string => String(value || '').trim()

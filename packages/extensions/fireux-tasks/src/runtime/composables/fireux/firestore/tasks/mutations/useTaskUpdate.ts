@@ -14,7 +14,7 @@ export function useTaskUpdate(runtimePortfolio = useActivePortfolio()) {
   async function updateTask(taskId: string, patch: Partial<Omit<Task, 'id'>>): Promise<void> {
     const portfolioId = normalize(runtimePortfolio.id.value)
     if (!portfolioId) {
-      throw new Error('[fireux-tasks] runtimePortfolioId is required.')
+      throw new Error('[fireux-tasks] portfolio id is required.')
     }
 
     if (runtimePortfolio.isDemo.value) {

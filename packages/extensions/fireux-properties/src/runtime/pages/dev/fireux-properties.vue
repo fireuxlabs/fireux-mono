@@ -9,7 +9,7 @@
       <UCard>
         <div class="grid gap-2 md:grid-cols-3 text-sm">
           <div>
-            runtimePortfolioId:
+            selectedId:
             <span class="font-mono">{{ runtimePortfolio.id }}</span>
           </div>
           <div>
