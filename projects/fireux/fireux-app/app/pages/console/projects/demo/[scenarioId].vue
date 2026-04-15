@@ -1,0 +1,35 @@
+<template>
+  <div />
+</template>
+
+<script setup lang="ts">
+import { navigateTo, useRoute } from '#imports'
+import { useProjectSelection } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectSelection'
+import {
+  getDemoProjectScenario,
+  getDemoProjectScenarioList,
+} from 'fireux-core/runtime/composables/fireux/app/project-console/demo-scenarios'
+
+definePageMeta({
+  layout: 'console',
+  consoleEntry: true,
+})
+
+const route = useRoute()
+const { setRuntimeProject } = useProjectSelection()
+const requestedScenarioId = String(route.params.scenarioId || '').trim()
+const fallbackScenarioId = String(getDemoProjectScenarioList()[0]?.id || '').trim()
+const resolvedScenarioId = getDemoProjectScenario(requestedScenarioId)
+  ? requestedScenarioId
+  : fallbackScenarioId
+
+if (!resolvedScenarioId) {
+  await navigateTo('/console/projects', { replace: true })
+} else {
+  setRuntimeProject({
+    mode: 'demo',
+    projectId: resolvedScenarioId,
+  })
+  await navigateTo('/console/projects', { replace: true })
+}
+</script>

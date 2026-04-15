@@ -3,6 +3,7 @@ import { computed, ref, watch, type Ref } from 'vue'
 import type { App } from '../../../../models/core/app.model'
 import type { Project } from '../../../../models/system/project.model'
 import { useEcosystemFetch } from '../../firestore/system/ecosystem/fetch/useEcosystemFetch'
+import type { DemoProjectScenario } from './demo-scenarios/_shared/types'
 import {
   resolveFireuxConsoleEndpoint,
   type FireuxConsoleAppRef,
@@ -12,6 +13,8 @@ import {
 type UseRuntimeProjectDataParams = {
   id: Ref<string> | string
   project: Ref<Project | null | undefined>
+  isDemo?: Ref<boolean>
+  scenario?: Ref<DemoProjectScenario | null | undefined>
 }
 
 type PublicAppInfoPayload = {
@@ -91,9 +94,12 @@ export function useRuntimeProjectData(params: UseRuntimeProjectDataParams) {
     typeof params.id === 'string' ? safeString(params.id) : safeString(params.id.value)
   )
   const project = computed(() => params.project.value ?? null)
+  const isDemo = computed(() => Boolean(params.isDemo?.value))
+  const scenario = computed(() => params.scenario?.value ?? null)
   const mainAppId = computed(() => safeString(project.value?.app_id))
   const ecosystemId = computed(() => safeString(project.value?.ecosystem_id))
   const endpoint = computed(() => {
+    if (isDemo.value) return `demo://project/${projectId.value}`
     if (!project.value) return ''
 
     try {
@@ -103,7 +109,9 @@ export function useRuntimeProjectData(params: UseRuntimeProjectDataParams) {
     }
   })
 
-  const { ecosystem, pending: ecosystemPending } = useEcosystemFetch(ecosystemId)
+  const ecosystemLookupId = computed(() => (isDemo.value ? '' : ecosystemId.value))
+  const { ecosystem: liveEcosystem, pending: liveEcosystemPending } =
+    useEcosystemFetch(ecosystemLookupId)
 
   const appRefs = ref<FireuxConsoleAppRef[]>([])
   const appsResolved = ref<App[]>([])
@@ -120,6 +128,16 @@ export function useRuntimeProjectData(params: UseRuntimeProjectDataParams) {
       appsResolved.value = []
       pendingRefs.value = false
       pendingApps.value = false
+
+      if (isDemo.value) {
+        const scenarioApps = Array.isArray(scenario.value?.apps) ? scenario.value.apps : []
+        appRefs.value = scenarioApps.map((app) => ({
+          id: safeString(app.id),
+          url: safeString(app.social_links?.website),
+        }))
+        appsResolved.value = scenarioApps
+        return
+      }
 
       if (!nextEndpoint) return
 
@@ -184,7 +202,22 @@ export function useRuntimeProjectData(params: UseRuntimeProjectDataParams) {
   })
 
   const appRefCount = computed(() => appRefs.value.length)
+  const ecosystem = computed(() => {
+    if (isDemo.value) {
+      const scenarioEcosystem = Array.isArray(scenario.value?.ecosystems)
+        ? scenario.value?.ecosystems.find((entry) => safeString(entry?.id) === ecosystemId.value) ??
+          scenario.value?.ecosystems[0] ??
+          null
+        : null
+
+      return scenarioEcosystem ?? null
+    }
+
+    return liveEcosystem.value
+  })
+  const ecosystemPending = computed(() => (isDemo.value ? false : liveEcosystemPending.value))
   const runtimeData = computed(() => ({
+    isDemo: isDemo.value,
     ecosystemId: ecosystemId.value,
     ecosystem: ecosystem.value,
     ecosystemPending: ecosystemPending.value,

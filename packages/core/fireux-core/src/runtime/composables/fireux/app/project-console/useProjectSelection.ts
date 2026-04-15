@@ -1,5 +1,7 @@
-import { computed } from 'vue'
-import { normalizeString } from 'fireux-core/runtime/composables/fireux/console/console.normalize'
+import {
+  normalizeConsoleMode,
+  normalizeString,
+} from 'fireux-core/runtime/composables/fireux/console/console.normalize'
 import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/console/console.types'
 import {
   selectionKey,
@@ -9,6 +11,7 @@ import { toConsoleSelectionStateKey } from 'fireux-core/runtime/composables/fire
 
 type ProjectSelectionState = {
   selectedId: string
+  mode: ConsoleMode
 }
 
 type RuntimeProjectSelectionInput = {
@@ -24,26 +27,31 @@ const normalizeSelectionState = (value: unknown): ProjectSelectionState => {
 
   return {
     selectedId: normalizeString(source.selectedId ?? source.projectId),
+    mode: normalizeConsoleMode(source.mode, { defaultMode: 'live' }),
   }
 }
 
 export function useProjectSelection() {
   const selection = useConsoleSelection<ProjectSelectionState>({
     cookieKey: COOKIE_KEY,
-    defaultState: () => ({ selectedId: '' }),
+    defaultState: () => ({ selectedId: '', mode: 'live' }),
     normalizeState: normalizeSelectionState,
   })
 
   const selectedId = selectionKey(selection, 'selectedId')
-  const mode = computed<ConsoleMode>(() => 'live')
+  const mode = selectionKey(selection, 'mode')
 
   const setRuntimeProject = (selectionPatch: RuntimeProjectSelectionInput = {}) => {
     const nextId =
       selectionPatch.selectedId !== undefined || selectionPatch.projectId !== undefined
         ? normalizeString(selectionPatch.selectedId ?? selectionPatch.projectId)
         : selectedId.value
+    const nextMode =
+      selectionPatch.mode !== undefined
+        ? normalizeConsoleMode(selectionPatch.mode, { defaultMode: mode.value })
+        : mode.value
 
-    selection.set({ selectedId: nextId })
+    selection.set({ selectedId: nextId, mode: nextMode })
   }
 
   const clearRuntimeProject = () => {

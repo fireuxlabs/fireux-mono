@@ -120,6 +120,8 @@ const { projectState, project } = useProjectConsole()
 const runtimeData = useRuntimeProjectData({
   id: projectState.id,
   project: projectState.project,
+  isDemo: projectState.isDemo,
+  scenario: projectState.scenario,
 })
 const { count: totalProjects } = useProjectCollection()
 const selectedProject = computed(

@@ -47,11 +47,15 @@ export function useProjectConsole(
   const consoleState = useConsoleState({
     family,
     selectedId: projectState.id,
-    mode: computed(() => 'live'),
-    setMode: () => {},
+    mode: projectState.mode,
+    setMode: (mode) => projectSelection.setRuntimeProject({ mode }),
     clearSelection: projectSelection.clearRuntimeProject,
     header: headerData,
     publishHeader: options.publishHeader,
+    modeOptions: [
+      { value: 'live', label: 'Live' },
+      { value: 'demo', label: 'Demo' },
+    ] as const,
   })
 
   return {

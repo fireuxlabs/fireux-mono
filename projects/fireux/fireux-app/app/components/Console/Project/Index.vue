@@ -32,7 +32,7 @@
       description="No live FireUX projects are currently available in this workspace."
     />
 
-    <div v-else class="space-y-6">
+    <div v-if="projectsList.length" class="space-y-6">
       <div class="space-y-2">
         <div class="flex items-center justify-between gap-3">
           <div class="text-xs uppercase tracking-[0.16em] text-toned">
@@ -72,30 +72,46 @@
         :show-badges="false"
         @select="selectProject"
       />
-
-      <section class="w-full max-w-sm space-y-3">
-        <div class="flex items-center gap-3">
-          <div class="h-px flex-1 bg-default/60" />
-          <div class="text-xs uppercase tracking-[0.16em] text-toned">Or</div>
-          <div class="h-px flex-1 bg-default/60" />
-        </div>
-
-        <div class="space-y-2">
-          <div class="text-sm font-medium text-highlighted">Try a project simulation</div>
-
-          <USwitch
-            v-model="showSimulations"
-            unchecked-icon="i-lucide-x"
-            checked-icon="i-lucide-check"
-            label="Show project simulations"
-          />
-        </div>
-
-        <div v-if="showSimulations" class="text-sm text-dimmed">
-          Project Simulations
-        </div>
-      </section>
     </div>
+
+    <section class="w-full max-w-xl space-y-3">
+      <div class="flex items-center gap-3">
+        <div class="h-px flex-1 bg-default/60" />
+        <div class="text-xs uppercase tracking-[0.16em] text-toned">Or</div>
+        <div class="h-px flex-1 bg-default/60" />
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-medium text-highlighted">Try a project simulation</div>
+
+        <USwitch
+          v-model="showSimulations"
+          unchecked-icon="i-lucide-x"
+          checked-icon="i-lucide-check"
+          label="Show project simulations"
+        />
+      </div>
+
+      <div v-if="showSimulations" class="space-y-2">
+        <div class="text-sm text-dimmed">
+          Read-only demo projects wired into the same console stack.
+        </div>
+
+        <div class="grid gap-2 sm:grid-cols-2">
+          <UButton
+            v-for="scenario in demoProjects"
+            :key="scenario.id"
+            :to="`/console/projects/demo/${scenario.id}`"
+            color="neutral"
+            variant="soft"
+            class="justify-between"
+          >
+            <span>{{ scenario.name }}</span>
+            <span class="text-xs text-dimmed">{{ scenario.label }}</span>
+          </UButton>
+        </div>
+      </div>
+    </section>
   </section>
 </template>
 
@@ -104,6 +120,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
 import { useProjectConsole } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectConsole'
 import { useProjectSelection } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectSelection'
+import { getDemoProjectScenarioList } from 'fireux-core/runtime/composables/fireux/app/project-console/demo-scenarios'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import {
   readProjectPublicFacade,
@@ -126,9 +143,10 @@ const syncState = ref<{
   failed: number
 } | null>(null)
 const projectsList = computed(() => projects.value ?? [])
+const demoProjects = computed(() => getDemoProjectScenarioList())
 
 const selectProject = (projectId: string) => {
-  setRuntimeProject({ projectId })
+  setRuntimeProject({ projectId, mode: 'live' })
 }
 
 async function syncProjectFacade(projectRow: ProjectSurface) {
