@@ -91,7 +91,9 @@ const mapPublicApp = (
 
 export function useRuntimeProjectData(params: UseRuntimeProjectDataParams) {
   const projectId = computed(() =>
-    typeof params.id === 'string' ? safeString(params.id) : safeString(params.id.value)
+    typeof params.id === 'string'
+      ? safeString(params.id)
+      : safeString(params.id.value)
   )
   const entity = computed(() => params.entity.value ?? null)
   const isDemo = computed(() => Boolean(params.isDemo?.value))
@@ -109,10 +111,13 @@ export function useRuntimeProjectData(params: UseRuntimeProjectDataParams) {
     }
   })
 
-  const ecosystemLookupId = computed(() => (isDemo.value ? '' : ecosystemId.value))
+  const ecosystemLookupId = computed(() =>
+    isDemo.value ? '' : ecosystemId.value
+  )
   const { ecosystem: liveEcosystem, pending: liveEcosystemPending } =
     useEcosystemFetch(ecosystemLookupId)
 
+  const endpointEcosystem = ref<FireuxConsolePayload['ecosystem']>(null)
   const appRefs = ref<FireuxConsoleAppRef[]>([])
   const appsResolved = ref<App[]>([])
   const pendingRefs = ref(false)
@@ -124,13 +129,16 @@ export function useRuntimeProjectData(params: UseRuntimeProjectDataParams) {
     async ([nextEndpoint, nextProjectId, nextEcosystemId]) => {
       const currentLoadId = ++loadId.value
 
+      endpointEcosystem.value = null
       appRefs.value = []
       appsResolved.value = []
       pendingRefs.value = false
       pendingApps.value = false
 
       if (isDemo.value) {
-        const scenarioApps = Array.isArray(scenario.value?.apps) ? scenario.value.apps : []
+        const scenarioApps = Array.isArray(scenario.value?.apps)
+          ? scenario.value.apps
+          : []
         appRefs.value = scenarioApps.map((app) => ({
           id: safeString(app.id),
           url: safeString(app.social_links?.website),
@@ -145,9 +153,11 @@ export function useRuntimeProjectData(params: UseRuntimeProjectDataParams) {
       try {
         const payload = await $fetch<FireuxConsolePayload>(nextEndpoint)
         if (currentLoadId !== loadId.value) return
+        endpointEcosystem.value = payload?.ecosystem ?? null
         appRefs.value = Array.isArray(payload?.apps) ? payload.apps : []
       } catch {
         if (currentLoadId !== loadId.value) return
+        endpointEcosystem.value = null
         appRefs.value = []
       } finally {
         if (currentLoadId === loadId.value) {
@@ -168,7 +178,12 @@ export function useRuntimeProjectData(params: UseRuntimeProjectDataParams) {
               const payload = await $fetch<PublicAppInfoPayload>(infoUrl)
               if (!payload?.app) return null
 
-              return mapPublicApp(payload.app, appRef, nextProjectId, nextEcosystemId)
+              return mapPublicApp(
+                payload.app,
+                appRef,
+                nextProjectId,
+                nextEcosystemId
+              )
             } catch {
               return null
             }
@@ -176,7 +191,9 @@ export function useRuntimeProjectData(params: UseRuntimeProjectDataParams) {
         )
 
         if (currentLoadId !== loadId.value) return
-        appsResolved.value = rows.filter((entry): entry is App => Boolean(entry?.id))
+        appsResolved.value = rows.filter((entry): entry is App =>
+          Boolean(entry?.id)
+        )
       } finally {
         if (currentLoadId === loadId.value) {
           pendingApps.value = false
@@ -205,17 +222,22 @@ export function useRuntimeProjectData(params: UseRuntimeProjectDataParams) {
   const ecosystem = computed(() => {
     if (isDemo.value) {
       const scenarioEcosystem = Array.isArray(scenario.value?.ecosystems)
-        ? scenario.value?.ecosystems.find((entry) => safeString(entry?.id) === ecosystemId.value) ??
+        ? (scenario.value?.ecosystems.find(
+            (entry) => safeString(entry?.id) === ecosystemId.value
+          ) ??
           scenario.value?.ecosystems[0] ??
-          null
+          null)
         : null
 
       return scenarioEcosystem ?? null
     }
 
-    return liveEcosystem.value
+    return liveEcosystem.value ?? endpointEcosystem.value ?? null
   })
-  const ecosystemPending = computed(() => (isDemo.value ? false : liveEcosystemPending.value))
+  const ecosystemPending = computed(() => {
+    if (isDemo.value) return false
+    return liveEcosystemPending.value || pendingRefs.value
+  })
   const runtimeData = computed(() => ({
     isDemo: isDemo.value,
     ecosystemId: ecosystemId.value,

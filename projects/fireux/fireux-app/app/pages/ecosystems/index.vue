@@ -11,7 +11,7 @@
         title="Ecosystems index"
         description="Browse ecosystem records from the FireUX project and move into the project console when you need to manage them."
         family="project"
-        source="db.collections.ecosystems"
+        source="db.collections.ecosystem"
         :count-label="`${count} ecosystem${count === 1 ? '' : 's'}`"
         :actions="actions"
       />
@@ -43,7 +43,8 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Ecosystems · FireUX',
-  description: 'Entity index for FireUX ecosystems stored in db.collections.ecosystems.',
+  description:
+    'Entity index for FireUX ecosystems stored in db.collections.ecosystem.',
 })
 
 const { ecosystems, count } = useEcosystemCollection()

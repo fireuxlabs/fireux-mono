@@ -4,12 +4,14 @@ import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
 type EcosystemCollectionDoc = EcosystemSurface
 
-export function useEcosystemCollection(collectionPath: string | { value?: string } = 'ecosystems') {
+export function useEcosystemCollection(
+  collectionPath: string | { value?: string } = 'ecosystem'
+) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const path =
     typeof collectionPath === 'string'
       ? collectionPath
-      : String(collectionPath?.value || 'ecosystems').trim() || 'ecosystems'
+      : String(collectionPath?.value || 'ecosystem').trim() || 'ecosystem'
   const source = firestoreFetchCollection<EcosystemCollectionDoc>(path)
   const ecosystems = computed(() => source.value ?? [])
   const count = computed(() => ecosystems.value.length)

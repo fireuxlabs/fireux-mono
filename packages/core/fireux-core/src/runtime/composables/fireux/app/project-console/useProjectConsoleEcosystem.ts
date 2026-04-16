@@ -13,16 +13,16 @@ export function useProjectConsoleEcosystem() {
     scenario: projectState.scenario,
   })
 
-  const { pill } = useEcosystemInterface()
+  const { profile } = useEcosystemInterface()
 
   const ecosystem = computed(() => runtimeData.value.ecosystem ?? null)
   const pending = computed(() => runtimeData.value.ecosystemPending)
 
-  const ecosystemPill = computed(() => pill(ecosystem.value))
+  const ecosystemProfile = computed(() => profile(ecosystem.value))
 
   return {
     ecosystem,
-    ecosystemPill,
+    ecosystemProfile,
     pending,
   }
 }

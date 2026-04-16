@@ -46,6 +46,43 @@ export type EcosystemInterfaceCard = {
 }
 
 export function useEcosystemInterface() {
+  type EcosystemPill = EcosystemInterfaceCard
+  type EcosystemCell = EcosystemInterfaceCard
+
+  type EcosystemPreview = {
+    id: string
+    slug: string
+    name: string
+    description: string
+    status: string
+    team: string
+    appCount: number
+    imageUrl: string
+  }
+
+  type EcosystemProfile = EcosystemPreview & {
+    appLabels: string[]
+  }
+
+  const resolveAppCount = (
+    target?: EcosystemInterfaceInput | null | undefined
+  ): number => {
+    if (!target) return 0
+
+    if (Array.isArray(target.apps)) return target.apps.length
+    if (Number.isFinite(Number(target.appCount))) return Number(target.appCount)
+    if (Number.isFinite(Number(target.apps))) return Number(target.apps)
+    return 0
+  }
+
+  const resolveAppLabels = (
+    target?: EcosystemInterfaceInput | null | undefined
+  ): string[] => {
+    if (!Array.isArray(target?.apps)) return []
+
+    return target!.apps.map((entry) => safeString(entry)).filter(Boolean)
+  }
+
   function buildInterface(
     target?: EcosystemInterfaceInput | null | undefined
   ): EcosystemInterfaceCard | null {
@@ -90,26 +127,44 @@ export function useEcosystemInterface() {
 
   function pill(
     target?: EcosystemInterfaceInput | null | undefined
-  ): EcosystemInterfaceCard | null {
+  ): EcosystemPill | null {
     return buildInterface(target)
   }
 
   function cell(
     target?: EcosystemInterfaceInput | null | undefined
-  ): EcosystemInterfaceCard | null {
+  ): EcosystemCell | null {
     return buildInterface(target)
   }
 
   function preview(
     target?: EcosystemInterfaceInput | null | undefined
-  ): EcosystemInterfaceCard | null {
-    return buildInterface(target)
+  ): EcosystemPreview | null {
+    const base = buildInterface(target)
+    if (!base || !target) return null
+
+    return {
+      id: base.id,
+      slug: safeString(target.slug || target.key || target.id),
+      name: safeString(target.name || base.title),
+      description: safeString(target.description),
+      status: safeString(target.status),
+      team: safeString(target.team),
+      appCount: resolveAppCount(target),
+      imageUrl: base.imageUrl,
+    }
   }
 
   function profile(
     target?: EcosystemInterfaceInput | null | undefined
-  ): EcosystemInterfaceCard | null {
-    return buildInterface(target)
+  ): EcosystemProfile | null {
+    const base = preview(target)
+    if (!base || !target) return null
+
+    return {
+      ...base,
+      appLabels: resolveAppLabels(target),
+    }
   }
 
   return {

@@ -13,7 +13,8 @@
         </template>
 
         <p class="text-sm text-dimmed">
-          Ecosystem documents are read from <code>db.collections.ecosystems</code> and normalized for cards:
+          Ecosystem documents are read from
+          <code>db.collections.ecosystem</code> and normalized for cards:
           <code>{ key, name, team, apps, src, text, href }</code>.
         </p>
       </UCard>
@@ -25,23 +26,38 @@
 
         <div class="space-y-2 text-sm">
           <div class="rounded border border-default p-3">
-            <p class="font-mono">Firestore collection: ecosystems</p>
-            <p class="text-dimmed">Primary source for <code>/ecosystems</code> entity index.</p>
+            <p class="font-mono">Firestore collection: ecosystem</p>
+            <p class="text-dimmed">
+              Primary source for <code>/ecosystems</code> entity index.
+            </p>
           </div>
           <div class="rounded border border-default p-3">
             <p class="font-mono">GET /api/registry</p>
-            <p class="text-dimmed">Reads registry docs (modules, apps, ecosystems) for audit/debug flows.</p>
+            <p class="text-dimmed">
+              Reads registry docs (modules, apps, ecosystems) for audit/debug
+              flows.
+            </p>
           </div>
           <div class="rounded border border-default p-3">
             <p class="font-mono">POST /api/registry</p>
-            <p class="text-dimmed">Creates/updates ecosystem registry rows in controlled setup flows.</p>
+            <p class="text-dimmed">
+              Creates/updates ecosystem registry rows in controlled setup flows.
+            </p>
           </div>
         </div>
       </UCard>
 
       <div class="flex flex-wrap gap-2">
-        <UButton to="/ecosystems" color="primary" icon="i-lucide-orbit">Open ecosystems</UButton>
-        <UButton to="/ecosystems/learn-more" color="neutral" variant="soft" icon="i-lucide-book-open">Public guide</UButton>
+        <UButton to="/ecosystems" color="primary" icon="i-lucide-orbit"
+          >Open ecosystems</UButton
+        >
+        <UButton
+          to="/ecosystems/learn-more"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-book-open"
+          >Public guide</UButton
+        >
       </div>
     </UPageBody>
   </UPage>
@@ -56,6 +72,7 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Ecosystems: Learn More (Dev) · FireUX',
-  description: 'Technical reference for FireUX ecosystem directory routes and data endpoints.',
+  description:
+    'Technical reference for FireUX ecosystem directory routes and data endpoints.',
 })
 </script>

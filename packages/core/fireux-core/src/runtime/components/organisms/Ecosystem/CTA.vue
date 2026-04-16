@@ -1,7 +1,7 @@
 <template>
   <UPageCTA
     title="Ecosystem collection"
-    description="This index reads directly from db.collections.ecosystems. If none exist yet, the list should stay at zero."
+    description="This index reads directly from db.collections.ecosystem. If none exist yet, the list should stay at zero."
     orientation="horizontal"
   >
     <template #links>
@@ -55,7 +55,7 @@
         alt="Ecosystem network"
         class="w-full rounded-lg object-cover"
         loading="lazy"
-      >
+      />
     </template>
   </UPageCTA>
 </template>
