@@ -8,8 +8,8 @@ export type EcosystemStatus = 'draft' | 'active' | 'paused' | 'archived'
  *
  * Family: System
  * Storage: root canonical record plus app-scoped record
- * Root path: /ecosystems/<ecosystemId>
- * App path: /apps/<appId>/ecosystems/<ecosystemId>
+ * Root path: /ecosystem/<ecosystemId>
+ * App path: /apps/<appId>/ecosystem/<ecosystemId>
  *
  * Decision note:
  * - Ecosystem is a dependent public entity with its own root facade.
@@ -71,4 +71,6 @@ export type AppEcosystem = {
 }
 
 export type EcosystemCreateInput = Omit<Ecosystem, 'id' | 'created' | 'updated'>
-export type EcosystemUpdateInput = Partial<Omit<Ecosystem, 'id' | 'created' | 'updated'>>
+export type EcosystemUpdateInput = Partial<
+  Omit<Ecosystem, 'id' | 'created' | 'updated'>
+>

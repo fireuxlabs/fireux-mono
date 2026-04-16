@@ -3,15 +3,15 @@
     <UPageHeader
       class="pageheader"
       title="Ecosystems"
-      description="Platform ecosystem index for the current FireUX project."
+      description="Platform ecosystem index for the current FireUX workspace."
     />
 
     <UPageBody class="pagebody">
       <EntityIndexCta
         title="Ecosystems index"
-        description="Browse ecosystem records from the FireUX project and move into the project console when you need to manage them."
+        description="Browse ecosystem records available in this FireUX workspace and move into the project console when you need to manage them."
         family="project"
-        source="db.collections.ecosystem"
+        source="public ecosystem mirror"
         :count-label="`${count} ecosystem${count === 1 ? '' : 's'}`"
         :actions="actions"
       />
@@ -44,7 +44,7 @@ definePageMeta({
 useSeoMeta({
   title: 'Ecosystems · FireUX',
   description:
-    'Entity index for FireUX ecosystems stored in db.collections.ecosystem.',
+    'Entity index for FireUX ecosystems stored in the public ecosystem mirror.',
 })
 
 const { ecosystems, count } = useEcosystemCollection()

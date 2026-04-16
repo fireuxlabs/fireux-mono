@@ -8,6 +8,16 @@
       description="Fetching apps linked to the selected project."
     />
 
+    <UCard v-else-if="!project">
+      <template #header>
+        <div class="console-card-header">
+          <div class="console-card-header__title">Project Apps</div>
+        </div>
+      </template>
+
+      <p class="console-card-header__description">No project selected.</p>
+    </UCard>
+
     <AppCollectionManager
       v-else
       :collection="apps"

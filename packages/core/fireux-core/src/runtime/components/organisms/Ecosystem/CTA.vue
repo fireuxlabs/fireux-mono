@@ -1,7 +1,7 @@
 <template>
   <UPageCTA
     title="Ecosystem collection"
-    description="This index reads directly from db.collections.ecosystem. If none exist yet, the list should stay at zero."
+    description="This index reads from the public ecosystem mirror. If none exist yet, the list should stay at zero."
     orientation="horizontal"
   >
     <template #links>
