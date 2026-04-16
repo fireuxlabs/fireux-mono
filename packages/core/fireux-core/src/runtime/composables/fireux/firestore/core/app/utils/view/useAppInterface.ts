@@ -107,7 +107,8 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
       tagline: safeString(app.tagline),
       shortName: safeString(app.app_short_name),
       role: app.role != null ? String(app.role) : '',
-      userCount: typeof derived.user_count === 'number' ? derived.user_count : 0,
+      userCount:
+        typeof derived.user_count === 'number' ? derived.user_count : 0,
 
       description: safeString(app.description),
       shortBio: safeString(app.short_bio),
@@ -122,12 +123,16 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
     }
   }
 
-  function buildInterface(target?: App | null | undefined): AppCard.Card | null {
+  function buildInterface(
+    target?: App | null | undefined
+  ): AppCard.Card | null {
     const app = target ?? appRef?.value ?? null
     if (!app) return null
     const mapped = map(app)
     return mapped.id ? mapped : null
   }
+
+  const toInterface = buildInterface
 
   function pill(target?: App | null | undefined): AppPill | null {
     return buildInterface(target)
@@ -146,6 +151,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
   }
 
   return {
+    interface: toInterface,
     pill,
     cell,
     preview,

@@ -96,8 +96,10 @@ export function useKitchenInterface() {
     if (isTestKitchen && !name) name = 'Test Kitchen'
     const displayTitle = isTestKitchen
       ? shortName || name
-      : shortName || stripLocationFromTitle(name, shortAddress || formattedAddress)
-    const imageUrl = safeString((kitchen as any)?.image_url) || DEFAULT_KITCHEN_IMAGE
+      : shortName ||
+        stripLocationFromTitle(name, shortAddress || formattedAddress)
+    const imageUrl =
+      safeString((kitchen as any)?.image_url) || DEFAULT_KITCHEN_IMAGE
 
     return {
       id,
@@ -127,11 +129,15 @@ export function useKitchenInterface() {
     }
   }
 
-  function buildInterface(target?: Kitchen | null | undefined): KitchenCard.Card | null {
+  function buildInterface(
+    target?: Kitchen | null | undefined
+  ): KitchenCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
+
+  const toInterface = buildInterface
 
   function pill(target?: Kitchen | null | undefined): KitchenPill | null {
     const base = buildInterface(target)
@@ -185,9 +191,13 @@ export function useKitchenInterface() {
       website: (target as any)?.website,
       address,
       phone: (target as any)?.phone,
-      socialLinks: (target as any)?.social_links as Partial<PlaceSocialLinks> | undefined,
+      socialLinks: (target as any)?.social_links as
+        | Partial<PlaceSocialLinks>
+        | undefined,
       coverImage: (target as any)?.cover_image,
-      galleryImages: ((target as any)?.gallery_images as string[] | undefined)?.slice(0, 3),
+      galleryImages: (
+        (target as any)?.gallery_images as string[] | undefined
+      )?.slice(0, 3),
       about: (target as any)?.about,
       verified: (target as any)?.verified,
       source: (target as any)?.source as PlaceSource | undefined,
@@ -195,6 +205,7 @@ export function useKitchenInterface() {
   }
 
   return {
+    interface: toInterface,
     pill,
     cell,
     preview,

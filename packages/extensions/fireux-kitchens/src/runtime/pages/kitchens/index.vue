@@ -39,7 +39,7 @@ import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useDevUi } from 'fireux-core/runtime/composables/fireux/app/ui/useDevUi'
 import { computed } from 'vue'
-import KitchenCTA from '../../components/organisms/Kitchen/CTA.vue'
+import KitchenCTA from '../../components/Organisms/Kitchen/CTA.vue'
 import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 
 definePageMeta({

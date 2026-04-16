@@ -1,4 +1,5 @@
 # Model & Interface Reference
+
 Authority: Tier2 (Operational)
 Updated: 2026-03-02
 
@@ -22,7 +23,8 @@ This guide consolidates the current FireUX data models that power app users, sha
 ### `UserCard` namespace
 
 - UI projections used by console components.
-- `UserCard.Card` is the canonical UI payload produced by `useUserInterface().card()`.
+- `UserCard.Card` is the canonical UI payload produced by `useUserInterface().interface()`.
+- The same interface composable also exposes `pill()`, `cell()`, `preview()`, and `profile()` so callers can choose the view seam they need.
 - Cards are presentational-only; business logic (CTA, badge decoration, permissions) lives in callers.
 
 ## Shared Profile Contract (`packages/core/fireux-core/src/runtime/models/core/profile.model.ts`)
@@ -63,9 +65,9 @@ This guide consolidates the current FireUX data models that power app users, sha
 
 ### `AgentCard` namespace (`useAgentInterface.ts`)
 
-- UI-facing `AgentCard.Card` payload emitted by `useAgentInterface().card()`.
-- Follows the same canonical card DTO shape used by App/User.
-- `useAgentInterface()` should also expose `searchText(raw)` (or `searchText(target?)`) so collection managers can filter via the interface rather than guessing fields.
+- UI-facing base payload emitted by `useAgentInterface().interface()`.
+- `useAgentInterface()` follows the shared top-level contract: `interface`, `pill`, `cell`, `preview`, and `profile`.
+- Thin families can reuse one shared DTO across those seams; richer families can specialize the returned shape per surface.
 
 ## Core App Model (`packages/core/fireux-core/src/runtime/models/core/app.model.ts`)
 
@@ -78,17 +80,16 @@ This guide consolidates the current FireUX data models that power app users, sha
 
 ### `AppCard.Card`
 
-- Produced by `useAppInterface().card()` in:
-	`packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface.ts`
+- Produced by `useAppInterface().interface()` in:
+  `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface.ts`
 - Model files remain Firestore schema-only; projection/mapping happens in the interface composable.
-- Canonical card DTO shape:
-	`id`, `to`, `avatar`, `title`, `subtitle`, `badges`, `line1`, `line2`, `line3`
+- Canonical display payload starts with stable routing/media/title fields (`id`, `to`, image/avatar fields, `title`, `subtitle`, `badges`) and then adds family-specific extras.
 - Badges are caller-owned: interfaces default to `badges: []`.
 
 ### `useAppInterface`
 
-- Accepts an `App` ref (or lazy target) and builds the `AppCard.Card` payload.
-- Strict: throws when required inputs are missing.
+- Accepts an optional `App` ref and can also map an explicit target passed to `interface()`, `pill()`, `cell()`, `preview()`, or `profile()`.
+- Returns `null` when the target is missing instead of inventing fallback data.
 - No badge decisions: returns `badges: []` and lets the caller decorate based on context.
 
 ## How They Fit Together
@@ -104,7 +105,7 @@ Keep this file updated as new domains or fields land so everyone knows where the
 
 To keep the stack maintainable while Agent and other profile domains are still forming, adopt the following interim rules:
 
-1. **Unify UI projections** – For every domain, expose a single `XCard.Card` payload (same DTO fields) that powers Pill/Cell/Preview/Profile views. Components control density; interfaces control mapping.
+1. **Unify interface seams** – For every domain, expose the same top-level interface contract: `interface`, `pill`, `cell`, `preview`, and `profile`. Thin families can reuse a single `XCard.Card` payload across those seams; richer families can specialize per surface.
 
 2. **No interface logic in model files** – Model files should declare TypeScript interfaces/types only. Helper logic (resolvers, formatters, route builders) must live inside composables (e.g., `useAgentInterface.ts`). This keeps data contracts and UI behavior separate and makes future schema changes easier.
 

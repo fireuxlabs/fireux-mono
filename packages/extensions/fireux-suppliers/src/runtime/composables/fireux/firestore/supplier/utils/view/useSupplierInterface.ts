@@ -70,8 +70,15 @@ export function useSupplierInterface(
     return userRef?.value ?? null
   }
 
-  function map(target: SupplierSurface, user?: UserLike | null): SupplierCard.Card {
-    const id = firstNonEmptyString([target.supplier_id, target.source_supplier_id, target.id])
+  function map(
+    target: SupplierSurface,
+    user?: UserLike | null
+  ): SupplierCard.Card {
+    const id = firstNonEmptyString([
+      target.supplier_id,
+      target.source_supplier_id,
+      target.id,
+    ])
     const organizationName = firstNonEmptyString([
       target.supplier_organization_name,
       target.name,
@@ -81,18 +88,16 @@ export function useSupplierInterface(
     const badges = resolveProfileBadges([target.supplier_product_categories])
     const deliveryAreas = safeStringArray(target.supplier_delivery_areas)
     const headline = firstNonEmptyString([target.supplier_headline])
-    const summary = resolveProfileSummary([
-      target.summary,
-      target.supplier_bio,
-    ])
-    const primaryAvatar = resolveProfileImage([
-      target.image,
-      target.supplier_image,
-      target.image_url,
-      target.logo_url,
-      target.avatar_url,
-      user?.avatar,
-    ]) || DEFAULT_SUPPLIER_IMAGE
+    const summary = resolveProfileSummary([target.summary, target.supplier_bio])
+    const primaryAvatar =
+      resolveProfileImage([
+        target.image,
+        target.supplier_image,
+        target.image_url,
+        target.logo_url,
+        target.avatar_url,
+        user?.avatar,
+      ]) || DEFAULT_SUPPLIER_IMAGE
     const categoriesCsv = csv(badges)
     const locationsLabel = deliveryAreas.join(', ')
     const categoryLabel = firstNonEmptyString([
@@ -100,7 +105,11 @@ export function useSupplierInterface(
       firstArrayValue(target.supplier_product_categories),
     ])
     const title = firstNonEmptyString([organizationName, id])
-    const subtitle = firstNonEmptyString([headline, locationsLabel, categoryLabel])
+    const subtitle = firstNonEmptyString([
+      headline,
+      locationsLabel,
+      categoryLabel,
+    ])
 
     return {
       id,
@@ -128,9 +137,14 @@ export function useSupplierInterface(
     const source = target ?? supplier?.coreSupplier.value ?? null
     if (!source) return null
 
-    const mapped = map(source, resolveUser(source as SupplierTarget, userOverride))
+    const mapped = map(
+      source,
+      resolveUser(source as SupplierTarget, userOverride)
+    )
     return mapped.id ? mapped : null
   }
+
+  const toInterface = buildInterface
 
   function pill(
     target?: SupplierSurface | null | undefined,
@@ -161,6 +175,7 @@ export function useSupplierInterface(
   }
 
   return {
+    interface: toInterface,
     pill,
     cell,
     preview,

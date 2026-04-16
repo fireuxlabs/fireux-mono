@@ -51,11 +51,15 @@ export function usePortfolioInterface() {
     }
   }
 
-  function buildInterface(target?: Portfolio | null | undefined): PortfolioCard.Card | null {
+  function buildInterface(
+    target?: Portfolio | null | undefined
+  ): PortfolioCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
+
+  const toInterface = buildInterface
 
   function pill(target?: Portfolio | null | undefined): PortfolioPill | null {
     return buildInterface(target)
@@ -65,15 +69,20 @@ export function usePortfolioInterface() {
     return buildInterface(target)
   }
 
-  function preview(target?: Portfolio | null | undefined): PortfolioPreview | null {
+  function preview(
+    target?: Portfolio | null | undefined
+  ): PortfolioPreview | null {
     return buildInterface(target)
   }
 
-  function profile(target?: Portfolio | null | undefined): PortfolioProfile | null {
+  function profile(
+    target?: Portfolio | null | undefined
+  ): PortfolioProfile | null {
     return buildInterface(target)
   }
 
   return {
+    interface: toInterface,
     pill,
     cell,
     preview,

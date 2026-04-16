@@ -7,7 +7,9 @@
           <p>{{ description }}</p>
         </div>
 
-        <div class="collection-manager__controls flex flex-1 items-center gap-2">
+        <div
+          class="collection-manager__controls flex flex-1 items-center gap-2"
+        >
           <div class="ml-auto flex items-center gap-2">
             <UInput
               v-if="showSearchInput"
@@ -20,11 +22,19 @@
               v-if="showVariantToggle"
               size="xs"
               variant="ghost"
-              :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
-              :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+              :icon="
+                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
+              "
+              :aria-label="
+                variant === 'pill'
+                  ? 'Switch to list view'
+                  : 'Switch to grid view'
+              "
               @click="toggleVariant"
             />
-            <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+            <UBadge v-if="showCount" variant="soft"
+              >{{ visibleCount }} / {{ totalCount }}</UBadge
+            >
           </div>
         </div>
       </div>
@@ -59,10 +69,10 @@
 </template>
 
 <script setup lang="ts">
-import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
-import type { Recipe } from 'fireux-kitchens/runtime/models/recipe.model';
-import { computed } from 'vue';
-import { useRecipeInterface } from '../../../../composables/fireux/firestore/recipe/utils/view/useRecipeInterface';
+import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
+import type { Recipe } from 'fireux-kitchens/runtime/models/recipe.model'
+import { computed } from 'vue'
+import { useRecipeInterface } from '../../../../composables/fireux/firestore/recipe/utils/view/useRecipeInterface'
 
 const props = withDefaults(
   defineProps<{
@@ -90,30 +100,51 @@ const props = withDefaults(
 
 const collection = computed(() => props.collection ?? [])
 const title = computed(() => String(props.title || 'Recipes'))
-const description = computed(
-  () => String(props.description || 'Browse recipe records available to this runtime.')
+const description = computed(() =>
+  String(
+    props.description || 'Browse recipe records available to this runtime.'
+  )
 )
 const linkEnabled = computed(() => props.link !== false)
-const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search recipes…'))
+const searchPlaceholder = computed(() =>
+  String(props.searchPlaceholder || 'Search recipes…')
+)
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
-const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
-const { pill: makeCard } = useRecipeInterface()
-
+const showSearchInput = computed(
+  () => showSearch.value && totalCount.value > 15
+)
 const {
-  query,
-  variant,
-  toggleVariant,
-  cards: cardsFiltered,
-  visibleCount,
-} = useCollectionSearch<Recipe, ReturnType<typeof makeCard>>({
-  items: collection,
-  makeCard: (recipe: Recipe) => makeCard(recipe),
-  initialVariant: props.initialVariant,
-})
+  interface: makeCard,
+  pill: makePill,
+  cell: makeCell,
+} = useRecipeInterface()
+
+const { query, variant, toggleVariant, visibleItems, visibleCount } =
+  useCollectionSearch<Recipe, NonNullable<ReturnType<typeof makeCard>>>({
+    items: collection,
+    makeCard: (recipe: Recipe) => makeCard(recipe),
+    initialVariant: props.initialVariant,
+  })
+
+const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
+  visibleItems.value
+    .map((recipe) => {
+      if (variant.value === 'cell') {
+        const base = makeCard(recipe)
+        const cell = makeCell(recipe)
+        if (!base || !cell) return null
+        return { ...base, ...cell }
+      }
+
+      return makePill(recipe)
+    })
+    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
+      Boolean(card)
+    )
+)
 
 const isDev = import.meta.dev
-
 </script>

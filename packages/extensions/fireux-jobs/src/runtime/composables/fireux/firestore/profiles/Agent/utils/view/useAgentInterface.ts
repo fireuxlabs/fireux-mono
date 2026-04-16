@@ -1,11 +1,11 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import {
-    resolveProfileBadges,
-    resolveProfileDisplayName,
-    resolveProfileImage,
-    resolveProfileSummary,
-    resolveSecondaryAvatarUrl,
-    safeString,
+  resolveProfileBadges,
+  resolveProfileDisplayName,
+  resolveProfileImage,
+  resolveProfileSummary,
+  resolveSecondaryAvatarUrl,
+  safeString,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
@@ -71,7 +71,8 @@ export function useAgentInterface(
   }
 
   const resolveUser = (target?: AgentTarget | null) => {
-    if (target && 'user' in target && target.user) return target.user as UserLike
+    if (target && 'user' in target && target.user)
+      return target.user as UserLike
     return userRef?.value ?? null
   }
 
@@ -82,13 +83,17 @@ export function useAgentInterface(
       safeString(u?.id).trim()
     const headline = safeString(p.title)
     const summary = resolveProfileSummary([p.summary, p.agent_bio])
-    const placementTypes = resolveProfileBadges([p.agent_placement_types, p.tags])
+    const placementTypes = resolveProfileBadges([
+      p.agent_placement_types,
+      p.tags,
+    ])
     const profileImage = resolveProfileImage([
       (p as Agent & { image?: string }).image,
       p.agent_image,
     ])
     const userAvatar = resolveUserAvatar(u)
-    const secondaryAvatarUrl = resolveSecondaryAvatarUrl(profileImage, userAvatar) || ''
+    const secondaryAvatarUrl =
+      resolveSecondaryAvatarUrl(profileImage, userAvatar) || ''
 
     return {
       id,
@@ -122,6 +127,8 @@ export function useAgentInterface(
     return mapped.id ? mapped : null
   }
 
+  const toInterface = buildInterface
+
   function pill(target?: AgentTarget | null | undefined): AgentPill | null {
     return buildInterface(target)
   }
@@ -130,7 +137,9 @@ export function useAgentInterface(
     return buildInterface(target)
   }
 
-  function preview(target?: AgentTarget | null | undefined): AgentPreview | null {
+  function preview(
+    target?: AgentTarget | null | undefined
+  ): AgentPreview | null {
     return buildInterface(target)
   }
 
@@ -141,6 +150,7 @@ export function useAgentInterface(
   }
 
   return {
+    interface: toInterface,
     pill,
     cell,
     preview,

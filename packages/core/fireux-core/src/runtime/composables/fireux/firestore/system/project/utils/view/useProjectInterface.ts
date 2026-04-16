@@ -83,11 +83,17 @@ export function useProjectInterface() {
     }
   }
 
-  function pill(target?: ProjectSurface | null | undefined): ProjectPill | null {
+  const toInterface = buildInterface
+
+  function pill(
+    target?: ProjectSurface | null | undefined
+  ): ProjectPill | null {
     return buildInterface(target)
   }
 
-  function cell(target?: ProjectSurface | null | undefined): ProjectCell | null {
+  function cell(
+    target?: ProjectSurface | null | undefined
+  ): ProjectCell | null {
     return buildInterface(target)
   }
 
@@ -104,6 +110,7 @@ export function useProjectInterface() {
   }
 
   return {
+    interface: toInterface,
     pill,
     cell,
     preview,

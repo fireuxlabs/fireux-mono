@@ -7,7 +7,9 @@
           <p v-if="description">{{ description }}</p>
         </div>
 
-        <div class="collection-manager__controls flex flex-1 items-center gap-2">
+        <div
+          class="collection-manager__controls flex flex-1 items-center gap-2"
+        >
           <div class="ml-auto flex items-center gap-2">
             <UInput
               v-if="showSearchInput"
@@ -20,12 +22,20 @@
               v-if="showVariantToggle"
               size="xs"
               variant="ghost"
-              :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
-              :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+              :icon="
+                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
+              "
+              :aria-label="
+                variant === 'pill'
+                  ? 'Switch to list view'
+                  : 'Switch to grid view'
+              "
               @click="toggleVariant"
             />
 
-            <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+            <UBadge v-if="showCount" variant="soft"
+              >{{ visibleCount }} / {{ totalCount }}</UBadge
+            >
           </div>
         </div>
       </div>
@@ -56,7 +66,9 @@
       </template>
     </SupplierCollectionList>
 
-    <p v-else>{{ query ? 'No suppliers match your search.' : 'No suppliers found.' }}</p>
+    <p v-else>
+      {{ query ? 'No suppliers match your search.' : 'No suppliers found.' }}
+    </p>
 
     <div v-if="isDev">
       <DevJson
@@ -71,10 +83,10 @@
 
 <script setup lang="ts">
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
-import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
-import { computed } from 'vue';
-import type { Supplier } from '../../../../models/supplier/Supplier.model';
-import { useSupplierInterface } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface';
+import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
+import { computed } from 'vue'
+import type { Supplier } from '../../../../models/supplier/Supplier.model'
+import { useSupplierInterface } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
 type SupplierEntry = Supplier & { user?: unknown }
 
@@ -117,27 +129,61 @@ const emit = defineEmits<{
 const collection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Suppliers'))
-const description = computed(
-  () => String(props.description || 'Browse supplier records available to this runtime.')
+const description = computed(() =>
+  String(
+    props.description || 'Browse supplier records available to this runtime.'
+  )
 )
 const linkEnabled = computed(() => props.link !== false)
 const actionEnabled = computed(() => props.action === true)
 const showBadges = computed(() => props.showBadges !== false)
-const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search suppliers…'))
+const searchPlaceholder = computed(() =>
+  String(props.searchPlaceholder || 'Search suppliers…')
+)
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
-const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
-const devJsonTitle = computed(() => String(props.devJsonTitle || 'Suppliers (JSON)').trim())
-const devJsonContext = computed(() => String(props.devJsonContext || 'collection manager · suppliers').trim())
-const { pill: makeCard } = useSupplierInterface()
-const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
-  useCollectionSearch<SupplierEntry, ReturnType<typeof makeCard>>({
+const showSearchInput = computed(
+  () => showSearch.value && totalCount.value > 15
+)
+const devJsonTitle = computed(() =>
+  String(props.devJsonTitle || 'Suppliers (JSON)').trim()
+)
+const devJsonContext = computed(() =>
+  String(props.devJsonContext || 'collection manager · suppliers').trim()
+)
+const {
+  interface: makeCard,
+  pill: makePill,
+  cell: makeCell,
+} = useSupplierInterface()
+const { query, variant, toggleVariant, visibleItems, visibleCount } =
+  useCollectionSearch<SupplierEntry, NonNullable<ReturnType<typeof makeCard>>>({
     items: collection,
-    makeCard: (entry) => makeCard(entry as Supplier, (entry as any)?.user ?? null),
+    makeCard: (entry) =>
+      makeCard(entry as Supplier, (entry as any)?.user ?? null),
     initialVariant: props.initialVariant,
   })
+
+const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
+  visibleItems.value
+    .map((entry) => {
+      const user = (entry as any)?.user ?? null
+
+      if (variant.value === 'cell') {
+        const base = makeCard(entry as Supplier, user)
+        const cell = makeCell(entry as Supplier, user)
+        if (!base || !cell) return null
+        return { ...base, ...cell }
+      }
+
+      return makePill(entry as Supplier, user)
+    })
+    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
+      Boolean(card)
+    )
+)
 
 const isDev = import.meta.dev
 </script>

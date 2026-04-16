@@ -1,4 +1,7 @@
-import { safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import {
+  safeString,
+  safeStringArray,
+} from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Recipe } from '../../../../../../../models/recipe.model'
 
 export namespace RecipeCard {
@@ -30,7 +33,9 @@ export function useRecipeInterface() {
     const protection = safeString(recipe.protection_level).trim()
     const recipeType = safeString(recipe.recipe_type).trim()
     const subtitle = [recipeType, visibility].filter(Boolean).join(' · ')
-    const badges = [status, protection === 'standard' ? '' : protection].filter(Boolean)
+    const badges = [status, protection === 'standard' ? '' : protection].filter(
+      Boolean
+    )
 
     return {
       id,
@@ -47,10 +52,14 @@ export function useRecipeInterface() {
     }
   }
 
-  function buildInterface(target?: Recipe | null | undefined): RecipeCard.Card | null {
+  function buildInterface(
+    target?: Recipe | null | undefined
+  ): RecipeCard.Card | null {
     if (!target) return null
     return map(target)
   }
+
+  const toInterface = buildInterface
 
   function pill(target?: Recipe | null | undefined): RecipeCard.Card | null {
     return buildInterface(target)
@@ -68,5 +77,5 @@ export function useRecipeInterface() {
     return buildInterface(target)
   }
 
-  return { pill, cell, preview, profile }
+  return { interface: toInterface, pill, cell, preview, profile }
 }

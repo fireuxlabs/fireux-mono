@@ -25,7 +25,10 @@ export namespace BlogCard {
 }
 
 function stripHtml(input: string): string {
-  return input.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+  return input
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 function ellipsis(text: string, limit = 180): string {
@@ -43,7 +46,8 @@ export function useBlogInterface() {
     const excerpt = ellipsis(stripHtml(content), 180)
 
     const author = safeString((post.author as any)?.display_name)
-    const imageUrl = safeString(post.featuredImage) || safeString(post.socialImage)
+    const imageUrl =
+      safeString(post.featuredImage) || safeString(post.socialImage)
     const id = safeString(post.slug).trim()
     const title = safeString(post.title)
 
@@ -64,11 +68,15 @@ export function useBlogInterface() {
     }
   }
 
-  function buildInterface(target?: BlogPost | null | undefined): BlogCard.Card | null {
+  function buildInterface(
+    target?: BlogPost | null | undefined
+  ): BlogCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
+
+  const toInterface = buildInterface
 
   function pill(target?: BlogPost | null | undefined): BlogPill | null {
     return buildInterface(target)
@@ -86,5 +94,5 @@ export function useBlogInterface() {
     return buildInterface(target)
   }
 
-  return { pill, cell, preview, profile }
+  return { interface: toInterface, pill, cell, preview, profile }
 }

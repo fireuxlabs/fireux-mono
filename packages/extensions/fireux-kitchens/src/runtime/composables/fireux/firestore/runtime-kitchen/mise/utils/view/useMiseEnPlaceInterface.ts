@@ -1,8 +1,13 @@
-import { safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import {
+  safeString,
+  safeStringArray,
+} from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { KitchenMiseTask } from '../../../../../../../models/kitchen-mise.model'
 
 const joinSubtitle = (station: string, serviceDate: string): string =>
-  [safeString(station).trim(), safeString(serviceDate).trim()].filter(Boolean).join(' · ')
+  [safeString(station).trim(), safeString(serviceDate).trim()]
+    .filter(Boolean)
+    .join(' · ')
 
 export namespace MiseEnPlaceCard {
   export type Card = {
@@ -65,7 +70,10 @@ export function useMiseEnPlaceInterface() {
     const id = safeString(task.id).trim()
     const name = safeString(task.title).trim() || id
     const category = safeString(task.station).trim()
-    const unit = Number(task.estimated_minutes || 0) > 0 ? `${Number(task.estimated_minutes)}m` : ''
+    const unit =
+      Number(task.estimated_minutes || 0) > 0
+        ? `${Number(task.estimated_minutes)}m`
+        : ''
     const status = safeString(task.status).trim()
     const tags = [
       safeString(task.priority).trim(),
@@ -90,13 +98,19 @@ export function useMiseEnPlaceInterface() {
     }
   }
 
-  function buildInterface(target?: KitchenMiseTask | null | undefined): MiseEnPlaceCard.Card | null {
+  function buildInterface(
+    target?: KitchenMiseTask | null | undefined
+  ): MiseEnPlaceCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
 
-  function pill(target?: KitchenMiseTask | null | undefined): MiseEnPlacePill | null {
+  const toInterface = buildInterface
+
+  function pill(
+    target?: KitchenMiseTask | null | undefined
+  ): MiseEnPlacePill | null {
     const base = buildInterface(target)
     if (!base) return null
     return {
@@ -106,7 +120,9 @@ export function useMiseEnPlaceInterface() {
     }
   }
 
-  function cell(target?: KitchenMiseTask | null | undefined): MiseEnPlaceCell | null {
+  function cell(
+    target?: KitchenMiseTask | null | undefined
+  ): MiseEnPlaceCell | null {
     const base = buildInterface(target)
     if (!base) return null
     return {
@@ -122,7 +138,9 @@ export function useMiseEnPlaceInterface() {
     }
   }
 
-  function preview(target?: KitchenMiseTask | null | undefined): MiseEnPlacePreview | null {
+  function preview(
+    target?: KitchenMiseTask | null | undefined
+  ): MiseEnPlacePreview | null {
     const base = buildInterface(target)
     if (!base) return null
 
@@ -140,7 +158,9 @@ export function useMiseEnPlaceInterface() {
     }
   }
 
-  function profile(target?: KitchenMiseTask | null | undefined): MiseEnPlaceProfile | null {
+  function profile(
+    target?: KitchenMiseTask | null | undefined
+  ): MiseEnPlaceProfile | null {
     const base = buildInterface(target)
     if (!base) return null
 
@@ -156,5 +176,5 @@ export function useMiseEnPlaceInterface() {
     }
   }
 
-  return { pill, cell, preview, profile }
+  return { interface: toInterface, pill, cell, preview, profile }
 }

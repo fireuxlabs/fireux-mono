@@ -69,11 +69,15 @@ export function useJobInterface() {
     }
   }
 
-  function buildInterface(target?: JobView | null | undefined): JobCard.Card | null {
+  function buildInterface(
+    target?: JobView | null | undefined
+  ): JobCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
+
+  const toInterface = buildInterface
 
   function pill(target?: JobView | null | undefined): JobPill | null {
     return buildInterface(target)
@@ -91,5 +95,5 @@ export function useJobInterface() {
     return buildInterface(target)
   }
 
-  return { pill, cell, preview, profile }
+  return { interface: toInterface, pill, cell, preview, profile }
 }

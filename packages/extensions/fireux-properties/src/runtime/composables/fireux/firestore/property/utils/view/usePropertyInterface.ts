@@ -41,7 +41,9 @@ export function usePropertyInterface() {
   type PropertyPreview = PropertyCard.Card
   type PropertyProfile = PropertyCard.Card
 
-  function buildInterface(target?: Property | null | undefined): PropertyCard.Card | null {
+  function buildInterface(
+    target?: Property | null | undefined
+  ): PropertyCard.Card | null {
     if (!target) return null
 
     const id = safeString(target.id)
@@ -49,7 +51,11 @@ export function usePropertyInterface() {
 
     const title = safeString(target.name) || id
     const subtitle =
-      [safeString(target.address_line), safeString(target.city), safeString(target.postcode)]
+      [
+        safeString(target.address_line),
+        safeString(target.city),
+        safeString(target.postcode),
+      ]
         .filter(Boolean)
         .join(' · ') || 'Address not set'
     const estimatedValue = formatEstimatedValue(
@@ -79,6 +85,8 @@ export function usePropertyInterface() {
     }
   }
 
+  const toInterface = buildInterface
+
   function pill(target?: Property | null | undefined): PropertyPill | null {
     return buildInterface(target)
   }
@@ -87,13 +95,17 @@ export function usePropertyInterface() {
     return buildInterface(target)
   }
 
-  function preview(target?: Property | null | undefined): PropertyPreview | null {
+  function preview(
+    target?: Property | null | undefined
+  ): PropertyPreview | null {
     return buildInterface(target)
   }
 
-  function profile(target?: Property | null | undefined): PropertyProfile | null {
+  function profile(
+    target?: Property | null | undefined
+  ): PropertyProfile | null {
     return buildInterface(target)
   }
 
-  return { pill, cell, preview, profile }
+  return { interface: toInterface, pill, cell, preview, profile }
 }

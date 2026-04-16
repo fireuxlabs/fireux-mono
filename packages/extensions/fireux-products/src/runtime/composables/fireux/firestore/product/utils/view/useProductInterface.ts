@@ -73,8 +73,7 @@ export function useProductInterface() {
 
   function map(product: FirebaseProduct): ProductCard.Card {
     const imageUrl =
-      safeString(product.main_image) ||
-      safeString(product.images?.[0]?.url)
+      safeString(product.main_image) || safeString(product.images?.[0]?.url)
     const id = safeString(product.id).trim()
     const slug = safeString(product.slug).trim() || id
     const name = safeString(product.name)
@@ -85,7 +84,9 @@ export function useProductInterface() {
     const to =
       productType === 'module'
         ? `/modules/${slug}`
-        : solutionIds.has(slug) || productType === 'saas_app' || productType === 'template'
+        : solutionIds.has(slug) ||
+            productType === 'saas_app' ||
+            productType === 'template'
           ? `/solutions/${slug}`
           : `/products/${slug}`
 
@@ -106,27 +107,39 @@ export function useProductInterface() {
     }
   }
 
-  function buildInterface(target?: FirebaseProduct | null | undefined): ProductCard.Card | null {
+  function buildInterface(
+    target?: FirebaseProduct | null | undefined
+  ): ProductCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
 
-  function pill(target?: FirebaseProduct | null | undefined): ProductPill | null {
+  const toInterface = buildInterface
+
+  function pill(
+    target?: FirebaseProduct | null | undefined
+  ): ProductPill | null {
     return buildInterface(target)
   }
 
-  function cell(target?: FirebaseProduct | null | undefined): ProductCell | null {
+  function cell(
+    target?: FirebaseProduct | null | undefined
+  ): ProductCell | null {
     return buildInterface(target)
   }
 
-  function preview(target?: FirebaseProduct | null | undefined): ProductPreview | null {
+  function preview(
+    target?: FirebaseProduct | null | undefined
+  ): ProductPreview | null {
     return buildInterface(target)
   }
 
-  function profile(target?: FirebaseProduct | null | undefined): ProductProfile | null {
+  function profile(
+    target?: FirebaseProduct | null | undefined
+  ): ProductProfile | null {
     return buildInterface(target)
   }
 
-  return { pill, cell, preview, profile }
+  return { interface: toInterface, pill, cell, preview, profile }
 }

@@ -27,15 +27,22 @@ export function useComplianceInterface() {
   type CompliancePreview = ComplianceCard.Card
   type ComplianceProfile = ComplianceCard.Card
 
-  function buildInterface(target?: ComplianceRecord | null | undefined): ComplianceCard.Card | null {
+  function buildInterface(
+    target?: ComplianceRecord | null | undefined
+  ): ComplianceCard.Card | null {
     if (!target) return null
 
     const id = safeString(target.id)
     if (!id) return null
 
-    const title = safeString(target.type_label) || safeString(target.type_id) || id
+    const title =
+      safeString(target.type_label) || safeString(target.type_id) || id
     const subtitle =
-      [safeString(target.provider), safeString(target.property_id), safeString(target.unit_id)]
+      [
+        safeString(target.provider),
+        safeString(target.property_id),
+        safeString(target.unit_id),
+      ]
         .filter(Boolean)
         .join(' · ') || 'No provider or scope labels'
 
@@ -56,21 +63,31 @@ export function useComplianceInterface() {
     }
   }
 
-  function pill(target?: ComplianceRecord | null | undefined): CompliancePill | null {
+  const toInterface = buildInterface
+
+  function pill(
+    target?: ComplianceRecord | null | undefined
+  ): CompliancePill | null {
     return buildInterface(target)
   }
 
-  function cell(target?: ComplianceRecord | null | undefined): ComplianceCell | null {
+  function cell(
+    target?: ComplianceRecord | null | undefined
+  ): ComplianceCell | null {
     return buildInterface(target)
   }
 
-  function preview(target?: ComplianceRecord | null | undefined): CompliancePreview | null {
+  function preview(
+    target?: ComplianceRecord | null | undefined
+  ): CompliancePreview | null {
     return buildInterface(target)
   }
 
-  function profile(target?: ComplianceRecord | null | undefined): ComplianceProfile | null {
+  function profile(
+    target?: ComplianceRecord | null | undefined
+  ): ComplianceProfile | null {
     return buildInterface(target)
   }
 
-  return { pill, cell, preview, profile }
+  return { interface: toInterface, pill, cell, preview, profile }
 }

@@ -22,7 +22,9 @@ export function useDocumentInterface() {
   type DocumentPreview = DocumentCard.Card
   type DocumentProfile = DocumentCard.Card
 
-  function buildInterface(target?: Document | null | undefined): DocumentCard.Card | null {
+  function buildInterface(
+    target?: Document | null | undefined
+  ): DocumentCard.Card | null {
     if (!target) return null
 
     const id = safeString(target.id)
@@ -41,6 +43,8 @@ export function useDocumentInterface() {
     }
   }
 
+  const toInterface = buildInterface
+
   function pill(target?: Document | null | undefined): DocumentPill | null {
     return buildInterface(target)
   }
@@ -49,13 +53,17 @@ export function useDocumentInterface() {
     return buildInterface(target)
   }
 
-  function preview(target?: Document | null | undefined): DocumentPreview | null {
+  function preview(
+    target?: Document | null | undefined
+  ): DocumentPreview | null {
     return buildInterface(target)
   }
 
-  function profile(target?: Document | null | undefined): DocumentProfile | null {
+  function profile(
+    target?: Document | null | undefined
+  ): DocumentProfile | null {
     return buildInterface(target)
   }
 
-  return { pill, cell, preview, profile }
+  return { interface: toInterface, pill, cell, preview, profile }
 }

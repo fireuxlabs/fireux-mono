@@ -7,7 +7,9 @@
           <p v-if="description">{{ description }}</p>
         </div>
 
-        <div class="collection-manager__controls flex flex-1 items-center gap-2">
+        <div
+          class="collection-manager__controls flex flex-1 items-center gap-2"
+        >
           <div class="ml-auto flex items-center gap-2">
             <UInput
               v-if="showSearchInput"
@@ -20,11 +22,19 @@
               v-if="showVariantToggle"
               size="xs"
               variant="ghost"
-              :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
-              :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+              :icon="
+                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
+              "
+              :aria-label="
+                variant === 'pill'
+                  ? 'Switch to list view'
+                  : 'Switch to grid view'
+              "
               @click="toggleVariant"
             />
-            <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+            <UBadge v-if="showCount" variant="soft"
+              >{{ visibleCount }} / {{ totalCount }}</UBadge
+            >
           </div>
         </div>
       </div>
@@ -72,10 +82,10 @@
 
 <script setup lang="ts">
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
-import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
-import { computed } from 'vue';
-import { useKitchenInterface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface';
-import type { Kitchen } from '../../../../models/kitchen.model';
+import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
+import { computed } from 'vue'
+import { useKitchenInterface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
+import type { Kitchen } from '../../../../models/kitchen.model'
 
 const props = withDefaults(
   defineProps<{
@@ -116,30 +126,59 @@ const emit = defineEmits<{
 const collection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Kitchens'))
-const description = computed(() => String(props.description || 'Browse kitchen records available to this runtime.').trim())
-const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search kitchens…'))
+const description = computed(() =>
+  String(
+    props.description || 'Browse kitchen records available to this runtime.'
+  ).trim()
+)
+const searchPlaceholder = computed(() =>
+  String(props.searchPlaceholder || 'Search kitchens…')
+)
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
 const actionEnabled = computed(() => props.action === true)
 const showBadges = computed(() => props.showBadges !== false)
-const devJsonTitle = computed(() => String(props.devJsonTitle || 'Kitchens (JSON)').trim())
-const devJsonContext = computed(() => String(props.devJsonContext || 'collection manager · kitchens').trim())
-const { pill: makeCard } = useKitchenInterface()
-
+const devJsonTitle = computed(() =>
+  String(props.devJsonTitle || 'Kitchens (JSON)').trim()
+)
+const devJsonContext = computed(() =>
+  String(props.devJsonContext || 'collection manager · kitchens').trim()
+)
 const {
-  query,
-  variant,
-  toggleVariant,
-  cards: cardsFiltered,
-  visibleCount,
-} = useCollectionSearch<Kitchen, ReturnType<typeof makeCard>>({
-  items: collection,
-  makeCard: (kitchen: Kitchen) => makeCard(kitchen),
-  initialVariant: props.initialVariant,
-})
+  interface: makeCard,
+  pill: makePill,
+  cell: makeCell,
+} = useKitchenInterface()
+
+const { query, variant, toggleVariant, visibleItems, visibleCount } =
+  useCollectionSearch<Kitchen, NonNullable<ReturnType<typeof makeCard>>>({
+    items: collection,
+    makeCard: (kitchen: Kitchen) => makeCard(kitchen),
+    initialVariant: props.initialVariant,
+  })
+
+const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
+  visibleItems.value
+    .map((kitchen) => {
+      if (variant.value === 'cell') {
+        const base = makeCard(kitchen)
+        const cell = makeCell(kitchen)
+        if (!base || !cell) return null
+        return { ...base, ...cell }
+      }
+
+      return makePill(kitchen)
+    })
+    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
+      Boolean(card)
+    )
+)
+
 const totalCount = computed(() => collection.value.length)
-const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
+const showSearchInput = computed(
+  () => showSearch.value && totalCount.value > 15
+)
 const isDev = import.meta.dev
 </script>

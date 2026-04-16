@@ -42,10 +42,10 @@ import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDri
 import { computed } from 'vue'
 import { useIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
 import {
-  IngredientModel as IngredientModelRuntime,
-  type Ingredient as IngredientType,
+    IngredientModel as IngredientModelRuntime,
+    type Ingredient as IngredientType,
 } from '../../../models/ingredient.model'
-import IngredientCollectionManager from '../../organisms/Ingredient/Collection/Manager.vue'
+import IngredientCollectionManager from '../../Organisms/Ingredient/Collection/Manager.vue'
 import DevIngredientDemo from './Demo.vue'
 
 defineOptions({ name: 'DevIngredientSystem' })

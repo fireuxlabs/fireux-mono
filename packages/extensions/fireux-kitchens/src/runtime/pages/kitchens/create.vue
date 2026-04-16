@@ -14,7 +14,7 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import KitchenCreateSystem from '../../components/organisms/Kitchen/Create/System.vue'
+import KitchenCreateSystem from '../../components/Organisms/Kitchen/Create/System.vue'
 
 definePageMeta({
   layout: 'default',

@@ -1,11 +1,11 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import {
-    resolveProfileBadges,
-    resolveProfileDisplayName,
-    resolveProfileImage,
-    resolveProfileSummary,
-    resolveSecondaryAvatarUrl,
-    safeString,
+  resolveProfileBadges,
+  resolveProfileDisplayName,
+  resolveProfileImage,
+  resolveProfileSummary,
+  resolveSecondaryAvatarUrl,
+  safeString,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
@@ -13,7 +13,8 @@ import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore
 import type { Chef } from 'fireux-kitchens/runtime/models/profiles/Chef/Chef.model'
 import type { Ref } from 'vue'
 
-type UserLike = Pick<User, 'display_name' | 'avatar'> & Partial<Pick<User, 'id'>>
+type UserLike = Pick<User, 'display_name' | 'avatar'> &
+  Partial<Pick<User, 'id'>>
 type ChefTarget = Chef & { user?: UserLike | null }
 
 export namespace ChefCard {
@@ -72,7 +73,9 @@ export function useChefInterface(
     ])
     const userAvatar = resolveUserAvatar(u)
     const avatarUrl = profileImage || userAvatar
-    const badges = resolveProfileBadges([(p as Chef & { tags?: string[] }).tags])
+    const badges = resolveProfileBadges([
+      (p as Chef & { tags?: string[] }).tags,
+    ])
     const secondaryAvatarUrl = resolveSecondaryAvatarUrl(avatarUrl, userAvatar)
 
     return {
@@ -97,31 +100,52 @@ export function useChefInterface(
     }
   }
 
-  function buildInterface(target?: ChefTarget | null, userOverride?: UserLike | null): ChefCard.Card | null {
+  function buildInterface(
+    target?: ChefTarget | null,
+    userOverride?: UserLike | null
+  ): ChefCard.Card | null {
     const p = target ?? profile?.coreProfile?.value ?? null
     if (!p) return null
 
-    const mapped = map(p, target?.user ?? userOverride ?? userRef?.value ?? null)
+    const mapped = map(
+      p,
+      target?.user ?? userOverride ?? userRef?.value ?? null
+    )
     return mapped.id && mapped.displayName ? mapped : null
   }
 
-  function pill(target?: ChefTarget | null, userOverride?: UserLike | null): ChefPill | null {
+  const toInterface = buildInterface
+
+  function pill(
+    target?: ChefTarget | null,
+    userOverride?: UserLike | null
+  ): ChefPill | null {
     return buildInterface(target, userOverride)
   }
 
-  function cell(target?: ChefTarget | null, userOverride?: UserLike | null): ChefCell | null {
+  function cell(
+    target?: ChefTarget | null,
+    userOverride?: UserLike | null
+  ): ChefCell | null {
     return buildInterface(target, userOverride)
   }
 
-  function preview(target?: ChefTarget | null, userOverride?: UserLike | null): ChefPreview | null {
+  function preview(
+    target?: ChefTarget | null,
+    userOverride?: UserLike | null
+  ): ChefPreview | null {
     return buildInterface(target, userOverride)
   }
 
-  function profile(target?: ChefTarget | null, userOverride?: UserLike | null): ChefProfile | null {
+  function profile(
+    target?: ChefTarget | null,
+    userOverride?: UserLike | null
+  ): ChefProfile | null {
     return buildInterface(target, userOverride)
   }
 
   return {
+    interface: toInterface,
     pill,
     cell,
     preview,

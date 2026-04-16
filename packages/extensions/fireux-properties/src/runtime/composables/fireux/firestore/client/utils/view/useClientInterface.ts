@@ -45,7 +45,9 @@ export function useClientInterface() {
   type ClientPreview = ClientCard.Card
   type ClientProfile = ClientCard.Card
 
-  function buildInterface(target?: Client | null | undefined): ClientCard.Card | null {
+  function buildInterface(
+    target?: Client | null | undefined
+  ): ClientCard.Card | null {
     if (!target) return null
 
     const id = safeString(target.id)
@@ -75,7 +77,10 @@ export function useClientInterface() {
 
     const metaParts = [
       safeString(target.status),
-      formatRent(Number(target.monthly_rent || 0), safeString(target.currency || 'GBP')),
+      formatRent(
+        Number(target.monthly_rent || 0),
+        safeString(target.currency || 'GBP')
+      ),
     ]
 
     const leaseEnd = safeString(target.lease_end_date)
@@ -94,6 +99,8 @@ export function useClientInterface() {
     }
   }
 
+  const toInterface = buildInterface
+
   function pill(target?: Client | null | undefined): ClientPill | null {
     return buildInterface(target)
   }
@@ -110,5 +117,5 @@ export function useClientInterface() {
     return buildInterface(target)
   }
 
-  return { pill, cell, preview, profile }
+  return { interface: toInterface, pill, cell, preview, profile }
 }

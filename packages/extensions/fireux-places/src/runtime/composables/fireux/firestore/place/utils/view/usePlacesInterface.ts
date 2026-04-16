@@ -1,6 +1,6 @@
 import {
   safeString,
-  sanitizeShortAddress
+  sanitizeShortAddress,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type {
   BasePlace,
@@ -120,11 +120,15 @@ export function usePlacesInterface() {
     }
   }
 
-  function buildInterface(target?: BasePlace | null | undefined): PlaceCard.Card | null {
+  function buildInterface(
+    target?: BasePlace | null | undefined
+  ): PlaceCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
+
+  const toInterface = buildInterface
 
   function pill(target?: BasePlace | null | undefined): PlacePill | null {
     const base = buildInterface(target)
@@ -136,7 +140,9 @@ export function usePlacesInterface() {
     }
   }
 
-  function cell(target?: (BasePlace & PlaceExtras) | null | undefined): PlaceCell | null {
+  function cell(
+    target?: (BasePlace & PlaceExtras) | null | undefined
+  ): PlaceCell | null {
     const base = buildInterface(target)
     if (!base || !target) return null
     return {
@@ -151,7 +157,9 @@ export function usePlacesInterface() {
     }
   }
 
-  function preview(target?: (BasePlace & PlaceExtras) | null | undefined): PlacePreview | null {
+  function preview(
+    target?: (BasePlace & PlaceExtras) | null | undefined
+  ): PlacePreview | null {
     const base = buildInterface(target)
     if (!base || !target) return null
     return {
@@ -164,7 +172,9 @@ export function usePlacesInterface() {
     }
   }
 
-  function profile(target?: (BasePlace & PlaceExtras) | null | undefined): PlaceProfile | null {
+  function profile(
+    target?: (BasePlace & PlaceExtras) | null | undefined
+  ): PlaceProfile | null {
     const base = buildInterface(target)
     if (!base || !target) return null
     const source = (target as any)?.source as PlaceSource | undefined
@@ -174,7 +184,9 @@ export function usePlacesInterface() {
     const types = (target as any)?.types as string[] | undefined
     const phone = (target as any)?.phone as string | undefined
     const website = (target as any)?.website as string | undefined
-    const socialLinks = (target as any)?.social_links as Partial<PlaceSocialLinks> | undefined
+    const socialLinks = (target as any)?.social_links as
+      | Partial<PlaceSocialLinks>
+      | undefined
     return {
       card: base,
       title: base.title,
@@ -182,7 +194,9 @@ export function usePlacesInterface() {
       imageUrl: (target as any)?.image_url,
       prop: (target as any)?.brand_tagline,
       coverImage: (target as any)?.cover_image,
-      galleryImages: ((target as any)?.gallery_images as string[] | undefined)?.slice(0, 3),
+      galleryImages: (
+        (target as any)?.gallery_images as string[] | undefined
+      )?.slice(0, 3),
       about: (target as any)?.about,
       rating,
       ratingCount,
@@ -199,6 +213,7 @@ export function usePlacesInterface() {
   }
 
   return {
+    interface: toInterface,
     pill,
     cell,
     preview,

@@ -89,7 +89,9 @@ export function useCompanyInterface() {
     const shortName = safeString((company as any)?.short_name)
     const shortAddress = sanitizeShortAddress((company as any)?.short_address)
     const formattedAddress = safeString((company as any)?.formatted_address)
-    const displayTitle = shortName || stripLocationFromTitle(name, shortAddress || formattedAddress)
+    const displayTitle =
+      shortName ||
+      stripLocationFromTitle(name, shortAddress || formattedAddress)
     const imageUrl = safeString((company as any)?.image_url)
 
     return {
@@ -116,13 +118,19 @@ export function useCompanyInterface() {
     }
   }
 
-  function buildInterface(target?: CompanyHydrated | null | undefined): CompanyCard.Card | null {
+  function buildInterface(
+    target?: CompanyHydrated | null | undefined
+  ): CompanyCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
 
-  function pill(target?: CompanyHydrated | null | undefined): CompanyPill | null {
+  const toInterface = buildInterface
+
+  function pill(
+    target?: CompanyHydrated | null | undefined
+  ): CompanyPill | null {
     const base = buildInterface(target)
     if (!base) return null
     return {
@@ -132,7 +140,9 @@ export function useCompanyInterface() {
     }
   }
 
-  function cell(target?: CompanyHydrated | null | undefined): CompanyCell | null {
+  function cell(
+    target?: CompanyHydrated | null | undefined
+  ): CompanyCell | null {
     const base = buildInterface(target)
     if (!base || !target) return null
     return {
@@ -147,7 +157,9 @@ export function useCompanyInterface() {
     }
   }
 
-  function preview(target?: CompanyHydrated | null | undefined): CompanyPreview | null {
+  function preview(
+    target?: CompanyHydrated | null | undefined
+  ): CompanyPreview | null {
     const base = buildInterface(target)
     if (!base || !target) return null
     return {
@@ -160,7 +172,9 @@ export function useCompanyInterface() {
     }
   }
 
-  function profile(target?: CompanyHydrated | null | undefined): CompanyProfile | null {
+  function profile(
+    target?: CompanyHydrated | null | undefined
+  ): CompanyProfile | null {
     const base = buildInterface(target)
     if (!base || !target) return null
     const address = base.shortAddress || base.formattedAddress
@@ -174,9 +188,13 @@ export function useCompanyInterface() {
       website: (target as any)?.website,
       address,
       phone: (target as any)?.phone,
-      socialLinks: (target as any)?.social_links as Partial<PlaceSocialLinks> | undefined,
+      socialLinks: (target as any)?.social_links as
+        | Partial<PlaceSocialLinks>
+        | undefined,
       coverImage: (target as any)?.cover_image,
-      galleryImages: ((target as any)?.gallery_images as string[] | undefined)?.slice(0, 3),
+      galleryImages: (
+        (target as any)?.gallery_images as string[] | undefined
+      )?.slice(0, 3),
       about: (target as any)?.about,
       verified: (target as any)?.verified,
       source: (target as any)?.source as PlaceSource | undefined,
@@ -184,6 +202,7 @@ export function useCompanyInterface() {
   }
 
   return {
+    interface: toInterface,
     pill,
     cell,
     preview,

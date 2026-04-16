@@ -7,7 +7,9 @@
           <p v-if="description">{{ description }}</p>
         </div>
 
-        <div class="collection-manager__controls flex flex-1 items-center gap-2">
+        <div
+          class="collection-manager__controls flex flex-1 items-center gap-2"
+        >
           <div class="ml-auto flex items-center gap-2">
             <UInput
               v-if="showSearchInput"
@@ -20,12 +22,20 @@
               v-if="showVariantToggle"
               size="xs"
               variant="ghost"
-              :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
-              :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+              :icon="
+                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
+              "
+              :aria-label="
+                variant === 'pill'
+                  ? 'Switch to list view'
+                  : 'Switch to grid view'
+              "
               @click="toggleVariant"
             />
 
-            <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+            <UBadge v-if="showCount" variant="soft"
+              >{{ visibleCount }} / {{ totalCount }}</UBadge
+            >
           </div>
         </div>
       </div>
@@ -117,7 +127,11 @@ const emit = defineEmits<{
   (event: 'select', portfolioId: string): void
 }>()
 
-const { pill: makeCard } = usePortfolioInterface()
+const {
+  interface: makeCard,
+  pill: makePill,
+  cell: makeCell,
+} = usePortfolioInterface()
 const collection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Available Portfolios'))
@@ -126,27 +140,47 @@ const linkEnabled = computed(() => props.link !== false)
 const actionEnabled = computed(() => props.action === true)
 const showBadges = computed(() => props.showBadges !== false)
 const totalCount = computed(() => collection.value.length)
-const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search portfolios…'))
+const searchPlaceholder = computed(() =>
+  String(props.searchPlaceholder || 'Search portfolios…')
+)
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
-const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
-const devJsonTitle = computed(() => String(props.devJsonTitle || 'Portfolios (JSON)').trim())
-const devJsonContext = computed(
-  () => String(props.devJsonContext || 'collection manager · portfolios · root: portfolios').trim()
+const showSearchInput = computed(
+  () => showSearch.value && totalCount.value > 15
+)
+const devJsonTitle = computed(() =>
+  String(props.devJsonTitle || 'Portfolios (JSON)').trim()
+)
+const devJsonContext = computed(() =>
+  String(
+    props.devJsonContext || 'collection manager · portfolios · root: portfolios'
+  ).trim()
 )
 
-const {
-  query,
-  variant,
-  toggleVariant,
-  cards: cardsFiltered,
-  visibleCount,
-} = useCollectionSearch<Portfolio, NonNullable<ReturnType<typeof makeCard>>>({
-  items: collection,
-  makeCard: (portfolio) => makeCard(portfolio),
-  initialVariant: props.initialVariant,
-})
+const { query, variant, toggleVariant, visibleItems, visibleCount } =
+  useCollectionSearch<Portfolio, NonNullable<ReturnType<typeof makeCard>>>({
+    items: collection,
+    makeCard: (portfolio) => makeCard(portfolio),
+    initialVariant: props.initialVariant,
+  })
+
+const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
+  visibleItems.value
+    .map((portfolio) => {
+      if (variant.value === 'cell') {
+        const base = makeCard(portfolio)
+        const cell = makeCell(portfolio)
+        if (!base || !cell) return null
+        return { ...base, ...cell }
+      }
+
+      return makePill(portfolio)
+    })
+    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
+      Boolean(card)
+    )
+)
 
 const isDev = import.meta.dev
 </script>

@@ -4,7 +4,8 @@ import type {
   KitchenIngredient,
 } from '../../../../../../models/ingredient.model'
 
-const joinSubtitle = (supplierRef = ''): string => safeString(supplierRef).trim()
+const joinSubtitle = (supplierRef = ''): string =>
+  safeString(supplierRef).trim()
 
 export type IngredientInterfaceItem =
   | Ingredient
@@ -42,13 +43,7 @@ export function useIngredientInterface() {
 
   type IngredientCell = Pick<
     IngredientCard.Card,
-    | 'id'
-    | 'to'
-    | 'imageUrl'
-    | 'name'
-    | 'subtitle'
-    | 'status'
-    | 'supplierName'
+    'id' | 'to' | 'imageUrl' | 'name' | 'subtitle' | 'status' | 'supplierName'
   >
 
   type IngredientPreview = {
@@ -92,7 +87,11 @@ export function useIngredientInterface() {
     return mapped.id ? mapped : null
   }
 
-  function pill(target?: IngredientInterfaceItem | null | undefined): IngredientPill | null {
+  const toInterface = buildInterface
+
+  function pill(
+    target?: IngredientInterfaceItem | null | undefined
+  ): IngredientPill | null {
     const base = buildInterface(target)
     if (!base) return null
     return {
@@ -102,7 +101,9 @@ export function useIngredientInterface() {
     }
   }
 
-  function cell(target?: IngredientInterfaceItem | null | undefined): IngredientCell | null {
+  function cell(
+    target?: IngredientInterfaceItem | null | undefined
+  ): IngredientCell | null {
     const base = buildInterface(target)
     if (!base) return null
     return {
@@ -127,9 +128,7 @@ export function useIngredientInterface() {
       name: base.name,
       subtitle: base.subtitle,
       status: base.status,
-      details: [
-        { label: 'Supplier', value: base.supplierName },
-      ],
+      details: [{ label: 'Supplier', value: base.supplierName }],
     }
   }
 
@@ -147,5 +146,5 @@ export function useIngredientInterface() {
     }
   }
 
-  return { pill, cell, preview, profile }
+  return { interface: toInterface, pill, cell, preview, profile }
 }

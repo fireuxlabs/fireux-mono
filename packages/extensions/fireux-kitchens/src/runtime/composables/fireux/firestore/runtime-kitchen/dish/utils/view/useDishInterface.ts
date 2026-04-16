@@ -1,4 +1,7 @@
-import { safeString, safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import {
+  safeString,
+  safeStringArray,
+} from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Dish } from '../../../../../../../models/dish.model'
 
 const joinSubtitle = (active: boolean): string =>
@@ -53,13 +56,30 @@ export function useDishInterface() {
 
   type DishCell = Pick<
     DishCard.Card,
-    'id' | 'to' | 'imageUrl' | 'title' | 'subtitle' | 'meta' | 'description' | 'active'
+    | 'id'
+    | 'to'
+    | 'imageUrl'
+    | 'title'
+    | 'subtitle'
+    | 'meta'
+    | 'description'
+    | 'active'
   >
 
   type DishPreview = {
     imageUrl: string
-    ingredientPills: Array<{ id: string; to: string; title: string; imageUrl: string }>
-    misePills: Array<{ id: string; to: string; title: string; imageUrl: string }>
+    ingredientPills: Array<{
+      id: string
+      to: string
+      title: string
+      imageUrl: string
+    }>
+    misePills: Array<{
+      id: string
+      to: string
+      title: string
+      imageUrl: string
+    }>
   }
 
   function map(dish: Dish): DishCard.Card {
@@ -78,7 +98,9 @@ export function useDishInterface() {
 
     return {
       id,
-      to: id ? `/console/kitchen/dishes?dish=${encodeURIComponent(id)}` : '/console/kitchen/dishes',
+      to: id
+        ? `/console/kitchen/dishes?dish=${encodeURIComponent(id)}`
+        : '/console/kitchen/dishes',
       imageUrl: safeString(dish.image_url).trim(),
       title: displayName,
       subtitle: joinSubtitle(active),
@@ -95,10 +117,14 @@ export function useDishInterface() {
     }
   }
 
-  function buildInterface(target?: Dish | null | undefined): DishCard.Card | null {
+  function buildInterface(
+    target?: Dish | null | undefined
+  ): DishCard.Card | null {
     if (!target) return null
     return map(target)
   }
+
+  const toInterface = buildInterface
 
   function pill(target?: Dish | null | undefined): DishPill | null {
     const base = buildInterface(target)
@@ -133,13 +159,17 @@ export function useDishInterface() {
       imageUrl: base.imageUrl,
       ingredientPills: base.ingredientIds.map((id) => ({
         id,
-        to: id ? `/console/kitchen/ingredients?ingredient=${encodeURIComponent(id)}` : '/console/kitchen/ingredients',
+        to: id
+          ? `/console/kitchen/ingredients?ingredient=${encodeURIComponent(id)}`
+          : '/console/kitchen/ingredients',
         title: toPillTitle(id),
         imageUrl: '',
       })),
       misePills: base.miseIds.map((id) => ({
         id,
-        to: id ? `/console/kitchen/mise?mise=${encodeURIComponent(id)}` : '/console/kitchen/mise',
+        to: id
+          ? `/console/kitchen/mise?mise=${encodeURIComponent(id)}`
+          : '/console/kitchen/mise',
         title: toPillTitle(id),
         imageUrl: '',
       })),
@@ -159,5 +189,5 @@ export function useDishInterface() {
     }
   }
 
-  return { pill, cell, preview, profile }
+  return { interface: toInterface, pill, cell, preview, profile }
 }

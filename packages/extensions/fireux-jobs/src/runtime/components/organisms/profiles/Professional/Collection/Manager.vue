@@ -7,7 +7,9 @@
           <p>{{ description }}</p>
         </div>
 
-        <div class="collection-manager__controls flex flex-1 items-center gap-2">
+        <div
+          class="collection-manager__controls flex flex-1 items-center gap-2"
+        >
           <div class="ml-auto flex items-center gap-2">
             <UInput
               v-if="showSearchInput"
@@ -20,12 +22,20 @@
               v-if="showVariantToggle"
               size="xs"
               variant="ghost"
-              :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
-              :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+              :icon="
+                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
+              "
+              :aria-label="
+                variant === 'pill'
+                  ? 'Switch to list view'
+                  : 'Switch to grid view'
+              "
               @click="toggleVariant"
             />
 
-            <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+            <UBadge v-if="showCount" variant="soft"
+              >{{ visibleCount }} / {{ totalCount }}</UBadge
+            >
           </div>
         </div>
       </div>
@@ -44,7 +54,13 @@
       </template>
     </ProfilesProfessionalCollectionList>
 
-    <p v-else>{{ query ? 'No professionals match your search.' : 'No professionals found.' }}</p>
+    <p v-else>
+      {{
+        query
+          ? 'No professionals match your search.'
+          : 'No professionals found.'
+      }}
+    </p>
 
     <div v-if="isDev">
       <DevJson
@@ -59,10 +75,10 @@
 
 <script setup lang="ts">
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
-import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch';
-import { computed } from 'vue';
-import { useProfessionalInterface } from '../../../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface';
-import type { Professional } from '../../../../../models/profiles/Professional/Professional.model';
+import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
+import { computed } from 'vue'
+import { useProfessionalInterface } from '../../../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
+import type { Professional } from '../../../../../models/profiles/Professional/Professional.model'
 
 type ProfessionalEntry = Professional & { user?: unknown }
 
@@ -93,25 +109,54 @@ const props = withDefaults(
 const collection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Professionals'))
-const description = computed(
-  () => String(props.description || 'Browse professionals available to this runtime.')
+const description = computed(() =>
+  String(props.description || 'Browse professionals available to this runtime.')
 )
 const linkEnabled = computed(() => props.link !== false)
-const searchPlaceholder = computed(
-  () => String(props.searchPlaceholder || 'Search professionals…')
+const searchPlaceholder = computed(() =>
+  String(props.searchPlaceholder || 'Search professionals…')
 )
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
-const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
-const { pill: makeCard } = useProfessionalInterface()
-const { query, variant, toggleVariant, cards: cardsFiltered, visibleCount } =
-  useCollectionSearch<ProfessionalEntry, ReturnType<typeof makeCard>>({
+const showSearchInput = computed(
+  () => showSearch.value && totalCount.value > 15
+)
+const {
+  interface: makeCard,
+  pill: makePill,
+  cell: makeCell,
+} = useProfessionalInterface()
+const { query, variant, toggleVariant, visibleItems, visibleCount } =
+  useCollectionSearch<
+    ProfessionalEntry,
+    NonNullable<ReturnType<typeof makeCard>>
+  >({
     items: collection,
-    makeCard: (entry) => makeCard(entry as Professional, (entry as any)?.user ?? null),
+    makeCard: (entry) =>
+      makeCard(entry as Professional, (entry as any)?.user ?? null),
     initialVariant: props.initialVariant,
   })
+
+const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
+  visibleItems.value
+    .map((entry) => {
+      const user = (entry as any)?.user ?? null
+
+      if (variant.value === 'cell') {
+        const base = makeCard(entry as Professional, user)
+        const cell = makeCell(entry as Professional, user)
+        if (!base || !cell) return null
+        return { ...base, ...cell }
+      }
+
+      return makePill(entry as Professional, user)
+    })
+    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
+      Boolean(card)
+    )
+)
 
 const isDev = import.meta.dev
 </script>

@@ -51,7 +51,8 @@ export function useEcosystemInterface() {
   ): EcosystemInterfaceCard | null {
     if (!target) return null
 
-    const key = safeString(target.key) || safeString(target.id) || safeString(target.slug)
+    const key =
+      safeString(target.key) || safeString(target.id) || safeString(target.slug)
     const name = safeString(target.name)
     const resolvedId = safeString(target.id) || key || name
 
@@ -72,7 +73,10 @@ export function useEcosystemInterface() {
       avatarText: safeString(target.text) || name || key,
       title: name || key || 'Untitled ecosystem',
       subtitle: key || '',
-      meta: [safeString(target.team) ? `team: ${safeString(target.team)}` : '', `apps: ${apps}`]
+      meta: [
+        safeString(target.team) ? `team: ${safeString(target.team)}` : '',
+        `apps: ${apps}`,
+      ]
         .filter(Boolean)
         .join(' · '),
       badges: [
@@ -82,23 +86,34 @@ export function useEcosystemInterface() {
     }
   }
 
-  function pill(target?: EcosystemInterfaceInput | null | undefined): EcosystemInterfaceCard | null {
+  const toInterface = buildInterface
+
+  function pill(
+    target?: EcosystemInterfaceInput | null | undefined
+  ): EcosystemInterfaceCard | null {
     return buildInterface(target)
   }
 
-  function cell(target?: EcosystemInterfaceInput | null | undefined): EcosystemInterfaceCard | null {
+  function cell(
+    target?: EcosystemInterfaceInput | null | undefined
+  ): EcosystemInterfaceCard | null {
     return buildInterface(target)
   }
 
-  function preview(target?: EcosystemInterfaceInput | null | undefined): EcosystemInterfaceCard | null {
+  function preview(
+    target?: EcosystemInterfaceInput | null | undefined
+  ): EcosystemInterfaceCard | null {
     return buildInterface(target)
   }
 
-  function profile(target?: EcosystemInterfaceInput | null | undefined): EcosystemInterfaceCard | null {
+  function profile(
+    target?: EcosystemInterfaceInput | null | undefined
+  ): EcosystemInterfaceCard | null {
     return buildInterface(target)
   }
 
   return {
+    interface: toInterface,
     pill,
     cell,
     preview,

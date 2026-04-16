@@ -30,7 +30,9 @@
 
         <div class="grid gap-3 sm:grid-cols-3">
           <div class="rounded-2xl border border-default bg-muted/40 p-4">
-            <div class="text-xs font-semibold uppercase tracking-[0.14em] text-dimmed">
+            <div
+              class="text-xs font-semibold uppercase tracking-[0.14em] text-dimmed"
+            >
               Compensation
             </div>
             <div class="mt-2 text-lg font-semibold">
@@ -39,7 +41,9 @@
           </div>
 
           <div class="rounded-2xl border border-default bg-muted/40 p-4">
-            <div class="text-xs font-semibold uppercase tracking-[0.14em] text-dimmed">
+            <div
+              class="text-xs font-semibold uppercase tracking-[0.14em] text-dimmed"
+            >
               Openings
             </div>
             <div class="mt-2 text-lg font-semibold">
@@ -48,7 +52,9 @@
           </div>
 
           <div class="rounded-2xl border border-default bg-muted/40 p-4">
-            <div class="text-xs font-semibold uppercase tracking-[0.14em] text-dimmed">
+            <div
+              class="text-xs font-semibold uppercase tracking-[0.14em] text-dimmed"
+            >
               Role type
             </div>
             <div class="mt-2 text-lg font-semibold">
@@ -85,7 +91,9 @@
               :key="field.key"
               class="rounded-xl border border-default bg-default p-3"
             >
-              <div class="text-[0.7rem] uppercase tracking-[0.14em] text-dimmed">
+              <div
+                class="text-[0.7rem] uppercase tracking-[0.14em] text-dimmed"
+              >
                 {{ field.label }}
               </div>
               <div class="mt-1 break-words text-sm font-medium">
@@ -94,7 +102,10 @@
             </div>
           </div>
 
-          <pre class="overflow-x-auto rounded-xl border border-default bg-default p-3 text-xs">{{ jobJson }}</pre>
+          <pre
+            class="overflow-x-auto rounded-xl border border-default bg-default p-3 text-xs"
+            >{{ jobJson }}</pre
+          >
         </div>
       </details>
     </div>
@@ -116,7 +127,8 @@ const isDev = import.meta.dev
 const formatValue = (value: unknown): string => {
   if (value === null || value === undefined) return ''
   if (typeof value === 'string') return value
-  if (typeof value === 'number' || typeof value === 'boolean') return String(value)
+  if (typeof value === 'number' || typeof value === 'boolean')
+    return String(value)
   return JSON.stringify(value, null, 2)
 }
 
@@ -125,26 +137,64 @@ const jobFields = computed(() => {
   if (!job) return [] as Array<{ key: string; label: string; value: string }>
   return [
     { key: 'id', label: 'id', value: formatValue(job.id) },
-    { key: 'company_id', label: 'company_id', value: formatValue(job.company_id) },
-    { key: 'workplace_type', label: 'workplace_type', value: formatValue(job.workplace_type) },
-    { key: 'workplace_id', label: 'workplace_id', value: formatValue(job.workplace_id) },
-    { key: 'workplace_label', label: 'workplace_label', value: formatValue(job.workplace_label) },
+    {
+      key: 'company_id',
+      label: 'company_id',
+      value: formatValue(job.company_id),
+    },
+    {
+      key: 'workplace_type',
+      label: 'workplace_type',
+      value: formatValue(job.workplace_type),
+    },
+    {
+      key: 'workplace_id',
+      label: 'workplace_id',
+      value: formatValue(job.workplace_id),
+    },
+    {
+      key: 'workplace_label',
+      label: 'workplace_label',
+      value: formatValue(job.workplace_label),
+    },
     { key: 'job_type', label: 'job_type', value: formatValue(job.job_type) },
-    { key: 'openings_count', label: 'openings_count', value: formatValue(job.openings_count) },
-    { key: 'pay_currency', label: 'pay_currency', value: formatValue(job.pay_currency) },
+    {
+      key: 'openings_count',
+      label: 'openings_count',
+      value: formatValue(job.openings_count),
+    },
+    {
+      key: 'pay_currency',
+      label: 'pay_currency',
+      value: formatValue(job.pay_currency),
+    },
     { key: 'pay_rate', label: 'pay_rate', value: formatValue(job.pay_rate) },
     { key: 'pay_unit', label: 'pay_unit', value: formatValue(job.pay_unit) },
     { key: 'start_at', label: 'start_at', value: formatValue(job.start_at) },
     { key: 'end_at', label: 'end_at', value: formatValue(job.end_at) },
     { key: 'title', label: 'title', value: formatValue(job.title) },
-    { key: 'description', label: 'description', value: formatValue(job.description) },
+    {
+      key: 'description',
+      label: 'description',
+      value: formatValue(job.description),
+    },
     { key: 'status', label: 'status', value: formatValue(job.status) },
-    { key: 'source_app_id', label: 'source_app_id', value: formatValue(job.source_app_id) },
-    { key: 'workplace', label: 'workplace', value: formatValue((job as any).workplace) },
+    {
+      key: 'source_app_id',
+      label: 'source_app_id',
+      value: formatValue(job.source_app_id),
+    },
+    {
+      key: 'workplace',
+      label: 'workplace',
+      value: formatValue((job as any).workplace),
+    },
   ]
 })
 
-const jobJson = computed(() => (props.job ? JSON.stringify(props.job, null, 2) : ''))
+const jobJson = computed(() =>
+  props.job ? JSON.stringify(props.job, null, 2) : ''
+)
 const payLabel = computed(() => {
   const job = props.job
   if (!job?.pay_rate) return 'Discuss'
@@ -163,7 +213,9 @@ const CompanyPill = defineComponent({
   props: { id: String },
   setup(props) {
     const { company } = useCompanyFetch()
-    const companyData = computed(() => (props.id ? company(props.id).value : null))
+    const companyData = computed(() =>
+      props.id ? company(props.id).value : null
+    )
     const companyInterface = useCompanyInterface()
     const companyCard = computed(() => companyInterface.pill(companyData.value))
     return { companyCard }
@@ -173,7 +225,7 @@ const CompanyPill = defineComponent({
       <UUser
         :name="companyCard.title"
         :description="companyCard.subtitle"
-        :avatar="{ src: companyCard.avatarUrl, alt: companyCard.title }"
+        :avatar="{ src: companyCard.imageUrl, alt: companyCard.title }"
         size="sm"
       />
     </div>

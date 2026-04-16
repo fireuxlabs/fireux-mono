@@ -7,7 +7,9 @@
           <p v-if="description">{{ description }}</p>
         </div>
 
-        <div class="collection-manager__controls flex flex-1 items-center gap-2">
+        <div
+          class="collection-manager__controls flex flex-1 items-center gap-2"
+        >
           <div class="ml-auto flex items-center gap-2">
             <UInput
               v-if="showSearchInput"
@@ -20,12 +22,20 @@
               v-if="showVariantToggle"
               size="xs"
               variant="ghost"
-              :icon="variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'"
-              :aria-label="variant === 'pill' ? 'Switch to list view' : 'Switch to grid view'"
+              :icon="
+                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
+              "
+              :aria-label="
+                variant === 'pill'
+                  ? 'Switch to list view'
+                  : 'Switch to grid view'
+              "
               @click="toggleVariant"
             />
 
-            <UBadge v-if="showCount" variant="soft">{{ visibleCount }} / {{ totalCount }}</UBadge>
+            <UBadge v-if="showCount" variant="soft"
+              >{{ visibleCount }} / {{ totalCount }}</UBadge
+            >
           </div>
         </div>
       </div>
@@ -61,10 +71,10 @@
 
 <script setup lang="ts">
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
-import { computed } from 'vue';
-import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface';
-import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch';
-import type { AppModel } from '../../../../models/core/app.model';
+import { computed } from 'vue'
+import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import { useCollectionSearch } from '../../../../composables/shared/useCollectionSearch'
+import type { AppModel } from '../../../../models/core/app.model'
 
 const props = withDefaults(
   defineProps<{
@@ -93,28 +103,51 @@ const props = withDefaults(
 const collection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Apps'))
-const description = computed(
-  () => String(props.description || 'Browse canonical app records for the current ecosystem.')
+const description = computed(() =>
+  String(
+    props.description ||
+      'Browse canonical app records for the current ecosystem.'
+  )
 )
 const linkEnabled = computed(() => props.link !== false)
-const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search apps…'))
+const searchPlaceholder = computed(() =>
+  String(props.searchPlaceholder || 'Search apps…')
+)
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
-const showSearchInput = computed(() => showSearch.value && totalCount.value > 15)
-const { pill: makeCard } = useAppInterface()
+const showSearchInput = computed(
+  () => showSearch.value && totalCount.value > 15
+)
 const {
-  query,
-  variant,
-  toggleVariant,
-  cards: cardsFiltered,
-  visibleCount,
-} = useCollectionSearch<AppModel, ReturnType<typeof makeCard>>({
-  items: collection,
-  makeCard: (app) => makeCard(app),
-  initialVariant: props.initialVariant,
-})
+  interface: makeCard,
+  pill: makePill,
+  cell: makeCell,
+} = useAppInterface()
+const { query, variant, toggleVariant, visibleItems, visibleCount } =
+  useCollectionSearch<AppModel, NonNullable<ReturnType<typeof makeCard>>>({
+    items: collection,
+    makeCard: (app) => makeCard(app),
+    initialVariant: props.initialVariant,
+  })
+
+const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
+  visibleItems.value
+    .map((app) => {
+      if (variant.value === 'cell') {
+        const base = makeCard(app)
+        const cell = makeCell(app)
+        if (!base || !cell) return null
+        return { ...base, ...cell }
+      }
+
+      return makePill(app)
+    })
+    .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
+      Boolean(card)
+    )
+)
 
 const isDev = import.meta.dev
 const devJsonContext = 'collection manager · apps · root: apps'

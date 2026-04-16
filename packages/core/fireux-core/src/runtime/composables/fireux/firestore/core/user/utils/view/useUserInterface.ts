@@ -1,4 +1,7 @@
-import { safeArray, safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import {
+  safeArray,
+  safeString,
+} from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Ref } from 'vue'
 import type { User } from '../../../../../../../models/core/user.model'
 import { useAvatarProxy } from '../../../../../app/ui/useAvatarProxy'
@@ -87,12 +90,16 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
     }
   }
 
-  function buildInterface(target?: User | null | undefined): UserCard.Card | null {
+  function buildInterface(
+    target?: User | null | undefined
+  ): UserCard.Card | null {
     const user = target ?? userRef?.value ?? null
     if (!user) return null
     const mapped = map(user)
     return mapped.id ? mapped : null
   }
+
+  const toInterface = buildInterface
 
   function pill(target?: User | null | undefined): UserPill | null {
     return buildInterface(target)
@@ -111,6 +118,7 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
   }
 
   return {
+    interface: toInterface,
     pill,
     cell,
     preview,

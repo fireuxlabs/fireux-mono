@@ -11,6 +11,7 @@ Learn how FireUX read behaviour works at runtime, what kind of truth is being re
 Read is a runtime concept, not just a detail page and not just a fetch composable.
 
 Read spans:
+
 - `runtime/pages/` for entry and audience
 - `runtime/components/` for browse, preview, detail, and management surfaces
 - `runtime/composables/` for fetch, collection, interface, and computed seams
@@ -20,24 +21,29 @@ Use this README as the read authority.
 Use the technical directories as supporting views.
 
 Useful simplifier:
+
 - `root` read = canonical entity read
 - `not root` read = either app-scoped overlay read or scoped child read
 
 Important:
+
 - the console itself is not a root entity
 - app-scoped read is the hosted console over a public entity
 
 ## Core Principle
 
 The main read question is not:
+
 - where is the detail page?
 
 The main read questions are:
+
 - what kind of thing are we reading?
 - which truth layer is it coming from?
 - how resolved is the data by the time the UI sees it?
 
 That means read canon should keep clear separation between:
+
 - canonical stored truth
 - app-scoped overlay truth
 - scoped child truth
@@ -45,6 +51,7 @@ That means read canon should keep clear separation between:
 - computed read models
 
 Do not confuse:
+
 - a resolved view
 - a preview card shape
 - a hydrated linked field
@@ -64,11 +71,13 @@ Current canon for domain/entity reads:
   - shape fetched truth for UI use
 
 Important:
+
 - `useXDocument.ts` is not a generic cross-repo canon seam
 - if a domain keeps a `useXDocument.ts` file, treat it as a local helper, not as the primary read primitive
 - the primary cross-repo read primitives are `useXFetch`, `useXCollection`, and `useXInterface`
 
 Hydration rule:
+
 - hydration is a read concern, never a model concern
 - root models store root fields and explicit links such as `place_id`
 - `useXFetch` and `useXCollection` stay plain by default
@@ -84,9 +93,11 @@ Hydration rule:
 Read one record or one resolved detail source.
 
 Common seam:
+
 - `use*Fetch.ts`
 
 Contract:
+
 - fetch one thing
 - make the truth layer clear
 - return a stable detail surface for the consumer
@@ -98,9 +109,11 @@ Contract:
 Read many records for browse, search, list, or manager surfaces.
 
 Common seams:
+
 - `use*Collection.ts`
 
 Contract:
+
 - browse many things
 - stay clear about collection scope
 - do not pretend a collection fetch is a detail fetch
@@ -111,9 +124,11 @@ Contract:
 Expose a stable resolved shape for UI use.
 
 Common seam:
+
 - `use*Interface.ts`
 
 Contract:
+
 - normalize read output for the UI
 - expose a predictable base interface shape
 - expose the same top-level seams everywhere:
@@ -122,7 +137,6 @@ Contract:
   - `cell`
   - `preview`
   - `profile`
-  - `searchText`
 - let components choose the fields they need from the returned interface object
 - allow thin families to reuse the base `interface` object for all display seams
 - allow richer families to specialize `pill`, `cell`, `preview`, or `profile` where that family genuinely needs it
@@ -133,9 +147,11 @@ Contract:
 Expose derived convenience state on top of fetched truth.
 
 Common seam:
+
 - `use*Computed.ts`
 
 Contract:
+
 - derive convenience data only
 - stay explicit that the result is computed, not stored truth
 
@@ -146,6 +162,7 @@ Contract:
 Read the canonical public record.
 
 Examples:
+
 - `companies/<id>`
 - `kitchens/<id>`
 - `places/<id>`
@@ -157,6 +174,7 @@ Examples:
 Read the app-scoped operational layer.
 
 Examples:
+
 - `apps/<appId>/kitchens/<id>`
 - `apps/<appId>/suppliers/<id>`
 - `apps/<appId>/portfolios/<id>`
@@ -168,6 +186,7 @@ For console-backed domains, this is the same thing as reading the hosted console
 Read children owned by a console or parent operational record.
 
 Examples:
+
 - `apps/<appId>/kitchens/<id>/recipes/<recipeId>`
 - `apps/<appId>/kitchens/<id>/orders/<orderId>`
 - `apps/<appId>/portfolios/<id>/documents/<documentId>`
@@ -179,6 +198,7 @@ Examples:
 Read who the user is in the system.
 
 Examples:
+
 - `User`
 - `Chef`
 - `Agent`
@@ -189,6 +209,7 @@ Examples:
 Read system bootstrap or platform-owned records.
 
 Examples:
+
 - `App`
 - `Project`
 - `Ecosystem`
@@ -199,6 +220,7 @@ For ecosystem apps with a registry split:
 - read canonical `apps` and ordinary operational collections from the named operational database
 
 Do not blur:
+
 - registry/public-mirror reads
 - operational domain reads
 
@@ -209,89 +231,101 @@ Canon read families are now simpler:
 ### Canon Single Fetch
 
 Behavior:
+
 - fetch one root record
 - expose one resolved record ref
 - expose `pending`
 
 Common seam:
+
 - `useXFetch.ts`
 
 ### Canon Collection Fetch
 
 Behavior:
+
 - fetch many root records
 - expose the plural collection
 - expose `count`
 - expose `pending`
 
 Common seam:
+
 - `useXCollection.ts`
 
 ### Interface / View Shaping
 
 Behavior:
+
 - shape fetched truth for UI use
 - normalize titles, images, pills, cards, and search text
 
 Common seam:
+
 - `useXInterface.ts`
 
 ### Explicit Hydration Helper
 
 Behavior:
+
 - perform extra linked reads where a root entity is explicitly backed by another root entity
 - stay visibly special
 - do not redefine the canon seam
 
 Examples:
+
 - kitchen helpers that hydrate `Kitchen` from `Place`
 
 Important:
+
 - generic `useXDocument.ts` is not part of the canon spine
 - if such helpers exist, they should be treated as local read helpers, not as the standard pattern
 
 ## Current `use*Fetch` Matrix
 
-| File | Family | Truth layer | Notes |
-| --- | --- | --- | --- |
-| `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/fetch/useAppFetch.ts` | Direct single fetch | System | One app record with pending state |
-| `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts` | Identity overlay fetch | Identity | Generic base seam for profile core + app overlay |
-| `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/fetch/useUserByHandleFetch.ts` | Direct single fetch | Identity | Single-user resolver via handle, then canonical user fetch |
-| `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch.ts` | Direct single fetch | Identity | Core user plus app user overlay |
-| `packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/fetch/useBlogFetch.ts` | Dual read facade | Public entity / managed | Sorted collection plus slug fetch |
-| `packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/fetch/useCompanyFetch.ts` | Dual read facade | Public entity | Place-backed list and single hydrated company |
-| `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/fetch/useJobFetch.ts` | Direct single fetch | Public entity / managed | Single job hydrated with kitchen read model |
-| `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Agent/main/useAgentFetch.ts` | Identity overlay fetch | Identity | Core and app agent collections plus selectors |
-| `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/main/useProfessionalFetch.ts` | Identity overlay fetch | Identity | Core and app professional collections plus selectors |
-| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/ingredient/fetch/useIngredientFetch.ts` | Collection-backed selector fetch | Scoped child | Global ingredient collection plus selector |
-| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenFetch.ts` | Canon single fetch + allowed hydration | Public entity | Single kitchen fetch; may hydrate from `Place` because kitchen root is place-backed |
-| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenCollection.ts` | Canon collection fetch + allowed hydration | Public entity | Kitchen collection; may hydrate from `Place` because kitchen root is place-backed |
-| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/profiles/Chef/main/useChefFetch.ts` | Identity overlay fetch | Identity | Core and app chef collections plus selectors |
-| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/ingredients/fetch/useKitchenIngredientFetch.ts` | Collection-backed selector fetch | Scoped child | Kitchen ingredient collection plus selector |
-| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/orders/fetch/useKitchenOrderFetch.ts` | Collection-backed selector fetch | Scoped child | Kitchen-scoped order collection plus selector |
-| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/orders/fetch/useKitchenOrdersFetch.ts` | Collection-backed selector fetch | Scoped child | Kitchen order view via orders package plus selector |
-| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/recipe/fetch/useRecipeFetch.ts` | Direct single fetch | Scoped child | Single recipe inside selected or explicit kitchen scope |
-| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/stack/fetch/useKitchenMenuStackFetch.ts` | Composite scoped reader | Scoped child | Multi-collection kitchen stack read |
-| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/suppliers/fetch/useKitchenSupplierFetch.ts` | Composite scoped reader | Scoped child + overlay | Link collection merged with canonical supplier records |
-| `packages/extensions/fireux-orders/src/runtime/composables/useOrdersForKitchenFetch.ts` | Collection-backed selector fetch | Scoped child | Scope-aware kitchen orders plus legacy merge and selector |
-| `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/fetch/usePlacesFetch.ts` | Direct single fetch | Public entity | Singular place helper despite plural filename |
-| `packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/fetch/useProductFetch.ts` | Collection-backed selector fetch | Public entity / managed | Product collection plus selector |
-| `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/fetch/usePortfolioFetch.ts` | Canon single fetch | Public entity / workspace | Single portfolio fetch |
-| `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/fetch/usePortfolioCollection.ts` | Canon collection fetch | Public entity / workspace | Portfolio collection |
-| `packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/fetch/useSupplierFetch.ts` | Canon single fetch | Public entity / workspace | Single supplier fetch |
-| `packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/fetch/useSupplierCollection.ts` | Canon collection fetch | Public entity / workspace | Supplier collection |
+| File                                                                                                                                          | Family                                     | Truth layer               | Notes                                                                               |
+| --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | ------------------------- | ----------------------------------------------------------------------------------- |
+| `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/fetch/useAppFetch.ts`                                            | Direct single fetch                        | System                    | One app record with pending state                                                   |
+| `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts`                                    | Identity overlay fetch                     | Identity                  | Generic base seam for profile core + app overlay                                    |
+| `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/fetch/useUserByHandleFetch.ts`                                  | Direct single fetch                        | Identity                  | Single-user resolver via handle, then canonical user fetch                          |
+| `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch.ts`                                          | Direct single fetch                        | Identity                  | Core user plus app user overlay                                                     |
+| `packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/fetch/useBlogFetch.ts`                                        | Dual read facade                           | Public entity / managed   | Sorted collection plus slug fetch                                                   |
+| `packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/fetch/useCompanyFetch.ts`                              | Dual read facade                           | Public entity             | Place-backed list and single hydrated company                                       |
+| `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/fetch/useJobFetch.ts`                                          | Direct single fetch                        | Public entity / managed   | Single job hydrated with kitchen read model                                         |
+| `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Agent/main/useAgentFetch.ts`                               | Identity overlay fetch                     | Identity                  | Core and app agent collections plus selectors                                       |
+| `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/main/useProfessionalFetch.ts`                 | Identity overlay fetch                     | Identity                  | Core and app professional collections plus selectors                                |
+| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/ingredient/fetch/useIngredientFetch.ts`                         | Collection-backed selector fetch           | Scoped child              | Global ingredient collection plus selector                                          |
+| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenFetch.ts`                               | Canon single fetch + allowed hydration     | Public entity             | Single kitchen fetch; may hydrate from `Place` because kitchen root is place-backed |
+| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenCollection.ts`                          | Canon collection fetch + allowed hydration | Public entity             | Kitchen collection; may hydrate from `Place` because kitchen root is place-backed   |
+| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/profiles/Chef/main/useChefFetch.ts`                             | Identity overlay fetch                     | Identity                  | Core and app chef collections plus selectors                                        |
+| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/ingredients/fetch/useKitchenIngredientFetch.ts` | Collection-backed selector fetch           | Scoped child              | Kitchen ingredient collection plus selector                                         |
+| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/orders/fetch/useKitchenOrderFetch.ts`           | Collection-backed selector fetch           | Scoped child              | Kitchen-scoped order collection plus selector                                       |
+| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/orders/fetch/useKitchenOrdersFetch.ts`          | Collection-backed selector fetch           | Scoped child              | Kitchen order view via orders package plus selector                                 |
+| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/recipe/fetch/useRecipeFetch.ts`                 | Direct single fetch                        | Scoped child              | Single recipe inside selected or explicit kitchen scope                             |
+| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/stack/fetch/useKitchenMenuStackFetch.ts`        | Composite scoped reader                    | Scoped child              | Multi-collection kitchen stack read                                                 |
+| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/suppliers/fetch/useKitchenSupplierFetch.ts`     | Composite scoped reader                    | Scoped child + overlay    | Link collection merged with canonical supplier records                              |
+| `packages/extensions/fireux-orders/src/runtime/composables/useOrdersForKitchenFetch.ts`                                                       | Collection-backed selector fetch           | Scoped child              | Scope-aware kitchen orders plus legacy merge and selector                           |
+| `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/fetch/usePlacesFetch.ts`                                    | Direct single fetch                        | Public entity             | Singular place helper despite plural filename                                       |
+| `packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/fetch/useProductFetch.ts`                               | Collection-backed selector fetch           | Public entity / managed   | Product collection plus selector                                                    |
+| `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/fetch/usePortfolioFetch.ts`                         | Canon single fetch                         | Public entity / workspace | Single portfolio fetch                                                              |
+| `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/fetch/usePortfolioCollection.ts`                    | Canon collection fetch                     | Public entity / workspace | Portfolio collection                                                                |
+| `packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/fetch/useSupplierFetch.ts`                            | Canon single fetch                         | Public entity / workspace | Single supplier fetch                                                               |
+| `packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/fetch/useSupplierCollection.ts`                       | Canon collection fetch                     | Public entity / workspace | Supplier collection                                                                 |
 
 ## Alignment Strategy
 
 Read alignment follows the same pressure pattern as the rest of CRUD:
+
 - start by asking whether the same seam can work the same way everywhere
 - where repeated domain nuance breaks that sameness, define a family
 - once a family is real, keep it internally consistent
 
 So the baseline goal is not:
+
 - every file must be byte-for-byte identical
 
 The actual goal is:
+
 - every entity should start from the same canon seam
 - every repeated hydration nuance should be declared explicitly
 - no entity should be special alone without a reason
@@ -308,6 +342,7 @@ But they do not all need the same richness.
 Public real-world thing with place, media, contact, and identity.
 
 Typical shape:
+
 - rich `interface`
 - real `pill`
 - real `cell`
@@ -315,6 +350,7 @@ Typical shape:
 - real `profile`
 
 Entities:
+
 - `Place`
 - `Company`
 - `Kitchen`
@@ -324,6 +360,7 @@ Entities:
 Person-facing public identity or profile surface.
 
 Typical shape:
+
 - avatar, display name, title, badges, summary first
 - often thinner than place-based public entities
 - still exposes the full top-level interface API
@@ -342,6 +379,7 @@ Typical shape:
   - `websiteUrl`
 
 Entities:
+
 - `User`
 - `Chef`
 - `Agent`
@@ -352,6 +390,7 @@ Entities:
 Non-person organization or workspace identity surface.
 
 Typical shape:
+
 - workspace or organization summary first
 - medium richness
 - often bridges public entity truth with operational context
@@ -369,6 +408,7 @@ Typical shape:
   - `locationLabel`
 
 Entities:
+
 - `Supplier`
 - `Portfolio`
 - `App`
@@ -378,6 +418,7 @@ Entities:
 Read-first listing or teaser entity.
 
 Typical shape:
+
 - title, subtitle, image, excerpt, status, badges
 - usually flatter than place-based entities
 - often optimized for cards, listing, and teaser views
@@ -392,6 +433,7 @@ Typical shape:
   - `badges`
 
 Entities:
+
 - `BlogPost`
 - `Product`
 - `Job`
@@ -402,6 +444,7 @@ Entities:
 Console-owned record used inside work rather than as a public root identity.
 
 Typical shape:
+
 - scoped operational summary first
 - may be rich or thin depending on the child entity
 - should stay clearly owned by its console or parent runtime
@@ -417,6 +460,7 @@ Typical shape:
   - `summary`
 
 Entities:
+
 - `Ingredient`
 - `Dish`
 - `Menu`
@@ -436,11 +480,13 @@ The implementation families below describe how the `use*Interface.ts` file itsel
 ### Single-shape Mapper
 
 Behavior:
+
 - map one target into one base interface shape
 - `pill`, `cell`, `preview`, and `profile` usually return that same shape
 - components choose which fields to render
 
 Examples:
+
 - `App`
 - `User`
 - `BlogPost`
@@ -456,11 +502,13 @@ Examples:
 ### Joined Mapper
 
 Behavior:
+
 - first resolve or merge more than one source
 - usually core record plus linked user or related identity context
 - still returns one main interface shape
 
 Examples:
+
 - `Chef`
 - `Agent`
 - `Professional`
@@ -469,11 +517,13 @@ Examples:
 ### Rich Projection Mapper
 
 Behavior:
+
 - `interface` is the base shape
 - `pill`, `cell`, `preview`, or `profile` are real specialized projections
 - used where one entity genuinely has multiple stable display projections
 
 Examples:
+
 - `Place`
 - `Company`
 - `Kitchen`
@@ -485,46 +535,49 @@ Examples:
 ### Legacy Edge
 
 Behavior:
+
 - an older extra seam exists outside the main interface contract
 - this should be removed rather than treated as canon
 
 Recent example:
+
 - old recipe `pillProps`
 
 This pass removes that edge and treats the main interface contract as the only real contract.
 
 ## Current `use*Interface` Matrix
 
-| File | Family | Notes |
-| --- | --- | --- |
-| `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface.ts` | Organization / workspace entity | System-owned workspace identity |
-| `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface.ts` | Identity / people profile | Core user identity surface |
-| `packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/recipe/utils/view/useRecipeInterface.ts` | Content / opportunity | Public recipe presentation |
-| `packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/utils/view/useBlogInterface.ts` | Content / opportunity | Listing and teaser-first content surface |
-| `packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/utils/view/useCompanyInterface.ts` | Place-based public entity | Place-backed public company surface |
-| `packages/extensions/fireux-compliance/src/runtime/composables/fireux/firestore/compliance/utils/view/useComplianceInterface.ts` | Console operational child | Portfolio-scoped operational record |
-| `packages/extensions/fireux-documents/src/runtime/composables/fireux/firestore/documents/utils/view/useDocumentInterface.ts` | Console operational child | Portfolio-scoped document record |
-| `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/utils/view/useJobInterface.ts` | Content / opportunity | Managed opportunity surface |
-| `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface.ts` | Identity / people profile | Agent public profile surface |
-| `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface.ts` | Identity / people profile | Professional public profile surface |
-| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/ingredient/utils/view/useIngredientInterface.ts` | Console operational child | Kitchen-scoped inventory child |
-| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface.ts` | Place-based public entity | Place-backed public kitchen surface |
-| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface.ts` | Identity / people profile | Chef public profile surface |
-| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/dish/utils/view/useDishInterface.ts` | Console operational child | Runtime kitchen menu child |
-| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/menu/utils/view/useMenuInterface.ts` | Console operational child | Runtime kitchen menu summary |
-| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/mise/utils/view/useMiseEnPlaceInterface.ts` | Console operational child | Runtime kitchen mise child |
-| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/recipe/utils/view/useRecipeInterface.ts` | Console operational child | Kitchen-owned recipe surface |
-| `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/utils/view/usePlacesInterface.ts` | Place-based public entity | Canonical public place surface |
-| `packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/utils/view/useProductInterface.ts` | Content / opportunity | Product listing and offering surface |
-| `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/client/utils/view/useClientInterface.ts` | Console operational child | Portfolio-scoped client record |
-| `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface.ts` | Organization / workspace entity | Workspace identity, currently thin |
-| `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/utils/view/usePropertyInterface.ts` | Console operational child | Portfolio property record |
-| `packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/utils/view/useSupplierInterface.ts` | Organization / workspace entity | Public organization surface with workspace crossover |
-| `packages/extensions/fireux-tasks/src/runtime/composables/fireux/firestore/tasks/utils/view/useTaskInterface.ts` | Console operational child | Portfolio task record |
+| File                                                                                                                                      | Family                          | Notes                                                |
+| ----------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- | ---------------------------------------------------- |
+| `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface.ts`                               | Organization / workspace entity | System-owned workspace identity                      |
+| `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface.ts`                             | Identity / people profile       | Core user identity surface                           |
+| `packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/recipe/utils/view/useRecipeInterface.ts`                      | Content / opportunity           | Public recipe presentation                           |
+| `packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/utils/view/useBlogInterface.ts`                           | Content / opportunity           | Listing and teaser-first content surface             |
+| `packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/utils/view/useCompanyInterface.ts`                 | Place-based public entity       | Place-backed public company surface                  |
+| `packages/extensions/fireux-compliance/src/runtime/composables/fireux/firestore/compliance/utils/view/useComplianceInterface.ts`          | Console operational child       | Portfolio-scoped operational record                  |
+| `packages/extensions/fireux-documents/src/runtime/composables/fireux/firestore/documents/utils/view/useDocumentInterface.ts`              | Console operational child       | Portfolio-scoped document record                     |
+| `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/utils/view/useJobInterface.ts`                             | Content / opportunity           | Managed opportunity surface                          |
+| `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface.ts`                 | Identity / people profile       | Agent public profile surface                         |
+| `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface.ts`   | Identity / people profile       | Professional public profile surface                  |
+| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/ingredient/utils/view/useIngredientInterface.ts`            | Console operational child       | Kitchen-scoped inventory child                       |
+| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface.ts`                  | Place-based public entity       | Place-backed public kitchen surface                  |
+| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface.ts`               | Identity / people profile       | Chef public profile surface                          |
+| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/dish/utils/view/useDishInterface.ts`        | Console operational child       | Runtime kitchen menu child                           |
+| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/menu/utils/view/useMenuInterface.ts`        | Console operational child       | Runtime kitchen menu summary                         |
+| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/mise/utils/view/useMiseEnPlaceInterface.ts` | Console operational child       | Runtime kitchen mise child                           |
+| `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/runtime-kitchen/recipe/utils/view/useRecipeInterface.ts`    | Console operational child       | Kitchen-owned recipe surface                         |
+| `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/utils/view/usePlacesInterface.ts`                       | Place-based public entity       | Canonical public place surface                       |
+| `packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/utils/view/useProductInterface.ts`                  | Content / opportunity           | Product listing and offering surface                 |
+| `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/client/utils/view/useClientInterface.ts`                  | Console operational child       | Portfolio-scoped client record                       |
+| `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface.ts`            | Organization / workspace entity | Workspace identity, currently thin                   |
+| `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/utils/view/usePropertyInterface.ts`              | Console operational child       | Portfolio property record                            |
+| `packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/utils/view/useSupplierInterface.ts`               | Organization / workspace entity | Public organization surface with workspace crossover |
+| `packages/extensions/fireux-tasks/src/runtime/composables/fireux/firestore/tasks/utils/view/useTaskInterface.ts`                          | Console operational child       | Portfolio task record                                |
 
 ## Current Edges To Watch
 
 These are not necessarily wrong, but they are the first places to inspect if read alignment starts drifting:
+
 - `Supplier` sits between public organization and console workspace
 - `Portfolio` is correctly in the organization/workspace family, but still thinner than it probably wants to be
 - `Recipe` is currently split across two distinct presentation jobs:
@@ -537,9 +590,11 @@ These are not necessarily wrong, but they are the first places to inspect if rea
 The current active read pass is fetch-first.
 
 The mirrored working set currently focuses on:
+
 - `use*Fetch.ts`
 
 This is the right read seam to inspect now because it shows:
+
 - which truth layer is being fetched
 - whether the seam is direct, collection-backed, dual, or composite
 - where consumers are being forced to improvise local selectors
@@ -549,6 +604,7 @@ This is the right read seam to inspect now because it shows:
 Read the user, profile, or role-facing identity layer.
 
 Examples:
+
 - `useUserFetch`
 - `useChefFetch`
 - `useAgentFetch`
@@ -583,6 +639,7 @@ Examples:
 ## Short Version
 
 Read is about:
+
 - what kind of thing we are reading
 - which truth layer it comes from
 - how resolved it is before the UI sees it

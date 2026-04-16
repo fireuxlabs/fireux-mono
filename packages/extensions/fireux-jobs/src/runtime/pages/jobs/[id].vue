@@ -25,12 +25,7 @@
     </UPageHeader>
 
     <UPageBody class="pagebody">
-      <UAlert
-        v-if="!job"
-        title="Job not found"
-        color="error"
-        variant="soft"
-      />
+      <UAlert v-if="!job" title="Job not found" color="error" variant="soft" />
 
       <template v-else>
         <DevJson
@@ -43,11 +38,7 @@
 
         <div class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <div class="space-y-6">
-            <JobCardsProfile
-              v-if="job"
-              :card="jobCard"
-              :job="job"
-            />
+            <JobCardsProfile v-if="job" :card="jobCard" :job="job" />
           </div>
 
           <div class="space-y-6">
@@ -87,8 +78,13 @@
                 <h3 class="font-semibold">Workplace</h3>
               </template>
               <div v-if="job?.workplace_id" class="space-y-2">
-                <KitchenPill v-if="job?.workplace_type === 'kitchen'" :id="job.workplace_id" />
-                <p class="text-xs text-gray-500">Workplace ID: {{ job?.workplace_id }}</p>
+                <KitchenPill
+                  v-if="job?.workplace_type === 'kitchen'"
+                  :id="job.workplace_id"
+                />
+                <p class="text-xs text-gray-500">
+                  Workplace ID: {{ job?.workplace_id }}
+                </p>
                 <p v-if="job?.workplace_label" class="text-xs text-gray-500">
                   {{ job.workplace_label }}
                 </p>
@@ -102,7 +98,9 @@
               </template>
               <div v-if="job?.company_id" class="space-y-2">
                 <CompanyPill :id="job.company_id" />
-                <p class="text-xs text-gray-500">Company ID: {{ job?.company_id }}</p>
+                <p class="text-xs text-gray-500">
+                  Company ID: {{ job?.company_id }}
+                </p>
               </div>
               <p v-else class="text-sm text-gray-600">No company linked.</p>
             </UCard>
@@ -132,8 +130,8 @@ const route = useRoute()
 const jobId = computed(() => {
   const raw = route.params.id
   return Array.isArray(raw)
-    ? raw[0]?.toString() ?? null
-    : raw?.toString() ?? null
+    ? (raw[0]?.toString() ?? null)
+    : (raw?.toString() ?? null)
 })
 
 const { job } = useJobFetch(jobId)
@@ -166,7 +164,9 @@ const CompanyPill = defineComponent({
   props: { id: String },
   setup(props) {
     const { company } = useCompanyFetch()
-    const companyData = computed(() => props.id ? company(props.id).value : null)
+    const companyData = computed(() =>
+      props.id ? company(props.id).value : null
+    )
     const companyInterface = useCompanyInterface()
     const companyCard = computed(() => companyInterface.pill(companyData.value))
     return { companyCard }
@@ -176,7 +176,7 @@ const CompanyPill = defineComponent({
       <UUser
         :name="companyCard.title"
         :description="companyCard.subtitle"
-        :avatar="{ src: companyCard.avatarUrl, alt: companyCard.title }"
+        :avatar="{ src: companyCard.imageUrl, alt: companyCard.title }"
         size="sm"
       />
     </div>
@@ -202,7 +202,7 @@ watchEffect(() => {
   statusLocal.value = (job.value?.status as JobStatus) ?? 'open'
 })
 
-const jobCard = computed(() => job.value ? jobCardFactory(job.value) : null)
+const jobCard = computed(() => (job.value ? jobCardFactory(job.value) : null))
 
 const saving = ref(false)
 const saveStatus = withToast(

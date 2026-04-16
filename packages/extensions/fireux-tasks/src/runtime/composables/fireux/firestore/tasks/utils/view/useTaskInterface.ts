@@ -22,7 +22,9 @@ export function useTaskInterface() {
   type TaskPreview = TaskCard.Card
   type TaskProfile = TaskCard.Card
 
-  function buildInterface(target?: Task | null | undefined): TaskCard.Card | null {
+  function buildInterface(
+    target?: Task | null | undefined
+  ): TaskCard.Card | null {
     if (!target) return null
 
     const id = safeString(target.id)
@@ -35,7 +37,11 @@ export function useTaskInterface() {
       imageUrl: '',
       title: safeString(target.title) || id,
       subtitle:
-        [safeString(target.source), due ? `due ${due}` : '', safeString(target.linked_entity_type)]
+        [
+          safeString(target.source),
+          due ? `due ${due}` : '',
+          safeString(target.linked_entity_type),
+        ]
           .filter(Boolean)
           .join(' · ') || 'No task metadata',
       meta: due ? `due ${due}` : '',
@@ -45,6 +51,8 @@ export function useTaskInterface() {
       to: '/console/portfolio/tasks',
     }
   }
+
+  const toInterface = buildInterface
 
   function pill(target?: Task | null | undefined): TaskPill | null {
     return buildInterface(target)
@@ -62,5 +70,5 @@ export function useTaskInterface() {
     return buildInterface(target)
   }
 
-  return { pill, cell, preview, profile }
+  return { interface: toInterface, pill, cell, preview, profile }
 }

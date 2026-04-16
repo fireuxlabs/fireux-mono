@@ -77,14 +77,13 @@ export function useMenuInterface() {
 
     return {
       id,
-      to: '/console/kitchen/menu',
+      to: '/console/kitchen/menus',
       imageUrl: '',
       title: name,
       subtitle: '',
-      meta: [
-        `Dishes: ${dishes.length}`,
-        windowLabel,
-      ].filter(Boolean).join(' · '),
+      meta: [`Dishes: ${dishes.length}`, windowLabel]
+        .filter(Boolean)
+        .join(' · '),
       status: active ? 'active' : 'inactive',
       badges: [
         active ? 'active' : 'inactive',
@@ -101,11 +100,15 @@ export function useMenuInterface() {
     }
   }
 
-  function buildInterface(target?: Menu | null | undefined): MenuCard.Card | null {
+  function buildInterface(
+    target?: Menu | null | undefined
+  ): MenuCard.Card | null {
     if (!target) return null
     const mapped = map(target)
     return mapped.id ? mapped : null
   }
+
+  const toInterface = buildInterface
 
   function pill(target?: Menu | null | undefined): MenuPill | null {
     const base = buildInterface(target)
@@ -147,7 +150,9 @@ export function useMenuInterface() {
       details: [
         { label: 'Active', value: base.active ? 'Yes' : 'No' },
         { label: 'Dishes', value: base.dishCount },
-        ...(base.windowLabel ? [{ label: 'Window', value: base.windowLabel }] : []),
+        ...(base.windowLabel
+          ? [{ label: 'Window', value: base.windowLabel }]
+          : []),
       ],
     }
   }
@@ -167,6 +172,7 @@ export function useMenuInterface() {
   }
 
   return {
+    interface: toInterface,
     pill,
     cell,
     preview,

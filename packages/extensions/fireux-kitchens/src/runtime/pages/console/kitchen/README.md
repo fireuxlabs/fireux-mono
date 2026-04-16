@@ -1,7 +1,7 @@
 # Console Kitchen Pages
 
 Authority: Operational
-Updated: 2026-03-28
+Updated: 2026-04-16
 Scope: `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/*`.
 
 This folder owns the kitchen console workspace.
@@ -14,7 +14,7 @@ This README only explains the kitchen-console delta.
 - `index.vue`
 - `overview.vue`
 - `create.vue`
-- `menu.vue`
+- `menus.vue`
 - `recipes.vue`
 - `orders.vue`
 - `ingredients.vue`

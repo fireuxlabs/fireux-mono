@@ -6,6 +6,7 @@ updated: 2026-03-02
 ---
 
 # FireUX Alignment
+
 Authority: Tier2 (Operational)
 
 Alignment means every layer agrees on responsibility and shape.
@@ -67,10 +68,11 @@ Every domain exposes one interface:
 
 Each interface is responsible for:
 
-- card(raw)
+- interface(raw)
 - pill(raw)
-- searchText(raw)
-- label(raw) (optional)
+- cell(raw)
+- preview(raw)
+- profile(raw)
 
 This is where alignment lives most strongly.
 
@@ -113,13 +115,13 @@ When directory structure mirrors mental structure, it’s aligned.
 
 Quick test:
 
-| Question | Correct owner |
-| --- | --- |
-| How does this render in a card? | Interface |
-| Who can edit this? | Page / orchestration |
-| How is this stored? | Model |
-| How is this searched? | Interface |
-| How is this laid out? | Section / organism |
+| Question                        | Correct owner        |
+| ------------------------------- | -------------------- |
+| How does this render in a card? | Interface            |
+| Who can edit this?              | Page / orchestration |
+| How is this stored?             | Model                |
+| How is this searched?           | Interface            |
+| How is this laid out?           | Section / organism   |
 
 If the answer is “this file does a bit of everything”, it’s misaligned.
 

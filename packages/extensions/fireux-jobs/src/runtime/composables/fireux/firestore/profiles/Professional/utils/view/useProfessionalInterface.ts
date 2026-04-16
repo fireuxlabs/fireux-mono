@@ -1,15 +1,18 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import {
-    resolveProfileBadges,
-    resolveProfileDisplayName,
-    resolveProfileImage,
-    resolveProfileSummary,
-    resolveSecondaryAvatarUrl,
-    safeString,
+  resolveProfileBadges,
+  resolveProfileDisplayName,
+  resolveProfileImage,
+  resolveProfileSummary,
+  resolveSecondaryAvatarUrl,
+  safeString,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { Ref } from 'vue'
-import type { Professional, ProfessionalUserSummary } from '../../../../../../../models/profiles/Professional/Professional.model'
+import type {
+  Professional,
+  ProfessionalUserSummary,
+} from '../../../../../../../models/profiles/Professional/Professional.model'
 import { professionalConfig } from '../../config/professionalConfig'
 
 type UserLike = ProfessionalUserSummary
@@ -96,6 +99,8 @@ export function useProfessionalInterface(
     }
   }
 
+  const toInterface = buildInterface
+
   function pill(
     target?: ProfessionalTarget | null | undefined,
     userOverride?: UserLike | null
@@ -125,6 +130,7 @@ export function useProfessionalInterface(
   }
 
   return {
+    interface: toInterface,
     pill,
     cell,
     preview,
