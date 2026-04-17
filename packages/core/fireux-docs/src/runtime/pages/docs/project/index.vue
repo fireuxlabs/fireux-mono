@@ -7,7 +7,7 @@
     />
 
     <UPageBody class="space-y-6">
-      <template v-for="chapter in chapters || []" :key="chapter.key">
+      <template v-for="chapter in chapters" :key="chapter.key">
         <section class="space-y-2">
           <p class="text-xs text-dimmed">Chapter {{ chapter.number }}</p>
           <h2 class="text-xl font-semibold">{{ chapter.title }}</h2>
@@ -17,15 +17,13 @@
           </p>
         </section>
 
-        <USeparator v-if="chapter.number !== chapters?.length" />
+        <USeparator v-if="chapter.number !== chapters.length" />
       </template>
     </UPageBody>
   </UPage>
 </template>
 
-<script setup lang="ts">
-import { queryCollection, useAsyncData } from '#imports'
-
+<script setup>
 definePageMeta({
   layout: 'docs',
   title: 'Project',
@@ -36,7 +34,7 @@ const chapterDefinitions = [
     key: 'project',
     number: 1,
     title: 'Project',
-    path: '/src/runtime/models/project/readme',
+    path: '/src/runtime/pages/docs/project/readme',
   },
   {
     key: 'concepts',
@@ -110,18 +108,18 @@ const chapterDefinitions = [
     title: 'Utils',
     path: '/src/runtime/utils/readme',
   },
-] as const
+]
 
-const { data: chapters } = await useAsyncData(
+const { data: chaptersData } = await useAsyncData(
   'fireux-docs-project-chapters',
   async () =>
     Promise.all(
       chapterDefinitions.map(async (chapter) => ({
         ...chapter,
-        page: await queryCollection('fireuxDocs' as never)
-          .path(chapter.path)
-          .first(),
+        page: await queryCollection('fireuxDocs').path(chapter.path).first(),
       }))
     )
 )
+
+const chapters = computed(() => chaptersData.value || [])
 </script>
