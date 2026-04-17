@@ -1,7 +1,12 @@
 <template>
   <UCard class="preview">
     <div class="preview__row">
-      <UAvatar :src="thumbnailUrl || undefined" :alt="displayName" size="sm" />
+      <UAvatar
+        :src="thumbnailUrl || undefined"
+        :text="avatarText || undefined"
+        :alt="displayName"
+        size="sm"
+      />
 
       <div class="preview__main">
         <div class="preview__top">
@@ -56,6 +61,7 @@ defineProps({
   shortName: { type: String, default: '' },
 
   thumbnailUrl: { type: String, default: '' },
+  avatarText: { type: String, default: '' },
   displayName: { type: String, default: '' },
 
   ecosystem: { type: String, default: '' },

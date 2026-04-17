@@ -2,7 +2,11 @@
   <UCard class="fx-card fx-card--profile">
     <div class="fx-card__stack fx-card__stack--loose">
       <div v-if="model.coverImage" class="fx-card__cover">
-        <img :src="model.coverImage" :alt="model.title" class="fx-card__cover-image" />
+        <img
+          :src="model.coverImage"
+          :alt="model.title"
+          class="fx-card__cover-image"
+        />
         <div class="fx-card__cover-gradient" />
         <div class="fx-card__cover-content">
           <UAvatar
@@ -12,9 +16,15 @@
             size="md"
           />
           <div class="fx-card__content">
-            <div class="fx-card__cover-title fx-truncate">{{ model.title }}</div>
-            <div v-if="model.prop" class="fx-card__cover-meta fx-truncate">{{ model.prop }}</div>
-            <div v-if="model.subtitle" class="fx-card__cover-meta fx-truncate">{{ model.subtitle }}</div>
+            <div class="fx-card__cover-title fx-truncate">
+              {{ model.title }}
+            </div>
+            <div v-if="model.prop" class="fx-card__cover-meta fx-truncate">
+              {{ model.prop }}
+            </div>
+            <div v-if="model.subtitle" class="fx-card__cover-meta fx-truncate">
+              {{ model.subtitle }}
+            </div>
           </div>
           <div class="fx-card__cover-badges">
             <UBadge
@@ -49,13 +59,31 @@
         <div class="fx-card__content fx-card__stack fx-card__stack--tight">
           <div class="fx-card__header">
             <div class="fx-card__content">
-              <div class="fx-card__title fx-card__title--lg">{{ model.title }}</div>
-              <div v-if="model.subtitle" class="fx-card__subtitle">{{ model.subtitle }}</div>
-              <div v-if="model.prop" class="fx-card__subtitle">{{ model.prop }}</div>
+              <div class="fx-card__title fx-card__title--lg">
+                {{ model.title }}
+              </div>
+              <div v-if="model.subtitle" class="fx-card__subtitle">
+                {{ model.subtitle }}
+              </div>
+              <div v-if="model.prop" class="fx-card__subtitle">
+                {{ model.prop }}
+              </div>
             </div>
             <div class="fx-card__badges">
-              <UBadge v-if="model.verified" size="xs" variant="soft" color="emerald">Verified</UBadge>
-              <UBadge v-if="sourceLabel" size="xs" variant="soft" color="neutral">{{ sourceLabel }}</UBadge>
+              <UBadge
+                v-if="model.verified"
+                size="xs"
+                variant="soft"
+                color="emerald"
+                >Verified</UBadge
+              >
+              <UBadge
+                v-if="sourceLabel"
+                size="xs"
+                variant="soft"
+                color="neutral"
+                >{{ sourceLabel }}</UBadge
+              >
             </div>
           </div>
         </div>
@@ -66,7 +94,10 @@
         <div class="fx-card__panel-value fx-truncate">
           {{ model.card.name }}
         </div>
-        <div v-if="model.card.shortName" class="fx-card__panel-subtitle fx-truncate">
+        <div
+          v-if="model.card.shortName"
+          class="fx-card__panel-subtitle fx-truncate"
+        >
           {{ model.card.shortName }}
         </div>
         <div class="fx-card__panel-row">
@@ -87,10 +118,15 @@
           </div>
           <div class="fx-card__panel-value">
             {{ ratingText }}
-            <span v-if="ratingCountText" class="fx-card__panel-subtitle">({{ ratingCountText }})</span>
+            <span v-if="ratingCountText" class="fx-card__panel-subtitle"
+              >({{ ratingCountText }})</span
+            >
           </div>
         </div>
-        <div v-if="model.priceLevel" class="fx-card__panel fx-card__panel--compact">
+        <div
+          v-if="model.priceLevel"
+          class="fx-card__panel fx-card__panel--compact"
+        >
           <div class="fx-card__panel-heading">
             <UIcon name="i-lucide-banknote" class="fx-card__icon" />
             <span>Price</span>
@@ -116,7 +152,7 @@
               color="primary"
               :loading="isClaiming"
               :disabled="isClaiming"
-              @click="onClaim"
+              @click="emit('claim')"
             >
               Claim this business
             </UButton>
@@ -143,7 +179,10 @@
         </UButton>
       </div>
 
-      <div v-if="socialItems.length" class="fx-card__actions fx-card__actions--tight">
+      <div
+        v-if="socialItems.length"
+        class="fx-card__actions fx-card__actions--tight"
+      >
         <UButton
           v-for="item in socialItems"
           :key="item.key"
@@ -158,7 +197,13 @@
       </div>
 
       <div v-if="tagChips.length" class="fx-card__chips">
-        <UBadge v-for="chip in tagChips" :key="chip" size="xs" variant="soft" color="neutral">
+        <UBadge
+          v-for="chip in tagChips"
+          :key="chip"
+          size="xs"
+          variant="soft"
+          color="neutral"
+        >
           {{ chip }}
         </UBadge>
       </div>
@@ -182,19 +227,37 @@
             Details
           </div>
           <div class="fx-card__stack">
-            <div><span class="fx-card__detail-label">Name:</span> {{ model.card.name }}</div>
-            <div v-if="model.card.shortName"><span class="fx-card__detail-label">Short name:</span> {{ model.card.shortName }}</div>
-            <div v-if="model.card.shortAddress"><span class="fx-card__detail-label">Short address:</span> {{ model.card.shortAddress }}</div>
-            <div v-if="model.card.formattedAddress"><span class="fx-card__detail-label">Formatted address:</span> {{ model.card.formattedAddress }}</div>
+            <div>
+              <span class="fx-card__detail-label">Name:</span>
+              {{ model.card.name }}
+            </div>
+            <div v-if="model.card.shortName">
+              <span class="fx-card__detail-label">Short name:</span>
+              {{ model.card.shortName }}
+            </div>
+            <div v-if="model.card.shortAddress">
+              <span class="fx-card__detail-label">Short address:</span>
+              {{ model.card.shortAddress }}
+            </div>
+            <div v-if="model.card.formattedAddress">
+              <span class="fx-card__detail-label">Formatted address:</span>
+              {{ model.card.formattedAddress }}
+            </div>
           </div>
         </div>
-        <div v-if="hasContactDetails" class="fx-card__stack fx-card__stack--tight">
+        <div
+          v-if="hasContactDetails"
+          class="fx-card__stack fx-card__stack--tight"
+        >
           <div class="fx-card__panel-heading">
             <UIcon name="i-lucide-phone" class="fx-card__icon" />
             Contact
           </div>
           <div class="fx-card__stack">
-            <div v-if="model.phone"><span class="fx-card__detail-label">Phone:</span> {{ model.phone }}</div>
+            <div v-if="model.phone">
+              <span class="fx-card__detail-label">Phone:</span>
+              {{ model.phone }}
+            </div>
             <div v-if="model.website">
               <span class="fx-card__detail-label">Website:</span>
               <span>{{ model.website }}</span>
@@ -219,52 +282,106 @@
 </template>
 
 <script setup lang="ts">
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify';
-import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch';
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser';
-import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface';
-import { computed, ref, toRefs } from 'vue';
-import { usePlaceClaim } from '../../../../composables/fireux/firestore/place/mutations/usePlaceClaim';
-import type { PlaceProfile } from '../../../../composables/fireux/firestore/place/utils/view/usePlacesInterface';
+import type { UserCard } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { computed, toRefs } from 'vue'
+import type { PlaceProfile } from '../../../../composables/fireux/firestore/place/utils/view/usePlacesInterface'
 
-const props = defineProps<{ model: PlaceProfile }>()
+const props = defineProps<{
+  model: PlaceProfile
+  claimedUserPill?: UserCard.Card | null
+  claimedStatus?: string
+  showClaimButton?: boolean
+  isClaiming?: boolean
+}>()
+const emit = defineEmits<{
+  (event: 'claim'): void
+}>()
 const { model } = toRefs(props)
 
-const ratingText = computed(() => (model.value.rating ? model.value.rating.toFixed(1) : ''))
+const ratingText = computed(() =>
+  model.value.rating ? model.value.rating.toFixed(1) : ''
+)
 const ratingCountText = computed(() =>
   model.value.ratingCount ? model.value.ratingCount.toLocaleString() : ''
 )
 
 const tagChips = computed(() =>
-  [...(model.value.tags ?? []), ...(model.value.types ?? [])].filter(Boolean).slice(0, 6)
+  [...(model.value.tags ?? []), ...(model.value.types ?? [])]
+    .filter(Boolean)
+    .slice(0, 6)
 )
 
 const socialItems = computed(() =>
   [
-    { key: 'website', label: 'Website', icon: 'i-lucide-globe', url: model.value.socialLinks?.website ?? '' },
-    { key: 'instagram', label: 'Instagram', icon: 'i-logos-instagram', url: model.value.socialLinks?.instagram ?? '' },
-    { key: 'facebook', label: 'Facebook', icon: 'i-logos-facebook', url: model.value.socialLinks?.facebook ?? '' },
-    { key: 'tiktok', label: 'TikTok', icon: 'i-logos-tiktok-icon', url: model.value.socialLinks?.tiktok ?? '' },
-    { key: 'linkedin', label: 'LinkedIn', icon: 'i-logos-linkedin-icon', url: model.value.socialLinks?.linkedin ?? '' },
-    { key: 'youtube', label: 'YouTube', icon: 'i-logos-youtube-icon', url: model.value.socialLinks?.youtube ?? '' },
+    {
+      key: 'website',
+      label: 'Website',
+      icon: 'i-lucide-globe',
+      url: model.value.socialLinks?.website ?? '',
+    },
+    {
+      key: 'instagram',
+      label: 'Instagram',
+      icon: 'i-logos-instagram',
+      url: model.value.socialLinks?.instagram ?? '',
+    },
+    {
+      key: 'facebook',
+      label: 'Facebook',
+      icon: 'i-logos-facebook',
+      url: model.value.socialLinks?.facebook ?? '',
+    },
+    {
+      key: 'tiktok',
+      label: 'TikTok',
+      icon: 'i-logos-tiktok-icon',
+      url: model.value.socialLinks?.tiktok ?? '',
+    },
+    {
+      key: 'linkedin',
+      label: 'LinkedIn',
+      icon: 'i-logos-linkedin-icon',
+      url: model.value.socialLinks?.linkedin ?? '',
+    },
+    {
+      key: 'youtube',
+      label: 'YouTube',
+      icon: 'i-logos-youtube-icon',
+      url: model.value.socialLinks?.youtube ?? '',
+    },
   ].filter((item) => item.url)
 )
 
-const contactItems = computed(() =>
-  [
-    model.value.phone ? { key: 'phone', label: 'Call', icon: 'i-lucide-phone', href: `tel:${model.value.phone}` } : null,
-    model.value.website ? { key: 'website', label: 'Website', icon: 'i-lucide-globe', href: model.value.website } : null,
-  ].filter(Boolean) as { key: string; label: string; icon: string; href: string }[]
+const contactItems = computed(
+  () =>
+    [
+      model.value.phone
+        ? {
+            key: 'phone',
+            label: 'Call',
+            icon: 'i-lucide-phone',
+            href: `tel:${model.value.phone}`,
+          }
+        : null,
+      model.value.website
+        ? {
+            key: 'website',
+            label: 'Website',
+            icon: 'i-lucide-globe',
+            href: model.value.website,
+          }
+        : null,
+    ].filter(Boolean) as {
+      key: string
+      label: string
+      icon: string
+      href: string
+    }[]
 )
 
 const hasContactDetails = computed(() =>
   Boolean(model.value.phone || model.value.website)
 )
-
-const claimedUserId = computed(() => model.value.card.claimedBy || '')
-const { user: claimedUser } = useUserFetch(claimedUserId)
-const { pill: userCard } = useUserInterface(claimedUser)
-const claimedUserPill = computed(() => userCard(claimedUser.value))
 
 const sourceLabel = computed(() => {
   const source = model.value.source
@@ -273,30 +390,4 @@ const sourceLabel = computed(() => {
   if (source === 'google') return 'Google'
   return ''
 })
-
-const claimedStatus = computed(() => (model.value.card.claimedBy ? 'Claimed' : 'Unclaimed'))
-const { currentUser, isAdmin } = useUser()
-const isVerifiedUser = computed(() => Boolean((currentUser.value as any)?.verified || isAdmin.value))
-const showClaimButton = computed(() =>
-  !String(model.value.card.claimedBy ?? '').trim() && isVerifiedUser.value
-)
-const isClaiming = ref(false)
-const { claimPlace } = usePlaceClaim()
-const toast = useToastify()
-
-async function onClaim() {
-  if (isClaiming.value) return
-  const placeId = model.value.card.id
-  if (!placeId || !showClaimButton.value) return
-  isClaiming.value = true
-  try {
-    await claimPlace(placeId)
-    toast.success('Place claimed')
-  } catch (error) {
-    const msg = error instanceof Error ? error.message : 'Please try again.'
-    toast.error(`Failed to claim place: ${msg}`)
-  } finally {
-    isClaiming.value = false
-  }
-}
 </script>

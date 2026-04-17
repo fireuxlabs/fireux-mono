@@ -33,11 +33,21 @@
         <div v-else-if="!place" class="space-y-2">
           <h1 class="text-lg font-semibold">Place Not Found</h1>
           <p>The place you’re looking for doesn’t exist.</p>
-          <NuxtLink to="/places" class="text-primary hover:underline">← Back</NuxtLink>
+          <NuxtLink to="/places" class="text-primary hover:underline"
+            >← Back</NuxtLink
+          >
         </div>
 
         <div v-else class="space-y-4">
-          <PlaceCardsProfile v-if="placeProfile" :model="placeProfile" />
+          <PlaceCardsProfile
+            v-if="placeProfile"
+            :model="placeProfile"
+            :claimed-user-pill="claimedUserPill"
+            :claimed-status="claimedStatus"
+            :show-claim-button="showClaimButton"
+            :is-claiming="isClaiming"
+            @claim="onClaim"
+          />
 
           <UCard>
             <template #header>
@@ -133,11 +143,13 @@
 <script setup lang="ts">
 import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { usePlaceClaim } from '../../composables/fireux/firestore/place/mutations/usePlaceClaim'
 import { usePlacesInterface } from '../../composables/fireux/firestore/place/utils/view/usePlacesInterface'
 import type { Place } from '../../models/place.model'
 
@@ -154,11 +166,12 @@ const route = useRoute()
 const raw = route.params.id
 const docId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
-
 const { firestoreFetchDoc } = useFirestoreRead()
 const rawDoc = docId ? await firestoreFetchDoc<Place>('places', docId) : null
 
-const place = computed<Place | null>(() => (rawDoc as any)?.value ?? rawDoc ?? null)
+const place = computed<Place | null>(
+  () => (rawDoc as any)?.value ?? rawDoc ?? null
+)
 
 const loading = computed(() => !rawDoc && !!docId)
 const pageTitle = computed(() => place.value?.name || 'Place')
@@ -174,11 +187,22 @@ const claimedBy = computed(() => String(place.value?.claimed_by ?? '').trim())
 const { user: claimedUser } = useUserFetch(claimedBy)
 const { pill: userCard } = useUserInterface(claimedUser)
 const claimedUserPill = computed(() => userCard(claimedUser.value))
-const { currentUser, isAdmin, isLoading, isResolved, isInitialized, cta } = useUser()
+const { currentUser, isAdmin, isLoading, isResolved, isInitialized, cta } =
+  useUser()
+const { claimPlace } = usePlaceClaim()
+const toast = useToastify()
+const isClaiming = ref(false)
 const canEditAsAdmin = computed(() => Boolean(isAdmin.value))
 const canEditAsClaimer = computed(() =>
   Boolean(currentUser.value?.id && currentUser.value.id === claimedBy.value)
 )
+const claimedStatus = computed(() =>
+  claimedBy.value ? 'Claimed' : 'Unclaimed'
+)
+const isVerifiedUser = computed(() =>
+  Boolean((currentUser.value as any)?.verified || isAdmin.value)
+)
+const showClaimButton = computed(() => !claimedBy.value && isVerifiedUser.value)
 const editDebug = computed(() => ({
   docId,
   claimedBy: claimedBy.value,
@@ -194,6 +218,21 @@ const userComputedDebug = computed(() => ({
   cta: cta.value,
 }))
 
+const onClaim = async () => {
+  if (isClaiming.value || !docId || !showClaimButton.value) return
+  isClaiming.value = true
+  try {
+    await claimPlace(docId)
+    toast.success('Place claimed')
+  } catch (claimError) {
+    const message =
+      claimError instanceof Error ? claimError.message : 'Please try again.'
+    toast.error(`Failed to claim place: ${message}`)
+  } finally {
+    isClaiming.value = false
+  }
+}
+
 const formatValue = (value: unknown) => {
   if (value == null) return ''
   if (Array.isArray(value)) return value.filter(Boolean).join(', ')
@@ -208,11 +247,16 @@ const details = computed(() => {
   const lat = Number(v.lat)
   const lng = Number(v.lng)
   const coords =
-    Number.isFinite(lat) && Number.isFinite(lng) ? `${lat.toFixed(6)}, ${lng.toFixed(6)}` : ''
+    Number.isFinite(lat) && Number.isFinite(lng)
+      ? `${lat.toFixed(6)}, ${lng.toFixed(6)}`
+      : ''
 
   const items = [
     { label: 'Short name', value: formatValue((v as any).short_name) },
-    { label: 'Formatted address', value: formatValue((v as any).formatted_address) },
+    {
+      label: 'Formatted address',
+      value: formatValue((v as any).formatted_address),
+    },
     { label: 'Short address', value: formatValue((v as any).short_address) },
     { label: 'Search term', value: formatValue((v as any).search_term) },
     { label: 'Source', value: formatValue((v as any).source) },

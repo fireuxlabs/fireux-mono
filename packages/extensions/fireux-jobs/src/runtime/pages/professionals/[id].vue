@@ -40,7 +40,9 @@
           v-if="isAdminUser"
           title="Professional profile not available"
           description="Create a professional profile for this user."
-          :button-label="professionalConfig.cta || 'Create Professional profile'"
+          :button-label="
+            professionalConfig.cta || 'Create Professional profile'
+          "
           :loading="isCreating"
           :error="createError"
           @create="createProfile"
@@ -55,10 +57,8 @@
 
       <div v-else>
         <ProfilesProfessionalCardsProfile
-          v-if="professionalCard"
-          :card="professionalCard"
-          :profile="professionalProfile"
-          :computed="professionalComputed"
+          v-if="professionalProfileView"
+          :model="professionalProfileView"
         />
 
         <DevJson
@@ -95,11 +95,17 @@ import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/fires
 import { computed, ref } from 'vue'
 import { useProfessionalComputed } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalComputed'
 import { useProfessionalInterface } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
-import type { AppProfessional, Professional } from '../../models/profiles/Professional/Professional.model'
+import { useProfessionalProfileView } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfileView'
+import type {
+  AppProfessional,
+  Professional,
+} from '../../models/profiles/Professional/Professional.model'
 
 const route = useRoute()
 const professionalId = computed(() => {
-  const raw = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
+  const raw = Array.isArray(route.params.id)
+    ? route.params.id[0]
+    : route.params.id
   return String(raw ?? '').trim() || null
 })
 
@@ -108,7 +114,10 @@ const { profile, pending } = useProfileFetch<Professional, AppProfessional>(
   professionalConfig
 )
 
-const { computed: professionalComputed } = useProfessionalComputed(profile, pending)
+const { computed: professionalComputed } = useProfessionalComputed(
+  profile,
+  pending
+)
 
 const professionalProfile = computed(() => profile.coreProfile.value ?? null)
 
@@ -119,10 +128,16 @@ const { profile: professionalInterface } = useProfessionalInterface(profile)
 const professionalCard = computed(() => {
   if (!professionalProfile.value) return null
   const resolved = user.value
-    ? ({ ...professionalProfile.value, user: user.value } as Professional & { user: typeof user.value })
+    ? ({ ...professionalProfile.value, user: user.value } as Professional & {
+        user: typeof user.value
+      })
     : professionalProfile.value
   return professionalInterface(resolved)
 })
+const { model: professionalProfileView } = useProfessionalProfileView(
+  professionalProfile,
+  professionalCard
+)
 
 const displayName = computed(() => user.value?.display_name ?? '')
 
@@ -142,12 +157,14 @@ const pageDescription = computed(() => {
 })
 
 const isSelf = computed(() =>
-  Boolean(professionalId.value && sessionUser.value?.id === professionalId.value)
+  Boolean(
+    professionalId.value && sessionUser.value?.id === professionalId.value
+  )
 )
 
-const isAdminUser = computed(() =>
-  appUser.value?.role === 'admin' ||
-  Boolean(coreUser.value?.adminOf?.length)
+const isAdminUser = computed(
+  () =>
+    appUser.value?.role === 'admin' || Boolean(coreUser.value?.adminOf?.length)
 )
 
 const { ensure } = useProfileEnsure(professionalConfig)

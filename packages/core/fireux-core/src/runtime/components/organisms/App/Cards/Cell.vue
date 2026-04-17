@@ -5,7 +5,13 @@
     class="card card--cell"
   >
     <div class="card__media">
-      <UAvatar :src="thumbnailUrl || undefined" :alt="displayName" size="md" class="shrink-0" />
+      <UAvatar
+        :src="thumbnailUrl || undefined"
+        :text="avatarText || undefined"
+        :alt="displayName"
+        size="md"
+        class="shrink-0"
+      />
 
       <div class="card__content card__stack">
         <div class="card__header">
@@ -44,7 +50,13 @@
     @click="onClick"
   >
     <div class="card__media">
-      <UAvatar :src="thumbnailUrl || undefined" :alt="displayName" size="md" class="shrink-0" />
+      <UAvatar
+        :src="thumbnailUrl || undefined"
+        :text="avatarText || undefined"
+        :alt="displayName"
+        size="md"
+        class="shrink-0"
+      />
 
       <div class="card__content card__stack">
         <div class="card__header">
@@ -87,7 +99,13 @@ defineOptions({ inheritAttrs: false })
 type Props = Omit<
   Pick<
     AppCard.Card,
-    'to' | 'thumbnailUrl' | 'displayName' | 'badges' | 'tagline' | 'userCount'
+    | 'to'
+    | 'thumbnailUrl'
+    | 'avatarText'
+    | 'displayName'
+    | 'badges'
+    | 'tagline'
+    | 'userCount'
   >,
   'userCount'
 > & {
@@ -107,6 +125,7 @@ const emit = defineEmits<{
 const props = withDefaults(defineProps<Props>(), {
   badges: () => [],
   tagline: '',
+  avatarText: '',
   userCount: null,
   showBadges: true,
   showTagline: true,

@@ -5,7 +5,6 @@
     <UPageBody class="pagebody">
       <div class="console-profile">
         <div class="flex justify-end">
-          
           <UButton
             :icon="viewIcon"
             size="sm"
@@ -33,7 +32,9 @@
           v-else-if="!resolvedCoreProfile"
           title="Professional profile not available"
           description="This professional profile hasn’t been created yet."
-          :button-label="professionalConfig.cta || 'Create Professional profile'"
+          :button-label="
+            professionalConfig.cta || 'Create Professional profile'
+          "
           :loading="isCreating"
           :error="createError"
           @create="createProfile"
@@ -42,17 +43,13 @@
         <ClientOnly v-else>
           <div v-if="view === 'profile'" class="console-profile__section">
             <ProfilesProfessionalCardsProfile
-              v-if="professionalCard"
-              :card="professionalCard"
-              :profile="resolvedCoreProfile"
-              :computed="professionalComputed"
+              v-if="professionalProfileView"
+              :model="professionalProfileView"
             />
           </div>
 
           <div v-else class="console-profile__section">
-            <ProfilesProfessionalEditCore
-              :professional="resolvedCoreProfile"
-            />
+            <ProfilesProfessionalEditCore :professional="resolvedCoreProfile" />
 
             <ProfilesProfessionalEditApp
               v-if="resolvedAppProfile"
@@ -83,7 +80,11 @@ import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useProfessionalComputed } from '../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalComputed'
 import { useProfessionalInterface } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
-import type { AppProfessional, Professional } from '../../../models/profiles/Professional/Professional.model'
+import { useProfessionalProfileView } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfileView'
+import type {
+  AppProfessional,
+  Professional,
+} from '../../../models/profiles/Professional/Professional.model'
 
 definePageMeta({
   layout: 'default',
@@ -106,7 +107,10 @@ const { profile, pending } = useProfileFetch<Professional, AppProfessional>(
   professionalConfig
 )
 const { coreProfile, appProfile } = profile
-const { computed: professionalComputed } = useProfessionalComputed(profile, pending)
+const { computed: professionalComputed } = useProfessionalComputed(
+  profile,
+  pending
+)
 
 const { profile: makeCard } = useProfessionalInterface(profile)
 
@@ -125,6 +129,10 @@ const professionalCard = computed(() => {
     : resolvedCoreProfile.value
   return makeCard(resolved)
 })
+const { model: professionalProfileView } = useProfessionalProfileView(
+  resolvedCoreProfile,
+  professionalCard
+)
 const pageTitle = computed(() =>
   professionalCard.value?.displayName
     ? `Admin · ${professionalCard.value.displayName}`
@@ -133,7 +141,8 @@ const pageTitle = computed(() =>
       : 'Admin · Professional Profile'
 )
 const pageDescription = computed(
-  () => 'Review the public profile and edit the underlying professional documents.'
+  () =>
+    'Review the public profile and edit the underlying professional documents.'
 )
 const isDev = import.meta.dev
 const devPayload = computed(() => ({

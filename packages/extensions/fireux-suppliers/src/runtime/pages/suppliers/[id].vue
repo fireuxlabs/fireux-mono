@@ -28,7 +28,9 @@
     <UPageBody class="pagebody">
       <ClientOnly>
         <div class="supplier-page">
-          <div v-if="loading" class="py-10 text-sm opacity-70">Loading supplier…</div>
+          <div v-if="loading" class="py-10 text-sm opacity-70">
+            Loading supplier…
+          </div>
 
           <div v-else-if="!supplierRecord" class="space-y-2">
             <MoleculesProfilesAdminCreateCard
@@ -44,12 +46,14 @@
             <div v-else>
               <h1 class="text-lg font-semibold">Supplier Not Found</h1>
               <p>The supplier you're looking for doesn't exist.</p>
-              <NuxtLink to="/suppliers" class="text-primary hover:underline">← Back</NuxtLink>
+              <NuxtLink to="/suppliers" class="text-primary hover:underline"
+                >← Back</NuxtLink
+              >
             </div>
           </div>
 
           <div v-else class="space-y-4">
-            <SupplierCardsProfile :supplier="supplierRecord" />
+            <SupplierCardsProfile v-if="supplierCard" :card="supplierCard" />
 
             <DevJson
               v-if="isDev && supplierRecord"
@@ -71,13 +75,16 @@
 
 <script setup lang="ts">
 import { navigateTo, useHead, useRoute, useSeoMeta } from '#imports'
+import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, ref } from 'vue'
 import { useSupplierEnsure } from '../../composables/fireux/firestore/supplier/mutations/useSupplierEnsure'
+import { useSupplierInterface } from '../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
 const supplierCollection = 'suppliers'
-const supplierCreateCta = 'Create your supplier workspace record to appear in listings.'
+const supplierCreateCta =
+  'Create your supplier workspace record to appear in listings.'
 useSeoMeta({
   title: 'Supplier',
   description: 'View supplier record',
@@ -90,11 +97,14 @@ const docId = Array.isArray(raw) ? raw[0] : String(raw || '')
 const { user, coreUser, appUser } = useUser()
 
 const { firestoreFetchDoc } = useFirestoreRead()
-const rawDoc = docId
-  ? await firestoreFetchDoc(supplierCollection, docId)
-  : null
-const supplierRecord = computed<any>(() => (rawDoc as any)?.value ?? rawDoc ?? null)
+const rawDoc = docId ? await firestoreFetchDoc(supplierCollection, docId) : null
+const supplierRecord = computed<any>(
+  () => (rawDoc as any)?.value ?? rawDoc ?? null
+)
 const loading = computed(() => !rawDoc && !!docId)
+const userRefs = useUserFetch(computed(() => docId || null))
+const { profile: supplierToProfile } = useSupplierInterface(null, userRefs.user)
+const supplierCard = computed(() => supplierToProfile(supplierRecord.value))
 
 const resolveName = (p: any) =>
   p?.supplier_organization_name ||
@@ -120,19 +130,15 @@ const isDev = import.meta.dev
 
 useHead({
   title: computed(() =>
-    displayName.value
-      ? `${displayName.value} - Supplier`
-      : 'Supplier'
+    displayName.value ? `${displayName.value} - Supplier` : 'Supplier'
   ),
 })
 
-const isSelf = computed(() =>
-  Boolean(docId && user.value?.id === docId)
-)
+const isSelf = computed(() => Boolean(docId && user.value?.id === docId))
 
-const isAdminUser = computed(() =>
-  appUser.value?.role === 'admin' ||
-  Boolean(coreUser.value?.adminOf?.length)
+const isAdminUser = computed(
+  () =>
+    appUser.value?.role === 'admin' || Boolean(coreUser.value?.adminOf?.length)
 )
 
 const { ensure } = useSupplierEnsure()
@@ -147,7 +153,8 @@ const createSupplier = async () => {
   try {
     await ensure(docId)
   } catch (error) {
-    createError.value = (error as Error)?.message || 'Failed to create supplier record.'
+    createError.value =
+      (error as Error)?.message || 'Failed to create supplier record.'
   } finally {
     isCreating.value = false
   }

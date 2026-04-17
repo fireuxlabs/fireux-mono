@@ -17,7 +17,8 @@
               Professionals collection
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Browse professionals resolved for this runtime and filter by model drift.
+              Browse professionals resolved for this runtime and filter by model
+              drift.
             </p>
             <DevDriftToolbar
               :drift-kind="professionalsDriftKind"
@@ -33,10 +34,14 @@
       </template>
 
       <div class="space-y-6">
-        <ProfilesProfessionalCollectionManager :collection="filteredProfessionals" />
+        <ProfilesProfessionalCollectionManager
+          :collection="filteredProfessionals"
+        />
 
         <div v-if="professionalPreviewCards.length" class="space-y-3">
-          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          <p
+            class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+          >
             Preview cards
           </p>
           <div class="space-y-3">
@@ -49,7 +54,9 @@
         </div>
 
         <div v-if="professionalProfileEntries.length" class="space-y-3">
-          <p class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+          <p
+            class="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400"
+          >
             Profile cards
           </p>
           <div class="space-y-4">
@@ -82,7 +89,10 @@ const professionalModelRuntime = {
 }
 
 const { coreProfessionals, appProfessionals } = useProfessionalFetch()
-const { coreProfessionals: rawCoreProfessionals, appProfessionals: rawAppProfessionals } = useProfessionalCollection()
+const {
+  coreProfessionals: rawCoreProfessionals,
+  appProfessionals: rawAppProfessionals,
+} = useProfessionalCollection()
 const { pill: makeProfessionalCard } = useProfessionalInterface()
 
 const professionalsCollection = computed(() => [
@@ -116,7 +126,20 @@ const {
   },
 })
 
-const SHORT_MONTHS = new Set(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'])
+const SHORT_MONTHS = new Set([
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+])
 
 const isShortMonth = (value?: unknown) => {
   if (value == null) return true
@@ -151,14 +174,16 @@ const filteredProfessionalsDriftPayload = buildProfessionalsDriftPayload({
         userHandle ??
         (doc as any)?.display_name ??
         (doc as any)?.handle ??
-        id ?? '',
+        id ??
+        '',
       drift,
     }
   },
 })
 
 const professionalsDriftCopyPayload = buildProfessionalsCopyPayload({
-  modelPath: 'packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model',
+  modelPath:
+    'packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model',
   itemsKey: 'professionals',
   items: filteredProfessionalsDriftPayload,
   total: computed(() => professionalsCollection.value.length),

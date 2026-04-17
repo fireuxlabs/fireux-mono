@@ -6,8 +6,8 @@
   >
     <div class="flex min-w-0 items-start gap-2">
       <UAvatar
-        v-if="thumbnailUrl"
         :src="thumbnailUrl || undefined"
+        :text="avatarText || undefined"
         :alt="displayName || ''"
         size="sm"
       />
@@ -35,8 +35,8 @@
   >
     <div class="flex min-w-0 items-start gap-2">
       <UAvatar
-        v-if="thumbnailUrl"
         :src="thumbnailUrl || undefined"
+        :text="avatarText || undefined"
         :alt="displayName || ''"
         size="sm"
       />
@@ -78,6 +78,7 @@ type Props = Partial<AppCard.Card> & {
 const props = withDefaults(defineProps<Props>(), {
   to: '',
   thumbnailUrl: '',
+  avatarText: '',
   displayName: '',
   ecosystem: '',
   badges: () => [],

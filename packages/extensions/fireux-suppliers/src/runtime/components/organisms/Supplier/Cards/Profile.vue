@@ -7,7 +7,9 @@
         <div class="flex items-start justify-between gap-4">
           <div class="min-w-0">
             <div class="truncate text-lg font-semibold">{{ vm.title }}</div>
-            <div v-if="vm.subtitle" class="truncate text-sm text-dimmed">{{ vm.subtitle }}</div>
+            <div v-if="vm.subtitle" class="truncate text-sm text-dimmed">
+              {{ vm.subtitle }}
+            </div>
           </div>
 
           <div v-if="vm.badges.length" class="flex flex-wrap justify-end gap-1">
@@ -66,39 +68,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import type {
-    SupplierCard,
-    SupplierRecord,
-} from '../../../../composables/fireux/firestore/supplier/useSupplier';
-import { useSupplier } from '../../../../composables/fireux/firestore/supplier/useSupplier';
+import { computed } from 'vue'
+import type { SupplierCard } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
 const props = defineProps<{
   title?: string
   subtitle?: string
   avatar?: string | null
   avatarSecondary?: string | null
-  supplier?: SupplierRecord | SupplierCard.Card | null
   card?: SupplierCard.Card | null
   prop?: string
 }>()
 
-const { coreSupplier, profile: toCard } = useSupplier()
-
-const isSupplierCard = (value: unknown): value is SupplierCard.Card => {
-  if (!value || typeof value !== 'object') return false
-  return 'to' in value && 'title' in value && 'badges' in value && 'organizationName' in value
-}
-
 const resolvedCard = computed<SupplierCard.Card | null>(() => {
-  if (props.card) return props.card
-
-  const supplied = props.supplier ?? null
-  if (supplied) {
-    return isSupplierCard(supplied) ? supplied : toCard(supplied)
-  }
-
-  return coreSupplier.value ? toCard(coreSupplier.value) : null
+  return props.card ?? null
 })
 
 const vm = computed(() => {

@@ -55,17 +55,13 @@
         <ClientOnly v-else>
           <div v-if="view === 'profile'" class="console-profile__section">
             <ProfilesProfessionalCardsProfile
-              v-if="professionalCard"
-              :card="professionalCard"
-              :profile="resolvedCoreProfile"
-              :computed="professionalComputed"
+              v-if="professionalProfileView"
+              :model="professionalProfileView"
             />
           </div>
 
           <div v-else class="console-profile__section">
-            <ProfilesProfessionalEditCore
-              :professional="resolvedCoreProfile"
-            />
+            <ProfilesProfessionalEditCore :professional="resolvedCoreProfile" />
 
             <ProfilesProfessionalEditApp
               v-if="resolvedAppProfile"
@@ -91,6 +87,7 @@ import { useConsoleProfileView } from 'fireux-core/runtime/composables/fireux/ap
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { computed, ref } from 'vue'
 import { useProfessional } from '../../../composables/fireux/firestore/profiles/Professional/useProfessional.ts'
+import { useProfessionalProfileView } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfileView'
 import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
 
 const profileKey = professionalConfig.id ?? 'professional'
@@ -149,7 +146,13 @@ const devPayload = computed(() => ({
   appProfile: resolvedAppProfile.value,
 }))
 
-const professionalCard = computed(() => professionalCardFromProfile(resolvedCoreProfile.value))
+const professionalCard = computed(() =>
+  professionalCardFromProfile(resolvedCoreProfile.value)
+)
+const { model: professionalProfileView } = useProfessionalProfileView(
+  resolvedCoreProfile,
+  professionalCard
+)
 
 const { view, viewIcon, toggleView } = useConsoleProfileView()
 </script>

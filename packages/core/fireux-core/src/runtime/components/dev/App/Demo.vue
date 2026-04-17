@@ -7,7 +7,8 @@
             Demo app surfaces
           </p>
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            Preview Pill, Cell, Preview, and Profile surfaces using shared core app demo data.
+            Preview Pill, Cell, Preview, and Profile surfaces using shared core
+            app demo data.
           </p>
         </div>
       </div>
@@ -60,22 +61,7 @@
 
         <div class="space-y-2">
           <div class="text-xs font-medium text-dimmed">Profile</div>
-          <AppCardsProfile
-            v-if="currentCard && currentApp"
-            :app="currentApp"
-            :id="currentCard.id"
-            :short-name="currentCard.shortName"
-            :role="currentCard.role"
-            :user-count="currentCard.userCount"
-            :tagline="currentCard.tagline"
-            :wordmark-light="currentCard.wordmarkLightUrl"
-            :wordmark-dark="currentCard.wordmarkDarkUrl"
-            :thumbnail-url="currentCard.thumbnailUrl"
-            :display-name="currentCard.displayName"
-            :ecosystem="currentCard.ecosystem"
-            :badges="currentCard.badges"
-            :social-links="currentCard.socialLinks"
-          />
+          <AppCardsProfile v-if="appProfileModel" :model="appProfileModel" />
         </div>
       </div>
     </div>
@@ -85,6 +71,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { demoAppList } from '../../../../../../../../demo/app.demo'
+import { useAppProfileView } from '../../../composables/fireux/firestore/core/app/utils/view/useAppProfileView'
 import { useAppInterface } from '../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import type { AppModel } from '../../../models/core/app.model'
 
@@ -105,19 +92,24 @@ const currentApp = computed<AppModel | null>(() => {
 const currentCard = computed(() => {
   return currentApp.value ? appCard(currentApp.value) : null
 })
+const { model: appProfileModel } = useAppProfileView(currentApp)
 
-const pillItems = computed(() =>
-  demoAppList
-    .map((app) => {
-      const card = appCard(app)
-      if (!card) return null
-      return {
-        id: String(app.id ?? ''),
-        app,
-        card,
-      }
-    })
-    .filter(Boolean) as Array<{ id: string; app: AppModel; card: NonNullable<ReturnType<typeof appCard>> }>
+const pillItems = computed(
+  () =>
+    demoAppList
+      .map((app) => {
+        const card = appCard(app)
+        if (!card) return null
+        return {
+          id: String(app.id ?? ''),
+          app,
+          card,
+        }
+      })
+      .filter(Boolean) as Array<{
+      id: string
+      app: AppModel
+      card: NonNullable<ReturnType<typeof appCard>>
+    }>
 )
 </script>
-

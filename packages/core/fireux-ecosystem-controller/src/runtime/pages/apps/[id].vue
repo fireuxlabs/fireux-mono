@@ -4,11 +4,7 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <div class="space-y-6">
-        <AppCardsProfile
-          v-if="appProfile"
-          v-bind="appProfile"
-          :app="currentApp"
-        />
+        <AppCardsProfile v-if="appProfileModel" :model="appProfileModel" />
 
         <DevJson
           v-if="isDev && currentApp"
@@ -52,7 +48,9 @@
                 </UBadge>
               </div>
 
-              <div v-if="usersPending" class="text-sm text-dimmed">Loading users…</div>
+              <div v-if="usersPending" class="text-sm text-dimmed">
+                Loading users…
+              </div>
 
               <div v-else class="flex flex-wrap gap-2">
                 <UserCardsPill
@@ -63,7 +61,10 @@
                   class="block"
                 />
 
-                <span v-if="!visibleCards.length" class="text-sm text-dimmed italic">
+                <span
+                  v-if="!visibleCards.length"
+                  class="text-sm text-dimmed italic"
+                >
                   missing
                 </span>
               </div>
@@ -78,7 +79,7 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useAppFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppFetch'
-import { useAppInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import { useAppProfileView } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppProfileView'
 import { useAppUserCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useAppUserCollection'
 import type { UserCard } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
@@ -95,10 +96,7 @@ const appId = computed(() => {
 })
 
 const { app: currentApp } = useAppFetch(appId)
-
-const { profile: appInterface } = useAppInterface()
-
-const appProfile = computed(() => (currentApp.value ? appInterface(currentApp.value) : null))
+const { model: appProfileModel } = useAppProfileView(currentApp)
 
 const { users: appUsers, pending: usersPending } = useAppUserCollection(appId)
 const { pill: userToCardByValue } = useUserInterface()

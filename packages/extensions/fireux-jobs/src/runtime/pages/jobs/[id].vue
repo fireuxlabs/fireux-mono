@@ -38,7 +38,12 @@
 
         <div class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <div class="space-y-6">
-            <JobCardsProfile v-if="job" :card="jobCard" :job="job" />
+            <JobCardsProfile
+              v-if="job"
+              :card="jobCard"
+              :job="job"
+              :company-card="companyCard"
+            />
           </div>
 
           <div class="space-y-6">
@@ -97,7 +102,11 @@
                 <h3 class="font-semibold">Company</h3>
               </template>
               <div v-if="job?.company_id" class="space-y-2">
-                <CompanyPill :id="job.company_id" />
+                <CompanyCardsPill
+                  v-if="companyCard"
+                  v-bind="companyCard"
+                  :link="Boolean(companyCard.to)"
+                />
                 <p class="text-xs text-gray-500">
                   Company ID: {{ job?.company_id }}
                 </p>
@@ -138,6 +147,7 @@ const { job } = useJobFetch(jobId)
 const { updateJob } = useJobUpdate()
 const { withToast } = useToastify()
 const { profile: jobCardFactory } = useJobInterface()
+const companyInterface = useCompanyInterface()
 
 const KitchenPill = defineComponent({
   props: { id: String },
@@ -154,29 +164,6 @@ const KitchenPill = defineComponent({
         :name="kitchenCard.title"
         :description="kitchenCard.subtitle"
         :avatar="{ src: kitchenCard.imageUrl, alt: kitchenCard.title }"
-        size="sm"
-      />
-    </div>
-  `,
-})
-
-const CompanyPill = defineComponent({
-  props: { id: String },
-  setup(props) {
-    const { company } = useCompanyFetch()
-    const companyData = computed(() =>
-      props.id ? company(props.id).value : null
-    )
-    const companyInterface = useCompanyInterface()
-    const companyCard = computed(() => companyInterface.pill(companyData.value))
-    return { companyCard }
-  },
-  template: `
-    <div v-if="companyCard" class="pill">
-      <UUser
-        :name="companyCard.title"
-        :description="companyCard.subtitle"
-        :avatar="{ src: companyCard.imageUrl, alt: companyCard.title }"
         size="sm"
       />
     </div>
@@ -203,6 +190,15 @@ watchEffect(() => {
 })
 
 const jobCard = computed(() => (job.value ? jobCardFactory(job.value) : null))
+const jobCompanyId = computed(() => {
+  const value = String(job.value?.company_id ?? '').trim()
+  return value || null
+})
+const { company } = useCompanyFetch()
+const companyData = computed(() =>
+  jobCompanyId.value ? company(jobCompanyId.value).value : null
+)
+const companyCard = computed(() => companyInterface.pill(companyData.value))
 
 const saving = ref(false)
 const saveStatus = withToast(

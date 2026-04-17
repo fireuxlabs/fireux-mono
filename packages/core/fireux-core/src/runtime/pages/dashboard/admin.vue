@@ -53,7 +53,11 @@
                   <UButton to="/admin/products" color="primary" class="w-fit">
                     View products
                   </UButton>
-                  <UButton to="/admin/products/create" variant="soft" class="w-fit">
+                  <UButton
+                    to="/admin/products/create"
+                    variant="soft"
+                    class="w-fit"
+                  >
                     Create product
                   </UButton>
                   <UButton to="/admin/licenses" variant="outline" class="w-fit">
@@ -71,7 +75,11 @@
                   <UButton to="/admin/blogs" color="primary" class="w-fit">
                     View posts
                   </UButton>
-                  <UButton to="/admin/blogs/create" variant="soft" class="w-fit">
+                  <UButton
+                    to="/admin/blogs/create"
+                    variant="soft"
+                    class="w-fit"
+                  >
                     Create post
                   </UButton>
                 </div>
@@ -80,11 +88,7 @@
           </div>
 
           <div class="panels-masonry__item mb-10">
-            <AppCardsProfile
-              v-if="appCard"
-              v-bind="appCard"
-              :app="app"
-            />
+            <AppCardsProfile v-if="appProfileModel" :model="appProfileModel" />
           </div>
 
           <AppEditAdmin />
@@ -96,11 +100,13 @@
 
 <script setup lang="ts">
 import { computed, definePageMeta } from '#imports'
+import { useAppProfileView } from '../../composables/fireux/firestore/core/app/utils/view/useAppProfileView'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 
 const { app, pending, pill: appToCard } = useApp()
 const { user, pill: userToCard } = useUser()
+const { model: appProfileModel } = useAppProfileView(app)
 
 const appCard = computed(() => appToCard(app.value))
 const userCard = computed(() => userToCard(user.value))

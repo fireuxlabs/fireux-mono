@@ -2,7 +2,13 @@
   <UCard v-if="card || job">
     <div class="space-y-5">
       <div v-if="card" class="space-y-4">
-        <CompanyPill v-if="card.companyId" :id="card.companyId" />
+        <UUser
+          v-if="companyCard"
+          :name="companyCard.title"
+          :description="companyCard.subtitle"
+          :avatar="{ src: companyCard.imageUrl, alt: companyCard.title }"
+          size="sm"
+        />
 
         <div class="flex flex-wrap items-start justify-between gap-3">
           <div class="space-y-2">
@@ -113,15 +119,18 @@
 </template>
 
 <script setup lang="ts">
-import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/company/fetch/useCompanyFetch'
-import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/company/utils/view/useCompanyInterface'
-import { computed, defineComponent } from 'vue'
+import type { CompanyCard } from 'fireux-companies/runtime/composables/fireux/firestore/company/utils/view/useCompanyInterface'
+import { computed } from 'vue'
 import type {
   JobCard,
   JobView,
 } from '../../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 
-const props = defineProps<{ card?: JobCard.Card; job?: JobView | null }>()
+const props = defineProps<{
+  card?: JobCard.Card
+  job?: JobView | null
+  companyCard?: CompanyCard.Card | null
+}>()
 const isDev = import.meta.dev
 
 const formatValue = (value: unknown): string => {
@@ -207,28 +216,5 @@ const openingsLabel = computed(() => {
 const jobTypeLabel = computed(() => {
   const value = String(props.job?.job_type || '').trim()
   return value ? value.charAt(0).toUpperCase() + value.slice(1) : 'Role'
-})
-
-const CompanyPill = defineComponent({
-  props: { id: String },
-  setup(props) {
-    const { company } = useCompanyFetch()
-    const companyData = computed(() =>
-      props.id ? company(props.id).value : null
-    )
-    const companyInterface = useCompanyInterface()
-    const companyCard = computed(() => companyInterface.pill(companyData.value))
-    return { companyCard }
-  },
-  template: `
-    <div v-if="companyCard">
-      <UUser
-        :name="companyCard.title"
-        :description="companyCard.subtitle"
-        :avatar="{ src: companyCard.imageUrl, alt: companyCard.title }"
-        size="sm"
-      />
-    </div>
-  `,
 })
 </script>

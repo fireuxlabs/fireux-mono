@@ -13,6 +13,7 @@ export namespace AppCard {
     // Media (empty string means unset)
     imageUrl: string
     avatarUrl: string
+    avatarText: string
     thumbnailUrl: string
 
     title: string
@@ -62,6 +63,18 @@ function safeDerived(app: App) {
   return app.derived ?? { user_count: 0 }
 }
 
+function makeAvatarText(app: App): string {
+  const source = safeString(app.app_short_name || app.app_name || app.id)
+  if (!source) return ''
+
+  return source
+    .split(/[\s-_]+/g)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || '')
+    .join('')
+}
+
 export function useAppInterface(appRef?: Ref<App | null | undefined>) {
   const resolvedMode = useResolvedColorMode()
   type AppPill = AppCard.Card
@@ -71,7 +84,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
 
   function resolveWordmarkUrl(app: App): string {
     const media = resolveAppMediaForView(safeMedia(app), {
-      devLocalFallback: import.meta.dev,
+      devLocalFallback: false,
     })
     return resolvedMode.value === 'dark'
       ? media.wordmarkDarkUrl
@@ -80,7 +93,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
 
   function map(app: App): AppCard.Card {
     const media = resolveAppMediaForView(safeMedia(app), {
-      devLocalFallback: import.meta.dev,
+      devLocalFallback: false,
     })
     const derived = safeDerived(app)
     const id = safeString(app.id).trim()
@@ -91,6 +104,7 @@ export function useAppInterface(appRef?: Ref<App | null | undefined>) {
 
       imageUrl: safeString(media.thumbnailUrl) || safeString(media.logoUrl),
       avatarUrl: safeString(media.thumbnailUrl) || safeString(media.logoUrl),
+      avatarText: makeAvatarText(app),
       thumbnailUrl: safeString(media.thumbnailUrl),
 
       title: safeString(app.app_name),
