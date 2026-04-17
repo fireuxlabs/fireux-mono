@@ -17,5 +17,6 @@ export function useKitchenMiseCollection(
     kitchenCollectionPath: state.kitchenCollectionPath,
     collectionPath: state.collectionPath,
     miseTasks: state.items,
+    pending: state.pending,
   }
 }

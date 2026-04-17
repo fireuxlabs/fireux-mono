@@ -154,6 +154,9 @@ Recent repo truth:
 - the generic console shell now lives in the runtime seam:
   - `useConsoleState()` is the shared console-layout contract
   - `useRuntimeXConsole()` adapts each family into that shared contract
+- the generic console data seam now also lives in the runtime seam:
+  - `useConsoleXData()` owns mode split, pending composition, ready state, and the final `{ data }` return shape
+  - `useRuntimeXData()` adapts each family by composing family fetch seams into that shared contract
 - main console page ownership is now explicit:
   - the shared console layout and generic runtime seam live in core
   - `Project` main console pages are app-owned

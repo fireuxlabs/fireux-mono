@@ -49,6 +49,9 @@ export function useKitchenOrderFetch(
 	)
 
 	const orders = computed<KitchenOrder[]>(() => ordersRef.value?.value ?? [])
+  const pending = computed(
+    () => Boolean(ordersPath.value) && ordersRef.value?.value === undefined
+  )
   const { byId: order } = useCollectionById(orders)
 
 	return {
@@ -57,5 +60,6 @@ export function useKitchenOrderFetch(
 		ordersPath,
 		orders,
     order,
+    pending,
 	}
 }

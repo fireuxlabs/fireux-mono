@@ -96,6 +96,14 @@ export function useKitchenIngredientFetch(
   })
 
   const count = computed(() => ingredients.value.length)
+  const pending = computed(() => {
+    if (!resolvedKitchenId.value) return false
+
+    return (
+      kitchenCollectionRef.value?.value === undefined ||
+      globalIngredients.value === undefined
+    )
+  })
   const { byId: ingredient } = useCollectionById(ingredients)
 
   return {
@@ -105,5 +113,6 @@ export function useKitchenIngredientFetch(
     ingredients,
     ingredient,
     count,
+    pending,
   }
 }

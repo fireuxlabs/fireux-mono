@@ -48,11 +48,15 @@ export function useKitchenConsoleCollection<T>(
   )
 
   const items = computed<T[]>(() => collectionRef.value?.value ?? [])
+  const pending = computed(
+    () => Boolean(collectionPath.value) && collectionRef.value?.value === undefined
+  )
 
   return {
     kitchenId: resolvedKitchenId,
     kitchenCollectionPath,
     collectionPath,
     items,
+    pending,
   }
 }

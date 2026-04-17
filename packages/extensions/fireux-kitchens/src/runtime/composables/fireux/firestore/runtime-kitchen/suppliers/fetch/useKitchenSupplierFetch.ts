@@ -157,6 +157,16 @@ export function useKitchenSupplierFetch(
   )
 
   const count = computed(() => suppliers.value.length)
+  const pending = computed(() => {
+    if (!isEnabled.value || !resolvedKitchenId.value) return false
+
+    return (
+      supplierLinksRef.value?.value === undefined ||
+      coreSuppliersRef.value?.value === undefined ||
+      (Boolean(canonicalAppPath.value) &&
+        appSuppliersRef.value?.value === undefined)
+    )
+  })
 
   return {
     kitchenId: resolvedKitchenId,
@@ -165,5 +175,6 @@ export function useKitchenSupplierFetch(
     supplierLinks,
     suppliers,
     count,
+    pending,
   }
 }

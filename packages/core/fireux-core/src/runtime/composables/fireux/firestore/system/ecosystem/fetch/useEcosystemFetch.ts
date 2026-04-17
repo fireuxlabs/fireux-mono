@@ -1,31 +1,59 @@
-import { computed } from 'vue'
+import { doc } from 'firebase/firestore'
+import { computed, ref } from 'vue'
 import type { EcosystemSurface } from '../utils/view/useEcosystemInterface'
-import { useFirestoreRead } from '../../../operations/useFirestoreRead'
+import {
+  useDocument,
+  useFirestore,
+} from '../../../vuefire'
 
 export function useEcosystemFetch(id: string | { value: string }) {
-  const { firestoreFetchDoc } = useFirestoreRead()
+  if (import.meta.server) {
+    return {
+      ecosystem: ref<EcosystemSurface | null | undefined>(undefined),
+      pending: ref(false),
+    }
+  }
+
+  const db = useFirestore()
 
   const ecosystemId = computed(() =>
     typeof id === 'string' ? String(id || '').trim() : String(id.value || '').trim()
   )
 
-  const source = computed(() => {
-    if (!ecosystemId.value) return null
-    return firestoreFetchDoc<EcosystemSurface>('ecosystem', ecosystemId.value)
-  })
+  const docRef = computed(() =>
+    ecosystemId.value ? (doc(db, 'ecosystem', ecosystemId.value) as any) : null
+  )
+
+  const docState =
+    useDocument<EcosystemSurface | undefined>(docRef as any, {
+      transform: (docSnap: any) => {
+        if (!docSnap?.exists?.()) return undefined
+        const raw = docSnap.data()
+        if (!raw) return undefined
+        return {
+          ...(raw as EcosystemSurface),
+          id: String(docSnap.id || ecosystemId.value).trim(),
+        }
+      },
+    } as any) || {
+      data: ref<EcosystemSurface | undefined>(undefined),
+      pending: ref(false),
+    }
+
+  const source = docState.data ?? ref<EcosystemSurface | undefined>(undefined)
+  const pending = docState.pending ?? ref(false)
 
   const ecosystem = computed(() => {
-    const entry = source.value?.value
-    if (!ecosystemId.value || !entry) return null
+    if (!ecosystemId.value) return undefined
+    if (pending.value) return undefined
+
+    const entry = source.value
+    if (!entry) return null
+
     return {
       ...entry,
       id: String(entry.id || ecosystemId.value).trim(),
     }
-  })
-
-  const pending = computed(() => {
-    if (!ecosystemId.value) return false
-    return source.value?.value === undefined
   })
 
   return {

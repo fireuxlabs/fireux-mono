@@ -17,5 +17,6 @@ export function useKitchenMenuCollection(
     kitchenCollectionPath: state.kitchenCollectionPath,
     collectionPath: state.collectionPath,
     menus: state.items,
+    pending: state.pending,
   }
 }

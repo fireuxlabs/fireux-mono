@@ -50,6 +50,9 @@ export function useKitchenRecipeCollection(
   const recipes = computed<Recipe[]>(() =>
     (collectionRef.value?.value ?? []).map((entry) => normalizeRecipe(entry))
   )
+  const pending = computed(
+    () => Boolean(collectionPath.value) && collectionRef.value?.value === undefined
+  )
 
   return {
     kitchenId: resolvedKitchenId,
@@ -57,5 +60,6 @@ export function useKitchenRecipeCollection(
     collectionPath,
     recipes,
     count: computed(() => recipes.value.length),
+    pending,
   }
 }
