@@ -12,7 +12,7 @@ defineOptions({ name: 'changelog' })
       <UPage>
         <template #left>
           <UPageAside v-if="navigation">
-            <UContentNavigation :navigation="navigation" highlight />
+            <DocsNavigation :items="navigation" />
           </UPageAside>
         </template>
 

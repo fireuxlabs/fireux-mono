@@ -142,6 +142,11 @@ Contract:
 - allow richer families to specialize `pill`, `cell`, `preview`, or `profile` where that family genuinely needs it
 - do not become a hidden write target
 
+Family note:
+
+- shared `useXInterface` family canon now lives in `runtime/concepts/stacks/crud/read/useXInterface/`
+- use that doc set when deciding whether a seam is Family 1, 2, or 3
+
 ### Computed / Read-model
 
 Expose derived convenience state on top of fetched truth.
