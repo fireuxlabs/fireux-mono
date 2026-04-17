@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-04-04
+Updated: 2026-04-18
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -19,15 +19,18 @@ Updated: 2026-04-04
 - Canon docs override operational docs and tooling/history docs on conflict.
 - App pages do not justify app-local storage on their own.
 - Root-first entities may be filtered by explicit scope fields instead of being duplicated under app paths.
-- FireUX project control data must be minimal and explicit.
-- The canonical project control doc path is `project/<firebaseProjectId>`.
-- Current required control fields are:
-  - `main_app_id`
-  - `main_ecosystem_id`
-- Each ecosystem has exactly one global/main app.
-- A global/main app may ensure the project control doc exists.
-- Global/main apps own project control identity for their ecosystem.
-- Tenant apps must not claim or overwrite project control ownership.
+- `Project` is a root/core entity.
+- Canonical project identity lives on the root `projects/<projectId>` record.
+- Root project membership and ownership fields live on that root record, not on app overlays.
+- Current canonical root project membership/ownership fields are:
+  - `team_ids`
+  - `owner_user_id`
+- Current canonical public routing field on the root project is:
+  - `slug`
+- App-scoped project overlays may exist for console/app behavior, but they must not also own or duplicate root team membership.
+- Generic project collection and console project selection are not the same seam.
+- `useProjectCollection()` stays generic.
+- Console project visibility adds user/app scope above the generic collection rather than redefining it.
 - Tenant apps are child app surfaces inside a FireUX ecosystem, not independent ecosystem canons.
 - Tenant apps may stay intentionally thin and do not justify new top-level domain/storage patterns on their own.
 - Placeholder tenant branding/assets are canonical until tenant-specific assets are explicitly provided.

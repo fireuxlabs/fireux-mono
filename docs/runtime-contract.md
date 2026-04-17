@@ -1,6 +1,6 @@
 # Runtime Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-04-04
+Updated: 2026-04-18
 ## Purpose
 - Define runtime selection, mode, collection path, and route policy across FireUX domains.
 
@@ -34,17 +34,20 @@ Updated: 2026-04-04
   - place lookup services
   - notifications, proxies, and other true service seams
 
-## Project Control Contract
-- Project control data lives in `(default)` at:
-  - `project/<firebaseProjectId>`
-- Current minimal required fields:
-  - `main_app_id`
-  - `main_ecosystem_id`
-- These fields define which app and ecosystem speak for the project.
-- Each ecosystem has exactly one global/main app.
-- A global/main app may ensure this doc exists during app initialization.
-- Tenant apps must not create or claim the project control doc.
-- Standalone apps must not create or claim the project control doc.
+## Project Root Contract
+- `Project` is a root/core entity.
+- Canonical root project data lives at:
+  - `projects/<projectId>`
+- Root project identity, ownership, and team membership live on that root record.
+- Current canonical root project fields are:
+  - `team_ids`
+  - `owner_user_id`
+  - `slug`
+- App-scoped project overlays may exist for app/console behavior, but they must not also own or duplicate root team membership.
+- `useProjectFetch()` = one project.
+- `useProjectCollection()` = many projects.
+- Public `/projects` must use the generic project collection.
+- Console `/console/projects` must use a user-scoped project view on top of the generic seam rather than redefining the generic collection.
 
 ## Tenant App Contract
 - Tenant apps are canonical thin child apps hosted inside a FireUX ecosystem.
@@ -201,6 +204,7 @@ Updated: 2026-04-04
 - Current canonical mapping:
   - Blogs public detail route: slug-based.
   - Products public detail route: slug-based.
+  - Projects public detail route: slug-based.
   - Users public profile route: handle-based (`/users/[handle]`) resolved from `users.handle`.
   - Console/admin/internal routes: id-based.
   - Entities without a published slug contract remain id-based until their extension contract defines slug rollout.
@@ -217,6 +221,7 @@ Updated: 2026-04-04
 | --- | --- | --- | --- |
 | fireux-blogs | BlogPost | slug | slug == doc id |
 | fireux-products | Product | slug | slug == doc id |
+| fireux-core | Project | slug | slug -> id |
 | fireux-core | User | handle | handle -> uid via canonical `users.handle` |
 | fireux-places | Place | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
 | fireux-companies | Company | slug (target) | slug -> id (TBD (Deano decision): migration not started) |

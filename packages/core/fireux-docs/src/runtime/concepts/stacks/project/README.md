@@ -1,7 +1,7 @@
 # Project Stack
 
 Authority: Operational
-Updated: 2026-04-17
+Updated: 2026-04-18
 Scope: FireUX `Project` stack truth across models, composables, components, pages, server seams, and docs.
 
 This page documents the `Project` stack.
@@ -70,7 +70,8 @@ The early `Project` stack currently expects these surface types:
 
 - model truth
 - linked system object truth
-- read and runtime adapters
+- generic read adapters
+- console selection/runtime adapters
 - console selection and active-target handling
 - console pages
 - docs surface
@@ -85,6 +86,10 @@ For the current `Project` stack, the shared contract is:
 
 - `Project` has model truth
 - `App` and `Ecosystem` link to `Project`
+- root `projects/<projectId>` owns project identity and team membership
+- `team_ids` and `owner_user_id` belong on the root project, not the app overlay
+- `useProjectCollection()` stays generic
+- console project selection/scope lives in the console seam rather than redefining the generic collection
 - project-facing runtime surfaces should keep infrastructure truth explicit
 - docs may expose friendly project routes, but source docs must stay in the correct spine branch
 - draft checks may exist to confirm repo truth still matches the declared stack

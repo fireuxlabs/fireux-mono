@@ -54,13 +54,15 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useProjectConsole } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectConsole'
 import { useProjectSelection } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectSelection'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
 import { useProjectInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 
-const { projects: liveProjects } = useProjectCollection()
+const { projects: liveProjects } = useProjectCollection({ scope: 'mine' })
 const { pill } = useProjectInterface()
 const { selectedId, setRuntimeProject, clearRuntimeProject } = useProjectSelection()
+useProjectConsole({ publishHeader: true })
 
 const selectedProject = computed(
   () =>

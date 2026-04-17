@@ -8,7 +8,7 @@ projectObjects:
 ---
 
 Authority: Operational
-Updated: 2026-04-17
+Updated: 2026-04-18
 
 `Project` belongs in the runtime `models` spine.
 
@@ -75,6 +75,10 @@ Rule of thumb:
 - `Project` is the root record.
 - `App` points to a project with `project_id`.
 - `Ecosystem` points to a project with `project_id`.
+- root `projects/<projectId>` owns project identity and team membership
+- `team_ids` and `owner_user_id` belong on the root project
+- `slug` belongs on the root project for public routing
+- app-scoped project overlays must not also own `team_ids`
 
 ## What The Draft Check Looks For
 

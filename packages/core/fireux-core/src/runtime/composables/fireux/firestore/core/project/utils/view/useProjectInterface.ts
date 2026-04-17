@@ -6,6 +6,12 @@ import type {
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 const DEFAULT_PROJECT_IMAGE = '/img/core/brand/logo.png'
+const resolveProjectPath = (target: { slug?: string; id?: string }) => {
+  const slug = safeString(target.slug)
+  const id = safeString(target.id)
+  const key = slug || id
+  return key ? `/projects/${key}` : ''
+}
 const labelize = (value: string) =>
   safeString(value)
     .split(/[-_]+/)
@@ -67,7 +73,7 @@ export function useProjectInterface() {
 
     return {
       id: resolvedId,
-      to: '',
+      to: resolveProjectPath({ slug: target.slug, id: resolvedId }),
       imageUrl,
       title: name || key || 'Untitled project',
       subtitle: key || '',

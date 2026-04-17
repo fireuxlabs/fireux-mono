@@ -124,6 +124,7 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
         ecosystem_id: ecosystemId,
         firebase_project_id: firebaseProjectId,
         owner_user_id: user.uid,
+        team_ids: [user.uid],
       }
 
       await setDocument(collectionPath, id, payload, {

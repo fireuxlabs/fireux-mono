@@ -47,6 +47,7 @@ export const ProjectModel = {
 
   // Canonical root ownership hint
   owner_user_id: '',
+  team_ids: [] as string[],
 
   created: {
     at: {} as FirebaseTimestamp,

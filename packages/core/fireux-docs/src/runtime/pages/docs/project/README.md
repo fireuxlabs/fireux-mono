@@ -52,13 +52,20 @@ That means `Project` page ownership should be read like this:
 The main current `Project` route surfaces are:
 
 - `/projects`
-  public family surface
+  public generic collection surface
+- `/projects/[slug]`
+  public detail surface using project `slug`
 - `/console/projects`
-  family entry and target selection
+  console family entry and user-scoped target selection
 - `/console/projects/overview`
   selected-target workspace overview
 
 Additional project child pages may exist beneath the selected workspace.
+
+Sibling page rule:
+
+- public project routing should use sibling route files such as `projects/index.vue` and `projects/[slug].vue`
+- do not pair `projects.vue` with `projects/[id].vue` unless the parent explicitly renders `<NuxtPage />`
 
 ## FireUX Page Rule For Project
 

@@ -7,7 +7,7 @@
     />
 
     <UPageBody class="pagebody">
-      <ProjectCollectionManager :collection="projects" />
+      <ProjectCollectionManager :collection="projects" :link="true" />
     </UPageBody>
   </UPage>
 </template>
