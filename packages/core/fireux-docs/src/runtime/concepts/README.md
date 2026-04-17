@@ -1,66 +1,96 @@
 # Concepts Directory
 
 Authority: Operational
-Updated: 2026-03-25
+Updated: 2026-04-17
 Scope: `packages/core/fireux-docs/src/runtime/concepts/*`.
 
-Learn how cross-cutting runtime concepts are documented when they span pages, components, composables, and models.
+Learn how FireUX runtime concepts are documented when they span more than one runtime branch.
 
 ## Concepts Directory
 
-`runtime/concepts/` is for runtime behaviour that has outgrown any single technical surface.
+`runtime/concepts/` is the FireUX cross-layer concept spine.
+
+It is how FireUX bolts extra canon on top of the plain Nuxt runtime spine.
 
 Use this directory when a concept spans:
-- `pages/`
-- `components/`
-- `composables/`
-- sometimes `models/`
 
-This is not a replacement for the technical directories.
-It is a cross-cutting behaviour layer.
+- more than one runtime branch
+- more than one technical owner
+- more than one entity surface
 
-## Current Concepts
+This is not a replacement for `runtime/pages/`, `runtime/components/`, `runtime/composables/`, or `runtime/models/`.
+It is the layer that explains how those branches cooperate in FireUX.
 
-- `console-entry/`
-- `create/`
+## Current Shape
+
+The current concept map is:
+
+- `console/`
+  console-backed entry, selection, and workspace meaning
+- `spine/`
+  how FireUX extends the plain Nuxt runtime spine
+- `stacks/`
+  entity systems and their canon across runtime layers
 - `connect/`
-- `read/`
-- `update/`
+  relationship and authority meaning across those systems
 
-`console-entry/` is now a real runtime concept because console-backed family entry spans:
+This keeps three big FireUX ideas visible:
+
+- the console is a major first-class concept
+- the spine is the FireUX bolt-on to Nuxt runtime structure
+- stacks describe entities as runtime systems rather than isolated files
+
+## Meaning Of Each Concept Group
+
+### `console/`
+
+Console is a real concept because console-backed families span:
+
 - app-level hub routing
 - family-specific chooser pages
-- public versus console shells
+- selected-target workspaces
 - mode selection
 - public create versus console create
 
-`create/` is a real runtime concept because creation spans:
-- route ownership
-- create-system orchestration
-- behavioural contracts in composables
+### `spine/`
 
-`read/` is now also a real runtime concept because reading spans:
-- route ownership
-- fetch versus collection versus resolved view seams
-- truth-layer distinction between public entity, overlay, scoped child, identity, and system reads
-- hydrated convenience data versus stored truth
+Spine is a real concept because FireUX extends the plain Nuxt runtime spine with extra cross-layer meaning.
 
-`update/` is now also a real runtime concept because editing spans:
-- route ownership
-- edit-family boundaries
-- stored-truth decisions in composables
-- public entity versus overlay versus scoped write targets
+Examples:
 
-`connect/` is now also a real runtime concept because relationship and authority spans:
-- public entity versus console overlay versus relationship link
-- profile and membership surfaces
-- permission meaning across pages, components, composables, and models
+- what pages mean beyond file routing
+- how branch docs and concept docs relate
+- where FireUX adds canon that Nuxt does not provide
+
+### `stacks/`
+
+Stacks are real concepts because FireUX entities behave like runtime systems.
+
+A stack may include:
+
+- model truth
+- read truth
+- create, read, and update contracts
+- interface and component surfaces
+- page and console surfaces
+- docs and drift checks
+
+That is why stacks can contain shared CRUD docs and entity-specific stack docs.
+
+### `connect/`
+
+Connect remains a real concept because relationship and authority still cut across:
+
+- public entity truth
+- console overlays
+- membership and profile links
+- permissions and operator assumptions
 
 ## What Belongs Here
 
 - cross-cutting runtime behaviour canon
-- system rules that apply across multiple runtime layers
-- contracts and terminology that should not live only in pages or components
+- FireUX-specific contracts that span multiple runtime layers
+- terminology that should not live only in branch docs or model docs
 
 ## What Does Not Belong Here
 
@@ -71,13 +101,19 @@ It is a cross-cutting behaviour layer.
 
 ## Roadmap To Reconciliation
 
-1. Add concept docs only when the behaviour is truly cross-cutting.
-2. Keep the technical directories as the primary view of the repo.
-3. Use concepts to explain how those technical layers cooperate for one operation.
-4. Start with the concepts that are real enough to need their own canon, and add new ones only when they become equally cross-cutting.
+1. Keep `console/`, `spine/`, and `stacks/` as the main organizing buckets.
+2. Keep branch docs as branch docs.
+3. Keep model docs as model docs.
+4. Use concepts only when FireUX meaning crosses those boundaries.
 
 ## Short Version
 
-`runtime/concepts/` is where cross-cutting runtime behaviour gets a home.
+`runtime/concepts/` is the FireUX bolt-on layer over the Nuxt runtime spine.
 
-Right now, `console-entry/`, `create/`, `connect/`, `read/`, and `update/` are the real concepts in that layer.
+Right now, the clearest buckets are:
+
+- `console/`
+- `spine/`
+- `stacks/`
+
+with `connect/` still acting as a shared relationship and authority concept across them.

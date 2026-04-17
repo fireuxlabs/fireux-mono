@@ -1,225 +1,73 @@
 # Components Directory
 
 Authority: Operational
-Updated: 2026-03-28
+Updated: 2026-04-17
 Scope: `packages/*/fireux-*/src/runtime/components` and child directories under `components/*`.
 
-Learn how `runtime/components/` is used across FireUX module packages, and how the current create-system component families are aligned.
+This page documents FireUX rules for `runtime/components/`.
+It does not explain general Nuxt component behavior.
 
-## Components Directory
+For Nuxt mechanics, use Nuxt documentation.
+This page is only for FireUX ownership and canon seams.
 
-`components/` contains Vue components delivered by the package at runtime.
+## FireUX Rule
 
-Implementation notes for specific component trees belong beside the real owning package or app.
-This README stays at repo and directory level only.
+`runtime/components/` is where FireUX package-owned UI and runtime behavior surfaces live.
 
-## Current Focus
+The important FireUX rule is not “how components work in Vue.”
+It is “which behavior belongs in components, and which does not.”
 
-For the current alignment pass, the important seam is:
+## FireUX Ownership
 
-- `runtime/components/**/Create/System.vue`
+In FireUX:
 
-For drift inspection, another seam is now explicit:
+- pages own route delivery
+- components own UI behavior and reusable runtime surfaces
+- composables own state, reads, writes, and adaptation logic
 
-- `runtime/components/**/Collection/Manager.vue`
+That means:
 
-Why this seam matters:
+- route shells belong in `pages/`
+- behavior-heavy UI surfaces belong in `components/`
+- fetch and mutation logic should not be invented inside components unless that is the explicit canon
 
-- routes increasingly act as owners and shells
-- create behaviour usually lives in the create system component
-- public and console routes often reuse the same create system
-- the real alignment question is now behavioural, not just route-shaped
+## FireUX Canon Seams
 
-Pages tell us who owns creation.
-Create-system components tell us how creation actually works.
-Use `packages/core/fireux-docs/src/runtime/concepts/create/README.md` as the create authority.
+The main repo-wide component seams are:
 
-## Create-system Families
+- `**/Create/System.vue`
+- `**/Collection/Manager.vue`
+- `**/Cards/*.vue`
 
-### Ensure / Bootstrap Family
+Read them like this:
 
-These create systems are idempotent, state-driven, and safe to run multiple times.
+- `Create/System.vue`
+  FireUX create behavior surface
+- `Collection/Manager.vue`
+  FireUX collection browse shell
+- `Cards/*`
+  FireUX presentational entity surfaces such as `pill`, `cell`, `preview`, and `profile`
 
-Examples:
-- `packages/core/fireux-core/src/runtime/components/organisms/User/Create/System.vue`
-- `packages/core/fireux-core/src/runtime/components/organisms/App/Create/System.vue`
+## FireUX Override
 
-Current behaviour:
-- `User` checks auth and user state, then ensures missing root and app membership records
-- `App` runs auth, PIN, and environment checks before allowing bootstrap
+FireUX adds stronger behavior rules on top of ordinary component placement:
 
-Status:
-- aligned
+- create ownership may start in pages, but create behavior usually lives in `Create/System.vue`
+- collection browse behavior should stay consistent across domains through the collection manager seam
+- profile cards should move toward prop-in, render-out rather than local read logic
 
-### Setup-if-missing Profile Family
+## What This README Should Answer
 
-These create systems create the profile if it is missing, then return the user to the profile workspace.
+Use this branch README when the question is:
 
-Examples:
-- `packages/extensions/fireux-kitchens/src/runtime/components/organisms/profiles/Chef/Create/System.vue`
-- `packages/extensions/fireux-jobs/src/runtime/components/organisms/profiles/Agent/Create/System.vue`
-- `packages/extensions/fireux-jobs/src/runtime/components/organisms/profiles/Professional/Create/System.vue`
+- does this behavior belong in a component at all
+- which component seam owns this FireUX pattern
+- is this component a shell, a manager, or a card surface
 
-Current behaviour:
-- shared card-based setup surface
-- explicit benefits list
-- single action button
-- ensure profile, then redirect back to dashboard profile
-
-Status:
-- aligned
-
-### Console Create Family
-
-These are the important console create systems for the current pass.
-
-Examples:
-- `packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Create/System.vue`
-- `packages/extensions/fireux-properties/src/runtime/components/organisms/Portfolio/Create/System.vue`
-- `packages/extensions/fireux-suppliers/src/runtime/components/organisms/Supplier/Create/System.vue`
-
-Target canon:
-- public create makes the root public entity
-- console create ensures the app-scoped overlay
-- console create may create the root public entity first if missing
-
-Current repo truth:
-- `Supplier`, `Kitchen`, and `Portfolio` now all use one create system with `public` and `console` modes
-- `console` mode ensures the public entity and the app overlay
-- `public` mode creates only the public entity
-- `Kitchen` still keeps a place-backed acquisition step inside the same create system
-
-Status:
-- aligned
-
-Important note:
-- `Kitchen` remains a place-backed subtype inside the aligned console family
-
-### Form-first Create Shell Family
-
-These create systems use a write-plus-preview shell and behave like normal create flows.
-
-Examples:
-- `packages/extensions/fireux-jobs/src/runtime/components/organisms/Job/Create/System.vue`
-- `packages/extensions/fireux-blogs/src/runtime/components/organisms/Blog/Create/System.vue`
-- `packages/extensions/fireux-products/src/runtime/components/organisms/Product/Create/System.vue`
-
-Current behaviour:
-- `MoleculesCreateShell`
-- write slot plus preview slot
-- submit action
-- clear or reset behaviour
-- optional creator or state context around the shell
-
-Status:
-- mostly aligned
-
-### Place-backed Acquisition Family
-
-These create systems acquire or confirm a place-backed root entity rather than behaving like a plain blank form.
-
-Examples:
-- `packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Create/System.vue`
-- `packages/extensions/fireux-companies/src/runtime/components/organisms/Company/Create/System.vue`
-- `packages/extensions/fireux-places/src/runtime/components/organisms/Place/Create/System.vue`
-
-Current behaviour:
-- `Place` confirms the canonical place record from search
-- `Company` uses `PlaceSearchSection` and either reuses an existing company or creates it
-- `Kitchen` still contains a place-acquisition step inside the console create flow
-
-Status:
-- aligned
-
-### Scoped Child Create Systems
-
-These create systems exist, but they are not part of the first important create alignment pass.
-
-Examples:
-- `packages/extensions/fireux-kitchens/src/runtime/components/organisms/Ingredient/Create/System.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/components/organisms/Kitchen/Ingredients/Create/System.vue`
-
-Current role:
-- console-owned or domain-child creation
-- useful for product work inside a console
-- not the main repo-level create canon right now
-
-Status:
-- deferred
-
-## What Belongs Here
-
-- package-owned UI components
-- component groups used by runtime pages, composables, and features
-- delivered UI surfaces that belong to the module
-- create-system components that implement runtime creation behaviour
-
-## Aligned In Repo
-
-- `runtime/components/` is already used in `fireux-core`, most extension packages, and several ecosystem packages
-- delivered UI is already colocated under runtime rather than pushed into config or package root
-- create behaviour is already concentrated in `Create/System.vue` components
-- ensure/bootstrap create systems for `User` and `App` are clear
-- setup-if-missing profile create systems for `Chef`, `Agent`, and `Professional` are clear
-- form-first create systems for `Job`, `Blog`, and `Product` already share a recognizable shell pattern
-
-## Not Aligned Yet
-
-- naming can still be tightened later, especially `createdRoot` versus `createdPublic`
-
-## Roadmap To Reconciliation
-
-1. Keep delivered UI in `runtime/components/`.
-2. Keep route ownership decisions in `runtime/pages/`, and behaviour decisions in create-system components.
-3. Treat `Create/System.vue` as the main implementation seam for creation work.
-4. Keep `User` and `App` as ensure-first systems, not normal CRUD forms.
-5. Keep `Chef`, `Agent`, and `Professional` as setup-if-missing systems.
-6. Keep scoped child create systems inside their owning console or domain, not in the first repo-wide canon pass.
-7. Tighten naming only after behaviour stays stable in real usage.
+If the question is only about Vue component syntax, that belongs to Nuxt or Vue docs instead.
 
 ## Short Version
 
-Delivered runtime UI components belong here.
+`runtime/components/` is for FireUX-delivered UI surfaces and component-owned behavior.
 
-For the current pass:
-- pages define create ownership
-- create-system components define create behaviour
-- four create-system families are already clear:
-  - ensure/bootstrap
-  - setup-if-missing profile
-  - console create
-  - form-first create shell
-
-The main remaining work is naming cleanup and any future create families beyond the current shipping slice.
-
-## Collection-manager Dev JSON
-
-Collection managers now carry a repo-wide developer contract:
-
-- the dev JSON panel should show the raw collection items, not the transformed card shape
-- nested object props inside each item should remain visible
-- direct Firestore subcollections should be appended in dev when they exist
-
-Why:
-
-- drift inspection is now a first-class repo need
-- operational audits need to see stored truth, not only UI-facing card data
-- hidden subcollections were previously easy to miss during migration work
-
-Current implementation shape:
-
-- collection managers call a shared dev helper to augment the raw collection
-- the helper keeps the original item payload intact
-- direct subcollections appear under `subcollections`
-
-Important limit:
-
-- this is a developer inspection contract
-- it is not a public runtime API contract
-- deep recursive subcollection crawling is not required by default; the active contract is direct subcollections only
-
-Use:
-- `packages/core/fireux-docs/src/runtime/composables/README.md`
-- `packages/core/fireux-docs/src/runtime/server/README.md`
-
-when the question becomes how that collection-manager contract is implemented.
+FireUX care points are ownership and canon seams, not basic Vue mechanics.

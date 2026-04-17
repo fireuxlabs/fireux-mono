@@ -1,69 +1,69 @@
 # Server Directory
 
 Authority: Operational
-Updated: 2026-04-11
+Updated: 2026-04-17
 Scope: `packages/*/fireux-*/src/runtime/server` only.
 
-Learn how `runtime/server/` is used across FireUX module packages.
+This page documents FireUX rules for `runtime/server/`.
+It does not explain general Nitro or Nuxt server behavior.
 
-## Server Directory
+For Nuxt mechanics, use Nuxt documentation.
+This page is only for FireUX server seams and runtime-only overrides.
 
-`server/` contains package-delivered server routes, handlers, and server-only support code.
+## FireUX Rule
 
-## What Belongs Here
+`runtime/server/` is for package-owned server delivery that FireUX genuinely needs at runtime.
+
+The main FireUX question is not “how server handlers work.”
+It is “when server seams are part of canon rather than accidental complexity.”
+
+## FireUX Uses
+
+Valid FireUX server uses include:
 
 - package-owned API handlers
-- server routes or handlers that the package genuinely delivers
-- server-only support code that belongs to delivered server behavior
+- runtime-only service seams
+- internal inspection routes
+- registry or mirror reads that should stay off the client
+- server support code that belongs directly to delivered runtime behavior
 
-For ecosystem apps with a registry split, `runtime/server/` is also the right home for API seams that expose:
+## FireUX Override
 
-- `project` and `ecosystem` from `(default)`
-- `apps` from the named operational database when app truth is required
+FireUX adds a few explicit server concerns:
 
-Those handlers should not pretend the named operational database is the same thing as the registry database.
+- registry and operational database concerns may need different server seams
+- internal dev inspection routes are valid when they support canon or drift checks
+- client UI should not hide database or authority decisions that belong in a server seam
 
-## Aligned In Repo
+For ecosystem apps with the registry split:
 
-- `runtime/server/` is already used in `fireux-core`, `fireux-places`, and `fireux-products`
-- where server delivery exists, the repo already treats it as part of runtime
+- `(default)` may expose registry and public-mirror truth such as `project` and `ecosystem`
+- the named operational database carries day-to-day operational truth such as `apps` and domain collections
 
-## Not Aligned Yet
+Those seams must stay explicit.
 
-- `runtime/server/` is selective rather than broad across package families
-- some packages do not need it and should stay narrower
+## FireUX Dev And Internal Seams
 
-## Current Dev Snapshot Seam
+Developer and internal routes are valid here when they support repo truth, for example:
 
-One server seam is now part of repo-wide drift tooling:
+- collection drift inspection
+- draft doc checks
+- runtime-only environment inspection
 
-- `runtime/server/api/dev/collection-snapshot.post.ts`
+These are FireUX runtime seams, not public product APIs.
 
-Purpose:
+## What This README Should Answer
 
-- list direct subcollections for known collection docs
-- return lightweight direct subcollection snapshots for dev JSON inspection
-- support collection-manager drift checks without changing public entity fetch contracts
+Use this branch README when the question is:
 
-Rules:
+- should this behavior live in a server seam at all
+- is this a public API, an internal route, or a dev inspection route
+- does this handler protect an important FireUX runtime boundary
 
-- dev-only
-- operational inspection only
-- direct subcollections only by default
-- should use the active runtime Firestore selection, including named databases where configured
-
-This is a valid `runtime/server/` use case because:
-
-- subcollections are not visible in the normal client collection payload
-- the behavior belongs to runtime delivery and runtime inspection
-- the repo now depends on this seam for drift discovery work
-
-## Roadmap To Reconciliation
-
-1. Keep server delivery optional.
-2. Use it for real service seams.
-3. Keep routine runtime delivery outside server-only structure unless clearly justified.
+If the question is only about Nitro route syntax, that belongs to Nuxt docs instead.
 
 ## Short Version
 
-Server-side runtime delivery belongs here when a package genuinely owns it.
+`runtime/server/` is for real FireUX server seams and runtime-only overrides.
+
+The FireUX concern is boundary ownership, not basic server-handler mechanics.

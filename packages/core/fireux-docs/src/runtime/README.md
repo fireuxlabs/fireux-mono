@@ -1,7 +1,7 @@
 # Runtime Directory
 
 Authority: Operational
-Updated: 2026-04-11
+Updated: 2026-04-17
 Scope: `packages/*/fireux-*/src/runtime` only.
 Does not apply to consuming app `app/`, `server/`, or root `public/` directories.
 
@@ -12,6 +12,61 @@ Learn how `runtime/` is structured across FireUX module packages.
 `runtime/` is the main delivery surface inside a FireUX module.
 
 If `module.ts` is the entrypoint, `runtime/` is where the package actually lands in Nuxt app space.
+
+## Two Runtime Spines
+
+There are two related but different ways to think about `runtime/` in this repo.
+
+### Nuxt Runtime Spine
+
+Plain Nuxt runtime structure is:
+
+```text
+runtime/
+├─ assets/
+├─ components/
+├─ composables/
+├─ layouts/
+├─ middleware/
+├─ models/
+├─ pages/
+├─ plugins/
+├─ public/
+├─ server/
+└─ utils/
+```
+
+This is the base runtime surface shape.
+
+### FireUX Runtime Spine
+
+FireUX keeps that Nuxt runtime spine and adds one important cross-layer surface:
+
+```text
+runtime/
+├─ assets/
+├─ components/
+├─ concepts/
+├─ composables/
+├─ layouts/
+├─ middleware/
+├─ models/
+├─ pages/
+├─ plugins/
+├─ public/
+├─ server/
+└─ utils/
+```
+
+The important distinction is:
+
+- Nuxt gives the runtime surfaces
+- FireUX adds `concepts/` for cross-layer canon
+
+That means:
+
+- `models/`, `components/`, `composables/`, `pages/`, and `server/` still describe runtime layers
+- `concepts/` is the FireUX layer used when one canon spans more than one runtime layer
 
 ## Runtime Structure
 
@@ -31,7 +86,9 @@ runtime/
 └─ utils/
 ```
 
-Not every package needs every runtime subdirectory.
+This is the FireUX runtime spine, not just the plain Nuxt one.
+
+Not every package needs every runtime subdirectory, but `concepts/` is the main FireUX addition when cross-layer canon needs a real home.
 
 ## assets Directory
 
@@ -43,9 +100,12 @@ Not every package needs every runtime subdirectory.
 
 ## concepts Directory
 
-`concepts/` contains cross-cutting runtime behaviour canon when a concept spans pages, components, composables, and related runtime layers.
+`concepts/` contains cross-cutting runtime behaviour canon when a concept spans pages, components, composables, models, server seams, and related runtime layers.
+
+This is the key FireUX addition to the plain Nuxt runtime spine.
 
 Current examples:
+
 - `concepts/create/`
 - `concepts/connect/`
 - `concepts/read/`
@@ -84,6 +144,7 @@ Current examples:
 `server/` contains package-delivered server routes, handlers, and server-only support code.
 
 Recent repo truth:
+
 - runtime drift inspection now uses a dev-only server seam for collection snapshotting
 - collection managers remain component-owned, but direct subcollection discovery is now a runtime server concern
 - console family visibility is now an app-config concern through `consoleFamilies`
@@ -136,5 +197,9 @@ Recent repo truth:
 ## Short Version
 
 `runtime/` is where a FireUX module actually delivers behavior.
+
+Nuxt gives the base runtime spine.
+
+FireUX keeps that spine and adds `concepts/` as the place where cross-layer canon can live.
 
 If structure becomes unclear, `runtime/` should usually be treated as the primary reference point.

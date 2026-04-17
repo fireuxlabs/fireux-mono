@@ -4,13 +4,48 @@
     <UPageHeader :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <div class="space-y-6">
-        <AppCardsProfile v-if="appProfileModel" :model="appProfileModel" />
+        <OrganismsAppCardsProfile
+          v-if="appProfileModel"
+          :model="appProfileModel"
+        />
+        <UAlert
+          v-else-if="currentApp"
+          color="warning"
+          variant="soft"
+          title="App profile model unavailable"
+          description="The app document loaded, but the prepared profile model resolved empty."
+        />
+
+        <UCard v-if="isDev" variant="subtle">
+          <div class="space-y-2 text-xs">
+            <div>
+              <strong>profile-model:</strong>
+              {{ appProfileModel ? 'ready' : 'missing' }}
+            </div>
+            <div>
+              <strong>profile-card:</strong>
+              {{ appProfileModel?.card?.id || 'missing' }}
+            </div>
+            <div>
+              <strong>app-doc:</strong>
+              {{ currentApp?.id || 'missing' }}
+            </div>
+          </div>
+        </UCard>
 
         <DevJson
           v-if="isDev && currentApp"
           :title="'App (Doc)'"
           context="App detail page · apps/[id] · app doc"
           :data="currentApp"
+          :default-open="false"
+        />
+
+        <DevJson
+          v-if="isDev"
+          :title="'App (Profile Model)'"
+          context="App detail page · apps/[id] · prepared profile model"
+          :data="appProfileModel"
           :default-open="false"
         />
 

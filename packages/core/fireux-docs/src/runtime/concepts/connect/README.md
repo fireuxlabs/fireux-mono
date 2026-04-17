@@ -1,23 +1,34 @@
 # Connect Concept
 
 Authority: Operational
-Updated: 2026-03-25
-Scope: runtime relationship and access behaviour across `pages/`, `components/`, `composables/`, and `models/`.
+Updated: 2026-04-17
+Scope: FireUX stack-level relationship and authority meaning for console-backed entities.
 
-Learn how FireUX separates public existence, console operation, and relationship linking for console-backed domains.
+Learn how FireUX separates public existence, console operation, and relationship linking inside a console-backed stack.
 
 ## Connect Concept
 
-Console-backed domains do not have one truth.
+`Connect` is not a branch doc.
+It is a stack-side concept.
+
+Use it when one FireUX entity stack needs to separate:
+
+- the entity itself
+- the console that operates it
+- the people, teams, or profiles connected to it
+
+Console-backed stacks do not have one truth.
 
 They usually have three:
+
 - the thing exists
 - the thing can be operated
 - the thing can be connected to someone
 
 Those are not the same thing.
 
-Use this README when a domain starts mixing:
+Use this README when a stack starts mixing:
+
 - public entities
 - app-hosted console overlays
 - profile, membership, ownership, or workplace links
@@ -29,16 +40,19 @@ Use this README when a domain starts mixing:
 The thing exists as a canonical public record.
 
 Examples:
+
 - `kitchens/<id>`
 - `portfolios/<id>`
 - `suppliers/<id>`
 
 Meaning:
+
 - this entity exists in the system
 - it has canonical identity
 - it can be discovered or routed to publicly where that domain allows it
 
 This does not mean:
+
 - the thing has an operational console
 - the current user can operate it
 
@@ -47,15 +61,18 @@ This does not mean:
 The thing can be operated in a specific app.
 
 Examples:
+
 - `apps/<appId>/kitchens/<id>`
 - `apps/<appId>/portfolios/<id>`
 - `apps/<appId>/suppliers/<id>`
 
 Meaning:
+
 - this app hosts the operational console for the entity
 - app-scoped governance and private operational state live here
 
 This is where authority should normally come from:
+
 - `admin_ids`
 - `join_requests`
 - `console_enabled`
@@ -66,16 +83,19 @@ This is where authority should normally come from:
 The thing is connected to a person, team, company, or profile.
 
 Examples:
+
 - a chef has `kitchen_ids`
 - a professional experience entry references a kitchen or company
 - a supplier is connected to a company or operator
 - a project has members or admins
 
 Meaning:
+
 - there is a relationship
 - there may be history, membership, employment, or affiliation
 
 This does not mean:
+
 - console access
 - console authority
 - operational ownership
@@ -95,15 +115,18 @@ Use these labels consistently:
 
 User-facing CTA labels may stay simply `Create X` even on `/console/X`.
 In that case, the route context carries the distinction:
+
 - `/X/create` = public create
 - `/console/X/create` = console create
 
 Avoid these confusions:
+
 - calling a relationship link a create
 - calling a public entity create a console create
 - treating profile association like console access
 
-Use `packages/core/fireux-docs/src/runtime/concepts/console-entry/README.md` when the question is about:
+Use `packages/core/fireux-docs/src/runtime/concepts/console/README.md` when the question is about:
+
 - `/console`
 - `/console/X`
 - `/X`
@@ -114,9 +137,11 @@ Use `packages/core/fireux-docs/src/runtime/concepts/console-entry/README.md` whe
 A relationship flow may sometimes ensure a public entity record exists if a canonical reference is missing.
 
 Example:
+
 - a work-history flow may ensure `kitchens/<id>` exists so the experience can point at a canonical kitchen
 
 That still does not mean:
+
 - the console overlay exists
 - the current user can run that console
 
@@ -160,6 +185,7 @@ Do not hide it inside profile linkage.
 ## Short Version
 
 Every console-backed thing has three truths:
+
 - it exists
 - it can be operated
 - it can be connected to someone

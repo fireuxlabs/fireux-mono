@@ -1,242 +1,87 @@
 # Composables Directory
 
 Authority: Operational
-Updated: 2026-04-11
+Updated: 2026-04-17
 Scope: `packages/*/fireux-*/src/runtime/composables` only.
 
-Learn how `runtime/composables/` is used across FireUX module packages.
+This page documents FireUX rules for `runtime/composables/`.
+It does not explain general Nuxt composable behavior.
 
-## Purpose
+For Nuxt mechanics, use Nuxt documentation.
+This page is only for FireUX composable structure and canon seams.
 
-`runtime/composables/` contains composables shipped by the package at runtime.
+## FireUX Rule
 
-Use this tree for:
+`runtime/composables/` is where FireUX runtime state, reads, writes, adapters, and helpers live.
 
-- delivered runtime logic
-- app-facing hooks used by pages and components
-- Firestore reads, writes, and view adapters
-- console state and entity state
+The main FireUX concern is not “what a composable is.”
+It is “which seam belongs where.”
 
-Do not use this tree for:
+## FireUX Top-Level Split
 
-- static config that belongs in `config/`
-- build tooling
-- one-off scripts
-
-## Core Structure
-
-Core canon now uses this top-level split:
+Core FireUX composable structure is:
 
 ```text
 runtime/composables/
   dev/
   shared/
   fireux/
-    app/
-    console/
-    firebase/
-    firestore/
 ```
 
-## Top-Level Meaning
+Read that split like this:
 
-### `dev/`
+- `dev/`
+  developer-only helpers and inspection tools
+- `shared/`
+  truly generic helpers
+- `fireux/`
+  actual FireUX product/runtime seams
 
-Developer-only helpers.
+## FireUX Canon Seams
 
-Use for:
+Important FireUX seams include:
 
-- drift inspection
-- raw collection inspection
-- developer support utilities
-
-Do not treat `dev/` composables as product/entity canon.
-
-### `shared/`
-
-Truly generic helpers that are not FireUX-domain specific.
-
-Use for:
-
-- generic collection helpers
-- generic card/search/view toggles
-- composables that could be reused outside a specific FireUX domain
-
-If a helper is clearly about FireUX app, console, Firebase, or Firestore behavior, it does not belong here.
-
-### `fireux/`
-
-FireUX-specific runtime composables.
-
-This is the main product tree.
-
-## `fireux/` Structure
-
-```text
-fireux/
-  app/
-    forms/
-    routing/
-    ui/
-    utils/
-  console/
-  firebase/
-  firestore/
-    core/
-    operations/
-    seo/
-    system/
-    utils/
-```
-
-### `fireux/app/`
-
-Current-app concerns.
-
-Use for:
-
-- app config access
-- app routing helpers
-- app UI helpers
-- app forms
-- app utility helpers
-
-Examples:
-
-- `FireUXConfig`
-- console route helpers
-- auth redirect helpers
-- console notification helpers
-
-Page/head SEO belongs with app concerns, not in a separate top-level SEO tree.
-
-### `fireux/console/`
-
-Shared console state.
-
-Use for:
-
-- console selection state
-- console mode normalization
-- console layout/header/nav state
-- shared console types
-- demo scenario registry helpers
-
-This is the shared console seam, not entity data loading.
-
-Core examples:
-
-- `useConsoleState.ts`
-- `useConsoleSelection.ts`
-- `console.normalize.ts`
-- `console.types.ts`
-
-### `fireux/firebase/`
-
-Firebase SDK-facing helpers.
-
-Use for:
-
-- auth
-- storage
-- user requirement guards
-- low-level Firebase service access
-
-### `fireux/firestore/`
-
-Firestore reads, writes, entity seams, and view adapters.
-
-Use for:
-
-- collection/document fetch composables
-- mutation composables
-- Firestore operation helpers
-- Firestore utility helpers
-- Firestore-backed SEO indexing
-
-Subtree meaning:
-
-- `core/` = core entities such as app, user, profile
-- `system/` = system entities such as project, ecosystem, console
-- `operations/` = generic Firestore CRUD helpers
-- `utils/` = shared Firestore helpers
-- `seo/` = Firestore SEO indexing helpers
-
-For ecosystem apps with a registry split:
-
-- system composables may read or write `(default)` for `project` and `ecosystem`
-- app composables and operational entity composables should target the named operational database
-- keep registry concerns and operational concerns explicit instead of hiding the database choice inside UI code
-
-## Console And Entity Seam Pattern
-
-For console-driven entities, prefer this three-part pattern:
-
-1. selection
-2. active entity
-3. console adapter
-
-Current naming canon:
-
-- `useProjectSelection`
-- `useActiveProject`
-- `useProjectConsole`
-
-- `usePortfolioSelection`
-- `useActivePortfolio`
-- `usePortfolioConsole`
-
-- `useKitchenSelection`
-- `useActiveKitchen`
-- `useKitchenConsole`
-
-- `useSupplierSelection`
-- `useActiveSupplier`
-- `useSupplierConsole`
-
-Meaning:
-
+- `useXFetch`
+  read one entity or one read seam
+- `useXCollection`
+  read collections
+- `useXInterface`
+  adapt read truth into UI surfaces
 - `useXSelection`
-  - remembers which entity is selected
+  remember selected console target
 - `useActiveX`
-  - resolves the active entity and its runtime data path
+  resolve active target/runtime path
 - `useXConsole`
-  - adapts the active entity into console-facing UI state
+  adapt active target into console-facing state
 
-The shared console layout should consume only the generic console contract from `fireux/console/`.
-It should not know project, portfolio, kitchen, or supplier internals.
+The important FireUX rule is:
 
-## What Belongs Close To The Entity
+- stored truth belongs in models
+- read and write behavior belongs in composables
+- UI shaping belongs in interface seams
+- UI rendering belongs in components
 
-Keep entity-local helpers close to the entity family when they are not generic enough for core console reuse.
+## FireUX Override
 
-Examples:
+FireUX adds structure on top of ordinary composable usage:
 
-- `useRuntimePortfolioPath`
-- `useRuntimeKitchenDocument`
-- `useRuntimeKitchenData`
+- console state gets explicit seams rather than ad hoc page logic
+- Firestore reads and writes stay explicit under `fireux/firestore/`
+- FireUX app/runtime helpers stay explicit under `fireux/app/`
+- generic helpers should not quietly absorb FireUX-specific behavior
 
-These are local entity/runtime helpers, not shared console helpers.
+## What This README Should Answer
 
-## Current Repo Direction
+Use this branch README when the question is:
 
-Aligned:
+- should this logic live in a composable at all
+- is this helper generic, FireUX-specific, or developer-only
+- which FireUX seam owns this read, write, selection, or console behavior
 
-- core now uses `fireux/console/` instead of nested `fireux/runtime/`
-- Firestore SEO indexing lives under `fireux/firestore/seo/`
-- project, portfolio, kitchen, and supplier console wrappers now follow the same public naming shape
-
-Still allowed:
-
-- entity-local helper names may still contain `Runtime` where they describe active entity/runtime behavior rather than shared console behavior
+If the question is only about `ref`, `computed`, or normal composable syntax, that belongs to Nuxt or Vue docs instead.
 
 ## Short Version
 
-Use:
+`runtime/composables/` is where FireUX runtime logic lives.
 
-- `dev/` for developer helpers
-- `shared/` for truly generic helpers
-- `fireux/app/` for current-app helpers
-- `fireux/console/` for shared console state
-- `fireux/firebase/` for Firebase SDK helpers
-- `fireux/firestore/` for Firestore reads, writes, and entity adapters
+The FireUX job here is seam ownership, not general composable education.

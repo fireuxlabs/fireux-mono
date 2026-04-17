@@ -1,37 +1,51 @@
 # Assets Directory
 
 Authority: Operational
-Updated: 2026-03-20
+Updated: 2026-04-17
 Scope: `packages/*/fireux-*/src/runtime/assets` only.
 
-Learn how `runtime/assets/` is used across FireUX module packages.
+This page documents FireUX rules for `runtime/assets/`.
+It does not explain general Nuxt asset handling.
 
-## Assets Directory
+For Nuxt mechanics, use Nuxt documentation.
+This page is only for FireUX placement and override rules.
 
-`assets/` contains build-processed runtime assets shipped by the package.
+## FireUX Rule
 
-## What Belongs Here
+Use `runtime/assets/` only for build-processed package assets that genuinely belong to delivered runtime behavior.
 
-- imported stylesheets
-- asset files used by runtime pages, components, or layouts
-- build-processed assets that are not meant to be served as public static files
+Typical FireUX use:
 
-## Aligned In Repo
+- imported package stylesheets
+- build-time visual assets used by delivered components or pages
+- package-owned assets that should stay inside the runtime delivery layer
 
-- `runtime/assets/` is already used in `fireux-core`
-- this proves it is a valid runtime surface when a package ships imported assets
+Do not use `runtime/assets/` for:
 
-## Not Aligned Yet
+- public brand files that should be directly served
+- app-root static files
+- general documentation or report files
 
-- `runtime/assets/` is not a common package-family pattern
-- the boundary between `runtime/assets/` and `runtime/public/` still needs to stay explicit
+## FireUX Boundary
 
-## Roadmap To Reconciliation
+The important FireUX boundary is:
 
-1. Keep `runtime/assets/` optional.
-2. Use it only for build-processed assets.
-3. Keep publicly served static files in `runtime/public/`.
+- `runtime/assets/` = build-processed package assets
+- `runtime/public/` = directly served static files
+
+If a file needs a stable public URL, it usually belongs in `runtime/public/`, not here.
+
+## FireUX Override
+
+FireUX does not add a special second asset architecture on top of Nuxt.
+
+The FireUX override is only this:
+
+- package assets must stay close to the package that delivers the runtime behavior
+- public brand and app-facing static files must stay explicit instead of being hidden in build assets
 
 ## Short Version
 
-Imported runtime assets belong here when a package genuinely needs them.
+Use `runtime/assets/` for package-owned build assets only.
+
+If the question is about general Nuxt asset behavior, that belongs to Nuxt docs, not here.
