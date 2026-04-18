@@ -1,4 +1,4 @@
-import { computed, ref, unref, type ComputedRef, type Ref } from 'vue'
+import { computed, reactive, toRef, unref, type ComputedRef, type Ref } from 'vue'
 import { useUser } from '../firestore/core/user/useUser'
 
 export type ConsoleMode = 'live' | 'demo' | 'test'
@@ -10,25 +10,13 @@ type ConsoleIndexUserContext = {
   displayName: string
 }
 
-type UseConsoleIndexOptions<TLive, TDemo, TSelected, TTest, TCard> = {
+type UseConsoleIndexOptions<TLive, TDemo, TTest> = {
   entities: MaybeRef<{
     live: unknown
     demo: unknown
     test: unknown
   }>
-  selectedEntity: MaybeRef<TSelected | null>
-  selectedMode: MaybeRef<ConsoleMode>
   selectEntity: (id: string, mode?: ConsoleMode) => void
-  toDemoCard: (item: TDemo) => TCard | null | undefined
-  toSelectedCard: (
-    item: TSelected,
-    mode: ConsoleMode,
-    user: ConsoleIndexUserContext
-  ) => TCard | null | undefined
-  toTestCard: (
-    item: TTest,
-    user: ConsoleIndexUserContext
-  ) => TCard | null | undefined
   getTestId: (item: TTest) => string
 }
 
@@ -37,10 +25,8 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 export function useConsoleIndex<
   TLive,
   TDemo,
-  TSelected,
   TTest,
-  TCard,
->(options: UseConsoleIndexOptions<TLive, TDemo, TSelected, TTest, TCard>) {
+>(options: UseConsoleIndexOptions<TLive, TDemo, TTest>) {
   const { currentUser, avatarSrc } = useUser()
 
   const user = computed<ConsoleIndexUserContext>(() => ({
@@ -48,7 +34,9 @@ export function useConsoleIndex<
     displayName: normalizeString(currentUser.value?.display_name),
   }))
 
-  const showSimulations = ref(false)
+  const state = reactive({
+    showSimulations: false,
+  })
 
   const liveItems = computed<TLive[]>(() => {
     const source = unref(options.entities)
@@ -67,49 +55,50 @@ export function useConsoleIndex<
       : null
   })
 
-  const demoCards = computed(() =>
-    demoItems.value.map((item) => options.toDemoCard(item)).filter(Boolean)
-  )
+  const entities = computed(() => ({
+    live: liveItems.value,
+    demo: demoItems.value,
+    test: testItem.value,
+  }))
 
-  const selectedCard = computed(() => {
-    const item = unref(options.selectedEntity)
-    if (!item) return null
-    return (
-      options.toSelectedCard(item, unref(options.selectedMode), user.value) ??
-      null
-    )
-  })
+  const actions = {
+    selectLive: (id: string) => {
+      options.selectEntity(id, 'live')
+    },
+    selectDemo: (id: string) => {
+      options.selectEntity(id, 'demo')
+    },
+    selectTest: () => {
+      const item = testItem.value
+      if (!item) return
 
-  const testCard = computed(() => {
-    const item = testItem.value
-    if (!item) return null
-    return options.toTestCard(item, user.value) ?? null
-  })
+      const id = normalizeString(options.getTestId(item))
+      if (!id) return
+
+      options.selectEntity(id, 'test')
+    },
+  }
 
   const selectDemoEntity = (id: string) => {
-    options.selectEntity(id, 'demo')
+    actions.selectDemo(id)
   }
 
   const selectTestEntity = () => {
-    const item = testItem.value
-    if (!item) return
-
-    const id = normalizeString(options.getTestId(item))
-    if (!id) return
-
-    options.selectEntity(id, 'test')
+    actions.selectTest()
   }
 
   return {
-    showSimulations,
+    state,
+    user,
+    entities,
+    actions,
+    showSimulations: toRef(state, 'showSimulations'),
     userAvatar: computed(() => user.value.avatarSrc),
     userDisplayName: computed(() => user.value.displayName),
     liveItems,
     demoItems,
     testItem,
-    demoCards,
-    selectedCard,
-    testCard,
+    selectLiveEntity: actions.selectLive,
     selectDemoEntity,
     selectTestEntity,
   }

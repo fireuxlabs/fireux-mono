@@ -19,6 +19,15 @@ import { useConsoleEnsure } from '../../console/mutations/useConsoleEnsure'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 
 const normalizeString = (value: unknown) => String(value || '').trim()
+const resolveTestUserLabel = (displayName: unknown, uid: unknown) => {
+  const resolvedDisplayName = normalizeString(displayName)
+  if (resolvedDisplayName) return resolvedDisplayName
+
+  const resolvedUid = normalizeString(uid)
+  if (!resolvedUid) return 'User'
+
+  return `User ${resolvedUid.slice(0, 6)}`
+}
 
 export type ProjectCreateOptions = {
   collectionPath?: string
@@ -38,6 +47,8 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
     options.test === true
       ? 'test-projects'
       : String(options.collectionPath || 'projects').trim() || 'projects'
+  const isTestProjectCollection =
+    options.test === true || collectionPath === 'test-projects'
 
   async function runProjectCreate(
     input: ProjectCreateInput,
@@ -49,7 +60,14 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
 
     const ensureRoot = async (): Promise<ConsoleRootEnsureResult> => {
       const id = requestedRootId
-      const name = normalizeString(input?.name)
+      const requestedName = normalizeString(input?.name)
+      const defaultTestName = isTestProjectCollection
+        ? `${resolveTestUserLabel(user.displayName, user.uid)} Test Project`
+        : ''
+      const name =
+        isTestProjectCollection && (!requestedName || requestedName === user.uid)
+          ? defaultTestName
+          : requestedName
       const slug = normalizeSlug(input?.slug)
       const description = normalizeString(input?.description)
       const imageUrl = normalizeString(input?.image_url)

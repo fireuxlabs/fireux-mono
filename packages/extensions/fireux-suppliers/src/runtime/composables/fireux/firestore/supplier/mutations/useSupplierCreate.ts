@@ -13,6 +13,17 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { AppSupplier, Supplier, SupplierCreateInput } from '../../../../../models/supplier/Supplier.model'
 
+const normalizeString = (value: unknown) => String(value || '').trim()
+const resolveTestUserLabel = (displayName: unknown, uid: unknown) => {
+  const resolvedDisplayName = normalizeString(displayName)
+  if (resolvedDisplayName) return resolvedDisplayName
+
+  const resolvedUid = normalizeString(uid)
+  if (!resolvedUid) return 'User'
+
+  return `User ${resolvedUid.slice(0, 6)}`
+}
+
 export type SupplierCreateOptions = {
   collectionPath?: string
   test?: boolean
@@ -59,7 +70,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
       }
 
       const defaultName = isTestSupplierCollection
-        ? `${String(currentUser.value?.displayName || '').trim() || 'Your'} Test Supplier`
+        ? `${resolveTestUserLabel(currentUser.value?.displayName, uid)} Test Supplier`
         : ''
 
       const payload: SupplierCreateInput = {

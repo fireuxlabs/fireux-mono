@@ -17,6 +17,17 @@ import type {
   KitchenCreateInput,
 } from '../../../../../models/kitchen.model'
 
+const normalizeString = (value: unknown) => String(value || '').trim()
+const resolveTestUserLabel = (displayName: unknown, uid: unknown) => {
+  const resolvedDisplayName = normalizeString(displayName)
+  if (resolvedDisplayName) return resolvedDisplayName
+
+  const resolvedUid = normalizeString(uid)
+  if (!resolvedUid) return 'User'
+
+  return `User ${resolvedUid.slice(0, 6)}`
+}
+
 export const KitchenPayload = {
   id: '',
 }
@@ -78,10 +89,10 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       }
     }
 
-    const explicitName = String((input as any)?.name || '').trim()
-    const explicitShortName = String((input as any)?.short_name || '').trim()
+    const explicitName = normalizeString((input as any)?.name)
+    const explicitShortName = normalizeString((input as any)?.short_name)
     const defaultTestName = isTestKitchenCollection
-      ? `${String(currentUser.value?.displayName || '').trim() || 'Your'} Test Kitchen`
+      ? `${resolveTestUserLabel(currentUser.value?.displayName, uid.value)} Test Kitchen`
       : ''
 
     const resolvedPayload: Record<string, unknown> = {
@@ -90,7 +101,10 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       place_id: resolvedId,
     }
 
-    const resolvedName = explicitName || defaultTestName
+    const resolvedName =
+      isTestKitchenCollection && (!explicitName || explicitName === normalizeString(uid.value))
+        ? defaultTestName
+        : explicitName
     if (resolvedName) {
       resolvedPayload.name = resolvedName
     }

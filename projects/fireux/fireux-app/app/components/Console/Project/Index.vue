@@ -1,7 +1,7 @@
 <template>
   <section class="space-y-6">
     <UAlert
-      v-if="!liveProjects.length"
+      v-if="!projects.live.length"
       color="neutral"
       variant="soft"
       title="No live projects found"
@@ -40,18 +40,18 @@
       </div>
 
       <ProjectCollectionManager
-        v-if="liveProjects.length"
-        :collection="liveProjects"
+        v-if="projects.live.length"
+        :collection="projects.live"
         title="Choose Live Project"
         description="Select the live project you want to work on."
         :link="false"
         :action="true"
         :show-badges="false"
-        @select="selectProject"
+        @select="actions.selectLive"
       />
     </div>
 
-    <section v-if="demoProjects.length" class="w-full max-w-xl space-y-3">
+    <section v-if="projects.demo.length" class="w-full max-w-xl space-y-3">
       <div class="flex items-center gap-3">
         <div class="h-px flex-1 bg-default/60" />
         <div class="text-xs uppercase tracking-[0.16em] text-toned">Or</div>
@@ -62,14 +62,14 @@
         <div class="text-sm font-medium text-highlighted">Try a project simulation</div>
 
         <USwitch
-          v-model="showSimulations"
+          v-model="state.showSimulations"
           unchecked-icon="i-lucide-x"
           checked-icon="i-lucide-check"
           label="Show project simulations"
         />
       </div>
 
-      <div v-if="showSimulations" class="space-y-2">
+      <div v-if="state.showSimulations" class="space-y-2">
         <div class="text-sm text-dimmed">
           Read-only demo projects wired into the same console stack.
         </div>
@@ -82,13 +82,13 @@
             :link="false"
             :action="true"
             :show-badges="false"
-            @action="selectDemoProject(scenario.id)"
+            @action="actions.selectDemo(scenario.id)"
           />
         </div>
       </div>
     </section>
 
-    <section v-if="testProject" class="w-full max-w-xl space-y-3">
+    <section v-if="projects.test" class="w-full max-w-xl space-y-3">
       <div class="flex items-center gap-3">
         <div class="h-px flex-1 bg-default/60" />
         <div class="text-xs uppercase tracking-[0.16em] text-toned">Or</div>
@@ -108,15 +108,7 @@
           :link="false"
           :action="true"
           :show-badges="false"
-          @action="selectTestProject"
-        />
-
-        <DevJson
-          v-if="isDev"
-          title="Test Project (Debug)"
-          context="console projects · test project · raw and fallback analysis"
-          :data="testProjectDebug"
-          :default-open="false"
+          @action="actions.selectTest"
         />
       </div>
     </section>
@@ -126,15 +118,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/console/useConsoleIndex'
-import { getDemoProjects } from 'fireux-core/runtime/composables/fireux/app/utils/project-demo-scenarios/demo-scenarios/index'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
-import { useProjectFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectFetch'
 import {
   useProjectInterface,
   type ProjectSurface,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
+import { useProjectConsole } from '../../../composables/fireux/project-console/useProjectConsole'
+import { useProjectConsoleIndex } from '../../../composables/fireux/project-console/useProjectConsoleIndex'
 
 type DemoProjectListItem = {
   id: string
@@ -143,137 +132,45 @@ type DemoProjectListItem = {
   image_url?: string
 }
 
-const {
-  selectedProject,
-  selectedMode,
-  selectProject,
-  clearSelectedProject,
-} = useProjectConsole()
-const { projects: liveProjectSource } = useProjectCollection({ scope: 'mine' })
-const { uid } = useAuth()
-const { project: testProjectSource } = useProjectFetch(uid, { source: 'test' })
+type ProjectPillCard = NonNullable<
+  ReturnType<ReturnType<typeof useProjectInterface>['pill']>
+>
+
+const { state, projects, actions } = useProjectConsoleIndex()
+const { selectedProject, selectedMode, clearSelectedProject } = useProjectConsole()
 const { pill } = useProjectInterface()
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-
-const projects = computed(() => ({
-  live: liveProjectSource.value,
-  demo: getDemoProjects(),
-  test: testProjectSource.value,
-}))
-
-const {
-  showSimulations,
-  userAvatar: testProjectAvatar,
-  liveItems: liveProjects,
-  demoItems: demoProjects,
-  testItem: testProject,
-  demoCards: demoProjectCards,
-  selectedCard: selectedProjectCard,
-  testCard: testProjectCard,
-  selectDemoEntity: selectDemoProject,
-  selectTestEntity: selectTestProject,
-} = useConsoleIndex({
-  entities: projects,
-  selectedEntity: selectedProject,
-  selectedMode,
-  selectEntity: selectProject,
-  toDemoCard: (project: DemoProjectListItem) =>
-    pill({
-      id: project.id,
-      slug: project.id,
-      name: project.name,
-      description: project.label,
-      image_url: project.image_url,
-      project_type: 'demo',
-      status: 'active',
-    }),
-  toSelectedCard: (project, mode, user) => {
-    if (mode === 'test') {
-      const card = pill({
-        ...(project as Record<string, unknown>),
-        image_url:
-          normalizeString((project as Record<string, unknown>)?.image_url) || user.avatarSrc,
-      } as ProjectSurface)
-
-      if (!card) return null
-
-      return {
-        ...card,
-        title: 'Test Project',
-        subtitle: user.displayName,
-      }
-    }
-
-    return pill(project as ProjectSurface)
-  },
-  toTestCard: (project: ProjectSurface, user) => {
-    const card = pill({
-      ...project,
-      image_url: normalizeString(project.image_url) || user.avatarSrc,
-    })
-    if (!card) return null
-
-    return {
-      ...card,
-      title: 'Test Project',
-      subtitle: user.displayName,
-    }
-  },
-  getTestId: (project: ProjectSurface) => normalizeString(project.id),
+const toDemoProjectSurface = (project: DemoProjectListItem): ProjectSurface => ({
+  id: project.id,
+  slug: project.id,
+  name: project.name,
+  description: project.label,
+  image_url: project.image_url,
+  project_type: 'demo',
+  status: 'active',
 })
-const isDev = import.meta.dev
 
-const testProjectDebug = computed(() => {
-  const project = testProject.value
-  const card = testProjectCard.value
+const demoProjectCards = computed<ProjectPillCard[]>(() =>
+  projects.value.demo
+    .map((project: DemoProjectListItem) => pill(toDemoProjectSurface(project)))
+    .filter((card): card is ProjectPillCard => Boolean(card))
+)
 
+const selectedProjectCard = computed<ProjectPillCard | null>(() => {
+  const project = selectedProject.value as ProjectSurface | DemoProjectListItem | null
   if (!project) return null
 
-  const missing = [
-    !normalizeString(project.slug) ? 'slug' : '',
-    !normalizeString(project.image_url) ? 'image_url' : '',
-    !normalizeString(project.description) ? 'description' : '',
-    !normalizeString(project.console_endpoint_url) ? 'console_endpoint_url' : '',
-    !normalizeString(project.source_url) ? 'source_url' : '',
-  ].filter(Boolean)
-
-  return {
-    raw: project,
-    card,
-    missing,
-    fallback: {
-      to: normalizeString(project.slug)
-        ? 'uses slug'
-        : normalizeString(project.id)
-          ? 'falls back to id'
-          : 'missing',
-      imageUrl: normalizeString(project.image_url)
-        ? 'uses image_url'
-        : testProjectAvatar.value
-          ? 'falls back to current user avatar'
-        : 'falls back to default project logo',
-      title: normalizeString(project.name)
-        ? 'uses name'
-        : normalizeString(project.id)
-          ? 'falls back to id'
-          : 'falls back to Untitled project',
-      subtitle: normalizeString(project.id)
-        ? 'uses id'
-        : normalizeString(project.slug)
-          ? 'falls back to slug'
-          : 'empty',
-      meta: normalizeString(project.description)
-        ? 'uses description'
-        : 'falls back to derived type/key meta',
-      statusBadge: normalizeString(project.status)
-        ? 'uses status'
-        : 'falls back to active',
-      projectTypeBadge: normalizeString(project.project_type)
-        ? 'uses project_type'
-        : 'missing',
-    },
+  if (selectedMode.value === 'demo') {
+    return pill(toDemoProjectSurface(project as DemoProjectListItem)) ?? null
   }
+
+  return pill(project as ProjectSurface) ?? null
 })
 
+const testProjectCard = computed<ProjectPillCard | null>(() => {
+  const project = projects.value.test
+  if (!project) return null
+
+  return pill(project) ?? null
+})
 </script>

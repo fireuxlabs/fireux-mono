@@ -21,6 +21,17 @@ const toSlug = (value: string) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
 
+const normalizeString = (value: unknown) => String(value || '').trim()
+const resolveTestUserLabel = (displayName: unknown, uid: unknown) => {
+  const resolvedDisplayName = normalizeString(displayName)
+  if (resolvedDisplayName) return resolvedDisplayName
+
+  const resolvedUid = normalizeString(uid)
+  if (!resolvedUid) return 'User'
+
+  return `User ${resolvedUid.slice(0, 6)}`
+}
+
 export type PortfolioCreateOptions = {
   collectionPath?: string
   test?: boolean
@@ -35,12 +46,21 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
   const { ensureConsole } = useConsoleEnsure()
-  const { uid } = useAuth()
+  const { uid, currentUser } = useAuth()
   const collectionPath =
     options.test === true ? 'test-portfolios' : String(options.collectionPath || 'portfolios').trim() || 'portfolios'
+  const isTestPortfolioCollection =
+    options.test === true || collectionPath === 'test-portfolios'
 
   async function createPortfolioRoot(input: PortfolioCreateInput): Promise<string> {
-    const name = String(input?.name || '').trim()
+    const defaultTestName = isTestPortfolioCollection
+      ? `${resolveTestUserLabel(currentUser.value?.displayName, uid.value)} Test Portfolio`
+      : ''
+    const requestedName = normalizeString(input?.name)
+    const name =
+      isTestPortfolioCollection && (!requestedName || requestedName === normalizeString(uid.value))
+        ? defaultTestName
+        : requestedName
     const slug = toSlug(String(input?.slug || '').trim() || name)
 
     if (!name) {
@@ -59,7 +79,11 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       id: slug,
       name,
       slug,
-      owner_label: String(input?.owner_label || '').trim(),
+      owner_label:
+        normalizeString(input?.owner_label) ||
+        (isTestPortfolioCollection
+          ? resolveTestUserLabel(currentUser.value?.displayName, uid.value)
+          : ''),
       status: input?.status || 'active',
       strategy_label: String(input?.strategy_label || '').trim(),
       region_label: String(input?.region_label || '').trim(),
@@ -90,7 +114,14 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     const requestedRootId = String(ensureOptions.existingRootId || '').trim()
 
     const ensureRoot = async (): Promise<ConsoleRootEnsureResult> => {
-      const name = String(input?.name || '').trim()
+      const defaultTestName = isTestPortfolioCollection
+        ? `${resolveTestUserLabel(currentUser.value?.displayName, uid.value)} Test Portfolio`
+        : ''
+      const requestedName = normalizeString(input?.name)
+      const name =
+        isTestPortfolioCollection && (!requestedName || requestedName === normalizeString(uid.value))
+          ? defaultTestName
+          : requestedName
       const slug = requestedRootId || toSlug(String(input?.slug || '').trim() || name)
 
       if (!name) {
@@ -111,7 +142,11 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
         id: slug,
         name,
         slug,
-        owner_label: String(input?.owner_label || '').trim(),
+        owner_label:
+          normalizeString(input?.owner_label) ||
+          (isTestPortfolioCollection
+            ? resolveTestUserLabel(currentUser.value?.displayName, uid.value)
+            : ''),
         status: input?.status || 'active',
         strategy_label: String(input?.strategy_label || '').trim(),
         region_label: String(input?.region_label || '').trim(),
