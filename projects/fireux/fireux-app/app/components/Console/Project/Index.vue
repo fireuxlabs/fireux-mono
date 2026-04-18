@@ -131,8 +131,6 @@ import {
 } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 
-type ProjectConsoleSelectionMode = 'live' | 'demo' | 'test'
-
 type DemoProjectListItem = {
   id: string
   name: string
@@ -143,14 +141,18 @@ type DemoProjectListItem = {
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-const { projects } = useProjectConsole()
+const {
+  projects,
+  selectedProject,
+  selectedProjectCard,
+  selectProject,
+  clearSelectedProject,
+} = useProjectConsole({ publishHeader: true })
 const { currentUser, avatarSrc } = useUser()
 const { pill } = useProjectInterface()
 
 const isDev = import.meta.dev
 const showSimulations = ref(false)
-const selectedProjectId = ref('')
-const selectedMode = ref<ProjectConsoleSelectionMode>('live')
 
 const liveProjects = computed<ProjectSurface[]>(() =>
   Array.isArray(projects.value.live) ? projects.value.live : []
@@ -261,62 +263,13 @@ const testProjectDebug = computed(() => {
   }
 })
 
-const selectedProject = computed<ProjectSurface | DemoProjectListItem | null>(() => {
-  const projectId = String(selectedProjectId.value || '').trim()
-  if (!projectId) return null
-
-  if (selectedMode.value === 'demo') {
-    return demoProjects.value.find((project) => project.id === projectId) ?? null
-  }
-
-  if (selectedMode.value === 'test') {
-    const project = testProjectCardInput.value
-    return project?.id === projectId ? project : null
-  }
-
-  return liveProjects.value.find((project) => String(project.id || '').trim() === projectId) ?? null
-})
-
-const selectedProjectCard = computed(() => {
-  const project = selectedProject.value
-  if (!project) return null
-
-  if (selectedMode.value === 'demo') {
-    return pill({
-      id: project.id,
-      slug: project.id,
-      name: project.name,
-      description: project.label,
-      image_url: project.image_url,
-      project_type: 'demo',
-      status: 'active',
-    })
-  }
-
-  if (selectedMode.value === 'test') {
-    return testProjectCard.value
-  }
-
-  return pill(project as ProjectSurface)
-})
-
-const selectProject = (projectId: string) => {
-  selectedProjectId.value = String(projectId || '').trim()
-  selectedMode.value = 'live'
-}
-
 const selectDemoProject = (projectId: string) => {
-  selectedProjectId.value = String(projectId || '').trim()
-  selectedMode.value = 'demo'
+  selectProject(projectId, 'demo')
 }
 
 const selectTestProject = () => {
-  selectedProjectId.value = String(testProject.value?.id || '').trim()
-  selectedMode.value = 'test'
-}
-
-const clearSelectedProject = () => {
-  selectedProjectId.value = ''
-  selectedMode.value = 'live'
+  const projectId = String(testProject.value?.id || '').trim()
+  if (!projectId) return
+  selectProject(projectId, 'test')
 }
 </script>
