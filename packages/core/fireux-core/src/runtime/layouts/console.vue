@@ -103,17 +103,34 @@
 </template>
 
 <script setup lang="ts">
-import { useConsoleState } from '../composables/fireux/console/useConsoleState'
+import { useRoute } from '#imports'
+import { computed, ref } from 'vue'
+import {
+  useConsoleHeaders,
+  type ConsoleHeaderData as HeaderData,
+} from '../composables/fireux/console/useConsole'
 
 defineOptions({ name: 'console' })
 
-const {
-  open,
-  isNotificationsSlideoverOpen,
-  hasSelection,
-  header,
-  topNav,
-  middleNav,
-  familyRootNav,
-} = useConsoleState()
+const normalizeString = (value: unknown) => String(value ?? '').trim()
+
+const open = ref(false)
+const isNotificationsSlideoverOpen = ref(false)
+const topNav = computed(() => [])
+const middleNav = computed(() => [])
+const familyRootNav = computed(() => [])
+
+const route = useRoute()
+const family = computed(() => {
+  const candidate = String(route.path || '').match(/^\/console\/([^/]+)/)?.[1] || ''
+  return candidate === 'kitchen' ? 'kitchens' : candidate
+})
+
+const consoleHeaders = useConsoleHeaders()
+
+const header = computed<HeaderData>(() => {
+  return consoleHeaders.value[normalizeString(family.value)] ?? null
+})
+
+const hasSelection = computed(() => Boolean(header.value))
 </script>

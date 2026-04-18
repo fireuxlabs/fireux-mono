@@ -1,6 +1,9 @@
 import { computed } from 'vue'
-import { getDemoKitchens } from './demo-scenarios'
-import { useConsole } from 'fireux-core/runtime/composables/fireux/console/useConsole'
+import {
+  useConsole,
+  usePublishConsoleHeader,
+  type ConsoleHeaderData,
+} from 'fireux-core/runtime/composables/fireux/console/useConsole'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenCollection } from '../../firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
@@ -10,8 +13,8 @@ type KitchenConsoleMode = 'live' | 'demo' | 'test'
 type DemoKitchenListItem = {
   id: string
   name: string
-  address_label: string
-  image_url: string
+  label?: string
+  image_url?: string
   mode: 'demo'
 }
 
@@ -20,22 +23,25 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 export function useKitchenConsole() {
   const { kitchens: liveKitchens } = useKitchenCollection()
   const { uid } = useAuth()
-  const { kitchen: testKitchen } = useKitchenFetch(uid, {
+  const testKitchenId = computed(() => normalizeString(uid.value))
+  const demoKitchens = computed<DemoKitchenListItem[]>(() => [])
+  const { kitchen: testKitchen } = useKitchenFetch(testKitchenId, {
     collectionPath: 'test-kitchens',
   })
   const { selectedId, selectedMode, selectEntity, clearSelection } = useConsole('kitchens')
 
   const kitchens = computed(() => ({
     live: liveKitchens.value,
-    demo: getDemoKitchens(),
+    demo: demoKitchens.value,
     test: testKitchen.value,
   }))
+
   const selectedKitchen = computed(() => {
     const kitchenId = normalizeString(selectedId.value)
     if (!kitchenId) return null
 
     if (selectedMode.value === 'demo') {
-      return (getDemoKitchens() as DemoKitchenListItem[]).find((kitchen) => kitchen.id === kitchenId) ?? null
+      return demoKitchens.value.find((kitchen) => kitchen.id === kitchenId) ?? null
     }
 
     if (selectedMode.value === 'test') {
@@ -47,33 +53,56 @@ export function useKitchenConsole() {
       liveKitchens.value.find((kitchen) => normalizeString(kitchen?.id) === kitchenId) ?? null
     )
   })
-  const kitchen = computed(() => null)
-  const kitchenState = {
-    id: selectedId,
-    entity: selectedKitchen,
-    mode: selectedMode,
-    isDemo: computed(() => selectedMode.value === 'demo'),
-    scenario: computed(() => null),
-  }
-  const consoleState = {
-    clearSelection,
-  }
+
+  const header = computed<ConsoleHeaderData>(() => {
+    const kitchen = selectedKitchen.value as Record<string, unknown> | null
+    if (!kitchen) return null
+
+    if (selectedMode.value === 'demo') {
+      return {
+        title: normalizeString(kitchen.name) || normalizeString(kitchen.id),
+        subtitle: normalizeString(kitchen.label) || normalizeString(kitchen.id) || undefined,
+        imageUrl: normalizeString(kitchen.image_url) || undefined,
+      }
+    }
+
+    if (selectedMode.value === 'test') {
+      return {
+        title: 'Test Kitchen',
+        subtitle:
+          normalizeString(kitchen.short_name) ||
+          normalizeString(kitchen.name) ||
+          normalizeString(kitchen.id) ||
+          undefined,
+        imageUrl: normalizeString(kitchen.image_url) || undefined,
+      }
+    }
+
+    return {
+      title:
+        normalizeString(kitchen.short_name) ||
+        normalizeString(kitchen.name) ||
+        normalizeString(kitchen.id),
+      subtitle:
+        normalizeString(kitchen.short_address) ||
+        normalizeString(kitchen.formatted_address) ||
+        normalizeString(kitchen.id) ||
+        undefined,
+      imageUrl: normalizeString(kitchen.image_url) || undefined,
+    }
+  })
+
+  usePublishConsoleHeader('kitchens', header)
 
   const clearSelectedKitchen = () => {
     clearSelection()
   }
-  const selectKitchen = (
-    kitchenId: string,
-    mode: KitchenConsoleMode = 'live'
-  ) => {
+  const selectKitchen = (kitchenId: string, mode: KitchenConsoleMode = 'live') => {
     selectEntity(kitchenId, mode)
   }
 
   return {
     kitchens,
-    kitchen,
-    kitchenState,
-    consoleState,
     selectedKitchen,
     selectedMode,
     clearSelectedKitchen,

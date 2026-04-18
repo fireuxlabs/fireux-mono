@@ -1,54 +1,118 @@
 import { computed } from 'vue'
-import { normalizeString } from 'fireux-core/runtime/composables/fireux/console/console.normalize'
-import { useConsoleState } from 'fireux-core/runtime/composables/fireux/console/useConsoleState'
-import type { Supplier } from '../../../../models/supplier/Supplier.model'
-import { useSupplierSelection } from './useSupplierSelection'
-import { useActiveSupplier } from './useActiveSupplier'
-import { useSupplierInterface } from '../../firestore/supplier/utils/view/useSupplierInterface'
+import {
+  useConsole,
+  usePublishConsoleHeader,
+  type ConsoleHeaderData,
+} from 'fireux-core/runtime/composables/fireux/console/useConsole'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useSupplierCollection } from '../../firestore/supplier/fetch/useSupplierCollection'
+import { useSupplierFetch } from '../../firestore/supplier/fetch/useSupplierFetch'
 
-type UseSupplierConsoleOptions = {
-  publishHeader?: boolean
+type SupplierConsoleMode = 'live' | 'demo' | 'test'
+
+type DemoSupplierListItem = {
+  id: string
+  name: string
+  label?: string
+  image_url?: string
+  mode: 'demo'
 }
 
-/**
- * Supplier console adapter.
- * Keeps only the active pill, header data, and shared console-state wiring.
- */
-export function useSupplierConsole(
-  options: UseSupplierConsoleOptions = {}
-) {
-  const supplierState = useActiveSupplier()
-  const supplierSelection = useSupplierSelection()
-  const { pill: toSupplierCard } = useSupplierInterface()
-  const supplier = computed(() =>
-    toSupplierCard(supplierState.entity.value as Supplier | null)
-  )
+const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-  const headerData = computed(() => {
-    const card = supplier.value
-    if (!card) return null
+export function useSupplierConsole() {
+  const { suppliers: liveSuppliers } = useSupplierCollection()
+  const { uid } = useAuth()
+  const testSupplierId = computed(() => normalizeString(uid.value))
+  const demoSuppliers = computed<DemoSupplierListItem[]>(() => [])
+  const { supplier: testSupplier } = useSupplierFetch(testSupplierId, {
+    collectionPath: 'test-suppliers',
+  })
+  const { selectedId, selectedMode, selectEntity, clearSelection } = useConsole('suppliers')
+
+  const suppliers = computed(() => ({
+    live: liveSuppliers.value,
+    demo: demoSuppliers.value,
+    test: testSupplier.value,
+  }))
+
+  const selectedSupplier = computed(() => {
+    const supplierId = normalizeString(selectedId.value)
+    if (!supplierId) return null
+
+    if (selectedMode.value === 'demo') {
+      return demoSuppliers.value.find((supplier) => supplier.id === supplierId) ?? null
+    }
+
+    if (selectedMode.value === 'test') {
+      const supplier = testSupplier.value
+      return normalizeString(supplier?.id) === supplierId ? supplier : null
+    }
+
+    return (
+      liveSuppliers.value.find((supplier) => normalizeString(supplier?.id) === supplierId) ?? null
+    )
+  })
+
+  const header = computed<ConsoleHeaderData>(() => {
+    const supplier = selectedSupplier.value as Record<string, unknown> | null
+    if (!supplier) return null
+
+    if (selectedMode.value === 'demo') {
+      return {
+        title: normalizeString(supplier.name) || normalizeString(supplier.id),
+        subtitle: normalizeString(supplier.label) || normalizeString(supplier.id) || undefined,
+        imageUrl: normalizeString(supplier.image_url) || undefined,
+      }
+    }
+
+    if (selectedMode.value === 'test') {
+      return {
+        title: 'Test Supplier',
+        subtitle:
+          normalizeString(supplier.supplier_organization_name) ||
+          normalizeString(supplier.name) ||
+          normalizeString(supplier.id) ||
+          undefined,
+        imageUrl:
+          normalizeString(supplier.supplier_image) ||
+          normalizeString(supplier.image_url) ||
+          undefined,
+      }
+    }
 
     return {
-      imageUrl: normalizeString(card.imageUrl ?? card.avatarUrl) || undefined,
-      title: card.title,
+      title:
+        normalizeString(supplier.supplier_organization_name) ||
+        normalizeString(supplier.name) ||
+        normalizeString(supplier.short_name) ||
+        normalizeString(supplier.id),
       subtitle:
-        normalizeString(card.subtitle) || normalizeString(supplierState.id.value) || undefined,
+        normalizeString(supplier.supplier_headline) ||
+        normalizeString(supplier.summary) ||
+        normalizeString(supplier.id) ||
+        undefined,
+      imageUrl:
+        normalizeString(supplier.supplier_image) ||
+        normalizeString(supplier.image_url) ||
+        undefined,
     }
   })
-  const consoleState = useConsoleState({
-    family: 'suppliers',
-    selectedId: supplierState.id,
-    mode: supplierState.mode,
-    setMode: (mode) => supplierSelection.setRuntimeSupplier({ mode }),
-    clearSelection: supplierSelection.clearRuntimeSupplier,
-    header: headerData,
-    publishHeader: options.publishHeader,
-  })
+
+  usePublishConsoleHeader('suppliers', header)
+
+  const clearSelectedSupplier = () => {
+    clearSelection()
+  }
+  const selectSupplier = (supplierId: string, mode: SupplierConsoleMode = 'live') => {
+    selectEntity(supplierId, mode)
+  }
 
   return {
-    supplierState,
-    supplier,
-    headerData,
-    consoleState,
+    suppliers,
+    selectedSupplier,
+    selectedMode,
+    clearSelectedSupplier,
+    selectSupplier,
   }
 }

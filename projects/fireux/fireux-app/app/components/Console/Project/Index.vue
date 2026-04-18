@@ -51,39 +51,6 @@
       />
     </div>
 
-    <section v-if="testProject" class="w-full max-w-xl space-y-3">
-      <div class="flex items-center gap-3">
-        <div class="h-px flex-1 bg-default/60" />
-        <div class="text-xs uppercase tracking-[0.16em] text-toned">Or</div>
-        <div class="h-px flex-1 bg-default/60" />
-      </div>
-
-      <div class="space-y-2">
-        <div class="text-sm font-medium text-highlighted">Use your test project</div>
-
-        <div class="text-sm text-dimmed">
-          Personal sandbox project for experiments and console setup.
-        </div>
-
-        <ProjectCardsPill
-          v-if="testProjectCard"
-          v-bind="testProjectCard"
-          :link="false"
-          :action="true"
-          :show-badges="false"
-          @action="selectTestProject"
-        />
-
-        <DevJson
-          v-if="isDev"
-          title="Test Project (Debug)"
-          context="console projects · test project · raw and fallback analysis"
-          :data="testProjectDebug"
-          :default-open="false"
-        />
-      </div>
-    </section>
-
     <section v-if="demoProjects.length" class="w-full max-w-xl space-y-3">
       <div class="flex items-center gap-3">
         <div class="h-px flex-1 bg-default/60" />
@@ -120,6 +87,40 @@
         </div>
       </div>
     </section>
+
+    <section v-if="testProject" class="w-full max-w-xl space-y-3">
+      <div class="flex items-center gap-3">
+        <div class="h-px flex-1 bg-default/60" />
+        <div class="text-xs uppercase tracking-[0.16em] text-toned">Or</div>
+        <div class="h-px flex-1 bg-default/60" />
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-medium text-highlighted">Use your test project</div>
+
+        <div class="text-sm text-dimmed">
+          Personal sandbox project for experiments and console setup.
+        </div>
+
+        <ProjectCardsPill
+          v-if="testProjectCard"
+          v-bind="testProjectCard"
+          :link="false"
+          :action="true"
+          :show-badges="false"
+          @action="selectTestProject"
+        />
+
+        <DevJson
+          v-if="isDev"
+          title="Test Project (Debug)"
+          context="console projects · test project · raw and fallback analysis"
+          :data="testProjectDebug"
+          :default-open="false"
+        />
+      </div>
+    </section>
+
   </section>
 </template>
 
@@ -136,7 +137,6 @@ type DemoProjectListItem = {
   name: string
   label: string
   image_url?: string
-  mode: 'demo'
 }
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -144,10 +144,10 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 const {
   projects,
   selectedProject,
-  selectedProjectCard,
+  selectedMode,
   selectProject,
   clearSelectedProject,
-} = useProjectConsole({ publishHeader: true })
+} = useProjectConsole()
 const { currentUser, avatarSrc } = useUser()
 const { pill } = useProjectInterface()
 
@@ -177,6 +177,29 @@ const demoProjectCards = computed(() =>
     )
     .filter(Boolean)
 )
+
+const selectedProjectCard = computed(() => {
+  const project = selectedProject.value
+  if (!project) return null
+
+  if (selectedMode.value === 'test') {
+    const card = pill({
+      ...(project as Record<string, unknown>),
+      image_url:
+        normalizeString((project as Record<string, unknown>)?.image_url) || testProjectAvatar.value,
+    } as ProjectSurface)
+
+    if (!card) return null
+
+    return {
+      ...card,
+      title: 'Test Project',
+      subtitle: testProjectDisplayName.value,
+    }
+  }
+
+  return pill(project as ProjectSurface)
+})
 
 const testProject = computed<ProjectSurface | null>(() => {
   const value = projects.value.test
@@ -263,13 +286,13 @@ const testProjectDebug = computed(() => {
   }
 })
 
-const selectDemoProject = (projectId: string) => {
-  selectProject(projectId, 'demo')
-}
-
 const selectTestProject = () => {
   const projectId = String(testProject.value?.id || '').trim()
   if (!projectId) return
   selectProject(projectId, 'test')
+}
+
+const selectDemoProject = (projectId: string) => {
+  selectProject(projectId, 'demo')
 }
 </script>

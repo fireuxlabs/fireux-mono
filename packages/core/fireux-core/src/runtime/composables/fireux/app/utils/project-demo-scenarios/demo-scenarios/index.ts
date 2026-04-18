@@ -1,4 +1,3 @@
-import { createDemoScenarioRegistry } from 'fireux-core/runtime/composables/fireux/console/createDemoScenarioRegistry'
 import { cedarLoopScenario } from './cedar-loop'
 import { harborGridScenario } from './harbor-grid'
 import { northstarWorksScenario } from './northstar-works'
@@ -20,25 +19,21 @@ const normalize = (value: unknown) => String(value ?? '').trim()
 const isScenarioKey = (value: string): value is ScenarioKey =>
   scenarioKeys.includes(value as ScenarioKey)
 
-const registry = createDemoScenarioRegistry<
-  DemoProjectScenario,
-  ScenarioKey,
-  DemoProjectScenarioListItem
->({
-  keys: scenarioKeys,
-  defaultKey: defaultScenarioKey,
-  builders: {
-    'northstar-works': northstarWorksScenario,
-    'harbor-grid': harborGridScenario,
-    'cedar-loop': cedarLoopScenario,
-  },
-  toListItem: (scenario) => ({
-    id: scenario.id,
-    name: scenario.name,
-    label: scenario.label,
-    image_url: scenario.image_url,
-    mode: 'demo',
-  }),
+const scenarioBuilders: Record<ScenarioKey, () => DemoProjectScenario> = {
+  'northstar-works': northstarWorksScenario,
+  'harbor-grid': harborGridScenario,
+  'cedar-loop': cedarLoopScenario,
+}
+
+const resolveScenario = (scenarioKey: ScenarioKey): DemoProjectScenario =>
+  scenarioBuilders[scenarioKey]()
+
+const toListItem = (scenario: DemoProjectScenario): DemoProjectScenarioListItem => ({
+  id: scenario.id,
+  name: scenario.name,
+  label: scenario.label,
+  image_url: scenario.image_url,
+  mode: 'demo',
 })
 
 export const getDemoProject = (
@@ -46,14 +41,14 @@ export const getDemoProject = (
 ): DemoProjectScenario | null => {
   const candidate = normalize(projectId)
   if (!candidate || !isScenarioKey(candidate)) return null
-  return registry.get(candidate)
+  return resolveScenario(candidate)
 }
 
 export const getDefaultDemoProject = (): DemoProjectScenario =>
-  registry.resolve(defaultScenarioKey)
+  resolveScenario(defaultScenarioKey)
 
 export const getDemoProjects = (): DemoProjectScenarioListItem[] =>
-  registry.getList()
+  scenarioKeys.map((scenarioKey) => toListItem(resolveScenario(scenarioKey)))
 
 export const getDemoProjectScenarios = (): DemoProjectScenario[] =>
-  scenarioKeys.map((scenarioKey) => registry.resolve(scenarioKey))
+  scenarioKeys.map((scenarioKey) => resolveScenario(scenarioKey))

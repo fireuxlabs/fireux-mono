@@ -1,55 +1,108 @@
 import { computed } from 'vue'
-import { normalizeString } from 'fireux-core/runtime/composables/fireux/console/console.normalize'
-import { useConsoleState } from 'fireux-core/runtime/composables/fireux/console/useConsoleState'
-import type { Portfolio } from '../../../../models/portfolio.model'
-import { usePortfolioSelection } from './usePortfolioSelection'
-import { useActivePortfolio } from './useActivePortfolio'
-import { usePortfolioInterface } from '../../firestore/portfolio/utils/view/usePortfolioInterface'
+import {
+  useConsole,
+  usePublishConsoleHeader,
+  type ConsoleHeaderData,
+} from 'fireux-core/runtime/composables/fireux/console/useConsole'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { usePortfolioCollection } from '../../firestore/portfolio/fetch/usePortfolioCollection'
+import { usePortfolioFetch } from '../../firestore/portfolio/fetch/usePortfolioFetch'
 
-type UsePortfolioConsoleOptions = {
-  publishHeader?: boolean
+type PortfolioConsoleMode = 'live' | 'demo' | 'test'
+
+type DemoPortfolioListItem = {
+  id: string
+  name: string
+  label?: string
+  image_url?: string
+  mode: 'demo'
 }
 
-/**
- * Portfolio console adapter.
- * Keeps only the active pill, header data, and shared console-state wiring.
- */
-export function usePortfolioConsole(
-  options: UsePortfolioConsoleOptions = {}
-) {
-  const portfolioState = useActivePortfolio()
-  const portfolioSelection = usePortfolioSelection()
-  const { pill: toPortfolioCard } = usePortfolioInterface()
+const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-  const portfolio = computed(() =>
-    toPortfolioCard(portfolioState.entity.value as Portfolio | null)
-  )
+export function usePortfolioConsole() {
+  const { portfolios: livePortfolios } = usePortfolioCollection()
+  const { uid } = useAuth()
+  const testPortfolioId = computed(() => normalizeString(uid.value))
+  const demoPortfolios = computed<DemoPortfolioListItem[]>(() => [])
+  const { portfolio: testPortfolio } = usePortfolioFetch(testPortfolioId, {
+    collectionPath: 'test-portfolios',
+  })
+  const { selectedId, selectedMode, selectEntity, clearSelection } = useConsole('portfolios')
 
-  const headerData = computed(() => {
-    const card = portfolio.value
-    if (!card) return null
+  const portfolios = computed(() => ({
+    live: livePortfolios.value,
+    demo: demoPortfolios.value,
+    test: testPortfolio.value,
+  }))
+
+  const selectedPortfolio = computed(() => {
+    const portfolioId = normalizeString(selectedId.value)
+    if (!portfolioId) return null
+
+    if (selectedMode.value === 'demo') {
+      return demoPortfolios.value.find((portfolio) => portfolio.id === portfolioId) ?? null
+    }
+
+    if (selectedMode.value === 'test') {
+      const portfolio = testPortfolio.value
+      return normalizeString(portfolio?.id) === portfolioId ? portfolio : null
+    }
+
+    return (
+      livePortfolios.value.find((portfolio) => normalizeString(portfolio?.id) === portfolioId) ??
+      null
+    )
+  })
+
+  const header = computed<ConsoleHeaderData>(() => {
+    const portfolio = selectedPortfolio.value as Record<string, unknown> | null
+    if (!portfolio) return null
+
+    if (selectedMode.value === 'demo') {
+      return {
+        title: normalizeString(portfolio.name) || normalizeString(portfolio.id),
+        subtitle: normalizeString(portfolio.label) || normalizeString(portfolio.id) || undefined,
+        imageUrl: normalizeString(portfolio.image_url) || undefined,
+      }
+    }
+
+    if (selectedMode.value === 'test') {
+      return {
+        title: 'Test Portfolio',
+        subtitle:
+          normalizeString(portfolio.name) ||
+          normalizeString(portfolio.id) ||
+          undefined,
+        imageUrl: normalizeString(portfolio.image_url) || undefined,
+      }
+    }
 
     return {
-      imageUrl: normalizeString(card.imageUrl ?? card.avatarUrl) || undefined,
-      title: card.title,
+      title: normalizeString(portfolio.name) || normalizeString(portfolio.id),
       subtitle:
-        normalizeString(card.subtitle) || normalizeString(portfolioState.id.value) || undefined,
+        normalizeString(portfolio.region_label) ||
+        normalizeString(portfolio.slug) ||
+        normalizeString(portfolio.id) ||
+        undefined,
+      imageUrl: normalizeString(portfolio.image_url) || undefined,
     }
   })
-  const consoleState = useConsoleState({
-    family: 'portfolios',
-    selectedId: portfolioState.id,
-    mode: portfolioState.mode,
-    setMode: (mode) => portfolioSelection.setRuntimePortfolio({ mode }),
-    clearSelection: portfolioSelection.clearRuntimePortfolio,
-    header: headerData,
-    publishHeader: options.publishHeader,
-  })
+
+  usePublishConsoleHeader('portfolios', header)
+
+  const clearSelectedPortfolio = () => {
+    clearSelection()
+  }
+  const selectPortfolio = (portfolioId: string, mode: PortfolioConsoleMode = 'live') => {
+    selectEntity(portfolioId, mode)
+  }
 
   return {
-    portfolioState,
-    portfolio,
-    headerData,
-    consoleState,
+    portfolios,
+    selectedPortfolio,
+    selectedMode,
+    clearSelectedPortfolio,
+    selectPortfolio,
   }
 }
