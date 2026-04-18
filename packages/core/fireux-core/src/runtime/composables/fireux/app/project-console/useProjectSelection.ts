@@ -1,8 +1,8 @@
-import { toConsoleSelectionStateKey } from 'fireux-core/runtime/composables/fireux/app/routing/consoleRoutes'
+import { toConsoleSelectionStateKey } from '../routing/consoleRoutes'
 import {
   normalizeConsoleMode,
   normalizeString,
-} from 'fireux-core/runtime/composables/fireux/console/console.normalize'
+} from '../../console/console.normalize'
 import type { ConsoleMode } from '../../console/console.types'
 import {
   selectionKey,

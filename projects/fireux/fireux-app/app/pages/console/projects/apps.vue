@@ -6,30 +6,13 @@
 
     <template #body>
       <section class="space-y-6">
-        <UAlert
-          v-if="!runtime.id"
-          color="neutral"
-          variant="soft"
-          title="No project selected"
-          description="Select a project on /console/projects before viewing apps."
-          :actions="[
-            {
-              label: 'Go to projects',
-              to: '/console/projects',
-              icon: 'i-lucide-arrow-right',
-            },
-          ]"
-        />
-
-        <ConsoleProjectApps v-else />
+        <ConsoleProjectApps />
       </section>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { useActiveProject } from 'fireux-core/runtime/composables/fireux/app/project-console/useActiveProject'
-
 definePageMeta({
   layout: 'console',
   nav: {
@@ -44,6 +27,4 @@ definePageMeta({
   },
   requiresAuth: true,
 })
-
-const runtime = useActiveProject()
 </script>

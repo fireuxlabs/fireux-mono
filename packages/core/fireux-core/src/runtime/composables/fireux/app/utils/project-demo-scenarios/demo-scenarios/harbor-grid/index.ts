@@ -1,6 +1,6 @@
-import { AppModel } from '../../../../../../models/core/app.model'
-import { EcosystemModel } from '../../../../../../models/system/ecosystem.model'
-import { ProjectModel } from '../../../../../../models/system/project.model'
+import { AppModel } from 'fireux-core/runtime/models/core/app.model'
+import { EcosystemModel } from 'fireux-core/runtime/models/system/ecosystem.model'
+import { ProjectModel } from 'fireux-core/runtime/models/system/project.model'
 import type { DemoProjectScenario } from '../_shared/types'
 
 export const harborGridScenario = (): DemoProjectScenario => ({
@@ -19,6 +19,8 @@ export const harborGridScenario = (): DemoProjectScenario => ({
     app_id: 'line-pass',
     ecosystem_id: 'harbor',
     firebase_project_id: 'harbor-grid',
+    owner_user_id: 'demo-user',
+    team_ids: ['demo-user'],
   },
   projects: [
     {
@@ -31,6 +33,8 @@ export const harborGridScenario = (): DemoProjectScenario => ({
       app_id: 'line-pass',
       ecosystem_id: 'harbor',
       firebase_project_id: 'harbor-grid',
+      owner_user_id: 'demo-user',
+      team_ids: ['demo-user'],
     },
   ],
   ecosystems: [

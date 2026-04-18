@@ -3,7 +3,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { computed } from 'vue'
 import type { AppKitchen, Kitchen } from '../../../models/kitchen.model'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
-import { getDemoKitchenScenario } from './demo-scenarios'
+import { getDemoKitchen } from './demo-scenarios'
 import { resolveKitchenConsoleCollectionPath } from './shared'
 import { useKitchenSelection } from './useKitchenSelection'
 
@@ -30,7 +30,7 @@ export function useActiveKitchen() {
   })
   const scenario = computed(() => {
     if (!isDemo.value || !id.value) return null
-    return getDemoKitchenScenario(id.value)
+    return getDemoKitchen(id.value)
   })
   const overlay = computed(() => {
     const docId = String(id.value || '').trim()

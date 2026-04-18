@@ -113,13 +113,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useProjectConsole } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectConsole'
-import { useProjectData } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectData'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
 
 const { projectState, project } = useProjectConsole()
-const runtimeData = useProjectData({
-  entity: projectState.entity,
-})
+// const runtimeData = useProjectData({
+//   entity: projectState.entity,
+// })
 const { count: totalProjects } = useProjectCollection()
 const selectedProject = computed(
   () => projectState.entity.value as Record<string, unknown> | null
@@ -141,10 +140,10 @@ const consoleEndpoint = computed(() =>
 const projectTitle = computed(
   () => project.value?.title || projectName.value || projectSlug.value || projectId.value || 'Selected Project'
 )
-const focusAppsValue = computed(() => String(runtimeData.value.apps.length))
+const focusAppsValue = computed(() => '0')
 const allProjectsValue = computed(() => totalProjectsLabel.value)
 const totalProjectsLabel = computed(() => String(totalProjects.value || 0))
-const ecosystemLabel = computed(() => normalizeString(runtimeData.value.ecosystemId))
+const ecosystemLabel = computed(() => normalizeString(selectedProject.value?.ecosystem_id))
 const focusSummary = computed(() => {
   if (!project.value) return 'No active project selected.'
   if (ecosystemLabel.value) {

@@ -12,7 +12,7 @@ import { useKitchenMiseCollection } from '../../firestore/runtime-kitchen/mise/f
 import { useKitchenOrderFetch } from '../../firestore/runtime-kitchen/orders/fetch/useKitchenOrderFetch'
 import { useKitchenRecipeCollection } from '../../firestore/runtime-kitchen/recipe/fetch/useKitchenRecipeCollection'
 import { useKitchenSupplierFetch } from '../../firestore/runtime-kitchen/suppliers/fetch/useKitchenSupplierFetch'
-import { getDemoKitchenScenario } from './demo-scenarios'
+import { getDemoKitchen } from './demo-scenarios'
 
 type RuntimeKitchenDataShape = {
   kitchenIngredients: KitchenIngredient[]
@@ -128,7 +128,7 @@ export function useRuntimeKitchenData(params: {
   const demoData = computed<RuntimeKitchenDataShape>(() => {
     if (!params.id.value) return emptyKitchenData()
 
-    const scenario = getDemoKitchenScenario(params.id.value)
+    const scenario = getDemoKitchen(params.id.value)
     if (!scenario) return emptyKitchenData()
 
     return {

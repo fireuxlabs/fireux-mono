@@ -38,7 +38,7 @@ const registry = createDemoScenarioRegistry<
   }),
 })
 
-export const getDemoSupplierScenario = (
+export const getDemoSupplier = (
   supplierId?: string
 ): DemoSupplierScenario | null => {
   const candidate = normalize(supplierId)
@@ -46,10 +46,10 @@ export const getDemoSupplierScenario = (
   return registry.get(candidate as ScenarioKey) ?? registry.resolve(defaultScenarioKey)
 }
 
-export const getDefaultDemoSupplierScenario = (): DemoSupplierScenario =>
+export const getDefaultDemoSupplier = (): DemoSupplierScenario =>
   registry.resolve(defaultScenarioKey)
 
-export const getDemoSupplierScenarioList = (): DemoSupplierScenarioListItem[] =>
+export const getDemoSuppliers = (): DemoSupplierScenarioListItem[] =>
   registry.getList()
 
 export const getDemoSupplierScenarios = (): DemoSupplierScenario[] =>

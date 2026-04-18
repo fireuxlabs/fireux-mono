@@ -106,7 +106,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore'
 import { computed, ref } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { getDefaultDemoKitchenScenario } from '../../../composables/fireux/app/kitchen-console/demo-scenarios'
+import { getDefaultDemoKitchen } from '../../../composables/fireux/app/kitchen-console/demo-scenarios'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { KitchenIngredientModel } from '../../../models/ingredient.model'
 import type { Kitchen } from '../../../models/kitchen.model'
@@ -115,7 +115,7 @@ import { KitchenModel as KitchenModelRuntime } from '../../../models/kitchen.mod
 defineOptions({ name: 'DevTestKitchenSystem' })
 
 const kitchenModelRuntime = KitchenModelRuntime
-const demoKitchenScenario = getDefaultDemoKitchenScenario()
+const demoKitchenScenario = getDefaultDemoKitchen()
 const db = useFirestore()
 const { setDocument } = useFirestoreCreate()
 

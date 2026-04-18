@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { usePortfolioCollection } from '../../firestore/portfolio/fetch/usePortfolioCollection'
-import { getDemoPortfolioScenarioList } from './demo-scenarios'
+import { getDemoPortfolios } from './demo-scenarios'
 import { usePortfolioConsole } from './usePortfolioConsole'
 import { usePortfolioSelection } from './usePortfolioSelection'
 
@@ -18,7 +18,7 @@ export function usePortfolioConsoleIndex(
   const { portfolios } = usePortfolioCollection()
 
   const livePortfolios = computed(() => portfolios.value ?? [])
-  const demoPortfolios = computed(() => getDemoPortfolioScenarioList())
+  const demoPortfolios = computed(() => getDemoPortfolios())
 
   const selectPortfolio = (portfolioId: string) => {
     setRuntimePortfolio({ portfolioId, mode: 'live' })

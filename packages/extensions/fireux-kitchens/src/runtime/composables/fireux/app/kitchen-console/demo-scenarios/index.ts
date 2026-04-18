@@ -52,19 +52,19 @@ const registry = createDemoScenarioRegistry<
   },
 })
 
-export const resolveDemoKitchenScenario = (key: ScenarioKey): DemoKitchenScenario =>
+const resolveDemoKitchenScenario = (key: ScenarioKey): DemoKitchenScenario =>
   registry.resolve(key)
 
-export const getDefaultDemoKitchenScenario = (): DemoKitchenScenario =>
+export const getDefaultDemoKitchen = (): DemoKitchenScenario =>
   registry.resolve(defaultScenarioKey)
 
-export const resolveDemoKitchenScenarioKey = (kitchenId?: string): ScenarioKey | null => {
+const resolveDemoKitchenScenarioKey = (kitchenId?: string): ScenarioKey | null => {
   const id = normalize(kitchenId)
   if (!id) return null
   return isScenarioKey(id) ? id : null
 }
 
-export const getDemoKitchenScenario = (
+export const getDemoKitchen = (
   kitchenId?: string
 ): DemoKitchenScenario | null => {
   const scenarioKey = resolveDemoKitchenScenarioKey(kitchenId)
@@ -75,8 +75,5 @@ export const getDemoKitchenScenario = (
 export const getDemoKitchenScenarios = (): DemoKitchenScenario[] =>
   scenarioKeys.map((scenarioKey) => registry.resolve(scenarioKey))
 
-export const getDemoKitchenScenarioList = (): DemoKitchenScenarioListItem[] =>
+export const getDemoKitchens = (): DemoKitchenScenarioListItem[] =>
   registry.getList()
-
-export const resolveScenario = resolveDemoKitchenScenario
-export const defaultScenario = getDefaultDemoKitchenScenario

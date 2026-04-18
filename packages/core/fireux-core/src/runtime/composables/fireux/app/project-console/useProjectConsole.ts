@@ -1,96 +1,57 @@
 import { computed } from 'vue'
-import { toConsoleSelectionStateKey } from 'fireux-core/runtime/composables/fireux/app/routing/consoleRoutes'
 import { useConsoleEntityAdapter } from '../../console/useConsoleEntityAdapter'
-import {
-  normalizeConsoleMode,
-  normalizeString,
-} from '../../console/console.normalize'
-import type { ConsoleMode } from '../../console/console.types'
-import {
-  selectionKey,
-  useConsoleSelection,
-} from '../../console/useConsoleSelection'
-import { useProjectCollection } from '../../firestore/core/project/fetch/useProjectCollection'
-import { useProjectInterface } from '../../firestore/core/project/utils/view/useProjectInterface'
+import { useProjectCollection } from '../../firestore/system/project/fetch/useProjectCollection'
+import { useProjectInterface } from '../../firestore/system/project/utils/view/useProjectInterface'
+import { useProjectSelection } from './useProjectSelection'
 
 type UseProjectConsoleOptions = {
   publishHeader?: boolean
 }
 
-type ProjectConsoleSelectionState = {
-  selectedId: string
-  mode: ConsoleMode
-}
-
-const COOKIE_KEY = toConsoleSelectionStateKey('projects')
-
-const normalizeSelectionState = (value: unknown): ProjectConsoleSelectionState => {
-  const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
-
-  return {
-    selectedId: normalizeString(source.selectedId ?? source.projectId),
-    mode: normalizeConsoleMode(source.mode, { defaultMode: 'live' }),
-  }
-}
-
+/**
+ * Compatibility wrapper for project console consumers that still import the
+ * old project-console branch while the shared console selection APIs are in use.
+ */
 export function useProjectConsole(options: UseProjectConsoleOptions = {}) {
-  const selection = useConsoleSelection<ProjectConsoleSelectionState>({
-    cookieKey: COOKIE_KEY,
-    defaultState: () => ({ selectedId: '', mode: 'live' }),
-    normalizeState: normalizeSelectionState,
-  })
-  const selectedId = selectionKey(selection, 'selectedId')
-  const mode = selectionKey(selection, 'mode')
-  const { projects: liveProjects } = useProjectCollection({ scope: 'mine' })
+  const projectSelection = useProjectSelection()
+  const { selectedId, mode, setRuntimeProject, clearRuntimeProject } = projectSelection
+  const { projects } = useProjectCollection({ scope: 'mine' })
   const { pill } = useProjectInterface()
-  const projects = computed(() => liveProjects.value ?? [])
 
-  const selectProject = (projectId: string, nextMode: ConsoleMode = 'live') => {
-    selection.set({
-      selectedId: normalizeString(projectId),
-      mode: normalizeConsoleMode(nextMode, { defaultMode: mode.value }),
-    })
-  }
-
-  const clearSelectedProject = () => {
-    selection.clear()
-  }
-
-  const selectedProject = computed(
+  const entity = computed(
     () =>
       projects.value.find((project) => String(project?.id || '').trim() === selectedId.value) ??
       null
   )
 
-  const project = computed(() => pill(selectedProject.value))
-  const { consoleState } = useConsoleEntityAdapter({
+  const project = computed(() => pill(entity.value))
+  const { headerData, consoleState } = useConsoleEntityAdapter({
     family: 'projects',
     selectedId,
     mode,
-    setMode: (nextMode) =>
-      selection.set({
-        mode: normalizeConsoleMode(nextMode, { defaultMode: mode.value }),
-      }),
-    clearSelection: clearSelectedProject,
+    setMode: (nextMode) => setRuntimeProject({ mode: nextMode }),
+    clearSelection: clearRuntimeProject,
     card: project,
     publishHeader: options.publishHeader === true,
   })
 
+  const clearSelectedProject = () => {
+    clearRuntimeProject()
+  }
+
   const projectState = {
     id: selectedId,
-    entity: selectedProject,
+    entity,
+    mode,
     isDemo: computed(() => mode.value === 'demo'),
     scenario: computed(() => null),
   }
 
   return {
-    projects,
-    selectedProject,
-    mode,
-    selectProject,
-    clearSelectedProject,
     project,
     projectState,
+    headerData,
     consoleState,
+    clearSelectedProject,
   }
 }

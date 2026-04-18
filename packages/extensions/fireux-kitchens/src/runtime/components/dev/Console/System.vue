@@ -32,11 +32,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { getDefaultDemoKitchenScenario } from '../../../composables/fireux/app/kitchen-console/demo-scenarios';
+import { getDefaultDemoKitchen } from '../../../composables/fireux/app/kitchen-console/demo-scenarios';
 
 defineOptions({ name: 'DevConsoleSystem' })
 
-const demoKitchenScenario = getDefaultDemoKitchenScenario()
+const demoKitchenScenario = getDefaultDemoKitchen()
 
 const counts = computed(() => ({
   ingredients: demoKitchenScenario.globalIngredients.length,

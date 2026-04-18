@@ -62,7 +62,7 @@ const registry = createDemoScenarioRegistry<
   }),
 })
 
-export const getDemoPortfolioScenario = (
+export const getDemoPortfolio = (
   portfolioId?: string
 ): DemoPortfolioScenario | null => {
   const candidate = normalize(portfolioId)
@@ -70,10 +70,10 @@ export const getDemoPortfolioScenario = (
   return registry.get(candidate as ScenarioKey) ?? registry.resolve(defaultScenarioKey)
 }
 
-export const getDefaultDemoPortfolioScenario = (): DemoPortfolioScenario =>
+export const getDefaultDemoPortfolio = (): DemoPortfolioScenario =>
   registry.resolve(defaultScenarioKey)
 
-export const getDemoPortfolioScenarioList = (): DemoPortfolioScenarioListItem[] =>
+export const getDemoPortfolios = (): DemoPortfolioScenarioListItem[] =>
   registry.getList()
 
 export const getDemoPortfolioScenarios = (): DemoPortfolioScenario[] =>

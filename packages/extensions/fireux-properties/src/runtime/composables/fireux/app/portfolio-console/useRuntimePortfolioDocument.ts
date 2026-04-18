@@ -2,7 +2,7 @@ import { doc as firestoreDoc, type DocumentSnapshot } from 'firebase/firestore'
 import { computed, type Ref } from 'vue'
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Portfolio } from '../../../../models/portfolio.model'
-import { getDemoPortfolioScenario } from './demo-scenarios'
+import { getDemoPortfolio } from './demo-scenarios'
 import type { DemoPortfolioScenario } from './demo-scenarios/_shared/types'
 
 export function useRuntimePortfolioDocument(params: {
@@ -30,7 +30,7 @@ export function useRuntimePortfolioDocument(params: {
 
   const scenario = computed<DemoPortfolioScenario | null>(() => {
     if (!params.isDemo.value || !params.id.value) return null
-    return getDemoPortfolioScenario(params.id.value)
+    return getDemoPortfolio(params.id.value)
   })
 
   const doc = computed<Portfolio | null>(() => {

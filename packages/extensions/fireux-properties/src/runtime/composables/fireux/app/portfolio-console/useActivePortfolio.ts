@@ -1,6 +1,6 @@
 import { computed, type Ref } from 'vue'
 import { usePortfolioFetch } from '../../firestore/portfolio/fetch/usePortfolioFetch'
-import { getDemoPortfolioScenario } from './demo-scenarios'
+import { getDemoPortfolio } from './demo-scenarios'
 import { usePortfolioSelection } from './usePortfolioSelection'
 import {
   resolvePortfolioConsoleCollectionPath,
@@ -22,7 +22,7 @@ export function useActivePortfolio() {
 
   const scenario = computed(() => {
     if (!isDemo.value || !id.value) return null
-    return getDemoPortfolioScenario(id.value)
+    return getDemoPortfolio(id.value)
   })
 
   const entity = computed(() => {

@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useSupplierFetch } from '../../firestore/supplier/fetch/useSupplierFetch'
-import { getDemoSupplierScenario } from './demo-scenarios'
+import { getDemoSupplier } from './demo-scenarios'
 import { useSupplierSelection } from './useSupplierSelection'
 
 /**
@@ -18,7 +18,7 @@ export function useActiveSupplier() {
 
   const scenario = computed(() => {
     if (!isDemo.value || !id.value) return null
-    return getDemoSupplierScenario(id.value)
+    return getDemoSupplier(id.value)
   })
 
   const entity = computed(() => {

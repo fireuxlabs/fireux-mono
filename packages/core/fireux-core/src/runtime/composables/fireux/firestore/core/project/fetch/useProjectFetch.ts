@@ -38,7 +38,7 @@ function normalizeProject(
 }
 
 export function useProjectFetch(
-  id: string | Ref<string>,
+  id: string | null | Ref<string | null>,
   options: UseProjectFetchOptions = {}
 ) {
   const { firestoreFetchDoc } = useFirestoreRead()

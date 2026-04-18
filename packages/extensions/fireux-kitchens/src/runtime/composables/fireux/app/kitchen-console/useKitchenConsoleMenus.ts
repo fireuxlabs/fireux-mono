@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useKitchenConsole } from './useKitchenConsole'
 import { useKitchenMenuCollection } from '../../firestore/runtime-kitchen/menu/fetch/useKitchenMenuCollection'
-import { getDemoKitchenScenario } from './demo-scenarios'
+import { getDemoKitchen } from './demo-scenarios'
 
 export function useKitchenConsoleMenus() {
   const { kitchenState } = useKitchenConsole()
@@ -13,7 +13,7 @@ export function useKitchenConsoleMenus() {
   const menus = computed(() => {
     if (!kitchenState.isDemo.value) return liveMenus.value
     if (!kitchenState.id.value) return []
-    return getDemoKitchenScenario(kitchenState.id.value)?.menuStack.menus ?? []
+    return getDemoKitchen(kitchenState.id.value)?.menuStack.menus ?? []
   })
   const pending = computed(() =>
     kitchenState.isDemo.value ? false : livePending.value

@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useSupplierCollection } from '../../firestore/supplier/fetch/useSupplierCollection'
-import { getDemoSupplierScenarioList } from './demo-scenarios'
+import { getDemoSuppliers } from './demo-scenarios'
 import { useSupplierConsole } from './useSupplierConsole'
 import { useSupplierSelection } from './useSupplierSelection'
 
@@ -18,7 +18,7 @@ export function useSupplierConsoleIndex(
   const { suppliers } = useSupplierCollection()
 
   const liveSuppliers = computed(() => suppliers.value ?? [])
-  const demoSuppliers = computed(() => getDemoSupplierScenarioList())
+  const demoSuppliers = computed(() => getDemoSuppliers())
 
   const selectSupplier = (supplierId: string) => {
     setRuntimeSupplier({ supplierId, mode: 'live' })

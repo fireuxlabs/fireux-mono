@@ -1,4 +1,4 @@
-import { createDemoScenarioRegistry } from '../../../console/createDemoScenarioRegistry'
+import { createDemoScenarioRegistry } from 'fireux-core/runtime/composables/fireux/console/createDemoScenarioRegistry'
 import { cedarLoopScenario } from './cedar-loop'
 import { harborGridScenario } from './harbor-grid'
 import { northstarWorksScenario } from './northstar-works'
@@ -41,7 +41,7 @@ const registry = createDemoScenarioRegistry<
   }),
 })
 
-export const getDemoProjectScenario = (
+export const getDemoProject = (
   projectId?: string
 ): DemoProjectScenario | null => {
   const candidate = normalize(projectId)
@@ -49,10 +49,10 @@ export const getDemoProjectScenario = (
   return registry.get(candidate)
 }
 
-export const getDefaultDemoProjectScenario = (): DemoProjectScenario =>
+export const getDefaultDemoProject = (): DemoProjectScenario =>
   registry.resolve(defaultScenarioKey)
 
-export const getDemoProjectScenarioList = (): DemoProjectScenarioListItem[] =>
+export const getDemoProjects = (): DemoProjectScenarioListItem[] =>
   registry.getList()
 
 export const getDemoProjectScenarios = (): DemoProjectScenario[] =>

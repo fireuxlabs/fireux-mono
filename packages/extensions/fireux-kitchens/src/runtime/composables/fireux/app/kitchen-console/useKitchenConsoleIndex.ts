@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useKitchenCollection } from '../../firestore/kitchen/fetch/useKitchenCollection'
-import { getDemoKitchenScenarioList } from './demo-scenarios'
+import { getDemoKitchens } from './demo-scenarios'
 import { useKitchenConsole } from './useKitchenConsole'
 import { useKitchenSelection } from './useKitchenSelection'
 
@@ -18,7 +18,7 @@ export function useKitchenConsoleIndex(
   const { kitchens } = useKitchenCollection()
 
   const liveKitchens = computed(() => kitchens.value ?? [])
-  const demoKitchens = computed(() => getDemoKitchenScenarioList())
+  const demoKitchens = computed(() => getDemoKitchens())
 
   const selectKitchen = (kitchenId: string) => {
     setRuntimeKitchen({ kitchenId, mode: 'live' })
