@@ -1,9 +1,10 @@
 import { computed } from 'vue'
+import { normalizeString } from 'fireux-core/runtime/composables/fireux/console/console.normalize'
+import { useConsoleState } from 'fireux-core/runtime/composables/fireux/console/useConsoleState'
 import type { Portfolio } from '../../../../models/portfolio.model'
 import { usePortfolioSelection } from './usePortfolioSelection'
 import { useActivePortfolio } from './useActivePortfolio'
 import { usePortfolioInterface } from '../../firestore/portfolio/utils/view/usePortfolioInterface'
-import { useConsoleEntityAdapter } from 'fireux-core/runtime/composables/fireux/console/useConsoleEntityAdapter'
 
 type UsePortfolioConsoleOptions = {
   publishHeader?: boolean
@@ -24,13 +25,24 @@ export function usePortfolioConsole(
     toPortfolioCard(portfolioState.entity.value as Portfolio | null)
   )
 
-  const { headerData, consoleState } = useConsoleEntityAdapter({
+  const headerData = computed(() => {
+    const card = portfolio.value
+    if (!card) return null
+
+    return {
+      imageUrl: normalizeString(card.imageUrl ?? card.avatarUrl) || undefined,
+      title: card.title,
+      subtitle:
+        normalizeString(card.subtitle) || normalizeString(portfolioState.id.value) || undefined,
+    }
+  })
+  const consoleState = useConsoleState({
     family: 'portfolios',
     selectedId: portfolioState.id,
     mode: portfolioState.mode,
     setMode: (mode) => portfolioSelection.setRuntimePortfolio({ mode }),
     clearSelection: portfolioSelection.clearRuntimePortfolio,
-    card: portfolio,
+    header: headerData,
     publishHeader: options.publishHeader,
   })
 

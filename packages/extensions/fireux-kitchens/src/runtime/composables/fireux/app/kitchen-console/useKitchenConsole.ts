@@ -1,43 +1,82 @@
 import { computed } from 'vue'
-import type { Kitchen } from '../../../../models/kitchen.model'
-import { useKitchenSelection } from './useKitchenSelection'
-import { useActiveKitchen } from './useActiveKitchen'
-import { useKitchenInterface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
-import { useConsoleEntityAdapter } from 'fireux-core/runtime/composables/fireux/console/useConsoleEntityAdapter'
+import { getDemoKitchens } from './demo-scenarios'
+import { useConsole } from 'fireux-core/runtime/composables/fireux/console/useConsole'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useKitchenCollection } from '../../firestore/kitchen/fetch/useKitchenCollection'
+import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 
-type UseKitchenConsoleOptions = {
-  publishHeader?: boolean
+type KitchenConsoleMode = 'live' | 'demo' | 'test'
+
+type DemoKitchenListItem = {
+  id: string
+  name: string
+  address_label: string
+  image_url: string
+  mode: 'demo'
 }
 
-/**
- * Kitchen console adapter.
- * Keeps only the active pill, header data, and shared console-state wiring.
- */
-export function useKitchenConsole(
-  options: UseKitchenConsoleOptions = {}
-) {
-  const kitchenState = useActiveKitchen()
-  const kitchenSelection = useKitchenSelection()
-  const { pill: toKitchenCard } = useKitchenInterface()
+const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-  const kitchen = computed(() =>
-    toKitchenCard(kitchenState.entity.value as Kitchen | null)
-  )
-
-  const { headerData, consoleState } = useConsoleEntityAdapter({
-    family: 'kitchens',
-    selectedId: kitchenState.id,
-    mode: kitchenState.mode,
-    setMode: (mode) => kitchenSelection.setRuntimeKitchen({ mode }),
-    clearSelection: kitchenSelection.clearRuntimeKitchen,
-    card: kitchen,
-    publishHeader: options.publishHeader,
+export function useKitchenConsole() {
+  const { kitchens: liveKitchens } = useKitchenCollection()
+  const { uid } = useAuth()
+  const { kitchen: testKitchen } = useKitchenFetch(uid, {
+    collectionPath: 'test-kitchens',
   })
+  const { selectedId, selectedMode, selectEntity, clearSelection } = useConsole('kitchens')
+
+  const kitchens = computed(() => ({
+    live: liveKitchens.value,
+    demo: getDemoKitchens(),
+    test: testKitchen.value,
+  }))
+  const selectedKitchen = computed(() => {
+    const kitchenId = normalizeString(selectedId.value)
+    if (!kitchenId) return null
+
+    if (selectedMode.value === 'demo') {
+      return (getDemoKitchens() as DemoKitchenListItem[]).find((kitchen) => kitchen.id === kitchenId) ?? null
+    }
+
+    if (selectedMode.value === 'test') {
+      const kitchen = testKitchen.value
+      return normalizeString(kitchen?.id) === kitchenId ? kitchen : null
+    }
+
+    return (
+      liveKitchens.value.find((kitchen) => normalizeString(kitchen?.id) === kitchenId) ?? null
+    )
+  })
+  const kitchen = computed(() => null)
+  const kitchenState = {
+    id: selectedId,
+    entity: selectedKitchen,
+    mode: selectedMode,
+    isDemo: computed(() => selectedMode.value === 'demo'),
+    scenario: computed(() => null),
+  }
+  const consoleState = {
+    clearSelection,
+  }
+
+  const clearSelectedKitchen = () => {
+    clearSelection()
+  }
+  const selectKitchen = (
+    kitchenId: string,
+    mode: KitchenConsoleMode = 'live'
+  ) => {
+    selectEntity(kitchenId, mode)
+  }
 
   return {
-    kitchenState,
+    kitchens,
     kitchen,
-    headerData,
+    kitchenState,
     consoleState,
+    selectedKitchen,
+    selectedMode,
+    clearSelectedKitchen,
+    selectKitchen,
   }
 }
