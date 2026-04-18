@@ -113,15 +113,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useProjectConsole } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectConsole'
-import { useRuntimeProjectData } from 'fireux-core/runtime/composables/fireux/app/project-console/useRuntimeProjectData'
+import { useProjectData } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectData'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
 
 const { projectState, project } = useProjectConsole()
-const runtimeData = useRuntimeProjectData({
-  id: projectState.id,
+const runtimeData = useProjectData({
   entity: projectState.entity,
-  isDemo: projectState.isDemo,
-  scenario: projectState.scenario,
 })
 const { count: totalProjects } = useProjectCollection()
 const selectedProject = computed(

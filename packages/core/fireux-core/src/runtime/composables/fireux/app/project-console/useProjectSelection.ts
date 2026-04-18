@@ -1,10 +1,13 @@
-import { computed } from 'vue'
-import { useState } from '#imports'
+import { toConsoleSelectionStateKey } from 'fireux-core/runtime/composables/fireux/app/routing/consoleRoutes'
 import {
   normalizeConsoleMode,
   normalizeString,
-} from '../../console/console.normalize'
+} from 'fireux-core/runtime/composables/fireux/console/console.normalize'
 import type { ConsoleMode } from '../../console/console.types'
+import {
+  selectionKey,
+  useConsoleSelection,
+} from '../../console/useConsoleSelection'
 
 type ProjectSelectionState = {
   selectedId: string
@@ -17,16 +20,25 @@ type RuntimeProjectSelectionInput = {
   mode?: ConsoleMode
 }
 
-const PROJECT_SELECTION_KEY = 'fireux-project-selection'
+const COOKIE_KEY = toConsoleSelectionStateKey('projects')
+
+const normalizeSelectionState = (value: unknown): ProjectSelectionState => {
+  const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
+
+  return {
+    selectedId: normalizeString(source.selectedId ?? source.projectId),
+    mode: normalizeConsoleMode(source.mode, { defaultMode: 'live' }),
+  }
+}
 
 export function useProjectSelection() {
-  const state = useState<ProjectSelectionState>(PROJECT_SELECTION_KEY, () => ({
-    selectedId: '',
-    mode: 'live',
-  }))
-
-  const selectedId = computed(() => state.value.selectedId)
-  const mode = computed(() => state.value.mode)
+  const selection = useConsoleSelection<ProjectSelectionState>({
+    cookieKey: COOKIE_KEY,
+    defaultState: () => ({ selectedId: '', mode: 'live' }),
+    normalizeState: normalizeSelectionState,
+  })
+  const selectedId = selectionKey(selection, 'selectedId')
+  const mode = selectionKey(selection, 'mode')
 
   const setRuntimeProject = (selectionPatch: RuntimeProjectSelectionInput = {}) => {
     const nextId =
@@ -39,17 +51,11 @@ export function useProjectSelection() {
         ? normalizeConsoleMode(selectionPatch.mode, { defaultMode: mode.value })
         : mode.value
 
-    state.value = {
-      selectedId: nextId,
-      mode: nextMode,
-    }
+    selection.set({ selectedId: nextId, mode: nextMode })
   }
 
   const clearRuntimeProject = () => {
-    state.value = {
-      selectedId: '',
-      mode: 'live',
-    }
+    selection.clear()
   }
 
   return {

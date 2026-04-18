@@ -254,12 +254,32 @@ function toAppRef(app: DefaultAppRecord): FireuxConsoleAppRef {
   }
 }
 
+function normalizeEcosystemId(docId: string, data: Record<string, unknown>) {
+  const slug = firstString(data, ['slug'])
+  if (slug) return slug
+
+  const storedId = firstString(data, ['id'])
+  if (storedId.startsWith('fireux-')) {
+    return storedId.replace(/^fireux-/, '')
+  }
+  if (storedId) return storedId
+
+  const normalizedDocId = normalizeString(docId)
+  if (normalizedDocId.startsWith('fireux-')) {
+    return normalizedDocId.replace(/^fireux-/, '')
+  }
+
+  return normalizedDocId
+}
+
 function normalizeEcosystem(docId: string, data: Record<string, unknown>): FireuxConsoleEcosystem {
+  const ecosystemId = normalizeEcosystemId(docId, data)
+
   return {
-    id: docId,
+    id: ecosystemId,
     project_id: firstString(data, ['project_id']),
     name: firstString(data, ['name']),
-    slug: firstString(data, ['slug']) || docId,
+    slug: firstString(data, ['slug']) || ecosystemId,
     description: firstString(data, ['description']),
     image_url: firstString(data, ['image_url']),
     source_url: firstString(data, ['source_url']),

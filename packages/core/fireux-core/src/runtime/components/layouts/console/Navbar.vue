@@ -14,7 +14,7 @@
           variant="ghost"
           size="xs"
           icon="i-lucide-x"
-          @click="clearRuntimeProject()"
+          @click="clearSelectedProject()"
         >
           Clear
         </UButton>
@@ -27,13 +27,11 @@
 
 <script setup lang="ts">
 import { useProjectConsole } from '../../../composables/fireux/app/project-console/useProjectConsole'
-import { useProjectSelection } from '../../../composables/fireux/app/project-console/useProjectSelection'
 
 defineProps<{
   title: string
   ui?: any
 }>()
 
-const { project } = useProjectConsole()
-const { clearRuntimeProject } = useProjectSelection()
+const { project, clearSelectedProject } = useProjectConsole()
 </script>

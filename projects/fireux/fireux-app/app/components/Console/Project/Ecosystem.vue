@@ -1,21 +1,24 @@
 <template>
   <section class="console-surface space-y-4">
     <UAlert
-      v-if="pending"
+      v-if="projectData.pendingEcosystem"
       color="neutral"
       variant="soft"
       title="Loading project ecosystem"
       description="Fetching the ecosystem linked to the selected project."
     />
 
-    <UCard v-else-if="project && ecosystem">
+    <UCard v-else-if="project && projectData.ecosystem">
       <template #header>
         <div class="console-card-header">
           <div class="console-card-header__title">Project Ecosystem</div>
         </div>
       </template>
 
-      <EcosystemCardsProfile v-if="ecosystemProfile" :item="ecosystemProfile" />
+      <EcosystemCardsProfile
+        v-if="projectData.ecosystemProfile"
+        :item="projectData.ecosystemProfile"
+      />
     </UCard>
 
     <UCard v-else-if="project">
@@ -44,8 +47,8 @@
 
 <script setup lang="ts">
 import { useProjectConsole } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectConsole'
-import { useProjectConsoleEcosystem } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectConsoleEcosystem'
+import { useProjectData } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectData'
 
 const { project } = useProjectConsole()
-const { ecosystem, ecosystemProfile, pending } = useProjectConsoleEcosystem()
+const projectData = useProjectData()
 </script>
