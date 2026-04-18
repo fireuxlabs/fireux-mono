@@ -1,15 +1,21 @@
 import { computed } from 'vue'
+import { useState } from '#imports'
 import { getDemoProjects } from 'fireux-core/runtime/composables/fireux/app/utils/project-demo-scenarios/demo-scenarios/index'
 import {
-  useConsole,
   usePublishConsoleHeader,
   type ConsoleHeaderData,
-} from 'fireux-core/runtime/composables/fireux/console/useConsole'
+} from 'fireux-core/runtime/composables/fireux/console/useConsoleHeader'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
 import { useProjectFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectFetch'
+import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/console/useConsoleIndex'
 
-type ProjectConsoleMode = 'live' | 'demo' | 'test'
+type ProjectConsoleMode = ConsoleMode
+
+type ProjectConsoleState = {
+  selectedId: string
+  selectedMode: ProjectConsoleMode
+}
 
 type DemoProjectListItem = {
   id: string
@@ -24,31 +30,30 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 export function useProjectConsole() {
   const { projects: liveProjects } = useProjectCollection({ scope: 'mine' })
   const { uid } = useAuth()
-  const testProjectId = computed(() => normalizeString(uid.value))
-  const { project: testProject } = useProjectFetch(testProjectId, { source: 'test' })
-  const { selectedId, selectedMode, selectEntity, clearSelection } = useConsole('projects')
-
-  const projects = computed(() => ({
-    live: liveProjects.value,
-    demo: getDemoProjects(),
-    test: testProject.value,
+  const { project: testProject } = useProjectFetch(uid, { source: 'test' })
+  const state = useState<ProjectConsoleState>('console:projects', () => ({
+    selectedId: '',
+    selectedMode: 'live',
   }))
+  const selectedId = computed(() => normalizeString(state.value.selectedId))
+  const selectedMode = computed(() => state.value.selectedMode)
+  const demoProjects = computed<DemoProjectListItem[]>(() => getDemoProjects())
 
   const selectedProject = computed(() => {
-    const projectId = normalizeString(selectedId.value)
-    if (!projectId) return null
+    if (!selectedId.value) return null
 
     if (selectedMode.value === 'demo') {
-      return (projects.value.demo as DemoProjectListItem[]).find((project) => project.id === projectId) ?? null
+      return demoProjects.value.find((project) => project.id === selectedId.value) ?? null
     }
 
     if (selectedMode.value === 'test') {
       const project = testProject.value
-      return normalizeString(project?.id) === projectId ? project : null
+      return normalizeString(project?.id) === selectedId.value ? project : null
     }
 
     return (
-      liveProjects.value.find((project) => normalizeString(project?.id) === projectId) ?? null
+      liveProjects.value.find((project) => normalizeString(project?.id) === selectedId.value) ??
+      null
     )
   })
 
@@ -67,10 +72,7 @@ export function useProjectConsole() {
     if (selectedMode.value === 'test') {
       return {
         title: 'Test Project',
-        subtitle:
-          normalizeString(project.name) ||
-          normalizeString(project.id) ||
-          undefined,
+        subtitle: normalizeString(project.name) || normalizeString(project.id) || undefined,
         imageUrl: normalizeString(project.image_url) || undefined,
       }
     }
@@ -78,9 +80,7 @@ export function useProjectConsole() {
     return {
       title: normalizeString(project.name) || normalizeString(project.id),
       subtitle:
-        normalizeString(project.slug) ||
-        normalizeString(project.id) ||
-        undefined,
+        normalizeString(project.slug) || normalizeString(project.id) || undefined,
       imageUrl: normalizeString(project.image_url) || undefined,
     }
   })
@@ -88,14 +88,20 @@ export function useProjectConsole() {
   usePublishConsoleHeader('projects', header)
 
   const clearSelectedProject = () => {
-    clearSelection()
+    state.value = {
+      selectedId: '',
+      selectedMode: 'live',
+    }
   }
+
   const selectProject = (projectId: string, mode: ProjectConsoleMode = 'live') => {
-    selectEntity(projectId, mode)
+    state.value = {
+      selectedId: normalizeString(projectId),
+      selectedMode: mode,
+    }
   }
 
   return {
-    projects,
     selectedProject,
     selectedMode,
     clearSelectedProject,

@@ -1,21 +1,19 @@
 import { computed } from 'vue'
+import { useState } from '#imports'
 import {
-  useConsole,
   usePublishConsoleHeader,
   type ConsoleHeaderData,
-} from 'fireux-core/runtime/composables/fireux/console/useConsole'
+} from 'fireux-core/runtime/composables/fireux/console/useConsoleHeader'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/console/useConsoleIndex'
 import { usePortfolioCollection } from '../../firestore/portfolio/fetch/usePortfolioCollection'
 import { usePortfolioFetch } from '../../firestore/portfolio/fetch/usePortfolioFetch'
 
-type PortfolioConsoleMode = 'live' | 'demo' | 'test'
+type PortfolioConsoleMode = ConsoleMode
 
-type DemoPortfolioListItem = {
-  id: string
-  name: string
-  label?: string
-  image_url?: string
-  mode: 'demo'
+type PortfolioConsoleState = {
+  selectedId: string
+  selectedMode: PortfolioConsoleMode
 }
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -23,34 +21,26 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 export function usePortfolioConsole() {
   const { portfolios: livePortfolios } = usePortfolioCollection()
   const { uid } = useAuth()
-  const testPortfolioId = computed(() => normalizeString(uid.value))
-  const demoPortfolios = computed<DemoPortfolioListItem[]>(() => [])
-  const { portfolio: testPortfolio } = usePortfolioFetch(testPortfolioId, {
+  const { portfolio: testPortfolio } = usePortfolioFetch(uid, {
     collectionPath: 'test-portfolios',
   })
-  const { selectedId, selectedMode, selectEntity, clearSelection } = useConsole('portfolios')
-
-  const portfolios = computed(() => ({
-    live: livePortfolios.value,
-    demo: demoPortfolios.value,
-    test: testPortfolio.value,
+  const state = useState<PortfolioConsoleState>('console:portfolios', () => ({
+    selectedId: '',
+    selectedMode: 'live',
   }))
+  const selectedId = computed(() => normalizeString(state.value.selectedId))
+  const selectedMode = computed(() => state.value.selectedMode)
 
   const selectedPortfolio = computed(() => {
-    const portfolioId = normalizeString(selectedId.value)
-    if (!portfolioId) return null
-
-    if (selectedMode.value === 'demo') {
-      return demoPortfolios.value.find((portfolio) => portfolio.id === portfolioId) ?? null
-    }
+    if (!selectedId.value) return null
 
     if (selectedMode.value === 'test') {
       const portfolio = testPortfolio.value
-      return normalizeString(portfolio?.id) === portfolioId ? portfolio : null
+      return normalizeString(portfolio?.id) === selectedId.value ? portfolio : null
     }
 
     return (
-      livePortfolios.value.find((portfolio) => normalizeString(portfolio?.id) === portfolioId) ??
+      livePortfolios.value.find((portfolio) => normalizeString(portfolio?.id) === selectedId.value) ??
       null
     )
   })
@@ -59,21 +49,10 @@ export function usePortfolioConsole() {
     const portfolio = selectedPortfolio.value as Record<string, unknown> | null
     if (!portfolio) return null
 
-    if (selectedMode.value === 'demo') {
-      return {
-        title: normalizeString(portfolio.name) || normalizeString(portfolio.id),
-        subtitle: normalizeString(portfolio.label) || normalizeString(portfolio.id) || undefined,
-        imageUrl: normalizeString(portfolio.image_url) || undefined,
-      }
-    }
-
     if (selectedMode.value === 'test') {
       return {
         title: 'Test Portfolio',
-        subtitle:
-          normalizeString(portfolio.name) ||
-          normalizeString(portfolio.id) ||
-          undefined,
+        subtitle: normalizeString(portfolio.name) || normalizeString(portfolio.id) || undefined,
         imageUrl: normalizeString(portfolio.image_url) || undefined,
       }
     }
@@ -92,14 +71,20 @@ export function usePortfolioConsole() {
   usePublishConsoleHeader('portfolios', header)
 
   const clearSelectedPortfolio = () => {
-    clearSelection()
+    state.value = {
+      selectedId: '',
+      selectedMode: 'live',
+    }
   }
+
   const selectPortfolio = (portfolioId: string, mode: PortfolioConsoleMode = 'live') => {
-    selectEntity(portfolioId, mode)
+    state.value = {
+      selectedId: normalizeString(portfolioId),
+      selectedMode: mode,
+    }
   }
 
   return {
-    portfolios,
     selectedPortfolio,
     selectedMode,
     clearSelectedPortfolio,

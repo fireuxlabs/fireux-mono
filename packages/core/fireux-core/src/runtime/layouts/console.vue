@@ -108,7 +108,7 @@ import { computed, ref } from 'vue'
 import {
   useConsoleHeaders,
   type ConsoleHeaderData as HeaderData,
-} from '../composables/fireux/console/useConsole'
+} from '../composables/fireux/console/useConsoleHeader'
 
 defineOptions({ name: 'console' })
 

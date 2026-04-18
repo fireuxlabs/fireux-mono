@@ -125,12 +125,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
+import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/console/useConsoleIndex'
+import { getDemoProjects } from 'fireux-core/runtime/composables/fireux/app/utils/project-demo-scenarios/demo-scenarios/index'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
+import { useProjectFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectFetch'
 import {
   useProjectInterface,
   type ProjectSurface,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 
 type DemoProjectListItem = {
   id: string
@@ -139,100 +143,86 @@ type DemoProjectListItem = {
   image_url?: string
 }
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-
 const {
-  projects,
   selectedProject,
   selectedMode,
   selectProject,
   clearSelectedProject,
 } = useProjectConsole()
-const { currentUser, avatarSrc } = useUser()
+const { projects: liveProjectSource } = useProjectCollection({ scope: 'mine' })
+const { uid } = useAuth()
+const { project: testProjectSource } = useProjectFetch(uid, { source: 'test' })
 const { pill } = useProjectInterface()
 
-const isDev = import.meta.dev
-const showSimulations = ref(false)
+const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-const liveProjects = computed<ProjectSurface[]>(() =>
-  Array.isArray(projects.value.live) ? projects.value.live : []
-)
+const projects = computed(() => ({
+  live: liveProjectSource.value,
+  demo: getDemoProjects(),
+  test: testProjectSource.value,
+}))
 
-const demoProjects = computed<DemoProjectListItem[]>(() =>
-  Array.isArray(projects.value.demo) ? projects.value.demo : []
-)
+const {
+  showSimulations,
+  userAvatar: testProjectAvatar,
+  liveItems: liveProjects,
+  demoItems: demoProjects,
+  testItem: testProject,
+  demoCards: demoProjectCards,
+  selectedCard: selectedProjectCard,
+  testCard: testProjectCard,
+  selectDemoEntity: selectDemoProject,
+  selectTestEntity: selectTestProject,
+} = useConsoleIndex({
+  entities: projects,
+  selectedEntity: selectedProject,
+  selectedMode,
+  selectEntity: selectProject,
+  toDemoCard: (project: DemoProjectListItem) =>
+    pill({
+      id: project.id,
+      slug: project.id,
+      name: project.name,
+      description: project.label,
+      image_url: project.image_url,
+      project_type: 'demo',
+      status: 'active',
+    }),
+  toSelectedCard: (project, mode, user) => {
+    if (mode === 'test') {
+      const card = pill({
+        ...(project as Record<string, unknown>),
+        image_url:
+          normalizeString((project as Record<string, unknown>)?.image_url) || user.avatarSrc,
+      } as ProjectSurface)
 
-const demoProjectCards = computed(() =>
-  demoProjects.value
-    .map((project) =>
-      pill({
-        id: project.id,
-        slug: project.id,
-        name: project.name,
-        description: project.label,
-        image_url: project.image_url,
-        project_type: 'demo',
-        status: 'active',
-      })
-    )
-    .filter(Boolean)
-)
+      if (!card) return null
 
-const selectedProjectCard = computed(() => {
-  const project = selectedProject.value
-  if (!project) return null
+      return {
+        ...card,
+        title: 'Test Project',
+        subtitle: user.displayName,
+      }
+    }
 
-  if (selectedMode.value === 'test') {
+    return pill(project as ProjectSurface)
+  },
+  toTestCard: (project: ProjectSurface, user) => {
     const card = pill({
-      ...(project as Record<string, unknown>),
-      image_url:
-        normalizeString((project as Record<string, unknown>)?.image_url) || testProjectAvatar.value,
-    } as ProjectSurface)
-
+      ...project,
+      image_url: normalizeString(project.image_url) || user.avatarSrc,
+    })
     if (!card) return null
 
     return {
       ...card,
       title: 'Test Project',
-      subtitle: testProjectDisplayName.value,
+      subtitle: user.displayName,
     }
-  }
-
-  return pill(project as ProjectSurface)
+  },
+  getTestId: (project: ProjectSurface) => normalizeString(project.id),
 })
-
-const testProject = computed<ProjectSurface | null>(() => {
-  const value = projects.value.test
-  return value && typeof value === 'object' ? (value as ProjectSurface) : null
-})
-
-const testProjectAvatar = computed(() =>
-  normalizeString(avatarSrc.value)
-)
-const testProjectDisplayName = computed(() =>
-  normalizeString(currentUser.value?.display_name)
-)
-
-const testProjectCardInput = computed<ProjectSurface | null>(() => {
-  const project = testProject.value
-  if (!project) return null
-
-  return {
-    ...project,
-    image_url: normalizeString(project.image_url) || testProjectAvatar.value,
-  }
-})
-
-const testProjectCard = computed(() => {
-  const card = pill(testProjectCardInput.value)
-  if (!card) return null
-
-  return {
-    ...card,
-    title: 'Test Project',
-    subtitle: testProjectDisplayName.value,
-  }
-})
+const isDev = import.meta.dev
 
 const testProjectDebug = computed(() => {
   const project = testProject.value
@@ -286,13 +276,4 @@ const testProjectDebug = computed(() => {
   }
 })
 
-const selectTestProject = () => {
-  const projectId = String(testProject.value?.id || '').trim()
-  if (!projectId) return
-  selectProject(projectId, 'test')
-}
-
-const selectDemoProject = (projectId: string) => {
-  selectProject(projectId, 'demo')
-}
 </script>

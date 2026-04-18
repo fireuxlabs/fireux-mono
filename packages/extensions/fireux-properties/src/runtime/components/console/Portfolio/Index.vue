@@ -1,4 +1,3 @@
-<!-- ConsolePortfolio.vue -->
 <template>
   <section class="space-y-6">
     <UAlert
@@ -9,40 +8,41 @@
       description="No live portfolios are currently available in this workspace."
     />
 
-    <div v-if="livePortfolios.length" class="space-y-6">
+    <div class="space-y-6">
       <div class="space-y-2">
         <div class="flex items-center justify-between gap-3">
           <div class="text-xs uppercase tracking-[0.16em] text-toned">
-            {{ portfolio ? 'Selected Portfolio' : 'Select a portfolio' }}
+            {{ selectedPortfolio ? 'Selected Portfolio' : 'Select a portfolio' }}
           </div>
 
           <UButton
-            v-if="portfolio"
+            v-if="selectedPortfolio"
             color="neutral"
             variant="ghost"
             size="sm"
             icon="i-lucide-x"
-            @click="clearSelection"
+            @click="clearSelectedPortfolio"
           >
             Clear
           </UButton>
         </div>
 
         <PortfolioCardsPill
-          v-if="portfolio"
-          v-bind="portfolio"
+          v-if="selectedPortfolioCard"
+          v-bind="selectedPortfolioCard"
           :link="false"
           :show-badges="false"
         />
 
         <p v-else class="text-sm text-dimmed">
-          Choose a portfolio below to load it into the console.
+          Choose a live, demo, or test portfolio to load it into the console.
         </p>
       </div>
 
       <PortfolioCollectionManager
+        v-if="livePortfolios.length"
         :collection="livePortfolios"
-        title="Choose Portfolio"
+        title="Choose Live Portfolio"
         description="Select the live portfolio you want to work on."
         :link="false"
         :action="true"
@@ -74,36 +74,62 @@
           Read-only demo portfolios wired into the same console stack.
         </div>
 
-        <div class="grid gap-2 sm:grid-cols-2">
-          <UButton
-            v-for="scenario in demoPortfolios"
+        <div class="space-y-2">
+          <PortfolioCardsPill
+            v-for="scenario in demoPortfolioCards"
             :key="scenario.id"
-            color="neutral"
-            variant="soft"
-            class="justify-between"
-            @click="selectDemoPortfolio(scenario.id)"
-          >
-            <span>{{ scenario.name }}</span>
-            <span class="text-xs text-dimmed">{{ scenario.label }}</span>
-          </UButton>
+            v-bind="scenario"
+            :link="false"
+            :action="true"
+            :show-badges="false"
+            @action="selectDemoPortfolio(scenario.id)"
+          />
         </div>
+      </div>
+    </section>
+
+    <section v-if="testPortfolio" class="w-full max-w-xl space-y-3">
+      <div class="flex items-center gap-3">
+        <div class="h-px flex-1 bg-default/60" />
+        <div class="text-xs uppercase tracking-[0.16em] text-toned">Or</div>
+        <div class="h-px flex-1 bg-default/60" />
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-medium text-highlighted">Use your test portfolio</div>
+
+        <div class="text-sm text-dimmed">
+          Personal sandbox portfolio for experiments and console setup.
+        </div>
+
+        <PortfolioCardsPill
+          v-if="testPortfolioCard"
+          v-bind="testPortfolioCard"
+          :link="false"
+          :action="true"
+          :show-badges="false"
+          @action="selectTestPortfolio"
+        />
       </div>
     </section>
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import { usePortfolioConsoleIndex } from '../../../composables/fireux/app/portfolio-console/usePortfolioConsoleIndex'
 
 const {
-  portfolio,
+  selectedPortfolio,
+  clearSelectedPortfolio,
+  showSimulations,
   livePortfolios,
   demoPortfolios,
-  clearSelection,
+  testPortfolio,
+  selectedPortfolioCard,
+  demoPortfolioCards,
+  testPortfolioCard,
   selectPortfolio,
   selectDemoPortfolio,
-} = usePortfolioConsoleIndex({ publishHeader: true })
-
-const showSimulations = ref(false)
+  selectTestPortfolio,
+} = usePortfolioConsoleIndex()
 </script>

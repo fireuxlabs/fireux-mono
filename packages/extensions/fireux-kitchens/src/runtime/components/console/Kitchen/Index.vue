@@ -1,4 +1,3 @@
-<!-- ConsoleKitchen.vue -->
 <template>
   <section class="space-y-6">
     <UAlert
@@ -9,40 +8,41 @@
       description="No live kitchens are currently available in this workspace."
     />
 
-    <div v-if="liveKitchens.length" class="space-y-6">
+    <div class="space-y-6">
       <div class="space-y-2">
         <div class="flex items-center justify-between gap-3">
           <div class="text-xs uppercase tracking-[0.16em] text-toned">
-            {{ kitchen ? 'Selected Kitchen' : 'Select a kitchen' }}
+            {{ selectedKitchen ? 'Selected Kitchen' : 'Select a kitchen' }}
           </div>
 
           <UButton
-            v-if="kitchen"
+            v-if="selectedKitchen"
             color="neutral"
             variant="ghost"
             size="sm"
             icon="i-lucide-x"
-            @click="clearSelection"
+            @click="clearSelectedKitchen"
           >
             Clear
           </UButton>
         </div>
 
         <KitchenCardsPill
-          v-if="kitchen"
-          v-bind="kitchen"
+          v-if="selectedKitchenCard"
+          v-bind="selectedKitchenCard"
           :link="false"
           :show-badges="false"
         />
 
         <p v-else class="text-sm text-dimmed">
-          Choose a kitchen below to load it into the console.
+          Choose a live, demo, or test kitchen to load it into the console.
         </p>
       </div>
 
       <KitchenCollectionManager
+        v-if="liveKitchens.length"
         :collection="liveKitchens"
-        title="Choose Kitchen"
+        title="Choose Live Kitchen"
         description="Select the live kitchen you want to work on."
         :link="false"
         :action="true"
@@ -74,36 +74,148 @@
           Read-only demo kitchens wired into the same console stack.
         </div>
 
-        <div class="grid gap-2 sm:grid-cols-2">
-          <UButton
-            v-for="scenario in demoKitchens"
+        <div class="space-y-2">
+          <KitchenCardsPill
+            v-for="scenario in demoKitchenCards"
             :key="scenario.id"
-            color="neutral"
-            variant="soft"
-            class="justify-between"
-            @click="selectDemoKitchen(scenario.id)"
-          >
-            <span>{{ scenario.name }}</span>
-            <span class="text-xs text-dimmed">{{ scenario.address_label }}</span>
-          </UButton>
+            v-bind="scenario"
+            :link="false"
+            :action="true"
+            :show-badges="false"
+            @action="selectDemoKitchen(scenario.id)"
+          />
         </div>
+      </div>
+    </section>
+
+    <section v-if="testKitchen" class="w-full max-w-xl space-y-3">
+      <div class="flex items-center gap-3">
+        <div class="h-px flex-1 bg-default/60" />
+        <div class="text-xs uppercase tracking-[0.16em] text-toned">Or</div>
+        <div class="h-px flex-1 bg-default/60" />
+      </div>
+
+      <div class="space-y-2">
+        <div class="text-sm font-medium text-highlighted">Use your test kitchen</div>
+
+        <div class="text-sm text-dimmed">
+          Personal sandbox kitchen for experiments and console setup.
+        </div>
+
+        <KitchenCardsPill
+          v-if="testKitchenCard"
+          v-bind="testKitchenCard"
+          :link="false"
+          :action="true"
+          :show-badges="false"
+          @action="selectTestKitchen"
+        />
       </div>
     </section>
   </section>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useKitchenConsoleIndex } from '../../../composables/fireux/app/kitchen-console/useKitchenConsoleIndex'
+import { computed } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/console/useConsoleIndex'
+import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
+import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
+import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
 const {
-  kitchen,
-  liveKitchens,
-  demoKitchens,
-  clearSelection,
+  selectedKitchen,
+  selectedMode,
   selectKitchen,
-  selectDemoKitchen,
-} = useKitchenConsoleIndex({ publishHeader: true })
+  clearSelectedKitchen,
+} = useKitchenConsole()
+const { kitchens: liveKitchenSource } = useKitchenCollection()
+const { uid } = useAuth()
+const { kitchen: testKitchenSource } = useKitchenFetch(uid, {
+  collectionPath: 'test-kitchens',
+})
+const { pill } = useKitchenInterface()
 
-const showSimulations = ref(false)
+type DemoKitchenListItem = {
+  id: string
+  name: string
+  label?: string
+  image_url?: string
+}
+
+const normalizeString = (value: unknown) => String(value ?? '').trim()
+
+const kitchens = computed(() => ({
+  live: liveKitchenSource.value,
+  demo: [] as DemoKitchenListItem[],
+  test: testKitchenSource.value,
+}))
+
+const {
+  showSimulations,
+  liveItems: liveKitchens,
+  demoItems: demoKitchens,
+  testItem: testKitchen,
+  demoCards: demoKitchenCards,
+  selectedCard: selectedKitchenCard,
+  testCard: testKitchenCard,
+  selectDemoEntity: selectDemoKitchen,
+  selectTestEntity: selectTestKitchen,
+} = useConsoleIndex({
+  entities: kitchens,
+  selectedEntity: selectedKitchen,
+  selectedMode,
+  selectEntity: selectKitchen,
+  toDemoCard: (kitchen: DemoKitchenListItem) =>
+    pill({
+      id: kitchen.id,
+      name: kitchen.name,
+      short_address: kitchen.label,
+      image_url: kitchen.image_url,
+    } as never),
+  toSelectedCard: (kitchen, mode, user) => {
+    if (mode === 'demo') {
+      return pill({
+        id: (kitchen as Record<string, unknown>).id,
+        name: (kitchen as Record<string, unknown>).name,
+        short_address: (kitchen as Record<string, unknown>).label,
+        image_url: (kitchen as Record<string, unknown>).image_url,
+      } as never)
+    }
+
+    if (mode === 'test') {
+      const card = pill({
+        ...(kitchen as Record<string, unknown>),
+        image_url:
+          normalizeString((kitchen as Record<string, unknown>).image_url) || user.avatarSrc,
+      } as never)
+
+      if (!card) return null
+
+      return {
+        ...card,
+        title: 'Test Kitchen',
+        subtitle: user.displayName,
+      }
+    }
+
+    return pill(kitchen as never)
+  },
+  toTestCard: (kitchen, user) => {
+    const card = pill({
+      ...(kitchen as Record<string, unknown>),
+      image_url:
+        normalizeString((kitchen as Record<string, unknown>).image_url) || user.avatarSrc,
+    } as never)
+    if (!card) return null
+
+    return {
+      ...card,
+      title: 'Test Kitchen',
+      subtitle: user.displayName,
+    }
+  },
+  getTestId: (kitchen) =>
+    normalizeString((kitchen as Record<string, unknown>).id),
+})
 </script>

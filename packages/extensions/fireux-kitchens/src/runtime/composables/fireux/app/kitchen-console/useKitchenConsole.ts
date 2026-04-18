@@ -1,21 +1,19 @@
 import { computed } from 'vue'
+import { useState } from '#imports'
 import {
-  useConsole,
   usePublishConsoleHeader,
   type ConsoleHeaderData,
-} from 'fireux-core/runtime/composables/fireux/console/useConsole'
+} from 'fireux-core/runtime/composables/fireux/console/useConsoleHeader'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/console/useConsoleIndex'
 import { useKitchenCollection } from '../../firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 
-type KitchenConsoleMode = 'live' | 'demo' | 'test'
+type KitchenConsoleMode = ConsoleMode
 
-type DemoKitchenListItem = {
-  id: string
-  name: string
-  label?: string
-  image_url?: string
-  mode: 'demo'
+type KitchenConsoleState = {
+  selectedId: string
+  selectedMode: KitchenConsoleMode
 }
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -23,48 +21,33 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 export function useKitchenConsole() {
   const { kitchens: liveKitchens } = useKitchenCollection()
   const { uid } = useAuth()
-  const testKitchenId = computed(() => normalizeString(uid.value))
-  const demoKitchens = computed<DemoKitchenListItem[]>(() => [])
-  const { kitchen: testKitchen } = useKitchenFetch(testKitchenId, {
+  const { kitchen: testKitchen } = useKitchenFetch(uid, {
     collectionPath: 'test-kitchens',
   })
-  const { selectedId, selectedMode, selectEntity, clearSelection } = useConsole('kitchens')
-
-  const kitchens = computed(() => ({
-    live: liveKitchens.value,
-    demo: demoKitchens.value,
-    test: testKitchen.value,
+  const state = useState<KitchenConsoleState>('console:kitchens', () => ({
+    selectedId: '',
+    selectedMode: 'live',
   }))
+  const selectedId = computed(() => normalizeString(state.value.selectedId))
+  const selectedMode = computed(() => state.value.selectedMode)
 
   const selectedKitchen = computed(() => {
-    const kitchenId = normalizeString(selectedId.value)
-    if (!kitchenId) return null
-
-    if (selectedMode.value === 'demo') {
-      return demoKitchens.value.find((kitchen) => kitchen.id === kitchenId) ?? null
-    }
+    if (!selectedId.value) return null
 
     if (selectedMode.value === 'test') {
       const kitchen = testKitchen.value
-      return normalizeString(kitchen?.id) === kitchenId ? kitchen : null
+      return normalizeString(kitchen?.id) === selectedId.value ? kitchen : null
     }
 
     return (
-      liveKitchens.value.find((kitchen) => normalizeString(kitchen?.id) === kitchenId) ?? null
+      liveKitchens.value.find((kitchen) => normalizeString(kitchen?.id) === selectedId.value) ??
+      null
     )
   })
 
   const header = computed<ConsoleHeaderData>(() => {
     const kitchen = selectedKitchen.value as Record<string, unknown> | null
     if (!kitchen) return null
-
-    if (selectedMode.value === 'demo') {
-      return {
-        title: normalizeString(kitchen.name) || normalizeString(kitchen.id),
-        subtitle: normalizeString(kitchen.label) || normalizeString(kitchen.id) || undefined,
-        imageUrl: normalizeString(kitchen.image_url) || undefined,
-      }
-    }
 
     if (selectedMode.value === 'test') {
       return {
@@ -95,14 +78,20 @@ export function useKitchenConsole() {
   usePublishConsoleHeader('kitchens', header)
 
   const clearSelectedKitchen = () => {
-    clearSelection()
+    state.value = {
+      selectedId: '',
+      selectedMode: 'live',
+    }
   }
+
   const selectKitchen = (kitchenId: string, mode: KitchenConsoleMode = 'live') => {
-    selectEntity(kitchenId, mode)
+    state.value = {
+      selectedId: normalizeString(kitchenId),
+      selectedMode: mode,
+    }
   }
 
   return {
-    kitchens,
     selectedKitchen,
     selectedMode,
     clearSelectedKitchen,
