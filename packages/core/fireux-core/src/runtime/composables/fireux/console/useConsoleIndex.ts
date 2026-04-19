@@ -1,4 +1,4 @@
-import { computed, reactive, toRef, unref, type ComputedRef, type Ref } from 'vue'
+import { computed, reactive, unref, type ComputedRef, type Ref } from 'vue'
 import { useUser } from '../firestore/core/user/useUser'
 
 export type ConsoleMode = 'live' | 'demo' | 'test'
@@ -79,27 +79,10 @@ export function useConsoleIndex<
     },
   }
 
-  const selectDemoEntity = (id: string) => {
-    actions.selectDemo(id)
-  }
-
-  const selectTestEntity = () => {
-    actions.selectTest()
-  }
-
   return {
     state,
     user,
     entities,
     actions,
-    showSimulations: toRef(state, 'showSimulations'),
-    userAvatar: computed(() => user.value.avatarSrc),
-    userDisplayName: computed(() => user.value.displayName),
-    liveItems,
-    demoItems,
-    testItem,
-    selectLiveEntity: actions.selectLive,
-    selectDemoEntity,
-    selectTestEntity,
   }
 }

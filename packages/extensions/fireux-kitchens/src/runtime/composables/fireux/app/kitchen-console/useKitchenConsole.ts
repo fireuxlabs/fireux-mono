@@ -12,6 +12,12 @@ import { useKitchenCollection } from '../../firestore/kitchen/fetch/useKitchenCo
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 
 type KitchenConsoleMode = ConsoleMode
+type DemoKitchenListItem = {
+  id: string
+  name: string
+  label: string
+  image_url?: string
+}
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
@@ -22,7 +28,7 @@ export function useKitchenConsole() {
     collectionPath: 'test-kitchens',
   })
   const { selectedId, selectedMode, selectEntity, clearSelection } = useConsole('kitchens')
-  const demoKitchens = computed(() => [])
+  const demoKitchens = computed<DemoKitchenListItem[]>(() => [])
 
   const selectedKitchen = computed(() => {
     const kitchenId = normalizeString(selectedId.value)
@@ -47,6 +53,14 @@ export function useKitchenConsole() {
   const header = computed<ConsoleHeaderData>(() => {
     const kitchen = selectedKitchen.value as Record<string, unknown> | null
     if (!kitchen) return null
+
+    if (selectedMode.value === 'demo') {
+      return {
+        title: normalizeString(kitchen.name),
+        subtitle: normalizeString(kitchen.label) || undefined,
+        imageUrl: normalizeString(kitchen.image_url) || undefined,
+      }
+    }
 
     if (selectedMode.value === 'test') {
       return {

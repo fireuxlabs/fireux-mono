@@ -124,34 +124,27 @@ import { useKitchenConsoleIndex } from '../../../composables/fireux/app/kitchen-
 type DemoKitchenListItem = {
   id: string
   name: string
-  label?: string
+  label: string
   image_url?: string
-}
-
-type KitchenSurface = {
-  id?: string
-  name?: string
-  short_name?: string
-  short_address?: string
-  formatted_address?: string
-  image_url?: string
-  slug?: string
-  is_test_kitchen?: boolean
-  place_id?: string
 }
 
 type KitchenPillCard = NonNullable<
   ReturnType<ReturnType<typeof useKitchenInterface>['pill']>
 >
 
-type KitchenPillInput = Parameters<ReturnType<typeof useKitchenInterface>['pill']>[0]
+type KitchenPillInput = Exclude<
+  Parameters<ReturnType<typeof useKitchenInterface>['pill']>[0],
+  null | undefined
+>
 
 const { state, kitchens, actions } = useKitchenConsoleIndex()
 const { selectedKitchen, selectedMode, clearSelectedKitchen } = useKitchenConsole()
 const { pill } = useKitchenInterface()
 
-const toDemoKitchenSurface = (kitchen: DemoKitchenListItem): KitchenSurface => ({
+const toDemoKitchenSurface = (kitchen: DemoKitchenListItem): KitchenPillInput => ({
   id: kitchen.id,
+  place_id: kitchen.id,
+  is_test_kitchen: false,
   name: kitchen.name,
   short_address: kitchen.label,
   image_url: kitchen.image_url,
@@ -166,20 +159,20 @@ const demoKitchenCards = computed<KitchenPillCard[]>(() =>
 )
 
 const selectedKitchenCard = computed<KitchenPillCard | null>(() => {
-  const kitchen = selectedKitchen.value as KitchenSurface | DemoKitchenListItem | null
+  const kitchen = selectedKitchen.value as KitchenPillInput | DemoKitchenListItem | null
   if (!kitchen) return null
 
   if (selectedMode.value === 'demo') {
-    return pill(toDemoKitchenSurface(kitchen as DemoKitchenListItem) as KitchenPillInput) ?? null
+    return pill(toDemoKitchenSurface(kitchen as DemoKitchenListItem)) ?? null
   }
 
-  return pill(kitchen as KitchenPillInput) ?? null
+  return pill(kitchen) ?? null
 })
 
 const testKitchenCard = computed<KitchenPillCard | null>(() => {
   const kitchen = kitchens.value.test
   if (!kitchen) return null
 
-  return pill(kitchen as KitchenPillInput) ?? null
+  return pill(kitchen) ?? null
 })
 </script>

@@ -8,20 +8,8 @@ import { useKitchenConsole } from './useKitchenConsole'
 type DemoKitchenListItem = {
   id: string
   name: string
-  label?: string
+  label: string
   image_url?: string
-}
-
-type KitchenSurface = {
-  id?: string
-  name?: string
-  short_name?: string
-  short_address?: string
-  formatted_address?: string
-  image_url?: string
-  slug?: string
-  is_test_kitchen?: boolean
-  place_id?: string
 }
 
 export function useKitchenConsoleIndex() {
@@ -31,13 +19,14 @@ export function useKitchenConsoleIndex() {
     collectionPath: 'test-kitchens',
   })
   const { selectKitchen } = useKitchenConsole()
+  type KitchenSurface =
+    | NonNullable<(typeof liveKitchenSource.value)[number]>
+    | NonNullable<typeof testKitchenSource.value>
 
   const sourceKitchens = computed(() => ({
-    live: Array.isArray(liveKitchenSource.value)
-      ? (liveKitchenSource.value as KitchenSurface[])
-      : [],
+    live: Array.isArray(liveKitchenSource.value) ? liveKitchenSource.value : [],
     demo: [] as DemoKitchenListItem[],
-    test: (testKitchenSource.value as KitchenSurface | null) ?? null,
+    test: testKitchenSource.value,
   }))
   const consoleIndex = useConsoleIndex<KitchenSurface, DemoKitchenListItem, KitchenSurface>({
     entities: sourceKitchens,
