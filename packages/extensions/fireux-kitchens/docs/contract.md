@@ -1,6 +1,6 @@
 # fireux-kitchens Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-04-14
+Updated: 2026-04-19
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -72,6 +72,18 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 7) Runtime dependencies
 - Runtime kitchen selection state (`selectedId`, `mode`).
 - Mode-aware data loading (`live`, `demo`).
+
+## 7b) Interface seam
+- `useKitchenInterface` is canonically a thin interface seam.
+- Its job is:
+  - kitchen entity in
+  - small stable UI-ready projection out
+- It must not become:
+  - a fetch seam
+  - a hidden hydration seam
+  - a console-specific behavior seam
+  - a rich kitchen presenter
+- If kitchen needs richer profile, menu, or console presentation, that belongs in a second layer such as a presenter/view seam rather than in `useKitchenInterface`.
 
 ## 8) SEO hooks
 - Public kitchen/menu pages should provide:

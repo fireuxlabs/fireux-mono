@@ -69,12 +69,17 @@ Current canon for domain/entity reads:
   - fetch many root `X`
 - `useXInterface.ts`
   - shape fetched truth for UI use
+- optional `useXProfileView.ts`
+  - build a richer dedicated profile view model when the profile surface needs
+    more than the thin interface seam should carry
 
 Important:
 
 - `useXDocument.ts` is not a generic cross-repo canon seam
 - if a domain keeps a `useXDocument.ts` file, treat it as a local helper, not as the primary read primitive
 - the primary cross-repo read primitives are `useXFetch`, `useXCollection`, and `useXInterface`
+- `useXProfileView` is currently an early second-layer seam, not a universal
+  base primitive
 
 Hydration rule:
 
@@ -146,6 +151,29 @@ Family note:
 
 - shared `useXInterface` family canon now lives in `runtime/concepts/stacks/crud/read/useXInterface/`
 - use that doc set when deciding whether a seam is Family 1, 2, or 3
+
+### Profile View Read
+
+Expose a richer dedicated profile model when a profile surface genuinely needs
+more than the thin interface seam should carry.
+
+Common seam:
+
+- `use*ProfileView.ts`
+
+Contract:
+
+- compose already-fetched truth
+- compose the thin interface card when useful
+- return one stable model for `Profile.vue`
+- stay read-only
+- do not replace `useXInterface`
+
+Status note:
+
+- this is early canon, not a fully frozen universal seam yet
+- shared guidance now lives in
+  `runtime/concepts/stacks/crud/read/useXProfileView/`
 
 ### Computed / Read-model
 

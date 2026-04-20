@@ -69,8 +69,14 @@ This seam should not absorb:
 - mutation logic
 - selection state
 - routing authority
+- richer dedicated profile view-model shaping when that work only exists for
+  `Profile.vue`
 
 Those belong in other seams.
+
+If a profile surface needs more than the thin shared interface contract should
+carry, prefer a second-layer seam such as `useXProfileView` instead of making
+`useXInterface` richer again.
 
 ## Short Version
 

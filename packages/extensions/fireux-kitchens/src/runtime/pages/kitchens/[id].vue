@@ -182,7 +182,7 @@ import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestor
 import { computed, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { resolveKitchenRuntimeChildCollectionPath } from '../../composables/fireux/app/kitchen-console/shared'
 import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
-import { useKitchenInterface } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
+import { useKitchenProfileView } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenProfileView'
 import type { Kitchen } from '../../models/kitchen.model'
 import type { Menu } from '../../models/menu.model'
 
@@ -256,8 +256,7 @@ const menuLink = (menuIdRaw: unknown) => {
   return `/kitchens/${encodeURIComponent(resolvedKitchenId)}/menu/${encodeURIComponent(menuId)}`
 }
 
-const { profile } = useKitchenInterface()
-const kitchenProfile = computed(() => profile(kitchen.value))
+const { model: kitchenProfile } = useKitchenProfileView(kitchen)
 
 const { currentUser, isAdmin } = useUser()
 const claimedBy = computed(() => String(kitchen.value?.claimed_by || '').trim())

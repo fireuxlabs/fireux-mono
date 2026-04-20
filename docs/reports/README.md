@@ -13,6 +13,7 @@ Updated: 2026-03-23
 ## Generated/Domain Reports
 - `context-refresh-2026-03-13.md`
 - `collection-manager-report.md`
+- `usexinterface-alignment-todo.md`
 - `../seo/global-entities-report.md`
 - `../canon/server-projection-v1.md`
 

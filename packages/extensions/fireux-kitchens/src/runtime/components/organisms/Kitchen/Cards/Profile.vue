@@ -27,9 +27,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenProfile } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
+import type { KitchenProfileViewModel } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenProfileView'
 
-const props = defineProps<{ model: KitchenProfile }>()
+const props = defineProps<{ model: KitchenProfileViewModel }>()
 
 const avatarShadeClass = computed(() => {
   const shade = props.model.imageShade

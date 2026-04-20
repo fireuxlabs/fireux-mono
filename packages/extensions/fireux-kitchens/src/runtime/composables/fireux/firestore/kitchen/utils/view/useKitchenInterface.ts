@@ -1,11 +1,6 @@
-import {
-  safeString,
-  sanitizeShortAddress,
-  stripLocationFromTitle,
-} from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type {
   PlaceImageShade,
-  PlaceSocialLinks,
   PlaceSource,
 } from 'fireux-places/runtime/models/place.model'
 import type { Kitchen } from '../../../../../../models/kitchen.model'
@@ -46,23 +41,25 @@ export namespace KitchenCard {
   }
 }
 
-export type KitchenProfile = {
-  card: KitchenCard.Card
-  title: string
-  subtitle: string
-  imageUrl?: string
-  imageShade?: PlaceImageShade
-  prop?: string
-  website?: string
-  address?: string
-  phone?: string
-  email?: string
-  socialLinks?: Partial<PlaceSocialLinks>
-  coverImage?: string
-  galleryImages?: string[]
-  about?: string
-  verified?: boolean
+export type KitchenSurface = Partial<Kitchen> & {
+  id?: string
+  slug?: string
+  name?: string
+  short_name?: string
+  formatted_address?: string
+  short_address?: string
+  image_url?: string
+  image_shade?: PlaceImageShade
   source?: PlaceSource
+  claimed_by?: string
+  brand_tagline?: string
+}
+
+const resolveKitchenPath = (target: { slug?: string; id?: string }) => {
+  const slug = safeString(target.slug)
+  const id = safeString(target.id)
+  const key = slug || id
+  return key ? `/kitchens/${encodeURIComponent(key)}` : ''
 }
 
 export function useKitchenInterface() {
@@ -85,34 +82,25 @@ export function useKitchenInterface() {
     prop?: string
   }
 
-  function map(kitchen: Kitchen): KitchenCard.Card {
+  function map(kitchen: KitchenSurface): KitchenCard.Card {
     const id = safeString(kitchen.id).trim()
     const slug = safeString((kitchen as any)?.slug).trim()
-    const isTestKitchen = Boolean((kitchen as any)?.is_test_kitchen)
-    let name = safeString(kitchen.name)
+    const name = safeString(kitchen.name)
     const shortName = safeString((kitchen as any)?.short_name)
-    const shortAddress = sanitizeShortAddress((kitchen as any)?.short_address)
+    const shortAddress = safeString((kitchen as any)?.short_address)
     const formattedAddress = safeString((kitchen as any)?.formatted_address)
-    if (isTestKitchen && !name) name = 'Test Kitchen'
-    const displayTitle = isTestKitchen
-      ? shortName || name
-      : shortName ||
-        stripLocationFromTitle(name, shortAddress || formattedAddress)
+    const title = shortName || name || 'Untitled kitchen'
     const imageUrl =
       safeString((kitchen as any)?.image_url) || DEFAULT_KITCHEN_IMAGE
 
     return {
       id,
-      to: slug
-        ? `/kitchens/${encodeURIComponent(slug)}`
-        : id
-          ? `/kitchens/${encodeURIComponent(id)}`
-          : '',
+      to: resolveKitchenPath({ slug, id }),
 
-      title: displayTitle || name,
+      title,
       subtitle: shortAddress || formattedAddress,
 
-      name,
+      name: name || title,
       badges: [],
 
       shortName,
@@ -130,7 +118,7 @@ export function useKitchenInterface() {
   }
 
   function buildInterface(
-    target?: Kitchen | null | undefined
+    target?: KitchenSurface | null | undefined
   ): KitchenCard.Card | null {
     if (!target) return null
     const mapped = map(target)
@@ -139,7 +127,9 @@ export function useKitchenInterface() {
 
   const toInterface = buildInterface
 
-  function pill(target?: Kitchen | null | undefined): KitchenPill | null {
+  function pill(
+    target?: KitchenSurface | null | undefined
+  ): KitchenPill | null {
     const base = buildInterface(target)
     if (!base) return null
     return {
@@ -149,7 +139,9 @@ export function useKitchenInterface() {
     }
   }
 
-  function cell(target?: Kitchen | null | undefined): KitchenCell | null {
+  function cell(
+    target?: KitchenSurface | null | undefined
+  ): KitchenCell | null {
     const base = buildInterface(target)
     if (!base || !target) return null
     return {
@@ -164,7 +156,9 @@ export function useKitchenInterface() {
     }
   }
 
-  function preview(target?: Kitchen | null | undefined): KitchenPreview | null {
+  function preview(
+    target?: KitchenSurface | null | undefined
+  ): KitchenPreview | null {
     const base = buildInterface(target)
     if (!base || !target) return null
     return {
@@ -177,31 +171,10 @@ export function useKitchenInterface() {
     }
   }
 
-  function profile(target?: Kitchen | null | undefined): KitchenProfile | null {
-    const base = buildInterface(target)
-    if (!base || !target) return null
-    const address = base.shortAddress || base.formattedAddress
-    return {
-      card: base,
-      title: base.title,
-      subtitle: base.subtitle,
-      imageUrl: base.imageUrl,
-      imageShade: base.imageShade,
-      prop: (target as any)?.brand_tagline,
-      website: (target as any)?.website,
-      address,
-      phone: (target as any)?.phone,
-      socialLinks: (target as any)?.social_links as
-        | Partial<PlaceSocialLinks>
-        | undefined,
-      coverImage: (target as any)?.cover_image,
-      galleryImages: (
-        (target as any)?.gallery_images as string[] | undefined
-      )?.slice(0, 3),
-      about: (target as any)?.about,
-      verified: (target as any)?.verified,
-      source: (target as any)?.source as PlaceSource | undefined,
-    }
+  function profile(
+    target?: KitchenSurface | null | undefined
+  ): KitchenCard.Card | null {
+    return buildInterface(target)
   }
 
   return {
