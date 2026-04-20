@@ -10,6 +10,7 @@ import {
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenCollection } from '../../firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
+import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 
 type KitchenConsoleMode = ConsoleMode
 type DemoKitchenListItem = {
@@ -18,6 +19,7 @@ type DemoKitchenListItem = {
   label: string
   image_url?: string
 }
+type KitchenConsoleEntity = KitchenSurface | DemoKitchenListItem
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
@@ -27,37 +29,27 @@ export function useKitchenConsole() {
   const { kitchen: testKitchen } = useKitchenFetch(uid, {
     collectionPath: 'test-kitchens',
   })
-  const { selectedId, selectedMode, selectEntity, clearSelection } = useConsole('kitchens')
   const demoKitchens = computed<DemoKitchenListItem[]>(() => [])
-
-  const selectedKitchen = computed(() => {
-    const kitchenId = normalizeString(selectedId.value)
-    if (!kitchenId) return null
-
-    if (selectedMode.value === 'demo') {
-      return (
-        demoKitchens.value.find((kitchen) => normalizeString(kitchen?.id) === kitchenId) ?? null
-      )
-    }
-
-    if (selectedMode.value === 'test') {
-      const kitchen = testKitchen.value
-      return normalizeString(kitchen?.id) === kitchenId ? kitchen : null
-    }
-
-    return (
-      liveKitchens.value.find((kitchen) => normalizeString(kitchen?.id) === kitchenId) ?? null
-    )
+  const { selectedEntity, selectedMode, selectEntity, clearSelection } = useConsole<
+    KitchenSurface,
+    DemoKitchenListItem,
+    KitchenSurface
+  >('kitchens', {
+    liveItems: liveKitchens,
+    demoItems: demoKitchens,
+    testItem: testKitchen,
+    getId: (kitchen) => normalizeString(kitchen?.id),
   })
+  const selectedKitchen = computed<KitchenConsoleEntity | null>(() => selectedEntity.value)
 
   const header = computed<ConsoleHeaderData>(() => {
-    const kitchen = selectedKitchen.value as Record<string, unknown> | null
+    const kitchen = selectedKitchen.value
     if (!kitchen) return null
 
     if (selectedMode.value === 'demo') {
       return {
         title: normalizeString(kitchen.name),
-        subtitle: normalizeString(kitchen.label) || undefined,
+        subtitle: normalizeString('label' in kitchen ? kitchen.label : '') || undefined,
         imageUrl: normalizeString(kitchen.image_url) || undefined,
       }
     }
@@ -72,7 +64,9 @@ export function useKitchenConsole() {
 
     return {
       title: normalizeString(kitchen.name),
-      subtitle: normalizeString(kitchen.formatted_address) || undefined,
+      subtitle:
+        normalizeString('formatted_address' in kitchen ? kitchen.formatted_address : '') ||
+        undefined,
       imageUrl: normalizeString(kitchen.image_url) || undefined,
     }
   })

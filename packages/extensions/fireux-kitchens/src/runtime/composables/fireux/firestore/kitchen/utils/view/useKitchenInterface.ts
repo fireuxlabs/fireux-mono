@@ -3,7 +3,6 @@ import type {
   PlaceImageShade,
   PlaceSource,
 } from 'fireux-places/runtime/models/place.model'
-import type { Kitchen } from '../../../../../../models/kitchen.model'
 
 const DEFAULT_KITCHEN_IMAGE = '/img/core/brand/logo.png'
 
@@ -41,18 +40,31 @@ export namespace KitchenCard {
   }
 }
 
-export type KitchenSurface = Partial<Kitchen> & {
+export type KitchenSurface = {
   id?: string
   slug?: string
+  is_test_kitchen?: boolean
+  place_id?: string
+  created?: unknown
+  updated?: unknown
   name?: string
   short_name?: string
   formatted_address?: string
   short_address?: string
+  lat?: number
+  lng?: number
   image_url?: string
   image_shade?: PlaceImageShade
   source?: PlaceSource
   claimed_by?: string
   brand_tagline?: string
+  website?: string
+  phone?: string
+  social_links?: unknown
+  cover_image?: string
+  gallery_images?: string[]
+  about?: string
+  verified?: boolean
 }
 
 const resolveKitchenPath = (target: { slug?: string; id?: string }) => {

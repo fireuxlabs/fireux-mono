@@ -11,8 +11,16 @@ import {
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
 import { useProjectFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectFetch'
+import { type ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 
 type ProjectConsoleMode = ConsoleMode
+type DemoProjectListItem = {
+  id: string
+  name: string
+  label: string
+  image_url?: string
+}
+type ProjectConsoleEntity = ProjectSurface | DemoProjectListItem
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
@@ -20,37 +28,27 @@ export function useProjectConsole() {
   const { projects: liveProjects } = useProjectCollection({ scope: 'mine' })
   const { uid } = useAuth()
   const { project: testProject } = useProjectFetch(uid, { source: 'test' })
-  const { selectedId, selectedMode, selectEntity, clearSelection } = useConsole('projects')
   const demoProjects = computed(() => getDemoProjects())
-
-  const selectedProject = computed(() => {
-    const projectId = normalizeString(selectedId.value)
-    if (!projectId) return null
-
-    if (selectedMode.value === 'demo') {
-      return (
-        demoProjects.value.find((project) => normalizeString(project.id) === projectId) ?? null
-      )
-    }
-
-    if (selectedMode.value === 'test') {
-      const project = testProject.value
-      return normalizeString(project?.id) === projectId ? project : null
-    }
-
-    return (
-      liveProjects.value.find((project) => normalizeString(project?.id) === projectId) ?? null
-    )
+  const { selectedEntity, selectedMode, selectEntity, clearSelection } = useConsole<
+    ProjectSurface,
+    DemoProjectListItem,
+    ProjectSurface
+  >('projects', {
+    liveItems: liveProjects,
+    demoItems: demoProjects,
+    testItem: testProject,
+    getId: (project) => normalizeString(project?.id),
   })
+  const selectedProject = computed<ProjectConsoleEntity | null>(() => selectedEntity.value)
 
   const header = computed<ConsoleHeaderData>(() => {
-    const project = selectedProject.value as Record<string, unknown> | null
+    const project = selectedProject.value
     if (!project) return null
 
     if (selectedMode.value === 'demo') {
       return {
         title: normalizeString(project.name),
-        subtitle: normalizeString(project.label) || undefined,
+        subtitle: normalizeString('label' in project ? project.label : '') || undefined,
         imageUrl: normalizeString(project.image_url) || undefined,
       }
     }
@@ -65,7 +63,7 @@ export function useProjectConsole() {
 
     return {
       title: normalizeString(project.name),
-      subtitle: normalizeString(project.slug) || undefined,
+      subtitle: normalizeString('slug' in project ? project.slug : '') || undefined,
       imageUrl: normalizeString(project.image_url) || undefined,
     }
   })
