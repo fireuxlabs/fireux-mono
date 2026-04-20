@@ -29,6 +29,14 @@ const resolveTestUserLabel = (displayName: unknown, uid: unknown) => {
   return `User ${resolvedUid.slice(0, 6)}`
 }
 
+type ProjectTestCreateInput = {
+  id?: string
+  slug?: string
+  name?: string
+  subtitle?: string
+  image_url?: string
+}
+
 export type ProjectCreateOptions = {
   collectionPath?: string
   test?: boolean
@@ -49,6 +57,50 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
       : String(options.collectionPath || 'projects').trim() || 'projects'
   const isTestProjectCollection =
     options.test === true || collectionPath === 'test-projects'
+
+  async function createTestProject(
+    input: ProjectTestCreateInput = {}
+  ): Promise<ConsoleRootEnsureResult> {
+    const user = await useRequireUser()
+    const id = normalizeString(input.id) || normalizeString(user.uid)
+    const userLabel =
+      normalizeString(input.subtitle) ||
+      resolveTestUserLabel(user.displayName, user.uid)
+    const name = normalizeString(input.name) || 'Test Project'
+    const imageUrl = normalizeString(input.image_url)
+
+    if (!id) {
+      throw new Error('Test project id is required')
+    }
+
+    const ref = doc(db, 'test-projects', id)
+    const snap = await getDoc(ref)
+    if (snap.exists()) {
+      return { id, created: false }
+    }
+
+    const slug = normalizeSlug(input.slug) || 'test-project'
+
+    if (!slug) {
+      throw new Error('Test project slug is required')
+    }
+
+    await setDocument<Partial<Project>>(
+      'test-projects',
+      id,
+      {
+        name,
+        slug,
+        description: userLabel,
+        image_url: imageUrl,
+      },
+      {
+        creator: true,
+      }
+    )
+
+    return { id, created: true }
+  }
 
   async function runProjectCreate(
     input: ProjectCreateInput,
@@ -128,13 +180,10 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
         return { id, created: false }
       }
 
-      const payload: Omit<Project, 'id' | 'created' | 'updated'> = {
+      const payload: Partial<Omit<Project, 'id' | 'created' | 'updated'>> = {
         name,
         slug,
-        description,
-        image_url: imageUrl,
         status,
-        primary_project: primaryProject,
         project_type: projectType,
         source_url: sourceUrl,
         console_endpoint_url: consoleEndpointUrl,
@@ -143,6 +192,18 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
         firebase_project_id: firebaseProjectId,
         owner_user_id: user.uid,
         team_ids: [user.uid],
+      }
+
+      if (description) {
+        payload.description = description
+      }
+
+      if (imageUrl) {
+        payload.image_url = imageUrl
+      }
+
+      if (primaryProject) {
+        payload.primary_project = true
       }
 
       await setDocument(collectionPath, id, payload, {
@@ -159,7 +220,6 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
       createOverlay: async () =>
         ({
           team_ids: [user.uid],
-          join_requests: [] as string[],
         }) as AppProject,
     })
   }
@@ -178,5 +238,5 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
     return runProjectCreate(input, ensureOptions, 'console')
   }
 
-  return { createProject, ensureProject }
+  return { createProject, ensureProject, createTestProject }
 }

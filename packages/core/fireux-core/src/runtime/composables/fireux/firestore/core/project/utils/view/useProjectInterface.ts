@@ -58,7 +58,6 @@ export function useProjectInterface() {
     if (!target) return null
 
     const id = safeString(target.id)
-    const key = safeString(target.key)
     const name = safeString(target.name)
     const status = safeString(target.status)
     const description = safeString(target.description)
@@ -72,7 +71,7 @@ export function useProjectInterface() {
       to: resolveProjectPath({ slug: target.slug }),
       imageUrl,
       title: name,
-      subtitle: key,
+      subtitle: description,
       meta: description,
       badges: [labelize(status), labelize(projectType)].filter(Boolean),
     }

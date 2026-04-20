@@ -15,10 +15,10 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 export function useKitchenConsoleIndex() {
   const { kitchens: liveKitchenSource } = useKitchenCollection({ scope: 'mine' })
   const { uid } = useAuth()
-  const { kitchen: testKitchenSource } = useKitchenFetch(uid, {
+  const { kitchen: testKitchenSource, pending: testKitchenPending } = useKitchenFetch(uid, {
     collectionPath: 'test-kitchens',
   })
-  const { ensureKitchen } = useKitchenCreate({ test: true })
+  const { createTestKitchen } = useKitchenCreate()
   const { selectKitchen } = useKitchenConsole()
 
   const sourceKitchens = computed(() => ({
@@ -30,23 +30,20 @@ export function useKitchenConsoleIndex() {
     entities: sourceKitchens,
     selectEntity: selectKitchen,
     getTestId: (kitchen) => String(kitchen.id ?? '').trim(),
+    autoCreateTest: true,
+    testPending: testKitchenPending,
+    testCreateKey: uid,
     createTestEntity: async ({ avatarSrc, displayName }) => {
       const testId = normalizeString(uid.value)
       if (!testId) return null
 
-      const testName = normalizeString(displayName) || `User ${testId.slice(0, 6)}`
-      const result = await ensureKitchen(
+      const userLabel = normalizeString(displayName) || `User ${testId.slice(0, 6)}`
+      const result = await createTestKitchen(
         {
           id: testId,
-          is_test_kitchen: true,
-          place_id: testId,
-          name: testName,
-          short_name: 'Test Kitchen',
+          name: 'Test Kitchen',
+          subtitle: userLabel,
           image_url: normalizeString(avatarSrc),
-        } as KitchenSurface,
-        {
-          mode: 'console',
-          existingRootId: testId,
         }
       )
 

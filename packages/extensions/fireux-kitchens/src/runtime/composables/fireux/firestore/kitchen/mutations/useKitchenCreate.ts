@@ -10,6 +10,7 @@ import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firesto
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceSave'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type {
   AppKitchen,
@@ -26,6 +27,14 @@ const resolveTestUserLabel = (displayName: unknown, uid: unknown) => {
   if (!resolvedUid) return 'User'
 
   return `User ${resolvedUid.slice(0, 6)}`
+}
+
+type KitchenTestCreateInput = {
+  id?: string
+  slug?: string
+  name?: string
+  subtitle?: string
+  image_url?: string
 }
 
 export const KitchenPayload = {
@@ -48,17 +57,66 @@ export type EnsureKitchenOptions = {
 }
 
 export function useKitchenCreate(options: KitchenCreateOptions = {}) {
+  const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
   const { ensurePlaceExists } = usePlaceSave()
   const { ensureConsole } = useConsoleEnsure()
   const { uid, currentUser } = useAuth()
-  const db = useFirestore()
   const collectionPath =
     options.test ? 'test-kitchens' : options.collectionPath ?? 'kitchens'
   const isTestKitchenCollection =
     options.test === true || collectionPath === 'test-kitchens'
   const shouldEnsurePlace = options.ensurePlace ?? !isTestKitchenCollection
+
+  async function createTestKitchen(
+    input: KitchenTestCreateInput = {}
+  ): Promise<ConsoleRootEnsureResult> {
+    const testId = normalizeString(input.id) || normalizeString(uid.value)
+    const userLabel =
+      normalizeString(input.subtitle) ||
+      resolveTestUserLabel(currentUser.value?.displayName, uid.value)
+    const name = normalizeString(input.name) || 'Test Kitchen'
+    const imageUrl = normalizeString(input.image_url)
+
+    if (!testId) {
+      throw new Error('Test kitchen id is required')
+    }
+
+    const ref = doc(db, 'test-kitchens', testId)
+    const snap = await getDoc(ref)
+    if (snap.exists()) {
+      return { id: testId, created: false }
+    }
+
+    const slug = normalizeSlug(input.slug) || 'test-kitchen'
+
+    if (!slug) {
+      throw new Error('Test kitchen slug is required')
+    }
+
+    await setDocument<Partial<Kitchen> & {
+      slug?: string
+      name?: string
+      short_address?: string
+      image_url?: string
+    }>(
+      'test-kitchens',
+      testId,
+      {
+        place_id: testId,
+        slug,
+        name,
+        short_address: userLabel,
+        image_url: imageUrl,
+      },
+      {
+        creator: false,
+      }
+    )
+
+    return { id: testId, created: true }
+  }
 
   async function ensureKitchenRoot(
     input: KitchenCreateInput & { place?: PlaceUpsertInput }
@@ -98,9 +156,11 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       : ''
 
     const resolvedPayload: Record<string, unknown> = {
-      id: resolvedId,
-      is_test_kitchen: isTestKitchenCollection,
       place_id: resolvedId,
+    }
+
+    if (isTestKitchenCollection) {
+      resolvedPayload.is_test_kitchen = true
     }
 
     const resolvedName =
@@ -172,8 +232,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
         }),
       createOverlay: async () =>
         ({
-          team_ids: uid.value ? [String(uid.value).trim()] : [],
-          join_requests: [],
+          ...(uid.value ? { team_ids: [String(uid.value).trim()] } : {}),
         }) as AppKitchen,
     })
   }
@@ -192,5 +251,5 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     return runKitchenCreate(input, ensureOptions, 'console')
   }
 
-  return { createKitchen, ensureKitchen }
+  return { createKitchen, ensureKitchen, createTestKitchen }
 }

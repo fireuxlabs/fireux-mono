@@ -1,4 +1,4 @@
-import { computed, reactive, unref, type ComputedRef, type Ref } from 'vue'
+import { computed, reactive, ref, unref, watch, type ComputedRef, type Ref } from 'vue'
 import { useUser } from '../firestore/core/user/useUser'
 
 export type ConsoleMode = 'live' | 'demo' | 'test'
@@ -18,6 +18,9 @@ type UseConsoleIndexOptions<TLive, TDemo, TTest> = {
   }>
   selectEntity: (id: string, mode?: ConsoleMode) => void
   getTestId: (item: TTest) => string
+  autoCreateTest?: boolean
+  testPending?: MaybeRef<boolean>
+  testCreateKey?: MaybeRef<string | null | undefined>
   createTestEntity?: (context: {
     avatarSrc: string
     displayName: string
@@ -42,6 +45,7 @@ export function useConsoleIndex<
     showSimulations: false,
     creatingTest: false,
   })
+  const lastAutoCreateKey = ref('')
 
   const liveItems = computed<TLive[]>(() => {
     const source = unref(options.entities)
@@ -65,6 +69,14 @@ export function useConsoleIndex<
     demo: demoItems.value,
     test: testItem.value,
   }))
+
+  const autoCreateTest = computed(
+    () => Boolean(options.autoCreateTest) && Boolean(options.createTestEntity)
+  )
+  const testPending = computed(() => Boolean(options.testPending ? unref(options.testPending) : false))
+  const testCreateKey = computed(() =>
+    normalizeString(options.testCreateKey ? unref(options.testCreateKey) : '')
+  )
 
   const actions = {
     selectLive: (id: string) => {
@@ -98,6 +110,7 @@ export function useConsoleIndex<
 
             if (!id) return
 
+            lastAutoCreateKey.value = testCreateKey.value
             options.selectEntity(id, 'test')
           } finally {
             state.creatingTest = false
@@ -105,6 +118,24 @@ export function useConsoleIndex<
         }
       : undefined,
   }
+
+  watch(
+    () => ({
+      enabled: autoCreateTest.value,
+      pending: testPending.value,
+      hasTest: Boolean(testItem.value),
+      key: testCreateKey.value,
+    }),
+    async ({ enabled, pending, hasTest, key }) => {
+      if (!enabled || pending || hasTest || state.creatingTest) return
+      if (!key || lastAutoCreateKey.value === key) return
+
+      await actions.createTest?.()
+    },
+    {
+      immediate: true,
+    }
+  )
 
   return {
     state,
