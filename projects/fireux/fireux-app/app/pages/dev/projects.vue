@@ -105,7 +105,7 @@ import { computed, ref, watch } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useProjectSelection } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectSelection'
 import { useDevStorageCollection } from 'fireux-core/runtime/composables/dev/useDevStorageCollection'
-import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
+import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
 import type { ConsoleProject, Project } from 'fireux-core/runtime/models/system/project.model'
 import { ProjectModel as ProjectModelRuntime } from 'fireux-core/runtime/models/system/project.model'
 

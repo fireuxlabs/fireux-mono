@@ -4,8 +4,6 @@ import type {
   PlaceSource,
 } from 'fireux-places/runtime/models/place.model'
 
-const DEFAULT_KITCHEN_IMAGE = '/img/core/brand/logo.png'
-
 export namespace KitchenCard {
   export type Card = {
     id: string
@@ -69,9 +67,7 @@ export type KitchenSurface = {
 
 const resolveKitchenPath = (target: { slug?: string; id?: string }) => {
   const slug = safeString(target.slug)
-  const id = safeString(target.id)
-  const key = slug || id
-  return key ? `/kitchens/${encodeURIComponent(key)}` : ''
+  return slug ? `/kitchens/${encodeURIComponent(slug)}` : ''
 }
 
 export function useKitchenInterface() {
@@ -96,23 +92,21 @@ export function useKitchenInterface() {
 
   function map(kitchen: KitchenSurface): KitchenCard.Card {
     const id = safeString(kitchen.id).trim()
-    const slug = safeString((kitchen as any)?.slug).trim()
+    const slug = safeString(kitchen.slug).trim()
     const name = safeString(kitchen.name)
-    const shortName = safeString((kitchen as any)?.short_name)
-    const shortAddress = safeString((kitchen as any)?.short_address)
-    const formattedAddress = safeString((kitchen as any)?.formatted_address)
-    const title = shortName || name || 'Untitled kitchen'
-    const imageUrl =
-      safeString((kitchen as any)?.image_url) || DEFAULT_KITCHEN_IMAGE
+    const shortName = safeString(kitchen.short_name)
+    const shortAddress = safeString(kitchen.short_address)
+    const formattedAddress = safeString(kitchen.formatted_address)
+    const imageUrl = safeString(kitchen.image_url)
 
     return {
       id,
-      to: resolveKitchenPath({ slug, id }),
+      to: resolveKitchenPath({ slug }),
 
-      title,
-      subtitle: shortAddress || formattedAddress,
+      title: name,
+      subtitle: shortAddress,
 
-      name: name || title,
+      name,
       badges: [],
 
       shortName,
@@ -121,11 +115,11 @@ export function useKitchenInterface() {
 
       imageUrl,
 
-      imageShade: (kitchen as any)?.image_shade ?? 'none',
+      imageShade: kitchen.image_shade,
 
-      source: (kitchen as any)?.source,
+      source: kitchen.source,
 
-      claimedBy: safeString((kitchen as any)?.claimed_by),
+      claimedBy: safeString(kitchen.claimed_by),
     }
   }
 

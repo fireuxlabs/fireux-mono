@@ -7,7 +7,7 @@ import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/v
 import { $fetch } from 'ofetch'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import { useFirestoreEcosystemEnsure } from '../../../system/ecosystem/mutations/useFirestoreEcosystemEnsure'
-import { useFirestoreProjectEnsure } from '../../../system/project/mutations/useFirestoreProjectEnsure'
+import { useProjectEnsure } from '../../project/mutations/useProjectEnsure'
 import type { AppMediaSyncResponse } from '../utils/appMedia'
 import { useAppCreate, type CreateAppInput } from './useAppCreate'
 
@@ -185,7 +185,7 @@ export function useAppEnsure() {
   const db = useFirestore()
   const { createApp } = useAppCreate()
   const { updateDocument } = useFirestoreUpdate()
-  const { ensureFirestoreProjectDoc } = useFirestoreProjectEnsure()
+  const { ensureProjectDoc } = useProjectEnsure()
   const { ensureFirestoreEcosystemDoc } = useFirestoreEcosystemEnsure()
 
   async function syncAppMedia(appId?: string): Promise<AppMediaSyncResponse> {
@@ -203,7 +203,7 @@ export function useAppEnsure() {
 
   async function ensureApp(): Promise<EnsureAppResult> {
     const fireux = useFireUXConfig()
-    await ensureFirestoreProjectDoc()
+    await ensureProjectDoc()
     await ensureFirestoreEcosystemDoc()
 
     const createPayload = buildCreatePayload(fireux)

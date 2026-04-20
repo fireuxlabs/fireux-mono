@@ -88,7 +88,7 @@
       </div>
     </section>
 
-    <section v-if="projects.test" class="w-full max-w-xl space-y-3">
+    <section v-if="projects.test || actions.createTest" class="w-full max-w-xl space-y-3">
       <div class="flex items-center gap-3">
         <div class="h-px flex-1 bg-default/60" />
         <div class="text-xs uppercase tracking-[0.16em] text-toned">Or</div>
@@ -110,6 +110,17 @@
           :show-badges="false"
           @action="actions.selectTest"
         />
+
+        <UButton
+          v-else-if="actions.createTest"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-plus"
+          :loading="state.creatingTest"
+          @click="actions.createTest"
+        >
+          Create Test Project
+        </UButton>
       </div>
     </section>
 

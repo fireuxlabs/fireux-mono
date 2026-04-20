@@ -90,7 +90,7 @@ import { useCollectionSearch } from '../../../../composables/shared/useCollectio
 import {
   useProjectInterface,
   type ProjectSurface,
-} from '../../../../composables/fireux/firestore/system/project/utils/view/useProjectInterface'
+} from '../../../../composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 
 const props = withDefaults(
   defineProps<{

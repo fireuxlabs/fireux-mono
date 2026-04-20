@@ -1,26 +1,24 @@
 import { computed } from 'vue'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/console/useConsoleIndex'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { getDemoKitchens } from '../utils/kitchen-demo-scenarios'
 import { useKitchenCollection } from '../../firestore/kitchen/fetch/useKitchenCollection'
+import { useKitchenCreate } from '../../firestore/kitchen/mutations/useKitchenCreate'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenConsole } from './useKitchenConsole'
 
-type DemoKitchenListItem = {
-  id: string
-  name: string
-  label: string
-  image_url?: string
-}
+type DemoKitchenListItem = ReturnType<typeof getDemoKitchens>[number]
 
-const getDemoKitchens = () => [] as DemoKitchenListItem[]
+const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useKitchenConsoleIndex() {
-  const { kitchens: liveKitchenSource } = useKitchenCollection()
+  const { kitchens: liveKitchenSource } = useKitchenCollection({ scope: 'mine' })
   const { uid } = useAuth()
   const { kitchen: testKitchenSource } = useKitchenFetch(uid, {
     collectionPath: 'test-kitchens',
   })
+  const { ensureKitchen } = useKitchenCreate({ test: true })
   const { selectKitchen } = useKitchenConsole()
 
   const sourceKitchens = computed(() => ({
@@ -32,6 +30,28 @@ export function useKitchenConsoleIndex() {
     entities: sourceKitchens,
     selectEntity: selectKitchen,
     getTestId: (kitchen) => String(kitchen.id ?? '').trim(),
+    createTestEntity: async ({ avatarSrc, displayName }) => {
+      const testId = normalizeString(uid.value)
+      if (!testId) return null
+
+      const testName = normalizeString(displayName) || `User ${testId.slice(0, 6)}`
+      const result = await ensureKitchen(
+        {
+          id: testId,
+          is_test_kitchen: true,
+          place_id: testId,
+          name: testName,
+          short_name: 'Test Kitchen',
+          image_url: normalizeString(avatarSrc),
+        } as KitchenSurface,
+        {
+          mode: 'console',
+          existingRootId: testId,
+        }
+      )
+
+      return normalizeString(result.id)
+    },
   })
 
   return {

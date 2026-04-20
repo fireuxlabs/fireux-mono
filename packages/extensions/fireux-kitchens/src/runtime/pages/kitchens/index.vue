@@ -67,6 +67,6 @@ const showDevNotes = computed(() => import.meta.dev && notesVisible.value)
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 
-const { kitchens } = useKitchenCollection()
+const { kitchens } = useKitchenCollection({ collectionPath: 'test-kitchens' })
 const collection = computed(() => kitchens.value)
 </script>

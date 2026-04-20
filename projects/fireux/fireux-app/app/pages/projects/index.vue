@@ -7,7 +7,11 @@
     />
 
     <UPageBody class="pagebody">
-      <ProjectCollectionManager :collection="projects" :link="true" />
+      <ProjectCollectionManager
+        :collection="projects"
+        :link="true"
+        :show-badges="false"
+      />
     </UPageBody>
   </UPage>
 </template>
@@ -15,7 +19,7 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
+import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
 
 definePageMeta({
   title: 'Projects',
@@ -44,5 +48,5 @@ useSeoMeta({
   description: pageDescription,
 })
 
-const { projects } = useProjectCollection()
+const { projects } = useProjectCollection({ collectionPath: 'test-projects' })
 </script>

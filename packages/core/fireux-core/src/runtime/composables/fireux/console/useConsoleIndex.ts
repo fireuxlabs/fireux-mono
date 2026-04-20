@@ -18,6 +18,10 @@ type UseConsoleIndexOptions<TLive, TDemo, TTest> = {
   }>
   selectEntity: (id: string, mode?: ConsoleMode) => void
   getTestId: (item: TTest) => string
+  createTestEntity?: (context: {
+    avatarSrc: string
+    displayName: string
+  }) => Promise<string | null | undefined>
 }
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -36,6 +40,7 @@ export function useConsoleIndex<
 
   const state = reactive({
     showSimulations: false,
+    creatingTest: false,
   })
 
   const liveItems = computed<TLive[]>(() => {
@@ -77,6 +82,28 @@ export function useConsoleIndex<
 
       options.selectEntity(id, 'test')
     },
+    createTest: options.createTestEntity
+      ? async () => {
+          if (state.creatingTest) return
+
+          state.creatingTest = true
+
+          try {
+            const id = normalizeString(
+              await options.createTestEntity({
+                avatarSrc: user.value.avatarSrc,
+                displayName: user.value.displayName,
+              })
+            )
+
+            if (!id) return
+
+            options.selectEntity(id, 'test')
+          } finally {
+            state.creatingTest = false
+          }
+        }
+      : undefined,
   }
 
   return {

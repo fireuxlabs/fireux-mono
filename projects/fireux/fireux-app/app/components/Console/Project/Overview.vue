@@ -113,7 +113,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useProjectConsole } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectConsole'
-import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
+import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
 
 const { projectState, project } = useProjectConsole()
 // const runtimeData = useProjectData({

@@ -5,12 +5,9 @@ import type {
 } from '../../../../../../../models/system/project.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
-const DEFAULT_PROJECT_IMAGE = '/img/core/brand/logo.png'
-const resolveProjectPath = (target: { slug?: string; id?: string }) => {
+const resolveProjectPath = (target: { slug?: string }) => {
   const slug = safeString(target.slug)
-  const id = safeString(target.id)
-  const key = slug || id
-  return key ? `/projects/${key}` : ''
+  return slug ? `/projects/${slug}` : ''
 }
 const labelize = (value: string) =>
   safeString(value)
@@ -61,30 +58,22 @@ export function useProjectInterface() {
     if (!target) return null
 
     const id = safeString(target.id)
-    const key = safeString(target.key) || id || safeString(target.slug)
+    const key = safeString(target.key)
     const name = safeString(target.name)
-    const status = safeString(target.status) || 'active'
+    const status = safeString(target.status)
     const description = safeString(target.description)
     const projectType = safeString(target.project_type)
-    const imageUrl = safeString(target.image_url) || DEFAULT_PROJECT_IMAGE
-    const resolvedId = id || key || name
+    const imageUrl = safeString(target.image_url)
 
-    if (!resolvedId || !(key || name)) return null
+    if (!id) return null
 
     return {
-      id: resolvedId,
-      to: resolveProjectPath({ slug: target.slug, id: resolvedId }),
+      id,
+      to: resolveProjectPath({ slug: target.slug }),
       imageUrl,
-      title: name || key || 'Untitled project',
-      subtitle: key || '',
-      meta:
-        description ||
-        [
-          projectType ? `type ${labelize(projectType)}` : '',
-          key ? `key ${key}` : '',
-        ]
-          .filter(Boolean)
-          .join(' · '),
+      title: name,
+      subtitle: key,
+      meta: description,
       badges: [labelize(status), labelize(projectType)].filter(Boolean),
     }
   }

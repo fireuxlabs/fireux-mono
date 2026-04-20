@@ -91,6 +91,8 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
 
     const explicitName = normalizeString((input as any)?.name)
     const explicitShortName = normalizeString((input as any)?.short_name)
+    const explicitShortAddress = normalizeString((input as any)?.short_address)
+    const explicitImageUrl = normalizeString((input as any)?.image_url)
     const defaultTestName = isTestKitchenCollection
       ? `${resolveTestUserLabel(currentUser.value?.displayName, uid.value)} Test Kitchen`
       : ''
@@ -111,6 +113,14 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
 
     if (explicitShortName) {
       resolvedPayload.short_name = explicitShortName
+    }
+
+    if (explicitShortAddress) {
+      resolvedPayload.short_address = explicitShortAddress
+    }
+
+    if (explicitImageUrl) {
+      resolvedPayload.image_url = explicitImageUrl
     }
 
     const ref = doc(db, collectionPath, resolvedId)

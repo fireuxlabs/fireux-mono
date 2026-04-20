@@ -70,7 +70,7 @@
 import { useRoute, useRouter } from '#imports'
 import { computed, ref, watch } from 'vue'
 import { useProjectSelection } from '../../../../composables/fireux/app/project-console/useProjectSelection'
-import { useProjectCreate } from '../../../../composables/fireux/firestore/system/project/mutations/useProjectCreate'
+import { useProjectCreate } from '../../../../composables/fireux/firestore/core/project/mutations/useProjectCreate'
 import {
   normalizeFireuxConsoleEndpoint,
   readProjectPublicFacade,

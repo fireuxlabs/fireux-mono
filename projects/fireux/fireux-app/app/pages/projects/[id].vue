@@ -163,11 +163,11 @@
 import { computed } from 'vue'
 import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/project/fetch/useProjectCollection'
+import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
 import {
   useProjectInterface,
   type ProjectSurface,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/project/utils/view/useProjectInterface'
+} from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 
 definePageMeta({
   layout: 'default',
