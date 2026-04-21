@@ -136,44 +136,23 @@ import {
 import { useProjectConsole } from '../../../composables/fireux/project-console/useProjectConsole'
 import { useProjectConsoleIndex } from '../../../composables/fireux/project-console/useProjectConsoleIndex'
 
-type DemoProjectListItem = {
-  id: string
-  name: string
-  label: string
-  image_url?: string
-}
-
 type ProjectPillCard = NonNullable<
   ReturnType<ReturnType<typeof useProjectInterface>['pill']>
 >
 
 const { state, projects, actions } = useProjectConsoleIndex()
-const { selectedProject, selectedMode, clearSelectedProject } = useProjectConsole()
+const { selectedProject, clearSelectedProject } = useProjectConsole()
 const { pill } = useProjectInterface()
-
-const toDemoProjectSurface = (project: DemoProjectListItem): ProjectSurface => ({
-  id: project.id,
-  slug: project.id,
-  name: project.name,
-  description: project.label,
-  image_url: project.image_url,
-  project_type: 'demo',
-  status: 'active',
-})
 
 const demoProjectCards = computed<ProjectPillCard[]>(() =>
   projects.value.demo
-    .map((project: DemoProjectListItem) => pill(toDemoProjectSurface(project)))
+    .map((project) => pill(project))
     .filter((card): card is ProjectPillCard => Boolean(card))
 )
 
 const selectedProjectCard = computed<ProjectPillCard | null>(() => {
-  const project = selectedProject.value as ProjectSurface | DemoProjectListItem | null
+  const project = selectedProject.value as ProjectSurface | null
   if (!project) return null
-
-  if (selectedMode.value === 'demo') {
-    return pill(toDemoProjectSurface(project as DemoProjectListItem)) ?? null
-  }
 
   return pill(project as ProjectSurface) ?? null
 })

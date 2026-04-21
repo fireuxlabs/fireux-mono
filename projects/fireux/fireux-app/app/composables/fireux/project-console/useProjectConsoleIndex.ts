@@ -1,6 +1,5 @@
 import { computed } from 'vue'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/console/useConsoleIndex'
-import { getDemoProjects } from 'fireux-core/runtime/composables/fireux/app/utils/project-demo-scenarios/demo-scenarios/index'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
 import { useProjectFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectFetch'
@@ -8,17 +7,11 @@ import { useProjectCreate } from 'fireux-core/runtime/composables/fireux/firesto
 import { type ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 import { useProjectConsole } from './useProjectConsole'
 
-type DemoProjectListItem = {
-  id: string
-  name: string
-  label: string
-  image_url?: string
-}
-
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useProjectConsoleIndex() {
-  const { projects: liveProjectSource } = useProjectCollection({ scope: 'mine' })
+  const { projects: liveProjectSource } = useProjectCollection({ source: 'live', scope: 'mine' })
+  const { projects: demoProjectSource } = useProjectCollection({ source: 'demo' })
   const { uid } = useAuth()
   const { project: testProjectSource, pending: testProjectPending } = useProjectFetch(uid, {
     source: 'test',
@@ -28,11 +21,11 @@ export function useProjectConsoleIndex() {
 
   const sourceProjects = computed(() => ({
     live: Array.isArray(liveProjectSource.value) ? liveProjectSource.value : [],
-    demo: getDemoProjects(),
+    demo: Array.isArray(demoProjectSource.value) ? demoProjectSource.value : [],
     test: testProjectSource.value,
   }))
 
-  const consoleIndex = useConsoleIndex<ProjectSurface, DemoProjectListItem, ProjectSurface>({
+  const consoleIndex = useConsoleIndex<ProjectSurface, ProjectSurface, ProjectSurface>({
     entities: sourceProjects,
     selectEntity: selectProject,
     getTestId: (project) => String(project.id ?? '').trim(),

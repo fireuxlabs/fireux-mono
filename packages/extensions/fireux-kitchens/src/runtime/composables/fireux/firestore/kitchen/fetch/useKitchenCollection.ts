@@ -8,6 +8,7 @@ import { computed, isRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { Place } from 'fireux-places/runtime/models/place.model'
+import { getDemoKitchens } from '../../app/utils/kitchen-demo-scenarios'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { AppKitchen, Kitchen } from '../../../../../models/kitchen.model'
@@ -15,14 +16,37 @@ import type { AppKitchen, Kitchen } from '../../../../../models/kitchen.model'
 type KitchenCollectionDoc = Partial<Kitchen> & { id?: string; place_id?: string }
 type AppKitchenCollectionDoc = AppKitchen & { id?: string }
 type KitchenCollectionScope = 'all' | 'mine'
+type KitchenCollectionSource = 'live' | 'test' | 'demo'
 
 type UseKitchenCollectionOptions = {
   collectionPath?: string | Ref<string>
   scope?: KitchenCollectionScope | Ref<KitchenCollectionScope>
+  source?: KitchenCollectionSource | Ref<KitchenCollectionSource>
   hydrate?: boolean
 }
 
 const DEFAULT_COLLECTION_PATH = 'kitchens'
+const TEST_COLLECTION_PATH = 'test-kitchens'
+
+function resolveMaybeRef<T>(value: T | Ref<T> | undefined, fallback: T): T {
+  if (isRef(value)) return value.value
+  return value ?? fallback
+}
+
+function toDemoKitchenSurface(
+  kitchen: ReturnType<typeof getDemoKitchens>[number]
+): KitchenCollectionDoc {
+  const id = String(kitchen.id || '').trim()
+
+  return {
+    id,
+    slug: id,
+    place_id: id,
+    name: String(kitchen.name || '').trim(),
+    short_address: String(kitchen.label || '').trim(),
+    image_url: kitchen.image_url,
+  }
+}
 
 const pickPlaceForKitchen = (
   place: Place | null
@@ -63,22 +87,29 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
   const { firestoreFetchCollection, firestoreQuery } = useFirestoreRead()
   const { appId } = useFireUXConfig()
   const { uid } = useAuth()
-  const pathRef = isRef(options.collectionPath)
-    ? options.collectionPath
-    : computed(() => String(options.collectionPath || DEFAULT_COLLECTION_PATH).trim())
-  const scopeRef = isRef(options.scope)
-    ? options.scope
-    : computed<KitchenCollectionScope>(() => options.scope || 'all')
+  const sourceRef = computed<KitchenCollectionSource>(() =>
+    resolveMaybeRef(options.source, 'live')
+  )
+  const pathRef = computed(() => {
+    const explicitPath = String(resolveMaybeRef(options.collectionPath, '') || '').trim()
+    if (explicitPath) return explicitPath
+    return sourceRef.value === 'test' ? TEST_COLLECTION_PATH : DEFAULT_COLLECTION_PATH
+  })
+  const scopeRef = computed<KitchenCollectionScope>(() =>
+    resolveMaybeRef(options.scope, 'all')
+  )
   const currentUid = computed(() => String(uid.value || '').trim())
   const currentAppId = computed(() => String(appId || '').trim())
   const shouldHydrate = options.hydrate !== false
 
-  const source = computed(() => {
+  const rootSource = computed(() => {
+    if (sourceRef.value === 'demo') return null
     const collectionPath = String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
     return firestoreFetchCollection<KitchenCollectionDoc>(collectionPath)
   })
 
   const overlaySource = computed(() => {
+    if (sourceRef.value !== 'live') return null
     if (scopeRef.value !== 'mine') return null
 
     const collectionPath = String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
@@ -104,7 +135,15 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
     return firestoreFetchCollection<Place>('places')
   })
 
+  const demoKitchens = computed<KitchenCollectionDoc[]>(() =>
+    getDemoKitchens().map(toDemoKitchenSurface)
+  )
+
   const kitchens = computed(() => {
+    if (sourceRef.value === 'demo') {
+      return demoKitchens.value
+    }
+
     const allowedKitchenIds =
       scopeRef.value === 'mine'
         ? new Set(
@@ -119,7 +158,7 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
       if (placeId) placesById.set(placeId, place)
     }
 
-    return (source.value?.value ?? [])
+    return (rootSource.value?.value ?? [])
       .filter((kitchen) => {
         if (!allowedKitchenIds) return true
         const kitchenId = String(kitchen?.id || '').trim()
@@ -141,11 +180,12 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
 
   const count = computed(() => kitchens.value.length)
   const pending = computed(() => {
+    if (sourceRef.value === 'demo') return false
     if (scopeRef.value === 'mine' && (!currentUid.value || !currentAppId.value)) return false
     if (scopeRef.value === 'mine') {
-      return source.value?.value === undefined || overlaySource.value?.value === undefined
+      return rootSource.value?.value === undefined || overlaySource.value?.value === undefined
     }
-    return source.value?.value === undefined
+    return rootSource.value?.value === undefined
   })
 
   return {

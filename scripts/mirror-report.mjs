@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const repoRoot = path.resolve(path.join(__dirname, '..'))
 const mirrorDir = path.join(repoRoot, 'mirror')
+const mirrorFilesDir = path.join(mirrorDir, 'files')
 const outDir = path.join(repoRoot, 'docs')
 const outFile = path.join(outDir, 'mirror-report.md')
 
@@ -29,7 +30,7 @@ function listMirrorFiles(dir) {
   try {
     const entries = fs.readdirSync(dir, { withFileTypes: true })
     return entries
-      .filter((e) => e.isFile())
+      .filter((e) => e.isFile() || e.isSymbolicLink())
       .map((e) => path.join(dir, e.name))
   } catch (err) {
     return []
@@ -37,7 +38,7 @@ function listMirrorFiles(dir) {
 }
 
 function buildReport() {
-  const files = listMirrorFiles(mirrorDir)
+  const files = listMirrorFiles(mirrorFilesDir)
   fs.mkdirSync(outDir, { recursive: true })
 
   const header = `# Mirror Report\n\nGenerated: ${new Date().toISOString()}\n\nTotal files: ${files.length}\n\n`

@@ -3,20 +3,13 @@ import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/fir
 import { type ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 import { useProjectConsole } from './useProjectConsole'
 
-type DemoProjectListItem = {
-  id: string
-  name: string
-  label: string
-  image_url?: string
-}
-
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useProjectConsoleOverview() {
-  const { projects: liveProjects } = useProjectCollection({ scope: 'mine' })
+  const { projects: liveProjects } = useProjectCollection({ source: 'live', scope: 'mine' })
   const { selectedProject, selectedMode } = useProjectConsole()
 
-  return useConsoleOverview<ProjectSurface | DemoProjectListItem, ProjectSurface>({
+  return useConsoleOverview<ProjectSurface, ProjectSurface>({
     selectedEntity: selectedProject,
     selectedMode,
     liveItems: liveProjects,

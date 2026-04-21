@@ -132,50 +132,23 @@ import { useKitchenInterface } from '../../../composables/fireux/firestore/kitch
 import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
 import { useKitchenConsoleIndex } from '../../../composables/fireux/app/kitchen-console/useKitchenConsoleIndex'
 
-type DemoKitchenListItem = {
-  id: string
-  name: string
-  label: string
-  image_url?: string
-}
-
 type KitchenPillCard = NonNullable<
   ReturnType<ReturnType<typeof useKitchenInterface>['pill']>
 >
 
-type KitchenPillInput = Exclude<
-  Parameters<ReturnType<typeof useKitchenInterface>['pill']>[0],
-  null | undefined
->
-
 const { state, kitchens, actions } = useKitchenConsoleIndex()
-const { selectedKitchen, selectedMode, clearSelectedKitchen } = useKitchenConsole()
+const { selectedKitchen, clearSelectedKitchen } = useKitchenConsole()
 const { pill } = useKitchenInterface()
-
-const toDemoKitchenSurface = (kitchen: DemoKitchenListItem): KitchenPillInput => ({
-  id: kitchen.id,
-  place_id: kitchen.id,
-  is_test_kitchen: false,
-  name: kitchen.name,
-  short_address: kitchen.label,
-  image_url: kitchen.image_url,
-})
 
 const demoKitchenCards = computed<KitchenPillCard[]>(() =>
   kitchens.value.demo
-    .map((kitchen: DemoKitchenListItem) =>
-      pill(toDemoKitchenSurface(kitchen) as KitchenPillInput)
-    )
+    .map((kitchen) => pill(kitchen))
     .filter((card): card is KitchenPillCard => Boolean(card))
 )
 
 const selectedKitchenCard = computed<KitchenPillCard | null>(() => {
-  const kitchen = selectedKitchen.value as KitchenPillInput | DemoKitchenListItem | null
+  const kitchen = selectedKitchen.value
   if (!kitchen) return null
-
-  if (selectedMode.value === 'demo') {
-    return pill(toDemoKitchenSurface(kitchen as DemoKitchenListItem)) ?? null
-  }
 
   return pill(kitchen) ?? null
 })

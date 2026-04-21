@@ -1,32 +1,28 @@
 import { computed } from 'vue'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/console/useConsoleIndex'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { getDemoKitchens } from '../utils/kitchen-demo-scenarios'
 import { useKitchenCollection } from '../../firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenCreate } from '../../firestore/kitchen/mutations/useKitchenCreate'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenConsole } from './useKitchenConsole'
 
-type DemoKitchenListItem = ReturnType<typeof getDemoKitchens>[number]
-
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useKitchenConsoleIndex() {
-  const { kitchens: liveKitchenSource } = useKitchenCollection({ scope: 'mine' })
+  const { kitchens: liveKitchenSource } = useKitchenCollection({ source: 'live', scope: 'mine' })
+  const { kitchens: demoKitchenSource } = useKitchenCollection({ source: 'demo' })
   const { uid } = useAuth()
-  const { kitchen: testKitchenSource, pending: testKitchenPending } = useKitchenFetch(uid, {
-    collectionPath: 'test-kitchens',
-  })
+  const { kitchen: testKitchenSource, pending: testKitchenPending } = useKitchenFetch(uid, { source: 'test' })
   const { createTestKitchen } = useKitchenCreate()
   const { selectKitchen } = useKitchenConsole()
 
   const sourceKitchens = computed(() => ({
     live: Array.isArray(liveKitchenSource.value) ? liveKitchenSource.value : [],
-    demo: getDemoKitchens(),
+    demo: Array.isArray(demoKitchenSource.value) ? demoKitchenSource.value : [],
     test: testKitchenSource.value,
   }))
-  const consoleIndex = useConsoleIndex<KitchenSurface, DemoKitchenListItem, KitchenSurface>({
+  const consoleIndex = useConsoleIndex<KitchenSurface, KitchenSurface, KitchenSurface>({
     entities: sourceKitchens,
     selectEntity: selectKitchen,
     getTestId: (kitchen) => String(kitchen.id ?? '').trim(),

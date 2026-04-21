@@ -90,41 +90,16 @@ import { computed } from 'vue'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenConsoleOverview } from '../../../composables/fireux/app/kitchen-console/useKitchenConsoleOverview'
 
-type DemoKitchenListItem = {
-  id: string
-  name: string
-  label: string
-  image_url?: string
-}
-
 type KitchenPillCard = NonNullable<
   ReturnType<ReturnType<typeof useKitchenInterface>['pill']>
->
-
-type KitchenPillInput = Exclude<
-  Parameters<ReturnType<typeof useKitchenInterface>['pill']>[0],
-  null | undefined
 >
 
 const { focus, group } = useKitchenConsoleOverview()
 const { pill } = useKitchenInterface()
 
-const toDemoKitchenSurface = (kitchen: DemoKitchenListItem): KitchenPillInput => ({
-  id: kitchen.id,
-  place_id: kitchen.id,
-  is_test_kitchen: false,
-  name: kitchen.name,
-  short_address: kitchen.label,
-  image_url: kitchen.image_url,
-})
-
 const focusCard = computed<KitchenPillCard | null>(() => {
-  const kitchen = focus.value.entity as KitchenPillInput | DemoKitchenListItem | null
+  const kitchen = focus.value.entity
   if (!kitchen) return null
-
-  if (focus.value.mode === 'demo') {
-    return pill(toDemoKitchenSurface(kitchen as DemoKitchenListItem)) ?? null
-  }
 
   return pill(kitchen) ?? null
 })

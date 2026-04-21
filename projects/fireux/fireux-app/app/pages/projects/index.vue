@@ -18,10 +18,8 @@
 
 <script setup lang="ts">
 import { useHead } from '#imports'
-import { computed } from 'vue'
-import { getDemoProjects } from 'fireux-core/runtime/composables/fireux/app/utils/project-demo-scenarios/demo-scenarios'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import type { ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
+import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
 
 definePageMeta({
   title: 'Projects',
@@ -50,15 +48,5 @@ useSeoMeta({
   description: pageDescription,
 })
 
-const projects = computed<ProjectSurface[]>(() =>
-  getDemoProjects().map((project) => ({
-    id: project.id,
-    slug: project.id,
-    name: project.name,
-    description: project.label,
-    image_url: project.image_url,
-    project_type: 'demo',
-    status: 'active',
-  }))
-)
+const { projects } = useProjectCollection({ source: 'demo' })
 </script>

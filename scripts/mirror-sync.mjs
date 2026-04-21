@@ -3,11 +3,8 @@ import path from 'node:path'
 
 const repoRoot = path.resolve(new URL('..', import.meta.url).pathname)
 const mirrorDir = path.join(repoRoot, 'mirror')
+const mirrorFilesDir = path.join(mirrorDir, 'files')
 const listPath = path.join(mirrorDir, 'mirror.txt')
-
-function isKeepFile(baseName) {
-  return baseName === 'README.md' || baseName === 'mirror.txt'
-}
 
 function linkNameFromRelPath(relPath) {
   // Flat mirror: build a readable name from key path segments.
@@ -186,19 +183,10 @@ function ensureDirExists(dir) {
 
 function removeGeneratedSymlinks(dir) {
   for (const ent of fs.readdirSync(dir, { withFileTypes: true })) {
-    const base = ent.name
-    if (isKeepFile(base)) continue
+    const abs = path.join(dir, ent.name)
 
-    const abs = path.join(dir, base)
-
-    // Mirror guardrail: no subfolders under mirror.
-    if (ent.isDirectory()) {
-      throw new Error(`mirror-sync: unexpected directory under mirror/: ${base}`)
-    }
-
-    // Remove any existing symlink (and also stale regular files if present).
     try {
-      fs.rmSync(abs, { force: true })
+      fs.rmSync(abs, { force: true, recursive: true })
     } catch (err) {
       throw new Error(`mirror-sync: failed to remove ${abs}: ${err?.message || err}`)
     }
@@ -220,12 +208,13 @@ function createSymlink({ linkAbsPath, targetAbsPath }) {
 
 function main() {
   ensureDirExists(mirrorDir)
+  ensureDirExists(mirrorFilesDir)
   if (!fs.existsSync(listPath)) {
     throw new Error(`mirror-sync: missing ${path.relative(repoRoot, listPath)}`)
   }
 
   const relEntries = readMirrorList(listPath)
-  removeGeneratedSymlinks(mirrorDir)
+  removeGeneratedSymlinks(mirrorFilesDir)
 
   const created = []
   const usedNames = new Map()
@@ -259,13 +248,13 @@ function main() {
     const count = (usedNames.get(baseName) || 0) + 1
     usedNames.set(baseName, count)
     const linkName = count === 1 ? baseName : `${baseName}--${count}`
-    const linkAbs = path.join(mirrorDir, linkName)
+    const linkAbs = path.join(mirrorFilesDir, linkName)
 
     createSymlink({ linkAbsPath: linkAbs, targetAbsPath: targetAbs })
     created.push(linkName)
   }
 
-  console.log(`mirror-sync: created ${created.length} symlinks in mirror/`)
+  console.log(`mirror-sync: created ${created.length} symlinks in mirror/files/`)
 }
 
 main()

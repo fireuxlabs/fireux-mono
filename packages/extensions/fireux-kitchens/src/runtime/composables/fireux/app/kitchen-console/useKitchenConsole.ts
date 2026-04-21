@@ -8,27 +8,23 @@ import {
   type ConsoleHeaderData,
 } from 'fireux-core/runtime/composables/fireux/console/useConsoleHeader'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { getDemoKitchens } from '../utils/kitchen-demo-scenarios'
 import { useKitchenCollection } from '../../firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 
 type KitchenConsoleMode = ConsoleMode
-type DemoKitchenListItem = ReturnType<typeof getDemoKitchens>[number]
-type KitchenConsoleEntity = KitchenSurface | DemoKitchenListItem
+type KitchenConsoleEntity = KitchenSurface
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useKitchenConsole() {
-  const { kitchens: liveKitchens } = useKitchenCollection({ scope: 'mine' })
+  const { kitchens: liveKitchens } = useKitchenCollection({ source: 'live', scope: 'mine' })
+  const { kitchens: demoKitchens } = useKitchenCollection({ source: 'demo' })
   const { uid } = useAuth()
-  const { kitchen: testKitchen } = useKitchenFetch(uid, {
-    collectionPath: 'test-kitchens',
-  })
-  const demoKitchens = computed<DemoKitchenListItem[]>(() => getDemoKitchens())
+  const { kitchen: testKitchen } = useKitchenFetch(uid, { source: 'test' })
   const { selectedEntity, selectedMode, selectEntity, clearSelection } = useConsole<
     KitchenSurface,
-    DemoKitchenListItem,
+    KitchenSurface,
     KitchenSurface
   >('kitchens', {
     liveItems: liveKitchens,
@@ -45,7 +41,7 @@ export function useKitchenConsole() {
     if (selectedMode.value === 'demo') {
       return {
         title: normalizeString(kitchen.name),
-        subtitle: normalizeString('label' in kitchen ? kitchen.label : '') || undefined,
+        subtitle: normalizeString(kitchen.short_address) || undefined,
         imageUrl: normalizeString(kitchen.image_url) || undefined,
       }
     }
@@ -53,7 +49,7 @@ export function useKitchenConsole() {
     if (selectedMode.value === 'test') {
       return {
         title: 'Test Kitchen',
-        subtitle: normalizeString(kitchen.name) || undefined,
+        subtitle: normalizeString(kitchen.short_address) || undefined,
         imageUrl: normalizeString(kitchen.image_url) || undefined,
       }
     }

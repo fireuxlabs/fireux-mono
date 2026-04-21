@@ -1,5 +1,4 @@
 import { computed } from 'vue'
-import { getDemoProjects } from 'fireux-core/runtime/composables/fireux/app/utils/project-demo-scenarios/demo-scenarios/index'
 import {
   useConsole,
   type ConsoleMode,
@@ -14,24 +13,18 @@ import { useProjectFetch } from 'fireux-core/runtime/composables/fireux/firestor
 import { type ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 
 type ProjectConsoleMode = ConsoleMode
-type DemoProjectListItem = {
-  id: string
-  name: string
-  label: string
-  image_url?: string
-}
-type ProjectConsoleEntity = ProjectSurface | DemoProjectListItem
+type ProjectConsoleEntity = ProjectSurface
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useProjectConsole() {
-  const { projects: liveProjects } = useProjectCollection({ scope: 'mine' })
+  const { projects: liveProjects } = useProjectCollection({ source: 'live', scope: 'mine' })
+  const { projects: demoProjects } = useProjectCollection({ source: 'demo' })
   const { uid } = useAuth()
   const { project: testProject } = useProjectFetch(uid, { source: 'test' })
-  const demoProjects = computed(() => getDemoProjects())
   const { selectedEntity, selectedMode, selectEntity, clearSelection } = useConsole<
     ProjectSurface,
-    DemoProjectListItem,
+    ProjectSurface,
     ProjectSurface
   >('projects', {
     liveItems: liveProjects,
@@ -48,7 +41,7 @@ export function useProjectConsole() {
     if (selectedMode.value === 'demo') {
       return {
         title: normalizeString(project.name),
-        subtitle: normalizeString('label' in project ? project.label : '') || undefined,
+        subtitle: normalizeString(project.description) || undefined,
         imageUrl: normalizeString(project.image_url) || undefined,
       }
     }
@@ -56,7 +49,7 @@ export function useProjectConsole() {
     if (selectedMode.value === 'test') {
       return {
         title: 'Test Project',
-        subtitle: normalizeString(project.name) || undefined,
+        subtitle: normalizeString(project.description) || undefined,
         imageUrl: normalizeString(project.image_url) || undefined,
       }
     }

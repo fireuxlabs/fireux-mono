@@ -1,4 +1,5 @@
 import { computed, isRef, type Ref } from 'vue'
+import { getDemoProject } from 'fireux-core/runtime/composables/fireux/app/utils/project-demo-scenarios/demo-scenarios/index'
 import type { ProjectSurface } from '../utils/view/useProjectInterface'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
@@ -37,6 +38,21 @@ function normalizeProject(
   }
 }
 
+function resolveDefaultDemoProject(projectId: string): ProjectFetchDoc | null {
+  const scenario = getDemoProject(projectId)
+  if (!scenario) return null
+
+  return {
+    id: scenario.id,
+    slug: scenario.id,
+    name: scenario.name,
+    description: scenario.label,
+    image_url: scenario.image_url,
+    project_type: 'demo',
+    status: 'active',
+  }
+}
+
 export function useProjectFetch(
   id: string | null | Ref<string | null>,
   options: UseProjectFetchOptions = {}
@@ -71,7 +87,8 @@ export function useProjectFetch(
     const docId = String(idRef.value || '').trim()
 
     if (sourceRef.value === 'demo') {
-      return normalizeProject(resolveMaybeRef(options.demoProject ?? null), docId)
+      const configuredDemo = resolveMaybeRef(options.demoProject ?? null)
+      return normalizeProject(configuredDemo ?? resolveDefaultDemoProject(docId), docId)
     }
 
     if (sourceRef.value === 'api') {

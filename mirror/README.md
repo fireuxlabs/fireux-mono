@@ -1,22 +1,39 @@
 Standard workflow
 
 1) Clear the mirror
-   - Delete any existing symlinks inside `mirror/`.
+   - Delete any existing symlinks inside `mirror/files/`.
    - Empty the file `mirror/mirror.txt`.
 
 2) Define the mirror scope
    - Add one source file path per line inside `mirror/mirror.txt`.
    - Paths should be relative to the repository root.
+   - Human workflow:
+     highlight a group of paths you want to inspect together, copy them, and paste them into `mirror/mirror.txt` one per line.
+   - Keep the list narrow.
+     Start with one pattern or one feature seam at a time, for example:
+     `useProjectCollection.ts`, related fetch hooks, and the page that consumes them.
    - Example:
      packages/core/fireux-core/src/runtime/composables/.../useUserInterface.ts
 
-3) Generate the mirror
+3) Find paths from the terminal
+   - Use `rg --files` to find matching files, then paste the output into `mirror/mirror.txt`.
+   - Example: all `use*Collection` files:
+     `rg --files packages | rg '/use.*Collection\\.ts$'`
+   - Example: all project collection files:
+     `rg --files packages projects | rg 'useProjectCollection\\.ts$'`
+   - Example: replace `mirror/mirror.txt` directly from the terminal:
+     `rg --files packages | rg '/use.*Collection\\.ts$' > mirror/mirror.txt`
+   - Shortcut script:
+     `bash mirror/find.sh '/use.*Collection\\.ts$'`
+   - The script overwrites `mirror/mirror.txt` by default.
+
+4) Generate the mirror
    - Run the script:
      pnpm mirror:sync
-   - This reads `mirror/mirror.txt` and creates symlinks inside `mirror/`.
+   - This reads `mirror/mirror.txt` and creates symlinks inside `mirror/files/`.
 
-4) Inspect or share the mirrored files
-   - The symlinked files inside `mirror/` provide a flattened view of the selected sources.
+5) Inspect or share the mirrored files
+   - The symlinked files inside `mirror/files/` provide a flattened view of the selected sources.
    - This makes it easier to review multiple related files together.
 
 Quick alignment command (models)
@@ -62,4 +79,5 @@ Current working set
 
 - The mirror currently targets all runtime interface files matching `packages/**/use*Interface.ts`.
 - The source list lives in `mirror/mirror.txt`.
-- After changing the list, run `pnpm mirror:sync` to rebuild the symlinks.
+- After changing the list, run `pnpm mirror:sync` to rebuild the symlinks in `mirror/files/`.
+ eg bash mirror/find.sh '/use.*Collection\.ts$' then pnpm mirror:sync

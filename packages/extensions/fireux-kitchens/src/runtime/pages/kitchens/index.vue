@@ -38,10 +38,9 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useDevUi } from 'fireux-core/runtime/composables/fireux/app/ui/useDevUi'
-import { getDemoKitchens } from '../../composables/fireux/app/utils/kitchen-demo-scenarios'
-import type { KitchenSurface } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import { computed } from 'vue'
 import KitchenCTA from '../../components/Organisms/Kitchen/CTA.vue'
+import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 
 definePageMeta({
   tag: 'kitchens',
@@ -68,14 +67,6 @@ const showDevNotes = computed(() => import.meta.dev && notesVisible.value)
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 
-const collection = computed<KitchenSurface[]>(() =>
-  getDemoKitchens().map((kitchen) => ({
-    id: kitchen.id,
-    slug: kitchen.id,
-    place_id: kitchen.id,
-    name: kitchen.name,
-    short_address: kitchen.label,
-    image_url: kitchen.image_url,
-  }))
-)
+const { kitchens } = useKitchenCollection({ source: 'demo' })
+const collection = computed(() => kitchens.value)
 </script>

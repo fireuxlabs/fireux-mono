@@ -89,16 +89,8 @@
 import { computed } from 'vue'
 import {
   useProjectInterface,
-  type ProjectSurface,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 import { useProjectConsoleOverview } from '../../../composables/fireux/project-console/useProjectConsoleOverview'
-
-type DemoProjectListItem = {
-  id: string
-  name: string
-  label: string
-  image_url?: string
-}
 
 type ProjectPillCard = NonNullable<
   ReturnType<ReturnType<typeof useProjectInterface>['pill']>
@@ -107,25 +99,10 @@ type ProjectPillCard = NonNullable<
 const { focus, group } = useProjectConsoleOverview()
 const { pill } = useProjectInterface()
 
-const toDemoProjectSurface = (project: DemoProjectListItem): ProjectSurface => ({
-  id: project.id,
-  slug: project.id,
-  name: project.name,
-  description: project.label,
-  image_url: project.image_url,
-  project_type: 'demo',
-  status: 'active',
-})
-
 const focusCard = computed<ProjectPillCard | null>(() => {
-  const project = focus.value.entity as ProjectSurface | DemoProjectListItem | null
+  const project = focus.value.entity
   if (!project) return null
-
-  if (focus.value.mode === 'demo') {
-    return pill(toDemoProjectSurface(project as DemoProjectListItem)) ?? null
-  }
-
-  return pill(project as ProjectSurface) ?? null
+  return pill(project) ?? null
 })
 
 const groupCards = computed<ProjectPillCard[]>(() =>
