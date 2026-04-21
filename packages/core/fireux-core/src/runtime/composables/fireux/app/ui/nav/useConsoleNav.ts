@@ -3,9 +3,8 @@ import { useRoute } from '#imports'
 import { useNav } from './useNav'
 import {
   consoleFamilyFromPath,
-  toConsoleSelectionStateKey,
 } from '../../routing/consoleRoutes'
-import { useSharedConsoleSelectionState } from '../../../console/useConsoleSelection'
+import { useConsole } from '../../../console/useConsole'
 import type { NavItem, NavPosition } from '../../nav.types'
 
 function normalizePath(value: unknown): string {
@@ -24,13 +23,13 @@ export const useConsoleNav = () => {
   const nav = useNav(['console'])
   const route = useRoute()
   const activeFamily = computed(() => consoleFamilyFromPath(normalizePath(route.path)))
-  const activeSelection = computed(() => {
+  const activeSelectionId = computed(() => {
     const family = activeFamily.value
-    if (!family) return null
-    return useSharedConsoleSelectionState(toConsoleSelectionStateKey(family)).value
+    if (!family) return ''
+    return useConsole(family).selectedId.value
   })
   const hasSelectedTarget = computed(() =>
-    Boolean(String(activeSelection.value?.selectedId || '').trim())
+    Boolean(String(activeSelectionId.value || '').trim())
   )
 
   const baseNavFilter = (item: NavItem) => {

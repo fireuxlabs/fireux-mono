@@ -105,6 +105,7 @@
 <script setup lang="ts">
 import { useRoute } from '#imports'
 import { computed, ref } from 'vue'
+import { useConsoleNav } from '../composables/fireux/app/ui/nav/useConsoleNav'
 import {
   useConsoleHeaders,
   type ConsoleHeaderData as HeaderData,
@@ -116,9 +117,16 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 const open = ref(false)
 const isNotificationsSlideoverOpen = ref(false)
-const topNav = computed(() => [])
-const middleNav = computed(() => [])
-const familyRootNav = computed(() => [])
+const consoleNav = useConsoleNav()
+const topNav = computed(() =>
+  consoleNav.desktop.value.filter((item) => consoleNav.resolveItemPosition(item) === 'top')
+)
+const middleNav = computed(() =>
+  consoleNav.desktop.value.filter((item) => consoleNav.resolveItemPosition(item) === 'middle')
+)
+const familyRootNav = computed(() =>
+  consoleNav.desktop.value.filter((item) => consoleNav.resolveItemPosition(item) === 'bottom')
+)
 
 const route = useRoute()
 const family = computed(() => {

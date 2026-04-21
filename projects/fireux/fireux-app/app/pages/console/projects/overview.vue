@@ -7,7 +7,7 @@
     <template #body>
       <section class="space-y-6">
         <UAlert
-          v-if="!projectState.id"
+          v-if="!selectedProject"
           color="neutral"
           variant="soft"
           title="No project selected"
@@ -22,13 +22,6 @@
         />
 
         <template v-else>
-          <ProjectCardsPill
-            v-if="project"
-            v-bind="project"
-            :link="false"
-            :show-badges="false"
-          />
-
           <ConsoleProjectOverview />
         </template>
       </section>
@@ -37,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProjectConsole } from 'fireux-core/runtime/composables/fireux/app/project-console/useProjectConsole'
+import { useProjectConsole } from '../../../composables/fireux/project-console/useProjectConsole'
 
 definePageMeta({
   layout: 'console',
@@ -55,7 +48,5 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { projectState, project } = useProjectConsole({
-  publishHeader: true,
-})
+const { selectedProject } = useProjectConsole()
 </script>

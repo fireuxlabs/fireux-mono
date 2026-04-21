@@ -1,18 +1,7 @@
-import { toConsoleSelectionStateKey } from '../routing/consoleRoutes'
 import {
-  normalizeConsoleMode,
-  normalizeString,
-} from '../../console/console.normalize'
-import type { ConsoleMode } from '../../console/console.types'
-import {
-  selectionKey,
-  useConsoleSelection,
-} from '../../console/useConsoleSelection'
-
-type ProjectSelectionState = {
-  selectedId: string
-  mode: ConsoleMode
-}
+  useConsole,
+  type ConsoleMode,
+} from '../../console/useConsole'
 
 type RuntimeProjectSelectionInput = {
   selectedId?: string
@@ -20,25 +9,10 @@ type RuntimeProjectSelectionInput = {
   mode?: ConsoleMode
 }
 
-const COOKIE_KEY = toConsoleSelectionStateKey('projects')
-
-const normalizeSelectionState = (value: unknown): ProjectSelectionState => {
-  const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
-
-  return {
-    selectedId: normalizeString(source.selectedId ?? source.projectId),
-    mode: normalizeConsoleMode(source.mode, { defaultMode: 'live' }),
-  }
-}
+const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useProjectSelection() {
-  const selection = useConsoleSelection<ProjectSelectionState>({
-    cookieKey: COOKIE_KEY,
-    defaultState: () => ({ selectedId: '', mode: 'live' }),
-    normalizeState: normalizeSelectionState,
-  })
-  const selectedId = selectionKey(selection, 'selectedId')
-  const mode = selectionKey(selection, 'mode')
+  const { selectedId, selectedMode, selectEntity, clearSelection } = useConsole('projects')
 
   const setRuntimeProject = (selectionPatch: RuntimeProjectSelectionInput = {}) => {
     const nextId =
@@ -46,21 +20,18 @@ export function useProjectSelection() {
         ? normalizeString(selectionPatch.selectedId ?? selectionPatch.projectId)
         : selectedId.value
 
-    const nextMode =
-      selectionPatch.mode !== undefined
-        ? normalizeConsoleMode(selectionPatch.mode, { defaultMode: mode.value })
-        : mode.value
+    const nextMode = selectionPatch.mode ?? selectedMode.value
 
-    selection.set({ selectedId: nextId, mode: nextMode })
+    selectEntity(nextId, nextMode)
   }
 
   const clearRuntimeProject = () => {
-    selection.clear()
+    clearSelection()
   }
 
   return {
     selectedId,
-    mode,
+    mode: selectedMode,
     setRuntimeProject,
     clearRuntimeProject,
   }
