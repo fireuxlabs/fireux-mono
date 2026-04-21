@@ -39,7 +39,7 @@
           <li v-else>Does not create the app-hosted kitchen console overlay.</li>
           <li v-if="isConsoleMode">
             Success routes to
-            <code>/console/kitchen</code>.
+            <code>{{ resolvedReturnTo }}</code>.
           </li>
           <li v-else>
             Success routes to
@@ -53,6 +53,17 @@
         placeholder="Search by name or address"
         @confirmed="onPlaceConfirmed"
       />
+
+      <div v-if="cancelTo && !successResult && !existingId" class="flex flex-wrap gap-2">
+        <UButton
+          :to="cancelTo"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-arrow-left"
+        >
+          Cancel
+        </UButton>
+      </div>
 
       <div v-if="successResult" class="space-y-3">
         <div class="text-sm text-green-600">
@@ -104,6 +115,7 @@
 </template>
 
 <script setup lang="ts">
+import { useRoute, useRouter } from '#imports'
 import type {
   ConsoleCreateMode,
   ConsoleEnsureResult,
@@ -116,18 +128,26 @@ import { computed, ref } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useKitchenCreate } from '../../../../composables/fireux/firestore/kitchen/mutations/useKitchenCreate'
 import { useChef } from '../../../../composables/fireux/firestore/profiles/Chef/useChef'
+import { useKitchenConsole } from '../../../../composables/fireux/app/kitchen-console/useKitchenConsole'
 
 const props = withDefaults(defineProps<{
   mode?: ConsoleCreateMode
+  returnTo?: string
+  cancelTo?: string
 }>(), {
   mode: 'console',
+  returnTo: '',
+  cancelTo: '',
 })
 
 const { createKitchen } = useKitchenCreate()
 const { ensurePlaceExists } = usePlaceSave()
 const { coreProfile, updateCoreProfile } = useChef()
+const { selectKitchen } = useKitchenConsole()
 const { notesVisible } = useDevUi()
 const db = useFirestore()
+const route = useRoute()
+const router = useRouter()
 
 const error = ref<string | null>(null)
 const successResult = ref<ConsoleEnsureResult | null>(null)
@@ -146,10 +166,17 @@ const headerDescription = computed(() =>
     ? 'We’ll connect this location to your console overlay. Nothing is duplicated.'
     : 'We’ll create the public kitchen entity for a real venue. Nothing is duplicated.'
 )
+const resolvedReturnTo = computed(() => {
+  const explicit = String(props.returnTo || '').trim()
+  if (explicit.startsWith('/')) return explicit
+
+  const queryValue = String(route.query.returnTo || '').trim()
+  if (queryValue.startsWith('/')) return queryValue
+
+  return isConsoleMode.value ? '/console/kitchen' : `/kitchens/${encodeURIComponent(successResult.value?.id || '')}`
+})
 const primarySuccessTo = computed(() =>
-  isConsoleMode.value
-    ? '/console/kitchen'
-    : `/kitchens/${encodeURIComponent(successResult.value?.id || '')}`
+  isConsoleMode.value ? resolvedReturnTo.value : `/kitchens/${encodeURIComponent(successResult.value?.id || '')}`
 )
 const primarySuccessLabel = computed(() =>
   isConsoleMode.value ? 'Go to console' : 'View kitchen'
@@ -231,7 +258,11 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
 
     if (isConsoleMode.value) {
       await ensureKitchenLinkedToChef(result.id)
+      selectKitchen(result.id, 'live')
       successResult.value = result
+      if (route.path !== resolvedReturnTo.value) {
+        await router.push(resolvedReturnTo.value)
+      }
       return
     }
 

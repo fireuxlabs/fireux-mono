@@ -3,7 +3,6 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import type { Ref, ShallowRef } from 'vue'
 import { computed, shallowRef, unref, watch } from 'vue'
 import { normalizeRecipe, type Recipe } from '../../../../../../models/recipe.model'
-import { useKitchenSelection } from '../../../../app/kitchen-console/useKitchenSelection'
 import { resolveKitchenChildCollectionBasePath } from '../../../../app/kitchen-console/shared'
 
 const resolveRecipesPath = (kitchenCollectionPath: string, kitchenId: string) =>
@@ -17,12 +16,11 @@ export function useKitchenRecipeCollection(
   kitchenId?: string | Ref<string | null | undefined>,
   options: UseKitchenRecipeCollectionOptions = {}
 ) {
-  const { selectedId } = useKitchenSelection()
   const { firestoreFetchCollection } = useFirestoreRead()
   const { appId } = useFireUXConfig()
 
   const resolvedKitchenId = computed(() =>
-    String(unref(kitchenId) || selectedId.value || '').trim()
+    String(unref(kitchenId) || '').trim()
   )
   const kitchenCollectionPath = computed(() =>
     resolveKitchenChildCollectionBasePath({

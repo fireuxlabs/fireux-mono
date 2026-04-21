@@ -6,7 +6,11 @@
 
     <template #body>
       <section class="space-y-4">
-        <KitchenCreateSystem mode="console" />
+        <KitchenCreateSystem
+          mode="console"
+          return-to="/console/kitchen"
+          cancel-to="/console/kitchen"
+        />
       </section>
     </template>
   </UDashboardPanel>
