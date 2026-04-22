@@ -133,15 +133,26 @@ import {
   useProjectInterface,
   type ProjectSurface,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
-import { useProjectConsole } from '../../../composables/fireux/project-console/useProjectConsole'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useProjectConsoleIndex } from '../../../composables/fireux/project-console/useProjectConsoleIndex'
 
 type ProjectPillCard = NonNullable<
   ReturnType<ReturnType<typeof useProjectInterface>['pill']>
 >
 
-const { state, projects, actions } = useProjectConsoleIndex()
-const { selectedProject, clearSelectedProject } = useProjectConsole()
+const { user } = useUser()
+const projectFilter = computed(() => ({
+  ids: Array.isArray(user.value?.projects) ? user.value.projects : [],
+}))
+const {
+  state,
+  projects,
+  actions,
+  selectedProject,
+  clearSelectedProject,
+} = useProjectConsoleIndex({
+  filter: projectFilter,
+})
 const { pill } = useProjectInterface()
 
 const demoProjectCards = computed<ProjectPillCard[]>(() =>

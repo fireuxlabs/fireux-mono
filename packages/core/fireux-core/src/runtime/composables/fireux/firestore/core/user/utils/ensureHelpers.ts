@@ -102,6 +102,7 @@ export async function ensureCoreUserDocument(
     if (typeof (data as any)?.email !== 'string') patch.email = options.email ?? ''
     if (typeof (data as any)?.bio !== 'string') patch.bio = ''
     if (!Array.isArray((data as any)?.profiles)) patch.profiles = []
+    if (!Array.isArray((data as any)?.projects)) patch.projects = []
     if (!Array.isArray((data as any)?.userOf)) patch.userOf = []
     if (!Array.isArray((data as any)?.adminOf)) patch.adminOf = []
     if (!Array.isArray((data as any)?.notifications)) patch.notifications = []
@@ -141,6 +142,7 @@ export async function ensureCoreUserDocument(
     email,
     bio: '',
     profiles: [],
+    projects: [],
     userOf: [],
     adminOf: [],
     notifications: [],

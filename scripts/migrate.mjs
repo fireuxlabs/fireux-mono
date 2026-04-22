@@ -1067,6 +1067,7 @@ function buildCanonicalUser(docId, data) {
     email: asString(data.email, '').trim(),
     bio: asString(data.bio, ''),
     profiles: asStringArray(data.profiles),
+    projects: asStringArray(data.projects),
     userOf: asStringArray(data.userOf),
     adminOf: asStringArray(data.adminOf),
     notifications: normalizeUserNotificationArray(data.notifications, createdAt),

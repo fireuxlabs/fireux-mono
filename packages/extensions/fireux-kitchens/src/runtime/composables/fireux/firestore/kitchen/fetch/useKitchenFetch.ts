@@ -1,6 +1,6 @@
-import { computed, isRef, type Ref } from 'vue'
+import { computed, isRef, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import type { Place } from 'fireux-places/runtime/models/place.model'
-import { getDemoKitchens } from '../../app/utils/kitchen-demo-scenarios'
+import { getDemoKitchens } from '../../../app/utils/kitchen-demo-scenarios'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Kitchen } from '../../../../../models/kitchen.model'
 
@@ -70,13 +70,20 @@ export function useKitchenFetch(
   })
   const shouldHydrate = options.hydrate !== false
 
-  const source = computed(() => {
-    if (sourceRef.value === 'demo') return null
-    const collectionPath = String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
-    const docId = String(idRef.value || '').trim()
-    if (!docId) return null
-    return firestoreFetchDoc<KitchenFetchDoc>(collectionPath, docId)
-  })
+  const source = shallowRef(null) as ShallowRef<Ref<KitchenFetchDoc | undefined> | null>
+  watch(
+    [sourceRef, pathRef, idRef],
+    ([nextSource, nextPath, nextId]) => {
+      const collectionPath = String(nextPath || '').trim() || DEFAULT_COLLECTION_PATH
+      const docId = String(nextId || '').trim()
+
+      source.value =
+        nextSource === 'demo' || !docId
+          ? null
+          : firestoreFetchDoc<KitchenFetchDoc>(collectionPath, docId)
+    },
+    { immediate: true }
+  )
 
   const placeId = computed(() => {
     const docId = String(idRef.value || '').trim()
@@ -84,12 +91,18 @@ export function useKitchenFetch(
     return String(entry?.place_id || docId).trim()
   })
 
-  const placeSource = computed(() => {
-    if (!shouldHydrate) return null
-    const resolvedPlaceId = String(placeId.value || '').trim()
-    if (!resolvedPlaceId) return null
-    return firestoreFetchDoc<Place>('places', resolvedPlaceId)
-  })
+  const placeSource = shallowRef(null) as ShallowRef<Ref<Place | undefined> | null>
+  watch(
+    placeId,
+    (nextPlaceId) => {
+      const resolvedPlaceId = String(nextPlaceId || '').trim()
+      placeSource.value =
+        !shouldHydrate || !resolvedPlaceId
+          ? null
+          : firestoreFetchDoc<Place>('places', resolvedPlaceId)
+    },
+    { immediate: true }
+  )
 
   const kitchen = computed<KitchenFetchDoc | null>(() => {
     const docId = String(idRef.value || '').trim()

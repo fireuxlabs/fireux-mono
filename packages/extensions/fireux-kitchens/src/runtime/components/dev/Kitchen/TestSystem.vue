@@ -121,9 +121,7 @@ const { setDocument } = useFirestoreCreate()
 
 const { firestoreFetchCollection } = useFirestoreRead()
 const kitchensCollection = firestoreFetchCollection<Kitchen>('test-kitchens')
-const { kitchens: hydratedKitchens } = useKitchenCollection({
-  collectionPath: 'test-kitchens',
-})
+const { kitchens: hydratedKitchens } = useKitchenCollection({ source: 'test' })
 
 const kitchensCollectionValue = computed(() => kitchensCollection.value ?? [])
 

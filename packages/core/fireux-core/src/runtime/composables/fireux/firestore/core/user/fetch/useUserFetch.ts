@@ -24,6 +24,7 @@ function normalizeCoreUser(raw: User, fallbackId: string): User {
     email: (raw as any).email ?? '',
     bio: (raw as any).bio ?? '',
     profiles: asStringArray(anyRaw.profiles),
+    projects: asStringArray(anyRaw.projects),
     userOf: asStringArray(anyRaw.userOf),
     adminOf: asStringArray(anyRaw.adminOf),
   }

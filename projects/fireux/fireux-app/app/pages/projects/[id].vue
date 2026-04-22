@@ -163,10 +163,9 @@
 import { computed } from 'vue'
 import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
+import { useProjectFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectFetch'
 import {
   useProjectInterface,
-  type ProjectSurface,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 
 definePageMeta({
@@ -176,23 +175,10 @@ definePageMeta({
 
 const route = useRoute()
 const { appName } = useFireUXConfig()
-const { projects, pending } = useProjectCollection()
 const { profile } = useProjectInterface()
 
-const routeId = computed(() => String(route.params.id || '').trim())
-
-const project = computed<ProjectSurface | null>(() => {
-  const key = routeId.value
-  if (!key) return null
-
-  return (
-    projects.value.find((entry) => {
-      const id = String(entry?.id || '').trim()
-      const slug = String(entry?.slug || '').trim()
-      return id === key || slug === key
-    }) ?? null
-  )
-})
+const routeId = computed<string | null>(() => String(route.params.id || '').trim() || null)
+const { project, pending } = useProjectFetch(routeId, { source: 'live' })
 
 const projectCard = computed(() => profile(project.value))
 const pageTitle = computed(

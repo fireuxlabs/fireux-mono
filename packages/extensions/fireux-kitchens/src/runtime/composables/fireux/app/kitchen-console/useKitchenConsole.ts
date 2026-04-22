@@ -16,9 +16,10 @@ type KitchenConsoleMode = ConsoleMode
 type KitchenConsoleEntity = KitchenSurface
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
+const kitchenFilter = [1, 2, 3, 4]
 
 export function useKitchenConsole() {
-  const { kitchens: liveKitchens } = useKitchenCollection({ source: 'live', scope: 'mine' })
+  const { kitchens: liveKitchens } = useKitchenCollection({ filter: kitchenFilter })
   const { kitchens: demoKitchens } = useKitchenCollection({ source: 'demo' })
   const { uid } = useAuth()
   const { kitchen: testKitchen } = useKitchenFetch(uid, { source: 'test' })
@@ -74,6 +75,8 @@ export function useKitchenConsole() {
   }
 
   return {
+    liveKitchens,
+    demoKitchens,
     selectedKitchen,
     selectedMode,
     clearSelectedKitchen,

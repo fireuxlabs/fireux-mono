@@ -1,7 +1,7 @@
-import { computed } from 'vue'
+import { computed, type Ref } from 'vue'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/console/useConsoleIndex'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
+import type { ProjectCollectionFilter } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
 import { useProjectFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectFetch'
 import { useProjectCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/project/mutations/useProjectCreate'
 import { type ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
@@ -9,19 +9,31 @@ import { useProjectConsole } from './useProjectConsole'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-export function useProjectConsoleIndex() {
-  const { projects: liveProjectSource } = useProjectCollection({ source: 'live', scope: 'mine' })
-  const { projects: demoProjectSource } = useProjectCollection({ source: 'demo' })
+type UseProjectConsoleIndexOptions = {
+  filter?: ProjectCollectionFilter | Ref<ProjectCollectionFilter | null | undefined> | null
+}
+
+export function useProjectConsoleIndex(
+  options: UseProjectConsoleIndexOptions = {}
+) {
   const { uid } = useAuth()
   const { project: testProjectSource, pending: testProjectPending } = useProjectFetch(uid, {
     source: 'test',
   })
   const { createTestProject } = useProjectCreate()
-  const { selectProject } = useProjectConsole()
+  const {
+    liveProjects,
+    demoProjects,
+    selectProject,
+    selectedProject,
+    clearSelectedProject,
+  } = useProjectConsole({
+    filter: options.filter,
+  })
 
   const sourceProjects = computed(() => ({
-    live: Array.isArray(liveProjectSource.value) ? liveProjectSource.value : [],
-    demo: Array.isArray(demoProjectSource.value) ? demoProjectSource.value : [],
+    live: liveProjects.value,
+    demo: demoProjects.value,
     test: testProjectSource.value,
   }))
 
@@ -55,5 +67,7 @@ export function useProjectConsoleIndex() {
     user: consoleIndex.user,
     projects: consoleIndex.entities,
     actions: consoleIndex.actions,
+    selectedProject,
+    clearSelectedProject,
   }
 }

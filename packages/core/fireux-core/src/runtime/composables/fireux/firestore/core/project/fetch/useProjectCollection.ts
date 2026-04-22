@@ -1,111 +1,97 @@
-import {
-  collection,
-  query as fsq,
-  where,
-  type Query,
-} from 'firebase/firestore'
 import { computed, isRef, type Ref } from 'vue'
 import { getDemoProjects } from 'fireux-core/runtime/composables/fireux/app/utils/project-demo-scenarios/demo-scenarios/index'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useFirestore } from '../../../vuefire'
 import type { ProjectSurface } from '../utils/view/useProjectInterface'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
-type ProjectCollectionDoc = ProjectSurface & {
-  team_ids?: string[]
+const PROJECT_COLLECTION_PATH = 'projects'
+const TEST_PROJECT_COLLECTION_PATH = 'test-projects'
+
+export type ProjectCollectionFilterValue = string | number | null | undefined
+export type ProjectCollectionFilter = {
+  ids?: ProjectCollectionFilterValue[] | null | undefined
 }
-type ProjectCollectionScope = 'all' | 'mine'
-type ProjectCollectionSource = 'live' | 'test' | 'demo'
+export type ProjectCollectionSource = 'live' | 'demo' | 'test'
 
 type UseProjectCollectionOptions = {
-  collectionPath?: string | Ref<string>
-  scope?: ProjectCollectionScope | Ref<ProjectCollectionScope>
-  source?: ProjectCollectionSource | Ref<ProjectCollectionSource>
-  hydrate?: boolean
+  source?: ProjectCollectionSource | Ref<ProjectCollectionSource | null | undefined> | null
+  filter?: ProjectCollectionFilter | Ref<ProjectCollectionFilter | null | undefined> | null
 }
 
-const DEFAULT_COLLECTION_PATH = 'projects'
-const TEST_COLLECTION_PATH = 'test-projects'
+function toDemoProjectSurface(
+  project: ReturnType<typeof getDemoProjects>[number]
+): ProjectSurface {
+  const id = String(project.id || '').trim()
 
-function resolveMaybeRef<T>(value: T | Ref<T> | undefined, fallback: T): T {
-  if (isRef(value)) return value.value
-  return value ?? fallback
-}
-
-function toDemoProjectSurface(project: ReturnType<typeof getDemoProjects>[number]): ProjectCollectionDoc {
   return {
-    id: String(project.id || '').trim(),
-    slug: String(project.id || '').trim(),
+    id,
+    slug: id,
     name: String(project.name || '').trim(),
     description: String(project.label || '').trim(),
-    image_url: project.image_url,
+    image_url: String(project.image_url || '').trim(),
     project_type: 'demo',
     status: 'active',
   }
 }
 
-export function useProjectCollection(options: UseProjectCollectionOptions = {}) {
-  const db = useFirestore()
-  const { firestoreFetchCollection, firestoreQuery } = useFirestoreRead()
-  const { uid } = useAuth()
-  const sourceRef = computed<ProjectCollectionSource>(() =>
-    resolveMaybeRef(options.source, 'live')
-  )
-  const pathRef = computed(() => {
-    const explicitPath = String(resolveMaybeRef(options.collectionPath, '') || '').trim()
-    if (explicitPath) return explicitPath
-    return sourceRef.value === 'test' ? TEST_COLLECTION_PATH : DEFAULT_COLLECTION_PATH
+export function useProjectCollection(
+  options: UseProjectCollectionOptions = {}
+) {
+  const { firestoreFetchCollection } = useFirestoreRead()
+  const sourceMode = computed<ProjectCollectionSource>(() => {
+    if (isRef(options.source)) return options.source.value ?? 'live'
+    return options.source ?? 'live'
   })
-  const scopeRef = computed<ProjectCollectionScope>(() =>
-    resolveMaybeRef(options.scope, 'all')
-  )
-  const currentUid = computed(() => String(uid.value || '').trim())
-
-  const rootSource = computed(() => {
-    if (sourceRef.value === 'demo') return null
-
-    const collectionPath = String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
-    if (sourceRef.value !== 'live' || scopeRef.value !== 'mine') {
-      return firestoreFetchCollection<ProjectCollectionDoc>(collectionPath)
-    }
-
-    const memberId = currentUid.value
-    if (!memberId) return null
-
-    const q = fsq(
-      collection(db, collectionPath),
-      where('team_ids', 'array-contains', memberId)
-    ) as Query<ProjectCollectionDoc>
-    return firestoreQuery<ProjectCollectionDoc>(
-      q,
-      `${collectionPath}-team-${memberId}`,
-      collectionPath
-    )
+  const liveSource = firestoreFetchCollection<ProjectSurface>(PROJECT_COLLECTION_PATH)
+  const testSource = firestoreFetchCollection<ProjectSurface>(TEST_PROJECT_COLLECTION_PATH)
+  const resolvedFilter = computed<ProjectCollectionFilter | undefined>(() => {
+    if (isRef(options.filter)) return options.filter.value ?? undefined
+    return options.filter ?? undefined
   })
-
-  const demoProjects = computed<ProjectCollectionDoc[]>(() =>
+  const hasFilter = computed(() => Array.isArray(resolvedFilter.value?.ids))
+  const filterIdSet = computed(
+    () =>
+      new Set(
+        (resolvedFilter.value?.ids ?? [])
+          .map((value) => String(value ?? '').trim())
+          .filter(Boolean)
+      )
+  )
+  const demoProjects = computed<ProjectSurface[]>(() =>
     getDemoProjects().map(toDemoProjectSurface)
   )
+  const collectionItems = computed<ProjectSurface[]>(() => {
+    if (sourceMode.value === 'demo') return demoProjects.value
+    return sourceMode.value === 'test'
+      ? (testSource.value ?? [])
+      : (liveSource.value ?? [])
+  })
 
-  const projects = computed(() =>
-    (sourceRef.value === 'demo' ? demoProjects.value : (rootSource.value?.value ?? []))
-      .map((project: ProjectCollectionDoc | null | undefined) => {
-        const id = String(project?.id || '').trim()
-        if (!id) return null
+  const projects = computed<ProjectSurface[]>(() =>
+    collectionItems.value.reduce<ProjectSurface[]>((acc, project) => {
+      const id = String(
+        project?.id ||
+          project?.slug ||
+          project?.app_id ||
+          project?.firebase_project_id ||
+          ''
+      ).trim()
+      if (!id) return acc
+      if (hasFilter.value && !filterIdSet.value.has(id)) return acc
 
-        return {
-          ...project,
-          id,
-        }
+      acc.push({
+        ...project,
+        id,
       })
-      .filter((project): project is ProjectCollectionDoc => Boolean(project?.id))
-  )
 
+      return acc
+    }, [])
+  )
   const count = computed(() => projects.value.length)
   const pending = computed(() => {
-    if (sourceRef.value === 'demo') return false
-    if (scopeRef.value === 'mine' && !currentUid.value) return false
-    return rootSource.value?.value === undefined
+    if (sourceMode.value === 'demo') return false
+    return sourceMode.value === 'test'
+      ? testSource.value === undefined
+      : liveSource.value === undefined
   })
 
   return {

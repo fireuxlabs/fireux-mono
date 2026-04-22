@@ -27,6 +27,7 @@ export const UserModel = {
   email: '',
   bio: '',
   profiles: [],
+  projects: [],
   userOf: [],
   adminOf: [],
   notifications: [],
