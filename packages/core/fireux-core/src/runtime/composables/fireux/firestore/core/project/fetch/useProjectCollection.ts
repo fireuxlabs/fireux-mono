@@ -41,8 +41,6 @@ export function useProjectCollection(
     if (isRef(options.source)) return options.source.value ?? 'live'
     return options.source ?? 'live'
   })
-  const liveSource = firestoreFetchCollection<ProjectSurface>(PROJECT_COLLECTION_PATH)
-  const testSource = firestoreFetchCollection<ProjectSurface>(TEST_PROJECT_COLLECTION_PATH)
   const resolvedFilter = computed<ProjectCollectionFilter | undefined>(() => {
     if (isRef(options.filter)) return options.filter.value ?? undefined
     return options.filter ?? undefined
@@ -59,22 +57,24 @@ export function useProjectCollection(
   const demoProjects = computed<ProjectSurface[]>(() =>
     getDemoProjects().map(toDemoProjectSurface)
   )
+  const firestoreSource = computed(() => {
+    if (sourceMode.value === 'demo') return null
+
+    const collectionPath =
+      sourceMode.value === 'test'
+        ? TEST_PROJECT_COLLECTION_PATH
+        : PROJECT_COLLECTION_PATH
+
+    return firestoreFetchCollection<ProjectSurface>(collectionPath)
+  })
   const collectionItems = computed<ProjectSurface[]>(() => {
     if (sourceMode.value === 'demo') return demoProjects.value
-    return sourceMode.value === 'test'
-      ? (testSource.value ?? [])
-      : (liveSource.value ?? [])
+    return firestoreSource.value?.value ?? []
   })
 
   const projects = computed<ProjectSurface[]>(() =>
     collectionItems.value.reduce<ProjectSurface[]>((acc, project) => {
-      const id = String(
-        project?.id ||
-          project?.slug ||
-          project?.app_id ||
-          project?.firebase_project_id ||
-          ''
-      ).trim()
+      const id = String(project?.id || '').trim()
       if (!id) return acc
       if (hasFilter.value && !filterIdSet.value.has(id)) return acc
 
@@ -89,9 +89,7 @@ export function useProjectCollection(
   const count = computed(() => projects.value.length)
   const pending = computed(() => {
     if (sourceMode.value === 'demo') return false
-    return sourceMode.value === 'test'
-      ? testSource.value === undefined
-      : liveSource.value === undefined
+    return firestoreSource.value?.value === undefined
   })
 
   return {

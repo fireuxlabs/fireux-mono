@@ -105,6 +105,7 @@ export function useProjectConsole(
   return {
     liveProjects,
     demoProjects,
+    testProject,
     selectedProject,
     selectedMode,
     clearSelectedProject,

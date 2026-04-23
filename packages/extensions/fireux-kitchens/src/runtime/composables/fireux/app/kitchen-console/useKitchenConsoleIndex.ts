@@ -3,16 +3,26 @@ import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/console/
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenCreate } from '../../firestore/kitchen/mutations/useKitchenCreate'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
+import type { KitchenCollectionFilter } from '../../firestore/kitchen/fetch/useKitchenCollection'
 import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenConsole } from './useKitchenConsole'
+import type { Ref } from 'vue'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-export function useKitchenConsoleIndex() {
+type UseKitchenConsoleIndexOptions = {
+  filter?: KitchenCollectionFilter | Ref<KitchenCollectionFilter | null | undefined> | null
+}
+
+export function useKitchenConsoleIndex(
+  options: UseKitchenConsoleIndexOptions = {}
+) {
   const { uid } = useAuth()
   const { kitchen: testKitchenSource, pending: testKitchenPending } = useKitchenFetch(uid, { source: 'test' })
   const { createTestKitchen } = useKitchenCreate()
-  const { liveKitchens, demoKitchens, selectKitchen } = useKitchenConsole()
+  const { liveKitchens, demoKitchens, selectKitchen } = useKitchenConsole({
+    filter: options.filter,
+  })
 
   const sourceKitchens = computed(() => ({
     live: liveKitchens.value,

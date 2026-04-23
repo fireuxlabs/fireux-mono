@@ -22,13 +22,6 @@
         />
 
         <template v-else>
-          <SupplierCardsPill
-            v-if="supplier"
-            v-bind="supplier"
-            :link="false"
-            :show-badges="false"
-          />
-
           <ConsoleSupplierOverview />
         </template>
       </section>
@@ -56,7 +49,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { supplierState, supplier } = useSupplierConsole({
+const { supplierState } = useSupplierConsole({
   publishHeader: true,
 })
 </script>

@@ -29,7 +29,17 @@
         </ul>
       </div>
 
-      <KitchenCollectionManager :collection="collection" />
+      <UCard v-if="pending">
+        <p>Loading kitchens…</p>
+      </UCard>
+
+      <KitchenCollectionManager
+        v-else
+        :collection="kitchens"
+        :source-mode="sourceMode"
+        :show-source-toggle="true"
+        @update:source-mode="sourceMode = $event"
+      />
     </UPageBody>
   </UPage>
 </template>
@@ -38,9 +48,12 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useDevUi } from 'fireux-core/runtime/composables/fireux/app/ui/useDevUi'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import KitchenCTA from '../../components/Organisms/Kitchen/CTA.vue'
-import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
+import {
+  useKitchenCollection,
+  type KitchenCollectionSource,
+} from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 
 definePageMeta({
   tag: 'kitchens',
@@ -63,10 +76,12 @@ const pageTitle = 'Kitchens'
 const pageDescription = 'Choose a kitchen surface for this runtime.'
 const { notesVisible } = useDevUi()
 const showDevNotes = computed(() => import.meta.dev && notesVisible.value)
+const sourceMode = ref<KitchenCollectionSource>('live')
 
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
 
-const { kitchens } = useKitchenCollection({ source: 'demo' })
-const collection = computed(() => kitchens.value)
+const { kitchens, pending } = useKitchenCollection({
+  source: sourceMode,
+})
 </script>

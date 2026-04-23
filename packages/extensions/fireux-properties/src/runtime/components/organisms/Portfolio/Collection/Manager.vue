@@ -10,7 +10,48 @@
         <div
           class="collection-manager__controls flex flex-1 items-center gap-2"
         >
-          <div class="ml-auto flex items-center gap-2">
+          <div class="ml-auto flex flex-wrap items-center gap-2">
+            <UButtonGroup v-if="showSourceToggle" size="xs">
+              <UButton
+                :variant="sourceMode === 'live' ? 'solid' : 'ghost'"
+                color="neutral"
+                @click="setSourceMode('live')"
+              >
+                Live
+              </UButton>
+              <UButton
+                :variant="sourceMode === 'demo' ? 'solid' : 'ghost'"
+                color="neutral"
+                @click="setSourceMode('demo')"
+              >
+                Demo
+              </UButton>
+              <UButton
+                :variant="sourceMode === 'test' ? 'solid' : 'ghost'"
+                color="neutral"
+                @click="setSourceMode('test')"
+              >
+                Test
+              </UButton>
+            </UButtonGroup>
+
+            <UButtonGroup v-if="showFilterToggle" size="xs">
+              <UButton
+                :variant="filterMode === 'all' ? 'solid' : 'ghost'"
+                color="neutral"
+                @click="setFilterMode('all')"
+              >
+                All
+              </UButton>
+              <UButton
+                :variant="filterMode === 'mine' ? 'solid' : 'ghost'"
+                color="neutral"
+                @click="setFilterMode('mine')"
+              >
+                Mine
+              </UButton>
+            </UButtonGroup>
+
             <UInput
               v-if="showSearchInput"
               v-model="query"
@@ -18,24 +59,9 @@
               :placeholder="searchPlaceholder"
             />
 
-            <UButton
-              v-if="showVariantToggle"
-              size="xs"
-              variant="ghost"
-              :icon="
-                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
-              "
-              :aria-label="
-                variant === 'pill'
-                  ? 'Switch to list view'
-                  : 'Switch to grid view'
-              "
-              @click="toggleVariant"
-            />
-
-            <UBadge v-if="showCount" variant="soft"
-              >{{ visibleCount }} / {{ totalCount }}</UBadge
-            >
+            <UBadge v-if="showCount" variant="soft">
+              {{ countLabel }}
+            </UBadge>
           </div>
         </div>
       </div>
@@ -94,6 +120,8 @@ import PortfolioCollectionList from './List.vue'
 const props = withDefaults(
   defineProps<{
     collection?: Portfolio[]
+    filterMode?: 'all' | 'mine'
+    sourceMode?: 'live' | 'demo' | 'test'
     title?: string
     description?: string
     link?: boolean
@@ -103,11 +131,16 @@ const props = withDefaults(
     showSearch?: boolean
     showVariantToggle?: boolean
     showCount?: boolean
+    showFilterToggle?: boolean
+    showSourceToggle?: boolean
     initialVariant?: 'pill' | 'cell'
     devJsonTitle?: string
     devJsonContext?: string
   }>(),
   {
+    collection: () => [],
+    filterMode: 'all',
+    sourceMode: 'live',
     title: 'Available Portfolios',
     description: 'Browse portfolios available in this workspace.',
     link: false,
@@ -117,14 +150,18 @@ const props = withDefaults(
     showSearch: true,
     showVariantToggle: true,
     showCount: true,
+    showFilterToggle: false,
+    showSourceToggle: false,
     initialVariant: 'pill',
     devJsonTitle: 'Portfolios (JSON)',
-    devJsonContext: 'collection manager · portfolios · root: portfolios',
+    devJsonContext: 'collection manager · portfolios · raw collection',
   }
 )
 
 const emit = defineEmits<{
   (event: 'select', portfolioId: string): void
+  (event: 'update:filterMode', value: 'all' | 'mine'): void
+  (event: 'update:sourceMode', value: 'live' | 'demo' | 'test'): void
 }>()
 
 const {
@@ -132,20 +169,34 @@ const {
   pill: makePill,
   cell: makeCell,
 } = usePortfolioInterface()
-const collection = computed(() => props.collection ?? [])
-const { devJsonData } = useDevCollectionJson(collection)
+const rawCollection = computed(() => props.collection ?? [])
+const { devJsonData } = useDevCollectionJson(rawCollection)
 const title = computed(() => String(props.title || 'Available Portfolios'))
 const description = computed(() => String(props.description || '').trim())
+const filterMode = computed<'all' | 'mine'>(() =>
+  props.filterMode === 'mine' ? 'mine' : 'all'
+)
+const sourceMode = computed<'live' | 'demo' | 'test'>(() => {
+  if (props.sourceMode === 'demo') return 'demo'
+  if (props.sourceMode === 'test') return 'test'
+  return 'live'
+})
 const linkEnabled = computed(() => props.link !== false)
 const actionEnabled = computed(() => props.action === true)
 const showBadges = computed(() => props.showBadges !== false)
-const totalCount = computed(() => collection.value.length)
 const searchPlaceholder = computed(() =>
   String(props.searchPlaceholder || 'Search portfolios…')
 )
 const showSearch = computed(() => props.showSearch !== false)
-const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
+const showFilterToggle = computed(() => props.showFilterToggle === true)
+const showSourceToggle = computed(() => props.showSourceToggle === true)
+const collection = computed<Portfolio[]>(() =>
+  rawCollection.value.filter((portfolio): portfolio is Portfolio =>
+    Boolean(makeCard(portfolio))
+  )
+)
+const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => showSearch.value && totalCount.value > 15
 )
@@ -154,11 +205,11 @@ const devJsonTitle = computed(() =>
 )
 const devJsonContext = computed(() =>
   String(
-    props.devJsonContext || 'collection manager · portfolios · root: portfolios'
+    props.devJsonContext || 'collection manager · portfolios · raw collection'
   ).trim()
 )
 
-const { query, variant, toggleVariant, visibleItems, visibleCount } =
+const { query, variant, visibleItems, visibleCount } =
   useCollectionSearch<Portfolio, NonNullable<ReturnType<typeof makeCard>>>({
     items: collection,
     makeCard: (portfolio) => makeCard(portfolio),
@@ -182,5 +233,18 @@ const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
     )
 )
 
+const countLabel = computed(() =>
+  showSearchInput.value && query.value
+    ? `${visibleCount.value} / ${totalCount.value}`
+    : `${totalCount.value}`
+)
 const isDev = import.meta.dev
+
+function setFilterMode(value: 'all' | 'mine') {
+  emit('update:filterMode', value)
+}
+
+function setSourceMode(value: 'live' | 'demo' | 'test') {
+  emit('update:sourceMode', value)
+}
 </script>

@@ -8,18 +8,28 @@ import {
   type ConsoleHeaderData,
 } from 'fireux-core/runtime/composables/fireux/console/useConsoleHeader'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useKitchenCollection } from '../../firestore/kitchen/fetch/useKitchenCollection'
+import {
+  useKitchenCollection,
+  type KitchenCollectionFilter,
+} from '../../firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
+import type { Ref } from 'vue'
 
 type KitchenConsoleMode = ConsoleMode
 type KitchenConsoleEntity = KitchenSurface
+type UseKitchenConsoleOptions = {
+  filter?: KitchenCollectionFilter | Ref<KitchenCollectionFilter | null | undefined> | null
+}
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const kitchenFilter = [1, 2, 3, 4]
 
-export function useKitchenConsole() {
-  const { kitchens: liveKitchens } = useKitchenCollection({ filter: kitchenFilter })
+export function useKitchenConsole(
+  options: UseKitchenConsoleOptions = {}
+) {
+  const { kitchens: liveKitchens } = useKitchenCollection({
+    filter: options.filter,
+  })
   const { kitchens: demoKitchens } = useKitchenCollection({ source: 'demo' })
   const { uid } = useAuth()
   const { kitchen: testKitchen } = useKitchenFetch(uid, { source: 'test' })
@@ -77,6 +87,7 @@ export function useKitchenConsole() {
   return {
     liveKitchens,
     demoKitchens,
+    testKitchen,
     selectedKitchen,
     selectedMode,
     clearSelectedKitchen,

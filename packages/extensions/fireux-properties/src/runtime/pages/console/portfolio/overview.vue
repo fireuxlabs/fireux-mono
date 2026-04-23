@@ -22,13 +22,6 @@
         />
 
         <template v-else>
-          <PortfolioCardsPill
-            v-if="portfolio"
-            v-bind="portfolio"
-            :link="false"
-            :show-badges="false"
-          />
-
           <ConsolePortfolioOverview />
         </template>
       </section>
@@ -56,7 +49,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { portfolioState, portfolio } = usePortfolioConsole({
+const { portfolioState } = usePortfolioConsole({
   publishHeader: true,
 })
 </script>

@@ -7,6 +7,8 @@ type UseConsoleOverviewOptions<TSelected, TGroup> = {
   selectedEntity: MaybeRef<TSelected | null | undefined>
   selectedMode?: MaybeRef<ConsoleMode | null | undefined>
   liveItems: MaybeRef<(TGroup | null | undefined)[] | null | undefined>
+  demoItems?: MaybeRef<(TGroup | null | undefined)[] | null | undefined>
+  testItem?: MaybeRef<TGroup | null | undefined>
   getId: (item: TSelected | TGroup) => string
 }
 
@@ -28,7 +30,14 @@ export function useConsoleOverview<TSelected, TGroup>(
   })
 
   const groupItems = computed<TGroup[]>(() => {
-    const items = unref(options.liveItems)
+    const mode = focus.value.mode
+    const items =
+      mode === 'demo'
+        ? unref(options.demoItems)
+        : mode === 'test'
+          ? [unref(options.testItem)]
+          : unref(options.liveItems)
+
     return Array.isArray(items) ? items.filter(isPresent) : []
   })
 

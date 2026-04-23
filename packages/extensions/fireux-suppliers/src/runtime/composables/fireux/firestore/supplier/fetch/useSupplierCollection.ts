@@ -1,85 +1,165 @@
 import { computed, isRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import type { Supplier } from '../../../../../models/supplier/Supplier.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import type { Supplier } from '../../../../../models/supplier/Supplier.model'
 
-type SupplierCollectionDoc = Partial<Supplier> & { id?: string }
+type SupplierCollectionDoc = Partial<Supplier> & {
+  id?: string
+  supplier_id?: string
+  source_supplier_id?: string
+}
 
-type UseSupplierCollectionOptions = {
-  collectionPath?: string | Ref<string>
-  hydrate?: boolean
+type AppSupplierOverlay = SupplierCollectionDoc & {
+  team_ids?: string[]
+  admin_ids?: string[]
+  console_enabled?: boolean
 }
 
 const DEFAULT_COLLECTION_PATH = 'suppliers'
+const TEST_COLLECTION_PATH = 'test-suppliers'
 
-export function useSupplierCollection(options: UseSupplierCollectionOptions = {}) {
+export type SupplierCollectionFilterValue = string | number | null | undefined
+export type SupplierCollectionFilter = {
+  ids?: SupplierCollectionFilterValue[] | null | undefined
+}
+export type SupplierCollectionSource = 'live' | 'demo' | 'test'
+
+type UseSupplierCollectionOptions = {
+  source?:
+    | SupplierCollectionSource
+    | Ref<SupplierCollectionSource | null | undefined>
+    | null
+  filter?:
+    | SupplierCollectionFilter
+    | Ref<SupplierCollectionFilter | null | undefined>
+    | null
+}
+
+const normalizeString = (value: unknown) => String(value ?? '').trim()
+
+function resolveSupplierId(supplier: Partial<SupplierCollectionDoc> | null | undefined) {
+  return normalizeString(
+    supplier?.id || supplier?.supplier_id || supplier?.source_supplier_id || ''
+  )
+}
+
+export function useSupplierCollection(
+  options: UseSupplierCollectionOptions = {}
+) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const { appId } = useFireUXConfig()
-  const { uid } = useAuth()
-  const pathRef = isRef(options.collectionPath)
-    ? options.collectionPath
-    : computed(() => String(options.collectionPath || DEFAULT_COLLECTION_PATH).trim())
-
-  const rootSource = computed(() => {
-    const collectionPath = String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
-    return firestoreFetchCollection<SupplierCollectionDoc>(collectionPath)
+  const sourceMode = computed<SupplierCollectionSource>(() => {
+    if (isRef(options.source)) return options.source.value ?? 'live'
+    return options.source ?? 'live'
   })
-
-  const overlaySource = computed(() => {
-    const resolvedAppId = String(appId || '').trim()
-    if (!resolvedAppId) return null
-    return firestoreFetchCollection<
-      SupplierCollectionDoc & { team_ids?: string[]; admin_ids?: string[] }
-    >(`apps/${resolvedAppId}/${DEFAULT_COLLECTION_PATH}`)
+  const liveSource = firestoreFetchCollection<SupplierCollectionDoc>(
+    DEFAULT_COLLECTION_PATH
+  )
+  const testSource = firestoreFetchCollection<SupplierCollectionDoc>(
+    TEST_COLLECTION_PATH
+  )
+  const resolvedAppId = normalizeString(appId)
+  const overlaySource = resolvedAppId
+    ? firestoreFetchCollection<AppSupplierOverlay>(
+        `apps/${resolvedAppId}/${DEFAULT_COLLECTION_PATH}`
+      )
+    : null
+  const resolvedFilter = computed<SupplierCollectionFilter | undefined>(() => {
+    if (isRef(options.filter)) return options.filter.value ?? undefined
+    return options.filter ?? undefined
   })
+  const hasFilter = computed(() => Array.isArray(resolvedFilter.value?.ids))
+  const filterIdSet = computed(
+    () =>
+      new Set(
+        (resolvedFilter.value?.ids ?? [])
+          .map((value) => normalizeString(value))
+          .filter(Boolean)
+      )
+  )
 
-  const suppliers = computed(() =>
-    {
-      const suppliersById = new Map<string, SupplierCollectionDoc>()
-      for (const supplier of rootSource.value?.value ?? []) {
-        const id = String(supplier?.id || '').trim()
-        if (!id) continue
-        suppliersById.set(id, {
-          ...supplier,
-          id,
-        })
-      }
+  const liveItems = computed<SupplierCollectionDoc[]>(() => {
+    const rootById = new Map<string, SupplierCollectionDoc>()
+    const overlayById = new Map<string, AppSupplierOverlay>()
 
-      const currentUid = String(uid.value || '').trim()
-      if (!currentUid) return []
-
-      return (overlaySource.value?.value ?? [])
-        .map((overlay) => {
-          const id = String(overlay?.id || '').trim()
-          const teamIds = Array.isArray((overlay as any)?.team_ids)
-            ? (overlay as any).team_ids
-            : Array.isArray((overlay as any)?.admin_ids)
-              ? (overlay as any).admin_ids
-              : []
-
-          return {
-            id,
-            teamIds: teamIds
-              .map((value: unknown) => String(value || '').trim())
-              .filter(Boolean),
-            overlay,
-          }
-        })
-        .filter((entry) => Boolean(entry.id) && entry.teamIds.includes(currentUid))
-        .map((entry) => ({
-          ...(suppliersById.get(entry.id) ?? {}),
-          ...(entry.overlay ?? {}),
-          id: entry.id,
-        }))
-        .filter((supplier) => Boolean(supplier.id))
+    for (const supplier of liveSource.value ?? []) {
+      const id = resolveSupplierId(supplier)
+      if (!id) continue
+      rootById.set(id, {
+        ...supplier,
+        id,
+      })
     }
+
+    for (const overlay of overlaySource?.value ?? []) {
+      const id = resolveSupplierId(overlay)
+      if (!id) continue
+      overlayById.set(id, {
+        ...overlay,
+        id,
+      })
+    }
+
+    const merged: SupplierCollectionDoc[] = []
+    const seen = new Set<string>()
+
+    for (const supplier of liveSource.value ?? []) {
+      const id = resolveSupplierId(supplier)
+      if (!id || seen.has(id)) continue
+      seen.add(id)
+
+      merged.push({
+        ...(rootById.get(id) ?? {}),
+        ...(overlayById.get(id) ?? {}),
+        id,
+      })
+    }
+
+    for (const overlay of overlaySource?.value ?? []) {
+      const id = resolveSupplierId(overlay)
+      if (!id || seen.has(id)) continue
+      seen.add(id)
+
+      merged.push({
+        ...(rootById.get(id) ?? {}),
+        ...(overlayById.get(id) ?? {}),
+        id,
+      })
+    }
+
+    return merged
+  })
+
+  const collectionItems = computed<SupplierCollectionDoc[]>(() => {
+    if (sourceMode.value === 'demo') return []
+    if (sourceMode.value === 'test') return testSource.value ?? []
+    return liveItems.value
+  })
+
+  const suppliers = computed<SupplierCollectionDoc[]>(() =>
+    collectionItems.value.reduce<SupplierCollectionDoc[]>((acc, supplier) => {
+      const id = resolveSupplierId(supplier)
+      if (!id) return acc
+      if (hasFilter.value && !filterIdSet.value.has(id)) return acc
+
+      acc.push({
+        ...supplier,
+        id,
+      })
+
+      return acc
+    }, [])
   )
 
   const count = computed(() => suppliers.value.length)
-  const pending = computed(
-    () => rootSource.value?.value === undefined || overlaySource.value?.value === undefined
-  )
+  const pending = computed(() => {
+    if (sourceMode.value === 'demo') return false
+    if (sourceMode.value === 'test') return testSource.value === undefined
+    return (
+      liveSource.value === undefined ||
+      (overlaySource ? overlaySource.value === undefined : false)
+    )
+  })
 
   return {
     suppliers,

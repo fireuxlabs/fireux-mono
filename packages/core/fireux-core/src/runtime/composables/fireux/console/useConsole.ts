@@ -1,4 +1,4 @@
-import { useState } from '#imports'
+import { useCookie } from '#imports'
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
 
 export type ConsoleMode = 'live' | 'demo' | 'test'
@@ -20,18 +20,27 @@ type UseConsoleOptions<TLive, TDemo, TTest> = {
 const normalizeFamily = (value: unknown) => String(value ?? '').trim()
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const isPresent = <T>(value: T | null | undefined): value is T => value != null
+const isConsoleMode = (value: unknown): value is ConsoleMode =>
+  value === 'live' || value === 'demo' || value === 'test'
+const defaultConsoleState = (): ConsoleState => ({
+  selectedId: '',
+  selectedMode: 'live',
+})
 
 export function useConsole<TLive = never, TDemo = never, TTest = never>(
   family: string,
   options?: UseConsoleOptions<TLive, TDemo, TTest>
 ) {
-  const state = useState<ConsoleState>(`console:${normalizeFamily(family)}`, () => ({
-    selectedId: '',
-    selectedMode: 'live',
-  }))
+  const normalizedFamily = normalizeFamily(family)
+  const state = useCookie<ConsoleState>(`fireux-console-${normalizedFamily}`, {
+    default: defaultConsoleState,
+    sameSite: 'lax',
+  })
 
-  const selectedId = computed(() => normalizeString(state.value.selectedId))
-  const selectedMode = computed(() => state.value.selectedMode)
+  const selectedId = computed(() => normalizeString(state.value?.selectedId))
+  const selectedMode = computed<ConsoleMode>(() =>
+    isConsoleMode(state.value?.selectedMode) ? state.value.selectedMode : 'live'
+  )
   const liveItems = computed<TLive[]>(() => {
     const items = options?.liveItems ? unref(options.liveItems) : []
     return Array.isArray(items) ? items.filter(isPresent) : []

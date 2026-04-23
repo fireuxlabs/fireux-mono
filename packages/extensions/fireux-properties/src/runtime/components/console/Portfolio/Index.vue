@@ -1,7 +1,7 @@
 <template>
   <section class="space-y-6">
     <UAlert
-      v-if="!livePortfolios.length"
+      v-if="!portfolios.live.length"
       color="neutral"
       variant="soft"
       title="No live portfolios found"
@@ -40,18 +40,18 @@
       </div>
 
       <PortfolioCollectionManager
-        v-if="livePortfolios.length"
-        :collection="livePortfolios"
+        v-if="portfolios.live.length"
+        :collection="portfolios.live"
         title="Choose Live Portfolio"
         description="Select the live portfolio you want to work on."
         :link="false"
         :action="true"
         :show-badges="false"
-        @select="selectPortfolio"
+        @select="actions.selectLive"
       />
     </div>
 
-    <section v-if="demoPortfolios.length" class="w-full max-w-xl space-y-3">
+    <section v-if="portfolios.demo.length" class="w-full max-w-xl space-y-3">
       <div class="flex items-center gap-3">
         <div class="h-px flex-1 bg-default/60" />
         <div class="text-xs uppercase tracking-[0.16em] text-toned">Or</div>
@@ -62,14 +62,14 @@
         <div class="text-sm font-medium text-highlighted">Try a portfolio simulation</div>
 
         <USwitch
-          v-model="showSimulations"
+          v-model="state.showSimulations"
           unchecked-icon="i-lucide-x"
           checked-icon="i-lucide-check"
           label="Show portfolio simulations"
         />
       </div>
 
-      <div v-if="showSimulations" class="space-y-2">
+      <div v-if="state.showSimulations" class="space-y-2">
         <div class="text-sm text-dimmed">
           Read-only demo portfolios wired into the same console stack.
         </div>
@@ -82,13 +82,13 @@
             :link="false"
             :action="true"
             :show-badges="false"
-            @action="selectDemoPortfolio(scenario.id)"
+            @action="actions.selectDemo(scenario.id)"
           />
         </div>
       </div>
     </section>
 
-    <section v-if="testPortfolio" class="w-full max-w-xl space-y-3">
+    <section v-if="portfolios.test" class="w-full max-w-xl space-y-3">
       <div class="flex items-center gap-3">
         <div class="h-px flex-1 bg-default/60" />
         <div class="text-xs uppercase tracking-[0.16em] text-toned">Or</div>
@@ -108,7 +108,7 @@
           :link="false"
           :action="true"
           :show-badges="false"
-          @action="selectTestPortfolio"
+          @action="actions.selectTest"
         />
       </div>
     </section>
@@ -116,20 +116,40 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { usePortfolioInterface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
 import { usePortfolioConsoleIndex } from '../../../composables/fireux/app/portfolio-console/usePortfolioConsoleIndex'
 
 const {
+  state,
+  portfolios,
+  actions,
   selectedPortfolio,
   clearSelectedPortfolio,
-  showSimulations,
-  livePortfolios,
-  demoPortfolios,
-  testPortfolio,
-  selectedPortfolioCard,
-  demoPortfolioCards,
-  testPortfolioCard,
-  selectPortfolio,
-  selectDemoPortfolio,
-  selectTestPortfolio,
 } = usePortfolioConsoleIndex()
+const { pill } = usePortfolioInterface()
+
+type PortfolioPillCard = NonNullable<
+  ReturnType<ReturnType<typeof usePortfolioInterface>['pill']>
+>
+
+const demoPortfolioCards = computed<PortfolioPillCard[]>(() =>
+  portfolios.value.demo
+    .map((portfolio) => pill(portfolio))
+    .filter((card): card is PortfolioPillCard => Boolean(card))
+)
+
+const selectedPortfolioCard = computed<PortfolioPillCard | null>(() => {
+  const portfolio = selectedPortfolio.value
+  if (!portfolio) return null
+
+  return pill(portfolio) ?? null
+})
+
+const testPortfolioCard = computed<PortfolioPillCard | null>(() => {
+  const portfolio = portfolios.value.test
+  if (!portfolio) return null
+
+  return pill(portfolio) ?? null
+})
 </script>

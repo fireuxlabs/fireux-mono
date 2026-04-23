@@ -3,7 +3,18 @@
     <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
       <PortfolioCTA />
-      <PortfolioCollectionManager :collection="collection" />
+
+      <UCard v-if="pending">
+        <p>Loading portfolios…</p>
+      </UCard>
+
+      <PortfolioCollectionManager
+        v-else
+        :collection="portfolios"
+        :source-mode="sourceMode"
+        :show-source-toggle="true"
+        @update:source-mode="sourceMode = $event"
+      />
     </UPageBody>
   </UPage>
 </template>
@@ -11,8 +22,11 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { computed } from 'vue'
-import { usePortfolioCollection } from '../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
+import { ref } from 'vue'
+import {
+  usePortfolioCollection,
+  type PortfolioCollectionSource,
+} from '../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
 
 definePageMeta({
   tag: 'portfolios',
@@ -33,8 +47,10 @@ definePageMeta({
 
 const pageTitle = 'Portfolios'
 const pageDescription = 'Select a portfolio runtime for the current workspace.'
+const sourceMode = ref<PortfolioCollectionSource>('live')
 const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | ${pageTitle}` })
-const { portfolios } = usePortfolioCollection()
-const collection = computed(() => portfolios.value)
+const { portfolios, pending } = usePortfolioCollection({
+  source: sourceMode,
+})
 </script>
