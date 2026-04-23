@@ -15,7 +15,10 @@ export const harborGridScenario = (): DemoProjectScenario => ({
     name: 'Harbor Grid',
     slug: 'harbor-grid',
     description: 'Read-only scenario for a hospitality operations workspace.',
+    image_url:
+      'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=320&h=320&q=80',
     status: 'active',
+    project_type: 'ecosystem_app',
     app_id: 'line-pass',
     ecosystem_id: 'harbor',
     firebase_project_id: 'harbor-grid',
@@ -29,7 +32,10 @@ export const harborGridScenario = (): DemoProjectScenario => ({
       name: 'Harbor Grid',
       slug: 'harbor-grid',
       description: 'Read-only scenario for a hospitality operations workspace.',
+      image_url:
+        'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=320&h=320&q=80',
       status: 'active',
+      project_type: 'ecosystem_app',
       app_id: 'line-pass',
       ecosystem_id: 'harbor',
       firebase_project_id: 'harbor-grid',

@@ -3,6 +3,14 @@ import type { FireuxStamped } from '../core/meta.model'
 
 export type EcosystemStatus = 'draft' | 'active' | 'paused' | 'archived'
 
+type WidenLiteral<T> =
+  T extends string ? string
+  : T extends number ? number
+  : T extends boolean ? boolean
+  : T extends readonly (infer U)[] ? WidenLiteral<U>[]
+  : T extends Record<string, unknown> ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
+  : T
+
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
@@ -45,9 +53,7 @@ export const EcosystemModel = {
   },
 } as const
 
-export type Ecosystem = {
-  [K in keyof typeof EcosystemModel]: (typeof EcosystemModel)[K]
-}
+export type Ecosystem = WidenLiteral<typeof EcosystemModel>
 
 /**
  * App-specific ecosystem record.

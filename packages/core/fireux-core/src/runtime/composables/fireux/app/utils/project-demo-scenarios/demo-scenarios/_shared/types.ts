@@ -1,6 +1,6 @@
-import type { App } from '../../../../../../models/core/app.model'
-import type { Ecosystem } from '../../../../../../models/system/ecosystem.model'
-import type { Project } from '../../../../../../models/system/project.model'
+import type { App } from '../../../../../../../models/core/app.model'
+import type { Ecosystem } from '../../../../../../../models/system/ecosystem.model'
+import type { Project } from '../../../../../../../models/system/project.model'
 
 export type DemoProjectScenario = {
   id: string

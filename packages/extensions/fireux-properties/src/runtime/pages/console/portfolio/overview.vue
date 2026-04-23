@@ -7,7 +7,7 @@
     <template #body>
       <section class="space-y-6">
         <UAlert
-          v-if="!portfolioState.id"
+          v-if="!selectedPortfolio"
           color="neutral"
           variant="soft"
           title="No portfolio selected"
@@ -49,7 +49,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { portfolioState } = usePortfolioConsole({
+const { selectedPortfolio } = usePortfolioConsole({
   publishHeader: true,
 })
 </script>

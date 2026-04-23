@@ -15,7 +15,10 @@ export const cedarLoopScenario = (): DemoProjectScenario => ({
     name: 'Cedar Loop',
     slug: 'cedar-loop',
     description: 'Read-only scenario for a property and asset operations workspace.',
+    image_url:
+      'https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=320&h=320&q=80',
     status: 'active',
+    project_type: 'ecosystem_app',
     app_id: 'lease-board',
     ecosystem_id: 'cedar',
     firebase_project_id: 'cedar-loop',
@@ -29,7 +32,10 @@ export const cedarLoopScenario = (): DemoProjectScenario => ({
       name: 'Cedar Loop',
       slug: 'cedar-loop',
       description: 'Read-only scenario for a property and asset operations workspace.',
+      image_url:
+        'https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=320&h=320&q=80',
       status: 'active',
+      project_type: 'ecosystem_app',
       app_id: 'lease-board',
       ecosystem_id: 'cedar',
       firebase_project_id: 'cedar-loop',

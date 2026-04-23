@@ -7,7 +7,7 @@
     <template #body>
       <section class="space-y-6">
         <UAlert
-          v-if="!supplierState.id"
+          v-if="!selectedSupplier"
           color="neutral"
           variant="soft"
           title="No supplier selected"
@@ -49,7 +49,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { supplierState } = useSupplierConsole({
+const { selectedSupplier } = useSupplierConsole({
   publishHeader: true,
 })
 </script>

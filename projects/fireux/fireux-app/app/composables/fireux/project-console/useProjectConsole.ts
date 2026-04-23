@@ -7,7 +7,6 @@ import {
   usePublishConsoleHeader,
   type ConsoleHeaderData,
 } from 'fireux-core/runtime/composables/fireux/console/useConsoleHeader'
-import { getDemoProjects } from 'fireux-core/runtime/composables/fireux/app/utils/project-demo-scenarios/demo-scenarios/index'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   useProjectCollection,
@@ -22,22 +21,6 @@ type ProjectConsoleEntity = ProjectSurface
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-function toDemoProjectSurface(
-  project: ReturnType<typeof getDemoProjects>[number]
-): ProjectSurface {
-  const id = normalizeString(project.id)
-
-  return {
-    id,
-    slug: id,
-    name: normalizeString(project.name),
-    description: normalizeString(project.label),
-    image_url: normalizeString(project.image_url),
-    project_type: 'demo',
-    status: 'active',
-  }
-}
-
 type UseProjectConsoleOptions = {
   filter?: ProjectCollectionFilter | Ref<ProjectCollectionFilter | null | undefined> | null
 }
@@ -49,9 +32,7 @@ export function useProjectConsole(
   const { projects: liveProjects } = useProjectCollection({
     filter: options.filter,
   })
-  const demoProjects = computed<ProjectSurface[]>(() =>
-    getDemoProjects().map(toDemoProjectSurface)
-  )
+  const { projects: demoProjects } = useProjectCollection({ source: 'demo' })
   const { project: testProject } = useProjectFetch(uid, { source: 'test' })
   const { selectedEntity, selectedMode, selectEntity, clearSelection } = useConsole<
     ProjectSurface,

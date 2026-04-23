@@ -1,5 +1,5 @@
 import { computed, isRef, type Ref } from 'vue'
-import { getDemoProjects } from 'fireux-core/runtime/composables/fireux/app/utils/project-demo-scenarios/demo-scenarios/index'
+import { getDemoProjectScenarios } from 'fireux-core/runtime/composables/fireux/app/utils/project-demo-scenarios/demo-scenarios/index'
 import type { ProjectSurface } from '../utils/view/useProjectInterface'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 
@@ -17,21 +17,9 @@ type UseProjectCollectionOptions = {
   filter?: ProjectCollectionFilter | Ref<ProjectCollectionFilter | null | undefined> | null
 }
 
-function toDemoProjectSurface(
-  project: ReturnType<typeof getDemoProjects>[number]
-): ProjectSurface {
-  const id = String(project.id || '').trim()
-
-  return {
-    id,
-    slug: id,
-    name: String(project.name || '').trim(),
-    description: String(project.label || '').trim(),
-    image_url: String(project.image_url || '').trim(),
-    project_type: 'demo',
-    status: 'active',
-  }
-}
+const toDemoProjectSurface = (
+  scenario: ReturnType<typeof getDemoProjectScenarios>[number]
+): ProjectSurface => ({ ...scenario.project })
 
 export function useProjectCollection(
   options: UseProjectCollectionOptions = {}
@@ -55,7 +43,7 @@ export function useProjectCollection(
       )
   )
   const demoProjects = computed<ProjectSurface[]>(() =>
-    getDemoProjects().map(toDemoProjectSurface)
+    getDemoProjectScenarios().map(toDemoProjectSurface)
   )
   const firestoreSource = computed(() => {
     if (sourceMode.value === 'demo') return null

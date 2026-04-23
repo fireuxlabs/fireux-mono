@@ -15,7 +15,10 @@ export const northstarWorksScenario = (): DemoProjectScenario => ({
     name: 'Northstar Works',
     slug: 'northstar-works',
     description: 'Read-only scenario for an SEO and content operations workspace.',
+    image_url:
+      'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=320&h=320&q=80',
     status: 'active',
+    project_type: 'ecosystem_app',
     app_id: 'rank-lens',
     ecosystem_id: 'northstar',
     firebase_project_id: 'northstar-works',
@@ -29,7 +32,10 @@ export const northstarWorksScenario = (): DemoProjectScenario => ({
       name: 'Northstar Works',
       slug: 'northstar-works',
       description: 'Read-only scenario for an SEO and content operations workspace.',
+      image_url:
+        'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=320&h=320&q=80',
       status: 'active',
+      project_type: 'ecosystem_app',
       app_id: 'rank-lens',
       ecosystem_id: 'northstar',
       firebase_project_id: 'northstar-works',

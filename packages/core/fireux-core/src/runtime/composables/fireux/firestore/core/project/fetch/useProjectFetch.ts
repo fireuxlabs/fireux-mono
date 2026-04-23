@@ -24,12 +24,11 @@ function resolveMaybeRef<T>(value: T | Ref<T>): T {
 }
 
 function normalizeProject(
-  entry: ProjectFetchDoc | null | undefined,
-  fallbackId: string
+  entry: ProjectFetchDoc | null | undefined
 ): ProjectFetchDoc | null {
   if (!entry) return null
 
-  const id = String(entry.id || fallbackId).trim()
+  const id = String(entry.id || '').trim()
   if (!id) return null
 
   return {
@@ -42,15 +41,7 @@ function resolveDefaultDemoProject(projectId: string): ProjectFetchDoc | null {
   const scenario = getDemoProject(projectId)
   if (!scenario) return null
 
-  return {
-    id: scenario.id,
-    slug: scenario.id,
-    name: scenario.name,
-    description: scenario.label,
-    image_url: scenario.image_url,
-    project_type: 'demo',
-    status: 'active',
-  }
+  return { ...scenario.project }
 }
 
 export function useProjectFetch(
@@ -59,9 +50,10 @@ export function useProjectFetch(
 ) {
   const { firestoreFetchDoc } = useFirestoreRead()
   const idRef = isRef(id) ? id : computed(() => String(id || '').trim())
-  const sourceRef = isRef(options.source)
-    ? options.source
-    : computed<ProjectFetchSource>(() => options.source || 'live')
+  const sourceRef = computed<ProjectFetchSource>(() => {
+    if (isRef(options.source)) return options.source.value
+    return options.source ?? 'live'
+  })
   const pathRef = computed(() => {
     const configuredPath = isRef(options.collectionPath)
       ? options.collectionPath.value
@@ -88,16 +80,16 @@ export function useProjectFetch(
 
     if (sourceRef.value === 'demo') {
       const configuredDemo = resolveMaybeRef(options.demoProject ?? null)
-      return normalizeProject(configuredDemo ?? resolveDefaultDemoProject(docId), docId)
+      return normalizeProject(configuredDemo ?? resolveDefaultDemoProject(docId))
     }
 
     if (sourceRef.value === 'api') {
       const apiEntry = resolveMaybeRef(options.apiProject ?? null)
-      return normalizeProject(apiEntry ?? null, docId)
+      return normalizeProject(apiEntry ?? null)
     }
 
     const entry = firestoreSource.value?.value
-    return normalizeProject(entry, docId)
+    return normalizeProject(entry)
   })
 
   const pending = computed(() => {

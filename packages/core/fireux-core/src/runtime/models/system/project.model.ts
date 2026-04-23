@@ -8,6 +8,14 @@ import { FireuxAppOverlayModel } from '../core/meta.model'
 export type ProjectStatus = 'draft' | 'active' | 'paused' | 'archived'
 export type ProjectType = 'standalone_app' | 'ecosystem_app'
 
+type WidenLiteral<T> =
+  T extends string ? string
+  : T extends number ? number
+  : T extends boolean ? boolean
+  : T extends readonly (infer U)[] ? WidenLiteral<U>[]
+  : T extends Record<string, unknown> ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
+  : T
+
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
@@ -60,9 +68,7 @@ export const ProjectModel = {
   },
 } as const
 
-export type Project = {
-  [K in keyof typeof ProjectModel]: (typeof ProjectModel)[K]
-}
+export type Project = WidenLiteral<typeof ProjectModel>
 
 export const AppProjectModel = {
   ...FireuxAppOverlayModel,
@@ -70,8 +76,28 @@ export const AppProjectModel = {
 
 export type AppProject = FireuxAppOverlay
 
-export type ProjectCreateInput = Omit<Project, 'created' | 'updated' | 'owner_user_id'> & {
-  owner_user_id?: string
-}
+export type ProjectCreateInput = Pick<
+  Project,
+  | 'id'
+  | 'name'
+  | 'slug'
+  | 'project_type'
+  | 'source_url'
+  | 'console_endpoint_url'
+  | 'app_id'
+  | 'ecosystem_id'
+  | 'firebase_project_id'
+> &
+  Partial<
+    Pick<
+      Project,
+      | 'description'
+      | 'image_url'
+      | 'primary_project'
+      | 'status'
+      | 'owner_user_id'
+      | 'team_ids'
+    >
+  >
 
 export type ProjectUpdateInput = Partial<Omit<Project, 'id' | 'created' | 'updated'>>
