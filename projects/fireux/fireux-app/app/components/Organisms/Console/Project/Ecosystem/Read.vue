@@ -28,32 +28,28 @@
     </div>
   </UCard>
 
-  <UCard>
-    <template #header>
-      <div class="console-card-header">
-        <div class="console-card-header__title">Ecosystem</div>
-        <p class="console-card-header__description">
-          Ecosystem record linked to the selected project.
-        </p>
-      </div>
-    </template>
-
-    <p v-if="pending" class="console-card-header__description">
+  <UCard v-if="pending">
+    <p class="console-card-header__description">
       Loading ecosystem…
     </p>
+  </UCard>
 
-    <EcosystemCardsPill
-      v-else-if="ecosystemCard"
-      v-bind="ecosystemCard"
-      :link="false"
-      :show-badges="false"
-    />
+  <EcosystemCollectionManager
+    v-else-if="ecosystemCollection.length"
+    :collection="ecosystemCollection"
+    title="Project Ecosystem"
+    description="Ecosystem record linked to the selected project."
+    :link="false"
+  />
 
-    <p v-else-if="!ecosystemId" class="console-card-header__description">
+  <UCard v-else-if="!ecosystemId">
+    <p class="console-card-header__description">
       This selected project does not expose an ecosystem id yet.
     </p>
+  </UCard>
 
-    <p v-else class="console-card-header__description">
+  <UCard v-else>
+    <p class="console-card-header__description">
       No ecosystem record was found for this project.
     </p>
   </UCard>
@@ -61,16 +57,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import {
-  useEcosystemInterface,
-  type EcosystemSurface,
+import type {
+  EcosystemInterfaceInput,
+  EcosystemSurface,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
 import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/console/useConsole'
 import type { ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
-
-type EcosystemPillCard = NonNullable<
-  ReturnType<ReturnType<typeof useEcosystemInterface>['pill']>
->
 
 const props = defineProps<{
   selectedProject: ProjectSurface | null
@@ -79,8 +71,6 @@ const props = defineProps<{
   ecosystem: EcosystemSurface | null | undefined
   pending: boolean
 }>()
-
-const { pill } = useEcosystemInterface()
 
 const selectedProjectName = computed(() =>
   String(props.selectedProject?.name || '').trim() || 'Untitled'
@@ -92,16 +82,18 @@ const selectedModeLabel = computed(() =>
   props.selectedMode === 'demo' ? 'Demo' : props.selectedMode === 'test' ? 'Test' : 'Live'
 )
 
-const ecosystemCard = computed<EcosystemPillCard | null>(() => {
+const ecosystemCollection = computed<EcosystemInterfaceInput[]>(() => {
   const value = props.ecosystem
-  if (!value) return null
+  if (!value) return []
 
-  return pill({
-    ...value,
-    href: value.id ? `/ecosystems/${encodeURIComponent(value.id)}` : '',
-    src: value.image_url,
-    text: value.name,
-    key: value.slug,
-  }) ?? null
+  return [
+    {
+      ...value,
+      href: value.id ? `/ecosystems/${encodeURIComponent(value.id)}` : '',
+      src: value.image_url,
+      text: value.name,
+      key: value.slug,
+    },
+  ]
 })
 </script>

@@ -34,6 +34,13 @@ export type EnsureSupplierOptions = {
   existingRootId?: string | null
 }
 
+type SupplierTestCreateInput = {
+  id?: string
+  name?: string
+  subtitle?: string
+  image_url?: string
+}
+
 export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
@@ -47,6 +54,48 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
       : String(options.collectionPath || 'suppliers').trim() || 'suppliers'
   const isTestSupplierCollection =
     options.test === true || supplierCollection === 'test-suppliers'
+
+  async function createTestSupplier(
+    input: SupplierTestCreateInput = {}
+  ): Promise<ConsoleRootEnsureResult> {
+    const { uid } = await requireUid()
+    const id = normalizeString(input.id) || normalizeString(uid)
+    const userLabel =
+      normalizeString(input.subtitle) ||
+      resolveTestUserLabel(currentUser.value?.displayName, uid)
+    const name = normalizeString(input.name) || 'Test Supplier'
+    const imageUrl = normalizeString(input.image_url)
+
+    if (!id) {
+      throw new Error('Test supplier id is required')
+    }
+
+    const ref = doc(db, 'test-suppliers', id)
+    const snap = await getDoc(ref)
+    if (snap.exists()) {
+      return { id, created: false }
+    }
+
+    const payload: Partial<Supplier> = {
+      supplier_organization_name: name,
+      supplier_headline: userLabel,
+    }
+
+    if (imageUrl) {
+      payload.supplier_image = imageUrl
+    }
+
+    await setDocument<Partial<Supplier>>(
+      'test-suppliers',
+      id,
+      payload,
+      {
+        creator: true,
+      }
+    )
+
+    return { id, created: true }
+  }
 
   async function runSupplierCreate(
     options: EnsureSupplierOptions = {},
@@ -136,5 +185,6 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   return {
     createSupplier,
     ensureSupplier,
+    createTestSupplier,
   }
 }

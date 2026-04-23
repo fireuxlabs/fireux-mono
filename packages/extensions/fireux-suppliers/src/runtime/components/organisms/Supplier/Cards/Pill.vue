@@ -6,7 +6,8 @@
 >
     <div class="flex min-w-0 items-start gap-2">
       <UAvatar
-        :src="avatarUrl || undefined"
+        v-if="imageUrl"
+        :src="imageUrl || undefined"
         :alt="title || ''"
         size="sm"
       />
@@ -34,7 +35,8 @@
 >
     <div class="flex min-w-0 items-start gap-2">
       <UAvatar
-        :src="avatarUrl || undefined"
+        v-if="imageUrl"
+        :src="imageUrl || undefined"
         :alt="title || ''"
         size="sm"
       />
@@ -67,7 +69,7 @@ const emit = defineEmits<{
 
 const props = withDefaults(
   defineProps<
-    Pick<SupplierCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
+    Pick<SupplierCard.Card, 'to' | 'imageUrl' | 'title' | 'subtitle' | 'badges'> & {
       showSubtitle?: boolean
       showBadges?: boolean
       link?: boolean

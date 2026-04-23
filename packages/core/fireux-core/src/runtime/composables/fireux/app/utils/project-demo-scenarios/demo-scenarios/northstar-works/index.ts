@@ -1,7 +1,7 @@
-import { AppModel } from 'fireux-core/runtime/models/core/app.model'
 import { EcosystemModel } from 'fireux-core/runtime/models/system/ecosystem.model'
 import { ProjectModel } from 'fireux-core/runtime/models/system/project.model'
 import type { DemoProjectScenario } from '../_shared/types'
+import { createDemoApp } from '../_shared/demo-app'
 
 export const northstarWorksScenario = (): DemoProjectScenario => ({
   id: 'northstar-works',
@@ -14,7 +14,7 @@ export const northstarWorksScenario = (): DemoProjectScenario => ({
     id: 'northstar-works',
     name: 'Northstar Works',
     slug: 'northstar-works',
-    description: 'Read-only scenario for an SEO and content operations workspace.',
+    description: 'SEO and growth operations',
     image_url:
       'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=320&h=320&q=80',
     status: 'active',
@@ -31,7 +31,7 @@ export const northstarWorksScenario = (): DemoProjectScenario => ({
       id: 'northstar-works',
       name: 'Northstar Works',
       slug: 'northstar-works',
-      description: 'Read-only scenario for an SEO and content operations workspace.',
+      description: 'SEO and growth operations',
       image_url:
         'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=320&h=320&q=80',
       status: 'active',
@@ -51,13 +51,14 @@ export const northstarWorksScenario = (): DemoProjectScenario => ({
       name: 'Northstar',
       slug: 'northstar',
       description: 'Search visibility ecosystem for audits, keyword planning, and content delivery.',
+      image_url:
+        'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=320&h=320&q=80',
       team: 'seo',
       apps: ['rank-lens', 'content-flow'],
     },
   ],
   apps: [
-    {
-      ...AppModel,
+    createDemoApp({
       id: 'rank-lens',
       project_id: 'northstar-works',
       ecosystem_id: 'northstar',
@@ -68,9 +69,10 @@ export const northstarWorksScenario = (): DemoProjectScenario => ({
       app_short_name: 'Rank Lens',
       role: 'system',
       ecosystem: 'northstar',
-    },
-    {
-      ...AppModel,
+      thumbnail_url:
+        'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=160&h=160&q=80',
+    }),
+    createDemoApp({
       id: 'content-flow',
       project_id: 'northstar-works',
       ecosystem_id: 'northstar',
@@ -81,6 +83,22 @@ export const northstarWorksScenario = (): DemoProjectScenario => ({
       app_short_name: 'Content Flow',
       role: 'ecosystem',
       ecosystem: 'northstar',
-    },
+      thumbnail_url:
+        'https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=160&h=160&q=80',
+    }),
+    createDemoApp({
+      id: 'signal-scout',
+      project_id: 'northstar-works',
+      ecosystem_id: '',
+      slug: 'signal-scout',
+      status: 'active',
+      team: 'seo',
+      app_name: 'Signal Scout',
+      app_short_name: 'Signal Scout',
+      role: 'standalone',
+      ecosystem: '',
+      thumbnail_url:
+        'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=160&h=160&q=80',
+    }),
   ],
 })

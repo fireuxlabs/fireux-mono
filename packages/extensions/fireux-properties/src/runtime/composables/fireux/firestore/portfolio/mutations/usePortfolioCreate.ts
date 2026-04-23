@@ -42,6 +42,14 @@ export type EnsurePortfolioOptions = {
   existingRootId?: string | null
 }
 
+type PortfolioTestCreateInput = {
+  id?: string
+  slug?: string
+  name?: string
+  subtitle?: string
+  image_url?: string
+}
+
 export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
@@ -51,6 +59,54 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     options.test === true ? 'test-portfolios' : String(options.collectionPath || 'portfolios').trim() || 'portfolios'
   const isTestPortfolioCollection =
     options.test === true || collectionPath === 'test-portfolios'
+
+  async function createTestPortfolio(
+    input: PortfolioTestCreateInput = {}
+  ): Promise<ConsoleRootEnsureResult> {
+    const id = normalizeString(input.id) || normalizeString(uid.value)
+    const userLabel =
+      normalizeString(input.subtitle) ||
+      resolveTestUserLabel(currentUser.value?.displayName, uid.value)
+    const name = normalizeString(input.name) || 'Test Portfolio'
+    const slug = toSlug(normalizeString(input.slug) || 'test-portfolio')
+
+    if (!id) {
+      throw new Error('Test portfolio id is required')
+    }
+
+    if (!slug) {
+      throw new Error('Test portfolio slug is required')
+    }
+
+    const ref = doc(db, 'test-portfolios', id)
+    const snap = await getDoc(ref)
+    if (snap.exists()) {
+      return { id, created: false }
+    }
+
+    const payload: Partial<Portfolio> & { image_url?: string } = {
+      name,
+      slug,
+      owner_label: userLabel,
+      region_label: userLabel,
+    }
+
+    const imageUrl = normalizeString(input.image_url)
+    if (imageUrl) {
+      payload.image_url = imageUrl
+    }
+
+    await setDocument<Partial<Portfolio> & { image_url?: string }>(
+      'test-portfolios',
+      id,
+      payload,
+      {
+        creator: true,
+      }
+    )
+
+    return { id, created: true }
+  }
 
   async function createPortfolioRoot(input: PortfolioCreateInput): Promise<string> {
     const defaultTestName = isTestPortfolioCollection
@@ -195,5 +251,5 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     return runPortfolioCreate(input, ensureOptions, 'console')
   }
 
-  return { createPortfolio, ensurePortfolio, createPortfolioRoot }
+  return { createPortfolio, ensurePortfolio, createPortfolioRoot, createTestPortfolio }
 }

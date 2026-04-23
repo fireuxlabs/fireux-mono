@@ -7,9 +7,7 @@ import {
   usePublishConsoleHeader,
   type ConsoleHeaderData,
 } from 'fireux-core/runtime/composables/fireux/console/useConsoleHeader'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import {
   usePortfolioCollection,
@@ -26,69 +24,26 @@ type UsePortfolioConsoleOptions = {
   filter?: PortfolioCollectionFilter | Ref<PortfolioCollectionFilter | null | undefined> | null
 }
 
-type AppPortfolioOverlay = Partial<Portfolio> & {
-  id?: string
-  team_ids?: string[]
-  admin_ids?: string[]
-  console_enabled?: boolean
-}
-
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function usePortfolioConsole(
   options: UsePortfolioConsoleOptions = {}
 ) {
-  const { appId } = useFireUXConfig()
   const { uid } = useAuth()
   const { avatarSrc, currentUser } = useUser()
-  const { firestoreFetchCollection } = useFirestoreRead()
   const { pill } = usePortfolioInterface()
-  const resolvedAppId = normalizeString(appId)
-  const overlaySource = resolvedAppId
-    ? firestoreFetchCollection<AppPortfolioOverlay>(
-        `apps/${resolvedAppId}/portfolios`
-      )
-    : null
   const liveFilter = computed<PortfolioCollectionFilter>(() => {
-    const currentUid = normalizeString(uid.value)
-    if (!currentUid) return { ids: [] }
-
-    const ids = (overlaySource?.value ?? [])
-      .map((overlay) => {
-        const id = normalizeString(overlay?.id || overlay?.slug)
-        if (!id) return ''
-        if (overlay?.console_enabled === false) return ''
-
-        const members = Array.isArray(overlay?.team_ids)
-          ? overlay.team_ids
-          : Array.isArray(overlay?.admin_ids)
-            ? overlay.admin_ids
-            : []
-
-        return members
-          .map((value) => normalizeString(value))
-          .includes(currentUid)
-          ? id
-          : ''
-      })
-      .filter(Boolean)
+    const explicitFilter = isRef(options.filter)
+      ? options.filter.value ?? {}
+      : options.filter ?? {}
 
     return {
-      ids,
+      ...explicitFilter,
+      teamId: normalizeString(uid.value),
     }
-  })
-  const resolvedFilter = computed<PortfolioCollectionFilter>(() => {
-    if (options.filter) {
-      const value = isRef(options.filter)
-        ? (options.filter.value ?? undefined)
-        : options.filter
-      if (value) return value
-    }
-
-    return liveFilter.value
   })
   const { portfolios: livePortfolios } = usePortfolioCollection({
-    filter: resolvedFilter,
+    filter: liveFilter,
   })
   const demoPortfolios = computed<Portfolio[]>(() => [])
   const { portfolio: testPortfolio } = usePortfolioFetch(uid, {

@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, isRef } from 'vue'
 import {
   useConsole,
   type ConsoleMode,
@@ -29,8 +29,18 @@ export function useProjectConsole(
   options: UseProjectConsoleOptions = {}
 ) {
   const { uid } = useAuth()
+  const liveFilter = computed<ProjectCollectionFilter>(() => {
+    const explicitFilter = isRef(options.filter)
+      ? options.filter.value ?? {}
+      : options.filter ?? {}
+
+    return {
+      ...explicitFilter,
+      teamId: normalizeString(uid.value),
+    }
+  })
   const { projects: liveProjects } = useProjectCollection({
-    filter: options.filter,
+    filter: liveFilter,
   })
   const { projects: demoProjects } = useProjectCollection({ source: 'demo' })
   const { project: testProject } = useProjectFetch(uid, { source: 'test' })

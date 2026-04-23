@@ -16,6 +16,10 @@ export function useProjectConsoleEcosystem() {
   const ecosystemId = computed(() => {
     const project = selectedProject.value
     if (!project) return ''
+    const projectEcosystemId = normalizeString(
+      'ecosystem_id' in project ? project.ecosystem_id : ''
+    )
+    if (projectEcosystemId) return projectEcosystemId
     if (selectedMode.value === 'demo') {
       return normalizeString(demoScenario.value?.project.ecosystem_id)
     }

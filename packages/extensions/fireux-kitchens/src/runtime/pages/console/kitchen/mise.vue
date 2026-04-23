@@ -21,31 +21,14 @@
           ]"
         />
 
-        <ConsoleKitchenChildLayout
-          v-else
-          description="Selected kitchen and mise collection in scope."
-          item-label="Mise Tasks"
-          :item-count="countLabel"
-          :pending="pending"
-          pending-title="Loading mise tasks"
-          pending-description="Fetching mise tasks for the selected kitchen."
-        >
-          <OrganismsMiseCollectionManager
-            :collection="miseTasks"
-            title="Mise Tasks"
-            description="Browse mise tasks for the selected kitchen."
-            :link="false"
-          />
-        </ConsoleKitchenChildLayout>
+        <ConsoleKitchenMise v-else />
       </section>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useKitchenConsoleChildFocus } from '../../../composables/fireux/app/kitchen-console/useKitchenConsoleChildFocus'
-import { useKitchenMiseCollection } from '../../../composables/fireux/firestore/runtime-kitchen/mise/fetch/useKitchenMiseCollection'
+import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
 
 definePageMeta({
   layout: 'console',
@@ -64,7 +47,5 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { selectedKitchen, kitchenId } = useKitchenConsoleChildFocus()
-const { miseTasks, pending } = useKitchenMiseCollection(kitchenId)
-const countLabel = computed(() => String(miseTasks.value.length))
+const { selectedKitchen } = useKitchenConsole()
 </script>

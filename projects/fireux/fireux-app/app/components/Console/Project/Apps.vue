@@ -4,7 +4,8 @@
       :selected-project="selectedProject"
       :selected-mode="selectedMode"
       :app-id="appId"
-      :app="app"
+      :ecosystem-id="ecosystemId"
+      :apps="apps"
       :pending="pending"
     />
 
@@ -16,6 +17,7 @@
 import { computed } from 'vue'
 import { useProjectConsoleApps } from '../../../composables/fireux/project-console/useProjectConsoleApps'
 
-const { selectedProject, selectedMode, appId, app, pending } = useProjectConsoleApps()
+const { selectedProject, selectedMode, appId, ecosystemId, apps, pending } =
+  useProjectConsoleApps()
 const canWrite = computed(() => selectedMode.value === 'live')
 </script>

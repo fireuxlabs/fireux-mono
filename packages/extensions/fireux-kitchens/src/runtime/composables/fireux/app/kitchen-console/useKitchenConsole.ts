@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, isRef } from 'vue'
 import {
   useConsole,
   type ConsoleMode,
@@ -27,11 +27,21 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 export function useKitchenConsole(
   options: UseKitchenConsoleOptions = {}
 ) {
+  const { uid } = useAuth()
+  const liveFilter = computed<KitchenCollectionFilter>(() => {
+    const explicitFilter = isRef(options.filter)
+      ? options.filter.value ?? {}
+      : options.filter ?? {}
+
+    return {
+      ...explicitFilter,
+      teamId: normalizeString(uid.value),
+    }
+  })
   const { kitchens: liveKitchens } = useKitchenCollection({
-    filter: options.filter,
+    filter: liveFilter,
   })
   const { kitchens: demoKitchens } = useKitchenCollection({ source: 'demo' })
-  const { uid } = useAuth()
   const { kitchen: testKitchen } = useKitchenFetch(uid, { source: 'test' })
   const { selectedEntity, selectedMode, selectEntity, clearSelection } = useConsole<
     KitchenSurface,

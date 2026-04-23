@@ -49,7 +49,5 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { selectedSupplier } = useSupplierConsole({
-  publishHeader: true,
-})
+const { selectedSupplier } = useSupplierConsole()
 </script>

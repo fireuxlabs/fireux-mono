@@ -21,31 +21,14 @@
           ]"
         />
 
-        <ConsoleKitchenChildLayout
-          v-else
-          description="Selected kitchen and supplier collection in scope."
-          item-label="Suppliers"
-          :item-count="countLabel"
-          :pending="pending"
-          pending-title="Loading suppliers"
-          pending-description="Fetching suppliers for the selected kitchen."
-        >
-          <OrganismsSupplierCollectionManager
-            :collection="suppliers"
-            title="Suppliers"
-            description="Browse suppliers for the selected kitchen."
-            :link="false"
-          />
-        </ConsoleKitchenChildLayout>
+        <ConsoleKitchenSuppliers v-else />
       </section>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useKitchenConsoleChildFocus } from '../../../composables/fireux/app/kitchen-console/useKitchenConsoleChildFocus'
-import { useKitchenSupplierFetch } from '../../../composables/fireux/firestore/runtime-kitchen/suppliers/fetch/useKitchenSupplierFetch'
+import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
 
 definePageMeta({
   layout: 'console',
@@ -64,7 +47,5 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { selectedKitchen, kitchenId } = useKitchenConsoleChildFocus()
-const { suppliers, count, pending } = useKitchenSupplierFetch(kitchenId)
-const countLabel = computed(() => String(count.value))
+const { selectedKitchen } = useKitchenConsole()
 </script>

@@ -20,7 +20,13 @@ export function useKitchenConsoleIndex(
   const { uid } = useAuth()
   const { kitchen: testKitchenSource, pending: testKitchenPending } = useKitchenFetch(uid, { source: 'test' })
   const { createTestKitchen } = useKitchenCreate()
-  const { liveKitchens, demoKitchens, selectKitchen } = useKitchenConsole({
+  const {
+    liveKitchens,
+    demoKitchens,
+    selectKitchen,
+    selectedKitchen,
+    clearSelectedKitchen,
+  } = useKitchenConsole({
     filter: options.filter,
   })
 
@@ -59,5 +65,7 @@ export function useKitchenConsoleIndex(
     user: consoleIndex.user,
     kitchens: consoleIndex.entities,
     actions: consoleIndex.actions,
+    selectedKitchen,
+    clearSelectedKitchen,
   }
 }

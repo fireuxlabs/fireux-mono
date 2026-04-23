@@ -8,7 +8,7 @@ export function useKitchenConsoleChildFocus() {
 
   const kitchenId = computed(() => normalizeString(selectedKitchen.value?.id))
   const selectedKitchenName = computed(
-    () => normalizeString(selectedKitchen.value?.name) || 'Untitled'
+    () => normalizeString(selectedKitchen.value?.name)
   )
   const selectedModeLabel = computed(() =>
     selectedMode.value === 'demo' ? 'Demo' : selectedMode.value === 'test' ? 'Test' : 'Live'

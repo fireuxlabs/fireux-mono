@@ -129,15 +129,19 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
 import { useKitchenConsoleIndex } from '../../../composables/fireux/app/kitchen-console/useKitchenConsoleIndex'
 
 type KitchenPillCard = NonNullable<
   ReturnType<ReturnType<typeof useKitchenInterface>['pill']>
 >
 
-const { state, kitchens, actions } = useKitchenConsoleIndex()
-const { selectedKitchen, clearSelectedKitchen } = useKitchenConsole()
+const {
+  state,
+  kitchens,
+  actions,
+  selectedKitchen,
+  clearSelectedKitchen,
+} = useKitchenConsoleIndex()
 const { pill } = useKitchenInterface()
 
 const demoKitchenCards = computed<KitchenPillCard[]>(() =>

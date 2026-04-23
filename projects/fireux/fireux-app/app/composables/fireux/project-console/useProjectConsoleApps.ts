@@ -12,10 +12,20 @@ export function useProjectConsoleApps() {
   const demoScenario = computed(() =>
     selectedMode.value === 'demo' ? getDemoProject(selectedProjectId.value) : null
   )
+  const ecosystemId = computed(() => {
+    const project = selectedProject.value
+    const projectEcosystemId = normalizeString(
+      project && 'ecosystem_id' in project ? project.ecosystem_id : ''
+    )
+    if (projectEcosystemId) return projectEcosystemId
+    return normalizeString(demoScenario.value?.project.ecosystem_id)
+  })
 
   const appId = computed(() => {
     const project = selectedProject.value
     if (!project) return ''
+    const projectAppId = normalizeString('app_id' in project ? project.app_id : '')
+    if (projectAppId) return projectAppId
     if (selectedMode.value === 'demo') {
       return normalizeString(demoScenario.value?.project.app_id)
     }
@@ -34,13 +44,22 @@ export function useProjectConsoleApps() {
 
     return liveApp.value
   })
+  const apps = computed<App[]>(() => {
+    if (selectedMode.value === 'demo') {
+      return demoScenario.value?.apps ?? []
+    }
+
+    return app.value ? [app.value] : []
+  })
   const pending = computed(() => selectedMode.value === 'live' && livePending.value)
 
   return {
     selectedProject,
     selectedMode,
     appId,
+    ecosystemId,
     app,
+    apps,
     pending,
   }
 }

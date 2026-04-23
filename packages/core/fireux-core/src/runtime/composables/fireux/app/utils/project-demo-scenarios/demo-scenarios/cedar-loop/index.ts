@@ -1,7 +1,7 @@
-import { AppModel } from 'fireux-core/runtime/models/core/app.model'
 import { EcosystemModel } from 'fireux-core/runtime/models/system/ecosystem.model'
 import { ProjectModel } from 'fireux-core/runtime/models/system/project.model'
 import type { DemoProjectScenario } from '../_shared/types'
+import { createDemoApp } from '../_shared/demo-app'
 
 export const cedarLoopScenario = (): DemoProjectScenario => ({
   id: 'cedar-loop',
@@ -14,7 +14,7 @@ export const cedarLoopScenario = (): DemoProjectScenario => ({
     id: 'cedar-loop',
     name: 'Cedar Loop',
     slug: 'cedar-loop',
-    description: 'Read-only scenario for a property and asset operations workspace.',
+    description: 'Property and asset operations',
     image_url:
       'https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=320&h=320&q=80',
     status: 'active',
@@ -31,7 +31,7 @@ export const cedarLoopScenario = (): DemoProjectScenario => ({
       id: 'cedar-loop',
       name: 'Cedar Loop',
       slug: 'cedar-loop',
-      description: 'Read-only scenario for a property and asset operations workspace.',
+      description: 'Property and asset operations',
       image_url:
         'https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=320&h=320&q=80',
       status: 'active',
@@ -56,8 +56,7 @@ export const cedarLoopScenario = (): DemoProjectScenario => ({
     },
   ],
   apps: [
-    {
-      ...AppModel,
+    createDemoApp({
       id: 'lease-board',
       project_id: 'cedar-loop',
       ecosystem_id: 'cedar',
@@ -68,9 +67,10 @@ export const cedarLoopScenario = (): DemoProjectScenario => ({
       app_short_name: 'Lease Board',
       role: 'system',
       ecosystem: 'cedar',
-    },
-    {
-      ...AppModel,
+      thumbnail_url:
+        'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=160&h=160&q=80',
+    }),
+    createDemoApp({
       id: 'site-ledger',
       project_id: 'cedar-loop',
       ecosystem_id: 'cedar',
@@ -81,6 +81,8 @@ export const cedarLoopScenario = (): DemoProjectScenario => ({
       app_short_name: 'Site Ledger',
       role: 'ecosystem',
       ecosystem: 'cedar',
-    },
+      thumbnail_url:
+        'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=160&h=160&q=80',
+    }),
   ],
 })

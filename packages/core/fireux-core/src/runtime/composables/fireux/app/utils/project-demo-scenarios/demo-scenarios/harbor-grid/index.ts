@@ -1,7 +1,7 @@
-import { AppModel } from 'fireux-core/runtime/models/core/app.model'
 import { EcosystemModel } from 'fireux-core/runtime/models/system/ecosystem.model'
 import { ProjectModel } from 'fireux-core/runtime/models/system/project.model'
 import type { DemoProjectScenario } from '../_shared/types'
+import { createDemoApp } from '../_shared/demo-app'
 
 export const harborGridScenario = (): DemoProjectScenario => ({
   id: 'harbor-grid',
@@ -14,7 +14,7 @@ export const harborGridScenario = (): DemoProjectScenario => ({
     id: 'harbor-grid',
     name: 'Harbor Grid',
     slug: 'harbor-grid',
-    description: 'Read-only scenario for a hospitality operations workspace.',
+    description: 'Hospitality operations',
     image_url:
       'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=320&h=320&q=80',
     status: 'active',
@@ -31,7 +31,7 @@ export const harborGridScenario = (): DemoProjectScenario => ({
       id: 'harbor-grid',
       name: 'Harbor Grid',
       slug: 'harbor-grid',
-      description: 'Read-only scenario for a hospitality operations workspace.',
+      description: 'Hospitality operations',
       image_url:
         'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=320&h=320&q=80',
       status: 'active',
@@ -56,8 +56,7 @@ export const harborGridScenario = (): DemoProjectScenario => ({
     },
   ],
   apps: [
-    {
-      ...AppModel,
+    createDemoApp({
       id: 'line-pass',
       project_id: 'harbor-grid',
       ecosystem_id: 'harbor',
@@ -68,9 +67,10 @@ export const harborGridScenario = (): DemoProjectScenario => ({
       app_short_name: 'Line Pass',
       role: 'system',
       ecosystem: 'harbor',
-    },
-    {
-      ...AppModel,
+      thumbnail_url:
+        'https://images.unsplash.com/photo-1559329007-40df8a9345d8?auto=format&fit=crop&w=160&h=160&q=80',
+    }),
+    createDemoApp({
       id: 'supply-loop',
       project_id: 'harbor-grid',
       ecosystem_id: 'harbor',
@@ -81,6 +81,8 @@ export const harborGridScenario = (): DemoProjectScenario => ({
       app_short_name: 'Supply Loop',
       role: 'ecosystem',
       ecosystem: 'harbor',
-    },
+      thumbnail_url:
+        'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=160&h=160&q=80',
+    }),
   ],
 })
