@@ -40,6 +40,7 @@ function toDemoKitchenSurface(
   return {
     id,
     slug: id,
+    route_scope: 'demo',
     place_id: id,
     name: String(kitchen.name || '').trim(),
     short_address: String(kitchen.label || '').trim(),
@@ -181,7 +182,7 @@ export function useKitchenCollection(
           id: kitchenId,
         }
       })
-      .filter((kitchen): kitchen is KitchenCollectionDoc => Boolean(kitchen))
+      .filter(Boolean) as KitchenCollectionDoc[]
   })
 
   const kitchens = computed<KitchenCollectionDoc[]>(() =>

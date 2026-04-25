@@ -9,6 +9,7 @@
   >
     <OrganismsDishCollectionManager
       :collection="dishes"
+      :sections="sections"
       title="Dishes"
       description="Browse dishes for the selected kitchen."
       :link="false"
@@ -19,10 +20,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Dish } from '../../../../../models/dish.model'
+import type { KitchenDishSection } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleDishes'
 
 const props = defineProps<{
   dishes: Dish[]
   pending: boolean
+  sections?: KitchenDishSection[]
 }>()
 
 const countLabel = computed(() => String(props.dishes.length))

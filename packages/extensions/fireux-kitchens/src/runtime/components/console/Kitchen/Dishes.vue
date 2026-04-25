@@ -3,6 +3,7 @@
     <OrganismsConsoleKitchenDishesRead
       :dishes="dishes"
       :pending="pending"
+      :sections="sections"
     />
 
     <OrganismsConsoleKitchenDishesWrite v-if="canWrite" />
@@ -12,5 +13,5 @@
 <script setup lang="ts">
 import { useKitchenConsoleDishes } from '../../../composables/fireux/app/kitchen-console/useKitchenConsoleDishes'
 
-const { dishes, pending, canWrite } = useKitchenConsoleDishes()
+const { dishes, pending, canWrite, sections } = useKitchenConsoleDishes()
 </script>

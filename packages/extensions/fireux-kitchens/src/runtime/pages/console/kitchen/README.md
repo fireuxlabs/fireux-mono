@@ -13,6 +13,7 @@ This README only explains the kitchen-console delta.
 
 - `index.vue`
 - `overview.vue`
+- `preview.vue`
 - `create.vue`
 - `menus.vue`
 - `recipes.vue`
@@ -28,6 +29,7 @@ This README only explains the kitchen-console delta.
 - apps must opt into kitchen visibility through `consoleFamilies`
 - `index.vue` is the family-specific chooser in console shell
 - `overview.vue` is the first selected-kitchen workspace page
+- `preview.vue` is the console-only customer surface preview for the selected kitchen
 - `create.vue` is the kitchen console create page
 - the rest of the routes are kitchen-owned operational delivery
 
