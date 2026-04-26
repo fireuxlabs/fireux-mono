@@ -1,5 +1,6 @@
 # fireux-products Contract
 Authority: Tier1 (Authoritative)
+Updated: 2026-04-26
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -18,6 +19,8 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `products/{productId}/prices/{priceId}` (optional)
 
 Supplier catalogue/product records should wrap canonical `Product` identity rather than replace it. Supplier-specific sale/procurement fields belong in supplier-owned records such as `suppliers/{supplierId}/products/{supplierProductId}` or `suppliers/{supplierId}/catalogue/{catalogueItemId}` with a `product_id` link.
+
+`ProductPrice` owns pricing terms. Product identity should not be split into fake products for naming variants such as `Pro` or `Enterprise` when the real commercial product is one product with multiple prices or terms.
 
 ## 4a) Root scope fields
 - `source_app_id`

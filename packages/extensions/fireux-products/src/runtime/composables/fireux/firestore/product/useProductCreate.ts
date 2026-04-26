@@ -5,7 +5,7 @@ import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firesto
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type {
   FirebaseProduct,
-  Price,
+  ProductPrice,
   StripePriceInput,
 } from '../../../../models/product.model'
 import { useCreatePricesState } from './Prices/useCreatePricesState'
@@ -69,10 +69,18 @@ export function useProductCreate() {
 
   const normalizePrices = (
     inputs: StripePriceInput[],
-    priceIds: string[]
-  ): Price[] =>
-    inputs.map((price, index) => ({
+    priceIds: string[],
+    productId: string
+  ): ProductPrice[] => {
+    const defaultIndexCandidate = inputs.findIndex(
+      (price) => price.type === 'recurring' && price.interval === 'month'
+    )
+    const defaultIndex = defaultIndexCandidate >= 0 ? defaultIndexCandidate : 0
+
+    return inputs.map((price, index) => ({
       id: priceIds[index] || '',
+      product_id: productId,
+      label: String(price.metadata?.label || '').trim(),
       currency: String(price.currency || 'usd').toLowerCase(),
       unit_amount: Number(price.unit_amount ?? 0),
       ...(price.type ? { type: price.type } : {}),
@@ -81,10 +89,15 @@ export function useProductCreate() {
         ? { interval_count: price.interval_count }
         : {}),
       ...(price.billing_scheme ? { billing_scheme: price.billing_scheme } : {}),
-      ...(price.metadata ? { metadata: price.metadata } : {}),
+      active: true,
+      default: index === defaultIndex,
+      provider: 'stripe',
+      provider_price_id: priceIds[index] || '',
+      metadata: price.metadata ?? {},
     }))
+  }
 
-  const chooseDefaultPrice = (normalizedPrices: Price[]) => {
+  const chooseDefaultPrice = (normalizedPrices: ProductPrice[]) => {
     const recurringMonthlyIndex = normalizedPrices.findIndex(
       (price) => price.type === 'recurring' && price.interval === 'month'
     )
@@ -169,7 +182,11 @@ export function useProductCreate() {
         throw new Error('Stripe product creation failed (missing prices)')
       }
 
-      const normalizedPrices = normalizePrices(normalizedPriceInputs, stripePriceIds)
+      const normalizedPrices = normalizePrices(
+        normalizedPriceInputs,
+        stripePriceIds,
+        slug
+      )
       const defaultPriceCandidate = chooseDefaultPrice(normalizedPrices)
 
       const data = {
@@ -210,9 +227,14 @@ export function useProductCreate() {
         normalizedPrices
           .filter((price) => Boolean(price.id))
           .map((price) =>
-            setDocument<Price>(pricesCollectionPath, String(price.id), price, {
-              stamp: false,
-            })
+            setDocument<ProductPrice>(
+              pricesCollectionPath,
+              String(price.id),
+              price,
+              {
+                stamp: false,
+              }
+            )
           )
       )
       await upsertSeoIndexDoc('seo_index_products', slug, {

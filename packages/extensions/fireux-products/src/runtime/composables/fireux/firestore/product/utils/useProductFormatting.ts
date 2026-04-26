@@ -7,7 +7,7 @@ import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/fire
 
 export function useProductFormatting() {
   const { uploadImage } = useImageStorage()
-  const { checkUnique } = useFirestoreManager()
+  const { firestoreFetchDoc } = useFirestoreManager()
 
   function formatSlug(slug: string): string {
     return slug
@@ -55,8 +55,8 @@ export function useProductFormatting() {
       .replace(/(^-|-$)/g, '')
 
     const slug = tenantId ? `${tenantId}-${base}` : base
-    const slugAvailable = await checkUnique(collectionName, 'slug', slug, true)
-    if (!slugAvailable) {
+    const existing = await firestoreFetchDoc(collectionName, slug)
+    if (existing) {
       return { success: false, message: `Slug "${slug}" is already taken.` }
     }
     return { success: true, slug }

@@ -9,7 +9,7 @@ Products/catalog module for FireUX apps.
 
 ## What it ships
 
-- **Firestore model**: `FirebaseProduct` (`src/runtime/models/product.model.ts`)
+- **Firestore models**: `Product`, `ProductPrice` (`src/runtime/models/product.model.ts`)
 - **Runtime pages**:
   - `/products` (index)
   - `/products/:slug` (public product page)
@@ -36,6 +36,9 @@ Products/catalog module for FireUX apps.
 FireUX treats products as root canonical records:
 - `products/{productId}`
 - `products/{productId}/prices/{priceId}` (if used)
+
+`Product` is the shared commercial identity. Pricing terms belong to `ProductPrice`.
+Supplier-specific catalogue, packaging, SKU, procurement cost, or ingredient linkage should wrap Product through `product_id` rather than expand Product itself.
 
 App and ecosystem product pages should filter root products through scope fields such as:
 - `source_app_id`

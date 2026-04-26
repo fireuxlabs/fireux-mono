@@ -1,6 +1,6 @@
 import type {
   FirebaseProduct,
-  Price,
+  ProductPrice,
 } from '../../../../models/product.model'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useProductCreate } from './useProductCreate.ts'
@@ -11,7 +11,6 @@ export function useProducts() {
   const {
     firestoreFetchCollection,
     firestoreFetchDoc,
-    firestoreQueryOneByField,
     getCollectionPath,
     firestoreFetchSubcollection,
   } = useFirestoreManager()
@@ -24,12 +23,12 @@ export function useProducts() {
     firestoreFetchDoc<FirebaseProduct>(collectionPath, id)
 
   const fetchProductBySlug = (slug: string) =>
-    firestoreQueryOneByField<FirebaseProduct>('products', 'slug', slug, true)
+    firestoreFetchDoc<FirebaseProduct>(collectionPath, slug)
 
-  const fetchProductPrices = async (productId: string): Promise<Price[]> => {
+  const fetchProductPrices = async (productId: string): Promise<ProductPrice[]> => {
     if (!productId) return []
     const collectionName = getCollectionPath('products')
-    return firestoreFetchSubcollection<Price>(
+    return firestoreFetchSubcollection<ProductPrice>(
       collectionName,
       productId,
       'prices'

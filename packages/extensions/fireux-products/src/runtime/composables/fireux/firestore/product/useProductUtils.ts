@@ -3,7 +3,7 @@ import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/fire
 
 export function useProductUtils() {
   const { uploadImage } = useImageStorage()
-  const { checkUnique } = useFirestoreManager()
+  const { firestoreFetchDoc } = useFirestoreManager()
 
   async function buildSlugIfUnique(
     title: string,
@@ -18,8 +18,8 @@ export function useProductUtils() {
       .replace(/(^-|-$)/g, '')
     const slug = tenantId ? `${tenantId}-${base}` : base
 
-    const slugAvailable = await checkUnique(collectionName, 'slug', slug, true)
-    if (!slugAvailable) {
+    const existing = await firestoreFetchDoc(collectionName, slug)
+    if (existing) {
       return { success: false, message: 'Slug taken' }
     }
 

@@ -8,7 +8,8 @@ export function useProductPermissions() {
 
   // Allow global/tenant admin or appUser flag
   const canManageProducts = computed(() => {
-    return isAdmin.value === true || appUser.value?.canManageProducts === true
+    const productAccess = appUser.value as { canManageProducts?: boolean } | null
+    return isAdmin.value === true || productAccess?.canManageProducts === true
   })
 
   // Expose pending to match the blog permissions chain

@@ -1,12 +1,13 @@
 import type { FirebaseProduct } from '../../../../../models/product.model'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
-/** Lookup a product by slug (server-side friendly). */
+/** Lookup a public product by route slug. Canonically, slug equals document id. */
 export function useProductBySlug() {
-  const { firestoreQueryOneByField } = useFirestoreManager()
+  const { firestoreFetchDoc, getCollectionPath } = useFirestoreManager()
+  const collectionPath = getCollectionPath('products')
 
   const fetchProductBySlug = (slug: string) =>
-    firestoreQueryOneByField<FirebaseProduct>('products', 'slug', slug, true)
+    firestoreFetchDoc<FirebaseProduct>(collectionPath, slug)
 
   return { fetchProductBySlug }
 }
