@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { getDefaultDemoKitchen } from '../../../composables/fireux/app/kitchen-console/demo-scenarios';
+import { getDefaultDemoKitchen } from '../../../composables/fireux/app/utils/kitchen-demo-scenarios';
 
 defineOptions({ name: 'DevMenuStackSystem' })
 

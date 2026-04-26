@@ -123,6 +123,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
         : ''
 
       const payload: SupplierCreateInput = {
+        company_id: '',
         supplier_organization_name: defaultName,
         supplier_headline: '',
         summary: '',
@@ -130,6 +131,9 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
         supplier_image: '',
         supplier_product_categories: [] as string[],
         supplier_delivery_areas: [] as string[],
+        state: 'public',
+        catalogue_state: 'public_only',
+        linked_ingredient_ids: [] as string[],
       }
 
       await setDocument<Supplier>(

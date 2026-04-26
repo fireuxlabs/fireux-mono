@@ -13,6 +13,7 @@ This README only explains the supplier-console delta.
 
 - `index.vue`
 - `overview.vue`
+- `catalogue.vue`
 - `create.vue`
 - `demo/index.vue`
 - `demo/[scenarioId].vue`
@@ -23,6 +24,7 @@ This README only explains the supplier-console delta.
 - apps must opt into supplier visibility through `consoleFamilies`
 - `index.vue` is the family-specific chooser in console shell
 - `overview.vue` is the first selected-supplier workspace page
+- `catalogue.vue` is the selected-supplier catalogue read page
 - `create.vue` belongs to the console create family
 - demo entry stays route-driven through the shared console runtime helpers
 

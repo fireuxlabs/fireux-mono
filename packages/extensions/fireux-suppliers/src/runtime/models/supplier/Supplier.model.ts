@@ -5,6 +5,17 @@ import type {
 import { FireuxAppOverlayModel } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
+export type SupplierState = 'official' | 'public'
+export type SupplierCatalogueState = 'integrated' | 'public_only'
+
+type WidenLiteral<T> =
+  T extends string ? string
+  : T extends number ? number
+  : T extends boolean ? boolean
+  : T extends readonly (infer U)[] ? WidenLiteral<U>[]
+  : T extends Record<string, unknown> ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
+  : T
+
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
@@ -21,12 +32,13 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Any future supplier operator profile should remain a prerequisite or presentation layer, not a second ownership model.
  * - Supplier operational state belongs to the app-hosted supplier record.
  * - Supplier-owned child records, if they become real, should live beneath that record.
- * - Supplier v1 stays intentionally small: organization name, headline, summary, bio, image, categories, and delivery areas.
+ * - Supplier v1 stays intentionally small: company link, organization name, headline, summary, bio, image, categories, delivery areas, state, catalogue state, and linked ingredients.
  * - If that changes later, update the models README first, then this file.
  */
 
 export const SupplierModel = {
   id: '',
+  company_id: '',
 
   // Public-facing supplier identity
   supplier_organization_name: '',
@@ -36,6 +48,9 @@ export const SupplierModel = {
   supplier_image: '',
   supplier_product_categories: [] as string[],
   supplier_delivery_areas: [] as string[],
+  state: 'public' as SupplierState,
+  catalogue_state: 'public_only' as SupplierCatalogueState,
+  linked_ingredient_ids: [] as string[],
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -48,9 +63,7 @@ export const SupplierModel = {
   },
 } as const
 
-export type Supplier = {
-  [K in keyof typeof SupplierModel]: (typeof SupplierModel)[K]
-}
+export type Supplier = WidenLiteral<typeof SupplierModel>
 
 export const AppSupplierModel = {
   ...FireuxAppOverlayModel,

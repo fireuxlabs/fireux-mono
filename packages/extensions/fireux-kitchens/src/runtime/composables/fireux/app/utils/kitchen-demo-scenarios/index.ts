@@ -937,16 +937,18 @@ const scenarios: DemoKitchenScenario[] = [
       {
         id: 'city-produce',
         supplier_id: 'city-produce',
+        company_id: 'city-produce',
         kitchen_id: 'deanos',
         name: 'City Produce',
         supplier_organization_name: 'City Produce',
-        supplier_headline: 'Daily meat and dry-store drops',
+        supplier_headline: 'Whole cuts, burger grind beef, and daily meat drops',
         supplier_product_categories: ['Meat', 'Dry Store'],
         supplier_delivery_areas: ['Central'],
-        summary: 'Official supplier demo with active catalogue coverage for meat and pantry basics.',
-        demo_state: 'official',
-        demo_catalogue_state: 'integrated',
-        demo_ingredient_ids: ['beef-smash-patties'],
+        summary:
+          'Official supplier demo with active butcher-style catalogue coverage for burger beef, chicken, and kitchen-ready meat supply.',
+        state: 'official',
+        catalogue_state: 'integrated',
+        linked_ingredient_ids: ['beef-smash-patties'],
         supplier_image:
           'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=240&h=240&q=80',
         image_url:
@@ -955,6 +957,7 @@ const scenarios: DemoKitchenScenario[] = [
       {
         id: 'daily-bakehouse',
         supplier_id: 'daily-bakehouse',
+        company_id: 'daily-bakehouse',
         kitchen_id: 'deanos',
         name: 'Daily Bakehouse',
         supplier_organization_name: 'Daily Bakehouse',
@@ -962,9 +965,9 @@ const scenarios: DemoKitchenScenario[] = [
         supplier_product_categories: ['Bakery'],
         supplier_delivery_areas: ['Central'],
         summary: 'Official supplier demo with a live bakery catalogue used across the demo kitchens.',
-        demo_state: 'official',
-        demo_catalogue_state: 'integrated',
-        demo_ingredient_ids: ['potato-buns'],
+        state: 'official',
+        catalogue_state: 'integrated',
+        linked_ingredient_ids: ['potato-buns'],
         supplier_image:
           'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=240&h=240&q=80',
         image_url:
@@ -973,6 +976,7 @@ const scenarios: DemoKitchenScenario[] = [
       {
         id: 'green-larder',
         supplier_id: 'green-larder',
+        company_id: 'green-larder',
         kitchen_id: 'deanos',
         name: 'Green Larder',
         supplier_organization_name: 'Green Larder',
@@ -981,9 +985,9 @@ const scenarios: DemoKitchenScenario[] = [
         supplier_delivery_areas: ['Central'],
         summary:
           'Public supplier record already linked by kitchens while the official supplier catalogue is still pending.',
-        demo_state: 'public',
-        demo_catalogue_state: 'public_only',
-        demo_ingredient_ids: ['iceberg-lettuce'],
+        state: 'public',
+        catalogue_state: 'public_only',
+        linked_ingredient_ids: ['iceberg-lettuce'],
         supplier_image:
           'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=240&h=240&q=80',
         image_url:
@@ -992,6 +996,7 @@ const scenarios: DemoKitchenScenario[] = [
       {
         id: 'pantry-house',
         supplier_id: 'pantry-house',
+        company_id: 'pantry-house',
         kitchen_id: 'deanos',
         name: 'Pantry House',
         supplier_organization_name: 'Pantry House',
@@ -1000,9 +1005,9 @@ const scenarios: DemoKitchenScenario[] = [
         supplier_delivery_areas: ['Central'],
         summary:
           'Public supplier record linked by kitchens for dairy and pantry items before the official catalogue is connected.',
-        demo_state: 'public',
-        demo_catalogue_state: 'public_only',
-        demo_ingredient_ids: ['house-pickles', 'american-cheese', 'mayonnaise', 'ketchup', 'yellow-mustard'],
+        state: 'public',
+        catalogue_state: 'public_only',
+        linked_ingredient_ids: ['house-pickles', 'american-cheese', 'mayonnaise', 'ketchup', 'yellow-mustard'],
         supplier_image:
           'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?auto=format&fit=crop&w=240&h=240&q=80',
         image_url:
@@ -1482,16 +1487,18 @@ const scenarios: DemoKitchenScenario[] = [
       {
         id: 'city-produce',
         supplier_id: 'city-produce',
+        company_id: 'city-produce',
         kitchen_id: 'garden-room',
         name: 'City Produce',
         supplier_organization_name: 'City Produce',
-        supplier_headline: 'Daily meat and dry-store drops',
+        supplier_headline: 'Whole cuts, burger grind beef, and daily meat drops',
         supplier_product_categories: ['Meat', 'Dry Store'],
         supplier_delivery_areas: ['Central'],
-        summary: 'Official supplier demo with active catalogue coverage for meat and pantry basics.',
-        demo_state: 'official',
-        demo_catalogue_state: 'integrated',
-        demo_ingredient_ids: ['chicken-thigh'],
+        summary:
+          'Official supplier demo with active butcher-style catalogue coverage for burger beef, chicken, and kitchen-ready meat supply.',
+        state: 'official',
+        catalogue_state: 'integrated',
+        linked_ingredient_ids: ['chicken-thigh'],
         supplier_image:
           'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=240&h=240&q=80',
         image_url:
@@ -1500,6 +1507,7 @@ const scenarios: DemoKitchenScenario[] = [
       {
         id: 'daily-bakehouse',
         supplier_id: 'daily-bakehouse',
+        company_id: 'daily-bakehouse',
         kitchen_id: 'garden-room',
         name: 'Daily Bakehouse',
         supplier_organization_name: 'Daily Bakehouse',
@@ -1507,9 +1515,9 @@ const scenarios: DemoKitchenScenario[] = [
         supplier_product_categories: ['Bakery'],
         supplier_delivery_areas: ['Central'],
         summary: 'Official supplier demo with a live bakery catalogue used across the demo kitchens.',
-        demo_state: 'official',
-        demo_catalogue_state: 'integrated',
-        demo_ingredient_ids: ['sourdough-loaf'],
+        state: 'official',
+        catalogue_state: 'integrated',
+        linked_ingredient_ids: ['sourdough-loaf'],
         supplier_image:
           'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=240&h=240&q=80',
         image_url:
@@ -1518,6 +1526,7 @@ const scenarios: DemoKitchenScenario[] = [
       {
         id: 'green-larder',
         supplier_id: 'green-larder',
+        company_id: 'green-larder',
         kitchen_id: 'garden-room',
         name: 'Green Larder',
         supplier_organization_name: 'Green Larder',
@@ -1526,9 +1535,9 @@ const scenarios: DemoKitchenScenario[] = [
         supplier_delivery_areas: ['Central'],
         summary:
           'Public supplier record already linked by kitchens while the official supplier catalogue is still pending.',
-        demo_state: 'public',
-        demo_catalogue_state: 'public_only',
-        demo_ingredient_ids: ['courgette', 'basil-oil', 'baby-potatoes', 'bitter-leaves'],
+        state: 'public',
+        catalogue_state: 'public_only',
+        linked_ingredient_ids: ['courgette', 'basil-oil', 'baby-potatoes', 'bitter-leaves'],
         supplier_image:
           'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=240&h=240&q=80',
         image_url:
@@ -1537,6 +1546,7 @@ const scenarios: DemoKitchenScenario[] = [
       {
         id: 'pantry-house',
         supplier_id: 'pantry-house',
+        company_id: 'pantry-house',
         kitchen_id: 'garden-room',
         name: 'Pantry House',
         supplier_organization_name: 'Pantry House',
@@ -1545,9 +1555,9 @@ const scenarios: DemoKitchenScenario[] = [
         supplier_delivery_areas: ['Central'],
         summary:
           'Public supplier record linked by kitchens for dairy and pantry items before the official catalogue is connected.',
-        demo_state: 'public',
-        demo_catalogue_state: 'public_only',
-        demo_ingredient_ids: ['ricotta', 'herb-butter'],
+        state: 'public',
+        catalogue_state: 'public_only',
+        linked_ingredient_ids: ['ricotta', 'herb-butter'],
         supplier_image:
           'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?auto=format&fit=crop&w=240&h=240&q=80',
         image_url:
@@ -1585,4 +1595,38 @@ export const getDemoKitchenCollection = <T = Record<string, unknown>>(
   const scenario = getDemoKitchen(kitchenId)
   if (!scenario) return []
   return cloneRecords<T>(scenario[collectionName])
+}
+
+export const getDefaultDemoKitchen = () => {
+  const scenario = scenarios[0]
+
+  return {
+    kitchen: {
+      id: scenario.id,
+      name: scenario.name,
+      label: scenario.label,
+      image_url: scenario.image_url,
+      place_id: scenario.id,
+      is_test_kitchen: false,
+      created: { at: {} },
+      updated: { at: {} },
+    },
+    globalIngredients: cloneRecords(scenario.ingredients),
+    kitchenIngredients: cloneRecords(scenario.ingredients),
+    menuStack: {
+      menus: cloneRecords(scenario.menus),
+      dishes: cloneRecords(scenario.dishes),
+      recipes: cloneRecords(scenario.recipes),
+      miseTasks: cloneRecords(scenario.mise),
+      stations: [],
+    },
+    procurementStack: {
+      suppliers: cloneRecords(scenario.suppliers),
+      supplierIngredients: [],
+      purchases: [],
+    },
+    serviceStack: {
+      incomingOrders: cloneRecords(scenario.orders),
+    },
+  }
 }

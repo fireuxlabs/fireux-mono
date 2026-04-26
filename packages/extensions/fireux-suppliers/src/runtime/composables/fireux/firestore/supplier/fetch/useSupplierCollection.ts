@@ -8,6 +8,8 @@ type SupplierCollectionDoc = Partial<Supplier> & {
   id?: string
   supplier_id?: string
   source_supplier_id?: string
+  name?: string
+  short_name?: string
   team_ids?: string[]
 }
 

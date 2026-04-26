@@ -3,7 +3,11 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import type { Supplier } from '../../../../../models/supplier/Supplier.model'
 import { getDemoSupplier } from '../../../app/utils/supplier-demo-scenarios'
 
-type SupplierFetchDoc = Partial<Supplier> & { id?: string }
+type SupplierFetchDoc = Partial<Supplier> & {
+  id?: string
+  name?: string
+  short_name?: string
+}
 export type SupplierFetchSource = 'live' | 'test' | 'demo'
 
 type UseSupplierFetchOptions = {
@@ -23,7 +27,9 @@ export function useSupplierFetch(
   const idRef = isRef(id) ? id : computed(() => String(id || '').trim())
   const sourceRef = isRef(options.source)
     ? options.source
-    : computed<SupplierFetchSource>(() => options.source || 'live')
+    : computed<SupplierFetchSource>(() =>
+        typeof options.source === 'string' ? options.source : 'live'
+      )
   const pathRef = computed(() => {
     const configuredPath = isRef(options.collectionPath)
       ? options.collectionPath.value

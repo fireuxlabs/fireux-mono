@@ -106,7 +106,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore'
 import { computed, ref } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { getDefaultDemoKitchen } from '../../../composables/fireux/app/kitchen-console/demo-scenarios'
+import { getDefaultDemoKitchen } from '../../../composables/fireux/app/utils/kitchen-demo-scenarios'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { KitchenIngredientModel } from '../../../models/ingredient.model'
 import type { Kitchen } from '../../../models/kitchen.model'

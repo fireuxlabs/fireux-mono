@@ -121,7 +121,7 @@ export function useSupplierInterface(
       organizationName,
       locationsLabel,
       summary,
-      status: '',
+      status: safeString(target.state),
       shortName: safeString(target.short_name),
       ownerLabel: organizationName,
       locationLabel: locationsLabel,

@@ -40,7 +40,12 @@ export function useSupplierConsole(
   const { suppliers: liveSuppliers } = useSupplierCollection({
     filter: liveFilter,
   })
-  const { suppliers: demoSuppliers } = useSupplierCollection({ source: 'demo' })
+  const { suppliers: allDemoSuppliers } = useSupplierCollection({ source: 'demo' })
+  const demoSuppliers = computed(() =>
+    allDemoSuppliers.value.filter(
+      (supplier) => normalizeString((supplier as SupplierSurface).state) === 'official'
+    )
+  )
   const { supplier: testSupplier } = useSupplierFetch(uid, { source: 'test' })
 
   const {
