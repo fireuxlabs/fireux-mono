@@ -11,11 +11,13 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 
 ## 3) Identity rule
 - Public product identity is slug-based; internal docs remain id-addressable where required.
-- Default publish rule: for published products, public `slug` equals Firestore product document id (unless Deano overrides to slug->id lookup/index).
+- Default publish rule: for published products, public `slug` equals Firestore product document id unless an explicit slug-to-id lookup/index is introduced.
 
 ## 4) Collections + paths
 - `products/{productId}`
 - `products/{productId}/prices/{priceId}` (optional)
+
+Supplier catalogue/product records should wrap canonical `Product` identity rather than replace it. Supplier-specific sale/procurement fields belong in supplier-owned records such as `suppliers/{supplierId}/products/{supplierProductId}` or `suppliers/{supplierId}/catalogue/{catalogueItemId}` with a `product_id` link.
 
 ## 4a) Root scope fields
 - `source_app_id`
