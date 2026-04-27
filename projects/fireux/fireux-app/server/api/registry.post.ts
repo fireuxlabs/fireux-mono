@@ -1,6 +1,6 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { getFirestoreDb } from './firebase-admin'
 
 type RegistryType = 'module' | 'app' | 'ecosystem'

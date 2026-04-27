@@ -105,6 +105,7 @@
 <script setup lang="ts">
 import { useRoute } from '#imports'
 import { computed, ref } from 'vue'
+import { consoleFamilyFromPath } from '../composables/fireux/app/routing/consoleRoutes'
 import { useConsoleNav } from '../composables/fireux/app/ui/nav/useConsoleNav'
 import {
   useConsoleHeaders,
@@ -129,10 +130,7 @@ const familyRootNav = computed(() =>
 )
 
 const route = useRoute()
-const family = computed(() => {
-  const candidate = String(route.path || '').match(/^\/console\/([^/]+)/)?.[1] || ''
-  return candidate === 'kitchen' ? 'kitchens' : candidate
-})
+const family = computed(() => consoleFamilyFromPath(String(route.path || '')))
 
 const consoleHeaders = useConsoleHeaders()
 
