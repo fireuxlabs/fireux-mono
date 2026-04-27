@@ -6,9 +6,7 @@ import type {
 
 export type DemoSupplierListItem = Partial<Supplier> & {
   id: string
-  supplier_id: string
   company_id: string
-  name: string
   supplier_organization_name: string
   supplier_headline: string
   supplier_image?: string
@@ -33,9 +31,9 @@ export type DemoSupplierCatalogueItem = {
 const demoSuppliers: DemoSupplierListItem[] = [
   {
     id: 'city-produce',
-    supplier_id: 'city-produce',
     company_id: 'city-produce',
-    name: 'City Produce',
+    app_scope_state: 'parent_app',
+    app_scope_app_id: 'misebox-app',
     supplier_organization_name: 'City Produce',
     supplier_headline: 'Whole cuts, burger grind beef, and daily meat drops',
     supplier_product_categories: ['Meat', 'Dry Store'],
@@ -52,9 +50,9 @@ const demoSuppliers: DemoSupplierListItem[] = [
   },
   {
     id: 'daily-bakehouse',
-    supplier_id: 'daily-bakehouse',
     company_id: 'daily-bakehouse',
-    name: 'Daily Bakehouse',
+    app_scope_state: 'parent_app',
+    app_scope_app_id: 'misebox-app',
     supplier_organization_name: 'Daily Bakehouse',
     supplier_headline: 'Buns and breads before service',
     supplier_product_categories: ['Bakery'],
@@ -70,9 +68,9 @@ const demoSuppliers: DemoSupplierListItem[] = [
   },
   {
     id: 'green-larder',
-    supplier_id: 'green-larder',
     company_id: 'green-larder',
-    name: 'Green Larder',
+    app_scope_state: 'root_only',
+    app_scope_app_id: '',
     supplier_organization_name: 'Green Larder',
     supplier_headline: 'Leafy greens and herbs for fast service kitchens',
     supplier_product_categories: ['Produce', 'Herbs'],
@@ -96,9 +94,9 @@ const demoSuppliers: DemoSupplierListItem[] = [
   },
   {
     id: 'pantry-house',
-    supplier_id: 'pantry-house',
     company_id: 'pantry-house',
-    name: 'Pantry House',
+    app_scope_state: 'root_only',
+    app_scope_app_id: '',
     supplier_organization_name: 'Pantry House',
     supplier_headline: 'Cultured dairy, pickles, and pantry staples for service kitchens',
     supplier_product_categories: ['Dairy', 'Preserves', 'Pantry'],

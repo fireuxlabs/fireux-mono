@@ -1,7 +1,7 @@
 # Models Directory
 
 Authority: Operational
-Updated: 2026-04-11
+Updated: 2026-04-27
 Scope: `packages/*/fireux-*/src/runtime/models` and child directories under `models/*`.
 
 Learn how FireUX runtime models are classified, how they are stored, and how future model decisions should be explained.
@@ -72,6 +72,9 @@ App-scoped canon:
 - root public entity
 - app-scoped operational record
 - app-owned child records beneath that record when operational children exist
+- root facade app relationship fields:
+  - `app_scope_state`
+  - `app_scope_app_id`
 
 Public create creates the root public entity.
 App-scoped create ensures the app record and may create root first when missing.
@@ -109,9 +112,8 @@ For app-scoped domains, the stored ownership pattern is shared:
 
 - the app-hosted record is the scoped record
 - app authority is user-based through:
-  - `admin_ids`
+  - `team_ids`
   - `join_requests`
-  - `console_enabled`
 
 Optional family-specific operator profiles do not replace that app-scoped pattern.
 

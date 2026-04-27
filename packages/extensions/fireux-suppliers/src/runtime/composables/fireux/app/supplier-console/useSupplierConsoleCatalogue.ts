@@ -8,17 +8,11 @@ export function useSupplierConsoleCatalogue() {
   const { selectedSupplier, selectedMode } = useSupplierConsole()
 
   const supplierId = computed(() =>
-    normalizeString(
-      selectedSupplier.value?.id || selectedSupplier.value?.supplier_id || ''
-    )
+    normalizeString(selectedSupplier.value?.id)
   )
 
   const supplierLabel = computed(() =>
-    normalizeString(
-      selectedSupplier.value?.supplier_organization_name ||
-        selectedSupplier.value?.name ||
-        supplierId.value
-    )
+    normalizeString(selectedSupplier.value?.supplier_organization_name)
   )
 
   const linkedIngredientIds = computed(() =>

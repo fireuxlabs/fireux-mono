@@ -1,4 +1,11 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import type {
+  FireuxAppOverlay,
+  FireuxStamped,
+} from 'fireux-core/runtime/models/core/meta.model'
+import {
+  FireuxAppOverlayModel,
+  FireuxAppScope,
+} from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -21,6 +28,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  */
 export const KitchenModel = {
   id: '',
+  ...FireuxAppScope,
   is_test_kitchen: false,
   place_id: '',
 
@@ -40,26 +48,17 @@ export type Kitchen = {
 }
 
 export const AppKitchenModel = {
-  id: '',
-  team_ids: [] as string[],
-  join_requests: [] as string[],
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-    app_id: undefined as FireuxStamped['created']['app_id'],
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
-  },
+  ...FireuxAppOverlayModel,
 } as const
 
-export type AppKitchen = {
-  [K in keyof typeof AppKitchenModel]: (typeof AppKitchenModel)[K]
-}
+export type AppKitchen = FireuxAppOverlay
 
-export type KitchenCreateInput = Omit<Kitchen, 'created' | 'updated'> & {
-  is_test_kitchen?: boolean
-}
+export type KitchenCreateInput = Omit<
+  Kitchen,
+  'created' | 'updated' | 'app_scope_state' | 'app_scope_app_id'
+> &
+  Partial<Pick<Kitchen, 'app_scope_state' | 'app_scope_app_id'>> & {
+    is_test_kitchen?: boolean
+  }
 
 export type KitchenUpdateInput = Partial<Pick<Kitchen, 'is_test_kitchen' | 'place_id'>>

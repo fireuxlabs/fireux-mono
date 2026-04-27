@@ -181,6 +181,8 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
       }
 
       const payload: Partial<Omit<Project, 'id' | 'created' | 'updated'>> = {
+        app_scope_state: 'root_only',
+        app_scope_app_id: '',
         name,
         slug,
         status,

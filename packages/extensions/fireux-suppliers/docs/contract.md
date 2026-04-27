@@ -1,6 +1,6 @@
 # fireux-suppliers Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-04-26
+Updated: 2026-04-27
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -22,6 +22,9 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Treat `Supplier` as a console/business entity family with:
   - a public canonical supplier record
   - an app-scoped supplier console overlay
+- Root supplier records carry explicit app relationship metadata:
+  - `app_scope_state`
+  - `app_scope_app_id`
 - Legacy profile-style supplier paths are compatibility debt, not target design.
 - Supplier console governance belongs to `apps/{appId}/suppliers/{supplierId}`.
 - Supplier-owned catalogue/product records belong to `suppliers/{supplierId}/products/{supplierProductId}` or the allowed catalogue label.
@@ -45,7 +48,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - not created during auth
 - `my real suppliers` means suppliers the current user can operate through the app overlay:
   - `apps/{appId}/suppliers/{supplierId}`
-  - `admin_ids` contains the user and `console_enabled` is not false
+  - `team_ids` contains the user
 - Supplier relationship or operator linkage may inform onboarding or claiming, but it is not the access rule by itself.
 
 ## 6) Surfaces supported

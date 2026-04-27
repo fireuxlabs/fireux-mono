@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-04-18
+Updated: 2026-04-27
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -28,6 +28,15 @@ Updated: 2026-04-18
 - Current canonical public routing field on the root project is:
   - `slug`
 - App-scoped project overlays may exist for console/app behavior, but they must not also own or duplicate root team membership.
+- Root-plus-app families must make the root facade relationship explicit with:
+  - `app_scope_state`: `root_only`, `parent_app`, or `dedicated_app`
+  - `app_scope_app_id`: the app id that hosts the app-scoped record, or empty for `root_only`
+- `app_scope_state` describes storage/topology, not access authority.
+- Current root-plus-app families are:
+  - `Kitchen`
+  - `Supplier`
+  - `Portfolio`
+  - `Project`
 - Generic project collection and console project selection are not the same seam.
 - `useProjectCollection()` stays generic.
 - Console project visibility adds user/app scope above the generic collection rather than redefining it.

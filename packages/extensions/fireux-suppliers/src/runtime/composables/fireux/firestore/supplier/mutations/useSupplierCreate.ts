@@ -123,6 +123,8 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
         : ''
 
       const payload: SupplierCreateInput = {
+        app_scope_state: 'root_only',
+        app_scope_app_id: '',
         company_id: '',
         supplier_organization_name: defaultName,
         supplier_headline: '',

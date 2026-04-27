@@ -64,6 +64,26 @@ export type FireuxRootScope = {
 }
 
 /**
+ * Canonical root facade relationship to app-scoped records.
+ *
+ * Root-plus-app entity families use this on the root public record so the
+ * relationship is explicit instead of inferred from domain state or overlays.
+ */
+export type FireuxAppScopeState =
+  | 'root_only'
+  | 'parent_app'
+  | 'dedicated_app'
+
+export const FireuxAppScope = {
+  app_scope_state: 'root_only' as FireuxAppScopeState,
+  app_scope_app_id: '' as string,
+} as const
+
+export type FireuxAppScope = {
+  [K in keyof typeof FireuxAppScope]: (typeof FireuxAppScope)[K]
+}
+
+/**
  * Canonical app-scoped support shape.
  *
  * Console entity rule:

@@ -1,4 +1,13 @@
-import { collection, doc, getDoc, getDocs, query, where } from 'firebase/firestore'
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  serverTimestamp,
+  setDoc,
+  where,
+} from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestore } from '../../../vuefire'
@@ -37,6 +46,15 @@ const consoleCollectionByType: Record<ConsoleEntityType, string> = {
 }
 
 const normalizeId = (value: unknown) => String(value || '').trim()
+
+function resolveAppScopeState(rootData: Record<string, unknown>, rootId: string, appId: string) {
+  const runtimeAppId = normalizeId(rootData.app_id)
+  if (runtimeAppId === appId || appId === `${rootId}-app`) {
+    return 'dedicated_app'
+  }
+
+  return 'parent_app'
+}
 
 export function useConsoleEnsure() {
   const db = useFirestore()
@@ -153,6 +171,33 @@ export function useConsoleEnsure() {
         }
       )
       createdOverlay = true
+    }
+
+    const rootRef = doc(db, collectionName, id)
+    const rootSnap = await getDoc(rootRef)
+    if (rootSnap.exists()) {
+      const rootData = rootSnap.data() ?? {}
+      const appScopeState = resolveAppScopeState(rootData, id, currentAppId)
+      const appScopeAppId = currentAppId
+
+      if (
+        rootData.app_scope_state !== appScopeState ||
+        rootData.app_scope_app_id !== appScopeAppId
+      ) {
+        const currentUid = normalizeId(uid.value)
+        await setDoc(
+          rootRef,
+          {
+            app_scope_state: appScopeState,
+            app_scope_app_id: appScopeAppId,
+            updated: {
+              at: serverTimestamp(),
+              ...(currentUid ? { by: currentUid } : {}),
+            },
+          },
+          { merge: true }
+        )
+      }
     }
 
     return {

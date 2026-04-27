@@ -43,7 +43,8 @@ export function useSupplierConsole(
   const { suppliers: allDemoSuppliers } = useSupplierCollection({ source: 'demo' })
   const demoSuppliers = computed(() =>
     allDemoSuppliers.value.filter(
-      (supplier) => normalizeString((supplier as SupplierSurface).state) === 'official'
+      (supplier) =>
+        normalizeString((supplier as SupplierSurface).app_scope_state) !== 'root_only'
     )
   )
   const { supplier: testSupplier } = useSupplierFetch(uid, { source: 'test' })

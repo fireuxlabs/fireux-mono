@@ -18,6 +18,8 @@ export const harborGridScenario = (): DemoProjectScenario => ({
     image_url:
       'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=320&h=320&q=80',
     status: 'active',
+    app_scope_state: 'dedicated_app',
+    app_scope_app_id: 'line-pass',
     project_type: 'ecosystem_app',
     app_id: 'line-pass',
     ecosystem_id: 'harbor',
@@ -35,6 +37,8 @@ export const harborGridScenario = (): DemoProjectScenario => ({
       image_url:
         'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=320&h=320&q=80',
       status: 'active',
+      app_scope_state: 'dedicated_app',
+      app_scope_app_id: 'line-pass',
       project_type: 'ecosystem_app',
       app_id: 'line-pass',
       ecosystem_id: 'harbor',

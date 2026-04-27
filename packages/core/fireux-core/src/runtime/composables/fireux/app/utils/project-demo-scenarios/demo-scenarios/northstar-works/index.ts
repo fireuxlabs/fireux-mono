@@ -18,6 +18,8 @@ export const northstarWorksScenario = (): DemoProjectScenario => ({
     image_url:
       'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=320&h=320&q=80',
     status: 'active',
+    app_scope_state: 'dedicated_app',
+    app_scope_app_id: 'rank-lens',
     project_type: 'ecosystem_app',
     app_id: 'rank-lens',
     ecosystem_id: 'northstar',
@@ -35,6 +37,8 @@ export const northstarWorksScenario = (): DemoProjectScenario => ({
       image_url:
         'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=320&h=320&q=80',
       status: 'active',
+      app_scope_state: 'dedicated_app',
+      app_scope_app_id: 'rank-lens',
       project_type: 'ecosystem_app',
       app_id: 'rank-lens',
       ecosystem_id: 'northstar',

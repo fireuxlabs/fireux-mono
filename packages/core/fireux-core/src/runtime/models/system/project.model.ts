@@ -3,7 +3,7 @@ import type {
   FireuxAppOverlay,
   FireuxStamped,
 } from '../core/meta.model'
-import { FireuxAppOverlayModel } from '../core/meta.model'
+import { FireuxAppOverlayModel, FireuxAppScope } from '../core/meta.model'
 
 export type ProjectStatus = 'draft' | 'active' | 'paused' | 'archived'
 export type ProjectType = 'standalone_app' | 'ecosystem_app'
@@ -36,6 +36,7 @@ type WidenLiteral<T> =
  */
 export const ProjectModel = {
   id: '',
+  ...FireuxAppScope,
 
   // Public-facing identity
   name: '',

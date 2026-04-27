@@ -19,12 +19,11 @@ function normalizeSupplier(raw: Supplier, fallbackId: string): Supplier {
 }
 
 function normalizeAppSupplier(raw: AppSupplier, fallbackId: string): AppSupplier {
-  const anyRaw = raw as any
   return {
     ...raw,
     id: raw.id ?? fallbackId,
-    team_ids: asStringArray(anyRaw.team_ids ?? anyRaw.admin_ids),
-    join_requests: asStringArray(anyRaw.join_requests),
+    team_ids: asStringArray(raw.team_ids),
+    join_requests: asStringArray(raw.join_requests),
   }
 }
 

@@ -133,6 +133,8 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
 
     const payload: Portfolio = {
       id: slug,
+      app_scope_state: 'root_only',
+      app_scope_app_id: '',
       name,
       slug,
       owner_label:
@@ -196,6 +198,8 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
 
       const payload: Portfolio = {
         id: slug,
+        app_scope_state: 'root_only',
+        app_scope_app_id: '',
         name,
         slug,
         owner_label:

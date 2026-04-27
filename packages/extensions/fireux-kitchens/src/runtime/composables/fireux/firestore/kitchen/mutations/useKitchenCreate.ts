@@ -156,6 +156,8 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       : ''
 
     const resolvedPayload: Record<string, unknown> = {
+      app_scope_state: 'root_only',
+      app_scope_app_id: '',
       place_id: resolvedId,
     }
 

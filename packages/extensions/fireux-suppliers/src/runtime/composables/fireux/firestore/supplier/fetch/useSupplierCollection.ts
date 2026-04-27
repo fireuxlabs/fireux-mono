@@ -6,17 +6,11 @@ import { getDemoSuppliers } from '../../../app/utils/supplier-demo-scenarios'
 
 type SupplierCollectionDoc = Partial<Supplier> & {
   id?: string
-  supplier_id?: string
-  source_supplier_id?: string
-  name?: string
-  short_name?: string
   team_ids?: string[]
 }
 
 type AppSupplierOverlay = SupplierCollectionDoc & {
   team_ids?: string[]
-  admin_ids?: string[]
-  console_enabled?: boolean
 }
 
 const DEFAULT_COLLECTION_PATH = 'suppliers'
@@ -43,9 +37,7 @@ type UseSupplierCollectionOptions = {
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 function resolveSupplierId(supplier: Partial<SupplierCollectionDoc> | null | undefined) {
-  return normalizeString(
-    supplier?.id || supplier?.supplier_id || supplier?.source_supplier_id || ''
-  )
+  return normalizeString(supplier?.id)
 }
 
 function toDemoSupplierSurface(
@@ -56,8 +48,6 @@ function toDemoSupplierSurface(
   return {
     ...supplier,
     id,
-    supplier_id: id,
-    name: normalizeString(supplier.name),
     supplier_organization_name: normalizeString(supplier.supplier_organization_name),
     supplier_headline: normalizeString(supplier.supplier_headline),
     supplier_image: normalizeString(supplier.supplier_image),

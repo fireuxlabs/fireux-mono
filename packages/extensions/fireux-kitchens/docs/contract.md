@@ -1,6 +1,6 @@
 # fireux-kitchens Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-04-19
+Updated: 2026-04-27
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -28,6 +28,9 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 4) Collections + paths
 - Live: `kitchens/{kitchenId}`
 - Live kitchen console: `apps/{appId}/kitchens/{kitchenId}`
+- Root kitchen records carry explicit app relationship metadata:
+  - `app_scope_state`
+  - `app_scope_app_id`
 - Global ingredients: `ingredients/{ingredientId}`
 - Root public kitchen children:
   - `kitchens/{kitchenId}/menus/{menuId}`

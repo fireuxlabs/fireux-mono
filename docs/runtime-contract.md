@@ -1,6 +1,6 @@
 # Runtime Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-04-18
+Updated: 2026-04-27
 ## Purpose
 - Define runtime selection, mode, collection path, and route policy across FireUX domains.
 
@@ -127,8 +127,8 @@ Updated: 2026-04-18
 - `live` family entry must show `my Xs`, not all documents in the backing collection.
 - `my Xs` means targets the current user can operate through the app-hosted console overlay.
 - Canon authority source for real-mode access is the overlay governance shape:
-  - `admin_ids`
-  - `console_enabled`
+  - `team_ids`
+  - `join_requests` as optional workflow state
   - and any family-specific canonical claim rule explicitly allowed in a Tier1 extension contract
 - Root ownership and relationship fields may support discovery or migration, but they do not replace overlay governance unless the Tier1 family contract explicitly says so.
 - Family-specific guidance:
@@ -136,6 +136,18 @@ Updated: 2026-04-18
   - `kitchen`: overlay governance or allowed claim rules; chef/profile linkage is not enough.
   - `portfolio`: overlay governance is primary; `owner_label` is presentation only.
   - `supplier`: overlay governance is primary; supplier/operator relationship is not enough.
+
+## Root App Scope State
+- Root-plus-app families must store the root facade's app relationship explicitly:
+  - `app_scope_state`
+  - `app_scope_app_id`
+- Allowed `app_scope_state` values:
+  - `root_only`: only the public root record exists
+  - `parent_app`: an app-scoped record exists under a parent app
+  - `dedicated_app`: the entity has or has moved to its own dedicated app
+- `app_scope_app_id` is empty for `root_only`.
+- `app_scope_app_id` points to the app that hosts the app-scoped record for `parent_app` and `dedicated_app`.
+- These fields are topology metadata only; access still comes from the app-hosted overlay governance rule.
 
 ## Runtime Mode Rules (Console Runtimes)
 - Supported modes:

@@ -60,8 +60,7 @@ export function usePortfolioConsole(
     liveItems: livePortfolios,
     demoItems: demoPortfolios,
     testItem: testPortfolio,
-    getId: (portfolio) =>
-      normalizeString((portfolio as Portfolio)?.id || (portfolio as Portfolio)?.slug),
+    getId: (portfolio) => normalizeString((portfolio as Portfolio)?.id),
   })
 
   const selectedPortfolio = computed<Portfolio | null>(

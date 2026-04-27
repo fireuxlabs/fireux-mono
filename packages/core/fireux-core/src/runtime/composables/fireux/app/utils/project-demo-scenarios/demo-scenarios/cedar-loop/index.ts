@@ -18,6 +18,8 @@ export const cedarLoopScenario = (): DemoProjectScenario => ({
     image_url:
       'https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=320&h=320&q=80',
     status: 'active',
+    app_scope_state: 'dedicated_app',
+    app_scope_app_id: 'lease-board',
     project_type: 'ecosystem_app',
     app_id: 'lease-board',
     ecosystem_id: 'cedar',
@@ -35,6 +37,8 @@ export const cedarLoopScenario = (): DemoProjectScenario => ({
       image_url:
         'https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=320&h=320&q=80',
       status: 'active',
+      app_scope_state: 'dedicated_app',
+      app_scope_app_id: 'lease-board',
       project_type: 'ecosystem_app',
       app_id: 'lease-board',
       ecosystem_id: 'cedar',

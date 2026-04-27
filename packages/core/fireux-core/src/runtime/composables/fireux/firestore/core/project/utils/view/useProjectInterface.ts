@@ -19,6 +19,8 @@ const labelize = (value: string) =>
 export type ProjectSurface = {
   id?: string
   key?: string
+  app_scope_state?: Project['app_scope_state']
+  app_scope_app_id?: Project['app_scope_app_id']
   name?: string
   slug?: string
   description?: string

@@ -1,6 +1,6 @@
 # fireux-properties Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-04-04
+Updated: 2026-04-27
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -22,6 +22,9 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 4) Collections + paths
 - `portfolios/{portfolioId}`
 - `apps/{appId}/portfolios/{portfolioId}`
+- Root portfolio records carry explicit app relationship metadata:
+  - `app_scope_state`
+  - `app_scope_app_id`
 - Portfolio-owned operational children live under:
   - `apps/{appId}/portfolios/{portfolioId}/{childCollection}/{childId}`
 
@@ -40,7 +43,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - not created during auth
 - `my real portfolios` means portfolios the current user can operate through the app overlay:
   - `apps/{appId}/portfolios/{portfolioId}`
-  - `admin_ids` contains the user and `console_enabled` is not false
+  - `team_ids` contains the user
 - Console selection is runtime-state based, not query-param selection.
 
 ## 6) Surfaces supported

@@ -2,7 +2,10 @@ import type {
   FireuxAppOverlay,
   FireuxStamped,
 } from 'fireux-core/runtime/models/core/meta.model'
-import { FireuxAppOverlayModel } from 'fireux-core/runtime/models/core/meta.model'
+import {
+  FireuxAppOverlayModel,
+  FireuxAppScope,
+} from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -26,6 +29,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 export type PortfolioStatus = 'active' | 'archived'
 export const PortfolioModel = {
   id: '',
+  ...FireuxAppScope,
 
   name: '',
   slug: '',
@@ -56,8 +60,12 @@ export const AppPortfolioModel = {
 
 export type AppPortfolio = FireuxAppOverlay
 
-export type PortfolioCreateInput = Omit<Portfolio, 'id' | 'created' | 'updated'> & {
-  slug?: string
-}
+export type PortfolioCreateInput = Omit<
+  Portfolio,
+  'id' | 'created' | 'updated' | 'app_scope_state' | 'app_scope_app_id'
+> &
+  Partial<Pick<Portfolio, 'app_scope_state' | 'app_scope_app_id'>> & {
+    slug?: string
+  }
 
 export type PortfolioUpdateInput = Partial<Omit<Portfolio, 'id' | 'created' | 'updated'>>

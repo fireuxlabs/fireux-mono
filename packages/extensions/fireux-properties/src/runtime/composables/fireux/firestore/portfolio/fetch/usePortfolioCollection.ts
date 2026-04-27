@@ -9,8 +9,6 @@ type PortfolioCollectionDoc = Partial<Portfolio> & {
 }
 type AppPortfolioOverlay = PortfolioCollectionDoc & {
   team_ids?: string[]
-  admin_ids?: string[]
-  console_enabled?: boolean
 }
 
 const DEFAULT_COLLECTION_PATH = 'portfolios'
@@ -37,7 +35,7 @@ type UsePortfolioCollectionOptions = {
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 function resolvePortfolioId(portfolio: Partial<PortfolioCollectionDoc> | null | undefined) {
-  return normalizeString(portfolio?.id || portfolio?.slug || '')
+  return normalizeString(portfolio?.id)
 }
 
 export function usePortfolioCollection(
