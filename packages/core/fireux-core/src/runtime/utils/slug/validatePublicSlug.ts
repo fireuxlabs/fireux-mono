@@ -1,6 +1,6 @@
 import {
-  getBaseReservedRouteSegmentKeys,
-  getReservedRouteKeys,
+  getReservedEntityRouteSegmentKeys,
+  getReservedRootRouteKeys,
   normalizeReservedRouteKey,
 } from '../../../config/module/reserved-route-keys'
 import { normalizeSlug, type NormalizeSlugOptions } from './normalizeSlug'
@@ -15,12 +15,14 @@ export type PublicRouteIdentityStrategy =
   | 'slug-id'
   | 'slug-alias'
   | 'handle-index'
+  | 'id-only'
 
 export type ValidatePublicSlugOptions = NormalizeSlugOptions &
   ValidateSlugFormatOptions & {
     namespace?: string
     reservedScope?: PublicSlugReservedScope
     reserved?: readonly unknown[]
+    registeredReserved?: readonly unknown[]
     runtimeReservedRouteKeys?: readonly unknown[]
   }
 
@@ -58,15 +60,19 @@ function buildReservedSet(options: ValidatePublicSlugOptions): Set<string> {
   const scope = options.reservedScope ?? 'entity'
 
   if (scope === 'root') {
-    for (const key of getReservedRouteKeys()) {
+    for (const key of getReservedRootRouteKeys()) {
       reserved.add(normalizeReservedRouteKey(key))
     }
   }
 
   if (scope === 'entity') {
-    for (const key of getBaseReservedRouteSegmentKeys()) {
+    for (const key of getReservedEntityRouteSegmentKeys()) {
       reserved.add(normalizeReservedRouteKey(key))
     }
+  }
+
+  for (const key of normalizeReservedKeys(options.registeredReserved)) {
+    reserved.add(key)
   }
 
   for (const key of normalizeReservedKeys(options.runtimeReservedRouteKeys)) {

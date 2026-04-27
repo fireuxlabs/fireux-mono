@@ -1,4 +1,4 @@
-const REGISTRY_KEY = '__fireux_reserved_route_keys__'
+const ROOT_REGISTRY_KEY = '__fireux_reserved_route_keys__'
 
 export const normalizeReservedRouteKey = (value: unknown): string =>
   String(value ?? '')
@@ -42,20 +42,20 @@ export const BASE_RESERVED_ROUTE_SEGMENT_KEYS: string[] = [
   'api',
 ]
 
-function getRegistry(): Set<string> {
+function getRootRegistry(): Set<string> {
   const globalAny = globalThis as any
-  if (!globalAny[REGISTRY_KEY]) {
-    globalAny[REGISTRY_KEY] = new Set(
+  if (!globalAny[ROOT_REGISTRY_KEY]) {
+    globalAny[ROOT_REGISTRY_KEY] = new Set(
       BASE_RESERVED_ROUTE_KEYS
         .map(normalizeReservedRouteKey)
         .filter(Boolean)
     )
   }
-  return globalAny[REGISTRY_KEY] as Set<string>
+  return globalAny[ROOT_REGISTRY_KEY] as Set<string>
 }
 
-export function registerReservedRouteKeys(keys: string[]): void {
-  const registry = getRegistry()
+export function registerReservedRootRouteKeys(keys: string[]): void {
+  const registry = getRootRegistry()
   for (const raw of Array.isArray(keys) ? keys : []) {
     const key = normalizeReservedRouteKey(raw)
     if (!key) continue
@@ -63,12 +63,17 @@ export function registerReservedRouteKeys(keys: string[]): void {
   }
 }
 
-export function getReservedRouteKeys(): string[] {
-  return Array.from(getRegistry())
+export function getReservedRootRouteKeys(): string[] {
+  return Array.from(getRootRegistry())
 }
 
-export function getBaseReservedRouteSegmentKeys(): string[] {
+export function getReservedEntityRouteSegmentKeys(): string[] {
   return BASE_RESERVED_ROUTE_SEGMENT_KEYS
     .map(normalizeReservedRouteKey)
     .filter(Boolean)
 }
+
+// Compatibility aliases kept while modules migrate to root/entity naming.
+export const registerReservedRouteKeys = registerReservedRootRouteKeys
+export const getReservedRouteKeys = getReservedRootRouteKeys
+export const getBaseReservedRouteSegmentKeys = getReservedEntityRouteSegmentKeys

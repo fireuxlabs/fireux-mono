@@ -211,47 +211,73 @@ Updated: 2026-04-27
 - `live` -> `kitchens/{kitchenId}`
 - `demo` -> no Firestore collection path (scenario-backed)
 
-## Route Policy (ID vs Slug)
-- Internal routes may use `[id]`.
-- Public/indexable entity routes should use `[slug]` where the entity is published for discovery/SEO.
+## Route Policy (ID, Slug, Handle)
+- Internal/admin/console routes may use `[id]`.
+- Public/indexable entity routes may use `[slug]` only when the entity contract declares a public slug strategy.
 - Tenant apps remain non-indexable by default unless a Tier1/Tier1-extension contract explicitly publishes a tenant route class.
-- Current canonical mapping:
-  - Blogs public detail route: slug-based.
-  - Products public detail route: slug-based.
-  - Projects public detail route: slug-based.
-  - Users public profile route: handle-based (`/users/[handle]`) resolved from `users.handle`.
-  - Console/admin/internal routes: id-based.
-  - Entities without a published slug contract remain id-based until their extension contract defines slug rollout.
+- Entities without a published slug contract remain id-based until their extension contract defines slug rollout.
 
-## Route Identity Policy Addendum (Slug vs ID)
-- Every public/indexable entity must declare exactly one strategy in its extension contract:
-  - `slug == doc id` (public slug is the Firestore doc id at publish time)
-  - `slug -> id` (public slug resolves to stable doc id via indexed lookup)
-- Internal/admin/console routes remain id-based.
-- Public link generators must follow the declared strategy; id-based public links are invalid when strategy is slug.
+## Public Slug Identity Policy
+- Default FireUX slug canon is `slug == doc id`.
+- For a slug-id entity, public route identity is the Firestore document id:
+  - `/products/[slug]` reads `products/{slug}`
+  - `/blog/[slug]` reads `blogs/{slug}` or the contract-declared blog collection equivalent
+  - `/places/[slug]` reads `places/{slug}` only if Place declares slug-id mode
+- When a `slug` field exists on a slug-id entity, it is a mirrored public/display field and must equal the Firestore document id.
+- Public `[slug]` routes must not query by slug field directly by default.
+- Public `[slug]` routes must not silently fall back through chains such as:
+  - `slug || id`
+  - `id || slug`
+  - `where('slug', '==', routeParam)`
+  - `where('slug', '==', routeParam) || doc(routeParam)`
+- If a public slug can differ from document id, the entity must explicitly declare alias-slug mode in its Tier1 extension contract.
+- Alias-slug mode requires an explicit slug-to-id index/claim collection owned by that entity contract.
+- Alias-slug mode reads must resolve through the declared index first, then fetch the resolved document id.
+- Ad hoc `where('slug', '==', routeParam)` lookups are not a canonical alias strategy.
+- Compatibility fallbacks are allowed only during a named migration window documented in Tier1/Tier1-extension canon, and must not be hidden in generic public route helpers.
+
+## Reserved Slug Policy
+- Root public identities, such as user handles, must validate against reserved top-level route keys.
+- Entity public slugs must validate against reserved static/action segment keys for their namespace.
+- Shared slug validation must use the repo slug utilities rather than local regex copies.
+- Reserved-scope meanings:
+  - `root`: top-level route keys such as `users`, `products`, `console`, `api`
+  - `entity`: namespace action/static segments such as `create`, `edit`, `settings`, `me`
+  - `none`: no reserved route check, for internal/non-route ids only
+
+## Public Route Strategy Types
+- Every public/indexable identity must declare exactly one strategy in its extension contract:
+  - `slug-id`: public slug equals Firestore document id.
+  - `slug-alias`: public slug resolves to a stable document id through an explicit slug index.
+  - `handle-index`: public handle resolves to a stable user id through the declared user handle index/field contract.
+  - `id-only`: public route is not slug based.
+- Public link generators, SEO paths, sitemap entries, and JSON-LD URLs must follow the declared strategy.
+- A `slugField` sitemap/config option is valid only for declared `slug-alias` entities or documented migration windows.
 
 ### Compact Entity Strategy Map
 | Extension | Entity | Public Param | Strategy |
 | --- | --- | --- | --- |
-| fireux-blogs | BlogPost | slug | slug == doc id |
-| fireux-products | Product | slug | slug == doc id |
-| fireux-core | Project | slug | slug -> id |
-| fireux-core | User | handle | handle -> uid via canonical `users.handle` |
-| fireux-places | Place | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
-| fireux-companies | Company | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
-| fireux-kitchens | Kitchen | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
-| fireux-jobs | Job | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
-| fireux-jobs | Agent | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
-| fireux-jobs | Professional | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
-| fireux-kitchens | Chef | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
-| fireux-suppliers | Supplier | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
-| fireux-kitchens | Ingredient | slug (target) | slug -> id (TBD (Deano decision): migration not started) |
-| fireux-orders | Order | n/a (internal) | id-only internal |
+| fireux-blogs | BlogPost | slug | slug-id |
+| fireux-products | Product | slug | slug-id |
+| fireux-core | User | handle | handle-index |
+| fireux-core | Project | id/slug TBD | classify before slug rollout |
+| fireux-places | Place | id/slug TBD | classify before slug rollout |
+| fireux-companies | Company | id/slug TBD | classify before slug rollout |
+| fireux-kitchens | Kitchen | id/slug TBD | classify before slug rollout |
+| fireux-jobs | Job | id/slug TBD | classify before slug rollout |
+| fireux-jobs | Agent | id/slug TBD | classify before slug rollout |
+| fireux-jobs | Professional | id/slug TBD | classify before slug rollout |
+| fireux-kitchens | Chef | id/slug TBD | classify before slug rollout |
+| fireux-suppliers | Supplier | id/slug TBD | classify before slug rollout |
+| fireux-kitchens | Ingredient | id/slug TBD | classify before slug rollout |
+| fireux-orders | Order | n/a | id-only |
 
 ### Enforcement
-- CI must fail if:
+- CI/check scripts should fail if:
   - a public page is added without a strategy entry.
   - a public URL generator uses id while strategy requires slug.
+  - a slug-id route queries by `slug` field instead of document id.
+  - a public helper silently falls back between slug and id.
   - a public user route bypasses handle resolution and exposes uid routes as canonical.
 
 ## Selection vs Formatting
