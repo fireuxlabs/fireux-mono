@@ -149,6 +149,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       created: {
         at: {} as any,
         by: undefined,
+        app_id: undefined,
       },
       updated: {
         at: {} as any,
@@ -214,6 +215,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
         created: {
           at: {} as any,
           by: undefined,
+          app_id: undefined,
         },
         updated: {
           at: {} as any,

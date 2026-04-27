@@ -11,7 +11,9 @@ import type { FireuxStamped } from './meta.model'
  * Used by: /chefs/<userId>, /agents/<userId>, /professionals/<userId>, and similar identity profile collections
  *
  * Decision note:
- * - Profiles follow the same root-plus-overlay rule as other identity records when scoped truth is real.
+ * - Profile roots are the default identity truth.
+ * - App profile records are overlays for app-specific presentation or capability state.
+ * - Identity profile overlays do not use FireuxAppScope because they are not root-plus-app operational targets.
  * - This file defines the shared base shapes so individual profile files stay aligned.
  * - If the identity rule changes later, update the models README first, then this file.
  */
@@ -84,7 +86,7 @@ export type ProfileBase = FireuxStamped & {
 }
 
 /**
- * App profile overlay base shape (app-scoped truth)
+ * App profile overlay base shape
  * Example path: /apps/<appId>/<collection>/<uid>
  *
  * Delta-only by design.

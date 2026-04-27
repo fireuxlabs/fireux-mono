@@ -34,9 +34,12 @@ Examples:
 - `Agent`
 - `Professional`
 
-Identity models normally use root plus app-scoped storage:
+Identity models normally use root plus app overlay storage:
 - root canonical record
-- app-scoped record only when real scoped stored state exists
+- app overlay record only when app-specific capability, membership, or presentation state exists
+
+Identity app records are overlays, not root-plus-app operational topology.
+Do not add `app_scope_state` or `app_scope_app_id` to `User`, profile roots, `AppUser`, or app profile overlays.
 
 Preferred model-file shape for identity models:
 - `XModel`
@@ -52,7 +55,7 @@ Example:
 - `User`
 - `AppUser`
 
-Typical app-user capability fields include:
+Typical app-user overlay capability fields include:
 - `role`
 - `is_premium`
 - `console_enabled`
@@ -67,6 +70,8 @@ Examples:
 - `Portfolio`
 - `Supplier`
 - `Project`
+
+This family does not include `User` or identity profiles.
 
 App-scoped canon:
 - root public entity

@@ -8,6 +8,14 @@ import {
 } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
+type WidenLiteral<T> =
+  T extends string ? string
+  : T extends number ? number
+  : T extends boolean ? boolean
+  : T extends readonly (infer U)[] ? WidenLiteral<U>[]
+  : T extends Record<string, unknown> ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
+  : T
+
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
@@ -50,9 +58,7 @@ export const PortfolioModel = {
   },
 } as const
 
-export type Portfolio = {
-  [K in keyof typeof PortfolioModel]: (typeof PortfolioModel)[K]
-}
+export type Portfolio = WidenLiteral<typeof PortfolioModel>
 
 export const AppPortfolioModel = {
   ...FireuxAppOverlayModel,

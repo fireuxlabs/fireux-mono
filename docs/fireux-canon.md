@@ -37,6 +37,7 @@ Updated: 2026-04-27
   - `Supplier`
   - `Portfolio`
   - `Project`
+- Identity roots such as `User` and profile roots do not use `app_scope_state`; their app records are overlays for membership, capability, and presentation.
 - Generic project collection and console project selection are not the same seam.
 - `useProjectCollection()` stays generic.
 - Console project visibility adds user/app scope above the generic collection rather than redefining it.

@@ -148,6 +148,8 @@ Updated: 2026-04-27
 - `app_scope_app_id` is empty for `root_only`.
 - `app_scope_app_id` points to the app that hosts the app-scoped record for `parent_app` and `dedicated_app`.
 - These fields are topology metadata only; access still comes from the app-hosted overlay governance rule.
+- This rule applies to operational root-plus-app families such as Kitchen, Supplier, Portfolio, and Project.
+- It does not apply to User or identity profile records; their app records are overlays.
 
 ## Runtime Mode Rules (Console Runtimes)
 - Supported modes:

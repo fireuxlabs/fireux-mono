@@ -17,6 +17,8 @@ export function useSupplierQuickCreate() {
       // Simulate create and return minimal supplier object
       const supplier: Supplier = {
         id: 'supplier-mock-id',
+        app_scope_state: 'root_only',
+        app_scope_app_id: '',
         company_id: '',
         supplier_organization_name: name,
         supplier_headline: name,

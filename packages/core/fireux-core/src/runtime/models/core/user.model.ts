@@ -8,14 +8,15 @@ import type { UserNotification } from './supporting/user'
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
  * Family: Identity
- * Storage: root canonical record plus app-scoped record
+ * Storage: root canonical record plus app overlay record
  * Root path: /users/<userId>
  * App path: /apps/<appId>/users/<userId>
  *
  * Decision note:
- * - User identity is global first, with app-scoped stored truth only where operational state is genuinely app-specific.
- * - AppUser is a real app-scoped record, not just a runtime facade.
- * - If the identity app-scoped rule changes later, update the models README first, then this file.
+ * - User identity is global first; the root user is the default truth.
+ * - AppUser is an overlay for app membership, capability, notifications, and presentation state.
+ * - Identity overlays do not use FireuxAppScope because they are not root-plus-app operational targets.
+ * - If the identity overlay rule changes later, update the models README first, then this file.
  */
 
 export const UserModel = {
@@ -47,7 +48,7 @@ export type User = {
 }
 
 /**
- * App-specific user membership record.
+ * App-specific user overlay.
  */
 export const AppUserModel = {
   id: '',
