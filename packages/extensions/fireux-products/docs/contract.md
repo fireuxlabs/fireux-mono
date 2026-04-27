@@ -12,7 +12,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 
 ## 3) Identity rule
 - Public product identity is slug-based; internal docs remain id-addressable where required.
-- Default publish rule: for published products, public `slug` equals Firestore product document id unless an explicit slug-to-id lookup/index is introduced.
+- Default publish rule: for published products, public `slug` equals Firestore product document id.
 
 ## 4) Collections + paths
 - `products/{productId}`

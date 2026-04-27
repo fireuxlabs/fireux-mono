@@ -12,7 +12,7 @@
     <div class="space-y-3">
       <NuxtLink
         v-for="item in solutionItems"
-        :key="item.product.id || item.product.slug"
+        :key="item.product.id"
         :to="resolveSolutionRoute(item.product)"
         class="block"
       >
@@ -46,17 +46,15 @@ const SOLUTION_ROUTES: Record<string, string> = {
   'fireux-app': '/solutions/fireux-app',
   'fireux-template': '/solutions/fireux-template',
 }
-const SOLUTION_SLUGS = Object.keys(SOLUTION_ROUTES)
+const SOLUTION_PRODUCT_IDS = Object.keys(SOLUTION_ROUTES)
 
 const { products } = useProductFetch()
 const { pill: mapCard } = useProductInterface()
 
 const solutionItems = computed(() =>
-  SOLUTION_SLUGS
-    .map((slug) =>
-      (products.value ?? []).find(
-        (product) => product.slug === slug || product.id === slug
-      )
+  SOLUTION_PRODUCT_IDS
+    .map((productId) =>
+      (products.value ?? []).find((product) => product.id === productId)
     )
     .filter((product): product is FirebaseProduct => Boolean(product))
     .map((product) => {
@@ -74,8 +72,8 @@ const solutionItems = computed(() =>
 )
 
 const resolveSolutionRoute = (product: FirebaseProduct) => {
-  const slug = String(product.slug || product.id || '').trim()
-  if (SOLUTION_ROUTES[slug]) return SOLUTION_ROUTES[slug]
-  return slug ? `/products/${slug}` : '/products'
+  const id = String(product.id || '').trim()
+  if (SOLUTION_ROUTES[id]) return SOLUTION_ROUTES[id]
+  return id ? `/products/${id}` : '/products'
 }
 </script>

@@ -230,10 +230,8 @@ Updated: 2026-04-27
   - `id || slug`
   - `where('slug', '==', routeParam)`
   - `where('slug', '==', routeParam) || doc(routeParam)`
-- If a public slug can differ from document id, the entity must explicitly declare alias-slug mode in its Tier1 extension contract.
-- Alias-slug mode requires an explicit slug-to-id index/claim collection owned by that entity contract.
-- Alias-slug mode reads must resolve through the declared index first, then fetch the resolved document id.
-- Ad hoc `where('slug', '==', routeParam)` lookups are not a canonical alias strategy.
+- Public slug and document id must not diverge.
+- Ad hoc `where('slug', '==', routeParam)` lookups are not canonical.
 - Compatibility fallbacks are allowed only during a named migration window documented in Tier1/Tier1-extension canon, and must not be hidden in generic public route helpers.
 
 ## Reserved Slug Policy
@@ -248,11 +246,10 @@ Updated: 2026-04-27
 ## Public Route Strategy Types
 - Every public/indexable identity must declare exactly one strategy in its extension contract:
   - `slug-id`: public slug equals Firestore document id.
-  - `slug-alias`: public slug resolves to a stable document id through an explicit slug index.
   - `handle-index`: public handle resolves to a stable user id through the declared user handle index/field contract.
   - `id-only`: public route is not slug based.
 - Public link generators, SEO paths, sitemap entries, and JSON-LD URLs must follow the declared strategy.
-- A `slugField` sitemap/config option is valid only for declared `slug-alias` entities or documented migration windows.
+- A `slugField` sitemap/config option is compatibility-only and must not define canonical route identity.
 
 ### Compact Entity Strategy Map
 | Extension | Entity | Public Param | Strategy |

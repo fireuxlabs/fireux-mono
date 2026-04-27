@@ -219,7 +219,7 @@ async function startCheckout() {
   const product = props.product
   const appId = String(product?.source_app_id || '').trim()
   const productId = String(product?.id || '').trim()
-  const slug = String(product?.slug || '').trim()
+  const slug = productId
   const priceId = resolveCheckoutPriceId(product)
 
   if (!appId || !productId || !slug) {

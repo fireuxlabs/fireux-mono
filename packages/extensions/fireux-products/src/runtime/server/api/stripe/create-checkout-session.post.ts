@@ -62,6 +62,13 @@ export default defineEventHandler(async (event: H3Event) => {
     })
   }
 
+  if (slug !== productId) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Product slug must match product id',
+    })
+  }
+
   const stripe = new Stripe(secret, { apiVersion: STRIPE_API_VERSION })
   const baseUrl = baseUrlFromEvent(event)
 

@@ -3,6 +3,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import type { BlogPost, BlogPostEntry } from '../../../../../models/blogPost.model'
 
 export const BlogPayload = {
@@ -48,16 +49,16 @@ export function useBlogCreate() {
     payload: BlogPostEntry,
     slug: string
   ): Promise<boolean> {
-    if (!slug) {
-      throw new Error('Blog post slug is required')
-    }
-
-    const ref = doc(db, 'blogs', slug)
-    const snap = await getDoc(ref)
-
-    if (snap.exists()) {
-      return false
-    }
+    const validatedSlug = await assertPublicSlug(slug, {
+      label: 'Blog post slug',
+      namespace: 'blog',
+      reservedScope: 'entity',
+      isAvailable: async (candidate) => {
+        const ref = doc(db, 'blogs', candidate)
+        const snap = await getDoc(ref)
+        return !snap.exists()
+      },
+    })
 
     const fireux = useFireUXConfig()
     const sourceAppId = String(payload.source_app_id || fireux.appId || '').trim()
@@ -70,20 +71,20 @@ export function useBlogCreate() {
     ).trim()
     const data = {
       ...payload,
-      id: slug,
-      slug,
+      id: validatedSlug,
+      slug: validatedSlug,
       source_app_id: sourceAppId,
       source_ecosystem_id: sourceEcosystemId,
       owner_type: ownerType,
       owner_id: ownerId,
       visibility: payload.visibility || 'app',
-    } satisfies Omit<BlogPost, 'created' | 'updated'>
+    } as Omit<BlogPost, 'created' | 'updated'>
 
-    await setDocument<BlogPost>('blogs', slug, data as BlogPost, {
+    await setDocument<BlogPost>('blogs', validatedSlug, data as BlogPost, {
       creator: true,
     })
-    await upsertSeoIndexDoc('seo_index_blogs', slug, {
-      path: `/blog/${slug}`,
+    await upsertSeoIndexDoc('seo_index_blogs', validatedSlug, {
+      path: `/blog/${validatedSlug}`,
       isPublic: true,
     })
 

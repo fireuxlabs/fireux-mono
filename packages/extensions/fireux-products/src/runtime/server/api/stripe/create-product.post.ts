@@ -7,6 +7,7 @@ import {
   type H3Error,
 } from 'h3'
 import { createRequire } from 'node:module'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import { STRIPE_API_VERSION } from '../../stripe/version'
 
 export default defineEventHandler(async (event: H3Event) => {
@@ -122,7 +123,18 @@ export default defineEventHandler(async (event: H3Event) => {
     }
 
     const appId = String(product.source_app_id || product.appId || 'app').trim()
-    const slug = String(product.slug || product.name || 'product').trim()
+    const slugValidation = validatePublicSlug(product.slug, {
+      label: 'Product slug',
+      namespace: 'products',
+      reservedScope: 'entity',
+    })
+    if (!slugValidation.isValid) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: slugValidation.message || 'Product slug is required',
+      })
+    }
+    const slug = slugValidation.slug
     const baseIdempotency = `${appId}:${slug}`
 
     const loadAllProducts = async () => {
@@ -175,7 +187,7 @@ export default defineEventHandler(async (event: H3Event) => {
             metadata: {
               appId: product.appId || '',
               source_app_id: product.source_app_id || product.appId || '',
-              slug: product.slug || '',
+              slug,
             },
           },
           {
@@ -190,7 +202,7 @@ export default defineEventHandler(async (event: H3Event) => {
             description: product.description || '',
             'metadata[appId]': product.source_app_id || product.appId || '',
             'metadata[source_app_id]': product.source_app_id || product.appId || '',
-            'metadata[slug]': product.slug || '',
+            'metadata[slug]': slug,
           },
           `products:${baseIdempotency}`
         )

@@ -1,5 +1,6 @@
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate.ts'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import type { BlogPost } from '../../../../../models/blogPost.model'
 
 export function useBlogUpdate() {
@@ -10,7 +11,8 @@ export function useBlogUpdate() {
     postId: string,
     updates: Partial<BlogPost>
   ): Promise<boolean> {
-    if (!postId) {
+    const blogPostId = String(postId || '').trim()
+    if (!blogPostId) {
       throw new Error('No blog post ID provided.')
     }
 
@@ -18,13 +20,33 @@ export function useBlogUpdate() {
       throw new Error('Invalid update payload. Must be an object.')
     }
 
-    await updateDocument('blogs', postId, updates)
-    await upsertSeoIndexDoc('seo_index_blogs', postId, {
-      path: `/blog/${String(updates?.slug || postId).trim()}`,
+    const requestedSlug =
+      updates.slug === undefined ? blogPostId : String(updates.slug || '').trim()
+    const slugValidation = validatePublicSlug(requestedSlug, {
+      label: 'Blog post slug',
+      namespace: 'blog',
+      reservedScope: 'entity',
+    })
+
+    if (!slugValidation.isValid) {
+      throw new Error(slugValidation.message || 'Blog post slug is invalid')
+    }
+
+    if (slugValidation.slug !== blogPostId) {
+      throw new Error('Blog post slug must match blog post id.')
+    }
+
+    const nextUpdates = (
+      updates.slug === undefined ? updates : { ...updates, slug: blogPostId }
+    ) as Partial<BlogPost>
+
+    await updateDocument('blogs', blogPostId, nextUpdates)
+    await upsertSeoIndexDoc('seo_index_blogs', blogPostId, {
+      path: `/blog/${blogPostId}`,
       isPublic: true,
     })
     if (import.meta.dev) {
-      console.log(`✅ Blog post updated successfully: ${postId}`)
+      console.log(`✅ Blog post updated successfully: ${blogPostId}`)
     }
     return true
   }

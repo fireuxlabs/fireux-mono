@@ -1,10 +1,8 @@
 import type { BlogAuthor } from '../../../../../models/blogPost.model'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 
 function generateSlug(title: string): string {
-  let out = title.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-')
-  out = out.replaceAll(/^-+/g, '')
-  out = out.replaceAll(/-+$/g, '')
-  return out
+  return normalizeSlug(title)
 }
 
 function computeReadingTime(content: string): string {

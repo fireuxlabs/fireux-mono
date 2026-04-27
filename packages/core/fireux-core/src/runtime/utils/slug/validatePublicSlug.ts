@@ -11,12 +11,6 @@ import {
 
 export type PublicSlugReservedScope = 'entity' | 'root' | 'none'
 
-export type PublicRouteIdentityStrategy =
-  | 'slug-id'
-  | 'slug-alias'
-  | 'handle-index'
-  | 'id-only'
-
 export type ValidatePublicSlugOptions = NormalizeSlugOptions &
   ValidateSlugFormatOptions & {
     namespace?: string
