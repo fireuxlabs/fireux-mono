@@ -5,32 +5,14 @@
     </template>
 
     <template #body>
-      <section class="space-y-6">
-        <UAlert
-          v-if="!selectedSupplier"
-          color="neutral"
-          variant="soft"
-          title="No supplier selected"
-          description="Select a supplier on /console/supplier before opening the supplier catalogue."
-          :actions="[
-            {
-              label: 'Go to suppliers',
-              to: '/console/supplier',
-              icon: 'i-lucide-arrow-right',
-            },
-          ]"
-        />
-
-        <template v-else>
-          <ConsoleSupplierCatalogue />
-        </template>
+      <section class="space-y-4">
+        <ConsoleSupplierCatalogue />
       </section>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { useSupplierConsole } from '../../../composables/fireux/app/supplier-console/useSupplierConsole'
 
 definePageMeta({
   layout: 'console',
@@ -49,5 +31,4 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { selectedSupplier } = useSupplierConsole()
 </script>

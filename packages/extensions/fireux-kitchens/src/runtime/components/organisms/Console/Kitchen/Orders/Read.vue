@@ -1,33 +1,32 @@
 <template>
-  <ConsoleKitchenChildLayout
-    description="Selected kitchen and order collection in scope."
-    item-label="Orders"
-    :item-count="countLabel"
-    :pending="pending"
-    pending-title="Loading orders"
-    pending-description="Fetching orders for the selected kitchen."
-  >
-    <UCard>
-      <template #header>
-        <div class="console-card-header">
-          <div class="console-card-header__title">Orders</div>
-          <p class="console-card-header__description">
-            Browse current orders for the selected kitchen.
-          </p>
-        </div>
-      </template>
+  <UAlert
+    v-if="pending"
+    color="neutral"
+    variant="soft"
+    title="Loading orders"
+    description="Fetching orders for the selected kitchen."
+  />
 
-      <div v-if="orderCards.length" class="flex flex-wrap gap-3">
-        <OrganismsOrderCard
-          v-for="card in orderCards"
-          :key="card.id"
-          v-bind="card"
-        />
+  <UCard v-else>
+    <template #header>
+      <div class="console-card-header">
+        <div class="console-card-header__title">Orders</div>
+        <p class="console-card-header__description">
+          Browse current orders for the selected kitchen.
+        </p>
       </div>
+    </template>
 
-      <p v-else class="text-sm text-dimmed">No orders found.</p>
-    </UCard>
-  </ConsoleKitchenChildLayout>
+    <div v-if="orderCards.length" class="flex flex-wrap gap-3">
+      <OrganismsOrderCard
+        v-for="card in orderCards"
+        :key="card.id"
+        v-bind="card"
+      />
+    </div>
+
+    <p v-else class="text-sm text-dimmed">No orders found.</p>
+  </UCard>
 </template>
 
 <script setup lang="ts">
@@ -38,8 +37,6 @@ const props = defineProps<{
   orders: KitchenOrder[]
   pending: boolean
 }>()
-
-const countLabel = computed(() => String(props.orders.length))
 
 const toTimeLabel = (value: any) => {
   const seconds = Number(value?.seconds)

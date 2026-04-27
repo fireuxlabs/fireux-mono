@@ -1,19 +1,19 @@
 <template>
-  <ConsoleKitchenChildLayout
-    description="Selected kitchen and ingredient collection in scope."
-    item-label="Ingredients"
-    :item-count="countLabel"
-    :pending="pending"
-    pending-title="Loading ingredients"
-    pending-description="Fetching ingredients for the selected kitchen."
-  >
-    <OrganismsIngredientCollectionManager
-      :collection="ingredients"
-      title="Ingredients"
-      description="Browse ingredients for the selected kitchen."
-      :link="false"
-    />
-  </ConsoleKitchenChildLayout>
+  <UAlert
+    v-if="pending"
+    color="neutral"
+    variant="soft"
+    title="Loading ingredients"
+    description="Fetching ingredients for the selected kitchen."
+  />
+
+  <OrganismsIngredientCollectionManager
+    v-else
+    :collection="ingredients"
+    title="Ingredients"
+    description="Browse ingredients for the selected kitchen."
+    :link="false"
+  />
 </template>
 
 <script setup lang="ts">

@@ -1,19 +1,19 @@
 <template>
-  <ConsoleKitchenChildLayout
-    description="Selected kitchen and mise collection in scope."
-    item-label="Mise Tasks"
-    :item-count="countLabel"
-    :pending="pending"
-    pending-title="Loading mise tasks"
-    pending-description="Fetching mise tasks for the selected kitchen."
-  >
-    <OrganismsMiseCollectionManager
-      :collection="miseTasks"
-      title="Mise Tasks"
-      description="Browse mise tasks for the selected kitchen."
-      :link="false"
-    />
-  </ConsoleKitchenChildLayout>
+  <UAlert
+    v-if="pending"
+    color="neutral"
+    variant="soft"
+    title="Loading mise tasks"
+    description="Fetching mise tasks for the selected kitchen."
+  />
+
+  <OrganismsMiseCollectionManager
+    v-else
+    :collection="miseTasks"
+    title="Mise Tasks"
+    description="Browse mise tasks for the selected kitchen."
+    :link="false"
+  />
 </template>
 
 <script setup lang="ts">

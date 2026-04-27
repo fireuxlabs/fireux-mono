@@ -28,11 +28,13 @@ export function useSupplierConsoleCatalogue() {
     normalizeString(selectedSupplier.value?.catalogue_state)
   )
 
-  const demoCatalogueItems = computed(() =>
+  const catalogueItems = computed(() =>
     selectedMode.value === 'demo' && supplierId.value
       ? getDemoSupplierCatalogueItems(supplierId.value)
       : []
   )
+  const pending = computed(() => false)
+  const canWrite = computed(() => selectedMode.value === 'live')
 
   const isIntegratedCatalogue = computed(
     () => catalogueState.value === 'integrated'
@@ -70,6 +72,25 @@ export function useSupplierConsoleCatalogue() {
     return 'Live'
   })
 
+  const catalogueTitle = computed(() =>
+    supplierLabel.value ? `${supplierLabel.value} Catalogue` : 'Supplier Catalogue'
+  )
+
+  const catalogueDescription = computed(() => {
+    const parts = [
+      modeLabel.value,
+      `state: ${state.value || 'missing'}`,
+      `catalogue: ${catalogueState.value || 'missing'}`,
+      `${linkedIngredientIds.value.length} linked ingredients`,
+    ]
+
+    return parts.join(' · ')
+  })
+
+  const devJsonContext = computed(
+    () => `console supplier · catalogue · ${selectedMode.value}`
+  )
+
   const formatPrice = (valueMinor: number, currencyCode?: string) =>
     new Intl.NumberFormat('de-CH', {
       style: 'currency',
@@ -86,12 +107,17 @@ export function useSupplierConsoleCatalogue() {
     linkedIngredientIds,
     state,
     catalogueState,
-    demoCatalogueItems,
+    catalogueItems,
+    pending,
+    canWrite,
     isIntegratedCatalogue,
     isPublicOnlySupplier,
     emptyTitle,
     emptyDescription,
     modeLabel,
+    catalogueTitle,
+    catalogueDescription,
+    devJsonContext,
     formatPrice,
   }
 }

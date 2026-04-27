@@ -1,19 +1,19 @@
 <template>
-  <ConsoleKitchenChildLayout
-    description="Selected kitchen and menu collection in scope."
-    item-label="Menus"
-    :item-count="countLabel"
-    :pending="pending"
-    pending-title="Loading menus"
-    pending-description="Fetching menus for the selected kitchen."
-  >
-    <OrganismsMenuCollectionManager
-      :collection="menus"
-      title="Menus"
-      description="Browse menus for the selected kitchen."
-      :link="false"
-    />
-  </ConsoleKitchenChildLayout>
+  <UAlert
+    v-if="pending"
+    color="neutral"
+    variant="soft"
+    title="Loading menus"
+    description="Fetching menus for the selected kitchen."
+  />
+
+  <OrganismsMenuCollectionManager
+    v-else
+    :collection="menus"
+    title="Menus"
+    description="Browse menus for the selected kitchen."
+    :link="false"
+  />
 </template>
 
 <script setup lang="ts">

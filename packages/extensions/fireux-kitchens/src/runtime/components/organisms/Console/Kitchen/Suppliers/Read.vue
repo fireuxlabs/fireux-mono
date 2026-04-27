@@ -1,19 +1,19 @@
 <template>
-  <ConsoleKitchenChildLayout
-    description="Selected kitchen and supplier collection in scope."
-    item-label="Suppliers"
-    :item-count="countLabel"
-    :pending="pending"
-    pending-title="Loading suppliers"
-    pending-description="Fetching suppliers for the selected kitchen."
-  >
-    <OrganismsSupplierCollectionManager
-      :collection="suppliers"
-      title="Suppliers"
-      description="Browse suppliers for the selected kitchen."
-      :link="false"
-    />
-  </ConsoleKitchenChildLayout>
+  <UAlert
+    v-if="pending"
+    color="neutral"
+    variant="soft"
+    title="Loading suppliers"
+    description="Fetching suppliers for the selected kitchen."
+  />
+
+  <OrganismsSupplierCollectionManager
+    v-else
+    :collection="suppliers"
+    title="Suppliers"
+    description="Browse suppliers for the selected kitchen."
+    :link="false"
+  />
 </template>
 
 <script setup lang="ts">

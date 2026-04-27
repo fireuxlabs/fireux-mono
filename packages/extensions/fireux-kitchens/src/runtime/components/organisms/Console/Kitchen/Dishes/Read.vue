@@ -1,20 +1,20 @@
 <template>
-  <ConsoleKitchenChildLayout
-    description="Selected kitchen and dish collection in scope."
-    item-label="Dishes"
-    :item-count="countLabel"
-    :pending="pending"
-    pending-title="Loading dishes"
-    pending-description="Fetching dishes for the selected kitchen."
-  >
-    <OrganismsDishCollectionManager
-      :collection="dishes"
-      :sections="sections"
-      title="Dishes"
-      description="Browse dishes for the selected kitchen."
-      :link="false"
-    />
-  </ConsoleKitchenChildLayout>
+  <UAlert
+    v-if="pending"
+    color="neutral"
+    variant="soft"
+    title="Loading dishes"
+    description="Fetching dishes for the selected kitchen."
+  />
+
+  <OrganismsDishCollectionManager
+    v-else
+    :collection="dishes"
+    :sections="sections"
+    title="Dishes"
+    description="Browse dishes for the selected kitchen."
+    :link="false"
+  />
 </template>
 
 <script setup lang="ts">
