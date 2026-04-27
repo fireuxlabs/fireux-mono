@@ -1,20 +1,12 @@
 import {
   csv,
-  firstNonEmptyString,
-  resolveProfileBadges,
-  resolveProfileImage,
-  resolveProfileSummary,
   safeString,
   safeStringArray,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { User } from 'fireux-core/runtime/models/core/user.model'
-import type { Ref } from 'vue'
 import type { Supplier } from '../../../../../../models/supplier/Supplier.model'
 import type { SupplierRefs } from '../../fetch/useSupplierRecord'
 
 const supplierCollection = 'suppliers'
-type UserLike = Pick<User, 'avatar'>
-type SupplierTarget = SupplierSurface & { user?: UserLike | null }
 
 export namespace SupplierCard {
   export type Card = {
@@ -36,93 +28,38 @@ export namespace SupplierCard {
   }
 }
 
-export type SupplierSurface = Partial<Supplier> & {
-  supplier_id?: string
-  source_supplier_id?: string
-  name?: string
-  short_name?: string
-  category?: string
-  image?: string
-  image_url?: string
-  logo_url?: string
-  avatar_url?: string
-}
+export type SupplierSurface = Partial<Supplier>
 
-const firstArrayValue = (value: unknown): string =>
-  firstNonEmptyString(Array.isArray(value) ? value : [])
-
-export function useSupplierInterface(
-  supplier?: SupplierRefs | null,
-  userRef?: Ref<User | null | undefined>
-) {
+export function useSupplierInterface(supplier?: SupplierRefs | null) {
   type SupplierPill = SupplierCard.Card
   type SupplierCell = SupplierCard.Card
   type SupplierPreview = SupplierCard.Card
   type SupplierProfile = SupplierCard.Card
 
-  function resolveUser(
-    target?: SupplierTarget | null | undefined,
-    userOverride?: UserLike | null
-  ): UserLike | null {
-    if (userOverride) return userOverride
-    if (target && 'user' in target && target.user) return target.user
-    return userRef?.value ?? null
-  }
-
-  function map(
-    target: SupplierSurface,
-    user?: UserLike | null
-  ): SupplierCard.Card {
-    const id = firstNonEmptyString([
-      target.supplier_id,
-      target.source_supplier_id,
-      target.id,
-    ])
-    const organizationName = firstNonEmptyString([
-      target.supplier_organization_name,
-      target.name,
-      target.short_name,
-      id,
-    ])
-    const badges = resolveProfileBadges([target.supplier_product_categories])
+  function map(target: SupplierSurface): SupplierCard.Card {
+    const id = safeString(target.id).trim()
+    const organizationName = safeString(target.supplier_organization_name)
+    const badges = safeStringArray(target.supplier_product_categories)
     const deliveryAreas = safeStringArray(target.supplier_delivery_areas)
-    const headline = firstNonEmptyString([target.supplier_headline])
-    const summary = resolveProfileSummary([target.summary, target.supplier_bio])
-    const primaryAvatar =
-      resolveProfileImage([
-        target.image,
-        target.supplier_image,
-        target.image_url,
-        target.logo_url,
-        target.avatar_url,
-        user?.avatar,
-      ])
+    const headline = safeString(target.supplier_headline)
+    const summary = safeString(target.summary)
+    const imageUrl = safeString(target.supplier_image)
     const categoriesCsv = csv(badges)
     const locationsLabel = deliveryAreas.join(', ')
-    const categoryLabel = firstNonEmptyString([
-      target.category,
-      firstArrayValue(target.supplier_product_categories),
-    ])
-    const title = firstNonEmptyString([organizationName, id])
-    const subtitle = firstNonEmptyString([
-      headline,
-      locationsLabel,
-      categoryLabel,
-    ])
 
     return {
       id,
       to: id ? `/${supplierCollection}/${encodeURIComponent(id)}` : '',
-      imageUrl: primaryAvatar,
-      avatarUrl: primaryAvatar,
-      title,
-      subtitle,
+      imageUrl,
+      avatarUrl: imageUrl,
+      title: organizationName,
+      subtitle: headline,
       badges,
       organizationName,
       locationsLabel,
       summary,
       status: safeString(target.state),
-      shortName: safeString(target.short_name),
+      shortName: '',
       ownerLabel: organizationName,
       locationLabel: locationsLabel,
       categoriesCsv: categoriesCsv || undefined,
@@ -130,47 +67,39 @@ export function useSupplierInterface(
   }
 
   function buildInterface(
-    target?: SupplierSurface | null | undefined,
-    userOverride?: UserLike | null
+    target?: SupplierSurface | null | undefined
   ): SupplierCard.Card | null {
     const source = target ?? supplier?.coreSupplier.value ?? null
     if (!source) return null
 
-    const mapped = map(
-      source,
-      resolveUser(source as SupplierTarget, userOverride)
-    )
+    const mapped = map(source)
     return mapped.id ? mapped : null
   }
 
   const toInterface = buildInterface
 
   function pill(
-    target?: SupplierSurface | null | undefined,
-    userOverride?: UserLike | null
+    target?: SupplierSurface | null | undefined
   ): SupplierPill | null {
-    return buildInterface(target, userOverride)
+    return buildInterface(target)
   }
 
   function cell(
-    target?: SupplierSurface | null | undefined,
-    userOverride?: UserLike | null
+    target?: SupplierSurface | null | undefined
   ): SupplierCell | null {
-    return buildInterface(target, userOverride)
+    return buildInterface(target)
   }
 
   function preview(
-    target?: SupplierSurface | null | undefined,
-    userOverride?: UserLike | null
+    target?: SupplierSurface | null | undefined
   ): SupplierPreview | null {
-    return buildInterface(target, userOverride)
+    return buildInterface(target)
   }
 
   function profile(
-    target?: SupplierSurface | null | undefined,
-    userOverride?: UserLike | null
+    target?: SupplierSurface | null | undefined
   ): SupplierProfile | null {
-    return buildInterface(target, userOverride)
+    return buildInterface(target)
   }
 
   return {

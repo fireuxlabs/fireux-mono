@@ -51,9 +51,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import type { ProductCard } from '../../../../composables/fireux/firestore/product/utils/view/useProductInterface';
-import type { FirebaseProduct } from '../../../../models/product.model';
+import { computed } from 'vue'
+import type { ProductCard } from '../../../../composables/fireux/firestore/product/utils/view/useProductInterface'
+import type { FirebaseProduct } from '../../../../models/product.model'
 
 const props = defineProps<{
   card: ProductCard.Card
@@ -62,14 +62,10 @@ const props = defineProps<{
   product?: FirebaseProduct | null
 }>()
 
-const title = computed(() => props.card.title || props.card.name)
-const subtitle = computed(() => props.card.subtitle || props.card.description)
-const avatar = computed(
-  () => props.avatar ?? props.card.avatarUrl ?? props.card.imageUrl ?? null
-)
-const description = computed(
-  () => props.card.description || props.product?.description || ''
-)
+const title = computed(() => props.card.title)
+const subtitle = computed(() => props.card.subtitle || undefined)
+const avatar = computed(() => props.avatar ?? props.card.avatarUrl ?? null)
+const description = computed(() => props.card.description)
 const content = computed(() =>
   props.product?.content ? String(props.product.content).trim() : ''
 )

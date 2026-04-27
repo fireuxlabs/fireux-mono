@@ -3,7 +3,10 @@ import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firesto
 import type { FirebaseProduct } from '../../../../models/product.model'
 
 export function useProductUpdate() {
-  const base = useDocumentUpdateBase<FirebaseProduct>('products', { resolvePath: true })
+  const base = useDocumentUpdateBase<FirebaseProduct>('products', {
+    resolvePath: true,
+    appScoped: false,
+  })
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
 
   async function updateProduct(

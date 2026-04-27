@@ -26,12 +26,12 @@
 
         <div v-if="showBody" class="preview__body">
           <div class="preview__line">
-            <span v-if="prop || summary">{{ prop || summary }}</span>
+            <span v-if="summary">{{ summary }}</span>
             <span v-else class="italic">missing</span>
           </div>
 
           <div class="preview__line text-dimmed">
-            <span v-if="categoriesCsv || locationsLabel">{{ categoriesCsv || locationsLabel }}</span>
+            <span v-if="categoriesCsv">{{ categoriesCsv }}</span>
             <span v-else class="italic">missing</span>
           </div>
         </div>

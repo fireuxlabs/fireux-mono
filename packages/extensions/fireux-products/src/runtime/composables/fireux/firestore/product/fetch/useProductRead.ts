@@ -4,7 +4,7 @@ import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/fire
 /** Fetch a single product by id/slug. */
 export function useProductRead() {
   const { firestoreFetchDoc, getCollectionPath } = useFirestoreManager()
-  const collectionPath = getCollectionPath('products')
+  const collectionPath = getCollectionPath('products', false)
 
   const fetchProduct = (id: string) =>
     firestoreFetchDoc<FirebaseProduct>(collectionPath, id)

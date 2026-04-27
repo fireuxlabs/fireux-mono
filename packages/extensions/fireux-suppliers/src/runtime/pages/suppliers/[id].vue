@@ -75,7 +75,6 @@
 
 <script setup lang="ts">
 import { navigateTo, useHead, useRoute, useSeoMeta } from '#imports'
-import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, ref } from 'vue'
@@ -102,23 +101,11 @@ const supplierRecord = computed<any>(
   () => (rawDoc as any)?.value ?? rawDoc ?? null
 )
 const loading = computed(() => !rawDoc && !!docId)
-const userRefs = useUserFetch(computed(() => docId || null))
-const { profile: supplierToProfile } = useSupplierInterface(null, userRefs.user)
+const { profile: supplierToProfile } = useSupplierInterface()
 const supplierCard = computed(() => supplierToProfile(supplierRecord.value))
 
-const resolveName = (p: any) =>
-  p?.supplier_organization_name ||
-  p?.supplier_headline ||
-  p?.display_name ||
-  p?.name ||
-  p?.agency_name ||
-  p?.company_name ||
-  p?.business_name ||
-  p?.professional_name ||
-  'Supplier'
-
 const displayName = computed(() =>
-  supplierRecord.value ? resolveName(supplierRecord.value) : null
+  supplierCard.value?.title || docId || null
 )
 const pageTitle = computed(() => displayName.value ?? 'Supplier')
 const pageDescription = computed(() =>

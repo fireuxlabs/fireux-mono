@@ -73,9 +73,9 @@ export function useProductInterface() {
 
   function map(product: FirebaseProduct): ProductCard.Card {
     const imageUrl =
-      safeString(product.main_image) || safeString(product.images?.[0]?.url)
+      safeString(product.main_image) ||
+      safeString(product.images?.[0]?.url)
     const id = safeString(product.id).trim()
-    const slug = safeString(product.slug).trim() || id
     const name = safeString(product.name)
     const tagline = safeString(product.tagline)
     const description = safeString(product.description)
@@ -83,21 +83,21 @@ export function useProductInterface() {
     const solutionIds = new Set(['fireux-app', 'fireux-template'])
     const to =
       productType === 'module'
-        ? `/modules/${slug}`
-        : solutionIds.has(slug) ||
+        ? `/modules/${id}`
+        : solutionIds.has(id) ||
             productType === 'saas_app' ||
             productType === 'template'
-          ? `/solutions/${slug}`
-          : `/products/${slug}`
+          ? `/solutions/${id}`
+          : `/products/${id}`
 
     return {
       id,
-      to: slug ? to : '',
+      to: id ? to : '',
 
       avatarUrl: imageUrl,
       imageUrl,
       title: name,
-      subtitle: tagline || description,
+      subtitle: tagline,
       summary: description,
       status: productType,
 

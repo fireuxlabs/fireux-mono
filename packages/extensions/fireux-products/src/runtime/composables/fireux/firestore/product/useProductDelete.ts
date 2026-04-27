@@ -6,7 +6,7 @@ export function useProductDelete() {
   const { deleteDocument, getCollectionPath } = useFirestoreManager()
   const { deleteSeoIndexDoc } = useSeoIndexWrite()
   const currentUser = useCurrentUser()
-  const collectionPath = getCollectionPath('products')
+  const collectionPath = getCollectionPath('products', false)
 
   async function deleteProduct(slug: string): Promise<boolean> {
     if (!slug) {

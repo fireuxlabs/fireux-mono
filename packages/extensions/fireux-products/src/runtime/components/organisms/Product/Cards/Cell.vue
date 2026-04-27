@@ -32,8 +32,8 @@
           </div>
         </div>
 
-        <div v-if="showMeta && record.description" class="truncate text-xs text-dimmed">
-          {{ record.description }}
+        <div v-if="showMeta && metaText" class="truncate text-xs text-dimmed">
+          {{ metaText }}
         </div>
 
         <div v-if="showTagline" class="truncate text-xs text-dimmed">
@@ -76,6 +76,12 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const record = computed(() => props.card ?? props)
+const metaText = computed(() => {
+  const description = String(record.value.description || '').trim()
+  const subtitle = String(record.value.subtitle || '').trim()
+  if (!description) return ''
+  return description === subtitle ? '' : description
+})
 
 const onClick = (event?: MouseEvent) => {
   if (props.action) {

@@ -59,6 +59,21 @@
               :placeholder="searchPlaceholder"
             />
 
+            <UButton
+              v-if="showVariantToggle"
+              size="xs"
+              variant="ghost"
+              :icon="
+                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
+              "
+              :aria-label="
+                variant === 'pill'
+                  ? 'Switch to list view'
+                  : 'Switch to grid view'
+              "
+              @click="toggleVariant"
+            />
+
             <UBadge v-if="showCount" variant="soft">
               {{ countLabel }}
             </UBadge>
@@ -186,6 +201,7 @@ const linkEnabled = computed(() => props.link !== false)
 const actionEnabled = computed(() => props.action === true)
 const showFilterToggle = computed(() => props.showFilterToggle === true)
 const showSourceToggle = computed(() => props.showSourceToggle === true)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showBadges = computed(() => props.showBadges !== false)
 const devJsonTitle = computed(() =>
   String(props.devJsonTitle || 'Kitchens (JSON)').trim()
@@ -205,7 +221,7 @@ const collection = computed<Kitchen[]>(() =>
   rawCollection.value.filter((row): row is Kitchen => Boolean(makeCard(row)))
 )
 
-const { query, variant, visibleItems, visibleCount } =
+const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<Kitchen, NonNullable<ReturnType<typeof makeCard>>>({
     items: collection,
     makeCard: (kitchen: Kitchen) => makeCard(kitchen),

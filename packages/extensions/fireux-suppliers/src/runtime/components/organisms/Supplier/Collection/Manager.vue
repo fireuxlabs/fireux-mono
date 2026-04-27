@@ -59,6 +59,21 @@
               :placeholder="searchPlaceholder"
             />
 
+            <UButton
+              v-if="showVariantToggle"
+              size="xs"
+              variant="ghost"
+              :icon="
+                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
+              "
+              :aria-label="
+                variant === 'pill'
+                  ? 'Switch to list view'
+                  : 'Switch to grid view'
+              "
+              @click="toggleVariant"
+            />
+
             <UBadge v-if="showCount" variant="soft">
               {{ countLabel }}
             </UBadge>
@@ -114,11 +129,9 @@ import { computed } from 'vue'
 import type { Supplier } from '../../../../models/supplier/Supplier.model'
 import { useSupplierInterface } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
-type SupplierEntry = Supplier & { user?: unknown }
-
 const props = withDefaults(
   defineProps<{
-    collection?: SupplierEntry[]
+    collection?: Supplier[]
     filterMode?: 'all' | 'mine'
     sourceMode?: 'live' | 'demo' | 'test'
     title?: string
@@ -189,6 +202,7 @@ const showSearch = computed(() => props.showSearch !== false)
 const showCount = computed(() => props.showCount !== false)
 const showFilterToggle = computed(() => props.showFilterToggle === true)
 const showSourceToggle = computed(() => props.showSourceToggle === true)
+const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showSearchInput = computed(
   () => showSearch.value && totalCount.value > 15
 )
@@ -206,34 +220,31 @@ const {
   cell: makeCell,
 } = useSupplierInterface()
 
-const collection = computed<SupplierEntry[]>(() =>
-  rawCollection.value.filter((entry): entry is SupplierEntry =>
-    Boolean(makeCard(entry as Supplier, (entry as any)?.user ?? null))
+const collection = computed<Supplier[]>(() =>
+  rawCollection.value.filter((entry): entry is Supplier =>
+    Boolean(makeCard(entry as Supplier))
   )
 )
 const totalCount = computed(() => collection.value.length)
 
-const { query, variant, visibleItems, visibleCount } =
-  useCollectionSearch<SupplierEntry, NonNullable<ReturnType<typeof makeCard>>>({
+const { query, variant, toggleVariant, visibleItems, visibleCount } =
+  useCollectionSearch<Supplier, NonNullable<ReturnType<typeof makeCard>>>({
     items: collection,
-    makeCard: (entry) =>
-      makeCard(entry as Supplier, (entry as any)?.user ?? null),
+    makeCard: (entry) => makeCard(entry),
     initialVariant: props.initialVariant,
   })
 
 const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
   visibleItems.value
     .map((entry) => {
-      const user = (entry as any)?.user ?? null
-
       if (variant.value === 'cell') {
-        const base = makeCard(entry as Supplier, user)
-        const cell = makeCell(entry as Supplier, user)
+        const base = makeCard(entry)
+        const cell = makeCell(entry)
         if (!base || !cell) return null
         return { ...base, ...cell }
       }
 
-      return makePill(entry as Supplier, user)
+      return makePill(entry)
     })
     .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
       Boolean(card)

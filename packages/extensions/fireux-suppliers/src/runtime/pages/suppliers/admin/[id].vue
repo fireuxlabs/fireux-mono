@@ -62,7 +62,6 @@
 
 <script setup lang="ts">
 import { useConsoleProfileView } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleProfileView'
-import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useSupplierInterface } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
@@ -85,15 +84,13 @@ const userId = computed(() => {
   return String(raw ?? '').trim() || null
 })
 
-const userRefs = useUserFetch(userId)
 const { coreSupplier, appSupplier, pending } = useSupplierRecord(userId)
 
 const { profile: makeCard } = useSupplierInterface(
   {
     coreSupplier,
     appSupplier,
-  },
-  userRefs.user
+  }
 )
 
 const isSupplierLoading = computed(

@@ -1,13 +1,7 @@
 import type { Portfolio } from '../../../../../../models/portfolio.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
-const DEFAULT_PORTFOLIO_IMAGE = '/img/core/brand/logo.png'
-
-export type PortfolioSurface = Partial<Portfolio> & {
-  id?: string
-  image_url?: string
-  avatar_url?: string
-}
+export type PortfolioSurface = Partial<Portfolio>
 
 export namespace PortfolioCard {
   export type Card = {
@@ -39,23 +33,19 @@ export function usePortfolioInterface() {
     const ownerLabel = safeString(portfolio.owner_label)
     const status = safeString(portfolio.status)
     const regionLabel = safeString(portfolio.region_label)
-    const imageUrl =
-      safeString(portfolio.image_url) ||
-      safeString(portfolio.avatar_url) ||
-      DEFAULT_PORTFOLIO_IMAGE
 
     return {
       id,
-      to: id ? `/console/portfolio` : '',
-      imageUrl,
-      avatarUrl: imageUrl,
+      to: id ? `/portfolios/${encodeURIComponent(id)}` : '',
+      imageUrl: '',
+      avatarUrl: '',
       title: name,
       subtitle: regionLabel,
       badges: [],
-      summary: '',
+      summary: safeString(portfolio.notes),
       ownerLabel,
       status,
-      shortName: '',
+      shortName: safeString(portfolio.slug),
       locationLabel: regionLabel,
       regionLabel,
     }

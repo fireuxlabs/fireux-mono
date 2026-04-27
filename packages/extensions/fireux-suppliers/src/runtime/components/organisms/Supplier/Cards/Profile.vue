@@ -87,7 +87,7 @@ const resolvedCard = computed<SupplierCard.Card | null>(() => {
 const vm = computed(() => {
   const card = resolvedCard.value
 
-  const title = props.title ?? card?.title ?? 'Supplier'
+  const title = props.title ?? card?.title ?? ''
   const subtitle = props.subtitle ?? (card?.subtitle || undefined)
   const avatar = props.avatar ?? (card?.avatarUrl || null)
   const badges = card?.badges ?? []

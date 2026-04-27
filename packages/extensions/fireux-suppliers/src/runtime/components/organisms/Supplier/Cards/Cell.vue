@@ -32,7 +32,7 @@
         </div>
 
         <div v-if="showTagline" class="truncate text-xs text-dimmed">
-          <span v-if="prop || summary">{{ prop || summary }}</span>
+          <span v-if="summary">{{ summary }}</span>
           <span v-else class="italic">missing</span>
         </div>
       </div>
@@ -72,7 +72,7 @@
         </div>
 
         <div v-if="showTagline" class="truncate text-xs text-dimmed">
-          <span v-if="prop || summary">{{ prop || summary }}</span>
+          <span v-if="summary">{{ summary }}</span>
           <span v-else class="italic">missing</span>
         </div>
       </div>

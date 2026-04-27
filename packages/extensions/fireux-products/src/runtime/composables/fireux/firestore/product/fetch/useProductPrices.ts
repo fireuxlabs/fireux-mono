@@ -7,7 +7,7 @@ export function useProductPrices() {
 
   const fetchProductPrices = async (productId: string): Promise<ProductPrice[]> => {
     if (!productId) return []
-    const collectionName = getCollectionPath('products')
+    const collectionName = getCollectionPath('products', false)
     return firestoreFetchSubcollection<ProductPrice>(
       collectionName,
       productId,

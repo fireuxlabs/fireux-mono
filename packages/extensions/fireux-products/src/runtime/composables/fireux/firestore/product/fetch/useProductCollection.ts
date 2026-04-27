@@ -5,7 +5,7 @@ import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/fire
 /** Fetches the products collection for the current runtime scope. */
 export function useProductCollection() {
   const { firestoreFetchCollection, getCollectionPath } = useFirestoreManager()
-  const collectionPath = getCollectionPath('products')
+  const collectionPath = getCollectionPath('products', false)
   const products = firestoreFetchCollection<FirebaseProduct>(collectionPath)
   const pending = computed(() => products.value === undefined)
   return { products, pending }

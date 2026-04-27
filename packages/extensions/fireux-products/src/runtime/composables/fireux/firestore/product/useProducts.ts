@@ -15,7 +15,7 @@ export function useProducts() {
     firestoreFetchSubcollection,
   } = useFirestoreManager()
 
-  const collectionPath = getCollectionPath('products')
+  const collectionPath = getCollectionPath('products', false)
   const productsCollection =
     firestoreFetchCollection<FirebaseProduct>(collectionPath)
 
@@ -27,7 +27,7 @@ export function useProducts() {
 
   const fetchProductPrices = async (productId: string): Promise<ProductPrice[]> => {
     if (!productId) return []
-    const collectionName = getCollectionPath('products')
+    const collectionName = getCollectionPath('products', false)
     return firestoreFetchSubcollection<ProductPrice>(
       collectionName,
       productId,

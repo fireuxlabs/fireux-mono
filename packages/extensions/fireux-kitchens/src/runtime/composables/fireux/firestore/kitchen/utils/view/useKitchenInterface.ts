@@ -67,20 +67,17 @@ export type KitchenSurface = {
 }
 
 const resolveKitchenPath = (target: {
-  slug?: string
   id?: string
   route_scope?: 'live' | 'demo' | 'test'
 }) => {
-  const slug = safeString(target.slug)
   const id = safeString(target.id)
-  const key = slug || id
-  if (!key) return ''
+  if (!id) return ''
 
   if (target.route_scope === 'demo') {
-    return `/demo/kitchens/${encodeURIComponent(key)}`
+    return `/demo/kitchens/${encodeURIComponent(id)}`
   }
 
-  return `/kitchens/${encodeURIComponent(key)}`
+  return `/kitchens/${encodeURIComponent(id)}`
 }
 
 export function useKitchenInterface() {
@@ -105,7 +102,6 @@ export function useKitchenInterface() {
 
   function map(kitchen: KitchenSurface): KitchenCard.Card {
     const id = safeString(kitchen.id).trim()
-    const slug = safeString(kitchen.slug).trim()
     const name = safeString(kitchen.name)
     const shortName = safeString(kitchen.short_name)
     const shortAddress = safeString(kitchen.short_address)
@@ -114,7 +110,7 @@ export function useKitchenInterface() {
 
     return {
       id,
-      to: resolveKitchenPath({ slug, id, route_scope: kitchen.route_scope }),
+      to: resolveKitchenPath({ id, route_scope: kitchen.route_scope }),
 
       title: name,
       subtitle: shortAddress,

@@ -154,7 +154,7 @@ const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
 
 const isDev = import.meta.dev
 const { getCollectionPath } = useFirestoreManager()
-const productCollectionRoot = getCollectionPath('products')
+const productCollectionRoot = getCollectionPath('products', false)
 const devJsonContext = computed(
   () => `collection manager · products · root: ${productCollectionRoot}`
 )

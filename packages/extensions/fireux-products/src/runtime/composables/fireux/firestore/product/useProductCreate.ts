@@ -52,7 +52,7 @@ export function useProductCreate() {
   const { pricesPayload } = useCreatePricesState()
   const fireux = useFireUXConfig()
 
-  const collectionPath = getCollectionPath('products')
+  const collectionPath = getCollectionPath('products', false)
 
   const resolveAvailableSlug = async (baseSlug: string) => {
     let attempt = 0
