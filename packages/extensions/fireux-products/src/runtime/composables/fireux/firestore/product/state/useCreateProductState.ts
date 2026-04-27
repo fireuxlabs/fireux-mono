@@ -2,6 +2,7 @@ import { useStorage } from '@vueuse/core'
 import { onMounted, ref, watch } from 'vue'
 import { useRuntimeConfig } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type { FirebaseProduct } from '../../../../../models/product.model'
 
 type ProductDraft = Partial<FirebaseProduct> & {
@@ -10,14 +11,6 @@ type ProductDraft = Partial<FirebaseProduct> & {
 
 const STORAGE_KEY = 'createProduct'
 const IMAGE_KEY = 'createProductMainImageData'
-
-function toSlug(name: string) {
-  const base = name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '')
-  return base
-}
 
 export function useCreateProductState() {
   const { appId: tenantId } = useFireUXConfig()
@@ -84,7 +77,7 @@ export function useCreateProductState() {
         return
       }
 
-      const slug = toSlug(newName)
+      const slug = normalizeSlug(newName)
       product.value.slug = slug
       isSlugTaken.value = false
     },

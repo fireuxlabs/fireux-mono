@@ -1,5 +1,5 @@
 import { useRuntimeConfig } from '#imports'
-import { getReservedRouteKeys } from '../../../../../../../../config/module/reserved-route-keys'
+import { validatePublicSlug } from '../../../../../../../utils/slug/validatePublicSlug'
 
 const normalizeKey = (value: unknown): string =>
   String(value ?? '')
@@ -17,13 +17,11 @@ function getRuntimeReservedRouteKeys(): string[] {
 }
 
 export function isVetoedHandle(handle: string): boolean {
-  const key = normalizeKey(handle)
-  if (!key) return false
+  const result = validatePublicSlug(handle, {
+    required: false,
+    reservedScope: 'root',
+    runtimeReservedRouteKeys: getRuntimeReservedRouteKeys(),
+  })
 
-  const merged = new Set<string>(getReservedRouteKeys().map(normalizeKey).filter(Boolean))
-  for (const runtimeKey of getRuntimeReservedRouteKeys()) {
-    merged.add(runtimeKey)
-  }
-
-  return merged.has(key)
+  return result.reason === 'reserved'
 }

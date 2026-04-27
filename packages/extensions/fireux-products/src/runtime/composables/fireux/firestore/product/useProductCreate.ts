@@ -3,6 +3,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import type {
   FirebaseProduct,
   ProductPrice,
@@ -54,17 +55,10 @@ export function useProductCreate() {
 
   const collectionPath = getCollectionPath('products', false)
 
-  const resolveAvailableSlug = async (baseSlug: string) => {
-    let attempt = 0
-    let candidate = baseSlug
-    while (attempt < 100) {
-      const checkRef = doc(db, collectionPath, candidate)
-      const checkSnap = await getDoc(checkRef)
-      if (!checkSnap.exists()) return candidate
-      attempt += 1
-      candidate = `${baseSlug}-${attempt + 1}`
-    }
-    throw new Error('Unable to allocate unique slug')
+  const isProductSlugAvailable = async (slug: string) => {
+    const checkRef = doc(db, collectionPath, slug)
+    const checkSnap = await getDoc(checkRef)
+    return !checkSnap.exists()
   }
 
   const normalizePrices = (
@@ -121,7 +115,12 @@ export function useProductCreate() {
         throw new Error('Product slug is required')
       }
 
-      const slug = await resolveAvailableSlug(requestedSlug)
+      const slug = await assertPublicSlug(requestedSlug, {
+        label: 'Product slug',
+        namespace: 'products',
+        reservedScope: 'entity',
+        isAvailable: isProductSlugAvailable,
+      })
       const normalizedPriceInputs = input.priceInputs.map((price) => ({
         ...price,
         currency: String(price.currency || 'usd').toLowerCase(),

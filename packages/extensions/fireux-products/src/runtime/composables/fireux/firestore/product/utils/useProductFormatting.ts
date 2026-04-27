@@ -4,17 +4,15 @@ import type {
 } from '../../../../../models/product.model'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 
 export function useProductFormatting() {
   const { uploadImage } = useImageStorage()
   const { firestoreFetchDoc } = useFirestoreManager()
 
   function formatSlug(slug: string): string {
-    return slug
-      .toLowerCase()
-      .replace(/[^a-z0-9-]/g, '')
-      .replace(/--+/g, '-')
-      .replace(/(^-|-$)/g, '')
+    return normalizeSlug(slug)
   }
 
   function formatProductData(
@@ -45,16 +43,24 @@ export function useProductFormatting() {
   async function buildSlugIfUnique(
     title: string,
     collectionName: string,
-    tenantId?: string
+    _tenantId?: string
   ): Promise<
     { success: true; slug: string } | { success: false; message: string }
   > {
-    const base = title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '')
+    const validation = validatePublicSlug(title, {
+      label: 'Product slug',
+      namespace: 'products',
+      reservedScope: 'entity',
+    })
 
-    const slug = tenantId ? `${tenantId}-${base}` : base
+    if (!validation.isValid) {
+      return {
+        success: false,
+        message: validation.message || 'Product slug is invalid',
+      }
+    }
+
+    const slug = validation.slug
     const existing = await firestoreFetchDoc(collectionName, slug)
     if (existing) {
       return { success: false, message: `Slug "${slug}" is already taken.` }

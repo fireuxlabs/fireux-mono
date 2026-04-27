@@ -1,5 +1,6 @@
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 
 export function useProductUtils() {
   const { uploadImage } = useImageStorage()
@@ -8,15 +9,24 @@ export function useProductUtils() {
   async function buildSlugIfUnique(
     title: string,
     collectionName: string,
-    tenantId?: string
+    _tenantId?: string
   ): Promise<
     { success: true; slug: string } | { success: false; message: string }
   > {
-    const base = title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '')
-    const slug = tenantId ? `${tenantId}-${base}` : base
+    const validation = validatePublicSlug(title, {
+      label: 'Product slug',
+      namespace: 'products',
+      reservedScope: 'entity',
+    })
+
+    if (!validation.isValid) {
+      return {
+        success: false,
+        message: validation.message || 'Product slug is invalid',
+      }
+    }
+
+    const slug = validation.slug
 
     const existing = await firestoreFetchDoc(collectionName, slug)
     if (existing) {

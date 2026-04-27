@@ -1,4 +1,5 @@
 import { useRuntimeConfig } from '#imports'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import type { FirebaseProduct } from '../../../../../models/product.model'
 
 export function useProductValidation() {
@@ -25,10 +26,15 @@ export function useProductValidation() {
       errors.push('Product description must be 1000 characters or less')
     }
 
-    if (product.slug && !isValidSlug(product.slug)) {
-      errors.push(
-        'Slug must contain only lowercase letters, numbers, and hyphens'
-      )
+    if (product.slug) {
+      const slugValidation = validatePublicSlug(product.slug, {
+        label: 'Product slug',
+        namespace: 'products',
+        reservedScope: 'entity',
+      })
+      if (!slugValidation.isValid) {
+        errors.push(slugValidation.message || 'Product slug is invalid')
+      }
     }
 
     if (product.prices && product.prices.length === 0) {
@@ -60,8 +66,11 @@ export function useProductValidation() {
   }
 
   function isValidSlug(slug: string): boolean {
-    const slugRegex = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
-    return slugRegex.test(slug)
+    return validatePublicSlug(slug, {
+      label: 'Product slug',
+      namespace: 'products',
+      reservedScope: 'entity',
+    }).isValid
   }
 
   function isValidUrl(url: string): boolean {

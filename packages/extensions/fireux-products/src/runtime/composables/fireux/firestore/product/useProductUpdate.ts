@@ -1,5 +1,6 @@
 import { useDocumentUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/operations/useDocumentUpdateBase'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import type { FirebaseProduct } from '../../../../models/product.model'
 
 export function useProductUpdate() {
@@ -13,16 +14,39 @@ export function useProductUpdate() {
     id: string,
     updates: Partial<FirebaseProduct>
   ): Promise<boolean> {
-    await base.updateById(id, updates)
-    const nextPathSegment = String(updates?.slug || id || '').trim()
-    if (nextPathSegment) {
-      await upsertSeoIndexDoc('seo_index_products', id, {
-        path: `/products/${nextPathSegment}`,
+    const productId = String(id || '').trim()
+    if (!productId) {
+      throw new Error('Product id is required')
+    }
+
+    const requestedSlug =
+      updates.slug === undefined ? productId : String(updates.slug || '').trim()
+    const slugValidation = validatePublicSlug(requestedSlug, {
+      label: 'Product slug',
+      namespace: 'products',
+      reservedScope: 'entity',
+    })
+
+    if (!slugValidation.isValid) {
+      throw new Error(slugValidation.message || 'Product slug is invalid')
+    }
+
+    if (slugValidation.slug !== productId) {
+      throw new Error('Product slug must match product id.')
+    }
+
+    const nextUpdates =
+      updates.slug === undefined ? updates : { ...updates, slug: productId }
+
+    await base.updateById(productId, nextUpdates)
+    if (productId) {
+      await upsertSeoIndexDoc('seo_index_products', productId, {
+        path: `/products/${productId}`,
         isPublic:
           typeof updates?.active === 'boolean' ? updates.active : undefined,
       })
     }
-    console.log('🧩 [Stub] updateProduct', { id, updates })
+    console.log('🧩 [Stub] updateProduct', { id: productId, updates: nextUpdates })
     return true
   }
 
