@@ -4,7 +4,7 @@
 // FILE: demo/product.demo.ts
 
 import { useProductInterface } from 'fireux-products/runtime/composables/fireux/firestore/product/utils/view/useProductInterface'
-import type { FirebaseProduct } from 'fireux-products/runtime/models/product.model'
+import type { FirebaseProduct, ProductPrice } from 'fireux-products/runtime/models/product.model'
 import { FirebaseProduct as ProductModelRuntime } from 'fireux-products/runtime/models/product.model'
 
 const createModule = (input: {
@@ -21,56 +21,69 @@ const createModule = (input: {
   packageName: string
   ecosystem: string
   appId: string
-}) : FirebaseProduct => ({
-  ...ProductModelRuntime,
-  id: input.id,
-  slug: input.slug,
-  name: input.name,
-  tagline: input.tagline,
-  Q: input.question,
-  A: input.answer,
-  description: input.description,
-  content: input.content.trim(),
-  active: true,
-  product_type: 'module',
-  main_image: '/img/app/logo.png',
-  images: [],
-  prices: [
-    {
-      id: `price_${input.id}_one_time`,
-      currency: 'chf',
-      unit_amount: input.price,
-      type: 'one_time',
-      billing_scheme: 'per_unit',
-      metadata: { kind: 'module_license' },
-    },
-  ],
-  default_price: {
-    id: `price_${input.id}_one_time`,
+}) : FirebaseProduct => {
+  const priceId = `manual_${input.id}_one_time`
+  const price: ProductPrice = {
+    id: priceId,
+    product_id: input.slug,
+    label: 'Module license',
+    currency: 'chf',
     unit_amount: input.price,
-  },
-  features: input.features.map((title) => ({ title, available: true })),
-  metadata: {
-    category: 'module',
-    kind: 'module',
-    module: { package: input.packageName, scope: 'template-only', requires: [] },
-    availability: { requires_template: true },
-    route: { scenario: 6, product: 'Modules' },
-    ecosystem: input.ecosystem,
-    pricing: { one_time: { amount: input.price / 100, currency: 'chf' } },
-    delivery: {
-      estimated_time: 'Instant',
-      requirements: ['Template installed'],
+    type: 'one_time',
+    billing_scheme: 'per_unit',
+    active: true,
+    default: true,
+    provider: 'manual',
+    provider_price_id: '',
+    metadata: {
+      kind: 'module_license',
+      demo: true,
     },
-    cta: { label: 'Add module', action: 'checkout' },
-    status: 'active',
-    stripe: { product_id: '', price_ids: [], configured: false },
-  },
-  appId: input.appId,
-  creator_id: 'uid_demo_modules',
-  created_at: {} as any,
-  updated_at: {} as any,
-})
+  }
+
+  return {
+    ...ProductModelRuntime,
+    id: input.slug,
+    slug: input.slug,
+    source_app_id: input.appId,
+    source_ecosystem_id: input.ecosystem,
+    owner_type: 'app',
+    owner_id: input.appId,
+    visibility: 'public',
+    name: input.name,
+    tagline: input.tagline,
+    Q: input.question,
+    A: input.answer,
+    description: input.description,
+    content: input.content.trim(),
+    active: true,
+    product_type: 'module',
+    main_image: '/img/app/logo.png',
+    images: [],
+    prices: [price],
+    default_price: {
+      id: priceId,
+      unit_amount: input.price,
+    },
+    features: input.features.map((title) => ({ title, available: true })),
+    metadata: {
+      category: 'module',
+      kind: 'module',
+      module: { package: input.packageName, scope: 'template-only', requires: [] },
+      availability: { requires_template: true },
+      route: { scenario: 6, product: 'Modules' },
+      ecosystem: input.ecosystem,
+      pricing: { one_time: { amount: input.price / 100, currency: 'chf' } },
+      delivery: {
+        estimated_time: 'Instant',
+        requirements: ['Template installed'],
+      },
+      cta: { label: 'Add module', action: 'checkout' },
+      status: 'active',
+      stripe: { product_id: '', price_ids: [], configured: false },
+    },
+  }
+}
 
 export const demoProductList: FirebaseProduct[] = [
   createModule({

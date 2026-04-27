@@ -19,8 +19,9 @@ const buildIngredient = (overrides: Partial<Ingredient>): Ingredient =>
   } as Ingredient)
 
 export const demoIngredient: Ingredient = buildIngredient({
-  id: 'beef-patty',
-  name: 'Beef Patty',
+  id: 'beef-smash-patties',
+  slug: 'beef-smash-patties',
+  name: 'Beef Smash Patties',
   image_url:
     'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=320&h=320&q=80',
 })
@@ -28,8 +29,30 @@ export const demoIngredient: Ingredient = buildIngredient({
 export const demoIngredientList: Ingredient[] = [
   demoIngredient,
   buildIngredient({
-    id: 'burger-buns',
-    name: 'Burger Buns',
+    id: 'potato-buns',
+    slug: 'potato-buns',
+    name: 'Potato Buns',
+    image_url:
+      'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=320&h=320&q=80',
+  }),
+  buildIngredient({
+    id: 'brioche-buns',
+    slug: 'brioche-buns',
+    name: 'Brioche Buns',
+    image_url:
+      'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=320&h=320&q=80',
+  }),
+  buildIngredient({
+    id: 'gua-bao-buns',
+    slug: 'gua-bao-buns',
+    name: 'Gua Bao Buns',
+    image_url:
+      'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=320&h=320&q=80',
+  }),
+  buildIngredient({
+    id: 'mini-buns',
+    slug: 'mini-buns',
+    name: 'Mini Buns',
     image_url:
       'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=320&h=320&q=80',
   }),

@@ -30,11 +30,11 @@ export type DemoSupplierCatalogueItem = {
 
 const demoSuppliers: DemoSupplierListItem[] = [
   {
-    id: 'city-produce',
-    company_id: 'city-produce',
+    id: 'city-butchers',
+    company_id: 'city-butchers',
     app_scope_state: 'parent_app',
     app_scope_app_id: 'misebox-app',
-    supplier_organization_name: 'City Produce',
+    supplier_organization_name: 'City Butchers',
     supplier_headline: 'Whole cuts, burger grind beef, and daily meat drops',
     supplier_product_categories: ['Meat', 'Dry Store'],
     supplier_delivery_areas: ['Central'],
@@ -62,7 +62,13 @@ const demoSuppliers: DemoSupplierListItem[] = [
       'Claimed supplier record focused on bread and bakehouse items for daily service.',
     state: 'official',
     catalogue_state: 'integrated',
-    linked_ingredient_ids: ['potato-buns', 'sourdough-loaf'],
+    linked_ingredient_ids: [
+      'potato-buns',
+      'brioche-buns',
+      'gua-bao-buns',
+      'mini-buns',
+      'sourdough-loaf',
+    ],
     supplier_image:
       'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=240&h=240&q=80',
   },
@@ -142,10 +148,10 @@ const demoSupplierCatalogueBySupplierId: Record<
   string,
   DemoSupplierCatalogueItem[]
 > = {
-  'city-produce': [
+  'city-butchers': [
     {
-      id: 'city-produce-beef-chuck-roll',
-      supplier_id: 'city-produce',
+      id: 'city-butchers-beef-chuck-roll',
+      supplier_id: 'city-butchers',
       ingredient_id: 'beef-chuck-roll',
       ingredient_name: 'Beef Chuck Roll',
       pack_size_label: '6 kg primal',
@@ -157,8 +163,8 @@ const demoSupplierCatalogueBySupplierId: Record<
       unit: '100g',
     },
     {
-      id: 'city-produce-beef-brisket-point',
-      supplier_id: 'city-produce',
+      id: 'city-butchers-beef-brisket-point',
+      supplier_id: 'city-butchers',
       ingredient_id: 'beef-brisket-point',
       ingredient_name: 'Beef Brisket Point',
       pack_size_label: '4 kg brisket point',
@@ -170,8 +176,8 @@ const demoSupplierCatalogueBySupplierId: Record<
       unit: '100g',
     },
     {
-      id: 'city-produce-beef-short-rib',
-      supplier_id: 'city-produce',
+      id: 'city-butchers-beef-short-rib',
+      supplier_id: 'city-butchers',
       ingredient_id: 'beef-short-rib',
       ingredient_name: 'Beef Short Rib',
       pack_size_label: '3 kg tray',
@@ -183,8 +189,8 @@ const demoSupplierCatalogueBySupplierId: Record<
       unit: '100g',
     },
     {
-      id: 'city-produce-beef-fat-trimmings',
-      supplier_id: 'city-produce',
+      id: 'city-butchers-beef-fat-trimmings',
+      supplier_id: 'city-butchers',
       ingredient_id: 'beef-fat-trimmings',
       ingredient_name: 'Beef Fat Trimmings',
       pack_size_label: '2 kg tub',
@@ -196,8 +202,8 @@ const demoSupplierCatalogueBySupplierId: Record<
       unit: '100g',
     },
     {
-      id: 'city-produce-beef-smash-patties',
-      supplier_id: 'city-produce',
+      id: 'city-butchers-beef-smash-patties',
+      supplier_id: 'city-butchers',
       ingredient_id: 'beef-smash-patties',
       ingredient_name: 'Beef Smash Patties',
       pack_size_label: '20 patties case',
@@ -209,8 +215,8 @@ const demoSupplierCatalogueBySupplierId: Record<
       unit: 'piece',
     },
     {
-      id: 'city-produce-chicken-thigh',
-      supplier_id: 'city-produce',
+      id: 'city-butchers-chicken-thigh',
+      supplier_id: 'city-butchers',
       ingredient_id: 'chicken-thigh',
       ingredient_name: 'Chicken Thigh',
       pack_size_label: '5 kg tray',
@@ -233,6 +239,45 @@ const demoSupplierCatalogueBySupplierId: Record<
         'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=240&h=240&q=80',
       cost_per_unit_minor: 90,
       pack_cost_minor: 2160,
+      currency_code: 'CHF',
+      unit: 'piece',
+    },
+    {
+      id: 'daily-bakehouse-brioche-buns',
+      supplier_id: 'daily-bakehouse',
+      ingredient_id: 'brioche-buns',
+      ingredient_name: 'Brioche Buns',
+      pack_size_label: '24 buns crate',
+      image_url:
+        'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=240&h=240&q=80',
+      cost_per_unit_minor: 110,
+      pack_cost_minor: 2640,
+      currency_code: 'CHF',
+      unit: 'piece',
+    },
+    {
+      id: 'daily-bakehouse-gua-bao-buns',
+      supplier_id: 'daily-bakehouse',
+      ingredient_id: 'gua-bao-buns',
+      ingredient_name: 'Gua Bao Buns',
+      pack_size_label: '30 bao case',
+      image_url:
+        'https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=240&h=240&q=80',
+      cost_per_unit_minor: 80,
+      pack_cost_minor: 2400,
+      currency_code: 'CHF',
+      unit: 'piece',
+    },
+    {
+      id: 'daily-bakehouse-mini-buns',
+      supplier_id: 'daily-bakehouse',
+      ingredient_id: 'mini-buns',
+      ingredient_name: 'Mini Buns',
+      pack_size_label: '40 mini buns crate',
+      image_url:
+        'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=240&h=240&q=80',
+      cost_per_unit_minor: 55,
+      pack_cost_minor: 2200,
       currency_code: 'CHF',
       unit: 'piece',
     },

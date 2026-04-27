@@ -1,5 +1,5 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { DemoSupplierCatalogueItem } from '../../../app/utils/supplier-demo-scenarios'
+import type { DemoSupplierCatalogueItem } from '../../../../app/utils/supplier-demo-scenarios'
 
 export type SupplierCatalogueInterfaceItem = DemoSupplierCatalogueItem & {
   supplier_name?: string

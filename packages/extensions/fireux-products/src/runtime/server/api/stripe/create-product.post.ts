@@ -7,7 +7,7 @@ import {
   type H3Error,
 } from 'h3'
 import { createRequire } from 'node:module'
-import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
 import { STRIPE_API_VERSION } from '../../stripe/version'
 
 export default defineEventHandler(async (event: H3Event) => {
