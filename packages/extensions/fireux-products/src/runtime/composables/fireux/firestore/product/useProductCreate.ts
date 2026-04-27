@@ -12,6 +12,11 @@ import type {
 import { useCreatePricesState } from './Prices/useCreatePricesState'
 import { useCreateProductState } from './state/useCreateProductState'
 
+type StripeProvisionResult = {
+  productId: string
+  priceIds: string[]
+}
+
 export const ProductPayload = {
   id: '',
   source_app_id: '',
@@ -99,6 +104,79 @@ export function useProductCreate() {
     return normalizedPrices[defaultIndex]
   }
 
+  const provisionStripeProduct = async (input: {
+    payload: Pick<FirebaseProduct, 'name' | 'description'>
+    slug: string
+    sourceAppId: string
+    priceInputs: StripePriceInput[]
+  }): Promise<StripeProvisionResult> => {
+    const stripeResponse = await fetch('/api/stripe/create-product', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        product: {
+          name: input.payload.name,
+          description: input.payload.description,
+          slug: input.slug,
+          source_app_id: input.sourceAppId,
+          prices: input.priceInputs,
+        },
+      }),
+    })
+
+    if (!stripeResponse.ok) {
+      let detail = stripeResponse.statusText || 'Stripe request failed'
+      try {
+        const text = await stripeResponse.text()
+        if (text) detail = text
+      } catch {
+        // ignore
+      }
+      throw new Error(detail)
+    }
+
+    const stripeResult = (await stripeResponse.json()) as {
+      success?: boolean
+      id?: string
+      stripe_prices?: string[]
+    }
+
+    const productId = String(stripeResult?.id || '').trim()
+    const priceIds = Array.isArray(stripeResult?.stripe_prices)
+      ? stripeResult.stripe_prices.map((id) => String(id || '').trim())
+      : []
+
+    if (!productId) {
+      throw new Error('Stripe product creation failed (missing id)')
+    }
+    if (!priceIds.length) {
+      throw new Error('Stripe product creation failed (missing prices)')
+    }
+
+    return { productId, priceIds }
+  }
+
+  const createProductPriceRecords = async (
+    productId: string,
+    prices: ProductPrice[]
+  ) => {
+    const pricesCollectionPath = `${collectionPath}/${productId}/prices`
+    await Promise.all(
+      prices
+        .filter((price) => Boolean(price.id))
+        .map((price) =>
+          setDocument<ProductPrice>(
+            pricesCollectionPath,
+            String(price.id),
+            price,
+            {
+              stamp: false,
+            }
+          )
+        )
+    )
+  }
+
   const createProductFromInput = async (input: {
     payload: Omit<FirebaseProduct, 'created' | 'updated'> &
       Partial<Pick<FirebaseProduct, 'created' | 'updated'>>
@@ -110,7 +188,7 @@ export function useProductCreate() {
   }> => {
     try {
       const payload = input.payload
-      const requestedSlug = payload.slug || payload.id
+      const requestedSlug = payload.slug
       if (!requestedSlug) {
         throw new Error('Product slug is required')
       }
@@ -138,52 +216,16 @@ export function useProductCreate() {
         payload.owner_id || (ownerType === 'ecosystem' ? sourceEcosystemId : sourceAppId)
       ).trim()
 
-      const stripeResponse = await fetch('/api/stripe/create-product', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          product: {
-            name: payload.name,
-            description: payload.description,
-            slug,
-            source_app_id: sourceAppId,
-            prices: normalizedPriceInputs,
-          },
-        }),
+      const stripeProvision = await provisionStripeProduct({
+        payload,
+        slug,
+        sourceAppId,
+        priceInputs: normalizedPriceInputs,
       })
-
-      if (!stripeResponse.ok) {
-        let detail = stripeResponse.statusText || 'Stripe request failed'
-        try {
-          const text = await stripeResponse.text()
-          if (text) detail = text
-        } catch {
-          // ignore
-        }
-        throw new Error(detail)
-      }
-
-      const stripeResult = (await stripeResponse.json()) as {
-        success?: boolean
-        id?: string
-        stripe_prices?: string[]
-      }
-
-      const stripeProductId = String(stripeResult?.id || '').trim()
-      const stripePriceIds = Array.isArray(stripeResult?.stripe_prices)
-        ? stripeResult.stripe_prices.map((id) => String(id || '').trim())
-        : []
-
-      if (!stripeProductId) {
-        throw new Error('Stripe product creation failed (missing id)')
-      }
-      if (!stripePriceIds.length) {
-        throw new Error('Stripe product creation failed (missing prices)')
-      }
 
       const normalizedPrices = normalizePrices(
         normalizedPriceInputs,
-        stripePriceIds,
+        stripeProvision.priceIds,
         slug
       )
       const defaultPriceCandidate = chooseDefaultPrice(normalizedPrices)
@@ -210,8 +252,8 @@ export function useProductCreate() {
         metadata: {
           ...(payload.metadata ?? {}),
           stripe: {
-            product_id: stripeProductId,
-            price_ids: stripePriceIds,
+            product_id: stripeProvision.productId,
+            price_ids: stripeProvision.priceIds,
             configured: true,
           },
         },
@@ -221,21 +263,7 @@ export function useProductCreate() {
         creator: true,
       })
 
-      const pricesCollectionPath = `${collectionPath}/${slug}/prices`
-      await Promise.all(
-        normalizedPrices
-          .filter((price) => Boolean(price.id))
-          .map((price) =>
-            setDocument<ProductPrice>(
-              pricesCollectionPath,
-              String(price.id),
-              price,
-              {
-                stamp: false,
-              }
-            )
-          )
-      )
+      await createProductPriceRecords(slug, normalizedPrices)
       await upsertSeoIndexDoc('seo_index_products', slug, {
         path: `/products/${slug}`,
         isPublic: data.active !== false,

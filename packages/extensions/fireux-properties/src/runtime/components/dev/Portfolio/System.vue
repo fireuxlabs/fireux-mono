@@ -171,7 +171,7 @@ const selectedPortfolioId = ref('')
 const portfolioOptions = computed(() =>
   portfolios.value.map((portfolio) => {
     const id = String(portfolio.id || '').trim()
-    const labelBase = portfolio.name || portfolio.slug || id
+    const labelBase = portfolio.name || id
     const overlayStatus = portfolioAppById.value.has(id) ? 'console' : 'root only'
     return {
       label: `${labelBase} · ${overlayStatus}`,
@@ -329,7 +329,7 @@ const portfolioStorageJson = computed(() => ({
   appId: resolvedAppId.value || null,
   runtimePortfolio: runtimePortfolio.value,
   selectedPortfolioId: selectedPortfolioId.value || null,
-  selectedPortfolioName: selectedRootPortfolio.value?.name || selectedRootPortfolio.value?.slug || null,
+  selectedPortfolioName: selectedRootPortfolio.value?.name || selectedRootPortfolio.value?.id || null,
   paths: {
     rootPortfolioCollection: rootPortfolioCollectionPath.value,
     overlayPortfolioCollection: overlayPortfolioCollectionPath.value || null,

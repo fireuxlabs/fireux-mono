@@ -113,7 +113,7 @@ export const PlaceModel = {
   claimed_by: '' as string,
   verified: false as boolean,
 
-  /** URL-friendly slug derived from name + location. */
+  /** Display/search slug derived from name + location; not route identity. */
   slug: '' as string,
 
   source: 'fireux' as PlaceSource,

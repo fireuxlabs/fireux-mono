@@ -48,7 +48,6 @@ Derived projection docs should exist, but only as projections of the canonical k
 Create these later when public publishing is implemented:
 
 - recipe_publications/{recipeId}
-- recipe_publication_slugs/{slug}
 
 Purpose of recipe_publications/{recipeId}:
 
@@ -56,12 +55,6 @@ Purpose of recipe_publications/{recipeId}:
 - contains denormalized public-safe fields needed by public pages
 - exists only when publication_status is published
 - never becomes an authoring source
-
-Purpose of recipe_publication_slugs/{slug}:
-
-- global slug lookup index for public routing
-- maps slug to recipeId and publication record metadata
-- prevents slug collision without turning slug into the primary document id
 
 ### Search projection
 
@@ -87,7 +80,6 @@ Final storage direction:
 
 - authoring canon now: kitchens/{kitchenId}/recipes/{recipeId}
 - public projection later: recipe_publications/{recipeId}
-- slug index later: recipe_publication_slugs/{slug}
 - no app overlay now
 - no search projection now
 
@@ -107,7 +99,7 @@ Final storage direction:
 - id is the Firestore doc id.
 - name is the authoritative internal title.
 - slug is optional until publication workflow needs it.
-- slug must be globally unique across published recipe projections, enforced through recipe_publication_slugs.
+- when used for public routing, slug must equal the public recipe document id.
 - recipe_type is required from day one so the kitchen can distinguish prep recipes from service recipes without inferring from names.
 
 ## Ownership
@@ -456,7 +448,6 @@ Exact rule:
 - if protection_level is secret, then visibility must not be public
 - if protection_level is secret, then publication_status must be unpublished or withdrawn
 - if protection_level is secret, no recipe_publications doc may be emitted
-- if protection_level is secret, no recipe_publication_slugs doc may be emitted
 
 ### Is public summary without full method allowed
 
@@ -644,7 +635,7 @@ Control bundle:
 
 ### Final recommendation
 
-Create one derived published recipe projection plus one slug index.
+Create one derived published recipe projection.
 
 Do not create a competing canonical recipe model.
 Do not create a search projection yet.
@@ -654,14 +645,13 @@ Do not create a search projection yet.
 Projection docs to create later:
 
 - recipe_publications/{recipeId}
-- recipe_publication_slugs/{slug}
 
 ### Why this is the right direction
 
 - public pages need a safe, stable, route-friendly shape
 - public pages should not read canonical kitchen docs directly
 - secret and confidential controls are easier to enforce when the public layer is generated from an allowlisted projection
-- slug uniqueness is easier to manage with a dedicated slug index than by making slug the canonical id
+- public route identity stays simple when the published projection id is the public slug
 - search is premature until the publication projection is settled
 
 ### What goes into recipe_publications
@@ -690,19 +680,6 @@ Only public-safe fields, for example:
 Important rule:
 
 - recipe_publications is always derived from the canonical kitchen recipe and never edited as the source of truth
-
-### What goes into recipe_publication_slugs
-
-- slug
-- recipe_id
-- publication_status
-- path
-- updated_at
-
-Important rule:
-
-- the slug index exists only to resolve public routing and uniqueness
-- it must never become a second recipe content store
 
 ## 9. Migration From Current Shape
 
@@ -831,7 +808,7 @@ Derive:
 - chef_name public display
 - public ingredient and instruction display lists
 - public route path from slug
-- projection docs and slug index
+- projection docs
 
 Postpone:
 

@@ -95,7 +95,7 @@ const editor = shallowRef<any>(null)
 
 const { utils } = useBlog()
 const { blogPost } = useBlogDraftState()
-const { generateSlug, computeReadingTime } = utils
+const { normalizeBlogSlug, computeReadingTime } = utils
 
 onMounted(async () => {
   const [{ Editor }, { default: StarterKit }] = await Promise.all([
@@ -116,7 +116,7 @@ onMounted(async () => {
 
   // Ensure slug exists when a title was prefilled before mount.
   if (!blogPost.value.slug && blogPost.value.title) {
-    blogPost.value.slug = generateSlug(blogPost.value.title)
+    blogPost.value.slug = normalizeBlogSlug(blogPost.value.title)
   }
 })
 
@@ -128,7 +128,7 @@ onBeforeUnmount(() => {
 watch(
   () => blogPost.value.title,
   (title: string) => {
-    blogPost.value.slug = title ? generateSlug(title) : ''
+    blogPost.value.slug = title ? normalizeBlogSlug(title) : ''
   }
 )
 

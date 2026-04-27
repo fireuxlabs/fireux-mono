@@ -25,7 +25,7 @@ export namespace RecipeCard {
 export function useRecipeInterface() {
   function map(recipe: Recipe): RecipeCard.Card {
     const status = safeString(recipe.workflow_status).trim() || 'draft'
-    const id = safeString(recipe.slug || recipe.id).trim()
+    const id = safeString(recipe.slug).trim()
     const title =
       safeString(recipe.published_summary?.title || recipe.name).trim() ||
       'Untitled Recipe'

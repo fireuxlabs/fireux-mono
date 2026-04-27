@@ -40,6 +40,8 @@
     "lint:envs": "node scripts/lint-envs.mjs",
     "format": "prettier --write .",
     "guard": "node scripts/guard.mjs",
+    "guard:slug": "node scripts/check-slug-canon.mjs",
+    "guard:slug:report": "node scripts/check-slug-canon.mjs --report",
     "pre-guard-clean": "node scripts/pre-guard-clean.mjs",
     "guard:shape": "pnpm guard",
     "guard:ts": "pnpm tsc:check",

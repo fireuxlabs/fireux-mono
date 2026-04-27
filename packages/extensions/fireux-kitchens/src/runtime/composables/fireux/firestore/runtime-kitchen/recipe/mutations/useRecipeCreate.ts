@@ -1,6 +1,7 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useCurrentUser } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { computed, unref, type Ref } from 'vue'
 import {
   RecipeModel,
@@ -25,12 +26,6 @@ type RecipeCreateDraft = Partial<RecipeCreateInput> & {
 }
 
 const trim = (value: unknown) => String(value || '').trim()
-const slugify = (value: string) =>
-  value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
 
 const optional = (value: unknown) => {
   const resolved = trim(value)
@@ -81,7 +76,7 @@ function buildRecipePayload(draft: RecipeCreateDraft, kitchenId: string, userId:
   return {
     ...RecipeModel,
     name: trim(draft.name),
-    slug: optional(draft.slug) || (publicationStatus === 'published' ? slugify(trim(draft.name)) : undefined),
+    slug: optional(draft.slug) || (publicationStatus === 'published' ? normalizeSlug(trim(draft.name)) : undefined),
     recipe_type: oneOf<RecipeType>(draft.recipe_type, ['base', 'component', 'prep', 'service'], 'service'),
     kitchen_id: kitchenId,
     author_chef_id: trim(draft.author_chef_id) || userId,

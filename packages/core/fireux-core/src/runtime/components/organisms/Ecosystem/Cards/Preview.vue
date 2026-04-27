@@ -85,5 +85,5 @@ const item = computed(() => ({
   imageUrl: props.item?.imageUrl || '',
 }))
 
-const avatarText = computed(() => item.value.name || item.value.slug || item.value.id || 'E')
+const avatarText = computed(() => item.value.name || item.value.id || 'E')
 </script>

@@ -1,4 +1,4 @@
-import { collection, doc, limit as fslimit, query as fsq, getDoc, getDocs, where } from 'firebase/firestore'
+import { doc, getDoc } from 'firebase/firestore'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
@@ -6,7 +6,7 @@ import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { canonicalPlaceId, fetchPlaceDetails } from '../fetch/google/usePlacesGoogle'
 import { toShortAddress } from '../utils/view/formatPlaceAddress'
-import { toPlaceSlug, toPlaceSlugWithSuffix } from '../utils/view/toPlaceSlug'
+import { toPlaceSlug } from '../utils/view/toPlaceSlug'
 import { sanitizeLogoAvatar } from '../utils/view/usePlaceLogos'
 
 export interface UsePlaceSaveOptions {
@@ -157,20 +157,7 @@ export function usePlaceSave(_options: UsePlaceSaveOptions = {}) {
         ? shadeRaw
         : 'none'
 
-    // ── Collision-safe slug ─────────────────────────────────
-    const baseSlug = toPlaceSlug(name, shortAddress)
-    let slug = baseSlug
-    if (slug) {
-      const slugQ = fsq(
-        collection(db, 'places'),
-        where('slug', '==', slug),
-        fslimit(1)
-      )
-      const slugSnap = await getDocs(slugQ)
-      if (!slugSnap.empty) {
-        slug = toPlaceSlugWithSuffix(baseSlug, id)
-      }
-    }
+    const slug = toPlaceSlug(name, shortAddress)
 
     const payload = {
       id,

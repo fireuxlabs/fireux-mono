@@ -1,6 +1,7 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import {
   IngredientModel,
   type IngredientCreateInput,
@@ -11,22 +12,15 @@ const GLOBAL_COLLECTION_PATH = 'ingredients'
 
 type IngredientCreateDraft = Partial<IngredientCreateInput>
 
-const toSlug = (value: string) =>
-  value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-
 const resolveIngredientId = (name: string) => {
-  const base = toSlug(name)
+  const base = normalizeSlug(name)
   return base || ''
 }
 
 const resolveIngredientSlug = (draft: IngredientCreateDraft) => {
-  const provided = toSlug(String(draft.slug || ''))
+  const provided = normalizeSlug(String(draft.slug || ''))
   if (provided) return provided
-  return toSlug(String(draft.name || ''))
+  return normalizeSlug(String(draft.name || ''))
 }
 
 const buildIngredientPayload = (

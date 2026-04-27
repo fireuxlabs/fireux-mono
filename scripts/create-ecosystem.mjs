@@ -46,7 +46,7 @@ Examples:
   pnpm create:ecosystem -- --name <name> --firebase-project <firebase-project-id>
 `) }
 
-function toSlug(value) {
+function normalizeEcosystemName(value) {
   return String(value || '')
     .trim()
     .toLowerCase()
@@ -458,7 +458,7 @@ function main() {
     return
   }
 
-  const slug = toSlug(args.name)
+  const slug = normalizeEcosystemName(args.name)
   if (!slug) {
     printUsage()
     throw new Error('--name is required')

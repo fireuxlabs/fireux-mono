@@ -20,7 +20,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `/places/[id]`
   - `/places/create`
   - `/places/edit/[id]`
-- Public slug routes for places are not canonical yet.
+- Place route identity is id-only. Any stored `slug` field is display/search metadata only and must not be used for public routing.
 
 ## 6) Surfaces supported
 - `Pill`, `Cell`, `Preview`, `Profile` supported.

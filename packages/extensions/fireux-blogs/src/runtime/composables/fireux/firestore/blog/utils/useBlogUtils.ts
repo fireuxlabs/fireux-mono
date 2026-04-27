@@ -1,7 +1,7 @@
 import type { BlogAuthor } from '../../../../../models/blogPost.model'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 
-function generateSlug(title: string): string {
+function normalizeBlogSlug(title: string): string {
   return normalizeSlug(title)
 }
 
@@ -41,7 +41,7 @@ function getDefaultImages(): { featuredImage: string; socialImage: string } {
  */
 export function useBlogUtils() {
   return {
-    generateSlug,
+    normalizeBlogSlug,
     computeReadingTime,
     getAuthor,
     getDefaultImages,

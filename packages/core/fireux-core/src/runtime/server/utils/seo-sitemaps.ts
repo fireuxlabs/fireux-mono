@@ -1,6 +1,7 @@
 import { setResponseHeaders, type H3Event } from 'h3'
 import { useRuntimeConfig } from '#imports'
 import { getRuntimeFirestore } from './getRuntimeFirestore'
+import { normalizeSlug } from '../../utils/slug/normalizeSlug'
 
 type AnyRecord = Record<string, unknown>
 
@@ -208,10 +209,6 @@ function toIsoString(value: unknown): string | undefined {
   return undefined
 }
 
-function toSlug(value: unknown): string {
-  return typeof value === 'string' ? value.trim() : ''
-}
-
 function resolveCanonicalDocPath(
   entity: RuntimeSitemapEntity,
   docId: string,
@@ -221,7 +218,7 @@ function resolveCanonicalDocPath(
   const normalizedPath = normalizePath(rawPath)
   if (normalizedPath) return normalizedPath
 
-  const slug = toSlug(data[entity.slugField]) || docId
+  const slug = normalizeSlug(data[entity.slugField]) || docId
   if (!slug) return null
   const encodedSlug = encodeURIComponent(slug)
   const routePrefix = normalizePath(entity.routePrefix || `/${entity.entityKey}`)
@@ -242,7 +239,7 @@ function isCanonicalDocPublic(
   const isPublic = data.isPublic
   if (typeof isPublic === 'boolean') return isPublic
 
-  const visibility = toSlug(data.visibility).toLowerCase()
+  const visibility = normalizeSlug(data.visibility).toLowerCase()
   if (visibility === 'public') return true
   if (visibility === 'private') return false
 
@@ -260,10 +257,6 @@ async function countPublicCanonicalDocs(entity: RuntimeSitemapEntity): Promise<n
     if (entity.publicField) {
       query = query.where(entity.publicField, '==', true)
     }
-    if (entity.slugField) {
-      query = query.where(entity.slugField, '>', '')
-    }
-
     const snap = await query.count().get()
     const count = Number((snap.data() as any)?.count ?? 0)
     if (!Number.isFinite(count)) return 0
@@ -287,13 +280,7 @@ async function fetchCanonicalEntitySitemapPage(
   if (entity.publicField) {
     query = query.where(entity.publicField, '==', true)
   }
-  if (entity.slugField) {
-    query = query
-      .where(entity.slugField, '>', '')
-      .orderBy(entity.slugField)
-  } else {
-    query = query.orderBy('__name__')
-  }
+  query = query.orderBy('__name__')
 
   const snap = await query
     .offset(offset)
@@ -303,7 +290,7 @@ async function fetchCanonicalEntitySitemapPage(
   const out: SitemapIndexEntry[] = []
   for (const doc of snap.docs) {
     const data = (doc.data() || {}) as Record<string, unknown>
-    const slug = toSlug(data[entity.slugField])
+    const slug = normalizeSlug(data[entity.slugField])
     if (!isCanonicalDocPublic(entity, data, slug)) continue
 
     const path = resolveCanonicalDocPath(entity, doc.id, data)

@@ -8,18 +8,12 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type {
   AppPortfolio,
   Portfolio,
   PortfolioCreateInput,
 } from '../../../../../models/portfolio.model'
-
-const toSlug = (value: string) =>
-  String(value || '')
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
 
 const normalizeString = (value: unknown) => String(value || '').trim()
 const resolveTestUserLabel = (displayName: unknown, uid: unknown) => {
@@ -68,7 +62,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       normalizeString(input.subtitle) ||
       resolveTestUserLabel(currentUser.value?.displayName, uid.value)
     const name = normalizeString(input.name) || 'Test Portfolio'
-    const slug = toSlug(normalizeString(input.slug) || 'test-portfolio')
+    const slug = normalizeSlug(normalizeString(input.slug) || 'test-portfolio')
 
     if (!id) {
       throw new Error('Test portfolio id is required')
@@ -117,7 +111,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       isTestPortfolioCollection && (!requestedName || requestedName === normalizeString(uid.value))
         ? defaultTestName
         : requestedName
-    const slug = toSlug(String(input?.slug || '').trim() || name)
+    const slug = normalizeSlug(String(input?.slug || '').trim() || name)
 
     if (!name) {
       throw new Error('Portfolio name is required')
@@ -181,7 +175,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
         isTestPortfolioCollection && (!requestedName || requestedName === normalizeString(uid.value))
           ? defaultTestName
           : requestedName
-      const slug = requestedRootId || toSlug(String(input?.slug || '').trim() || name)
+      const slug = requestedRootId || normalizeSlug(String(input?.slug || '').trim() || name)
 
       if (!name) {
         throw new Error('Portfolio name is required')

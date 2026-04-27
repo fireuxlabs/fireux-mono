@@ -2,6 +2,7 @@ import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-console/shared'
 import {
   IngredientModel,
@@ -19,17 +20,10 @@ const resolveKitchenIngredientsPath = (basePath: string, kitchenId: string) =>
 type KitchenIngredientAddDraft = Partial<Pick<KitchenIngredientDoc, 'id'>> &
   Partial<Pick<IngredientCreateInput, 'name' | 'slug' | 'image_url'>>
 
-const toSlug = (value: string) =>
-  value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-
 const resolveIngredientId = (draft: KitchenIngredientAddDraft) => {
   const providedId = String(draft.id || '').trim()
   if (providedId) return providedId
-  return toSlug(String(draft.name || ''))
+  return normalizeSlug(String(draft.name || ''))
 }
 
 const buildGlobalIngredientPayload = (
@@ -39,7 +33,7 @@ const buildGlobalIngredientPayload = (
   ...IngredientModel,
   id: ingredientId,
   name: String(draft.name || '').trim(),
-  slug: toSlug(String(draft.slug || draft.name || ingredientId)),
+  slug: normalizeSlug(String(draft.slug || draft.name || ingredientId)),
   image_url: String(draft.image_url || '').trim(),
 })
 

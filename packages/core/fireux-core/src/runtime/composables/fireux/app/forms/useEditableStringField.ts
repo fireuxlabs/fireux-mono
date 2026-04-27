@@ -1,4 +1,5 @@
 import { computed, getCurrentInstance, ref, watch } from 'vue'
+import { normalizeSlug } from '../../../../utils/slug/normalizeSlug'
 
 export type ValidationResult = {
   isValid: boolean
@@ -32,12 +33,6 @@ const toStringValue = (value?: string | number | null) => {
   return String(value)
 }
 
-const slugify = (value: string) =>
-  value
-    .toLowerCase()
-    .replaceAll(/[^a-z0-9]+/g, '-')
-    .replaceAll(/(^-|-$)/g, '')
-
 export function useEditableStringField(options: Options) {
   const isEditing = ref(false)
   const draft = ref('')
@@ -55,7 +50,7 @@ export function useEditableStringField(options: Options) {
 
   const inputId = computed(() => {
     if (options.id) return options.id
-    const labelSlug = options.label ? slugify(options.label) : 'field'
+    const labelSlug = options.label ? normalizeSlug(options.label) : 'field'
     return `simple-field-${labelSlug}-${instanceId}`
   })
 

@@ -257,16 +257,20 @@ Updated: 2026-04-27
 | fireux-blogs | BlogPost | slug | slug-id |
 | fireux-products | Product | slug | slug-id |
 | fireux-core | User | handle | handle-index |
-| fireux-core | Project | id/slug TBD | classify before slug rollout |
-| fireux-places | Place | id/slug TBD | classify before slug rollout |
-| fireux-companies | Company | id/slug TBD | classify before slug rollout |
-| fireux-kitchens | Kitchen | id/slug TBD | classify before slug rollout |
-| fireux-jobs | Job | id/slug TBD | classify before slug rollout |
-| fireux-jobs | Agent | id/slug TBD | classify before slug rollout |
-| fireux-jobs | Professional | id/slug TBD | classify before slug rollout |
-| fireux-kitchens | Chef | id/slug TBD | classify before slug rollout |
-| fireux-suppliers | Supplier | id/slug TBD | classify before slug rollout |
-| fireux-kitchens | Ingredient | id/slug TBD | classify before slug rollout |
+| fireux-core | Project | id | id-only |
+| fireux-core | App | id | id-only |
+| fireux-core | Ecosystem | id | id-only |
+| fireux-places | Place | id | id-only |
+| fireux-companies | Company | id | id-only |
+| fireux-kitchens | Kitchen | id | id-only |
+| fireux-kitchens | Recipe publication | slug | slug-id |
+| fireux-kitchens | Chef | id | id-only |
+| fireux-kitchens | Ingredient | id | id-only |
+| fireux-suppliers | Supplier | id | id-only |
+| fireux-properties | Portfolio | id | id-only |
+| fireux-jobs | Job | id | id-only |
+| fireux-jobs | Agent | id | id-only |
+| fireux-jobs | Professional | id | id-only |
 | fireux-orders | Order | n/a | id-only |
 
 ### Enforcement

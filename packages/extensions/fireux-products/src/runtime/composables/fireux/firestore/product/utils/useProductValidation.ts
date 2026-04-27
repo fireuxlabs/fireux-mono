@@ -65,14 +65,6 @@ export function useProductValidation() {
     }
   }
 
-  function isValidSlug(slug: string): boolean {
-    return validatePublicSlug(slug, {
-      label: 'Product slug',
-      namespace: 'products',
-      reservedScope: 'entity',
-    }).isValid
-  }
-
   function isValidUrl(url: string): boolean {
     try {
       new URL(url)
@@ -96,7 +88,6 @@ export function useProductValidation() {
 
   return {
     validateProduct,
-    isValidSlug,
     isValidUrl,
     isValidPrice,
     isValidProductType,

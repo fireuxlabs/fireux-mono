@@ -2,6 +2,7 @@ import { useRuntimeConfig } from '#imports'
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
+import { normalizeSlug } from '../../../../utils/slug/normalizeSlug'
 
 function asString(value: unknown): string {
   return typeof value === 'string' ? value.trim() : ''
@@ -40,15 +41,8 @@ function toAbsoluteUrl(input: unknown, siteOrigin?: string): string | undefined 
   return undefined
 }
 
-function toSlug(input: string): string {
-  return asString(input)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
-
 function appSlugFromId(appId: string): string {
-  return toSlug(appId.replace(/-app$/i, ''))
+  return normalizeSlug(appId.replace(/-app$/i, ''))
 }
 
 function ecosystemIdFromSlug(slug: string): string {
@@ -98,7 +92,7 @@ export default defineEventHandler(async (event: H3Event) => {
     normalizeSiteUrl(runtime.public?.fireux?.siteUrl) ||
     normalizeSiteUrl(cfg.siteUrl) ||
     normalizeSiteUrl((runtime.public?.fireux as Record<string, unknown> | undefined)?.domain)
-  const ecosystemSlug = toSlug(cfg.ecosystem)
+  const ecosystemSlug = normalizeSlug(cfg.ecosystem)
   const appSlug = appSlugFromId(cfg.appId)
   const runtimeProjectId = asString(
     (runtime.public?.firebaseEcosystem as Record<string, any> | undefined)?.firebase

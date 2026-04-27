@@ -22,6 +22,8 @@ Supplier catalogue/product records should wrap canonical `Product` identity rath
 
 `ProductPrice` owns pricing terms. Product identity should not be split into fake products for naming variants such as `Pro` or `Enterprise` when the real commercial product is one product with multiple prices or terms.
 
+Product creation follows the standard `useXCreate` pattern. For saleable products, creation may also provision transaction-provider records such as Stripe products and prices. Firestore remains canonical for FireUX product identity. Provider ids are stored as integration metadata and on `ProductPrice` records.
+
 ## 4a) Root scope fields
 - `source_app_id`
 - `source_ecosystem_id`

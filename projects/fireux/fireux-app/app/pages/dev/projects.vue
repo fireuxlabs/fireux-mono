@@ -160,7 +160,7 @@ const selectedProjectId = ref('')
 const projectOptions = computed(() =>
   (projects.value ?? []).map((project) => {
     const id = String(project?.id || '').trim()
-    const labelBase = String(project?.name || project?.slug || id).trim() || id
+    const labelBase = String(project?.name || id).trim() || id
     const overlayStatus = projectAppById.value.has(id) ? 'console' : 'root only'
     return {
       label: `${labelBase} · ${overlayStatus}`,

@@ -3,18 +3,13 @@ import {
   collection,
   doc,
   getDoc,
-  getDocs,
   getFirestore,
-  limit,
-  query,
   serverTimestamp,
   setDoc,
-  where,
 } from 'firebase/firestore'
 import { useFirebaseApp } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import type { Firestore } from 'firebase/firestore'
-import type { QueryDocumentSnapshot } from 'firebase/firestore'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useRuntimeConfig } from '#imports'
 
@@ -31,17 +26,6 @@ async function resolveFirestoreEcosystemRef(db: Firestore, ecosystemId: string) 
   const legacyRef = doc(ecosystemCollection, `fireux-${ecosystemId}`)
   const legacySnap = await getDoc(legacyRef)
   if (legacySnap.exists()) return legacyRef
-
-  const bySlug = await getDocs(
-    query(ecosystemCollection, where('slug', '==', ecosystemId), limit(5))
-  )
-
-  if (!bySlug.empty) {
-    const exact =
-      bySlug.docs.find((entry: QueryDocumentSnapshot) => entry.id === ecosystemId) ||
-      bySlug.docs[0]
-    return exact.ref
-  }
 
   return plainRef
 }

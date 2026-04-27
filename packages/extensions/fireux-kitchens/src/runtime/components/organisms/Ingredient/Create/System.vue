@@ -49,6 +49,7 @@
 <script setup lang="ts">
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { computed, ref } from 'vue'
 import { useIngredientCreate } from '../../../../composables/fireux/firestore/ingredient/mutations/useIngredientCreate'
 import { createDefaultIngredientForm, type IngredientCreateForm } from './types'
@@ -70,13 +71,6 @@ const INGREDIENT_IMAGE_QUALITY = 0.86
 const clearDraft = () => {
   form.value = createDefaultIngredientForm()
 }
-
-const toSlug = (value: string) =>
-  value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
 
 const imageInitials = computed(() => {
   const rawName = String(form.value.name || '').trim()
@@ -146,7 +140,7 @@ const handleImageUpload = async (file: File) => {
   if (imageUploading.value || submitting.value) return
 
   const name = String(form.value.name || '').trim()
-  const ingredientId = toSlug(name)
+  const ingredientId = normalizeSlug(name)
   if (!ingredientId) {
     toast.error('Set ingredient name before uploading image')
     return

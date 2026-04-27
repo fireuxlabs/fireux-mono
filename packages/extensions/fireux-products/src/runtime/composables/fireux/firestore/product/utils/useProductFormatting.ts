@@ -11,10 +11,6 @@ export function useProductFormatting() {
   const { uploadImage } = useImageStorage()
   const { firestoreFetchDoc } = useFirestoreManager()
 
-  function formatSlug(slug: string): string {
-    return normalizeSlug(slug)
-  }
-
   function formatProductData(
     product: Partial<FirebaseProduct>
   ): Partial<FirebaseProduct> {
@@ -23,7 +19,7 @@ export function useProductFormatting() {
     if (formatted.name) formatted.name = formatted.name.trim()
     if (formatted.description)
       formatted.description = formatted.description.trim()
-    if (formatted.slug) formatted.slug = formatSlug(formatted.slug)
+    if (formatted.slug) formatted.slug = normalizeSlug(formatted.slug)
 
     if (formatted.features) {
       formatted.features = formatGenericArray(formatted.features as any[])
@@ -190,7 +186,6 @@ export function useProductFormatting() {
   return {
     formatProductData,
     buildSlugIfUnique,
-    formatSlug,
     formatProductName,
     formatProductExcerpt,
     formatPrice,

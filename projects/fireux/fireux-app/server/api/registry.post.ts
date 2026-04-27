@@ -1,5 +1,6 @@
 import { defineEventHandler, readBody, createError } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { getFirestoreDb } from './firebase-admin'
 
 type RegistryType = 'module' | 'app' | 'ecosystem'
@@ -16,15 +17,6 @@ type RegistryPayload = {
   team?: string
   type?: RegistryType
   ecosystem?: string
-}
-
-function toSlug(value: string) {
-  return value
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9-]+/g, '-')
-    .replace(/-{2,}/g, '-')
-    .replace(/^-+|-+$/g, '')
 }
 
 export default defineEventHandler(async (event) => {
@@ -88,7 +80,7 @@ export default defineEventHandler(async (event) => {
   const normalizedTeam = team.toLowerCase()
 
   const normalizedEcosystem = requiresEcosystem
-    ? toSlug(payload.ecosystem as string)
+    ? normalizeSlug(payload.ecosystem)
     : undefined
 
   if (requiresEcosystem && !normalizedEcosystem) {
