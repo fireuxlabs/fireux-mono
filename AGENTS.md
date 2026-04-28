@@ -42,6 +42,18 @@ If any Tier2/Tier3 doc conflicts with Tier1, Tier1 wins.
 - Never treat Tier3 as authority.
 - If more than a small, localized set of files seems required, stop and report the scope before broad inspection or editing.
 
+## Default ignore zones for context loading
+Do not inspect these folders unless the user explicitly asks for them, or the task is specifically about that folder:
+- `docs/ai/**`
+- `docs/reports/**`
+- `scripts/reports/**`
+- `temp/**`
+- `mirror/**`
+- `.vscode/**`
+- `docs/copilot-documentation/**`
+
+These folders may contain stale, generated, historical, or tool-specific material. They are not authority. If one of these files appears relevant, summarize why before using it.
+
 ## Runtime README Branch System
 - `packages/core/fireux-docs/src/runtime/README.md` is the runtime docs entry point.
 - `packages/core/fireux-docs/src/runtime/*/README.md` are the branch READMEs for each runtime surface:
