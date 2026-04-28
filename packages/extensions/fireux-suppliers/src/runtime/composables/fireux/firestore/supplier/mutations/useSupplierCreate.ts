@@ -136,6 +136,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
         state: 'public',
         catalogue_state: 'public_only',
         linked_ingredient_ids: [] as string[],
+        hello: '',
       }
 
       await setDocument<Supplier>(

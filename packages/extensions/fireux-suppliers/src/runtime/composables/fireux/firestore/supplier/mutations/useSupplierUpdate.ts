@@ -1,11 +1,22 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import {
+  resolveConsoleEntityCollectionPath,
+  type ConsoleEntityRuntimeMode,
+} from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import type { AppSupplier, Supplier } from '../../../../../models/supplier/Supplier.model'
 import type { SupplierRefs } from '../fetch/useSupplierRecord'
 
 const supplierCollection = 'suppliers'
+
+type SupplierUpdateCollectionOptions = {
+  collectionPath?: string | null
+  mode?: ConsoleEntityRuntimeMode | null
+  source?: ConsoleEntityRuntimeMode | null
+  test?: boolean
+}
 /**
  * useSupplierUpdate
  * - Canon surface: global supplier record updates
@@ -14,13 +25,17 @@ const supplierCollection = 'suppliers'
  * Shared update surface for v1 scoped fields.
  */
 export function useSupplierUpdate(
-  supplier?: SupplierRefs | null
+  supplier?: SupplierRefs | null,
+  defaults: SupplierUpdateCollectionOptions = {}
 ) {
   const { updateDocument } = useFirestoreUpdate()
   const { appId } = useFireUXConfig()
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
   const hasAppScope = Boolean(appId)
-  type UpdateOptions = { id?: string | null; scope?: 'core' | 'app' }
+  type UpdateOptions = SupplierUpdateCollectionOptions & {
+    id?: string | null
+    scope?: 'core' | 'app'
+  }
 
   const pruneUndefined = <T extends Record<string, any>>(payload: Partial<T>) => {
     const entries = Object.entries(payload).filter(([, value]) => value !== undefined)
@@ -56,12 +71,33 @@ export function useSupplierUpdate(
     return user.uid
   }
 
+  const resolveMode = (
+    options: SupplierUpdateCollectionOptions = {}
+  ): ConsoleEntityRuntimeMode => {
+    if (options.test === true || defaults.test === true) return 'test'
+    return (
+      options.mode ??
+      options.source ??
+      defaults.mode ??
+      defaults.source ??
+      'live'
+    )
+  }
+
+  const resolveCoreCollectionPath = (
+    options: SupplierUpdateCollectionOptions = {}
+  ) =>
+    resolveConsoleEntityCollectionPath({
+      family: supplierCollection,
+      mode: resolveMode(options),
+      explicitPath: options.collectionPath ?? defaults.collectionPath,
+    })
+
   /**
    * Update the CORE Supplier record
    * - global document (e.g. suppliers/{uid})
    */
-  const touchSeoIndex = async (id?: string | null) => {
-    const resolvedId = await resolveId(id)
+  const touchSeoIndex = async (resolvedId: string) => {
     await upsertSeoIndexDoc('seo_index_suppliers', resolvedId, {
       path: `/suppliers/${resolvedId}`,
       isPublic: true,
@@ -70,28 +106,42 @@ export function useSupplierUpdate(
 
   const updateCoreSupplier = async (
     patch: Partial<Supplier>,
-    options: { id?: string | null } = {}
+    options: UpdateOptions = {}
   ) => {
     const resolvedId = await resolveId(options.id)
+    const collectionPath = resolveCoreCollectionPath(options)
+    if (!collectionPath) {
+      throw new Error('[useSupplierUpdate] Cannot update demo supplier records')
+    }
+
     await updateDocument<Supplier>(
-      supplierCollection,
+      collectionPath,
       resolvedId,
       pruneUndefined(patch)
     )
-    await touchSeoIndex(options.id)
+    if (collectionPath === supplierCollection) {
+      await touchSeoIndex(resolvedId)
+    }
   }
 
   const updateAppSupplier = async (
     patch: Partial<AppSupplier>,
-    options: { id?: string | null } = {}
+    options: UpdateOptions = {}
   ) => {
     if (!hasAppScope || !appId) {
       throw new Error('[useSupplierUpdate] App context required for supplier overlay updates')
     }
 
     const resolvedId = await resolveId(options.id)
+    const collectionPath = resolveConsoleEntityCollectionPath({
+      family: supplierCollection,
+      mode: 'live',
+      appId,
+      useAppOverlay: true,
+    })
+
     await updateDocument<AppSupplier>(
-      `apps/${appId}/${supplierCollection}`,
+      collectionPath,
       resolvedId,
       pruneUndefined(patch)
     )

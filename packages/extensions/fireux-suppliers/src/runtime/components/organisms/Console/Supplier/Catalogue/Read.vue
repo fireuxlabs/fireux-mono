@@ -1,5 +1,14 @@
 <template>
+  <UAlert
+    v-if="pending"
+    color="neutral"
+    variant="soft"
+    title="Loading catalogue"
+    description="Fetching supplier-owned product rows for the selected supplier."
+  />
+
   <SupplierCatalogueCollectionManager
+    v-else
     :collection="catalogueItems"
     title="Catalogue"
     description="Browse catalogue items for the selected supplier."
@@ -12,5 +21,6 @@ import type { SupplierCatalogueInterfaceItem } from '../../../../../composables/
 
 defineProps<{
   catalogueItems: SupplierCatalogueInterfaceItem[]
+  pending: boolean
 }>()
 </script>

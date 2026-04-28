@@ -9,6 +9,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 2) Core entities
 - `Supplier`
 - `SupplierProduct` (supplier-owned sale/procurement wrapper over canonical `Product`)
+- `SupplierCatalogue` (future supplier-owned presentation/grouping surface for supplier offers)
 
 ## 3) Identity rule
 - Supplier identity is id-based (`supplier.id` is canonical).
@@ -18,7 +19,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `suppliers/{supplierId}`
 - `apps/{appId}/suppliers/{supplierId}`
 - `suppliers/{supplierId}/products/{supplierProductId}`
-- `suppliers/{supplierId}/catalogue/{catalogueItemId}` (allowed catalogue label for supplier product records)
+- `suppliers/{supplierId}/catalogues/{catalogueId}` (presentation/grouping, not product sale terms)
 - Treat `Supplier` as a console/business entity family with:
   - a public canonical supplier record
   - an app-scoped supplier console overlay
@@ -27,8 +28,9 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `app_scope_app_id`
 - Legacy profile-style supplier paths are compatibility debt, not target design.
 - Supplier console governance belongs to `apps/{appId}/suppliers/{supplierId}`.
-- Supplier-owned catalogue/product records belong to `suppliers/{supplierId}/products/{supplierProductId}` or the allowed catalogue label.
-- Supplier catalogue/product records must link to canonical Product identity through `product_id`.
+- Supplier-owned product offers belong to `suppliers/{supplierId}/products/{supplierProductId}`.
+- SupplierProduct records must link to canonical Product identity through `product_id`.
+- SupplierCatalogue records present/group SupplierProduct records; they do not own sale terms.
 - Ingredient linkage is optional through `ingredient_id`; it is not supplier product identity.
 
 ## 5) Routes (public vs internal; slug vs id)

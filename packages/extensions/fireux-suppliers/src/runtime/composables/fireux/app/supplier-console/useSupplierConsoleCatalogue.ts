@@ -1,6 +1,8 @@
 import { computed } from 'vue'
 import { useSupplierConsole } from './useSupplierConsole'
 import { getDemoSupplierCatalogueItems } from '../utils/supplier-demo-scenarios'
+import { useSupplierProductCollection } from '../../firestore/supplier/fetch/useSupplierProductCollection'
+import type { SupplierCatalogueInterfaceItem } from '../../firestore/supplier/utils/view/useSupplierCatalogueItemInterface'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
@@ -27,13 +29,25 @@ export function useSupplierConsoleCatalogue() {
   const catalogueState = computed(() =>
     normalizeString(selectedSupplier.value?.catalogue_state)
   )
+  const liveCatalogueEnabled = computed(() => selectedMode.value === 'live')
+  const {
+    collectionPath: supplierProductsCollectionPath,
+    supplierProducts: liveCatalogueItems,
+    pending: livePending,
+  } = useSupplierProductCollection(supplierId, {
+    enabled: liveCatalogueEnabled,
+  })
 
-  const catalogueItems = computed(() =>
+  const catalogueItems = computed<SupplierCatalogueInterfaceItem[]>(() =>
     selectedMode.value === 'demo' && supplierId.value
       ? getDemoSupplierCatalogueItems(supplierId.value)
-      : []
+      : selectedMode.value === 'live'
+        ? liveCatalogueItems.value
+        : []
   )
-  const pending = computed(() => false)
+  const pending = computed(() =>
+    selectedMode.value === 'live' ? livePending.value : false
+  )
   const canWrite = computed(() => selectedMode.value === 'live')
 
   const isIntegratedCatalogue = computed(
@@ -56,7 +70,7 @@ export function useSupplierConsoleCatalogue() {
     }
 
     if (selectedMode.value === 'live') {
-      return 'This supplier console page is ready, but live supplier-owned catalogue rows are not wired here yet.'
+      return 'No supplier-owned product rows are available for this supplier yet.'
     }
 
     if (selectedMode.value === 'test') {
@@ -107,6 +121,7 @@ export function useSupplierConsoleCatalogue() {
     linkedIngredientIds,
     state,
     catalogueState,
+    supplierProductsCollectionPath,
     catalogueItems,
     pending,
     canWrite,

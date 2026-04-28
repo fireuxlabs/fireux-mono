@@ -122,17 +122,23 @@ export function useSupplierCatalogueForKitchen(params: {
         const ingredientName = asString(ingredientNameById.value.get(ingredientId))
         const supplierNameStrict = supplierName || `[Missing supplier name: ${supplierId || 'unknown'}]`
         const ingredientNameStrict = ingredientName || `[Missing ingredient name: ${ingredientId || 'unknown'}]`
-        const productName = asString(row.product_name) || ingredientNameStrict
+        const productName = asString(row.name_override) || ingredientNameStrict
 
         const unit = asString(row.unit) || 'unit'
         const packSizeLabel = asString(row.pack_size_label) || 'Pack'
         const currencyCode = asString(row.currency_code || 'CHF') || 'CHF'
 
         const packCostMinor = Number(row.pack_cost_minor || 0)
-        const unitCostMinor = Number(row.cost_per_unit_minor || 0)
+        const quantityPerPack = Number(row.quantity_per_pack || 0)
+        const explicitUnitCostMinor = Number(row.cost_per_unit_minor || 0)
+        const unitCostMinor =
+          explicitUnitCostMinor ||
+          (packCostMinor && quantityPerPack
+            ? Math.round(packCostMinor / quantityPerPack)
+            : 0)
 
         const supplierIngredientImage =
-          asString(row.product_image_url) ||
+          asString(row.image_override) ||
           asString(row.image_url) ||
           asString(row.ingredient_image_url)
         const globalImage = resolveGlobalIngredientImage.value(ingredientId)

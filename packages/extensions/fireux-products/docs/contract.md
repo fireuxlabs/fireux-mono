@@ -18,7 +18,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `products/{productId}`
 - `products/{productId}/prices/{priceId}` (optional)
 
-Supplier catalogue/product records should wrap canonical `Product` identity rather than replace it. Supplier-specific sale/procurement fields belong in supplier-owned records such as `suppliers/{supplierId}/products/{supplierProductId}` or `suppliers/{supplierId}/catalogue/{catalogueItemId}` with a `product_id` link.
+SupplierProduct records should wrap canonical `Product` identity rather than replace it. Supplier-specific sale/procurement fields belong in supplier-owned records at `suppliers/{supplierId}/products/{supplierProductId}` with a `product_id` link. SupplierCatalogue records are presentation/grouping surfaces for those supplier product offers.
 
 `ProductPrice` owns pricing terms. Product identity should not be split into fake products for naming variants such as `Pro` or `Enterprise` when the real commercial product is one product with multiple prices or terms.
 

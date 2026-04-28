@@ -16,7 +16,7 @@ export type DemoSupplierListItem = Partial<Supplier> & {
   linked_ingredient_ids?: string[]
 }
 
-export type DemoSupplierCatalogueItem = Pick<
+type DemoSupplierCatalogueSeed = Pick<
   SupplierProduct,
   | 'id'
   | 'supplier_id'
@@ -28,6 +28,10 @@ export type DemoSupplierCatalogueItem = Pick<
 > &
   Partial<Pick<
     SupplierProduct,
+    | 'ingredient_id'
+    | 'name_override'
+    | 'description_override'
+    | 'image_override'
     | 'supplier_sku'
     | 'quantity_per_pack'
     | 'order_unit'
@@ -35,15 +39,10 @@ export type DemoSupplierCatalogueItem = Pick<
     | 'lead_time_days'
     | 'min_order_quantity'
     | 'active'
-  >> & {
-  product_name: string
-  product_description?: string
-  product_image_url?: string
-  ingredient_id?: string
-  ingredient_name?: string
-  image_url?: string
-  cost_per_unit_minor: number
-}
+    | 'metadata'
+  >>
+
+export type DemoSupplierCatalogueItem = SupplierProduct
 
 const demoSuppliers: DemoSupplierListItem[] = [
   {
@@ -163,7 +162,7 @@ const cloneSupplier = (supplier: DemoSupplierListItem): DemoSupplierListItem => 
 
 const demoSupplierCatalogueBySupplierId: Record<
   string,
-  DemoSupplierCatalogueItem[]
+  DemoSupplierCatalogueSeed[]
 > = {
   'city-butchers': [
     {
@@ -171,12 +170,12 @@ const demoSupplierCatalogueBySupplierId: Record<
       supplier_id: 'city-butchers',
       product_id: 'beef-chuck-roll',
       ingredient_id: 'beef-chuck-roll',
-      ingredient_name: 'Beef Chuck Roll',
-      product_name: 'Beef Chuck Roll',
+      name_override: 'Beef Chuck Roll',
       pack_size_label: '6 kg primal',
-      image_url:
+      image_override:
         'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=240&h=240&q=80',
-      cost_per_unit_minor: 240,
+      quantity_per_pack: 60,
+      order_unit: 'primal',
       pack_cost_minor: 14400,
       currency_code: 'CHF',
       unit: '100g',
@@ -186,12 +185,12 @@ const demoSupplierCatalogueBySupplierId: Record<
       supplier_id: 'city-butchers',
       product_id: 'beef-brisket-point',
       ingredient_id: 'beef-brisket-point',
-      ingredient_name: 'Beef Brisket Point',
-      product_name: 'Beef Brisket Point',
+      name_override: 'Beef Brisket Point',
       pack_size_label: '4 kg brisket point',
-      image_url:
+      image_override:
         'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=240&h=240&q=80',
-      cost_per_unit_minor: 210,
+      quantity_per_pack: 40,
+      order_unit: 'point',
       pack_cost_minor: 8400,
       currency_code: 'CHF',
       unit: '100g',
@@ -201,12 +200,12 @@ const demoSupplierCatalogueBySupplierId: Record<
       supplier_id: 'city-butchers',
       product_id: 'beef-short-rib',
       ingredient_id: 'beef-short-rib',
-      ingredient_name: 'Beef Short Rib',
-      product_name: 'Beef Short Rib',
+      name_override: 'Beef Short Rib',
       pack_size_label: '3 kg tray',
-      image_url:
+      image_override:
         'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=240&h=240&q=80',
-      cost_per_unit_minor: 320,
+      quantity_per_pack: 30,
+      order_unit: 'tray',
       pack_cost_minor: 9600,
       currency_code: 'CHF',
       unit: '100g',
@@ -216,12 +215,12 @@ const demoSupplierCatalogueBySupplierId: Record<
       supplier_id: 'city-butchers',
       product_id: 'beef-fat-trimmings',
       ingredient_id: 'beef-fat-trimmings',
-      ingredient_name: 'Beef Fat Trimmings',
-      product_name: 'Beef Fat Trimmings',
+      name_override: 'Beef Fat Trimmings',
       pack_size_label: '2 kg tub',
-      image_url:
+      image_override:
         'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=240&h=240&q=80',
-      cost_per_unit_minor: 70,
+      quantity_per_pack: 20,
+      order_unit: 'tub',
       pack_cost_minor: 1400,
       currency_code: 'CHF',
       unit: '100g',
@@ -231,12 +230,12 @@ const demoSupplierCatalogueBySupplierId: Record<
       supplier_id: 'city-butchers',
       product_id: 'beef-smash-patties',
       ingredient_id: 'beef-smash-patties',
-      ingredient_name: 'Beef Smash Patties',
-      product_name: 'Beef Smash Patties',
+      name_override: 'Beef Smash Patties',
       pack_size_label: '20 patties case',
-      image_url:
+      image_override:
         'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&w=240&h=240&q=80',
-      cost_per_unit_minor: 180,
+      quantity_per_pack: 20,
+      order_unit: 'case',
       pack_cost_minor: 3600,
       currency_code: 'CHF',
       unit: 'piece',
@@ -246,12 +245,12 @@ const demoSupplierCatalogueBySupplierId: Record<
       supplier_id: 'city-butchers',
       product_id: 'chicken-thigh',
       ingredient_id: 'chicken-thigh',
-      ingredient_name: 'Chicken Thigh',
-      product_name: 'Chicken Thigh',
+      name_override: 'Chicken Thigh',
       pack_size_label: '5 kg tray',
-      image_url:
+      image_override:
         'https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=240&h=240&q=80',
-      cost_per_unit_minor: 220,
+      quantity_per_pack: 50,
+      order_unit: 'tray',
       pack_cost_minor: 11000,
       currency_code: 'CHF',
       unit: '100g',
@@ -263,12 +262,12 @@ const demoSupplierCatalogueBySupplierId: Record<
       supplier_id: 'daily-bakehouse',
       product_id: 'potato-buns',
       ingredient_id: 'potato-buns',
-      ingredient_name: 'Potato Buns',
-      product_name: 'Potato Buns',
+      name_override: 'Potato Buns',
       pack_size_label: '24 buns crate',
-      image_url:
+      image_override:
         'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=240&h=240&q=80',
-      cost_per_unit_minor: 90,
+      quantity_per_pack: 24,
+      order_unit: 'crate',
       pack_cost_minor: 2160,
       currency_code: 'CHF',
       unit: 'piece',
@@ -278,12 +277,12 @@ const demoSupplierCatalogueBySupplierId: Record<
       supplier_id: 'daily-bakehouse',
       product_id: 'brioche-buns',
       ingredient_id: 'brioche-buns',
-      ingredient_name: 'Brioche Buns',
-      product_name: 'Brioche Buns',
+      name_override: 'Brioche Buns',
       pack_size_label: '24 buns crate',
-      image_url:
+      image_override:
         'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=240&h=240&q=80',
-      cost_per_unit_minor: 110,
+      quantity_per_pack: 24,
+      order_unit: 'crate',
       pack_cost_minor: 2640,
       currency_code: 'CHF',
       unit: 'piece',
@@ -293,12 +292,12 @@ const demoSupplierCatalogueBySupplierId: Record<
       supplier_id: 'daily-bakehouse',
       product_id: 'gua-bao-buns',
       ingredient_id: 'gua-bao-buns',
-      ingredient_name: 'Gua Bao Buns',
-      product_name: 'Gua Bao Buns',
+      name_override: 'Gua Bao Buns',
       pack_size_label: '30 bao case',
-      image_url:
+      image_override:
         'https://images.unsplash.com/photo-1525755662778-989d0524087e?auto=format&fit=crop&w=240&h=240&q=80',
-      cost_per_unit_minor: 80,
+      quantity_per_pack: 30,
+      order_unit: 'case',
       pack_cost_minor: 2400,
       currency_code: 'CHF',
       unit: 'piece',
@@ -308,12 +307,12 @@ const demoSupplierCatalogueBySupplierId: Record<
       supplier_id: 'daily-bakehouse',
       product_id: 'mini-buns',
       ingredient_id: 'mini-buns',
-      ingredient_name: 'Mini Buns',
-      product_name: 'Mini Buns',
+      name_override: 'Mini Buns',
       pack_size_label: '40 mini buns crate',
-      image_url:
+      image_override:
         'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=240&h=240&q=80',
-      cost_per_unit_minor: 55,
+      quantity_per_pack: 40,
+      order_unit: 'crate',
       pack_cost_minor: 2200,
       currency_code: 'CHF',
       unit: 'piece',
@@ -323,12 +322,12 @@ const demoSupplierCatalogueBySupplierId: Record<
       supplier_id: 'daily-bakehouse',
       product_id: 'sourdough-loaf',
       ingredient_id: 'sourdough-loaf',
-      ingredient_name: 'Sourdough Loaf',
-      product_name: 'Sourdough Loaf',
+      name_override: 'Sourdough Loaf',
       pack_size_label: '8 loaf bake',
-      image_url:
+      image_override:
         'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=240&h=240&q=80',
-      cost_per_unit_minor: 650,
+      quantity_per_pack: 8,
+      order_unit: 'bake',
       pack_cost_minor: 5200,
       currency_code: 'CHF',
       unit: 'loaf',
@@ -337,21 +336,18 @@ const demoSupplierCatalogueBySupplierId: Record<
 }
 
 const cloneCatalogueItem = (
-  item: DemoSupplierCatalogueItem
+  item: DemoSupplierCatalogueSeed
 ): DemoSupplierCatalogueItem => ({
   ...item,
   id: normalizeString(item.id),
   supplier_id: normalizeString(item.supplier_id),
   product_id: normalizeString(item.product_id) || normalizeString(item.ingredient_id),
   ingredient_id: normalizeString(item.ingredient_id),
-  product_name: normalizeString(item.product_name || item.ingredient_name),
-  product_description: normalizeString(item.product_description),
-  product_image_url: normalizeString(item.product_image_url || item.image_url),
-  ingredient_name: normalizeString(item.ingredient_name),
+  name_override: normalizeString(item.name_override),
+  description_override: normalizeString(item.description_override),
+  image_override: normalizeString(item.image_override),
   pack_size_label: normalizeString(item.pack_size_label),
   supplier_sku: normalizeString(item.supplier_sku),
-  image_url: normalizeString(item.image_url),
-  cost_per_unit_minor: Math.max(0, Math.round(Number(item.cost_per_unit_minor || 0))),
   pack_cost_minor: Math.max(0, Math.round(Number(item.pack_cost_minor || 0))),
   currency_code: normalizeCurrency(item.currency_code),
   unit: normalizeString(item.unit) || 'unit',
@@ -364,6 +360,16 @@ const cloneCatalogueItem = (
   min_order_quantity:
     item.min_order_quantity === null ? null : Number(item.min_order_quantity || 0) || null,
   active: item.active !== false,
+  metadata: item.metadata ?? {},
+  created: {
+    at: {},
+    by: undefined,
+    app_id: undefined,
+  },
+  updated: {
+    at: {},
+    by: undefined,
+  },
 })
 
 export const getDemoSupplier = (supplierId?: string): DemoSupplierListItem | null => {

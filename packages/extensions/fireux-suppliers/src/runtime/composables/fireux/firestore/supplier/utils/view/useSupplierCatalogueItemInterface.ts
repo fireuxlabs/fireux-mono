@@ -1,17 +1,25 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { DemoSupplierCatalogueItem } from '../../../../app/utils/supplier-demo-scenarios'
+import type { SupplierProduct } from '../../../../../models/supplier/Supplier.model'
 
-export type SupplierCatalogueInterfaceItem = DemoSupplierCatalogueItem & {
+export type SupplierCatalogueInterfaceItem = Partial<SupplierProduct> &
+  Pick<SupplierProduct, 'id' | 'supplier_id' | 'product_id'> & {
   supplier_name?: string
 }
 
-const formatPrice = (valueMinor?: number, currencyCode?: string) =>
+const formatPrice = (valueMinor?: number | null, currencyCode?: string) =>
   new Intl.NumberFormat('de-CH', {
     style: 'currency',
     currency: safeString(currencyCode).trim().toUpperCase() || 'CHF',
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   }).format(Number(valueMinor || 0) / 100)
+
+const resolveUnitCostMinor = (item: SupplierCatalogueInterfaceItem) => {
+  const packCostMinor = Number(item.pack_cost_minor || 0)
+  const quantityPerPack = Number(item.quantity_per_pack || 0)
+  if (!packCostMinor || !quantityPerPack) return 0
+  return Math.round(packCostMinor / quantityPerPack)
+}
 
 export namespace SupplierCatalogueItemCard {
   export type Card = {
@@ -53,21 +61,22 @@ export function useSupplierCatalogueItemInterface() {
   ): SupplierCatalogueItemCard.Card {
     const id = safeString(item.id).trim()
     const productId = safeString(item.product_id || item.ingredient_id).trim()
-    const name = safeString(item.product_name || item.ingredient_name).trim()
+    const name = safeString(item.name_override || item.product_id).trim()
     const ingredientId = safeString(item.ingredient_id).trim()
     const packLabel = safeString(item.pack_size_label).trim()
     const unit = safeString(item.unit).trim() || 'unit'
     const supplierSku = safeString(item.supplier_sku).trim()
+    const unitCostMinor = resolveUnitCostMinor(item)
     const badges = [
       unit,
-      `Unit ${formatPrice(item.cost_per_unit_minor, item.currency_code)}`,
+      `Unit ${formatPrice(unitCostMinor, item.currency_code)}`,
       supplierSku ? `SKU ${supplierSku}` : '',
     ].filter(Boolean)
 
     return {
       id,
       to: '',
-      imageUrl: safeString(item.product_image_url || item.image_url).trim(),
+      imageUrl: safeString(item.image_override).trim(),
       title: name,
       subtitle: packLabel,
       badges,
@@ -76,7 +85,7 @@ export function useSupplierCatalogueItemInterface() {
       ingredientId,
       packLabel,
       unit,
-      unitPriceLabel: formatPrice(item.cost_per_unit_minor, item.currency_code),
+      unitPriceLabel: formatPrice(unitCostMinor, item.currency_code),
       packPriceLabel: formatPrice(item.pack_cost_minor, item.currency_code),
     }
   }

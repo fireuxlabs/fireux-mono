@@ -36,6 +36,15 @@
     <p v-else class="console-card-header__description">
       No supplier is currently selected.
     </p>
+
+    <div v-if="isDev" class="mt-4">
+      <DevJson
+        title="Supplier Focus (JSON)"
+        context="console supplier overview · focus"
+        :data="focusDebugData"
+        :default-open="false"
+      />
+    </div>
   </UCard>
 </template>
 
@@ -45,6 +54,7 @@ import {
   useSupplierInterface,
   type SupplierSurface,
 } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
+import { resolveSupplierProductCollectionPath } from '../../../../composables/fireux/firestore/supplier/fetch/useSupplierProductCollection'
 
 type SupplierPillCard = NonNullable<
   ReturnType<ReturnType<typeof useSupplierInterface>['pill']>
@@ -78,4 +88,58 @@ const focusModeLabel = computed(() =>
   props.focus.mode === 'demo' ? 'Demo' : props.focus.mode === 'test' ? 'Test' : 'Live'
 )
 const groupCountLabel = computed(() => String(props.group.count))
+const supplierCollectionPath = computed(() => {
+  if (props.focus.mode === 'test') return 'test-suppliers'
+  if (props.focus.mode === 'live') return 'suppliers'
+  return ''
+})
+const supplierDocPath = computed(() => {
+  if (!supplierCollectionPath.value || !props.focus.id) return ''
+  return `${supplierCollectionPath.value}/${props.focus.id}`
+})
+const supplierProductsCollectionPath = computed(() => {
+  if (props.focus.mode === 'demo') return 'demo supplier product offers'
+  return resolveSupplierProductCollectionPath(
+    props.focus.id,
+    supplierCollectionPath.value
+  )
+})
+const supplierCataloguesCollectionPath = computed(() => {
+  if (props.focus.mode === 'demo') return 'demo supplier catalogues'
+  if (!supplierCollectionPath.value || !props.focus.id) return ''
+  return `${supplierCollectionPath.value}/${props.focus.id}/catalogues`
+})
+const focusDebugData = computed(() => {
+  const supplier = props.focus.entity ?? null
+
+  return {
+    supplier: {
+      ...(supplier ?? {}),
+      id: supplier?.id || props.focus.id,
+      _debug: {
+        mode: props.focus.mode,
+        hasSelection: props.focus.hasSelection,
+        collectionPath: supplierCollectionPath.value || 'demo supplier scenarios',
+        docPath: supplierDocPath.value,
+      },
+      products: {
+        collectionPath: supplierProductsCollectionPath.value,
+        itemPath:
+          supplierProductsCollectionPath.value && props.focus.mode !== 'demo'
+            ? `${supplierProductsCollectionPath.value}/<supplierProductId>`
+            : '',
+        productPath: '/products/<productId>',
+      },
+      catalogues: {
+        collectionPath: supplierCataloguesCollectionPath.value,
+        itemPath:
+          supplierCataloguesCollectionPath.value && props.focus.mode !== 'demo'
+            ? `${supplierCataloguesCollectionPath.value}/<catalogueId>`
+            : '',
+        state: 'planned presentation/grouping surface',
+      },
+    },
+  }
+})
+const isDev = import.meta.dev
 </script>

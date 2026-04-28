@@ -34,7 +34,8 @@ type WidenLiteral<T> =
  * - Public facade depth can vary by family; Supplier may expose only the fields that make sense for its marketplace/public role.
  * - Any future supplier operator profile should remain a prerequisite or presentation layer, not a second ownership model.
  * - Supplier console governance belongs to the app-hosted supplier record.
- * - Supplier-owned catalogue/product records live beneath the root supplier record and link to Product.
+ * - Supplier-owned product offers live beneath the root supplier record and link to Product.
+ * - Supplier catalogue records, when introduced, should present/group supplier product offers rather than replace them.
  * - Supplier v1 stays intentionally small: company link, organization name, headline, summary, bio, image, categories, delivery areas, state, catalogue state, and linked ingredients.
  * - If that changes later, update the models README first, then this file.
  */
@@ -55,6 +56,7 @@ export const SupplierModel = {
   state: 'public' as SupplierState,
   catalogue_state: 'public_only' as SupplierCatalogueState,
   linked_ingredient_ids: [] as string[],
+  hello: '',
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -93,7 +95,6 @@ export type SupplierProductAvailabilityState =
  * Family: Supplier-scoped
  * Storage: supplier-owned sale/procurement wrapper over canonical Product
  * Path: /suppliers/<supplierId>/products/<supplierProductId>
- * Alternate collection label: /suppliers/<supplierId>/catalogue/<catalogueItemId>
  *
  * Decision note:
  * - SupplierProduct is not a replacement for Product.
