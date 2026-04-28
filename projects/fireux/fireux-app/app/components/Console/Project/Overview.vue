@@ -5,13 +5,12 @@
       <OrganismsConsoleProjectOverviewGroup :group="group" :mode="focus.mode" />
     </div>
 
-    <div v-if="isDev" class="mt-4">
-      <DevJson
-        title="Project Overview Debug"
-        context="console projects overview · selected project header source"
+    <div class="mt-4">
+      <DevFireuxDebugPanel
+        title="Project overview"
+        scope="console"
         :data="debugState"
-        :default-open="true"
-        :hide-when-empty="false"
+        default-open
       />
     </div>
   </section>
@@ -22,7 +21,6 @@ import { computed } from 'vue'
 import { useProjectConsoleOverview } from '../../../composables/fireux/project-console/useProjectConsoleOverview'
 
 const { focus, group } = useProjectConsoleOverview()
-const isDev = import.meta.dev
 
 const debugState = computed(() => {
   const project = focus.value.entity
