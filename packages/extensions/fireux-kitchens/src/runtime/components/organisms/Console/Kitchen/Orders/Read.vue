@@ -1,13 +1,5 @@
 <template>
-  <UAlert
-    v-if="pending"
-    color="neutral"
-    variant="soft"
-    title="Loading orders"
-    description="Fetching orders for the selected kitchen."
-  />
-
-  <UCard v-else>
+  <UCard>
     <template #header>
       <div class="console-card-header">
         <div class="console-card-header__title">Orders</div>
@@ -35,7 +27,6 @@ import type { KitchenOrder } from '../../../../../models/order.model'
 
 const props = defineProps<{
   orders: KitchenOrder[]
-  pending: boolean
 }>()
 
 const toTimeLabel = (value: any) => {

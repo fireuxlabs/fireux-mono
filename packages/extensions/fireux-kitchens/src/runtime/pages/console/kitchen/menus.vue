@@ -13,7 +13,6 @@
 </template>
 
 <script setup lang="ts">
-
 definePageMeta({
   layout: 'console',
   nav: {
@@ -30,5 +29,4 @@ definePageMeta({
   },
   requiresAuth: true,
 })
-
 </script>

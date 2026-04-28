@@ -10,12 +10,17 @@ export function useKitchenConsoleMenus() {
   const { selectedKitchen, selectedMode } = useKitchenConsole()
 
   const kitchenId = computed(() => normalizeString(selectedKitchen.value?.id))
-  const fetchKitchenId = computed(() => (selectedMode.value === 'demo' ? '' : kitchenId.value))
+  const fetchKitchenId = computed(() =>
+    selectedMode.value === 'demo' ? '' : kitchenId.value
+  )
   const kitchenCollectionPath = computed(() =>
     selectedMode.value === 'test' ? 'test-kitchens' : undefined
   )
-  const { menus: liveMenus, pending: livePending, collectionPath } =
-    useKitchenMenuCollection(fetchKitchenId, { kitchenCollectionPath })
+  const {
+    menus: liveMenus,
+    pending: livePending,
+    collectionPath,
+  } = useKitchenMenuCollection(fetchKitchenId, { kitchenCollectionPath })
   const page = useKitchenConsoleReadPage<Menu>({
     collectionName: 'menus',
     selectedKitchen,

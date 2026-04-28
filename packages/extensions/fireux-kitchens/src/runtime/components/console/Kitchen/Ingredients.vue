@@ -1,9 +1,6 @@
 <template>
-  <section class="console-surface space-y-4">
-    <OrganismsConsoleKitchenIngredientsRead
-      :ingredients="ingredients"
-      :pending="pending"
-    />
+  <section class="console-surface space-y-6">
+    <OrganismsConsoleKitchenIngredientsRead :ingredients="ingredients" />
 
     <OrganismsConsoleKitchenIngredientsWrite v-if="canWrite" />
   </section>
@@ -12,5 +9,5 @@
 <script setup lang="ts">
 import { useKitchenConsoleIngredients } from '../../../composables/fireux/app/kitchen-console/useKitchenConsoleIngredients'
 
-const { ingredients, pending, canWrite } = useKitchenConsoleIngredients()
+const { ingredients, canWrite } = useKitchenConsoleIngredients()
 </script>

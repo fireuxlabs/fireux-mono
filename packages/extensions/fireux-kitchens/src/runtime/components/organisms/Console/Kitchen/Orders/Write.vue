@@ -6,8 +6,6 @@
       </div>
     </template>
 
-    <p class="console-card-header__description">
-      hello world - WRITE
-    </p>
+    <p class="console-card-header__description">hello world - WRITE Orders</p>
   </UCard>
 </template>

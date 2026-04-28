@@ -1,13 +1,5 @@
 <template>
-  <UAlert
-    v-if="pending"
-    color="neutral"
-    variant="soft"
-    title="Loading recipes"
-    description="Fetching recipes for the selected kitchen."
-  />
-
-  <UCard v-else>
+  <UCard>
     <template #header>
       <div class="console-card-header">
         <div class="console-card-header__title">Recipes</div>
@@ -33,10 +25,19 @@
           />
 
           <div class="min-w-0 flex-1 space-y-1">
-            <p class="truncate text-sm font-medium text-default">{{ card.title }}</p>
-            <p v-if="card.subtitle" class="truncate text-xs text-dimmed">{{ card.subtitle }}</p>
-            <p v-if="card.summary" class="text-xs text-dimmed">{{ card.summary }}</p>
-            <div v-if="card.badges.length" class="flex flex-wrap items-center gap-1">
+            <p class="truncate text-sm font-medium text-default">
+              {{ card.title }}
+            </p>
+            <p v-if="card.subtitle" class="truncate text-xs text-dimmed">
+              {{ card.subtitle }}
+            </p>
+            <p v-if="card.summary" class="text-xs text-dimmed">
+              {{ card.summary }}
+            </p>
+            <div
+              v-if="card.badges.length"
+              class="flex flex-wrap items-center gap-1"
+            >
               <UBadge
                 v-for="badge in card.badges"
                 :key="badge"
@@ -61,11 +62,12 @@ import { computed } from 'vue'
 import type { Recipe } from '../../../../../models/recipe.model'
 import { useRecipeInterface } from '../../../../../composables/fireux/firestore/runtime-kitchen/recipe/utils/view/useRecipeInterface'
 
-type RecipeCard = NonNullable<ReturnType<ReturnType<typeof useRecipeInterface>['pill']>>
+type RecipeCard = NonNullable<
+  ReturnType<ReturnType<typeof useRecipeInterface>['pill']>
+>
 
 const props = defineProps<{
   recipes: Recipe[]
-  pending: boolean
 }>()
 
 const { pill } = useRecipeInterface()
