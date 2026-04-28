@@ -30,12 +30,17 @@ Repository: fireux-mono
 If any Tier2/Tier3 doc conflicts with Tier1, Tier1 wins.
 
 ## Where to look first
-1. `AGENTS.md` (this file)
-2. `docs/README.md`
-3. `packages/core/fireux-docs/src/runtime/README.md`
-4. `docs/fireux-canon.md`
-5. `docs/runtime-contract.md`
-6. `docs/seo-canon.md`
+1. The user task and any directly named files.
+2. `AGENTS.md` (this file).
+3. For package/app work, the nearest local `AGENTS.md`, `AI.md`, `README.md`, or `docs/contract.md` only when relevant.
+
+## Context loading rules
+- Do not read broad docs by default.
+- Read Tier1 canon only when the task touches architecture, runtime contracts, routing, Firestore models, SEO, or cross-package behavior.
+- Read `packages/core/fireux-docs/src/runtime/README.md` only when the task touches runtime documentation, reusable runtime surfaces, or cross-cutting runtime components/composables/models/pages.
+- Never read `docs/ai/**` unless the user explicitly asks for history/context.
+- Never treat Tier3 as authority.
+- If more than a small, localized set of files seems required, stop and report the scope before broad inspection or editing.
 
 ## Runtime README Branch System
 - `packages/core/fireux-docs/src/runtime/README.md` is the runtime docs entry point.
