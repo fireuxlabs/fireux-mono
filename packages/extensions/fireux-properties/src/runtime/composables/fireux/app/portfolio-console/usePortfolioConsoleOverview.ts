@@ -1,14 +1,21 @@
 import { useConsoleOverview } from 'fireux-core/runtime/composables/fireux/console/useConsoleOverview'
-import type { Portfolio } from '../../../../../models/portfolio.model'
-import { usePortfolioConsole } from './usePortfolioConsole'
+import {
+  usePortfolioConsole,
+  type PortfolioConsoleEntity,
+} from './usePortfolioConsole'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function usePortfolioConsoleOverview() {
-  const { livePortfolios, demoPortfolios, testPortfolio, selectedPortfolio, selectedMode } =
-    usePortfolioConsole()
+  const {
+    livePortfolios,
+    demoPortfolios,
+    testPortfolio,
+    selectedPortfolio,
+    selectedMode,
+  } = usePortfolioConsole()
 
-  return useConsoleOverview<Portfolio, Portfolio>({
+  return useConsoleOverview<PortfolioConsoleEntity, PortfolioConsoleEntity>({
     selectedEntity: selectedPortfolio,
     selectedMode,
     liveItems: livePortfolios,

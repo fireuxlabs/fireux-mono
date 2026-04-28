@@ -14,39 +14,49 @@ import {
   type PortfolioCollectionFilter,
 } from '../../firestore/portfolio/fetch/usePortfolioCollection'
 import { usePortfolioFetch } from '../../firestore/portfolio/fetch/usePortfolioFetch'
-import { usePortfolioInterface } from '../../firestore/portfolio/utils/view/usePortfolioInterface'
-import type { Portfolio } from '../../../../../models/portfolio.model'
+import {
+  usePortfolioInterface,
+  type PortfolioSurface,
+} from '../../firestore/portfolio/utils/view/usePortfolioInterface'
+import { getDemoPortfolios } from './demo-scenarios'
 import type { Ref } from 'vue'
 
 type PortfolioConsoleMode = ConsoleMode
+export type PortfolioConsoleEntity = PortfolioSurface & {
+  id?: string
+  image_url?: string
+}
 type UsePortfolioConsoleOptions = {
-  publishHeader?: boolean
-  filter?: PortfolioCollectionFilter | Ref<PortfolioCollectionFilter | null | undefined> | null
+  filter?:
+    | PortfolioCollectionFilter
+    | Ref<PortfolioCollectionFilter | null | undefined>
+    | null
 }
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-export function usePortfolioConsole(
-  options: UsePortfolioConsoleOptions = {}
-) {
+export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
   const { uid } = useAuth()
+  const normalizedUid = computed(() => normalizeString(uid.value))
   const { avatarSrc, currentUser } = useUser()
   const { pill } = usePortfolioInterface()
   const liveFilter = computed<PortfolioCollectionFilter>(() => {
     const explicitFilter = isRef(options.filter)
-      ? options.filter.value ?? {}
-      : options.filter ?? {}
+      ? (options.filter.value ?? {})
+      : (options.filter ?? {})
 
     return {
       ...explicitFilter,
-      teamId: normalizeString(uid.value),
+      teamId: normalizedUid.value,
     }
   })
   const { portfolios: livePortfolios } = usePortfolioCollection({
     filter: liveFilter,
   })
-  const demoPortfolios = computed<Portfolio[]>(() => [])
-  const { portfolio: testPortfolio } = usePortfolioFetch(uid, {
+  const demoPortfolios = computed<PortfolioConsoleEntity[]>(() =>
+    getDemoPortfolios()
+  )
+  const { portfolio: testPortfolio } = usePortfolioFetch(normalizedUid, {
     collectionPath: 'test-portfolios',
   })
 
@@ -56,15 +66,20 @@ export function usePortfolioConsole(
     selectedEntity,
     selectEntity,
     clearSelection,
-  } = useConsole<Portfolio, Portfolio, Portfolio>('portfolios', {
+  } = useConsole<
+    PortfolioConsoleEntity,
+    PortfolioConsoleEntity,
+    PortfolioConsoleEntity
+  >('portfolios', {
     liveItems: livePortfolios,
     demoItems: demoPortfolios,
     testItem: testPortfolio,
-    getId: (portfolio) => normalizeString((portfolio as Portfolio)?.id),
+    getId: (portfolio) =>
+      normalizeString((portfolio as PortfolioConsoleEntity)?.id),
   })
 
-  const selectedPortfolio = computed<Portfolio | null>(
-    () => selectedEntity.value as Portfolio | null
+  const selectedPortfolio = computed<PortfolioConsoleEntity | null>(
+    () => selectedEntity.value as PortfolioConsoleEntity | null
   )
 
   const portfolio = computed(() => {
@@ -125,7 +140,10 @@ export function usePortfolioConsole(
     clearSelection()
   }
 
-  const selectPortfolio = (portfolioId: string, mode: PortfolioConsoleMode = 'live') => {
+  const selectPortfolio = (
+    portfolioId: string,
+    mode: PortfolioConsoleMode = 'live'
+  ) => {
     selectEntity(portfolioId, mode)
   }
 

@@ -5,7 +5,10 @@ import {
   useRuntimePortfolioPath,
 } from '../../../app/portfolio-console/useActivePortfolio'
 import type { Client } from '../../../../../models/client.model'
-import type { DemoLease, DemoPortfolioScenario } from '../../../app/portfolio-console/demo-scenarios'
+import type {
+  DemoLease,
+  DemoPortfolioScenario,
+} from '../../../app/portfolio-console/demo-scenarios'
 
 const clientAvatarPlaceholder = (seed: string) =>
   `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(`fireux-client-${seed || 'placeholder'}`)}`
@@ -82,7 +85,9 @@ const pickDemoClientSeeds = (scenarioId: string, count: number) => {
   const pool = DEMO_CLIENT_SEEDS
   const requested = Math.max(1, Math.min(count, pool.length))
   const start = hashString(scenarioId) % pool.length
-  return Array.from({ length: requested }).map((_, offset) => pool[(start + offset) % pool.length] as DemoClientSeed)
+  return Array.from({ length: requested }).map(
+    (_, offset) => pool[(start + offset) % pool.length] as DemoClientSeed
+  )
 }
 
 const normalizeStatus = (value: unknown): Client['status'] => {
@@ -94,7 +99,10 @@ const normalizeStatus = (value: unknown): Client['status'] => {
   return 'active'
 }
 
-const normalizeRisk = (value: unknown, status: Client['status']): Client['risk_level'] => {
+const normalizeRisk = (
+  value: unknown,
+  status: Client['status']
+): Client['risk_level'] => {
   const risk = safeString(value).toLowerCase()
   if (risk === 'low') return 'low'
   if (risk === 'medium') return 'medium'
@@ -107,7 +115,11 @@ const normalizeRisk = (value: unknown, status: Client['status']): Client['risk_l
 const normalizeClient = (value: Partial<Client>): Client => {
   const id = safeString(value.id)
   const status = normalizeStatus(value.status)
-  const displayName = safeString(value.display_name) || safeString(value.legal_name) || id || 'Unknown client'
+  const displayName =
+    safeString(value.display_name) ||
+    safeString(value.legal_name) ||
+    id ||
+    'Unknown client'
   const portfolioId = safeString(value.portfolio_id)
   const propertyId = safeString(value.property_id)
   const unitId = safeString(value.unit_id)
@@ -121,10 +133,19 @@ const normalizeClient = (value: Partial<Client>): Client => {
     ...(isArray(value.property_ids) ? value.property_ids : []),
     propertyId,
   ])
-  const unitIds = uniqueStrings([...(isArray(value.unit_ids) ? value.unit_ids : []), unitId])
+  const unitIds = uniqueStrings([
+    ...(isArray(value.unit_ids) ? value.unit_ids : []),
+    unitId,
+  ])
 
   return {
-    id: id || `client-${safeString(displayName).toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'unknown'}`,
+    id:
+      id ||
+      `client-${
+        safeString(displayName)
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-') || 'unknown'
+      }`,
     portfolio_id: portfolioId,
     portfolio_ids: portfolioIds,
     property_id: propertyId,
@@ -140,14 +161,19 @@ const normalizeClient = (value: Partial<Client>): Client => {
     trading_name: safeString(value.trading_name),
     entity_kind: value.entity_kind || 'organization',
     entity_type: value.entity_type || 'company',
+    parent_client_id: safeString(value.parent_client_id),
+    ultimate_parent_name: safeString(value.ultimate_parent_name),
     registration_number: safeString(value.registration_number),
     tax_id: safeString(value.tax_id),
     jurisdiction: safeString(value.jurisdiction),
 
     status,
     relationship_status:
-      value.relationship_status || (status === 'prospect' ? 'prospect' : 'active'),
+      value.relationship_status ||
+      (status === 'prospect' ? 'prospect' : 'active'),
+    relationship_since: safeString(value.relationship_since),
     risk_level: normalizeRisk(value.risk_level, status),
+    risk_notes: safeString(value.risk_notes),
     monthly_rent: Number(value.monthly_rent || 0),
     currency: safeString(value.currency || 'GBP').toUpperCase() || 'GBP',
 
@@ -160,10 +186,18 @@ const normalizeClient = (value: Partial<Client>): Client => {
     phone: safeString(value.phone),
     website_url: safeString(value.website_url),
 
-    contacts: isArray(value.contacts) ? (value.contacts as Client['contacts']) : [],
+    contacts: isArray(value.contacts)
+      ? (value.contacts as Client['contacts'])
+      : [],
     account_owner_user_id: safeString(value.account_owner_user_id),
     notes: safeString(value.notes),
     tags: isArray(value.tags) ? uniqueStrings(value.tags) : [],
+    created: value.created ?? {
+      at: {} as any,
+      by: undefined,
+      app_id: undefined,
+    },
+    updated: value.updated ?? { at: {} as any, by: undefined },
   }
 }
 
@@ -180,8 +214,12 @@ const buildDemoClients = (scenario: DemoPortfolioScenario): Client[] => {
     'GBP'
 
   if (!portfolioId || properties.length === 0) {
-    const fallbackName = safeString(scenario.portfolio?.owner_label) || 'Portfolio Owner'
-    const slug = safeString(fallbackName).toLowerCase().replace(/[^a-z0-9]+/g, '-') || 'portfolio-owner'
+    const fallbackName =
+      safeString(scenario.portfolio?.owner_label) || 'Portfolio Owner'
+    const slug =
+      safeString(fallbackName)
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-') || 'portfolio-owner'
     return [
       normalizeClient({
         id: `client-${portfolioId || 'unknown'}-${slug}`,
@@ -209,12 +247,7 @@ const buildDemoClients = (scenario: DemoPortfolioScenario): Client[] => {
     ]
   }
 
-  const groupCount =
-    properties.length >= 9
-      ? 3
-      : properties.length >= 4
-        ? 2
-        : 1
+  const groupCount = properties.length >= 9 ? 3 : properties.length >= 4 ? 2 : 1
   const seeds = pickDemoClientSeeds(portfolioId, groupCount)
   const leaseById = new Map<string, DemoLease>(
     leases
@@ -223,22 +256,38 @@ const buildDemoClients = (scenario: DemoPortfolioScenario): Client[] => {
   )
 
   const grouped = seeds.map((seed, index) => {
-    const ownedProperties = properties.filter((_, propertyIndex) => propertyIndex % seeds.length === index)
+    const ownedProperties = properties.filter(
+      (_, propertyIndex) => propertyIndex % seeds.length === index
+    )
     const ownedPropertyIds = ownedProperties
       .map((property) => safeString(property.id))
       .filter(Boolean)
-    const ownedUnits = units.filter((unit) => ownedPropertyIds.includes(safeString(unit.property_id)))
-    const ownedUnitIds = ownedUnits.map((unit) => safeString(unit.id)).filter(Boolean)
-    const ownedTenants = tenants.filter((tenant) => ownedPropertyIds.includes(safeString(tenant.property_id)))
+    const ownedUnits = units.filter((unit) =>
+      ownedPropertyIds.includes(safeString(unit.property_id))
+    )
+    const ownedUnitIds = ownedUnits
+      .map((unit) => safeString(unit.id))
+      .filter(Boolean)
+    const ownedTenants = tenants.filter((tenant) =>
+      ownedPropertyIds.includes(safeString(tenant.property_id))
+    )
 
     const monthlyRent = ownedTenants.reduce(
       (sum, tenant) => sum + Number(tenant.monthly_rent || 0),
       0
     )
 
-    const hasArrears = ownedTenants.some((tenant) => safeString(tenant.status) === 'arrears')
-    const hasEnding = ownedTenants.some((tenant) => safeString(tenant.status) === 'ending')
-    const status: Client['status'] = hasArrears ? 'arrears' : hasEnding ? 'ending' : 'active'
+    const hasArrears = ownedTenants.some(
+      (tenant) => safeString(tenant.status) === 'arrears'
+    )
+    const hasEnding = ownedTenants.some(
+      (tenant) => safeString(tenant.status) === 'ending'
+    )
+    const status: Client['status'] = hasArrears
+      ? 'arrears'
+      : hasEnding
+        ? 'ending'
+        : 'active'
 
     const leaseCandidates = ownedTenants
       .map((tenant) => {
@@ -276,7 +325,8 @@ const buildDemoClients = (scenario: DemoPortfolioScenario): Client[] => {
       entity_type: seed.entity_type,
       jurisdiction: seed.jurisdiction,
       relationship_status: 'active',
-      risk_level: status === 'arrears' ? 'high' : status === 'ending' ? 'medium' : 'low',
+      risk_level:
+        status === 'arrears' ? 'high' : status === 'ending' ? 'medium' : 'low',
       status,
       monthly_rent: roundToMoney(monthlyRent),
       currency,
@@ -292,9 +342,13 @@ const buildDemoClients = (scenario: DemoPortfolioScenario): Client[] => {
 
 const roundToMoney = (value: number) => Math.round(Number(value || 0))
 
-export function usePortfolioClientCollection(runtimePortfolio = useActivePortfolio()) {
+export function usePortfolioClientCollection(
+  runtimePortfolio = useActivePortfolio()
+) {
   const { firestoreFetchCollection } = useFirestoreRead()
-  const sourceRef = shallowRef(null) as ShallowRef<Ref<Client[] | undefined> | null>
+  const sourceRef = shallowRef(null) as ShallowRef<Ref<
+    Client[] | undefined
+  > | null>
   const collectionPath = useRuntimePortfolioPath(runtimePortfolio, 'clients')
 
   watch(
@@ -316,7 +370,9 @@ export function usePortfolioClientCollection(runtimePortfolio = useActivePortfol
 
       const scenarioClients = (scenario as any).clients
       if (Array.isArray(scenarioClients) && scenarioClients.length > 0) {
-        return scenarioClients.map((entry: Partial<Client>) => normalizeClient(entry))
+        return scenarioClients.map((entry: Partial<Client>) =>
+          normalizeClient(entry)
+        )
       }
 
       return buildDemoClients(scenario)

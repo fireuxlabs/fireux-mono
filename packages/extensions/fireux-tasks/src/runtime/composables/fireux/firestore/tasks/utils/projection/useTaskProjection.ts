@@ -1,5 +1,5 @@
 import { useActivePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
-import type { TaskCreateInput } from '../../../../../models/task.model'
+import type { TaskCreateInput } from '../../../../../../models/task.model'
 
 const normalize = (value: unknown) => String(value || '').trim()
 
@@ -20,13 +20,20 @@ export function useTaskProjection(runtimePortfolio = useActivePortfolio()) {
     property_id?: string
     expiry_date?: string
   }): TaskCreateInput {
-    const typeLabel = normalize(record.type_label) || normalize(record.type_id) || 'compliance item'
+    const typeLabel =
+      normalize(record.type_label) ||
+      normalize(record.type_id) ||
+      'compliance item'
 
     return {
       title: `Review ${typeLabel}`,
       description: [
-        normalize(record.property_id) ? `Property ${normalize(record.property_id)}` : '',
-        normalize(record.expiry_date) ? `Expiry ${normalize(record.expiry_date)}` : '',
+        normalize(record.property_id)
+          ? `Property ${normalize(record.property_id)}`
+          : '',
+        normalize(record.expiry_date)
+          ? `Expiry ${normalize(record.expiry_date)}`
+          : '',
       ]
         .filter(Boolean)
         .join(' · '),
@@ -47,8 +54,12 @@ export function useTaskProjection(runtimePortfolio = useActivePortfolio()) {
     return {
       title: `Review linked document ${normalize(link.document_id) || 'document'}`,
       description: [
-        normalize(link.target_type) ? `Target type ${normalize(link.target_type)}` : '',
-        normalize(link.target_id) ? `Target id ${normalize(link.target_id)}` : '',
+        normalize(link.target_type)
+          ? `Target type ${normalize(link.target_type)}`
+          : '',
+        normalize(link.target_id)
+          ? `Target id ${normalize(link.target_id)}`
+          : '',
         runtimeId() ? `Portfolio ${runtimeId()}` : '',
       ]
         .filter(Boolean)

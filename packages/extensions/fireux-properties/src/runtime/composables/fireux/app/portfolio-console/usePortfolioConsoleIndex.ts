@@ -4,22 +4,29 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import type { PortfolioCollectionFilter } from '../../firestore/portfolio/fetch/usePortfolioCollection'
 import { usePortfolioFetch } from '../../firestore/portfolio/fetch/usePortfolioFetch'
 import { usePortfolioCreate } from '../../firestore/portfolio/mutations/usePortfolioCreate'
-import type { Portfolio } from '../../../../../models/portfolio.model'
-import { usePortfolioConsole } from './usePortfolioConsole'
+import {
+  usePortfolioConsole,
+  type PortfolioConsoleEntity,
+} from './usePortfolioConsole'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 type UsePortfolioConsoleIndexOptions = {
-  filter?: PortfolioCollectionFilter | Ref<PortfolioCollectionFilter | null | undefined> | null
+  filter?:
+    | PortfolioCollectionFilter
+    | Ref<PortfolioCollectionFilter | null | undefined>
+    | null
 }
 
 export function usePortfolioConsoleIndex(
   options: UsePortfolioConsoleIndexOptions = {}
 ) {
   const { uid } = useAuth()
-  const { portfolio: testPortfolioSource, pending: testPortfolioPending } = usePortfolioFetch(uid, {
-    collectionPath: 'test-portfolios',
-  })
+  const normalizedUid = computed(() => normalizeString(uid.value))
+  const { portfolio: testPortfolioSource, pending: testPortfolioPending } =
+    usePortfolioFetch(normalizedUid, {
+      collectionPath: 'test-portfolios',
+    })
   const { createTestPortfolio } = usePortfolioCreate()
   const {
     livePortfolios,
@@ -37,18 +44,23 @@ export function usePortfolioConsoleIndex(
     test: testPortfolioSource.value,
   }))
 
-  const consoleIndex = useConsoleIndex<Portfolio, Portfolio, Portfolio>({
+  const consoleIndex = useConsoleIndex<
+    PortfolioConsoleEntity,
+    PortfolioConsoleEntity,
+    PortfolioConsoleEntity
+  >({
     entities: sourcePortfolios,
     selectEntity: selectPortfolio,
     getTestId: (portfolio) => normalizeString(portfolio.id),
     autoCreateTest: true,
     testPending: testPortfolioPending,
-    testCreateKey: uid,
+    testCreateKey: normalizedUid,
     createTestEntity: async ({ avatarSrc, displayName }) => {
-      const testId = normalizeString(uid.value)
+      const testId = normalizedUid.value
       if (!testId) return null
 
-      const userLabel = normalizeString(displayName) || `User ${testId.slice(0, 6)}`
+      const userLabel =
+        normalizeString(displayName) || `User ${testId.slice(0, 6)}`
       const result = await createTestPortfolio({
         id: testId,
         name: 'Test Portfolio',
