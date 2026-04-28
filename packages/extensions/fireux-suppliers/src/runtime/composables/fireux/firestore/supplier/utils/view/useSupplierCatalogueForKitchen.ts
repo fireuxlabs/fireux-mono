@@ -3,6 +3,7 @@ import { computed, type MaybeRefOrGetter, toValue } from 'vue'
 export type SupplierItemRow = {
   id: string
   supplier_id: string
+  product_id: string
   ingredient_id: string
   name: string
   slug: string
@@ -115,11 +116,13 @@ export function useSupplierCatalogueForKitchen(params: {
 
         const id = asString(row.id) || `supplier-ingredient-${index + 1}`
         const supplierId = asString(row.supplier_id)
+        const productId = asString(row.product_id) || asString(row.ingredient_id)
         const ingredientId = asString(row.ingredient_id)
         const supplierName = asString(supplierNameById.value.get(supplierId))
         const ingredientName = asString(ingredientNameById.value.get(ingredientId))
         const supplierNameStrict = supplierName || `[Missing supplier name: ${supplierId || 'unknown'}]`
         const ingredientNameStrict = ingredientName || `[Missing ingredient name: ${ingredientId || 'unknown'}]`
+        const productName = asString(row.product_name) || ingredientNameStrict
 
         const unit = asString(row.unit) || 'unit'
         const packSizeLabel = asString(row.pack_size_label) || 'Pack'
@@ -128,15 +131,19 @@ export function useSupplierCatalogueForKitchen(params: {
         const packCostMinor = Number(row.pack_cost_minor || 0)
         const unitCostMinor = Number(row.cost_per_unit_minor || 0)
 
-        const supplierIngredientImage = asString(row.image_url) || asString(row.ingredient_image_url)
+        const supplierIngredientImage =
+          asString(row.product_image_url) ||
+          asString(row.image_url) ||
+          asString(row.ingredient_image_url)
         const globalImage = resolveGlobalIngredientImage.value(ingredientId)
 
         return {
           id,
           supplier_id: supplierId,
+          product_id: productId,
           ingredient_id: ingredientId,
-          name: ingredientNameStrict,
-          slug: ingredientId || id,
+          name: productName,
+          slug: productId || ingredientId || id,
           image_url: supplierIngredientImage || globalImage,
           subtitle: supplierNameStrict,
           pack_label: packSizeLabel || '[Missing pack size]',

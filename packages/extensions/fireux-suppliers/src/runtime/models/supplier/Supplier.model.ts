@@ -135,7 +135,11 @@ export const SupplierProductModel = {
   },
 } as const
 
-export type SupplierProduct = WidenLiteral<typeof SupplierProductModel>
+type SupplierProductModelShape = WidenLiteral<typeof SupplierProductModel>
+
+export type SupplierProduct = Omit<SupplierProductModelShape, 'ingredient_id'> & {
+  ingredient_id?: string
+}
 
 export type SupplierProductCreateInput = Omit<
   SupplierProduct,

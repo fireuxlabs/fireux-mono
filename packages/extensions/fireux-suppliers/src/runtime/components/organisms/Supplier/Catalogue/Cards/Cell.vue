@@ -38,7 +38,15 @@
 
         <div class="flex flex-wrap items-center gap-1">
           <UBadge
-            v-if="record.ingredientId"
+            v-if="record.productId"
+            variant="soft"
+            color="neutral"
+            size="xs"
+          >
+            {{ record.productId }}
+          </UBadge>
+          <UBadge
+            v-if="record.ingredientId && record.ingredientId !== record.productId"
             variant="soft"
             color="neutral"
             size="xs"

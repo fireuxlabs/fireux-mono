@@ -22,6 +22,7 @@ export namespace SupplierCatalogueItemCard {
     subtitle: string
     badges: string[]
     name: string
+    productId: string
     ingredientId: string
     packLabel: string
     unit: string
@@ -40,6 +41,7 @@ export function useSupplierCatalogueItemInterface() {
     | 'imageUrl'
     | 'name'
     | 'subtitle'
+    | 'productId'
     | 'ingredientId'
     | 'unitPriceLabel'
     | 'packPriceLabel'
@@ -50,19 +52,27 @@ export function useSupplierCatalogueItemInterface() {
     item: SupplierCatalogueInterfaceItem
   ): SupplierCatalogueItemCard.Card {
     const id = safeString(item.id).trim()
-    const name = safeString(item.ingredient_name).trim()
+    const productId = safeString(item.product_id || item.ingredient_id).trim()
+    const name = safeString(item.product_name || item.ingredient_name).trim()
     const ingredientId = safeString(item.ingredient_id).trim()
     const packLabel = safeString(item.pack_size_label).trim()
     const unit = safeString(item.unit).trim() || 'unit'
+    const supplierSku = safeString(item.supplier_sku).trim()
+    const badges = [
+      unit,
+      `Unit ${formatPrice(item.cost_per_unit_minor, item.currency_code)}`,
+      supplierSku ? `SKU ${supplierSku}` : '',
+    ].filter(Boolean)
 
     return {
       id,
       to: '',
-      imageUrl: safeString(item.image_url).trim(),
+      imageUrl: safeString(item.product_image_url || item.image_url).trim(),
       title: name,
       subtitle: packLabel,
-      badges: [unit, `Unit ${formatPrice(item.cost_per_unit_minor, item.currency_code)}`],
+      badges,
       name,
+      productId,
       ingredientId,
       packLabel,
       unit,
@@ -101,6 +111,7 @@ export function useSupplierCatalogueItemInterface() {
       imageUrl: base.imageUrl,
       name: base.name,
       subtitle: base.subtitle,
+      productId: base.productId,
       ingredientId: base.ingredientId,
       unitPriceLabel: base.unitPriceLabel,
       packPriceLabel: base.packPriceLabel,
