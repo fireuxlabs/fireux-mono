@@ -93,7 +93,31 @@
     </UDashboardSidebar>
 
     <div class="h-screen w-full overflow-y-auto bg-elevated/50 p-0 lg:p-4">
-      <NuxtPage />
+      <UDashboardPanel v-if="selectionBlocked" id="console-selection-required">
+        <template #header>
+          <LayoutsConsoleNavbar title="Selection Required" />
+        </template>
+
+        <template #body>
+          <section class="space-y-4">
+            <UAlert
+              color="neutral"
+              variant="soft"
+              title="No console item selected"
+              :description="selectionRequiredDescription"
+              :actions="[
+                {
+                  label: selectionRequiredActionLabel,
+                  to: familyPath,
+                  icon: 'i-lucide-arrow-right',
+                },
+              ]"
+            />
+          </section>
+        </template>
+      </UDashboardPanel>
+
+      <NuxtPage v-else />
     </div>
   </UDashboardGroup>
 
@@ -105,8 +129,13 @@
 <script setup lang="ts">
 import { useRoute } from '#imports'
 import { computed, ref } from 'vue'
-import { consoleFamilyFromPath } from '../composables/fireux/app/routing/consoleRoutes'
+import {
+  consoleFamilyFromPath,
+  toConsoleFamilyLabel,
+  toConsoleFamilyPath,
+} from '../composables/fireux/app/routing/consoleRoutes'
 import { useConsoleNav } from '../composables/fireux/app/ui/nav/useConsoleNav'
+import { useConsole } from '../composables/fireux/console/useConsole'
 import {
   useConsoleHeaders,
   type ConsoleHeaderData as HeaderData,
@@ -131,6 +160,24 @@ const familyRootNav = computed(() =>
 
 const route = useRoute()
 const family = computed(() => consoleFamilyFromPath(String(route.path || '')))
+const familyLabel = computed(() => toConsoleFamilyLabel(family.value) || 'Console')
+const familyPath = computed(() => family.value ? toConsoleFamilyPath(family.value) : '/console')
+const activeSelectionId = computed(() => {
+  const activeFamily = family.value
+  if (!activeFamily) return ''
+  return useConsole(activeFamily).selectedId.value
+})
+const requiresSelection = computed(() => {
+  const nav = route.meta.nav as Record<string, unknown> | undefined
+  return route.meta.requiresSelection === true || nav?.requiresSelection === true
+})
+const selectionBlocked = computed(() =>
+  requiresSelection.value && !normalizeString(activeSelectionId.value)
+)
+const selectionRequiredDescription = computed(() =>
+  `Choose an item from ${familyLabel.value} before opening this console page.`
+)
+const selectionRequiredActionLabel = computed(() => `Go to ${familyLabel.value}`)
 
 const consoleHeaders = useConsoleHeaders()
 

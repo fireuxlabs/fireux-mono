@@ -7,37 +7,20 @@
     <template #body>
       <section class="space-y-4">
         <UAlert
-          v-if="!selectedKitchen"
           color="neutral"
           variant="soft"
-          title="No kitchen selected"
-          description="Select a kitchen on /console/kitchen before opening kitchen preview."
-          :actions="[
-            {
-              label: 'Go to kitchens',
-              to: '/console/kitchen',
-              icon: 'i-lucide-arrow-right',
-            },
-          ]"
+          title="Preview only"
+          :description="previewDescription"
         />
 
-        <template v-else>
-          <UAlert
-            color="neutral"
-            variant="soft"
-            title="Preview only"
-            :description="previewDescription"
-          />
-
-          <KitchenMenuSurfaceKiosk
-            v-if="surface === 'kiosk'"
-            :surface="menuSurface"
-          />
-          <KitchenMenuSurfaceQR
-            v-else
-            :surface="menuSurface"
-          />
-        </template>
+        <KitchenMenuSurfaceKiosk
+          v-if="surface === 'kiosk'"
+          :surface="menuSurface"
+        />
+        <KitchenMenuSurfaceQR
+          v-else
+          :surface="menuSurface"
+        />
       </section>
     </template>
   </UDashboardPanel>
@@ -67,7 +50,7 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const { selectedKitchen, selectedMode } = useKitchenConsole()
+const { selectedMode } = useKitchenConsole()
 const menuSurface = useKitchenConsoleMenuSurface()
 const surface = computed(() => menuSurface.surface.value)
 const previewDescription = computed(() =>

@@ -6,30 +6,13 @@
 
     <template #body>
       <section class="space-y-4">
-        <UAlert
-          v-if="!selectedKitchen"
-          color="neutral"
-          variant="soft"
-          title="No kitchen selected"
-          description="Select a kitchen on /console/kitchen before opening kitchen orders."
-          :actions="[
-            {
-              label: 'Go to kitchens',
-              to: '/console/kitchen',
-              icon: 'i-lucide-arrow-right',
-            },
-          ]"
-        />
-
-        <ConsoleKitchenOrders v-else />
+        <ConsoleKitchenOrders />
       </section>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
-
 definePageMeta({
   layout: 'console',
   nav: {
@@ -46,6 +29,4 @@ definePageMeta({
   },
   requiresAuth: true,
 })
-
-const { selectedKitchen } = useKitchenConsole()
 </script>
