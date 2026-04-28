@@ -63,7 +63,7 @@
 
     <div v-if="isDev">
       <DevJson
-        :title="'Supplier Catalogue (JSON)'"
+        :title="`${title} (JSON)`"
         :context="devJsonContext"
         :data="devJsonData"
         :default-open="false"

@@ -24,6 +24,10 @@ export function useSupplierConsoleIndex(
     liveSuppliers,
     demoSuppliers,
     selectedSupplier,
+    selectedMode,
+    supplierId,
+    rootCollection,
+    canWrite,
     selectSupplier,
     clearSelectedSupplier,
   } = useSupplierConsole({
@@ -65,6 +69,10 @@ export function useSupplierConsoleIndex(
     suppliers: consoleIndex.entities,
     actions: consoleIndex.actions,
     selectedSupplier,
+    selectedMode,
+    supplierId,
+    rootCollection,
+    canWrite,
     clearSelectedSupplier,
   }
 }

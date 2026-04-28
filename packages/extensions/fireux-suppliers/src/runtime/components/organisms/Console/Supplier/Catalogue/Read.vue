@@ -1,26 +1,31 @@
 <template>
-  <UAlert
-    v-if="pending"
-    color="neutral"
-    variant="soft"
-    title="Loading catalogue"
-    description="Fetching supplier-owned product rows for the selected supplier."
-  />
+  <UCard>
+    <template #header>
+      <div class="console-card-header">
+        <div class="console-card-header__title">{{ title }}</div>
+      </div>
+    </template>
 
-  <SupplierCatalogueCollectionManager
-    v-else
-    :collection="catalogueItems"
-    title="Catalogue"
-    description="Browse catalogue items for the selected supplier."
-    :link="false"
-  />
+    <div class="space-y-2">
+      <p class="console-card-header__description">
+        {{ description }}
+      </p>
+      <p class="text-sm text-dimmed">
+        Supplier catalogue grouping will live here.
+      </p>
+      <p class="text-sm text-dimmed">
+        Collection path:
+        <code>{{ collectionPath || 'none' }}</code>
+      </p>
+    </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
-import type { SupplierCatalogueInterfaceItem } from '../../../../../composables/fireux/firestore/supplier/utils/view/useSupplierCatalogueItemInterface'
-
 defineProps<{
-  catalogueItems: SupplierCatalogueInterfaceItem[]
+  title: string
+  description: string
+  collectionPath: string
   pending: boolean
 }>()
 </script>

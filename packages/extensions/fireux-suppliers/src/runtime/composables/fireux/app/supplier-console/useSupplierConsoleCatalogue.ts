@@ -1,54 +1,31 @@
 import { computed } from 'vue'
 import { useSupplierConsole } from './useSupplierConsole'
-import { getDemoSupplierCatalogueItems } from '../utils/supplier-demo-scenarios'
-import { useSupplierProductCollection } from '../../firestore/supplier/fetch/useSupplierProductCollection'
-import type { SupplierCatalogueInterfaceItem } from '../../firestore/supplier/utils/view/useSupplierCatalogueItemInterface'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useSupplierConsoleCatalogue() {
-  const { selectedSupplier, selectedMode } = useSupplierConsole()
-
-  const supplierId = computed(() =>
-    normalizeString(selectedSupplier.value?.id)
-  )
+  const {
+    selectedSupplier,
+    selectedMode,
+    supplierId,
+    rootCollection,
+    canWrite,
+  } = useSupplierConsole()
 
   const supplierLabel = computed(() =>
     normalizeString(selectedSupplier.value?.supplier_organization_name)
-  )
-
-  const linkedIngredientIds = computed(() =>
-    Array.isArray(selectedSupplier.value?.linked_ingredient_ids)
-      ? selectedSupplier.value.linked_ingredient_ids
-          .map((value) => normalizeString(value))
-          .filter(Boolean)
-      : []
   )
 
   const state = computed(() => normalizeString(selectedSupplier.value?.state))
   const catalogueState = computed(() =>
     normalizeString(selectedSupplier.value?.catalogue_state)
   )
-  const liveCatalogueEnabled = computed(() => selectedMode.value === 'live')
-  const {
-    collectionPath: supplierProductsCollectionPath,
-    supplierProducts: liveCatalogueItems,
-    pending: livePending,
-  } = useSupplierProductCollection(supplierId, {
-    enabled: liveCatalogueEnabled,
-  })
-
-  const catalogueItems = computed<SupplierCatalogueInterfaceItem[]>(() =>
-    selectedMode.value === 'demo' && supplierId.value
-      ? getDemoSupplierCatalogueItems(supplierId.value)
-      : selectedMode.value === 'live'
-        ? liveCatalogueItems.value
-        : []
+  const supplierCataloguesCollectionPath = computed(() =>
+    rootCollection.value && supplierId.value
+      ? `${rootCollection.value}/${supplierId.value}/catalogues`
+      : ''
   )
-  const pending = computed(() =>
-    selectedMode.value === 'live' ? livePending.value : false
-  )
-  const canWrite = computed(() => selectedMode.value === 'live')
+  const pending = computed(() => false)
 
   const isIntegratedCatalogue = computed(
     () => catalogueState.value === 'integrated'
@@ -70,7 +47,7 @@ export function useSupplierConsoleCatalogue() {
     }
 
     if (selectedMode.value === 'live') {
-      return 'No supplier-owned product rows are available for this supplier yet.'
+      return 'No supplier catalogue grouping rows are available for this supplier yet.'
     }
 
     if (selectedMode.value === 'test') {
@@ -95,7 +72,6 @@ export function useSupplierConsoleCatalogue() {
       modeLabel.value,
       `state: ${state.value || 'missing'}`,
       `catalogue: ${catalogueState.value || 'missing'}`,
-      `${linkedIngredientIds.value.length} linked ingredients`,
     ]
 
     return parts.join(' · ')
@@ -105,24 +81,15 @@ export function useSupplierConsoleCatalogue() {
     () => `console supplier · catalogue · ${selectedMode.value}`
   )
 
-  const formatPrice = (valueMinor: number, currencyCode?: string) =>
-    new Intl.NumberFormat('de-CH', {
-      style: 'currency',
-      currency: normalizeString(currencyCode).toUpperCase() || 'CHF',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(Number(valueMinor || 0) / 100)
-
   return {
     selectedSupplier,
     selectedMode,
     supplierId,
     supplierLabel,
-    linkedIngredientIds,
+    rootCollection,
     state,
     catalogueState,
-    supplierProductsCollectionPath,
-    catalogueItems,
+    supplierCataloguesCollectionPath,
     pending,
     canWrite,
     isIntegratedCatalogue,
@@ -133,7 +100,6 @@ export function useSupplierConsoleCatalogue() {
     catalogueTitle,
     catalogueDescription,
     devJsonContext,
-    formatPrice,
   }
 }
 

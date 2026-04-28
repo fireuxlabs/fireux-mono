@@ -10,8 +10,7 @@
 import { computed } from 'vue'
 import { useSupplierConsole } from '../../../composables/fireux/app/supplier-console/useSupplierConsole'
 
-const { selectedSupplier, selectedMode } = useSupplierConsole()
+const { selectedSupplier, canWrite } = useSupplierConsole()
 
 const hello = computed(() => String(selectedSupplier.value?.hello ?? '').trim())
-const canWrite = computed(() => selectedMode.value !== 'demo')
 </script>

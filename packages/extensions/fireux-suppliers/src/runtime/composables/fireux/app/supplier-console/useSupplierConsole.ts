@@ -64,6 +64,13 @@ export function useSupplierConsole(
   const selectedSupplier = computed<SupplierSurface | null>(
     () => selectedEntity.value as SupplierSurface | null
   )
+  const supplierId = computed(() => normalizeString(selectedSupplier.value?.id))
+  const rootCollection = computed(() => {
+    if (selectedMode.value === 'demo') return ''
+    if (selectedMode.value === 'test') return 'test-suppliers'
+    return 'suppliers'
+  })
+  const canWrite = computed(() => selectedMode.value !== 'demo')
 
   const header = computed<ConsoleHeaderData>(() => {
     const target = selectedSupplier.value as Record<string, unknown> | null
@@ -100,6 +107,9 @@ export function useSupplierConsole(
     testSupplier,
     selectedSupplier,
     selectedMode,
+    supplierId,
+    rootCollection,
+    canWrite,
     clearSelectedSupplier,
     selectSupplier,
   }
