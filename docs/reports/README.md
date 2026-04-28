@@ -1,9 +1,14 @@
 # Documentation Reports
-Authority: Tier2 (Operational reports)
+Status: Generated / historical evidence
+Authority: Non-authoritative evidence unless promoted into Tier1/Tier2
 Updated: 2026-03-23
+
 ## Purpose
 - Keep weekly evidence of docs freshness, authority alignment, and navigation quality.
 - Store generated scans that support canon decisions.
+- Reports may support decisions, but they do not define canon by themselves.
+- If a report conflicts with Tier1 canon, Tier1 wins.
+- Reports are not default agent context.
 
 ## Weekly Reports
 - `weekly-docs-hygiene-2026-03-23.md`
