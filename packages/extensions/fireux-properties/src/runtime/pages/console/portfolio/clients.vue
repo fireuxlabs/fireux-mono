@@ -5,12 +5,14 @@
     </template>
 
     <template #body>
-      <UAlert
-        color="neutral"
-        variant="soft"
-        title="Portfolio clients are not wired yet"
-        description="The portfolio console is currently normalized around the live index and overview seam. Client views can be brought back later as a separate pass."
-      />
+      <section class="space-y-4">
+        <UAlert
+          color="neutral"
+          variant="soft"
+          title="Portfolio clients are parked"
+          description="This portfolio console route is intentionally hidden until client views are wired."
+        />
+      </section>
     </template>
   </UDashboardPanel>
 </template>
@@ -23,6 +25,10 @@ definePageMeta({
     key: 'console-portfolio-clients',
     label: 'Clients',
     icon: 'i-lucide-users',
+    position: 'top',
+    hidden: true,
+    parked: true,
+    requiresSelection: true,
     order: 30,
     desktop: true,
     mobile: true,

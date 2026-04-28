@@ -2,10 +2,7 @@ import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useRouter, type RouteRecordNormalized } from 'vue-router'
 import { useFireUXConfig } from '../../FireUXConfig'
 import type { NavItem, NavMeta, NavPosition } from '../../nav.types'
-import {
-  isNavVisibleForScope,
-  normaliseNavVisibility,
-} from './visibility'
+import { isNavVisibleForScope, normaliseNavVisibility } from './visibility'
 
 const DEFAULT_LAYOUT = 'default'
 const DEFAULT_ORDER = 999
@@ -90,6 +87,8 @@ function buildNavItem(
   nav: NavMeta,
   targetLayouts: string[]
 ): NavItem | null {
+  if (nav.hidden === true) return null
+
   const layouts = resolveLayouts(nav)
   if (!layouts.some((layout) => targetLayouts.includes(layout))) return null
 
@@ -114,6 +113,7 @@ function buildNavItem(
       typeof nav.requiresSelection === 'boolean'
         ? nav.requiresSelection
         : undefined,
+    parked: nav.parked === true ? true : undefined,
     roles: normaliseRoles((route.meta as RouteMetaLike).roles),
     tenant:
       typeof (route.meta as RouteMetaLike).tenant === 'string'

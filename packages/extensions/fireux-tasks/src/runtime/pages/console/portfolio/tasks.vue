@@ -6,110 +6,130 @@
 
     <template #body>
       <section class="space-y-6">
-        <UAlert
-          v-if="!runtimeId"
-          color="warning"
-          variant="soft"
-          title="No portfolio selected"
-          description="Select a portfolio on /console/portfolio before using tasks."
-          :actions="[{ label: 'Go to portfolios', to: '/console/portfolio', icon: 'i-lucide-arrow-right' }]"
-        />
-
-        <template v-else>
-          <UCard>
-            <div class="flex items-start gap-4">
-              <div class="space-y-1">
-                <div class="text-sm font-semibold">Task tracker</div>
-                <div class="text-xs text-dimmed">
-                  Mode: <span class="font-medium">{{ runtimeMode }}</span>
-                  · Source: <code>{{ isDemo ? 'demo scenario' : tasksPath }}</code>
-                </div>
+        <UCard>
+          <div class="flex items-start gap-4">
+            <div class="space-y-1">
+              <div class="text-sm font-semibold">Task tracker</div>
+              <div class="text-xs text-dimmed">
+                Mode: <span class="font-medium">{{ runtimeMode }}</span> ·
+                Source: <code>{{ isDemo ? 'demo scenario' : tasksPath }}</code>
               </div>
             </div>
-          </UCard>
+          </div>
+        </UCard>
 
-          <UCard>
-            <div class="grid gap-3 sm:grid-cols-3">
-              <div class="rounded border border-default p-3">
-                <div class="text-xs text-dimmed">Open</div>
-                <div class="text-xl font-semibold">{{ summary.open }}</div>
-              </div>
-              <div class="rounded border border-default p-3">
-                <div class="text-xs text-dimmed">In progress</div>
-                <div class="text-xl font-semibold">{{ summary.inProgress }}</div>
-              </div>
-              <div class="rounded border border-default p-3">
-                <div class="text-xs text-dimmed">Done</div>
-                <div class="text-xl font-semibold">{{ summary.done }}</div>
-              </div>
+        <UCard>
+          <div class="grid gap-3 sm:grid-cols-3">
+            <div class="rounded border border-default p-3">
+              <div class="text-xs text-dimmed">Open</div>
+              <div class="text-xl font-semibold">{{ summary.open }}</div>
             </div>
-          </UCard>
-
-          <UCard v-if="!isDemo">
-            <template #header>
-              <div class="text-sm font-semibold">Create task</div>
-            </template>
-
-            <div class="grid gap-3 sm:grid-cols-2">
-              <UInput v-model="newTaskTitle" :disabled="isDemo" placeholder="Task title" />
-              <UInput v-model="newTaskDueDate" :disabled="isDemo" placeholder="Due date (YYYY-MM-DD)" />
-              <UInput v-model="newTaskDescription" :disabled="isDemo" placeholder="Description" class="sm:col-span-2" />
+            <div class="rounded border border-default p-3">
+              <div class="text-xs text-dimmed">In progress</div>
+              <div class="text-xl font-semibold">{{ summary.inProgress }}</div>
             </div>
-
-            <div class="mt-3">
-              <UButton
-                size="sm"
-                icon="i-lucide-plus"
-                :disabled="isDemo || !newTaskTitle.trim() || createBusy"
-                :loading="createBusy"
-                @click="createManualTask"
-              >
-                Create task
-              </UButton>
+            <div class="rounded border border-default p-3">
+              <div class="text-xs text-dimmed">Done</div>
+              <div class="text-xl font-semibold">{{ summary.done }}</div>
             </div>
-          </UCard>
+          </div>
+        </UCard>
 
-          <UCard>
-            <template #header>
-              <div class="text-sm font-semibold">Task list</div>
-            </template>
+        <UCard v-if="!isDemo">
+          <template #header>
+            <div class="text-sm font-semibold">Create task</div>
+          </template>
 
-            <div v-if="cards.length" class="space-y-3">
-              <div
-                v-for="item in cards"
-                :key="item.id"
-                class="rounded border border-default p-3"
-              >
-                <div class="flex items-start justify-between gap-3">
-                  <div class="space-y-1">
-                    <div class="text-sm font-semibold">{{ item.title }}</div>
-                    <div class="text-xs text-dimmed">{{ item.subtitle }}</div>
-                  </div>
-
-                  <div class="flex items-center gap-2">
-                    <UBadge :color="statusColor(item.status)" variant="soft">
-                      {{ item.status }}
-                    </UBadge>
-
-                    <div v-if="!isDemo" class="flex gap-1">
-                      <UButton size="xs" variant="ghost" :disabled="isDemo" @click="setStatus(item.id, 'open')">Open</UButton>
-                      <UButton size="xs" variant="ghost" :disabled="isDemo" @click="setStatus(item.id, 'in_progress')">In progress</UButton>
-                      <UButton size="xs" variant="ghost" :disabled="isDemo" @click="setStatus(item.id, 'done')">Done</UButton>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <UAlert
-              v-else
-              color="neutral"
-              variant="soft"
-              title="No tasks"
-              description="Create tasks manually or from compliance/documents workflows."
+          <div class="grid gap-3 sm:grid-cols-2">
+            <UInput
+              v-model="newTaskTitle"
+              :disabled="isDemo"
+              placeholder="Task title"
             />
-          </UCard>
-        </template>
+            <UInput
+              v-model="newTaskDueDate"
+              :disabled="isDemo"
+              placeholder="Due date (YYYY-MM-DD)"
+            />
+            <UInput
+              v-model="newTaskDescription"
+              :disabled="isDemo"
+              placeholder="Description"
+              class="sm:col-span-2"
+            />
+          </div>
+
+          <div class="mt-3">
+            <UButton
+              size="sm"
+              icon="i-lucide-plus"
+              :disabled="isDemo || !newTaskTitle.trim() || createBusy"
+              :loading="createBusy"
+              @click="createManualTask"
+            >
+              Create task
+            </UButton>
+          </div>
+        </UCard>
+
+        <UCard>
+          <template #header>
+            <div class="text-sm font-semibold">Task list</div>
+          </template>
+
+          <div v-if="cards.length" class="space-y-3">
+            <div
+              v-for="item in cards"
+              :key="item.id"
+              class="rounded border border-default p-3"
+            >
+              <div class="flex items-start justify-between gap-3">
+                <div class="space-y-1">
+                  <div class="text-sm font-semibold">{{ item.title }}</div>
+                  <div class="text-xs text-dimmed">{{ item.subtitle }}</div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <UBadge :color="statusColor(item.status)" variant="soft">
+                    {{ item.status }}
+                  </UBadge>
+
+                  <div v-if="!isDemo" class="flex gap-1">
+                    <UButton
+                      size="xs"
+                      variant="ghost"
+                      :disabled="isDemo"
+                      @click="setStatus(item.id, 'open')"
+                      >Open</UButton
+                    >
+                    <UButton
+                      size="xs"
+                      variant="ghost"
+                      :disabled="isDemo"
+                      @click="setStatus(item.id, 'in_progress')"
+                      >In progress</UButton
+                    >
+                    <UButton
+                      size="xs"
+                      variant="ghost"
+                      :disabled="isDemo"
+                      @click="setStatus(item.id, 'done')"
+                      >Done</UButton
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <UAlert
+            v-else
+            color="neutral"
+            variant="soft"
+            title="No tasks"
+            description="Create tasks manually or from compliance/documents workflows."
+          />
+        </UCard>
       </section>
     </template>
   </UDashboardPanel>
@@ -134,6 +154,8 @@ definePageMeta({
     key: 'console-portfolio-tasks',
     label: 'Tasks',
     icon: 'i-lucide-list-checks',
+    position: 'top',
+    requiresSelection: true,
     order: 50,
     desktop: true,
     mobile: true,
@@ -143,7 +165,6 @@ definePageMeta({
 })
 
 const runtimePortfolio = useActivePortfolio()
-const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const isDemo = computed(() => runtimePortfolio.isDemo.value)
 const tasksPath = useRuntimePortfolioPath(runtimePortfolio, 'tasks')

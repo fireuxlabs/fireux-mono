@@ -6,93 +6,89 @@
 
     <template #body>
       <section class="space-y-6">
-        <UAlert
-          v-if="!runtimeId"
-          color="warning"
-          variant="soft"
-          title="No portfolio selected"
-          description="Select a portfolio on /console/portfolio before using compliance monitoring."
-          :actions="[{ label: 'Go to portfolios', to: '/console/portfolio', icon: 'i-lucide-arrow-right' }]"
-        />
+        <UCard>
+          <div class="flex items-center gap-4">
+            <div class="space-y-1">
+              <div class="text-sm font-semibold">Compliance monitor</div>
+              <div class="text-xs text-dimmed">
+                Mode: <span class="font-medium">{{ runtimeMode }}</span> ·
+                Source:
+                <code>{{ isDemo ? 'demo scenario' : compliancePath }}</code>
+              </div>
+            </div>
+          </div>
+        </UCard>
 
-        <template v-else>
-          <UCard>
-            <div class="flex items-center gap-4">
-              <div class="space-y-1">
-                <div class="text-sm font-semibold">Compliance monitor</div>
-                <div class="text-xs text-dimmed">
-                  Mode: <span class="font-medium">{{ runtimeMode }}</span>
-                  · Source: <code>{{ isDemo ? 'demo scenario' : compliancePath }}</code>
+        <UCard>
+          <div class="grid gap-3 sm:grid-cols-3">
+            <div class="rounded border border-default p-3">
+              <div class="text-xs text-dimmed">Total records</div>
+              <div class="text-xl font-semibold">
+                {{ complianceSummary.total }}
+              </div>
+            </div>
+            <div class="rounded border border-default p-3">
+              <div class="text-xs text-dimmed">Due soon</div>
+              <div class="text-xl font-semibold">
+                {{ complianceSummary.dueSoon }}
+              </div>
+            </div>
+            <div class="rounded border border-default p-3">
+              <div class="text-xs text-dimmed">Overdue</div>
+              <div class="text-xl font-semibold">
+                {{ complianceSummary.overdue }}
+              </div>
+            </div>
+          </div>
+        </UCard>
+
+        <UCard>
+          <template #header>
+            <div class="text-sm font-semibold">Compliance board</div>
+          </template>
+
+          <div v-if="cards.length" class="space-y-3">
+            <div
+              v-for="item in cards"
+              :key="item.id"
+              class="rounded border border-default p-3"
+            >
+              <div class="flex items-start justify-between gap-3">
+                <div class="space-y-1">
+                  <div class="text-sm font-semibold">{{ item.title }}</div>
+                  <div class="text-xs text-dimmed">{{ item.subtitle }}</div>
+                  <div class="text-xs text-dimmed">
+                    Expiry: {{ item.expiryDate || 'missing' }}
+                  </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                  <UBadge :color="statusColor(item.status)" variant="soft">
+                    {{ statusLabel(item.status) }}
+                  </UBadge>
+                  <UButton
+                    v-if="!isDemo"
+                    size="xs"
+                    variant="ghost"
+                    icon="i-lucide-list-checks"
+                    :disabled="isDemo"
+                    @click="createTaskFromCompliance(item.id)"
+                  >
+                    Create task
+                  </UButton>
                 </div>
               </div>
             </div>
-          </UCard>
+          </div>
 
-          <UCard>
-            <div class="grid gap-3 sm:grid-cols-3">
-              <div class="rounded border border-default p-3">
-                <div class="text-xs text-dimmed">Total records</div>
-                <div class="text-xl font-semibold">{{ complianceSummary.total }}</div>
-              </div>
-              <div class="rounded border border-default p-3">
-                <div class="text-xs text-dimmed">Due soon</div>
-                <div class="text-xl font-semibold">{{ complianceSummary.dueSoon }}</div>
-              </div>
-              <div class="rounded border border-default p-3">
-                <div class="text-xs text-dimmed">Overdue</div>
-                <div class="text-xl font-semibold">{{ complianceSummary.overdue }}</div>
-              </div>
-            </div>
-          </UCard>
-
-          <UCard>
-            <template #header>
-              <div class="text-sm font-semibold">Compliance board</div>
-            </template>
-
-            <div v-if="cards.length" class="space-y-3">
-              <div
-                v-for="item in cards"
-                :key="item.id"
-                class="rounded border border-default p-3"
-              >
-                <div class="flex items-start justify-between gap-3">
-                  <div class="space-y-1">
-                    <div class="text-sm font-semibold">{{ item.title }}</div>
-                    <div class="text-xs text-dimmed">{{ item.subtitle }}</div>
-                    <div class="text-xs text-dimmed">
-                      Expiry: {{ item.expiryDate || 'missing' }}
-                    </div>
-                  </div>
-
-                  <div class="flex items-center gap-2">
-                    <UBadge :color="statusColor(item.status)" variant="soft">
-                      {{ statusLabel(item.status) }}
-                    </UBadge>
-                    <UButton
-                      v-if="!isDemo"
-                      size="xs"
-                      variant="ghost"
-                      icon="i-lucide-list-checks"
-                      :disabled="isDemo"
-                      @click="createTaskFromCompliance(item.id)"
-                    >
-                      Create task
-                    </UButton>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <UAlert
-              v-else
-              color="neutral"
-              variant="soft"
-              title="No compliance records"
-              description="Add compliance records to populate this board."
-            />
-          </UCard>
-        </template>
+          <UAlert
+            v-else
+            color="neutral"
+            variant="soft"
+            title="No compliance records"
+            description="Add compliance records to populate this board."
+          />
+        </UCard>
       </section>
     </template>
   </UDashboardPanel>
@@ -116,6 +112,8 @@ definePageMeta({
     key: 'console-portfolio-compliance',
     label: 'Compliance',
     icon: 'i-lucide-shield-check',
+    position: 'top',
+    requiresSelection: true,
     order: 30,
     desktop: true,
     mobile: true,
@@ -129,9 +127,11 @@ const { collection } = usePortfolioComplianceRecordCollection(runtimePortfolio)
 const { pill: complianceInterface } = useComplianceInterface()
 const { createTask } = useTaskCreate(runtimePortfolio)
 const { fromComplianceRecord } = useTaskProjection(runtimePortfolio)
-const compliancePath = useRuntimePortfolioPath(runtimePortfolio, 'compliance-records')
+const compliancePath = useRuntimePortfolioPath(
+  runtimePortfolio,
+  'compliance-records'
+)
 
-const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const isDemo = computed(() => runtimePortfolio.isDemo.value)
 
@@ -173,7 +173,10 @@ const statusColor = (status: 'ok' | 'dueSoon' | 'overdue' | null) => {
 const createTaskFromCompliance = async (complianceId: string) => {
   if (isDemo.value) return
 
-  const record = collection.value.find((entry) => String(entry.id || '').trim() === String(complianceId || '').trim())
+  const record = collection.value.find(
+    (entry) =>
+      String(entry.id || '').trim() === String(complianceId || '').trim()
+  )
   if (!record) return
 
   const draft = fromComplianceRecord(record)

@@ -5,12 +5,14 @@
     </template>
 
     <template #body>
-      <UAlert
-        color="neutral"
-        variant="soft"
-        title="Portfolio properties are not wired yet"
-        description="The portfolio console is currently normalized around the live index and overview seam. Property views can be brought back later as a separate pass."
-      />
+      <section class="space-y-4">
+        <UAlert
+          color="neutral"
+          variant="soft"
+          title="Portfolio properties are parked"
+          description="This portfolio console route is intentionally hidden until property views are wired."
+        />
+      </section>
     </template>
   </UDashboardPanel>
 </template>
@@ -23,6 +25,10 @@ definePageMeta({
     key: 'console-portfolio-properties',
     label: 'Properties',
     icon: 'i-lucide-building',
+    position: 'top',
+    hidden: true,
+    parked: true,
+    requiresSelection: true,
     order: 20,
     desktop: true,
     mobile: true,

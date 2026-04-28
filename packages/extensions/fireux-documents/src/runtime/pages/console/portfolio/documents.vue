@@ -6,146 +6,163 @@
 
     <template #body>
       <section class="space-y-6">
-        <UAlert
-          v-if="!runtimeId"
-          color="warning"
-          variant="soft"
-          title="No portfolio selected"
-          description="Select a portfolio on /console/portfolio before using the document vault."
-          :actions="[{ label: 'Go to portfolios', to: '/console/portfolio', icon: 'i-lucide-arrow-right' }]"
-        />
-
-        <template v-else>
-          <UCard>
-            <div class="flex items-start gap-4">
-              <div class="space-y-1">
-                <div class="text-sm font-semibold">Document vault</div>
-                <div class="text-xs text-dimmed">
-                  Mode: <span class="font-medium">{{ runtimeMode }}</span>
-                  · Source: <code>{{ isDemo ? 'demo scenario' : documentsPath }}</code>
-                </div>
-              </div>
-            </div>
-          </UCard>
-
-          <UCard>
-            <div class="grid gap-3 sm:grid-cols-2">
-              <div class="rounded border border-default p-3">
-                <div class="text-xs text-dimmed">Documents</div>
-                <div class="text-xl font-semibold">{{ documents.length }}</div>
-              </div>
-              <div class="rounded border border-default p-3">
-                <div class="text-xs text-dimmed">Links</div>
-                <div class="text-xl font-semibold">{{ links.length }}</div>
-              </div>
-            </div>
-          </UCard>
-
-          <UCard v-if="!isDemo">
-            <template #header>
-              <div class="text-sm font-semibold">Upload document</div>
-            </template>
-
-            <div class="space-y-3">
-              <input
-                type="file"
-                class="block w-full rounded border border-default p-2 text-sm"
-                :disabled="isDemo"
-                @change="handleFileInput"
-              />
-
-              <UInput v-model="uploadNotes" :disabled="isDemo" placeholder="Optional notes" />
-
-              <UButton
-                size="sm"
-                icon="i-lucide-upload"
-                :disabled="!selectedFile || isDemo || uploadBusy"
-                :loading="uploadBusy"
-                @click="uploadSelectedFile"
-              >
-                Upload to vault
-              </UButton>
-
+        <UCard>
+          <div class="flex items-start gap-4">
+            <div class="space-y-1">
+              <div class="text-sm font-semibold">Document vault</div>
               <div class="text-xs text-dimmed">
-                Generic file upload. No image-only assumptions.
+                Mode: <span class="font-medium">{{ runtimeMode }}</span> ·
+                Source:
+                <code>{{ isDemo ? 'demo scenario' : documentsPath }}</code>
               </div>
             </div>
-          </UCard>
+          </div>
+        </UCard>
 
-          <UCard v-if="!isDemo">
-            <template #header>
-              <div class="text-sm font-semibold">Link document to entity</div>
-            </template>
-
-            <div class="grid gap-3 sm:grid-cols-2">
-              <UInput v-model="linkDocumentId" :disabled="isDemo" placeholder="Document id" />
-              <UInput v-model="linkTargetType" :disabled="isDemo" placeholder="Target type (property, compliance-record, tenancy, ...)" />
-              <UInput v-model="linkTargetId" :disabled="isDemo" placeholder="Target id" />
-              <UInput v-model="linkTargetLabel" :disabled="isDemo" placeholder="Target label (optional)" />
+        <UCard>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <div class="rounded border border-default p-3">
+              <div class="text-xs text-dimmed">Documents</div>
+              <div class="text-xl font-semibold">{{ documents.length }}</div>
             </div>
-
-            <div class="mt-3 flex items-center gap-2">
-              <UButton
-                size="sm"
-                icon="i-lucide-link"
-                :disabled="isDemo || linkBusy"
-                :loading="linkBusy"
-                @click="createLink"
-              >
-                Link document
-              </UButton>
-
-              <UButton
-                size="sm"
-                variant="soft"
-                icon="i-lucide-list-checks"
-                :disabled="isDemo || linkBusy"
-                @click="createLink(true)"
-              >
-                Link + create task
-              </UButton>
+            <div class="rounded border border-default p-3">
+              <div class="text-xs text-dimmed">Links</div>
+              <div class="text-xl font-semibold">{{ links.length }}</div>
             </div>
+          </div>
+        </UCard>
 
-            <div class="mt-2 text-xs text-dimmed">
-              Allowed target types: {{ allowedTargetTypesLabel }}
-            </div>
-          </UCard>
+        <UCard v-if="!isDemo">
+          <template #header>
+            <div class="text-sm font-semibold">Upload document</div>
+          </template>
 
-          <UCard>
-            <template #header>
-              <div class="text-sm font-semibold">Vault documents</div>
-            </template>
-
-            <div v-if="cards.length" class="space-y-3">
-              <div
-                v-for="item in cards"
-                :key="item.id"
-                class="rounded border border-default p-3"
-              >
-                <div class="flex items-start justify-between gap-3">
-                  <div class="space-y-1">
-                    <div class="text-sm font-semibold">{{ item.title }}</div>
-                    <div class="text-xs text-dimmed">{{ item.subtitle }}</div>
-                    <div class="text-xs text-dimmed">{{ item.meta }}</div>
-                    <div class="text-xs text-dimmed">Links: {{ linkCountByDocument[item.id] || 0 }}</div>
-                  </div>
-
-                  <UButton size="xs" variant="ghost" icon="i-lucide-copy" @click="useForLink(item.id)">
-                    Use id
-                  </UButton>
-                </div>
-              </div>
-            </div>
-
-            <UAlert
-              v-else
-              color="neutral"
-              variant="soft"
-              title="No documents"
-              description="Upload files to populate the vault."
+          <div class="space-y-3">
+            <input
+              type="file"
+              class="block w-full rounded border border-default p-2 text-sm"
+              :disabled="isDemo"
+              @change="handleFileInput"
             />
-          </UCard>
-        </template>
+
+            <UInput
+              v-model="uploadNotes"
+              :disabled="isDemo"
+              placeholder="Optional notes"
+            />
+
+            <UButton
+              size="sm"
+              icon="i-lucide-upload"
+              :disabled="!selectedFile || isDemo || uploadBusy"
+              :loading="uploadBusy"
+              @click="uploadSelectedFile"
+            >
+              Upload to vault
+            </UButton>
+
+            <div class="text-xs text-dimmed">
+              Generic file upload. No image-only assumptions.
+            </div>
+          </div>
+        </UCard>
+
+        <UCard v-if="!isDemo">
+          <template #header>
+            <div class="text-sm font-semibold">Link document to entity</div>
+          </template>
+
+          <div class="grid gap-3 sm:grid-cols-2">
+            <UInput
+              v-model="linkDocumentId"
+              :disabled="isDemo"
+              placeholder="Document id"
+            />
+            <UInput
+              v-model="linkTargetType"
+              :disabled="isDemo"
+              placeholder="Target type (property, compliance-record, tenancy, ...)"
+            />
+            <UInput
+              v-model="linkTargetId"
+              :disabled="isDemo"
+              placeholder="Target id"
+            />
+            <UInput
+              v-model="linkTargetLabel"
+              :disabled="isDemo"
+              placeholder="Target label (optional)"
+            />
+          </div>
+
+          <div class="mt-3 flex items-center gap-2">
+            <UButton
+              size="sm"
+              icon="i-lucide-link"
+              :disabled="isDemo || linkBusy"
+              :loading="linkBusy"
+              @click="createLink"
+            >
+              Link document
+            </UButton>
+
+            <UButton
+              size="sm"
+              variant="soft"
+              icon="i-lucide-list-checks"
+              :disabled="isDemo || linkBusy"
+              @click="createLink(true)"
+            >
+              Link + create task
+            </UButton>
+          </div>
+
+          <div class="mt-2 text-xs text-dimmed">
+            Allowed target types: {{ allowedTargetTypesLabel }}
+          </div>
+        </UCard>
+
+        <UCard>
+          <template #header>
+            <div class="text-sm font-semibold">Vault documents</div>
+          </template>
+
+          <div v-if="cards.length" class="space-y-3">
+            <div
+              v-for="item in cards"
+              :key="item.id"
+              class="rounded border border-default p-3"
+            >
+              <div class="flex items-start justify-between gap-3">
+                <div class="space-y-1">
+                  <div class="text-sm font-semibold">{{ item.title }}</div>
+                  <div class="text-xs text-dimmed">{{ item.subtitle }}</div>
+                  <div class="text-xs text-dimmed">{{ item.meta }}</div>
+                  <div class="text-xs text-dimmed">
+                    Links: {{ linkCountByDocument[item.id] || 0 }}
+                  </div>
+                </div>
+
+                <UButton
+                  size="xs"
+                  variant="ghost"
+                  icon="i-lucide-copy"
+                  @click="useForLink(item.id)"
+                >
+                  Use id
+                </UButton>
+              </div>
+            </div>
+          </div>
+
+          <UAlert
+            v-else
+            color="neutral"
+            variant="soft"
+            title="No documents"
+            description="Upload files to populate the vault."
+          />
+        </UCard>
       </section>
     </template>
   </UDashboardPanel>
@@ -172,6 +189,8 @@ definePageMeta({
     key: 'console-portfolio-documents',
     label: 'Documents',
     icon: 'i-lucide-file-text',
+    position: 'top',
+    requiresSelection: true,
     order: 40,
     desktop: true,
     mobile: true,
@@ -186,8 +205,10 @@ const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const isDemo = computed(() => runtimePortfolio.isDemo.value)
 const documentsPath = useRuntimePortfolioPath(runtimePortfolio, 'documents')
 
-const { collection: documentCollection } = usePortfolioDocumentCollection(runtimePortfolio)
-const { collection: linkCollection } = usePortfolioDocumentLinkCollection(runtimePortfolio)
+const { collection: documentCollection } =
+  usePortfolioDocumentCollection(runtimePortfolio)
+const { collection: linkCollection } =
+  usePortfolioDocumentLinkCollection(runtimePortfolio)
 const { pill: documentInterface } = useDocumentInterface()
 
 const documents = computed(() => documentCollection.value)
@@ -222,7 +243,8 @@ const allowedTargetTypesLabel = documentLinkTargetTypes.join(', ')
 
 const { uploadFile } = useDocumentStorage()
 const { createDocumentRecord } = useDocumentCreate(runtimePortfolio)
-const { linkDocumentToEntity: linkMutation } = linkDocumentToEntity(runtimePortfolio)
+const { linkDocumentToEntity: linkMutation } =
+  linkDocumentToEntity(runtimePortfolio)
 
 const handleFileInput = (event: Event) => {
   const target = event.target as HTMLInputElement | null

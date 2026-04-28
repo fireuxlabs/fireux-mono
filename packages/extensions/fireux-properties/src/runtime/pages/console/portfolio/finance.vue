@@ -5,12 +5,14 @@
     </template>
 
     <template #body>
-      <UAlert
-        color="neutral"
-        variant="soft"
-        title="Portfolio finance is not wired yet"
-        description="The portfolio console is currently normalized around the live index and overview seam. Finance views can be brought back later as a deliberate follow-up."
-      />
+      <section class="space-y-4">
+        <UAlert
+          color="neutral"
+          variant="soft"
+          title="Portfolio finance is parked"
+          description="This portfolio console route is intentionally hidden until finance views are wired."
+        />
+      </section>
     </template>
   </UDashboardPanel>
 </template>
@@ -23,6 +25,10 @@ definePageMeta({
     key: 'console-portfolio-finance',
     label: 'Financial Signals',
     icon: 'i-lucide-chart-line',
+    position: 'top',
+    hidden: true,
+    parked: true,
+    requiresSelection: true,
     order: 25,
     desktop: true,
     mobile: true,

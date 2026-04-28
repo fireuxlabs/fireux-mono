@@ -1,43 +1,39 @@
 # Console Portfolio Pages
 
 Authority: Operational
-Updated: 2026-03-28
-Scope: `packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/*`.
+Scope: `packages/extensions/fireux-properties/src/runtime/pages/console/portfolio/*`
 
 This folder owns the operational portfolio console workspace.
 
-Use `packages/core/fireux-docs/src/runtime/concepts/console-entry/README.md` for the shared console-entry concept.
-This README only explains the portfolio-console delta.
-
 ## Current Routes
 
-- `index.vue`
-- `overview.vue`
-- `create.vue`
-- `demo/index.vue`
-- `demo/[scenarioId].vue`
-- `clients.vue`
-- `finance.vue`
-- `incidents.vue`
-- `properties.vue`
+- `index.vue` — portfolio console entry / chooser
+- `overview.vue` — selected portfolio overview
+- `create.vue` — portfolio create flow
+- `clients.vue` — parked selected portfolio clients route
+- `finance.vue` — parked selected portfolio finance route
+- `incidents.vue` — parked selected portfolio incidents route
+- `properties.vue` — parked selected portfolio properties route
 
 ## Local Contract
 
-- this folder is operational, not public
-- `Portfolio` owns the console route family because it is the portfolio domain runtime anchor
-- apps must opt into portfolio visibility through `consoleFamilies`
-- `index.vue` is the family-specific chooser in console shell
-- `overview.vue` is the first selected-portfolio workspace page
-- `create.vue` belongs to the console create family
-- child routes stay portfolio-scoped even when Granite adds branding and shell framing around them
+- This folder is operational, not public.
+- Apps must opt into portfolio visibility through console families.
+- The shared console layout owns selection guarding.
+- Portfolio pages should not add local "No portfolio selected" guards unless they need special behaviour.
+- Selected-child pages should use `nav.requiresSelection: true`.
+- Parked child pages should use `hidden: true` and `parked: true`.
 
-Portfolio-console delta:
-- console create ensures `apps/<appId>/portfolios/<portfolioId>`
-- console create creates the root portfolio first when missing
-- console create seeds console authority for the current user
-- operational child records stay under `apps/<appId>/portfolios/<portfolioId>/...`
+## Portfolio Console Delta
+
+- Create flow ensures `apps/<appId>/portfolios/<portfolioId>`.
+- Create flow creates the root portfolio first when missing.
+- Create flow seeds console authority for the current user.
+- Operational child records stay under `apps/<appId>/portfolios/<portfolioId>/...`.
 
 ## Short Version
 
-This folder is the portfolio-console half of the shared console-entry concept.
-Treat Granite as delivery shell, not as the owner of portfolio console truth.
+Portfolio is one member of the shared console family system.
+
+Keep portfolio/property pages aligned with kitchen, supplier, and project consoles:
+same shell, same meta contract, same layout-level selection guard.
