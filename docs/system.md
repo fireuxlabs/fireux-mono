@@ -1,4 +1,5 @@
 # Documentation System
+Status: Active documentation policy
 Authority: Tier2 (Operational)
 Updated: 2026-03-28
 
@@ -9,6 +10,8 @@ Updated: 2026-03-28
 - Tier1 canon remains authoritative when structural rules are involved.
 
 ## Structure
+This section defines the documentation authority model. It is not an agent context loading order.
+
 ### Tier1 (authoritative)
 - `docs/fireux-canon.md`
 - `docs/runtime-contract.md`

@@ -6,8 +6,11 @@ updated: 2026-03-23
 ---
 
 # FireUX Docs
+Status: Documentation index/map
 Authority: Tier2 (Operational index)
 Updated: 2026-03-23
+
+This file is a compact docs map. The human documentation hub is `README.md`; documentation policy lives in `system.md`; agent context loading lives in `../AGENTS.md`.
 
 ## Start Here
 - Documentation system: `system.md`

@@ -1,6 +1,10 @@
 # Documentation Manifest
-Authority: Tier2 (Operational index)
+Status: Maintenance manifest
+Authority: Tier2 (Maintenance inventory)
 Updated: 2026-03-23
+
+Purpose: maintenance inventory for docs hygiene. This file does not define canon, policy, or agent context loading.
+
 ## Authority Model
 - Tier1 (authoritative): canon + contracts.
 - Tier2 (operational): runbooks, guides, migration notes, weekly reports.

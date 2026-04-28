@@ -1,9 +1,11 @@
 # FireUX Documentation Hub
+Status: Active human documentation hub
 Authority: Tier2 (Operational index)
 Updated: 2026-03-28
 
 This is the docs landing map for weekly maintenance and day-to-day navigation.
 System definition: `docs/system.md`.
+Agent context loading is owned by `AGENTS.md`; this file is for human documentation navigation.
 
 ## Product Source of Truth (Public Pages)
 App-specific product narrative lives in each ecosystem app, not in shared docs.
