@@ -54,6 +54,13 @@ Do not inspect these folders unless the user explicitly asks for them, or the ta
 
 These folders may contain stale, generated, historical, or tool-specific material. They are not authority. If one of these files appears relevant, summarize why before using it.
 
+## Scoped context hints
+- Package and app roots have strict shape rules; do not add local `AGENTS.md` files there unless the guard allows it.
+- `packages/core/fireux-core`: owns shared runtime primitives, config helpers, composables, models, utilities, layouts, and SEO/runtime endpoints. Do not pull in extension/app docs unless imports or the task require it.
+- `packages/extensions/fireux-kitchens`: owns kitchen runtime domain, operations entities, kitchen console behavior, and kitchen-owned runtime surfaces. Use `docs/contract.md` for kitchen identity, collections, routes, console behavior, SEO, or mutations.
+- `packages/extensions/fireux-suppliers`: owns supplier runtime domain, supplier console behavior, supplier-owned catalogue/product wrappers, and supplier-owned runtime surfaces. Use `docs/contract.md` for supplier identity, collections, routes, console behavior, SEO, catalogue/product wrappers, or mutations.
+- `projects/misebox/misebox-app`: owns the Misebox global app shell, app config, app-local pages, content, assets, styles, scripts, deployment wiring, and enabled extension composition. Move shared domain changes into the owning package or extension.
+
 ## Runtime README Branch System
 - `packages/core/fireux-docs/src/runtime/README.md` is the runtime docs entry point.
 - `packages/core/fireux-docs/src/runtime/*/README.md` are the branch READMEs for each runtime surface:
