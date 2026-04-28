@@ -3,9 +3,10 @@ Authority: Tier2 (Operational)
 Updated: 2026-03-28
 
 ## Entry Point
-1. `AGENTS.md`
-2. `docs/README.md`
-3. Tier1 canon files
+- Agent context loading: `AGENTS.md` is authoritative.
+- Agents must follow `AGENTS.md` context loading rules and must not read broad docs by default.
+- Documentation navigation starts at `docs/README.md`.
+- Tier1 canon remains authoritative when structural rules are involved.
 
 ## Structure
 ### Tier1 (authoritative)
