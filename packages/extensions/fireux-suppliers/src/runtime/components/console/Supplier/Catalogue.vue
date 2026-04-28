@@ -1,9 +1,6 @@
 <template>
-  <section class="console-surface space-y-4">
-    <OrganismsConsoleSupplierCatalogueRead
-      :catalogue-items="catalogueItems"
-      :pending="pending"
-    />
+  <section class="console-surface space-y-6">
+    <OrganismsConsoleSupplierCatalogueRead :catalogue-items="catalogueItems" />
 
     <OrganismsConsoleSupplierCatalogueWrite v-if="canWrite" />
   </section>
@@ -12,9 +9,5 @@
 <script setup lang="ts">
 import { useSupplierConsoleCatalogue } from '../../../composables/fireux/app/supplier-console/useSupplierConsoleCatalogue'
 
-const {
-  catalogueItems,
-  pending,
-  canWrite,
-} = useSupplierConsoleCatalogue()
+const { catalogueItems, canWrite } = useSupplierConsoleCatalogue()
 </script>

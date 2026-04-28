@@ -7,7 +7,7 @@
     </template>
 
     <p class="console-card-header__description">
-      Supplier catalogue write tools will live here.
+      hello world - WRITE Catalogue
     </p>
   </UCard>
 </template>
