@@ -5,13 +5,12 @@
       <KitchenOverviewGroup :group="group" :mode="focus.mode" />
     </div>
 
-    <div v-if="isDev" class="mt-4">
-      <DevJson
-        title="Kitchen Overview Debug"
-        context="console kitchen overview · selected kitchen header source"
+    <div class="mt-4">
+      <DevFireuxDebugPanel
+        title="Kitchen overview"
+        scope="console"
         :data="debugState"
-        :default-open="true"
-        :hide-when-empty="false"
+        default-open
       />
     </div>
   </section>
@@ -22,7 +21,6 @@ import { computed } from 'vue'
 import { useKitchenConsoleOverview } from '../../../composables/fireux/app/kitchen-console/useKitchenConsoleOverview'
 
 const { focus, group } = useKitchenConsoleOverview()
-const isDev = import.meta.dev
 
 const debugState = computed(() => {
   const kitchen = focus.value.entity
