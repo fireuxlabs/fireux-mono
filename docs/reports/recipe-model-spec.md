@@ -1,6 +1,7 @@
 # Recipe Model Spec
 
-Authority: working model design spec
+Status: historical evidence
+Authority: non-authoritative evidence
 Updated: 2026-03-16
 
 ## 1. Final Entity Definition

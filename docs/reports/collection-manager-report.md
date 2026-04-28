@@ -1,5 +1,7 @@
 # Collection Manager Report
 
+Status: generated report
+Authority: non-authoritative evidence
 Generated: 2026-03-02T11:57:37.372Z
 Canon version: `server-projection-v1`
 Scan scope:

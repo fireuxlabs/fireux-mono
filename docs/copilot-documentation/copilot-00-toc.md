@@ -5,8 +5,11 @@ updated: 2026-03-23
 ---
 
 # FireUX Handbook
+Status: Older operational/copilot docs index; not default agent context
 Updated: 2026-03-23
 Authority: Tier2 (Operational index)
+
+These docs may be stale against current `AGENTS.md` and Tier1 canon. Use them as operational reference only; if they conflict with Tier1 or `AGENTS.md`, those sources win.
 
 ## 1. Canon Layer (Tier1)
 - `../fireux-canon.md`

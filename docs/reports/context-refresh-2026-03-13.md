@@ -1,5 +1,6 @@
 # Context Refresh Report
-Authority: Tier2 (Operational report)
+Status: generated report
+Authority: non-authoritative evidence
 Updated: 2026-03-13
 
 ## Purpose

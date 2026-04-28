@@ -1,6 +1,7 @@
 # Console Alignment Report
 
-Authority: working canon review
+Status: historical evidence
+Authority: non-authoritative evidence
 Updated: 2026-03-28
 
 ## Purpose

@@ -1,6 +1,7 @@
 # Recipe Canon Report
 
-Authority: working canon audit
+Status: historical evidence
+Authority: non-authoritative evidence
 Updated: 2026-03-16
 
 Containment note: this report contains pre-containment analysis. Current canonical recipe model is `packages/extensions/fireux-kitchens/src/runtime/models/recipe.model.ts`. The former `packages/extensions/fireux-kitchens/src/runtime/models/kitchen-recipe.model.ts` and `packages/ecosystem/fireux-misebox/src/runtime/models/Recipe.model.ts` files have been removed.
