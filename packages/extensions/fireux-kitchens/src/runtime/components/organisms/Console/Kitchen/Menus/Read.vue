@@ -1,16 +1,24 @@
 <template>
-  <OrganismsMenuCollectionManager
-    :collection="menus"
-    title="Menus"
-    description="Browse menus for the selected kitchen."
-    :link="false"
-  />
+  <div class="space-y-6">
+    <OrganismsMenuCollectionManager
+      :collection="menus"
+      title="Menus"
+      description="Browse menus for the selected kitchen."
+      :link="false"
+    />
+
+    <DevFireuxDebugPanel
+      v-if="isDev"
+      title="Kitchen menus"
+      scope="console"
+      :data="debug"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
-import type { Menu } from '../../../../../models/menu.model'
+import { useKitchenConsoleMenus } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMenus'
 
-defineProps<{
-  menus: Menu[]
-}>()
+const { menus, debug } = useKitchenConsoleMenus()
+const isDev = import.meta.dev
 </script>

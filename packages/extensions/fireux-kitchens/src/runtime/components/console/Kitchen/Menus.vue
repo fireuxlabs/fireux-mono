@@ -1,6 +1,6 @@
 <template>
   <section class="console-surface space-y-6">
-    <OrganismsConsoleKitchenMenusRead :menus="menus" />
+    <OrganismsConsoleKitchenMenusRead />
 
     <OrganismsConsoleKitchenMenusWrite v-if="canWrite" />
   </section>
@@ -9,5 +9,5 @@
 <script setup lang="ts">
 import { useKitchenConsoleMenus } from '../../../composables/fireux/app/kitchen-console/useKitchenConsoleMenus'
 
-const { menus, canWrite } = useKitchenConsoleMenus()
+const { canWrite } = useKitchenConsoleMenus()
 </script>

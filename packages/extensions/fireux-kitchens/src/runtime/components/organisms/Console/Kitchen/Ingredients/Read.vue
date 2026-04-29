@@ -1,16 +1,24 @@
 <template>
-  <OrganismsIngredientCollectionManager
-    :collection="ingredients"
-    title="Ingredients"
-    description="Browse ingredients for the selected kitchen."
-    :link="false"
-  />
+  <div class="space-y-6">
+    <OrganismsIngredientCollectionManager
+      :collection="ingredients"
+      title="Ingredients"
+      description="Browse ingredients for the selected kitchen."
+      :link="false"
+    />
+
+    <DevFireuxDebugPanel
+      v-if="isDev"
+      title="Kitchen ingredients"
+      scope="console"
+      :data="debug"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
-import type { IngredientInterfaceItem } from '../../../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
+import { useKitchenConsoleIngredients } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleIngredients'
 
-defineProps<{
-  ingredients: IngredientInterfaceItem[]
-}>()
+const { ingredients, debug } = useKitchenConsoleIngredients()
+const isDev = import.meta.dev
 </script>

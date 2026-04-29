@@ -1,6 +1,6 @@
 <template>
   <section class="console-surface space-y-6">
-    <OrganismsConsoleKitchenMiseRead :mise-tasks="miseTasks" />
+    <OrganismsConsoleKitchenMiseRead />
 
     <OrganismsConsoleKitchenMiseWrite v-if="canWrite" />
   </section>
@@ -9,5 +9,5 @@
 <script setup lang="ts">
 import { useKitchenConsoleMise } from '../../../composables/fireux/app/kitchen-console/useKitchenConsoleMise'
 
-const { miseTasks, canWrite } = useKitchenConsoleMise()
+const { canWrite } = useKitchenConsoleMise()
 </script>

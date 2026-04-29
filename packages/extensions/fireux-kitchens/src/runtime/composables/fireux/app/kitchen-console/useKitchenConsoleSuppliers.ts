@@ -4,17 +4,21 @@ import { useKitchenSupplierFetch } from '../../firestore/runtime-kitchen/supplie
 import { useKitchenConsole } from './useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-
 export function useKitchenConsoleSuppliers() {
-  const { selectedKitchen, selectedMode } = useKitchenConsole()
-  const kitchenId = computed(() => normalizeString(selectedKitchen.value?.id))
-  const fetchKitchenId = computed(() => (selectedMode.value === 'demo' ? '' : kitchenId.value))
-  const kitchenCollectionPath = computed(() =>
-    selectedMode.value === 'test' ? 'test-kitchens' : undefined
+  const {
+    selectedKitchen,
+    selectedMode,
+    kitchenId,
+    rootCollection,
+    canWrite,
+  } = useKitchenConsole()
+  const fetchKitchenId = computed(() =>
+    rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
   const { suppliers: liveSuppliers, count: liveCount, pending: livePending, collectionPath } =
-    useKitchenSupplierFetch(fetchKitchenId, { kitchenCollectionPath })
+    useKitchenSupplierFetch(fetchKitchenId, {
+      kitchenCollectionPath: rootCollection,
+    })
   const typedLiveSuppliers = computed<SupplierSurface[]>(() => liveSuppliers.value as SupplierSurface[])
   const page = useKitchenConsoleReadPage<SupplierSurface>({
     collectionName: 'suppliers',
@@ -28,6 +32,15 @@ export function useKitchenConsoleSuppliers() {
   const suppliers = computed(() => page.collection.value.items)
   const count = computed(() => page.collection.value.count)
   const pending = computed(() => page.collection.value.pending)
+  const debug = computed(() => ({
+    mode: selectedMode.value,
+    kitchenId: kitchenId.value,
+    rootCollection: rootCollection.value,
+    collectionPath: collectionPath.value,
+    count: count.value,
+    pending: pending.value,
+    canWrite: canWrite.value,
+  }))
 
   return {
     ...page,
@@ -35,9 +48,12 @@ export function useKitchenConsoleSuppliers() {
     selectedMode,
     kitchenId,
     collectionPath,
+    rootCollection,
+    canWrite,
     liveCount,
     suppliers,
     count,
     pending,
+    debug,
   }
 }

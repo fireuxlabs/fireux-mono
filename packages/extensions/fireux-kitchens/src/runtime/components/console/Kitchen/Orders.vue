@@ -1,6 +1,6 @@
 <template>
   <section class="console-surface space-y-6">
-    <OrganismsConsoleKitchenOrdersRead :orders="orders" />
+    <OrganismsConsoleKitchenOrdersRead />
 
     <OrganismsConsoleKitchenOrdersWrite v-if="canWrite" />
   </section>
@@ -9,5 +9,5 @@
 <script setup lang="ts">
 import { useKitchenConsoleOrders } from '../../../composables/fireux/app/kitchen-console/useKitchenConsoleOrders'
 
-const { orders, canWrite } = useKitchenConsoleOrders()
+const { canWrite } = useKitchenConsoleOrders()
 </script>

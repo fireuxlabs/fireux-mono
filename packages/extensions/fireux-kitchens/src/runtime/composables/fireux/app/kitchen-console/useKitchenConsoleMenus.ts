@@ -33,6 +33,15 @@ export function useKitchenConsoleMenus() {
   })
   const menus = computed(() => page.collection.value.items)
   const pending = computed(() => page.collection.value.pending)
+  const debug = computed(() => ({
+    mode: selectedMode.value,
+    kitchenId: kitchenId.value,
+    rootCollection: rootCollection.value,
+    collectionPath: collectionPath.value,
+    menusCount: menus.value.length,
+    pending: pending.value,
+    canWrite: canWrite.value,
+  }))
 
   return {
     ...page,
@@ -44,5 +53,6 @@ export function useKitchenConsoleMenus() {
     canWrite,
     menus,
     pending,
+    debug,
   }
 }

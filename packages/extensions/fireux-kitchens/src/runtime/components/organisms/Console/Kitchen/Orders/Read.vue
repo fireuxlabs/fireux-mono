@@ -1,33 +1,38 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="console-card-header">
-        <div class="console-card-header__title">Orders</div>
-        <p class="console-card-header__description">
-          Browse current orders for the selected kitchen.
-        </p>
+  <div class="space-y-6">
+    <UCard>
+      <template #header>
+        <div class="console-card-header">
+          <div class="console-card-header__title">Orders</div>
+          <p class="console-card-header__description">
+            Browse current orders for the selected kitchen.
+          </p>
+        </div>
+      </template>
+
+      <div v-if="orderCards.length" class="flex flex-wrap gap-3">
+        <OrganismsOrderCard
+          v-for="card in orderCards"
+          :key="card.id"
+          v-bind="card"
+        />
       </div>
-    </template>
 
-    <div v-if="orderCards.length" class="flex flex-wrap gap-3">
-      <OrganismsOrderCard
-        v-for="card in orderCards"
-        :key="card.id"
-        v-bind="card"
-      />
-    </div>
+      <p v-else class="text-sm text-dimmed">No orders found.</p>
+    </UCard>
 
-    <p v-else class="text-sm text-dimmed">No orders found.</p>
-  </UCard>
+    <DevFireuxDebugPanel
+      v-if="isDev"
+      title="Kitchen orders"
+      scope="console"
+      :data="debug"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenOrder } from '../../../../../models/order.model'
-
-const props = defineProps<{
-  orders: KitchenOrder[]
-}>()
+import { useKitchenConsoleOrders } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleOrders'
 
 const toTimeLabel = (value: any) => {
   const seconds = Number(value?.seconds)
@@ -38,8 +43,9 @@ const toTimeLabel = (value: any) => {
   })
 }
 
+const { orders, debug } = useKitchenConsoleOrders()
 const orderCards = computed(() =>
-  props.orders.map((order) => ({
+  orders.value.map((order) => ({
     id: String(order.id || '').trim(),
     contextLabel: String(order.order_number || '').trim() || 'Order',
     timeLabel:
@@ -55,4 +61,5 @@ const orderCards = computed(() =>
       : [],
   }))
 )
+const isDev = import.meta.dev
 </script>

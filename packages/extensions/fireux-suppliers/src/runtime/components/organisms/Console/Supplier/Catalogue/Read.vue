@@ -8,12 +8,11 @@
       :description="catalogueDescription"
     />
 
-    <DevJson
+    <DevFireuxDebugPanel
       v-if="isDev"
-      title="Supplier Catalogue Flags (JSON)"
-      context="console supplier catalogue · read"
+      title="Supplier catalogue"
+      scope="console"
       :data="debug"
-      :default-open="false"
     />
   </div>
 </template>

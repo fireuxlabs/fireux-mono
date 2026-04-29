@@ -7,12 +7,11 @@
       :dev-context="devJsonContext"
     />
 
-    <DevJson
+    <DevFireuxDebugPanel
       v-if="isDev"
-      title="Supplier Products Flags (JSON)"
-      context="console supplier products · read"
+      title="Supplier products"
+      scope="console"
       :data="debug"
-      :default-open="false"
     />
   </div>
 </template>

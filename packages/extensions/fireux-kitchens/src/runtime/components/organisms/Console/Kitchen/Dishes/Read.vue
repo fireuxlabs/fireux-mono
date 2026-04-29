@@ -1,19 +1,25 @@
 <template>
-  <OrganismsDishCollectionManager
-    :collection="dishes"
-    :sections="sections"
-    title="Dishes"
-    description="Browse dishes for the selected kitchen."
-    :link="false"
-  />
+  <div class="space-y-6">
+    <OrganismsDishCollectionManager
+      :collection="dishes"
+      :sections="sections"
+      title="Dishes"
+      description="Browse dishes for the selected kitchen."
+      :link="false"
+    />
+
+    <DevFireuxDebugPanel
+      v-if="isDev"
+      title="Kitchen dishes"
+      scope="console"
+      :data="debug"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
-import type { Dish } from '../../../../../models/dish.model'
-import type { KitchenDishSection } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleDishes'
+import { useKitchenConsoleDishes } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleDishes'
 
-defineProps<{
-  dishes: Dish[]
-  sections?: KitchenDishSection[]
-}>()
+const { dishes, sections, debug } = useKitchenConsoleDishes()
+const isDev = import.meta.dev
 </script>

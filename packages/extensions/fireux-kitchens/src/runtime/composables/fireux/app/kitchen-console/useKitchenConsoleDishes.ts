@@ -15,14 +15,20 @@ export type KitchenDishSection = {
 }
 
 export function useKitchenConsoleDishes() {
-  const { selectedKitchen, selectedMode } = useKitchenConsole()
-  const kitchenId = computed(() => normalizeString(selectedKitchen.value?.id))
-  const fetchKitchenId = computed(() => (selectedMode.value === 'demo' ? '' : kitchenId.value))
-  const kitchenCollectionPath = computed(() =>
-    selectedMode.value === 'test' ? 'test-kitchens' : undefined
+  const {
+    selectedKitchen,
+    selectedMode,
+    kitchenId,
+    rootCollection,
+    canWrite,
+  } = useKitchenConsole()
+  const fetchKitchenId = computed(() =>
+    rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
   const { dishes: liveDishes, pending: livePending, collectionPath } =
-    useKitchenDishCollection(fetchKitchenId, { kitchenCollectionPath })
+    useKitchenDishCollection(fetchKitchenId, {
+      kitchenCollectionPath: rootCollection,
+    })
   const page = useKitchenConsoleReadPage<Dish>({
     collectionName: 'dishes',
     selectedKitchen,
@@ -102,6 +108,16 @@ export function useKitchenConsoleDishes() {
         }
       })
   })
+  const debug = computed(() => ({
+    mode: selectedMode.value,
+    kitchenId: kitchenId.value,
+    rootCollection: rootCollection.value,
+    collectionPath: collectionPath.value,
+    count: dishes.value.length,
+    pending: pending.value,
+    canWrite: canWrite.value,
+    sectionsCount: sections.value.length,
+  }))
 
   return {
     ...page,
@@ -109,8 +125,11 @@ export function useKitchenConsoleDishes() {
     selectedMode,
     kitchenId,
     collectionPath,
+    rootCollection,
+    canWrite,
     dishes,
     pending,
     sections,
+    debug,
   }
 }
