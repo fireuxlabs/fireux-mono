@@ -1,5 +1,8 @@
 import { computed, isRef } from 'vue'
 import {
+  normalizeConsoleString as normalizeString,
+  resolveConsoleCanWrite,
+  resolveConsoleRootCollection,
   useConsole,
   type ConsoleMode,
 } from 'fireux-core/runtime/composables/fireux/console/useConsole'
@@ -32,8 +35,6 @@ type UsePortfolioConsoleOptions = {
     | Ref<PortfolioCollectionFilter | null | undefined>
     | null
 }
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
   const { uid } = useAuth()
@@ -81,6 +82,11 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
   const selectedPortfolio = computed<PortfolioConsoleEntity | null>(
     () => selectedEntity.value as PortfolioConsoleEntity | null
   )
+  const portfolioId = computed(() => normalizeString(selectedPortfolio.value?.id))
+  const rootCollection = computed(() =>
+    resolveConsoleRootCollection('portfolios', selectedMode.value)
+  )
+  const canWrite = computed(() => resolveConsoleCanWrite(selectedMode.value))
 
   const portfolio = computed(() => {
     const target = selectedPortfolio.value
@@ -155,6 +161,9 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
     portfolio,
     selectedPortfolio,
     selectedMode,
+    portfolioId,
+    rootCollection,
+    canWrite,
     clearSelectedPortfolio,
     selectPortfolio,
   }

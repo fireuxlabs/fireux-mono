@@ -1,5 +1,8 @@
 import { computed, isRef } from 'vue'
 import {
+  normalizeConsoleString as normalizeString,
+  resolveConsoleCanWrite,
+  resolveConsoleRootCollection,
   useConsole,
   type ConsoleMode,
 } from 'fireux-core/runtime/composables/fireux/console/useConsole'
@@ -18,8 +21,6 @@ import type { Ref } from 'vue'
 
 type ProjectConsoleMode = ConsoleMode
 type ProjectConsoleEntity = ProjectSurface
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 type UseProjectConsoleOptions = {
   filter?: ProjectCollectionFilter | Ref<ProjectCollectionFilter | null | undefined> | null
@@ -57,12 +58,10 @@ export function useProjectConsole(
   })
   const selectedProject = computed<ProjectConsoleEntity | null>(() => selectedEntity.value)
   const projectId = computed(() => normalizeString(selectedProject.value?.id))
-  const rootCollection = computed(() => {
-    if (selectedMode.value === 'demo') return ''
-    if (selectedMode.value === 'test') return 'test-projects'
-    return 'projects'
-  })
-  const canWrite = computed(() => selectedMode.value !== 'demo')
+  const rootCollection = computed(() =>
+    resolveConsoleRootCollection('projects', selectedMode.value)
+  )
+  const canWrite = computed(() => resolveConsoleCanWrite(selectedMode.value))
 
   const header = computed<ConsoleHeaderData>(() => {
     const project = selectedProject.value
