@@ -1,31 +1,33 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="console-card-header">
-        <div class="console-card-header__title">{{ title }}</div>
-      </div>
-    </template>
+  <div class="space-y-6">
+    <SupplierCatalogueCollectionManager
+      :collection="catalogues"
+      :pending="pending"
+      :collection-path="supplierCataloguesCollectionPath"
+      :title="catalogueTitle"
+      :description="catalogueDescription"
+    />
 
-    <div class="space-y-2">
-      <p class="console-card-header__description">
-        {{ description }}
-      </p>
-      <p class="text-sm text-dimmed">
-        Supplier catalogue grouping will live here.
-      </p>
-      <p class="text-sm text-dimmed">
-        Collection path:
-        <code>{{ collectionPath || 'none' }}</code>
-      </p>
-    </div>
-  </UCard>
+    <DevJson
+      v-if="isDev"
+      title="Supplier Catalogue Flags (JSON)"
+      context="console supplier catalogue · read"
+      :data="debug"
+      :default-open="false"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  title: string
-  description: string
-  collectionPath: string
-  pending: boolean
-}>()
+import { useSupplierConsoleCatalogue } from '../../../../../composables/fireux/app/supplier-console/useSupplierConsoleCatalogue'
+
+const {
+  catalogues,
+  pending,
+  catalogueTitle,
+  catalogueDescription,
+  supplierCataloguesCollectionPath,
+  debug,
+} = useSupplierConsoleCatalogue()
+const isDev = import.meta.dev
 </script>

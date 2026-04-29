@@ -150,3 +150,61 @@ export type SupplierProductCreateInput = Omit<
 export type SupplierProductUpdateInput = Partial<
   Omit<SupplierProduct, 'id' | 'supplier_id' | 'product_id' | 'created' | 'updated'>
 >
+
+export type SupplierCatalogueItem = {
+  id: string
+  supplier_product_id: string
+  product_id: string
+  label: string
+  active: boolean
+  sort_order: number
+}
+
+export type SupplierCatalogueSection = {
+  id: string
+  label: string
+  description: string
+  items: SupplierCatalogueItem[]
+  sort_order: number
+}
+
+/**
+ * Family: Supplier-scoped
+ * Storage: supplier-owned presentation/grouping surface
+ * Path: /suppliers/<supplierId>/catalogues/<catalogueId>
+ *
+ * Decision note:
+ * - SupplierCatalogue organizes SupplierProduct rows for presentation.
+ * - It does not own SKU, pack, price, or availability terms.
+ * - Catalogue items point back to supplier products and may carry light labels/sort state.
+ */
+export const SupplierCatalogueModel = {
+  id: '',
+  supplier_id: '',
+  name: '',
+  description: '',
+  active: true as boolean,
+  sections: [] as SupplierCatalogueSection[],
+  sort_order: 0,
+
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined as FireuxStamped['updated']['by'],
+  },
+} as const
+
+export type SupplierCatalogue = WidenLiteral<typeof SupplierCatalogueModel>
+
+export type SupplierCatalogueCreateInput = Omit<
+  SupplierCatalogue,
+  'id' | 'created' | 'updated'
+>
+
+export type SupplierCatalogueUpdateInput = Partial<
+  Omit<SupplierCatalogue, 'id' | 'supplier_id' | 'created' | 'updated'>
+>

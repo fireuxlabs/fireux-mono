@@ -25,6 +25,7 @@ export function useSupplierConsoleCatalogue() {
       ? `${rootCollection.value}/${supplierId.value}/catalogues`
       : ''
   )
+  const catalogues = computed(() => [])
   const pending = computed(() => false)
 
   const isIntegratedCatalogue = computed(
@@ -80,6 +81,17 @@ export function useSupplierConsoleCatalogue() {
   const devJsonContext = computed(
     () => `console supplier · catalogue · ${selectedMode.value}`
   )
+  const debug = computed(() => ({
+    mode: selectedMode.value,
+    supplierId: supplierId.value,
+    supplierName: supplierLabel.value,
+    rootCollection: rootCollection.value,
+    state: state.value,
+    catalogueState: catalogueState.value,
+    supplierCataloguesCollectionPath: supplierCataloguesCollectionPath.value,
+    pending: pending.value,
+    canWrite: canWrite.value,
+  }))
 
   return {
     selectedSupplier,
@@ -90,6 +102,7 @@ export function useSupplierConsoleCatalogue() {
     state,
     catalogueState,
     supplierCataloguesCollectionPath,
+    catalogues,
     pending,
     canWrite,
     isIntegratedCatalogue,
@@ -100,6 +113,7 @@ export function useSupplierConsoleCatalogue() {
     catalogueTitle,
     catalogueDescription,
     devJsonContext,
+    debug,
   }
 }
 

@@ -17,8 +17,26 @@ type UseConsoleOptions<TLive, TDemo, TTest> = {
   getId?: (item: TLive | TDemo | TTest) => string
 }
 
-const normalizeFamily = (value: unknown) => String(value ?? '').trim()
-const normalizeString = (value: unknown) => String(value ?? '').trim()
+export const normalizeConsoleString = (value: unknown) =>
+  String(value ?? '').trim()
+
+export const resolveConsoleRootCollection = (
+  family: string,
+  mode: ConsoleMode
+) => {
+  const normalizedFamily = normalizeConsoleString(family)
+  if (!normalizedFamily || mode === 'demo') return ''
+  if (mode === 'test') return `test-${normalizedFamily}`
+  return normalizedFamily
+}
+
+export const resolveConsoleCanWrite = (mode: ConsoleMode) => mode !== 'demo'
+
+export const resolveConsoleModeLabel = (mode: ConsoleMode) =>
+  mode === 'demo' ? 'Demo' : mode === 'test' ? 'Test' : 'Live'
+
+const normalizeFamily = normalizeConsoleString
+const normalizeString = normalizeConsoleString
 const isPresent = <T>(value: T | null | undefined): value is T => value != null
 const isConsoleMode = (value: unknown): value is ConsoleMode =>
   value === 'live' || value === 'demo' || value === 'test'

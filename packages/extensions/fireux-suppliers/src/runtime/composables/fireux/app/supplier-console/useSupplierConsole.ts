@@ -1,5 +1,8 @@
 import { computed, isRef } from 'vue'
 import {
+  normalizeConsoleString as normalizeString,
+  resolveConsoleCanWrite,
+  resolveConsoleRootCollection,
   useConsole,
   type ConsoleMode,
 } from 'fireux-core/runtime/composables/fireux/console/useConsole'
@@ -20,8 +23,6 @@ type SupplierConsoleMode = ConsoleMode
 type UseSupplierConsoleOptions = {
   filter?: SupplierCollectionFilter | Ref<SupplierCollectionFilter | null | undefined> | null
 }
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useSupplierConsole(
   options: UseSupplierConsoleOptions = {}
@@ -66,12 +67,10 @@ export function useSupplierConsole(
     () => selectedEntity.value as SupplierSurface | null
   )
   const supplierId = computed(() => normalizeString(selectedSupplier.value?.id))
-  const rootCollection = computed(() => {
-    if (selectedMode.value === 'demo') return ''
-    if (selectedMode.value === 'test') return 'test-suppliers'
-    return 'suppliers'
-  })
-  const canWrite = computed(() => selectedMode.value !== 'demo')
+  const rootCollection = computed(() =>
+    resolveConsoleRootCollection('suppliers', selectedMode.value)
+  )
+  const canWrite = computed(() => resolveConsoleCanWrite(selectedMode.value))
 
   const header = computed<ConsoleHeaderData>(() => {
     const target = selectedSupplier.value as Record<string, unknown> | null

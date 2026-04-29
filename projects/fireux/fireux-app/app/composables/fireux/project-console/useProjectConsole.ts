@@ -29,6 +29,7 @@ export function useProjectConsole(
   options: UseProjectConsoleOptions = {}
 ) {
   const { uid } = useAuth()
+  const userId = computed(() => normalizeString(uid.value))
   const liveFilter = computed<ProjectCollectionFilter>(() => {
     const explicitFilter = isRef(options.filter)
       ? options.filter.value ?? {}
@@ -36,14 +37,14 @@ export function useProjectConsole(
 
     return {
       ...explicitFilter,
-      teamId: normalizeString(uid.value),
+      teamId: userId.value,
     }
   })
   const { projects: liveProjects } = useProjectCollection({
     filter: liveFilter,
   })
   const { projects: demoProjects } = useProjectCollection({ source: 'demo' })
-  const { project: testProject } = useProjectFetch(uid, { source: 'test' })
+  const { project: testProject } = useProjectFetch(userId, { source: 'test' })
   const { selectedEntity, selectedMode, selectEntity, clearSelection } = useConsole<
     ProjectSurface,
     ProjectSurface,
@@ -55,6 +56,13 @@ export function useProjectConsole(
     getId: (project) => normalizeString(project?.id),
   })
   const selectedProject = computed<ProjectConsoleEntity | null>(() => selectedEntity.value)
+  const projectId = computed(() => normalizeString(selectedProject.value?.id))
+  const rootCollection = computed(() => {
+    if (selectedMode.value === 'demo') return ''
+    if (selectedMode.value === 'test') return 'test-projects'
+    return 'projects'
+  })
+  const canWrite = computed(() => selectedMode.value !== 'demo')
 
   const header = computed<ConsoleHeaderData>(() => {
     const project = selectedProject.value
@@ -99,6 +107,9 @@ export function useProjectConsole(
     testProject,
     selectedProject,
     selectedMode,
+    projectId,
+    rootCollection,
+    canWrite,
     clearSelectedProject,
     selectProject,
   }

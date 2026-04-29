@@ -1,5 +1,8 @@
 import { computed, isRef } from 'vue'
 import {
+  normalizeConsoleString as normalizeString,
+  resolveConsoleCanWrite,
+  resolveConsoleRootCollection,
   useConsole,
   type ConsoleMode,
 } from 'fireux-core/runtime/composables/fireux/console/useConsole'
@@ -21,8 +24,6 @@ type KitchenConsoleEntity = KitchenSurface
 type UseKitchenConsoleOptions = {
   filter?: KitchenCollectionFilter | Ref<KitchenCollectionFilter | null | undefined> | null
 }
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useKitchenConsole(
   options: UseKitchenConsoleOptions = {}
@@ -56,12 +57,10 @@ export function useKitchenConsole(
   })
   const selectedKitchen = computed<KitchenConsoleEntity | null>(() => selectedEntity.value)
   const kitchenId = computed(() => normalizeString(selectedKitchen.value?.id))
-  const rootCollection = computed(() => {
-    if (selectedMode.value === 'demo') return ''
-    if (selectedMode.value === 'test') return 'test-kitchens'
-    return 'kitchens'
-  })
-  const canWrite = computed(() => selectedMode.value !== 'demo')
+  const rootCollection = computed(() =>
+    resolveConsoleRootCollection('kitchens', selectedMode.value)
+  )
+  const canWrite = computed(() => resolveConsoleCanWrite(selectedMode.value))
 
   const header = computed<ConsoleHeaderData>(() => {
     const kitchen = selectedKitchen.value
