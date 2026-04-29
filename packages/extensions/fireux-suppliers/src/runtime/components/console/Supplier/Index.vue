@@ -40,11 +40,10 @@
       </div>
 
       <div v-if="isDev">
-        <DevJson
-          title="Supplier Console Flags (JSON)"
-          context="console supplier index · flags"
-          :data="consoleFlagsDebugData"
-          :default-open="false"
+        <DevFireuxDebugPanel
+          title="Supplier index"
+          scope="console"
+          :data="debug"
         />
       </div>
 
@@ -148,10 +147,7 @@ const {
   suppliers,
   actions,
   selectedSupplier,
-  selectedMode,
-  supplierId,
-  rootCollection,
-  canWrite,
+  debug,
   clearSelectedSupplier,
 } = useSupplierConsoleIndex()
 const { pill } = useSupplierInterface()
@@ -173,17 +169,6 @@ const selectedSupplierCard = computed<SupplierPillCard | null>(() => {
   return pill(supplier) ?? null
 })
 
-const supplierName = computed(() =>
-  String(selectedSupplier.value?.supplier_organization_name ?? '').trim()
-)
-const consoleFlagsDebugData = computed(() => ({
-  mode: selectedMode.value,
-  supplierId: supplierId.value,
-  rootCollection: rootCollection.value,
-  canWrite: canWrite.value,
-  supplierName: supplierName.value,
-  selectedSupplier: selectedSupplier.value,
-}))
 const isDev = import.meta.dev
 
 const testSupplierCard = computed<SupplierPillCard | null>(() => {

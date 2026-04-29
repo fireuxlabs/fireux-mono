@@ -39,6 +39,14 @@
         </p>
       </div>
 
+      <div v-if="isDev">
+        <DevFireuxDebugPanel
+          title="Kitchen index"
+          scope="console"
+          :data="debug"
+        />
+      </div>
+
       <KitchenCollectionManager
         v-if="kitchens.live.length"
         :collection="kitchens.live"
@@ -140,9 +148,11 @@ const {
   kitchens,
   actions,
   selectedKitchen,
+  debug,
   clearSelectedKitchen,
 } = useKitchenConsoleIndex()
 const { pill } = useKitchenInterface()
+const isDev = import.meta.dev
 
 const demoKitchenCards = computed<KitchenPillCard[]>(() =>
   kitchens.value.demo

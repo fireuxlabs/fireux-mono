@@ -1,10 +1,10 @@
+import { computed } from 'vue'
+import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/console/useConsole'
 import { useConsoleOverview } from 'fireux-core/runtime/composables/fireux/console/useConsoleOverview'
 import {
   usePortfolioConsole,
   type PortfolioConsoleEntity,
 } from './usePortfolioConsole'
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function usePortfolioConsoleOverview() {
   const {
@@ -13,9 +13,13 @@ export function usePortfolioConsoleOverview() {
     testPortfolio,
     selectedPortfolio,
     selectedMode,
+    portfolioId,
+    rootCollection,
+    canWrite,
+    clearSelectedPortfolio,
   } = usePortfolioConsole()
 
-  return useConsoleOverview<PortfolioConsoleEntity, PortfolioConsoleEntity>({
+  const overview = useConsoleOverview<PortfolioConsoleEntity, PortfolioConsoleEntity>({
     selectedEntity: selectedPortfolio,
     selectedMode,
     liveItems: livePortfolios,
@@ -23,4 +27,26 @@ export function usePortfolioConsoleOverview() {
     testItem: testPortfolio,
     getId: (portfolio) => normalizeString(portfolio?.id),
   })
+  const debug = computed(() => ({
+    mode: selectedMode.value,
+    portfolioId: portfolioId.value,
+    rootCollection: rootCollection.value,
+    canWrite: canWrite.value,
+    focus: overview.focus.value,
+    group: {
+      count: overview.group.value.count,
+      ids: overview.group.value.items.map((item) => normalizeString(item?.id)),
+    },
+  }))
+
+  return {
+    ...overview,
+    selectedPortfolio,
+    selectedMode,
+    portfolioId,
+    rootCollection,
+    canWrite,
+    clearSelectedPortfolio,
+    debug,
+  }
 }

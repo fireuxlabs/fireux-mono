@@ -74,6 +74,18 @@ export function usePortfolioConsoleIndex(
       return normalizeString(result.id)
     },
   })
+  const debug = computed(() => ({
+    mode: selectedMode.value,
+    portfolioId: portfolioId.value,
+    rootCollection: rootCollection.value,
+    canWrite: canWrite.value,
+    selectedPortfolio: selectedPortfolio.value,
+    counts: {
+      live: consoleIndex.entities.value.live.length,
+      demo: consoleIndex.entities.value.demo.length,
+      test: consoleIndex.entities.value.test ? 1 : 0,
+    },
+  }))
 
   return {
     state: consoleIndex.state,
@@ -85,6 +97,7 @@ export function usePortfolioConsoleIndex(
     portfolioId,
     rootCollection,
     canWrite,
+    debug,
     clearSelectedPortfolio,
   }
 }

@@ -39,6 +39,14 @@
         </p>
       </div>
 
+      <div v-if="isDev">
+        <DevFireuxDebugPanel
+          title="Portfolio index"
+          scope="console"
+          :data="debug"
+        />
+      </div>
+
       <PortfolioCollectionManager
         v-if="portfolios.live.length"
         :collection="portfolios.live"
@@ -136,9 +144,11 @@ const {
   portfolios,
   actions,
   selectedPortfolio,
+  debug,
   clearSelectedPortfolio,
 } = usePortfolioConsoleIndex()
 const { pill } = usePortfolioInterface()
+const isDev = import.meta.dev
 
 type PortfolioPillCard = NonNullable<
   ReturnType<ReturnType<typeof usePortfolioInterface>['pill']>

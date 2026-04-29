@@ -4,11 +4,20 @@
       <PortfolioOverviewFocus :focus="focus" :group="group" />
       <PortfolioOverviewGroup :group="group" :mode="focus.mode" />
     </div>
+
+    <div class="mt-4">
+      <DevFireuxDebugPanel
+        title="Portfolio overview"
+        scope="console"
+        :data="debug"
+        default-open
+      />
+    </div>
   </section>
 </template>
 
 <script setup lang="ts">
 import { usePortfolioConsoleOverview } from '../../../composables/fireux/app/portfolio-console/usePortfolioConsoleOverview'
 
-const { focus, group } = usePortfolioConsoleOverview()
+const { focus, group, debug } = usePortfolioConsoleOverview()
 </script>

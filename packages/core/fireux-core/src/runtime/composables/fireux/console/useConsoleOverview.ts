@@ -1,5 +1,8 @@
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
-import type { ConsoleMode } from './useConsole'
+import {
+  normalizeConsoleString,
+  type ConsoleMode,
+} from './useConsole'
 
 type MaybeRef<T> = Ref<T> | ComputedRef<T>
 
@@ -12,7 +15,6 @@ type UseConsoleOverviewOptions<TSelected, TGroup> = {
   getId: (item: TSelected | TGroup) => string
 }
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
 const isPresent = <T>(value: T | null | undefined): value is T => value != null
 
 export function useConsoleOverview<TSelected, TGroup>(
@@ -23,7 +25,7 @@ export function useConsoleOverview<TSelected, TGroup>(
 
     return {
       entity,
-      id: entity ? normalizeString(options.getId(entity)) : '',
+      id: entity ? normalizeConsoleString(options.getId(entity)) : '',
       mode: (options.selectedMode ? unref(options.selectedMode) : 'live') ?? 'live',
       hasSelection: Boolean(entity),
     }

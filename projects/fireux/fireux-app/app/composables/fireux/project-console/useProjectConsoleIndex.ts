@@ -65,6 +65,18 @@ export function useProjectConsoleIndex(
       return normalizeString(result.id)
     },
   })
+  const debug = computed(() => ({
+    mode: selectedMode.value,
+    projectId: projectId.value,
+    rootCollection: rootCollection.value,
+    canWrite: canWrite.value,
+    selectedProject: selectedProject.value,
+    counts: {
+      live: consoleIndex.entities.value.live.length,
+      demo: consoleIndex.entities.value.demo.length,
+      test: consoleIndex.entities.value.test ? 1 : 0,
+    },
+  }))
 
   return {
     state: consoleIndex.state,
@@ -76,6 +88,7 @@ export function useProjectConsoleIndex(
     projectId,
     rootCollection,
     canWrite,
+    debug,
     clearSelectedProject,
   }
 }

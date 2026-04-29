@@ -14,15 +14,28 @@
           </div>
         </div>
 
-        <UButton
-          size="xs"
-          color="neutral"
-          variant="ghost"
-          :icon="open ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-          @click="open = !open"
-        >
-          {{ open ? 'Hide' : 'Show' }}
-        </UButton>
+        <div class="fireux-debug-panel__actions">
+          <UButton
+            size="xs"
+            color="neutral"
+            variant="ghost"
+            icon="i-lucide-copy"
+            :loading="copying"
+            @click="copyDebug"
+          >
+            Copy
+          </UButton>
+
+          <UButton
+            size="xs"
+            color="neutral"
+            variant="ghost"
+            :icon="open ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+            @click="open = !open"
+          >
+            {{ open ? 'Hide' : 'Show' }}
+          </UButton>
+        </div>
       </div>
     </template>
 
@@ -31,7 +44,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, isRef, ref, unref } from 'vue'
+import { computed, ref } from 'vue'
+import { useDevClipboard } from '../../composables/dev/useDevClipboard'
+import { useDevDebugData } from '../../composables/dev/useDevDebugData'
 
 defineOptions({ name: 'FireuxDebugPanel' })
 
@@ -60,93 +75,21 @@ const props = withDefaults(
 
 const isDev = import.meta.dev
 const open = ref(props.defaultOpen)
-
-const normalizeForJson = (value: unknown, seen = new WeakSet<object>()): unknown => {
-  const source = isRef(value) ? unref(value) : value
-
-  if (source === null || source === undefined) return source
-  if (typeof source === 'function') return undefined
-  if (typeof source === 'bigint') return source.toString()
-  if (
-    typeof source === 'string' ||
-    typeof source === 'number' ||
-    typeof source === 'boolean'
-  ) {
-    return source
+const { copying, copyText } = useDevClipboard()
+const { dataKindLabel, dataSizeLabel, jsonString } = useDevDebugData(
+  computed(() => props.data),
+  {
+    stringifyErrorMessage: '[FireuxDebugPanel] Unable to stringify data',
+    treatEmptyContainersAsEmpty: false,
   }
-
-  if (source instanceof Date) return source.toISOString()
-  if (source instanceof Error) {
-    return {
-      name: source.name,
-      message: source.message,
-      stack: source.stack,
-    }
-  }
-
-  if (Array.isArray(source)) {
-    return source.map((entry) => normalizeForJson(entry, seen))
-  }
-
-  if (typeof source === 'object') {
-    const objectSource = source as Record<string, unknown>
-    if (seen.has(objectSource)) return '[Circular]'
-
-    seen.add(objectSource)
-
-    if (source instanceof Map) {
-      return Array.from(source.entries()).map(([key, entry]) => ({
-        key: normalizeForJson(key, seen),
-        value: normalizeForJson(entry, seen),
-      }))
-    }
-
-    if (source instanceof Set) {
-      return Array.from(source.values()).map((entry) => normalizeForJson(entry, seen))
-    }
-
-    const normalized: Record<string, unknown> = {}
-    for (const [key, entry] of Object.entries(objectSource)) {
-      const nextValue = normalizeForJson(entry, seen)
-      if (nextValue !== undefined) normalized[key] = nextValue
-    }
-    return normalized
-  }
-
-  return String(source)
-}
-
-const normalizedData = computed(() => normalizeForJson(props.data))
-const dataKind = computed<'array' | 'object' | 'primitive' | 'empty'>(() => {
-  const value = normalizedData.value
-  if (value === null || value === undefined) return 'empty'
-  if (Array.isArray(value)) return 'array'
-  if (typeof value === 'object') return 'object'
-  return 'primitive'
-})
-const dataKindLabel = computed(() => {
-  if (dataKind.value === 'array') return 'Collection'
-  if (dataKind.value === 'object') return 'Object'
-  if (dataKind.value === 'primitive') return 'Primitive'
-  return 'Empty'
-})
-const dataSizeLabel = computed(() => {
-  const value = normalizedData.value
-  if (Array.isArray(value)) return `${value.length} items`
-  if (value && typeof value === 'object') {
-    return `${Object.keys(value as Record<string, unknown>).length} keys`
-  }
-  if (dataKind.value === 'primitive') return '1 value'
-  return '0'
-})
+)
 const scopeLabel = computed(() => `${props.scope} debug`)
-const jsonString = computed(() => {
-  try {
-    return JSON.stringify(normalizedData.value, null, 2) ?? 'undefined'
-  } catch {
-    return '[FireuxDebugPanel] Unable to stringify data'
-  }
-})
+
+const copyDebug = () =>
+  copyText(jsonString.value, {
+    label: props.title,
+    success: 'Debug copied to clipboard',
+  })
 </script>
 
 <style scoped>
@@ -160,6 +103,14 @@ const jsonString = computed(() => {
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+}
+
+.fireux-debug-panel__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
 }
 
 .fireux-debug-panel__eyebrow,

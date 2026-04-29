@@ -19,7 +19,7 @@ definePageMeta({
     visibility: { modules: ['fireux-suppliers'] },
     key: 'console-supplier-identity',
     label: 'Identity',
-    icon: 'i-lucide-fingerprint',
+    icon: 'i-lucide-info',
     position: 'top',
     requiresSelection: true,
     order: 3,

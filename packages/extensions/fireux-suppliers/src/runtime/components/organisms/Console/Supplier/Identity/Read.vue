@@ -10,10 +10,18 @@
       {{ hello || 'No value set' }}
     </p>
   </UCard>
+
+  <DevFireuxDebugPanel
+    v-if="isDev"
+    title="Supplier identity"
+    scope="console"
+    :data="debug"
+  />
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  hello: string
-}>()
+import { useSupplierConsoleIdentity } from '../../../../../composables/fireux/app/supplier-console/useSupplierConsoleIdentity'
+
+const { hello, debug } = useSupplierConsoleIdentity()
+const isDev = import.meta.dev
 </script>

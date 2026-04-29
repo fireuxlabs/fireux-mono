@@ -1,16 +1,13 @@
 <template>
   <section class="console-surface space-y-6">
-    <OrganismsConsoleSupplierIdentityRead :hello="hello" />
+    <OrganismsConsoleSupplierIdentityRead />
 
     <OrganismsConsoleSupplierIdentityWrite v-if="canWrite" />
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useSupplierConsole } from '../../../composables/fireux/app/supplier-console/useSupplierConsole'
+import { useSupplierConsoleIdentity } from '../../../composables/fireux/app/supplier-console/useSupplierConsoleIdentity'
 
-const { selectedSupplier, canWrite } = useSupplierConsole()
-
-const hello = computed(() => String(selectedSupplier.value?.hello ?? '').trim())
+const { canWrite } = useSupplierConsoleIdentity()
 </script>

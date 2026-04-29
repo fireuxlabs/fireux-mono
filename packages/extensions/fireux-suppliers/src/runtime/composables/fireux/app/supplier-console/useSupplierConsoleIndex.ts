@@ -62,6 +62,18 @@ export function useSupplierConsoleIndex(
       return normalizeString(result.id)
     },
   })
+  const debug = computed(() => ({
+    mode: selectedMode.value,
+    supplierId: supplierId.value,
+    rootCollection: rootCollection.value,
+    canWrite: canWrite.value,
+    selectedSupplier: selectedSupplier.value,
+    counts: {
+      live: consoleIndex.entities.value.live.length,
+      demo: consoleIndex.entities.value.demo.length,
+      test: consoleIndex.entities.value.test ? 1 : 0,
+    },
+  }))
 
   return {
     state: consoleIndex.state,
@@ -73,6 +85,7 @@ export function useSupplierConsoleIndex(
     supplierId,
     rootCollection,
     canWrite,
+    debug,
     clearSelectedSupplier,
   }
 }

@@ -13,9 +13,9 @@ type ConsoleIndexUserContext = {
 
 type UseConsoleIndexOptions<TLive, TDemo, TTest> = {
   entities: MaybeRef<{
-    live: unknown
-    demo: unknown
-    test: unknown
+    live: (TLive | null | undefined)[] | null | undefined
+    demo: (TDemo | null | undefined)[] | null | undefined
+    test: TTest | null | undefined
   }>
   selectEntity: (id: string, mode?: ConsoleMode) => void
   getTestId: (item: TTest) => string
@@ -34,6 +34,7 @@ export function useConsoleIndex<
   TTest,
 >(options: UseConsoleIndexOptions<TLive, TDemo, TTest>) {
   const { currentUser, avatarSrc } = useUser()
+  const createTestEntity = options.createTestEntity
 
   const user = computed<ConsoleIndexUserContext>(() => ({
     avatarSrc: normalizeConsoleString(avatarSrc.value),
@@ -70,7 +71,7 @@ export function useConsoleIndex<
   }))
 
   const autoCreateTest = computed(
-    () => Boolean(options.autoCreateTest) && Boolean(options.createTestEntity)
+    () => Boolean(options.autoCreateTest) && Boolean(createTestEntity)
   )
   const testPending = computed(() => Boolean(options.testPending ? unref(options.testPending) : false))
   const testCreateKey = computed(() =>
@@ -93,7 +94,7 @@ export function useConsoleIndex<
 
       options.selectEntity(id, 'test')
     },
-    createTest: options.createTestEntity
+    createTest: createTestEntity
       ? async () => {
           if (state.creatingTest) return
 
@@ -101,7 +102,7 @@ export function useConsoleIndex<
 
           try {
             const id = normalizeConsoleString(
-              await options.createTestEntity({
+              await createTestEntity({
                 avatarSrc: user.value.avatarSrc,
                 displayName: user.value.displayName,
               })

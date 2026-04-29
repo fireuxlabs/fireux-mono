@@ -39,6 +39,14 @@
         </p>
       </div>
 
+      <div v-if="isDev">
+        <DevFireuxDebugPanel
+          title="Project index"
+          scope="console"
+          :data="debug"
+        />
+      </div>
+
       <ProjectCollectionManager
         v-if="projects.live.length"
         :collection="projects.live"
@@ -144,9 +152,11 @@ const {
   projects,
   actions,
   selectedProject,
+  debug,
   clearSelectedProject,
 } = useProjectConsoleIndex()
 const { pill } = useProjectInterface()
+const isDev = import.meta.dev
 
 const demoProjectCards = computed<ProjectPillCard[]>(() =>
   projects.value.demo

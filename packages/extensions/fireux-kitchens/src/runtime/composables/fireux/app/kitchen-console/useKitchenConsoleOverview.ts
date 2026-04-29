@@ -1,14 +1,24 @@
+import { computed } from 'vue'
+import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/console/useConsole'
 import { useConsoleOverview } from 'fireux-core/runtime/composables/fireux/console/useConsoleOverview'
 import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenConsole } from './useKitchenConsole'
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-
 export function useKitchenConsoleOverview() {
-  const { liveKitchens, demoKitchens, testKitchen, selectedKitchen, selectedMode } =
+  const {
+    liveKitchens,
+    demoKitchens,
+    testKitchen,
+    selectedKitchen,
+    selectedMode,
+    kitchenId,
+    rootCollection,
+    canWrite,
+    clearSelectedKitchen,
+  } =
     useKitchenConsole()
 
-  return useConsoleOverview<KitchenSurface, KitchenSurface>({
+  const overview = useConsoleOverview<KitchenSurface, KitchenSurface>({
     selectedEntity: selectedKitchen,
     selectedMode,
     liveItems: liveKitchens,
@@ -16,4 +26,26 @@ export function useKitchenConsoleOverview() {
     testItem: testKitchen,
     getId: (kitchen) => normalizeString(kitchen?.id),
   })
+  const debug = computed(() => ({
+    mode: selectedMode.value,
+    kitchenId: kitchenId.value,
+    rootCollection: rootCollection.value,
+    canWrite: canWrite.value,
+    focus: overview.focus.value,
+    group: {
+      count: overview.group.value.count,
+      ids: overview.group.value.items.map((item) => normalizeString(item?.id)),
+    },
+  }))
+
+  return {
+    ...overview,
+    selectedKitchen,
+    selectedMode,
+    kitchenId,
+    rootCollection,
+    canWrite,
+    clearSelectedKitchen,
+    debug,
+  }
 }
