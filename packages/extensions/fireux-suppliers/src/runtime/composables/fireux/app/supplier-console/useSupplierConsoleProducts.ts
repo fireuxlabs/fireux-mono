@@ -96,6 +96,15 @@ export function useSupplierConsoleProducts() {
   const devJsonContext = computed(
     () => `console supplier · products · ${selectedMode.value}`
   )
+  const debug = computed(() => ({
+    mode: selectedMode.value,
+    supplierId: supplierId.value,
+    supplierName: supplierLabel.value,
+    supplierProductsCollectionPath: supplierProductsCollectionPath.value,
+    productItemsCount: productItems.value.length,
+    pending: pending.value,
+    canWrite: canWrite.value,
+  }))
 
   return {
     selectedSupplier,
@@ -115,6 +124,7 @@ export function useSupplierConsoleProducts() {
     productsTitle,
     productsDescription,
     devJsonContext,
+    debug,
   }
 }
 

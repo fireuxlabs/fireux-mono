@@ -27,6 +27,7 @@ export function useSupplierConsole(
   options: UseSupplierConsoleOptions = {}
 ) {
   const { uid } = useAuth()
+  const userId = computed(() => normalizeString(uid.value))
   const liveFilter = computed<SupplierCollectionFilter>(() => {
     const explicitFilter = isRef(options.filter)
       ? options.filter.value ?? {}
@@ -34,7 +35,7 @@ export function useSupplierConsole(
 
     return {
       ...explicitFilter,
-      teamId: normalizeString(uid.value),
+      teamId: userId.value,
     }
   })
   const { suppliers: liveSuppliers } = useSupplierCollection({
@@ -47,7 +48,7 @@ export function useSupplierConsole(
         normalizeString((supplier as SupplierSurface).app_scope_state) !== 'root_only'
     )
   )
-  const { supplier: testSupplier } = useSupplierFetch(uid, { source: 'test' })
+  const { supplier: testSupplier } = useSupplierFetch(userId, { source: 'test' })
 
   const {
     selectedMode,

@@ -1,30 +1,30 @@
 <template>
-  <SupplierProductCollectionManager
-    :collection="productItems"
-    :title="title"
-    :description="description"
-    :empty-title="pending ? 'Loading products' : emptyTitle"
-    :empty-description="
-      pending
-        ? 'Fetching supplier-owned product rows for the selected supplier.'
-        : emptyDescription
-    "
-    search-placeholder="Search supplier products…"
-    :link="false"
-    :dev-context="devContext"
-  />
+  <div class="space-y-6">
+    <SupplierProductCollectionManager
+      :collection="productItems"
+      :pending="pending"
+      :link="false"
+      :dev-context="devJsonContext"
+    />
+
+    <DevJson
+      v-if="isDev"
+      title="Supplier Products Flags (JSON)"
+      context="console supplier products · read"
+      :data="debug"
+      :default-open="false"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
-import type { SupplierProductInterfaceItem } from '../../../../../composables/fireux/firestore/supplier/utils/view/useSupplierProductInterface'
+import { useSupplierConsoleProducts } from '../../../../../composables/fireux/app/supplier-console/useSupplierConsoleProducts'
 
-defineProps<{
-  productItems: SupplierProductInterfaceItem[]
-  pending: boolean
-  title: string
-  description: string
-  emptyTitle: string
-  emptyDescription: string
-  devContext: string
-}>()
+const {
+  productItems,
+  pending,
+  devJsonContext,
+  debug,
+} = useSupplierConsoleProducts()
+const isDev = import.meta.dev
 </script>

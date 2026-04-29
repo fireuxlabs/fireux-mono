@@ -28,6 +28,7 @@ export function useKitchenConsole(
   options: UseKitchenConsoleOptions = {}
 ) {
   const { uid } = useAuth()
+  const userId = computed(() => normalizeString(uid.value))
   const liveFilter = computed<KitchenCollectionFilter>(() => {
     const explicitFilter = isRef(options.filter)
       ? options.filter.value ?? {}
@@ -35,14 +36,14 @@ export function useKitchenConsole(
 
     return {
       ...explicitFilter,
-      teamId: normalizeString(uid.value),
+      teamId: userId.value,
     }
   })
   const { kitchens: liveKitchens } = useKitchenCollection({
     filter: liveFilter,
   })
   const { kitchens: demoKitchens } = useKitchenCollection({ source: 'demo' })
-  const { kitchen: testKitchen } = useKitchenFetch(uid, { source: 'test' })
+  const { kitchen: testKitchen } = useKitchenFetch(userId, { source: 'test' })
   const { selectedEntity, selectedMode, selectEntity, clearSelection } = useConsole<
     KitchenSurface,
     KitchenSurface,
