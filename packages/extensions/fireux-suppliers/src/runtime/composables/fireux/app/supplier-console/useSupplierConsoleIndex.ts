@@ -1,4 +1,5 @@
 import { computed, type Ref } from 'vue'
+import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/console/useConsole'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/console/useConsoleIndex'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { SupplierCollectionFilter } from '../../firestore/supplier/fetch/useSupplierCollection'
@@ -6,8 +7,6 @@ import { useSupplierFetch } from '../../firestore/supplier/fetch/useSupplierFetc
 import { useSupplierCreate } from '../../firestore/supplier/mutations/useSupplierCreate'
 import { type SupplierSurface } from '../../firestore/supplier/utils/view/useSupplierInterface'
 import { useSupplierConsole } from './useSupplierConsole'
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 type UseSupplierConsoleIndexOptions = {
   filter?: SupplierCollectionFilter | Ref<SupplierCollectionFilter | null | undefined> | null
@@ -17,8 +16,9 @@ export function useSupplierConsoleIndex(
   options: UseSupplierConsoleIndexOptions = {}
 ) {
   const { uid } = useAuth()
+  const userId = computed(() => normalizeString(uid.value))
   const { supplier: testSupplierSource, pending: testSupplierPending } =
-    useSupplierFetch(uid, { source: 'test' })
+    useSupplierFetch(userId, { source: 'test' })
   const { createTestSupplier } = useSupplierCreate()
   const {
     liveSuppliers,
@@ -46,9 +46,9 @@ export function useSupplierConsoleIndex(
     getTestId: (supplier) => normalizeString(supplier.id),
     autoCreateTest: true,
     testPending: testSupplierPending,
-    testCreateKey: uid,
+    testCreateKey: userId,
     createTestEntity: async ({ avatarSrc, displayName }) => {
-      const testId = normalizeString(uid.value)
+      const testId = userId.value
       if (!testId) return null
 
       const userLabel = normalizeString(displayName) || `User ${testId.slice(0, 6)}`

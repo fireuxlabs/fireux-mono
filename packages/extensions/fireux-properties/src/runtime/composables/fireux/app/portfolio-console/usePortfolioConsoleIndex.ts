@@ -1,4 +1,5 @@
 import { computed, type Ref } from 'vue'
+import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/console/useConsole'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/console/useConsoleIndex'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { PortfolioCollectionFilter } from '../../firestore/portfolio/fetch/usePortfolioCollection'
@@ -8,8 +9,6 @@ import {
   usePortfolioConsole,
   type PortfolioConsoleEntity,
 } from './usePortfolioConsole'
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 type UsePortfolioConsoleIndexOptions = {
   filter?:
@@ -32,6 +31,10 @@ export function usePortfolioConsoleIndex(
     livePortfolios,
     demoPortfolios,
     selectedPortfolio,
+    selectedMode,
+    portfolioId,
+    rootCollection,
+    canWrite,
     selectPortfolio,
     clearSelectedPortfolio,
   } = usePortfolioConsole({
@@ -78,6 +81,10 @@ export function usePortfolioConsoleIndex(
     portfolios: consoleIndex.entities,
     actions: consoleIndex.actions,
     selectedPortfolio,
+    selectedMode,
+    portfolioId,
+    rootCollection,
+    canWrite,
     clearSelectedPortfolio,
   }
 }

@@ -1,4 +1,5 @@
 import { computed, type Ref } from 'vue'
+import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/console/useConsole'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/console/useConsoleIndex'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { ProjectCollectionFilter } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
@@ -6,8 +7,6 @@ import { useProjectFetch } from 'fireux-core/runtime/composables/fireux/firestor
 import { useProjectCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/project/mutations/useProjectCreate'
 import { type ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 import { useProjectConsole } from './useProjectConsole'
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 type UseProjectConsoleIndexOptions = {
   filter?: ProjectCollectionFilter | Ref<ProjectCollectionFilter | null | undefined> | null
@@ -17,7 +16,8 @@ export function useProjectConsoleIndex(
   options: UseProjectConsoleIndexOptions = {}
 ) {
   const { uid } = useAuth()
-  const { project: testProjectSource, pending: testProjectPending } = useProjectFetch(uid, {
+  const userId = computed(() => normalizeString(uid.value))
+  const { project: testProjectSource, pending: testProjectPending } = useProjectFetch(userId, {
     source: 'test',
   })
   const { createTestProject } = useProjectCreate()
@@ -26,6 +26,10 @@ export function useProjectConsoleIndex(
     demoProjects,
     selectProject,
     selectedProject,
+    selectedMode,
+    projectId,
+    rootCollection,
+    canWrite,
     clearSelectedProject,
   } = useProjectConsole({
     filter: options.filter,
@@ -40,12 +44,12 @@ export function useProjectConsoleIndex(
   const consoleIndex = useConsoleIndex<ProjectSurface, ProjectSurface, ProjectSurface>({
     entities: sourceProjects,
     selectEntity: selectProject,
-    getTestId: (project) => String(project.id ?? '').trim(),
+    getTestId: (project) => normalizeString(project.id),
     autoCreateTest: true,
     testPending: testProjectPending,
-    testCreateKey: uid,
+    testCreateKey: userId,
     createTestEntity: async ({ avatarSrc, displayName }) => {
-      const testId = normalizeString(uid.value)
+      const testId = userId.value
       if (!testId) return null
 
       const userLabel = normalizeString(displayName) || `User ${testId.slice(0, 6)}`
@@ -68,6 +72,10 @@ export function useProjectConsoleIndex(
     projects: consoleIndex.entities,
     actions: consoleIndex.actions,
     selectedProject,
+    selectedMode,
+    projectId,
+    rootCollection,
+    canWrite,
     clearSelectedProject,
   }
 }

@@ -1,5 +1,6 @@
 import { computed, reactive, ref, unref, watch, type ComputedRef, type Ref } from 'vue'
 import { useUser } from '../firestore/core/user/useUser'
+import { normalizeConsoleString } from './useConsole'
 
 export type ConsoleMode = 'live' | 'demo' | 'test'
 
@@ -27,8 +28,6 @@ type UseConsoleIndexOptions<TLive, TDemo, TTest> = {
   }) => Promise<string | null | undefined>
 }
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-
 export function useConsoleIndex<
   TLive,
   TDemo,
@@ -37,8 +36,8 @@ export function useConsoleIndex<
   const { currentUser, avatarSrc } = useUser()
 
   const user = computed<ConsoleIndexUserContext>(() => ({
-    avatarSrc: normalizeString(avatarSrc.value),
-    displayName: normalizeString(currentUser.value?.display_name),
+    avatarSrc: normalizeConsoleString(avatarSrc.value),
+    displayName: normalizeConsoleString(currentUser.value?.display_name),
   }))
 
   const state = reactive({
@@ -75,7 +74,7 @@ export function useConsoleIndex<
   )
   const testPending = computed(() => Boolean(options.testPending ? unref(options.testPending) : false))
   const testCreateKey = computed(() =>
-    normalizeString(options.testCreateKey ? unref(options.testCreateKey) : '')
+    normalizeConsoleString(options.testCreateKey ? unref(options.testCreateKey) : '')
   )
 
   const actions = {
@@ -89,7 +88,7 @@ export function useConsoleIndex<
       const item = testItem.value
       if (!item) return
 
-      const id = normalizeString(options.getTestId(item))
+      const id = normalizeConsoleString(options.getTestId(item))
       if (!id) return
 
       options.selectEntity(id, 'test')
@@ -101,7 +100,7 @@ export function useConsoleIndex<
           state.creatingTest = true
 
           try {
-            const id = normalizeString(
+            const id = normalizeConsoleString(
               await options.createTestEntity({
                 avatarSrc: user.value.avatarSrc,
                 displayName: user.value.displayName,

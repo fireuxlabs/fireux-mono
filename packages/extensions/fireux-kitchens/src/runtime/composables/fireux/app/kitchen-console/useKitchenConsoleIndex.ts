@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/console/useConsole'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/console/useConsoleIndex'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenCreate } from '../../firestore/kitchen/mutations/useKitchenCreate'
@@ -8,8 +9,6 @@ import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitch
 import { useKitchenConsole } from './useKitchenConsole'
 import type { Ref } from 'vue'
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-
 type UseKitchenConsoleIndexOptions = {
   filter?: KitchenCollectionFilter | Ref<KitchenCollectionFilter | null | undefined> | null
 }
@@ -18,13 +17,18 @@ export function useKitchenConsoleIndex(
   options: UseKitchenConsoleIndexOptions = {}
 ) {
   const { uid } = useAuth()
-  const { kitchen: testKitchenSource, pending: testKitchenPending } = useKitchenFetch(uid, { source: 'test' })
+  const userId = computed(() => normalizeString(uid.value))
+  const { kitchen: testKitchenSource, pending: testKitchenPending } = useKitchenFetch(userId, { source: 'test' })
   const { createTestKitchen } = useKitchenCreate()
   const {
     liveKitchens,
     demoKitchens,
     selectKitchen,
     selectedKitchen,
+    selectedMode,
+    kitchenId,
+    rootCollection,
+    canWrite,
     clearSelectedKitchen,
   } = useKitchenConsole({
     filter: options.filter,
@@ -38,12 +42,12 @@ export function useKitchenConsoleIndex(
   const consoleIndex = useConsoleIndex<KitchenSurface, KitchenSurface, KitchenSurface>({
     entities: sourceKitchens,
     selectEntity: selectKitchen,
-    getTestId: (kitchen) => String(kitchen.id ?? '').trim(),
+    getTestId: (kitchen) => normalizeString(kitchen.id),
     autoCreateTest: true,
     testPending: testKitchenPending,
-    testCreateKey: uid,
+    testCreateKey: userId,
     createTestEntity: async ({ avatarSrc, displayName }) => {
-      const testId = normalizeString(uid.value)
+      const testId = userId.value
       if (!testId) return null
 
       const userLabel = normalizeString(displayName) || `User ${testId.slice(0, 6)}`
@@ -66,6 +70,10 @@ export function useKitchenConsoleIndex(
     kitchens: consoleIndex.entities,
     actions: consoleIndex.actions,
     selectedKitchen,
+    selectedMode,
+    kitchenId,
+    rootCollection,
+    canWrite,
     clearSelectedKitchen,
   }
 }
