@@ -4,23 +4,24 @@ import type { Menu } from '../../../../models/menu.model'
 import { useKitchenConsole } from './useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-
 export function useKitchenConsoleMenus() {
-  const { selectedKitchen, selectedMode } = useKitchenConsole()
-
-  const kitchenId = computed(() => normalizeString(selectedKitchen.value?.id))
+  const {
+    selectedKitchen,
+    selectedMode,
+    kitchenId,
+    rootCollection,
+    canWrite,
+  } = useKitchenConsole()
   const fetchKitchenId = computed(() =>
-    selectedMode.value === 'demo' ? '' : kitchenId.value
-  )
-  const kitchenCollectionPath = computed(() =>
-    selectedMode.value === 'test' ? 'test-kitchens' : undefined
+    rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
   const {
     menus: liveMenus,
     pending: livePending,
     collectionPath,
-  } = useKitchenMenuCollection(fetchKitchenId, { kitchenCollectionPath })
+  } = useKitchenMenuCollection(fetchKitchenId, {
+    kitchenCollectionPath: rootCollection,
+  })
   const page = useKitchenConsoleReadPage<Menu>({
     collectionName: 'menus',
     selectedKitchen,
@@ -39,6 +40,8 @@ export function useKitchenConsoleMenus() {
     selectedMode,
     kitchenId,
     collectionPath,
+    rootCollection,
+    canWrite,
     menus,
     pending,
   }

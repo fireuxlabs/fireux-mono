@@ -54,6 +54,13 @@ export function useKitchenConsole(
     getId: (kitchen) => normalizeString(kitchen?.id),
   })
   const selectedKitchen = computed<KitchenConsoleEntity | null>(() => selectedEntity.value)
+  const kitchenId = computed(() => normalizeString(selectedKitchen.value?.id))
+  const rootCollection = computed(() => {
+    if (selectedMode.value === 'demo') return ''
+    if (selectedMode.value === 'test') return 'test-kitchens'
+    return 'kitchens'
+  })
+  const canWrite = computed(() => selectedMode.value !== 'demo')
 
   const header = computed<ConsoleHeaderData>(() => {
     const kitchen = selectedKitchen.value
@@ -100,6 +107,9 @@ export function useKitchenConsole(
     testKitchen,
     selectedKitchen,
     selectedMode,
+    kitchenId,
+    rootCollection,
+    canWrite,
     clearSelectedKitchen,
     selectKitchen,
   }

@@ -13,11 +13,11 @@
 </template>
 
 <script setup lang="ts">
-import type { SupplierCatalogueItemCard } from '../../../../../composables/fireux/firestore/supplier/utils/view/useSupplierCatalogueItemInterface'
+import type { SupplierProductItemCard } from '../../../../../composables/fireux/firestore/supplier/utils/view/useSupplierProductInterface'
 
 withDefaults(
   defineProps<{
-    cards: SupplierCatalogueItemCard.Card[]
+    cards: SupplierProductItemCard.Card[]
     variant?: 'pill' | 'cell'
   }>(),
   {

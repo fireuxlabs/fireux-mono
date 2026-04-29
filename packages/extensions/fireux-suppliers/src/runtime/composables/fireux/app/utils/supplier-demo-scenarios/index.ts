@@ -16,7 +16,7 @@ export type DemoSupplierListItem = Partial<Supplier> & {
   linked_ingredient_ids?: string[]
 }
 
-type DemoSupplierCatalogueSeed = Pick<
+type DemoSupplierProductSeed = Pick<
   SupplierProduct,
   | 'id'
   | 'supplier_id'
@@ -42,7 +42,7 @@ type DemoSupplierCatalogueSeed = Pick<
     | 'metadata'
   >>
 
-export type DemoSupplierCatalogueItem = SupplierProduct
+export type DemoSupplierProductItem = SupplierProduct
 
 const demoSuppliers: DemoSupplierListItem[] = [
   {
@@ -160,9 +160,9 @@ const cloneSupplier = (supplier: DemoSupplierListItem): DemoSupplierListItem => 
     : [],
 })
 
-const demoSupplierCatalogueBySupplierId: Record<
+const demoSupplierProductsBySupplierId: Record<
   string,
-  DemoSupplierCatalogueSeed[]
+  DemoSupplierProductSeed[]
 > = {
   'city-butchers': [
     {
@@ -335,9 +335,9 @@ const demoSupplierCatalogueBySupplierId: Record<
   ],
 }
 
-const cloneCatalogueItem = (
-  item: DemoSupplierCatalogueSeed
-): DemoSupplierCatalogueItem => ({
+const cloneProductItem = (
+  item: DemoSupplierProductSeed
+): DemoSupplierProductItem => ({
   ...item,
   id: normalizeString(item.id),
   supplier_id: normalizeString(item.supplier_id),
@@ -383,12 +383,12 @@ export const getDemoSupplier = (supplierId?: string): DemoSupplierListItem | nul
 export const getDemoSuppliers = (): DemoSupplierListItem[] =>
   demoSuppliers.map((supplier) => cloneSupplier(supplier))
 
-export const getDemoSupplierCatalogueItems = (
+export const getDemoSupplierProductItems = (
   supplierId?: string
-): DemoSupplierCatalogueItem[] => {
+): DemoSupplierProductItem[] => {
   const resolvedId = normalizeString(supplierId)
   if (!resolvedId) return []
 
-  const items = demoSupplierCatalogueBySupplierId[resolvedId] ?? []
-  return items.map((item) => cloneCatalogueItem(item))
+  const items = demoSupplierProductsBySupplierId[resolvedId] ?? []
+  return items.map((item) => cloneProductItem(item))
 }

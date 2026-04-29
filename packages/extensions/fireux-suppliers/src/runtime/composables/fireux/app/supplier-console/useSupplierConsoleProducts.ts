@@ -1,8 +1,8 @@
 import { computed } from 'vue'
 import { useSupplierConsole } from './useSupplierConsole'
-import { getDemoSupplierCatalogueItems } from '../utils/supplier-demo-scenarios'
+import { getDemoSupplierProductItems } from '../utils/supplier-demo-scenarios'
 import { useSupplierProductCollection } from '../../firestore/supplier/fetch/useSupplierProductCollection'
-import type { SupplierCatalogueInterfaceItem } from '../../firestore/supplier/utils/view/useSupplierCatalogueItemInterface'
+import type { SupplierProductInterfaceItem } from '../../firestore/supplier/utils/view/useSupplierProductInterface'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
@@ -43,9 +43,9 @@ export function useSupplierConsoleProducts() {
     supplierCollectionPath: rootCollection,
   })
 
-  const productItems = computed<SupplierCatalogueInterfaceItem[]>(() =>
+  const productItems = computed<SupplierProductInterfaceItem[]>(() =>
     selectedMode.value === 'demo' && supplierId.value
-      ? getDemoSupplierCatalogueItems(supplierId.value)
+      ? getDemoSupplierProductItems(supplierId.value)
       : rootCollection.value
         ? supplierProducts.value
         : []

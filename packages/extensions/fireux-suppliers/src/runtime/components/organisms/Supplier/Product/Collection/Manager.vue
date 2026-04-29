@@ -40,18 +40,18 @@
       </div>
     </template>
 
-    <SupplierCatalogueCollectionList
+    <SupplierProductCollectionList
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
       <template #pill="{ card }">
-        <SupplierCatalogueCardsPill v-bind="card" :link="linkEnabled" />
+        <SupplierProductCardsPill v-bind="card" :link="linkEnabled" />
       </template>
       <template #cell="{ card }">
-        <SupplierCatalogueCardsCell v-bind="card" :link="linkEnabled" />
+        <SupplierProductCardsCell v-bind="card" :link="linkEnabled" />
       </template>
-    </SupplierCatalogueCollectionList>
+    </SupplierProductCollectionList>
 
     <UAlert
       v-else
@@ -77,13 +77,13 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
 import {
-  useSupplierCatalogueItemInterface,
-  type SupplierCatalogueInterfaceItem,
-} from '../../../../../composables/fireux/firestore/supplier/utils/view/useSupplierCatalogueItemInterface'
+  useSupplierProductInterface,
+  type SupplierProductInterfaceItem,
+} from '../../../../../composables/fireux/firestore/supplier/utils/view/useSupplierProductInterface'
 
 const props = withDefaults(
   defineProps<{
-    collection?: SupplierCatalogueInterfaceItem[]
+    collection?: SupplierProductInterfaceItem[]
     title?: string
     description?: string
     link?: boolean
@@ -97,31 +97,31 @@ const props = withDefaults(
     devContext?: string
   }>(),
   {
-    title: 'Supplier Catalogue',
-    description: 'Browse supplier-owned catalogue rows for this supplier.',
+    title: 'Supplier Products',
+    description: 'Browse supplier-owned product rows for this supplier.',
     link: false,
-    searchPlaceholder: 'Search catalogue…',
+    searchPlaceholder: 'Search supplier products...',
     showSearch: true,
     showVariantToggle: true,
     showCount: true,
     initialVariant: 'pill',
-    emptyTitle: 'No catalogue items found.',
-    emptyDescription: 'No supplier catalogue rows are available.',
-    devContext: 'supplier catalogue collection manager',
+    emptyTitle: 'No supplier products found.',
+    emptyDescription: 'No supplier product rows are available.',
+    devContext: 'supplier product collection manager',
   }
 )
 
 const collection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
-const title = computed(() => String(props.title || 'Supplier Catalogue'))
+const title = computed(() => String(props.title || 'Supplier Products'))
 const description = computed(() =>
   String(
-    props.description || 'Browse supplier-owned catalogue rows for this supplier.'
+    props.description || 'Browse supplier-owned product rows for this supplier.'
   )
 )
 const linkEnabled = computed(() => props.link !== false)
 const searchPlaceholder = computed(() =>
-  String(props.searchPlaceholder || 'Search catalogue…')
+  String(props.searchPlaceholder || 'Search supplier products...')
 )
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
@@ -130,24 +130,24 @@ const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => showSearch.value && totalCount.value > 15
 )
-const emptyTitle = computed(() => String(props.emptyTitle || 'No catalogue items found.'))
+const emptyTitle = computed(() => String(props.emptyTitle || 'No supplier products found.'))
 const emptyDescription = computed(() =>
-  String(props.emptyDescription || 'No supplier catalogue rows are available.')
+  String(props.emptyDescription || 'No supplier product rows are available.')
 )
 
 const {
   interface: makeCard,
   pill: makePill,
   cell: makeCell,
-} = useSupplierCatalogueItemInterface()
+} = useSupplierProductInterface()
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<
-    SupplierCatalogueInterfaceItem,
+    SupplierProductInterfaceItem,
     NonNullable<ReturnType<typeof makeCard>>
   >({
     items: collection,
-    makeCard: (item: SupplierCatalogueInterfaceItem) => makeCard(item),
+    makeCard: (item: SupplierProductInterfaceItem) => makeCard(item),
     initialVariant: props.initialVariant,
   })
 

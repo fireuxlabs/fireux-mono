@@ -1,5 +1,5 @@
 <template>
-  <SupplierCatalogueCollectionManager
+  <SupplierProductCollectionManager
     :collection="productItems"
     :title="title"
     :description="description"
@@ -16,10 +16,10 @@
 </template>
 
 <script setup lang="ts">
-import type { SupplierCatalogueInterfaceItem } from '../../../../../composables/fireux/firestore/supplier/utils/view/useSupplierCatalogueItemInterface'
+import type { SupplierProductInterfaceItem } from '../../../../../composables/fireux/firestore/supplier/utils/view/useSupplierProductInterface'
 
 defineProps<{
-  productItems: SupplierCatalogueInterfaceItem[]
+  productItems: SupplierProductInterfaceItem[]
   pending: boolean
   title: string
   description: string
