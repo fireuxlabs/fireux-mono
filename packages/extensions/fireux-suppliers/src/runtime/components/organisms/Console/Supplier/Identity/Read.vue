@@ -14,7 +14,7 @@
 
         <div class="console-summary-grid">
           <div class="console-summary-field">
-            Hello:
+            Supplier label:
             <span class="console-summary-value">{{ hello || 'Unset' }}</span>
           </div>
         </div>
