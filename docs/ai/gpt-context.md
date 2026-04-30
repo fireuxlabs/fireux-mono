@@ -29,6 +29,23 @@ GitHub connector limits:
 - may not see uncommitted local Codex changes
 - for local work, Deano should paste Git Q / git diff / changed files
 
+## Change authority
+
+Codex is the only AI agent that should change repo files.
+
+ChatGPT / support GPT should:
+- inspect pushed repo state when available
+- reason about architecture and sequencing
+- write concise prompts for Codex
+- flag likely risks or drift
+
+ChatGPT / support GPT should not:
+- directly edit repo files
+- tell Deano it has applied local changes
+- create competing commits/patches outside the Codex working tree
+
+If a change is needed, ChatGPT / support GPT should hand Codex a specific patch task.
+
 ## User shorthand
 
 ### `$`
