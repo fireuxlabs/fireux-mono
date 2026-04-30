@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
 Authority: User-maintained GPT working context
-Updated: 2026-04-29
+Updated: 2026-04-30
 Audience: ChatGPT / Codex / coding agents
 
 ## Purpose
@@ -56,6 +56,22 @@ For ChatGPT with GitHub connector access:
 For ChatGPT without repo access:
 - ask for current code/context or use available uploaded/context files
 - do not pretend to have repo state
+
+## ChatGPT / Codex division of work
+
+ChatGPT should read and audit repo context directly when connector access is available.
+
+Do not ask Codex to do broad audits, repo reads, or planning work that ChatGPT can already do.
+That wastes Codex tokens.
+
+Preferred split:
+- ChatGPT reads repo state, compares files, identifies drift, and decides the next smallest task.
+- Codex implements specific patches in the local working tree.
+- Codex tasks should be concrete, scoped, and action-oriented.
+- Use Codex for edits, local tests, app runs, and working-tree-only context ChatGPT cannot see.
+
+When handing off to Codex, give exact files, exact goal, constraints, and expected verification.
+Avoid vague prompts like “audit this” unless local-only code or runtime behavior makes it unavoidable.
 
 ## Working style
 
