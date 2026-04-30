@@ -41,7 +41,7 @@
       </ul>
     </div>
 
-    <PortfolioCreateForm
+    <PortfolioCreateWrite
       :mode="resolvedMode"
       :return-to="returnTo"
       :cancel-to="cancelTo"
@@ -57,7 +57,7 @@ import type {
   ConsoleEnsureResult,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { useDevUi } from 'fireux-core/runtime/composables/fireux/app/ui/useDevUi'
-import PortfolioCreateForm from './Form.vue'
+import PortfolioCreateWrite from './Write.vue'
 
 const props = defineProps<{
   mode?: ConsoleCreateMode
