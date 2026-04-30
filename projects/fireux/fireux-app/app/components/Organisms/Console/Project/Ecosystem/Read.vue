@@ -1,89 +1,97 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="console-card-header">
-        <div class="console-card-header__title">Focus</div>
-      </div>
-    </template>
+  <div class="space-y-6">
+    <UCard>
+      <template #header>
+        <div class="console-card-header">
+          <div class="console-card-header__title">Focus</div>
+        </div>
+      </template>
 
-    <div class="space-y-3">
+      <div class="space-y-3">
+        <p class="console-card-header__description">
+          Selected project and its linked ecosystem.
+        </p>
+
+        <div class="console-summary-grid">
+          <div class="console-summary-field">
+            Project:
+            <span class="console-summary-value">{{ selectedProjectName }}</span>
+          </div>
+          <div class="console-summary-field">
+            Mode:
+            <span class="console-summary-value">{{ selectedModeLabel }}</span>
+          </div>
+          <div class="console-summary-field">
+            Ecosystem ID:
+            <span class="console-summary-value">{{ ecosystemIdLabel }}</span>
+          </div>
+        </div>
+      </div>
+    </UCard>
+
+    <UCard v-if="pending">
       <p class="console-card-header__description">
-        Selected project and its linked ecosystem.
+        Loading ecosystem…
       </p>
+    </UCard>
 
-      <div class="console-summary-grid">
-        <div class="console-summary-field">
-          Project:
-          <span class="console-summary-value">{{ selectedProjectName }}</span>
-        </div>
-        <div class="console-summary-field">
-          Mode:
-          <span class="console-summary-value">{{ selectedModeLabel }}</span>
-        </div>
-        <div class="console-summary-field">
-          Ecosystem ID:
-          <span class="console-summary-value">{{ ecosystemIdLabel }}</span>
-        </div>
-      </div>
-    </div>
-  </UCard>
+    <EcosystemCollectionManager
+      v-else-if="ecosystemCollection.length"
+      :collection="ecosystemCollection"
+      title="Project Ecosystem"
+      description="Ecosystem record linked to the selected project."
+      :link="false"
+    />
 
-  <UCard v-if="pending">
-    <p class="console-card-header__description">
-      Loading ecosystem…
-    </p>
-  </UCard>
+    <UCard v-else-if="!ecosystemId">
+      <p class="console-card-header__description">
+        This selected project does not expose an ecosystem id yet.
+      </p>
+    </UCard>
 
-  <EcosystemCollectionManager
-    v-else-if="ecosystemCollection.length"
-    :collection="ecosystemCollection"
-    title="Project Ecosystem"
-    description="Ecosystem record linked to the selected project."
-    :link="false"
-  />
+    <UCard v-else>
+      <p class="console-card-header__description">
+        No ecosystem record was found for this project.
+      </p>
+    </UCard>
 
-  <UCard v-else-if="!ecosystemId">
-    <p class="console-card-header__description">
-      This selected project does not expose an ecosystem id yet.
-    </p>
-  </UCard>
-
-  <UCard v-else>
-    <p class="console-card-header__description">
-      No ecosystem record was found for this project.
-    </p>
-  </UCard>
+    <DevFireuxDebugPanel
+      v-if="isDev"
+      title="Project ecosystem"
+      scope="console"
+      :data="debug"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import type {
   EcosystemInterfaceInput,
-  EcosystemSurface,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
-import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/console/useConsole'
-import type { ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
+import { useProjectConsoleEcosystem } from '../../../../../composables/fireux/project-console/useProjectConsoleEcosystem'
 
-const props = defineProps<{
-  selectedProject: ProjectSurface | null
-  selectedMode: ConsoleMode
-  ecosystemId: string
-  ecosystem: EcosystemSurface | null | undefined
-  pending: boolean
-}>()
+const {
+  selectedProject,
+  selectedMode,
+  ecosystemId,
+  ecosystem,
+  pending,
+  debug,
+} = useProjectConsoleEcosystem()
 
 const selectedProjectName = computed(() =>
-  String(props.selectedProject?.name || '').trim() || 'Untitled'
+  String(selectedProject.value?.name || '').trim() || 'Untitled'
 )
 const ecosystemIdLabel = computed(() =>
-  String(props.ecosystemId || '').trim() || 'Unset'
+  String(ecosystemId.value || '').trim() || 'Unset'
 )
 const selectedModeLabel = computed(() =>
-  props.selectedMode === 'demo' ? 'Demo' : props.selectedMode === 'test' ? 'Test' : 'Live'
+  selectedMode.value === 'demo' ? 'Demo' : selectedMode.value === 'test' ? 'Test' : 'Live'
 )
 
 const ecosystemCollection = computed<EcosystemInterfaceInput[]>(() => {
-  const value = props.ecosystem
+  const value = ecosystem.value
   if (!value) return []
 
   return [
@@ -96,4 +104,5 @@ const ecosystemCollection = computed<EcosystemInterfaceInput[]>(() => {
     },
   ]
 })
+const isDev = import.meta.dev
 </script>

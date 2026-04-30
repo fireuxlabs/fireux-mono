@@ -7,10 +7,15 @@ import { useProjectConsole } from './useProjectConsole'
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useProjectConsoleEcosystem() {
-  const { selectedProject, selectedMode } = useProjectConsole()
-  const selectedProjectId = computed(() => normalizeString(selectedProject.value?.id))
+  const {
+    selectedProject,
+    selectedMode,
+    projectId,
+    rootCollection,
+    canWrite,
+  } = useProjectConsole()
   const demoScenario = computed(() =>
-    selectedMode.value === 'demo' ? getDemoProject(selectedProjectId.value) : null
+    selectedMode.value === 'demo' ? getDemoProject(projectId.value) : null
   )
 
   const ecosystemId = computed(() => {
@@ -41,12 +46,25 @@ export function useProjectConsoleEcosystem() {
     return liveEcosystem.value
   })
   const pending = computed(() => selectedMode.value === 'live' && livePending.value)
+  const debug = computed(() => ({
+    mode: selectedMode.value,
+    projectId: projectId.value,
+    rootCollection: rootCollection.value,
+    ecosystemId: ecosystemId.value,
+    hasEcosystem: Boolean(ecosystem.value),
+    pending: pending.value,
+    canWrite: canWrite.value,
+  }))
 
   return {
     selectedProject,
     selectedMode,
+    projectId,
+    rootCollection,
+    canWrite,
     ecosystemId,
     ecosystem,
     pending,
+    debug,
   }
 }

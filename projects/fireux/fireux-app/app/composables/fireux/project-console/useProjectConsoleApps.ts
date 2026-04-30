@@ -7,10 +7,15 @@ import { useProjectConsole } from './useProjectConsole'
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useProjectConsoleApps() {
-  const { selectedProject, selectedMode } = useProjectConsole()
-  const selectedProjectId = computed(() => normalizeString(selectedProject.value?.id))
+  const {
+    selectedProject,
+    selectedMode,
+    projectId,
+    rootCollection,
+    canWrite,
+  } = useProjectConsole()
   const demoScenario = computed(() =>
-    selectedMode.value === 'demo' ? getDemoProject(selectedProjectId.value) : null
+    selectedMode.value === 'demo' ? getDemoProject(projectId.value) : null
   )
   const ecosystemId = computed(() => {
     const project = selectedProject.value
@@ -52,14 +57,28 @@ export function useProjectConsoleApps() {
     return app.value ? [app.value] : []
   })
   const pending = computed(() => selectedMode.value === 'live' && livePending.value)
+  const debug = computed(() => ({
+    mode: selectedMode.value,
+    projectId: projectId.value,
+    rootCollection: rootCollection.value,
+    appId: appId.value,
+    ecosystemId: ecosystemId.value,
+    appsCount: apps.value.length,
+    pending: pending.value,
+    canWrite: canWrite.value,
+  }))
 
   return {
     selectedProject,
     selectedMode,
+    projectId,
+    rootCollection,
+    canWrite,
     appId,
     ecosystemId,
     app,
     apps,
     pending,
+    debug,
   }
 }
