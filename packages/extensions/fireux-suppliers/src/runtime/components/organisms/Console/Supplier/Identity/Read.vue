@@ -1,22 +1,33 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="console-card-header">
-        <div class="console-card-header__title">Identity</div>
+  <div class="space-y-6">
+    <UCard>
+      <template #header>
+        <div class="console-card-header">
+          <div class="console-card-header__title">Identity</div>
+        </div>
+      </template>
+
+      <div class="space-y-3">
+        <p class="console-card-header__description">
+          Root-facing supplier information for the selected supplier.
+        </p>
+
+        <div class="console-summary-grid">
+          <div class="console-summary-field">
+            Hello:
+            <span class="console-summary-value">{{ hello || 'Unset' }}</span>
+          </div>
+        </div>
       </div>
-    </template>
+    </UCard>
 
-    <p class="console-card-header__description">
-      {{ hello || 'No value set' }}
-    </p>
-  </UCard>
-
-  <DevFireuxDebugPanel
-    v-if="isDev"
-    title="Supplier identity"
-    scope="console"
-    :data="debug"
-  />
+    <DevFireuxDebugPanel
+      v-if="isDev"
+      title="Supplier identity"
+      scope="console"
+      :data="debug"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
