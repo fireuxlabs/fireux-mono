@@ -13,6 +13,22 @@ It should be kept small, current, and practical.
 Generated chatcontext is for repo/project state.
 This file is for how Deano wants the AI to work.
 
+## Repo identity
+
+Primary GitHub repo:
+
+fireuxlabs/fireux-mono
+
+When ChatGPT has GitHub connector access, use this repo first for FireUX questions.
+
+Do not default to Deano's personal repositories when looking for FireUX.
+Search/select the `fireuxlabs` organisation repo.
+
+GitHub connector limits:
+- sees pushed repo state
+- may not see uncommitted local Codex changes
+- for local work, Deano should paste Git Q / git diff / changed files
+
 ## User shorthand
 
 ### `$`
@@ -31,6 +47,11 @@ For Codex:
 - prefer current repo truth
 - keep response concise
 - avoid reading the whole repo unless needed
+
+For ChatGPT with GitHub connector access:
+- use `fireuxlabs/fireux-mono`
+- inspect pushed repo state before answering
+- do not pretend pushed GitHub state includes uncommitted local changes
 
 For ChatGPT without repo access:
 - ask for current code/context or use available uploaded/context files
