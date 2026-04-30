@@ -6,12 +6,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <UAlert
-          color="neutral"
-          variant="soft"
-          title="Portfolio incidents are parked"
-          description="This portfolio console route is intentionally hidden until incident tools are wired."
-        />
+        <ConsolePortfolioIncidents />
       </section>
     </template>
   </UDashboardPanel>
@@ -26,8 +21,6 @@ definePageMeta({
     label: 'Incidents',
     icon: 'i-lucide-triangle-alert',
     position: 'top',
-    hidden: true,
-    parked: true,
     requiresSelection: true,
     order: 35,
     desktop: true,

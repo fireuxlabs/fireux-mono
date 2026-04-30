@@ -6,12 +6,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <UAlert
-          color="neutral"
-          variant="soft"
-          title="Portfolio properties are parked"
-          description="This portfolio console route is intentionally hidden until property views are wired."
-        />
+        <ConsolePortfolioProperties />
       </section>
     </template>
   </UDashboardPanel>
@@ -26,8 +21,6 @@ definePageMeta({
     label: 'Properties',
     icon: 'i-lucide-building',
     position: 'top',
-    hidden: true,
-    parked: true,
     requiresSelection: true,
     order: 20,
     desktop: true,
