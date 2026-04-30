@@ -1,14 +1,9 @@
 # AI Context Docs
-Status: Historical AI continuity / generated context
-Authority: Tier3 non-authoritative evidence
-Updated: 2026-04-09
+Authority: Tier3 (Non-authoritative)
+Updated: 2026-04-30
 
-- Purpose: AI memory, thread context, and upload bundles.
-- Canonical location: `docs/ai/**`.
-- Daily bundles live directly under `docs/ai/` as `chatcontext-YYYY-MM-DD.md`.
-- These files support assistant continuity and audits.
-- These files are not default agent context.
-- They do not define runtime, routing, identity, or SEO canon.
-- They never define canon.
-- If content conflicts with Tier1 docs, Tier1 docs win.
-- Current scan focus: console runtime seams, app metadata/SEO scaffolding, and shared runtime selection cleanup.
+- Purpose: generated AI handoff, thread continuity, and compact upload bundles.
+- Durable source layer lives in `packages/core/fireux-docs/src/runtime/**` plus Tier1 canon docs.
+- `docs/ai/**` is generated support context, not architecture authority.
+- Chatcontext bundles should be rebuilt from current docs, recent commits, and active working-tree signals.
+- If content conflicts with Tier1 or `fireux-docs`, Tier1 and `fireux-docs` win.

@@ -1,37 +1,42 @@
 # FireUX - Droply module thread (Codex)
 Authority: Tier3 automation context (Non-authoritative)
-Updated: 2026-04-09
+Updated: 2026-04-30
 Audience: Implementation context for Codex agents.
 
 ## Scope
 - Thread key: droply.
 - Audience: Codex agents implementing code and runtime changes.
-- Priority: preserve Tier1 runtime and SEO canon alignment while keeping diffs minimal.
+- Priority: reflect current architecture direction without turning Tier3 notes into authority.
+
+## Source Layers
+- Tier1 canon: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`.
+- Tier2 runtime docs: `packages/core/fireux-docs/src/runtime/README.md` and branch READMEs.
+- Tier3 output: these thread files and the generated chatcontext bundle.
 
 ## Commit Window
-- Start: 2026-03-31T00:00:00+02:00
-- End: 2026-04-09T10:10:07+02:00
-- Source: manual_refresh_2026-04-09
+- Start: 2026-04-16T00:00:00+02:00
+- End: 2026-04-30T10:10:34+02:00
+- Source: rebuild_refresh_2026-04-30
 
 ## Recent Signals
-- 740abf1b5 refresh: runtime console docs and docs alignment (2026-04-05)
-- 8bdd11705 refine: app meta SEO structure and public app metadata direction (2026-04-06)
-- 022b7fd50 feat: add public app meta endpoint (2026-04-06)
-- 2f7f96be2 fix: app model typing drift and profile compatibility edges (2026-04-06)
-- 76931a7d0 refactor: route runtime selection wrappers through shared factory (2026-04-07)
-- 29b77e105 refactor: clean up project console wrappers and shared CTA (2026-04-07)
-- 95d428e18 docs/runtime: canon and app onboarding/media rules updated (2026-04-08)
-- 23de0e524 chore: console index, collection managers, and registry follow-up alignment (2026-04-08)
+- 5f1e52b3d + cfbc559b5 expanded project demo scenario foundations and shared runtime scenario types (2026-04-23).
+- a3f3ea978 + bbe934374 tightened FireUX canon wording around route ownership and runtime behavior (2026-04-27).
+- 0d8384b4a + c9c18fd61 + ff47d716c aligned reserved route keys and runtime-contract direction for console/public routing (2026-04-27).
+- 08bb61bc1 + 8596c4e2c + d5d151f32 + a9ae70f26 + 55fbe79c6 + f11d445bb + 28bc13bd7 re-labeled docs entry points, generated docs, and scoped agent context loading (2026-04-28).
+- ac65efebc clarified console entity collection-path resolution and related supplier/property path behavior (2026-04-28).
+- 9feb37142 + e433b44d7 + 3a7e14fde + dafe5743f refined generic console state, console index behavior, and domain adapters across kitchen/portfolio/supplier (2026-04-29).
+- 8a01ded76 + d99d8bf3f refreshed FireuxDebugPanel and developer inspection surfaces around runtime state (2026-04-28/29).
+- 80a901d6a + 70a400f0f + 1aae9ef88 aligned kitchen dishes/identity and project app console surfaces with the current console model (2026-04-30).
 
 ## Working Guidance
-- Map runtime selection, console routing, and public metadata changes back to Tier1 canon before editing callers.
-- Prefer shared core fixes over project-local divergence, especially for console seams and app metadata.
-- Treat supplier, kitchen, property, and project console surfaces as one aligned runtime family when touching collection managers or overview pages.
-- Keep this file as continuity context only; do not promote Tier3 notes into canon.
+- Treat `packages/core/fireux-docs/src/runtime/**` as the durable runtime-doc source layer before rebuilding Tier3 context.
+- Keep the mental model strict: layout is a dumb shell, core runtime owns generic console state, and domain runtimes are adapters.
+- Map routing, selection, metadata, and collection-path changes back to Tier1 canon before editing pages or cards.
+- Do not let generated chatcontext drift away from `fireux-docs`, Tier1 canon, or the actual working tree.
 
 ## Next Run Checklist
-- Continue from the next successful scan timestamp.
-- Rebuild this file in place and enforce terminal #end.
-- Regenerate the daily chatcontext bundle.
+- Re-scan recent commits and the active working tree instead of replaying the prior bundle window.
+- Refresh fireux-docs runtime READMEs first when architecture direction changed materially.
+- Overwrite this file completely and regenerate the daily chatcontext bundle.
 
 #end
