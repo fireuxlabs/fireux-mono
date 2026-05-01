@@ -1,40 +1,56 @@
 <template>
-  <UAccordion type="multiple" class="space-y-2">
-    <UAccordionItem
+  <div class="space-y-3">
+    <div
       v-for="section in sectionsSorted"
       :key="section.id || section.label"
-      :value="String(section.id || section.label || 'section')"
-      :title="sectionTitle(section)"
+      class="rounded border border-default p-3"
     >
-      <template #body>
-        <div v-if="sectionItems(section).length" class="space-y-2">
-          <div
-            v-for="item in sectionItems(section).slice(0, 4)"
-            :key="item.id || item.dish_id || item.label"
-            class="flex items-center justify-between gap-3 rounded border border-default p-2 text-sm"
-          >
-            <span class="font-medium">
-              {{ item.label || item.dish_id || 'Untitled item' }}
-            </span>
-            <span class="text-dimmed">
-              {{ formatPrice(item.price_minor, item.currency_code || currencyCode) }}
-            </span>
-          </div>
+      <div class="mb-3 flex items-center justify-between gap-3">
+        <div class="text-sm font-semibold">
+          {{ section.label || section.id || 'Untitled section' }}
+        </div>
+        <UBadge color="neutral" variant="soft">
+          {{ sectionItems(section).length }}
+          {{ sectionItems(section).length === 1 ? 'item' : 'items' }}
+        </UBadge>
+      </div>
 
-          <p
-            v-if="sectionItems(section).length > 4"
-            class="text-xs text-dimmed"
-          >
-            +{{ sectionItems(section).length - 4 }} more items
-          </p>
+      <div v-if="sectionItems(section).length" class="space-y-2">
+        <div
+          v-for="item in sectionItems(section).slice(0, 4)"
+          :key="item.id || item.dish_id || item.label"
+          class="pill"
+        >
+          <div class="flex min-w-0 items-start gap-2">
+            <div class="min-w-0 flex-1 space-y-1">
+              <p class="truncate text-sm font-medium text-highlighted">
+                {{ itemLabel(item) }}
+              </p>
+              <p v-if="showDishId(item)" class="truncate text-xs text-toned">
+                {{ item.dish_id }}
+              </p>
+              <div class="flex flex-wrap items-center gap-1">
+                <UBadge variant="soft" color="neutral" size="xs">
+                  {{ formatPrice(item.price_minor, item.currency_code || currencyCode) }}
+                </UBadge>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <p v-else class="text-sm text-dimmed">
-          No items in this section yet.
+        <p
+          v-if="sectionItems(section).length > 4"
+          class="text-xs text-dimmed"
+        >
+          +{{ sectionItems(section).length - 4 }} more items
         </p>
-      </template>
-    </UAccordionItem>
-  </UAccordion>
+      </div>
+
+      <p v-else class="text-sm text-dimmed">
+        No items in this section yet.
+      </p>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -65,10 +81,13 @@ const sectionItems = (section: MenuSection) =>
       )
     : []
 
-const sectionTitle = (section: MenuSection) => {
-  const label = String(section.label || section.id || 'Untitled section')
-  const count = sectionItems(section).length
-  return `${label} · ${count} ${count === 1 ? 'item' : 'items'}`
+const itemLabel = (item: MenuSectionItem) =>
+  String(item.label || item.dish_id || 'Untitled item')
+
+const showDishId = (item: MenuSectionItem) => {
+  const label = String(item.label || '').trim()
+  const dishId = String(item.dish_id || '').trim()
+  return Boolean(label && dishId && label !== dishId)
 }
 
 const formatPrice = (
