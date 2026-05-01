@@ -3,9 +3,11 @@
     <OrganismsMenuCollectionManager
       :collection="menus"
       title="Menus"
-      description="Browse menus for the selected kitchen."
+      description="Raw menu collection for the selected kitchen."
       :link="false"
     />
+
+    <OrganismsMenuConsoleCore :collection="menus" />
 
     <DevFireuxDebugPanel
       v-if="isDev"
