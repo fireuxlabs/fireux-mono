@@ -32,58 +32,57 @@
       </div>
 
       <template v-else>
-        <UAlert
-          color="neutral"
-          variant="soft"
-          title="Demo surface"
-          description="This is a public demo kitchen page backed by scenario data, not a live kitchen record."
-        />
-
         <UCard>
-          <template #header>
-            <div class="space-y-1">
-              <div class="text-sm font-semibold">Menus</div>
-              <p class="text-xs text-dimmed">
-                Open a customer-facing demo surface for this kitchen.
-              </p>
-            </div>
-          </template>
+          <div class="grid gap-4 md:grid-cols-[minmax(0,240px)_1fr] md:items-center">
+            <img
+              v-if="heroImage"
+              :src="heroImage"
+              :alt="pageTitle"
+              class="h-48 w-full rounded object-cover md:h-56"
+            />
 
-          <div class="space-y-3">
-            <div
-              v-for="menu in sortedMenus"
-              :key="menu.id || menu.name"
-              class="flex flex-col gap-3 rounded border border-default p-3 md:flex-row md:items-center md:justify-between"
-            >
-              <div class="space-y-1">
-                <div class="font-medium">
-                  {{ menu.name || menu.id || 'Untitled menu' }}
-                </div>
-                <div v-if="menu.description" class="text-sm text-dimmed">
-                  {{ menu.description }}
-                </div>
+            <div class="space-y-4">
+              <div class="flex flex-wrap items-center gap-2">
+                <UBadge variant="soft" color="neutral">
+                  Demo kitchen
+                </UBadge>
+                <UBadge v-if="sortedMenus.length" variant="soft">
+                  {{ sortedMenus.length }} menus
+                </UBadge>
+              </div>
+
+              <div class="space-y-2">
+                <h2 class="text-2xl font-semibold">
+                  {{ pageTitle }}
+                </h2>
+                <p class="text-sm text-dimmed">
+                  {{ pageDescription }}
+                </p>
+                <p v-if="identityDescription" class="text-sm text-toned">
+                  {{ identityDescription }}
+                </p>
               </div>
 
               <div class="flex flex-wrap gap-2">
-                <UButton
-                  size="xs"
-                  variant="soft"
-                  :to="menuSurfaceTo(menu.id, 'qr')"
-                >
-                  QR
+                <UButton :to="menusTo">
+                  View menus
                 </UButton>
                 <UButton
-                  size="xs"
-                  :to="menuSurfaceTo(menu.id, 'kiosk')"
+                  v-if="firstMenuId"
+                  variant="soft"
+                  :to="menuSurfaceTo(firstMenuId, 'qr')"
                 >
-                  Kiosk
+                  Open QR menu
+                </UButton>
+                <UButton
+                  v-if="firstMenuId"
+                  variant="ghost"
+                  :to="menuSurfaceTo(firstMenuId, 'kiosk')"
+                >
+                  Open kiosk
                 </UButton>
               </div>
             </div>
-
-            <p v-if="!sortedMenus.length" class="text-sm text-dimmed">
-              No demo menus available yet.
-            </p>
           </div>
         </UCard>
       </template>
@@ -109,7 +108,8 @@ definePageMeta({
 const route = useRoute()
 const hasChildRoute = computed(() => {
   const path = String(route.path || '').trim()
-  return /\/demo\/kitchens\/[^/]+\/menu(?:\/|$)/.test(path)
+  return /\/demo\/kitchens\/[^/]+\/menus(?:\/|$)/.test(path) ||
+    /\/demo\/kitchens\/[^/]+\/menu(?:\/|$)/.test(path)
 })
 
 const kitchenRouteKey = computed(() => {
@@ -132,6 +132,13 @@ const sortedMenus = computed(() =>
       String(a?.name || '').localeCompare(String(b?.name || ''))
   )
 )
+const firstMenuId = computed(() => String(sortedMenus.value[0]?.id || '').trim())
+const menusTo = computed(() => {
+  const resolvedKitchenId = String(kitchenRouteKey.value || '').trim()
+  if (!resolvedKitchenId) return '/demo/kitchens'
+
+  return `/demo/kitchens/${encodeURIComponent(resolvedKitchenId)}/menus`
+})
 
 const menuSurfaceTo = (menuIdRaw: unknown, surface: 'qr' | 'kiosk') => {
   const resolvedKitchenId = String(kitchenRouteKey.value || '').trim()
@@ -155,5 +162,19 @@ const pageDescription = computed(() =>
       (kitchen.value as any)?.formatted_address ||
       'Demo kitchen details.'
   )
+)
+const identityDescription = computed(() =>
+  String(
+    (kitchen.value as any)?.label ||
+      (kitchen.value as any)?.description ||
+      ''
+  ).trim()
+)
+const heroImage = computed(() =>
+  String(
+    (kitchen.value as any)?.image_url ||
+      (kitchen.value as any)?.image ||
+      ''
+  ).trim()
 )
 </script>
