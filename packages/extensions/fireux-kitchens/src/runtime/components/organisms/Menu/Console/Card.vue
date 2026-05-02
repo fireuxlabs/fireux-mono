@@ -6,9 +6,6 @@
           <div class="text-lg font-semibold">
             {{ menu.name || menu.id || 'Untitled menu' }}
           </div>
-          <p v-if="menu.description" class="text-sm text-dimmed">
-            {{ menu.description }}
-          </p>
         </div>
 
         <div class="flex flex-wrap gap-2">

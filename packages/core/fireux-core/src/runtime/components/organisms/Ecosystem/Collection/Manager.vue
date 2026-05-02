@@ -34,7 +34,7 @@
             />
 
             <UBadge v-if="showCount" variant="soft"
-              >{{ visibleCount }} / {{ totalCount }}</UBadge
+              >{{ countLabel }}</UBadge
             >
           </div>
         </div>
@@ -156,6 +156,11 @@ const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => showSearch.value && totalCount.value > 15
+)
+const countLabel = computed(() =>
+  showSearchInput.value && query.value
+    ? `${visibleCount.value} / ${totalCount.value}`
+    : `${totalCount.value}`
 )
 const isDev = import.meta.dev
 </script>

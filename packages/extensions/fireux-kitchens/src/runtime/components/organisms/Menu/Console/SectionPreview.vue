@@ -9,10 +9,6 @@
         <div class="text-sm font-semibold">
           {{ section.label || section.id || 'Untitled section' }}
         </div>
-        <UBadge color="neutral" variant="soft">
-          {{ sectionItems(section).length }}
-          {{ sectionItems(section).length === 1 ? 'item' : 'items' }}
-        </UBadge>
       </div>
 
       <div v-if="sectionItems(section).length" class="space-y-2">
@@ -25,9 +21,6 @@
             <div class="min-w-0 flex-1 space-y-1">
               <p class="truncate text-sm font-medium text-highlighted">
                 {{ itemLabel(item) }}
-              </p>
-              <p v-if="showDishId(item)" class="truncate text-xs text-toned">
-                {{ item.dish_id }}
               </p>
               <div class="flex flex-wrap items-center gap-1">
                 <UBadge variant="soft" color="neutral" size="xs">
@@ -83,12 +76,6 @@ const sectionItems = (section: MenuSection) =>
 
 const itemLabel = (item: MenuSectionItem) =>
   String(item.label || item.dish_id || 'Untitled item')
-
-const showDishId = (item: MenuSectionItem) => {
-  const label = String(item.label || '').trim()
-  const dishId = String(item.dish_id || '').trim()
-  return Boolean(label && dishId && label !== dishId)
-}
 
 const formatPrice = (
   valueMinor: MenuSectionItem['price_minor'],

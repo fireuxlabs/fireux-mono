@@ -33,7 +33,7 @@
               @click="toggleVariant"
             />
             <UBadge v-if="showCount" variant="soft"
-              >{{ visibleCount }} / {{ totalCount }}</UBadge
+              >{{ countLabel }}</UBadge
             >
           </div>
         </div>
@@ -152,6 +152,11 @@ const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
     )
 )
 
+const countLabel = computed(() =>
+  showSearchInput.value && query.value
+    ? `${visibleCount.value} / ${totalCount.value}`
+    : `${totalCount.value}`
+)
 const isDev = import.meta.dev
 const { getCollectionPath } = useFirestoreManager()
 const productCollectionRoot = getCollectionPath('products', false)

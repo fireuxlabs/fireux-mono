@@ -33,7 +33,7 @@
               @click="toggleVariant"
             />
             <UBadge v-if="showCount" variant="soft"
-              >{{ visibleCount }} / {{ totalCount }}</UBadge
+              >{{ countLabel }}</UBadge
             >
           </div>
         </div>
@@ -144,6 +144,11 @@ const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
     .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
       Boolean(card)
     )
+)
+const countLabel = computed(() =>
+  showSearchInput.value && query.value
+    ? `${visibleCount.value} / ${totalCount.value}`
+    : `${totalCount.value}`
 )
 const isDev = import.meta.dev
 const devJsonContext = 'collection manager · blogs · root: blogs'
