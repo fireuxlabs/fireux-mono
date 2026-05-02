@@ -66,7 +66,7 @@ export function useIngredientInterface() {
     return {
       id,
       slug,
-      to: id ? `/ingredients/${encodeURIComponent(id)}` : '',
+      to: id ? `/console/kitchen/ingredients/${encodeURIComponent(id)}` : '',
       imageUrl: safeString(ingredient.image_url).trim(),
       title: name,
       subtitle: joinSubtitle(supplierRef),

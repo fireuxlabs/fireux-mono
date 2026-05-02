@@ -11,9 +11,10 @@
       </template>
 
       <div v-if="recipeCards.length" class="space-y-2">
-        <div
+        <NuxtLink
           v-for="card in recipeCards"
           :key="card.id"
+          :to="card.to"
           class="rounded-lg border border-default p-3"
         >
           <div class="flex items-start gap-3">
@@ -51,7 +52,7 @@
               </div>
             </div>
           </div>
-        </div>
+        </NuxtLink>
       </div>
 
       <p v-else class="text-sm text-dimmed">No recipes found.</p>

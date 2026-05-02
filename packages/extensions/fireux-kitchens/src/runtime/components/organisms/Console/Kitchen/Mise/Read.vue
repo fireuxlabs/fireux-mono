@@ -4,7 +4,7 @@
       :collection="miseTasks"
       title="Mise Tasks"
       description="Browse mise tasks for the selected kitchen."
-      :link="false"
+      :link="true"
     />
 
     <DevFireuxDebugPanel

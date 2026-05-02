@@ -160,7 +160,7 @@ export function useDishInterface() {
       ingredientPills: base.ingredientIds.map((id) => ({
         id,
         to: id
-          ? `/console/kitchen/ingredients?ingredient=${encodeURIComponent(id)}`
+          ? `/console/kitchen/ingredients/${encodeURIComponent(id)}`
           : '/console/kitchen/ingredients',
         title: toPillTitle(id),
         imageUrl: '',
@@ -168,7 +168,7 @@ export function useDishInterface() {
       misePills: base.miseIds.map((id) => ({
         id,
         to: id
-          ? `/console/kitchen/mise?mise=${encodeURIComponent(id)}`
+          ? `/console/kitchen/mise/${encodeURIComponent(id)}`
           : '/console/kitchen/mise',
         title: toPillTitle(id),
         imageUrl: '',

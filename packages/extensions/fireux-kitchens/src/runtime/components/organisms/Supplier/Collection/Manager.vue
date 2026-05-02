@@ -111,6 +111,8 @@ const {
 const collection = computed(() => props.collection ?? [])
 const { devJsonData } = useDevCollectionJson(collection)
 const linkEnabled = computed(() => props.link !== false)
+const supplierTo = (supplierId: string) =>
+  supplierId ? `/console/kitchen/suppliers/${encodeURIComponent(supplierId)}` : ''
 const searchPlaceholder = computed(() =>
   String(props.searchPlaceholder || 'Search suppliers…')
 )
@@ -138,10 +140,11 @@ const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
         const base = makeCard(supplier)
         const cell = makeCell(supplier)
         if (!base || !cell) return null
-        return { ...base, ...cell }
+        return { ...base, ...cell, to: supplierTo(base.id) }
       }
 
-      return makePill(supplier)
+      const pill = makePill(supplier)
+      return pill ? { ...pill, to: supplierTo(pill.id) } : null
     })
     .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
       Boolean(card)

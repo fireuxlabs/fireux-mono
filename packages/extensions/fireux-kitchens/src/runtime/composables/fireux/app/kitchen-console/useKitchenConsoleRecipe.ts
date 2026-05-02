@@ -1,0 +1,56 @@
+import { useRoute } from '#imports'
+import { computed } from 'vue'
+import type { Recipe } from '../../../../models/recipe.model'
+import { useKitchenConsoleRecipes } from './useKitchenConsoleRecipes'
+
+const normalizeString = (value: unknown) => String(value ?? '').trim()
+
+export function useKitchenConsoleRecipe() {
+  const route = useRoute()
+  const {
+    selectedKitchen,
+    selectedMode,
+    kitchenId,
+    rootCollection,
+    collectionPath,
+    canWrite,
+    recipes,
+    pending,
+  } = useKitchenConsoleRecipes()
+
+  const recipeId = computed(() => {
+    const raw = route.params.recipeId
+    return normalizeString(Array.isArray(raw) ? raw[0] : raw)
+  })
+
+  const recipe = computed<Recipe | null>(
+    () =>
+      recipes.value.find((item) => normalizeString(item?.id) === recipeId.value) ??
+      null
+  )
+
+  const debug = computed(() => ({
+    mode: selectedMode.value,
+    kitchenId: kitchenId.value,
+    rootCollection: rootCollection.value,
+    collectionPath: collectionPath.value,
+    recipeId: recipeId.value,
+    hasRecipe: Boolean(recipe.value),
+    pending: pending.value,
+    canWrite: canWrite.value,
+  }))
+
+  return {
+    selectedKitchen,
+    selectedMode,
+    kitchenId,
+    rootCollection,
+    collectionPath,
+    canWrite,
+    recipes,
+    pending,
+    recipeId,
+    recipe,
+    debug,
+  }
+}

@@ -4,7 +4,7 @@
       :collection="ingredients"
       title="Ingredients"
       description="Browse ingredients for the selected kitchen."
-      :link="false"
+      :link="true"
     />
 
     <DevFireuxDebugPanel

@@ -4,7 +4,7 @@
       :collection="suppliers"
       title="Suppliers"
       description="Browse suppliers for the selected kitchen."
-      :link="false"
+      :link="true"
     />
 
     <DevFireuxDebugPanel

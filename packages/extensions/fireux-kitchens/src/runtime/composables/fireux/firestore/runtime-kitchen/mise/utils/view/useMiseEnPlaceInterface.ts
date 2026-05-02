@@ -82,7 +82,7 @@ export function useMiseEnPlaceInterface() {
 
     return {
       id,
-      to: '',
+      to: id ? `/console/kitchen/mise/${encodeURIComponent(id)}` : '',
       imageUrl: '',
       title: name,
       subtitle: joinSubtitle(category, safeString(task.service_date).trim()),
