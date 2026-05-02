@@ -7,16 +7,18 @@
     <div
       class="flex w-full items-start gap-3 rounded-lg border border-default bg-default p-3 transition hover:bg-[var(--ui-bg-elevated)]"
     >
-      <div class="relative shrink-0">
-        <UAvatar
-          :src="imageUrl"
-          size="md"
-        />
+      <div class="shrink-0">
         <UChip
           :color="isActiveNow ? 'success' : 'error'"
+          position="top-left"
           inset
-          class="absolute -left-1 -top-1"
-        />
+        >
+          <UAvatar
+            :src="imageUrl"
+            icon="i-lucide-book-open-check"
+            size="md"
+          />
+        </UChip>
       </div>
 
       <div class="min-w-0 flex-1 space-y-1.5">
@@ -54,16 +56,18 @@
     <div
       class="flex w-full items-start gap-3 rounded-lg border border-default bg-default p-3 transition hover:bg-[var(--ui-bg-elevated)]"
     >
-      <div class="relative shrink-0">
-        <UAvatar
-          :src="imageUrl"
-          size="md"
-        />
+      <div class="shrink-0">
         <UChip
           :color="isActiveNow ? 'success' : 'error'"
+          position="top-left"
           inset
-          class="absolute -left-1 -top-1"
-        />
+        >
+          <UAvatar
+            :src="imageUrl"
+            icon="i-lucide-book-open-check"
+            size="md"
+          />
+        </UChip>
       </div>
 
       <div class="min-w-0 flex-1 space-y-1.5">

@@ -1,22 +1,23 @@
 <template>
   <NuxtLink
-  v-if="link && to"
-  :to="to"
-  class="pill"
->
+    v-if="link && to"
+    :to="to"
+    class="pill"
+  >
     <div class="flex min-w-0 items-start gap-2">
-      <div class="relative shrink-0">
-        <UAvatar
-          v-if="imageUrl"
-          :src="imageUrl || undefined"
-          :alt="title || ''"
-          size="sm"
-        />
+      <div class="shrink-0">
         <UChip
           :color="isActiveNow ? 'success' : 'error'"
+          position="top-left"
           inset
-          class="absolute -left-1 -top-1"
-        />
+        >
+          <UAvatar
+            :src="imageUrl || undefined"
+            :alt="title || ''"
+            size="sm"
+            icon="i-lucide-book-open-check"
+          />
+        </UChip>
       </div>
 
       <div class="min-w-0 flex-1 space-y-1">
@@ -33,26 +34,27 @@
         </div>
       </div>
     </div>
-</NuxtLink>
+  </NuxtLink>
 
-<div
-  v-else
-  class="pill"
-  @click="onClick"
->
+  <div
+    v-else
+    class="pill"
+    @click="onClick"
+  >
     <div class="flex min-w-0 items-start gap-2">
-      <div class="relative shrink-0">
-        <UAvatar
-          v-if="imageUrl"
-          :src="imageUrl || undefined"
-          :alt="title || ''"
-          size="sm"
-        />
+      <div class="shrink-0">
         <UChip
           :color="isActiveNow ? 'success' : 'error'"
+          position="top-left"
           inset
-          class="absolute -left-1 -top-1"
-        />
+        >
+          <UAvatar
+            :src="imageUrl || undefined"
+            :alt="title || ''"
+            size="sm"
+            icon="i-lucide-book-open-check"
+          />
+        </UChip>
       </div>
 
       <div class="min-w-0 flex-1 space-y-1">
@@ -69,7 +71,7 @@
         </div>
       </div>
     </div>
-</div>
+  </div>
 </template>
 
 <script setup lang="ts">
