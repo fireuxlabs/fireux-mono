@@ -38,6 +38,7 @@
       <OrganismsMenuConsoleSectionPreview
         v-if="sections.length"
         :sections="sections"
+        :dishes="dishes"
         :currency-code="menu.currency_code"
       />
 
@@ -54,10 +55,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { Dish } from '../../../../models/dish.model'
 import type { Menu } from '../../../../models/menu.model'
 
 const props = defineProps<{
   menu: Menu
+  dishes?: Dish[]
 }>()
 
 const sections = computed(() =>

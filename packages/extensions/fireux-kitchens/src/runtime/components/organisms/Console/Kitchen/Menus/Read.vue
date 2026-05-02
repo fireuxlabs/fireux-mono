@@ -7,7 +7,7 @@
       :link="false"
     />
 
-    <OrganismsMenuConsoleCore :collection="menus" />
+    <OrganismsMenuConsoleCore :collection="menus" :dishes="dishes" />
 
     <DevFireuxDebugPanel
       v-if="isDev"
@@ -21,6 +21,6 @@
 <script setup lang="ts">
 import { useKitchenConsoleMenus } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMenus'
 
-const { menus, debug } = useKitchenConsoleMenus()
+const { menus, dishes, debug } = useKitchenConsoleMenus()
 const isDev = import.meta.dev
 </script>

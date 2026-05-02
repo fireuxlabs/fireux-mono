@@ -15,6 +15,7 @@
           v-for="menu in menusSorted"
           :key="menu.id || menu.name"
           :menu="menu"
+          :dishes="dishes"
         />
       </div>
     </UCard>
@@ -31,14 +32,17 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { Dish } from '../../../../models/dish.model'
 import type { Menu } from '../../../../models/menu.model'
 
 const props = withDefaults(
   defineProps<{
     collection?: Menu[]
+    dishes?: Dish[]
   }>(),
   {
     collection: () => [],
+    dishes: () => [],
   }
 )
 

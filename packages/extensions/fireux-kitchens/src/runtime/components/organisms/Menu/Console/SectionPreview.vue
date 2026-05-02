@@ -18,6 +18,14 @@
           class="pill"
         >
           <div class="flex min-w-0 items-start gap-2">
+            <UAvatar
+              v-if="dishImageUrl(item)"
+              :src="dishImageUrl(item)"
+              :alt="itemLabel(item)"
+              size="sm"
+              icon="i-lucide-utensils"
+            />
+
             <div class="min-w-0 flex-1 space-y-1">
               <p class="truncate text-sm font-medium text-highlighted">
                 {{ itemLabel(item) }}
@@ -48,18 +56,23 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { Dish } from '../../../../models/dish.model'
 import type { MenuSection, MenuSectionItem } from '../../../../models/menu.model'
 
 const props = withDefaults(
   defineProps<{
     sections?: MenuSection[]
+    dishes?: Dish[]
     currencyCode?: string
   }>(),
   {
     sections: () => [],
+    dishes: () => [],
     currencyCode: 'CHF',
   }
 )
+
+const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 const sectionsSorted = computed(() =>
   [...props.sections].sort(
@@ -74,8 +87,33 @@ const sectionItems = (section: MenuSection) =>
       )
     : []
 
+const dishesById = computed(() => {
+  const lookup = new Map<string, Dish>()
+
+  props.dishes.forEach((dish) => {
+    const id = normalizeString(dish?.id)
+    if (id) lookup.set(id, dish)
+  })
+
+  return lookup
+})
+
+const resolvedDish = (item: MenuSectionItem) =>
+  dishesById.value.get(normalizeString(item.dish_id)) ?? null
+
+const resolvedDishName = (item: MenuSectionItem) => {
+  const dish = resolvedDish(item)
+  return normalizeString(dish?.name) || normalizeString(dish?.short_name)
+}
+
 const itemLabel = (item: MenuSectionItem) =>
-  String(item.label || item.dish_id || 'Untitled item')
+  normalizeString(item.label) ||
+  resolvedDishName(item) ||
+  normalizeString(item.dish_id) ||
+  'Untitled item'
+
+const dishImageUrl = (item: MenuSectionItem) =>
+  normalizeString(resolvedDish(item)?.image_url)
 
 const formatPrice = (
   valueMinor: MenuSectionItem['price_minor'],
