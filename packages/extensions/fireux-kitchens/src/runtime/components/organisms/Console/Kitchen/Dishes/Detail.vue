@@ -10,7 +10,11 @@
       Back to dishes
     </UButton>
 
-    <DishProfile v-if="dish" :dish="dish" />
+    <DishProfile
+      v-if="dish"
+      :dish="dish"
+      :menu-usage="menuUsage"
+    />
 
     <UAlert
       v-else
@@ -37,6 +41,6 @@
 import { useKitchenConsoleDish } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleDish'
 import DishProfile from '../../../Dish/Cards/Profile.vue'
 
-const { dish, dishId, pending, debug } = useKitchenConsoleDish()
+const { dish, dishId, menuUsage, pending, debug } = useKitchenConsoleDish()
 const isDev = import.meta.dev
 </script>

@@ -61,6 +61,15 @@
                     {{ miseCount(dish) }}
                     {{ miseCount(dish) === 1 ? 'mise' : 'mise' }}
                   </UBadge>
+                  <UBadge
+                    v-if="menuUsageCount(dish)"
+                    variant="soft"
+                    color="primary"
+                    size="xs"
+                  >
+                    {{ menuUsageCount(dish) }}
+                    {{ menuUsageCount(dish) === 1 ? 'menu' : 'menus' }}
+                  </UBadge>
                 </div>
 
                 <p v-if="dish.primary_recipe_id" class="truncate text-xs text-dimmed">
@@ -86,13 +95,16 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Dish } from '../../../../models/dish.model'
+import type { KitchenDishMenuUsage } from '../../../../composables/fireux/app/kitchen-console/useKitchenConsoleDishes'
 
 const props = withDefaults(
   defineProps<{
     collection?: Dish[]
+    menuUsageByDishId?: Record<string, KitchenDishMenuUsage[]>
   }>(),
   {
     collection: () => [],
+    menuUsageByDishId: () => ({}),
   }
 )
 
@@ -112,6 +124,9 @@ const ingredientCount = (dish: Dish) =>
 
 const miseCount = (dish: Dish) =>
   Array.isArray(dish.mise_ids) ? dish.mise_ids.length : 0
+
+const menuUsageCount = (dish: Dish) =>
+  dish.id ? (props.menuUsageByDishId[dish.id] || []).length : 0
 
 const dishTo = (dish: Dish) =>
   dish.id

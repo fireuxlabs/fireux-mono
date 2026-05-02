@@ -15,6 +15,19 @@ export type KitchenDishSection = {
   count: number
 }
 
+export type KitchenDishMenuUsage = {
+  dishId: string
+  menuId: string
+  menuName: string
+  sectionId: string
+  sectionLabel: string
+  itemId: string
+  itemLabel: string
+  priceMinor: number
+  currencyCode: string
+  active: boolean
+}
+
 type UseKitchenConsoleDishesOptions = {
   resolveMenuSections?: boolean
 }
@@ -138,6 +151,67 @@ export function useKitchenConsoleDishes(
         }
       })
   })
+  const menuUsageByDishId = computed<Record<string, KitchenDishMenuUsage[]>>(() => {
+    const dishIdsInScope = new Set(
+      dishes.value
+        .map((dish) => normalizeString(dish?.id))
+        .filter(Boolean)
+    )
+
+    const usage = sectionMenus.value.reduce<Record<string, KitchenDishMenuUsage[]>>(
+      (acc, menu) => {
+        const menuId = normalizeString(menu?.id)
+        const menuName = normalizeString(menu?.name) || menuId
+        const menuCurrency = normalizeString(menu?.currency_code) || 'CHF'
+        const menuActive = menu?.active !== false
+        const sections = Array.isArray(menu?.sections) ? menu.sections : []
+
+        sections.forEach((section) => {
+          const sectionId = normalizeString(section?.id)
+          const sectionLabel = normalizeString(section?.label) || sectionId
+          const items = Array.isArray(section?.items) ? section.items : []
+
+          items.forEach((item) => {
+            const dishId = normalizeString(item?.dish_id)
+            if (!dishId || !dishIdsInScope.has(dishId)) return
+
+            const entry: KitchenDishMenuUsage = {
+              dishId,
+              menuId,
+              menuName,
+              sectionId,
+              sectionLabel,
+              itemId: normalizeString(item?.id),
+              itemLabel: normalizeString(item?.label),
+              priceMinor: Number(item?.price_minor || 0),
+              currencyCode:
+                normalizeString(item?.currency_code) || menuCurrency,
+              active: menuActive && item?.active !== false,
+            }
+
+            acc[dishId] = [...(acc[dishId] || []), entry]
+          })
+        })
+
+        return acc
+      },
+      {}
+    )
+
+    Object.values(usage).forEach((entries) => {
+      entries.sort((a, b) => {
+        if (a.menuName !== b.menuName) return a.menuName.localeCompare(b.menuName)
+        if (a.sectionLabel !== b.sectionLabel) {
+          return a.sectionLabel.localeCompare(b.sectionLabel)
+        }
+        return a.itemLabel.localeCompare(b.itemLabel)
+      })
+    })
+
+    return usage
+  })
+  const getMenuUsageForDish = (dishId: string) =>
+    menuUsageByDishId.value[normalizeString(dishId)] || []
   const debug = computed(() => ({
     mode: selectedMode.value,
     kitchenId: kitchenId.value,
@@ -147,6 +221,11 @@ export function useKitchenConsoleDishes(
     pending: pending.value,
     canWrite: canWrite.value,
     sectionsCount: sections.value.length,
+    menuUsageDishCount: Object.keys(menuUsageByDishId.value).length,
+    menuUsageCount: Object.values(menuUsageByDishId.value).reduce(
+      (total, entries) => total + entries.length,
+      0
+    ),
   }))
 
   return {
@@ -160,6 +239,8 @@ export function useKitchenConsoleDishes(
     dishes,
     pending,
     sections,
+    menuUsageByDishId,
+    getMenuUsageForDish,
     debug,
   }
 }

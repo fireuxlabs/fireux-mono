@@ -15,7 +15,8 @@ export function useKitchenConsoleDish() {
     canWrite,
     dishes,
     pending,
-  } = useKitchenConsoleDishes({ resolveMenuSections: false })
+    getMenuUsageForDish,
+  } = useKitchenConsoleDishes()
 
   const dishId = computed(() => {
     const raw = route.params.dishId
@@ -27,6 +28,7 @@ export function useKitchenConsoleDish() {
       dishes.value.find((item) => normalizeString(item?.id) === dishId.value) ??
       null
   )
+  const menuUsage = computed(() => getMenuUsageForDish(dishId.value))
 
   const debug = computed(() => ({
     mode: selectedMode.value,
@@ -35,6 +37,7 @@ export function useKitchenConsoleDish() {
     collectionPath: collectionPath.value,
     dishId: dishId.value,
     hasDish: Boolean(dish.value),
+    menuUsageCount: menuUsage.value.length,
     pending: pending.value,
     canWrite: canWrite.value,
   }))
@@ -50,6 +53,7 @@ export function useKitchenConsoleDish() {
     pending,
     dishId,
     dish,
+    menuUsage,
     debug,
   }
 }
