@@ -2,7 +2,7 @@
   <UCard v-if="dish">
     <div class="flex flex-col gap-5 md:flex-row md:items-start">
       <div
-        class="size-32 shrink-0 overflow-hidden rounded-lg border border-default bg-elevated/40"
+        class="size-28 shrink-0 overflow-hidden rounded-lg border border-default bg-elevated/40 md:size-32"
       >
         <img
           v-if="dish.image_url"
