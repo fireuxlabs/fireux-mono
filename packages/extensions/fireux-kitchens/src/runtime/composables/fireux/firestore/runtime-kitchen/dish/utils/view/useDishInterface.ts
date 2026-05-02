@@ -99,7 +99,7 @@ export function useDishInterface() {
     return {
       id,
       to: id
-        ? `/console/kitchen/dishes?dish=${encodeURIComponent(id)}`
+        ? `/console/kitchen/dishes/${encodeURIComponent(id)}`
         : '/console/kitchen/dishes',
       imageUrl: safeString(dish.image_url).trim(),
       title: displayName,

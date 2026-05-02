@@ -5,7 +5,7 @@
       :sections="sections"
       title="Dishes"
       description="Browse dishes for the selected kitchen."
-      :link="false"
+      :link="true"
     />
 
     <OrganismsDishConsoleCore :collection="dishes" />
