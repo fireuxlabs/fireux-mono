@@ -1,9 +1,9 @@
 <template>
   <NuxtLink
-  v-if="link && to"
-  :to="to"
-  class="block w-full"
->
+    v-if="link && to"
+    :to="to"
+    class="block w-full"
+  >
     <div
       class="flex w-full items-start gap-3 rounded-lg border border-default bg-default p-3 transition hover:bg-[var(--ui-bg-elevated)]"
     >
@@ -46,13 +46,13 @@
         </div>
       </div>
     </div>
-</NuxtLink>
+  </NuxtLink>
 
-<div
-  v-else
-  class="block w-full"
-  @click="onClick"
->
+  <div
+    v-else
+    class="block w-full"
+    @click="onClick"
+  >
     <div
       class="flex w-full items-start gap-3 rounded-lg border border-default bg-default p-3 transition hover:bg-[var(--ui-bg-elevated)]"
     >
@@ -95,11 +95,11 @@
         </div>
       </div>
     </div>
-</div>
+  </div>
 </template>
 
 <script setup lang="ts">
-
+import { navigateTo } from '#imports'
 import type { MenuCard } from '../../../../composables/fireux/firestore/runtime-kitchen/menu/utils/view/useMenuInterface'
 
 type Props = Pick<
@@ -117,6 +117,7 @@ type Props = Pick<
   showMeta?: boolean
   showTagline?: boolean
   link?: boolean
+  action?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -124,5 +125,11 @@ const props = withDefaults(defineProps<Props>(), {
   showMeta: true,
   showTagline: true,
   link: false,
+  action: false,
 })
+
+const onClick = () => {
+  if (!props.link || !props.to) return
+  navigateTo(props.to)
+}
 </script>

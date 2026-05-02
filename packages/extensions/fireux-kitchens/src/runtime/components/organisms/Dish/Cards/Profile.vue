@@ -4,12 +4,14 @@
       <div class="flex flex-col gap-5 md:flex-row md:items-start">
         <div
           class="h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-default bg-elevated/40 md:h-24 md:w-24"
+          style="width: 80px; height: 80px; max-width: 80px; max-height: 80px;"
         >
           <img
             v-if="dish.image_url"
             :src="dish.image_url"
             :alt="dish.name || dish.short_name || 'Dish image'"
             class="h-full w-full object-cover"
+            style="width: 100%; height: 100%; object-fit: cover;"
             loading="lazy"
           >
           <div
