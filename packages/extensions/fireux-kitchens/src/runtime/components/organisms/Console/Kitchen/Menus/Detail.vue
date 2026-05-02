@@ -10,7 +10,7 @@
       Back to menus
     </UButton>
 
-    <OrganismsMenuCardsProfile
+    <MenuProfile
       v-if="menu"
       :menu="menu"
       :dishes="dishes"
@@ -39,6 +39,7 @@
 
 <script setup lang="ts">
 import { useKitchenConsoleMenu } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMenu'
+import MenuProfile from '../../../Menu/Cards/Profile.vue'
 
 const { menu, menuId, dishes, pending, debug } = useKitchenConsoleMenu()
 const isDev = import.meta.dev

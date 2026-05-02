@@ -1,19 +1,23 @@
 <template>
   <UCard v-if="dish">
     <div class="flex flex-col gap-5 md:flex-row md:items-start">
-      <div class="w-24 shrink-0 overflow-hidden rounded-lg border border-default bg-elevated/40 md:w-28">
+      <div
+        class="shrink-0 overflow-hidden rounded-lg border border-default bg-elevated/40"
+        style="width: 256px; height: 256px; max-width: 256px; max-height: 256px;"
+      >
         <img
           v-if="dish.image_url"
           :src="dish.image_url"
           :alt="dish.name || dish.short_name || 'Dish image'"
-          class="aspect-square w-full object-cover"
+          class="object-cover"
+          style="width: 256px; height: 256px; max-width: 256px; max-height: 256px;"
           loading="lazy"
         >
         <div
           v-else
-          class="flex aspect-square w-full items-center justify-center text-dimmed"
+          class="flex h-full w-full items-center justify-center text-dimmed"
         >
-          <UIcon name="i-lucide-utensils" class="size-8" />
+          <UIcon name="i-lucide-utensils" class="size-6" />
         </div>
       </div>
 
