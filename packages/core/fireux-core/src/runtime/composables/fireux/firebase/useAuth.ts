@@ -14,7 +14,7 @@ import {
     type Auth,
     type User,
 } from 'firebase/auth'
-import { computed, onMounted, ref, watch, type Ref } from 'vue'
+import { computed, getCurrentInstance, onMounted, ref, watch, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useCurrentUser, useFirebaseAuth } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useUserEnsure } from '../firestore/core/user/mutations/useUserEnsure'
@@ -138,7 +138,7 @@ export function useAuth() {
   scheduleBindRetry()
 
   // retry after mount (covers “installed a moment later” cases)
-  if (import.meta.client) {
+  if (import.meta.client && getCurrentInstance()) {
     onMounted(() => {
       if (!isReady.value) bind()
       armAuthStateResolution()

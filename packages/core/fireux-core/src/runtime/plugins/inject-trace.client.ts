@@ -4,8 +4,8 @@ import type { ComponentPublicInstance } from 'vue'
 
 /**
  * inject-trace.client
- * Dev helper: intercept Vue warns for inject()/Nuxt composables used outside setup
- * and print a focused report with component file and filtered stack lines.
+ * Dev helper: intercept Vue warns for setup-only API misuse and print a focused
+ * report with component file and filtered stack lines.
  */
 export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
   if (process.env.NODE_ENV === 'production') return
@@ -74,18 +74,82 @@ export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
     }
   }
 
+  function classifyWarning(message: string):
+    | 'inject()'
+    | 'nuxt-composable'
+    | 'vue-lifecycle'
+    | null {
+    if (message.includes('inject() can only be used inside setup')) {
+      return 'inject()'
+    }
+
+    if (
+      message.includes('A composable that requires access to the Nuxt instance')
+    ) {
+      return 'nuxt-composable'
+    }
+
+    if (
+      message.includes(
+        'onMounted is called when there is no active component instance'
+      ) ||
+      message.includes(
+        'Lifecycle injection APIs can only be used during execution of setup'
+      )
+    ) {
+      return 'vue-lifecycle'
+    }
+
+    return null
+  }
+
+  function filteredStackLines(...sources: Array<string | undefined>) {
+    return sources
+      .flatMap((source) => String(source || '').split('\n'))
+      .filter(
+        (line) => line.includes('/projects/') || line.includes('/packages/')
+      )
+      .filter((line) => !line.includes('node_modules'))
+  }
+
+  function logClientDiagnostic(payload: {
+    source: string
+    kind: string
+    message: string
+    component?: { name: string; file: string }
+    hint: string
+    stack: string[]
+    rawTrace?: string
+  }) {
+    const component = payload.component
+      ? `\nComponent: ${payload.component.name} (${payload.component.file})`
+      : ''
+    const stack = payload.stack.length
+      ? `\nStack:\n${payload.stack.join('\n')}`
+      : ''
+    const rawTrace = payload.rawTrace
+      ? `\nRaw trace:\n${payload.rawTrace}`
+      : ''
+    const href =
+      typeof window !== 'undefined' ? `\nHref: ${window.location.href}` : ''
+
+    console.info(
+      `[InjectTrace] ${payload.kind} misuse\n` +
+        `Source: ${payload.source}\n` +
+        `Message: ${payload.message}${component}\n` +
+        `Hint: ${payload.hint}${stack}${rawTrace}${href}`
+    )
+  }
+
   config.warnHandler = (
     message: string,
     instance: ComponentPublicInstance | null,
     trace: string
   ) => {
     const msg = String(message ?? '')
-    const isInjectWarn = msg.includes('inject() can only be used inside setup')
-    const isUseNuxtAppWarn = msg.includes(
-      'A composable that requires access to the Nuxt instance'
-    )
+    const kind = classifyWarning(msg)
 
-    if (isInjectWarn || isUseNuxtAppWarn) {
+    if (kind) {
       const comp = (instance ?? {}) as {
         type?: { __file?: string; name?: string }
         __file?: string
@@ -95,26 +159,25 @@ export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
       const name = comp?.type?.name ?? comp?.name ?? 'anonymous-component'
 
       const err = new Error(msg)
-      const stackLines = (err.stack || '').split('\n')
-      const filtered = stackLines
-        .filter(
-          (line) => line.includes('/projects/') || line.includes('/packages/')
-        )
-        .filter((line) => !line.includes('node_modules'))
+      const filtered = filteredStackLines(trace, err.stack)
       const hint =
         filtered[0]?.trim() ||
         (trace ? String(trace).split('\n')[0] : '') ||
         '(no userland frame)'
 
       // Forward to server (no client console noise)
-      forwardToServer({
+      const payload = {
         source: 'client-warnHandler',
-        kind: isInjectWarn ? 'inject()' : 'nuxt-composable',
+        kind,
         message: msg,
         component: { name, file },
         hint,
         stack: filtered.slice(0, 12),
-      })
+        rawTrace: trace || undefined,
+      }
+
+      logClientDiagnostic(payload)
+      forwardToServer(payload)
     }
 
     if (typeof originalWarnHandler === 'function') {
@@ -132,27 +195,24 @@ export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
     console.warn = (...args: unknown[]) => {
       try {
         const text = args.map((a) => safeToText(a)).join(' ')
-        const injectSig = 'inject() can only be used inside setup'
-        const nuxtSig = 'A composable that requires access to the Nuxt instance'
-        const isInjectWarn = text.includes(injectSig)
-        const isUseNuxtAppWarn = text.includes(nuxtSig)
-        if (isInjectWarn || isUseNuxtAppWarn) {
+        const kind = classifyWarning(text)
+
+        if (kind) {
           const err = new Error(safeToText(args[0]))
-          const stackLines = (err.stack || '').split('\n')
-          const filtered = stackLines
-            .filter(
-              (line) =>
-                line.includes('/projects/') || line.includes('/packages/')
-            )
-            .filter((line) => !line.includes('node_modules'))
+          const rawTrace = args.map((a) => safeToText(a)).join('\n')
+          const filtered = filteredStackLines(rawTrace, err.stack)
           const hint = filtered[0]?.trim() || '(no userland frame)'
-          forwardToServer({
+          const payload = {
             source: 'client-console-fallback',
-            kind: isInjectWarn ? 'inject()' : 'nuxt-composable',
+            kind,
             message: text,
             hint,
             stack: filtered.slice(0, 12),
-          })
+            rawTrace,
+          }
+
+          logClientDiagnostic(payload)
+          forwardToServer(payload)
         }
       } catch {
         // ignore
