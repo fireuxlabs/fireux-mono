@@ -1,9 +1,8 @@
 import { computed } from 'vue'
-import { useKitchenDishCollection } from '../../firestore/runtime-kitchen/dish/fetch/useKitchenDishCollection'
 import { useKitchenMenuCollection } from '../../firestore/runtime-kitchen/menu/fetch/useKitchenMenuCollection'
-import type { Dish } from '../../../../models/dish.model'
 import type { Menu } from '../../../../models/menu.model'
 import { useKitchenConsole } from './useKitchenConsole'
+import { useKitchenConsoleDishes } from './useKitchenConsoleDishes'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
 
 export function useKitchenConsoleMenus() {
@@ -25,12 +24,10 @@ export function useKitchenConsoleMenus() {
     kitchenCollectionPath: rootCollection,
   })
   const {
-    dishes: liveDishes,
-    pending: liveDishesPending,
+    dishes,
+    pending: dishesPending,
     collectionPath: dishesCollectionPath,
-  } = useKitchenDishCollection(fetchKitchenId, {
-    kitchenCollectionPath: rootCollection,
-  })
+  } = useKitchenConsoleDishes({ resolveMenuSections: false })
   const page = useKitchenConsoleReadPage<Menu>({
     collectionName: 'menus',
     selectedKitchen,
@@ -40,17 +37,7 @@ export function useKitchenConsoleMenus() {
     livePending,
     collectionPath,
   })
-  const dishesPage = useKitchenConsoleReadPage<Dish>({
-    collectionName: 'dishes',
-    selectedKitchen,
-    selectedMode,
-    kitchenId,
-    liveItems: liveDishes,
-    livePending: liveDishesPending,
-    collectionPath: dishesCollectionPath,
-  })
   const menus = computed(() => page.collection.value.items)
-  const dishes = computed(() => dishesPage.collection.value.items)
   const pending = computed(() => page.collection.value.pending)
   const debug = computed(() => ({
     mode: selectedMode.value,
@@ -61,6 +48,7 @@ export function useKitchenConsoleMenus() {
     menusCount: menus.value.length,
     dishesCount: dishes.value.length,
     pending: pending.value,
+    dishesPending: dishesPending.value,
     canWrite: canWrite.value,
   }))
 

@@ -1,9 +1,10 @@
 import { computed } from 'vue'
 import { useKitchenDishCollection } from '../../firestore/runtime-kitchen/dish/fetch/useKitchenDishCollection'
 import type { Dish } from '../../../../models/dish.model'
+import type { Menu } from '../../../../models/menu.model'
 import { useKitchenConsole } from './useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
-import { useKitchenConsoleMenus } from './useKitchenConsoleMenus'
+import { useKitchenMenuCollection } from '../../firestore/runtime-kitchen/menu/fetch/useKitchenMenuCollection'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
@@ -14,7 +15,13 @@ export type KitchenDishSection = {
   count: number
 }
 
-export function useKitchenConsoleDishes() {
+type UseKitchenConsoleDishesOptions = {
+  resolveMenuSections?: boolean
+}
+
+export function useKitchenConsoleDishes(
+  options: UseKitchenConsoleDishesOptions = {}
+) {
   const {
     selectedKitchen,
     selectedMode,
@@ -29,6 +36,16 @@ export function useKitchenConsoleDishes() {
     useKitchenDishCollection(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
     })
+  const sectionFetchKitchenId = computed(() =>
+    options.resolveMenuSections === false ? '' : fetchKitchenId.value
+  )
+  const {
+    menus: liveSectionMenus,
+    pending: liveSectionMenusPending,
+    collectionPath: sectionMenusCollectionPath,
+  } = useKitchenMenuCollection(sectionFetchKitchenId, {
+    kitchenCollectionPath: rootCollection,
+  })
   const page = useKitchenConsoleReadPage<Dish>({
     collectionName: 'dishes',
     selectedKitchen,
@@ -38,9 +55,22 @@ export function useKitchenConsoleDishes() {
     livePending,
     collectionPath,
   })
+  const sectionMenusPage = useKitchenConsoleReadPage<Menu>({
+    collectionName: 'menus',
+    selectedKitchen,
+    selectedMode,
+    kitchenId,
+    liveItems: liveSectionMenus,
+    livePending: liveSectionMenusPending,
+    collectionPath: sectionMenusCollectionPath,
+  })
   const dishes = computed(() => page.collection.value.items)
   const pending = computed(() => page.collection.value.pending)
-  const { menus } = useKitchenConsoleMenus()
+  const sectionMenus = computed(() =>
+    options.resolveMenuSections === false
+      ? []
+      : sectionMenusPage.collection.value.items
+  )
 
   const sections = computed<KitchenDishSection[]>(() => {
     const dishIdsInScope = new Set(
@@ -49,7 +79,7 @@ export function useKitchenConsoleDishes() {
         .filter(Boolean)
     )
 
-    const rawSections = menus.value.flatMap((menu) => {
+    const rawSections = sectionMenus.value.flatMap((menu) => {
       const menuId = normalizeString(menu?.id)
       const menuName = normalizeString(menu?.name)
       const menuSort = Number(menu?.sort_order ?? 0)
