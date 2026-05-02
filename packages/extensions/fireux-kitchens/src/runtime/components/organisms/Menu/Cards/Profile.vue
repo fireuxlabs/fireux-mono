@@ -3,22 +3,20 @@
     <div class="space-y-6">
       <div class="flex flex-col gap-5 md:flex-row md:items-start">
         <div
-          class="shrink-0 overflow-hidden rounded-lg border border-default bg-elevated/40"
-          style="width: 256px; height: 256px; max-width: 256px; max-height: 256px;"
+          class="h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-default bg-elevated/40 md:h-24 md:w-24"
         >
           <img
             v-if="imageUrl"
             :src="imageUrl"
             :alt="menu.name || 'Menu image'"
-            class="object-cover"
-            style="width: 256px; height: 256px; max-width: 256px; max-height: 256px;"
+            class="h-full w-full object-cover"
             loading="lazy"
           >
           <div
             v-else
             class="flex h-full w-full items-center justify-center text-dimmed"
           >
-            <UIcon name="i-lucide-book-open-check" class="size-6" />
+            <UIcon name="i-lucide-book-open-check" class="size-5" />
           </div>
         </div>
 
