@@ -5,7 +5,10 @@
       :key="section.id || section.label"
       class="space-y-2"
     >
-      <p class="text-xs font-medium uppercase tracking-wide text-dimmed">
+      <p
+        v-if="showSectionHeadings"
+        class="text-xs font-medium uppercase tracking-wide text-dimmed"
+      >
         {{ section.label || section.id || 'Untitled section' }}
       </p>
 
@@ -62,11 +65,13 @@ const props = withDefaults(
     sections?: MenuSection[]
     dishes?: Dish[]
     currencyCode?: string
+    showSectionHeadings?: boolean
   }>(),
   {
     sections: () => [],
     dishes: () => [],
     currencyCode: 'CHF',
+    showSectionHeadings: true,
   }
 )
 
