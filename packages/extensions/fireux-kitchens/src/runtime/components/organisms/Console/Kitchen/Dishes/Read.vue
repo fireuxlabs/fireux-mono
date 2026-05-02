@@ -8,6 +8,8 @@
       :link="false"
     />
 
+    <OrganismsDishConsoleCore :collection="dishes" />
+
     <DevFireuxDebugPanel
       v-if="isDev"
       title="Kitchen dishes"
