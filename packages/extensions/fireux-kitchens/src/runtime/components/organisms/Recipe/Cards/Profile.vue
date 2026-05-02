@@ -58,6 +58,62 @@
           </div>
         </div>
 
+        <UCard variant="soft">
+          <div class="space-y-3">
+            <div>
+              <div class="text-sm font-medium text-highlighted">Dish usage</div>
+              <p class="text-xs text-dimmed">
+                Sellable dishes that depend on this recipe.
+              </p>
+            </div>
+
+            <div v-if="dishUsageSorted.length" class="space-y-2">
+              <div
+                v-for="usage in dishUsageSorted"
+                :key="usage.dishId"
+                class="pill"
+              >
+                <div class="flex min-w-0 items-start gap-2">
+                  <UAvatar
+                    :src="usage.dishImageUrl || undefined"
+                    :alt="usage.dishName"
+                    icon="i-lucide-utensils"
+                    size="sm"
+                    class="shrink-0"
+                  />
+
+                  <div class="min-w-0 flex-1 space-y-1">
+                    <div class="flex items-center gap-2">
+                      <UChip
+                        :color="usage.active ? 'success' : 'error'"
+                        inset
+                      />
+                      <p class="truncate text-sm font-medium text-highlighted">
+                        {{ usage.dishName || usage.dishId || 'Untitled dish' }}
+                      </p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-1">
+                      <UBadge
+                        v-if="usage.isPrimary"
+                        variant="soft"
+                        color="primary"
+                        size="xs"
+                      >
+                        Primary
+                      </UBadge>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p v-else class="text-sm text-dimmed">
+              Not currently used by a dish.
+            </p>
+          </div>
+        </UCard>
+
         <div class="grid gap-3 md:grid-cols-3">
           <UCard variant="soft">
             <div class="space-y-1">
@@ -94,10 +150,17 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Recipe } from '../../../../models/recipe.model'
+import type { KitchenRecipeDishUsage } from '../../../../composables/fireux/app/kitchen-console/useKitchenConsoleRecipes'
 
-const props = defineProps<{
-  recipe: Recipe | null
-}>()
+const props = withDefaults(
+  defineProps<{
+    recipe: Recipe | null
+    dishUsage?: KitchenRecipeDishUsage[]
+  }>(),
+  {
+    dishUsage: () => [],
+  }
+)
 
 const title = computed(
   () =>
@@ -136,5 +199,12 @@ const ingredientLinesCount = computed(() =>
 
 const stepsCount = computed(() =>
   Array.isArray(props.recipe?.steps) ? props.recipe.steps.length : 0
+)
+
+const dishUsageSorted = computed(() =>
+  [...props.dishUsage].sort((a, b) => {
+    if (a.isPrimary !== b.isPrimary) return a.isPrimary ? -1 : 1
+    return a.dishName.localeCompare(b.dishName)
+  })
 )
 </script>

@@ -10,7 +10,11 @@
       Back to recipes
     </UButton>
 
-    <RecipeProfile v-if="recipe" :recipe="recipe" />
+    <RecipeProfile
+      v-if="recipe"
+      :recipe="recipe"
+      :dish-usage="dishUsage"
+    />
 
     <UAlert
       v-else
@@ -37,6 +41,6 @@
 import { useKitchenConsoleRecipe } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleRecipe'
 import RecipeProfile from '../../../Recipe/Cards/Profile.vue'
 
-const { recipe, recipeId, pending, debug } = useKitchenConsoleRecipe()
+const { recipe, recipeId, dishUsage, pending, debug } = useKitchenConsoleRecipe()
 const isDev = import.meta.dev
 </script>

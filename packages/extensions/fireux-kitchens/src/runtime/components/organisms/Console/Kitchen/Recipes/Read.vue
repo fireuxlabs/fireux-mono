@@ -49,6 +49,15 @@
                 >
                   {{ badge }}
                 </UBadge>
+                <UBadge
+                  v-if="dishUsageCount(card.id)"
+                  variant="soft"
+                  color="primary"
+                  size="xs"
+                >
+                  {{ dishUsageCount(card.id) }}
+                  {{ dishUsageCount(card.id) === 1 ? 'dish' : 'dishes' }}
+                </UBadge>
               </div>
             </div>
           </div>
@@ -77,11 +86,13 @@ type RecipeCard = NonNullable<
 >
 
 const { pill } = useRecipeInterface()
-const { recipes, debug } = useKitchenConsoleRecipes()
+const { recipes, dishUsageByRecipeId, debug } = useKitchenConsoleRecipes()
 const recipeCards = computed<RecipeCard[]>(() =>
   recipes.value
     .map((recipe) => pill(recipe))
     .filter((card): card is RecipeCard => Boolean(card))
 )
+const dishUsageCount = (recipeId: string) =>
+  (dishUsageByRecipeId.value[recipeId] || []).length
 const isDev = import.meta.dev
 </script>

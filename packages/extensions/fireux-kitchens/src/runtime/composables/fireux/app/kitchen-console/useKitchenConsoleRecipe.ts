@@ -16,6 +16,7 @@ export function useKitchenConsoleRecipe() {
     canWrite,
     recipes,
     pending,
+    getDishUsageForRecipe,
   } = useKitchenConsoleRecipes()
 
   const recipeId = computed(() => {
@@ -28,6 +29,7 @@ export function useKitchenConsoleRecipe() {
       recipes.value.find((item) => normalizeString(item?.id) === recipeId.value) ??
       null
   )
+  const dishUsage = computed(() => getDishUsageForRecipe(recipeId.value))
 
   const debug = computed(() => ({
     mode: selectedMode.value,
@@ -36,6 +38,7 @@ export function useKitchenConsoleRecipe() {
     collectionPath: collectionPath.value,
     recipeId: recipeId.value,
     hasRecipe: Boolean(recipe.value),
+    dishUsageCount: dishUsage.value.length,
     pending: pending.value,
     canWrite: canWrite.value,
   }))
@@ -51,6 +54,7 @@ export function useKitchenConsoleRecipe() {
     pending,
     recipeId,
     recipe,
+    dishUsage,
     debug,
   }
 }
