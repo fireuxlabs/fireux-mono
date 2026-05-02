@@ -74,11 +74,13 @@ import { computed } from 'vue'
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useMenuInterface } from '../../../../composables/fireux/firestore/runtime-kitchen/menu/utils/view/useMenuInterface'
+import type { Dish } from '../../../../models/dish.model'
 import type { Menu } from '../../../../models/menu.model'
 
 const props = withDefaults(
   defineProps<{
     collection?: Menu[]
+    dishes?: Dish[]
     title?: string
     description?: string
     searchPlaceholder?: string
@@ -89,6 +91,7 @@ const props = withDefaults(
     link?: boolean
   }>(),
   {
+    dishes: () => [],
     title: 'Menus',
     description: 'Browse menus for this kitchen.',
     searchPlaceholder: 'Search menus...',
@@ -114,6 +117,29 @@ const collection = computed(() =>
   )
 )
 
+const dishesById = computed(() => {
+  const lookup = new Map<string, Dish>()
+
+  props.dishes.forEach((dish) => {
+    const id = String(dish?.id ?? '').trim()
+    if (id) lookup.set(id, dish)
+  })
+
+  return lookup
+})
+
+const menuImageUrl = (menu: Menu) => {
+  const items = (menu.sections ?? []).flatMap((section) => section.items ?? [])
+
+  for (const item of items) {
+    const dishId = String(item?.dish_id ?? '').trim()
+    const imageUrl = String(dishesById.value.get(dishId)?.image_url ?? '').trim()
+    if (imageUrl) return imageUrl
+  }
+
+  return ''
+}
+
 const { devJsonData } = useDevCollectionJson(collection)
 
 const totalCount = computed(() => collection.value.length)
@@ -135,10 +161,17 @@ const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
         const base = makeCard(menu)
         const cell = makeCell(menu)
         if (!base || !cell) return null
-        return { ...base, ...cell }
+        return {
+          ...base,
+          ...cell,
+          imageUrl: menuImageUrl(menu) || base.imageUrl,
+        }
       }
 
-      return makePill(menu)
+      const pill = makePill(menu)
+      return pill
+        ? { ...pill, imageUrl: menuImageUrl(menu) || pill.imageUrl }
+        : null
     })
     .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
       Boolean(card)

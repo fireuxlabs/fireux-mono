@@ -2,6 +2,7 @@
   <div class="space-y-6">
     <OrganismsMenuCollectionManager
       :collection="menus"
+      :dishes="dishes"
       title="Menus"
       description="Raw menu collection for the selected kitchen."
       :link="false"

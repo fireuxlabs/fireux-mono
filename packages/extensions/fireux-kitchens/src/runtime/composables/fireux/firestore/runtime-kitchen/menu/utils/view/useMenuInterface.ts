@@ -86,7 +86,6 @@ export function useMenuInterface() {
         .join(' · '),
       status: active ? 'active' : 'inactive',
       badges: [
-        active ? 'active' : 'inactive',
         `${dishes.length} ${dishes.length === 1 ? 'dish' : 'dishes'}`,
       ],
       summary: safeString(menu.description).trim(),

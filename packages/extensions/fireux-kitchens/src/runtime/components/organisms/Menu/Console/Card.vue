@@ -8,16 +8,13 @@
           </div>
         </div>
 
-        <div class="flex flex-wrap gap-2">
-          <UBadge :color="menu.active === false ? 'neutral' : 'success'" variant="soft">
-            {{ menu.active === false ? 'Inactive' : 'Active' }}
-          </UBadge>
-          <UBadge variant="soft">
-            {{ menu.currency_code || 'CHF' }}
-          </UBadge>
-        </div>
+        <UChip :color="menu.active === false ? 'error' : 'success'" inset />
       </div>
     </template>
+
+    <p v-if="availabilityText" class="mb-3 text-xs text-dimmed">
+      {{ availabilityText }}
+    </p>
 
     <div>
       <OrganismsMenuConsoleSectionPreview
@@ -55,5 +52,14 @@ const sections = computed(() =>
         (a, b) => Number(a?.sort_order || 0) - Number(b?.sort_order || 0)
       )
     : []
+)
+
+const availabilityText = computed(() =>
+  String(
+    (props.menu as Record<string, unknown>).availability_label ||
+      (props.menu as Record<string, unknown>).availability_summary ||
+      (props.menu as Record<string, unknown>).hours_label ||
+      ''
+  ).trim()
 )
 </script>

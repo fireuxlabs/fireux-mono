@@ -14,7 +14,7 @@
 
       <div v-if="sectionItems(section).length" class="space-y-2">
         <div
-          v-for="item in sectionItems(section).slice(0, 4)"
+          v-for="item in sectionItems(section)"
           :key="item.id || item.dish_id || item.label"
           class="pill"
         >
@@ -39,13 +39,6 @@
             </div>
           </div>
         </div>
-
-        <p
-          v-if="sectionItems(section).length > 4"
-          class="text-xs text-dimmed"
-        >
-          +{{ sectionItems(section).length - 4 }} more items
-        </p>
       </div>
 
       <p v-else class="text-sm text-dimmed">

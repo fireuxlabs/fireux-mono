@@ -13,9 +13,12 @@
       />
 
       <div class="min-w-0 flex-1 space-y-1">
-        <p class="truncate text-sm font-medium text-highlighted">
-          {{ title }}
-        </p>
+        <div class="flex items-center gap-2">
+          <p class="min-w-0 flex-1 truncate text-sm font-medium text-highlighted">
+            {{ title }}
+          </p>
+          <UChip :color="isActiveNow ? 'success' : 'error'" inset />
+        </div>
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
         </p>
@@ -42,9 +45,12 @@
       />
 
       <div class="min-w-0 flex-1 space-y-1">
-        <p class="truncate text-sm font-medium text-highlighted">
-          {{ title }}
-        </p>
+        <div class="flex items-center gap-2">
+          <p class="min-w-0 flex-1 truncate text-sm font-medium text-highlighted">
+            {{ title }}
+          </p>
+          <UChip :color="isActiveNow ? 'success' : 'error'" inset />
+        </div>
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
         </p>
