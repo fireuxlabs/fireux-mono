@@ -19,22 +19,7 @@
       </div>
     </template>
 
-    <div class="space-y-4">
-      <div class="console-summary-grid">
-        <div class="console-summary-field">
-          Sections:
-          <span class="console-summary-value">
-            {{ sections.length }}
-          </span>
-        </div>
-        <div class="console-summary-field">
-          Items:
-          <span class="console-summary-value">
-            {{ itemCount }}
-          </span>
-        </div>
-      </div>
-
+    <div>
       <OrganismsMenuConsoleSectionPreview
         v-if="sections.length"
         :sections="sections"
@@ -69,13 +54,5 @@ const sections = computed(() =>
         (a, b) => Number(a?.sort_order || 0) - Number(b?.sort_order || 0)
       )
     : []
-)
-
-const itemCount = computed(() =>
-  sections.value.reduce(
-    (total, section) =>
-      total + (Array.isArray(section.items) ? section.items.length : 0),
-    0
-  )
 )
 </script>

@@ -3,13 +3,11 @@
     <div
       v-for="section in sectionsSorted"
       :key="section.id || section.label"
-      class="rounded border border-default p-3"
+      class="space-y-2"
     >
-      <div class="mb-3 flex items-center justify-between gap-3">
-        <div class="text-sm font-semibold">
-          {{ section.label || section.id || 'Untitled section' }}
-        </div>
-      </div>
+      <p class="text-xs font-medium uppercase tracking-wide text-dimmed">
+        {{ section.label || section.id || 'Untitled section' }}
+      </p>
 
       <div v-if="sectionItems(section).length" class="space-y-2">
         <div
