@@ -10,7 +10,7 @@
       Back to dishes
     </UButton>
 
-    <OrganismsDishConsoleProfile v-if="dish" :dish="dish" />
+    <OrganismsDishCardsProfile v-if="dish" :dish="dish" />
 
     <UAlert
       v-else

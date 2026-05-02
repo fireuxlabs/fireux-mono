@@ -77,7 +77,9 @@
 
           <UCard variant="soft">
             <div class="space-y-1">
-              <div class="text-sm font-medium text-highlighted">Kitchen build</div>
+              <div class="text-sm font-medium text-highlighted">
+                Kitchen build
+              </div>
               <p class="text-xs text-dimmed">
                 Recipe, station, build steps, timing, and plating checks will live here.
               </p>
