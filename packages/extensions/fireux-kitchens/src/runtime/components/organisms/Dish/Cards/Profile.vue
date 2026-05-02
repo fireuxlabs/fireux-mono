@@ -2,7 +2,7 @@
   <UCard v-if="dish">
     <div class="flex flex-col gap-5 md:flex-row md:items-start">
       <div
-        class="size-28 shrink-0 overflow-hidden rounded-lg border border-default bg-elevated/40 md:size-32"
+        class="h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-default bg-elevated/40 md:h-24 md:w-24"
       >
         <img
           v-if="dish.image_url"
@@ -15,7 +15,7 @@
           v-else
           class="flex h-full w-full items-center justify-center text-dimmed"
         >
-          <UIcon name="i-lucide-utensils" class="size-6" />
+          <UIcon name="i-lucide-utensils" class="size-5" />
         </div>
       </div>
 
