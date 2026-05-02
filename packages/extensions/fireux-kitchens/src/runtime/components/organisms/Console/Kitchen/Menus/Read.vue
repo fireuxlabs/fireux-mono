@@ -5,7 +5,7 @@
       :dishes="dishes"
       title="Menus"
       description="Raw menu collection for the selected kitchen."
-      :link="false"
+      :link="true"
     />
 
     <OrganismsMenuConsoleCore :collection="menus" :dishes="dishes" />

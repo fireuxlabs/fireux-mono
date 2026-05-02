@@ -1,7 +1,7 @@
 <template>
   <UCard v-if="dish">
-    <div class="grid gap-6 lg:grid-cols-[240px_1fr]">
-      <div class="overflow-hidden rounded-lg border border-default bg-elevated/40">
+    <div class="flex flex-col gap-5 md:flex-row md:items-start">
+      <div class="w-24 shrink-0 overflow-hidden rounded-lg border border-default bg-elevated/40 md:w-28">
         <img
           v-if="dish.image_url"
           :src="dish.image_url"
