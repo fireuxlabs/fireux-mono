@@ -2,15 +2,13 @@
   <UCard v-if="dish">
     <div class="flex flex-col gap-5 md:flex-row md:items-start">
       <div
-        class="shrink-0 overflow-hidden rounded-lg border border-default bg-elevated/40"
-        style="width: 256px; height: 256px; max-width: 256px; max-height: 256px;"
+        class="size-32 shrink-0 overflow-hidden rounded-lg border border-default bg-elevated/40"
       >
         <img
           v-if="dish.image_url"
           :src="dish.image_url"
           :alt="dish.name || dish.short_name || 'Dish image'"
-          class="object-cover"
-          style="width: 256px; height: 256px; max-width: 256px; max-height: 256px;"
+          class="h-full w-full object-cover"
           loading="lazy"
         >
         <div
