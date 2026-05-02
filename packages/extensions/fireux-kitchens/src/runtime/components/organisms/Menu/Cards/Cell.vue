@@ -7,11 +7,17 @@
     <div
       class="flex w-full items-start gap-3 rounded-lg border border-default bg-default p-3 transition hover:bg-[var(--ui-bg-elevated)]"
     >
-      <UAvatar
-        :src="imageUrl"
-        size="md"
-        class="shrink-0"
-      />
+      <div class="relative shrink-0">
+        <UAvatar
+          :src="imageUrl"
+          size="md"
+        />
+        <UChip
+          :color="isActiveNow ? 'success' : 'error'"
+          inset
+          class="absolute -left-1 -top-1"
+        />
+      </div>
 
       <div class="min-w-0 flex-1 space-y-1.5">
         <div class="flex items-start justify-between gap-2">
@@ -26,9 +32,6 @@
             </div>
           </div>
 
-          <div class="shrink-0 pt-0.5">
-            <UChip :color="isActiveNow ? 'success' : 'error'" inset />
-          </div>
         </div>
 
         <div v-if="showMeta" class="truncate text-xs text-dimmed">
@@ -51,11 +54,17 @@
     <div
       class="flex w-full items-start gap-3 rounded-lg border border-default bg-default p-3 transition hover:bg-[var(--ui-bg-elevated)]"
     >
-      <UAvatar
-        :src="imageUrl"
-        size="md"
-        class="shrink-0"
-      />
+      <div class="relative shrink-0">
+        <UAvatar
+          :src="imageUrl"
+          size="md"
+        />
+        <UChip
+          :color="isActiveNow ? 'success' : 'error'"
+          inset
+          class="absolute -left-1 -top-1"
+        />
+      </div>
 
       <div class="min-w-0 flex-1 space-y-1.5">
         <div class="flex items-start justify-between gap-2">
@@ -70,9 +79,6 @@
             </div>
           </div>
 
-          <div class="shrink-0 pt-0.5">
-            <UChip :color="isActiveNow ? 'success' : 'error'" inset />
-          </div>
         </div>
 
         <div v-if="showMeta" class="truncate text-xs text-dimmed">

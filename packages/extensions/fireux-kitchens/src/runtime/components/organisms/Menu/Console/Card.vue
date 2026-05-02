@@ -1,14 +1,11 @@
 <template>
   <UCard variant="soft">
     <template #header>
-      <div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-        <div class="space-y-1">
-          <div class="text-lg font-semibold">
-            {{ menu.name || menu.id || 'Untitled menu' }}
-          </div>
-        </div>
-
+      <div class="flex items-center gap-2">
         <UChip :color="menu.active === false ? 'error' : 'success'" inset />
+        <div class="text-lg font-semibold">
+          {{ menu.name || menu.id || 'Untitled menu' }}
+        </div>
       </div>
     </template>
 

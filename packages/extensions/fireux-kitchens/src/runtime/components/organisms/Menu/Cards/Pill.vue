@@ -5,20 +5,24 @@
   class="pill"
 >
     <div class="flex min-w-0 items-start gap-2">
-      <UAvatar
-        v-if="imageUrl"
-        :src="imageUrl || undefined"
-        :alt="title || ''"
-        size="sm"
-      />
+      <div class="relative shrink-0">
+        <UAvatar
+          v-if="imageUrl"
+          :src="imageUrl || undefined"
+          :alt="title || ''"
+          size="sm"
+        />
+        <UChip
+          :color="isActiveNow ? 'success' : 'error'"
+          inset
+          class="absolute -left-1 -top-1"
+        />
+      </div>
 
       <div class="min-w-0 flex-1 space-y-1">
-        <div class="flex items-center gap-2">
-          <p class="min-w-0 flex-1 truncate text-sm font-medium text-highlighted">
-            {{ title }}
-          </p>
-          <UChip :color="isActiveNow ? 'success' : 'error'" inset />
-        </div>
+        <p class="truncate text-sm font-medium text-highlighted">
+          {{ title }}
+        </p>
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
         </p>
@@ -37,20 +41,24 @@
   @click="onClick"
 >
     <div class="flex min-w-0 items-start gap-2">
-      <UAvatar
-        v-if="imageUrl"
-        :src="imageUrl || undefined"
-        :alt="title || ''"
-        size="sm"
-      />
+      <div class="relative shrink-0">
+        <UAvatar
+          v-if="imageUrl"
+          :src="imageUrl || undefined"
+          :alt="title || ''"
+          size="sm"
+        />
+        <UChip
+          :color="isActiveNow ? 'success' : 'error'"
+          inset
+          class="absolute -left-1 -top-1"
+        />
+      </div>
 
       <div class="min-w-0 flex-1 space-y-1">
-        <div class="flex items-center gap-2">
-          <p class="min-w-0 flex-1 truncate text-sm font-medium text-highlighted">
-            {{ title }}
-          </p>
-          <UChip :color="isActiveNow ? 'success' : 'error'" inset />
-        </div>
+        <p class="truncate text-sm font-medium text-highlighted">
+          {{ title }}
+        </p>
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
         </p>
