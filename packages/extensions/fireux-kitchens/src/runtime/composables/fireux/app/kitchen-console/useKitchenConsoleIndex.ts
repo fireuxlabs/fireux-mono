@@ -6,6 +6,7 @@ import { useKitchenCreate } from '../../firestore/kitchen/mutations/useKitchenCr
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'
 import type { KitchenCollectionFilter } from '../../firestore/kitchen/fetch/useKitchenCollection'
 import { type KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
+import { resolveTestKitchenName } from '../kitchens/testKitchenIdentity'
 import { useKitchenConsole } from './useKitchenConsole'
 import type { Ref } from 'vue'
 
@@ -50,12 +51,10 @@ export function useKitchenConsoleIndex(
       const testId = userId.value
       if (!testId) return null
 
-      const userLabel = normalizeString(displayName) || `User ${testId.slice(0, 6)}`
       const result = await createTestKitchen(
         {
           id: testId,
-          name: 'Test Kitchen',
-          subtitle: userLabel,
+          name: resolveTestKitchenName(displayName, testId),
           image_url: normalizeString(avatarSrc),
         }
       )

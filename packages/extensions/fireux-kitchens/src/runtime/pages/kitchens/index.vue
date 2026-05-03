@@ -18,14 +18,30 @@
           Developer Note
         </p>
         <ul data-dev-note-body class="list-disc space-y-1 pl-4">
-          <li>Public browsing layer.</li>
           <li>
-            Cards route to
-            <code>/kitchens/:slug</code>
-            or
-            <code>/kitchens/:id</code>.
+            Source mode:
+            <code>{{ sourceMode }}</code>
           </li>
-          <li>Does not enter the console.</li>
+          <li>
+            Source:
+            <code>{{ devSourceLabel }}</code>
+          </li>
+          <li>
+            Route:
+            <code>{{ routePath }}</code>
+          </li>
+          <li>
+            Pending:
+            <code>{{ String(pending) }}</code>
+          </li>
+          <li>
+            Kitchens:
+            <code>{{ devKitchenCount }}</code>
+          </li>
+          <li v-if="sourceMode === 'test'">
+            Test probe:
+            <code>{{ devTestProbe }}</code>
+          </li>
         </ul>
       </div>
 
@@ -38,22 +54,14 @@
         :collection="kitchens"
         :source-mode="sourceMode"
         :show-source-toggle="true"
-        @update:source-mode="sourceMode = $event"
+        @update:source-mode="setSourceMode"
       />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { useHead } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useDevUi } from 'fireux-core/runtime/composables/fireux/app/ui/useDevUi'
-import { computed, ref } from 'vue'
-import KitchenCTA from '../../components/Organisms/Kitchen/CTA.vue'
-import {
-  useKitchenCollection,
-  type KitchenCollectionSource,
-} from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
+import { useKitchens } from '../../composables/fireux/app/kitchens/useKitchens'
 
 definePageMeta({
   tag: 'kitchens',
@@ -70,18 +78,20 @@ definePageMeta({
   description: 'Browse kitchens.',
   layout: 'default',
   name: 'KitchensIndexPage',
+  alias: ['/kitchens.demo', '/kitchens.test'],
 })
 
-const pageTitle = 'Kitchens'
-const pageDescription = 'Choose a kitchen surface for this runtime.'
-const { notesVisible } = useDevUi()
-const showDevNotes = computed(() => import.meta.dev && notesVisible.value)
-const sourceMode = ref<KitchenCollectionSource>('live')
-
-const { appName } = useFireUXConfig()
-useHead({ title: `${appName} | ${pageTitle}` })
-
-const { kitchens, pending } = useKitchenCollection({
-  source: sourceMode,
-})
+const {
+  pageTitle,
+  pageDescription,
+  sourceMode,
+  kitchens,
+  pending,
+  showDevNotes,
+  routePath,
+  devSourceLabel,
+  devKitchenCount,
+  devTestProbe,
+  setSourceMode,
+} = useKitchens()
 </script>

@@ -4,7 +4,7 @@ import {
   where,
   type Query,
 } from 'firebase/firestore'
-import { computed, isRef, type Ref } from 'vue'
+import { computed, isRef, ref, type Ref } from 'vue'
 import type { Place } from 'fireux-places/runtime/models/place.model'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
@@ -83,7 +83,7 @@ export function useKitchenCollection(
 ) {
   const db = useFirestore()
   const simulationDatabaseId = computed(
-    () => requireSimulationDatabaseId()
+    () => readRuntimeSimulationFirestoreDatabaseId() || ''
   )
   const resolveSimulationDb = useFirestoreResolver(simulationDatabaseId)
   const { appId } = useFireUXConfig()
@@ -121,26 +121,31 @@ export function useKitchenCollection(
       route_scope: 'demo',
     }))
   )
+  const liveFirestoreSource =
+    firestoreFetchCollection<KitchenCollectionDoc>(DEFAULT_COLLECTION_PATH)
+  const livePlacesSource = firestoreFetchCollection<Place>('places')
+  const testFirestoreSource = simulationDatabaseId.value
+    ? (() => {
+        const q = fsq(
+          collection(resolveSimulationDb(), DEFAULT_COLLECTION_PATH),
+          where('simulation_kind', '==', 'test')
+        ) as Query<KitchenCollectionDoc>
+
+        return simulationRead.firestoreQuery<KitchenCollectionDoc>(
+          q,
+          `${simulationDatabaseId.value}-${DEFAULT_COLLECTION_PATH}-test`,
+          DEFAULT_COLLECTION_PATH
+        )
+      })()
+    : ref(undefined)
 
   const firestoreSource = computed(() => {
-    if (sourceMode.value === 'demo') {
-      return localDemoSource
-    }
-
+    if (sourceMode.value === 'demo') return localDemoSource
     if (sourceMode.value === 'test') {
-      const q = fsq(
-        collection(resolveSimulationDb(), DEFAULT_COLLECTION_PATH),
-        where('simulation_kind', '==', 'test')
-      ) as Query<KitchenCollectionDoc>
-
-      return simulationRead.firestoreQuery<KitchenCollectionDoc>(
-        q,
-        `${simulationDatabaseId.value}-${DEFAULT_COLLECTION_PATH}-test`,
-        DEFAULT_COLLECTION_PATH
-      )
+      if (!simulationDatabaseId.value) requireSimulationDatabaseId()
+      return testFirestoreSource
     }
-
-    return firestoreFetchCollection<KitchenCollectionDoc>(DEFAULT_COLLECTION_PATH)
+    return liveFirestoreSource
   })
   const overlaySource = computed(() => {
     if (sourceMode.value !== 'live') return null
@@ -161,7 +166,7 @@ export function useKitchenCollection(
   })
   const placesSource = computed(() => {
     if (!shouldHydrate.value) return null
-    return firestoreFetchCollection<Place>('places')
+    return livePlacesSource
   })
   const collectionItems = computed<KitchenCollectionDoc[]>(() => {
     const allowedKitchenIds = new Set(

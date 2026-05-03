@@ -5,17 +5,22 @@ import type {
   ConsoleRootEnsureResult,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceSave'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import {
   readRuntimeSimulationFirestoreDatabaseId,
   useFirestore,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed } from 'vue'
+import {
+  resolveTestKitchenName,
+  resolveTestKitchenShortAddress,
+  resolveTestKitchenSlug,
+} from '../../../app/kitchens/testKitchenIdentity'
 import type {
   AppKitchen,
   Kitchen,
@@ -32,21 +37,9 @@ const requireSimulationDatabaseId = () => {
   }
   return databaseId
 }
-const resolveTestUserLabel = (displayName: unknown, uid: unknown) => {
-  const resolvedDisplayName = normalizeString(displayName)
-  if (resolvedDisplayName) return resolvedDisplayName
-
-  const resolvedUid = normalizeString(uid)
-  if (!resolvedUid) return 'User'
-
-  return `User ${resolvedUid.slice(0, 6)}`
-}
-
 type KitchenTestCreateInput = {
   id?: string
-  slug?: string
   name?: string
-  subtitle?: string
   image_url?: string
 }
 
@@ -79,6 +72,9 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
   const { setDocument: setSimulationDocument } = useFirestoreCreate({
     databaseId: simulationDatabaseId,
   })
+  const { updateDocument: updateSimulationDocument } = useFirestoreUpdate({
+    databaseId: simulationDatabaseId,
+  })
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
   const { ensurePlaceExists } = usePlaceSave()
   const { ensureConsole } = useConsoleEnsure()
@@ -96,11 +92,12 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     input: KitchenTestCreateInput = {}
   ): Promise<ConsoleRootEnsureResult> {
     const testId = normalizeString(input.id) || normalizeString(uid.value)
-    const userLabel =
-      normalizeString(input.subtitle) ||
-      resolveTestUserLabel(currentUser.value?.displayName, uid.value)
-    const name = normalizeString(input.name) || 'Test Kitchen'
-    const imageUrl = normalizeString(input.image_url)
+    const name =
+      normalizeString(input.name) ||
+      resolveTestKitchenName(currentUser.value?.displayName, uid.value)
+    const imageUrl =
+      normalizeString(input.image_url) ||
+      normalizeString(currentUser.value?.photoURL)
 
     if (!testId) {
       throw new Error('Test kitchen id is required')
@@ -109,10 +106,17 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     const ref = doc(simulationDb, 'kitchens', testId)
     const snap = await getDoc(ref)
     if (snap.exists()) {
+      const existingImageUrl = normalizeString(snap.data()?.image_url)
+      await updateSimulationDocument<Kitchen>('kitchens', testId, {
+        name,
+        slug: resolveTestKitchenSlug(currentUser.value?.displayName, uid.value),
+        short_address: resolveTestKitchenShortAddress(),
+        ...(existingImageUrl ? {} : { image_url: imageUrl }),
+      })
       return { id: testId, created: false }
     }
 
-    const slug = normalizeSlug(input.slug) || 'test-kitchen'
+    const slug = resolveTestKitchenSlug(currentUser.value?.displayName, uid.value)
 
     if (!slug) {
       throw new Error('Test kitchen slug is required')
@@ -133,7 +137,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
         place_id: testId,
         slug,
         name,
-        short_address: userLabel,
+        short_address: resolveTestKitchenShortAddress(),
         image_url: imageUrl,
         simulation_kind: 'test',
         can_write: true,
@@ -179,9 +183,13 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     const explicitName = normalizeString((input as any)?.name)
     const explicitShortName = normalizeString((input as any)?.short_name)
     const explicitShortAddress = normalizeString((input as any)?.short_address)
-    const explicitImageUrl = normalizeString((input as any)?.image_url)
+    const explicitImageUrl =
+      normalizeString((input as any)?.image_url) ||
+      (isTestKitchenCollection
+        ? normalizeString(currentUser.value?.photoURL)
+        : '')
     const defaultTestName = isTestKitchenCollection
-      ? `${resolveTestUserLabel(currentUser.value?.displayName, uid.value)} Test Kitchen`
+      ? resolveTestKitchenName(currentUser.value?.displayName, uid.value)
       : ''
 
     const resolvedPayload: Record<string, unknown> = {
@@ -208,8 +216,12 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       resolvedPayload.short_name = explicitShortName
     }
 
-    if (explicitShortAddress) {
-      resolvedPayload.short_address = explicitShortAddress
+    const resolvedShortAddress =
+      explicitShortAddress ||
+      (isTestKitchenCollection ? resolveTestKitchenShortAddress() : '')
+
+    if (resolvedShortAddress) {
+      resolvedPayload.short_address = resolvedShortAddress
     }
 
     if (explicitImageUrl) {

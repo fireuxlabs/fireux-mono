@@ -15,21 +15,21 @@
               <UButton
                 :variant="sourceMode === 'live' ? 'solid' : 'ghost'"
                 color="neutral"
-                @click="setSourceMode('live')"
+                @click="emit('update:sourceMode', 'live')"
               >
                 Live
               </UButton>
               <UButton
                 :variant="sourceMode === 'demo' ? 'solid' : 'ghost'"
                 color="neutral"
-                @click="setSourceMode('demo')"
+                @click="emit('update:sourceMode', 'demo')"
               >
                 Demo
               </UButton>
               <UButton
                 :variant="sourceMode === 'test' ? 'solid' : 'ghost'"
                 color="neutral"
-                @click="setSourceMode('test')"
+                @click="emit('update:sourceMode', 'test')"
               >
                 Test
               </UButton>
@@ -258,9 +258,5 @@ const isDev = import.meta.dev
 
 function setFilterMode(value: 'all' | 'mine') {
   emit('update:filterMode', value)
-}
-
-function setSourceMode(value: 'live' | 'demo' | 'test') {
-  emit('update:sourceMode', value)
 }
 </script>

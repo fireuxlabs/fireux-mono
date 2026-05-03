@@ -14,6 +14,8 @@ type EcosystemFirebase = {
     projectId: string
     storageBucket: string
     messagingSenderId: string
+    databaseId?: string
+    simulationDatabaseId?: string
   }
 }
 

@@ -6,7 +6,6 @@
 >
     <div class="flex min-w-0 items-start gap-2">
       <UAvatar
-        v-if="imageUrl"
         :src="imageUrl || undefined"
         :alt="title || ''"
         size="sm"
@@ -36,7 +35,6 @@
 >
     <div class="flex min-w-0 items-start gap-2">
       <UAvatar
-        v-if="imageUrl"
         :src="imageUrl || undefined"
         :alt="title || ''"
         size="sm"

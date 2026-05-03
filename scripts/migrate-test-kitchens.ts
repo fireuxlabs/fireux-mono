@@ -1,9 +1,15 @@
 #!/usr/bin/env node
 /*
-  Migrate kitchen docs into the test-kitchens collection.
+  LEGACY: Migrate kitchen docs into the obsolete test-kitchens collection.
+
+  Current Misebox test canon is:
+    misebox-simulation/kitchens/{uid}
+
+  Prefer:
+    node scripts/sync-misebox-test-kitchen.mjs --kitchen <uid> --commit
 
   Usage:
-    pnpm -s tsx scripts/migrate-test-kitchens.ts --project <projectId> [--commit] [--delete-source] [--force] [--ids <csv>]
+    pnpm -s tsx scripts/migrate-test-kitchens.ts --project <projectId> --allow-legacy-test-kitchens [--commit] [--delete-source] [--force] [--ids <csv>]
 
   Notes:
     - By default runs in dry-run mode and uses the hardcoded ID list below.
@@ -60,10 +66,20 @@ const projectId =
 const commit = Boolean(args.commit)
 const force = Boolean(args.force)
 const deleteSource = Boolean(args['delete-source'] || args.deleteSource)
+const allowLegacyTestKitchens = Boolean(args['allow-legacy-test-kitchens'])
 const idsArg = typeof args.ids === 'string' ? args.ids : ''
 const ids = idsArg
   ? idsArg.split(',').map((id) => id.trim()).filter(Boolean)
   : DEFAULT_IDS
+
+if (!allowLegacyTestKitchens) {
+  console.error(
+    'Refusing to write obsolete test-kitchens root. ' +
+      'Current canon is misebox-simulation/kitchens/{uid}. ' +
+      'Use scripts/sync-misebox-test-kitchen.mjs, or pass --allow-legacy-test-kitchens intentionally.'
+  )
+  process.exit(1)
+}
 
 if (!projectId) {
   console.error('Missing --project (or FIREBASE_PROJECT_ID / GCLOUD_PROJECT).')

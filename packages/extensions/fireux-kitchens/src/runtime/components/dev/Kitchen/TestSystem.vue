@@ -104,6 +104,7 @@ import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDri
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore'
 import { computed, ref, watch } from 'vue'
 import {
@@ -111,6 +112,11 @@ import {
   useFirestore,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { getDefaultDemoKitchen } from '../../../composables/fireux/app/utils/kitchen-demo-scenarios'
+import {
+  resolveTestKitchenName,
+  resolveTestKitchenShortAddress,
+  resolveTestKitchenSlug,
+} from '../../../composables/fireux/app/kitchens/testKitchenIdentity'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import type { Kitchen } from '../../../models/kitchen.model'
 import { KitchenModel as KitchenModelRuntime } from '../../../models/kitchen.model'
@@ -133,7 +139,8 @@ const simulationDatabaseId = computed(
 )
 const db = useFirestore(simulationDatabaseId)
 const { setDocument } = useFirestoreCreate({ databaseId: simulationDatabaseId })
-const { uid } = useAuth()
+const { uid, currentUser: authUser } = useAuth()
+const { avatarSrc } = useUser()
 
 const { firestoreFetchCollection } = useFirestoreRead({
   databaseId: simulationDatabaseId,
@@ -239,18 +246,18 @@ const withKitchenId = <T extends Record<string, unknown>>(docs: T[], kitchenId: 
 
 const buildTestKitchenDoc = (kitchenId: string): Kitchen => {
   const existingKitchen = hydratedById.value.get(kitchenId)
-  const existingName = String(existingKitchen?.name || '').trim()
-  const existingShortAddress = String(existingKitchen?.short_address || '').trim()
   const existingImageUrl = String(existingKitchen?.image_url || '').trim()
-  const existingSlug = String((existingKitchen as any)?.slug || '').trim()
+  const userAvatarUrl =
+    String(avatarSrc.value || '').trim() ||
+    String(authUser.value?.photoURL || '').trim()
 
   return {
     id: kitchenId,
     place_id: String(existingKitchen?.place_id || kitchenId).trim(),
-    slug: existingSlug || 'test-kitchen',
-    name: existingName || 'Test Kitchen',
-    short_address: existingShortAddress || 'Writable kitchen sandbox',
-    image_url: existingImageUrl || undefined,
+    slug: resolveTestKitchenSlug(authUser.value?.displayName, kitchenId),
+    name: resolveTestKitchenName(authUser.value?.displayName, kitchenId),
+    short_address: resolveTestKitchenShortAddress(),
+    image_url: existingImageUrl || userAvatarUrl || undefined,
     is_test_kitchen: true,
     simulation_kind: 'test',
     can_write: true,

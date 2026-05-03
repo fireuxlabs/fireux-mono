@@ -197,7 +197,7 @@ Updated: 2026-04-27
 - Family entry pages may call `ensureX` when the canon says the family has one personal test target per signed-in user.
 - Current family-entry test canon:
   - `projects/test` ensures one `test-projects/{uid}`
-  - `kitchen/test` ensures one `test-kitchens/{uid}`
+  - `kitchen/test` ensures one `misebox-simulation/kitchens/{uid}`
   - `portfolio/test` ensures one `test-portfolios/{uid}`
   - `supplier/test` ensures one `test-suppliers/{uid}`
 - Test target creation happens on entry to that family's console page in `test` mode, not in auth/bootstrap middleware.
@@ -210,6 +210,7 @@ Updated: 2026-04-27
 ## Collection Path Policy (Kitchen Runtime)
 - `live` -> `kitchens/{kitchenId}`
 - `demo` -> no Firestore collection path (scenario-backed)
+- `test` -> `misebox-simulation/kitchens/{kitchenId}`
 
 ## Route Policy (ID, Slug, Handle)
 - Internal/admin/console routes may use `[id]`.

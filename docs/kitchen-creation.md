@@ -58,7 +58,8 @@ Relationship is not console authority.
   - In console mode, ensures the app overlay and links the kitchen to the chef profile as an association.
 - `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenCreate.ts`
   - Canon kitchen create mutation.
-  - Writes to `kitchens` by default (`test-kitchens` if options specify).
+  - Writes live kitchens to `misebox/kitchens`.
+  - Writes test kitchens to `misebox-simulation/kitchens`.
   - Enforces place-backed create by default for live kitchens.
   - Supports explicit escape hatch via `ensurePlace: false` option.
   - Sets `is_test_kitchen` explicitly (`false` for live, `true` for test).

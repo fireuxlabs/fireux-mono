@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { cert, initializeApp } from 'firebase-admin/app'
+import { getAuth } from 'firebase-admin/auth'
 import { FieldValue, getFirestore } from 'firebase-admin/firestore'
 import { readFile } from 'node:fs/promises'
 import ts from 'typescript'
@@ -13,6 +14,7 @@ const DEFAULT_SERVICE_ACCOUNT =
   'packages/ecosystem/fireux-misebox/src/config/firebase/service-account.json'
 const DEFAULT_SCENARIO_PATH =
   'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/utils/kitchen-demo-scenarios/index.ts'
+const TEST_KITCHEN_ADDRESS = '123 Sandbox Street'
 
 const args = parseArgs(process.argv.slice(2))
 const serviceAccountPath = String(args['service-account'] || DEFAULT_SERVICE_ACCOUNT).trim()
@@ -21,6 +23,7 @@ const databaseId = String(args.database || DEFAULT_DATABASE_ID).trim()
 const kitchenId = String(args.kitchen || '').trim()
 const commit = Boolean(args.commit)
 const prune = args.prune !== false && args.prune !== 'false'
+const ensureRoot = Boolean(args['ensure-root'])
 
 if (!kitchenId) {
   console.error(
@@ -105,6 +108,29 @@ const stripUndefined = (value) => {
   )
 }
 
+const normalizeSlug = (value) =>
+  String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/['’]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
+const resolveFirstName = (displayName, userId) => {
+  const name = String(displayName || '').trim()
+  const firstName = name.split(/\s+/).find(Boolean)
+  if (firstName) return firstName
+
+  const id = String(userId || '').trim()
+  return id ? `User ${id.slice(0, 6)}` : 'User'
+}
+
+const resolveTestKitchenName = (displayName, userId) =>
+  `${resolveFirstName(displayName, userId)}'s Test Kitchen`
+
+const resolveTestKitchenSlug = (displayName, userId) =>
+  normalizeSlug(resolveTestKitchenName(displayName, userId)) || 'user-test-kitchen'
+
 const writeCollection = async ({ db, kitchenRef, name, docs }) => {
   const keepIds = new Set()
 
@@ -154,6 +180,21 @@ const buildOperationalCollections = (demoKitchenScenario, nextKitchenId) => ({
   orders: withKitchenId(asDocs(demoKitchenScenario.serviceStack.incomingOrders), nextKitchenId),
 })
 
+const readUserIdentity = async (app, userId) => {
+  const id = String(userId || '').trim()
+  if (!id) return { displayName: '', photoURL: '' }
+
+  try {
+    const user = await getAuth(app).getUser(id)
+    return {
+      displayName: String(user.displayName || '').trim(),
+      photoURL: String(user.photoURL || '').trim(),
+    }
+  } catch {
+    return { displayName: '', photoURL: '' }
+  }
+}
+
 const syncKitchen = async ({
   db,
   kitchenRef,
@@ -163,25 +204,34 @@ const syncKitchen = async ({
   canWrite,
   identity,
 }) => {
-  const existingKitchen = (await kitchenRef.get()).data() || {}
+  const existingKitchenSnap = await kitchenRef.get()
+  const existingKitchen = existingKitchenSnap.data() || {}
   const collections = buildOperationalCollections(demoKitchenScenario, nextKitchenId)
 
-  await kitchenRef.set(
-    stripUndefined({
-      id: nextKitchenId,
-      place_id: String(existingKitchen.place_id || identity.place_id || nextKitchenId).trim(),
-      slug: String(existingKitchen.slug || identity.slug || nextKitchenId).trim(),
-      name: String(existingKitchen.name || identity.name || nextKitchenId).trim(),
-      short_address: String(existingKitchen.short_address || identity.short_address || '').trim(),
-      image_url: existingKitchen.image_url || identity.image_url || undefined,
-      is_test_kitchen: simulationKind === 'test',
-      simulation_kind: simulationKind,
-      can_write: canWrite,
-      updated: { at: FieldValue.serverTimestamp() },
-      created: existingKitchen.created || { at: FieldValue.serverTimestamp() },
-    }),
-    { merge: true }
-  )
+  if (!existingKitchenSnap.exists && !ensureRoot) {
+    throw new Error(
+      `Missing test kitchen root "${kitchenRef.path}". Join/create the Test Kitchen first, or pass --ensure-root.`
+    )
+  }
+
+  if (ensureRoot) {
+    await kitchenRef.set(
+      stripUndefined({
+        id: nextKitchenId,
+        place_id: String(identity.place_id || nextKitchenId).trim(),
+        slug: String(identity.slug || nextKitchenId).trim(),
+        name: String(identity.name || nextKitchenId).trim(),
+        short_address: String(identity.short_address || '').trim(),
+        image_url: existingKitchen.image_url || identity.image_url || undefined,
+        is_test_kitchen: simulationKind === 'test',
+        simulation_kind: simulationKind,
+        can_write: canWrite,
+        updated: { at: FieldValue.serverTimestamp() },
+        created: existingKitchen.created || { at: FieldValue.serverTimestamp() },
+      }),
+      { merge: true }
+    )
+  }
 
   const writeSummary = {}
   for (const [name, docs] of Object.entries(collections)) {
@@ -212,11 +262,13 @@ const db = getFirestore(app, databaseId)
 const demoKitchenScenario = await loadDefaultDemoKitchen()
 const testKitchenRef = db.collection(ROOT_COLLECTION).doc(kitchenId)
 const previewCollections = buildOperationalCollections(demoKitchenScenario, kitchenId)
+const testUserIdentity = await readUserIdentity(app, kitchenId)
 
 const summary = {
   projectId,
   databaseId,
   commit,
+  ensureRoot,
   rootCollection: ROOT_COLLECTION,
   demoSource: scenarioPath,
   testKitchenPath: testKitchenRef.path,
@@ -241,9 +293,10 @@ const testWriteSummary = await syncKitchen({
   canWrite: true,
   identity: {
     place_id: kitchenId,
-    slug: 'test-kitchen',
-    name: 'Test Kitchen',
-    short_address: 'Daniel Watson',
+    slug: resolveTestKitchenSlug(testUserIdentity.displayName, kitchenId),
+    name: resolveTestKitchenName(testUserIdentity.displayName, kitchenId),
+    short_address: TEST_KITCHEN_ADDRESS,
+    image_url: testUserIdentity.photoURL || undefined,
   },
 })
 

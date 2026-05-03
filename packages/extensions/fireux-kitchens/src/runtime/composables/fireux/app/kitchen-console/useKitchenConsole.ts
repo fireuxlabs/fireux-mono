@@ -91,7 +91,7 @@ export function useKitchenConsole(
 
     if (selectedMode.value === 'test') {
       return {
-        title: 'Test Kitchen',
+        title: normalizeString(kitchen.name),
         subtitle: normalizeString((kitchen as any).tagline) || undefined,
         imageUrl: normalizeString(kitchen.image_url) || undefined,
       }
