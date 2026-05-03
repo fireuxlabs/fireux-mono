@@ -47,6 +47,7 @@ export const SupplierModel = {
 
   // Public-facing supplier identity
   supplier_organization_name: '',
+  tagline: '',
   supplier_headline: '',
   summary: '',
   supplier_bio: '',
@@ -79,9 +80,9 @@ export type AppSupplier = FireuxAppOverlay
 
 export type SupplierCreateInput = Omit<
   Supplier,
-  'id' | 'created' | 'updated' | 'app_scope_state' | 'app_scope_app_id'
+  'id' | 'created' | 'updated' | 'app_scope_state' | 'app_scope_app_id' | 'tagline'
 > &
-  Partial<Pick<Supplier, 'app_scope_state' | 'app_scope_app_id'>>
+  Partial<Pick<Supplier, 'app_scope_state' | 'app_scope_app_id' | 'tagline'>>
 
 export type SupplierUpdateInput = Partial<Omit<Supplier, 'id' | 'created' | 'updated'>>
 

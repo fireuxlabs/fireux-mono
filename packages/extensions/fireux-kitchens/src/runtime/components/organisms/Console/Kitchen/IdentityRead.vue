@@ -18,6 +18,10 @@
             <span class="console-summary-value">{{ name || 'Unset' }}</span>
           </div>
           <div class="console-summary-field">
+            Tagline:
+            <span class="console-summary-value">{{ tagline || 'Unset' }}</span>
+          </div>
+          <div class="console-summary-field">
             Place ID:
             <span class="console-summary-value">{{ placeId || 'Unset' }}</span>
           </div>
@@ -41,6 +45,6 @@
 <script setup lang="ts">
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/app/kitchen-console/useKitchenConsoleIdentity'
 
-const { name, placeId, address, debug } = useKitchenConsoleIdentity()
+const { name, tagline, placeId, address, debug } = useKitchenConsoleIdentity()
 const isDev = import.meta.dev
 </script>

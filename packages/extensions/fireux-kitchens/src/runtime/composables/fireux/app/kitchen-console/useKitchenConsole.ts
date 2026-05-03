@@ -69,7 +69,10 @@ export function useKitchenConsole(
     if (selectedMode.value === 'demo') {
       return {
         title: normalizeString(kitchen.name),
-        subtitle: normalizeString(kitchen.short_address) || undefined,
+        subtitle:
+          normalizeString((kitchen as any).tagline) ||
+          normalizeString(kitchen.short_address) ||
+          undefined,
         imageUrl: normalizeString(kitchen.image_url) || undefined,
       }
     }
@@ -77,7 +80,10 @@ export function useKitchenConsole(
     if (selectedMode.value === 'test') {
       return {
         title: 'Test Kitchen',
-        subtitle: normalizeString(kitchen.short_address) || undefined,
+        subtitle:
+          normalizeString((kitchen as any).tagline) ||
+          normalizeString(kitchen.short_address) ||
+          undefined,
         imageUrl: normalizeString(kitchen.image_url) || undefined,
       }
     }
@@ -85,6 +91,8 @@ export function useKitchenConsole(
     return {
       title: normalizeString(kitchen.name),
       subtitle:
+        normalizeString((kitchen as any).tagline) ||
+        normalizeString('short_address' in kitchen ? kitchen.short_address : '') ||
         normalizeString('formatted_address' in kitchen ? kitchen.formatted_address : '') ||
         undefined,
       imageUrl: normalizeString(kitchen.image_url) || undefined,

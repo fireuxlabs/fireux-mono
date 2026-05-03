@@ -40,6 +40,7 @@ export const KitchenModel = {
   is_test_kitchen: false,
   place_id: '',
   name: '',
+  tagline: '',
   short_name: '',
   short_address: '',
   formatted_address: '',
@@ -72,6 +73,7 @@ export type KitchenCreateInput = Omit<
   | 'app_scope_app_id'
   | 'is_test_kitchen'
   | 'name'
+  | 'tagline'
   | 'short_name'
   | 'short_address'
   | 'formatted_address'
@@ -84,6 +86,7 @@ export type KitchenCreateInput = Omit<
       | 'app_scope_app_id'
       | 'is_test_kitchen'
       | 'name'
+      | 'tagline'
       | 'short_name'
       | 'short_address'
       | 'formatted_address'
@@ -97,6 +100,7 @@ export type KitchenUpdateInput = Partial<
     | 'is_test_kitchen'
     | 'place_id'
     | 'name'
+    | 'tagline'
     | 'short_name'
     | 'short_address'
     | 'formatted_address'
