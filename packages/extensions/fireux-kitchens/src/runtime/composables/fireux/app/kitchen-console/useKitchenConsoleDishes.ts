@@ -92,64 +92,45 @@ export function useKitchenConsoleDishes(
         .filter(Boolean)
     )
 
-    const rawSections = sectionMenus.value.flatMap((menu) => {
-      const menuId = normalizeString(menu?.id)
-      const menuName = normalizeString(menu?.name)
-      const menuSort = Number(menu?.sort_order ?? 0)
-      const sections = Array.isArray(menu?.sections) ? menu.sections : []
-
-      return sections.map((section, index) => {
-        const sectionId = normalizeString(section?.id)
-        const sectionLabel = normalizeString(section?.label)
-        const items = Array.isArray(section?.items) ? section.items : []
+    return sectionMenus.value
+      .map((menu) => {
+        const menuId = normalizeString(menu?.id)
+        const menuName = normalizeString(menu?.name) || menuId
+        const menuSort = Number(menu?.sort_order ?? 0)
+        const sections = Array.isArray(menu?.sections) ? menu.sections : []
         const dishIds = Array.from(
           new Set(
-            items
-              .map((item) => normalizeString(item?.dish_id))
-              .filter((dishId) => dishIdsInScope.has(dishId))
+            sections.flatMap((section) => {
+              const items = Array.isArray(section?.items) ? section.items : []
+
+              return items
+                .map((item) => normalizeString(item?.dish_id))
+                .filter((dishId) => dishIdsInScope.has(dishId))
+            })
           )
         )
 
         return {
-          id: `${menuId}:${sectionId}`,
+          id: menuId,
+          label: menuName,
           menuId,
           menuName,
           menuSort,
-          sectionId,
-          sectionLabel,
-          sectionSort: Number(section?.sort_order ?? index),
           dishIds,
+          count: dishIds.length,
         }
       })
-    })
-
-    const duplicateCounts = rawSections.reduce<Record<string, number>>((acc, section) => {
-      const key = normalizeString(section.sectionLabel).toLowerCase()
-      if (!key) return acc
-      acc[key] = (acc[key] || 0) + 1
-      return acc
-    }, {})
-
-    return rawSections
-      .filter((section) => section.dishIds.length > 0)
+      .filter((menu) => menu.id && menu.dishIds.length > 0)
       .sort((a, b) => {
         if (a.menuSort !== b.menuSort) return a.menuSort - b.menuSort
-        return a.sectionSort - b.sectionSort
+        return a.menuName.localeCompare(b.menuName)
       })
-      .map((section) => {
-        const duplicateKey = normalizeString(section.sectionLabel).toLowerCase()
-        const hasDuplicateLabel = Boolean(duplicateCounts[duplicateKey] > 1)
-
-        return {
-          id: section.id,
-          label:
-            hasDuplicateLabel && section.menuName
-              ? `${section.menuName} · ${section.sectionLabel}`
-              : section.sectionLabel,
-          dishIds: section.dishIds,
-          count: section.dishIds.length,
-        }
-      })
+      .map(({ id, label, dishIds, count }) => ({
+        id,
+        label,
+        dishIds,
+        count,
+      }))
   })
   const menuUsageByDishId = computed<Record<string, KitchenDishMenuUsage[]>>(() => {
     const dishIdsInScope = new Set(
@@ -221,6 +202,7 @@ export function useKitchenConsoleDishes(
     pending: pending.value,
     canWrite: canWrite.value,
     sectionsCount: sections.value.length,
+    menuFilterCount: sections.value.length,
     menuUsageDishCount: Object.keys(menuUsageByDishId.value).length,
     menuUsageCount: Object.values(menuUsageByDishId.value).reduce(
       (total, entries) => total + entries.length,
