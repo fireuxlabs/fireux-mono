@@ -3,8 +3,8 @@
     <div class="space-y-6">
       <div class="flex flex-col gap-5 md:flex-row md:items-start">
         <div
-          class="h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-default bg-elevated/40 md:h-24 md:w-24"
-          style="width: 80px; height: 80px; max-width: 80px; max-height: 80px;"
+          class="h-32 w-32 shrink-0 overflow-hidden rounded-lg border border-default bg-elevated/40 md:h-40 md:w-40"
+          style="width: 128px; height: 128px; max-width: 128px; max-height: 128px;"
         >
           <img
             v-if="dish.image_url"
@@ -18,7 +18,7 @@
             v-else
             class="flex h-full w-full items-center justify-center text-dimmed"
           >
-            <UIcon name="i-lucide-utensils" class="size-5" />
+            <UIcon name="i-lucide-utensils" class="size-6" />
           </div>
         </div>
 
@@ -69,6 +69,79 @@
               </span>
             </div>
           </div>
+
+          <div class="grid gap-3 md:grid-cols-2">
+            <UCard variant="soft">
+              <div class="space-y-3">
+                <div class="text-sm font-medium text-highlighted">
+                  Components
+                </div>
+                <ol v-if="components.length" class="space-y-1 text-sm">
+                  <li
+                    v-for="(component, index) in components"
+                    :key="`${index}:${component}`"
+                    class="flex gap-2"
+                  >
+                    <span class="w-5 shrink-0 text-xs font-medium text-dimmed">
+                      {{ index + 1 }}.
+                    </span>
+                    <span class="min-w-0 text-highlighted">{{ component }}</span>
+                  </li>
+                </ol>
+                <p v-else class="text-xs text-dimmed">
+                  Components not set.
+                </p>
+              </div>
+            </UCard>
+
+            <UCard variant="soft">
+              <div class="space-y-3">
+                <div class="text-sm font-medium text-highlighted">Build</div>
+                <ol v-if="build.length" class="space-y-1 text-sm">
+                  <li
+                    v-for="(step, index) in build"
+                    :key="`${index}:${step}`"
+                    class="flex gap-2"
+                  >
+                    <span class="w-5 shrink-0 text-xs font-medium text-dimmed">
+                      {{ index + 1 }}.
+                    </span>
+                    <span class="min-w-0 text-highlighted">{{ step }}</span>
+                  </li>
+                </ol>
+                <p v-else class="text-xs text-dimmed">
+                  Build not set.
+                </p>
+              </div>
+            </UCard>
+          </div>
+
+          <UCard v-if="subRecipes.length" variant="soft">
+            <div class="space-y-3">
+              <div>
+                <div class="text-sm font-medium text-highlighted">
+                  Sub-recipes
+                </div>
+                <p class="text-xs text-dimmed">
+                  Prep recipes used inside this dish.
+                </p>
+              </div>
+
+              <div class="flex flex-wrap gap-1.5">
+                <UButton
+                  v-for="recipeId in subRecipes"
+                  :key="recipeId"
+                  :to="`/console/kitchen/recipes/${encodeURIComponent(recipeId)}`"
+                  size="xs"
+                  color="neutral"
+                  variant="soft"
+                  icon="i-lucide-book-open-check"
+                >
+                  {{ subRecipeLabel(recipeId) }}
+                </UButton>
+              </div>
+            </div>
+          </UCard>
 
           <UCard variant="soft">
             <div class="space-y-3">
@@ -180,6 +253,30 @@ const ingredientCount = computed(() =>
 const miseCount = computed(() =>
   Array.isArray(props.dish?.mise_ids) ? props.dish.mise_ids.length : 0
 )
+
+const stringList = (value: unknown) =>
+  Array.isArray(value)
+    ? value.map((entry) => String(entry ?? '').trim()).filter(Boolean)
+    : []
+
+const components = computed(() =>
+  stringList((props.dish as { components?: unknown } | null)?.components)
+)
+
+const build = computed(() =>
+  stringList((props.dish as { build?: unknown } | null)?.build)
+)
+
+const subRecipes = computed(() =>
+  stringList((props.dish as { sub_recipe_ids?: unknown } | null)?.sub_recipe_ids)
+)
+
+const subRecipeLabel = (recipeId: string) =>
+  recipeId
+    .split(/[-_]/g)
+    .filter(Boolean)
+    .map((part) => part[0].toUpperCase() + part.slice(1))
+    .join(' ')
 
 const menuUsageSorted = computed(() =>
   [...props.menuUsage].sort((a, b) => {
