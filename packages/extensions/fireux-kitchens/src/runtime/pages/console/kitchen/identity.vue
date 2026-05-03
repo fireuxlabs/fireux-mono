@@ -3,9 +3,10 @@
     <template #header>
       <LayoutsConsoleNavbar :title="navTitle">
         <template #right>
-          <UButtonGroup size="sm">
+          <div class="inline-flex items-center gap-1">
             <UButton
               icon="i-lucide-eye"
+              size="sm"
               :variant="view === 'identity' ? 'solid' : 'ghost'"
               color="neutral"
               aria-label="View kitchen identity"
@@ -14,13 +15,14 @@
 
             <UButton
               icon="i-lucide-notebook-pen"
+              size="sm"
               :variant="view === 'edit' ? 'solid' : 'ghost'"
               color="neutral"
               aria-label="Edit kitchen identity"
               :disabled="!canWrite"
               @click="view = 'edit'"
             />
-          </UButtonGroup>
+          </div>
         </template>
       </LayoutsConsoleNavbar>
     </template>

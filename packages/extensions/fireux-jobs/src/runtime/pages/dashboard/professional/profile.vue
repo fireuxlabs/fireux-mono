@@ -7,9 +7,10 @@
     <template #header>
       <LayoutsDashboardNavbar :title="navTitle">
         <template #right>
-          <UButtonGroup size="sm">
+          <div class="inline-flex items-center gap-1">
             <UButton
               icon="i-lucide-eye"
+              size="sm"
               :variant="view === 'profile' ? 'solid' : 'ghost'"
               color="neutral"
               aria-label="View profile"
@@ -18,12 +19,13 @@
 
             <UButton
               icon="i-lucide-notebook-pen"
+              size="sm"
               :variant="view === 'edit' ? 'solid' : 'ghost'"
               color="neutral"
               aria-label="Edit profile"
               @click="view = 'edit'"
             />
-          </UButtonGroup>
+          </div>
         </template>
       </LayoutsDashboardNavbar>
     </template>
