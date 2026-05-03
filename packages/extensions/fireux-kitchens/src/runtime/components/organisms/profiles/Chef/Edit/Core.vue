@@ -62,14 +62,14 @@
 </template>
 
 <script setup lang="ts">
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify';
-import { computed } from 'vue';
-import { useChefUpdate } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefUpdate';
-import type { Chef } from '../../../../../models/profiles/Chef/Chef.model';
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { computed } from 'vue'
+import { useChefUpdate } from '../../../../../composables/fireux/firestore/profiles/Chef/main/useChefUpdate'
+import { useChef } from '../../../../../composables/fireux/firestore/profiles/Chef/useChef'
 
-const props = defineProps<{ chef: Chef | null }>()
+const { coreProfile } = useChef()
 
-const chef = computed(() => props.chef ?? null)
+const chef = computed(() => coreProfile.value ?? null)
 const { updateTitle, updateSummary, updateBio, updateImage, updateSignatureDishes } = useChefUpdate()
 
 const toast = useToastify()

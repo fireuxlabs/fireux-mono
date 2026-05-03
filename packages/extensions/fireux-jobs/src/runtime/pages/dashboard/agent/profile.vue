@@ -2,16 +2,38 @@
 <template>
   <UDashboardPanel id="dashboard-agent-profile">
     <template #header>
-      <LayoutsDashboardNavbar :title="navTitle" />
+      <LayoutsDashboardNavbar :title="navTitle">
+        <template #right>
+          <UButtonGroup size="sm">
+            <UButton
+              icon="i-lucide-eye"
+              :variant="view === 'profile' ? 'solid' : 'ghost'"
+              color="neutral"
+              aria-label="View profile"
+              @click="view = 'profile'"
+            />
+
+            <UButton
+              icon="i-lucide-notebook-pen"
+              :variant="view === 'edit' ? 'solid' : 'ghost'"
+              color="neutral"
+              aria-label="Edit profile"
+              @click="view = 'edit'"
+            />
+          </UButtonGroup>
+        </template>
+      </LayoutsDashboardNavbar>
     </template>
 
     <template #body>
       <div class="console-profile">
-        <ProfilesAgentIdentity />
+        <ProfilesAgentIdentity v-if="view === 'profile'" />
 
-        <ProfilesAgentEditCore />
-
-        <ProfilesAgentEditApp v-if="showAppProfileSection" />
+        <ClientOnly v-else>
+          <div class="console-profile__section">
+            <ProfilesAgentEditCore />
+          </div>
+        </ClientOnly>
       </div>
     </template>
   </UDashboardPanel>
@@ -19,12 +41,13 @@
 
 <script setup lang="ts">
 import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
+import { ref } from 'vue'
 
 const navLabel = agentConfig.navLabel ?? `${agentConfig.profileType} Profile`
 const navIcon = agentConfig.navIcon ?? 'i-lucide-user'
 const navTitle = navLabel
 
-const showAppProfileSection = false
+const view = ref<'profile' | 'edit'>('profile')
 
 definePageMeta({
   layout: 'dashboard',

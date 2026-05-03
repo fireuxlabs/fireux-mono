@@ -10,7 +10,7 @@
     </div>
 
     <UPageCard v-if="isProfileLoading" variant="subtle">
-      <p class="text-sm text-dimmed">Loading profile...</p>
+      <p class="text-sm text-dimmed">Loading profile…</p>
     </UPageCard>
 
     <UPageCard

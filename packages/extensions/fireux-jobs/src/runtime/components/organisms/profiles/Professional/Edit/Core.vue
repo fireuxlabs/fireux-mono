@@ -109,11 +109,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from '#imports'
+import { computed, ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useJobsConfig } from '../../../../../composables/fireux/app/useJobsConfig'
 import { useProfessionalUpdate } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalUpdate'
-import type { Professional } from '../../../../../models/profiles/Professional/Professional.model'
+import { useProfessional } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
 import type {
   CertificationItem,
   EducationItem,
@@ -124,9 +124,8 @@ import type {
   VolunteeringItem,
 } from '../../../../../models/profiles/Professional/Professional.model'
 
-const props = defineProps<{ professional: Professional | null }>()
-
 const toast = useToastify()
+const { coreProfile } = useProfessional()
 
 const {
   updateTitle,
@@ -147,7 +146,7 @@ const { placeCollections } = useJobsConfig()
 const relevantPlaceType = computed(() => placeCollections[0] ?? null)
 const relevantExperienceLabel = computed(() => 'Relevant Experience')
 
-const professional = computed(() => props.professional ?? null)
+const professional = computed(() => coreProfile.value ?? null)
 
 const headline = computed(() => professional.value?.title ?? '')
 const summary = computed(() => professional.value?.summary ?? '')
@@ -168,7 +167,7 @@ const education = computed(() => professional.value?.education ?? [])
 const volunteering = computed(() => professional.value?.volunteering ?? [])
 const projects = computed(() => professional.value?.projects ?? [])
 
-const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string) => {
+const wrap = async (fn: () => Promise<void>, failTitle: string) => {
   try {
     await fn()
     return 'success'
@@ -186,21 +185,18 @@ const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string)
 const handleHeadline = async (value: string) =>
   wrap(
     () => updateTitle(value, { id: professional.value?.id ?? null }),
-    'Title updated',
     'Failed to update title'
   )
 
 const handleSummary = async (value: string) =>
   wrap(
     () => updateSummary(value, { id: professional.value?.id ?? null }),
-    'Summary updated',
     'Failed to update summary'
   )
 
 const handleBio = async (value: string) =>
   wrap(
     () => updateBio(value, { id: professional.value?.id ?? null }),
-    'Bio updated',
     'Failed to update bio'
   )
 
@@ -225,56 +221,48 @@ const handleImageUpload = async (file: File) => {
 const handlePositions = async (value: string[]) =>
   wrap(
     () => updatePositions(value, { id: professional.value?.id ?? null }),
-    'Positions updated',
     'Failed to update positions'
   )
 
 const handleLanguages = async (value: LanguageProficiency[]) =>
   wrap(
     () => updateLanguages(value, { id: professional.value?.id ?? null }),
-    'Languages updated',
     'Failed to update languages'
   )
 
 const handleCertifications = async (value: CertificationItem[]) =>
   wrap(
     () => updateCertifications(value, { id: professional.value?.id ?? null }),
-    'Certifications updated',
     'Failed to update certifications'
   )
 
 const handleEducation = async (value: EducationItem[]) =>
   wrap(
     () => updateEducation(value, { id: professional.value?.id ?? null }),
-    'Education updated',
     'Failed to update education'
   )
 
 const handleVolunteering = async (value: VolunteeringItem[]) =>
   wrap(
     () => updateVolunteering(value, { id: professional.value?.id ?? null }),
-    'Volunteering updated',
     'Failed to update volunteering'
   )
 
 const handleProjects = async (value: ProjectItem[]) =>
   wrap(
     () => updateProjects(value, { id: professional.value?.id ?? null }),
-    'Projects updated',
     'Failed to update projects'
   )
 
 const handleRelevantExperience = async (items: RelevantExperienceItem[]) =>
   wrap(
     () => setRelevantExperience(items, { id: professional.value?.id ?? null }),
-    'Relevant experience updated',
     'Failed to update relevant experience'
   )
 
 const handleOtherExperience = async (items: OtherExperienceItem[]) =>
   wrap(
     () => setOtherExperience(items, { id: professional.value?.id ?? null }),
-    'Other experience updated',
     'Failed to update other experience'
   )
 </script>
