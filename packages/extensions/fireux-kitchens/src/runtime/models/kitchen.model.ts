@@ -39,6 +39,11 @@ export const KitchenModel = {
   ...FireuxAppScope,
   is_test_kitchen: false,
   place_id: '',
+  name: '',
+  short_name: '',
+  short_address: '',
+  formatted_address: '',
+  image_url: '',
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -61,10 +66,40 @@ export type AppKitchen = FireuxAppOverlay
 
 export type KitchenCreateInput = Omit<
   Kitchen,
-  'created' | 'updated' | 'app_scope_state' | 'app_scope_app_id'
+  | 'created'
+  | 'updated'
+  | 'app_scope_state'
+  | 'app_scope_app_id'
+  | 'is_test_kitchen'
+  | 'name'
+  | 'short_name'
+  | 'short_address'
+  | 'formatted_address'
+  | 'image_url'
 > &
-  Partial<Pick<Kitchen, 'app_scope_state' | 'app_scope_app_id'>> & {
-    is_test_kitchen?: boolean
-  }
+  Partial<
+    Pick<
+      Kitchen,
+      | 'app_scope_state'
+      | 'app_scope_app_id'
+      | 'is_test_kitchen'
+      | 'name'
+      | 'short_name'
+      | 'short_address'
+      | 'formatted_address'
+      | 'image_url'
+    >
+  >
 
-export type KitchenUpdateInput = Partial<Pick<Kitchen, 'is_test_kitchen' | 'place_id'>>
+export type KitchenUpdateInput = Partial<
+  Pick<
+    Kitchen,
+    | 'is_test_kitchen'
+    | 'place_id'
+    | 'name'
+    | 'short_name'
+    | 'short_address'
+    | 'formatted_address'
+    | 'image_url'
+  >
+>
