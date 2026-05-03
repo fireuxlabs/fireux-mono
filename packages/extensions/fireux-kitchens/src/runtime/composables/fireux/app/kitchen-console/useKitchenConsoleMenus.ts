@@ -11,6 +11,7 @@ export function useKitchenConsoleMenus() {
     selectedMode,
     kitchenId,
     rootCollection,
+    databaseId,
     canWrite,
   } = useKitchenConsole()
   const fetchKitchenId = computed(() =>
@@ -22,6 +23,7 @@ export function useKitchenConsoleMenus() {
     collectionPath,
   } = useKitchenMenuCollection(fetchKitchenId, {
     kitchenCollectionPath: rootCollection,
+    databaseId,
   })
   const {
     dishes,
@@ -43,6 +45,7 @@ export function useKitchenConsoleMenus() {
     mode: selectedMode.value,
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
+    databaseId: databaseId.value,
     collectionPath: collectionPath.value,
     dishesCollectionPath: dishesCollectionPath.value,
     menusCount: menus.value.length,
@@ -59,6 +62,7 @@ export function useKitchenConsoleMenus() {
     kitchenId,
     collectionPath,
     rootCollection,
+    databaseId,
     canWrite,
     menus,
     dishes,

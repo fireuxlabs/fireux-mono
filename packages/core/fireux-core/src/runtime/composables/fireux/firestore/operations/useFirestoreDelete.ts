@@ -1,16 +1,21 @@
 import { deleteDoc, doc } from 'firebase/firestore'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useRequireUser } from '../../firebase/useRequireUser'
+import type { Ref } from 'vue'
 
-export function useFirestoreDelete() {
-  const db = useFirestore()
+type UseFirestoreDeleteOptions = {
+  databaseId?: string | Ref<string | null | undefined> | null | undefined
+}
+
+export function useFirestoreDelete(options: UseFirestoreDeleteOptions = {}) {
+  const resolveDb = useFirestoreResolver(options.databaseId)
 
   async function deleteDocument(
     collectionPath: string,
     id: string
   ): Promise<void> {
     await useRequireUser()
-    const ref = doc(db, collectionPath, id)
+    const ref = doc(resolveDb(), collectionPath, id)
     await deleteDoc(ref)
   }
 

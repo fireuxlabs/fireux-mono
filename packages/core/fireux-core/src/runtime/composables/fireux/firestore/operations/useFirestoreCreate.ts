@@ -1,7 +1,12 @@
 import { addDoc, collection, doc, serverTimestamp, setDoc } from 'firebase/firestore'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from '../../app/FireUXConfig'
 import { useRequireUser } from '../../firebase/useRequireUser'
+import type { Ref } from 'vue'
+
+type UseFirestoreCreateOptions = {
+  databaseId?: string | Ref<string | null | undefined> | null | undefined
+}
 
 type StampOpts = {
   stamp?: boolean
@@ -48,11 +53,11 @@ export async function stampDoc<T>(data: T, opts: StampOpts = {}): Promise<T | St
   return base as Stamped<T>
 }
 
-export function useFirestoreCreate() {
-  const db = useFirestore()
+export function useFirestoreCreate(options: UseFirestoreCreateOptions = {}) {
+  const resolveDb = useFirestoreResolver(options.databaseId)
 
   async function createDocument<T>(collectionPath: string, data: T, opts: StampOpts = {}): Promise<string> {
-    const ref = collection(db, collectionPath)
+    const ref = collection(resolveDb(), collectionPath)
     const next = { ...(data as any) } as Record<string, unknown>
     if ('id' in next) delete next.id
     const stamped = await stampDoc(next as T, opts)
@@ -61,7 +66,7 @@ export function useFirestoreCreate() {
   }
 
   async function setDocument<T>(collectionPath: string, id: string, data: T, opts: StampOpts = {}): Promise<void> {
-    const ref = doc(db, collectionPath, id)
+    const ref = doc(resolveDb(), collectionPath, id)
     // Canon: never persist id field; Firestore doc id is source of truth.
     const next = { ...(data as any) } as Record<string, unknown>
     if ('id' in next) delete next.id

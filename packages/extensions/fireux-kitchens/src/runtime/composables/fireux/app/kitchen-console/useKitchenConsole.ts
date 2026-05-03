@@ -7,6 +7,10 @@ import {
   type ConsoleMode,
 } from 'fireux-core/runtime/composables/fireux/console/useConsole'
 import {
+  readRuntimeFirestoreDatabaseId,
+  readRuntimeSimulationFirestoreDatabaseId,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import {
   usePublishConsoleHeader,
   type ConsoleHeaderData,
 } from 'fireux-core/runtime/composables/fireux/console/useConsoleHeader'
@@ -57,8 +61,19 @@ export function useKitchenConsole(
   })
   const selectedKitchen = computed<KitchenConsoleEntity | null>(() => selectedEntity.value)
   const kitchenId = computed(() => normalizeString(selectedKitchen.value?.id))
+  const databaseId = computed(() =>
+    selectedMode.value === 'live'
+      ? readRuntimeFirestoreDatabaseId() || ''
+      : selectedMode.value === 'test'
+        ? readRuntimeSimulationFirestoreDatabaseId() || ''
+        : ''
+  )
   const rootCollection = computed(() =>
-    resolveConsoleRootCollection('kitchens', selectedMode.value)
+    selectedMode.value === 'demo'
+      ? ''
+      : selectedMode.value === 'test'
+        ? 'kitchens'
+        : resolveConsoleRootCollection('kitchens', selectedMode.value)
   )
   const canWrite = computed(() => resolveConsoleCanWrite(selectedMode.value))
 
@@ -107,6 +122,7 @@ export function useKitchenConsole(
     selectedMode,
     kitchenId,
     rootCollection,
+    databaseId,
     canWrite,
     clearSelectedKitchen,
     selectKitchen,

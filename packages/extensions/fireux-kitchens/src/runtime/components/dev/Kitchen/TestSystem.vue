@@ -7,7 +7,7 @@
             Demo -> Test sync
           </p>
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            Build in demo mode first, then sync this exact stack into a test kitchen.
+            Copy the local demo scenario into a writable simulation test kitchen.
           </p>
         </div>
       </template>
@@ -56,7 +56,7 @@
 
         <p v-else-if="syncSummary" class="text-xs text-dimmed">
           Synced {{ syncSummary.written }} docs to
-          <code>test-kitchens/{{ syncSummary.kitchenId }}</code>
+          <code>{{ simulationDatabaseId }}/kitchens/{{ syncSummary.kitchenId }}</code>
           <span v-if="pruneMissing">
             · Pruned {{ syncSummary.pruned }} stale docs.
           </span>
@@ -79,7 +79,7 @@
               Test kitchens collection
             </p>
             <p class="text-xs text-gray-500 dark:text-gray-400">
-              Browse test kitchens resolved for this runtime and filter by model drift.
+              Browse test kitchens in the simulation database and filter by model drift.
             </p>
             <DevDriftToolbar
               :drift-kind="kitchensDriftKind"
@@ -106,10 +106,12 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore'
 import { computed, ref, watch } from 'vue'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import {
+  readRuntimeSimulationFirestoreDatabaseId,
+  useFirestore,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { getDefaultDemoKitchen } from '../../../composables/fireux/app/utils/kitchen-demo-scenarios'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
-import { KitchenIngredientModel } from '../../../models/ingredient.model'
 import type { Kitchen } from '../../../models/kitchen.model'
 import { KitchenModel as KitchenModelRuntime } from '../../../models/kitchen.model'
 
@@ -117,12 +119,26 @@ defineOptions({ name: 'DevTestKitchenSystem' })
 
 const kitchenModelRuntime = KitchenModelRuntime
 const demoKitchenScenario = getDefaultDemoKitchen()
-const db = useFirestore()
-const { setDocument } = useFirestoreCreate()
+const requireSimulationDatabaseId = () => {
+  const databaseId = readRuntimeSimulationFirestoreDatabaseId()
+  if (!databaseId) {
+    throw new Error(
+      'Missing firebase.simulationDatabaseId for kitchen test sync.'
+    )
+  }
+  return databaseId
+}
+const simulationDatabaseId = computed(
+  () => requireSimulationDatabaseId()
+)
+const db = useFirestore(simulationDatabaseId)
+const { setDocument } = useFirestoreCreate({ databaseId: simulationDatabaseId })
 const { uid } = useAuth()
 
-const { firestoreFetchCollection } = useFirestoreRead()
-const kitchensCollection = firestoreFetchCollection<Kitchen>('test-kitchens')
+const { firestoreFetchCollection } = useFirestoreRead({
+  databaseId: simulationDatabaseId,
+})
+const kitchensCollection = firestoreFetchCollection<Kitchen>('kitchens')
 const { kitchens: hydratedKitchens } = useKitchenCollection({ source: 'test' })
 
 const kitchensCollectionValue = computed(() => kitchensCollection.value ?? [])
@@ -212,7 +228,7 @@ const syncCounts = computed(() => ({
 }))
 
 const resolveCollectionPath = (kitchenId: string, name: KitchenCollectionName) =>
-  `test-kitchens/${kitchenId}/${name}`
+  `kitchens/${kitchenId}/${name}`
 
 const withKitchenId = <T extends Record<string, unknown>>(docs: T[], kitchenId: string) =>
   docs.map((doc) => ({
@@ -236,6 +252,8 @@ const buildTestKitchenDoc = (kitchenId: string): Kitchen => {
     short_address: existingShortAddress || 'Writable kitchen sandbox',
     image_url: existingImageUrl || undefined,
     is_test_kitchen: true,
+    simulation_kind: 'test',
+    can_write: true,
     created: (existingKitchen as any)?.created || { at: {} },
     updated: { at: {} },
   } as Kitchen
@@ -249,7 +267,7 @@ const buildKitchenIngredientsForSync = () => {
     if (!id) return
 
     map.set(id, {
-      ...KitchenIngredientModel,
+      ...entry,
       id,
       ingredient_id: String(entry.ingredient_id || id).trim(),
     })
@@ -314,7 +332,7 @@ const syncDemoToTestKitchen = async () => {
   try {
     const kitchenDoc = buildTestKitchenDoc(kitchenId)
 
-    await setDocument<Kitchen>('test-kitchens', kitchenId, kitchenDoc, {
+    await setDocument<Kitchen>('kitchens', kitchenId, kitchenDoc, {
       app: true,
       creator: true,
     })

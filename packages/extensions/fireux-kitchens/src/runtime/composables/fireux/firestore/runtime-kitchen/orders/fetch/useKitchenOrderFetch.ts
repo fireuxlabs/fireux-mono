@@ -8,6 +8,7 @@ import type { KitchenOrder } from '../../../../../../models/order.model'
 
 type UseKitchenOrderFetchOptions = {
 	kitchenCollectionPath?: string | Ref<string | null | undefined>
+  databaseId?: string | Ref<string | null | undefined>
 }
 
 const resolveKitchenOrdersPath = (basePath: string, kitchenId: string) =>
@@ -17,7 +18,9 @@ export function useKitchenOrderFetch(
 	kitchenId: Ref<string> | string,
 	options: UseKitchenOrderFetchOptions = {}
 ) {
-	const { firestoreFetchCollection } = useFirestoreRead()
+	const { firestoreFetchCollection } = useFirestoreRead({
+    databaseId: options.databaseId,
+  })
   const { appId } = useFireUXConfig()
 
 	const resolvedKitchenId = computed(() =>
@@ -37,12 +40,13 @@ export function useKitchenOrderFetch(
 			? resolveKitchenOrdersPath(kitchenCollectionPath.value, resolvedKitchenId.value)
 			: ''
 	)
+  const databaseIdKey = computed(() => String(unref(options.databaseId) || '').trim())
 
 	const ordersRef = shallowRef(null) as ShallowRef<Ref<KitchenOrder[] | undefined> | null>
 
 	watch(
-		ordersPath,
-		(nextPath) => {
+		[ordersPath, databaseIdKey],
+		([nextPath]) => {
 			ordersRef.value = nextPath ? firestoreFetchCollection<KitchenOrder>(nextPath) : null
 		},
 		{ immediate: true }

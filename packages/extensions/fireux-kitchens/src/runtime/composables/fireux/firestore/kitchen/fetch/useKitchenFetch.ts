@@ -1,10 +1,16 @@
 import { computed, isRef, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import type { Place } from 'fireux-places/runtime/models/place.model'
-import { getDemoKitchens } from '../../../app/utils/kitchen-demo-scenarios'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import {
+  readRuntimeSimulationFirestoreDatabaseId,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { getDemoKitchen } from '../../../app/utils/kitchen-demo-scenarios'
 import type { Kitchen } from '../../../../../models/kitchen.model'
 
-type KitchenFetchDoc = Partial<Kitchen> & { id?: string }
+type KitchenFetchDoc = Partial<Kitchen> & {
+  id?: string
+  route_scope?: 'live' | 'demo' | 'test'
+}
 export type KitchenFetchSource = 'live' | 'test' | 'demo'
 
 type UseKitchenFetchOptions = {
@@ -14,7 +20,15 @@ type UseKitchenFetchOptions = {
 }
 
 const DEFAULT_COLLECTION_PATH = 'kitchens'
-const TEST_COLLECTION_PATH = 'test-kitchens'
+const requireSimulationDatabaseId = () => {
+  const databaseId = readRuntimeSimulationFirestoreDatabaseId()
+  if (!databaseId) {
+    throw new Error(
+      'Missing firebase.simulationDatabaseId for kitchen test-mode reads.'
+    )
+  }
+  return databaseId
+}
 
 const pickPlaceForKitchen = (
   place: Place | null
@@ -54,7 +68,11 @@ export function useKitchenFetch(
   id: string | Ref<string>,
   options: UseKitchenFetchOptions = {}
 ) {
-  const { firestoreFetchDoc } = useFirestoreRead()
+  const simulationDatabaseId = computed(
+    () => requireSimulationDatabaseId()
+  )
+  const liveRead = useFirestoreRead()
+  const simulationRead = useFirestoreRead({ databaseId: simulationDatabaseId })
   const idRef = isRef(id) ? id : computed(() => String(id || '').trim())
   const sourceRef = isRef(options.source)
     ? options.source
@@ -66,7 +84,7 @@ export function useKitchenFetch(
 
     const explicitPath = String(configuredPath || '').trim()
     if (explicitPath) return explicitPath
-    return sourceRef.value === 'test' ? TEST_COLLECTION_PATH : DEFAULT_COLLECTION_PATH
+    return DEFAULT_COLLECTION_PATH
   })
   const shouldHydrate = options.hydrate !== false
 
@@ -77,10 +95,32 @@ export function useKitchenFetch(
       const collectionPath = String(nextPath || '').trim() || DEFAULT_COLLECTION_PATH
       const docId = String(nextId || '').trim()
 
+      if (!docId) {
+        source.value = null
+        return
+      }
+
+      if (nextSource === 'demo') {
+        source.value = computed<KitchenFetchDoc | undefined>(() => {
+          const scenario = getDemoKitchen(docId)
+          if (!scenario) return undefined
+
+          return {
+            id: scenario.id,
+            place_id: scenario.id,
+            name: scenario.name,
+            short_address: scenario.label,
+            image_url: scenario.image_url,
+            route_scope: 'demo',
+          } as KitchenFetchDoc
+        })
+        return
+      }
+
       source.value =
-        nextSource === 'demo' || !docId
-          ? null
-          : firestoreFetchDoc<KitchenFetchDoc>(collectionPath, docId)
+        nextSource === 'test'
+          ? simulationRead.firestoreFetchDoc<KitchenFetchDoc>(collectionPath, docId)
+          : liveRead.firestoreFetchDoc<KitchenFetchDoc>(collectionPath, docId)
     },
     { immediate: true }
   )
@@ -93,33 +133,19 @@ export function useKitchenFetch(
 
   const placeSource = shallowRef(null) as ShallowRef<Ref<Place | undefined> | null>
   watch(
-    placeId,
-    (nextPlaceId) => {
+    [placeId, sourceRef],
+    ([nextPlaceId, nextSource]) => {
       const resolvedPlaceId = String(nextPlaceId || '').trim()
       placeSource.value =
-        !shouldHydrate || !resolvedPlaceId
+        !shouldHydrate || nextSource !== 'live' || !resolvedPlaceId
           ? null
-          : firestoreFetchDoc<Place>('places', resolvedPlaceId)
+          : liveRead.firestoreFetchDoc<Place>('places', resolvedPlaceId)
     },
     { immediate: true }
   )
 
   const kitchen = computed<KitchenFetchDoc | null>(() => {
     const docId = String(idRef.value || '').trim()
-    if (sourceRef.value === 'demo') {
-      const demoKitchen = getDemoKitchens().find((entry) => String(entry.id || '').trim() === docId)
-      if (!demoKitchen) return null
-
-      return {
-        id: demoKitchen.id,
-        slug: demoKitchen.id,
-        place_id: demoKitchen.id,
-        name: demoKitchen.name,
-        short_address: demoKitchen.label,
-        image_url: demoKitchen.image_url,
-      }
-    }
-
     const entry = source.value?.value
     if (!docId || !entry) return null
 
@@ -129,6 +155,10 @@ export function useKitchenFetch(
       ...pickPlaceForKitchen(place),
       ...entry,
       id: String(entry?.id || docId).trim(),
+      route_scope:
+        sourceRef.value === 'demo' || sourceRef.value === 'test'
+          ? sourceRef.value
+          : (entry as any)?.route_scope,
     }
   })
 

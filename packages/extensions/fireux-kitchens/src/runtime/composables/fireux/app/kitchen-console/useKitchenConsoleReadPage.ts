@@ -1,6 +1,9 @@
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
 import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/console/useConsole'
-import { getDemoKitchenCollection, type DemoKitchenCollectionName } from '../utils/kitchen-demo-scenarios'
+import {
+  getDemoKitchenCollection,
+  type DemoKitchenCollectionName,
+} from '../utils/kitchen-demo-scenarios'
 import type { KitchenSurface } from '../../firestore/kitchen/utils/view/useKitchenInterface'
 
 type MaybeRef<T> = Ref<T> | ComputedRef<T>
@@ -37,7 +40,10 @@ export function useKitchenConsoleReadPage<T>(
 
   const items = computed<T[]>(() => {
     if (focus.value.mode === 'demo') {
-      return getDemoKitchenCollection<T>(focus.value.id, options.collectionName)
+      return getDemoKitchenCollection<T>(
+        focus.value.id,
+        options.collectionName
+      )
     }
 
     return unref(options.liveItems) ?? []
@@ -47,15 +53,20 @@ export function useKitchenConsoleReadPage<T>(
     items: items.value,
     count: items.value.length,
     hasItems: items.value.length > 0,
-    pending:
-      focus.value.mode === 'demo' ? false : Boolean(unref(options.livePending)),
+    pending: focus.value.mode === 'demo'
+      ? false
+      : Boolean(unref(options.livePending)),
   }))
 
-  const canWrite = computed(() => focus.value.mode === 'live')
+  const canWrite = computed(() => false)
 
   const debug = computed(() => ({
     focus: focus.value,
-    source: focus.value.mode === 'demo' ? 'demo-scenario' : 'firestore',
+    source: focus.value.mode === 'demo'
+      ? 'local-demo'
+      : focus.value.mode === 'test'
+        ? 'simulation-firestore'
+        : 'firestore',
     collectionName: options.collectionName,
     collectionPath: normalizeString(unref(options.collectionPath)),
     count: collection.value.count,

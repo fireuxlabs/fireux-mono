@@ -12,8 +12,16 @@ import {
   type QueryDocumentSnapshot,
 } from 'firebase/firestore'
 import { ref, type Ref } from 'vue'
-import { useCollection, useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import {
+  useCollection,
+  useDocument,
+  useFirestoreResolver,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { attachDevCollectionMeta } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
+
+type UseFirestoreReadOptions = {
+  databaseId?: string | Ref<string | null | undefined> | null | undefined
+}
 
 function isOfflineFirestoreError(error: unknown): boolean {
   const code = typeof (error as any)?.code === 'string' ? (error as any).code : ''
@@ -43,8 +51,8 @@ function guardFirestorePromise(
  * Unified Firestore read composable for FireUX.
  * Covers single docs, full collections, and common query patterns.
  */
-export function useFirestoreRead() {
-  const db = useFirestore()
+export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
+  const resolveDb = useFirestoreResolver(options.databaseId)
 
   /** Run any Firestore Query (reactive) */
   const firestoreQuery = <T>(
@@ -74,7 +82,7 @@ export function useFirestoreRead() {
   const firestoreFetchCollection = <T>(
     collectionPath: string
   ): Ref<T[] | undefined> => {
-    const q = fsq(collection(db, collectionPath)) as Query<T>
+    const q = fsq(collection(resolveDb(), collectionPath)) as Query<T>
     return firestoreQuery<T>(q, collectionPath, collectionPath)
   }
 
@@ -87,7 +95,7 @@ export function useFirestoreRead() {
       return ref(undefined) as Ref<T | undefined>
     }
 
-    const docRef = doc(db, collectionPath, docId)
+    const docRef = doc(resolveDb(), collectionPath, docId)
     const binding = useDocument(docRef, {
       ssrKey: `${collectionPath}-${docId}`,
       transform: (docSnap: DocumentSnapshot<T>) => {
@@ -115,7 +123,7 @@ export function useFirestoreRead() {
     max = 10
   ): Promise<T[]> => {
     const q = fsq(
-      collection(db, collectionPath),
+      collection(resolveDb(), collectionPath),
       orderBy(field),
       startAt(value),
       endAt(value + '\uf8ff'),

@@ -10,6 +10,7 @@ export function useKitchenConsoleIngredients() {
     selectedMode,
     kitchenId,
     rootCollection,
+    databaseId,
     canWrite,
   } = useKitchenConsole()
   const fetchKitchenId = computed(() =>
@@ -18,6 +19,7 @@ export function useKitchenConsoleIngredients() {
   const { ingredients: liveIngredients, pending: livePending, collectionPath } =
     useKitchenIngredientFetch(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
+      databaseId,
     })
   const page = useKitchenConsoleReadPage<IngredientInterfaceItem>({
     collectionName: 'ingredients',
@@ -35,6 +37,7 @@ export function useKitchenConsoleIngredients() {
     mode: selectedMode.value,
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
+    databaseId: databaseId.value,
     collectionPath: collectionPath.value,
     count: count.value,
     pending: pending.value,
@@ -48,6 +51,7 @@ export function useKitchenConsoleIngredients() {
     kitchenId,
     collectionPath,
     rootCollection,
+    databaseId,
     canWrite,
     ingredients,
     count,

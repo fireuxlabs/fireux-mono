@@ -11,6 +11,7 @@ type SupplierRecord = Record<string, unknown>
 
 type UseKitchenSupplierFetchOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
+  databaseId?: string | Ref<string | null | undefined>
   enabled?: boolean | Ref<boolean | null | undefined>
 }
 
@@ -40,7 +41,9 @@ export function useKitchenSupplierFetch(
   kitchenId: Ref<string> | string,
   options: UseKitchenSupplierFetchOptions = {}
 ) {
-  const { firestoreFetchCollection } = useFirestoreRead()
+  const { firestoreFetchCollection } = useFirestoreRead({
+    databaseId: options.databaseId,
+  })
   const { appId } = useFireUXConfig()
 
   const isEnabled = computed(() => unref(options.enabled) !== false)
@@ -62,6 +65,7 @@ export function useKitchenSupplierFetch(
       ? resolveKitchenCollectionPath(kitchenCollectionPath.value, resolvedKitchenId.value)
       : ''
   )
+  const databaseIdKey = computed(() => normalizeString(unref(options.databaseId)))
 
   const canonicalCorePath = computed(() => (isEnabled.value ? 'suppliers' : ''))
 
@@ -74,8 +78,8 @@ export function useKitchenSupplierFetch(
   const appSuppliersRef = shallowRef(null) as ShallowRef<Ref<SupplierRecord[] | undefined> | null>
 
   watch(
-    collectionPath,
-    (nextPath) => {
+    [collectionPath, databaseIdKey],
+    ([nextPath]) => {
       supplierLinksRef.value = nextPath ? firestoreFetchCollection<SupplierRecord>(nextPath) : null
     },
     { immediate: true }

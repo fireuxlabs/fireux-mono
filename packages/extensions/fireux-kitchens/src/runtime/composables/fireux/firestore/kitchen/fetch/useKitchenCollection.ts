@@ -6,10 +6,14 @@ import {
 } from 'firebase/firestore'
 import { computed, isRef, type Ref } from 'vue'
 import type { Place } from 'fireux-places/runtime/models/place.model'
-import { getDemoKitchens } from '../../../app/utils/kitchen-demo-scenarios'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import {
+  readRuntimeSimulationFirestoreDatabaseId,
+  useFirestore,
+  useFirestoreResolver,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { getDemoKitchens } from '../../../app/utils/kitchen-demo-scenarios'
 import type { KitchenSurface } from '../utils/view/useKitchenInterface'
 
 type KitchenCollectionDoc = KitchenSurface
@@ -19,7 +23,15 @@ type AppKitchenCollectionDoc = {
 }
 
 const DEFAULT_COLLECTION_PATH = 'kitchens'
-const TEST_COLLECTION_PATH = 'test-kitchens'
+const requireSimulationDatabaseId = () => {
+  const databaseId = readRuntimeSimulationFirestoreDatabaseId()
+  if (!databaseId) {
+    throw new Error(
+      'Missing firebase.simulationDatabaseId for kitchen test-mode reads.'
+    )
+  }
+  return databaseId
+}
 export type KitchenCollectionFilterValue = string | number | null | undefined
 export type KitchenCollectionFilter = {
   ids?: KitchenCollectionFilterValue[] | null | undefined
@@ -30,22 +42,6 @@ export type KitchenCollectionSource = 'live' | 'demo' | 'test'
 type UseKitchenCollectionOptions = {
   source?: KitchenCollectionSource | Ref<KitchenCollectionSource | null | undefined> | null
   filter?: KitchenCollectionFilter | Ref<KitchenCollectionFilter | null | undefined> | null
-}
-
-function toDemoKitchenSurface(
-  kitchen: ReturnType<typeof getDemoKitchens>[number]
-): KitchenCollectionDoc {
-  const id = String(kitchen.id || '').trim()
-
-  return {
-    id,
-    slug: id,
-    route_scope: 'demo',
-    place_id: id,
-    name: String(kitchen.name || '').trim(),
-    short_address: String(kitchen.label || '').trim(),
-    image_url: kitchen.image_url,
-  }
 }
 
 const pickPlaceForKitchen = (
@@ -86,8 +82,13 @@ export function useKitchenCollection(
   options: UseKitchenCollectionOptions = {}
 ) {
   const db = useFirestore()
+  const simulationDatabaseId = computed(
+    () => requireSimulationDatabaseId()
+  )
+  const resolveSimulationDb = useFirestoreResolver(simulationDatabaseId)
   const { appId } = useFireUXConfig()
   const { firestoreFetchCollection, firestoreQuery } = useFirestoreRead()
+  const simulationRead = useFirestoreRead({ databaseId: simulationDatabaseId })
   const sourceMode = computed<KitchenCollectionSource>(() => {
     if (isRef(options.source)) return options.source.value ?? 'live'
     return options.source ?? 'live'
@@ -113,19 +114,33 @@ export function useKitchenCollection(
       )
   )
   const shouldHydrate = computed(() => sourceMode.value === 'live')
-
-  const demoKitchens = computed<KitchenCollectionDoc[]>(() =>
-    getDemoKitchens().map(toDemoKitchenSurface)
+  const localDemoSource = computed<KitchenCollectionDoc[]>(() =>
+    getDemoKitchens().map((kitchen) => ({
+      ...kitchen,
+      short_address: kitchen.label,
+      route_scope: 'demo',
+    }))
   )
+
   const firestoreSource = computed(() => {
-    if (sourceMode.value === 'demo') return null
+    if (sourceMode.value === 'demo') {
+      return localDemoSource
+    }
 
-    const collectionPath =
-      sourceMode.value === 'test'
-        ? TEST_COLLECTION_PATH
-        : DEFAULT_COLLECTION_PATH
+    if (sourceMode.value === 'test') {
+      const q = fsq(
+        collection(resolveSimulationDb(), DEFAULT_COLLECTION_PATH),
+        where('simulation_kind', '==', 'test')
+      ) as Query<KitchenCollectionDoc>
 
-    return firestoreFetchCollection<KitchenCollectionDoc>(collectionPath)
+      return simulationRead.firestoreQuery<KitchenCollectionDoc>(
+        q,
+        `${simulationDatabaseId.value}-${DEFAULT_COLLECTION_PATH}-test`,
+        DEFAULT_COLLECTION_PATH
+      )
+    }
+
+    return firestoreFetchCollection<KitchenCollectionDoc>(DEFAULT_COLLECTION_PATH)
   })
   const overlaySource = computed(() => {
     if (sourceMode.value !== 'live') return null
@@ -160,10 +175,7 @@ export function useKitchenCollection(
       if (placeId) placesById.set(placeId, place)
     }
 
-    const rootItems =
-      sourceMode.value === 'demo'
-        ? demoKitchens.value
-        : (firestoreSource.value?.value ?? [])
+    const rootItems = firestoreSource.value?.value ?? []
 
     return rootItems
       .map((kitchen) => {
@@ -180,6 +192,10 @@ export function useKitchenCollection(
           ...pickPlaceForKitchen(place),
           ...kitchen,
           id: kitchenId,
+          route_scope:
+            sourceMode.value === 'demo' || sourceMode.value === 'test'
+              ? sourceMode.value
+              : kitchen.route_scope,
         }
       })
       .filter(Boolean) as KitchenCollectionDoc[]

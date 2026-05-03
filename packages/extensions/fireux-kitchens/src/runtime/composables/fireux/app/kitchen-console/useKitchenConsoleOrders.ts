@@ -10,6 +10,7 @@ export function useKitchenConsoleOrders() {
     selectedMode,
     kitchenId,
     rootCollection,
+    databaseId,
     canWrite,
   } = useKitchenConsole()
   const fetchKitchenId = computed(() =>
@@ -18,6 +19,7 @@ export function useKitchenConsoleOrders() {
   const { orders: liveOrders, pending: livePending, ordersPath } =
     useKitchenOrdersFetch(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
+      databaseId,
     })
   const page = useKitchenConsoleReadPage<KitchenOrder>({
     collectionName: 'orders',
@@ -34,6 +36,7 @@ export function useKitchenConsoleOrders() {
     mode: selectedMode.value,
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
+    databaseId: databaseId.value,
     collectionPath: ordersPath.value,
     count: orders.value.length,
     pending: pending.value,
@@ -47,6 +50,7 @@ export function useKitchenConsoleOrders() {
     kitchenId,
     collectionPath: ordersPath,
     rootCollection,
+    databaseId,
     canWrite,
     orders,
     pending,

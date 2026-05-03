@@ -10,6 +10,7 @@ import {
 
 type UseKitchenConsoleCollectionOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
+  databaseId?: string | Ref<string | null | undefined>
 }
 
 export function useKitchenConsoleCollection<T>(
@@ -18,7 +19,9 @@ export function useKitchenConsoleCollection<T>(
   options: UseKitchenConsoleCollectionOptions = {}
 ) {
   const { appId } = useFireUXConfig()
-  const { firestoreFetchCollection } = useFirestoreRead()
+  const { firestoreFetchCollection } = useFirestoreRead({
+    databaseId: options.databaseId,
+  })
 
   const resolvedKitchenId = computed(() =>
     normalizeString(typeof kitchenId === 'string' ? kitchenId : kitchenId.value)
@@ -36,12 +39,13 @@ export function useKitchenConsoleCollection<T>(
       appId,
     })
   )
+  const databaseIdKey = computed(() => normalizeString(unref(options.databaseId)))
 
   const collectionRef = shallowRef(null) as ShallowRef<Ref<T[] | undefined> | null>
 
   watch(
-    collectionPath,
-    (nextPath) => {
+    [collectionPath, databaseIdKey],
+    ([nextPath]) => {
       collectionRef.value = nextPath ? firestoreFetchCollection<T>(nextPath) : null
     },
     { immediate: true }

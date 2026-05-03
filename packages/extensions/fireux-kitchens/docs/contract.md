@@ -60,7 +60,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `test`: Firestore-backed test kitchens
   - `live`: my real kitchens for this app
 - `test` canon is one personal kitchen per signed-in user:
-  - `test-kitchens/{uid}`
+  - `misebox-simulation/kitchens/{uid}`
   - ensured on entry to `/console/kitchen` in `test` mode
   - not created during auth
 - `my real kitchens` means kitchens the current user can operate through the app overlay:

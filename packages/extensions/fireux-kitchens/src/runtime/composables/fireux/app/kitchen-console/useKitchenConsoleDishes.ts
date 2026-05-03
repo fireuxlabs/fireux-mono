@@ -40,6 +40,7 @@ export function useKitchenConsoleDishes(
     selectedMode,
     kitchenId,
     rootCollection,
+    databaseId,
     canWrite,
   } = useKitchenConsole()
   const fetchKitchenId = computed(() =>
@@ -48,6 +49,7 @@ export function useKitchenConsoleDishes(
   const { dishes: liveDishes, pending: livePending, collectionPath } =
     useKitchenDishCollection(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
+      databaseId,
     })
   const sectionFetchKitchenId = computed(() =>
     options.resolveMenuSections === false ? '' : fetchKitchenId.value
@@ -58,6 +60,7 @@ export function useKitchenConsoleDishes(
     collectionPath: sectionMenusCollectionPath,
   } = useKitchenMenuCollection(sectionFetchKitchenId, {
     kitchenCollectionPath: rootCollection,
+    databaseId,
   })
   const page = useKitchenConsoleReadPage<Dish>({
     collectionName: 'dishes',
@@ -197,6 +200,7 @@ export function useKitchenConsoleDishes(
     mode: selectedMode.value,
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
+    databaseId: databaseId.value,
     collectionPath: collectionPath.value,
     count: dishes.value.length,
     pending: pending.value,
@@ -217,6 +221,7 @@ export function useKitchenConsoleDishes(
     kitchenId,
     collectionPath,
     rootCollection,
+    databaseId,
     canWrite,
     dishes,
     pending,

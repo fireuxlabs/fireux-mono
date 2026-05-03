@@ -23,6 +23,7 @@ export function useKitchenConsoleRecipes() {
     selectedMode,
     kitchenId,
     rootCollection,
+    databaseId,
     canWrite,
   } = useKitchenConsole()
   const fetchKitchenId = computed(() =>
@@ -31,6 +32,7 @@ export function useKitchenConsoleRecipes() {
   const { recipes: liveRecipes, count: liveCount, pending: livePending, collectionPath } =
     useKitchenRecipeCollection(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
+      databaseId,
     })
   const {
     dishes: liveDishes,
@@ -38,6 +40,7 @@ export function useKitchenConsoleRecipes() {
     collectionPath: dishesCollectionPath,
   } = useKitchenDishCollection(fetchKitchenId, {
     kitchenCollectionPath: rootCollection,
+    databaseId,
   })
   const page = useKitchenConsoleReadPage<Recipe>({
     collectionName: 'recipes',
@@ -119,6 +122,7 @@ export function useKitchenConsoleRecipes() {
     mode: selectedMode.value,
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
+    databaseId: databaseId.value,
     collectionPath: collectionPath.value,
     dishesCollectionPath: dishesCollectionPath.value,
     count: count.value,
@@ -139,6 +143,7 @@ export function useKitchenConsoleRecipes() {
     kitchenId,
     collectionPath,
     rootCollection,
+    databaseId,
     canWrite,
     liveCount,
     recipes,

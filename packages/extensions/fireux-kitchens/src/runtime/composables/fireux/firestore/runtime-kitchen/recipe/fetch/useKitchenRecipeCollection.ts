@@ -10,13 +10,16 @@ const resolveRecipesPath = (kitchenCollectionPath: string, kitchenId: string) =>
 
 type UseKitchenRecipeCollectionOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
+  databaseId?: string | Ref<string | null | undefined>
 }
 
 export function useKitchenRecipeCollection(
   kitchenId?: string | Ref<string | null | undefined>,
   options: UseKitchenRecipeCollectionOptions = {}
 ) {
-  const { firestoreFetchCollection } = useFirestoreRead()
+  const { firestoreFetchCollection } = useFirestoreRead({
+    databaseId: options.databaseId,
+  })
   const { appId } = useFireUXConfig()
 
   const resolvedKitchenId = computed(() =>
@@ -34,12 +37,13 @@ export function useKitchenRecipeCollection(
       ? resolveRecipesPath(kitchenCollectionPath.value, resolvedKitchenId.value)
       : ''
   )
+  const databaseIdKey = computed(() => String(unref(options.databaseId) || '').trim())
 
   const collectionRef = shallowRef(null) as ShallowRef<Ref<Record<string, unknown>[] | undefined> | null>
 
   watch(
-    collectionPath,
-    (nextPath) => {
+    [collectionPath, databaseIdKey],
+    ([nextPath]) => {
       collectionRef.value = nextPath ? firestoreFetchCollection<Record<string, unknown>>(nextPath) : null
     },
     { immediate: true }

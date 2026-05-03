@@ -10,6 +10,7 @@ export type FireuxEcosystemConfig = {
     storageBucket: string
     messagingSenderId: string
     databaseId?: string
+    simulationDatabaseId?: string
   }
 
   /**

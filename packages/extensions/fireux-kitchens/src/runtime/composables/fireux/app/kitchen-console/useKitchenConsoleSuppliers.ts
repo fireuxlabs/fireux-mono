@@ -10,6 +10,7 @@ export function useKitchenConsoleSuppliers() {
     selectedMode,
     kitchenId,
     rootCollection,
+    databaseId,
     canWrite,
   } = useKitchenConsole()
   const fetchKitchenId = computed(() =>
@@ -18,6 +19,7 @@ export function useKitchenConsoleSuppliers() {
   const { suppliers: liveSuppliers, count: liveCount, pending: livePending, collectionPath } =
     useKitchenSupplierFetch(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
+      databaseId,
     })
   const typedLiveSuppliers = computed<SupplierSurface[]>(() => liveSuppliers.value as SupplierSurface[])
   const page = useKitchenConsoleReadPage<SupplierSurface>({
@@ -36,6 +38,7 @@ export function useKitchenConsoleSuppliers() {
     mode: selectedMode.value,
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
+    databaseId: databaseId.value,
     collectionPath: collectionPath.value,
     count: count.value,
     pending: pending.value,
@@ -49,6 +52,7 @@ export function useKitchenConsoleSuppliers() {
     kitchenId,
     collectionPath,
     rootCollection,
+    databaseId,
     canWrite,
     liveCount,
     suppliers,

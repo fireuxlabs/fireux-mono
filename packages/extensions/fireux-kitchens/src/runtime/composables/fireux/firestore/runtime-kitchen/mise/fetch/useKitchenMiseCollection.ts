@@ -4,6 +4,7 @@ import { useKitchenConsoleCollection } from '../../fetch/useKitchenConsoleCollec
 
 type UseKitchenMiseCollectionOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
+  databaseId?: string | Ref<string | null | undefined>
 }
 
 export function useKitchenMiseCollection(

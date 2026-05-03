@@ -11,7 +11,11 @@ import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth
 import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceSave'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import {
+  readRuntimeSimulationFirestoreDatabaseId,
+  useFirestore,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { computed } from 'vue'
 import type {
   AppKitchen,
   Kitchen,
@@ -19,6 +23,15 @@ import type {
 } from '../../../../../models/kitchen.model'
 
 const normalizeString = (value: unknown) => String(value || '').trim()
+const requireSimulationDatabaseId = () => {
+  const databaseId = readRuntimeSimulationFirestoreDatabaseId()
+  if (!databaseId) {
+    throw new Error(
+      'Missing firebase.simulationDatabaseId for kitchen test-mode writes.'
+    )
+  }
+  return databaseId
+}
 const resolveTestUserLabel = (displayName: unknown, uid: unknown) => {
   const resolvedDisplayName = normalizeString(displayName)
   if (resolvedDisplayName) return resolvedDisplayName
@@ -58,15 +71,25 @@ export type EnsureKitchenOptions = {
 
 export function useKitchenCreate(options: KitchenCreateOptions = {}) {
   const db = useFirestore()
+  const simulationDatabaseId = computed(
+    () => requireSimulationDatabaseId()
+  )
+  const simulationDb = useFirestore(simulationDatabaseId)
   const { setDocument } = useFirestoreCreate()
+  const { setDocument: setSimulationDocument } = useFirestoreCreate({
+    databaseId: simulationDatabaseId,
+  })
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
   const { ensurePlaceExists } = usePlaceSave()
   const { ensureConsole } = useConsoleEnsure()
   const { uid, currentUser } = useAuth()
   const collectionPath =
-    options.test ? 'test-kitchens' : options.collectionPath ?? 'kitchens'
-  const isTestKitchenCollection =
-    options.test === true || collectionPath === 'test-kitchens'
+    options.test ? 'kitchens' : options.collectionPath ?? 'kitchens'
+  const isTestKitchenCollection = options.test === true
+  const activeDb = isTestKitchenCollection ? simulationDb : db
+  const activeSetDocument = isTestKitchenCollection
+    ? setSimulationDocument
+    : setDocument
   const shouldEnsurePlace = options.ensurePlace ?? !isTestKitchenCollection
 
   async function createTestKitchen(
@@ -83,7 +106,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       throw new Error('Test kitchen id is required')
     }
 
-    const ref = doc(db, 'test-kitchens', testId)
+    const ref = doc(simulationDb, 'kitchens', testId)
     const snap = await getDoc(ref)
     if (snap.exists()) {
       return { id: testId, created: false }
@@ -95,13 +118,16 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       throw new Error('Test kitchen slug is required')
     }
 
-    await setDocument<Partial<Kitchen> & {
+    await setSimulationDocument<Partial<Kitchen> & {
       slug?: string
       name?: string
       short_address?: string
       image_url?: string
+      simulation_kind?: string
+      can_write?: boolean
+      is_test_kitchen?: boolean
     }>(
-      'test-kitchens',
+      'kitchens',
       testId,
       {
         place_id: testId,
@@ -109,6 +135,9 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
         name,
         short_address: userLabel,
         image_url: imageUrl,
+        simulation_kind: 'test',
+        can_write: true,
+        is_test_kitchen: true,
       },
       {
         creator: false,
@@ -138,7 +167,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
           throw new Error(`Unable to resolve place for kitchen "${resolvedId}"`)
         }
       } else {
-        const placeSnap = await getDoc(doc(db, 'places', resolvedId))
+        const placeSnap = await getDoc(doc(activeDb, 'places', resolvedId))
         if (!placeSnap.exists()) {
           throw new Error(
             `Kitchen "${resolvedId}" requires an existing place or a place payload`
@@ -163,6 +192,8 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
 
     if (isTestKitchenCollection) {
       resolvedPayload.is_test_kitchen = true
+      resolvedPayload.simulation_kind = 'test'
+      resolvedPayload.can_write = true
     }
 
     const resolvedName =
@@ -185,7 +216,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       resolvedPayload.image_url = explicitImageUrl
     }
 
-    const ref = doc(db, collectionPath, resolvedId)
+    const ref = doc(activeDb, collectionPath, resolvedId)
     const snap = await getDoc(ref)
     if (snap.exists()) {
       if (!isTestKitchenCollection) {
@@ -197,7 +228,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       return { id: resolvedId, created: false }
     }
 
-    await setDocument<Kitchen>(
+    await activeSetDocument<Kitchen>(
       collectionPath,
       resolvedId,
       resolvedPayload as Kitchen,

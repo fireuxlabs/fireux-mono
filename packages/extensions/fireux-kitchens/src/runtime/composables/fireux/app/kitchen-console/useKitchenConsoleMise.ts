@@ -11,6 +11,7 @@ export function useKitchenConsoleMise() {
     selectedMode,
     kitchenId,
     rootCollection,
+    databaseId,
     canWrite,
   } = useKitchenConsole()
   const fetchKitchenId = computed(() =>
@@ -19,6 +20,7 @@ export function useKitchenConsoleMise() {
   const { miseTasks: liveMiseTasks, pending: livePending, collectionPath } =
     useKitchenMiseCollection(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
+      databaseId,
     })
   const page = useKitchenConsoleReadPage<KitchenMiseTask>({
     collectionName: 'mise',
@@ -36,7 +38,7 @@ export function useKitchenConsoleMise() {
     () =>
       canWrite.value &&
       selectedMode.value === 'test' &&
-      rootCollection.value === 'test-kitchens'
+      rootCollection.value === 'kitchens'
   )
   const isDone = (task: KitchenMiseTask) => {
     const source = task as Record<string, unknown>
@@ -63,6 +65,7 @@ export function useKitchenConsoleMise() {
     mode: selectedMode.value,
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,
+    databaseId: databaseId.value,
     collectionPath: collectionPath.value,
     count: miseTasks.value.length,
     pending: pending.value,
@@ -77,6 +80,7 @@ export function useKitchenConsoleMise() {
     kitchenId,
     collectionPath,
     rootCollection,
+    databaseId,
     canWrite,
     canToggleMise,
     miseTasks,

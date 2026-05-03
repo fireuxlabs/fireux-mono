@@ -1,11 +1,16 @@
 import { updateDoc, doc, serverTimestamp } from 'firebase/firestore'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useRequireUser } from '../../firebase/useRequireUser'
+import type { Ref } from 'vue'
+
+type UseFirestoreUpdateOptions = {
+  databaseId?: string | Ref<string | null | undefined> | null | undefined
+}
 
 type UpdateOpts = Record<string, never>
 
-export function useFirestoreUpdate() {
-  const db = useFirestore()
+export function useFirestoreUpdate(options: UseFirestoreUpdateOptions = {}) {
+  const resolveDb = useFirestoreResolver(options.databaseId)
   const FORBIDDEN_TOP_LEVEL_KEYS = new Set(['id', 'uid', 'created', 'updated'])
 
   async function updateDocument<T>(
@@ -15,7 +20,7 @@ export function useFirestoreUpdate() {
     _opts: UpdateOpts = {}
   ): Promise<void> {
     const user = await useRequireUser()
-    const ref = doc(db, collectionPath, id)
+    const ref = doc(resolveDb(), collectionPath, id)
     const patch = { ...(data as any) } as Record<string, unknown>
     const strippedKeys: string[] = []
 

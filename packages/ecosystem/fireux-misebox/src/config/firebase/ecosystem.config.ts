@@ -12,6 +12,7 @@ export const ecosystemConfig = {
     storageBucket: 'misebox-78f9c.appspot.com',
     messagingSenderId: '102749723716',
     databaseId: 'misebox',
+    simulationDatabaseId: 'misebox-simulation',
   },
   ssrRegion: 'europe-west6',
 } as const satisfies FireuxEcosystemConfig
