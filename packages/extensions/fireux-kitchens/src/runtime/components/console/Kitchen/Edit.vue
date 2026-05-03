@@ -21,47 +21,7 @@
         </div>
       </template>
 
-      <div class="space-y-4">
-        <MoleculesFormsFirestoreSimpleField
-          label="Name"
-          :firebase-value="name"
-          placeholder="Kitchen name"
-          :maxlength="120"
-          :update-function="handleName"
-        />
-
-        <MoleculesFormsFirestoreSimpleField
-          label="Short name"
-          :firebase-value="shortName"
-          placeholder="Short display name"
-          :maxlength="80"
-          :update-function="handleShortName"
-        />
-
-        <MoleculesFormsFirestoreSimpleField
-          label="Tagline"
-          :firebase-value="tagline"
-          placeholder="Short service tagline"
-          :maxlength="120"
-          :update-function="handleTagline"
-        />
-
-        <MoleculesFormsFirestoreSimpleField
-          label="Short address"
-          :firebase-value="shortAddress"
-          placeholder="Short address"
-          :maxlength="160"
-          :update-function="handleShortAddress"
-        />
-
-        <MoleculesFormsFirestoreSimpleField
-          label="Formatted address"
-          :firebase-value="formattedAddress"
-          placeholder="Full formatted address"
-          :maxlength="240"
-          :update-function="handleFormattedAddress"
-        />
-
+      <div class="space-y-6">
         <div class="flex flex-col items-center gap-2">
           <MoleculesFormsFirestoreImagePicker
             :src="imageUrl"
@@ -73,6 +33,50 @@
             Uploading image…
           </p>
         </div>
+
+        <section class="space-y-4">
+          <MoleculesFormsFirestoreSimpleField
+            label="Name"
+            :firebase-value="name"
+            placeholder="Kitchen name"
+            :maxlength="120"
+            :update-function="handleName"
+          />
+
+          <MoleculesFormsFirestoreSimpleField
+            label="Short name"
+            :firebase-value="shortName"
+            placeholder="Short display name"
+            :maxlength="80"
+            :update-function="handleShortName"
+          />
+
+          <MoleculesFormsFirestoreSimpleField
+            label="Tagline"
+            :firebase-value="tagline"
+            placeholder="Short service tagline"
+            :maxlength="120"
+            :update-function="handleTagline"
+          />
+        </section>
+
+        <section class="space-y-4">
+          <MoleculesFormsFirestoreSimpleField
+            label="Short address"
+            :firebase-value="shortAddress"
+            placeholder="Short address"
+            :maxlength="160"
+            :update-function="handleShortAddress"
+          />
+
+          <MoleculesFormsFirestoreSimpleField
+            label="Formatted address"
+            :firebase-value="formattedAddress"
+            placeholder="Full formatted address"
+            :maxlength="240"
+            :update-function="handleFormattedAddress"
+          />
+        </section>
       </div>
     </UCard>
   </section>

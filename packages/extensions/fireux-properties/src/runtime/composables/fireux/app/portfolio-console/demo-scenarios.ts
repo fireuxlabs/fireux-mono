@@ -113,6 +113,7 @@ const demoPortfolioScenarios: DemoPortfolioScenario[] = [
       'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=320&h=320&q=80',
     portfolio: {
       name: 'Rivergate Estate',
+      tagline: 'Mixed-use portfolio operations in London',
       slug: 'rivergate-estate',
       owner_label: 'Rivergate Holdings',
       strategy_label: 'Urban income and compliance',
@@ -345,6 +346,7 @@ const toPortfolio = (scenario: DemoPortfolioScenario): DemoPortfolio => {
     app_scope_app_id: '',
     name:
       normalizeString(portfolio.name) || normalizeString(scenario.name) || id,
+    tagline: normalizeString(portfolio.tagline),
     slug: normalizeString(portfolio.slug) || id,
     owner_label: normalizeString(portfolio.owner_label),
     status: portfolio.status === 'archived' ? 'archived' : 'active',

@@ -159,46 +159,71 @@ export function useSupplierUpdate(
     await updateCoreSupplier(patch, options)
   }
 
-  const updateHeadline = async (value: string) => {
+  const updateHeadline = async (value: string, options: UpdateOptions = {}) => {
     const normalized = cleanString(value)
-    await updateCoreSupplier({ supplier_headline: normalized ?? undefined })
+    await updateCoreSupplier(
+      { supplier_headline: normalized ?? undefined },
+      options
+    )
   }
 
-  const updateSummary = async (value: string) => {
+  const updateSummary = async (value: string, options: UpdateOptions = {}) => {
     const normalized = cleanString(value)
-    await updateCoreSupplier({ summary: normalized ?? undefined })
+    await updateCoreSupplier({ summary: normalized ?? undefined }, options)
   }
 
-  const updateBio = async (value: string) => {
+  const updateBio = async (value: string, options: UpdateOptions = {}) => {
     const normalized = cleanString(value)
-    await updateCoreSupplier({ supplier_bio: normalized ?? undefined })
+    await updateCoreSupplier({ supplier_bio: normalized ?? undefined }, options)
   }
 
-  const updateImage = async (value: string) => {
+  const updateImage = async (value: string, options: UpdateOptions = {}) => {
     const normalized = cleanString(value)
-    await updateCoreSupplier({ supplier_image: normalized ?? undefined })
+    await updateCoreSupplier({ supplier_image: normalized ?? undefined }, options)
   }
 
-  const updateProductCategories = async (value: string | string[]) => {
-    await updateCoreSupplier({
-      supplier_product_categories: toStringArray(value),
-    })
+  const updateProductCategories = async (
+    value: string | string[],
+    options: UpdateOptions = {}
+  ) => {
+    await updateCoreSupplier(
+      {
+        supplier_product_categories: toStringArray(value),
+      },
+      options
+    )
   }
 
-  const updateDeliveryAreas = async (value: string | string[]) => {
-    await updateCoreSupplier({
-      supplier_delivery_areas: toStringArray(value),
-    })
+  const updateDeliveryAreas = async (
+    value: string | string[],
+    options: UpdateOptions = {}
+  ) => {
+    await updateCoreSupplier(
+      {
+        supplier_delivery_areas: toStringArray(value),
+      },
+      options
+    )
   }
 
-  const updateOrganizationName = async (value: string) => {
+  const updateOrganizationName = async (
+    value: string,
+    options: UpdateOptions = {}
+  ) => {
     const normalized = cleanString(value)
-    await updateCoreSupplier({ supplier_organization_name: normalized ?? undefined })
+    await updateCoreSupplier(
+      { supplier_organization_name: normalized ?? undefined },
+      options
+    )
   }
 
-  const updateTagline = async (value: string) => updateHeadline(value)
+  const updateTagline = async (value: string, options: UpdateOptions = {}) => {
+    const normalized = cleanString(value)
+    await updateCoreSupplier({ tagline: normalized ?? undefined }, options)
+  }
 
-  const updateBioShort = async (value: string) => updateSummary(value)
+  const updateBioShort = async (value: string, options: UpdateOptions = {}) =>
+    updateSummary(value, options)
 
   return {
     commitUpdate,

@@ -40,6 +40,8 @@ export const PortfolioModel = {
   ...FireuxAppScope,
 
   name: '',
+  tagline: '',
+  image_url: '',
   slug: '',
   owner_label: '',
   status: 'active' as PortfolioStatus,
@@ -68,9 +70,17 @@ export type AppPortfolio = FireuxAppOverlay
 
 export type PortfolioCreateInput = Omit<
   Portfolio,
-  'id' | 'created' | 'updated' | 'app_scope_state' | 'app_scope_app_id'
+  | 'id'
+  | 'created'
+  | 'updated'
+  | 'app_scope_state'
+  | 'app_scope_app_id'
+  | 'tagline'
+  | 'image_url'
 > &
-  Partial<Pick<Portfolio, 'app_scope_state' | 'app_scope_app_id'>> & {
+  Partial<
+    Pick<Portfolio, 'app_scope_state' | 'app_scope_app_id' | 'tagline' | 'image_url'>
+  > & {
     slug?: string
   }
 

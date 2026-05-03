@@ -79,14 +79,14 @@ export function useSupplierConsole(
     if (selectedMode.value === 'test') {
       return {
         title: 'Test Supplier',
-        subtitle: normalizeString(target.supplier_headline) || undefined,
+        subtitle: normalizeString(target.tagline) || undefined,
         imageUrl: normalizeString(target.supplier_image) || undefined,
       }
     }
 
     return {
       title: normalizeString(target.supplier_organization_name),
-      subtitle: normalizeString(target.supplier_headline) || undefined,
+      subtitle: normalizeString(target.tagline) || undefined,
       imageUrl: normalizeString(target.supplier_image) || undefined,
     }
   })

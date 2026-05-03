@@ -1,18 +1,54 @@
 <template>
   <UDashboardPanel id="console-portfolio-identity">
     <template #header>
-      <LayoutsConsoleNavbar title="Portfolio Identity" />
+      <LayoutsConsoleNavbar :title="navTitle">
+        <template #right>
+          <div class="inline-flex items-center gap-1">
+            <UButton
+              icon="i-lucide-eye"
+              size="sm"
+              :variant="view === 'identity' ? 'solid' : 'ghost'"
+              color="neutral"
+              aria-label="View portfolio identity"
+              @click="view = 'identity'"
+            />
+
+            <UButton
+              icon="i-lucide-notebook-pen"
+              size="sm"
+              :variant="view === 'edit' ? 'solid' : 'ghost'"
+              color="neutral"
+              aria-label="Edit portfolio identity"
+              :disabled="!canWrite"
+              @click="view = 'edit'"
+            />
+          </div>
+        </template>
+      </LayoutsConsoleNavbar>
     </template>
 
     <template #body>
-      <section class="space-y-4">
-        <ConsolePortfolioIdentity />
-      </section>
+      <div class="console-profile">
+        <ConsolePortfolioIdentity v-if="view === 'identity' || !canWrite" />
+
+        <ClientOnly v-else>
+          <div class="console-profile__section">
+            <ConsolePortfolioEdit />
+          </div>
+        </ClientOnly>
+      </div>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
+import { usePortfolioConsoleIdentity } from '../../../composables/fireux/app/portfolio-console/usePortfolioConsoleIdentity'
+import { ref } from 'vue'
+
+const navTitle = 'Portfolio Identity'
+const view = ref<'identity' | 'edit'>('identity')
+const { canWrite } = usePortfolioConsoleIdentity()
+
 definePageMeta({
   layout: 'console',
   nav: {

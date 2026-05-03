@@ -130,6 +130,8 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       app_scope_state: 'root_only',
       app_scope_app_id: '',
       name,
+      tagline: normalizeString(input?.tagline),
+      image_url: normalizeString(input?.image_url),
       slug,
       owner_label:
         normalizeString(input?.owner_label) ||
@@ -196,6 +198,8 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
         app_scope_state: 'root_only',
         app_scope_app_id: '',
         name,
+        tagline: normalizeString(input?.tagline),
+        image_url: normalizeString(input?.image_url),
         slug,
         owner_label:
           normalizeString(input?.owner_label) ||

@@ -12,13 +12,32 @@ export function useSupplierConsoleIdentity() {
     clearSelectedSupplier,
   } = useSupplierConsole()
 
-  const hello = computed(() => normalizeString(selectedSupplier.value?.hello))
+  const name = computed(() =>
+    normalizeString(selectedSupplier.value?.supplier_organization_name)
+  )
+  const tagline = computed(() => normalizeString((selectedSupplier.value as any)?.tagline))
+  const headline = computed(() => normalizeString(selectedSupplier.value?.supplier_headline))
+  const summary = computed(() => normalizeString(selectedSupplier.value?.summary))
+  const imageUrl = computed(() => normalizeString(selectedSupplier.value?.supplier_image))
+  const categories = computed(() =>
+    Array.isArray(selectedSupplier.value?.supplier_product_categories)
+      ? selectedSupplier.value?.supplier_product_categories
+      : []
+  )
+  const deliveryAreas = computed(() =>
+    Array.isArray(selectedSupplier.value?.supplier_delivery_areas)
+      ? selectedSupplier.value?.supplier_delivery_areas
+      : []
+  )
   const debug = computed(() => ({
     mode: selectedMode.value,
     supplierId: supplierId.value,
     rootCollection: rootCollection.value,
     canWrite: canWrite.value,
-    hello: hello.value,
+    name: name.value,
+    tagline: tagline.value,
+    headline: headline.value,
+    summary: summary.value,
     selectedSupplier: selectedSupplier.value,
   }))
 
@@ -29,7 +48,13 @@ export function useSupplierConsoleIdentity() {
     rootCollection,
     canWrite,
     clearSelectedSupplier,
-    hello,
+    name,
+    tagline,
+    headline,
+    summary,
+    imageUrl,
+    categories,
+    deliveryAreas,
     debug,
   }
 }

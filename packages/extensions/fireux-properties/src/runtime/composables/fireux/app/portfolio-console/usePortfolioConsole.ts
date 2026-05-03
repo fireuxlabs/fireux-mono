@@ -27,6 +27,7 @@ import type { Ref } from 'vue'
 type PortfolioConsoleMode = ConsoleMode
 export type PortfolioConsoleEntity = PortfolioSurface & {
   id?: string
+  tagline?: string
   image_url?: string
 }
 type UsePortfolioConsoleOptions = {
@@ -39,7 +40,7 @@ type UsePortfolioConsoleOptions = {
 export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
   const { uid } = useAuth()
   const normalizedUid = computed(() => normalizeString(uid.value))
-  const { avatarSrc, currentUser } = useUser()
+  const { avatarSrc } = useUser()
   const { pill } = usePortfolioInterface()
   const liveFilter = computed<PortfolioCollectionFilter>(() => {
     const explicitFilter = isRef(options.filter)
@@ -101,11 +102,14 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
         imageUrl: avatarSrc.value || card.imageUrl,
         avatarUrl: avatarSrc.value || card.avatarUrl,
         title: 'Test Portfolio',
-        subtitle: normalizeString(currentUser.value?.display_name),
+        subtitle: normalizeString(target.tagline),
       }
     }
 
-    return card
+    return {
+      ...card,
+      subtitle: normalizeString(target.tagline),
+    }
   })
 
   const portfolioState = {
@@ -121,21 +125,14 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
     if (selectedMode.value === 'test') {
       return {
         title: 'Test Portfolio',
-        subtitle:
-          normalizeString(target.name) ||
-          normalizeString(target.id) ||
-          undefined,
+        subtitle: normalizeString(target.tagline) || undefined,
         imageUrl: normalizeString(target.image_url) || undefined,
       }
     }
 
     return {
       title: normalizeString(target.name) || normalizeString(target.id),
-      subtitle:
-        normalizeString(target.region_label) ||
-        normalizeString(target.slug) ||
-        normalizeString(target.id) ||
-        undefined,
+      subtitle: normalizeString(target.tagline) || undefined,
       imageUrl: normalizeString(target.image_url) || undefined,
     }
   })
