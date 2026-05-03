@@ -3,10 +3,7 @@
     <UCard v-if="dishesSorted.length">
       <template #header>
         <div class="console-card-header">
-          <div class="console-card-header__title">Dish Profiles</div>
-          <p class="console-card-header__description">
-            Lightweight operator view of the selected kitchen's sellable dishes.
-          </p>
+          <div class="console-card-header__title">Dish Previews</div>
         </div>
       </template>
 

@@ -3,10 +3,7 @@
     <UCard v-if="menusSorted.length">
       <template #header>
         <div class="console-card-header">
-          <div class="console-card-header__title">Menu Profiles</div>
-          <p class="console-card-header__description">
-            Lightweight operator preview of the selected kitchen's service menus.
-          </p>
+          <div class="console-card-header__title">Menu Previews</div>
         </div>
       </template>
 

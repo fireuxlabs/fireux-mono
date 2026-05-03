@@ -185,9 +185,10 @@ const collectionFilteredBySection = computed(() => {
   )
 })
 
+const fullCollectionCount = computed(() => collection.value.length)
 const totalCount = computed(() => collectionFilteredBySection.value.length)
 const showSearchInput = computed(
-  () => showSearch.value && totalCount.value > 15
+  () => showSearch.value && fullCollectionCount.value > 15
 )
 
 const setActiveSection = (sectionId: string) => {

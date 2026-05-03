@@ -26,9 +26,10 @@
 </template>
 
 <script setup lang="ts">
-import type { Agent } from '../../../../../models/profiles/Agent/Agent.model';
+import { computed } from 'vue'
+import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
-defineProps<{
-  agent: Partial<Agent> | null | undefined
-}>()
+const { appProfile } = useAgent()
+
+const agent = computed(() => appProfile.value ?? null)
 </script>
