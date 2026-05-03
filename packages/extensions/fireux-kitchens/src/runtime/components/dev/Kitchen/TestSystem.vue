@@ -103,8 +103,9 @@
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { getDefaultDemoKitchen } from '../../../composables/fireux/app/utils/kitchen-demo-scenarios'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
@@ -118,6 +119,7 @@ const kitchenModelRuntime = KitchenModelRuntime
 const demoKitchenScenario = getDefaultDemoKitchen()
 const db = useFirestore()
 const { setDocument } = useFirestoreCreate()
+const { uid } = useAuth()
 
 const { firestoreFetchCollection } = useFirestoreRead()
 const kitchensCollection = firestoreFetchCollection<Kitchen>('test-kitchens')
@@ -181,11 +183,21 @@ type KitchenCollectionName =
   | 'purchases'
   | 'orders'
 
-const targetKitchenId = ref(String(demoKitchenScenario.kitchen?.id || '').trim())
+const defaultTargetKitchenId = computed(() => String(uid.value || '').trim())
+const targetKitchenId = ref('')
 const pruneMissing = ref(true)
 const isSyncing = ref(false)
 const syncError = ref('')
 const syncSummary = ref<{ kitchenId: string; written: number; pruned: number } | null>(null)
+
+watch(
+  defaultTargetKitchenId,
+  (nextKitchenId) => {
+    if (String(targetKitchenId.value || '').trim()) return
+    targetKitchenId.value = String(nextKitchenId || '').trim()
+  },
+  { immediate: true }
+)
 
 const syncCounts = computed(() => ({
   ingredients: demoKitchenScenario.kitchenIngredients.length,
@@ -208,6 +220,26 @@ const withKitchenId = <T extends Record<string, unknown>>(docs: T[], kitchenId: 
     id: String(doc.id || '').trim(),
     kitchen_id: kitchenId,
   }))
+
+const buildTestKitchenDoc = (kitchenId: string): Kitchen => {
+  const existingKitchen = hydratedById.value.get(kitchenId)
+  const existingName = String(existingKitchen?.name || '').trim()
+  const existingShortAddress = String(existingKitchen?.short_address || '').trim()
+  const existingImageUrl = String(existingKitchen?.image_url || '').trim()
+  const existingSlug = String((existingKitchen as any)?.slug || '').trim()
+
+  return {
+    id: kitchenId,
+    place_id: String(existingKitchen?.place_id || kitchenId).trim(),
+    slug: existingSlug || 'test-kitchen',
+    name: existingName || 'Test Kitchen',
+    short_address: existingShortAddress || 'Writable kitchen sandbox',
+    image_url: existingImageUrl || undefined,
+    is_test_kitchen: true,
+    created: (existingKitchen as any)?.created || { at: {} },
+    updated: { at: {} },
+  } as Kitchen
+}
 
 const buildKitchenIngredientsForSync = () => {
   const map = new Map<string, Record<string, unknown>>()
@@ -280,11 +312,7 @@ const syncDemoToTestKitchen = async () => {
   syncError.value = ''
 
   try {
-    const kitchenDoc: Kitchen = {
-      ...(demoKitchenScenario.kitchen as Kitchen),
-      id: kitchenId,
-      is_test_kitchen: true,
-    }
+    const kitchenDoc = buildTestKitchenDoc(kitchenId)
 
     await setDocument<Kitchen>('test-kitchens', kitchenId, kitchenDoc, {
       app: true,

@@ -1,5 +1,6 @@
 import { computed } from 'vue'
 import { useKitchenMiseCollection } from '../../firestore/runtime-kitchen/mise/fetch/useKitchenMiseCollection'
+import { useKitchenMiseToggleDone } from '../../firestore/runtime-kitchen/mise/mutations/useKitchenMiseToggleDone'
 import type { KitchenMiseTask } from '../../../../models/kitchen-mise.model'
 import { useKitchenConsole } from './useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
@@ -28,8 +29,36 @@ export function useKitchenConsoleMise() {
     livePending,
     collectionPath,
   })
+  const { toggleKitchenMiseDone } = useKitchenMiseToggleDone()
   const miseTasks = computed(() => page.collection.value.items)
   const pending = computed(() => page.collection.value.pending)
+  const canToggleMise = computed(
+    () =>
+      canWrite.value &&
+      selectedMode.value === 'test' &&
+      rootCollection.value === 'test-kitchens'
+  )
+  const isDone = (task: KitchenMiseTask) => {
+    const source = task as Record<string, unknown>
+    if (task.status === 'done') return true
+    return Boolean(
+      source.done ||
+        source.checked ||
+        source.complete ||
+        source.completed
+    )
+  }
+  const toggleDone = async (task: KitchenMiseTask) => {
+    const taskId = String(task?.id || '').trim()
+    if (!canToggleMise.value || !taskId) return
+
+    await toggleKitchenMiseDone({
+      kitchenId: kitchenId.value,
+      taskId,
+      done: !isDone(task),
+      kitchenCollectionPath: rootCollection.value,
+    })
+  }
   const debug = computed(() => ({
     mode: selectedMode.value,
     kitchenId: kitchenId.value,
@@ -38,6 +67,7 @@ export function useKitchenConsoleMise() {
     count: miseTasks.value.length,
     pending: pending.value,
     canWrite: canWrite.value,
+    canToggleMise: canToggleMise.value,
   }))
 
   return {
@@ -48,8 +78,10 @@ export function useKitchenConsoleMise() {
     collectionPath,
     rootCollection,
     canWrite,
+    canToggleMise,
     miseTasks,
     pending,
+    toggleDone,
     debug,
   }
 }

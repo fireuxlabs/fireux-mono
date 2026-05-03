@@ -85,6 +85,9 @@ const props = withDefaults(
     canWrite: false,
   }
 )
+const emit = defineEmits<{
+  (event: 'toggle-done', task: KitchenMiseTask): void
+}>()
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const statusRank = (task: KitchenMiseTask) => (isDone(task) ? 1 : 0)
@@ -114,8 +117,8 @@ const taskTitle = (task: KitchenMiseTask) =>
 const taskDescription = (task: KitchenMiseTask) =>
   normalizeString(task.description) || normalizeString(task.notes)
 
-const toggleDone = (_task: KitchenMiseTask) => {
+const toggleDone = (task: KitchenMiseTask) => {
   if (!props.canWrite) return
-  // TODO: wire to a safe mise done/not-done mutation for live/test mode.
+  emit('toggle-done', task)
 }
 </script>
