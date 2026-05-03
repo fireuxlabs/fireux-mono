@@ -1,6 +1,19 @@
 <template>
   <UCard v-if="dish">
     <div class="space-y-6">
+      <div class="space-y-2">
+        <div class="flex items-center gap-2">
+          <UChip :color="dish.active === false ? 'error' : 'success'" inset />
+          <h2 class="text-2xl font-semibold text-highlighted">
+            {{ dish.name || dish.short_name || dish.id || 'Untitled dish' }}
+          </h2>
+        </div>
+
+        <p v-if="dish.description" class="max-w-2xl text-sm text-dimmed">
+          {{ dish.description }}
+        </p>
+      </div>
+
       <div class="flex flex-col gap-5 md:flex-row md:items-start">
         <div
           class="h-32 w-32 shrink-0 overflow-hidden rounded-lg border border-default bg-elevated/40 md:h-40 md:w-40"
@@ -23,53 +36,6 @@
         </div>
 
         <div class="min-w-0 flex-1 space-y-5">
-          <div class="space-y-2">
-            <div class="flex items-center gap-2">
-              <UChip :color="dish.active === false ? 'error' : 'success'" inset />
-              <h2 class="text-2xl font-semibold text-highlighted">
-                {{ dish.name || dish.short_name || dish.id || 'Untitled dish' }}
-              </h2>
-            </div>
-
-            <p
-              v-if="dish.short_name && dish.short_name !== dish.name"
-              class="text-sm text-toned"
-            >
-              {{ dish.short_name }}
-            </p>
-
-            <p v-if="dish.description" class="max-w-2xl text-sm text-dimmed">
-              {{ dish.description }}
-            </p>
-          </div>
-
-          <div class="console-summary-grid">
-            <div class="console-summary-field">
-              Primary recipe:
-              <span class="console-summary-value">
-                {{ dish.primary_recipe_id || 'Not linked' }}
-              </span>
-            </div>
-            <div class="console-summary-field">
-              Recipes:
-              <span class="console-summary-value">
-                {{ recipeCount }}
-              </span>
-            </div>
-            <div class="console-summary-field">
-              Ingredients:
-              <span class="console-summary-value">
-                {{ ingredientCount }}
-              </span>
-            </div>
-            <div class="console-summary-field">
-              Mise:
-              <span class="console-summary-value">
-                {{ miseCount }}
-              </span>
-            </div>
-          </div>
-
           <div class="grid gap-3 md:grid-cols-2">
             <UCard variant="soft">
               <div class="space-y-3">
@@ -143,6 +109,33 @@
             </div>
           </UCard>
 
+          <div class="console-summary-grid">
+            <div class="console-summary-field">
+              Primary recipe:
+              <span class="console-summary-value">
+                {{ dish.primary_recipe_id || 'Not linked' }}
+              </span>
+            </div>
+            <div class="console-summary-field">
+              Recipes:
+              <span class="console-summary-value">
+                {{ recipeCount }}
+              </span>
+            </div>
+            <div class="console-summary-field">
+              Ingredients:
+              <span class="console-summary-value">
+                {{ ingredientCount }}
+              </span>
+            </div>
+            <div class="console-summary-field">
+              Mise:
+              <span class="console-summary-value">
+                {{ miseCount }}
+              </span>
+            </div>
+          </div>
+
           <UCard variant="soft">
             <div class="space-y-3">
               <div>
@@ -196,7 +189,7 @@
               <div class="space-y-1">
                 <div class="text-sm font-medium text-highlighted">Sales</div>
                 <p class="text-xs text-dimmed">
-                  Menu usage, pricing, upsells, allergens, and sales notes will live here.
+                  Pricing, upsells, and sales notes will live here.
                 </p>
               </div>
             </UCard>
