@@ -95,7 +95,7 @@ export function useKitchenConsoleDishes(
     return sectionMenus.value
       .map((menu) => {
         const menuId = normalizeString(menu?.id)
-        const menuName = normalizeString(menu?.name) || menuId
+        const menuName = normalizeString(menu?.name)
         const menuSort = Number(menu?.sort_order ?? 0)
         const sections = Array.isArray(menu?.sections) ? menu.sections : []
         const dishIds = Array.from(
