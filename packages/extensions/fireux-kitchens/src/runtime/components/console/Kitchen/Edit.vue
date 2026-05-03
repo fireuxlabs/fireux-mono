@@ -17,7 +17,7 @@
     <UCard v-else>
       <template #header>
         <div class="console-card-header">
-          <div class="console-card-header__title">Kitchen Edit Core</div>
+          <div class="console-card-header__title">Kitchen Identity</div>
         </div>
       </template>
 
