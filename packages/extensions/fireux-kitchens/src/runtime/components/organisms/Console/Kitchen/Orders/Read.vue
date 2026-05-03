@@ -1,14 +1,10 @@
 <template>
   <div class="space-y-6">
-    <UCard>
-      <template #header>
-        <div class="console-card-header">
-          <div class="console-card-header__title">Orders</div>
-        </div>
-      </template>
-
-      <OrganismsOrdersCollectionManager :orders="orders" />
-    </UCard>
+    <OrganismsOrdersCollectionManager
+      :orders="orders"
+      title="Orders"
+      description="Browse active kitchen order tickets."
+    />
 
     <DevFireuxDebugPanel
       v-if="isDev"
