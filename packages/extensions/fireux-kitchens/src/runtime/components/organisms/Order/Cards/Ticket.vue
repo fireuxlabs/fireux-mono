@@ -1,7 +1,10 @@
 <template>
-  <UCard class="w-[18rem] max-w-full shrink-0">
+  <UCard
+    class="flex w-[18rem] max-w-full shrink-0 flex-col"
+    :ui="{ header: 'h-12', body: 'flex-1', footer: 'h-12' }"
+  >
     <template #header>
-      <div class="text-sm font-semibold text-highlighted">
+      <div class="flex h-full items-center text-sm font-semibold text-highlighted">
         {{ createdTimeLabel || 'Time unset' }}
       </div>
     </template>
@@ -22,7 +25,7 @@
     </div>
 
     <template #footer>
-      <div class="text-xs font-medium text-dimmed">
+      <div class="flex h-full items-center text-xs font-medium text-dimmed">
         {{ orderLabel }}
       </div>
     </template>
