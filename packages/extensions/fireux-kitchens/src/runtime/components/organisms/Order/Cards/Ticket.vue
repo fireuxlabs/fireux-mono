@@ -1,35 +1,32 @@
 <template>
-  <UCard
-    class="flex w-[18rem] max-w-full shrink-0 flex-col"
-    :ui="{ header: 'h-12', body: 'flex-1', footer: 'h-12' }"
+  <div
+    class="w-[18rem] max-w-full shrink-0 self-start overflow-hidden rounded-lg border border-default bg-default shadow-sm"
   >
-    <template #header>
-      <div class="flex h-full items-center text-sm font-semibold text-highlighted">
+    <div class="divide-y divide-default">
+      <div class="flex h-12 shrink-0 items-center px-4 text-sm font-semibold text-highlighted">
         {{ createdTimeLabel || 'Time unset' }}
       </div>
-    </template>
 
-    <div class="space-y-1">
-      <div
-        v-for="line in lines"
-        :key="line.id"
-        class="flex items-start gap-2 text-sm"
-      >
-        <span class="w-6 shrink-0 font-semibold">{{ line.qty }}x</span>
-        <span class="min-w-0">{{ line.label }}</span>
+      <div class="space-y-1 p-4">
+        <div
+          v-for="line in lines"
+          :key="line.id"
+          class="flex items-start gap-2 text-sm"
+        >
+          <span class="w-6 shrink-0 font-semibold">{{ line.qty }}x</span>
+          <span class="min-w-0">{{ line.label }}</span>
+        </div>
+
+        <div v-if="!lines.length" class="text-xs italic text-dimmed">
+          No items in this order.
+        </div>
       </div>
 
-      <div v-if="!lines.length" class="text-xs italic text-dimmed">
-        No items in this order.
-      </div>
-    </div>
-
-    <template #footer>
-      <div class="flex h-full items-center text-xs font-medium text-dimmed">
+      <div class="flex h-12 shrink-0 items-center px-4 text-xs font-medium text-dimmed">
         {{ orderLabel }}
       </div>
-    </template>
-  </UCard>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -7,7 +7,7 @@
         </div>
       </template>
 
-      <OrganismsOrderCollectionManager :orders="orders" />
+      <OrganismsOrdersCollectionManager :orders="orders" />
     </UCard>
 
     <DevFireuxDebugPanel

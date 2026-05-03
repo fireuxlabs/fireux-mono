@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="ticketOrders.length" class="flex flex-wrap gap-3">
+    <div v-if="ticketOrders.length" class="flex flex-wrap items-start gap-3">
       <OrganismsOrderCardsTicket
         v-for="ticket in ticketOrders"
         :key="ticket.id"
