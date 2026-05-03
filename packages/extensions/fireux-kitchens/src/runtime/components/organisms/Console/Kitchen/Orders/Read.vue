@@ -3,7 +3,6 @@
     <OrganismsOrdersCollectionManager
       :orders="orders"
       title="Orders"
-      description="Browse active kitchen order tickets."
     />
 
     <DevFireuxDebugPanel
