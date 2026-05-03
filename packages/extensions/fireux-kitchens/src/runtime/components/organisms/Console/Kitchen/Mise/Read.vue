@@ -7,6 +7,11 @@
       :link="true"
     />
 
+    <OrganismsMiseConsoleCore
+      :collection="miseTasks"
+      :can-write="canWrite"
+    />
+
     <DevFireuxDebugPanel
       v-if="isDev"
       title="Kitchen mise"
@@ -19,6 +24,6 @@
 <script setup lang="ts">
 import { useKitchenConsoleMise } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMise'
 
-const { miseTasks, debug } = useKitchenConsoleMise()
+const { miseTasks, canWrite, debug } = useKitchenConsoleMise()
 const isDev = import.meta.dev
 </script>
