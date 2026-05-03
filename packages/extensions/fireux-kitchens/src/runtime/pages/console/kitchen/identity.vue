@@ -42,6 +42,7 @@
 </template>
 
 <script setup lang="ts">
+import ConsoleKitchenEdit from '../../../components/console/Kitchen/Edit.vue'
 import { useKitchenConsoleIdentity } from '../../../composables/fireux/app/kitchen-console/useKitchenConsoleIdentity'
 import { ref } from 'vue'
 
