@@ -6,7 +6,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <ConsoleKitchenMiseItem />
+        <ConsoleKitchenMiseTask />
       </section>
     </template>
   </UDashboardPanel>
@@ -16,6 +16,7 @@
 definePageMeta({
   layout: 'console',
   requiresAuth: true,
+  requiresSelection: true,
   nav: {
     visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-mise-detail',

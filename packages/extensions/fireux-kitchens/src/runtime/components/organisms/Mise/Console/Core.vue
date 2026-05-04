@@ -14,13 +14,9 @@
         v-for="task in tasksSorted"
         :key="task.id || task.title"
         type="button"
-        class="flex w-full items-start gap-3 rounded-lg border border-default bg-default p-3 text-left transition"
-        :class="[
-          isDone(task) ? 'opacity-60' : '',
-          canWrite ? 'hover:bg-elevated/60' : 'cursor-default',
-        ]"
-        :disabled="!canWrite"
-        @click="toggleDone(task)"
+        class="flex w-full cursor-default items-start gap-3 rounded-lg border border-default bg-default p-3 text-left"
+        :class="isDone(task) ? 'opacity-60' : ''"
+        disabled
       >
         <span
           class="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded border"
@@ -42,20 +38,22 @@
             class="block text-sm font-medium text-highlighted"
             :class="isDone(task) ? 'line-through' : ''"
           >
-            {{ taskTitle(task) }}
+            {{ taskDisplayTitle(task) }}
           </span>
+          <UBadge
+            v-if="hasMissingTitle(task)"
+            color="error"
+            variant="soft"
+            size="xs"
+          >
+            Missing title
+          </UBadge>
           <span v-if="taskDescription(task)" class="block text-xs text-dimmed">
             {{ taskDescription(task) }}
           </span>
         </span>
 
-        <UBadge
-          v-if="!canWrite"
-          color="neutral"
-          variant="soft"
-          size="xs"
-          class="shrink-0"
-        >
+        <UBadge color="neutral" variant="soft" size="xs" class="shrink-0">
           Read only
         </UBadge>
       </button>
@@ -78,16 +76,11 @@ import type { KitchenMiseTask } from '../../../../models/kitchen-mise.model'
 const props = withDefaults(
   defineProps<{
     collection?: KitchenMiseTask[]
-    canWrite?: boolean
   }>(),
   {
     collection: () => [],
-    canWrite: false,
   }
 )
-const emit = defineEmits<{
-  (event: 'toggle-done', task: KitchenMiseTask): void
-}>()
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const statusRank = (task: KitchenMiseTask) => (isDone(task) ? 1 : 0)
@@ -96,7 +89,9 @@ const tasksSorted = computed(() =>
   [...props.collection].sort((a, b) => {
     const doneDelta = statusRank(a) - statusRank(b)
     if (doneDelta !== 0) return doneDelta
-    return taskTitle(a).localeCompare(taskTitle(b))
+    const titleDelta = taskDisplayTitle(a).localeCompare(taskDisplayTitle(b))
+    if (titleDelta !== 0) return titleDelta
+    return normalizeString(a.id).localeCompare(normalizeString(b.id))
   })
 )
 
@@ -112,13 +107,13 @@ const isDone = (task: KitchenMiseTask) => {
 }
 
 const taskTitle = (task: KitchenMiseTask) =>
-  normalizeString(task.title) || normalizeString(task.id) || 'Untitled mise'
+  normalizeString(task.title)
+
+const taskDisplayTitle = (task: KitchenMiseTask) =>
+  taskTitle(task) || 'Missing mise title'
+
+const hasMissingTitle = (task: KitchenMiseTask) => !taskTitle(task)
 
 const taskDescription = (task: KitchenMiseTask) =>
   normalizeString(task.description) || normalizeString(task.notes)
-
-const toggleDone = (task: KitchenMiseTask) => {
-  if (!props.canWrite) return
-  emit('toggle-done', task)
-}
 </script>

@@ -8,7 +8,7 @@ Audience: Consolidated context for coding and product-support agents.
 # FireUX GPT Context
 
 Authority: User-maintained GPT working context
-Updated: 2026-04-29
+Updated: 2026-05-04
 Audience: ChatGPT / Codex / coding agents
 
 ## Purpose
@@ -73,6 +73,40 @@ For ChatGPT without repo access:
 - Do not ask unnecessary confirmation.
 - Simplicity beats over-engineering.
 - FireUX should move forward in small safe steps.
+
+## No silent fallback chains
+
+- Do not use fallback chains to make missing required data look valid.
+- Prefer explicit missing states such as `Missing title`.
+- IDs are not display labels unless the model contract says they are.
+- Route and identity fields must not silently fall back between slug, id, and name.
+- Display fields should use the canonical field first; if missing, show a missing or empty state and surface a dev/debug signal where useful.
+- Fallbacks are allowed only for harmless display resilience, not for identity, routing, ownership, source, permissions, or required business fields.
+- TypeScript union pipes like `'live' | 'demo' | 'test'` are fine. The problem is runtime fallback chains using `||` or `??` to hide missing data.
+
+Bad:
+
+```ts
+const title = name || shortName || id || 'Untitled'
+```
+
+Better:
+
+```ts
+const title = name
+const displayTitle = title || 'Missing title'
+const hasMissingTitle = !title
+```
+
+Bad:
+
+```ts
+const routeId = slug || id
+```
+
+Better:
+
+Use the route identity declared by the entity contract only.
 
 ## Code delivery preference
 

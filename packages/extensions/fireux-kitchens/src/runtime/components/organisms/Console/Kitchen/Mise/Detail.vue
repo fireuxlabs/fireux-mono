@@ -10,7 +10,14 @@
       Back to mise
     </UButton>
 
-    <MiseProfile v-if="profile" :model="profile" />
+    <template v-if="task">
+      <MiseProfile :task="task" />
+
+      <OrganismsConsoleKitchenMiseEdit
+        v-if="canEditMise"
+        :task="task"
+      />
+    </template>
 
     <UAlert
       v-else
@@ -34,13 +41,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useKitchenConsoleMiseItem } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMiseItem'
-import { useMiseEnPlaceInterface } from '../../../../../composables/fireux/firestore/runtime-kitchen/mise/utils/view/useMiseEnPlaceInterface'
+import { useKitchenConsoleMiseTask } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMiseTask'
 import MiseProfile from '../../../Mise/Cards/Profile.vue'
 
-const { profile: makeProfile } = useMiseEnPlaceInterface()
-const { miseTask, miseId, pending, debug } = useKitchenConsoleMiseItem()
-const profile = computed(() => makeProfile(miseTask.value))
+const { task, miseId, pending, canEditMise, debug } = useKitchenConsoleMiseTask()
 const isDev = import.meta.dev
 </script>

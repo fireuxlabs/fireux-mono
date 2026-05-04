@@ -9,7 +9,7 @@
     >
       <UAvatar
         :src="imageUrl || undefined"
-        icon="i-lucide-clipboard-check"
+        :icon="icon || 'i-lucide-list-checks'"
         size="md"
         class="shrink-0"
       />
@@ -26,22 +26,6 @@
               {{ subtitle }}
             </div>
           </div>
-
-          <UBadge
-            v-if="showStatus && status"
-            variant="soft"
-            color="neutral"
-            size="xs"
-            class="shrink-0"
-          >
-            {{ status }}
-          </UBadge>
-        </div>
-
-        <div class="truncate text-xs text-dimmed">
-          <span>Category: {{ category || '—' }}</span>
-          <span class="mx-1">·</span>
-          <span>Unit: {{ unit || '—' }}</span>
         </div>
 
         <div
@@ -65,7 +49,7 @@
     >
       <UAvatar
         :src="imageUrl || undefined"
-        icon="i-lucide-clipboard-check"
+        :icon="icon || 'i-lucide-list-checks'"
         size="md"
         class="shrink-0"
       />
@@ -82,22 +66,6 @@
               {{ subtitle }}
             </div>
           </div>
-
-          <UBadge
-            v-if="showStatus && status"
-            variant="soft"
-            color="neutral"
-            size="xs"
-            class="shrink-0"
-          >
-            {{ status }}
-          </UBadge>
-        </div>
-
-        <div class="truncate text-xs text-dimmed">
-          <span>Category: {{ category || '—' }}</span>
-          <span class="mx-1">·</span>
-          <span>Unit: {{ unit || '—' }}</span>
         </div>
 
         <div
@@ -119,11 +87,10 @@ import type { MiseEnPlaceCard } from '../../../../composables/fireux/firestore/r
 
 type Props = Pick<
   MiseEnPlaceCard.Card,
-  'to' | 'name' | 'subtitle' | 'status' | 'category' | 'unit' | 'imageUrl' | 'description'
+  'to' | 'name' | 'subtitle' | 'icon' | 'imageUrl' | 'description'
 > & {
   prop?: string
   showSubtitle?: boolean
-  showStatus?: boolean
   showTagline?: boolean
   link?: boolean
   action?: boolean
@@ -136,7 +103,7 @@ const emit = defineEmits<{
 const props = withDefaults(defineProps<Props>(), {
   prop: '',
   showSubtitle: true,
-  showStatus: true,
+  icon: 'i-lucide-list-checks',
   showTagline: true,
   link: false,
   action: false,

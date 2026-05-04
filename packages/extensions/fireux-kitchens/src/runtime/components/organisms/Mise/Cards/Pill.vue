@@ -9,7 +9,7 @@
         :src="imageUrl || undefined"
         :alt="title || ''"
         size="sm"
-        icon="i-lucide-clipboard-check"
+        :icon="icon || 'i-lucide-list-checks'"
       />
 
       <div class="min-w-0 flex-1 space-y-1">
@@ -19,11 +19,14 @@
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
         </p>
-        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
-          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
-            {{ badge }}
-          </UBadge>
-        </div>
+        <UBadge
+          v-if="hasMissingTitle"
+          color="error"
+          variant="soft"
+          size="xs"
+        >
+          Missing title
+        </UBadge>
       </div>
     </div>
 </NuxtLink>
@@ -38,7 +41,7 @@
         :src="imageUrl || undefined"
         :alt="title || ''"
         size="sm"
-        icon="i-lucide-clipboard-check"
+        :icon="icon || 'i-lucide-list-checks'"
       />
 
       <div class="min-w-0 flex-1 space-y-1">
@@ -48,11 +51,14 @@
         <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
           {{ subtitle }}
         </p>
-        <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
-          <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
-            {{ badge }}
-          </UBadge>
-        </div>
+        <UBadge
+          v-if="hasMissingTitle"
+          color="error"
+          variant="soft"
+          size="xs"
+        >
+          Missing title
+        </UBadge>
       </div>
     </div>
 </div>
@@ -63,11 +69,12 @@ import { navigateTo } from '#imports'
 
 import type { MiseEnPlaceCard } from '../../../../composables/fireux/firestore/runtime-kitchen/mise/utils/view/useMiseEnPlaceInterface'
 
-type PillProps = Pick<MiseEnPlaceCard.Card, 'to' | 'title' | 'imageUrl'> & {
+type PillProps = Pick<
+  MiseEnPlaceCard.Card,
+  'to' | 'title' | 'imageUrl' | 'icon' | 'hasMissingTitle'
+> & {
   subtitle?: string
-  badges?: string[]
   showSubtitle?: boolean
-  showBadges?: boolean
   link?: boolean
   action?: boolean
 }
@@ -78,9 +85,9 @@ const emit = defineEmits<{
 
 const props = withDefaults(defineProps<PillProps>(), {
   subtitle: '',
-  badges: () => [],
   showSubtitle: true,
-  showBadges: true,
+  icon: 'i-lucide-list-checks',
+  hasMissingTitle: false,
   link: false,
   action: false,
 })

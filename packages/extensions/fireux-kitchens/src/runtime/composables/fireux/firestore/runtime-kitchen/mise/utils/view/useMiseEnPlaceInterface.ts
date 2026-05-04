@@ -1,13 +1,9 @@
-import {
-  safeString,
-  safeStringArray,
-} from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { KitchenMiseTask } from '../../../../../../../models/kitchen-mise.model'
 
-const joinSubtitle = (station: string, serviceDate: string): string =>
-  [safeString(station).trim(), safeString(serviceDate).trim()]
-    .filter(Boolean)
-    .join(' · ')
+const MISSING_TITLE = 'Missing mise title'
+const FOOD_KIND_RE = /^(food|mise|food_mise|prep|component)$/
+const TASK_KIND_RE = /^(non-food|non_food|task|check|setup)$/
 
 export namespace MiseEnPlaceCard {
   export type Card = {
@@ -16,6 +12,7 @@ export namespace MiseEnPlaceCard {
     imageUrl: string
     title: string
     subtitle: string
+    icon: string
     meta: string
     badges: string[]
     summary: string
@@ -25,6 +22,7 @@ export namespace MiseEnPlaceCard {
     unit: string
     status: string
     tags: string[]
+    hasMissingTitle: boolean
   }
 }
 
@@ -49,6 +47,7 @@ export function useMiseEnPlaceInterface() {
     | 'imageUrl'
     | 'name'
     | 'subtitle'
+    | 'icon'
     | 'status'
     | 'category'
     | 'unit'
@@ -68,33 +67,29 @@ export function useMiseEnPlaceInterface() {
 
   function map(task: KitchenMiseTask): MiseEnPlaceCard.Card {
     const id = safeString(task.id).trim()
-    const name = safeString(task.title).trim() || id
-    const category = safeString(task.station).trim()
-    const unit =
-      Number(task.estimated_minutes || 0) > 0
-        ? `${Number(task.estimated_minutes)}m`
-        : ''
+    const title = safeString(task.title).trim()
+    const name = title || MISSING_TITLE
+    const category = resolveResponsibility(task)
+    const unit = ''
     const status = safeString(task.status).trim()
-    const tags = [
-      safeString(task.priority).trim(),
-      ...safeStringArray(task.ingredient_ids).slice(0, 3),
-    ].filter(Boolean)
 
     return {
       id,
       to: id ? `/console/kitchen/mise/${encodeURIComponent(id)}` : '',
       imageUrl: '',
+      icon: resolveIcon(task),
       title: name,
-      subtitle: joinSubtitle(category, safeString(task.service_date).trim()),
-      meta: [category, unit].filter(Boolean).join(' · '),
-      badges: tags.slice(0, 4),
+      subtitle: category,
+      meta: category,
+      badges: [],
       summary: safeString(task.description).trim(),
       name,
       description: safeString(task.description).trim(),
       category,
       unit,
       status,
-      tags,
+      tags: [],
+      hasMissingTitle: !title,
     }
   }
 
@@ -131,6 +126,7 @@ export function useMiseEnPlaceInterface() {
       imageUrl: base.imageUrl,
       name: base.name,
       subtitle: base.subtitle,
+      icon: base.icon,
       status: base.status,
       category: base.category,
       unit: base.unit,
@@ -177,4 +173,33 @@ export function useMiseEnPlaceInterface() {
   }
 
   return { interface: toInterface, pill, cell, preview, profile }
+}
+
+function resolveResponsibility(task: KitchenMiseTask) {
+  const source = task as Record<string, unknown>
+  return [
+    task.station,
+    source.station_id,
+    source.station_name,
+    source.responsibility,
+    source.responsible_station,
+  ]
+    .map((value) => safeString(value).trim())
+    .find(Boolean) || ''
+}
+
+function resolveIcon(task: KitchenMiseTask) {
+  const source = task as Record<string, unknown>
+  const kind = [
+    source.type,
+    source.category,
+    source.kind,
+    source.task_type,
+  ]
+    .map((value) => safeString(value).trim().toLowerCase())
+    .find(Boolean) || ''
+
+  if (FOOD_KIND_RE.test(kind)) return 'i-lucide-utensils'
+  if (TASK_KIND_RE.test(kind)) return 'i-lucide-list-checks'
+  return 'i-lucide-list-checks'
 }
