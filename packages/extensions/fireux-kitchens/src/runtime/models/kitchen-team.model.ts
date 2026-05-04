@@ -16,16 +16,6 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - Keep the ownership explicit: the kitchen owns the team record.
  * - If that changes later, update the models README first, then this file.
  */
-export type KitchenTeamRole =
-  | 'head_chef'
-  | 'sous_chef'
-  | 'line_cook'
-  | 'prep_cook'
-  | 'dishwasher'
-  | 'runner'
-  | 'manager'
-  | 'other'
-
 export type KitchenTeamStatus = 'active' | 'inactive'
 
 export const KitchenTeamMemberModel = {
@@ -36,8 +26,12 @@ export const KitchenTeamMemberModel = {
   user_id: '' as string,
   chef_profile_id: '' as string,
 
+  name: '' as string,
   display_name: '' as string,
-  role: 'other' as KitchenTeamRole,
+  role: '' as string,
+  station_ids: [] as string[],
+  active: true as boolean,
+  sort_order: 0 as number,
   status: 'active' as KitchenTeamStatus,
   station: '' as string,
   shift_label: '' as string,

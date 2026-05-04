@@ -11,6 +11,8 @@ export type DemoKitchenCollectionName =
   | 'ingredients'
   | 'recipes'
   | 'mise'
+  | 'stations'
+  | 'team'
   | 'suppliers'
   | 'orders'
 
@@ -20,6 +22,8 @@ export type DemoKitchenScenario = DemoKitchenListItem & {
   ingredients: Record<string, unknown>[]
   recipes: Record<string, unknown>[]
   mise: Record<string, unknown>[]
+  stations: Record<string, unknown>[]
+  team: Record<string, unknown>[]
   suppliers: Record<string, unknown>[]
   orders: Record<string, unknown>[]
 }
@@ -1039,6 +1043,103 @@ const scenarios: DemoKitchenScenario[] = [
         updated: { at: {} },
       },
     ],
+    stations: [
+      {
+        id: 'grill',
+        kitchen_id: 'deanos',
+        name: 'Grill',
+        description: 'Flat-top and burger cooking station.',
+        active: true,
+        sort_order: 1,
+        created: { at: {} },
+        updated: { at: {} },
+      },
+      {
+        id: 'fryer',
+        kitchen_id: 'deanos',
+        name: 'Fryer',
+        description: 'Fries, loaded fries, and fried sides.',
+        active: true,
+        sort_order: 2,
+        created: { at: {} },
+        updated: { at: {} },
+      },
+      {
+        id: 'cold-prep',
+        kitchen_id: 'deanos',
+        name: 'Cold Prep',
+        description: 'Cold toppings, lettuce, pickles, and garnish prep.',
+        active: true,
+        sort_order: 3,
+        created: { at: {} },
+        updated: { at: {} },
+      },
+      {
+        id: 'sauce-prep',
+        kitchen_id: 'deanos',
+        name: 'Sauce Prep',
+        description: 'House sauces, dips, and squeeze bottle batches.',
+        active: true,
+        sort_order: 4,
+        created: { at: {} },
+        updated: { at: {} },
+      },
+      {
+        id: 'assembly',
+        kitchen_id: 'deanos',
+        name: 'Assembly',
+        description: 'Burger build, wrapping, and order grouping.',
+        active: true,
+        sort_order: 5,
+        created: { at: {} },
+        updated: { at: {} },
+      },
+      {
+        id: 'pass',
+        kitchen_id: 'deanos',
+        name: 'Pass',
+        description: 'Final check and handoff station.',
+        active: true,
+        sort_order: 6,
+        created: { at: {} },
+        updated: { at: {} },
+      },
+    ],
+    team: [
+      {
+        id: 'deano',
+        kitchen_id: 'deanos',
+        name: 'Deano',
+        role: 'Head Cook',
+        station_ids: ['grill', 'assembly'],
+        active: true,
+        sort_order: 1,
+        created: { at: {} },
+        updated: { at: {} },
+      },
+      {
+        id: 'prep-cook',
+        kitchen_id: 'deanos',
+        name: 'Prep Cook',
+        role: 'Prep Cook',
+        station_ids: ['cold-prep', 'sauce-prep'],
+        active: true,
+        sort_order: 2,
+        created: { at: {} },
+        updated: { at: {} },
+      },
+      {
+        id: 'fryer-cook',
+        kitchen_id: 'deanos',
+        name: 'Fryer Cook',
+        role: 'Line Cook',
+        station_ids: ['fryer', 'pass'],
+        active: true,
+        sort_order: 3,
+        created: { at: {} },
+        updated: { at: {} },
+      },
+    ],
     suppliers: [
       {
         id: 'city-butchers',
@@ -1379,6 +1480,8 @@ const scenarios: DemoKitchenScenario[] = [
         updated: { at: {} },
       },
     ],
+    stations: [],
+    team: [],
     suppliers: [],
     orders: [],
   },
@@ -1787,6 +1890,8 @@ const scenarios: DemoKitchenScenario[] = [
         updated: { at: {} },
       },
     ],
+    stations: [],
+    team: [],
     suppliers: [
       {
         id: 'city-butchers',
@@ -1922,7 +2027,8 @@ export const getDefaultDemoKitchen = () => {
       dishes: cloneRecords(scenario.dishes),
       recipes: cloneRecords(scenario.recipes),
       miseTasks: cloneRecords(scenario.mise),
-      stations: [],
+      stations: cloneRecords(scenario.stations),
+      team: cloneRecords(scenario.team),
     },
     procurementStack: {
       suppliers: cloneRecords(scenario.suppliers),

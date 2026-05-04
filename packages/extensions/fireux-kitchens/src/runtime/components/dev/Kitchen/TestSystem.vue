@@ -44,6 +44,8 @@
           <UBadge variant="soft">Recipes: {{ syncCounts.recipes }}</UBadge>
           <UBadge variant="soft">Dishes: {{ syncCounts.dishes }}</UBadge>
           <UBadge variant="soft">Menus: {{ syncCounts.menus }}</UBadge>
+          <UBadge variant="soft">Stations: {{ syncCounts.stations }}</UBadge>
+          <UBadge variant="soft">Team: {{ syncCounts.team }}</UBadge>
           <UBadge variant="soft">Suppliers: {{ syncCounts.suppliers }}</UBadge>
           <UBadge variant="soft">Supplier Ingredients: {{ syncCounts.supplierIngredients }}</UBadge>
           <UBadge variant="soft">Purchases: {{ syncCounts.purchases }}</UBadge>
@@ -201,6 +203,8 @@ type KitchenCollectionName =
   | 'recipes'
   | 'dishes'
   | 'menus'
+  | 'stations'
+  | 'team'
   | 'suppliers'
   | 'supplierIngredients'
   | 'purchases'
@@ -228,6 +232,8 @@ const syncCounts = computed(() => ({
   recipes: demoKitchenScenario.menuStack.recipes.length,
   dishes: demoKitchenScenario.menuStack.dishes.length,
   menus: demoKitchenScenario.menuStack.menus.length,
+  stations: demoKitchenScenario.menuStack.stations.length,
+  team: demoKitchenScenario.menuStack.team.length,
   suppliers: demoKitchenScenario.procurementStack.suppliers.length,
   supplierIngredients: demoKitchenScenario.procurementStack.supplierIngredients.length,
   purchases: demoKitchenScenario.procurementStack.purchases.length,
@@ -350,6 +356,8 @@ const syncDemoToTestKitchen = async () => {
       recipes: withKitchenId(asDocs(demoKitchenScenario.menuStack.recipes), kitchenId),
       dishes: withKitchenId(asDocs(demoKitchenScenario.menuStack.dishes), kitchenId),
       menus: withKitchenId(asDocs(demoKitchenScenario.menuStack.menus), kitchenId),
+      stations: withKitchenId(asDocs(demoKitchenScenario.menuStack.stations), kitchenId),
+      team: withKitchenId(asDocs(demoKitchenScenario.menuStack.team), kitchenId),
       suppliers: withKitchenId(asDocs(demoKitchenScenario.procurementStack.suppliers), kitchenId),
       supplierIngredients: withKitchenId(
         asDocs(demoKitchenScenario.procurementStack.supplierIngredients),
@@ -368,6 +376,8 @@ const syncDemoToTestKitchen = async () => {
       'recipes',
       'dishes',
       'menus',
+      'stations',
+      'team',
       'suppliers',
       'supplierIngredients',
       'purchases',

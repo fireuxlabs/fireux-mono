@@ -6,8 +6,23 @@
 	/* FireUX-owned runtime tokens */
 	--fx-fireux-yellow: #f59e0b;
 	--fx-fireux-yellow-muted: #b45309;
-	--fx-dev-note-border: rgb(245 158 11 / 0.28);
-	--fx-dev-note-bg: rgb(245 158 11 / 0.08);
+	--fx-debug-violet: #7c3aed;
+	--fx-debug-violet-muted: #6d28d9;
+	--fx-debug-violet-border: rgb(124 58 237 / 0.34);
+	--fx-debug-violet-bg: rgb(124 58 237 / 0.08);
+	--fx-debug-violet-bg-strong: rgb(124 58 237 / 0.12);
+	--fx-debug-violet-text: #4c1d95;
+	--fx-debug-amber: #f59e0b;
+	--fx-debug-amber-border: rgb(245 158 11 / 0.34);
+	--fx-debug-amber-bg: rgb(245 158 11 / 0.1);
+	--fx-debug-red: #dc2626;
+	--fx-debug-red-border: rgb(220 38 38 / 0.34);
+	--fx-debug-red-bg: rgb(220 38 38 / 0.1);
+	--fx-debug-blue: #0891b2;
+	--fx-debug-blue-border: rgb(8 145 178 / 0.3);
+	--fx-debug-blue-bg: rgb(8 145 178 / 0.08);
+	--fx-dev-note-border: var(--fx-debug-violet-border);
+	--fx-dev-note-bg: var(--fx-debug-violet-bg);
 
 	/* TODO: prune redundant scales once design system is finalized */
 
@@ -59,17 +74,29 @@
 
 .dark {
 	--fx-fireux-yellow-muted: #fbbf24;
-	--fx-dev-note-border: rgb(251 191 36 / 0.24);
-	--fx-dev-note-bg: rgb(245 158 11 / 0.12);
+	--fx-debug-violet-muted: #c4b5fd;
+	--fx-debug-violet-border: rgb(196 181 253 / 0.28);
+	--fx-debug-violet-bg: rgb(124 58 237 / 0.16);
+	--fx-debug-violet-bg-strong: rgb(124 58 237 / 0.22);
+	--fx-debug-violet-text: #ddd6fe;
+	--fx-debug-amber-border: rgb(251 191 36 / 0.3);
+	--fx-debug-amber-bg: rgb(245 158 11 / 0.16);
+	--fx-debug-red-border: rgb(248 113 113 / 0.32);
+	--fx-debug-red-bg: rgb(220 38 38 / 0.16);
+	--fx-debug-blue-border: rgb(103 232 249 / 0.28);
+	--fx-debug-blue-bg: rgb(8 145 178 / 0.16);
+	--fx-dev-note-border: var(--fx-debug-violet-border);
+	--fx-dev-note-bg: var(--fx-debug-violet-bg);
 }
 
 .fireux-dev-note {
 	border: 1px solid var(--fx-dev-note-border);
 	background: var(--fx-dev-note-bg);
+	box-shadow: inset 3px 0 0 var(--fx-debug-violet-muted);
 }
 
 .fireux-dev-note__label {
-	color: var(--fx-fireux-yellow-muted);
+	color: var(--fx-debug-violet-muted);
 }
 
 /* Base transition for interactive elements */

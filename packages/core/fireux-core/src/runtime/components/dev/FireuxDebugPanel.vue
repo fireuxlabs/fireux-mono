@@ -3,8 +3,11 @@
     <template #header>
       <div class="fireux-debug-panel__header">
         <div class="min-w-0">
-          <div class="fireux-debug-panel__eyebrow">
-            {{ scopeLabel }}
+          <div class="fireux-debug-panel__eyebrow-row">
+            <span class="fireux-debug-panel__badge">FireUX debug</span>
+            <span class="fireux-debug-panel__eyebrow">
+              {{ scopeLabel }}
+            </span>
           </div>
           <div class="fireux-debug-panel__title">
             {{ title }}
@@ -94,8 +97,12 @@ const copyDebug = () =>
 
 <style scoped>
 .fireux-debug-panel {
+  border: 1px solid var(--fx-debug-violet-border);
+  background:
+    linear-gradient(135deg, var(--fx-debug-violet-bg), transparent 44%),
+    var(--ui-bg);
+  box-shadow: inset 3px 0 0 var(--fx-debug-violet-muted);
   font-size: 12px;
-  opacity: 0.82;
 }
 
 .fireux-debug-panel__header {
@@ -103,6 +110,27 @@ const copyDebug = () =>
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+}
+
+.fireux-debug-panel__eyebrow-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.fireux-debug-panel__badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--fx-debug-violet-border);
+  border-radius: 999px;
+  background: var(--fx-debug-violet-bg-strong);
+  padding: 1px 7px;
+  color: var(--fx-debug-violet-text);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .fireux-debug-panel__actions {
@@ -115,7 +143,7 @@ const copyDebug = () =>
 
 .fireux-debug-panel__eyebrow,
 .fireux-debug-panel__meta {
-  color: var(--ui-text-muted);
+  color: var(--fx-debug-violet-muted);
   font-size: 11px;
 }
 
@@ -125,16 +153,19 @@ const copyDebug = () =>
 }
 
 .fireux-debug-panel__title {
-  color: var(--ui-text);
+  color: var(--fx-debug-violet-text);
   font-size: 13px;
   font-weight: 600;
 }
 
 .fireux-debug-panel__json {
+  border-top: 1px solid var(--fx-debug-violet-border);
+  background: var(--fx-debug-violet-bg);
+  padding: 10px 12px;
   margin: 0;
   overflow: auto;
   white-space: pre-wrap;
   font-size: 11px;
-  color: var(--ui-text-muted);
+  color: var(--ui-text);
 }
 </style>

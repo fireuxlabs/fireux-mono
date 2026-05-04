@@ -171,6 +171,8 @@ const buildOperationalCollections = (demoKitchenScenario, nextKitchenId) => ({
   recipes: withKitchenId(asDocs(demoKitchenScenario.menuStack.recipes), nextKitchenId),
   dishes: withKitchenId(asDocs(demoKitchenScenario.menuStack.dishes), nextKitchenId),
   menus: withKitchenId(asDocs(demoKitchenScenario.menuStack.menus), nextKitchenId),
+  stations: withKitchenId(asDocs(demoKitchenScenario.menuStack.stations), nextKitchenId),
+  team: withKitchenId(asDocs(demoKitchenScenario.menuStack.team), nextKitchenId),
   suppliers: withKitchenId(asDocs(demoKitchenScenario.procurementStack.suppliers), nextKitchenId),
   supplierIngredients: withKitchenId(
     asDocs(demoKitchenScenario.procurementStack.supplierIngredients),

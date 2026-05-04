@@ -6,12 +6,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <UAlert
-          color="neutral"
-          variant="soft"
-          title="Kitchen stations are parked"
-          description="This kitchen console route is intentionally hidden until station management is wired."
-        />
+        <ConsoleKitchenStations />
       </section>
     </template>
   </UDashboardPanel>
@@ -26,10 +21,8 @@ definePageMeta({
     label: 'Stations',
     icon: 'i-lucide-map-pinned',
     position: 'top',
-    hidden: true,
-    parked: true,
     requiresSelection: true,
-    order: 83,
+    order: 5,
     desktop: true,
     mobile: true,
     layouts: ['console'],
