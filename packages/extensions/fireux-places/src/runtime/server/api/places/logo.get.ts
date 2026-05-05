@@ -7,6 +7,27 @@ const logError = (...args: unknown[]) => console.error('[places-logo]', ...args)
 const HOMEPAGE_TIMEOUT_MS = 4500
 const PROBE_CONCURRENCY = 4
 const CLEARBIT_SIZE = 256
+const NON_BRAND_ASSET_PATTERNS: Array<{ reason: string; pattern: RegExp }> = [
+  { reason: 'tripadvisor widget', pattern: /tripadvisor/i },
+  { reason: 'review widget', pattern: /wp[-_/]tripadvisor[-_/]review[-_/]slider/i },
+  {
+    reason: 'review widget asset',
+    pattern: /\breview(s)?[-_/]?(badge|button|icon|logo|rating|star|widget)\b/i,
+  },
+  {
+    reason: 'rating widget asset',
+    pattern: /\brating(s)?[-_/]?(badge|button|icon|logo|star|widget)\b/i,
+  },
+  {
+    reason: 'star rating asset',
+    pattern: /\bstar(s)?[-_/]?(badge|button|icon|rating|widget)\b/i,
+  },
+  { reason: 'facebook asset', pattern: /facebook|fb[-_/]icon/i },
+  { reason: 'google asset', pattern: /google[-_/](maps|review|rating|icon)|maps\.gstatic\.com/i },
+  { reason: 'yelp asset', pattern: /\byelp\b/i },
+  { reason: 'foursquare asset', pattern: /\bfoursquare\b/i },
+  { reason: 'trustpilot asset', pattern: /\btrustpilot\b/i },
+]
 
 /**
  * Best-effort logo resolver.
@@ -93,16 +114,25 @@ export default defineEventHandler(async (event) => {
     const makeAbs = (u: string) => toAbsolute(finalHome, u)
 
     // 2) Collect icon link candidates.
-    const iconLinks = extractIconLinks(html).map(makeAbs)
+    const iconLinks = filterBrandCandidateUrls(
+      extractIconLinks(html).map(makeAbs),
+      'icon links'
+    )
 
     // 3) Collect social meta images (only keep if they look like logos).
-    const socialImgsRaw = extractSocialImages(html).map(makeAbs)
+    const socialImgsRaw = filterBrandCandidateUrls(
+      extractSocialImages(html).map(makeAbs),
+      'social images'
+    )
     const socialImgs = socialImgsRaw.filter((url) =>
       /logo|icon|brand|mark/i.test(url)
     )
 
     // 4) Collect inline <img> logos (class/id/alt contains logo/brand/mark).
-    const inlineImgs = extractInlineLogoImages(html).map(makeAbs)
+    const inlineImgs = filterBrandCandidateUrls(
+      extractInlineLogoImages(html).map(makeAbs),
+      'inline images'
+    )
 
     // 5) Common logo paths (HEAD probe first).
     const commonPaths = [
@@ -257,9 +287,41 @@ function extractInlineLogoImages(html: string): string[] {
       .filter(Boolean)
       .join(' ')
       .toLowerCase()
+    const rejectionReason = getNonBrandAssetReason(signature)
+    if (rejectionReason) {
+      log('rejected inline image signature', {
+        reason: rejectionReason,
+        src,
+      })
+      continue
+    }
     if (/logo|brand|mark/.test(signature)) {
       out.push(src)
     }
+  }
+  return out
+}
+
+function getNonBrandAssetReason(value: string): string | null {
+  for (const { reason, pattern } of NON_BRAND_ASSET_PATTERNS) {
+    if (pattern.test(value)) return reason
+  }
+  return null
+}
+
+function filterBrandCandidateUrls(urls: string[], source: string): string[] {
+  const out: string[] = []
+  for (const url of urls) {
+    const rejectionReason = getNonBrandAssetReason(url)
+    if (rejectionReason) {
+      log('rejected non-brand candidate', {
+        source,
+        reason: rejectionReason,
+        url,
+      })
+      continue
+    }
+    out.push(url)
   }
   return out
 }
@@ -389,6 +451,14 @@ async function probeCandidates(
     while (queue.length) {
       const candidate = queue.shift()
       if (!candidate) return
+      const rejectionReason = getNonBrandAssetReason(candidate)
+      if (rejectionReason) {
+        log('candidate rejected before probe', {
+          candidate,
+          reason: rejectionReason,
+        })
+        continue
+      }
       const ok = await looksLikeImage(candidate)
       if (!ok) continue
       const score = scoreCandidate(candidate)

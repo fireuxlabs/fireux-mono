@@ -16,6 +16,9 @@ export function useKitchenConsoleIdentity() {
   const tagline = computed(() =>
     normalizeString((selectedKitchen.value as Record<string, unknown> | null)?.tagline)
   )
+  const slug = computed(() =>
+    normalizeString((selectedKitchen.value as Record<string, unknown> | null)?.slug)
+  )
   const placeId = computed(() =>
     normalizeString((selectedKitchen.value as Record<string, unknown> | null)?.place_id)
   )
@@ -30,6 +33,7 @@ export function useKitchenConsoleIdentity() {
     canWrite: canWrite.value,
     name: name.value,
     tagline: tagline.value,
+    slug: slug.value,
     placeId: placeId.value,
     address: address.value,
     selectedKitchen: selectedKitchen.value,
@@ -44,6 +48,7 @@ export function useKitchenConsoleIdentity() {
     clearSelectedKitchen,
     name,
     tagline,
+    slug,
     placeId,
     address,
     debug,

@@ -1,5 +1,5 @@
 <template>
-  <button type="button" class="pill" @click="emit('select')">
+  <button type="button" class="pill justify-start text-left" @click="emit('select')">
     <UUser
       :name="primaryLabel"
       :description="address || undefined"

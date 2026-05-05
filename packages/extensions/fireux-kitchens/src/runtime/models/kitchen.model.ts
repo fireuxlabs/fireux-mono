@@ -39,6 +39,7 @@ export const KitchenModel = {
   ...FireuxAppScope,
   is_test_kitchen: false,
   place_id: '',
+  slug: '',
   name: '',
   tagline: '',
   short_name: '',
@@ -72,6 +73,7 @@ export type KitchenCreateInput = Omit<
   | 'app_scope_state'
   | 'app_scope_app_id'
   | 'is_test_kitchen'
+  | 'slug'
   | 'name'
   | 'tagline'
   | 'short_name'
@@ -85,6 +87,7 @@ export type KitchenCreateInput = Omit<
       | 'app_scope_state'
       | 'app_scope_app_id'
       | 'is_test_kitchen'
+      | 'slug'
       | 'name'
       | 'tagline'
       | 'short_name'
@@ -99,6 +102,7 @@ export type KitchenUpdateInput = Partial<
     Kitchen,
     | 'is_test_kitchen'
     | 'place_id'
+    | 'slug'
     | 'name'
     | 'tagline'
     | 'short_name'

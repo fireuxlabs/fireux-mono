@@ -4,7 +4,7 @@
       <PlaceCardsDropdownGoogle
         v-if="cell.source === 'google'"
         :name="cell.name"
-        :address="cell.subtitle"
+        :address="resolveAddress(cell)"
         :image-url="resolveImageUrl(cell)"
         @select="onSelect(cell)"
       />
@@ -12,7 +12,7 @@
         v-else
         :name="cell.name"
         :short-name="cell.shortName"
-        :address="cell.subtitle"
+        :address="resolveAddress(cell)"
         :image-url="resolveImageUrl(cell)"
         :image-shade="cell.imageShade"
         :source="cell.source"
@@ -55,6 +55,7 @@ const debugCells = computed(() =>
   cells.value.map((cell) => ({
     ...cell,
     imageUrl: resolveImageUrl(cell),
+    address: resolveAddress(cell),
   }))
 )
 
@@ -102,6 +103,15 @@ function resolveImageUrl(card: PlaceCard.Card) {
   const cardId = String(card?.id || '').trim()
   if (!cardId) return String(card?.imageUrl || '')
   return String(logoById.value[cardId] || card.imageUrl || '')
+}
+
+function resolveAddress(card: PlaceCard.Card) {
+  return String(
+    card.subtitle ||
+      card.shortAddress ||
+      card.formattedAddress ||
+      ''
+  ).trim()
 }
 
 function toBasePlace(card: PlaceCard.Card): BasePlace {

@@ -183,19 +183,34 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     const explicitName = normalizeString((input as any)?.name)
     const explicitShortName = normalizeString((input as any)?.short_name)
     const explicitShortAddress = normalizeString((input as any)?.short_address)
+    const explicitFormattedAddress = normalizeString((input as any)?.formatted_address)
     const explicitImageUrl =
       normalizeString((input as any)?.image_url) ||
       (isTestKitchenCollection
         ? normalizeString(currentUser.value?.photoURL)
         : '')
+    const explicitImageShade = normalizeString((input as any)?.image_shade)
+    const explicitSlug = normalizeString((input as any)?.slug)
+    const explicitSource = normalizeString((input as any)?.source)
     const defaultTestName = isTestKitchenCollection
       ? resolveTestKitchenName(currentUser.value?.displayName, uid.value)
       : ''
+    const placeName = normalizeString((place as any)?.name)
+    const placeShortName = normalizeString((place as any)?.short_name)
+    const placeShortAddress = normalizeString((place as any)?.short_address)
+    const placeFormattedAddress = normalizeString((place as any)?.formatted_address)
+    const placeImageUrl = normalizeString((place as any)?.image_url)
+    const placeImageShade = normalizeString((place as any)?.image_shade)
+    const placeSlug = normalizeString((place as any)?.slug)
+    const placeSource = normalizeString((place as any)?.source)
+    const placeLat = Number((place as any)?.lat)
+    const placeLng = Number((place as any)?.lng)
 
     const resolvedPayload: Record<string, unknown> = {
       app_scope_state: 'root_only',
       app_scope_app_id: '',
       place_id: resolvedId,
+      is_test_kitchen: false,
     }
 
     if (isTestKitchenCollection) {
@@ -207,25 +222,56 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     const resolvedName =
       isTestKitchenCollection && (!explicitName || explicitName === normalizeString(uid.value))
         ? defaultTestName
-        : explicitName
+        : explicitName || placeName
     if (resolvedName) {
       resolvedPayload.name = resolvedName
     }
 
-    if (explicitShortName) {
-      resolvedPayload.short_name = explicitShortName
+    const resolvedShortName = explicitShortName || placeShortName
+    if (resolvedShortName) {
+      resolvedPayload.short_name = resolvedShortName
     }
 
     const resolvedShortAddress =
       explicitShortAddress ||
+      placeShortAddress ||
       (isTestKitchenCollection ? resolveTestKitchenShortAddress() : '')
 
     if (resolvedShortAddress) {
       resolvedPayload.short_address = resolvedShortAddress
     }
 
-    if (explicitImageUrl) {
-      resolvedPayload.image_url = explicitImageUrl
+    const resolvedFormattedAddress = explicitFormattedAddress || placeFormattedAddress
+    if (resolvedFormattedAddress) {
+      resolvedPayload.formatted_address = resolvedFormattedAddress
+    }
+
+    if (Number.isFinite(placeLat)) {
+      resolvedPayload.lat = placeLat
+    }
+
+    if (Number.isFinite(placeLng)) {
+      resolvedPayload.lng = placeLng
+    }
+
+    const resolvedImageUrl = explicitImageUrl || placeImageUrl
+    if (resolvedImageUrl) {
+      resolvedPayload.image_url = resolvedImageUrl
+    }
+
+    const resolvedImageShade = explicitImageShade || placeImageShade
+    if (resolvedImageShade) {
+      resolvedPayload.image_shade = resolvedImageShade
+    }
+
+    const resolvedSlug = explicitSlug || placeSlug
+    if (resolvedSlug) {
+      resolvedPayload.slug = resolvedSlug
+    }
+
+    const resolvedSource = explicitSource || placeSource
+    if (resolvedSource) {
+      resolvedPayload.source = resolvedSource
     }
 
     const ref = doc(activeDb, collectionPath, resolvedId)

@@ -69,6 +69,10 @@
             Source:
             <span class="console-summary-value">{{ source || 'Unset' }}</span>
           </div>
+          <div class="console-summary-field">
+            Slug:
+            <span class="console-summary-value">{{ slug || 'Unset' }}</span>
+          </div>
         </div>
       </UCard>
     </template>
@@ -101,6 +105,7 @@ const imageUrl = computed(() => String(kitchen.value?.image_url ?? ''))
 const shortAddress = computed(() => String(kitchen.value?.short_address ?? ''))
 const formattedAddress = computed(() => String(kitchen.value?.formatted_address ?? ''))
 const source = computed(() => String(kitchen.value?.source ?? ''))
+const slug = computed(() => String(kitchen.value?.slug ?? ''))
 const imageInitials = computed(() => {
   const text = String(name.value || '').trim()
   if (!text) return 'K'
