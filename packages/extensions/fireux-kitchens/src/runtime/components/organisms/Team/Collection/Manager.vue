@@ -43,14 +43,6 @@
               {{ memberStations(member) }}
             </p>
           </div>
-
-          <UBadge
-            size="xs"
-            variant="soft"
-            :color="activeColor(member)"
-          >
-            {{ activeLabel(member) }}
-          </UBadge>
         </div>
       </div>
     </div>
@@ -87,6 +79,9 @@ const props = withDefaults(
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const collection = computed(() => props.collection ?? [])
+const currentMembers = computed(() =>
+  collection.value.filter((member) => (member as Record<string, unknown>).active !== false)
+)
 const memberName = (member: KitchenTeamMember) => normalizeString(member.name)
 const memberDisplayName = (member: KitchenTeamMember) =>
   memberName(member) || 'Missing team member name'
@@ -96,26 +91,12 @@ const memberStations = (member: KitchenTeamMember) =>
     ? member.station_ids.map((value) => normalizeString(value)).filter(Boolean).join(', ')
     : ''
 const hasMissingName = (member: KitchenTeamMember) => !memberName(member)
-const activeValue = (member: KitchenTeamMember) =>
-  (member as Record<string, unknown>).active
-const activeLabel = (member: KitchenTeamMember) => {
-  const value = activeValue(member)
-  if (value === true) return 'Active'
-  if (value === false) return 'Inactive'
-  return 'Missing active state'
-}
-const activeColor = (member: KitchenTeamMember) => {
-  const value = activeValue(member)
-  if (value === true) return 'primary'
-  if (value === false) return 'neutral'
-  return 'error'
-}
 const sortOrder = (member: KitchenTeamMember) => {
   const value = Number(member.sort_order)
   return Number.isFinite(value) ? value : Number.MAX_SAFE_INTEGER
 }
 const sortedMembers = computed(() =>
-  [...collection.value].sort((left, right) => {
+  [...currentMembers.value].sort((left, right) => {
     const byOrder = sortOrder(left) - sortOrder(right)
     if (byOrder) return byOrder
 

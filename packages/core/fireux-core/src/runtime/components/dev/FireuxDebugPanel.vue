@@ -97,11 +97,10 @@ const copyDebug = () =>
 
 <style scoped>
 .fireux-debug-panel {
-  border: 1px solid var(--fx-debug-violet-border);
+  border: 1px solid var(--fx-debug-yellow-border);
   background:
-    linear-gradient(135deg, var(--fx-debug-violet-bg), transparent 44%),
+    linear-gradient(135deg, var(--fx-debug-yellow-bg), transparent 44%),
     var(--ui-bg);
-  box-shadow: inset 3px 0 0 var(--fx-debug-violet-muted);
   font-size: 12px;
 }
 
@@ -122,11 +121,11 @@ const copyDebug = () =>
 .fireux-debug-panel__badge {
   display: inline-flex;
   align-items: center;
-  border: 1px solid var(--fx-debug-violet-border);
+  border: 1px solid var(--fx-debug-yellow-border);
   border-radius: 999px;
-  background: var(--fx-debug-violet-bg-strong);
+  background: var(--fx-debug-yellow-bg-strong);
   padding: 1px 7px;
-  color: var(--fx-debug-violet-text);
+  color: var(--fx-debug-ink);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -143,7 +142,7 @@ const copyDebug = () =>
 
 .fireux-debug-panel__eyebrow,
 .fireux-debug-panel__meta {
-  color: var(--fx-debug-violet-muted);
+  color: var(--fx-debug-yellow-muted);
   font-size: 11px;
 }
 
@@ -153,14 +152,14 @@ const copyDebug = () =>
 }
 
 .fireux-debug-panel__title {
-  color: var(--fx-debug-violet-text);
+  color: var(--fx-debug-ink);
   font-size: 13px;
   font-weight: 600;
 }
 
 .fireux-debug-panel__json {
-  border-top: 1px solid var(--fx-debug-violet-border);
-  background: var(--fx-debug-violet-bg);
+  border-top: 1px solid var(--fx-debug-yellow-border);
+  background: var(--fx-debug-yellow-bg);
   padding: 10px 12px;
   margin: 0;
   overflow: auto;

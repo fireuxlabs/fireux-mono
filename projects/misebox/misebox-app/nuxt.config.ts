@@ -13,7 +13,7 @@ const fireuxConfig = defineFireuxConfig({
   consoleFamilies: ['kitchens', 'suppliers'],
   seo: {
     siteUrl: 'https://misebox.app',
-    staticPaths: ['/get-started', '/programme'],
+    staticPaths: ['/get-started', '/programme', '/luna-piccante', '/luna-piccante/menu'],
   },
   modules: [
     'fireux-places',

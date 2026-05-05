@@ -138,18 +138,17 @@ const onCopy = async () => {
 }
 
 .jsonpanel-launcher :deep(button) {
-  border: 1px solid var(--fx-debug-violet-border);
-  background: var(--fx-debug-violet-bg);
-  color: var(--fx-debug-violet-text);
+  border: 1px solid var(--fx-debug-yellow-border);
+  background: var(--fx-debug-yellow-bg);
+  color: var(--fx-debug-ink);
 }
 
 .jsonpanel-panel {
-  border: 1px solid var(--fx-debug-violet-border);
+  border: 1px solid var(--fx-debug-yellow-border);
   border-radius: 12px;
   background:
-    linear-gradient(135deg, var(--fx-debug-violet-bg), transparent 48%),
+    linear-gradient(135deg, var(--fx-debug-yellow-bg), transparent 48%),
     var(--ui-bg);
-  box-shadow: inset 3px 0 0 var(--fx-debug-violet-muted);
   padding: 12px;
 }
 
@@ -163,11 +162,11 @@ const onCopy = async () => {
 .jsonpanel-eyebrow {
   display: inline-flex;
   align-items: center;
-  border: 1px solid var(--fx-debug-violet-border);
+  border: 1px solid var(--fx-debug-yellow-border);
   border-radius: 999px;
-  background: var(--fx-debug-violet-bg-strong);
+  background: var(--fx-debug-yellow-bg-strong);
   padding: 1px 7px;
-  color: var(--fx-debug-violet-text);
+  color: var(--fx-debug-ink);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -176,7 +175,7 @@ const onCopy = async () => {
 
 .jsonpanel-title {
   margin: 6px 0 0;
-  color: var(--fx-debug-violet-text);
+  color: var(--fx-debug-ink);
   font-size: 13px;
   font-weight: 700;
 }
@@ -184,13 +183,13 @@ const onCopy = async () => {
 .jsonpanel-context {
   margin: 2px 0 0;
   font-size: 12px;
-  color: var(--fx-debug-violet-muted);
+  color: var(--fx-debug-yellow-muted);
 }
 
 .jsonpanel-meta {
   margin: 2px 0 0;
   font-size: 11px;
-  color: var(--fx-debug-violet-muted);
+  color: var(--fx-debug-yellow-muted);
 }
 
 .jsonpanel-actions {
@@ -200,9 +199,9 @@ const onCopy = async () => {
 
 .jsonpanel-object-preview {
   margin: 8px 0 12px;
-  border: 1px solid var(--fx-debug-violet-border);
+  border: 1px solid var(--fx-debug-yellow-border);
   border-radius: 8px;
-  background: var(--fx-debug-violet-bg);
+  background: var(--fx-debug-yellow-bg);
 }
 
 .jsonpanel-object-row {
@@ -213,7 +212,7 @@ const onCopy = async () => {
 }
 
 .jsonpanel-object-row + .jsonpanel-object-row {
-  border-top: 1px solid var(--fx-debug-violet-border);
+  border-top: 1px solid var(--fx-debug-yellow-border);
 }
 
 .jsonpanel-object-key {
@@ -227,9 +226,9 @@ const onCopy = async () => {
 }
 
 pre {
-  border: 1px solid var(--fx-debug-violet-border);
+  border: 1px solid var(--fx-debug-yellow-border);
   border-radius: 8px;
-  background: var(--fx-debug-violet-bg);
+  background: var(--fx-debug-yellow-bg);
   padding: 10px;
   margin-top: 8px;
   color: var(--ui-text);

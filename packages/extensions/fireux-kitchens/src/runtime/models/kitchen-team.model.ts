@@ -17,12 +17,13 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - If that changes later, update the models README first, then this file.
  */
 export type KitchenTeamStatus = 'active' | 'inactive'
+export type KitchenTeamJoinRequestStatus = 'pending' | 'approved' | 'rejected'
 
 export const KitchenTeamMemberModel = {
   id: '' as string,
   kitchen_id: '' as string,
 
-  // Optional links to existing profile/user records.
+  // Optional future links to existing profile/user records. Demo/test team records stay fake/manual.
   user_id: '' as string,
   chef_profile_id: '' as string,
 
@@ -60,3 +61,27 @@ export type KitchenTeamMemberCreateInput = Omit<KitchenTeamMember, 'created' | '
 export type KitchenTeamMemberUpdateInput = Partial<
   Omit<KitchenTeamMember, 'id' | 'created' | 'updated' | 'kitchen_id'>
 >
+
+export const KitchenTeamJoinRequestModel = {
+  id: '' as string,
+  kitchen_id: '' as string,
+
+  user_id: '' as string,
+  name: '' as string,
+  message: '' as string,
+  status: 'pending' as KitchenTeamJoinRequestStatus,
+
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+    app_id: '' as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: '' as FireuxStamped['created']['by'],
+  },
+} as const
+
+export type KitchenTeamJoinRequest = {
+  [K in keyof typeof KitchenTeamJoinRequestModel]: (typeof KitchenTeamJoinRequestModel)[K]
+}

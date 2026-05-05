@@ -6,8 +6,6 @@
       description="Kitchen work areas for the selected kitchen."
     />
 
-    <StationConsoleCore :collection="stations" />
-
     <DevFireuxDebugPanel
       v-if="isDev"
       title="Kitchen stations"
@@ -20,7 +18,6 @@
 <script setup lang="ts">
 import { useKitchenConsoleStations } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleStations'
 import StationCollectionManager from '../../../Station/Collection/Manager.vue'
-import StationConsoleCore from '../../../Station/Console/Core.vue'
 
 const { stations, debug } = useKitchenConsoleStations()
 const isDev = import.meta.dev
