@@ -17,12 +17,6 @@ const resolveIngredientId = (name: string) => {
   return base || ''
 }
 
-const resolveIngredientSlug = (draft: IngredientCreateDraft) => {
-  const provided = normalizeSlug(String(draft.slug || ''))
-  if (provided) return provided
-  return normalizeSlug(String(draft.name || ''))
-}
-
 const buildIngredientPayload = (
   ingredientId: string,
   draft: IngredientCreateDraft
@@ -30,7 +24,7 @@ const buildIngredientPayload = (
   ...IngredientModel,
   id: ingredientId,
   name: String(draft.name || '').trim(),
-  slug: resolveIngredientSlug(draft),
+  slug: ingredientId,
   image_url: String(draft.image_url || '').trim(),
 })
 

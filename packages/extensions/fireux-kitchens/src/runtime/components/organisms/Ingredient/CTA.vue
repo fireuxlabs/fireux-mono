@@ -17,25 +17,20 @@
         <div v-else class="space-y-3">
           <div class="flex justify-end">
             <UButton
+              to="/ingredients/add"
               size="sm"
               color="primary"
               icon="i-lucide-plus"
-              @click="showCreate = !showCreate"
             >
-              {{ showCreate ? 'Hide add' : 'Add ingredient' }}
+              Add ingredient
             </UButton>
           </div>
-
-          <IngredientCreateSystem v-if="showCreate" @created="showCreate = false" />
         </div>
       </div>
     </template>
   </UPageCTA>
 </template>
-
 <script setup lang="ts">
-import { ref } from 'vue';
-
 const props = withDefaults(
   defineProps<{
     canCreate?: boolean
@@ -44,6 +39,4 @@ const props = withDefaults(
     canCreate: false,
   }
 )
-
-const showCreate = ref(false)
 </script>

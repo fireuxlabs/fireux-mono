@@ -1,0 +1,49 @@
+<template>
+  <UPage>
+    <UPageHeader title="Add Ingredient" description="Create a global ingredient record.">
+      <template #ctas>
+        <UButton
+          size="xs"
+          variant="ghost"
+          icon="i-lucide-arrow-left"
+          to="/ingredients"
+        >
+          Back
+        </UButton>
+      </template>
+    </UPageHeader>
+
+    <UPageBody class="pagebody">
+      <IngredientCreateSystem @created="handleCreated" />
+    </UPageBody>
+  </UPage>
+</template>
+
+<script setup lang="ts">
+import { navigateTo, useHead } from '#imports'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+
+definePageMeta({
+  layout: 'default',
+  title: 'Add Ingredient',
+  description: 'Create a global ingredient.',
+  tag: 'ingredients-add',
+  nav: {
+    key: 'ingredients-add',
+    label: 'Add Ingredient',
+    icon: 'i-lucide-plus',
+    desktop: false,
+    mobile: false,
+    hidden: true,
+    layouts: ['default'],
+  },
+})
+
+const { appName } = useFireUXConfig()
+
+const handleCreated = async (id: string) => {
+  await navigateTo(`/ingredients/${encodeURIComponent(id)}`)
+}
+
+useHead({ title: `${appName} | Add Ingredient` })
+</script>

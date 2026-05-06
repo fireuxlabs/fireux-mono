@@ -95,6 +95,7 @@ const props = withDefaults(
     showVariantToggle?: boolean
     showCount?: boolean
     initialVariant?: 'pill' | 'cell'
+    routeScope?: 'root' | 'console'
   }>(),
   {
     title: 'Ingredients',
@@ -105,6 +106,7 @@ const props = withDefaults(
     showVariantToggle: true,
     showCount: true,
     initialVariant: 'pill',
+    routeScope: 'root',
   }
 )
 
@@ -112,7 +114,7 @@ const {
   interface: makeCard,
   pill: makePill,
   cell: makeCell,
-} = useIngredientInterface()
+} = useIngredientInterface({ routeScope: props.routeScope })
 
 const collection = computed(() => props.collection ?? [])
 const sourceDevJsonCollection = computed(() =>
