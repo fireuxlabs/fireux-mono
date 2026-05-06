@@ -1,135 +1,21 @@
 import { useRoute } from '#imports'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
-import { resolveMenuItemView, type ResolvedMenuItemView } from '../firestore/runtime-kitchen/menu/utils/view/resolveMenuItemView'
 import { useKitchenCollection } from '../firestore/kitchen/fetch/useKitchenCollection'
-import type { Menu, MenuSection, MenuServiceMode } from '../../../models/menu.model'
+import type { Menu } from '../../../models/menu.model'
 import {
   normalizeString,
   resolveKitchenRuntimeChildCollectionPath,
 } from './kitchen-console/shared'
-import { resolveMenuDesign } from './kitchen-menu-design'
+import {
+  normalizeKitchenMenuMode,
+  useResolvedKitchenMenuView,
+} from './kitchen-menu-view'
 
-export type KitchenMenuItemGroup = {
-  key: string
-  label: string
-  items: ResolvedMenuItemView[]
-}
-
-export type KitchenMenuSectionView = MenuSection & {
-  itemGroups: KitchenMenuItemGroup[]
-}
-
-const normalizeMode = (
-  value: unknown
-): '' | 'dine_in' | 'collection' | 'delivery' => {
-  const raw = normalizeString(value).toLowerCase()
-  if (raw === 'dine_in' || raw === 'dine-in') return 'dine_in'
-  if (raw === 'collection') return 'collection'
-  if (raw === 'delivery') return 'delivery'
-  return ''
-}
-
-const inferLegacyModes = (menu: Menu): MenuServiceMode[] => {
-  const id = normalizeString(menu?.id).toLowerCase()
-  const name = normalizeString(menu?.name).toLowerCase()
-  const joined = `${id} ${name}`
-  const inferred: MenuServiceMode[] = []
-
-  if (joined.includes('dine') || joined.includes('eat in')) {
-    inferred.push('dine_in')
-  }
-
-  if (
-    joined.includes('collection') ||
-    joined.includes('pickup') ||
-    joined.includes('pick up')
-  ) {
-    inferred.push('collection')
-  }
-
-  if (joined.includes('delivery')) {
-    inferred.push('delivery')
-  }
-
-  return inferred
-}
-
-const resolveMenuModes = (menu: Menu): MenuServiceMode[] => {
-  const raw = Array.isArray((menu as any)?.service_modes)
-    ? (menu as any).service_modes
-    : []
-
-  const normalized = raw
-    .map((mode: unknown) => normalizeMode(mode))
-    .filter(Boolean) as MenuServiceMode[]
-
-  if (normalized.length) return normalized
-
-  const inferred = inferLegacyModes(menu)
-  if (inferred.length) return inferred
-
-  return ['dine_in']
-}
-
-const resolveGroupLabel = (
-  dishId: string,
-  items: ResolvedMenuItemView[]
-): string => {
-  const labels = items
-    .map((item) => normalizeString(item.label))
-    .filter(Boolean)
-
-  if (!labels.length) return dishId || 'Menu item'
-
-  const prefixParts = labels.map((label) => {
-    const [prefix] = label.split('·')
-    return normalizeString(prefix)
-  })
-
-  const firstPrefix = normalizeString(prefixParts[0])
-  const hasCommonPrefix =
-    Boolean(firstPrefix) && prefixParts.every((part) => part === firstPrefix)
-
-  if (hasCommonPrefix) return firstPrefix
-
-  return labels[0] || dishId || 'Menu item'
-}
-
-const buildItemGroups = (
-  items: ResolvedMenuItemView[]
-): KitchenMenuItemGroup[] => {
-  const groups: KitchenMenuItemGroup[] = []
-  const groupsByKey = new Map<string, KitchenMenuItemGroup>()
-
-  for (const item of items) {
-    const dishId = normalizeString(item.dish_id)
-    const key =
-      dishId ||
-      `item:${normalizeString(item.id) || normalizeString(item.label)}`
-
-    let group = groupsByKey.get(key)
-
-    if (!group) {
-      group = {
-        key,
-        label: '',
-        items: [],
-      }
-      groupsByKey.set(key, group)
-      groups.push(group)
-    }
-
-    group.items.push(item)
-  }
-
-  for (const group of groups) {
-    const dishId = normalizeString(group.items[0]?.dish_id)
-    group.label = resolveGroupLabel(dishId, group.items)
-  }
-
-  return groups
-}
+export type {
+  KitchenMenuItemGroup,
+  KitchenMenuSectionView,
+} from './kitchen-menu-view'
 
 export function useKitchenMenu() {
   const route = useRoute()
@@ -155,7 +41,9 @@ export function useKitchenMenu() {
       : normalizeString(raw)
   })
 
-  const requestedMode = computed(() => normalizeMode(route.query.mode))
+  const requestedMode = computed(() =>
+    normalizeKitchenMenuMode(route.query.mode)
+  )
   const requestedTable = computed(() => {
     const raw = route.query.table
     return Array.isArray(raw)
@@ -167,13 +55,6 @@ export function useKitchenMenu() {
     return Array.isArray(raw)
       ? normalizeString(raw[0])
       : normalizeString(raw)
-  })
-
-  const requestedModeLabel = computed(() => {
-    if (requestedMode.value === 'dine_in') return 'Dine-in'
-    if (requestedMode.value === 'collection') return 'Collection'
-    if (requestedMode.value === 'delivery') return 'Delivery'
-    return ''
   })
 
   const { kitchens, pending: kitchensPending } = useKitchenCollection()
@@ -225,57 +106,18 @@ export function useKitchenMenu() {
 
   const menus = computed(() => menusRef.value?.value ?? [])
 
-  const sortedMenus = computed(() =>
-    [...menus.value].sort(
-      (a, b) => Number(a?.sort_order || 0) - Number(b?.sort_order || 0)
-    )
-  )
-
-  const isMenuAvailableForMode = (
-    menu: Menu,
-    mode: '' | MenuServiceMode
-  ) => {
-    if (!mode) return true
-    return resolveMenuModes(menu).includes(mode)
-  }
-
-  const isMenuSelectable = (menu: Menu) =>
-    Boolean(menu?.active) && isMenuAvailableForMode(menu, requestedMode.value)
-
-  const activeMenus = computed(() =>
-    sortedMenus.value.filter((menu) => isMenuSelectable(menu))
-  )
-
-  const activeMenu = computed(() => activeMenus.value[0] ?? null)
-
-  const selectedMenu = computed(() => {
-    const requestedId = routeMenuId.value
-    if (requestedId) {
-      const requested = activeMenus.value.find(
-        (menu) => normalizeString(menu?.id) === requestedId
-      )
-      if (requested) return requested
-    }
-
-    return activeMenu.value
-  })
-
-  const selectedMenuId = computed(() =>
-    normalizeString(selectedMenu.value?.id)
-  )
-
-  const menuDesign = computed(() => {
-    const mainMenu = menus.value.find(
-      (menu) => normalizeString(menu?.id).toLowerCase() === 'main'
-    )
-    return resolveMenuDesign(selectedMenu.value?.design ?? mainMenu?.design)
-  })
-
-  const noMenuDescription = computed(() => {
-    if (requestedModeLabel.value) {
-      return `This kitchen has no active menu available for ${requestedModeLabel.value.toLowerCase()} right now.`
-    }
-    return 'This kitchen has no active public menu right now.'
+  const menuView = useResolvedKitchenMenuView({
+    menus,
+    requestedMenuId: routeMenuId,
+    requestedMode,
+    kitchen: resolvedKitchen,
+    kitchenAddress,
+    headerTitleFallback: 'Menu',
+    headerDescriptionFallback: 'Public menu',
+    headerDescriptionSuffix: 'Public menu',
+    includeHeaderSuffixWithAddress: false,
+    emptyMenuSubject: 'This kitchen',
+    emptyMenuFallback: 'This kitchen has no active public menu right now.',
   })
 
   const resolveMenuTo = (menu: Menu) => {
@@ -301,69 +143,6 @@ export function useKitchenMenu() {
     }
   }
 
-  const isSelectedMenu = (menu: Menu) =>
-    normalizeString(menu?.id) === selectedMenuId.value
-
-  const resolveVariantLabel = (groupLabel: string, itemLabel: string) => {
-    const label = normalizeString(itemLabel)
-    const prefix = normalizeString(groupLabel)
-    if (!label) return 'Option'
-    if (!prefix) return label
-
-    const normalizedPrefix = `${prefix} · `
-    if (label.startsWith(normalizedPrefix)) {
-      const variant = normalizeString(label.slice(normalizedPrefix.length))
-      return variant || label
-    }
-
-    return label
-  }
-
-  const sortedSections = computed<KitchenMenuSectionView[]>(() => {
-    const menu = selectedMenu.value
-    if (!menu) return []
-
-    return [...(menu.sections ?? [])]
-      .sort((a, b) => Number(a?.sort_order || 0) - Number(b?.sort_order || 0))
-      .map((section) => ({
-        ...section,
-        itemGroups: buildItemGroups(
-          [...(section.items ?? [])]
-            .map((item) => resolveMenuItemView(menu, section, item))
-            .filter((item) => item.active)
-            .sort(
-              (a, b) =>
-                Number(a?.sort_order || 0) - Number(b?.sort_order || 0)
-            )
-        ),
-      }))
-      .filter((section) => section.itemGroups.length > 0)
-  })
-
-  const formatPrice = (priceMinor?: number, currencyCode?: string) => {
-    const amount = Number(priceMinor || 0) / 100
-    const code = normalizeString(currencyCode || 'CHF').toUpperCase() || 'CHF'
-
-    return new Intl.NumberFormat('de-CH', {
-      style: 'currency',
-      currency: code,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount)
-  }
-
-  const headerTitle = computed(() => selectedMenu.value?.name || 'Menu')
-  const headerDescription = computed(() => {
-    const kitchenName = normalizeString(resolvedKitchen.value?.name)
-    if (kitchenName && kitchenAddress.value) {
-      return `${kitchenName} · ${kitchenAddress.value}`
-    }
-    if (kitchenName) {
-      return `${kitchenName} · Public menu`
-    }
-    return 'Public menu'
-  })
-
   const backToKitchen = computed(() => {
     const key = routeKitchenSlug.value || kitchenId.value
     return key ? `/kitchens/${encodeURIComponent(key)}` : '/kitchens'
@@ -371,7 +150,7 @@ export function useKitchenMenu() {
 
   return {
     requestedMode,
-    requestedModeLabel,
+    requestedModeLabel: menuView.requestedModeLabel,
     requestedTable,
     requestedCover,
     routeKitchenSlug,
@@ -382,19 +161,22 @@ export function useKitchenMenu() {
     kitchenId,
     kitchenAddress,
     menus,
-    sortedMenus,
-    selectedMenu,
-    selectedMenuId,
-    menuDesign,
-    sortedSections,
-    noMenuDescription,
-    isMenuSelectable,
-    isSelectedMenu,
+    sortedMenus: menuView.sortedMenus,
+    activeMenus: menuView.activeMenus,
+    activeMenu: menuView.activeMenu,
+    selectedMenu: menuView.selectedMenu,
+    selectedMenuId: menuView.selectedMenuId,
+    menuDesign: menuView.menuDesign,
+    sortedSections: menuView.sortedSections,
+    noMenuDescription: menuView.noMenuDescription,
+    isMenuAvailableForMode: menuView.isMenuAvailableForMode,
+    isMenuSelectable: menuView.isMenuSelectable,
+    isSelectedMenu: menuView.isSelectedMenu,
     resolveMenuTo,
-    resolveVariantLabel,
-    formatPrice,
-    headerTitle,
-    headerDescription,
+    resolveVariantLabel: menuView.resolveVariantLabel,
+    formatPrice: menuView.formatPrice,
+    headerTitle: menuView.headerTitle,
+    headerDescription: menuView.headerDescription,
     backToKitchen,
   }
 }

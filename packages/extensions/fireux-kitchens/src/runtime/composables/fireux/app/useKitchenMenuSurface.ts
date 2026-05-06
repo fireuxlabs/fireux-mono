@@ -6,10 +6,10 @@ import {
 export {
   type KitchenMenuItemGroup,
   type KitchenMenuSectionView,
-} from './useKitchenMenu'
+} from './kitchen-menu-view'
 
 export type KitchenMenuSurfacePresentation = 'qr' | 'kiosk'
-export type KitchenMenuSurfaceState = KitchenMenuState & Record<string, any>
+export type KitchenMenuSurfaceState = KitchenMenuState & Record<string, unknown>
 
 export function useKitchenMenuSurface(): KitchenMenuSurfaceState {
   return useKitchenMenu() as KitchenMenuSurfaceState
