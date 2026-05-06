@@ -20,7 +20,8 @@ export const IngredientModel = {
   id: '' as string,
 
   name: '' as string,
-  names: undefined as Record<string, string> | undefined,
+  default_locale: undefined as string | undefined,
+  names: undefined as Partial<Record<string, string>> | undefined,
   slug: '' as string,
   image_url: '' as string,
   // Legacy top-level scope field still used by demo scenarios.

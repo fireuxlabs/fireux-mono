@@ -89,6 +89,32 @@
               <UInput v-model="form.name" placeholder="Ingredient name" />
             </UFormField>
 
+            <div class="space-y-3">
+              <div>
+                <div class="text-sm font-semibold">Language names</div>
+                <p class="text-xs text-dimmed">
+                  Root ingredient names for menu and recipe translation.
+                </p>
+              </div>
+
+              <UFormField label="Default locale">
+                <UInput v-model="form.default_locale" placeholder="en" />
+              </UFormField>
+
+              <div class="grid gap-3 sm:grid-cols-2">
+                <UFormField
+                  v-for="field in localeNameFields"
+                  :key="field.code"
+                  :label="field.label"
+                >
+                  <UInput
+                    v-model="form.names[field.code]"
+                    :placeholder="field.placeholder"
+                  />
+                </UFormField>
+              </div>
+            </div>
+
             <div class="flex justify-end gap-2">
               <UButton
                 variant="ghost"
@@ -156,28 +182,99 @@ const saving = ref(false)
 const deleting = ref(false)
 const imageUploading = ref(false)
 
+const localeNameFields = [
+  { code: 'it', label: 'Italian name', placeholder: 'origano' },
+  { code: 'de', label: 'German name', placeholder: 'Oregano' },
+  { code: 'en', label: 'English name', placeholder: 'oregano' },
+  { code: 'fr', label: 'French name', placeholder: 'origan' },
+] as const
+
+type LocaleNameCode = (typeof localeNameFields)[number]['code']
+
 const form = reactive<{
   name: string
+  default_locale: string
+  names: Record<LocaleNameCode, string>
 }>({
   name: '',
+  default_locale: 'en',
+  names: {
+    it: '',
+    de: '',
+    en: '',
+    fr: '',
+  },
 })
+
+const trimString = (value: unknown) => String(value || '').trim()
+const normalizeLocale = (value: unknown) =>
+  trimString(value).replace(/_/g, '-').toLowerCase()
+
+const normalizeNames = (value: unknown): Record<string, string> => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .map(([locale, name]) => [normalizeLocale(locale), trimString(name)])
+      .filter(([locale, name]) => Boolean(locale && name))
+  )
+}
+const serializeNames = (value: Record<string, string>) =>
+  JSON.stringify(Object.entries(value).sort(([left], [right]) => left.localeCompare(right)))
+
+const buildNamesPatch = (entry: Ingredient): Record<string, string> => {
+  const names = normalizeNames(entry.names)
+
+  for (const field of localeNameFields) {
+    const value = trimString(form.names[field.code])
+    if (value) {
+      names[field.code] = value
+    } else {
+      delete names[field.code]
+    }
+  }
+
+  return names
+}
 
 watchEffect(() => {
   const entry = ingredient.value
   if (!entry) return
   form.name = entry.name ?? ''
+  form.default_locale = normalizeLocale(entry.default_locale) || 'en'
+
+  const names = normalizeNames(entry.names)
+  for (const field of localeNameFields) {
+    form.names[field.code] = names[field.code] ?? ''
+  }
 })
 
 const isDirty = computed(() => {
   const entry = ingredient.value
   if (!entry) return false
-  return form.name.trim() !== String(entry.name ?? '').trim()
+
+  const currentNames = normalizeNames(entry.names)
+  const nextNames = buildNamesPatch(entry)
+  const currentDefaultLocale = normalizeLocale(entry.default_locale)
+  const nextDefaultLocale = normalizeLocale(form.default_locale) || 'en'
+
+  return (
+    form.name.trim() !== String(entry.name ?? '').trim() ||
+    currentDefaultLocale !== nextDefaultLocale ||
+    serializeNames(currentNames) !== serializeNames(nextNames)
+  )
 })
 
 const resetForm = () => {
   const entry = ingredient.value
   if (!entry) return
   form.name = entry.name ?? ''
+  form.default_locale = normalizeLocale(entry.default_locale) || 'en'
+
+  const names = normalizeNames(entry.names)
+  for (const field of localeNameFields) {
+    form.names[field.code] = names[field.code] ?? ''
+  }
 }
 
 const imageInitials = computed(() => {
@@ -207,9 +304,26 @@ const saveChanges = async () => {
   if (!ingredient.value || !docId || !isDirty.value) return
   saving.value = true
   try {
-    await updateDocument<Ingredient>('ingredients', docId, {
-      name: form.name.trim(),
-    })
+    const entry = ingredient.value
+    const nextNames = buildNamesPatch(entry)
+    const nextDefaultLocale = normalizeLocale(form.default_locale) || 'en'
+    const patch: Partial<Ingredient> = {}
+
+    if (form.name.trim() !== String(entry.name ?? '').trim()) {
+      patch.name = form.name.trim()
+    }
+
+    if (normalizeLocale(entry.default_locale) !== nextDefaultLocale) {
+      patch.default_locale = nextDefaultLocale
+    }
+
+    if (serializeNames(normalizeNames(entry.names)) !== serializeNames(nextNames)) {
+      patch.names = nextNames
+    }
+
+    if (!Object.keys(patch).length) return
+
+    await updateDocument<Ingredient>('ingredients', docId, patch)
     toast.success('Ingredient updated')
   } catch (error: any) {
     toast.error(String(error?.message || 'Failed to update ingredient'))
