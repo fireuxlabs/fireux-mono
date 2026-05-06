@@ -16,6 +16,19 @@ type WidenLiteral<T> =
   : T extends Record<string, unknown> ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
   : T
 
+export type Weekday = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun'
+
+export type TimeWindow = {
+  start: string
+  end: string
+}
+
+export type KitchenOpeningHours = {
+  timezone: string
+  weekly: Partial<Record<Weekday, TimeWindow[]>>
+  notes?: string
+}
+
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
@@ -46,6 +59,7 @@ export const KitchenModel = {
   short_address: '',
   formatted_address: '',
   image_url: '',
+  opening_hours: undefined as KitchenOpeningHours | undefined,
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -94,6 +108,7 @@ export type KitchenCreateInput = Omit<
       | 'short_address'
       | 'formatted_address'
       | 'image_url'
+      | 'opening_hours'
     >
   >
 
@@ -109,5 +124,6 @@ export type KitchenUpdateInput = Partial<
     | 'short_address'
     | 'formatted_address'
     | 'image_url'
+    | 'opening_hours'
   >
 >

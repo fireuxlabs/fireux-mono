@@ -22,6 +22,9 @@ export function useKitchenConsoleIdentity() {
   const placeId = computed(() =>
     normalizeString((selectedKitchen.value as Record<string, unknown> | null)?.place_id)
   )
+  const openingHours = computed(
+    () => (selectedKitchen.value as Record<string, unknown> | null)?.opening_hours
+  )
   const address = computed(() => {
     const kitchen = selectedKitchen.value as Record<string, unknown> | null
     return normalizeString(kitchen?.short_address || kitchen?.formatted_address)
@@ -36,6 +39,7 @@ export function useKitchenConsoleIdentity() {
     slug: slug.value,
     placeId: placeId.value,
     address: address.value,
+    openingHours: openingHours.value,
     selectedKitchen: selectedKitchen.value,
   }))
 
@@ -50,6 +54,7 @@ export function useKitchenConsoleIdentity() {
     tagline,
     slug,
     placeId,
+    openingHours,
     address,
     debug,
   }

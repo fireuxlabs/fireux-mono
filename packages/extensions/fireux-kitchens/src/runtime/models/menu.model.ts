@@ -26,7 +26,7 @@ export type MenuDesign = {
 
 export type MenuSectionItem = {
   id: string
-  dish_id: string
+  dish_id?: string
 
   label: string
   price_minor: number

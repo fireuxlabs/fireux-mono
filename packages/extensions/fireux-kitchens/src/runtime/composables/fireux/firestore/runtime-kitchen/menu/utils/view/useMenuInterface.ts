@@ -18,7 +18,7 @@ export namespace MenuCard {
     name: string
     description: string
     active: boolean
-    dishCount: number
+    itemCount: number
     isActiveNow: boolean
     windowLabel: string
     sortOrder: number
@@ -31,7 +31,7 @@ export type MenuProfile = {
   subtitle: string
   description: string
   active: boolean
-  dishCount: number
+  itemCount: number
 }
 
 export function useMenuInterface() {
@@ -62,14 +62,11 @@ export function useMenuInterface() {
 
   function map(menu: Menu): MenuCard.Card {
     const active = Boolean(menu.active)
-    const dishes = (menu.sections ?? [])
-      .flatMap((section) => section.items ?? [])
-      .map((item) => safeString(item?.dish_id).trim())
-      .filter(Boolean)
+    const items = (menu.sections ?? []).flatMap((section) => section.items ?? [])
     const id =
       safeString(menu.id).trim() ||
       safeString(menu.name).trim() ||
-      `menu-${dishes.length}`
+      `menu-${items.length}`
     const rawName = safeString(menu.name).trim()
     const name = stripKitchenPrefix(rawName) || rawName || id
     const isActiveNow = active
@@ -81,18 +78,18 @@ export function useMenuInterface() {
       imageUrl: '',
       title: name,
       subtitle: '',
-      meta: [`Dishes: ${dishes.length}`, windowLabel]
+      meta: [`Items: ${items.length}`, windowLabel]
         .filter(Boolean)
         .join(' · '),
       status: active ? 'active' : 'inactive',
       badges: [
-        `${dishes.length} ${dishes.length === 1 ? 'dish' : 'dishes'}`,
+        `${items.length} ${items.length === 1 ? 'item' : 'items'}`,
       ],
       summary: safeString(menu.description).trim(),
       name,
       description: safeString(menu.description).trim(),
       active,
-      dishCount: dishes.length,
+      itemCount: items.length,
       isActiveNow,
       windowLabel,
       sortOrder: Number(menu.sort_order || 0),
@@ -148,7 +145,7 @@ export function useMenuInterface() {
       badges: base.badges,
       details: [
         { label: 'Active', value: base.active ? 'Yes' : 'No' },
-        { label: 'Dishes', value: base.dishCount },
+        { label: 'Items', value: base.itemCount },
         ...(base.windowLabel
           ? [{ label: 'Window', value: base.windowLabel }]
           : []),
@@ -166,7 +163,7 @@ export function useMenuInterface() {
       subtitle: base.subtitle,
       description: base.description,
       active: base.active,
-      dishCount: base.dishCount,
+      itemCount: base.itemCount,
     }
   }
 

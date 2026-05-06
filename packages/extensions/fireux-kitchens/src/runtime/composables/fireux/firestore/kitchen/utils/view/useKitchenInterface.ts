@@ -3,6 +3,7 @@ import type {
   PlaceImageShade,
   PlaceSource,
 } from 'fireux-places/runtime/models/place.model'
+import type { KitchenOpeningHours } from '../../../../../../models/kitchen.model'
 
 export namespace KitchenCard {
   export type Card = {
@@ -60,6 +61,7 @@ export type KitchenSurface = {
   website?: string
   phone?: string
   social_links?: unknown
+  opening_hours?: KitchenOpeningHours
   cover_image?: string
   gallery_images?: string[]
   about?: string

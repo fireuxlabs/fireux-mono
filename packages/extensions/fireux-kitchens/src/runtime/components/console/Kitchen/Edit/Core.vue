@@ -74,6 +74,90 @@
               :update-function="handleFormattedAddress"
             />
           </section>
+
+          <section class="space-y-4 border-t border-default pt-6">
+            <div>
+              <h3 class="text-base font-semibold text-highlighted">
+                Opening Hours
+              </h3>
+              <p class="text-sm text-dimmed">
+                Manual kitchen opening facts. Food service times can be noted
+                here until they are confirmed.
+              </p>
+            </div>
+
+            <UFormField label="Timezone">
+              <UInput
+                v-model="openingTimezone"
+                placeholder="Europe/Zurich"
+                :disabled="openingHoursSaving"
+              />
+            </UFormField>
+
+            <div class="space-y-2">
+              <div
+                v-for="weekday in weekdays"
+                :key="weekday.key"
+                class="grid gap-3 rounded-md border border-default p-3 sm:grid-cols-[96px_1fr_1fr_auto]"
+              >
+                <div class="flex items-center text-sm font-medium text-highlighted">
+                  {{ weekday.label }}
+                </div>
+
+                <UFormField label="Start">
+                  <UInput
+                    v-model="openingRows[weekday.key].start"
+                    type="time"
+                    :disabled="openingHoursSaving || openingRows[weekday.key].closed"
+                  />
+                </UFormField>
+
+                <UFormField label="End">
+                  <UInput
+                    v-model="openingRows[weekday.key].end"
+                    type="time"
+                    :disabled="openingHoursSaving || openingRows[weekday.key].closed"
+                  />
+                </UFormField>
+
+                <div class="flex items-end">
+                  <USwitch
+                    v-model="openingRows[weekday.key].closed"
+                    label="Closed"
+                    :disabled="openingHoursSaving"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <UFormField label="Notes">
+              <UTextarea
+                v-model="openingNotes"
+                :rows="3"
+                placeholder="Food service times to be confirmed."
+                :disabled="openingHoursSaving"
+              />
+            </UFormField>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <UButton
+                icon="i-lucide-save"
+                :loading="openingHoursSaving"
+                :disabled="!canSaveOpeningHours"
+                @click="handleOpeningHours"
+              >
+                Save opening hours
+              </UButton>
+
+              <p
+                v-if="openingHoursStatus"
+                class="text-xs"
+                :class="invalidOpeningRows.length ? 'text-error' : 'text-dimmed'"
+              >
+                {{ openingHoursStatus }}
+              </p>
+            </div>
+          </section>
         </div>
       </UCard>
     </div>
@@ -87,10 +171,14 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import { computed, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/app/kitchen-console/useKitchenConsoleIdentity'
 import { useKitchenUpdate } from '../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
-import type { KitchenUpdateInput } from '../../../../models/kitchen.model'
+import type {
+  KitchenOpeningHours,
+  KitchenUpdateInput,
+  Weekday,
+} from '../../../../models/kitchen.model'
 
 const { selectedKitchen, kitchenId, rootCollection, canWrite } =
   useKitchenConsoleIdentity()
@@ -115,6 +203,84 @@ const imageInitials = computed(() => {
   return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase()
 })
 const imageUploading = ref(false)
+const openingHoursSaving = ref(false)
+const openingHoursMessage = ref('')
+
+type OpeningHoursDayDraft = {
+  closed: boolean
+  start: string
+  end: string
+}
+
+const weekdays: Array<{ key: Weekday; label: string }> = [
+  { key: 'mon', label: 'Mon' },
+  { key: 'tue', label: 'Tue' },
+  { key: 'wed', label: 'Wed' },
+  { key: 'thu', label: 'Thu' },
+  { key: 'fri', label: 'Fri' },
+  { key: 'sat', label: 'Sat' },
+  { key: 'sun', label: 'Sun' },
+]
+
+const createClosedOpeningRows = (): Record<Weekday, OpeningHoursDayDraft> => ({
+  mon: { closed: true, start: '', end: '' },
+  tue: { closed: true, start: '', end: '' },
+  wed: { closed: true, start: '', end: '' },
+  thu: { closed: true, start: '', end: '' },
+  fri: { closed: true, start: '', end: '' },
+  sat: { closed: true, start: '', end: '' },
+  sun: { closed: true, start: '', end: '' },
+})
+
+const openingTimezone = ref('Europe/Zurich')
+const openingNotes = ref('')
+const openingRows = reactive(createClosedOpeningRows())
+const openingHours = computed(
+  () => kitchen.value?.opening_hours as KitchenOpeningHours | undefined
+)
+
+const normalizeString = (value: unknown) => String(value ?? '').trim()
+const isTimeValue = (value: unknown) =>
+  /^([01]\d|2[0-3]):[0-5]\d$/.test(normalizeString(value))
+
+const invalidOpeningRows = computed(() =>
+  weekdays.filter(({ key }) => {
+    const row = openingRows[key]
+    if (row.closed) return false
+    if (!row.start && !row.end) return false
+    return !isTimeValue(row.start) || !isTimeValue(row.end)
+  })
+)
+const canSaveOpeningHours = computed(
+  () =>
+    canWrite.value &&
+    !openingHoursSaving.value &&
+    invalidOpeningRows.value.length === 0
+)
+const openingHoursStatus = computed(() => {
+  if (openingHoursMessage.value) return openingHoursMessage.value
+  if (!invalidOpeningRows.value.length) return ''
+  return 'Each open day needs valid start and end times.'
+})
+
+watch(
+  openingHours,
+  (next) => {
+    openingTimezone.value = normalizeString(next?.timezone) || 'Europe/Zurich'
+    openingNotes.value = normalizeString(next?.notes)
+
+    for (const { key } of weekdays) {
+      const [window] = next?.weekly?.[key] ?? []
+      const start = normalizeString(window?.start)
+      const end = normalizeString(window?.end)
+
+      openingRows[key].start = start
+      openingRows[key].end = end
+      openingRows[key].closed = !start && !end
+    }
+  },
+  { immediate: true }
+)
 
 const cacheBust = (url: string) => {
   const stamp = Date.now().toString(36)
@@ -208,6 +374,48 @@ const handleFormattedAddress = async (value: string) =>
     'Formatted address updated',
     'Failed to update formatted address'
   )
+
+const handleOpeningHours = async () => {
+  if (!canSaveOpeningHours.value) return
+
+  openingHoursSaving.value = true
+  openingHoursMessage.value = ''
+
+  try {
+    const weekly: KitchenOpeningHours['weekly'] = {}
+
+    for (const { key } of weekdays) {
+      const row = openingRows[key]
+      if (row.closed || !row.start || !row.end) continue
+
+      weekly[key] = [
+        {
+          start: normalizeString(row.start),
+          end: normalizeString(row.end),
+        },
+      ]
+    }
+
+    const notes = normalizeString(openingNotes.value)
+    const nextOpeningHours: KitchenOpeningHours = {
+      timezone: normalizeString(openingTimezone.value) || 'Europe/Zurich',
+      weekly,
+    }
+
+    if (notes) {
+      nextOpeningHours.notes = notes
+    }
+
+    await updateIdentityField(
+      { opening_hours: nextOpeningHours },
+      'Opening hours updated',
+      'Failed to update opening hours'
+    )
+    openingHoursMessage.value = 'Opening hours saved.'
+  } finally {
+    openingHoursSaving.value = false
+  }
+}
 
 const handleImageUpload = async (file: File) => {
   if (!canWrite.value) {

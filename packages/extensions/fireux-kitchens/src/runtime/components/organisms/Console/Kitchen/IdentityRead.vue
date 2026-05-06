@@ -75,6 +75,42 @@
           </div>
         </div>
       </UCard>
+
+      <UCard>
+        <template #header>
+          <div class="console-card-header">
+            <div class="console-card-header__title">Opening Hours</div>
+          </div>
+        </template>
+
+        <div v-if="openingRows.length" class="space-y-3">
+          <div class="console-summary-field">
+            Timezone:
+            <span class="console-summary-value">
+              {{ openingTimezone }}
+            </span>
+          </div>
+
+          <div class="grid gap-2 sm:grid-cols-2">
+            <div
+              v-for="row in openingRows"
+              :key="row.key"
+              class="rounded-md border border-default px-3 py-2 text-sm"
+            >
+              <span class="font-medium text-highlighted">{{ row.label }}</span>
+              <span class="ml-2 text-dimmed">{{ row.value }}</span>
+            </div>
+          </div>
+
+          <p v-if="openingNotes" class="text-sm text-dimmed">
+            {{ openingNotes }}
+          </p>
+        </div>
+
+        <p v-else class="text-sm text-dimmed">
+          Opening hours are not set yet.
+        </p>
+      </UCard>
     </template>
 
     <DevFireuxDebugPanel
@@ -89,6 +125,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/app/kitchen-console/useKitchenConsoleIdentity'
+import type {
+  KitchenOpeningHours,
+  Weekday,
+} from '../../../../models/kitchen.model'
 
 const {
   selectedKitchen,
@@ -106,6 +146,36 @@ const shortAddress = computed(() => String(kitchen.value?.short_address ?? ''))
 const formattedAddress = computed(() => String(kitchen.value?.formatted_address ?? ''))
 const source = computed(() => String(kitchen.value?.source ?? ''))
 const slug = computed(() => String(kitchen.value?.slug ?? ''))
+const openingHours = computed(
+  () => kitchen.value?.opening_hours as KitchenOpeningHours | undefined
+)
+const weekdays: Array<{ key: Weekday; label: string }> = [
+  { key: 'mon', label: 'Mon' },
+  { key: 'tue', label: 'Tue' },
+  { key: 'wed', label: 'Wed' },
+  { key: 'thu', label: 'Thu' },
+  { key: 'fri', label: 'Fri' },
+  { key: 'sat', label: 'Sat' },
+  { key: 'sun', label: 'Sun' },
+]
+const openingTimezone = computed(
+  () => String(openingHours.value?.timezone || 'Europe/Zurich')
+)
+const openingNotes = computed(() => String(openingHours.value?.notes || ''))
+const openingRows = computed(() => {
+  if (!openingHours.value) return []
+
+  return weekdays.map(({ key, label }) => {
+    const windows = openingHours.value?.weekly?.[key] ?? []
+    return {
+      key,
+      label,
+      value: windows.length
+        ? windows.map((window) => `${window.start}-${window.end}`).join(', ')
+        : 'Closed',
+    }
+  })
+})
 const imageInitials = computed(() => {
   const text = String(name.value || '').trim()
   if (!text) return 'K'
