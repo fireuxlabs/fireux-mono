@@ -6,7 +6,7 @@
 import KitchenPublicMenuDetailPage from './[menuId].vue'
 
 definePageMeta({
-  layout: 'kitchen-menu',
+  layout: 'public-menu',
   title: 'Kitchen Menu',
   description: 'Public menu view.',
   head: { title: 'Kitchen Menu' },

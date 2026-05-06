@@ -19,6 +19,11 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type MenuServiceMode = 'dine_in' | 'collection' | 'delivery'
 
+export type MenuDesign = {
+  background_hex?: string
+  text_hex?: string
+}
+
 export type MenuSectionItem = {
   id: string
   dish_id: string
@@ -89,6 +94,8 @@ export const MenuModel = {
 
 export type Menu = {
   [K in keyof typeof MenuModel]: (typeof MenuModel)[K]
+} & {
+  design?: MenuDesign
 }
 
 export type MenuCreateInput = Omit<Menu, 'created' | 'updated'>

@@ -1,288 +1,154 @@
 export type MenuLanguageCode = 'de' | 'en' | 'gsw' | 'hi' | 'ar' | 'ko'
 
-export type MenuTranslation = {
-  name?: string
-  title?: string
+export type PublicMenuTranslation = {
+  name: string
   description?: string
-}
-
-export type PublicMenuItem = {
-  id: string
-  sectionId: string
-  price?: number
-  currency: 'CHF'
-  isAvailable: boolean
-  isSpicy?: boolean
-  isVegetarian?: boolean
-  isVegan?: boolean
-  containsGluten?: boolean
-  containsDairy?: boolean
-  containsNuts?: boolean
-  translations: Partial<Record<MenuLanguageCode, MenuTranslation>>
 }
 
 export type PublicMenuSection = {
   id: string
   order: number
-  translations: Partial<Record<MenuLanguageCode, MenuTranslation>>
+  translations: Partial<Record<MenuLanguageCode, PublicMenuTranslation>>
 }
 
-export type PublicRestaurantMenu = {
-  slug: string
-  restaurantName: string
-  location: string
-  currency: 'CHF'
-  sourceLanguages: MenuLanguageCode[]
-  languages: ReadonlyArray<{
-    code: MenuLanguageCode
-    label: string
-    shortLabel: string
-    nativeLabel: string
-    dir?: 'ltr' | 'rtl'
-  }>
+export type PublicMenuItem = {
+  id: string
+  section_id: string
+  order: number
+  price_chf?: number
+  image_url?: string
+  is_available: boolean
+  translations: Partial<Record<MenuLanguageCode, PublicMenuTranslation>>
+}
+
+export type PublicKitchenMenu = {
+  id: string
+  kitchen_id: string
+  kitchen_slug: string
+  kitchen_name: string
+  kitchen_address: string
+  kitchen_tagline?: string
+  kitchen_phone?: string
+  kitchen_instagram?: string
+  opening_hours?: Partial<Record<MenuLanguageCode, string>>
+  hero_image_url: string
+  default_language: MenuLanguageCode
+  supported_languages: MenuLanguageCode[]
+  allergy_notice: Partial<Record<MenuLanguageCode, string>>
+  empty_state: Partial<Record<MenuLanguageCode, PublicMenuTranslation>>
   sections: PublicMenuSection[]
   items: PublicMenuItem[]
+  is_published: boolean
 }
 
-export const menuLanguageFallback: MenuLanguageCode = 'en'
+export type PublicMenuLanguage = {
+  code: MenuLanguageCode
+  icon: string
+  label: string
+  native_label: string
+  short_label: string
+  dir: 'ltr' | 'rtl'
+}
 
-export const publicMenus: Record<string, PublicRestaurantMenu> = {
+export const publicMenuLanguages: Record<MenuLanguageCode, PublicMenuLanguage> = {
+  de: {
+    code: 'de',
+    icon: '🇩🇪',
+    label: 'Deutsch',
+    native_label: 'Deutsch',
+    short_label: 'DE',
+    dir: 'ltr',
+  },
+  en: {
+    code: 'en',
+    icon: '🇬🇧',
+    label: 'English',
+    native_label: 'English',
+    short_label: 'EN',
+    dir: 'ltr',
+  },
+  gsw: {
+    code: 'gsw',
+    icon: '🇨🇭',
+    label: 'Baernduetsch',
+    native_label: 'Baernduetsch',
+    short_label: 'CH',
+    dir: 'ltr',
+  },
+  hi: {
+    code: 'hi',
+    icon: '🇮🇳',
+    label: 'Hindi',
+    native_label: 'हिन्दी',
+    short_label: 'HI',
+    dir: 'ltr',
+  },
+  ar: {
+    code: 'ar',
+    icon: '🇸🇦',
+    label: 'Arabic',
+    native_label: 'العربية',
+    short_label: 'AR',
+    dir: 'rtl',
+  },
+  ko: {
+    code: 'ko',
+    icon: '🇰🇷',
+    label: 'Korean',
+    native_label: '한국어',
+    short_label: 'KO',
+    dir: 'ltr',
+  },
+}
+
+const allergyNotice: Record<MenuLanguageCode, string> = {
+  de: 'Wenn Sie eine Allergie oder Unvertraeglichkeit haben, sprechen Sie bitte vor der Bestellung mit unserem Team.',
+  en: 'If you have an allergy or intolerance, please speak to a member of staff before ordering.',
+  gsw: 'Wenn du e Allergie oder Unvertraeglichkeit hesch, sprich bitte vor em Bstelle mit oisem Team.',
+  hi: 'यदि आपको कोई एलर्जी या असहिष्णुता है, तो ऑर्डर करने से पहले कृपया स्टाफ से बात करें।',
+  ar: 'إذا كانت لديك حساسية أو عدم تحمل لأي مكون، يرجى التحدث إلى أحد أفراد الفريق قبل الطلب.',
+  ko: '알레르기나 음식 불내증이 있으시면 주문 전 직원에게 말씀해 주세요.',
+}
+
+export const publicMenus: Record<string, PublicKitchenMenu> = {
   'luna-piccante': {
-    slug: 'luna-piccante',
-    restaurantName: 'Luna Piccante',
-    location: 'Bern',
-    currency: 'CHF',
-    sourceLanguages: ['de', 'en'],
-    languages: [
-      { code: 'de', label: 'Deutsch', shortLabel: 'DE', nativeLabel: '🇩🇪 Deutsch' },
-      { code: 'en', label: 'English', shortLabel: 'EN', nativeLabel: '🇬🇧 English' },
-      { code: 'gsw', label: 'Bärndütsch', shortLabel: 'CH', nativeLabel: '🇨🇭 Bärndütsch' },
-      { code: 'hi', label: 'Hindi', shortLabel: 'HI', nativeLabel: '🇮🇳 हिन्दी' },
-      { code: 'ar', label: 'Arabic', shortLabel: 'AR', nativeLabel: '🇸🇦 العربية', dir: 'rtl' },
-      { code: 'ko', label: 'Korean', shortLabel: 'KO', nativeLabel: '🇰🇷 한국어' },
-    ],
-    sections: [
-      {
-        id: 'antipasti',
-        order: 10,
-        translations: {
-          de: { title: 'Antipasti', description: 'Kleine Teller zum Teilen.' },
-          en: { title: 'Antipasti', description: 'Small plates to share.' },
-          gsw: { title: 'Antipasti', description: 'Chlini Taeller zum Teile.' },
-          hi: { title: 'एंटीपास्टी', description: 'साझा करने के लिए छोटे प्लेट्स।' },
-          ar: { title: 'مقبلات', description: 'أطباق صغيرة للمشاركة.' },
-          ko: { title: '안티파스티', description: '나누어 먹기 좋은 작은 접시.' },
-        },
-      },
-      {
-        id: 'pizzas',
-        order: 20,
-        translations: {
-          de: { title: 'Pizza', description: 'Aus dem Steinofen.' },
-          en: { title: 'Pizza', description: 'From the stone oven.' },
-          gsw: { title: 'Pizza', description: 'Us em Steiofe.' },
-          hi: { title: 'पिज्जा', description: 'स्टोन ओवन से।' },
-          ar: { title: 'بيتزا', description: 'من فرن حجري.' },
-          ko: { title: '피자', description: '화덕에서 구운 피자.' },
-        },
-      },
-      {
-        id: 'dolci',
-        order: 30,
-        translations: {
-          de: { title: 'Dolci', description: 'Suesse Klassiker.' },
-          en: { title: 'Desserts', description: 'Sweet classics.' },
-          gsw: { title: 'Dolci', description: 'Sueessi Klassiker.' },
-          hi: { title: 'मिठाइयाँ', description: 'क्लासिक डेजर्ट।' },
-          ar: { title: 'حلويات', description: 'حلويات كلاسيكية.' },
-          ko: { title: '디저트', description: '달콤한 클래식 디저트.' },
-        },
-      },
-    ],
-    items: [
-      {
-        id: 'bruschetta',
-        sectionId: 'antipasti',
-        price: 12,
-        currency: 'CHF',
-        isAvailable: true,
-        isVegetarian: true,
-        isVegan: true,
-        containsGluten: true,
-        translations: {
-          de: {
-            name: 'Bruschetta al Pomodoro',
-            description: 'Geroestetes Brot, Tomaten, Basilikum, Olivenoel.',
-          },
-          en: {
-            name: 'Tomato Bruschetta',
-            description: 'Toasted bread, tomatoes, basil, olive oil.',
-          },
-          gsw: {
-            name: 'Bruschetta mit Tomate',
-            description: 'Groestets Brot, Tomate, Basilikum, Olivenoel.',
-          },
-          hi: {
-            name: 'टोमैटो ब्रुशेट्टा',
-            description: 'टोस्टेड ब्रेड, टमाटर, तुलसी, जैतून का तेल।',
-          },
-          ar: {
-            name: 'بروشيتا بالطماطم',
-            description: 'خبز محمص، طماطم، ريحان، زيت زيتون.',
-          },
-          ko: {
-            name: '토마토 브루스케타',
-            description: '구운 빵, 토마토, 바질, 올리브 오일.',
-          },
-        },
-      },
-      {
-        id: 'caprese',
-        sectionId: 'antipasti',
-        price: 16,
-        currency: 'CHF',
-        isAvailable: true,
-        isVegetarian: true,
-        containsDairy: true,
-        translations: {
-          de: {
-            name: 'Insalata Caprese',
-            description: 'Mozzarella, Tomaten, Basilikum, Balsamico.',
-          },
-          en: {
-            name: 'Caprese Salad',
-            description: 'Mozzarella, tomatoes, basil, balsamic.',
-          },
-          gsw: {
-            name: 'Insalata Caprese',
-            description: 'Mozzarella, Tomate, Basilikum, Balsamico.',
-          },
-          hi: {
-            name: 'कैप्रेसे सलाद',
-            description: 'मोज़ारेला, टमाटर, तुलसी, बाल्समिक।',
-          },
-          ar: {
-            name: 'سلطة كابريزي',
-            description: 'موزاريلا، طماطم، ريحان، بلسميك.',
-          },
-          ko: {
-            name: '카프레제 샐러드',
-            description: '모차렐라, 토마토, 바질, 발사믹.',
-          },
-        },
-      },
-      {
-        id: 'pizza-margherita',
-        sectionId: 'pizzas',
-        price: 21,
-        currency: 'CHF',
-        isAvailable: true,
-        isVegetarian: true,
-        containsGluten: true,
-        containsDairy: true,
-        translations: {
-          de: {
-            name: 'Pizza Margherita',
-            description: 'Tomatensauce, Mozzarella, Basilikum.',
-          },
-          en: {
-            name: 'Pizza Margherita',
-            description: 'Tomato sauce, mozzarella, basil.',
-          },
-          gsw: {
-            name: 'Pizza Margherita',
-            description: 'Tomatesauce, Mozzarella, Basilikum.',
-          },
-          hi: {
-            name: 'पिज्जा मार्गरीटा',
-            description: 'टमाटर सॉस, मोज़ारेला, तुलसी।',
-          },
-          ar: {
-            name: 'بيتزا مارغريتا',
-            description: 'صلصة طماطم، موزاريلا، ريحان.',
-          },
-          ko: {
-            name: '마르게리타 피자',
-            description: '토마토 소스, 모차렐라, 바질.',
-          },
-        },
-      },
-      {
-        id: 'pizza-diavola',
-        sectionId: 'pizzas',
-        price: 24,
-        currency: 'CHF',
-        isAvailable: true,
-        isSpicy: true,
-        containsGluten: true,
-        containsDairy: true,
-        translations: {
-          de: {
-            name: 'Pizza Diavola',
-            description: 'Tomatensauce, Mozzarella, scharfe Salami, Chili.',
-          },
-          en: {
-            name: 'Pizza Diavola',
-            description: 'Tomato sauce, mozzarella, spicy salami, chilli.',
-          },
-          gsw: {
-            name: 'Pizza Diavola',
-            description: 'Tomatesauce, Mozzarella, scharfi Salami, Chili.',
-          },
-          hi: {
-            name: 'पिज्जा डियावोला',
-            description: 'टमाटर सॉस, मोज़ारेला, तीखी सलामी, मिर्च।',
-          },
-          ar: {
-            name: 'بيتزا ديافولا',
-            description: 'صلصة طماطم، موزاريلا، سلامي حار، فلفل حار.',
-          },
-          ko: {
-            name: '디아볼라 피자',
-            description: '토마토 소스, 모차렐라, 매운 살라미, 칠리.',
-          },
-        },
-      },
-      {
-        id: 'tiramisu',
-        sectionId: 'dolci',
-        price: 11,
-        currency: 'CHF',
-        isAvailable: true,
-        isVegetarian: true,
-        containsGluten: true,
-        containsDairy: true,
-        translations: {
-          de: {
-            name: 'Tiramisu',
-            description: 'Mascarpone, Espresso, Kakao, Loeffelbiskuit.',
-          },
-          en: {
-            name: 'Tiramisu',
-            description: 'Mascarpone, espresso, cocoa, ladyfingers.',
-          },
-          gsw: {
-            name: 'Tiramisu',
-            description: 'Mascarpone, Espresso, Kakao, Loeffelbiskuit.',
-          },
-          hi: {
-            name: 'तिरामिसू',
-            description: 'मस्कारपोन, एस्प्रेसो, कोको, लेडीफिंगर्स।',
-          },
-          ar: {
-            name: 'تيراميسو',
-            description: 'ماسكاربوني، إسبريسو، كاكاو، بسكويت.',
-          },
-          ko: {
-            name: '티라미수',
-            description: '마스카르포네, 에스프레소, 코코아, 레이디핑거.',
-          },
-        },
-      },
-    ],
+    id: 'luna-piccante-main',
+    kitchen_id: 'ChIJ93_ggY-jj0cRTCyLcfBuK2w',
+    kitchen_slug: 'luna-piccante',
+    kitchen_name: 'Luna Piccante',
+    kitchen_address: 'Obereigasse 50, 3812 Wilderswil',
+    kitchen_tagline: 'Italian restaurant in Wilderswil.',
+    opening_hours: {
+      de: 'Oeffnungszeiten folgen',
+      en: 'Opening hours coming soon',
+      gsw: 'Oeffnigszyte choeme glii',
+      hi: 'खुलने का समय जल्द आएगा',
+      ar: 'ساعات العمل قريباً',
+      ko: '영업시간은 곧 안내됩니다',
+    },
+    hero_image_url:
+      'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/places%2FChIJ93_ggY-jj0cRTCyLcfBuK2w%2Fimage?alt=media&token=e6740539-e7cb-4337-b920-6bced1bf0bfd',
+    default_language: 'de',
+    supported_languages: ['de', 'en', 'gsw', 'hi', 'ar', 'ko'],
+    allergy_notice: allergyNotice,
+    empty_state: {
+      de: { name: 'Menue kommt bald', description: 'Wir bereiten das digitale Menue vor.' },
+      en: { name: 'Menu coming soon', description: 'We are preparing the digital menu.' },
+      gsw: { name: 'Menue chunnt glii', description: 'Mir bereite s digitale Menue vor.' },
+      hi: { name: 'मेनू जल्द आ रहा है', description: 'हम डिजिटल मेनू तैयार कर रहे हैं।' },
+      ar: { name: 'القائمة قريباً', description: 'نحن نجهز القائمة الرقمية.' },
+      ko: { name: '메뉴 준비 중', description: '디지털 메뉴를 준비하고 있습니다.' },
+    },
+    is_published: true,
+    sections: [],
+    items: [],
   },
 }
 
 export function getPublicMenu(slug: string) {
-  return publicMenus[slug]
+  const normalizedSlug = String(slug || '').trim().toLowerCase()
+  if (normalizedSlug === 'luna-piccante-wilderswil-switzerland') {
+    return publicMenus['luna-piccante']
+  }
+  return publicMenus[normalizedSlug]
 }

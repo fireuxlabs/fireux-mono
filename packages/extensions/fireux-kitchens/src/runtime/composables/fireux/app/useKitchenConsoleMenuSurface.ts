@@ -4,10 +4,9 @@ import { computed } from 'vue'
 import type { OrderLine } from 'fireux-orders/runtime/models/order.model'
 import type { Menu, MenuServiceMode } from '../../../models/menu.model'
 import { resolveMenuItemView, type ResolvedMenuItemView } from '../firestore/runtime-kitchen/menu/utils/view/resolveMenuItemView'
-import {
-  useKitchenConsoleMenus,
-} from './kitchen-console/useKitchenConsoleMenus'
+import { useKitchenConsoleMenus } from './kitchen-console/useKitchenConsoleMenus'
 import { useKitchenConsole } from './kitchen-console/useKitchenConsole'
+import { resolveMenuDesign } from './kitchen-menu-design'
 import type {
   KitchenMenuItemGroup,
   KitchenMenuSectionView,
@@ -389,6 +388,13 @@ export function useKitchenConsoleMenuSurface() {
     normalizeString(selectedMenu.value?.id)
   )
 
+  const menuDesign = computed(() => {
+    const mainMenu = menus.value.find(
+      (menu) => normalizeString(menu?.id).toLowerCase() === 'main'
+    )
+    return resolveMenuDesign(selectedMenu.value?.design ?? mainMenu?.design)
+  })
+
   const noMenuDescription = computed(() => {
     if (requestedModeLabel.value) {
       return `This kitchen has no active menu available for ${requestedModeLabel.value.toLowerCase()} right now.`
@@ -574,6 +580,7 @@ export function useKitchenConsoleMenuSurface() {
     sortedMenus,
     selectedMenu,
     selectedMenuId,
+    menuDesign,
     sortedSections,
     noMenuDescription,
     basketKitchenMismatch,

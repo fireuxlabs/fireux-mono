@@ -14,6 +14,7 @@ import type {
   KitchenMenuSectionView,
   KitchenMenuSurfacePresentation,
 } from './useKitchenMenuSurface'
+import { resolveMenuDesign } from './kitchen-menu-design'
 
 type PreviewBasketState = {
   scope_type: string
@@ -417,6 +418,13 @@ export function useKitchenDemoMenuSurface() {
 
   const selectedMenuId = computed(() => normalizeString(selectedMenu.value?.id))
 
+  const menuDesign = computed(() => {
+    const mainMenu = menus.value.find(
+      (menu) => normalizeString(menu?.id).toLowerCase() === 'main'
+    )
+    return resolveMenuDesign(selectedMenu.value?.design ?? mainMenu?.design)
+  })
+
   const noMenuDescription = computed(() => {
     if (requestedModeLabel.value) {
       return `This demo kitchen has no active menu available for ${requestedModeLabel.value.toLowerCase()} right now.`
@@ -599,6 +607,7 @@ export function useKitchenDemoMenuSurface() {
     sortedMenus,
     selectedMenu,
     selectedMenuId,
+    menuDesign,
     sortedSections,
     noMenuDescription,
     basketKitchenMismatch,
