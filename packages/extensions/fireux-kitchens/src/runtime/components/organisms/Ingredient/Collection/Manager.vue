@@ -72,6 +72,7 @@
 
 <script setup lang="ts">
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
+import { useCollectionRouteContext } from 'fireux-core/runtime/composables/shared/useCollectionRouteContext'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
 import {
@@ -95,7 +96,9 @@ const props = withDefaults(
     showVariantToggle?: boolean
     showCount?: boolean
     initialVariant?: 'pill' | 'cell'
-    routeScope?: 'root' | 'console'
+    collectionKey?: string
+    baseRoute?: string
+    resolveTo?: (id: string) => string
   }>(),
   {
     title: 'Ingredients',
@@ -106,7 +109,7 @@ const props = withDefaults(
     showVariantToggle: true,
     showCount: true,
     initialVariant: 'pill',
-    routeScope: 'root',
+    collectionKey: 'ingredients',
   }
 )
 
@@ -114,9 +117,20 @@ const {
   interface: makeCard,
   pill: makePill,
   cell: makeCell,
-} = useIngredientInterface({ routeScope: props.routeScope })
+} = useIngredientInterface()
 
 const collection = computed(() => props.collection ?? [])
+const { resolveTo } = useCollectionRouteContext({
+  collectionKey: computed(() => props.collectionKey),
+  baseRoute: computed(() => props.baseRoute),
+  resolveTo: computed(() => props.resolveTo),
+})
+const withIngredientRoute = <T extends { id: string; to: string } | null>(
+  card: T
+): T => {
+  if (!card) return card
+  return { ...card, to: resolveTo(card.id) } as T
+}
 const sourceDevJsonCollection = computed(() =>
   Array.isArray(props.devJsonData)
     ? (props.devJsonData as IngredientInterfaceItem[])
@@ -143,7 +157,8 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     NonNullable<ReturnType<typeof makeCard>>
   >({
     items: collection,
-    makeCard: (ingredient: IngredientInterfaceItem) => makeCard(ingredient),
+    makeCard: (ingredient: IngredientInterfaceItem) =>
+      withIngredientRoute(makeCard(ingredient)),
     initialVariant: props.initialVariant,
   })
 
@@ -154,10 +169,10 @@ const cardsFiltered = computed<NonNullable<ReturnType<typeof makeCard>>[]>(() =>
         const base = makeCard(ingredient)
         const cell = makeCell(ingredient)
         if (!base || !cell) return null
-        return { ...base, ...cell }
+        return withIngredientRoute({ ...base, ...cell })
       }
 
-      return makePill(ingredient)
+      return withIngredientRoute(makePill(ingredient))
     })
     .filter((card): card is NonNullable<ReturnType<typeof makeCard>> =>
       Boolean(card)

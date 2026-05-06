@@ -38,27 +38,7 @@ export type IngredientProfile = {
   status: string
 }
 
-export type IngredientRouteScope = 'root' | 'console'
-
-type UseIngredientInterfaceOptions = {
-  routeScope?: IngredientRouteScope
-}
-
-const resolveIngredientRoute = (
-  id: string,
-  routeScope: IngredientRouteScope
-) => {
-  if (!id) return ''
-
-  const encoded = encodeURIComponent(id)
-  return routeScope === 'console'
-    ? `/console/kitchen/ingredients/${encoded}`
-    : `/ingredients/${encoded}`
-}
-
-export function useIngredientInterface(
-  options: UseIngredientInterfaceOptions = {}
-) {
+export function useIngredientInterface() {
   type IngredientPill = IngredientCard.Card
 
   type IngredientCell = Pick<
@@ -75,7 +55,6 @@ export function useIngredientInterface(
   }
 
   function map(ingredient: IngredientInterfaceItem): IngredientCard.Card {
-    const routeScope = options.routeScope ?? 'root'
     const id = safeString(ingredient.id).trim()
     const slug = safeString((ingredient as Ingredient).slug).trim() || id
     const name = safeString(ingredient.name).trim()
@@ -87,7 +66,7 @@ export function useIngredientInterface(
     return {
       id,
       slug,
-      to: resolveIngredientRoute(id, routeScope),
+      to: '',
       imageUrl: safeString(ingredient.image_url).trim(),
       title: name,
       subtitle: joinSubtitle(supplierRef),

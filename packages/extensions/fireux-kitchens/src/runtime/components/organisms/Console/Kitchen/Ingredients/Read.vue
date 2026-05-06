@@ -5,7 +5,6 @@
       title="Ingredients"
       description="Browse ingredients for the selected kitchen."
       :link="true"
-      route-scope="console"
     />
 
     <DevFireuxDebugPanel
