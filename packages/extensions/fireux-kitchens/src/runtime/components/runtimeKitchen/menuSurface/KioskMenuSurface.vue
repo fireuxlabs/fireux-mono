@@ -169,7 +169,7 @@
 
                       <div class="flex items-center justify-between gap-3">
                         <div class="text-lg font-semibold">
-                          {{ formatPrice(item.price_minor, item.currency_code) }}
+                          {{ formatPrice(item.price_minor) }}
                         </div>
                         <UButton
                           size="lg"
@@ -218,7 +218,7 @@
               <div class="min-w-0">
                 <div class="truncate text-base font-medium">{{ line.label }}</div>
                 <div class="text-xs text-dimmed">
-                  {{ formatPrice(line.price_minor, line.currency_code) }} each
+                  {{ formatPrice(line.price_minor) }} each
                 </div>
               </div>
 

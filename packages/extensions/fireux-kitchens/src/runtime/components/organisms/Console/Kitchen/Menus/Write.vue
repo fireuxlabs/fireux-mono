@@ -12,7 +12,7 @@
       <UCard>
         <template #header>
           <div class="console-card-header">
-            <div class="console-card-header__title">Menus</div>
+            <div class="console-card-header__title">Menu Editor</div>
             <p class="console-card-header__description">
               Create simple public menus for this kitchen. Items can stand alone
               and do not need dishes or recipes yet.
@@ -20,8 +20,11 @@
           </div>
         </template>
 
-        <div class="grid gap-5 lg:grid-cols-[minmax(220px,280px)_1fr]">
-          <aside class="space-y-4">
+        <div
+          class="grid gap-5"
+          :class="detailMode ? '' : 'lg:grid-cols-[minmax(220px,280px)_1fr]'"
+        >
+          <aside v-if="!detailMode" class="space-y-4">
             <div class="space-y-2">
               <button
                 v-for="menu in menusSorted"
@@ -109,59 +112,86 @@
               v-if="!draft"
               color="neutral"
               variant="soft"
-              title="Select or create a menu"
-              description="Menus hold sections and simple priced menu items."
+              :title="detailMode ? 'Menu not found' : 'Select or create a menu'"
+              :description="
+                detailMode
+                  ? `No menu was found for ${selectedMenuId || 'this route'}.`
+                  : 'Menus hold sections and simple priced menu items.'
+              "
             />
 
             <form v-else class="space-y-5" @submit.prevent="saveDraft">
-              <div class="grid gap-4 sm:grid-cols-2">
-                <UFormField label="Menu name">
-                  <UInput
-                    v-model="draft.name"
-                    placeholder="Speisekarte"
-                    :disabled="busy"
-                  />
-                </UFormField>
+              <div
+                v-if="detailMode"
+                class="rounded-lg border border-default bg-default px-4 py-3"
+              >
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                  <div class="min-w-0">
+                    <h3 class="truncate text-base font-semibold text-highlighted">
+                      {{ draft.name || selectedMenuId || 'Untitled menu' }}
+                    </h3>
+                    <p class="text-xs text-dimmed">
+                      {{ selectedMenuId }} · {{ draft.active ? 'Published' : 'Hidden' }}
+                    </p>
+                  </div>
 
-                <UFormField label="Menu id">
-                  <UInput :model-value="selectedMenuId" disabled />
-                </UFormField>
-              </div>
-
-              <UFormField label="Description">
-                <UTextarea
-                  v-model="draft.description"
-                  :rows="2"
-                  placeholder="Optional note shown on the public menu."
-                  :disabled="busy"
-                />
-              </UFormField>
-
-              <div class="grid gap-4 sm:grid-cols-3">
-                <UFormField label="Order">
-                  <UInput
-                    v-model="draft.sort_order"
-                    type="number"
-                    :disabled="busy"
-                  />
-                </UFormField>
-
-                <UFormField label="Currency">
-                  <UInput
-                    v-model="draft.currency_code"
-                    placeholder="CHF"
-                    :disabled="busy"
-                  />
-                </UFormField>
-
-                <div class="flex items-end">
-                  <USwitch
-                    v-model="draft.active"
-                    label="Published"
-                    :disabled="busy"
-                  />
+                  <UBadge color="neutral" variant="soft">
+                    {{ draft.sections.length }} sections
+                  </UBadge>
                 </div>
               </div>
+
+              <details
+                class="rounded-lg border border-default p-4"
+                :open="!detailMode"
+              >
+                <summary class="cursor-pointer select-none text-sm font-semibold text-highlighted">
+                  Menu settings
+                </summary>
+
+                <div class="mt-4 space-y-4">
+                  <div class="grid gap-4 sm:grid-cols-2">
+                    <UFormField label="Menu name">
+                      <UInput
+                        v-model="draft.name"
+                        placeholder="Speisekarte"
+                        :disabled="busy"
+                      />
+                    </UFormField>
+
+                    <UFormField label="Menu id">
+                      <UInput :model-value="selectedMenuId" disabled />
+                    </UFormField>
+                  </div>
+
+                  <UFormField label="Description">
+                    <UTextarea
+                      v-model="draft.description"
+                      :rows="2"
+                      placeholder="Optional note shown on the public menu."
+                      :disabled="busy"
+                    />
+                  </UFormField>
+
+                  <div class="grid gap-4 sm:grid-cols-2">
+                    <UFormField label="Order">
+                      <UInput
+                        v-model="draft.sort_order"
+                        type="number"
+                        :disabled="busy"
+                      />
+                    </UFormField>
+
+                    <div class="flex items-end">
+                      <USwitch
+                        v-model="draft.active"
+                        label="Published"
+                        :disabled="busy"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </details>
 
               <div class="flex flex-wrap items-center gap-2">
                 <UButton
@@ -190,8 +220,16 @@
                 </p>
               </div>
 
-              <div class="border-t border-default pt-5">
-                <div class="mb-3 flex items-center justify-between gap-3">
+              <details
+                class="rounded-lg border border-default p-4"
+                :open="!detailMode"
+              >
+                <summary class="cursor-pointer select-none text-sm font-semibold text-highlighted">
+                  Sections & items
+                </summary>
+
+                <div class="mt-4 border-t border-default pt-4">
+                  <div class="mb-3 flex items-center justify-between gap-3">
                   <div>
                     <h3 class="text-sm font-semibold text-highlighted">
                       Sections
@@ -202,7 +240,7 @@
                   </div>
                 </div>
 
-                <div class="space-y-4">
+                  <div class="space-y-4">
                   <div
                     v-for="(section, sectionIndex) in draft.sections"
                     :key="section.local_key"
@@ -300,7 +338,7 @@
                               {{ item.label || 'Untitled item' }}
                             </p>
                             <p class="text-xs text-dimmed">
-                              {{ formatDraftPrice(item.price_chf, item.currency_code || draft.currency_code) }}
+                              {{ formatDraftPrice(item.price_chf) }}
                             </p>
                           </div>
 
@@ -430,7 +468,7 @@
                   </div>
                 </div>
 
-                <div class="mt-4 rounded-lg border border-dashed border-default p-3">
+                  <div class="mt-4 rounded-lg border border-dashed border-default p-3">
                   <div class="grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
                     <UInput
                       v-model="newSection.label"
@@ -451,8 +489,9 @@
                       Add section
                     </UButton>
                   </div>
+                  </div>
                 </div>
-              </div>
+              </details>
             </form>
           </section>
         </div>
@@ -469,6 +508,7 @@
 </template>
 
 <script setup lang="ts">
+import { navigateTo } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
@@ -484,6 +524,17 @@ import type {
   MenuServiceMode,
 } from '../../../../../models/menu.model'
 
+const props = withDefaults(
+  defineProps<{
+    menuId?: string
+    detailMode?: boolean
+  }>(),
+  {
+    menuId: '',
+    detailMode: false,
+  }
+)
+
 type ItemDraft = {
   local_key: string
   id: string
@@ -491,7 +542,6 @@ type ItemDraft = {
   label: string
   description: string
   price_chf: string
-  currency_code: string
   active: boolean
   sort_order: number
   photo_url?: string
@@ -513,7 +563,6 @@ type MenuDraft = {
   name: string
   description: string
   active: boolean
-  currency_code: string
   defaults?: Partial<MenuItemDefaults>
   service_modes: MenuServiceMode[]
   sections: SectionDraft[]
@@ -611,6 +660,10 @@ const sortedByOrder = <T extends { sort_order?: number; label?: string; name?: s
   )
 
 const menusSorted = computed(() => sortedByOrder(menus.value))
+const kitchenCurrencyCode = computed(() =>
+  normalizeCurrency((selectedKitchen.value as Record<string, unknown> | null)?.currency_code)
+)
+const routeMenuId = computed(() => normalizeString(props.menuId))
 const selectedMenu = computed(
   () =>
     menusSorted.value.find(
@@ -639,8 +692,25 @@ const canSaveDraft = computed(
 )
 
 watch(
+  routeMenuId,
+  (nextMenuId) => {
+    if (nextMenuId) {
+      selectedMenuId.value = nextMenuId
+    }
+  },
+  { immediate: true }
+)
+
+watch(
   menusSorted,
   (nextMenus) => {
+    if (props.detailMode) {
+      if (routeMenuId.value) {
+        selectedMenuId.value = routeMenuId.value
+      }
+      return
+    }
+
     if (!nextMenus.length) {
       selectedMenuId.value = ''
       return
@@ -678,28 +748,22 @@ watch(
 )
 
 function menuToDraft(menu: Menu): MenuDraft {
-  const currencyCode = normalizeCurrency(menu.currency_code)
-
   return {
     name: normalizeString(menu.name),
     description: normalizeString(menu.description),
     active: menu.active !== false,
-    currency_code: currencyCode,
     defaults: menu.defaults ? { ...menu.defaults } : undefined,
     service_modes: Array.isArray(menu.service_modes) && menu.service_modes.length
       ? [...menu.service_modes]
       : ['dine_in'],
     sort_order: numberValue(menu.sort_order, 0),
     sections: sortedByOrder(menu.sections ?? []).map((section) =>
-      sectionToDraft(section, currencyCode)
+      sectionToDraft(section)
     ),
   }
 }
 
-function sectionToDraft(
-  section: MenuSection,
-  currencyCode: string
-): SectionDraft {
+function sectionToDraft(section: MenuSection): SectionDraft {
   return {
     local_key: nextLocalKey('section'),
     id: normalizeString(section.id),
@@ -710,15 +774,12 @@ function sectionToDraft(
     new_item_label: '',
     new_item_price_chf: '',
     items: sortedByOrder(section.items ?? []).map((item) =>
-      itemToDraft(item, currencyCode)
+      itemToDraft(item)
     ),
   }
 }
 
-function itemToDraft(
-  item: MenuSectionItem,
-  currencyCode: string
-): ItemDraft {
+function itemToDraft(item: MenuSectionItem): ItemDraft {
   return {
     local_key: nextLocalKey('item'),
     id: normalizeString(item.id),
@@ -726,7 +787,6 @@ function itemToDraft(
     label: normalizeString(item.label),
     description: normalizeString(item.description),
     price_chf: priceInputFromMinor(item.price_minor),
-    currency_code: normalizeCurrency(item.currency_code || currencyCode),
     active: item.active !== false,
     sort_order: numberValue(item.sort_order, 0),
     photo_url: normalizeString(item.photo_url) || undefined,
@@ -825,7 +885,6 @@ function addItem(sectionIndex: number) {
     label: section.new_item_label.trim(),
     description: '',
     price_chf: section.new_item_price_chf,
-    currency_code: normalizeCurrency(draft.value.currency_code),
     active: true,
     sort_order: nextOrder,
   })
@@ -858,7 +917,6 @@ function moveItem(sectionIndex: number, itemIndex: number, delta: number) {
 
 function draftToPatch(source: MenuDraft): Partial<Menu> {
   const sectionIds = new Set<string>()
-  const currencyCode = normalizeCurrency(source.currency_code)
   const sections: MenuSection[] = source.sections.map((section) => {
     const itemIds = new Set<string>()
     const sectionId = uniqueId(
@@ -873,7 +931,6 @@ function draftToPatch(source: MenuDraft): Partial<Menu> {
         label: normalizeString(item.label) || itemId,
         description: normalizeString(item.description),
         price_minor: parsePriceMinor(item.price_chf),
-        currency_code: normalizeCurrency(item.currency_code || currencyCode),
         active: item.active !== false,
         sort_order: numberValue(item.sort_order, 0),
       }
@@ -901,9 +958,7 @@ function draftToPatch(source: MenuDraft): Partial<Menu> {
     name: normalizeString(source.name),
     description: normalizeString(source.description),
     active: source.active !== false,
-    currency_code: currencyCode,
     defaults: source.defaults ?? {
-      currency_code: currencyCode,
       active: true,
       description: '',
       photo_url: '',
@@ -914,10 +969,10 @@ function draftToPatch(source: MenuDraft): Partial<Menu> {
   }
 }
 
-function formatDraftPrice(value: unknown, currencyCode?: string) {
+function formatDraftPrice(value: unknown) {
   return new Intl.NumberFormat('de-CH', {
     style: 'currency',
-    currency: normalizeCurrency(currencyCode),
+    currency: kitchenCurrencyCode.value,
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(parsePriceMinor(value) / 100)
@@ -950,9 +1005,7 @@ async function createMenu() {
       name: normalizeString(newMenu.name),
       description: '',
       active: newMenu.active,
-      currency_code: 'CHF',
       defaults: {
-        currency_code: 'CHF',
         active: true,
         description: '',
         photo_url: '',
@@ -1040,6 +1093,9 @@ async function deleteMenu() {
     await useRequireUser()
     await deleteDoc(doc(resolveDb(), collectionPath.value, selectedMenuId.value))
     selectedMenuId.value = ''
+    if (props.detailMode) {
+      await navigateTo('/console/kitchen/menus')
+    }
     toast.add({ title: 'Menu deleted', icon: 'i-heroicons-check-circle' })
   } catch (error) {
     const description = error instanceof Error ? error.message : 'Please try again.'

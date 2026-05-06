@@ -4,6 +4,7 @@ import type {
   MenuSection,
   MenuServiceMode,
 } from '../../../models/menu.model'
+import type { Dish } from '../../../models/dish.model'
 import {
   resolveMenuItemView,
   type ResolvedMenuItemView,
@@ -28,9 +29,11 @@ export type KitchenMenuSectionView = MenuSection & {
 
 type UseResolvedKitchenMenuViewOptions = {
   menus: MaybeRef<Menu[] | null | undefined>
+  dishes?: MaybeRef<Dish[] | null | undefined>
   requestedMenuId: MaybeRef<string | null | undefined>
   requestedMode: MaybeRef<KitchenMenuMode>
   kitchen: MaybeRef<KitchenLike>
+  currencyCode?: MaybeRef<string | null | undefined>
   kitchenAddress: MaybeRef<string | null | undefined>
   headerTitleFallback: string
   headerDescriptionFallback: string
@@ -193,6 +196,7 @@ export function useResolvedKitchenMenuView(
   options: UseResolvedKitchenMenuViewOptions
 ) {
   const menus = computed<Menu[]>(() => unref(options.menus) ?? [])
+  const dishes = computed<Dish[]>(() => unref(options.dishes) ?? [])
   const requestedMenuId = computed(() =>
     normalizeString(unref(options.requestedMenuId))
   )
@@ -200,6 +204,21 @@ export function useResolvedKitchenMenuView(
     normalizeKitchenMenuMode(unref(options.requestedMode))
   )
   const kitchen = computed(() => unref(options.kitchen) ?? null)
+  const kitchenCurrencyCode = computed(() =>
+    normalizeKitchenMenuCurrency(
+      unref(options.currencyCode) || kitchen.value?.currency_code || 'CHF'
+    )
+  )
+  const dishesById = computed(() => {
+    const lookup = new Map<string, Dish>()
+
+    for (const dish of dishes.value) {
+      const id = normalizeString(dish?.id)
+      if (id) lookup.set(id, dish)
+    }
+
+    return lookup
+  })
   const kitchenAddress = computed(() =>
     normalizeString(unref(options.kitchenAddress))
   )
@@ -276,7 +295,12 @@ export function useResolvedKitchenMenuView(
         ...section,
         itemGroups: buildItemGroups(
           [...(section.items ?? [])]
-            .map((item) => resolveMenuItemView(menu, section, item))
+            .map((item) => {
+              const dishId = normalizeString(item?.dish_id)
+              return resolveMenuItemView(menu, section, item, {
+                dish: dishId ? dishesById.value.get(dishId) : null,
+              })
+            })
             .filter((item) => item.active)
             .sort(
               (a, b) =>
@@ -324,7 +348,12 @@ export function useResolvedKitchenMenuView(
     isMenuSelectable,
     isSelectedMenu,
     resolveVariantLabel: resolveKitchenMenuVariantLabel,
-    formatPrice: formatKitchenMenuPrice,
+    formatPrice: (priceMinor?: number, currencyCode?: string) =>
+      formatKitchenMenuPrice(
+        priceMinor,
+        currencyCode || kitchenCurrencyCode.value
+      ),
+    currencyCode: kitchenCurrencyCode,
     headerTitle,
     headerDescription,
   }

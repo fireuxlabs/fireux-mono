@@ -73,6 +73,10 @@
             Slug:
             <span class="console-summary-value">{{ slug || 'Unset' }}</span>
           </div>
+          <div class="console-summary-field">
+            Currency:
+            <span class="console-summary-value">{{ currencyCode || 'CHF' }}</span>
+          </div>
         </div>
       </UCard>
 
@@ -146,6 +150,7 @@ const shortAddress = computed(() => String(kitchen.value?.short_address ?? ''))
 const formattedAddress = computed(() => String(kitchen.value?.formatted_address ?? ''))
 const source = computed(() => String(kitchen.value?.source ?? ''))
 const slug = computed(() => String(kitchen.value?.slug ?? ''))
+const currencyCode = computed(() => String(kitchen.value?.currency_code ?? 'CHF'))
 const openingHours = computed(
   () => kitchen.value?.opening_hours as KitchenOpeningHours | undefined
 )

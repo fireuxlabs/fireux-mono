@@ -33,7 +33,7 @@
               </p>
               <div class="flex flex-wrap items-center gap-1">
                 <UBadge variant="soft" color="neutral" size="xs">
-                  {{ formatPrice(item.price_minor, item.currency_code || currencyCode) }}
+                  {{ formatPrice(item.price_minor, currencyCode) }}
                 </UBadge>
               </div>
             </div>

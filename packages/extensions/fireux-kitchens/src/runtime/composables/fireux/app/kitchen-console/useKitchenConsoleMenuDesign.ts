@@ -73,9 +73,7 @@ export function useKitchenConsoleMenuDesign() {
         name: 'Public Menu',
         description: '',
         active: false,
-        currency_code: 'CHF',
         defaults: {
-          currency_code: 'CHF',
           active: true,
           description: '',
           photo_url: '',

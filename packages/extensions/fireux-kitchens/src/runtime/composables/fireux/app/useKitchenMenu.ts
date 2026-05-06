@@ -3,6 +3,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useKitchenCollection } from '../firestore/kitchen/fetch/useKitchenCollection'
 import type { Menu } from '../../../models/menu.model'
+import type { Dish } from '../../../models/dish.model'
 import {
   normalizeString,
   resolveKitchenRuntimeChildCollectionPath,
@@ -90,27 +91,43 @@ export function useKitchenMenu() {
   const menusRef = shallowRef(null) as ShallowRef<
     Ref<Menu[] | undefined> | null
   >
+  const dishesRef = shallowRef(null) as ShallowRef<
+    Ref<Dish[] | undefined> | null
+  >
 
   watch(
     kitchenId,
     (nextKitchenId) => {
-      const path = resolveKitchenRuntimeChildCollectionPath({
+      const menusPath = resolveKitchenRuntimeChildCollectionPath({
         kitchenId: nextKitchenId,
         collectionName: 'menus',
       })
+      const dishesPath = resolveKitchenRuntimeChildCollectionPath({
+        kitchenId: nextKitchenId,
+        collectionName: 'dishes',
+      })
 
-      menusRef.value = path ? firestoreFetchCollection<Menu>(path) : null
+      menusRef.value = menusPath ? firestoreFetchCollection<Menu>(menusPath) : null
+      dishesRef.value = dishesPath
+        ? firestoreFetchCollection<Dish>(dishesPath)
+        : null
     },
     { immediate: true }
   )
 
   const menus = computed(() => menusRef.value?.value ?? [])
+  const dishes = computed(() => dishesRef.value?.value ?? [])
+  const currencyCode = computed(() =>
+    normalizeString((resolvedKitchen.value as any)?.currency_code) || 'CHF'
+  )
 
   const menuView = useResolvedKitchenMenuView({
     menus,
+    dishes,
     requestedMenuId: routeMenuId,
     requestedMode,
     kitchen: resolvedKitchen,
+    currencyCode,
     kitchenAddress,
     headerTitleFallback: 'Menu',
     headerDescriptionFallback: 'Public menu',
@@ -161,6 +178,8 @@ export function useKitchenMenu() {
     kitchenId,
     kitchenAddress,
     menus,
+    dishes,
+    currencyCode: menuView.currencyCode,
     sortedMenus: menuView.sortedMenus,
     activeMenus: menuView.activeMenus,
     activeMenu: menuView.activeMenu,

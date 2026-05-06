@@ -1,8 +1,8 @@
 <template>
   <section class="console-surface space-y-6">
-    <OrganismsConsoleKitchenMenusWrite v-if="canWrite || !selectedKitchen" />
+    <OrganismsConsoleKitchenMenusRead v-if="selectedKitchen" />
 
-    <OrganismsConsoleKitchenMenusRead v-else />
+    <OrganismsConsoleKitchenMenusWrite v-if="canWrite || !selectedKitchen" />
   </section>
 </template>
 

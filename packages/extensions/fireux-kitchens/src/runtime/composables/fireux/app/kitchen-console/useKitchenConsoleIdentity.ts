@@ -16,6 +16,11 @@ export function useKitchenConsoleIdentity() {
   const tagline = computed(() =>
     normalizeString((selectedKitchen.value as Record<string, unknown> | null)?.tagline)
   )
+  const currencyCode = computed(() =>
+    normalizeString(
+      (selectedKitchen.value as Record<string, unknown> | null)?.currency_code
+    ) || 'CHF'
+  )
   const slug = computed(() =>
     normalizeString((selectedKitchen.value as Record<string, unknown> | null)?.slug)
   )
@@ -36,6 +41,7 @@ export function useKitchenConsoleIdentity() {
     canWrite: canWrite.value,
     name: name.value,
     tagline: tagline.value,
+    currencyCode: currencyCode.value,
     slug: slug.value,
     placeId: placeId.value,
     address: address.value,
@@ -52,6 +58,7 @@ export function useKitchenConsoleIdentity() {
     clearSelectedKitchen,
     name,
     tagline,
+    currencyCode,
     slug,
     placeId,
     openingHours,

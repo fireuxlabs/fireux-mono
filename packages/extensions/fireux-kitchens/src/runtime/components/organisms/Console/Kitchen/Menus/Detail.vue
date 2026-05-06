@@ -10,8 +10,14 @@
       Back to menus
     </UButton>
 
+    <OrganismsConsoleKitchenMenusWrite
+      v-if="canWrite"
+      :menu-id="menuId"
+      detail-mode
+    />
+
     <MenuProfile
-      v-if="menu"
+      v-else-if="menu"
       :menu="menu"
       :dishes="dishes"
     />
@@ -41,6 +47,6 @@
 import { useKitchenConsoleMenu } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMenu'
 import MenuProfile from '../../../Menu/Cards/Profile.vue'
 
-const { menu, menuId, dishes, pending, debug } = useKitchenConsoleMenu()
+const { menu, menuId, dishes, pending, canWrite, debug } = useKitchenConsoleMenu()
 const isDev = import.meta.dev
 </script>

@@ -198,7 +198,7 @@ export function useKitchenConsoleMenuSurface() {
   const route = useRoute()
   const toast = useToastify()
   const { selectedKitchen, selectedMode } = useKitchenConsole()
-  const { menus, pending } = useKitchenConsoleMenus()
+  const { menus, dishes, pending } = useKitchenConsoleMenus()
 
   const routeMenuId = computed(() => {
     const rawParam = route.query.menuId
@@ -229,6 +229,9 @@ export function useKitchenConsoleMenuSurface() {
 
   const resolvedKitchen = computed(() => selectedKitchen.value ?? null)
   const kitchenId = computed(() => normalizeString(resolvedKitchen.value?.id))
+  const kitchenCurrencyCode = computed(() =>
+    normalizeCurrency((resolvedKitchen.value as any)?.currency_code || 'CHF')
+  )
   const kitchenAddress = computed(() =>
     normalizeString(
       (resolvedKitchen.value as any)?.short_address ||
@@ -249,9 +252,11 @@ export function useKitchenConsoleMenuSurface() {
 
   const menuView = useResolvedKitchenMenuView({
     menus,
+    dishes,
     requestedMenuId: routeMenuId,
     requestedMode,
     kitchen: resolvedKitchen,
+    currencyCode: kitchenCurrencyCode,
     kitchenAddress,
     headerTitleFallback: 'Menu Preview',
     headerDescriptionFallback: 'Console menu preview',
@@ -326,7 +331,7 @@ export function useKitchenConsoleMenuSurface() {
         dish_id: normalizeString(item?.dish_id),
         label,
         price_minor: Number(item?.price_minor || 0),
-        currency_code: normalizeCurrency(item?.currency_code || 'CHF'),
+        currency_code: kitchenCurrencyCode.value,
         qty: 1,
       })
 

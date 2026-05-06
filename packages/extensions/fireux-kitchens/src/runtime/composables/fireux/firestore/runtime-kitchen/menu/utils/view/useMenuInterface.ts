@@ -61,6 +61,10 @@ export function useMenuInterface() {
   }
 
   function map(menu: Menu): MenuCard.Card {
+    const extra = menu as Menu & {
+      menu_type?: unknown
+      order?: unknown
+    }
     const active = Boolean(menu.active)
     const items = (menu.sections ?? []).flatMap((section) => section.items ?? [])
     const id =
@@ -69,6 +73,8 @@ export function useMenuInterface() {
       `menu-${items.length}`
     const rawName = safeString(menu.name).trim()
     const name = stripKitchenPrefix(rawName) || rawName || id
+    const sortOrder = Number(menu.sort_order || extra.order || 0)
+    const menuType = safeString(extra.menu_type).trim()
     const isActiveNow = active
     const windowLabel = ''
 
@@ -77,14 +83,16 @@ export function useMenuInterface() {
       to: `/console/kitchen/menus/${encodeURIComponent(id)}`,
       imageUrl: '',
       title: name,
-      subtitle: '',
-      meta: [`Items: ${items.length}`, windowLabel]
+      subtitle: id,
+      meta: [
+        menuType ? `Type: ${menuType}` : '',
+        `Order: ${sortOrder}`,
+        windowLabel,
+      ]
         .filter(Boolean)
         .join(' · '),
       status: active ? 'active' : 'inactive',
-      badges: [
-        `${items.length} ${items.length === 1 ? 'item' : 'items'}`,
-      ],
+      badges: [],
       summary: safeString(menu.description).trim(),
       name,
       description: safeString(menu.description).trim(),
@@ -92,7 +100,7 @@ export function useMenuInterface() {
       itemCount: items.length,
       isActiveNow,
       windowLabel,
-      sortOrder: Number(menu.sort_order || 0),
+      sortOrder,
     }
   }
 

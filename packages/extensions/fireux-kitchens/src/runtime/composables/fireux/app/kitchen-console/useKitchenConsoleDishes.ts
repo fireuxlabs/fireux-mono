@@ -87,6 +87,12 @@ export function useKitchenConsoleDishes(
       ? []
       : sectionMenusPage.collection.value.items
   )
+  const kitchenCurrencyCode = computed(
+    () =>
+      normalizeString(
+        (selectedKitchen.value as Record<string, unknown> | null)?.currency_code
+      ) || 'CHF'
+  )
 
   const sections = computed<KitchenDishSection[]>(() => {
     const dishIdsInScope = new Set(
@@ -146,7 +152,6 @@ export function useKitchenConsoleDishes(
       (acc, menu) => {
         const menuId = normalizeString(menu?.id)
         const menuName = normalizeString(menu?.name) || menuId
-        const menuCurrency = normalizeString(menu?.currency_code) || 'CHF'
         const menuActive = menu?.active !== false
         const sections = Array.isArray(menu?.sections) ? menu.sections : []
 
@@ -168,8 +173,7 @@ export function useKitchenConsoleDishes(
               itemId: normalizeString(item?.id),
               itemLabel: normalizeString(item?.label),
               priceMinor: Number(item?.price_minor || 0),
-              currencyCode:
-                normalizeString(item?.currency_code) || menuCurrency,
+              currencyCode: kitchenCurrencyCode.value,
               active: menuActive && item?.active !== false,
             }
 

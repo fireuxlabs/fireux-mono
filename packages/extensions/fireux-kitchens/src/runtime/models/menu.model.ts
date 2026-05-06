@@ -28,19 +28,17 @@ export type MenuSectionItem = {
   id: string
   dish_id?: string
 
-  label: string
+  label?: string
   price_minor: number
   sort_order: number
 
   // Optional item overrides (resolved at runtime from section/menu defaults)
   description?: string
-  currency_code?: string
   photo_url?: string
   active?: boolean
 }
 
 export type MenuItemDefaults = {
-  currency_code: string
   active: boolean
   description: string
   photo_url: string
@@ -65,10 +63,7 @@ export const MenuModel = {
   // Publishing toggle for this menu record (separate from per-mode availability)
   active: true as boolean,
 
-  // Default currency for items
-  currency_code: 'CHF' as string,
   defaults: {
-    currency_code: 'CHF',
     active: true,
     description: '',
     photo_url: '',

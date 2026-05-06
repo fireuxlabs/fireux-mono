@@ -49,6 +49,7 @@ export type KitchenSurface = {
   updated?: unknown
   name?: string
   short_name?: string
+  currency_code?: string
   formatted_address?: string
   short_address?: string
   lat?: number

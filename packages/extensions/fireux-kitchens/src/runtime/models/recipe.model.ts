@@ -81,6 +81,7 @@ export const RecipeModel = {
   id: '' as string,
 
   name: '' as string,
+  names: undefined as Record<string, string> | undefined,
   slug: undefined as string | undefined,
   recipe_type: 'service' as RecipeType,
 
@@ -99,6 +100,7 @@ export const RecipeModel = {
   access_policy: DEFAULT_POLICY as RecipeAccessPolicy,
 
   description: '' as string,
+  descriptions: undefined as Record<string, string> | undefined,
   ingredient_lines: [] as RecipeIngredientLine[],
   steps: [] as RecipeStep[],
   tags: [] as string[],

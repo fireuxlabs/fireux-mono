@@ -240,7 +240,8 @@ type MenuSectionViewLike = {
       label?: string
       description?: string
       price_minor?: number
-      currency_code?: string
+      names?: Record<string, string>
+      descriptions?: Record<string, string>
     }>
   }>
 }
@@ -437,11 +438,29 @@ function menuEntriesForSection(section: MenuSectionViewLike): MenuEntry[] {
       key: `${group.key || group.label || 'group'}-${item.id || item.label}`,
       label: items.length > 1
         ? `${group.label || ''} ${item.label || ''}`.trim()
-        : item.label || 'Menu item',
-      description: item.description || '',
-      price: formatPrice(item.price_minor, item.currency_code),
+        : resolveLocalizedMenuText(item.names, item.label || 'Menu item'),
+      description: resolveLocalizedMenuText(item.descriptions, item.description || ''),
+      price: formatPrice(item.price_minor),
     }))
   })
+}
+
+function resolveLocalizedMenuText(
+  translations: Record<string, string> | undefined,
+  fallback: string
+) {
+  if (!translations) return fallback
+
+  const code = activeLanguage.value.code
+  return (
+    translations[code] ||
+    translations.de ||
+    translations.en ||
+    translations.it ||
+    translations.fr ||
+    Object.values(translations)[0] ||
+    fallback
+  )
 }
 </script>
 

@@ -61,7 +61,6 @@
         v-if="sections.length"
         :sections="sections"
         :dishes="dishes"
-        :currency-code="menu.currency_code"
         :show-section-headings="sections.length > 1"
       />
 

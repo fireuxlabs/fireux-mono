@@ -24,6 +24,8 @@ export const DishModel = {
   name: '' as string,
   short_name: '' as string,
   description: '' as string,
+  names: undefined as Record<string, string> | undefined,
+  descriptions: undefined as Record<string, string> | undefined,
   image_url: '' as string,
 
   primary_recipe_id: '' as string,

@@ -47,6 +47,16 @@
             />
 
             <MoleculesFormsFirestoreSimpleField
+              label="Currency"
+              :firebase-value="currencyCode"
+              placeholder="CHF"
+              :maxlength="3"
+              :formatting-function="formatCurrencyField"
+              :validation-function="validateCurrencyField"
+              :update-function="handleCurrencyCode"
+            />
+
+            <MoleculesFormsFirestoreSimpleField
               label="Slug"
               :firebase-value="slug"
               placeholder="luna-piccante"
@@ -190,6 +200,7 @@ const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> 
 
 const name = computed(() => String(kitchen.value?.name ?? ''))
 const tagline = computed(() => String(kitchen.value?.tagline ?? ''))
+const currencyCode = computed(() => String(kitchen.value?.currency_code ?? 'CHF'))
 const slug = computed(() => String(kitchen.value?.slug ?? ''))
 const shortName = computed(() => String(kitchen.value?.short_name ?? ''))
 const shortAddress = computed(() => String(kitchen.value?.short_address ?? ''))
@@ -336,6 +347,26 @@ const handleTagline = async (value: string) =>
     { tagline: value },
     'Tagline updated',
     'Failed to update tagline'
+  )
+
+const formatCurrencyField = (value: string) =>
+  normalizeString(value).toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3)
+
+const validateCurrencyField = (value: string) => {
+  const code = formatCurrencyField(value)
+  const isValid = /^[A-Z]{3}$/.test(code)
+
+  return {
+    isValid,
+    message: isValid ? '' : 'Use a 3-letter currency code.',
+  }
+}
+
+const handleCurrencyCode = async (value: string) =>
+  updateIdentityField(
+    { currency_code: formatCurrencyField(value) || 'CHF' },
+    'Currency updated',
+    'Failed to update currency'
   )
 
 const formatSlugField = (value: string) => normalizeSlug(value, { maxLength: 80 })

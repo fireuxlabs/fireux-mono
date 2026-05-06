@@ -248,6 +248,9 @@ export function useKitchenDemoMenuSurface() {
 
   const resolvedKitchen = computed(() => kitchen.value ?? null)
   const kitchenId = computed(() => normalizeString(resolvedKitchen.value?.id))
+  const kitchenCurrencyCode = computed(() =>
+    normalizeCurrency((resolvedKitchen.value as any)?.currency_code || 'CHF')
+  )
   const kitchenAddress = computed(() =>
     normalizeString(
       (resolvedKitchen.value as any)?.short_address ||
@@ -261,12 +264,17 @@ export function useKitchenDemoMenuSurface() {
   const menus = computed<Menu[]>(() =>
     getDemoKitchenCollection<Menu>(routeKitchenId.value, 'menus')
   )
+  const dishes = computed(() =>
+    getDemoKitchenCollection<any>(routeKitchenId.value, 'dishes')
+  )
 
   const menuView = useResolvedKitchenMenuView({
     menus,
+    dishes,
     requestedMenuId: routeMenuId,
     requestedMode,
     kitchen: resolvedKitchen,
+    currencyCode: kitchenCurrencyCode,
     kitchenAddress,
     headerTitleFallback: 'Demo Menu',
     headerDescriptionFallback: 'Demo kitchen menu preview',
@@ -343,7 +351,7 @@ export function useKitchenDemoMenuSurface() {
         dish_id: normalizeString(item?.dish_id),
         label,
         price_minor: Number(item?.price_minor || 0),
-        currency_code: normalizeCurrency(item?.currency_code || 'CHF'),
+        currency_code: kitchenCurrencyCode.value,
         qty: 1,
       })
 
