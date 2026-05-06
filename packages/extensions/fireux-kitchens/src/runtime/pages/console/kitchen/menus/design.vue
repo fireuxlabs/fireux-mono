@@ -17,7 +17,7 @@ definePageMeta({
   layout: 'console',
   nav: {
     visibility: { modules: ['fireux-kitchens'] },
-    key: 'console-kitchen-menu-design',
+    key: 'console-kitchen-menus-design',
     label: 'Design',
     icon: 'i-lucide-palette',
     position: 'top',
