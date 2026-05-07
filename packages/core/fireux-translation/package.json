@@ -1,0 +1,49 @@
+{
+  "name": "fireux-translation",
+  "version": "0.1.0",
+  "description": "Shared FireUX translation utilities and language catalogue",
+  "private": true,
+  "type": "module",
+  "main": "./src/module.ts",
+  "types": "./src/module.ts",
+  "exports": {
+    ".": "./src/module.ts",
+    "./runtime/*": {
+      "types": "./src/runtime/*.ts",
+      "default": "./src/runtime/*.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "runtime/*": ["src/runtime/*.ts"]
+    }
+  },
+  "files": [
+    "src/**/*"
+  ],
+  "scripts": {
+    "build": "nuxt-module-build build",
+    "dev": "nuxt-module-build --stub",
+    "postbuild": "rimraf src/**/*.map",
+    "clean": "rimraf dist"
+  },
+  "engines": {
+    "node": ">=20.11 <23",
+    "pnpm": ">=10"
+  },
+  "peerDependencies": {
+    "nuxt": "^4.1.0",
+    "@nuxt/kit": "^4.1.0",
+    "@nuxt/schema": "^4.1.0",
+    "vue": "^3.5.20"
+  },
+  "devDependencies": {
+    "@nuxt/kit": "4.1.2",
+    "@nuxt/module-builder": "^0.5.5",
+    "@nuxt/schema": "4.1.2",
+    "mkdist": "^1.5.3",
+    "rimraf": "^6.0.1",
+    "vue": "3.5.20"
+  }
+}

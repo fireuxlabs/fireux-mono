@@ -29,6 +29,16 @@ export type KitchenOpeningHours = {
   notes?: string
 }
 
+export type KitchenLanguageSettings = {
+  default_language: string
+  supported_languages: string[]
+}
+
+export const KITCHEN_STARTER_LANGUAGE_SETTINGS: KitchenLanguageSettings = {
+  default_language: 'de',
+  supported_languages: ['de', 'en', 'it', 'fr'],
+}
+
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
@@ -61,6 +71,7 @@ export const KitchenModel = {
   formatted_address: '',
   image_url: '',
   opening_hours: undefined as KitchenOpeningHours | undefined,
+  language_settings: undefined as KitchenLanguageSettings | undefined,
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -111,6 +122,7 @@ export type KitchenCreateInput = Omit<
       | 'formatted_address'
       | 'image_url'
       | 'opening_hours'
+      | 'language_settings'
     >
   >
 
@@ -128,5 +140,6 @@ export type KitchenUpdateInput = Partial<
     | 'formatted_address'
     | 'image_url'
     | 'opening_hours'
+    | 'language_settings'
   >
 >

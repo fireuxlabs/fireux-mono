@@ -35,6 +35,15 @@
       "fireux-core/runtime/*": [
         "./packages/core/fireux-core/src/runtime/*"
       ],
+      "fireux-translation": [
+        "./packages/core/fireux-translation/src/module.ts"
+      ],
+      "fireux-translation/*": [
+        "./packages/core/fireux-translation/src/*"
+      ],
+      "fireux-translation/runtime/*": [
+        "./packages/core/fireux-translation/src/runtime/*"
+      ],
       "fireux-jobs": [
         "./packages/extensions/fireux-jobs/src/module.ts"
       ],
@@ -142,6 +151,9 @@
       ],
       "@fireux-core/*": [
         "./packages/core/fireux-core/src/*"
+      ],
+      "@fireux-translation/*": [
+        "./packages/core/fireux-translation/src/*"
       ],
       "@fireux-jobs/*": [
         "./packages/extensions/fireux-jobs/src/*"
