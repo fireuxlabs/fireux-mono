@@ -6,8 +6,13 @@ import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-con
 
 const trim = (value: unknown) => String(value || '').trim()
 
-export function useRecipeDelete(options: { kitchenCollectionPath?: string | Ref<string | null | undefined> } = {}) {
-  const { deleteDocument } = useFirestoreDelete()
+export function useRecipeDelete(
+  options: {
+    kitchenCollectionPath?: string | Ref<string | null | undefined>
+    databaseId?: string | Ref<string | null | undefined>
+  } = {}
+) {
+  const { deleteDocument } = useFirestoreDelete({ databaseId: options.databaseId })
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenSelection()
 
