@@ -2,9 +2,9 @@ import { doc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, unref, type Ref } from 'vue'
-import { normalizeRecipe, type Recipe } from '../../../../../../models/recipe.model'
-import { useKitchenSelection } from '../../../../app/kitchen-console/useKitchenSelection'
-import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-console/shared'
+import { normalizeRecipe, type Recipe } from '../../../../../models/recipe.model'
+import { useKitchenSelection } from '../../../app/kitchen-console/useKitchenSelection'
+import { resolveKitchenConsoleCollectionPath } from '../../../app/kitchen-console/shared'
 
 const resolveRecipesPath = (kitchenCollectionPath: string, kitchenId: string) =>
   `${kitchenCollectionPath}/${kitchenId}/recipes`

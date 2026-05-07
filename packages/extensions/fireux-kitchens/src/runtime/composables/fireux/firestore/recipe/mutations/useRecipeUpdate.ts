@@ -7,9 +7,9 @@ import {
   type Recipe,
   type RecipeUpdateInput,
   type RecipeType,
-} from '../../../../../../models/recipe.model'
-import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-console/shared'
-import { useKitchenSelection } from '../../../../app/kitchen-console/useKitchenSelection'
+} from '../../../../../models/recipe.model'
+import { resolveKitchenConsoleCollectionPath } from '../../../app/kitchen-console/shared'
+import { useKitchenSelection } from '../../../app/kitchen-console/useKitchenSelection'
 
 const trim = (value: unknown) => String(value || '').trim()
 const optional = (value: unknown) => trim(value) || undefined

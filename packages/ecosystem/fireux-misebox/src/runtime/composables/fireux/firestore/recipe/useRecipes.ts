@@ -1,13 +1,15 @@
 import {
-    useKitchenRecipeCollection as useCanonicalRecipeCollection,
-} from 'fireux-kitchens/runtime/composables/fireux/firestore/runtime-kitchen/recipe/fetch/useKitchenRecipeCollection'
+    useRecipeCollection,
+} from 'fireux-kitchens/runtime/composables/fireux/firestore/recipe/fetch/useRecipeCollection'
+import {
+    useRecipeCreate,
+} from 'fireux-kitchens/runtime/composables/fireux/firestore/recipe/mutations/useRecipeCreate'
 import { computed } from 'vue'
-import { useRecipeCreate } from './useRecipeCreate'
 import { useRecipeDelete } from './useRecipeDelete'
 import { useRecipeUpdate } from './useRecipeUpdate'
 
 export function useRecipes() {
-  const { recipes, count } = useCanonicalRecipeCollection()
+  const { recipes, count } = useRecipeCollection()
 
   const all = computed(() => recipes.value ?? [])
   const pending = computed(() => !count.value && recipes.value === undefined)

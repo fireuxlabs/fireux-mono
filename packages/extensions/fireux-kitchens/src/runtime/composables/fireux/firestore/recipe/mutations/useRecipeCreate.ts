@@ -4,51 +4,30 @@ import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { computed, unref, type Ref } from 'vue'
 import {
   RecipeModel,
-  normalizeLocalizedText,
-  type LocaleCode,
   type RecipeCreateInput,
   type Recipe as RecipeDoc,
-  type RecipeType,
-} from '../../../../../../models/recipe.model'
-import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-console/shared'
-import { useKitchenSelection } from '../../../../app/kitchen-console/useKitchenSelection'
+} from '../../../../../models/recipe.model'
+import { resolveKitchenConsoleCollectionPath } from '../../../app/kitchen-console/shared'
+import { useKitchenSelection } from '../../../app/kitchen-console/useKitchenSelection'
 
-type RecipeCreateDraft = Partial<RecipeCreateInput> & {
+type RecipeCreateDraft = {
   name: string
+  description?: string
 }
 
 const trim = (value: unknown) => String(value || '').trim()
-const optional = (value: unknown) => trim(value) || undefined
-
-const oneOf = <T extends string>(
-  value: unknown,
-  allowed: readonly T[],
-  fallback: T
-): T => {
-  const resolved = trim(value) as T
-  return allowed.includes(resolved) ? resolved : fallback
-}
 
 function buildRecipePayload(
   draft: RecipeCreateDraft,
   kitchenId: string
 ): RecipeCreateInput {
   const name = trim(draft.name)
-  const defaultLocale = oneOf<LocaleCode>(
-    draft.default_locale,
-    ['it', 'de', 'en', 'fr'],
-    'en'
-  )
 
   return {
     ...RecipeModel,
     name,
-    slug: optional(draft.slug) || normalizeSlug(name),
-    recipe_type: oneOf<RecipeType>(draft.recipe_type, ['prep', 'service'], 'prep'),
-    default_locale: defaultLocale,
-    names: normalizeLocalizedText(draft.names, defaultLocale),
-    descriptions: normalizeLocalizedText(draft.descriptions, defaultLocale),
-    notes: trim(draft.notes),
+    slug: normalizeSlug(name),
+    description: trim(draft.description),
     kitchen_id: kitchenId,
     created: RecipeModel.created,
     updated: RecipeModel.updated,

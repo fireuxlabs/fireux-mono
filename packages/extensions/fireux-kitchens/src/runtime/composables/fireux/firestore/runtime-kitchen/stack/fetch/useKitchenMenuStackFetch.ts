@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { useKitchenDishCollection } from '../../dish/fetch/useKitchenDishCollection'
 import { useKitchenMenuCollection } from '../../menu/fetch/useKitchenMenuCollection'
 import { useKitchenMiseCollection } from '../../mise/fetch/useKitchenMiseCollection'
-import { useKitchenRecipeCollection } from '../../recipe/fetch/useKitchenRecipeCollection'
+import { useRecipeCollection } from '../../../recipe/fetch/useRecipeCollection'
 
 type UseKitchenMenuStackFetchOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
@@ -16,7 +16,7 @@ export function useKitchenMenuStackFetch(
   const { menus, kitchenId: resolvedKitchenId, kitchenCollectionPath } =
     useKitchenMenuCollection(kitchenId, options)
   const { dishes } = useKitchenDishCollection(kitchenId, options)
-  const { recipes } = useKitchenRecipeCollection(kitchenId, options)
+  const { recipes } = useRecipeCollection(kitchenId, options)
   const { miseTasks } = useKitchenMiseCollection(kitchenId, options)
 
   const counts = computed(() => ({

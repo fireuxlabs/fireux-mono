@@ -71,7 +71,7 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import { useRecipeInterface } from '../../../../composables/fireux/firestore/runtime-kitchen/recipe/utils/view/useRecipeInterface'
+import { useRecipeInterface } from '../../../../composables/fireux/firestore/recipe/utils/view/useRecipeInterface'
 import type { Recipe } from '../../../../models/recipe.model'
 import RecipeCardsCell from '../Cards/Cell.vue'
 import RecipeCardsPill from '../Cards/Pill.vue'
