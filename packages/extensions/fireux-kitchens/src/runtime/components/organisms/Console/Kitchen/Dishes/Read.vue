@@ -8,7 +8,7 @@
       :link="true"
     />
 
-    <OrganismsDishConsoleCore
+    <OrganismsConsoleKitchenDishesPreview
       :collection="dishes"
       :menu-usage-by-dish-id="menuUsageByDishId"
     />

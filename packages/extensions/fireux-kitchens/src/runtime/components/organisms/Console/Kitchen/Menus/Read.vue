@@ -8,7 +8,7 @@
       :link="true"
     />
 
-    <OrganismsMenuConsoleCore :collection="menus" :dishes="dishes" />
+    <OrganismsConsoleKitchenMenusPreview :collection="menus" :dishes="dishes" />
 
     <DevFireuxDebugPanel
       v-if="isDev"

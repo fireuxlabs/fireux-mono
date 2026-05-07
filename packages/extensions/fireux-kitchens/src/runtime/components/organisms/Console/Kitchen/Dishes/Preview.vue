@@ -91,8 +91,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Dish } from '../../../../models/dish.model'
-import type { KitchenDishMenuUsage } from '../../../../composables/fireux/app/kitchen-console/useKitchenConsoleDishes'
+import type { Dish } from '../../../../../models/dish.model'
+import type { KitchenDishMenuUsage } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleDishes'
 
 const props = withDefaults(
   defineProps<{
