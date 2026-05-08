@@ -1,7 +1,7 @@
 import { useDocumentUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/operations/useDocumentUpdateBase'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import type { FirebaseProduct } from '../../../../models/product.model'
+import type { FirebaseProduct } from '../../../../../models/product.model'
 
 export function useProductUpdate() {
   const base = useDocumentUpdateBase<FirebaseProduct>('products', {

@@ -70,7 +70,7 @@
 
 <script setup lang="ts">
 import { watch } from 'vue'
-import { useCreateProductState } from '../../../../composables/fireux/firestore/product/editor/useCreateProductState'
+import { useCreateProductState } from '../../../../composables/fireux/firestore/product/state/useCreateProductState'
 
 const { product } = await useCreateProductState()
 

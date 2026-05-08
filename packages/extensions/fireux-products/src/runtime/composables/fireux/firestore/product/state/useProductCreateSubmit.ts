@@ -1,6 +1,6 @@
 import { useCreateProductState } from './useCreateProductState'
-import { useCreatePricesState } from './useCreatePricesState'
-import { useProductCreate } from '../useProductCreate'
+import { useCreatePricesState } from '../price/state/useCreatePricesState'
+import { useProductCreate } from '../mutations/useProductCreate'
 import type { StripePriceInput } from '../../../../../models/product.model'
 
 export function useProductCreateSubmit() {

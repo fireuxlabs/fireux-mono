@@ -8,7 +8,7 @@ import type {
   FirebaseProduct,
   ProductPrice,
   StripePriceInput,
-} from '../../../../models/product.model'
+} from '../../../../../models/product.model'
 
 type StripeProvisionResult = {
   productId: string

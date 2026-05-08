@@ -3,9 +3,9 @@ import type {
   ProductPrice,
 } from '../../../../models/product.model'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import { useProductCreate } from './useProductCreate.ts'
-import { useProductUpdate } from './useProductUpdate.ts'
-import { useProductDelete } from './useProductDelete.ts'
+import { useProductCreate } from './mutations/useProductCreate'
+import { useProductUpdate } from './mutations/useProductUpdate'
+import { useProductDelete } from './mutations/useProductDelete'
 
 export function useProducts() {
   const {

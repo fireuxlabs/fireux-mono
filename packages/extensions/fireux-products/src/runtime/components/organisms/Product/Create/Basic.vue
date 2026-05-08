@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { useCreateProductState } from '../../../../composables/fireux/firestore/product/editor/useCreateProductState';
+import { useCreateProductState } from '../../../../composables/fireux/firestore/product/state/useCreateProductState';
 
 // Shared creation state
 const { product, isSlugTaken } = await useCreateProductState()
