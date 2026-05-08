@@ -30,8 +30,8 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 import { computed } from 'vue'
-import { useCreatePricesState } from '../../../../composables/fireux/firestore/product/Prices/useCreatePricesState'
-import { useCreateProductState } from '../../../../composables/fireux/firestore/product/state/useCreateProductState'
+import { useCreatePricesState } from '../../../../composables/fireux/app/product-editor/useCreatePricesState'
+import { useCreateProductState } from '../../../../composables/fireux/app/product-editor/useCreateProductState'
 import type { FirebaseProduct } from '../../../../models/product.model'
 
 const { product } = await useCreateProductState()

@@ -4,7 +4,7 @@ import type {
 	DefaultPrice,
 	Price,
 	StripePriceInput,
-} from '../../../../../models/product.model'
+} from '../../../../models/product.model'
 
 export function useCreatePricesState() {
 	const prices = useStorage<Partial<Price>[]>('createProductPrices', [])
