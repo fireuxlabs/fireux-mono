@@ -1,4 +1,4 @@
-import { useBlog } from '../../../blog/useBlog'
+import { useBlog } from '../../firestore/blog/useBlog'
 import { useBlogDraftState } from './useBlogDraftState'
 
 export function useBlogCreateSubmit() {

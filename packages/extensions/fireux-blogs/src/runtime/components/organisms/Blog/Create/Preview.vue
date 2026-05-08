@@ -88,7 +88,7 @@
 <script setup lang="ts">
 import DOMPurify from 'dompurify'
 import { computed, onMounted, ref } from 'vue'
-import { useBlogDraftState } from '../../../../composables/fireux/firestore/blogs/post/state/useBlogDraftState'
+import { useBlogDraftState } from '../../../../composables/fireux/app/blog-post-create/useBlogDraftState'
 
 // Use the centralized state management
 const { blogPost, featuredImageData, socialImageData } = useBlogDraftState()
