@@ -4,7 +4,7 @@ import { useNav } from './useNav'
 import {
   consoleFamilyFromPath,
 } from '../../routing/consoleRoutes'
-import { useConsole } from '../../../console/useConsole'
+import { useConsole } from '../../console/useConsole'
 import type { NavItem, NavPosition } from '../../nav.types'
 
 function normalizePath(value: unknown): string {

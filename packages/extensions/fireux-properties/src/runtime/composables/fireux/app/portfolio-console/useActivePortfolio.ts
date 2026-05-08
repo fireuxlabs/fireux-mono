@@ -1,5 +1,5 @@
 import { computed, type ComputedRef } from 'vue'
-import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/console/useConsole'
+import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import {
   getDemoPortfolioScenario,

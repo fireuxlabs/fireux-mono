@@ -1,7 +1,7 @@
 import {
   useConsole,
   type ConsoleMode,
-} from '../../console/useConsole'
+} from '../console/useConsole'
 
 type RuntimeProjectSelectionInput = {
   selectedId?: string

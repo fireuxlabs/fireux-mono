@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import type { ConsoleFamily } from '../../../console/console.types'
+import type { ConsoleFamily } from '../../console/console.types'
 import {
   CONSOLE_ROOT,
   normalizeConsoleFamily,

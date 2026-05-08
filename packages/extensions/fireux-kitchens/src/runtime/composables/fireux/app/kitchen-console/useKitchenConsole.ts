@@ -5,7 +5,7 @@ import {
   resolveConsoleRootCollection,
   useConsole,
   type ConsoleMode,
-} from 'fireux-core/runtime/composables/fireux/console/useConsole'
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import {
   readRuntimeFirestoreDatabaseId,
   readRuntimeSimulationFirestoreDatabaseId,
@@ -13,7 +13,7 @@ import {
 import {
   usePublishConsoleHeader,
   type ConsoleHeaderData,
-} from 'fireux-core/runtime/composables/fireux/console/useConsoleHeader'
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleHeader'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   useKitchenCollection,

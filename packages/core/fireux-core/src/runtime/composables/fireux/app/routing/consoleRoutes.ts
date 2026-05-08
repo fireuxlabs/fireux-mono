@@ -1,6 +1,6 @@
 import type {
   ConsoleFamily,
-} from '../../console/console.types'
+} from '../console/console.types'
 
 export const CONSOLE_ROOT = '/console'
 

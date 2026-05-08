@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/console/useConsole'
-import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/console/useConsoleIndex'
+import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenCreate } from '../../firestore/kitchen/mutations/useKitchenCreate'
 import { useKitchenFetch } from '../../firestore/kitchen/fetch/useKitchenFetch'

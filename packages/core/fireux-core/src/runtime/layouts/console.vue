@@ -135,11 +135,11 @@ import {
   toConsoleFamilyPath,
 } from '../composables/fireux/app/routing/consoleRoutes'
 import { useConsoleNav } from '../composables/fireux/app/ui/nav/useConsoleNav'
-import { useConsole } from '../composables/fireux/console/useConsole'
+import { useConsole } from '../composables/fireux/app/console/useConsole'
 import {
   useConsoleHeaders,
   type ConsoleHeaderData as HeaderData,
-} from '../composables/fireux/console/useConsoleHeader'
+} from '../composables/fireux/app/console/useConsoleHeader'
 
 defineOptions({ name: 'console' })
 

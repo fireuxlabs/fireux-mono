@@ -1,7 +1,7 @@
 import {
   useConsole,
   type ConsoleMode,
-} from 'fireux-core/runtime/composables/fireux/console/useConsole'
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 
 type RuntimeSupplierSelectionInput = {
   selectedId?: string

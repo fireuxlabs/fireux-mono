@@ -1,6 +1,6 @@
 import { computed, type Ref } from 'vue'
-import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/console/useConsole'
-import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/console/useConsoleIndex'
+import { normalizeConsoleString as normalizeString } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { SupplierCollectionFilter } from '../../firestore/supplier/fetch/useSupplierCollection'
 import { useSupplierFetch } from '../../firestore/supplier/fetch/useSupplierFetch'

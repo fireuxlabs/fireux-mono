@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProductFulfillmentOnboarding } from '../../../../composables/fireux/onboarding/useProductFulfillmentOnboarding';
+import { useProductFulfillmentOnboarding } from '../../../../composables/fireux/app/product-onboarding/useProductFulfillmentOnboarding';
 
 const { onboardingAssetSpecs, applyRandomTestAssets } = useProductFulfillmentOnboarding()
 </script>

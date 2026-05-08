@@ -1,5 +1,5 @@
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
-import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/console/useConsole'
+import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import {
   getDemoKitchenCollection,
   type DemoKitchenCollectionName,
