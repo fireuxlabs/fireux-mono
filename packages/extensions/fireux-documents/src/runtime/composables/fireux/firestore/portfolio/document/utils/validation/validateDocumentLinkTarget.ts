@@ -1,4 +1,4 @@
-import type { DocumentLinkTargetType } from '../../../../../../models/document-link.model'
+import type { DocumentLinkTargetType } from '../../../../../../../models/document-link.model'
 
 const normalize = (value: unknown) => String(value || '').trim()
 

@@ -174,13 +174,13 @@ import {
   useRuntimePortfolioPath,
 } from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
 import { computed, ref } from 'vue'
-import { usePortfolioDocumentCollection } from '../../../composables/fireux/firestore/documents/fetch/usePortfolioDocumentCollection'
-import { usePortfolioDocumentLinkCollection } from '../../../composables/fireux/firestore/documents/fetch/usePortfolioDocumentLinkCollection'
-import { linkDocumentToEntity } from '../../../composables/fireux/firestore/documents/mutations/linkDocumentToEntity'
-import { useDocumentCreate } from '../../../composables/fireux/firestore/documents/mutations/useDocumentCreate'
-import { useDocumentStorage } from '../../../composables/fireux/firestore/documents/mutations/useDocumentStorage'
-import { documentLinkTargetTypes } from '../../../composables/fireux/firestore/documents/utils/validation/validateDocumentLinkTarget'
-import { useDocumentInterface } from '../../../composables/fireux/firestore/documents/utils/view/useDocumentInterface'
+import { usePortfolioDocumentCollection } from '../../../composables/fireux/firestore/portfolio/document/fetch/usePortfolioDocumentCollection'
+import { usePortfolioDocumentLinkCollection } from '../../../composables/fireux/firestore/portfolio/document/fetch/usePortfolioDocumentLinkCollection'
+import { linkDocumentToEntity } from '../../../composables/fireux/firestore/portfolio/document/mutations/linkDocumentToEntity'
+import { useDocumentCreate } from '../../../composables/fireux/firestore/portfolio/document/mutations/useDocumentCreate'
+import { useDocumentStorage } from '../../../composables/fireux/firestore/portfolio/document/mutations/useDocumentStorage'
+import { documentLinkTargetTypes } from '../../../composables/fireux/firestore/portfolio/document/utils/validation/validateDocumentLinkTarget'
+import { useDocumentInterface } from '../../../composables/fireux/firestore/portfolio/document/utils/view/useDocumentInterface'
 
 definePageMeta({
   layout: 'console',

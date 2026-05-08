@@ -77,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProductFulfillmentOnboarding } from '../../../../composables/fireux/app/product-onboarding/useProductFulfillmentOnboarding';
+import { useProductFulfillmentOnboarding } from '../../../../composables/fireux/firestore/product/onboarding/useProductFulfillmentOnboarding';
 
 withDefaults(
   defineProps<{

@@ -5,7 +5,7 @@ import {
 } from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
 import { useTaskCreate } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/mutations/useTaskCreate'
 import { useTaskProjection } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/utils/projection/useTaskProjection'
-import type { DocumentLink, DocumentLinkTargetType } from '../../../../../models/document-link.model'
+import type { DocumentLink, DocumentLinkTargetType } from '../../../../../../models/document-link.model'
 import { validateDocumentLinkTarget } from '../utils/validation/validateDocumentLinkTarget'
 
 export type LinkDocumentToEntityInput = {

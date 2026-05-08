@@ -84,7 +84,7 @@ import {
     watch,
 } from 'vue'
 import { useBlog } from '../../../../composables/fireux/firestore/blog/useBlog'
-import { useBlogDraftState } from '../../../../composables/fireux/app/blog-editor/useBlogDraftState'
+import { useBlogDraftState } from '../../../../composables/fireux/firestore/blog/editor/useBlogDraftState'
 
 const EditorContent = defineAsyncComponent(async () => {
   const mod = await import('@tiptap/vue-3')

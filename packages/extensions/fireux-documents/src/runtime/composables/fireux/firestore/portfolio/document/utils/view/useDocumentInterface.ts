@@ -1,4 +1,4 @@
-import type { Document } from '../../../../../../models/document.model'
+import type { Document } from '../../../../../../../models/document.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 

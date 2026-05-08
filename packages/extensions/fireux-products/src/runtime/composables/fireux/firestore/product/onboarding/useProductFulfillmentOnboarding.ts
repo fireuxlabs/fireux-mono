@@ -1,6 +1,6 @@
 import { computed, type Ref } from 'vue'
 import { useStorage } from '@vueuse/core'
-import type { FirebaseProduct } from '../../../../models/product.model'
+import type { FirebaseProduct } from '../../../../../models/product.model'
 
 export type AssetKey =
   | 'onboardingAssetLogo'

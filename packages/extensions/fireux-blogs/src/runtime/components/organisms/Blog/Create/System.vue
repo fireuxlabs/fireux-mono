@@ -17,8 +17,8 @@
 <script setup lang="ts">
 import { useRouter } from '#imports'
 import { ref } from 'vue'
-import { useBlogCreateSubmit } from '../../../../composables/fireux/app/blog-editor/useBlogCreateSubmit'
-import { useBlogDraftState } from '../../../../composables/fireux/app/blog-editor/useBlogDraftState'
+import { useBlogCreateSubmit } from '../../../../composables/fireux/firestore/blog/editor/useBlogCreateSubmit'
+import { useBlogDraftState } from '../../../../composables/fireux/firestore/blog/editor/useBlogDraftState'
 // Nuxt UI provides useToast via auto-import in app context; fall back if unavailable
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined

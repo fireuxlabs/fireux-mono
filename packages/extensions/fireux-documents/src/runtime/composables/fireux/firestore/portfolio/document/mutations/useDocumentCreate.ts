@@ -3,7 +3,7 @@ import {
   useActivePortfolio,
   useRuntimePortfolioPath,
 } from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
-import type { Document, DocumentCreateInput } from '../../../../../models/document.model'
+import type { Document, DocumentCreateInput } from '../../../../../../models/document.model'
 
 const normalize = (value: unknown) => String(value || '').trim()
 

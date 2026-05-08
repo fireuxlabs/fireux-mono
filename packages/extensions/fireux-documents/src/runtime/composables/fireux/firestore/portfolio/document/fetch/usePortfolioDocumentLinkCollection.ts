@@ -5,7 +5,7 @@ import {
   useRuntimePortfolioPath,
 } from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
 import type { DemoDocumentLink } from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/demo-scenarios'
-import type { DocumentLink } from '../../../../../models/document-link.model'
+import type { DocumentLink } from '../../../../../../models/document-link.model'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
 

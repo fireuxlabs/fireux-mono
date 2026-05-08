@@ -72,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { useBlogDraftState } from '../../../../composables/fireux/app/blog-editor/useBlogDraftState';
+import { useBlogDraftState } from '../../../../composables/fireux/firestore/blog/editor/useBlogDraftState';
 
 const { blogPost } = useBlogDraftState()
 </script>
