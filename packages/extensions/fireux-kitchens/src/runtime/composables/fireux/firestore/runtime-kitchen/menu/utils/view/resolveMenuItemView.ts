@@ -93,7 +93,7 @@ export const resolveMenuItemView = (
     id: pickString(item.id, ''),
     dish_id: pickString(item.dish_id, ''),
     label: pickString(item.label, dishName),
-    price_minor: pickNumber(item.price_minor, 0),
+    price: pickNumber(item.price, 0),
     sort_order: pickNumber(item.sort_order, 0),
     active: pickBoolean(item.active, defaults.active),
     description: pickString(item.description, dishDescription || defaults.description),

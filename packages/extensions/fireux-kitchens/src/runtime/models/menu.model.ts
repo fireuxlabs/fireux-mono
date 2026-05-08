@@ -29,7 +29,7 @@ export type MenuSectionItem = {
   dish_id?: string
 
   label?: string
-  price_minor: number
+  price: number
   sort_order: number
 
   // Optional item overrides (resolved at runtime from section/menu defaults)

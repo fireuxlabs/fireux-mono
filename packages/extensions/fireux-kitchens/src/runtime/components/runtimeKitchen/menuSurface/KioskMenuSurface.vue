@@ -169,7 +169,7 @@
 
                       <div class="flex items-center justify-between gap-3">
                         <div class="text-lg font-semibold">
-                          {{ formatPrice(item.price_minor) }}
+                          {{ formatPrice(item.price) }}
                         </div>
                         <UButton
                           size="lg"
@@ -218,7 +218,7 @@
               <div class="min-w-0">
                 <div class="truncate text-base font-medium">{{ line.label }}</div>
                 <div class="text-xs text-dimmed">
-                  {{ formatPrice(line.price_minor) }} each
+                  {{ formatPrice(line.price_minor / 100, line.currency_code) }} each
                 </div>
               </div>
 
@@ -255,7 +255,7 @@
             <div class="flex items-center justify-between">
               <div class="text-sm text-dimmed">Subtotal</div>
               <div class="text-lg font-semibold">
-                {{ formatPrice(subtotalMinor, currencyCode) }}
+                {{ formatPrice(subtotalMinor / 100, currencyCode) }}
               </div>
             </div>
           </template>
@@ -270,7 +270,7 @@
       size="xl"
       :to="checkoutRoute"
     >
-      Checkout · {{ itemCount }} · {{ formatPrice(subtotalMinor, currencyCode) }}
+      Checkout · {{ itemCount }} · {{ formatPrice(subtotalMinor / 100, currencyCode) }}
     </UButton>
   </UPage>
 </template>

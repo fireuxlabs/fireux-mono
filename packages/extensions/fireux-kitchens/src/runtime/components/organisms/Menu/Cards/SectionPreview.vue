@@ -2,20 +2,20 @@
   <div class="space-y-3">
     <div
       v-for="section in sectionsSorted"
-      :key="section.id || section.label"
+      :key="section.id"
       class="space-y-2"
     >
       <p
         v-if="showSectionHeadings"
         class="text-xs font-medium uppercase tracking-wide text-dimmed"
       >
-        {{ section.label || section.id || 'Untitled section' }}
+        {{ section.label }}
       </p>
 
       <div v-if="sectionItems(section).length" class="space-y-2">
         <div
           v-for="item in sectionItems(section)"
-          :key="item.id || item.dish_id || item.label"
+          :key="item.id"
           class="pill"
         >
           <div class="flex min-w-0 items-start gap-2">
@@ -33,7 +33,7 @@
               </p>
               <div class="flex flex-wrap items-center gap-1">
                 <UBadge variant="soft" color="neutral" size="xs">
-                  {{ formatPrice(item.price_minor, currencyCode) }}
+                  {{ formatItemPrice(item, currencyCode) }}
                 </UBadge>
               </div>
             </div>
@@ -104,21 +104,21 @@ const resolvedDishName = (item: MenuSectionItem) => {
 
 const itemLabel = (item: MenuSectionItem) =>
   normalizeString(item.label) ||
-  resolvedDishName(item) ||
-  normalizeString(item.dish_id) ||
-  'Untitled item'
+  resolvedDishName(item)
 
 const dishImageUrl = (item: MenuSectionItem) =>
   normalizeString(resolvedDish(item)?.image_url)
 
-const formatPrice = (
-  valueMinor: MenuSectionItem['price_minor'],
-  currencyCode?: string
-) =>
+const itemPrice = (item: MenuSectionItem) => {
+  const price = Number(item.price)
+  return Number.isFinite(price) ? price : 0
+}
+
+const formatItemPrice = (item: MenuSectionItem, currencyCode?: string) =>
   new Intl.NumberFormat('de-CH', {
     style: 'currency',
     currency: String(currencyCode || 'CHF').trim().toUpperCase() || 'CHF',
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
-  }).format(Number(valueMinor || 0) / 100)
+  }).format(itemPrice(item))
 </script>

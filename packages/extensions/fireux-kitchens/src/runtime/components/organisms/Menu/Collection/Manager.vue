@@ -113,7 +113,7 @@ const collection = computed(() =>
   [...(props.collection ?? [])].sort(
     (a, b) =>
       Number(a.sort_order || 0) - Number(b.sort_order || 0) ||
-      String(a.name || '').localeCompare(String(b.name || ''))
+      String(a.name).localeCompare(String(b.name))
   )
 )
 

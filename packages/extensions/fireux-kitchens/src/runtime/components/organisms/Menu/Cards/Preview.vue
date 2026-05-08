@@ -4,7 +4,7 @@
       <div class="flex items-center gap-2">
         <UChip :color="menu.active === false ? 'error' : 'success'" inset />
         <div class="text-lg font-semibold">
-          {{ menu.name || menu.id || 'Untitled menu' }}
+          {{ menu.name }}
         </div>
       </div>
     </template>

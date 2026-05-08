@@ -159,7 +159,7 @@
                     />
                     <div class="min-w-0 flex-1 space-y-1">
                       <p class="truncate text-sm font-medium text-highlighted">
-                        {{ usage.menuName || usage.menuId || 'Untitled menu' }}
+                        {{ usage.menuName }}
                       </p>
                       <p class="truncate text-xs text-toned">
                         {{ usage.sectionLabel || 'Unsectioned' }}
@@ -173,7 +173,7 @@
                     size="xs"
                     class="shrink-0"
                   >
-                    {{ formatPrice(usage.priceMinor, usage.currencyCode) }}
+                    {{ formatPrice(usage.price, usage.currencyCode) }}
                   </UBadge>
                 </div>
               </div>
@@ -284,7 +284,7 @@ const menuUsageSorted = computed(() =>
 const usageKey = (usage: KitchenDishMenuUsage) =>
   [usage.menuId, usage.sectionId, usage.itemId, usage.itemLabel].join(':')
 
-const formatPrice = (valueMinor: number, currencyCode?: string) => {
+const formatPrice = (price: number, currencyCode?: string) => {
   const normalizedCurrency = String(currencyCode || 'CHF').trim().toUpperCase()
   const currency = /^[A-Z]{3}$/.test(normalizedCurrency)
     ? normalizedCurrency
@@ -295,6 +295,6 @@ const formatPrice = (valueMinor: number, currencyCode?: string) => {
     currency,
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
-  }).format(Number(valueMinor || 0) / 100)
+  }).format(Number(price || 0))
 }
 </script>

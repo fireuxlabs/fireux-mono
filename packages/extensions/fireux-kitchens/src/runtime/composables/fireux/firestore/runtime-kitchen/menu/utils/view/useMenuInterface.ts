@@ -67,12 +67,9 @@ export function useMenuInterface() {
     }
     const active = Boolean(menu.active)
     const items = (menu.sections ?? []).flatMap((section) => section.items ?? [])
-    const id =
-      safeString(menu.id).trim() ||
-      safeString(menu.name).trim() ||
-      `menu-${items.length}`
+    const id = safeString(menu.id).trim()
     const rawName = safeString(menu.name).trim()
-    const name = stripKitchenPrefix(rawName) || rawName || id
+    const name = stripKitchenPrefix(rawName) || rawName
     const sortOrder = Number(menu.sort_order || extra.order || 0)
     const menuType = safeString(extra.menu_type).trim()
     const isActiveNow = active

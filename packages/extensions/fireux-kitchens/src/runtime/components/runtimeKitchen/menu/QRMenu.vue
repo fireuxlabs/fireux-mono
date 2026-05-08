@@ -68,11 +68,11 @@
       <div class="mx-auto flex w-full max-w-3xl gap-2 overflow-x-auto px-5 py-3 sm:px-7">
         <a
           v-for="section in sortedSections"
-          :key="section.id || section.label"
+          :key="section.id"
           :href="`#${sectionAnchor(section)}`"
           class="shrink-0 rounded-md border border-[#ead9c5] bg-white px-3 py-2 text-sm font-semibold text-[#4c2f1d] shadow-sm"
         >
-          {{ section.label || uiLabels.section }}
+          {{ section.label }}
         </a>
       </div>
     </nav>
@@ -96,7 +96,7 @@
               {{ uiLabels.qrMenu }}
             </p>
             <h2 class="mt-1 text-3xl font-semibold tracking-normal text-[var(--qr-menu-text)]">
-              {{ selectedMenu?.name || uiLabels.todaysMenu }}
+              {{ selectedMenu ? selectedMenu.name : uiLabels.todaysMenu }}
             </h2>
           </div>
           <span class="rounded-md border border-[#ead9c5] bg-white px-3 py-2 text-sm font-semibold text-[#4c2f1d] shadow-sm">
@@ -108,12 +108,12 @@
           <section
             v-for="section in sortedSections"
             :id="sectionAnchor(section)"
-            :key="section.id || section.label"
+            :key="section.id"
             class="scroll-mt-24"
           >
             <div class="mb-5 border-b border-[#ead9c5] pb-4">
               <h3 class="text-3xl font-semibold tracking-normal text-[#21140d]">
-                {{ section.label || uiLabels.section }}
+                {{ section.label }}
               </h3>
             </div>
 
@@ -230,16 +230,16 @@ type MenuEntry = {
 }
 
 type MenuSectionViewLike = {
-  id?: string
-  label?: string
+  id: string
+  label: string
   itemGroups?: Array<{
-    key?: string
-    label?: string
+    key: string
+    label: string
     items?: Array<{
-      id?: string
+      id: string
       label?: string
       description?: string
-      price_minor?: number
+      price?: number
       names?: Record<string, string>
       descriptions?: Record<string, string>
     }>
@@ -423,8 +423,8 @@ const hasMenuItems = computed(() =>
   sortedSections.value.some((section) => menuEntriesForSection(section).length > 0)
 )
 
-function sectionAnchor(section: { id?: string, label?: string }) {
-  return String(section.id || section.label || 'section')
+function sectionAnchor(section: { id: string }) {
+  return String(section.id)
     .trim()
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
@@ -435,12 +435,12 @@ function menuEntriesForSection(section: MenuSectionViewLike): MenuEntry[] {
   return (section.itemGroups || []).flatMap((group) => {
     const items = group.items || []
     return items.map((item) => ({
-      key: `${group.key || group.label || 'group'}-${item.id || item.label}`,
+      key: `${group.key}-${item.id}`,
       label: items.length > 1
-        ? `${group.label || ''} ${item.label || ''}`.trim()
-        : resolveLocalizedMenuText(item.names, item.label || 'Menu item'),
+        ? `${group.label} ${item.label}`.trim()
+        : resolveLocalizedMenuText(item.names, item.label ?? ''),
       description: resolveLocalizedMenuText(item.descriptions, item.description || ''),
-      price: formatPrice(item.price_minor),
+      price: formatPrice(item.price),
     }))
   })
 }

@@ -23,7 +23,7 @@ export type KitchenDishMenuUsage = {
   sectionLabel: string
   itemId: string
   itemLabel: string
-  priceMinor: number
+  price: number
   currencyCode: string
   active: boolean
 }
@@ -172,7 +172,7 @@ export function useKitchenConsoleDishes(
               sectionLabel,
               itemId: normalizeString(item?.id),
               itemLabel: normalizeString(item?.label),
-              priceMinor: Number(item?.price_minor || 0),
+              price: Number(item?.price || 0),
               currencyCode: kitchenCurrencyCode.value,
               active: menuActive && item?.active !== false,
             }

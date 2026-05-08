@@ -59,16 +59,16 @@ export const normalizeKitchenMenuCurrency = (value: unknown) => {
 }
 
 export function formatKitchenMenuPrice(
-  priceMinor?: number,
+  price?: number,
   currencyCode?: string
 ) {
-  const amount = Number(priceMinor || 0) / 100
+  const amount = Number(price || 0)
   const code = normalizeKitchenMenuCurrency(currencyCode || 'CHF')
 
   return new Intl.NumberFormat('de-CH', {
     style: 'currency',
     currency: code,
-    minimumFractionDigits: 2,
+    minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(amount)
 }
@@ -123,7 +123,7 @@ const resolveGroupLabel = (
     .map((item) => normalizeString(item.label))
     .filter(Boolean)
 
-  if (!labels.length) return dishId || 'Menu item'
+  if (!labels.length) return dishId
 
   const prefixParts = labels.map((label) => {
     const [prefix] = label.split('·')
@@ -136,7 +136,7 @@ const resolveGroupLabel = (
 
   if (hasCommonPrefix) return firstPrefix
 
-  return labels[0] || dishId || 'Menu item'
+  return labels[0] || dishId
 }
 
 const buildItemGroups = (
@@ -149,7 +149,7 @@ const buildItemGroups = (
     const dishId = normalizeString(item.dish_id)
     const key =
       dishId ||
-      `item:${normalizeString(item.id) || normalizeString(item.label)}`
+      `item:${normalizeString(item.id)}`
 
     let group = groupsByKey.get(key)
 
@@ -312,7 +312,7 @@ export function useResolvedKitchenMenuView(
   })
 
   const headerTitle = computed(() =>
-    selectedMenu.value?.name || options.headerTitleFallback
+    selectedMenu.value ? selectedMenu.value.name : options.headerTitleFallback
   )
 
   const headerDescription = computed(() => {
@@ -348,9 +348,9 @@ export function useResolvedKitchenMenuView(
     isMenuSelectable,
     isSelectedMenu,
     resolveVariantLabel: resolveKitchenMenuVariantLabel,
-    formatPrice: (priceMinor?: number, currencyCode?: string) =>
+    formatPrice: (price?: number, currencyCode?: string) =>
       formatKitchenMenuPrice(
-        priceMinor,
+        price,
         currencyCode || kitchenCurrencyCode.value
       ),
     currencyCode: kitchenCurrencyCode,

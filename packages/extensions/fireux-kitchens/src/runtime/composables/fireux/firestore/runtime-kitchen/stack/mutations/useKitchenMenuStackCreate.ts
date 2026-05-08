@@ -146,7 +146,7 @@ export function useKitchenMenuStackCreate() {
             id: `item-${dishId}`,
             dish_id: dishId,
             label: '',
-            price_minor: 0,
+            price: 0,
             sort_order: index + 1,
           })),
         },

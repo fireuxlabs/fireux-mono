@@ -9,7 +9,7 @@
           <img
             v-if="imageUrl"
             :src="imageUrl"
-            :alt="menu.name || 'Menu image'"
+            :alt="menu.name"
             class="h-full w-full object-cover"
             style="width: 100%; height: 100%; object-fit: cover;"
             loading="lazy"
@@ -27,7 +27,7 @@
             <div class="flex items-center gap-2">
               <UChip :color="menu.active === false ? 'error' : 'success'" inset />
               <h2 class="text-2xl font-semibold text-highlighted">
-                {{ menu.name || menu.id || 'Untitled menu' }}
+                {{ menu.name }}
               </h2>
             </div>
 

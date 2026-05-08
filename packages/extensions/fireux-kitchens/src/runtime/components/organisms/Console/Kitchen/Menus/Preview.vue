@@ -10,7 +10,7 @@
       <div class="space-y-4">
         <OrganismsMenuCardsPreview
           v-for="menu in menusSorted"
-          :key="menu.id || menu.name"
+          :key="menu.id"
           :menu="menu"
           :dishes="dishes"
         />
@@ -47,7 +47,7 @@ const menusSorted = computed(() =>
   [...props.collection].sort(
     (a, b) =>
       Number(a?.sort_order || 0) - Number(b?.sort_order || 0) ||
-      String(a?.name || '').localeCompare(String(b?.name || ''))
+      String(a?.name).localeCompare(String(b?.name))
   )
 )
 </script>

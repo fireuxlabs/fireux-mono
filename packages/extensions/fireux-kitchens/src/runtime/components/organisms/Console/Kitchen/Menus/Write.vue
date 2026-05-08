@@ -28,7 +28,7 @@
             <div class="space-y-2">
               <button
                 v-for="menu in menusSorted"
-                :key="menu.id || menu.name"
+                :key="menu.id"
                 type="button"
                 class="w-full rounded-md border px-3 py-2 text-left text-sm transition"
                 :class="
@@ -40,7 +40,7 @@
               >
                 <div class="flex items-center justify-between gap-2">
                   <span class="min-w-0 truncate font-medium">
-                    {{ menu.name || menu.id || 'Untitled menu' }}
+                    {{ menu.name }}
                   </span>
                   <UBadge
                     :color="menu.active === false ? 'neutral' : 'success'"
@@ -51,7 +51,7 @@
                   </UBadge>
                 </div>
                 <p class="mt-1 truncate text-xs text-dimmed">
-                  {{ menu.id || 'Missing id' }}
+                  {{ menu.id }}
                 </p>
               </button>
 
@@ -338,7 +338,7 @@
                               {{ item.label || 'Untitled item' }}
                             </p>
                             <p class="text-xs text-dimmed">
-                              {{ formatDraftPrice(item.price_chf) }}
+                              {{ formatDraftPrice(item.price) }}
                             </p>
                           </div>
 
@@ -391,9 +391,9 @@
                             />
                           </UFormField>
 
-                          <UFormField label="CHF">
+                          <UFormField label="Price">
                             <UInput
-                              v-model="item.price_chf"
+                              v-model="item.price"
                               type="number"
                               step="0.05"
                               min="0"
@@ -446,7 +446,7 @@
                             :disabled="busy"
                           />
                           <UInput
-                            v-model="section.new_item_price_chf"
+                            v-model="section.new_item_price"
                             type="number"
                             step="0.05"
                             min="0"
@@ -541,7 +541,7 @@ type ItemDraft = {
   dish_id: string
   label: string
   description: string
-  price_chf: string
+  price: string
   active: boolean
   sort_order: number
   photo_url?: string
@@ -555,7 +555,7 @@ type SectionDraft = {
   sort_order: number
   defaults?: Partial<MenuItemDefaults>
   new_item_label: string
-  new_item_price_chf: string
+  new_item_price: string
   items: ItemDraft[]
 }
 
@@ -632,14 +632,14 @@ const uniqueId = (base: string, used: Set<string>) => {
   return id
 }
 
-const parsePriceMinor = (value: unknown) => {
+const parsePrice = (value: unknown) => {
   const raw = normalizeString(value).replace(',', '.')
   const amount = Number(raw)
-  return Number.isFinite(amount) ? Math.max(0, Math.round(amount * 100)) : 0
+  return Number.isFinite(amount) ? Math.max(0, amount) : 0
 }
 
-const priceInputFromMinor = (value: unknown) => {
-  const amount = Number(value || 0) / 100
+const priceInput = (value: unknown) => {
+  const amount = Number(value || 0)
   return amount ? amount.toFixed(2) : ''
 }
 
@@ -772,7 +772,7 @@ function sectionToDraft(section: MenuSection): SectionDraft {
     sort_order: numberValue(section.sort_order, 0),
     defaults: section.defaults ? { ...section.defaults } : undefined,
     new_item_label: '',
-    new_item_price_chf: '',
+    new_item_price: '',
     items: sortedByOrder(section.items ?? []).map((item) =>
       itemToDraft(item)
     ),
@@ -786,7 +786,7 @@ function itemToDraft(item: MenuSectionItem): ItemDraft {
     dish_id: normalizeString(item.dish_id),
     label: normalizeString(item.label),
     description: normalizeString(item.description),
-    price_chf: priceInputFromMinor(item.price_minor),
+    price: priceInput(item.price),
     active: item.active !== false,
     sort_order: numberValue(item.sort_order, 0),
     photo_url: normalizeString(item.photo_url) || undefined,
@@ -841,7 +841,7 @@ function addSection() {
     description: '',
     sort_order: nextOrder,
     new_item_label: '',
-    new_item_price_chf: '',
+    new_item_price: '',
     items: [],
   }
 
@@ -884,13 +884,13 @@ function addItem(sectionIndex: number) {
     dish_id: '',
     label: section.new_item_label.trim(),
     description: '',
-    price_chf: section.new_item_price_chf,
+    price: section.new_item_price,
     active: true,
     sort_order: nextOrder,
   })
 
   section.new_item_label = ''
-  section.new_item_price_chf = ''
+  section.new_item_price = ''
 }
 
 function deleteItem(sectionIndex: number, itemIndex: number) {
@@ -930,7 +930,7 @@ function draftToPatch(source: MenuDraft): Partial<Menu> {
         id: itemId,
         label: normalizeString(item.label) || itemId,
         description: normalizeString(item.description),
-        price_minor: parsePriceMinor(item.price_chf),
+        price: parsePrice(item.price),
         active: item.active !== false,
         sort_order: numberValue(item.sort_order, 0),
       }
@@ -975,7 +975,7 @@ function formatDraftPrice(value: unknown) {
     currency: kitchenCurrencyCode.value,
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
-  }).format(parsePriceMinor(value) / 100)
+  }).format(parsePrice(value))
 }
 
 function confirmDelete(prompt: string) {

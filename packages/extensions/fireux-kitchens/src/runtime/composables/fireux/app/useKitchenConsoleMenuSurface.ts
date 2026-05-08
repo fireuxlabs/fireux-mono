@@ -330,7 +330,7 @@ export function useKitchenConsoleMenuSurface() {
         kitchen_id: kitchenId.value,
         dish_id: normalizeString(item?.dish_id),
         label,
-        price_minor: Number(item?.price_minor || 0),
+        price_minor: Math.round(Number(item?.price || 0) * 100),
         currency_code: kitchenCurrencyCode.value,
         qty: 1,
       })
