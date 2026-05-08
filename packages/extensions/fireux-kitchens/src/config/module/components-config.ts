@@ -74,14 +74,14 @@ export function configureComponents(resolver: Resolver) {
     { global: true }
   )
 
-  registerComponentsDir(resolver, './runtime/components/organisms/profiles/Chef', {
+  registerComponentsDir(resolver, './runtime/components/organisms/Chef', {
     global: true,
     pathPrefix: true,
     prefix: 'OrganismsProfilesChef',
   })
   registerComponentAliases(
     resolver,
-    './runtime/components/organisms/profiles/Chef',
+    './runtime/components/organisms/Chef',
     'Chef',
     {
       global: true,
@@ -89,7 +89,7 @@ export function configureComponents(resolver: Resolver) {
   )
   registerComponentAliases(
     resolver,
-    './runtime/components/organisms/profiles/Chef',
+    './runtime/components/organisms/Chef',
     'ProfilesChef',
     { global: true }
   )

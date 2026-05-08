@@ -16,25 +16,25 @@ export function configureComponents(resolver: Resolver) {
 
   registerComponentAliases(
     resolver,
-    './runtime/components/organisms/profiles/Agent',
+    './runtime/components/organisms/Agent',
     'Agent',
     { global: true }
   )
   registerComponentAliases(
     resolver,
-    './runtime/components/organisms/profiles/Agent',
+    './runtime/components/organisms/Agent',
     'ProfilesAgent',
     { global: true }
   )
   registerComponentAliases(
     resolver,
-    './runtime/components/organisms/profiles/Professional',
+    './runtime/components/organisms/Professional',
     'Professional',
     { global: true }
   )
   registerComponentAliases(
     resolver,
-    './runtime/components/organisms/profiles/Professional',
+    './runtime/components/organisms/Professional',
     'ProfilesProfessional',
     { global: true }
   )
