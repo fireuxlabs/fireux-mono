@@ -9,12 +9,22 @@ import type {
   ProductPrice,
   StripePriceInput,
 } from '../../../../models/product.model'
-import { useCreatePricesState } from './Prices/useCreatePricesState'
-import { useCreateProductState } from './state/useCreateProductState'
 
 type StripeProvisionResult = {
   productId: string
   priceIds: string[]
+}
+
+export type ProductCreateInput = {
+  payload: Omit<FirebaseProduct, 'created' | 'updated'> &
+    Partial<Pick<FirebaseProduct, 'created' | 'updated'>>
+  priceInputs: StripePriceInput[]
+}
+
+export type ProductCreateResult = {
+  success: boolean
+  id?: string
+  error?: string
 }
 
 export const ProductPayload = {
@@ -54,8 +64,6 @@ export function useProductCreate() {
   const db = useFirestore()
   const { setDocument, getCollectionPath } = useFirestoreManager()
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
-  const { getProductPayload } = useCreateProductState()
-  const { pricesPayload } = useCreatePricesState()
   const fireux = useFireUXConfig()
 
   const collectionPath = getCollectionPath('products', false)
@@ -177,15 +185,9 @@ export function useProductCreate() {
     )
   }
 
-  const createProductFromInput = async (input: {
-    payload: Omit<FirebaseProduct, 'created' | 'updated'> &
-      Partial<Pick<FirebaseProduct, 'created' | 'updated'>>
-    priceInputs: StripePriceInput[]
-  }): Promise<{
-    success: boolean
-    id?: string
-    error?: string
-  }> => {
+  const createProductFromInput = async (
+    input: ProductCreateInput
+  ): Promise<ProductCreateResult> => {
     try {
       const payload = input.payload
       const requestedSlug = payload.slug
@@ -279,17 +281,10 @@ export function useProductCreate() {
     }
   }
 
-  async function createProduct(): Promise<{
-    success: boolean
-    id?: string
-    error?: string
-  }> {
-    const payload = getProductPayload()
-    const inputs = pricesPayload.value as StripePriceInput[]
-    return createProductFromInput({
-      payload: payload as any,
-      priceInputs: inputs,
-    })
+  async function createProduct(
+    input: ProductCreateInput
+  ): Promise<ProductCreateResult> {
+    return createProductFromInput(input)
   }
 
   return { createProduct, createProductFromInput }

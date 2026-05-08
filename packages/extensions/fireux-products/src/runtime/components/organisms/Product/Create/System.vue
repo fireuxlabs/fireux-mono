@@ -40,10 +40,15 @@ import { ref } from 'vue'
 import { useCreatePricesState } from '../../../../composables/fireux/firestore/product/Prices/useCreatePricesState'
 import { useCreateProductState } from '../../../../composables/fireux/firestore/product/state/useCreateProductState'
 import { useProductCreate } from '../../../../composables/fireux/firestore/product/useProductCreate'
+import type { StripePriceInput } from '../../../../models/product.model'
 
-const { product, resetCreateProductState } = await useCreateProductState()
+const {
+  product,
+  resetCreateProductState,
+  getProductPayload,
+} = await useCreateProductState()
 
-const { resetCreatePricesState } = useCreatePricesState()
+const { resetCreatePricesState, pricesPayload } = useCreatePricesState()
 
 const { createProduct } = await useProductCreate()
 const toast = useToastify()
@@ -71,7 +76,10 @@ async function handleCreate() {
 
   isCreating.value = true
   try {
-    const response = await createProduct()
+    const response = await createProduct({
+      payload: getProductPayload() as any,
+      priceInputs: pricesPayload.value as StripePriceInput[],
+    })
 
     if (!response.success) {
       toast.add({
