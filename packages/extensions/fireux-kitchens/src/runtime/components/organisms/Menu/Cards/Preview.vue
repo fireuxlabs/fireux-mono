@@ -1,5 +1,37 @@
 <template>
-  <UCard class="overflow-hidden">
+  <UCard v-if="menu" variant="soft">
+    <template #header>
+      <div class="flex items-center gap-2">
+        <UChip :color="menu.active === false ? 'error' : 'success'" inset />
+        <div class="text-lg font-semibold">
+          {{ menu.name || menu.id || 'Untitled menu' }}
+        </div>
+      </div>
+    </template>
+
+    <p v-if="availabilityText" class="mb-3 text-xs text-dimmed">
+      {{ availabilityText }}
+    </p>
+
+    <div>
+      <OrganismsMenuCardsSectionPreview
+        v-if="sections.length"
+        :sections="sections"
+        :dishes="dishes"
+        :show-section-headings="sections.length > 1"
+      />
+
+      <UAlert
+        v-else
+        color="neutral"
+        variant="soft"
+        title="No sections"
+        description="This menu does not have any sections yet."
+      />
+    </div>
+  </UCard>
+
+  <UCard v-else class="overflow-hidden">
     <div class="space-y-3">
       <div class="flex items-center gap-3">
         <UAvatar
@@ -20,7 +52,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-1 shrink-0">
+            <div class="flex shrink-0 items-center gap-1">
               <div class="flex items-center gap-1 text-xs capitalize text-dimmed">
                 <UChip :color="isActiveNow ? 'success' : 'error'" inset />
                 <span>{{ isActiveNow ? 'active' : 'inactive' }}</span>
@@ -76,16 +108,22 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import type { Dish } from '../../../../models/dish.model'
+import type { Menu } from '../../../../models/menu.model'
+
 type MenuPreviewDetail = {
   label: string
   value?: string | number | null
 }
 
 type Props = {
-  imageUrl: string
-  title: string
-  subtitle: string
-  isActiveNow: boolean
+  menu?: Menu | null
+  dishes?: Dish[]
+  imageUrl?: string
+  title?: string
+  subtitle?: string
+  isActiveNow?: boolean
   description?: string
   badges?: string[]
   details?: MenuPreviewDetail[]
@@ -94,15 +132,39 @@ type Props = {
 }
 
 const props = withDefaults(defineProps<Props>(), {
+  menu: null,
+  dishes: () => [],
+  imageUrl: '',
+  title: '',
+  subtitle: '',
+  isActiveNow: false,
+  description: '',
   badges: () => [],
   details: () => [],
   showBadges: true,
   showBody: true,
 })
 
+const sections = computed(() =>
+  Array.isArray(props.menu?.sections)
+    ? [...props.menu.sections].sort(
+        (a, b) => Number(a?.sort_order || 0) - Number(b?.sort_order || 0)
+      )
+    : []
+)
+
+const availabilityText = computed(() =>
+  String(
+    (props.menu as Record<string, unknown> | null)?.availability_label ||
+      (props.menu as Record<string, unknown> | null)?.availability_summary ||
+      (props.menu as Record<string, unknown> | null)?.hours_label ||
+      ''
+  ).trim()
+)
+
 const formatValue = (value?: string | number | null) => {
-  if (value == null) return '—'
+  if (value == null) return '-'
   const str = String(value).trim()
-  return str || '—'
+  return str || '-'
 }
 </script>

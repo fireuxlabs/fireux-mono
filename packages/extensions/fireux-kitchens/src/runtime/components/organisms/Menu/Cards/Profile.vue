@@ -57,7 +57,7 @@
         </div>
       </div>
 
-      <OrganismsMenuConsoleSectionPreview
+      <OrganismsMenuCardsSectionPreview
         v-if="sections.length"
         :sections="sections"
         :dishes="dishes"

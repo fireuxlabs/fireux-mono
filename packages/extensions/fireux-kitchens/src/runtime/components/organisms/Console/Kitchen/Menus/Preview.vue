@@ -8,7 +8,7 @@
       </template>
 
       <div class="space-y-4">
-        <OrganismsMenuConsoleCard
+        <OrganismsMenuCardsPreview
           v-for="menu in menusSorted"
           :key="menu.id || menu.name"
           :menu="menu"
