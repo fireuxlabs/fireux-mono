@@ -19,6 +19,10 @@ export const FIREUX_CORE_LANGUAGE_OPTIONS: FireuxLanguageOption[] = [
   { code: 'ja', label: 'Japanese', tier: 'core' },
 ]
 
+export const FIREUX_CORE_LANGUAGE_CODES = FIREUX_CORE_LANGUAGE_OPTIONS.map(
+  (language) => language.code
+)
+
 export const FIREUX_OPTIONAL_LANGUAGE_OPTIONS: FireuxLanguageOption[] = [
   { code: 'hi', label: 'Hindi', tier: 'optional' },
   { code: 'nl', label: 'Dutch', tier: 'optional' },
@@ -27,7 +31,15 @@ export const FIREUX_OPTIONAL_LANGUAGE_OPTIONS: FireuxLanguageOption[] = [
   { code: 'th', label: 'Thai', tier: 'optional' },
 ]
 
+export const FIREUX_OPTIONAL_LANGUAGE_CODES = FIREUX_OPTIONAL_LANGUAGE_OPTIONS.map(
+  (language) => language.code
+)
+
 export const FIREUX_LANGUAGE_OPTIONS: FireuxLanguageOption[] = [
   ...FIREUX_CORE_LANGUAGE_OPTIONS,
   ...FIREUX_OPTIONAL_LANGUAGE_OPTIONS,
 ]
+
+export const FIREUX_LANGUAGE_CODES = FIREUX_LANGUAGE_OPTIONS.map(
+  (language) => language.code
+)

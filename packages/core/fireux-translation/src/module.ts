@@ -9,3 +9,4 @@ export default defineNuxtModule({
 })
 
 export * from './runtime/languages'
+export * from './runtime/useTranslate'

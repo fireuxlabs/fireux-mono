@@ -164,10 +164,16 @@ const handleCreate = async () => {
   submitting.value = true
 
   try {
-    const id = await createIngredient(form.value)
-    toast.success('Ingredient added')
+    const result = await createIngredient(form.value)
+    if (result.failedLanguages.length) {
+      toast.warn(
+        `Ingredient added, but translation failed for ${result.failedLanguages.join(', ')}`
+      )
+    } else {
+      toast.success('Ingredient added')
+    }
     clearDraft()
-    emit('created', id)
+    emit('created', result.id)
   } catch (error: any) {
     toast.error(String(error?.message || 'Failed to add ingredient'))
   } finally {

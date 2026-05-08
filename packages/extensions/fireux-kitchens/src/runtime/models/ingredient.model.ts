@@ -3,6 +3,8 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
+export type IngredientNameStatus = 'source' | 'machine_draft' | 'approved'
+
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
@@ -20,8 +22,9 @@ export const IngredientModel = {
   id: '' as string,
 
   name: '' as string,
-  default_locale: undefined as string | undefined,
+  source_language: undefined as string | undefined,
   names: undefined as Partial<Record<string, string>> | undefined,
+  names_status: undefined as Partial<Record<string, IngredientNameStatus>> | undefined,
   slug: '' as string,
   image_url: '' as string,
   // Legacy top-level scope field still used by demo scenarios.

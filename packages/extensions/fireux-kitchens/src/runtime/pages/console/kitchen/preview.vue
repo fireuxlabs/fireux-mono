@@ -17,9 +17,9 @@
           v-if="surface === 'kiosk'"
           :surface="menuSurface"
         />
-        <KitchenMenuSurfaceQR
+        <MenuQR
           v-else
-          :surface="menuSurface"
+          :menu="menuSurface"
         />
       </section>
     </template>
@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import KitchenMenuSurfaceKiosk from '../../../components/organisms/Menu/Public/KioskMenuSurface.vue'
-import KitchenMenuSurfaceQR from '../../../components/organisms/Menu/Public/QRMenuSurface.vue'
+import MenuQR from '../../../components/organisms/Menu/QR.vue'
 import { useKitchenConsoleMenuSurface } from '../../../composables/fireux/app/useKitchenConsoleMenuSurface'
 import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
 

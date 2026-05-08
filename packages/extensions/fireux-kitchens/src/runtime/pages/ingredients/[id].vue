@@ -97,13 +97,17 @@
                 </p>
               </div>
 
-              <UFormField label="Default locale">
-                <UInput v-model="form.default_locale" placeholder="en" />
+              <UFormField label="Source language">
+                <USelect
+                  v-model="form.source_language"
+                  :options="sourceLanguageOptions"
+                  placeholder="Select source language"
+                />
               </UFormField>
 
               <div class="grid gap-3 sm:grid-cols-2">
                 <UFormField
-                  v-for="field in localeNameFields"
+                  v-for="field in languageNameFields"
                   :key="field.code"
                   :label="field.label"
                 >
@@ -147,6 +151,9 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
+import {
+  FIREUX_CORE_LANGUAGE_OPTIONS,
+} from 'fireux-translation/runtime/languages'
 import { computed, reactive, ref, watchEffect } from 'vue'
 import { useIngredient } from '../../composables/fireux/firestore/ingredient/useIngredient'
 import type { Ingredient } from '../../models/ingredient.model'
@@ -182,41 +189,37 @@ const saving = ref(false)
 const deleting = ref(false)
 const imageUploading = ref(false)
 
-const localeNameFields = [
-  { code: 'it', label: 'Italian name', placeholder: 'origano' },
-  { code: 'de', label: 'German name', placeholder: 'Oregano' },
-  { code: 'en', label: 'English name', placeholder: 'oregano' },
-  { code: 'fr', label: 'French name', placeholder: 'origan' },
-] as const
-
-type LocaleNameCode = (typeof localeNameFields)[number]['code']
+const sourceLanguageOptions = FIREUX_CORE_LANGUAGE_OPTIONS.map((language) => ({
+  label: `${language.label} (${language.code})`,
+  value: language.code,
+}))
+const languageNameFields = FIREUX_CORE_LANGUAGE_OPTIONS.map((language) => ({
+  code: language.code,
+  label: `${language.label} name`,
+  placeholder: language.label,
+}))
 
 const form = reactive<{
   name: string
-  default_locale: string
-  names: Record<LocaleNameCode, string>
+  source_language: string
+  names: Record<string, string>
 }>({
   name: '',
-  default_locale: 'en',
-  names: {
-    it: '',
-    de: '',
-    en: '',
-    fr: '',
-  },
+  source_language: 'en',
+  names: {},
 })
 
 const trimString = (value: unknown) => String(value || '').trim()
-const normalizeLocale = (value: unknown) =>
-  trimString(value).replace(/_/g, '-').toLowerCase()
+const normalizeLanguageCode = (value: unknown) =>
+  trimString(value).replace(/_/g, '-')
 
 const normalizeNames = (value: unknown): Record<string, string> => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
 
   return Object.fromEntries(
     Object.entries(value as Record<string, unknown>)
-      .map(([locale, name]) => [normalizeLocale(locale), trimString(name)])
-      .filter(([locale, name]) => Boolean(locale && name))
+      .map(([language, name]) => [normalizeLanguageCode(language), trimString(name)])
+      .filter(([language, name]) => Boolean(language && name))
   )
 }
 const serializeNames = (value: Record<string, string>) =>
@@ -225,7 +228,7 @@ const serializeNames = (value: Record<string, string>) =>
 const buildNamesPatch = (entry: Ingredient): Record<string, string> => {
   const names = normalizeNames(entry.names)
 
-  for (const field of localeNameFields) {
+  for (const field of languageNameFields) {
     const value = trimString(form.names[field.code])
     if (value) {
       names[field.code] = value
@@ -241,10 +244,10 @@ watchEffect(() => {
   const entry = ingredient.value
   if (!entry) return
   form.name = entry.name ?? ''
-  form.default_locale = normalizeLocale(entry.default_locale) || 'en'
+  form.source_language = normalizeLanguageCode(entry.source_language) || 'en'
 
   const names = normalizeNames(entry.names)
-  for (const field of localeNameFields) {
+  for (const field of languageNameFields) {
     form.names[field.code] = names[field.code] ?? ''
   }
 })
@@ -255,12 +258,12 @@ const isDirty = computed(() => {
 
   const currentNames = normalizeNames(entry.names)
   const nextNames = buildNamesPatch(entry)
-  const currentDefaultLocale = normalizeLocale(entry.default_locale)
-  const nextDefaultLocale = normalizeLocale(form.default_locale) || 'en'
+  const currentSourceLanguage = normalizeLanguageCode(entry.source_language)
+  const nextSourceLanguage = normalizeLanguageCode(form.source_language) || 'en'
 
   return (
     form.name.trim() !== String(entry.name ?? '').trim() ||
-    currentDefaultLocale !== nextDefaultLocale ||
+    currentSourceLanguage !== nextSourceLanguage ||
     serializeNames(currentNames) !== serializeNames(nextNames)
   )
 })
@@ -269,10 +272,10 @@ const resetForm = () => {
   const entry = ingredient.value
   if (!entry) return
   form.name = entry.name ?? ''
-  form.default_locale = normalizeLocale(entry.default_locale) || 'en'
+  form.source_language = normalizeLanguageCode(entry.source_language) || 'en'
 
   const names = normalizeNames(entry.names)
-  for (const field of localeNameFields) {
+  for (const field of languageNameFields) {
     form.names[field.code] = names[field.code] ?? ''
   }
 }
@@ -306,15 +309,15 @@ const saveChanges = async () => {
   try {
     const entry = ingredient.value
     const nextNames = buildNamesPatch(entry)
-    const nextDefaultLocale = normalizeLocale(form.default_locale) || 'en'
+    const nextSourceLanguage = normalizeLanguageCode(form.source_language) || 'en'
     const patch: Partial<Ingredient> = {}
 
     if (form.name.trim() !== String(entry.name ?? '').trim()) {
       patch.name = form.name.trim()
     }
 
-    if (normalizeLocale(entry.default_locale) !== nextDefaultLocale) {
-      patch.default_locale = nextDefaultLocale
+    if (normalizeLanguageCode(entry.source_language) !== nextSourceLanguage) {
+      patch.source_language = nextSourceLanguage
     }
 
     if (serializeNames(normalizeNames(entry.names)) !== serializeNames(nextNames)) {

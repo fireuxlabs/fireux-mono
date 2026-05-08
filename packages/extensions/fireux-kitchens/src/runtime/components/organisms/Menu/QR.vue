@@ -195,7 +195,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute } from '#imports'
 import type { KitchenMenuState } from '../../../../composables/fireux/app/useKitchenMenu'
 
-type KitchenQRMenuState = Pick<
+type MenuQRState = Pick<
   KitchenMenuState,
   | 'formatPrice'
   | 'headerDescription'
@@ -209,7 +209,7 @@ type KitchenQRMenuState = Pick<
 >
 
 const props = defineProps<{
-  menu: KitchenQRMenuState
+  menu: MenuQRState
 }>()
 
 type MenuLanguageCode = 'de' | 'en' | 'gsw' | 'ar' | 'ko' | 'hi'
