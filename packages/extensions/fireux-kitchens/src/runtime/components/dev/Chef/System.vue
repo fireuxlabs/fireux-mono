@@ -80,7 +80,7 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
-import { useChefFetch } from '../../../composables/fireux/firestore/profiles/Chef/main/useChefFetch'
+import { useChefFetch } from '../../../composables/fireux/firestore/profiles/Chef/fetch/useChefFetch'
 import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
 import { ChefModel as ChefModelRuntime } from '../../../models/profiles/Chef/Chef.model'
 

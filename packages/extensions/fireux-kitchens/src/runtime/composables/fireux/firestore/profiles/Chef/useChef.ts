@@ -3,9 +3,9 @@
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
 import { chefConfig } from './config/chefConfig'
 import type { Chef } from '../../../../../models/profiles/Chef/Chef.model'
-import { useChefComputed } from './main/useChefComputed'
-import { useChefCreate } from './main/useChefCreate'
-import { useChefUpdate } from './main/useChefUpdate'
+import { useChefComputed } from './utils/view/useChefComputed'
+import { useChefCreate } from './mutations/useChefCreate'
+import { useChefUpdate } from './mutations/useChefUpdate'
 import type { ChefCard } from './utils/view/useChefInterface'
 import { useChefInterface } from './utils/view/useChefInterface'
 

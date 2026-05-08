@@ -93,7 +93,7 @@ import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/c
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
 import { computed, ref } from 'vue'
-import { useProfessionalComputed } from '../../composables/fireux/firestore/profiles/Professional/main/useProfessionalComputed'
+import { useProfessionalComputed } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalComputed'
 import { useProfessionalInterface } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import { useProfessionalProfileView } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfileView'
 import type {

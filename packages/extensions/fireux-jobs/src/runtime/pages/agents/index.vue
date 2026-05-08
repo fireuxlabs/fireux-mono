@@ -13,7 +13,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useAgentFetch } from '../../composables/fireux/firestore/profiles/Agent/main/useAgentFetch'
+import { useAgentFetch } from '../../composables/fireux/firestore/profiles/Agent/fetch/useAgentFetch'
 
 definePageMeta({
   tag: 'agents',

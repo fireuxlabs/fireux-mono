@@ -14,7 +14,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
-import { useChefFetch } from '../../composables/fireux/firestore/profiles/Chef/main/useChefFetch'
+import { useChefFetch } from '../../composables/fireux/firestore/profiles/Chef/fetch/useChefFetch'
 
 definePageMeta({
   tag: 'chefs',

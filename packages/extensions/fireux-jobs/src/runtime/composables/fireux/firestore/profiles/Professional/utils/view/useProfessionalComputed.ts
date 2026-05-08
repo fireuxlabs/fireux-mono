@@ -1,6 +1,6 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { computed, unref } from 'vue'
-import type { Professional } from '../../../../../../models/profiles/Professional/Professional.model'
+import type { Professional } from '../../../../../../../models/profiles/Professional/Professional.model'
 
 /**
  * useProfessionalComputed

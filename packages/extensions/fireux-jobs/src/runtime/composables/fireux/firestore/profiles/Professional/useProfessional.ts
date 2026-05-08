@@ -7,9 +7,9 @@ import { computed } from 'vue'
 import { professionalConfig } from './config/professionalConfig'
 import type { Professional } from '../../../../../models/profiles/Professional/Professional.model'
 
-import { useProfessionalComputed } from './main/useProfessionalComputed'
-import { useProfessionalCreate } from './main/useProfessionalCreate'
-import { useProfessionalUpdate } from './main/useProfessionalUpdate'
+import { useProfessionalComputed } from './utils/view/useProfessionalComputed'
+import { useProfessionalCreate } from './mutations/useProfessionalCreate'
+import { useProfessionalUpdate } from './mutations/useProfessionalUpdate'
 import { useProfessionalInterface, type ProfessionalCard } from './utils/view/useProfessionalInterface'
 
 export type { ProfessionalCard, Professional }

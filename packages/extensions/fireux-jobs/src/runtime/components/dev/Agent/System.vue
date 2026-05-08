@@ -69,8 +69,8 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
-import { useAgentCollection } from '../../../composables/fireux/firestore/profiles/Agent/main/useAgentCollection'
-import { useAgentFetch } from '../../../composables/fireux/firestore/profiles/Agent/main/useAgentFetch'
+import { useAgentCollection } from '../../../composables/fireux/firestore/profiles/Agent/fetch/useAgentCollection'
+import { useAgentFetch } from '../../../composables/fireux/firestore/profiles/Agent/fetch/useAgentFetch'
 import { useAgentInterface } from '../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
 import { AgentModel as AgentModelRuntime } from '../../../models/profiles/Agent/Agent.model'
 

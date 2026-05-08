@@ -99,7 +99,7 @@
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUserFormattingAndValidation } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/validation/useUserFormatting'
 import { computed } from 'vue'
-import { useAgentUpdate } from '../../../../../composables/fireux/firestore/profiles/Agent/main/useAgentUpdate'
+import { useAgentUpdate } from '../../../../../composables/fireux/firestore/profiles/Agent/mutations/useAgentUpdate'
 import { useAgent } from '../../../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 const { coreProfile } = useAgent()

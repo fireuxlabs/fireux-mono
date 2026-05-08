@@ -5,10 +5,10 @@ import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/cor
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { agentConfig } from './config/agentConfig'
 import type { Agent } from '../../../../../models/profiles/Agent/Agent.model'
-import { useAgentComputed } from './main/useAgentComputed'
+import { useAgentComputed } from './utils/view/useAgentComputed'
 import { useAgentInterface, type AgentCard } from './utils/view/useAgentInterface'
-import { useAgentUpdate } from './main/useAgentUpdate'
-import { useAgentCreate } from './main/useAgentCreate'
+import { useAgentUpdate } from './mutations/useAgentUpdate'
+import { useAgentCreate } from './mutations/useAgentCreate'
 
 export type AgentState = {
   user: unknown | null

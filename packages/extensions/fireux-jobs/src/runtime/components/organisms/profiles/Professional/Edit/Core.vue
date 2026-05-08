@@ -112,7 +112,7 @@
 import { computed, ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useJobsConfig } from '../../../../../composables/fireux/app/useJobsConfig'
-import { useProfessionalUpdate } from '../../../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalUpdate'
+import { useProfessionalUpdate } from '../../../../../composables/fireux/firestore/profiles/Professional/mutations/useProfessionalUpdate'
 import { useProfessional } from '../../../../../composables/fireux/firestore/profiles/Professional/useProfessional'
 import type {
   CertificationItem,

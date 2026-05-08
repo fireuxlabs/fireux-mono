@@ -76,8 +76,8 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
-import { useProfessionalCollection } from '../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalCollection'
-import { useProfessionalFetch } from '../../../composables/fireux/firestore/profiles/Professional/main/useProfessionalFetch'
+import { useProfessionalCollection } from '../../../composables/fireux/firestore/profiles/Professional/fetch/useProfessionalCollection'
+import { useProfessionalFetch } from '../../../composables/fireux/firestore/profiles/Professional/fetch/useProfessionalFetch'
 import { useProfessionalInterface } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import { ProfessionalModel as ProfessionalModelRuntime } from '../../../models/profiles/Professional/Professional.model'
 

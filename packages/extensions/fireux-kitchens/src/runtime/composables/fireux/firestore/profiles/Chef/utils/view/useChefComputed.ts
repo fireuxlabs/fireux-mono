@@ -1,15 +1,15 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import type { Agent } from '../../../../../../models/profiles/Agent/Agent.model'
+import type { Chef } from '../../../../../../../models/profiles/Chef/Chef.model'
 
 /**
- * useAgentComputed
- * - Stubbed computed helpers for Agent profiles
+ * useChefComputed
+ * - Stubbed computed helpers for Chef profiles
  * - Accepts refs + pending but does not use them yet
- * - Safe to spread into useAgent() return
+ * - Safe to spread into useChef() return
  */
-export function useAgentComputed(
-  refs: ProfileRefs<Agent>,
-  pending?: unknown
+export function useChefComputed(
+  refs: ProfileRefs<Chef>,
+  pending: unknown
 ) {
   // Stub: keep args for future use, avoid TS “unused” warnings
   void refs
