@@ -53,11 +53,9 @@ import { useProductPermissions } from '../../../composables/useProductPermission
 // Use Nuxt UI toast if available (auto-imported in app)
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
-import {
-  useProductCreate,
-  useCreateProductState,
-  useCreatePricesState,
-} from '../../../composables/fireux/firestore/product/useProduct'
+import { useProductCreate } from '../../../composables/fireux/firestore/product/mutations/useProductCreate'
+import { useCreatePricesState } from '../../../composables/fireux/firestore/product/price/state/useCreatePricesState'
+import { useCreateProductState } from '../../../composables/fireux/firestore/product/state/useCreateProductState'
 import type { StripePriceInput } from '../../../models/product.model'
 
 definePageMeta({
