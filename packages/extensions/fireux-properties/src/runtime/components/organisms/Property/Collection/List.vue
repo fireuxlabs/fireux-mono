@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PropertyCard } from '../../../../composables/fireux/firestore/property/utils/view/usePropertyInterface'
+import type { PropertyCard } from '../../../../composables/fireux/firestore/portfolio/property/utils/view/usePropertyInterface'
 
 withDefaults(
   defineProps<{

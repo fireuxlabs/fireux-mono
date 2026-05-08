@@ -603,7 +603,7 @@ This pass removes that edge and treats the main interface contract as the only r
 | `packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/utils/view/useProductInterface.ts`                  | Content / opportunity           | Product listing and offering surface                 |
 | `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/client/utils/view/useClientInterface.ts`        | Console operational child       | Portfolio-scoped client record                       |
 | `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface.ts`            | Organization / workspace entity | Workspace identity, currently thin                   |
-| `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/utils/view/usePropertyInterface.ts`              | Console operational child       | Portfolio property record                            |
+| `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/property/utils/view/usePropertyInterface.ts`    | Console operational child       | Portfolio property record                            |
 | `packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/utils/view/useSupplierInterface.ts`               | Organization / workspace entity | Public organization surface with workspace crossover |
 | `packages/extensions/fireux-tasks/src/runtime/composables/fireux/firestore/tasks/utils/view/useTaskInterface.ts`                          | Console operational child       | Portfolio task record                                |
 

@@ -79,7 +79,7 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import { usePropertyInterface } from '../../../../composables/fireux/firestore/property/utils/view/usePropertyInterface'
+import { usePropertyInterface } from '../../../../composables/fireux/firestore/portfolio/property/utils/view/usePropertyInterface'
 import type { Property } from '../../../../models/property.model'
 import PropertyCardsCell from '../Cards/Cell.vue'
 import PropertyCardsPill from '../Cards/Pill.vue'

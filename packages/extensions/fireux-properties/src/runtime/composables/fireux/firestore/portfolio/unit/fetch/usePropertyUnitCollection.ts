@@ -3,8 +3,8 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import {
   useActivePortfolio,
   useRuntimePortfolioPath,
-} from '../../../app/portfolio-console/useActivePortfolio'
-import type { Unit } from '../../../../../models/unit.model'
+} from '../../../../app/portfolio-console/useActivePortfolio'
+import type { Unit } from '../../../../../../models/unit.model'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
 

@@ -3,8 +3,8 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import {
   useActivePortfolio,
   useRuntimePortfolioPath,
-} from '../../../app/portfolio-console/useActivePortfolio'
-import type { Property } from '../../../../../models/property.model'
+} from '../../../../app/portfolio-console/useActivePortfolio'
+import type { Property } from '../../../../../../models/property.model'
 
 export function usePortfolioPropertyCollection(runtimePortfolio = useActivePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
