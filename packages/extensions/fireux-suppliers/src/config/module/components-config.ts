@@ -10,7 +10,7 @@ export function configureComponents(resolver: Resolver) {
     pathPrefix: true,
   })
 
-  registerComponentsDir(resolver, './runtime/components/console/Supplier', {
+  registerComponentsDir(resolver, './runtime/components/organisms/Console/Supplier', {
     global: true,
     pathPrefix: true,
     prefix: 'ConsoleSupplier',

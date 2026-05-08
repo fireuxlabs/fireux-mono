@@ -11,8 +11,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import KitchenMenuSurfaceKiosk from '../../../../../components/runtimeKitchen/menuSurface/KioskMenuSurface.vue'
-import KitchenMenuSurfaceQR from '../../../../../components/runtimeKitchen/menuSurface/QRMenuSurface.vue'
+import KitchenMenuSurfaceKiosk from '../../../../../components/organisms/Menu/Public/KioskMenuSurface.vue'
+import KitchenMenuSurfaceQR from '../../../../../components/organisms/Menu/Public/QRMenuSurface.vue'
 import { useKitchenDemoMenuSurface } from '../../../../../composables/fireux/app/useKitchenDemoMenuSurface'
 
 definePageMeta({

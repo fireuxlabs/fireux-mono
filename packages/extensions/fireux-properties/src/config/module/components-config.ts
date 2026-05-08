@@ -5,7 +5,7 @@ import {
 } from 'fireux-core/config/module/module-helpers'
 
 export function configureComponents(resolver: Resolver) {
-  registerComponentsDir(resolver, './runtime/components/console/Portfolio', {
+  registerComponentsDir(resolver, './runtime/components/organisms/Console/Portfolio', {
     global: true,
     pathPrefix: true,
     prefix: 'ConsolePortfolio',

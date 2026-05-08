@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import KitchenQRMenu from '../../../../components/runtimeKitchen/menu/QRMenu.vue'
+import KitchenQRMenu from '../../../../components/organisms/Menu/Public/QRMenu.vue'
 import { useKitchenMenu } from '../../../../composables/fireux/app/useKitchenMenu'
 
 definePageMeta({

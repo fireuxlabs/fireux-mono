@@ -1,7 +1,7 @@
 # Composables Directory
 
 Authority: Operational
-Updated: 2026-04-17
+Updated: 2026-05-08
 Scope: `packages/*/fireux-*/src/runtime/composables` only.
 
 This page documents FireUX rules for `runtime/composables/`.
@@ -36,6 +36,57 @@ Read that split like this:
   truly generic helpers
 - `fireux/`
   actual FireUX product/runtime seams
+
+Loose top-level composable files should not live beside `dev/`, `shared/`,
+and `fireux/`.
+
+## Runtime Composables Placement
+
+Current placement canon:
+
+```text
+src/runtime/composables/
+  dev/
+  fireux/
+  shared/
+```
+
+Meaning:
+
+- `dev/` is for dev tooling, debug, inspection, drift, mock, and test helpers.
+- `fireux/` is for FireUX product, runtime, data, entity, and console composables.
+- `shared/` is for neutral reusable composables usable by both `dev/` and `fireux/`.
+
+Current audit verdict:
+
+- `dev/` is clean enough to leave alone.
+- `shared/` is mostly clean.
+- There is no blocker before moving into `composables/fireux/` canonisation.
+
+Known follow-ups:
+
+- `shared/useCollectionRouteContext.ts` is FireUX-aware-ish because it understands `/console` route semantics. Later, consider moving it under a FireUX app, console, or navigation helper path after checking imports.
+- `shared/useInterfaceUtils.ts` can stay for now. Later, review whether profile/entity formatting should split from neutral string and array helpers.
+
+Roadmap:
+
+1. Leave `dev/` and `shared/` alone for now.
+2. Start repo-wide audit inside `composables/fireux/`.
+3. Canonise Firestore composables by storage ownership/path:
+
+```text
+composables/fireux/firestore/<rootEntity>/
+composables/fireux/firestore/<rootEntity>/<scopedChild>/
+```
+
+4. Keep app/runtime composables as adapters:
+
+```text
+composables/fireux/app/<context>-runtime/
+composables/fireux/app/<context>-console/
+```
+
+5. Only after `fireux/` is stable, revisit the small `shared/` follow-ups.
 
 ## FireUX Canon Seams
 
