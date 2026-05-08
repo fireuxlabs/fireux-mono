@@ -3,12 +3,12 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import {
   useActivePortfolio,
   useRuntimePortfolioPath,
-} from '../../../app/portfolio-console/useActivePortfolio'
-import type { Client } from '../../../../../models/client.model'
+} from '../../../../app/portfolio-console/useActivePortfolio'
+import type { Client } from '../../../../../../models/client.model'
 import type {
   DemoLease,
   DemoPortfolioScenario,
-} from '../../../app/portfolio-console/demo-scenarios'
+} from '../../../../app/portfolio-console/demo-scenarios'
 
 const clientAvatarPlaceholder = (seed: string) =>
   `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(`fireux-client-${seed || 'placeholder'}`)}`

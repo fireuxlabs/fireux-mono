@@ -1,4 +1,4 @@
-import type { Client } from '../../../../../../models/client.model'
+import type { Client } from '../../../../../../../models/client.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 const clientAvatarPlaceholder = (seed: string) =>
