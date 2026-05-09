@@ -7,6 +7,3 @@ export default defineNuxtModule({
     compatibility: { nuxt: '^4.0.0' },
   },
 })
-
-export * from './runtime/languages'
-export * from './runtime/useTranslate'

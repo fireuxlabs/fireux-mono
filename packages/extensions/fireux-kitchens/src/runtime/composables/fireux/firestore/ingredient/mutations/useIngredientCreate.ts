@@ -2,20 +2,16 @@ import { doc, getDoc } from 'firebase/firestore'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { FIREUX_CORE_LANGUAGE_CODES } from 'fireux-translation/runtime/languages'
-import { useTranslate } from 'fireux-translation/runtime/useTranslate'
+import { useTranslationSeed } from 'fireux-translation/runtime/useTranslationSeed'
 import {
   IngredientModel,
-  type IngredientNameStatus,
   type IngredientCreateInput,
   type Ingredient as IngredientDoc,
 } from '../../../../../models/ingredient.model'
 
 const GLOBAL_COLLECTION_PATH = 'ingredients'
 
-type IngredientCreateDraft = Partial<IngredientCreateInput> & {
-  language_codes?: string[]
-}
+type IngredientCreateDraft = Partial<IngredientCreateInput>
 
 type IngredientCreateOptions = {
   languageCodes?: string[]
@@ -34,127 +30,41 @@ const resolveIngredientId = (name: string) => {
 }
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const normalizeLanguageCode = (value: unknown) =>
-  normalizeString(value).replace(/_/g, '-')
-
-const normalizeLanguageCodes = (values: unknown) => {
-  if (!Array.isArray(values)) return []
-
-  const seen = new Set<string>()
-  const codes: string[] = []
-  for (const value of values) {
-    const code = normalizeLanguageCode(value)
-    if (!code || seen.has(code)) continue
-    seen.add(code)
-    codes.push(code)
-  }
-
-  return codes
-}
-
-const normalizeNames = (value: unknown): Record<string, string> => {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
-
-  const names: Record<string, string> = {}
-  for (const [language, name] of Object.entries(value as Record<string, unknown>)) {
-    const code = normalizeLanguageCode(language)
-    const text = normalizeString(name)
-    if (code && text) names[code] = text
-  }
-
-  return names
-}
-
-const normalizeNameStatuses = (
-  value: unknown
-): Partial<Record<string, IngredientNameStatus>> => {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
-
-  const allowed = new Set<IngredientNameStatus>(['source', 'machine_draft', 'approved'])
-  const statuses: Partial<Record<string, IngredientNameStatus>> = {}
-  for (const [language, statusValue] of Object.entries(value as Record<string, unknown>)) {
-    const code = normalizeLanguageCode(language)
-    const status = normalizeString(statusValue) as IngredientNameStatus
-    if (code && allowed.has(status)) statuses[code] = status
-  }
-
-  return statuses
-}
-
-const resolveTargetLanguages = (
-  draft: IngredientCreateDraft,
-  options: IngredientCreateOptions
-) => {
-  const configured = normalizeLanguageCodes(options.languageCodes)
-  if (configured.length) return configured
-
-  const drafted = normalizeLanguageCodes(draft.language_codes)
-  if (drafted.length) return drafted
-
-  return FIREUX_CORE_LANGUAGE_CODES
-}
 
 const buildIngredientPayload = async (
   ingredientId: string,
   draft: IngredientCreateDraft,
   options: IngredientCreateOptions,
-  translate: ReturnType<typeof useTranslate>['translate']
+  seedTranslations: ReturnType<typeof useTranslationSeed>['seedTranslations']
 ): Promise<{ payload: IngredientDoc; failedLanguages: string[] }> => {
   const name = normalizeString(draft.name)
-  const sourceLanguage =
-    normalizeLanguageCode(options.sourceLanguage || draft.source_language) || 'en'
-  const targetLanguages = resolveTargetLanguages(draft, options)
-  const names = normalizeNames(draft.names)
-  const namesStatus = normalizeNameStatuses(draft.names_status)
-  const failedLanguages: string[] = []
-
-  names[sourceLanguage] = name
-  namesStatus[sourceLanguage] = 'source'
-
-  if (options.translate !== false) {
-    await Promise.all(
-      targetLanguages.map(async (language) => {
-        if (language === sourceLanguage || names[language]) return
-
-        try {
-          const result = await translate({
-            text: name,
-            from: sourceLanguage,
-            to: language,
-          })
-          const translated = normalizeString(result.text)
-          if (!translated) {
-            failedLanguages.push(language)
-            return
-          }
-
-          names[language] = translated
-          namesStatus[language] = 'machine_draft'
-        } catch {
-          failedLanguages.push(language)
-        }
-      })
-    )
-  }
+  const seeded = await seedTranslations({
+    text: name,
+    sourceLanguage: options.sourceLanguage,
+    languageCodes: options.languageCodes,
+    existingText: draft.names,
+    existingStatus: draft.names_status,
+    translate: options.translate,
+  })
 
   const payload: IngredientDoc = {
     ...IngredientModel,
     id: ingredientId,
     name,
-    source_language: sourceLanguage,
-    names,
-    names_status: namesStatus,
+    source_language: seeded.sourceLanguage,
+    names: seeded.text,
+    names_status: seeded.status,
     slug: ingredientId,
     image_url: normalizeString(draft.image_url),
   }
 
-  return { payload, failedLanguages }
+  return { payload, failedLanguages: seeded.failedLanguages }
 }
 
 export function useIngredientCreate() {
   const { setDocument } = useFirestoreCreate()
   const db = useFirestore()
-  const { translate } = useTranslate()
+  const { seedTranslations } = useTranslationSeed()
 
   const createIngredient = async (
     draft: IngredientCreateDraft,
@@ -176,7 +86,7 @@ export function useIngredientCreate() {
       ingredientId,
       draft,
       options,
-      translate
+      seedTranslations
     )
 
     await setDocument<IngredientDoc>(GLOBAL_COLLECTION_PATH, ingredientId, payload, {
