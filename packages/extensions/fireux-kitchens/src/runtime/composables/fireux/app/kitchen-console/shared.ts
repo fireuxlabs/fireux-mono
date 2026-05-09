@@ -15,6 +15,8 @@ type ResolveKitchenRuntimeChildCollectionPathOptions = {
 
 export { normalizeString }
 
+export const ROOT_KITCHEN_COLLECTION_PATH = 'kitchens'
+
 export const resolveKitchenConsoleCollectionPath = (
   appId?: string | null | undefined
 ): string => {

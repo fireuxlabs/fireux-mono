@@ -43,7 +43,6 @@ const buildIngredientPayload = async (
     sourceLanguage: options.sourceLanguage,
     languageCodes: options.languageCodes,
     existingText: draft.names,
-    existingStatus: draft.names_status,
     translate: options.translate,
   })
 
@@ -53,7 +52,6 @@ const buildIngredientPayload = async (
     name,
     source_language: seeded.sourceLanguage,
     names: seeded.text,
-    names_status: seeded.status,
     slug: ingredientId,
     image_url: normalizeString(draft.image_url),
   }

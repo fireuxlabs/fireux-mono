@@ -73,8 +73,8 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
-import type { Chef } from '../../../models/profiles/Chef/Chef.model'
+import { useChefInterface } from '../../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
+import type { Chef } from '../../../../models/profiles/Chef/Chef.model'
 
 type ChefEntry = Chef & { user?: unknown }
 

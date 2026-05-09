@@ -77,8 +77,8 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import { useProfessionalInterface } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
-import type { Professional } from '../../../models/profiles/Professional/Professional.model'
+import { useProfessionalInterface } from '../../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
+import type { Professional } from '../../../../models/profiles/Professional/Professional.model'
 
 type ProfessionalEntry = Professional & { user?: unknown }
 

@@ -53,7 +53,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useProfessionalCreate } from '../../../composables/fireux/firestore/profiles/Professional/mutations/useProfessionalCreate';
+import { useProfessionalCreate } from '../../../../composables/fireux/firestore/profiles/Professional/mutations/useProfessionalCreate';
 
 const props = defineProps<{ create?: () => Promise<unknown> }>()
 

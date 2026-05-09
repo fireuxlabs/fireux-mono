@@ -63,7 +63,7 @@
 <script setup lang="ts">
 import { toDataURL } from 'qrcode';
 import { ref, watch } from 'vue';
-import type { ProfessionalCard } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface';
+import type { ProfessionalCard } from '../../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface';
 
 defineOptions({ name: 'ProfessionalsCardBusiness' })
 

@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CertificationItem } from '../../../models/profiles/Professional/Professional.model';
+import type { CertificationItem } from '../../../../../models/profiles/Professional/Professional.model';
 
 const props = defineProps<{
   items: CertificationItem[]

@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import type { AgentCard } from '../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface';
+import type { AgentCard } from '../../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface';
 
 type Props = Pick<
   AgentCard.Card,

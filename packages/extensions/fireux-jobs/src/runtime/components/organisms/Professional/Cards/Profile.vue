@@ -234,9 +234,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ProfessionalCard } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
-import type { ProfessionalProfileViewModel } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfileView'
-import type { Professional } from '../../../models/profiles/Professional/Professional.model'
+import type { ProfessionalCard } from '../../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
+import type { ProfessionalProfileViewModel } from '../../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfileView'
+import type { Professional } from '../../../../models/profiles/Professional/Professional.model'
 
 const props = defineProps<{
   model?: ProfessionalProfileViewModel | null

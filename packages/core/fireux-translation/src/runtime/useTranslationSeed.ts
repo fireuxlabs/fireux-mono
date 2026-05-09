@@ -4,21 +4,17 @@ import { useTranslate } from './useTranslate'
 const DEFAULT_SOURCE_LANGUAGE = 'en'
 const DEFAULT_TARGET_LANGUAGE_CODES = FIREUX_CORE_LANGUAGE_CODES
 
-export type FireuxTranslationStatus = 'source' | 'machine_draft' | 'approved'
-
 export type TranslationSeedInput = {
   text: string
   sourceLanguage?: string
   languageCodes?: string[]
   existingText?: unknown
-  existingStatus?: unknown
   translate?: boolean
 }
 
 export type TranslationSeedResult = {
   sourceLanguage: string
   text: Record<string, string>
-  status: Partial<Record<string, FireuxTranslationStatus>>
   failedLanguages: string[]
 }
 
@@ -54,27 +50,6 @@ const normalizeTextMap = (value: unknown): Record<string, string> => {
   return text
 }
 
-const normalizeStatusMap = (
-  value: unknown
-): Partial<Record<string, FireuxTranslationStatus>> => {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
-
-  const allowed = new Set<FireuxTranslationStatus>([
-    'source',
-    'machine_draft',
-    'approved',
-  ])
-  const status: Partial<Record<string, FireuxTranslationStatus>> = {}
-
-  for (const [language, entry] of Object.entries(value as Record<string, unknown>)) {
-    const code = normalizeLanguageCode(language)
-    const translationStatus = normalizeString(entry) as FireuxTranslationStatus
-    if (code && allowed.has(translationStatus)) status[code] = translationStatus
-  }
-
-  return status
-}
-
 const resolveTargetLanguages = (languageCodes?: string[]) => {
   const configured = normalizeLanguageCodes(languageCodes)
   return configured.length ? configured : DEFAULT_TARGET_LANGUAGE_CODES
@@ -93,13 +68,11 @@ export function useTranslationSeed() {
       normalizeLanguageCode(input.sourceLanguage) || DEFAULT_SOURCE_LANGUAGE
     const targetLanguages = resolveTargetLanguages(input.languageCodes)
     const text = normalizeTextMap(input.existingText)
-    const status = normalizeStatusMap(input.existingStatus)
     const failedLanguages: string[] = []
 
     // Source text is canonical for its language; existing target translations are preserved.
     // Failed target languages are reported without blocking the rest of the seed.
     text[sourceLanguage] = sourceText
-    status[sourceLanguage] = 'source'
 
     if (input.translate !== false) {
       await Promise.all(
@@ -119,7 +92,6 @@ export function useTranslationSeed() {
             }
 
             text[language] = translated
-            status[language] = 'machine_draft'
           } catch {
             failedLanguages.push(language)
           }
@@ -130,7 +102,6 @@ export function useTranslationSeed() {
     return {
       sourceLanguage,
       text,
-      status,
       failedLanguages,
     }
   }

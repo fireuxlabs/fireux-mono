@@ -179,7 +179,7 @@ import { useCompanyCreate } from 'fireux-companies/runtime/composables/fireux/fi
 import { useKitchenCreate } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenCreate'
 import type { Place, PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { computed, ref, shallowRef, watch, type Ref } from 'vue'
-import type { ExperienceItem } from '../../../models/profiles/Professional/Professional.model'
+import type { ExperienceItem } from '../../../../models/profiles/Professional/Professional.model'
 
 type PlaceSelectedPayload = { placeId: string; place: PlaceUpsertInput }
 

@@ -64,8 +64,8 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed } from 'vue'
-import { useChefUpdate } from '../../../composables/fireux/firestore/profiles/Chef/mutations/useChefUpdate'
-import { useChef } from '../../../composables/fireux/firestore/profiles/Chef/useChef'
+import { useChefUpdate } from '../../../../composables/fireux/firestore/profiles/Chef/mutations/useChefUpdate'
+import { useChef } from '../../../../composables/fireux/firestore/profiles/Chef/useChef'
 
 const { coreProfile } = useChef()
 

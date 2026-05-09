@@ -1,5 +1,6 @@
 import type { Resolver } from '@nuxt/kit'
 import {
+  registerComponentAlias,
   registerComponentAliases,
   registerComponentsDir,
 } from 'fireux-core/config/module/module-helpers'
@@ -15,6 +16,12 @@ export function configureComponents(resolver: Resolver) {
     pathPrefix: true,
     prefix: 'ConsoleSupplier',
   })
+  registerComponentAlias(
+    resolver,
+    './runtime/components/organisms/Console/Supplier/Index.vue',
+    'ConsoleSupplier',
+    { global: true }
+  )
 
   registerComponentsDir(resolver, './runtime/components/organisms/Supplier', {
     global: true,

@@ -87,7 +87,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-import type { ChefCard } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface';
+import type { ChefCard } from '../../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface';
 
 type Props = Pick<
   ChefCard.Card,
