@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useKitchenDishCollection } from '../../firestore/runtime-kitchen/dish/fetch/useKitchenDishCollection'
+import { useDishCollection } from '../../firestore/dish/fetch/useDishCollection'
 import { useRecipeCollection } from '../../firestore/recipe/fetch/useRecipeCollection'
 import type { Dish } from '../../../../models/dish.model'
 import type { Recipe } from '../../../../models/recipe.model'
@@ -12,9 +12,6 @@ export type KitchenRecipeDishUsage = {
   recipeId: string
   dishId: string
   dishName: string
-  dishImageUrl: string
-  active: boolean
-  isPrimary: boolean
 }
 
 export function useKitchenConsoleRecipes() {
@@ -38,7 +35,7 @@ export function useKitchenConsoleRecipes() {
     dishes: liveDishes,
     pending: liveDishesPending,
     collectionPath: dishesCollectionPath,
-  } = useKitchenDishCollection(fetchKitchenId, {
+  } = useDishCollection(fetchKitchenId, {
     kitchenCollectionPath: rootCollection,
     databaseId,
   })
@@ -76,12 +73,8 @@ export function useKitchenConsoleRecipes() {
         const dishId = normalizeString(dish?.id)
         if (!dishId) return acc
 
-        const primaryRecipeId = normalizeString(dish?.primary_recipe_id)
         const recipeIds = new Set(
-          [
-            primaryRecipeId,
-            ...(Array.isArray(dish?.recipe_ids) ? dish.recipe_ids : []),
-          ]
+          (Array.isArray(dish?.recipe_ids) ? dish.recipe_ids : [])
             .map((recipeId) => normalizeString(recipeId))
             .filter((recipeId) => recipeIdsInScope.has(recipeId))
         )
@@ -90,13 +83,7 @@ export function useKitchenConsoleRecipes() {
           const entry: KitchenRecipeDishUsage = {
             recipeId,
             dishId,
-            dishName:
-              normalizeString(dish?.name) ||
-              normalizeString(dish?.short_name) ||
-              dishId,
-            dishImageUrl: normalizeString(dish?.image_url),
-            active: dish?.active !== false,
-            isPrimary: recipeId === primaryRecipeId,
+            dishName: normalizeString(dish?.name),
           }
 
           acc[recipeId] = [...(acc[recipeId] || []), entry]
@@ -109,7 +96,6 @@ export function useKitchenConsoleRecipes() {
 
     Object.values(usage).forEach((entries) => {
       entries.sort((a, b) => {
-        if (a.isPrimary !== b.isPrimary) return a.isPrimary ? -1 : 1
         return a.dishName.localeCompare(b.dishName)
       })
     })

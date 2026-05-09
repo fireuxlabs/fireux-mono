@@ -19,14 +19,6 @@
           class="pill"
         >
           <div class="flex min-w-0 items-start gap-2">
-            <UAvatar
-              v-if="dishImageUrl(item)"
-              :src="dishImageUrl(item)"
-              :alt="itemLabel(item)"
-              size="sm"
-              icon="i-lucide-utensils"
-            />
-
             <div class="min-w-0 flex-1 space-y-1">
               <p class="truncate text-sm font-medium text-highlighted">
                 {{ itemLabel(item) }}
@@ -99,15 +91,12 @@ const resolvedDish = (item: MenuSectionItem) =>
 
 const resolvedDishName = (item: MenuSectionItem) => {
   const dish = resolvedDish(item)
-  return normalizeString(dish?.name) || normalizeString(dish?.short_name)
+  return normalizeString(dish?.name)
 }
 
 const itemLabel = (item: MenuSectionItem) =>
   normalizeString(item.label) ||
   resolvedDishName(item)
-
-const dishImageUrl = (item: MenuSectionItem) =>
-  normalizeString(resolvedDish(item)?.image_url)
 
 const itemPrice = (item: MenuSectionItem) => {
   const price = Number(item.price)

@@ -1,48 +1,60 @@
 <template>
-  <UCard class="overflow-hidden">
+  <UCard>
     <div class="space-y-3">
-      <div class="mx-auto h-[200px] w-[200px] overflow-hidden rounded-md border border-default bg-elevated/40">
-        <img
-          v-if="imageUrl"
-          :src="imageUrl"
-          alt="Dish image"
-          class="h-[200px] w-[200px] object-cover"
-          loading="lazy"
+      <div class="flex items-center gap-2">
+        <UAvatar
+          icon="i-lucide-utensils"
+          size="sm"
+        />
+        <div class="text-sm font-medium text-highlighted">Dish semantics</div>
+      </div>
+
+      <div
+        v-if="recipeIds.length || ingredientIds.length"
+        class="space-y-2"
+      >
+        <div
+          v-if="recipeIds.length"
+          class="flex flex-wrap gap-1"
         >
-        <div v-else class="flex h-[200px] w-[200px] items-center justify-center text-dimmed">
-          <UIcon name="i-lucide-utensils" class="size-6" />
-        </div>
-      </div>
-
-      <div class="space-y-2">
-        <div v-if="ingredientPills.length" class="flex flex-wrap items-center gap-1">
-          <IngredientCardsPill
-            v-for="pill in ingredientPills"
-            :key="pill.id"
-            :to="pill.to"
-            :title="pill.title"
-            :image-url="pill.imageUrl"
-            :link="false"
+          <UBadge
+            v-for="recipeId in recipeIds"
+            :key="recipeId"
+            variant="soft"
+            color="neutral"
+            size="xs"
           >
-          </IngredientCardsPill>
+            {{ recipeId }}
+          </UBadge>
         </div>
-      </div>
 
-      <div class="space-y-2">
-        <div v-if="misePills.length" class="flex flex-wrap items-center gap-1">
-          <MiseCardsPill
-            v-for="pill in misePills"
-            :key="pill.id"
-            :to="pill.to"
-            :title="pill.title"
-            :image-url="pill.imageUrl"
-            :link="false"
+        <div
+          v-if="ingredientIds.length"
+          class="flex flex-wrap gap-1"
+        >
+          <UBadge
+            v-for="ingredientId in ingredientIds"
+            :key="ingredientId"
+            variant="soft"
+            color="neutral"
+            size="xs"
           >
-          </MiseCardsPill>
+            {{ ingredientId }}
+          </UBadge>
         </div>
       </div>
 
-      <div v-if="$slots.actions" class="pt-1">
+      <p
+        v-else
+        class="text-sm text-dimmed"
+      >
+        No semantic links yet.
+      </p>
+
+      <div
+        v-if="$slots.actions"
+        class="pt-1"
+      >
         <slot name="actions" />
       </div>
     </div>
@@ -51,13 +63,12 @@
 
 <script setup lang="ts">
 type Props = {
-  imageUrl: string
-  ingredientPills?: Array<{ id: string; to: string; title: string; imageUrl: string }>
-  misePills?: Array<{ id: string; to: string; title: string; imageUrl: string }>
+  recipeIds?: string[]
+  ingredientIds?: string[]
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  ingredientPills: () => [],
-  misePills: () => [],
+withDefaults(defineProps<Props>(), {
+  recipeIds: () => [],
+  ingredientIds: () => [],
 })
 </script>

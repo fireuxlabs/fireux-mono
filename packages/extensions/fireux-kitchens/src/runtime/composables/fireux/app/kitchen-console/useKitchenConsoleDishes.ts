@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useKitchenDishCollection } from '../../firestore/runtime-kitchen/dish/fetch/useKitchenDishCollection'
+import { useDishCollection } from '../../firestore/dish/fetch/useDishCollection'
 import type { Dish } from '../../../../models/dish.model'
 import type { Menu } from '../../../../models/menu.model'
 import { useKitchenConsole } from './useKitchenConsole'
@@ -47,7 +47,7 @@ export function useKitchenConsoleDishes(
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
   const { dishes: liveDishes, pending: livePending, collectionPath } =
-    useKitchenDishCollection(fetchKitchenId, {
+    useDishCollection(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
     })

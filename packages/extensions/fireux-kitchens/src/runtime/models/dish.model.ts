@@ -1,5 +1,3 @@
-// FILE: packages/extensions/fireux-kitchens/src/runtime/models/dish.model.ts
-
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
@@ -7,35 +5,28 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
  * Family: Kitchen-scoped
- * Storage: scoped operational record
+ * Storage: scoped guest-facing food record
  * Path: /kitchens/<kitchenId>/dishes/<dishId>
  * Owner app scope: Kitchen
  *
- * Decision note:
- * - Dish exists because a kitchen owns and publishes it.
- * - Keep links to recipes or ingredients explicit through ids rather than inventing root twins.
- * - If Dish ever becomes a root entity, update the models README first, then this file.
+ * Dish is the first guest-facing semantic composition layer. It links to
+ * kitchen-owned recipe/prep components and root/shared ingredients by id.
+ * Steps, allergens, pricing, stock, mise, images, and service workflow are
+ * not active on the Dish model yet.
  */
+export type DishTranslatedText = Partial<Record<string, string>>
 
 export const DishModel = {
   id: '' as string,
-  kitchen_id: '' as string,
-
   name: '' as string,
-  short_name: '' as string,
+  slug: '' as string,
   description: '' as string,
-  names: undefined as Record<string, string> | undefined,
-  descriptions: undefined as Record<string, string> | undefined,
-  image_url: '' as string,
-
-  primary_recipe_id: '' as string,
+  source_language: '' as string,
+  names: {} as DishTranslatedText,
+  descriptions: {} as DishTranslatedText,
   recipe_ids: [] as string[],
   ingredient_ids: [] as string[],
-  mise_ids: [] as string[],
-
-  sort_order: 0 as number,
-  active: true as boolean,
-
+  kitchen_id: '' as string,
   created: {
     at: {} as FirebaseTimestamp,
     by: '' as FireuxStamped['created']['by'],
@@ -52,4 +43,60 @@ export type Dish = {
 }
 
 export type DishCreateInput = Omit<Dish, 'created' | 'updated'>
-export type DishUpdateInput = Partial<Omit<Dish, 'id' | 'created' | 'updated' | 'kitchen_id'>>
+export type DishUpdateInput = Partial<
+  Omit<Dish, 'id' | 'created' | 'updated' | 'kitchen_id'>
+>
+
+const pickString = (value: unknown) => String(value ?? '').trim()
+
+export function normalizeDishStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+
+  return Array.from(
+    new Set(value.map((entry) => pickString(entry)).filter(Boolean))
+  )
+}
+
+export function normalizeDishTranslatedText(value: unknown): DishTranslatedText {
+  if (typeof value === 'string') {
+    const text = pickString(value)
+    return text ? { en: text } : {}
+  }
+
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
+
+  const translated: DishTranslatedText = {}
+  for (const [language, text] of Object.entries(value as Record<string, unknown>)) {
+    const code = pickString(language).replace(/_/g, '-')
+    const copy = pickString(text)
+    if (code && copy) translated[code] = copy
+  }
+
+  return translated
+}
+
+export function normalizeDish(value: unknown): Dish {
+  const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
+  const created = source.created && typeof source.created === 'object'
+    ? (source.created as Dish['created'])
+    : DishModel.created
+  const updated = source.updated && typeof source.updated === 'object'
+    ? (source.updated as Dish['updated'])
+    : DishModel.updated
+
+  return {
+    ...DishModel,
+    id: pickString(source.id),
+    name: pickString(source.name),
+    slug: pickString(source.slug),
+    description: pickString(source.description),
+    source_language: pickString(source.source_language),
+    names: normalizeDishTranslatedText(source.names),
+    descriptions: normalizeDishTranslatedText(source.descriptions),
+    recipe_ids: normalizeDishStringArray(source.recipe_ids),
+    ingredient_ids: normalizeDishStringArray(source.ingredient_ids),
+    kitchen_id: pickString(source.kitchen_id),
+    created,
+    updated,
+  }
+}

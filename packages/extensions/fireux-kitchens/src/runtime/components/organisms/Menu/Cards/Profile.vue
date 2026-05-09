@@ -6,16 +6,7 @@
           class="h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-default bg-elevated/40 md:h-24 md:w-24"
           style="width: 80px; height: 80px; max-width: 80px; max-height: 80px;"
         >
-          <img
-            v-if="imageUrl"
-            :src="imageUrl"
-            :alt="menu.name"
-            class="h-full w-full object-cover"
-            style="width: 100%; height: 100%; object-fit: cover;"
-            loading="lazy"
-          >
           <div
-            v-else
             class="flex h-full w-full items-center justify-center text-dimmed"
           >
             <UIcon name="i-lucide-book-open-check" class="size-5" />
@@ -99,31 +90,6 @@ const sections = computed(() =>
       )
     : []
 )
-
-const dishesById = computed(() => {
-  const lookup = new Map<string, Dish>()
-
-  props.dishes.forEach((dish) => {
-    const id = normalizeString(dish?.id)
-    if (id) lookup.set(id, dish)
-  })
-
-  return lookup
-})
-
-const imageUrl = computed(() => {
-  for (const section of sections.value) {
-    const items = Array.isArray(section.items) ? section.items : []
-
-    for (const item of items) {
-      const dish = dishesById.value.get(normalizeString(item?.dish_id))
-      const dishImageUrl = normalizeString(dish?.image_url)
-      if (dishImageUrl) return dishImageUrl
-    }
-  }
-
-  return ''
-})
 
 const itemsCount = computed(() =>
   sections.value.reduce(

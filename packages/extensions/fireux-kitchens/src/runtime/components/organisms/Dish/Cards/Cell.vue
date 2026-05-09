@@ -26,15 +26,6 @@
               {{ subtitle }}
             </div>
           </div>
-
-          <UBadge
-            variant="soft"
-            :color="active ? 'success' : 'neutral'"
-            size="xs"
-            class="shrink-0"
-          >
-            {{ active ? 'active' : 'inactive' }}
-          </UBadge>
         </div>
 
         <div v-if="showMeta" class="truncate text-xs text-dimmed">
@@ -77,15 +68,6 @@
               {{ subtitle }}
             </div>
           </div>
-
-          <UBadge
-            variant="soft"
-            :color="active ? 'success' : 'neutral'"
-            size="xs"
-            class="shrink-0"
-          >
-            {{ active ? 'active' : 'inactive' }}
-          </UBadge>
         </div>
 
         <div v-if="showMeta" class="truncate text-xs text-dimmed">
@@ -104,11 +86,11 @@
 
 <script setup lang="ts">
 
-import type { DishCard } from '../../../../composables/fireux/firestore/runtime-kitchen/dish/utils/view/useDishInterface'
+import type { DishCard } from '../../../../composables/fireux/firestore/dish/utils/view/useDishInterface'
 
 type Props = Pick<
   DishCard.Card,
-  'to' | 'title' | 'subtitle' | 'active' | 'imageUrl' | 'description' | 'meta'
+  'to' | 'title' | 'subtitle' | 'imageUrl' | 'description' | 'meta'
 > & {
   showSubtitle?: boolean
   showMeta?: boolean
