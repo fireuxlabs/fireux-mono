@@ -43,7 +43,8 @@ export function useDishCollection(
 
   watch(
     [collectionPath, databaseIdKey],
-    ([nextPath]) => {
+    (next) => {
+      const [nextPath] = next
       collectionRef.value = nextPath ? firestoreFetchCollection<Record<string, unknown>>(nextPath) : null
     },
     { immediate: true }

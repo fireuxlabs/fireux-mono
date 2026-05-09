@@ -4,6 +4,9 @@ import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useKitchenCollection } from '../firestore/kitchen/fetch/useKitchenCollection'
 import type { Menu } from '../../../models/menu.model'
 import type { Dish } from '../../../models/dish.model'
+import type { Ingredient } from '../../../models/ingredient.model'
+import type { Recipe } from '../../../models/recipe.model'
+import { resolveDishSemanticLine } from '../firestore/dish/utils/view/resolveDishSemanticLine'
 import {
   normalizeString,
   resolveKitchenRuntimeChildCollectionPath,
@@ -18,11 +21,50 @@ export type {
   KitchenMenuSectionView,
 } from './kitchen-menu-view'
 
+export type KitchenSemanticMenuEntry = {
+  id: string
+  dishId: string
+  name: string
+  semanticLine: string
+  integrityNote: string
+}
+
+export type KitchenSemanticMenuSection = {
+  id: string
+  label: string
+  description: string
+  entries: KitchenSemanticMenuEntry[]
+}
+
+type SemanticMenuJsonSource = {
+  id: string
+  name: string
+  names?: Partial<Record<string, string>>
+}
+
+const normalizeList = (value: unknown) =>
+  Array.isArray(value)
+    ? Array.from(new Set(value.map((entry) => normalizeString(entry)).filter(Boolean)))
+    : []
+
+const sortBySortOrder = <T extends { sort_order?: number }>(items: T[]) =>
+  [...items].sort(
+    (a, b) => Number(a?.sort_order ?? 0) - Number(b?.sort_order ?? 0)
+  )
+
+const localizedName = (
+  source: { name?: string; names?: Partial<Record<string, string>> },
+  languageCode: string
+) => {
+  const localized = source.names?.[languageCode]
+  return normalizeString(localized) || normalizeString(source.name)
+}
+
 export function useKitchenMenu() {
   const route = useRoute()
 
   const routeKitchenSlug = computed(() => {
-    const raw = route.params.kitchenSlug
+    const raw = route.params.kitchenSlug || route.params.slug
     return Array.isArray(raw)
       ? normalizeString(raw[0])
       : normalizeString(raw)
@@ -56,6 +98,13 @@ export function useKitchenMenu() {
     return Array.isArray(raw)
       ? normalizeString(raw[0])
       : normalizeString(raw)
+  })
+  const requestedLanguageCode = computed(() => {
+    const raw = route.query.lang || route.query.language
+    const code = Array.isArray(raw)
+      ? normalizeString(raw[0])
+      : normalizeString(raw)
+    return code.replace(/_/g, '-') || 'en'
   })
 
   const { kitchens, pending: kitchensPending } = useKitchenCollection()
@@ -94,6 +143,10 @@ export function useKitchenMenu() {
   const dishesRef = shallowRef(null) as ShallowRef<
     Ref<Dish[] | undefined> | null
   >
+  const recipesRef = shallowRef(null) as ShallowRef<
+    Ref<Recipe[] | undefined> | null
+  >
+  const ingredientsRef = firestoreFetchCollection<Ingredient>('ingredients')
 
   watch(
     kitchenId,
@@ -106,10 +159,17 @@ export function useKitchenMenu() {
         kitchenId: nextKitchenId,
         collectionName: 'dishes',
       })
+      const recipesPath = resolveKitchenRuntimeChildCollectionPath({
+        kitchenId: nextKitchenId,
+        collectionName: 'recipes',
+      })
 
       menusRef.value = menusPath ? firestoreFetchCollection<Menu>(menusPath) : null
       dishesRef.value = dishesPath
         ? firestoreFetchCollection<Dish>(dishesPath)
+        : null
+      recipesRef.value = recipesPath
+        ? firestoreFetchCollection<Recipe>(recipesPath)
         : null
     },
     { immediate: true }
@@ -117,9 +177,32 @@ export function useKitchenMenu() {
 
   const menus = computed(() => menusRef.value?.value ?? [])
   const dishes = computed(() => dishesRef.value?.value ?? [])
+  const recipes = computed(() => recipesRef.value?.value ?? [])
+  const ingredients = computed(() => ingredientsRef.value ?? [])
   const currencyCode = computed(() =>
     normalizeString((resolvedKitchen.value as any)?.currency_code) || 'CHF'
   )
+  const dishesById = computed(() => {
+    const map = new Map<string, Dish>()
+    dishes.value.forEach((dish) => {
+      if (dish.id) map.set(dish.id, dish)
+    })
+    return map
+  })
+  const recipesById = computed(() => {
+    const map = new Map<string, Recipe>()
+    recipes.value.forEach((recipe) => {
+      if (recipe.id) map.set(recipe.id, recipe)
+    })
+    return map
+  })
+  const ingredientsById = computed(() => {
+    const map = new Map<string, Ingredient>()
+    ingredients.value.forEach((ingredient) => {
+      if (ingredient.id) map.set(ingredient.id, ingredient)
+    })
+    return map
+  })
 
   const menuView = useResolvedKitchenMenuView({
     menus,
@@ -164,12 +247,139 @@ export function useKitchenMenu() {
     const key = routeKitchenSlug.value || kitchenId.value
     return key ? `/kitchens/${encodeURIComponent(key)}` : '/kitchens'
   })
+  const semanticSections = computed<KitchenSemanticMenuSection[]>(() => {
+    const menu = menuView.selectedMenu.value
+    if (!menu || !Array.isArray(menu.sections)) return []
+
+    const languageCode = requestedLanguageCode.value
+
+    return sortBySortOrder(menu.sections)
+      .map((section) => {
+        const excludedIds = normalizeList(section.render_excluded_ids)
+        const excludedTerms = normalizeList(section.render_excluded_terms)
+        const entries = sortBySortOrder(section.items || [])
+          .map((item) => {
+            const dishId = normalizeString(item.dish_id)
+            if (!dishId) return null
+
+            const dish = dishesById.value.get(dishId)
+            if (!dish) return null
+
+            const name = localizedName(dish, languageCode)
+            const semanticLine = resolveDishSemanticLine({
+              dish,
+              recipes: recipes.value,
+              ingredients: ingredients.value,
+              languageCode,
+              excludedIds,
+              excludedTerms,
+            })
+            const integrityNote = normalizeString(
+              (item as Record<string, unknown>).integrity_note ||
+                (dish as Record<string, unknown>).integrity_note
+            )
+
+            return {
+              id: item.id,
+              dishId,
+              name,
+              semanticLine,
+              integrityNote,
+            }
+          })
+          .filter((entry): entry is KitchenSemanticMenuEntry => Boolean(entry))
+
+        return {
+          id: section.id,
+          label: section.label,
+          description: section.description,
+          entries,
+        }
+      })
+      .filter((section) => section.entries.length > 0)
+  })
+  const usedDishIds = computed(() =>
+    Array.from(
+      new Set(
+        semanticSections.value.flatMap((section) =>
+          section.entries.map((entry) => entry.dishId)
+        )
+      )
+    )
+  )
+  const usedDishes = computed(() =>
+    usedDishIds.value
+      .map((id) => dishesById.value.get(id))
+      .filter((dish): dish is Dish => Boolean(dish))
+  )
+  const usedRecipeIds = computed(() =>
+    Array.from(
+      new Set(
+        usedDishes.value.flatMap((dish) => normalizeList(dish.recipe_ids))
+      )
+    )
+  )
+  const usedIngredientIds = computed(() =>
+    Array.from(
+      new Set(
+        usedDishes.value.flatMap((dish) => normalizeList(dish.ingredient_ids))
+      )
+    )
+  )
+  const minimalSource = (source: SemanticMenuJsonSource) => ({
+    id: source.id,
+    name: source.name,
+    names: source.names || {},
+  })
+  const prototypeMenuJson = computed(() => ({
+    route: {
+      slug: routeKitchenSlug.value,
+      menu_id: routeMenuId.value || null,
+      language: requestedLanguageCode.value,
+    },
+    firestore_paths: {
+      kitchen: kitchenId.value ? `kitchens/${kitchenId.value}` : '',
+      menus: kitchenId.value ? `kitchens/${kitchenId.value}/menus` : '',
+      dishes: kitchenId.value ? `kitchens/${kitchenId.value}/dishes` : '',
+      recipes: kitchenId.value ? `kitchens/${kitchenId.value}/recipes` : '',
+      ingredients: 'ingredients',
+    },
+    kitchen: resolvedKitchen.value
+      ? {
+          id: resolvedKitchen.value.id,
+          name: (resolvedKitchen.value as any).name || '',
+          slug: (resolvedKitchen.value as any).slug || '',
+          address:
+            (resolvedKitchen.value as any).short_address ||
+            (resolvedKitchen.value as any).formatted_address ||
+            '',
+        }
+      : null,
+    menu: menuView.selectedMenu.value || null,
+    sections: semanticSections.value,
+    dishes: usedDishes.value.map((dish) => ({
+      id: dish.id,
+      name: dish.name,
+      names: dish.names || {},
+      recipe_ids: dish.recipe_ids,
+      ingredient_ids: dish.ingredient_ids,
+    })),
+    recipes: usedRecipeIds.value
+      .map((id) => recipesById.value.get(id))
+      .filter((recipe): recipe is Recipe => Boolean(recipe))
+      .map(minimalSource),
+    ingredients: usedIngredientIds.value
+      .map((id) => ingredientsById.value.get(id))
+      .filter((ingredient): ingredient is Ingredient => Boolean(ingredient))
+      .map(minimalSource),
+  }))
 
   return {
     requestedMode,
     requestedModeLabel: menuView.requestedModeLabel,
     requestedTable,
     requestedCover,
+    requestedLanguageCode,
     routeKitchenSlug,
     routeKitchenId: routeKitchenSlug,
     routeMenuId,
@@ -179,6 +389,8 @@ export function useKitchenMenu() {
     kitchenAddress,
     menus,
     dishes,
+    recipes,
+    ingredients,
     currencyCode: menuView.currencyCode,
     sortedMenus: menuView.sortedMenus,
     activeMenus: menuView.activeMenus,
@@ -194,6 +406,8 @@ export function useKitchenMenu() {
     resolveMenuTo,
     resolveVariantLabel: menuView.resolveVariantLabel,
     formatPrice: menuView.formatPrice,
+    semanticSections,
+    prototypeMenuJson,
     headerTitle: menuView.headerTitle,
     headerDescription: menuView.headerDescription,
     backToKitchen,

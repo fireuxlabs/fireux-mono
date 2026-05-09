@@ -50,6 +50,8 @@ export type MenuSection = {
   description: string
   items: MenuSectionItem[]
   sort_order: number
+  render_excluded_ids?: string[]
+  render_excluded_terms?: string[]
   defaults?: Partial<MenuItemDefaults>
 }
 

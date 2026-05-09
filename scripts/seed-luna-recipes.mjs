@@ -10,6 +10,7 @@ import { parseArgs } from './_lib/args.mjs'
 const DEFAULT_PROJECT_ID = 'misebox-78f9c'
 const DEFAULT_SERVICE_ACCOUNT_PATH =
   'packages/ecosystem/fireux-misebox/src/config/firebase/service-account.json'
+const DEFAULT_DATABASE_ID = 'misebox'
 const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
 const LUNA_KITCHEN_ID = 'ChIJ93_ggY-jj0cRTCyLcfBuK2w'
 const SOURCE_LANGUAGE = 'en'
@@ -69,7 +70,7 @@ Usage:
 Options:
   --commit                         Write missing recipe docs.
   --project <id>                   Google/Firebase project id. Defaults to service-account project or misebox-78f9c.
-  --database <id>                  Firestore database id. Defaults to the default database.
+  --database <id>                  Firestore database id. Defaults to misebox.
   --service-account <path>         Service account JSON path.
   --kitchen <id>                   Kitchen doc id. Defaults to Luna Piccante.
   --kitchen-collection <path>      Kitchen collection path. Defaults to kitchens.
@@ -117,7 +118,9 @@ async function main() {
     args.project || process.env.FIREBASE_PROJECT_ID || account.project_id || DEFAULT_PROJECT_ID
   )
   const databaseId =
-    typeof args.database === 'string' ? normalizeString(args.database) : ''
+    typeof args.database === 'string'
+      ? normalizeString(args.database)
+      : DEFAULT_DATABASE_ID
   const kitchenId =
     typeof args.kitchen === 'string'
       ? normalizeString(args.kitchen)

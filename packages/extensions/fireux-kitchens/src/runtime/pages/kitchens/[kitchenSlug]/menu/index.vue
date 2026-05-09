@@ -1,9 +1,10 @@
 <template>
-  <KitchenPublicMenuDetailPage />
+  <MenuPreview :menu="kitchenMenu" />
 </template>
 
 <script setup lang="ts">
-import KitchenPublicMenuDetailPage from './[menuId].vue'
+import MenuPreview from '../../../../components/organisms/Menu/Preview.vue'
+import { useKitchenMenu } from '../../../../composables/fireux/app/useKitchenMenu'
 
 definePageMeta({
   layout: 'public-menu',
@@ -12,4 +13,6 @@ definePageMeta({
   head: { title: 'Kitchen Menu' },
   name: 'KitchenPublicMenuIndexPage',
 })
+
+const kitchenMenu = useKitchenMenu()
 </script>

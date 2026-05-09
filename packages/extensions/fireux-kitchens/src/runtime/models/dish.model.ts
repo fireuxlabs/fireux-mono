@@ -39,7 +39,7 @@ export const DishModel = {
 } as const
 
 export type Dish = {
-  [K in keyof typeof DishModel]: (typeof DishModel)[K]
+  -readonly [K in keyof typeof DishModel]: (typeof DishModel)[K]
 }
 
 export type DishCreateInput = Omit<Dish, 'created' | 'updated'>

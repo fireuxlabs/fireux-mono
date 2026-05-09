@@ -4,6 +4,7 @@ import { useDishCreate } from './mutations/useDishCreate'
 import { useDishUpdate } from './mutations/useDishUpdate'
 import { useDishDelete } from './mutations/useDishDelete'
 import { useDishInterface } from './utils/view/useDishInterface'
+import { resolveDishSemanticLine } from './utils/view/resolveDishSemanticLine'
 
 export {
   useDishCollection,
@@ -12,6 +13,7 @@ export {
   useDishUpdate,
   useDishDelete,
   useDishInterface,
+  resolveDishSemanticLine,
 }
 
 export function useDish() {

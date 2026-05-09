@@ -1,9 +1,9 @@
 <template>
-  <MenuQR :menu="kitchenMenu" />
+  <MenuPreview :menu="kitchenMenu" />
 </template>
 
 <script setup lang="ts">
-import MenuQR from '../../../../components/organisms/Menu/QR.vue'
+import MenuPreview from '../../../../components/organisms/Menu/Preview.vue'
 import { useKitchenMenu } from '../../../../composables/fireux/app/useKitchenMenu'
 
 definePageMeta({
