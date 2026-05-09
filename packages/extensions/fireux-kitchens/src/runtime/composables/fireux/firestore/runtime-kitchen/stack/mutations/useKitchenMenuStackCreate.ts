@@ -7,7 +7,6 @@ import { MenuModel, type Menu as MenuDoc } from '../../../../../../models/menu.m
 import {
   RecipeModel,
   type Recipe as RecipeDoc,
-  type RecipeIngredientLine,
 } from '../../../../../../models/recipe.model'
 import {
   resolveKitchenConsoleCollectionPath,
@@ -37,14 +36,12 @@ type RequiredIngredientKey = keyof typeof REQUIRED_INGREDIENTS
 
 function resolveRequiredIngredients(ingredients: Ingredient[]) {
   const idByName = new Map<string, string>()
-  const nameById = new Map<string, string>()
 
   for (const ingredient of ingredients) {
     const id = String(ingredient.id || '').trim()
     const name = String(ingredient.name || '').trim()
     if (!id || !name) continue
     idByName.set(normalize(name), id)
-    nameById.set(id, name)
   }
 
   const resolved = {} as Record<RequiredIngredientKey, string>
@@ -67,7 +64,7 @@ function resolveRequiredIngredients(ingredients: Ingredient[]) {
     resolved[key] = ingredientId
   }
 
-  return { resolved, missing, nameById }
+  return { resolved, missing }
 }
 
 export function useKitchenMenuStackCreate() {
@@ -92,24 +89,10 @@ export function useKitchenMenuStackCreate() {
         appId,
       })
 
-    const { resolved, missing, nameById } = resolveRequiredIngredients(ingredients ?? [])
+    const { resolved, missing } = resolveRequiredIngredients(ingredients ?? [])
     if (missing.length) {
       throw new Error(`Missing required ingredients: ${missing.join(', ')}`)
     }
-
-    const line = (
-      ingredientId: string,
-      quantity: number,
-      unit: string,
-      prep_note: string
-    ): RecipeIngredientLine => ({
-      id: `${ingredientId}-${quantity}-${unit}`,
-      ingredient_id: ingredientId,
-      ingredient_name: String(nameById.get(ingredientId) || ''),
-      quantity,
-      unit,
-      prep_note,
-    })
 
     const menuId = 'menu-starter-service'
     const dishIds = [
@@ -229,122 +212,34 @@ export function useKitchenMenuStackCreate() {
         ...RecipeModel,
         id: recipeIds[0],
         kitchen_id: resolvedKitchenId,
-        primary_dish_id: dishIds[0],
+        slug: recipeIds[0],
         name: 'Classic Cheeseburger v1',
         description: 'Single burger assembly workflow.',
-        workflow_status: 'active',
-        yield_qty: 1,
-        yield_unit: 'portion',
-        prep_minutes: 8,
-        cook_minutes: 8,
-        ingredient_lines: [
-          line(resolved.burgerBuns, 1, 'piece', 'Split and toast'),
-          line(resolved.beefPatty, 1, 'piece', 'Season and grill'),
-          line(resolved.americanCheese, 1, 'piece', 'Melt on patty'),
-          line(resolved.lettuce, 0.25, 'piece', 'Washed leaves'),
-          line(resolved.tomato, 0.5, 'piece', 'Slice'),
-          line(resolved.onion, 0.25, 'piece', 'Slice'),
-          line(resolved.ketchup, 15, 'ml', 'Bottle at pass'),
-        ],
-        steps: [
-          {
-            id: 'step-grill-patty',
-            order: 1,
-            title: 'Grill patty',
-            instruction: 'Cook beef patty and melt American cheese.',
-            minutes: 6,
-          },
-          {
-            id: 'step-toast-bun',
-            order: 2,
-            title: 'Toast bun',
-            instruction: 'Toast burger buns cut side down.',
-            minutes: 1,
-          },
-          {
-            id: 'step-assemble',
-            order: 3,
-            title: 'Assemble burger',
-            instruction: 'Build with sauce, produce, and patty; close and serve.',
-            minutes: 1,
-          },
-        ],
-        notes: 'Target ticket time: 8 minutes.',
-        tags: ['burger', 'service'],
+        source_language: 'en',
+        names: { en: 'Classic Cheeseburger v1' },
+        descriptions: { en: 'Single burger assembly workflow.' },
       },
       {
         ...RecipeModel,
         id: recipeIds[1],
         kitchen_id: resolvedKitchenId,
-        primary_dish_id: dishIds[1],
+        slug: recipeIds[1],
         name: 'Caprese Lemon Salad v1',
         description: 'Cold station salad build.',
-        workflow_status: 'active',
-        yield_qty: 1,
-        yield_unit: 'portion',
-        prep_minutes: 6,
-        cook_minutes: 0,
-        ingredient_lines: [
-          line(resolved.tomato, 2, 'piece', 'Slice wedges'),
-          line(resolved.mozzarella, 1, 'piece', 'Slice medallions'),
-          line(resolved.lemon, 0.5, 'piece', 'Juice to finish'),
-        ],
-        steps: [
-          {
-            id: 'step-prep-salad',
-            order: 1,
-            title: 'Prep ingredients',
-            instruction: 'Slice tomato and mozzarella evenly.',
-            minutes: 4,
-          },
-          {
-            id: 'step-plate-salad',
-            order: 2,
-            title: 'Plate and finish',
-            instruction: 'Layer slices and finish with lemon juice.',
-            minutes: 2,
-          },
-        ],
-        notes: 'Hold cold and plate to order.',
-        tags: ['salad', 'cold'],
+        source_language: 'en',
+        names: { en: 'Caprese Lemon Salad v1' },
+        descriptions: { en: 'Cold station salad build.' },
       },
       {
         ...RecipeModel,
         id: recipeIds[2],
         kitchen_id: resolvedKitchenId,
-        primary_dish_id: dishIds[2],
+        slug: recipeIds[2],
         name: 'Cheddar Onion Melt v1',
         description: 'Cheddar burger variation with onions.',
-        workflow_status: 'active',
-        yield_qty: 1,
-        yield_unit: 'portion',
-        prep_minutes: 6,
-        cook_minutes: 8,
-        ingredient_lines: [
-          line(resolved.burgerBuns, 1, 'piece', 'Split and toast'),
-          line(resolved.beefPatty, 1, 'piece', 'Season and grill'),
-          line(resolved.cheddar, 1, 'piece', 'Melt on patty'),
-          line(resolved.onion, 0.5, 'piece', 'Slice thin'),
-          line(resolved.ketchup, 10, 'ml', 'Apply to bun'),
-        ],
-        steps: [
-          {
-            id: 'step-cook-patty',
-            order: 1,
-            title: 'Cook patty',
-            instruction: 'Grill patty and melt cheddar.',
-            minutes: 6,
-          },
-          {
-            id: 'step-build-melt',
-            order: 2,
-            title: 'Build melt',
-            instruction: 'Toast bun, add onion and ketchup, then close burger.',
-            minutes: 2,
-          },
-        ],
-        notes: 'Onion can be served raw or lightly griddled.',
-        tags: ['burger', 'grill'],
+        source_language: 'en',
+        names: { en: 'Cheddar Onion Melt v1' },
+        descriptions: { en: 'Cheddar burger variation with onions.' },
       },
     ]
 

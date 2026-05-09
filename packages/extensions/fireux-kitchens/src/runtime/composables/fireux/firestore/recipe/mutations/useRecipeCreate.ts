@@ -1,9 +1,11 @@
+import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { useTranslationSeed } from 'fireux-translation/runtime/useTranslationSeed'
 import { computed, unref, type Ref } from 'vue'
 import {
-  RecipeModel,
   type RecipeCreateInput,
   type Recipe as RecipeDoc,
 } from '../../../../../models/recipe.model'
@@ -13,24 +15,66 @@ import { useKitchenSelection } from '../../../app/kitchen-console/useKitchenSele
 type RecipeCreateDraft = {
   name: string
   description?: string
+  names?: unknown
+  descriptions?: unknown
+}
+
+type RecipeCreateOptions = {
+  languageCodes?: string[]
+  sourceLanguage?: string
+  translate?: boolean
+}
+
+export type RecipeCreateResult = {
+  id: string
+  failedLanguages: string[]
 }
 
 const trim = (value: unknown) => String(value || '').trim()
 
-function buildRecipePayload(
+async function buildRecipePayload(
+  recipeId: string,
   draft: RecipeCreateDraft,
-  kitchenId: string
-): RecipeCreateInput {
+  kitchenId: string,
+  seedTranslations: ReturnType<typeof useTranslationSeed>['seedTranslations'],
+  options: RecipeCreateOptions
+): Promise<{ payload: RecipeCreateInput; failedLanguages: string[] }> {
   const name = trim(draft.name)
+  const description = trim(draft.description)
+  const nameSeed = await seedTranslations({
+    text: name,
+    sourceLanguage: options.sourceLanguage,
+    languageCodes: options.languageCodes,
+    existingText: draft.names,
+    translate: options.translate,
+  })
+  const descriptionSeed = description
+    ? await seedTranslations({
+        text: description,
+        sourceLanguage: nameSeed.sourceLanguage,
+        languageCodes: options.languageCodes,
+        existingText: draft.descriptions,
+        translate: options.translate,
+      })
+    : null
 
   return {
-    ...RecipeModel,
-    name,
-    slug: normalizeSlug(name),
-    description: trim(draft.description),
-    kitchen_id: kitchenId,
-    created: RecipeModel.created,
-    updated: RecipeModel.updated,
+    failedLanguages: Array.from(
+      new Set([
+        ...nameSeed.failedLanguages,
+        ...(descriptionSeed?.failedLanguages ?? []),
+      ])
+    ),
+    payload: {
+      id: recipeId,
+      name,
+      slug: recipeId,
+      description,
+      source_language: nameSeed.sourceLanguage,
+      names: nameSeed.text,
+      descriptions: descriptionSeed?.text ?? {},
+      kitchen_id: kitchenId,
+    },
   }
 }
 
@@ -40,9 +84,11 @@ export function useRecipeCreate(
     databaseId?: string | Ref<string | null | undefined>
   } = {}
 ) {
-  const { createDocument } = useFirestoreCreate({ databaseId: options.databaseId })
+  const { setDocument } = useFirestoreCreate({ databaseId: options.databaseId })
+  const db = useFirestore(options.databaseId)
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenSelection()
+  const { seedTranslations } = useTranslationSeed()
 
   const kitchenCollectionPath = computed(() =>
     trim(unref(options.kitchenCollectionPath)) ||
@@ -51,21 +97,39 @@ export function useRecipeCreate(
 
   const createRecipe = async (
     draft: RecipeCreateDraft,
-    overrides: { kitchenId?: string } = {}
-  ) => {
+    overrides: { kitchenId?: string } = {},
+    createOptions: RecipeCreateOptions = {}
+  ): Promise<RecipeCreateResult> => {
     const kitchenId = trim(overrides.kitchenId || selectedId.value)
     if (!kitchenId) throw new Error('Kitchen id is required')
 
     const name = trim(draft.name)
     if (!name) throw new Error('Recipe name is required')
 
-    const payload = buildRecipePayload(draft, kitchenId)
-    const collectionPath = `${kitchenCollectionPath.value}/${kitchenId}/recipes`
+    const recipeId = normalizeSlug(name)
+    if (!recipeId) throw new Error('Unable to resolve recipe id')
 
-    return createDocument<RecipeDoc>(collectionPath, payload as RecipeDoc, {
+    const collectionPath = `${kitchenCollectionPath.value}/${kitchenId}/recipes`
+    const recipeRef = doc(db, collectionPath, recipeId)
+    const recipeSnap = await getDoc(recipeRef)
+    if (recipeSnap.exists()) {
+      throw new Error('Recipe already exists')
+    }
+
+    const { payload, failedLanguages } = await buildRecipePayload(
+      recipeId,
+      draft,
+      kitchenId,
+      seedTranslations,
+      createOptions
+    )
+
+    await setDocument<RecipeDoc>(collectionPath, recipeId, payload as RecipeDoc, {
       app: true,
       creator: true,
     })
+
+    return { id: recipeId, failedLanguages }
   }
 
   return { createRecipe }

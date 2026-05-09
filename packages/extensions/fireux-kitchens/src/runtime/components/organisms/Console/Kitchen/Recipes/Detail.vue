@@ -113,7 +113,10 @@ import { computed, reactive, ref, watch } from 'vue'
 import { useKitchenConsoleRecipe } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleRecipe'
 import { useRecipeDelete } from '../../../../../composables/fireux/firestore/recipe/mutations/useRecipeDelete'
 import { useRecipeUpdate } from '../../../../../composables/fireux/firestore/recipe/mutations/useRecipeUpdate'
-import type { Recipe } from '../../../../../models/recipe.model'
+import {
+  normalizeTranslatedText,
+  type Recipe,
+} from '../../../../../models/recipe.model'
 
 const {
   recipe,
@@ -149,6 +152,8 @@ const form = reactive({
 })
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
+const normalizeLanguageCode = (value: unknown) =>
+  normalizeString(value).replace(/_/g, '-')
 
 const buildSignature = () =>
   JSON.stringify({
@@ -185,11 +190,27 @@ const saveRecipe = async () => {
   saveMessage.value = ''
 
   try {
+    const sourceLanguage =
+      normalizeLanguageCode(recipe.value.source_language) || 'en'
+    const names = normalizeTranslatedText(recipe.value.names)
+    const descriptions = normalizeTranslatedText(recipe.value.descriptions)
+    names[sourceLanguage] = name
+
+    const description = normalizeString(form.description)
+    if (description) {
+      descriptions[sourceLanguage] = description
+    } else {
+      delete descriptions[sourceLanguage]
+    }
+
     await updateRecipe(
       recipeId.value,
       {
         name,
-        description: normalizeString(form.description),
+        description,
+        source_language: sourceLanguage,
+        names,
+        descriptions,
       },
       { kitchenId: kitchenId.value }
     )

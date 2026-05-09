@@ -2,26 +2,16 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { computed, unref, type Ref } from 'vue'
 import {
-  normalizeLocalizedText,
-  type LocaleCode,
+  normalizeTranslatedText,
   type Recipe,
   type RecipeUpdateInput,
-  type RecipeType,
 } from '../../../../../models/recipe.model'
 import { resolveKitchenConsoleCollectionPath } from '../../../app/kitchen-console/shared'
 import { useKitchenSelection } from '../../../app/kitchen-console/useKitchenSelection'
 
 const trim = (value: unknown) => String(value || '').trim()
 const optional = (value: unknown) => trim(value) || undefined
-
-const oneOf = <T extends string>(
-  value: unknown,
-  allowed: readonly T[],
-  fallback: T
-): T => {
-  const resolved = trim(value) as T
-  return allowed.includes(resolved) ? resolved : fallback
-}
+const normalizeLanguageCode = (value: unknown) => optional(value)?.replace(/_/g, '-')
 
 export function useRecipeUpdate(
   options: {
@@ -50,23 +40,17 @@ export function useRecipeUpdate(
     if (!kitchenId) throw new Error('Kitchen id is required')
 
     const next: Partial<Recipe> & Record<string, unknown> = { ...patch }
-    const defaultLocale = oneOf<LocaleCode>(
-      next.default_locale,
-      ['it', 'de', 'en', 'fr'],
-      'en'
-    )
 
     if ('name' in next) next.name = trim(next.name)
     if ('slug' in next) next.slug = optional(next.slug) || ''
-    if ('recipe_type' in next) {
-      next.recipe_type = oneOf<RecipeType>(next.recipe_type, ['prep', 'service'], 'prep')
+    if ('description' in next) next.description = trim(next.description)
+    if ('source_language' in next) {
+      next.source_language = normalizeLanguageCode(next.source_language) || ''
     }
-    if ('default_locale' in next) next.default_locale = defaultLocale
-    if ('names' in next) next.names = normalizeLocalizedText(next.names, defaultLocale)
+    if ('names' in next) next.names = normalizeTranslatedText(next.names)
     if ('descriptions' in next) {
-      next.descriptions = normalizeLocalizedText(next.descriptions, defaultLocale)
+      next.descriptions = normalizeTranslatedText(next.descriptions)
     }
-    if ('notes' in next) next.notes = trim(next.notes)
 
     const collectionPath = `${kitchenCollectionPath.value}/${kitchenId}/recipes`
     await updateDocument<Recipe>(collectionPath, resolvedRecipeId, next)

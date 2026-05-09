@@ -93,7 +93,7 @@ const addRecipe = async () => {
   message.value = ''
 
   try {
-    await createRecipe(
+    const result = await createRecipe(
       {
         name: recipeName,
         description: normalizeString(description.value),
@@ -103,7 +103,16 @@ const addRecipe = async () => {
     name.value = ''
     description.value = ''
     message.value = `Created ${recipeName}.`
-    toast.add({ title: 'Recipe created', icon: 'i-heroicons-check-circle' })
+    if (result.failedLanguages.length) {
+      toast.add({
+        title: 'Recipe created with translation gaps',
+        description: `Failed languages: ${result.failedLanguages.join(', ')}`,
+        color: 'amber',
+        icon: 'i-heroicons-exclamation-triangle',
+      })
+    } else {
+      toast.add({ title: 'Recipe created', icon: 'i-heroicons-check-circle' })
+    }
   } catch (error) {
     const errorMessage = String((error as any)?.message || error || 'Create recipe failed.')
     message.value = errorMessage

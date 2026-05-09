@@ -22,31 +22,21 @@ export namespace RecipeCard {
 export function useRecipeInterface() {
   function map(recipe: Recipe): RecipeCard.Card {
     const id = safeString(recipe.id).trim()
-    const title =
-      safeString(recipe.published_summary?.title).trim() ||
-      safeString(recipe.name).trim() ||
-      'Untitled recipe'
-    const status = safeString(recipe.workflow_status).trim() || 'draft'
-    const visibility = safeString(recipe.visibility).trim()
-    const protection = safeString(recipe.protection_level).trim()
-    const recipeType = safeString(recipe.recipe_type).trim()
-    const subtitle = [recipeType, visibility].filter(Boolean).join(' · ')
-    const badges = [status, protection === 'standard' ? '' : protection].filter(
-      Boolean
-    )
+    const title = safeString(recipe.name).trim()
+    const summary = safeString(recipe.description).trim()
 
     return {
       id,
-      to: id ? `/console/kitchen/recipes/${encodeURIComponent(id)}` : '',
-      avatarUrl: safeString(recipe.published_summary?.hero_image_url).trim(),
-      imageUrl: safeString(recipe.published_summary?.hero_image_url).trim(),
-      subtitle,
-      meta: subtitle,
+      to: `/console/kitchen/recipes/${encodeURIComponent(id)}`,
+      avatarUrl: '',
+      imageUrl: '',
+      subtitle: summary,
+      meta: summary,
       title,
-      status,
-      badges,
-      summary: safeString(recipe.description).trim(),
-      prop: safeString(recipe.description).trim(),
+      status: '',
+      badges: [],
+      summary,
+      prop: summary,
     }
   }
 
