@@ -21,6 +21,25 @@ const normalizeIdList = (value) =>
   Array.isArray(value)
     ? Array.from(new Set(value.map((entry) => normalizeString(entry)).filter(Boolean)))
     : []
+const normalizeMenuPlacements = (value) => {
+  if (!Array.isArray(value)) return []
+
+  const seen = new Set()
+  const placements = []
+  for (const entry of value) {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) continue
+    const menuId = normalizeString(entry.menu_id)
+    const sectionId = normalizeString(entry.section_id)
+    if (!menuId || !sectionId) continue
+
+    const key = `${menuId}:${sectionId}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    placements.push({ menu_id: menuId, section_id: sectionId })
+  }
+
+  return placements
+}
 
 function findMonorepoRoot(startDir) {
   let dir = startDir
@@ -147,7 +166,6 @@ function validateSeed(seed) {
   const dishes = Array.isArray(seed.dishes) ? seed.dishes : []
   const sections = Array.isArray(seed.sections) ? seed.sections : []
   const ingredientIds = new Set(ingredients.map((entry) => normalizeString(entry.id)).filter(Boolean))
-  const recipeIds = new Set(recipes.map((entry) => normalizeString(entry.id)).filter(Boolean))
   const miseIds = new Set(mise.map((entry) => normalizeString(entry.id)).filter(Boolean))
   const dishIds = new Set(dishes.map((entry) => normalizeString(entry.id)).filter(Boolean))
 
@@ -164,12 +182,6 @@ function validateSeed(seed) {
 
   for (const dish of dishes) {
     const dishId = normalizeString(dish.id)
-    for (const recipeId of normalizeIdList(dish.recipe_ids)) {
-      if (!recipeIds.has(recipeId)) {
-        errors.push(`dish ${dishId} references unknown recipe ${recipeId}`)
-      }
-    }
-
     for (const miseId of normalizeIdList(dish.mise_ids)) {
       if (!miseIds.has(miseId)) {
         errors.push(`dish ${dishId} references unknown mise ${miseId}`)
@@ -328,15 +340,13 @@ function buildDishPayload(dish, seed, kitchenId, snap) {
   const language = sourceLanguage(seed)
   const description = normalizeString(dish.description)
   const existing = snap?.exists ? snap.data() || {} : {}
-  const seededRecipeIds = normalizeIdList(dish.recipe_ids)
   const seededMiseIds = normalizeIdList(dish.mise_ids)
   const seededIngredientIds = normalizeIdList(dish.ingredient_ids)
-  const recipeIds = seededRecipeIds.length ? seededRecipeIds : normalizeIdList(existing.recipe_ids)
   const miseIds = seededMiseIds.length ? seededMiseIds : normalizeIdList(existing.mise_ids)
   const ingredientIds = seededIngredientIds.length
     ? seededIngredientIds
     : normalizeIdList(existing.ingredient_ids)
-  const hasComponentMapping = recipeIds.length || miseIds.length || ingredientIds.length
+  const hasComponentMapping = miseIds.length || ingredientIds.length
   const payload = {
     id: dish.id,
     name: dish.name,
@@ -347,7 +357,8 @@ function buildDishPayload(dish, seed, kitchenId, snap) {
       [language]: dish.name,
     },
     descriptions: description ? { [language]: description } : {},
-    recipe_ids: recipeIds,
+    translated: dish.translated === true,
+    menu_placements: normalizeMenuPlacements(dish.menu_placements),
     mise_ids: miseIds,
     ingredient_ids: ingredientIds,
     kitchen_id: kitchenId,

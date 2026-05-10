@@ -1,14 +1,14 @@
-import type { Ingredient } from '../../../../../../models/ingredient.model'
-import type { KitchenMiseTask } from '../../../../../../models/kitchen-mise.model'
-import type { Recipe } from '../../../../../../models/recipe.model'
 import type { Dish } from '../../../../../../models/dish.model'
 
-type SemanticSource = Pick<Recipe | Ingredient, 'id' | 'name' | 'names'> &
-  Partial<Pick<KitchenMiseTask, 'title'>>
+type SemanticSource = {
+  id: string
+  name?: string
+  names?: Partial<Record<string, string>>
+  title?: string
+}
 
 export type ResolveDishSemanticLineInput = {
-  dish: Pick<Dish, 'recipe_ids' | 'mise_ids' | 'ingredient_ids'> | null | undefined
-  recipes?: SemanticSource[]
+  dish: Pick<Dish, 'mise_ids' | 'ingredient_ids'> | null | undefined
   mise?: SemanticSource[]
   ingredients?: SemanticSource[]
   languageCode?: string
@@ -54,7 +54,6 @@ export function resolveDishSemanticLine(input: ResolveDishSemanticLineInput) {
   const excludedTerms = new Set(
     normalizeIdList(input.excludedTerms).map((term) => normalizeComparable(term))
   )
-  const recipesById = sourceMap(input.recipes)
   const miseById = sourceMap(input.mise)
   const ingredientsById = sourceMap(input.ingredients)
 
@@ -67,9 +66,6 @@ export function resolveDishSemanticLine(input: ResolveDishSemanticLineInput) {
     names.push(name)
   }
 
-  normalizeIdList(dish.recipe_ids).forEach((id) => {
-    pushSource(id, recipesById.get(id))
-  })
   normalizeIdList(dish.mise_ids).forEach((id) => {
     pushSource(id, miseById.get(id))
   })

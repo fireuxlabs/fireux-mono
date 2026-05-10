@@ -1,16 +1,17 @@
 <template>
   <div class="space-y-6">
+    <OrganismsConsoleKitchenDishesPreview
+      :collection="dishes"
+      :menu-usage-by-dish-id="menuUsageByDishId"
+      :semantic-preview-by-dish-id="semanticPreviewByDishId"
+    />
+
     <OrganismsDishCollectionManager
       :collection="dishes"
       :sections="sections"
       title="Dishes"
       description="Browse dishes for the selected kitchen."
       :link="true"
-    />
-
-    <OrganismsConsoleKitchenDishesPreview
-      :collection="dishes"
-      :menu-usage-by-dish-id="menuUsageByDishId"
     />
 
     <DevFireuxDebugPanel
@@ -25,6 +26,12 @@
 <script setup lang="ts">
 import { useKitchenConsoleDishes } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleDishes'
 
-const { dishes, sections, menuUsageByDishId, debug } = useKitchenConsoleDishes()
+const {
+  dishes,
+  sections,
+  menuUsageByDishId,
+  semanticPreviewByDishId,
+  debug,
+} = useKitchenConsoleDishes()
 const isDev = import.meta.dev
 </script>

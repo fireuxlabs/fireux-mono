@@ -10,14 +10,8 @@
       Back to menus
     </UButton>
 
-    <OrganismsConsoleKitchenMenusWrite
-      v-if="canWrite"
-      :menu-id="menuId"
-      detail-mode
-    />
-
     <MenuProfile
-      v-else-if="menu"
+      v-if="menu"
       :menu="menu"
       :dishes="dishes"
     />
@@ -33,6 +27,22 @@
           : `No menu was found for ${menuId || 'this route'}.`
       "
     />
+
+    <details
+      v-if="canWrite && menu"
+      class="rounded-lg border border-default p-4"
+    >
+      <summary class="cursor-pointer select-none text-sm font-semibold text-highlighted">
+        Edit
+      </summary>
+
+      <div class="mt-4">
+        <OrganismsConsoleKitchenMenusWrite
+          :menu-id="menuId"
+          detail-mode
+        />
+      </div>
+    </details>
 
     <DevFireuxDebugPanel
       v-if="isDev"

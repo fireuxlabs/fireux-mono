@@ -46,10 +46,6 @@
           >
             <h3 class="text-lg font-semibold">{{ entry.name }}</h3>
             <p class="mt-2 text-sm text-[#36473b]">
-              <span class="font-medium text-[#17201a]">Recipes:</span>
-              {{ formatNames(entry.recipe_names) }}
-            </p>
-            <p class="mt-1 text-sm text-[#36473b]">
               <span class="font-medium text-[#17201a]">Mise:</span>
               {{ formatNames(entry.mise_names) }}
             </p>
@@ -87,10 +83,8 @@ type PrototypeMenuEntry = {
   dish_id: string
   name: string
   semantic_line: string
-  recipe_names?: string[]
   mise_names?: string[]
   ingredient_names?: string[]
-  missing_recipe_ids?: string[]
   missing_mise_ids?: string[]
   missing_ingredient_ids?: string[]
   integrity_note?: string
@@ -138,7 +132,6 @@ const formatNames = (names?: string[]) =>
   Array.isArray(names) && names.length ? names.join(', ') : '—'
 const missingLabel = (entry: PrototypeMenuEntry) => {
   const missing = [
-    ...(entry.missing_recipe_ids || []).map((id) => `recipe:${id}`),
     ...(entry.missing_mise_ids || []).map((id) => `mise:${id}`),
     ...(entry.missing_ingredient_ids || []).map((id) => `ingredient:${id}`),
   ]
@@ -152,7 +145,6 @@ const copyText = computed(() => {
     lines.push(section.label)
     for (const entry of section.entries) {
       lines.push(entry.name)
-      lines.push(`Recipes: ${formatNames(entry.recipe_names)}`)
       lines.push(`Mise: ${formatNames(entry.mise_names)}`)
       lines.push(`Ingredients: ${formatNames(entry.ingredient_names)}`)
       if (entry.integrity_note) lines.push(`Integrity: ${entry.integrity_note}`)

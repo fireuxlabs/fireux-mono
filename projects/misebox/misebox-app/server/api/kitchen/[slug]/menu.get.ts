@@ -148,7 +148,6 @@ const sourceName = (source: SourceDoc | undefined, languageCode: string) => {
 
 function resolveSemanticLine(options: {
   dish: Record<string, unknown>
-  recipesById: Map<string, SourceDoc>
   miseById: Map<string, SourceDoc>
   ingredientsById: Map<string, SourceDoc>
   languageCode: string
@@ -166,9 +165,6 @@ function resolveSemanticLine(options: {
     names.push(name)
   }
 
-  normalizeList(options.dish.recipe_ids).forEach((id) =>
-    pushSource(id, options.recipesById.get(id))
-  )
   normalizeList(options.dish.mise_ids).forEach((id) =>
     pushSource(id, options.miseById.get(id))
   )
@@ -281,7 +277,6 @@ export default defineEventHandler(async (event) => {
   const menu = { id: menuSnap.id, ...(menuSnap.data() || {}) } as Record<string, unknown>
   const rawSections = Array.isArray(menu.sections) ? menu.sections : []
   const menuDishIds = normalizeList(menu.dish_ids)
-  const menuRecipeIds = normalizeList(menu.recipe_ids)
   const menuMiseIds = normalizeList(menu.mise_ids)
   const menuIngredientIds = normalizeList(menu.ingredient_ids)
   const dishIds = Array.from(
@@ -300,12 +295,6 @@ export default defineEventHandler(async (event) => {
   )
   const dishes = await fetchDocsById(kitchenRef.collection('dishes'), dishIds)
   const dishesById = new Map(dishes.map((dish) => [dish.id, dish]))
-  const recipeIds = Array.from(
-    new Set([
-      ...menuRecipeIds,
-      ...dishes.flatMap((dish) => normalizeList((dish as Record<string, unknown>).recipe_ids)),
-    ])
-  )
   const miseIds = Array.from(
     new Set([
       ...menuMiseIds,
@@ -322,10 +311,8 @@ export default defineEventHandler(async (event) => {
       ]
     )
   )
-  const recipes = await fetchDocsById(kitchenRef.collection('recipes'), recipeIds)
   const mise = await fetchDocsById(kitchenRef.collection('mise'), miseIds)
   const ingredients = await fetchDocsById(db.collection('ingredients'), ingredientIds)
-  const recipesById = new Map(recipes.map((recipe) => [recipe.id, recipe]))
   const miseById = new Map(mise.map((item) => [item.id, item]))
   const ingredientsById = new Map(ingredients.map((ingredient) => [ingredient.id, ingredient]))
   const sections = rawSections
@@ -349,14 +336,8 @@ export default defineEventHandler(async (event) => {
           const dishId = normalizeString(item.dish_id)
           const dish = dishesById.get(dishId)
           if (!dish) return null
-          const recipeIds = normalizeList((dish as Record<string, unknown>).recipe_ids)
           const miseIds = normalizeList((dish as Record<string, unknown>).mise_ids)
           const ingredientIds = normalizeList((dish as Record<string, unknown>).ingredient_ids)
-          const resolvedRecipes = resolveComponentNames({
-            ids: recipeIds,
-            sourcesById: recipesById,
-            languageCode,
-          })
           const resolvedMise = resolveComponentNames({
             ids: miseIds,
             sourcesById: miseById,
@@ -372,18 +353,14 @@ export default defineEventHandler(async (event) => {
             id: normalizeString(item.id),
             dish_id: dishId,
             name: sourceName(dish, languageCode),
-            recipe_ids: recipeIds,
             mise_ids: miseIds,
             ingredient_ids: ingredientIds,
-            recipe_names: resolvedRecipes.names,
             mise_names: resolvedMise.names,
             ingredient_names: resolvedIngredients.names,
-            missing_recipe_ids: resolvedRecipes.missingIds,
             missing_mise_ids: resolvedMise.missingIds,
             missing_ingredient_ids: resolvedIngredients.missingIds,
             semantic_line: resolveSemanticLine({
               dish,
-              recipesById,
               miseById,
               ingredientsById,
               languageCode,
@@ -417,7 +394,6 @@ export default defineEventHandler(async (event) => {
       menus: menusRef.path,
       menu: menuSnap.ref.path,
       dishes: kitchenRef.collection('dishes').path,
-      recipes: kitchenRef.collection('recipes').path,
       mise: kitchenRef.collection('mise').path,
       ingredients: 'ingredients',
     },
@@ -430,7 +406,6 @@ export default defineEventHandler(async (event) => {
     menu,
     sections,
     dishes,
-    recipes,
     mise,
     ingredients,
   })

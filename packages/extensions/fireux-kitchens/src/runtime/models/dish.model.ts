@@ -10,11 +10,17 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Owner app scope: Kitchen
  *
  * Dish is the first guest-facing semantic composition layer. It links to
- * future recipe/method cards, kitchen-owned mise/prep components, and
- * root/shared ingredients by id. Steps, allergens, pricing, stock, images,
- * and service workflow are not active on the Dish model yet.
+ * kitchen-owned mise/prep components and root/shared ingredients by id.
+ * Recipe/method cards can live behind mise/prep items later; they are not
+ * active Dish semantics. Steps, allergens, pricing, stock, images, and
+ * service workflow are not active on the Dish model yet.
  */
 export type DishTranslatedText = Partial<Record<string, string>>
+
+export type DishMenuPlacement = {
+  menu_id: string
+  section_id: string
+}
 
 export const DishModel = {
   id: '' as string,
@@ -24,7 +30,8 @@ export const DishModel = {
   source_language: '' as string,
   names: {} as DishTranslatedText,
   descriptions: {} as DishTranslatedText,
-  recipe_ids: [] as string[],
+  translated: false as boolean,
+  menu_placements: [] as DishMenuPlacement[],
   mise_ids: [] as string[],
   ingredient_ids: [] as string[],
   kitchen_id: '' as string,
@@ -56,6 +63,31 @@ export function normalizeDishStringArray(value: unknown): string[] {
   return Array.from(
     new Set(value.map((entry) => pickString(entry)).filter(Boolean))
   )
+}
+
+export function normalizeDishMenuPlacements(value: unknown): DishMenuPlacement[] {
+  if (!Array.isArray(value)) return []
+
+  const seen = new Set<string>()
+  const placements: DishMenuPlacement[] = []
+
+  for (const entry of value) {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) continue
+    const source = entry as Record<string, unknown>
+    const menuId = pickString(source.menu_id)
+    const sectionId = pickString(source.section_id)
+    if (!menuId || !sectionId) continue
+
+    const key = `${menuId}:${sectionId}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    placements.push({
+      menu_id: menuId,
+      section_id: sectionId,
+    })
+  }
+
+  return placements
 }
 
 export function normalizeDishTranslatedText(value: unknown): DishTranslatedText {
@@ -94,7 +126,8 @@ export function normalizeDish(value: unknown): Dish {
     source_language: pickString(source.source_language),
     names: normalizeDishTranslatedText(source.names),
     descriptions: normalizeDishTranslatedText(source.descriptions),
-    recipe_ids: normalizeDishStringArray(source.recipe_ids),
+    translated: source.translated === true,
+    menu_placements: normalizeDishMenuPlacements(source.menu_placements),
     mise_ids: normalizeDishStringArray(source.mise_ids),
     ingredient_ids: normalizeDishStringArray(source.ingredient_ids),
     kitchen_id: pickString(source.kitchen_id),

@@ -513,6 +513,7 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useTranslationSeed } from 'fireux-translation/runtime/useTranslationSeed'
 import { deleteDoc, doc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { computed, reactive, ref, watch } from 'vue'
 import { useKitchenConsoleMenus } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMenus'
@@ -582,6 +583,7 @@ const {
 const { appId } = useFireUXConfig()
 const resolveDb = useFirestoreResolver(databaseId)
 const toast = useToastify()
+const { seedTranslations } = useTranslationSeed()
 const isDev = import.meta.dev
 
 const selectedMenuId = ref('')
@@ -605,6 +607,7 @@ const newSection = reactive({
 })
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
+const normalizeLanguageCode = (value: unknown) => normalizeString(value).replace(/_/g, '-')
 const normalizeCurrency = (value: unknown) =>
   normalizeString(value).toUpperCase() || 'CHF'
 const nextLocalKey = (prefix: string) => `${prefix}-${Date.now()}-${localCounter++}`
@@ -663,6 +666,30 @@ const menusSorted = computed(() => sortedByOrder(menus.value))
 const kitchenCurrencyCode = computed(() =>
   normalizeCurrency((selectedKitchen.value as Record<string, unknown> | null)?.currency_code)
 )
+const menuSourceLanguage = computed(() => {
+  const settings = (selectedKitchen.value as Record<string, unknown> | null)
+    ?.language_settings as Record<string, unknown> | undefined
+  return normalizeLanguageCode(settings?.default_language) || 'de'
+})
+const menuLanguageCodes = computed(() => {
+  const settings = (selectedKitchen.value as Record<string, unknown> | null)
+    ?.language_settings as Record<string, unknown> | undefined
+  const sourceLanguage = menuSourceLanguage.value
+  const rawCodes = Array.isArray(settings?.supported_languages)
+    ? settings.supported_languages
+    : []
+  const seen = new Set<string>()
+  const codes: string[] = []
+
+  for (const value of [sourceLanguage, ...rawCodes]) {
+    const code = normalizeLanguageCode(value)
+    if (!code || seen.has(code)) continue
+    seen.add(code)
+    codes.push(code)
+  }
+
+  return codes.length ? codes : [sourceLanguage]
+})
 const routeMenuId = computed(() => normalizeString(props.menuId))
 const selectedMenu = computed(
   () =>
@@ -969,6 +996,63 @@ function draftToPatch(source: MenuDraft): Partial<Menu> {
   }
 }
 
+async function buildMenuTranslationPatch(source: {
+  name: unknown
+  description?: unknown
+}) {
+  const name = normalizeString(source.name)
+  const description = normalizeString(source.description)
+  const sourceLanguage = menuSourceLanguage.value
+  const languageCodes = menuLanguageCodes.value
+  const nameSeed = await seedTranslations({
+    text: name,
+    sourceLanguage,
+    languageCodes,
+    translate: true,
+  })
+  const descriptionSeed = description
+    ? await seedTranslations({
+        text: description,
+        sourceLanguage: nameSeed.sourceLanguage,
+        languageCodes,
+        translate: true,
+      })
+    : null
+
+  return {
+    source_language: nameSeed.sourceLanguage,
+    names: nameSeed.text,
+    descriptions: descriptionSeed?.text ?? {},
+    failedLanguages: Array.from(
+      new Set([
+        ...nameSeed.failedLanguages,
+        ...(descriptionSeed?.failedLanguages ?? []),
+      ])
+    ),
+  }
+}
+
+function savedToast(
+  title: string,
+  failedLanguages: string[],
+  fallbackMessage: string
+) {
+  if (!failedLanguages.length) {
+    message.value = fallbackMessage
+    toast.add({ title, icon: 'i-heroicons-check-circle' })
+    return
+  }
+
+  const failed = failedLanguages.join(', ')
+  message.value = `${fallbackMessage} Translation failed for: ${failed}.`
+  toast.add({
+    title,
+    description: `Translation failed for: ${failed}`,
+    color: 'amber',
+    icon: 'i-heroicons-exclamation-triangle',
+  })
+}
+
 function formatDraftPrice(value: unknown) {
   return new Intl.NumberFormat('de-CH', {
     style: 'currency',
@@ -1000,10 +1084,16 @@ async function createMenu() {
 
     const user = await useRequireUser()
     const stamp = serverTimestamp()
+    const translated = await buildMenuTranslationPatch({
+      name: newMenu.name,
+      description: '',
+    })
+    const { failedLanguages, ...translatedFields } = translated
     const payload: Partial<Menu> = {
       kitchen_id: kitchenId.value,
       name: normalizeString(newMenu.name),
       description: '',
+      ...translatedFields,
       active: newMenu.active,
       defaults: {
         active: true,
@@ -1027,7 +1117,7 @@ async function createMenu() {
     await setDoc(doc(resolveDb(), collectionPath.value, id), payload)
     selectedMenuId.value = id
     resetNewMenu()
-    toast.add({ title: 'Menu created', icon: 'i-heroicons-check-circle' })
+    savedToast('Menu created', failedLanguages, 'Created.')
   } catch (error) {
     const description = error instanceof Error ? error.message : 'Please try again.'
     message.value = description
@@ -1050,9 +1140,16 @@ async function saveDraft() {
 
   try {
     const user = await useRequireUser()
+    const patch = draftToPatch(draft.value)
+    const translated = await buildMenuTranslationPatch({
+      name: patch.name,
+      description: patch.description,
+    })
+    const { failedLanguages, ...translatedFields } = translated
     const payload: Partial<Menu> = {
       kitchen_id: kitchenId.value,
-      ...draftToPatch(draft.value),
+      ...patch,
+      ...translatedFields,
       updated: {
         at: serverTimestamp() as any,
         by: user.uid,
@@ -1064,8 +1161,7 @@ async function saveDraft() {
       payload,
       { merge: true }
     )
-    message.value = 'Saved.'
-    toast.add({ title: 'Menu saved', icon: 'i-heroicons-check-circle' })
+    savedToast('Menu saved', failedLanguages, 'Saved.')
   } catch (error) {
     const description = error instanceof Error ? error.message : 'Please try again.'
     message.value = description

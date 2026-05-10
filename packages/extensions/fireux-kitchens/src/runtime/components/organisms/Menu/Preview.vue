@@ -65,11 +65,8 @@
             class="border-t border-[#cfdacf] py-4"
           >
             <h3 class="text-lg font-semibold">{{ entry.name }}</h3>
-            <p v-if="entry.semanticLine" class="mt-1 text-base text-[#36473b]">
-              {{ entry.semanticLine }}
-            </p>
-            <p v-if="entry.integrityNote" class="mt-2 text-sm text-[#b2362f]">
-              {{ entry.integrityNote }}
+            <p v-if="entry.description" class="mt-1 text-base text-[#36473b]">
+              {{ entry.description }}
             </p>
           </article>
         </section>

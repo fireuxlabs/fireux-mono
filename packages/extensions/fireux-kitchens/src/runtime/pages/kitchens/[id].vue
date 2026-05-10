@@ -217,7 +217,13 @@ const kitchen = computed<Kitchen | null>(() => {
   const found = list.find((entry) => {
     const id = String(entry?.id ?? '').trim()
     const slug = String((entry as any)?.slug ?? '').trim().toLowerCase()
-    return id === key || (slug.length > 0 && slug === keyLower)
+    const slugAliases = Array.isArray((entry as any)?.slug_aliases)
+      ? (entry as any).slug_aliases.map((alias: unknown) =>
+          String(alias ?? '').trim().toLowerCase()
+        )
+      : []
+
+    return id === key || (slug.length > 0 && slug === keyLower) || slugAliases.includes(keyLower)
   })
   return found ?? null
 })
@@ -250,10 +256,10 @@ const sortedMenus = computed(() =>
 )
 const activeMenu = computed(() => sortedMenus.value.find((menu) => Boolean(menu?.active)) || null)
 const menuLink = (menuIdRaw: unknown) => {
-  const resolvedKitchenId = String(kitchenId.value || '').trim()
+  const publicKitchenKey = String((kitchen.value as any)?.slug || kitchenRouteKey.value || kitchenId.value).trim()
   const menuId = String(menuIdRaw || '').trim()
-  if (!resolvedKitchenId || !menuId) return ''
-  return `/kitchens/${encodeURIComponent(resolvedKitchenId)}/menu/${encodeURIComponent(menuId)}`
+  if (!publicKitchenKey || !menuId) return ''
+  return `/kitchens/${encodeURIComponent(publicKitchenKey)}/menu/${encodeURIComponent(menuId)}`
 }
 
 const { model: kitchenProfile } = useKitchenProfileView(kitchen)

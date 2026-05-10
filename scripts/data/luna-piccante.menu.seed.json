@@ -60,6 +60,13 @@
       }
     },
     {
+      "id": "beef-carpaccio",
+      "name": "Beef carpaccio",
+      "names": {
+        "en": "beef carpaccio"
+      }
+    },
+    {
       "id": "beef-strips",
       "name": "Beef strips",
       "names": {
@@ -78,6 +85,13 @@
       "name": "Buffalo mozzarella",
       "names": {
         "en": "buffalo mozzarella"
+      }
+    },
+    {
+      "id": "burrata",
+      "name": "Burrata",
+      "names": {
+        "en": "burrata"
       }
     },
     {
@@ -109,6 +123,20 @@
       }
     },
     {
+      "id": "croutons",
+      "name": "Croutons",
+      "names": {
+        "en": "croutons"
+      }
+    },
+    {
+      "id": "curry",
+      "name": "Curry",
+      "names": {
+        "en": "curry"
+      }
+    },
+    {
       "id": "curd-cheese",
       "name": "Curd cheese",
       "names": {
@@ -134,6 +162,13 @@
       "name": "Fresh herbs",
       "names": {
         "en": "fresh herbs"
+      }
+    },
+    {
+      "id": "field-salad",
+      "name": "Field salad",
+      "names": {
+        "en": "field salad"
       }
     },
     {
@@ -165,6 +200,13 @@
       }
     },
     {
+      "id": "green-salad",
+      "name": "Green salad",
+      "names": {
+        "en": "green salad"
+      }
+    },
+    {
       "id": "ham",
       "name": "Ham",
       "names": {
@@ -176,6 +218,13 @@
       "name": "Lamb strips",
       "names": {
         "en": "lamb strips"
+      }
+    },
+    {
+      "id": "lemon",
+      "name": "Lemon",
+      "names": {
+        "en": "lemon"
       }
     },
     {
@@ -197,6 +246,13 @@
       "name": "Olives",
       "names": {
         "en": "olives"
+      }
+    },
+    {
+      "id": "olive-oil",
+      "name": "Olive oil",
+      "names": {
+        "en": "olive oil"
       }
     },
     {
@@ -330,6 +386,13 @@
       "name": "Vegetables",
       "names": {
         "en": "vegetables"
+      }
+    },
+    {
+      "id": "vinegar",
+      "name": "Vinegar",
+      "names": {
+        "en": "vinegar"
       }
     }
   ],
@@ -756,13 +819,12 @@
         "en": "Focaccia «Aperitivo» Pomodoro, Bufala e Parma"
       },
       "descriptions": {},
-      "recipe_ids": [
-        "pizza-dough"
-      ],
       "mise_ids": [
+        "pizza-dough",
         "tomato-cubes"
       ],
       "ingredient_ids": [
+        "olive-oil",
         "garlic",
         "onion",
         "basil",
@@ -770,9 +832,12 @@
         "parma-ham"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending",
-      "unmapped_terms": [
-        "olive oil"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "starters"
+        }
       ]
     },
     {
@@ -785,17 +850,21 @@
         "en": "Focaccia Prosciutto di Parma"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
+        "olive-oil",
+        "garlic",
         "parma-ham"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending",
-      "unmapped_terms": [
-        "olive oil"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "starters"
+        }
       ]
     },
     {
@@ -808,13 +877,21 @@
         "en": "Carpaccio di Manzo"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
-      "ingredient_ids": [],
+      "ingredient_ids": [
+        "beef-carpaccio",
+        "grana-padano",
+        "olive-oil",
+        "lemon",
+        "rocket"
+      ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending",
-      "unmapped_terms": [
-        "beef carpaccio"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "starters"
+        }
       ]
     },
     {
@@ -827,13 +904,23 @@
         "en": "Gamberetti all’Aglio"
       },
       "descriptions": {},
-      "recipe_ids": [],
-      "mise_ids": [],
+      "mise_ids": [
+        "roasted-bread"
+      ],
       "ingredient_ids": [
         "shrimps",
-        "garlic"
+        "olive-oil",
+        "garlic",
+        "rocket"
       ],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "starters"
+        }
+      ]
     },
     {
       "id": "cocktail-di-gamberetti",
@@ -845,14 +932,21 @@
         "en": "Cocktail di Gamberetti"
       },
       "descriptions": {},
-      "recipe_ids": [
-        "cocktail-sauce"
+      "mise_ids": [
+        "cocktail-sauce",
+        "roasted-bread"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
         "shrimps"
       ],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "starters"
+        }
+      ]
     },
     {
       "id": "bruschetta",
@@ -864,7 +958,6 @@
         "en": "Bruschetta"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [
         "tomato-cubes",
         "roasted-bread"
@@ -873,12 +966,16 @@
         "fresh-herbs",
         "garlic",
         "onion",
-        "basil"
+        "basil",
+        "olive-oil"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending",
-      "unmapped_terms": [
-        "olive oil"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "starters"
+        }
       ]
     },
     {
@@ -891,12 +988,18 @@
         "en": "Minestrone"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "vegetable-soup"
       ],
-      "mise_ids": [],
       "ingredient_ids": [],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "soups"
+        }
+      ]
     },
     {
       "id": "crema-di-pomodoro",
@@ -908,12 +1011,18 @@
         "en": "Crema di Pomodoro"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "tomato-cream-soup"
       ],
-      "mise_ids": [],
       "ingredient_ids": [],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "soups"
+        }
+      ]
     },
     {
       "id": "insalata-soncino",
@@ -925,13 +1034,20 @@
         "en": "Insalata Soncino"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
-      "ingredient_ids": [],
+      "ingredient_ids": [
+        "field-salad",
+        "bacon",
+        "egg",
+        "croutons"
+      ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending",
-      "unmapped_terms": [
-        "soncino"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "salads"
+        }
       ]
     },
     {
@@ -944,14 +1060,22 @@
         "en": "Insalata Caprese"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [
-        "buffalo-mozzarella",
         "tomato",
-        "basil"
+        "buffalo-mozzarella",
+        "basil",
+        "olive-oil",
+        "vinegar"
       ],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "salads"
+        }
+      ]
     },
     {
       "id": "burrata",
@@ -963,13 +1087,20 @@
         "en": "Burrata"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
-      "ingredient_ids": [],
+      "ingredient_ids": [
+        "burrata",
+        "tomato",
+        "basil",
+        "olive-oil"
+      ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending",
-      "unmapped_terms": [
-        "burrata"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "salads"
+        }
       ]
     },
     {
@@ -982,11 +1113,19 @@
         "en": "Insalata Gigante"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
-      "ingredient_ids": [],
+      "ingredient_ids": [
+        "vegetables",
+        "egg"
+      ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "salads"
+        }
+      ]
     },
     {
       "id": "insalata-verde",
@@ -998,13 +1137,17 @@
         "en": "Insalata Verde"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
-      "ingredient_ids": [],
+      "ingredient_ids": [
+        "green-salad"
+      ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending",
-      "unmapped_terms": [
-        "green salad"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "salads"
+        }
       ]
     },
     {
@@ -1017,13 +1160,18 @@
         "en": "Insalata Mista"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [
         "vegetables"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "salads"
+        }
+      ]
     },
     {
       "id": "risotto-milanese",
@@ -1035,12 +1183,21 @@
         "en": "Risotto Milanese"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "saffron-risotto"
       ],
-      "mise_ids": [],
-      "ingredient_ids": [],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "ingredient_ids": [
+        "onion",
+        "garlic"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "risotto"
+        }
+      ]
     },
     {
       "id": "risotto-pollo-e-zafferano",
@@ -1052,14 +1209,22 @@
         "en": "Risotto Pollo e Zafferano"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "saffron-risotto"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
-        "chicken"
+        "chicken",
+        "onion",
+        "garlic"
       ],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "risotto"
+        }
+      ]
     },
     {
       "id": "risotto-porcini",
@@ -1071,13 +1236,21 @@
         "en": "Risotto Porcini"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [
-        "porcini"
+        "grana-padano",
+        "porcini",
+        "garlic",
+        "onion"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "risotto"
+        }
+      ]
     },
     {
       "id": "gnocchi-piemontese",
@@ -1089,13 +1262,19 @@
         "en": "Gnocchi Piemontese"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
       "integrity_note": "component mapping pending",
       "unmapped_terms": [
         "gnocchi"
+      ],
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "gratin"
+        }
       ]
     },
     {
@@ -1108,13 +1287,19 @@
         "en": "Lasagna Casalinga"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
       "integrity_note": "component mapping pending",
       "unmapped_terms": [
         "lasagna"
+      ],
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "gratin"
+        }
       ]
     },
     {
@@ -1127,13 +1312,19 @@
         "en": "Cannelloni Fiorentina"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "spinach-curd-filling"
       ],
-      "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "gratin"
+        }
+      ]
     },
     {
       "id": "paglia-e-fieno-bella-rebecca",
@@ -1145,11 +1336,17 @@
         "en": "Paglia e Fieno Bella Rebecca"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pasta"
+        }
+      ]
     },
     {
       "id": "fettuccine-nere-mare-e-monti",
@@ -1161,14 +1358,20 @@
         "en": "Fettuccine Nere Mare e Monti"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [
         "seafood",
         "porcini"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pasta"
+        }
+      ]
     },
     {
       "id": "fettuccine-nere-al-salmone",
@@ -1180,12 +1383,24 @@
         "en": "Fettuccine Nere al Salmone"
       },
       "descriptions": {},
-      "recipe_ids": [],
-      "mise_ids": [],
-      "ingredient_ids": [
-        "salmon"
+      "mise_ids": [
+        "tomato-cream-sauce"
       ],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "ingredient_ids": [
+        "salmon",
+        "onion",
+        "garlic",
+        "fresh-herbs"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pasta"
+        }
+      ],
+      "integrity_note": "component mapping pending"
     },
     {
       "id": "penne-all-arrabbiata",
@@ -1197,16 +1412,22 @@
         "en": "Penne all’Arrabbiata"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
         "fresh-chili",
         "garlic"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pasta"
+        }
+      ]
     },
     {
       "id": "penne-imperiale",
@@ -1218,11 +1439,17 @@
         "en": "Penne Imperiale"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pasta"
+        }
+      ]
     },
     {
       "id": "penne-alla-fiamma",
@@ -1234,11 +1461,17 @@
         "en": "Penne alla Fiamma"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pasta"
+        }
+      ]
     },
     {
       "id": "spaghetti-aglio-olio-e-peperoncino",
@@ -1250,16 +1483,19 @@
         "en": "Spaghetti Aglio, Olio e Peperoncino"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [
         "garlic",
+        "olive-oil",
         "fresh-chili"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending",
-      "unmapped_terms": [
-        "olive oil"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pasta"
+        }
       ]
     },
     {
@@ -1272,12 +1508,25 @@
         "en": "Spaghetti Frutti di Mare"
       },
       "descriptions": {},
-      "recipe_ids": [],
-      "mise_ids": [],
-      "ingredient_ids": [
-        "seafood"
+      "mise_ids": [
+        "tomato-sauce"
       ],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "ingredient_ids": [
+        "seafood",
+        "garlic",
+        "onion",
+        "cherry-tomatoes",
+        "olive-oil"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pasta"
+        }
+      ],
+      "integrity_note": "component mapping pending"
     },
     {
       "id": "spaghetti-carbonara",
@@ -1289,7 +1538,6 @@
         "en": "Spaghetti Carbonara"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [
         "bacon",
@@ -1297,7 +1545,13 @@
         "grana-padano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pasta"
+        }
+      ]
     },
     {
       "id": "spaghetti-vegetariana",
@@ -1309,12 +1563,18 @@
         "en": "Spaghetti Vegetariana"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [
         "vegetables"
       ],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pasta"
+        }
+      ]
     },
     {
       "id": "spaghetti-napoli",
@@ -1326,12 +1586,18 @@
         "en": "Spaghetti Napoli"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pasta"
+        }
+      ]
     },
     {
       "id": "spaghetti-al-pesto",
@@ -1343,13 +1609,19 @@
         "en": "Spaghetti al Pesto"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pesto-cream-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pasta"
+        }
+      ]
     },
     {
       "id": "spaghetti-bolognese",
@@ -1361,33 +1633,45 @@
         "en": "Spaghetti Bolognese"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "beef-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pasta"
+        }
+      ]
     },
     {
       "id": "margherita",
       "name": "Margherita",
       "slug": "margherita",
-      "description": "Tomato sauce, mozzarella, oregano",
+      "description": "",
       "source_language": "en",
       "names": {
         "en": "Margherita"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
         "mozzarella",
         "oregano"
       ],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "marinara",
@@ -1399,17 +1683,22 @@
         "en": "Marinara"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
         "garlic",
         "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "napoli",
@@ -1421,18 +1710,24 @@
         "en": "Napoli"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
+        "mozzarella",
         "anchovies",
         "capers",
         "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "prosciutto",
@@ -1444,16 +1739,23 @@
         "en": "Prosciutto"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
-        "ham"
+        "mozzarella",
+        "ham",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "prosciutto-e-funghi",
@@ -1465,17 +1767,24 @@
         "en": "Prosciutto e Funghi"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
+        "mozzarella",
         "ham",
-        "mushrooms"
+        "mushrooms",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "salami",
@@ -1487,16 +1796,23 @@
         "en": "Salami"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
-        "salami"
+        "mozzarella",
+        "salami",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "piccante",
@@ -1508,17 +1824,24 @@
         "en": "Piccante"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
+        "mozzarella",
         "spicy-salami",
-        "fresh-chili"
+        "fresh-chili",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "diavola",
@@ -1530,17 +1853,24 @@
         "en": "Diavola"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
+        "mozzarella",
         "spicy-salami",
-        "fresh-chili"
+        "fresh-chili",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "hawaii",
@@ -1552,17 +1882,24 @@
         "en": "Hawaii"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
+        "mozzarella",
         "ham",
-        "pineapple"
+        "pineapple",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "tonno",
@@ -1574,16 +1911,23 @@
         "en": "Tonno"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
-        "tuna"
+        "mozzarella",
+        "tuna",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "tonno-e-cipolla",
@@ -1595,17 +1939,24 @@
         "en": "Tonno e Cipolla"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
+        "mozzarella",
         "tuna",
-        "onion"
+        "onion",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "gamberetti",
@@ -1617,16 +1968,23 @@
         "en": "Gamberetti"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
-        "shrimps"
+        "mozzarella",
+        "shrimps",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "frutti-di-mare",
@@ -1638,16 +1996,23 @@
         "en": "Frutti di Mare"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
-        "seafood"
+        "mozzarella",
+        "seafood",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "salmone",
@@ -1659,16 +2024,24 @@
         "en": "Salmone"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
-        "salmon"
+        "mozzarella",
+        "salmon",
+        "onion",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "vegetariana",
@@ -1680,16 +2053,25 @@
         "en": "Vegetariana"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
-        "vegetables"
+        "mozzarella",
+        "spinach",
+        "red-pepper",
+        "aubergine",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "quattro-formaggi",
@@ -1701,11 +2083,10 @@
         "en": "Quattro Formaggi"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
         "mozzarella",
         "gorgonzola",
@@ -1715,6 +2096,13 @@
       "integrity_note": "component mapping pending",
       "unmapped_terms": [
         "fourth cheese"
+      ],
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
       ]
     },
     {
@@ -1727,19 +2115,26 @@
         "en": "Quattro Stagioni"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
+        "mozzarella",
         "ham",
         "mushrooms",
         "artichokes",
-        "olives"
+        "red-pepper",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "calzone",
@@ -1751,17 +2146,23 @@
         "en": "Calzone"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
+        "mozzarella",
         "ham",
-        "mushrooms"
+        "curd-cheese"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "parma",
@@ -1773,16 +2174,23 @@
         "en": "Parma"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
-        "parma-ham"
+        "mozzarella",
+        "parma-ham",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "buffala",
@@ -1794,16 +2202,24 @@
         "en": "Buffala"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
-        "buffalo-mozzarella"
+        "mozzarella",
+        "cherry-tomatoes",
+        "buffalo-mozzarella",
+        "basil"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "gorgonzola",
@@ -1815,16 +2231,23 @@
         "en": "Gorgonzola"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
-        "gorgonzola"
+        "mozzarella",
+        "gorgonzola",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "boscaiolo",
@@ -1836,17 +2259,24 @@
         "en": "Boscaiolo"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
+        "mozzarella",
         "mushrooms",
-        "bacon"
+        "bacon",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "melanzane",
@@ -1858,16 +2288,23 @@
         "en": "Melanzane"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
-        "aubergine"
+        "mozzarella",
+        "aubergine",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "parmigiana",
@@ -1879,17 +2316,24 @@
         "en": "Parmigiana"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
+        "mozzarella",
         "aubergine",
-        "grana-padano"
+        "grana-padano",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "oliva",
@@ -1901,16 +2345,23 @@
         "en": "Oliva"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
-        "olives"
+        "mozzarella",
+        "olives",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "paprika",
@@ -1922,17 +2373,24 @@
         "en": "Paprika"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
+        "mozzarella",
         "red-pepper",
-        "green-pepper"
+        "green-pepper",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "tricolore",
@@ -1944,18 +2402,24 @@
         "en": "Tricolore"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
         "tomato",
         "mozzarella",
-        "basil"
+        "basil",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "curry",
@@ -1967,15 +2431,24 @@
         "en": "Curry"
       },
       "descriptions": {},
-      "recipe_ids": [
-        "pizza-dough"
+      "mise_ids": [
+        "pizza-dough",
+        "tomato-sauce"
       ],
-      "mise_ids": [],
-      "ingredient_ids": [],
+      "ingredient_ids": [
+        "mozzarella",
+        "curry",
+        "chicken",
+        "mushrooms",
+        "oregano"
+      ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending",
-      "unmapped_terms": [
-        "curry"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
       ]
     },
     {
@@ -1988,11 +2461,26 @@
         "en": "Antonio"
       },
       "descriptions": {},
-      "recipe_ids": [],
-      "mise_ids": [],
-      "ingredient_ids": [],
+      "mise_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "ingredient_ids": [
+        "mozzarella",
+        "ham",
+        "gorgonzola",
+        "pear",
+        "fresh-chili",
+        "oregano"
+      ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "al-capone",
@@ -2004,11 +2492,17 @@
         "en": "Al Capone"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "alla-piemontese",
@@ -2020,11 +2514,23 @@
         "en": "Alla Piemontese"
       },
       "descriptions": {},
-      "recipe_ids": [],
-      "mise_ids": [],
-      "ingredient_ids": [],
+      "mise_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "ingredient_ids": [
+        "mozzarella",
+        "porcini",
+        "oregano"
+      ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "casanova",
@@ -2036,11 +2542,25 @@
         "en": "Casanova"
       },
       "descriptions": {},
-      "recipe_ids": [],
-      "mise_ids": [],
-      "ingredient_ids": [],
+      "mise_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "ingredient_ids": [
+        "mozzarella",
+        "veal-strips",
+        "spinach",
+        "fresh-chili",
+        "oregano"
+      ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "lucifer",
@@ -2052,17 +2572,25 @@
         "en": "Lucifer"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pizza-dough",
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
+        "mozzarella",
+        "bacon",
         "spicy-salami",
-        "fresh-chili"
+        "fresh-chili",
+        "oregano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "lunatico",
@@ -2074,11 +2602,24 @@
         "en": "Lunatico"
       },
       "descriptions": {},
-      "recipe_ids": [],
-      "mise_ids": [],
-      "ingredient_ids": [],
+      "mise_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "ingredient_ids": [
+        "mozzarella",
+        "beef-strips",
+        "green-pepper",
+        "oregano"
+      ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "pinocchio",
@@ -2090,11 +2631,25 @@
         "en": "Pinocchio"
       },
       "descriptions": {},
-      "recipe_ids": [],
-      "mise_ids": [],
-      "ingredient_ids": [],
+      "mise_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "ingredient_ids": [
+        "mozzarella",
+        "olives",
+        "corn",
+        "red-pepper",
+        "oregano"
+      ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "pizza"
+        }
+      ]
     },
     {
       "id": "gamberoni-alla-griglia",
@@ -2106,12 +2661,18 @@
         "en": "Gamberoni alla Griglia"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [
         "shrimps"
       ],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "fish"
+        }
+      ]
     },
     {
       "id": "gamberi-luna-piccante",
@@ -2123,14 +2684,20 @@
         "en": "Gamberi Luna Piccante"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [
         "shrimps",
         "fresh-chili"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "fish"
+        }
+      ]
     },
     {
       "id": "salmone-alla-griglia",
@@ -2142,12 +2709,18 @@
         "en": "Salmone alla Griglia"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [
         "salmon"
       ],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "fish"
+        }
+      ]
     },
     {
       "id": "controfiletto-di-manzo-alla-griglia",
@@ -2159,11 +2732,17 @@
         "en": "Controfiletto di Manzo alla Griglia"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "meat"
+        }
+      ]
     },
     {
       "id": "controfiletto-di-manzo-al-pepe-verde",
@@ -2175,14 +2754,20 @@
         "en": "Controfiletto di Manzo al Pepe Verde"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "green-pepper-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
         "beef-strips"
       ],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "meat"
+        }
+      ]
     },
     {
       "id": "controfiletto-d-agnello-alla-griglia",
@@ -2194,13 +2779,19 @@
         "en": "Controfiletto d’Agnello alla Griglia"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [
         "lamb-strips"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "meat"
+        }
+      ]
     },
     {
       "id": "controfiletto-d-agnello-alla-montanara",
@@ -2212,11 +2803,17 @@
         "en": "Controfiletto d’Agnello alla Montanara"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "meat"
+        }
+      ]
     },
     {
       "id": "petto-di-pollo-alla-griglia",
@@ -2228,12 +2825,18 @@
         "en": "Petto di Pollo alla Griglia"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [
         "chicken"
       ],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "meat"
+        }
+      ]
     },
     {
       "id": "maiale-impanato",
@@ -2245,13 +2848,19 @@
         "en": "Maiale Impanato"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
       "integrity_note": "component mapping pending",
       "unmapped_terms": [
         "pork"
+      ],
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "meat"
+        }
       ]
     },
     {
@@ -2264,7 +2873,6 @@
         "en": "Scaloppina di Vitello al Limone"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [
         "veal-strips"
@@ -2273,6 +2881,13 @@
       "integrity_note": "component mapping pending",
       "unmapped_terms": [
         "lemon"
+      ],
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "meat"
+        }
       ]
     },
     {
@@ -2285,7 +2900,6 @@
         "en": "Saltimbocca alla Romana"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [
         "veal-strips",
@@ -2295,6 +2909,13 @@
       "integrity_note": "component mapping pending",
       "unmapped_terms": [
         "sage"
+      ],
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "meat"
+        }
       ]
     },
     {
@@ -2307,14 +2928,20 @@
         "en": "Scaloppina di Vitello alla Crema di Funghi"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "mushroom-cream-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [
         "veal-strips"
       ],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "meat"
+        }
+      ]
     },
     {
       "id": "affettato-alla-zurighese",
@@ -2326,11 +2953,17 @@
         "en": "Affettato alla Zurighese"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "meat"
+        }
+      ]
     },
     {
       "id": "rindsentrecote",
@@ -2342,11 +2975,17 @@
         "en": "Rindsentrecôte"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "hot-stone"
+        }
+      ]
     },
     {
       "id": "schweinesteak",
@@ -2358,11 +2997,17 @@
         "en": "Schweinesteak"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "hot-stone"
+        }
+      ]
     },
     {
       "id": "lamm-nierstuck",
@@ -2374,13 +3019,19 @@
         "en": "Lamm-Nierstück"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [
         "lamb-strips"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "hot-stone"
+        }
+      ]
     },
     {
       "id": "rindsfleisch-spiess",
@@ -2392,13 +3043,19 @@
         "en": "Rindsfleisch Spiess"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [
         "beef-cubes"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "hot-stone"
+        }
+      ]
     },
     {
       "id": "gemischter-spiess",
@@ -2410,7 +3067,6 @@
         "en": "Gemischter Spiess"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [
         "beef-cubes",
@@ -2418,7 +3074,14 @@
         "chicken"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "hot-stone"
+        }
+      ]
     },
     {
       "id": "spaghetti-with-tomato-sauce",
@@ -2430,12 +3093,18 @@
         "en": "Spaghetti with Tomato Sauce"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "tomato-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "kids"
+        }
+      ]
     },
     {
       "id": "kids-spaghetti-bolognese",
@@ -2447,12 +3116,18 @@
         "en": "Spaghetti Bolognese"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "beef-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "kids"
+        }
+      ]
     },
     {
       "id": "kids-spaghetti-carbonara",
@@ -2464,7 +3139,6 @@
         "en": "Spaghetti Carbonara"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [
         "bacon",
@@ -2472,7 +3146,14 @@
         "grana-padano"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "kids"
+        }
+      ]
     },
     {
       "id": "kids-spaghetti-al-pesto",
@@ -2484,13 +3165,19 @@
         "en": "Spaghetti al Pesto"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "pesto-cream-sauce"
       ],
-      "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "kids"
+        }
+      ]
     },
     {
       "id": "spaghetti-al-burro",
@@ -2502,11 +3189,17 @@
         "en": "Spaghetti al Burro"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "kids"
+        }
+      ]
     },
     {
       "id": "gnocchi-al-burro",
@@ -2518,11 +3211,17 @@
         "en": "Gnocchi al Burro"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "kids"
+        }
+      ]
     },
     {
       "id": "capitano",
@@ -2534,11 +3233,17 @@
         "en": "Capitano"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "kids"
+        }
+      ]
     },
     {
       "id": "chicken-nuggets",
@@ -2550,13 +3255,19 @@
         "en": "Chicken Nuggets"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [
         "chicken"
       ],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "kids"
+        }
+      ]
     },
     {
       "id": "portion-pommes-frites",
@@ -2568,13 +3279,19 @@
         "en": "Portion Pommes Frites"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
       "integrity_note": "component mapping pending",
       "unmapped_terms": [
         "pommes frites"
+      ],
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "kids"
+        }
       ]
     },
     {
@@ -2587,11 +3304,17 @@
         "en": "Risotto Bambini"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "kids"
+        }
+      ]
     },
     {
       "id": "spaghetti",
@@ -2603,11 +3326,17 @@
         "en": "Spaghetti"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "sides"
+        }
+      ]
     },
     {
       "id": "penne",
@@ -2619,11 +3348,17 @@
         "en": "Penne"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "sides"
+        }
+      ]
     },
     {
       "id": "pommes-frites",
@@ -2635,11 +3370,17 @@
         "en": "Pommes Frites"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "sides"
+        }
+      ]
     },
     {
       "id": "rice",
@@ -2651,11 +3392,17 @@
         "en": "Rice"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "sides"
+        }
+      ]
     },
     {
       "id": "risotto",
@@ -2667,11 +3414,17 @@
         "en": "Risotto"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "sides"
+        }
+      ]
     },
     {
       "id": "salad",
@@ -2683,11 +3436,17 @@
         "en": "Salad"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "sides"
+        }
+      ]
     },
     {
       "id": "saffron-risotto",
@@ -2699,12 +3458,18 @@
         "en": "Saffron Risotto"
       },
       "descriptions": {},
-      "recipe_ids": [
+      "mise_ids": [
         "saffron-risotto"
       ],
-      "mise_ids": [],
       "ingredient_ids": [],
-      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "translated": true,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "sides"
+        }
+      ]
     },
     {
       "id": "homemade-pasta",
@@ -2716,11 +3481,17 @@
         "en": "Homemade Pasta"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "sides"
+        }
+      ]
     },
     {
       "id": "gluten-free-pasta",
@@ -2732,11 +3503,17 @@
         "en": "Gluten-Free Pasta"
       },
       "descriptions": {},
-      "recipe_ids": [],
       "mise_ids": [],
       "ingredient_ids": [],
       "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
-      "integrity_note": "component mapping pending"
+      "integrity_note": "component mapping pending",
+      "translated": false,
+      "menu_placements": [
+        {
+          "menu_id": "luna-semantic-menu",
+          "section_id": "sides"
+        }
+      ]
     }
   ],
   "sections": [

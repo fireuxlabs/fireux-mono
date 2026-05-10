@@ -60,7 +60,7 @@
             </p>
           </header>
 
-          <div class="grid gap-4 md:grid-cols-3">
+          <div class="grid gap-4 md:grid-cols-2">
             <section
               v-for="group in semanticGroups"
               :key="group.key"
@@ -92,6 +92,54 @@
                 —
               </p>
             </section>
+          </div>
+
+          <section class="space-y-3 rounded-md border border-default p-4">
+            <h2 class="text-sm font-semibold text-highlighted">
+              Menu placements
+            </h2>
+
+            <div
+              v-if="menuPlacements.length"
+              class="space-y-3"
+            >
+              <div
+                v-for="placement in menuPlacements"
+                :key="`${placement.menu_id}:${placement.section_id}`"
+              >
+                <div class="text-sm font-medium text-highlighted">
+                  {{ placement.section_id }}
+                </div>
+                <div class="text-xs text-muted">
+                  menu: {{ placement.menu_id }}
+                </div>
+              </div>
+            </div>
+
+            <p
+              v-else
+              class="text-sm text-muted"
+            >
+              —
+            </p>
+          </section>
+
+          <div
+            v-if="legacyRecipeIds.length"
+            class="space-y-3 rounded-md border border-warning/30 bg-warning/5 p-4"
+          >
+            <h2 class="text-sm font-semibold text-warning">Legacy recipe_ids</h2>
+            <p class="text-sm text-muted">
+              Dish semantics now use mise and ingredients. These ids should be cleared from the dish doc.
+            </p>
+            <ul class="space-y-1 text-sm text-warning">
+              <li
+                v-for="id in legacyRecipeIds"
+                :key="id"
+              >
+                {{ id }}
+              </li>
+            </ul>
           </div>
 
           <div
@@ -154,9 +202,9 @@
         </template>
 
         <div class="grid gap-4 md:grid-cols-2">
-          <UFormField label="Recipe ids">
+          <UFormField label="Mise ids">
             <UTextarea
-              v-model="form.recipeIds"
+              v-model="form.miseIds"
               placeholder="tomato-sauce, pizza-dough"
               :disabled="!canWrite"
               :rows="4"
@@ -226,7 +274,6 @@ import { useKitchenConsoleDish } from '../../../../../composables/fireux/app/kit
 import { useDishDelete } from '../../../../../composables/fireux/firestore/dish/mutations/useDishDelete'
 import { useDishUpdate } from '../../../../../composables/fireux/firestore/dish/mutations/useDishUpdate'
 import { useIngredientFetch } from '../../../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
-import { useRecipeCollection } from '../../../../../composables/fireux/firestore/recipe/fetch/useRecipeCollection'
 import { useKitchenMiseCollection } from '../../../../../composables/fireux/firestore/runtime-kitchen/mise/fetch/useKitchenMiseCollection'
 import {
   normalizeDishStringArray,
@@ -255,10 +302,6 @@ const { deleteDish } = useDishDelete({
   kitchenCollectionPath: rootCollection,
   databaseId,
 })
-const { recipes } = useRecipeCollection(kitchenId, {
-  kitchenCollectionPath: rootCollection,
-  databaseId,
-})
 const { miseTasks } = useKitchenMiseCollection(kitchenId, {
   kitchenCollectionPath: rootCollection,
   databaseId,
@@ -274,7 +317,7 @@ const originalSignature = ref('')
 const form = reactive({
   name: '',
   description: '',
-  recipeIds: '',
+  miseIds: '',
   ingredientIds: '',
 })
 
@@ -290,7 +333,7 @@ const buildSignature = () =>
   JSON.stringify({
     name: normalizeString(form.name),
     description: normalizeString(form.description),
-    recipe_ids: parseIds(form.recipeIds),
+    mise_ids: parseIds(form.miseIds),
     ingredient_ids: parseIds(form.ingredientIds),
   })
 
@@ -301,7 +344,7 @@ const resetForm = (source: Dish | null) => {
 
   form.name = normalizeString(source?.name)
   form.description = normalizeString(source?.description)
-  form.recipeIds = idsToText(source?.recipe_ids)
+  form.miseIds = idsToText(source?.mise_ids)
   form.ingredientIds = idsToText(source?.ingredient_ids)
   originalSignature.value = buildSignature()
 }
@@ -346,7 +389,7 @@ const saveDish = async () => {
         source_language: sourceLanguage,
         names,
         descriptions,
-        recipe_ids: parseIds(form.recipeIds),
+        mise_ids: parseIds(form.miseIds),
         ingredient_ids: parseIds(form.ingredientIds),
       },
       { kitchenId: kitchenId.value }
@@ -447,13 +490,6 @@ const resolveGroup = (
 const displayLanguage = computed(() =>
   normalizeLanguageCode(dish.value?.source_language) || 'en'
 )
-const recipeResolution = computed(() =>
-  resolveGroup(
-    normalizeDishStringArray(dish.value?.recipe_ids),
-    recipes.value as Record<string, unknown>[],
-    displayLanguage.value
-  )
-)
 const miseResolution = computed(() =>
   resolveGroup(
     normalizeDishStringArray(dish.value?.mise_ids),
@@ -470,11 +506,6 @@ const ingredientResolution = computed(() =>
 )
 const semanticGroups = computed(() => [
   {
-    key: 'recipes',
-    label: 'Recipes',
-    items: recipeResolution.value.items,
-  },
-  {
     key: 'mise',
     label: 'Mise',
     items: miseResolution.value.items,
@@ -487,11 +518,6 @@ const semanticGroups = computed(() => [
 ])
 const missingGroups = computed(() =>
   [
-    {
-      key: 'recipes',
-      label: 'Recipes',
-      ids: recipeResolution.value.missing,
-    },
     {
       key: 'mise',
       label: 'Mise',
@@ -507,10 +533,16 @@ const missingGroups = computed(() =>
 const dishIntegrityNote = computed(() =>
   normalizeString((dish.value as Record<string, unknown> | null)?.integrity_note)
 )
+const legacyRecipeIds = computed(() =>
+  normalizeDishStringArray((dish.value as Record<string, unknown> | null)?.recipe_ids)
+)
+const menuPlacements = computed(() =>
+  Array.isArray(dish.value?.menu_placements) ? dish.value.menu_placements : []
+)
 const resolvedComponentsDebug = computed(() => ({
   dish_id: dishId.value,
   language: displayLanguage.value,
-  recipes: recipeResolution.value,
+  legacy_recipe_ids: legacyRecipeIds.value,
   mise: miseResolution.value,
   ingredients: ingredientResolution.value,
 }))

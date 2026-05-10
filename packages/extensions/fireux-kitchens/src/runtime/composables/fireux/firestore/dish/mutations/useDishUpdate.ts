@@ -2,6 +2,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { computed, unref, type Ref } from 'vue'
 import {
+  normalizeDishMenuPlacements,
   normalizeDishStringArray,
   normalizeDishTranslatedText,
   type Dish,
@@ -52,7 +53,10 @@ export function useDishUpdate(
     if ('descriptions' in next) {
       next.descriptions = normalizeDishTranslatedText(next.descriptions)
     }
-    if ('recipe_ids' in next) next.recipe_ids = normalizeDishStringArray(next.recipe_ids)
+    if ('translated' in next) next.translated = next.translated === true
+    if ('menu_placements' in next) {
+      next.menu_placements = normalizeDishMenuPlacements(next.menu_placements)
+    }
     if ('mise_ids' in next) next.mise_ids = normalizeDishStringArray(next.mise_ids)
     if ('ingredient_ids' in next) {
       next.ingredient_ids = normalizeDishStringArray(next.ingredient_ids)

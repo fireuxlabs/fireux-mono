@@ -24,79 +24,125 @@ const normalizeIdList = (value) =>
     ? Array.from(new Set(value.map((entry) => normalizeString(entry)).filter(Boolean)))
     : []
 
-const map = ({ recipe_ids = [], mise_ids = [], ingredient_ids = [], unmapped_terms = [], complete = false } = {}) => ({
-  recipe_ids,
+const map = ({
+  mise_ids = [],
+  ingredient_ids = [],
+  unmapped_terms = [],
+  description = '',
+  complete = false,
+} = {}) => ({
   mise_ids,
   ingredient_ids,
   unmapped_terms,
+  description,
   complete,
 })
 
+function menuPlacementsByDishId(seed) {
+  const menuId = normalizeString(seed?.menu?.id)
+  const placements = new Map()
+
+  if (!menuId) return placements
+
+  for (const section of Array.isArray(seed?.sections) ? seed.sections : []) {
+    const sectionId = normalizeString(section?.id)
+    if (!sectionId) continue
+
+    for (const item of Array.isArray(section?.items) ? section.items : []) {
+      const dishId = normalizeString(item?.dish_id)
+      if (!dishId) continue
+
+      const entry = {
+        menu_id: menuId,
+        section_id: sectionId,
+      }
+      const current = placements.get(dishId) || []
+      if (!current.some((placement) =>
+        placement.menu_id === entry.menu_id && placement.section_id === entry.section_id
+      )) {
+        placements.set(dishId, [...current, entry])
+      }
+    }
+  }
+
+  return placements
+}
+
 const DISH_COMPONENT_MAPPINGS = {
   'focaccia-aperitivo-pomodoro-bufala-e-parma': map({
-    recipe_ids: ['pizza-dough'],
-    mise_ids: ['tomato-cubes'],
-    ingredient_ids: ['garlic', 'onion', 'basil', 'buffalo-mozzarella', 'parma-ham'],
-    unmapped_terms: ['olive oil'],
+    mise_ids: ['pizza-dough', 'tomato-cubes'],
+    ingredient_ids: ['olive-oil', 'garlic', 'onion', 'basil', 'buffalo-mozzarella', 'parma-ham'],
+    complete: true,
   }),
   'focaccia-prosciutto-di-parma': map({
-    recipe_ids: ['pizza-dough'],
-    ingredient_ids: ['parma-ham'],
-    unmapped_terms: ['olive oil'],
+    mise_ids: ['pizza-dough'],
+    ingredient_ids: ['olive-oil', 'garlic', 'parma-ham'],
+    complete: true,
   }),
   'carpaccio-di-manzo': map({
-    unmapped_terms: ['beef carpaccio'],
+    ingredient_ids: ['beef-carpaccio', 'grana-padano', 'olive-oil', 'lemon', 'rocket'],
+    complete: true,
   }),
   'gamberetti-all-aglio': map({
-    ingredient_ids: ['shrimps', 'garlic'],
+    mise_ids: ['roasted-bread'],
+    ingredient_ids: ['shrimps', 'olive-oil', 'garlic', 'rocket'],
     complete: true,
   }),
   'cocktail-di-gamberetti': map({
-    recipe_ids: ['cocktail-sauce'],
+    mise_ids: ['cocktail-sauce', 'roasted-bread'],
     ingredient_ids: ['shrimps'],
     complete: true,
   }),
   bruschetta: map({
     mise_ids: ['tomato-cubes', 'roasted-bread'],
-    ingredient_ids: ['fresh-herbs', 'garlic', 'onion', 'basil'],
-    unmapped_terms: ['olive oil'],
+    ingredient_ids: ['fresh-herbs', 'garlic', 'onion', 'basil', 'olive-oil'],
+    complete: true,
   }),
   minestrone: map({
-    recipe_ids: ['vegetable-soup'],
+    mise_ids: ['vegetable-soup'],
     complete: true,
   }),
   'crema-di-pomodoro': map({
-    recipe_ids: ['tomato-cream-soup'],
+    mise_ids: ['tomato-cream-soup'],
     complete: true,
   }),
   'insalata-soncino': map({
-    unmapped_terms: ['soncino'],
+    ingredient_ids: ['field-salad', 'bacon', 'egg', 'croutons'],
+    complete: true,
   }),
   'insalata-caprese': map({
-    ingredient_ids: ['buffalo-mozzarella', 'tomato', 'basil'],
+    ingredient_ids: ['tomato', 'buffalo-mozzarella', 'basil', 'olive-oil', 'vinegar'],
     complete: true,
   }),
   burrata: map({
-    unmapped_terms: ['burrata'],
+    ingredient_ids: ['burrata', 'tomato', 'basil', 'olive-oil'],
+    complete: true,
   }),
-  'insalata-gigante': map(),
+  'insalata-gigante': map({
+    ingredient_ids: ['vegetables', 'egg'],
+    complete: true,
+  }),
   'insalata-verde': map({
-    unmapped_terms: ['green salad'],
+    ingredient_ids: ['green-salad'],
+    complete: true,
   }),
   'insalata-mista': map({
     ingredient_ids: ['vegetables'],
+    complete: true,
   }),
   'risotto-milanese': map({
-    recipe_ids: ['saffron-risotto'],
+    mise_ids: ['saffron-risotto'],
+    ingredient_ids: ['onion', 'garlic'],
     complete: true,
   }),
   'risotto-pollo-e-zafferano': map({
-    recipe_ids: ['saffron-risotto'],
-    ingredient_ids: ['chicken'],
+    mise_ids: ['saffron-risotto'],
+    ingredient_ids: ['chicken', 'onion', 'garlic'],
     complete: true,
   }),
   'risotto-porcini': map({
-    ingredient_ids: ['porcini'],
+    ingredient_ids: ['grana-padano', 'porcini', 'garlic', 'onion'],
+    complete: true,
   }),
   'gnocchi-piemontese': map({
     unmapped_terms: ['gnocchi'],
@@ -105,162 +151,215 @@ const DISH_COMPONENT_MAPPINGS = {
     unmapped_terms: ['lasagna'],
   }),
   'cannelloni-fiorentina': map({
-    recipe_ids: ['spinach-curd-filling'],
+    mise_ids: ['spinach-curd-filling'],
   }),
   'fettuccine-nere-mare-e-monti': map({
     ingredient_ids: ['seafood', 'porcini'],
   }),
   'fettuccine-nere-al-salmone': map({
-    ingredient_ids: ['salmon'],
-    complete: true,
+    mise_ids: ['tomato-cream-sauce'],
+    ingredient_ids: ['salmon', 'onion', 'garlic', 'fresh-herbs'],
   }),
   'penne-all-arrabbiata': map({
-    recipe_ids: ['tomato-sauce'],
+    mise_ids: ['tomato-sauce'],
     ingredient_ids: ['fresh-chili', 'garlic'],
   }),
   'spaghetti-aglio-olio-e-peperoncino': map({
-    ingredient_ids: ['garlic', 'fresh-chili'],
-    unmapped_terms: ['olive oil'],
+    ingredient_ids: ['garlic', 'olive-oil', 'fresh-chili'],
+    complete: true,
   }),
   'spaghetti-frutti-di-mare': map({
-    ingredient_ids: ['seafood'],
-    complete: true,
+    mise_ids: ['tomato-sauce'],
+    ingredient_ids: ['seafood', 'garlic', 'onion', 'cherry-tomatoes', 'olive-oil'],
   }),
   'spaghetti-carbonara': map({
     ingredient_ids: ['bacon', 'egg', 'grana-padano'],
+    complete: true,
   }),
   'spaghetti-vegetariana': map({
     ingredient_ids: ['vegetables'],
     complete: true,
   }),
   'spaghetti-napoli': map({
-    recipe_ids: ['tomato-sauce'],
+    mise_ids: ['tomato-sauce'],
     complete: true,
   }),
   'spaghetti-al-pesto': map({
-    recipe_ids: ['pesto-cream-sauce'],
+    mise_ids: ['pesto-cream-sauce'],
   }),
   'spaghetti-bolognese': map({
-    recipe_ids: ['beef-sauce'],
+    mise_ids: ['beef-sauce'],
     complete: true,
   }),
   margherita: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
     ingredient_ids: ['mozzarella', 'oregano'],
     complete: true,
   }),
   marinara: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
     ingredient_ids: ['garlic', 'oregano'],
+    complete: true,
   }),
   napoli: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['anchovies', 'capers', 'oregano'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'anchovies', 'capers', 'oregano'],
+    complete: true,
   }),
   prosciutto: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['ham'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'ham', 'oregano'],
+    complete: true,
   }),
   'prosciutto-e-funghi': map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['ham', 'mushrooms'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'ham', 'mushrooms', 'oregano'],
+    complete: true,
   }),
   salami: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['salami'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'salami', 'oregano'],
+    complete: true,
   }),
   piccante: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['spicy-salami', 'fresh-chili'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'spicy-salami', 'fresh-chili', 'oregano'],
+    complete: true,
   }),
   diavola: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['spicy-salami', 'fresh-chili'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'spicy-salami', 'fresh-chili', 'oregano'],
+    complete: true,
   }),
   hawaii: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['ham', 'pineapple'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'ham', 'pineapple', 'oregano'],
+    complete: true,
   }),
   tonno: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['tuna'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'tuna', 'oregano'],
+    complete: true,
   }),
   'tonno-e-cipolla': map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['tuna', 'onion'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'tuna', 'onion', 'oregano'],
+    complete: true,
   }),
   gamberetti: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['shrimps'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'shrimps', 'oregano'],
+    complete: true,
   }),
   'frutti-di-mare': map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['seafood'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'seafood', 'oregano'],
+    complete: true,
   }),
   salmone: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['salmon'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'salmon', 'onion', 'oregano'],
+    complete: true,
   }),
   vegetariana: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['vegetables'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'spinach', 'red-pepper', 'aubergine', 'oregano'],
+    complete: true,
   }),
   'quattro-formaggi': map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
     ingredient_ids: ['mozzarella', 'gorgonzola', 'grana-padano'],
     unmapped_terms: ['fourth cheese'],
   }),
   'quattro-stagioni': map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['ham', 'mushrooms', 'artichokes', 'olives'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'ham', 'mushrooms', 'artichokes', 'red-pepper', 'oregano'],
+    complete: true,
   }),
   calzone: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['ham', 'mushrooms'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'ham', 'curd-cheese'],
+    complete: true,
   }),
   parma: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['parma-ham'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'parma-ham', 'oregano'],
+    complete: true,
   }),
   buffala: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['buffalo-mozzarella'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'cherry-tomatoes', 'buffalo-mozzarella', 'basil'],
+    complete: true,
   }),
   gorgonzola: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['gorgonzola'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'gorgonzola', 'oregano'],
+    complete: true,
   }),
   boscaiolo: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['mushrooms', 'bacon'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'mushrooms', 'bacon', 'oregano'],
+    complete: true,
   }),
   melanzane: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['aubergine'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'aubergine', 'oregano'],
+    complete: true,
   }),
   parmigiana: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['aubergine', 'grana-padano'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'aubergine', 'grana-padano', 'oregano'],
+    complete: true,
   }),
   oliva: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['olives'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'olives', 'oregano'],
+    complete: true,
   }),
   paprika: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['red-pepper', 'green-pepper'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'red-pepper', 'green-pepper', 'oregano'],
+    complete: true,
   }),
   tricolore: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['tomato', 'mozzarella', 'basil'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['tomato', 'mozzarella', 'basil', 'oregano'],
+    complete: true,
   }),
   curry: map({
-    recipe_ids: ['pizza-dough'],
-    unmapped_terms: ['curry'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'curry', 'chicken', 'mushrooms', 'oregano'],
+    complete: true,
+  }),
+  antonio: map({
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'ham', 'gorgonzola', 'pear', 'fresh-chili', 'oregano'],
+    complete: true,
+  }),
+  'alla-piemontese': map({
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'porcini', 'oregano'],
+    complete: true,
+  }),
+  casanova: map({
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'veal-strips', 'spinach', 'fresh-chili', 'oregano'],
+    complete: true,
   }),
   lucifer: map({
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['spicy-salami', 'fresh-chili'],
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'bacon', 'spicy-salami', 'fresh-chili', 'oregano'],
+    complete: true,
+  }),
+  lunatico: map({
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'beef-strips', 'green-pepper', 'oregano'],
+    complete: true,
+  }),
+  pinocchio: map({
+    mise_ids: ['pizza-dough', 'tomato-sauce'],
+    ingredient_ids: ['mozzarella', 'olives', 'corn', 'red-pepper', 'oregano'],
+    complete: true,
   }),
   'gamberoni-alla-griglia': map({
     ingredient_ids: ['shrimps'],
@@ -274,7 +373,7 @@ const DISH_COMPONENT_MAPPINGS = {
     complete: true,
   }),
   'controfiletto-di-manzo-al-pepe-verde': map({
-    recipe_ids: ['green-pepper-sauce'],
+    mise_ids: ['green-pepper-sauce'],
     ingredient_ids: ['beef-strips'],
     complete: true,
   }),
@@ -297,7 +396,7 @@ const DISH_COMPONENT_MAPPINGS = {
     unmapped_terms: ['sage'],
   }),
   'scaloppina-di-vitello-alla-crema-di-funghi': map({
-    recipe_ids: ['mushroom-cream-sauce'],
+    mise_ids: ['mushroom-cream-sauce'],
     ingredient_ids: ['veal-strips'],
     complete: true,
   }),
@@ -311,18 +410,18 @@ const DISH_COMPONENT_MAPPINGS = {
     ingredient_ids: ['beef-cubes', 'lamb-strips', 'chicken'],
   }),
   'spaghetti-with-tomato-sauce': map({
-    recipe_ids: ['tomato-sauce'],
+    mise_ids: ['tomato-sauce'],
     complete: true,
   }),
   'kids-spaghetti-bolognese': map({
-    recipe_ids: ['beef-sauce'],
+    mise_ids: ['beef-sauce'],
     complete: true,
   }),
   'kids-spaghetti-carbonara': map({
     ingredient_ids: ['bacon', 'egg', 'grana-padano'],
   }),
   'kids-spaghetti-al-pesto': map({
-    recipe_ids: ['pesto-cream-sauce'],
+    mise_ids: ['pesto-cream-sauce'],
   }),
   'chicken-nuggets': map({
     ingredient_ids: ['chicken'],
@@ -331,7 +430,7 @@ const DISH_COMPONENT_MAPPINGS = {
     unmapped_terms: ['pommes frites'],
   }),
   'saffron-risotto': map({
-    recipe_ids: ['saffron-risotto'],
+    mise_ids: ['saffron-risotto'],
     complete: true,
   }),
 }
@@ -404,19 +503,14 @@ Options:
 }
 
 function validateMappedIds(seed) {
-  const recipeIds = new Set(normalizeIdList(seed.recipes?.map((entry) => entry.id)))
   const miseIds = new Set(normalizeIdList(seed.mise?.map((entry) => entry.id)))
   const ingredientIds = new Set(normalizeIdList(seed.ingredients?.map((entry) => entry.id)))
   const missing = {
-    recipes: [],
     mise: [],
     ingredients: [],
   }
 
   for (const dish of seed.dishes || []) {
-    for (const id of normalizeIdList(dish.recipe_ids)) {
-      if (!recipeIds.has(id)) missing.recipes.push(`${dish.id}:${id}`)
-    }
     for (const id of normalizeIdList(dish.mise_ids)) {
       if (!miseIds.has(id)) missing.mise.push(`${dish.id}:${id}`)
     }
@@ -426,7 +520,6 @@ function validateMappedIds(seed) {
   }
 
   return {
-    recipes: Array.from(new Set(missing.recipes)),
     mise: Array.from(new Set(missing.mise)),
     ingredients: Array.from(new Set(missing.ingredients)),
   }
@@ -437,21 +530,31 @@ function applyMapping(seed, recipeSeed) {
   if (Array.isArray(recipeSeed.recipes) && recipeSeed.recipes.length) {
     next.recipes = recipeSeed.recipes
   }
+  const miseIds = new Set(normalizeIdList(next.mise?.map((entry) => entry.id)))
+  const placementsByDishId = menuPlacementsByDishId(next)
 
   next.dishes = (Array.isArray(next.dishes) ? next.dishes : []).map((dish) => {
     const mapping = DISH_COMPONENT_MAPPINGS[dish.id] || map()
-    const recipeIds = normalizeIdList(mapping.recipe_ids)
-    const miseIds = normalizeIdList(mapping.mise_ids)
+    const mappedMiseIds = normalizeIdList(
+      normalizeIdList(mapping.mise_ids).filter((id) => miseIds.has(id))
+    )
     const ingredientIds = normalizeIdList(mapping.ingredient_ids)
     const unmappedTerms = normalizeIdList(mapping.unmapped_terms)
-    const hasComponents = recipeIds.length || miseIds.length || ingredientIds.length
+    const mappedDescription = normalizeString(mapping.description)
+    const description = mappedDescription
+    const hasComponents = mappedMiseIds.length || ingredientIds.length
     const isComplete = mapping.complete === true && unmappedTerms.length === 0
+    const isTranslated = Boolean(isComplete && hasComponents && !mappedDescription)
     const nextDish = {
       ...dish,
-      recipe_ids: recipeIds,
-      mise_ids: miseIds,
+      description,
+      descriptions: description ? { de: description } : {},
+      translated: isTranslated,
+      menu_placements: placementsByDishId.get(dish.id) || [],
+      mise_ids: mappedMiseIds,
       ingredient_ids: ingredientIds,
     }
+    delete nextDish.recipe_ids
 
     if (unmappedTerms.length) {
       nextDish.unmapped_terms = unmappedTerms
@@ -475,7 +578,6 @@ function summarize(seed) {
   const dishes = Array.isArray(seed.dishes) ? seed.dishes : []
   const mapped = dishes.filter(
     (dish) =>
-      normalizeIdList(dish.recipe_ids).length ||
       normalizeIdList(dish.mise_ids).length ||
       normalizeIdList(dish.ingredient_ids).length
   )
@@ -494,7 +596,11 @@ function summarize(seed) {
 
 function buildDishPatch(dish) {
   const patch = {
-    recipe_ids: normalizeIdList(dish.recipe_ids),
+    recipe_ids: FieldValue.delete(),
+    description: normalizeString(dish.description),
+    descriptions: dish.descriptions && typeof dish.descriptions === 'object' ? dish.descriptions : {},
+    translated: dish.translated === true,
+    menu_placements: Array.isArray(dish.menu_placements) ? dish.menu_placements : [],
     mise_ids: normalizeIdList(dish.mise_ids),
     ingredient_ids: normalizeIdList(dish.ingredient_ids),
     updated: {
@@ -613,7 +719,7 @@ async function main() {
   const missing = validateMappedIds(mappedSeed)
   const summary = summarize(mappedSeed)
 
-  if (missing.recipes.length || missing.mise.length || missing.ingredients.length) {
+  if (missing.mise.length || missing.ingredients.length) {
     console.error('[map] missing component ids', missing)
     throw new Error('Mapped seed references missing component ids')
   }

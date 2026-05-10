@@ -29,6 +29,25 @@ const normalizeIdList = (value) =>
   Array.isArray(value)
     ? Array.from(new Set(value.map((entry) => normalizeString(entry)).filter(Boolean)))
     : []
+const normalizeMenuPlacements = (value) => {
+  if (!Array.isArray(value)) return []
+
+  const seen = new Set()
+  const placements = []
+  for (const entry of value) {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) continue
+    const menuId = normalizeString(entry.menu_id)
+    const sectionId = normalizeString(entry.section_id)
+    if (!menuId || !sectionId) continue
+
+    const key = `${menuId}:${sectionId}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    placements.push({ menu_id: menuId, section_id: sectionId })
+  }
+
+  return placements
+}
 
 function findMonorepoRoot(startDir) {
   let dir = startDir
@@ -131,7 +150,9 @@ function buildDishPayload(dish, kitchenId, language) {
           [language]: description,
         }
       : {},
-    recipe_ids: dish.recipe_ids,
+    translated: dish.translated === true,
+    menu_placements: normalizeMenuPlacements(dish.menu_placements),
+    mise_ids: dish.mise_ids,
     ingredient_ids: dish.ingredient_ids,
     kitchen_id: kitchenId,
     created: {
@@ -151,12 +172,12 @@ function sourceName(source, languageCode) {
   return normalizeString(names[languageCode]) || normalizeString(source?.name)
 }
 
-function resolveDishSemanticLine({ dish, recipes, ingredients, languageCode, excludedIds }) {
+function resolveDishSemanticLine({ dish, mise, ingredients, languageCode, excludedIds }) {
   const excluded = new Set(normalizeIdList(excludedIds))
   const excludedTerms = new Set(
     normalizeIdList(excludedIds).map((id) => normalizeComparable(id))
   )
-  const recipesById = new Map(recipes.map((recipe) => [recipe.id, recipe]))
+  const miseById = new Map(mise.map((item) => [item.id, item]))
   const ingredientsById = new Map(
     ingredients.map((ingredient) => [ingredient.id, ingredient])
   )
@@ -169,7 +190,7 @@ function resolveDishSemanticLine({ dish, recipes, ingredients, languageCode, exc
     names.push(name)
   }
 
-  normalizeIdList(dish.recipe_ids).forEach((id) => pushSource(id, recipesById.get(id)))
+  normalizeIdList(dish.mise_ids).forEach((id) => pushSource(id, miseById.get(id)))
   normalizeIdList(dish.ingredient_ids).forEach((id) =>
     pushSource(id, ingredientsById.get(id))
   )
@@ -244,7 +265,7 @@ async function main() {
   }, 'seed-luna-dishes')
   const db = databaseId ? getFirestore(app, databaseId) : getFirestore(app)
   const kitchenRef = db.doc(`${kitchenCollectionPath}/${kitchenId}`)
-  const recipesCollection = kitchenRef.collection('recipes')
+  const miseCollection = kitchenRef.collection('mise')
   const dishesCollection = kitchenRef.collection('dishes')
   const ingredientsCollection = db.collection('ingredients')
 
@@ -275,9 +296,9 @@ async function main() {
   const batch = db.batch()
 
   for (const dish of dishes) {
-    const recipeIds = normalizeIdList(dish.recipe_ids)
+    const miseIds = normalizeIdList(dish.mise_ids)
     const ingredientIds = normalizeIdList(dish.ingredient_ids)
-    const recipes = await fetchSourceDocs(recipesCollection, recipeIds, 'recipes')
+    const mise = await fetchSourceDocs(miseCollection, miseIds, 'mise')
     const ingredients = await fetchSourceDocs(
       ingredientsCollection,
       ingredientIds,
@@ -298,7 +319,7 @@ async function main() {
         console.log('[dry-run] create', {
           path: ref.path,
           name: dish.name,
-          recipe_ids: recipeIds,
+          mise_ids: miseIds,
           ingredient_ids: ingredientIds,
         })
       }
@@ -311,7 +332,7 @@ async function main() {
       excludedIds,
       line: resolveDishSemanticLine({
         dish: resolvedDish,
-        recipes,
+        mise,
         ingredients,
         languageCode,
         excludedIds,

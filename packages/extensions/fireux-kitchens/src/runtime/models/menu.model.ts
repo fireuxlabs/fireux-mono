@@ -61,6 +61,9 @@ export const MenuModel = {
 
   name: '' as string,
   description: '' as string,
+  source_language: '' as string,
+  names: {} as Partial<Record<string, string>>,
+  descriptions: {} as Partial<Record<string, string>>,
 
   // Publishing toggle for this menu record (separate from per-mode availability)
   active: true as boolean,

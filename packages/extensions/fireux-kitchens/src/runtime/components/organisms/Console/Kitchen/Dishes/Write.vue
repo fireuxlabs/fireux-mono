@@ -30,9 +30,9 @@
       </div>
 
       <div class="grid gap-4 md:grid-cols-2">
-        <UFormField label="Recipe ids">
+        <UFormField label="Mise ids">
           <UTextarea
-            v-model="recipeIds"
+            v-model="miseIds"
             placeholder="tomato-sauce, pizza-dough"
             :disabled="saving || !canCreateDish"
             :rows="3"
@@ -91,7 +91,7 @@ const toast = useToastify()
 
 const name = ref('')
 const description = ref('')
-const recipeIds = ref('')
+const miseIds = ref('')
 const ingredientIds = ref('')
 const saving = ref(false)
 const message = ref('')
@@ -124,14 +124,14 @@ const addDish = async () => {
       {
         name: dishName,
         description: normalizeString(description.value),
-        recipe_ids: parseIds(recipeIds.value),
+        mise_ids: parseIds(miseIds.value),
         ingredient_ids: parseIds(ingredientIds.value),
       },
       { kitchenId: normalizeString(kitchenId.value) }
     )
     name.value = ''
     description.value = ''
-    recipeIds.value = ''
+    miseIds.value = ''
     ingredientIds.value = ''
     message.value = `Created ${dishName}.`
     if (result.failedLanguages.length) {

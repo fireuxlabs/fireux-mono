@@ -5,7 +5,7 @@ import { useKitchenCollection } from '../firestore/kitchen/fetch/useKitchenColle
 import type { Menu } from '../../../models/menu.model'
 import type { Dish } from '../../../models/dish.model'
 import type { Ingredient } from '../../../models/ingredient.model'
-import type { Recipe } from '../../../models/recipe.model'
+import type { KitchenMiseTask } from '../../../models/kitchen-mise.model'
 import { resolveDishSemanticLine } from '../firestore/dish/utils/view/resolveDishSemanticLine'
 import {
   normalizeString,
@@ -25,6 +25,7 @@ export type KitchenSemanticMenuEntry = {
   id: string
   dishId: string
   name: string
+  description: string
   semanticLine: string
   integrityNote: string
 }
@@ -38,7 +39,8 @@ export type KitchenSemanticMenuSection = {
 
 type SemanticMenuJsonSource = {
   id: string
-  name: string
+  name?: string
+  title?: string
   names?: Partial<Record<string, string>>
 }
 
@@ -58,6 +60,14 @@ const localizedName = (
 ) => {
   const localized = source.names?.[languageCode]
   return normalizeString(localized) || normalizeString(source.name)
+}
+
+const localizedDescription = (
+  source: { description?: string; descriptions?: Partial<Record<string, string>> },
+  languageCode: string
+) => {
+  const localized = source.descriptions?.[languageCode]
+  return normalizeString(localized) || normalizeString(source.description)
 }
 
 export function useKitchenMenu() {
@@ -99,12 +109,12 @@ export function useKitchenMenu() {
       ? normalizeString(raw[0])
       : normalizeString(raw)
   })
-  const requestedLanguageCode = computed(() => {
+  const requestedLanguageParam = computed(() => {
     const raw = route.query.lang || route.query.language
     const code = Array.isArray(raw)
       ? normalizeString(raw[0])
       : normalizeString(raw)
-    return code.replace(/_/g, '-') || 'en'
+    return code.replace(/_/g, '-')
   })
 
   const { kitchens, pending: kitchensPending } = useKitchenCollection()
@@ -118,10 +128,32 @@ export function useKitchenMenu() {
     const found = list.find((entry) => {
       const id = normalizeString(entry?.id)
       const slug = normalizeString((entry as any)?.slug).toLowerCase()
-      return id === key || (slug.length > 0 && slug === keyLower)
+      const slugAliases = Array.isArray((entry as any)?.slug_aliases)
+        ? (entry as any).slug_aliases.map((alias: unknown) =>
+            normalizeString(alias).toLowerCase()
+          )
+        : []
+
+      return (
+        id === key ||
+        (slug.length > 0 && slug === keyLower) ||
+        slugAliases.includes(keyLower) ||
+        (id === 'ChIJ93_ggY-jj0cRTCyLcfBuK2w' &&
+          ['luna-picante', 'luna-piccante'].includes(keyLower))
+      )
     })
 
     return found ?? null
+  })
+
+  const requestedLanguageCode = computed(() => {
+    const explicit = requestedLanguageParam.value
+    if (explicit) return explicit
+
+    return (
+      normalizeString((resolvedKitchen.value as any)?.language_settings?.default_language) ||
+      'de'
+    )
   })
 
   const kitchenId = computed(() => normalizeString(resolvedKitchen.value?.id))
@@ -143,8 +175,8 @@ export function useKitchenMenu() {
   const dishesRef = shallowRef(null) as ShallowRef<
     Ref<Dish[] | undefined> | null
   >
-  const recipesRef = shallowRef(null) as ShallowRef<
-    Ref<Recipe[] | undefined> | null
+  const miseRef = shallowRef(null) as ShallowRef<
+    Ref<KitchenMiseTask[] | undefined> | null
   >
   const ingredientsRef = firestoreFetchCollection<Ingredient>('ingredients')
 
@@ -159,17 +191,17 @@ export function useKitchenMenu() {
         kitchenId: nextKitchenId,
         collectionName: 'dishes',
       })
-      const recipesPath = resolveKitchenRuntimeChildCollectionPath({
+      const misePath = resolveKitchenRuntimeChildCollectionPath({
         kitchenId: nextKitchenId,
-        collectionName: 'recipes',
+        collectionName: 'mise',
       })
 
       menusRef.value = menusPath ? firestoreFetchCollection<Menu>(menusPath) : null
       dishesRef.value = dishesPath
         ? firestoreFetchCollection<Dish>(dishesPath)
         : null
-      recipesRef.value = recipesPath
-        ? firestoreFetchCollection<Recipe>(recipesPath)
+      miseRef.value = misePath
+        ? firestoreFetchCollection<KitchenMiseTask>(misePath)
         : null
     },
     { immediate: true }
@@ -177,7 +209,7 @@ export function useKitchenMenu() {
 
   const menus = computed(() => menusRef.value?.value ?? [])
   const dishes = computed(() => dishesRef.value?.value ?? [])
-  const recipes = computed(() => recipesRef.value?.value ?? [])
+  const mise = computed(() => miseRef.value?.value ?? [])
   const ingredients = computed(() => ingredientsRef.value ?? [])
   const currencyCode = computed(() =>
     normalizeString((resolvedKitchen.value as any)?.currency_code) || 'CHF'
@@ -189,10 +221,10 @@ export function useKitchenMenu() {
     })
     return map
   })
-  const recipesById = computed(() => {
-    const map = new Map<string, Recipe>()
-    recipes.value.forEach((recipe) => {
-      if (recipe.id) map.set(recipe.id, recipe)
+  const miseById = computed(() => {
+    const map = new Map<string, KitchenMiseTask>()
+    mise.value.forEach((item) => {
+      if (item.id) map.set(item.id, item)
     })
     return map
   })
@@ -219,6 +251,11 @@ export function useKitchenMenu() {
     emptyMenuSubject: 'This kitchen',
     emptyMenuFallback: 'This kitchen has no active public menu right now.',
   })
+  const headerTitle = computed(() =>
+    menuView.selectedMenu.value
+      ? localizedName(menuView.selectedMenu.value, requestedLanguageCode.value)
+      : menuView.headerTitle.value
+  )
 
   const resolveMenuTo = (menu: Menu) => {
     const menuId = normalizeString(menu?.id)
@@ -266,9 +303,11 @@ export function useKitchenMenu() {
             if (!dish) return null
 
             const name = localizedName(dish, languageCode)
+            const itemDescription = localizedDescription(item, languageCode)
+            const dishDescription = localizedDescription(dish, languageCode)
             const semanticLine = resolveDishSemanticLine({
               dish,
-              recipes: recipes.value,
+              mise: mise.value,
               ingredients: ingredients.value,
               languageCode,
               excludedIds,
@@ -283,6 +322,7 @@ export function useKitchenMenu() {
               id: item.id,
               dishId,
               name,
+              description: itemDescription || dishDescription,
               semanticLine,
               integrityNote,
             }
@@ -312,10 +352,10 @@ export function useKitchenMenu() {
       .map((id) => dishesById.value.get(id))
       .filter((dish): dish is Dish => Boolean(dish))
   )
-  const usedRecipeIds = computed(() =>
+  const usedMiseIds = computed(() =>
     Array.from(
       new Set(
-        usedDishes.value.flatMap((dish) => normalizeList(dish.recipe_ids))
+        usedDishes.value.flatMap((dish) => normalizeList(dish.mise_ids))
       )
     )
   )
@@ -328,7 +368,7 @@ export function useKitchenMenu() {
   )
   const minimalSource = (source: SemanticMenuJsonSource) => ({
     id: source.id,
-    name: source.name,
+    name: source.name || source.title || '',
     names: source.names || {},
   })
   const prototypeMenuJson = computed(() => ({
@@ -341,7 +381,7 @@ export function useKitchenMenu() {
       kitchen: kitchenId.value ? `kitchens/${kitchenId.value}` : '',
       menus: kitchenId.value ? `kitchens/${kitchenId.value}/menus` : '',
       dishes: kitchenId.value ? `kitchens/${kitchenId.value}/dishes` : '',
-      recipes: kitchenId.value ? `kitchens/${kitchenId.value}/recipes` : '',
+      mise: kitchenId.value ? `kitchens/${kitchenId.value}/mise` : '',
       ingredients: 'ingredients',
     },
     kitchen: resolvedKitchen.value
@@ -361,12 +401,14 @@ export function useKitchenMenu() {
       id: dish.id,
       name: dish.name,
       names: dish.names || {},
-      recipe_ids: dish.recipe_ids,
+      description: dish.description || '',
+      descriptions: dish.descriptions || {},
+      mise_ids: dish.mise_ids,
       ingredient_ids: dish.ingredient_ids,
     })),
-    recipes: usedRecipeIds.value
-      .map((id) => recipesById.value.get(id))
-      .filter((recipe): recipe is Recipe => Boolean(recipe))
+    mise: usedMiseIds.value
+      .map((id) => miseById.value.get(id))
+      .filter((item): item is KitchenMiseTask => Boolean(item))
       .map(minimalSource),
     ingredients: usedIngredientIds.value
       .map((id) => ingredientsById.value.get(id))
@@ -389,7 +431,7 @@ export function useKitchenMenu() {
     kitchenAddress,
     menus,
     dishes,
-    recipes,
+    mise,
     ingredients,
     currencyCode: menuView.currencyCode,
     sortedMenus: menuView.sortedMenus,
@@ -408,7 +450,7 @@ export function useKitchenMenu() {
     formatPrice: menuView.formatPrice,
     semanticSections,
     prototypeMenuJson,
-    headerTitle: menuView.headerTitle,
+    headerTitle,
     headerDescription: menuView.headerDescription,
     backToKitchen,
   }

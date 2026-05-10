@@ -10,21 +10,21 @@
       </div>
 
       <div
-        v-if="recipeIds.length || ingredientIds.length"
+        v-if="miseIds.length || ingredientIds.length"
         class="space-y-2"
       >
         <div
-          v-if="recipeIds.length"
+          v-if="miseIds.length"
           class="flex flex-wrap gap-1"
         >
           <UBadge
-            v-for="recipeId in recipeIds"
-            :key="recipeId"
+            v-for="miseId in miseIds"
+            :key="miseId"
             variant="soft"
             color="neutral"
             size="xs"
           >
-            {{ recipeId }}
+            {{ miseId }}
           </UBadge>
         </div>
 
@@ -63,12 +63,12 @@
 
 <script setup lang="ts">
 type Props = {
-  recipeIds?: string[]
+  miseIds?: string[]
   ingredientIds?: string[]
 }
 
 withDefaults(defineProps<Props>(), {
-  recipeIds: () => [],
+  miseIds: () => [],
   ingredientIds: () => [],
 })
 </script>
