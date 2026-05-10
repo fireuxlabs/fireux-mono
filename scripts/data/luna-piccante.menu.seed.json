@@ -331,7 +331,8 @@
       }
     }
   ],
-  "recipes": [
+  "recipes": [],
+  "mise": [
     {
       "id": "tomato-sauce",
       "name": "Tomato sauce",
@@ -410,7 +411,8 @@
       "id": "margherita",
       "name": "Margherita",
       "description": "Tomato sauce, mozzarella, oregano",
-      "recipe_ids": ["pizza-dough", "tomato-sauce"],
+      "recipe_ids": [],
+      "mise_ids": ["pizza-dough", "tomato-sauce"],
       "ingredient_ids": ["mozzarella", "oregano"]
     }
   ],

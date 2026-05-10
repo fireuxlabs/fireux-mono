@@ -72,14 +72,27 @@
         </section>
 
         <section class="space-y-3">
-          <h3 class="text-base font-semibold">Recipes / Prep</h3>
+          <h3 class="text-base font-semibold">Recipes</h3>
           <ul class="space-y-1 text-sm text-[#36473b]">
             <li
               v-for="recipe in recipes"
               :key="recipe.id"
             >
-              <span class="font-medium text-[#17201a]">{{ recipe.name }}</span>
+              <span class="font-medium text-[#17201a]">{{ sourceName(recipe) }}</span>
               <span class="text-[#6b776e]"> · {{ recipe.id }}</span>
+            </li>
+          </ul>
+        </section>
+
+        <section class="space-y-3">
+          <h3 class="text-base font-semibold">Mise / Prep</h3>
+          <ul class="space-y-1 text-sm text-[#36473b]">
+            <li
+              v-for="item in mise"
+              :key="item.id"
+            >
+              <span class="font-medium text-[#17201a]">{{ sourceName(item) }}</span>
+              <span class="text-[#6b776e]"> · {{ item.id }}</span>
             </li>
           </ul>
         </section>
@@ -97,6 +110,9 @@
               </div>
               <div v-if="dish.recipe_ids.length" class="mt-1">
                 Recipes: {{ dish.recipe_ids.join(', ') }}
+              </div>
+              <div v-if="dish.mise_ids.length" class="mt-1">
+                Mise: {{ dish.mise_ids.join(', ') }}
               </div>
               <div v-if="dish.ingredient_ids.length" class="mt-1">
                 Ingredients: {{ dish.ingredient_ids.join(', ') }}
@@ -169,8 +185,10 @@ type PrototypeMenuSection = {
 type PrototypeSource = {
   id: string
   name?: string
+  title?: string
   names?: Record<string, string>
   recipe_ids?: string[]
+  mise_ids?: string[]
   ingredient_ids?: string[]
   integrity_note?: string
 }
@@ -183,6 +201,7 @@ type PrototypeMenu = {
   sections?: PrototypeMenuSection[]
   ingredients?: PrototypeSource[]
   recipes?: PrototypeSource[]
+  mise?: PrototypeSource[]
   dishes?: PrototypeSource[]
 }
 
@@ -211,13 +230,15 @@ const visibleSections = computed(() =>
 )
 const ingredients = computed(() => prototypeMenu.value?.ingredients || [])
 const recipes = computed(() => prototypeMenu.value?.recipes || [])
+const mise = computed(() => prototypeMenu.value?.mise || [])
 const dishes = computed(() =>
   (prototypeMenu.value?.dishes || []).map((dish) => ({
     ...dish,
     recipe_ids: dish.recipe_ids || [],
+    mise_ids: dish.mise_ids || [],
     ingredient_ids: dish.ingredient_ids || [],
   }))
 )
 const sourceName = (source: PrototypeSource) =>
-  source.names?.en || source.name || source.id
+  source.names?.en || source.name || source.title || source.id
 </script>

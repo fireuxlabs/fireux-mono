@@ -16,6 +16,7 @@ type ServiceAccount = {
 type SourceDoc = {
   id: string
   name?: string
+  title?: string
   names?: Record<string, string>
 }
 
@@ -138,12 +139,17 @@ function cleanForJson(value: unknown): unknown {
 
 const sourceName = (source: SourceDoc | undefined, languageCode: string) => {
   if (!source) return ''
-  return normalizeString(source.names?.[languageCode]) || normalizeString(source.name)
+  return (
+    normalizeString(source.names?.[languageCode]) ||
+    normalizeString(source.name) ||
+    normalizeString(source.title)
+  )
 }
 
 function resolveSemanticLine(options: {
   dish: Record<string, unknown>
   recipesById: Map<string, SourceDoc>
+  miseById: Map<string, SourceDoc>
   ingredientsById: Map<string, SourceDoc>
   languageCode: string
   excludedIds: string[]
@@ -162,6 +168,9 @@ function resolveSemanticLine(options: {
 
   normalizeList(options.dish.recipe_ids).forEach((id) =>
     pushSource(id, options.recipesById.get(id))
+  )
+  normalizeList(options.dish.mise_ids).forEach((id) =>
+    pushSource(id, options.miseById.get(id))
   )
   normalizeList(options.dish.ingredient_ids).forEach((id) =>
     pushSource(id, options.ingredientsById.get(id))
@@ -244,6 +253,7 @@ export default defineEventHandler(async (event) => {
   const rawSections = Array.isArray(menu.sections) ? menu.sections : []
   const menuDishIds = normalizeList(menu.dish_ids)
   const menuRecipeIds = normalizeList(menu.recipe_ids)
+  const menuMiseIds = normalizeList(menu.mise_ids)
   const menuIngredientIds = normalizeList(menu.ingredient_ids)
   const dishIds = Array.from(
     new Set(
@@ -267,6 +277,12 @@ export default defineEventHandler(async (event) => {
       ...dishes.flatMap((dish) => normalizeList((dish as Record<string, unknown>).recipe_ids)),
     ])
   )
+  const miseIds = Array.from(
+    new Set([
+      ...menuMiseIds,
+      ...dishes.flatMap((dish) => normalizeList((dish as Record<string, unknown>).mise_ids)),
+    ])
+  )
   const ingredientIds = Array.from(
     new Set(
       [
@@ -278,8 +294,10 @@ export default defineEventHandler(async (event) => {
     )
   )
   const recipes = await fetchDocsById(kitchenRef.collection('recipes'), recipeIds)
+  const mise = await fetchDocsById(kitchenRef.collection('mise'), miseIds)
   const ingredients = await fetchDocsById(db.collection('ingredients'), ingredientIds)
   const recipesById = new Map(recipes.map((recipe) => [recipe.id, recipe]))
+  const miseById = new Map(mise.map((item) => [item.id, item]))
   const ingredientsById = new Map(ingredients.map((ingredient) => [ingredient.id, ingredient]))
   const sections = rawSections
     .slice()
@@ -310,6 +328,7 @@ export default defineEventHandler(async (event) => {
             semantic_line: resolveSemanticLine({
               dish,
               recipesById,
+              miseById,
               ingredientsById,
               languageCode,
               excludedIds,
@@ -343,6 +362,7 @@ export default defineEventHandler(async (event) => {
       menu: menuSnap.ref.path,
       dishes: kitchenRef.collection('dishes').path,
       recipes: kitchenRef.collection('recipes').path,
+      mise: kitchenRef.collection('mise').path,
       ingredients: 'ingredients',
     },
     kitchen: {
@@ -355,6 +375,7 @@ export default defineEventHandler(async (event) => {
     sections,
     dishes,
     recipes,
+    mise,
     ingredients,
   })
 })

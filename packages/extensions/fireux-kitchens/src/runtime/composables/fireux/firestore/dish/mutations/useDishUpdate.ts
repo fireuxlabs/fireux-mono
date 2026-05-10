@@ -53,6 +53,7 @@ export function useDishUpdate(
       next.descriptions = normalizeDishTranslatedText(next.descriptions)
     }
     if ('recipe_ids' in next) next.recipe_ids = normalizeDishStringArray(next.recipe_ids)
+    if ('mise_ids' in next) next.mise_ids = normalizeDishStringArray(next.mise_ids)
     if ('ingredient_ids' in next) {
       next.ingredient_ids = normalizeDishStringArray(next.ingredient_ids)
     }

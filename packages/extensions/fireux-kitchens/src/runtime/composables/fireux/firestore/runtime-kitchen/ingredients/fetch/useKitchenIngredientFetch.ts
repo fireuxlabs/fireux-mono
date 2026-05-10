@@ -62,8 +62,8 @@ export function useKitchenIngredientFetch(
     if (!path) return null
     return fsq(collection(resolveDb(), path)) as Query<KitchenIngredient>
   })
-  const kitchenItems = import.meta.server
-    ? ref(undefined) as Ref<KitchenIngredient[] | undefined>
+  const kitchenBinding = import.meta.server
+    ? null
     : useCollection<KitchenIngredient>(kitchenQuery, {
         ssrKey: computed(() => collectionPath.value || 'kitchen-ingredients-empty'),
         transform: (docSnap: QueryDocumentSnapshot<KitchenIngredient>) => {
@@ -75,7 +75,10 @@ export function useKitchenIngredientFetch(
             ? attachDevCollectionMeta(value, collectionPath.value, docSnap.id) as KitchenIngredient
             : value as KitchenIngredient
         },
-      } as any) as Ref<KitchenIngredient[] | undefined>
+      } as any)
+  const kitchenItems = import.meta.server
+    ? ref(undefined) as Ref<KitchenIngredient[] | undefined>
+    : (kitchenBinding as any).data as Ref<KitchenIngredient[] | undefined>
 
   const globalIngredients = firestoreFetchCollection<Ingredient>(GLOBAL_COLLECTION_PATH)
 

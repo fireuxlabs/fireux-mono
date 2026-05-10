@@ -10,9 +10,9 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Owner app scope: Kitchen
  *
  * Dish is the first guest-facing semantic composition layer. It links to
- * kitchen-owned recipe/prep components and root/shared ingredients by id.
- * Steps, allergens, pricing, stock, mise, images, and service workflow are
- * not active on the Dish model yet.
+ * future recipe/method cards, kitchen-owned mise/prep components, and
+ * root/shared ingredients by id. Steps, allergens, pricing, stock, images,
+ * and service workflow are not active on the Dish model yet.
  */
 export type DishTranslatedText = Partial<Record<string, string>>
 
@@ -25,6 +25,7 @@ export const DishModel = {
   names: {} as DishTranslatedText,
   descriptions: {} as DishTranslatedText,
   recipe_ids: [] as string[],
+  mise_ids: [] as string[],
   ingredient_ids: [] as string[],
   kitchen_id: '' as string,
   created: {
@@ -94,6 +95,7 @@ export function normalizeDish(value: unknown): Dish {
     names: normalizeDishTranslatedText(source.names),
     descriptions: normalizeDishTranslatedText(source.descriptions),
     recipe_ids: normalizeDishStringArray(source.recipe_ids),
+    mise_ids: normalizeDishStringArray(source.mise_ids),
     ingredient_ids: normalizeDishStringArray(source.ingredient_ids),
     kitchen_id: pickString(source.kitchen_id),
     created,

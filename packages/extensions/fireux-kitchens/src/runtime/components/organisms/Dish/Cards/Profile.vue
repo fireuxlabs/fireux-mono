@@ -27,6 +27,10 @@
           <span class="console-summary-value">{{ recipeCount }}</span>
         </div>
         <div class="console-summary-field">
+          Mise:
+          <span class="console-summary-value">{{ miseCount }}</span>
+        </div>
+        <div class="console-summary-field">
           Ingredients:
           <span class="console-summary-value">{{ ingredientCount }}</span>
         </div>
@@ -57,6 +61,34 @@
               class="text-xs text-dimmed"
             >
               No recipe links yet.
+            </p>
+          </div>
+        </UCard>
+
+        <UCard variant="soft">
+          <div class="space-y-3">
+            <div class="text-sm font-medium text-highlighted">Mise</div>
+            <div
+              v-if="miseIds.length"
+              class="flex flex-wrap gap-1.5"
+            >
+              <UButton
+                v-for="miseId in miseIds"
+                :key="miseId"
+                :to="`/console/kitchen/mise/${encodeURIComponent(miseId)}`"
+                size="xs"
+                color="neutral"
+                variant="soft"
+                icon="i-lucide-list-checks"
+              >
+                {{ miseId }}
+              </UButton>
+            </div>
+            <p
+              v-else
+              class="text-xs text-dimmed"
+            >
+              No mise links yet.
             </p>
           </div>
         </UCard>
@@ -105,10 +137,15 @@ const recipeIds = computed(() =>
   Array.isArray(props.dish?.recipe_ids) ? props.dish.recipe_ids : []
 )
 
+const miseIds = computed(() =>
+  Array.isArray(props.dish?.mise_ids) ? props.dish.mise_ids : []
+)
+
 const ingredientIds = computed(() =>
   Array.isArray(props.dish?.ingredient_ids) ? props.dish.ingredient_ids : []
 )
 
 const recipeCount = computed(() => recipeIds.value.length)
+const miseCount = computed(() => miseIds.value.length)
 const ingredientCount = computed(() => ingredientIds.value.length)
 </script>

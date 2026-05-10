@@ -18,6 +18,7 @@ export namespace DishCard {
     name: string
     description: string
     recipeIds: string[]
+    miseIds: string[]
     ingredientIds: string[]
   }
 }
@@ -45,6 +46,7 @@ export function useDishInterface() {
 
   type DishPreview = {
     recipeIds: string[]
+    miseIds: string[]
     ingredientIds: string[]
   }
 
@@ -53,6 +55,7 @@ export function useDishInterface() {
     const name = safeString(dish.name).trim()
     const description = safeString(dish.description).trim()
     const recipeIds = safeStringArray(dish.recipe_ids)
+    const miseIds = safeStringArray(dish.mise_ids)
     const ingredientIds = safeStringArray(dish.ingredient_ids)
 
     return {
@@ -68,6 +71,7 @@ export function useDishInterface() {
       name,
       description,
       recipeIds,
+      miseIds,
       ingredientIds,
     }
   }
@@ -105,6 +109,7 @@ export function useDishInterface() {
 
     return {
       recipeIds: base.recipeIds,
+      miseIds: base.miseIds,
       ingredientIds: base.ingredientIds,
     }
   }

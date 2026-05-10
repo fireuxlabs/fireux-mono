@@ -1,7 +1,12 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import type { Ref, ShallowRef } from 'vue'
-import { computed, shallowRef, unref, watch } from 'vue'
+import { attachDevCollectionMeta } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
+import {
+  useCollection,
+  useFirestoreResolver,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { collection, query as fsq, type Query, type QueryDocumentSnapshot } from 'firebase/firestore'
+import type { Ref } from 'vue'
+import { computed, ref, unref } from 'vue'
 import {
   normalizeString,
   resolveKitchenRuntimeChildCollectionPath,
@@ -19,9 +24,7 @@ export function useKitchenConsoleCollection<T>(
   options: UseKitchenConsoleCollectionOptions = {}
 ) {
   const { appId } = useFireUXConfig()
-  const { firestoreFetchCollection } = useFirestoreRead({
-    databaseId: options.databaseId,
-  })
+  const resolveDb = useFirestoreResolver(options.databaseId)
 
   const resolvedKitchenId = computed(() =>
     normalizeString(typeof kitchenId === 'string' ? kitchenId : kitchenId.value)
@@ -39,21 +42,32 @@ export function useKitchenConsoleCollection<T>(
       appId,
     })
   )
-  const databaseIdKey = computed(() => normalizeString(unref(options.databaseId)))
+  const collectionQuery = computed<Query<T> | null>(() => {
+    const path = collectionPath.value
+    if (!path) return null
+    return fsq(collection(resolveDb(), path)) as Query<T>
+  })
+  const collectionBinding = import.meta.server
+    ? null
+    : useCollection<T>(collectionQuery, {
+        ssrKey: computed(() => collectionPath.value || `${collectionName}-empty`),
+        transform: (docSnap: QueryDocumentSnapshot<T>) => {
+          const value = {
+            ...(docSnap.data() as T),
+            id: docSnap.id,
+          } as T & Record<string, unknown>
+          return collectionPath.value
+            ? attachDevCollectionMeta(value, collectionPath.value, docSnap.id) as T
+            : value as T
+        },
+      } as any)
+  const collectionItems = import.meta.server
+    ? ref(undefined) as Ref<T[] | undefined>
+    : (collectionBinding as any).data as Ref<T[] | undefined>
 
-  const collectionRef = shallowRef(null) as ShallowRef<Ref<T[] | undefined> | null>
-
-  watch(
-    [collectionPath, databaseIdKey],
-    ([nextPath]) => {
-      collectionRef.value = nextPath ? firestoreFetchCollection<T>(nextPath) : null
-    },
-    { immediate: true }
-  )
-
-  const items = computed<T[]>(() => collectionRef.value?.value ?? [])
+  const items = computed<T[]>(() => collectionItems.value ?? [])
   const pending = computed(
-    () => Boolean(collectionPath.value) && collectionRef.value?.value === undefined
+    () => Boolean(collectionPath.value) && collectionItems.value === undefined
   )
 
   return {

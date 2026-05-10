@@ -106,6 +106,12 @@ function duplicateIds(entries, label) {
 
 function collectIntegrityNotes(seed) {
   const notes = []
+  for (const item of Array.isArray(seed.mise) ? seed.mise : []) {
+    if (normalizeString(item.integrity_note)) {
+      notes.push({ scope: 'mise', id: normalizeString(item.id), note: item.integrity_note })
+    }
+  }
+
   for (const dish of Array.isArray(seed.dishes) ? seed.dishes : []) {
     if (normalizeString(dish.integrity_note)) {
       notes.push({ scope: 'dish', id: normalizeString(dish.id), note: dish.integrity_note })
@@ -137,10 +143,12 @@ function validateSeed(seed) {
   const warnings = []
   const ingredients = Array.isArray(seed.ingredients) ? seed.ingredients : []
   const recipes = Array.isArray(seed.recipes) ? seed.recipes : []
+  const mise = Array.isArray(seed.mise) ? seed.mise : []
   const dishes = Array.isArray(seed.dishes) ? seed.dishes : []
   const sections = Array.isArray(seed.sections) ? seed.sections : []
   const ingredientIds = new Set(ingredients.map((entry) => normalizeString(entry.id)).filter(Boolean))
   const recipeIds = new Set(recipes.map((entry) => normalizeString(entry.id)).filter(Boolean))
+  const miseIds = new Set(mise.map((entry) => normalizeString(entry.id)).filter(Boolean))
   const dishIds = new Set(dishes.map((entry) => normalizeString(entry.id)).filter(Boolean))
 
   if (!normalizeString(seed.kitchen?.id)) errors.push('missing kitchen.id')
@@ -150,6 +158,7 @@ function validateSeed(seed) {
 
   errors.push(...duplicateIds(ingredients, 'ingredient duplicate'))
   errors.push(...duplicateIds(recipes, 'recipe duplicate'))
+  errors.push(...duplicateIds(mise, 'mise duplicate'))
   errors.push(...duplicateIds(dishes, 'dish duplicate'))
   errors.push(...duplicateIds(sections, 'section duplicate'))
 
@@ -158,6 +167,12 @@ function validateSeed(seed) {
     for (const recipeId of normalizeIdList(dish.recipe_ids)) {
       if (!recipeIds.has(recipeId)) {
         errors.push(`dish ${dishId} references unknown recipe ${recipeId}`)
+      }
+    }
+
+    for (const miseId of normalizeIdList(dish.mise_ids)) {
+      if (!miseIds.has(miseId)) {
+        errors.push(`dish ${dishId} references unknown mise ${miseId}`)
       }
     }
 
@@ -271,6 +286,44 @@ function buildRecipePayload(recipe, seed, kitchenId, snap) {
   }
 }
 
+function buildMisePayload(mise, seed, kitchenId, snap) {
+  const language = sourceLanguage(seed)
+  const description = normalizeString(mise.description)
+  const names = localizedText(mise.names, language, mise.name)
+  const descriptions = localizedText(mise.descriptions, language, description)
+
+  return {
+    id: mise.id,
+    kitchen_id: kitchenId,
+    title: mise.name,
+    name: mise.name,
+    slug: mise.id,
+    description,
+    source_language: language,
+    names,
+    descriptions,
+    kind: 'prep',
+    type: 'prep',
+    category: 'prep',
+    station: normalizeString(mise.station),
+    service_date: '',
+    status: 'todo',
+    priority: 'normal',
+    estimated_minutes: 0,
+    ingredient_ids: normalizeIdList(mise.ingredient_ids),
+    mise_ids: normalizeIdList(mise.mise_ids),
+    menu_id: '',
+    recipe_id: normalizeString(mise.recipe_id),
+    assignee_ids: [],
+    checklist: [],
+    due_at: {},
+    completed_at: {},
+    notes: normalizeString(mise.notes),
+    created: createdStamp(snap),
+    updated: updatedStamp(),
+  }
+}
+
 function buildDishPayload(dish, seed, kitchenId, snap) {
   const language = sourceLanguage(seed)
   const description = normalizeString(dish.description)
@@ -285,6 +338,7 @@ function buildDishPayload(dish, seed, kitchenId, snap) {
     },
     descriptions: description ? { [language]: description } : {},
     recipe_ids: normalizeIdList(dish.recipe_ids),
+    mise_ids: normalizeIdList(dish.mise_ids),
     ingredient_ids: normalizeIdList(dish.ingredient_ids),
     kitchen_id: kitchenId,
     created: createdStamp(snap),
@@ -311,9 +365,10 @@ function buildMenuPayload(seed, kitchenId, snap) {
       photo_url: '',
     },
     service_modes: Array.isArray(seed.menu.service_modes) ? seed.menu.service_modes : [],
-    ingredient_ids: seed.ingredients.map((ingredient) => ingredient.id),
-    recipe_ids: seed.recipes.map((recipe) => recipe.id),
-    dish_ids: seed.dishes.map((dish) => dish.id),
+    ingredient_ids: (Array.isArray(seed.ingredients) ? seed.ingredients : []).map((ingredient) => ingredient.id),
+    recipe_ids: (Array.isArray(seed.recipes) ? seed.recipes : []).map((recipe) => recipe.id),
+    mise_ids: (Array.isArray(seed.mise) ? seed.mise : []).map((mise) => mise.id),
+    dish_ids: (Array.isArray(seed.dishes) ? seed.dishes : []).map((dish) => dish.id),
     sections: seed.sections.map((section, index) => {
       const payload = {
         id: section.id,
@@ -368,6 +423,7 @@ async function inspectFirestoreState({ db, kitchenRef, seed }) {
   const ingredients = []
   const kitchenIngredients = []
   const recipes = []
+  const mise = []
   const dishes = []
 
   for (const ingredient of seed.ingredients) {
@@ -388,6 +444,11 @@ async function inspectFirestoreState({ db, kitchenRef, seed }) {
     recipes.push({ id: recipe.id, exists: snap.exists, path: snap.ref.path, snap })
   }
 
+  for (const item of Array.isArray(seed.mise) ? seed.mise : []) {
+    const snap = await kitchenRef.collection('mise').doc(item.id).get()
+    mise.push({ id: item.id, exists: snap.exists, path: snap.ref.path, snap })
+  }
+
   for (const dish of seed.dishes) {
     const snap = await kitchenRef.collection('dishes').doc(dish.id).get()
     dishes.push({ id: dish.id, exists: snap.exists, path: snap.ref.path, snap })
@@ -399,6 +460,7 @@ async function inspectFirestoreState({ db, kitchenRef, seed }) {
     ingredients,
     kitchenIngredients,
     recipes,
+    mise,
     dishes,
     menu: { id: seed.menu.id, exists: menuSnap.exists, path: menuSnap.ref.path, snap: menuSnap },
     missingIngredients: ingredients.filter((entry) => !entry.exists).map((entry) => entry.id),
@@ -406,6 +468,7 @@ async function inspectFirestoreState({ db, kitchenRef, seed }) {
       .filter((entry) => !entry.exists)
       .map((entry) => entry.id),
     missingRecipes: recipes.filter((entry) => !entry.exists).map((entry) => entry.id),
+    missingMise: mise.filter((entry) => !entry.exists).map((entry) => entry.id),
     missingDishes: dishes.filter((entry) => !entry.exists).map((entry) => entry.id),
     missingMenu: !menuSnap.exists ? seed.menu.id : '',
   }
@@ -476,6 +539,7 @@ async function main() {
     missingIngredients: state.missingIngredients,
     missingKitchenIngredients: state.missingKitchenIngredients,
     missingRecipes: state.missingRecipes,
+    missingMise: state.missingMise,
     missingDishes: state.missingDishes,
     missingMenu: state.missingMenu || null,
     emptySections: validation.emptySections,
@@ -487,12 +551,14 @@ async function main() {
     ingredients: [],
     kitchenIngredients: [],
     recipes: [],
+    mise: [],
     dishes: [],
     menus: [],
   }
   const updated = {
     kitchenIngredients: [],
     recipes: [],
+    mise: [],
     dishes: [],
     menus: [],
   }
@@ -536,6 +602,16 @@ async function main() {
       else created.recipes.push(entry.id)
     }
 
+    for (const entry of state.mise) {
+      const item = seed.mise.find((source) => source.id === entry.id)
+      if (!item) continue
+      batch.set(entry.snap.ref, buildMisePayload(item, seed, seed.kitchen.id, entry.snap), {
+        merge: false,
+      })
+      if (entry.exists) updated.mise.push(entry.id)
+      else created.mise.push(entry.id)
+    }
+
     for (const entry of state.dishes) {
       const dish = seed.dishes.find((item) => item.id === entry.id)
       if (!dish) continue
@@ -557,6 +633,7 @@ async function main() {
       ingredients: state.ingredients.map((entry) => entry.path),
       kitchenIngredients: state.kitchenIngredients.map((entry) => entry.path),
       recipes: state.recipes.map((entry) => entry.path),
+      mise: state.mise.map((entry) => entry.path),
       dishes: state.dishes.map((entry) => entry.path),
       menu: menuRef.path,
     })
@@ -574,6 +651,7 @@ async function main() {
       ingredients: 'ingredients',
       kitchenIngredients: kitchenRef.collection('ingredients').path,
       recipes: kitchenRef.collection('recipes').path,
+      mise: kitchenRef.collection('mise').path,
       dishes: kitchenRef.collection('dishes').path,
       menu: menuRef.path,
     },

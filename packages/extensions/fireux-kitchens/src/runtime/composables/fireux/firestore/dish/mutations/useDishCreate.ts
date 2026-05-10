@@ -19,6 +19,7 @@ type DishCreateDraft = {
   names?: unknown
   descriptions?: unknown
   recipe_ids?: unknown
+  mise_ids?: unknown
   ingredient_ids?: unknown
 }
 
@@ -77,6 +78,7 @@ async function buildDishPayload(
       names: nameSeed.text,
       descriptions: descriptionSeed?.text ?? {},
       recipe_ids: normalizeDishStringArray(draft.recipe_ids),
+      mise_ids: normalizeDishStringArray(draft.mise_ids),
       ingredient_ids: normalizeDishStringArray(draft.ingredient_ids),
       kitchen_id: kitchenId,
     },

@@ -40,6 +40,10 @@
                     {{ recipeCount(dish) === 1 ? 'recipe' : 'recipes' }}
                   </UBadge>
                   <UBadge variant="soft" color="neutral" size="xs">
+                    {{ miseCount(dish) }}
+                    {{ miseCount(dish) === 1 ? 'mise' : 'mise' }}
+                  </UBadge>
+                  <UBadge variant="soft" color="neutral" size="xs">
                     {{ ingredientCount(dish) }}
                     {{ ingredientCount(dish) === 1 ? 'ingredient' : 'ingredients' }}
                   </UBadge>
@@ -95,6 +99,9 @@ const dishesSorted = computed(() =>
 
 const recipeCount = (dish: Dish) =>
   Array.isArray(dish.recipe_ids) ? dish.recipe_ids.length : 0
+
+const miseCount = (dish: Dish) =>
+  Array.isArray(dish.mise_ids) ? dish.mise_ids.length : 0
 
 const ingredientCount = (dish: Dish) =>
   Array.isArray(dish.ingredient_ids) ? dish.ingredient_ids.length : 0
