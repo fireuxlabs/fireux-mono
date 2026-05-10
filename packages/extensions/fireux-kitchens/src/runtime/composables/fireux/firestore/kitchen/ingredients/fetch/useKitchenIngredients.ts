@@ -11,27 +11,29 @@ import type { Ref } from 'vue'
 import { computed, ref, unref } from 'vue'
 import { resolveKitchenChildCollectionBasePath } from '../../../../app/kitchen-console/shared'
 import type {
-    Ingredient,
-    KitchenIngredient,
+  Ingredient,
+  KitchenIngredient,
 } from '../../../../../../models/ingredient.model'
 
 const GLOBAL_COLLECTION_PATH = 'ingredients'
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
   `${basePath}/${kitchenId}/ingredients`
 
-type UseKitchenIngredientFetchOptions = {
+type UseKitchenIngredientsOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
   databaseId?: string | Ref<string | null | undefined>
 }
 
-type KitchenIngredientRecord = KitchenIngredient &
-  Partial<Ingredient> & {
-    ingredient_id: string
-  }
+export type KitchenIngredientRecord = Partial<Ingredient> & {
+  id: string
+  ingredient_id: string
+  kitchen_ingredient: KitchenIngredient
+  missing_root_ingredient: boolean
+}
 
-export function useKitchenIngredientFetch(
+export function useKitchenIngredients(
   kitchenId: Ref<string> | string,
-  options: UseKitchenIngredientFetchOptions = {}
+  options: UseKitchenIngredientsOptions = {}
 ) {
   const { firestoreFetchCollection } = useFirestoreRead({
     databaseId: options.databaseId,
@@ -98,18 +100,30 @@ export function useKitchenIngredientFetch(
     return kitchenEntries.map((entry) => {
       const linkId = String((entry as any).ingredient_id || entry.id || '').trim()
       const global = ingredientById.value.get(linkId)
-      const entryImage = String((entry as any).image_url || '').trim()
-      const globalImage = String((global as any)?.image_url || '').trim()
-      const entryName = String((entry as any).name || '').trim()
-      const globalName = String((global as any)?.name || '').trim()
-
-      return {
-        ...(global ?? {}),
+      const usage = {
         ...entry,
         id: String(entry.id || linkId).trim() || linkId,
         ingredient_id: linkId,
-        image_url: entryImage || globalImage,
-        name: entryName || globalName,
+      } as KitchenIngredient
+
+      if (!global) {
+        return {
+          id: linkId,
+          ingredient_id: linkId,
+          name: 'Missing ingredient',
+          slug: '',
+          image_url: '',
+          kitchen_ingredient: usage,
+          missing_root_ingredient: true,
+        }
+      }
+
+      // Root ingredient data is canonical; the kitchen record remains relationship metadata.
+      return {
+        ...global,
+        ingredient_id: linkId,
+        kitchen_ingredient: usage,
+        missing_root_ingredient: false,
       }
     })
   })

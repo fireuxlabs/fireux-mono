@@ -56,7 +56,7 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify';
 import { computed, ref } from 'vue';
-import { useKitchenIngredientAdd } from '../../../../../composables/fireux/firestore/runtime-kitchen/ingredients/mutations/useKitchenIngredientAdd';
+import { useKitchenIngredientAdd } from '../../../../../composables/fireux/firestore/kitchen/ingredients/mutations/useKitchenIngredientAdd';
 import {
     createDefaultKitchenIngredientForm,
     type KitchenIngredientCreateForm,

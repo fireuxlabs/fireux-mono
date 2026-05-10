@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import type { IngredientInterfaceItem } from '../../firestore/ingredient/utils/view/useIngredientInterface'
-import { useKitchenIngredientFetch } from '../../firestore/runtime-kitchen/ingredients/fetch/useKitchenIngredientFetch'
+import { useKitchenIngredients } from '../../firestore/kitchen/ingredients/fetch/useKitchenIngredients'
 import { useKitchenConsole } from './useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
 
@@ -17,7 +17,7 @@ export function useKitchenConsoleIngredients() {
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
   const { ingredients: liveIngredients, pending: livePending, collectionPath } =
-    useKitchenIngredientFetch(fetchKitchenId, {
+    useKitchenIngredients(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
     })

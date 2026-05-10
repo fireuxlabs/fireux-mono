@@ -7,12 +7,12 @@ import type {
 const joinSubtitle = (supplierRef = ''): string =>
   safeString(supplierRef).trim()
 
-export type IngredientInterfaceItem =
-  | Ingredient
-  | (KitchenIngredient &
-      Partial<Ingredient> & {
-        ingredient_id?: string
-      })
+export type IngredientInterfaceItem = Partial<Ingredient> & {
+  id: string
+  ingredient_id?: string
+  kitchen_ingredient?: KitchenIngredient
+  missing_root_ingredient?: boolean
+}
 
 export namespace IngredientCard {
   export type Card = {
