@@ -179,6 +179,35 @@ function resolveSemanticLine(options: {
   return names.join(', ')
 }
 
+function resolveComponentNames(options: {
+  ids: string[]
+  sourcesById: Map<string, SourceDoc>
+  languageCode: string
+  excludedIds?: string[]
+  excludedTerms?: string[]
+}) {
+  const excludedIds = new Set(options.excludedIds || [])
+  const excludedTerms = new Set((options.excludedTerms || []).map(normalizeComparable))
+  const names: string[] = []
+  const missingIds: string[] = []
+
+  for (const id of options.ids) {
+    if (!id || excludedIds.has(id)) continue
+
+    const source = options.sourcesById.get(id)
+    if (!source) {
+      missingIds.push(id)
+      continue
+    }
+
+    const name = sourceName(source, options.languageCode)
+    if (!name || excludedTerms.has(normalizeComparable(name))) continue
+    names.push(name)
+  }
+
+  return { names, missingIds }
+}
+
 async function resolveKitchenRef(db: Firestore, slug: string) {
   if (slug === 'luna-piccante') {
     const explicitRef = db.collection('kitchens').doc(LUNA_KITCHEN_ID)
@@ -320,11 +349,38 @@ export default defineEventHandler(async (event) => {
           const dishId = normalizeString(item.dish_id)
           const dish = dishesById.get(dishId)
           if (!dish) return null
+          const recipeIds = normalizeList((dish as Record<string, unknown>).recipe_ids)
+          const miseIds = normalizeList((dish as Record<string, unknown>).mise_ids)
+          const ingredientIds = normalizeList((dish as Record<string, unknown>).ingredient_ids)
+          const resolvedRecipes = resolveComponentNames({
+            ids: recipeIds,
+            sourcesById: recipesById,
+            languageCode,
+          })
+          const resolvedMise = resolveComponentNames({
+            ids: miseIds,
+            sourcesById: miseById,
+            languageCode,
+          })
+          const resolvedIngredients = resolveComponentNames({
+            ids: ingredientIds,
+            sourcesById: ingredientsById,
+            languageCode,
+          })
 
           return {
             id: normalizeString(item.id),
             dish_id: dishId,
             name: sourceName(dish, languageCode),
+            recipe_ids: recipeIds,
+            mise_ids: miseIds,
+            ingredient_ids: ingredientIds,
+            recipe_names: resolvedRecipes.names,
+            mise_names: resolvedMise.names,
+            ingredient_names: resolvedIngredients.names,
+            missing_recipe_ids: resolvedRecipes.missingIds,
+            missing_mise_ids: resolvedMise.missingIds,
+            missing_ingredient_ids: resolvedIngredients.missingIds,
             semantic_line: resolveSemanticLine({
               dish,
               recipesById,

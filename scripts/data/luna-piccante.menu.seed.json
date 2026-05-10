@@ -12,7 +12,9 @@
     "name": "Luna Piccante Menu",
     "description": "",
     "active": true,
-    "service_modes": ["dine_in"]
+    "service_modes": [
+      "dine_in"
+    ]
   },
   "ingredients": [
     {
@@ -331,55 +333,236 @@
       }
     }
   ],
-  "recipes": [],
-  "mise": [
+  "recipes": [
     {
-      "id": "tomato-sauce",
-      "name": "Tomato sauce",
+      "id": "bbq-chicken",
+      "name": "BBQ chicken",
+      "description": "",
       "names": {
-        "en": "tomato sauce"
-      },
-      "description": ""
+        "en": "BBQ chicken"
+      }
     },
     {
-      "id": "tomato-cubes",
-      "name": "Tomato cubes",
+      "id": "beef-filling",
+      "name": "Beef filling",
+      "description": "",
       "names": {
-        "en": "tomato cubes"
-      },
-      "description": ""
+        "en": "beef filling"
+      }
     },
     {
-      "id": "tomato-slices",
-      "name": "Tomato slices",
+      "id": "beef-sauce",
+      "name": "Beef sauce",
+      "description": "",
       "names": {
-        "en": "tomato slices"
-      },
-      "description": ""
+        "en": "beef sauce"
+      }
+    },
+    {
+      "id": "champignon-cream-sauce",
+      "name": "Champignon cream sauce",
+      "description": "",
+      "names": {
+        "en": "champignon cream sauce"
+      }
+    },
+    {
+      "id": "cocktail-sauce",
+      "name": "Cocktail sauce",
+      "description": "",
+      "names": {
+        "en": "cocktail sauce"
+      }
     },
     {
       "id": "cream-sauce",
       "name": "Cream sauce",
+      "description": "",
       "names": {
         "en": "cream sauce"
-      },
-      "description": ""
+      }
+    },
+    {
+      "id": "green-pepper-sauce",
+      "name": "Green pepper sauce",
+      "description": "",
+      "names": {
+        "en": "green pepper sauce"
+      }
+    },
+    {
+      "id": "herb-butter",
+      "name": "Herb butter",
+      "description": "",
+      "names": {
+        "en": "herb butter"
+      }
+    },
+    {
+      "id": "marsala-cream-sauce",
+      "name": "Marsala cream sauce",
+      "description": "",
+      "names": {
+        "en": "marsala cream sauce"
+      }
+    },
+    {
+      "id": "marsala-sauce",
+      "name": "Marsala sauce",
+      "description": "",
+      "names": {
+        "en": "marsala sauce"
+      }
+    },
+    {
+      "id": "mushroom-cream-sauce",
+      "name": "Mushroom cream sauce",
+      "description": "",
+      "names": {
+        "en": "mushroom cream sauce"
+      }
+    },
+    {
+      "id": "paprika-cream-sauce",
+      "name": "Paprika cream sauce",
+      "description": "",
+      "names": {
+        "en": "paprika cream sauce"
+      }
     },
     {
       "id": "pesto-cream-sauce",
       "name": "Pesto cream sauce",
+      "description": "",
       "names": {
         "en": "pesto cream sauce"
-      },
-      "description": ""
+      }
+    },
+    {
+      "id": "pizza-dough",
+      "name": "Pizza dough",
+      "description": "",
+      "names": {
+        "en": "pizza dough"
+      }
+    },
+    {
+      "id": "roasted-bread",
+      "name": "Roasted bread",
+      "description": "",
+      "names": {
+        "en": "roasted bread"
+      }
+    },
+    {
+      "id": "saffron-risotto",
+      "name": "Saffron risotto",
+      "description": "",
+      "names": {
+        "en": "saffron risotto"
+      }
     },
     {
       "id": "saffron-sauce",
       "name": "Saffron sauce",
+      "description": "",
       "names": {
         "en": "saffron sauce"
+      }
+    },
+    {
+      "id": "spinach-curd-filling",
+      "name": "Spinach-curd filling",
+      "description": "",
+      "names": {
+        "en": "spinach-curd filling"
+      }
+    },
+    {
+      "id": "tomato-cream-sauce",
+      "name": "Tomato cream sauce",
+      "description": "",
+      "names": {
+        "en": "tomato cream sauce"
+      }
+    },
+    {
+      "id": "tomato-cream-soup",
+      "name": "Tomato cream soup",
+      "description": "",
+      "names": {
+        "en": "tomato cream soup"
+      }
+    },
+    {
+      "id": "tomato-cubes",
+      "name": "Tomato cubes",
+      "description": "",
+      "names": {
+        "en": "tomato cubes"
+      }
+    },
+    {
+      "id": "tomato-sauce",
+      "name": "Tomato sauce",
+      "description": "",
+      "names": {
+        "en": "tomato sauce"
+      }
+    },
+    {
+      "id": "tomato-slices",
+      "name": "Tomato slices",
+      "description": "",
+      "names": {
+        "en": "tomato slices"
+      }
+    },
+    {
+      "id": "vegetable-soup",
+      "name": "Vegetable soup",
+      "description": "",
+      "names": {
+        "en": "vegetable soup"
+      }
+    }
+  ],
+  "mise": [
+    {
+      "id": "bbq-chicken",
+      "name": "BBQ chicken",
+      "names": {
+        "en": "bbq chicken"
       },
-      "description": ""
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "beef-filling",
+      "name": "Beef filling",
+      "names": {
+        "en": "beef filling"
+      },
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "beef-sauce",
+      "name": "Beef sauce",
+      "names": {
+        "en": "beef sauce"
+      },
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "champignon-cream-sauce",
+      "name": "Champignon cream sauce",
+      "names": {
+        "en": "champignon cream sauce"
+      },
+      "description": "",
+      "descriptions": {}
     },
     {
       "id": "cocktail-sauce",
@@ -387,15 +570,80 @@
       "names": {
         "en": "cocktail sauce"
       },
-      "description": ""
+      "description": "",
+      "descriptions": {}
     },
     {
-      "id": "roasted-bread",
-      "name": "Roasted bread",
+      "id": "cream-sauce",
+      "name": "Cream sauce",
       "names": {
-        "en": "roasted bread"
+        "en": "cream sauce"
       },
-      "description": ""
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "green-pepper-sauce",
+      "name": "Green pepper sauce",
+      "names": {
+        "en": "green pepper sauce"
+      },
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "herb-butter",
+      "name": "Herb butter",
+      "names": {
+        "en": "herb butter"
+      },
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "marsala-cream-sauce",
+      "name": "Marsala cream sauce",
+      "names": {
+        "en": "marsala cream sauce"
+      },
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "marsala-sauce",
+      "name": "Marsala sauce",
+      "names": {
+        "en": "marsala sauce"
+      },
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "mushroom-cream-sauce",
+      "name": "Mushroom cream sauce",
+      "names": {
+        "en": "mushroom cream sauce"
+      },
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "paprika-cream-sauce",
+      "name": "Paprika cream sauce",
+      "names": {
+        "en": "paprika cream sauce"
+      },
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "pesto-cream-sauce",
+      "name": "Pesto cream sauce",
+      "names": {
+        "en": "pesto cream sauce"
+      },
+      "description": "",
+      "descriptions": {}
     },
     {
       "id": "pizza-dough",
@@ -403,75 +651,2706 @@
       "names": {
         "en": "pizza dough"
       },
-      "description": ""
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "roasted-bread",
+      "name": "Roasted bread",
+      "names": {
+        "en": "roasted bread"
+      },
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "saffron-risotto",
+      "name": "Saffron risotto",
+      "names": {
+        "en": "saffron risotto"
+      },
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "saffron-sauce",
+      "name": "Saffron sauce",
+      "names": {
+        "en": "saffron sauce"
+      },
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "spinach-curd-filling",
+      "name": "Spinach-curd filling",
+      "names": {
+        "en": "spinach-curd filling"
+      },
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "tomato-cream-sauce",
+      "name": "Tomato cream sauce",
+      "names": {
+        "en": "tomato cream sauce"
+      },
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "tomato-cream-soup",
+      "name": "Tomato cream soup",
+      "names": {
+        "en": "tomato cream soup"
+      },
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "tomato-cubes",
+      "name": "Tomato cubes",
+      "names": {
+        "en": "tomato cubes"
+      },
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "tomato-sauce",
+      "name": "Tomato sauce",
+      "names": {
+        "en": "tomato sauce"
+      },
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "tomato-slices",
+      "name": "Tomato slices",
+      "names": {
+        "en": "tomato slices"
+      },
+      "description": "",
+      "descriptions": {}
+    },
+    {
+      "id": "vegetable-soup",
+      "name": "Vegetable soup",
+      "names": {
+        "en": "vegetable soup"
+      },
+      "description": "",
+      "descriptions": {}
     }
   ],
   "dishes": [
     {
+      "id": "focaccia-aperitivo-pomodoro-bufala-e-parma",
+      "name": "Focaccia «Aperitivo» Pomodoro, Bufala e Parma",
+      "slug": "focaccia-aperitivo-pomodoro-bufala-e-parma",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Focaccia «Aperitivo» Pomodoro, Bufala e Parma"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough"
+      ],
+      "mise_ids": [
+        "tomato-cubes"
+      ],
+      "ingredient_ids": [
+        "garlic",
+        "onion",
+        "basil",
+        "buffalo-mozzarella",
+        "parma-ham"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending",
+      "unmapped_terms": [
+        "olive oil"
+      ]
+    },
+    {
+      "id": "focaccia-prosciutto-di-parma",
+      "name": "Focaccia Prosciutto di Parma",
+      "slug": "focaccia-prosciutto-di-parma",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Focaccia Prosciutto di Parma"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "parma-ham"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending",
+      "unmapped_terms": [
+        "olive oil"
+      ]
+    },
+    {
+      "id": "carpaccio-di-manzo",
+      "name": "Carpaccio di Manzo",
+      "slug": "carpaccio-di-manzo",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Carpaccio di Manzo"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending",
+      "unmapped_terms": [
+        "beef carpaccio"
+      ]
+    },
+    {
+      "id": "gamberetti-all-aglio",
+      "name": "Gamberetti all’Aglio",
+      "slug": "gamberetti-all-aglio",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Gamberetti all’Aglio"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "shrimps",
+        "garlic"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "cocktail-di-gamberetti",
+      "name": "Cocktail di Gamberetti",
+      "slug": "cocktail-di-gamberetti",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Cocktail di Gamberetti"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "cocktail-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "shrimps"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "bruschetta",
+      "name": "Bruschetta",
+      "slug": "bruschetta",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Bruschetta"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [
+        "tomato-cubes",
+        "roasted-bread"
+      ],
+      "ingredient_ids": [
+        "fresh-herbs",
+        "garlic",
+        "onion",
+        "basil"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending",
+      "unmapped_terms": [
+        "olive oil"
+      ]
+    },
+    {
+      "id": "minestrone",
+      "name": "Minestrone",
+      "slug": "minestrone",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Minestrone"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "vegetable-soup"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "crema-di-pomodoro",
+      "name": "Crema di Pomodoro",
+      "slug": "crema-di-pomodoro",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Crema di Pomodoro"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "tomato-cream-soup"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "insalata-soncino",
+      "name": "Insalata Soncino",
+      "slug": "insalata-soncino",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Insalata Soncino"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending",
+      "unmapped_terms": [
+        "soncino"
+      ]
+    },
+    {
+      "id": "insalata-caprese",
+      "name": "Insalata Caprese",
+      "slug": "insalata-caprese",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Insalata Caprese"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "buffalo-mozzarella",
+        "tomato",
+        "basil"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "burrata",
+      "name": "Burrata",
+      "slug": "burrata",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Burrata"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending",
+      "unmapped_terms": [
+        "burrata"
+      ]
+    },
+    {
+      "id": "insalata-gigante",
+      "name": "Insalata Gigante",
+      "slug": "insalata-gigante",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Insalata Gigante"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "insalata-verde",
+      "name": "Insalata Verde",
+      "slug": "insalata-verde",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Insalata Verde"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending",
+      "unmapped_terms": [
+        "green salad"
+      ]
+    },
+    {
+      "id": "insalata-mista",
+      "name": "Insalata Mista",
+      "slug": "insalata-mista",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Insalata Mista"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "vegetables"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "risotto-milanese",
+      "name": "Risotto Milanese",
+      "slug": "risotto-milanese",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Risotto Milanese"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "saffron-risotto"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "risotto-pollo-e-zafferano",
+      "name": "Risotto Pollo e Zafferano",
+      "slug": "risotto-pollo-e-zafferano",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Risotto Pollo e Zafferano"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "saffron-risotto"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "chicken"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "risotto-porcini",
+      "name": "Risotto Porcini",
+      "slug": "risotto-porcini",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Risotto Porcini"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "porcini"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "gnocchi-piemontese",
+      "name": "Gnocchi Piemontese",
+      "slug": "gnocchi-piemontese",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Gnocchi Piemontese"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending",
+      "unmapped_terms": [
+        "gnocchi"
+      ]
+    },
+    {
+      "id": "lasagna-casalinga",
+      "name": "Lasagna Casalinga",
+      "slug": "lasagna-casalinga",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Lasagna Casalinga"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending",
+      "unmapped_terms": [
+        "lasagna"
+      ]
+    },
+    {
+      "id": "cannelloni-fiorentina",
+      "name": "Cannelloni Fiorentina",
+      "slug": "cannelloni-fiorentina",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Cannelloni Fiorentina"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "spinach-curd-filling"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "paglia-e-fieno-bella-rebecca",
+      "name": "Paglia e Fieno Bella Rebecca",
+      "slug": "paglia-e-fieno-bella-rebecca",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Paglia e Fieno Bella Rebecca"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "fettuccine-nere-mare-e-monti",
+      "name": "Fettuccine Nere Mare e Monti",
+      "slug": "fettuccine-nere-mare-e-monti",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Fettuccine Nere Mare e Monti"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "seafood",
+        "porcini"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "fettuccine-nere-al-salmone",
+      "name": "Fettuccine Nere al Salmone",
+      "slug": "fettuccine-nere-al-salmone",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Fettuccine Nere al Salmone"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "salmon"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "penne-all-arrabbiata",
+      "name": "Penne all’Arrabbiata",
+      "slug": "penne-all-arrabbiata",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Penne all’Arrabbiata"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "fresh-chili",
+        "garlic"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "penne-imperiale",
+      "name": "Penne Imperiale",
+      "slug": "penne-imperiale",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Penne Imperiale"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "penne-alla-fiamma",
+      "name": "Penne alla Fiamma",
+      "slug": "penne-alla-fiamma",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Penne alla Fiamma"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "spaghetti-aglio-olio-e-peperoncino",
+      "name": "Spaghetti Aglio, Olio e Peperoncino",
+      "slug": "spaghetti-aglio-olio-e-peperoncino",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Spaghetti Aglio, Olio e Peperoncino"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "garlic",
+        "fresh-chili"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending",
+      "unmapped_terms": [
+        "olive oil"
+      ]
+    },
+    {
+      "id": "spaghetti-frutti-di-mare",
+      "name": "Spaghetti Frutti di Mare",
+      "slug": "spaghetti-frutti-di-mare",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Spaghetti Frutti di Mare"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "seafood"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "spaghetti-carbonara",
+      "name": "Spaghetti Carbonara",
+      "slug": "spaghetti-carbonara",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Spaghetti Carbonara"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "bacon",
+        "egg",
+        "grana-padano"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "spaghetti-vegetariana",
+      "name": "Spaghetti Vegetariana",
+      "slug": "spaghetti-vegetariana",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Spaghetti Vegetariana"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "vegetables"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "spaghetti-napoli",
+      "name": "Spaghetti Napoli",
+      "slug": "spaghetti-napoli",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Spaghetti Napoli"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "spaghetti-al-pesto",
+      "name": "Spaghetti al Pesto",
+      "slug": "spaghetti-al-pesto",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Spaghetti al Pesto"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pesto-cream-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "spaghetti-bolognese",
+      "name": "Spaghetti Bolognese",
+      "slug": "spaghetti-bolognese",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Spaghetti Bolognese"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "beef-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
       "id": "margherita",
       "name": "Margherita",
+      "slug": "margherita",
       "description": "Tomato sauce, mozzarella, oregano",
+      "source_language": "en",
+      "names": {
+        "en": "Margherita"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "mozzarella",
+        "oregano"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "marinara",
+      "name": "Marinara",
+      "slug": "marinara",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Marinara"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "garlic",
+        "oregano"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "napoli",
+      "name": "Napoli",
+      "slug": "napoli",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Napoli"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "anchovies",
+        "capers",
+        "oregano"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "prosciutto",
+      "name": "Prosciutto",
+      "slug": "prosciutto",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Prosciutto"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "ham"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "prosciutto-e-funghi",
+      "name": "Prosciutto e Funghi",
+      "slug": "prosciutto-e-funghi",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Prosciutto e Funghi"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "ham",
+        "mushrooms"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "salami",
+      "name": "Salami",
+      "slug": "salami",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Salami"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "salami"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "piccante",
+      "name": "Piccante",
+      "slug": "piccante",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Piccante"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "spicy-salami",
+        "fresh-chili"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "diavola",
+      "name": "Diavola",
+      "slug": "diavola",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Diavola"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "spicy-salami",
+        "fresh-chili"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "hawaii",
+      "name": "Hawaii",
+      "slug": "hawaii",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Hawaii"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "ham",
+        "pineapple"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "tonno",
+      "name": "Tonno",
+      "slug": "tonno",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Tonno"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "tuna"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "tonno-e-cipolla",
+      "name": "Tonno e Cipolla",
+      "slug": "tonno-e-cipolla",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Tonno e Cipolla"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "tuna",
+        "onion"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "gamberetti",
+      "name": "Gamberetti",
+      "slug": "gamberetti",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Gamberetti"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "shrimps"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "frutti-di-mare",
+      "name": "Frutti di Mare",
+      "slug": "frutti-di-mare",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Frutti di Mare"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "seafood"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "salmone",
+      "name": "Salmone",
+      "slug": "salmone",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Salmone"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "salmon"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "vegetariana",
+      "name": "Vegetariana",
+      "slug": "vegetariana",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Vegetariana"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "vegetables"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "quattro-formaggi",
+      "name": "Quattro Formaggi",
+      "slug": "quattro-formaggi",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Quattro Formaggi"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "mozzarella",
+        "gorgonzola",
+        "grana-padano"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending",
+      "unmapped_terms": [
+        "fourth cheese"
+      ]
+    },
+    {
+      "id": "quattro-stagioni",
+      "name": "Quattro Stagioni",
+      "slug": "quattro-stagioni",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Quattro Stagioni"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "ham",
+        "mushrooms",
+        "artichokes",
+        "olives"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "calzone",
+      "name": "Calzone",
+      "slug": "calzone",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Calzone"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "ham",
+        "mushrooms"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "parma",
+      "name": "Parma",
+      "slug": "parma",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Parma"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "parma-ham"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "buffala",
+      "name": "Buffala",
+      "slug": "buffala",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Buffala"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "buffalo-mozzarella"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "gorgonzola",
+      "name": "Gorgonzola",
+      "slug": "gorgonzola",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Gorgonzola"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "gorgonzola"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "boscaiolo",
+      "name": "Boscaiolo",
+      "slug": "boscaiolo",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Boscaiolo"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "mushrooms",
+        "bacon"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "melanzane",
+      "name": "Melanzane",
+      "slug": "melanzane",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Melanzane"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "aubergine"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "parmigiana",
+      "name": "Parmigiana",
+      "slug": "parmigiana",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Parmigiana"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "aubergine",
+        "grana-padano"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "oliva",
+      "name": "Oliva",
+      "slug": "oliva",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Oliva"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "olives"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "paprika",
+      "name": "Paprika",
+      "slug": "paprika",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Paprika"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "red-pepper",
+        "green-pepper"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "tricolore",
+      "name": "Tricolore",
+      "slug": "tricolore",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Tricolore"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "tomato",
+        "mozzarella",
+        "basil"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "curry",
+      "name": "Curry",
+      "slug": "curry",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Curry"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending",
+      "unmapped_terms": [
+        "curry"
+      ]
+    },
+    {
+      "id": "antonio",
+      "name": "Antonio",
+      "slug": "antonio",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Antonio"
+      },
+      "descriptions": {},
       "recipe_ids": [],
-      "mise_ids": ["pizza-dough", "tomato-sauce"],
-      "ingredient_ids": ["mozzarella", "oregano"]
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "al-capone",
+      "name": "Al Capone",
+      "slug": "al-capone",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Al Capone"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "alla-piemontese",
+      "name": "Alla Piemontese",
+      "slug": "alla-piemontese",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Alla Piemontese"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "casanova",
+      "name": "Casanova",
+      "slug": "casanova",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Casanova"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "lucifer",
+      "name": "Lucifer",
+      "slug": "lucifer",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Lucifer"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pizza-dough",
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "spicy-salami",
+        "fresh-chili"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "lunatico",
+      "name": "Lunatico",
+      "slug": "lunatico",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Lunatico"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "pinocchio",
+      "name": "Pinocchio",
+      "slug": "pinocchio",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Pinocchio"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "gamberoni-alla-griglia",
+      "name": "Gamberoni alla Griglia",
+      "slug": "gamberoni-alla-griglia",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Gamberoni alla Griglia"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "shrimps"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "gamberi-luna-piccante",
+      "name": "Gamberi Luna Piccante",
+      "slug": "gamberi-luna-piccante",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Gamberi Luna Piccante"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "shrimps",
+        "fresh-chili"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "salmone-alla-griglia",
+      "name": "Salmone alla Griglia",
+      "slug": "salmone-alla-griglia",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Salmone alla Griglia"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "salmon"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "controfiletto-di-manzo-alla-griglia",
+      "name": "Controfiletto di Manzo alla Griglia",
+      "slug": "controfiletto-di-manzo-alla-griglia",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Controfiletto di Manzo alla Griglia"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "controfiletto-di-manzo-al-pepe-verde",
+      "name": "Controfiletto di Manzo al Pepe Verde",
+      "slug": "controfiletto-di-manzo-al-pepe-verde",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Controfiletto di Manzo al Pepe Verde"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "green-pepper-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "beef-strips"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "controfiletto-d-agnello-alla-griglia",
+      "name": "Controfiletto d’Agnello alla Griglia",
+      "slug": "controfiletto-d-agnello-alla-griglia",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Controfiletto d’Agnello alla Griglia"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "lamb-strips"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "controfiletto-d-agnello-alla-montanara",
+      "name": "Controfiletto d’Agnello alla Montanara",
+      "slug": "controfiletto-d-agnello-alla-montanara",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Controfiletto d’Agnello alla Montanara"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "petto-di-pollo-alla-griglia",
+      "name": "Petto di Pollo alla Griglia",
+      "slug": "petto-di-pollo-alla-griglia",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Petto di Pollo alla Griglia"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "chicken"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "maiale-impanato",
+      "name": "Maiale Impanato",
+      "slug": "maiale-impanato",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Maiale Impanato"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending",
+      "unmapped_terms": [
+        "pork"
+      ]
+    },
+    {
+      "id": "scaloppina-di-vitello-al-limone",
+      "name": "Scaloppina di Vitello al Limone",
+      "slug": "scaloppina-di-vitello-al-limone",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Scaloppina di Vitello al Limone"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "veal-strips"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending",
+      "unmapped_terms": [
+        "lemon"
+      ]
+    },
+    {
+      "id": "saltimbocca-alla-romana",
+      "name": "Saltimbocca alla Romana",
+      "slug": "saltimbocca-alla-romana",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Saltimbocca alla Romana"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "veal-strips",
+        "parma-ham"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending",
+      "unmapped_terms": [
+        "sage"
+      ]
+    },
+    {
+      "id": "scaloppina-di-vitello-alla-crema-di-funghi",
+      "name": "Scaloppina di Vitello alla Crema di Funghi",
+      "slug": "scaloppina-di-vitello-alla-crema-di-funghi",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Scaloppina di Vitello alla Crema di Funghi"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "mushroom-cream-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "veal-strips"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "affettato-alla-zurighese",
+      "name": "Affettato alla Zurighese",
+      "slug": "affettato-alla-zurighese",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Affettato alla Zurighese"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "rindsentrecote",
+      "name": "Rindsentrecôte",
+      "slug": "rindsentrecote",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Rindsentrecôte"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "schweinesteak",
+      "name": "Schweinesteak",
+      "slug": "schweinesteak",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Schweinesteak"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "lamm-nierstuck",
+      "name": "Lamm-Nierstück",
+      "slug": "lamm-nierstuck",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Lamm-Nierstück"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "lamb-strips"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "rindsfleisch-spiess",
+      "name": "Rindsfleisch Spiess",
+      "slug": "rindsfleisch-spiess",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Rindsfleisch Spiess"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "beef-cubes"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "gemischter-spiess",
+      "name": "Gemischter Spiess",
+      "slug": "gemischter-spiess",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Gemischter Spiess"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "beef-cubes",
+        "lamb-strips",
+        "chicken"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "spaghetti-with-tomato-sauce",
+      "name": "Spaghetti with Tomato Sauce",
+      "slug": "spaghetti-with-tomato-sauce",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Spaghetti with Tomato Sauce"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "tomato-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "kids-spaghetti-bolognese",
+      "name": "Spaghetti Bolognese",
+      "slug": "kids-spaghetti-bolognese",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Spaghetti Bolognese"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "beef-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "kids-spaghetti-carbonara",
+      "name": "Spaghetti Carbonara",
+      "slug": "kids-spaghetti-carbonara",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Spaghetti Carbonara"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "bacon",
+        "egg",
+        "grana-padano"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "kids-spaghetti-al-pesto",
+      "name": "Spaghetti al Pesto",
+      "slug": "kids-spaghetti-al-pesto",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Spaghetti al Pesto"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "pesto-cream-sauce"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "spaghetti-al-burro",
+      "name": "Spaghetti al Burro",
+      "slug": "spaghetti-al-burro",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Spaghetti al Burro"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "gnocchi-al-burro",
+      "name": "Gnocchi al Burro",
+      "slug": "gnocchi-al-burro",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Gnocchi al Burro"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "capitano",
+      "name": "Capitano",
+      "slug": "capitano",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Capitano"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "chicken-nuggets",
+      "name": "Chicken Nuggets",
+      "slug": "chicken-nuggets",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Chicken Nuggets"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [
+        "chicken"
+      ],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "portion-pommes-frites",
+      "name": "Portion Pommes Frites",
+      "slug": "portion-pommes-frites",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Portion Pommes Frites"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending",
+      "unmapped_terms": [
+        "pommes frites"
+      ]
+    },
+    {
+      "id": "risotto-bambini",
+      "name": "Risotto Bambini",
+      "slug": "risotto-bambini",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Risotto Bambini"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "spaghetti",
+      "name": "Spaghetti",
+      "slug": "spaghetti",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Spaghetti"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "penne",
+      "name": "Penne",
+      "slug": "penne",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Penne"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "pommes-frites",
+      "name": "Pommes Frites",
+      "slug": "pommes-frites",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Pommes Frites"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "rice",
+      "name": "Rice",
+      "slug": "rice",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Rice"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "risotto",
+      "name": "Risotto",
+      "slug": "risotto",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Risotto"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "salad",
+      "name": "Salad",
+      "slug": "salad",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Salad"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "saffron-risotto",
+      "name": "Saffron Risotto",
+      "slug": "saffron-risotto",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Saffron Risotto"
+      },
+      "descriptions": {},
+      "recipe_ids": [
+        "saffron-risotto"
+      ],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w"
+    },
+    {
+      "id": "homemade-pasta",
+      "name": "Homemade Pasta",
+      "slug": "homemade-pasta",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Homemade Pasta"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
+    },
+    {
+      "id": "gluten-free-pasta",
+      "name": "Gluten-Free Pasta",
+      "slug": "gluten-free-pasta",
+      "description": "",
+      "source_language": "en",
+      "names": {
+        "en": "Gluten-Free Pasta"
+      },
+      "descriptions": {},
+      "recipe_ids": [],
+      "mise_ids": [],
+      "ingredient_ids": [],
+      "kitchen_id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+      "integrity_note": "component mapping pending"
     }
   ],
   "sections": [
     {
       "id": "starters",
       "label": "Starters",
-      "items": []
+      "sort_order": 10,
+      "items": [
+        {
+          "id": "focaccia-aperitivo-pomodoro-bufala-e-parma",
+          "dish_id": "focaccia-aperitivo-pomodoro-bufala-e-parma",
+          "sort_order": 10
+        },
+        {
+          "id": "focaccia-prosciutto-di-parma",
+          "dish_id": "focaccia-prosciutto-di-parma",
+          "sort_order": 20
+        },
+        {
+          "id": "carpaccio-di-manzo",
+          "dish_id": "carpaccio-di-manzo",
+          "sort_order": 30
+        },
+        {
+          "id": "gamberetti-all-aglio",
+          "dish_id": "gamberetti-all-aglio",
+          "sort_order": 40
+        },
+        {
+          "id": "cocktail-di-gamberetti",
+          "dish_id": "cocktail-di-gamberetti",
+          "sort_order": 50
+        },
+        {
+          "id": "bruschetta",
+          "dish_id": "bruschetta",
+          "sort_order": 60
+        }
+      ]
     },
     {
       "id": "soups",
       "label": "Soups",
-      "items": []
+      "sort_order": 20,
+      "items": [
+        {
+          "id": "minestrone",
+          "dish_id": "minestrone",
+          "sort_order": 10
+        },
+        {
+          "id": "crema-di-pomodoro",
+          "dish_id": "crema-di-pomodoro",
+          "sort_order": 20
+        }
+      ]
     },
     {
       "id": "salads",
       "label": "Salads",
-      "items": []
+      "sort_order": 30,
+      "items": [
+        {
+          "id": "insalata-soncino",
+          "dish_id": "insalata-soncino",
+          "sort_order": 10
+        },
+        {
+          "id": "insalata-caprese",
+          "dish_id": "insalata-caprese",
+          "sort_order": 20
+        },
+        {
+          "id": "burrata",
+          "dish_id": "burrata",
+          "sort_order": 30
+        },
+        {
+          "id": "insalata-gigante",
+          "dish_id": "insalata-gigante",
+          "sort_order": 40
+        },
+        {
+          "id": "insalata-verde",
+          "dish_id": "insalata-verde",
+          "sort_order": 50
+        },
+        {
+          "id": "insalata-mista",
+          "dish_id": "insalata-mista",
+          "sort_order": 60
+        }
+      ]
     },
     {
       "id": "risotto",
       "label": "Risotto",
-      "items": []
+      "sort_order": 40,
+      "items": [
+        {
+          "id": "risotto-milanese",
+          "dish_id": "risotto-milanese",
+          "sort_order": 10
+        },
+        {
+          "id": "risotto-pollo-e-zafferano",
+          "dish_id": "risotto-pollo-e-zafferano",
+          "sort_order": 20
+        },
+        {
+          "id": "risotto-porcini",
+          "dish_id": "risotto-porcini",
+          "sort_order": 30
+        }
+      ]
     },
     {
       "id": "gratin",
       "label": "Gratin",
-      "items": []
+      "sort_order": 50,
+      "items": [
+        {
+          "id": "gnocchi-piemontese",
+          "dish_id": "gnocchi-piemontese",
+          "sort_order": 10
+        },
+        {
+          "id": "lasagna-casalinga",
+          "dish_id": "lasagna-casalinga",
+          "sort_order": 20
+        },
+        {
+          "id": "cannelloni-fiorentina",
+          "dish_id": "cannelloni-fiorentina",
+          "sort_order": 30
+        }
+      ]
     },
     {
       "id": "pasta",
       "label": "Pasta",
-      "items": []
+      "sort_order": 60,
+      "items": [
+        {
+          "id": "paglia-e-fieno-bella-rebecca",
+          "dish_id": "paglia-e-fieno-bella-rebecca",
+          "sort_order": 10
+        },
+        {
+          "id": "fettuccine-nere-mare-e-monti",
+          "dish_id": "fettuccine-nere-mare-e-monti",
+          "sort_order": 20
+        },
+        {
+          "id": "fettuccine-nere-al-salmone",
+          "dish_id": "fettuccine-nere-al-salmone",
+          "sort_order": 30
+        },
+        {
+          "id": "penne-all-arrabbiata",
+          "dish_id": "penne-all-arrabbiata",
+          "sort_order": 40
+        },
+        {
+          "id": "penne-imperiale",
+          "dish_id": "penne-imperiale",
+          "sort_order": 50
+        },
+        {
+          "id": "penne-alla-fiamma",
+          "dish_id": "penne-alla-fiamma",
+          "sort_order": 60
+        },
+        {
+          "id": "spaghetti-aglio-olio-e-peperoncino",
+          "dish_id": "spaghetti-aglio-olio-e-peperoncino",
+          "sort_order": 70
+        },
+        {
+          "id": "spaghetti-frutti-di-mare",
+          "dish_id": "spaghetti-frutti-di-mare",
+          "sort_order": 80
+        },
+        {
+          "id": "spaghetti-carbonara",
+          "dish_id": "spaghetti-carbonara",
+          "sort_order": 90
+        },
+        {
+          "id": "spaghetti-vegetariana",
+          "dish_id": "spaghetti-vegetariana",
+          "sort_order": 100
+        },
+        {
+          "id": "spaghetti-napoli",
+          "dish_id": "spaghetti-napoli",
+          "sort_order": 110
+        },
+        {
+          "id": "spaghetti-al-pesto",
+          "dish_id": "spaghetti-al-pesto",
+          "sort_order": 120
+        },
+        {
+          "id": "spaghetti-bolognese",
+          "dish_id": "spaghetti-bolognese",
+          "sort_order": 130
+        }
+      ]
     },
     {
       "id": "pizza",
       "label": "Pizza",
-      "render_excluded_ids": ["pizza-dough"],
+      "sort_order": 70,
       "items": [
         {
           "id": "margherita",
-          "dish_id": "margherita"
+          "dish_id": "margherita",
+          "sort_order": 10
+        },
+        {
+          "id": "marinara",
+          "dish_id": "marinara",
+          "sort_order": 20
+        },
+        {
+          "id": "napoli",
+          "dish_id": "napoli",
+          "sort_order": 30
+        },
+        {
+          "id": "prosciutto",
+          "dish_id": "prosciutto",
+          "sort_order": 40
+        },
+        {
+          "id": "prosciutto-e-funghi",
+          "dish_id": "prosciutto-e-funghi",
+          "sort_order": 50
+        },
+        {
+          "id": "salami",
+          "dish_id": "salami",
+          "sort_order": 60
+        },
+        {
+          "id": "piccante",
+          "dish_id": "piccante",
+          "sort_order": 70
+        },
+        {
+          "id": "diavola",
+          "dish_id": "diavola",
+          "sort_order": 80
+        },
+        {
+          "id": "hawaii",
+          "dish_id": "hawaii",
+          "sort_order": 90
+        },
+        {
+          "id": "tonno",
+          "dish_id": "tonno",
+          "sort_order": 100
+        },
+        {
+          "id": "tonno-e-cipolla",
+          "dish_id": "tonno-e-cipolla",
+          "sort_order": 110
+        },
+        {
+          "id": "gamberetti",
+          "dish_id": "gamberetti",
+          "sort_order": 120
+        },
+        {
+          "id": "frutti-di-mare",
+          "dish_id": "frutti-di-mare",
+          "sort_order": 130
+        },
+        {
+          "id": "salmone",
+          "dish_id": "salmone",
+          "sort_order": 140
+        },
+        {
+          "id": "vegetariana",
+          "dish_id": "vegetariana",
+          "sort_order": 150
+        },
+        {
+          "id": "quattro-formaggi",
+          "dish_id": "quattro-formaggi",
+          "sort_order": 160
+        },
+        {
+          "id": "quattro-stagioni",
+          "dish_id": "quattro-stagioni",
+          "sort_order": 170
+        },
+        {
+          "id": "calzone",
+          "dish_id": "calzone",
+          "sort_order": 180
+        },
+        {
+          "id": "parma",
+          "dish_id": "parma",
+          "sort_order": 190
+        },
+        {
+          "id": "buffala",
+          "dish_id": "buffala",
+          "sort_order": 200
+        },
+        {
+          "id": "gorgonzola",
+          "dish_id": "gorgonzola",
+          "sort_order": 210
+        },
+        {
+          "id": "boscaiolo",
+          "dish_id": "boscaiolo",
+          "sort_order": 220
+        },
+        {
+          "id": "melanzane",
+          "dish_id": "melanzane",
+          "sort_order": 230
+        },
+        {
+          "id": "parmigiana",
+          "dish_id": "parmigiana",
+          "sort_order": 240
+        },
+        {
+          "id": "oliva",
+          "dish_id": "oliva",
+          "sort_order": 250
+        },
+        {
+          "id": "paprika",
+          "dish_id": "paprika",
+          "sort_order": 260
+        },
+        {
+          "id": "tricolore",
+          "dish_id": "tricolore",
+          "sort_order": 270
+        },
+        {
+          "id": "curry",
+          "dish_id": "curry",
+          "sort_order": 280
+        },
+        {
+          "id": "antonio",
+          "dish_id": "antonio",
+          "sort_order": 290
+        },
+        {
+          "id": "al-capone",
+          "dish_id": "al-capone",
+          "sort_order": 300
+        },
+        {
+          "id": "alla-piemontese",
+          "dish_id": "alla-piemontese",
+          "sort_order": 310
+        },
+        {
+          "id": "casanova",
+          "dish_id": "casanova",
+          "sort_order": 320
+        },
+        {
+          "id": "lucifer",
+          "dish_id": "lucifer",
+          "sort_order": 330
+        },
+        {
+          "id": "lunatico",
+          "dish_id": "lunatico",
+          "sort_order": 340
+        },
+        {
+          "id": "pinocchio",
+          "dish_id": "pinocchio",
+          "sort_order": 350
         }
+      ],
+      "render_excluded_ids": [
+        "pizza-dough"
       ]
     },
     {
       "id": "fish",
       "label": "Fish",
-      "items": []
+      "sort_order": 80,
+      "items": [
+        {
+          "id": "gamberoni-alla-griglia",
+          "dish_id": "gamberoni-alla-griglia",
+          "sort_order": 10
+        },
+        {
+          "id": "gamberi-luna-piccante",
+          "dish_id": "gamberi-luna-piccante",
+          "sort_order": 20
+        },
+        {
+          "id": "salmone-alla-griglia",
+          "dish_id": "salmone-alla-griglia",
+          "sort_order": 30
+        }
+      ]
     },
     {
       "id": "meat",
       "label": "Meat",
-      "items": []
+      "sort_order": 90,
+      "items": [
+        {
+          "id": "controfiletto-di-manzo-alla-griglia",
+          "dish_id": "controfiletto-di-manzo-alla-griglia",
+          "sort_order": 10
+        },
+        {
+          "id": "controfiletto-di-manzo-al-pepe-verde",
+          "dish_id": "controfiletto-di-manzo-al-pepe-verde",
+          "sort_order": 20
+        },
+        {
+          "id": "controfiletto-d-agnello-alla-griglia",
+          "dish_id": "controfiletto-d-agnello-alla-griglia",
+          "sort_order": 30
+        },
+        {
+          "id": "controfiletto-d-agnello-alla-montanara",
+          "dish_id": "controfiletto-d-agnello-alla-montanara",
+          "sort_order": 40
+        },
+        {
+          "id": "petto-di-pollo-alla-griglia",
+          "dish_id": "petto-di-pollo-alla-griglia",
+          "sort_order": 50
+        },
+        {
+          "id": "maiale-impanato",
+          "dish_id": "maiale-impanato",
+          "sort_order": 60
+        },
+        {
+          "id": "scaloppina-di-vitello-al-limone",
+          "dish_id": "scaloppina-di-vitello-al-limone",
+          "sort_order": 70
+        },
+        {
+          "id": "saltimbocca-alla-romana",
+          "dish_id": "saltimbocca-alla-romana",
+          "sort_order": 80
+        },
+        {
+          "id": "scaloppina-di-vitello-alla-crema-di-funghi",
+          "dish_id": "scaloppina-di-vitello-alla-crema-di-funghi",
+          "sort_order": 90
+        },
+        {
+          "id": "affettato-alla-zurighese",
+          "dish_id": "affettato-alla-zurighese",
+          "sort_order": 100
+        }
+      ]
     },
     {
       "id": "hot-stone",
       "label": "Hot Stone",
-      "items": []
+      "sort_order": 100,
+      "items": [
+        {
+          "id": "rindsentrecote",
+          "dish_id": "rindsentrecote",
+          "sort_order": 10
+        },
+        {
+          "id": "schweinesteak",
+          "dish_id": "schweinesteak",
+          "sort_order": 20
+        },
+        {
+          "id": "lamm-nierstuck",
+          "dish_id": "lamm-nierstuck",
+          "sort_order": 30
+        },
+        {
+          "id": "rindsfleisch-spiess",
+          "dish_id": "rindsfleisch-spiess",
+          "sort_order": 40
+        },
+        {
+          "id": "gemischter-spiess",
+          "dish_id": "gemischter-spiess",
+          "sort_order": 50
+        }
+      ]
+    },
+    {
+      "id": "kids",
+      "label": "Kids",
+      "sort_order": 110,
+      "items": [
+        {
+          "id": "spaghetti-with-tomato-sauce",
+          "dish_id": "spaghetti-with-tomato-sauce",
+          "sort_order": 10
+        },
+        {
+          "id": "kids-spaghetti-bolognese",
+          "dish_id": "kids-spaghetti-bolognese",
+          "sort_order": 20
+        },
+        {
+          "id": "kids-spaghetti-carbonara",
+          "dish_id": "kids-spaghetti-carbonara",
+          "sort_order": 30
+        },
+        {
+          "id": "kids-spaghetti-al-pesto",
+          "dish_id": "kids-spaghetti-al-pesto",
+          "sort_order": 40
+        },
+        {
+          "id": "spaghetti-al-burro",
+          "dish_id": "spaghetti-al-burro",
+          "sort_order": 50
+        },
+        {
+          "id": "gnocchi-al-burro",
+          "dish_id": "gnocchi-al-burro",
+          "sort_order": 60
+        },
+        {
+          "id": "capitano",
+          "dish_id": "capitano",
+          "sort_order": 70
+        },
+        {
+          "id": "chicken-nuggets",
+          "dish_id": "chicken-nuggets",
+          "sort_order": 80
+        },
+        {
+          "id": "portion-pommes-frites",
+          "dish_id": "portion-pommes-frites",
+          "sort_order": 90
+        },
+        {
+          "id": "risotto-bambini",
+          "dish_id": "risotto-bambini",
+          "sort_order": 100
+        }
+      ]
+    },
+    {
+      "id": "sides",
+      "label": "Sides",
+      "sort_order": 120,
+      "items": [
+        {
+          "id": "spaghetti",
+          "dish_id": "spaghetti",
+          "sort_order": 10
+        },
+        {
+          "id": "penne",
+          "dish_id": "penne",
+          "sort_order": 20
+        },
+        {
+          "id": "pommes-frites",
+          "dish_id": "pommes-frites",
+          "sort_order": 30
+        },
+        {
+          "id": "rice",
+          "dish_id": "rice",
+          "sort_order": 40
+        },
+        {
+          "id": "risotto",
+          "dish_id": "risotto",
+          "sort_order": 50
+        },
+        {
+          "id": "salad",
+          "dish_id": "salad",
+          "sort_order": 60
+        },
+        {
+          "id": "saffron-risotto",
+          "dish_id": "saffron-risotto",
+          "sort_order": 70
+        },
+        {
+          "id": "homemade-pasta",
+          "dish_id": "homemade-pasta",
+          "sort_order": 80
+        },
+        {
+          "id": "gluten-free-pasta",
+          "dish_id": "gluten-free-pasta",
+          "sort_order": 90
+        }
+      ]
     }
   ]
 }

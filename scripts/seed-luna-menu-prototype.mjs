@@ -327,6 +327,16 @@ function buildMisePayload(mise, seed, kitchenId, snap) {
 function buildDishPayload(dish, seed, kitchenId, snap) {
   const language = sourceLanguage(seed)
   const description = normalizeString(dish.description)
+  const existing = snap?.exists ? snap.data() || {} : {}
+  const seededRecipeIds = normalizeIdList(dish.recipe_ids)
+  const seededMiseIds = normalizeIdList(dish.mise_ids)
+  const seededIngredientIds = normalizeIdList(dish.ingredient_ids)
+  const recipeIds = seededRecipeIds.length ? seededRecipeIds : normalizeIdList(existing.recipe_ids)
+  const miseIds = seededMiseIds.length ? seededMiseIds : normalizeIdList(existing.mise_ids)
+  const ingredientIds = seededIngredientIds.length
+    ? seededIngredientIds
+    : normalizeIdList(existing.ingredient_ids)
+  const hasComponentMapping = recipeIds.length || miseIds.length || ingredientIds.length
   const payload = {
     id: dish.id,
     name: dish.name,
@@ -337,16 +347,19 @@ function buildDishPayload(dish, seed, kitchenId, snap) {
       [language]: dish.name,
     },
     descriptions: description ? { [language]: description } : {},
-    recipe_ids: normalizeIdList(dish.recipe_ids),
-    mise_ids: normalizeIdList(dish.mise_ids),
-    ingredient_ids: normalizeIdList(dish.ingredient_ids),
+    recipe_ids: recipeIds,
+    mise_ids: miseIds,
+    ingredient_ids: ingredientIds,
     kitchen_id: kitchenId,
     created: createdStamp(snap),
     updated: updatedStamp(),
   }
 
-  if (normalizeString(dish.integrity_note)) {
-    payload.integrity_note = normalizeString(dish.integrity_note)
+  const integrityNote = normalizeString(dish.integrity_note) ||
+    (!hasComponentMapping ? 'component mapping pending' : '')
+
+  if (integrityNote) {
+    payload.integrity_note = integrityNote
   }
 
   return payload

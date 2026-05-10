@@ -32,7 +32,99 @@
       <UCard>
         <template #header>
           <div class="console-card-header">
-            <div class="console-card-header__title">Dish</div>
+            <div class="console-card-header__title">Dish Summary</div>
+          </div>
+        </template>
+
+        <div class="space-y-6">
+          <header class="space-y-2">
+            <div>
+              <h1 class="text-2xl font-semibold text-highlighted">
+                {{ dish.name }}
+              </h1>
+              <p class="text-sm text-muted">id: {{ dish.id }}</p>
+            </div>
+
+            <p
+              v-if="dish.description"
+              class="text-sm text-toned"
+            >
+              {{ dish.description }}
+            </p>
+
+            <p
+              v-if="dishIntegrityNote"
+              class="text-sm text-warning"
+            >
+              {{ dishIntegrityNote }}
+            </p>
+          </header>
+
+          <div class="grid gap-4 md:grid-cols-3">
+            <section
+              v-for="group in semanticGroups"
+              :key="group.key"
+              class="space-y-3 rounded-md border border-default p-4"
+            >
+              <h2 class="text-sm font-semibold text-highlighted">
+                {{ group.label }}
+              </h2>
+
+              <div
+                v-if="group.items.length"
+                class="space-y-3"
+              >
+                <div
+                  v-for="item in group.items"
+                  :key="item.id"
+                >
+                  <div class="text-sm font-medium text-highlighted">
+                    {{ item.name }}
+                  </div>
+                  <div class="text-xs text-muted">id: {{ item.id }}</div>
+                </div>
+              </div>
+
+              <p
+                v-else
+                class="text-sm text-muted"
+              >
+                —
+              </p>
+            </section>
+          </div>
+
+          <div
+            v-if="missingGroups.length"
+            class="space-y-3 rounded-md border border-error/30 bg-error/5 p-4"
+          >
+            <h2 class="text-sm font-semibold text-error">Missing references</h2>
+
+            <section
+              v-for="group in missingGroups"
+              :key="group.key"
+              class="space-y-1"
+            >
+              <h3 class="text-sm font-medium text-error">
+                Missing {{ group.label.toLowerCase() }}
+              </h3>
+              <ul class="space-y-1 text-sm text-error">
+                <li
+                  v-for="id in group.ids"
+                  :key="id"
+                >
+                  {{ id }}
+                </li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </UCard>
+
+      <UCard>
+        <template #header>
+          <div class="console-card-header">
+            <div class="console-card-header__title">Edit</div>
           </div>
         </template>
 
@@ -116,21 +208,13 @@
       "
     />
 
-    <details
+    <DevFireuxDebugPanel
       v-if="isDev"
-      class="rounded-lg border border-default bg-default p-4"
-    >
-      <summary class="cursor-pointer text-sm font-medium text-highlighted">
-        Debug
-      </summary>
-
-      <DevFireuxDebugPanel
-        title="Kitchen dish detail"
-        scope="console"
-        :data="debug"
-        class="mt-4"
-      />
-    </details>
+      title="Kitchen dish object"
+      scope="console"
+      :data="fireuxDebugData"
+      :default-open="true"
+    />
   </div>
 </template>
 
@@ -141,6 +225,9 @@ import { computed, reactive, ref, watch } from 'vue'
 import { useKitchenConsoleDish } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleDish'
 import { useDishDelete } from '../../../../../composables/fireux/firestore/dish/mutations/useDishDelete'
 import { useDishUpdate } from '../../../../../composables/fireux/firestore/dish/mutations/useDishUpdate'
+import { useIngredientFetch } from '../../../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
+import { useRecipeCollection } from '../../../../../composables/fireux/firestore/recipe/fetch/useRecipeCollection'
+import { useKitchenMiseCollection } from '../../../../../composables/fireux/firestore/runtime-kitchen/mise/fetch/useKitchenMiseCollection'
 import {
   normalizeDishStringArray,
   normalizeDishTranslatedText,
@@ -168,6 +255,15 @@ const { deleteDish } = useDishDelete({
   kitchenCollectionPath: rootCollection,
   databaseId,
 })
+const { recipes } = useRecipeCollection(kitchenId, {
+  kitchenCollectionPath: rootCollection,
+  databaseId,
+})
+const { miseTasks } = useKitchenMiseCollection(kitchenId, {
+  kitchenCollectionPath: rootCollection,
+  databaseId,
+})
+const { ingredients } = useIngredientFetch()
 
 const isDev = import.meta.dev
 const saving = ref(false)
@@ -300,4 +396,128 @@ const deleteSelectedDish = async () => {
     deleting.value = false
   }
 }
+
+type ResolvedComponent = {
+  id: string
+  name: string
+}
+
+const sourceName = (source: Record<string, unknown>, languageCode: string) => {
+  const names =
+    source.names && typeof source.names === 'object' && !Array.isArray(source.names)
+      ? (source.names as Record<string, unknown>)
+      : {}
+
+  return (
+    normalizeString(names[languageCode]) ||
+    normalizeString(source?.name) ||
+    normalizeString(source?.title) ||
+    normalizeString(source?.id)
+  )
+}
+const resolveGroup = (
+  ids: string[],
+  sources: Record<string, unknown>[],
+  languageCode: string
+) => {
+  const byId = new Map(
+    sources
+      .map((source) => [normalizeString(source?.id), source] as const)
+      .filter(([id]) => Boolean(id))
+  )
+  const items: ResolvedComponent[] = []
+  const missing: string[] = []
+
+  ids.forEach((id) => {
+    const source = byId.get(id)
+    if (!source) {
+      missing.push(id)
+      return
+    }
+
+    items.push({
+      id,
+      name: sourceName(source, languageCode) || id,
+    })
+  })
+
+  return { items, missing }
+}
+
+const displayLanguage = computed(() =>
+  normalizeLanguageCode(dish.value?.source_language) || 'en'
+)
+const recipeResolution = computed(() =>
+  resolveGroup(
+    normalizeDishStringArray(dish.value?.recipe_ids),
+    recipes.value as Record<string, unknown>[],
+    displayLanguage.value
+  )
+)
+const miseResolution = computed(() =>
+  resolveGroup(
+    normalizeDishStringArray(dish.value?.mise_ids),
+    miseTasks.value as Record<string, unknown>[],
+    displayLanguage.value
+  )
+)
+const ingredientResolution = computed(() =>
+  resolveGroup(
+    normalizeDishStringArray(dish.value?.ingredient_ids),
+    (ingredients.value || []) as Record<string, unknown>[],
+    displayLanguage.value
+  )
+)
+const semanticGroups = computed(() => [
+  {
+    key: 'recipes',
+    label: 'Recipes',
+    items: recipeResolution.value.items,
+  },
+  {
+    key: 'mise',
+    label: 'Mise',
+    items: miseResolution.value.items,
+  },
+  {
+    key: 'ingredients',
+    label: 'Ingredients',
+    items: ingredientResolution.value.items,
+  },
+])
+const missingGroups = computed(() =>
+  [
+    {
+      key: 'recipes',
+      label: 'Recipes',
+      ids: recipeResolution.value.missing,
+    },
+    {
+      key: 'mise',
+      label: 'Mise',
+      ids: miseResolution.value.missing,
+    },
+    {
+      key: 'ingredients',
+      label: 'Ingredients',
+      ids: ingredientResolution.value.missing,
+    },
+  ].filter((group) => group.ids.length)
+)
+const dishIntegrityNote = computed(() =>
+  normalizeString((dish.value as Record<string, unknown> | null)?.integrity_note)
+)
+const resolvedComponentsDebug = computed(() => ({
+  dish_id: dishId.value,
+  language: displayLanguage.value,
+  recipes: recipeResolution.value,
+  mise: miseResolution.value,
+  ingredients: ingredientResolution.value,
+}))
+const fireuxDebugData = computed(() => ({
+  ...debug.value,
+  dish: dish.value,
+  resolved_components: resolvedComponentsDebug.value,
+  menu_usage: menuUsage.value,
+}))
 </script>

@@ -12,7 +12,7 @@ const DEFAULT_SERVICE_ACCOUNT_PATH =
   'packages/ecosystem/fireux-misebox/src/config/firebase/service-account.json'
 const DEFAULT_DATABASE_ID = 'misebox'
 const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
-const DEFAULT_SEED_PATH = 'scripts/data/luna-piccante.menu.seed.json'
+const DEFAULT_SEED_PATH = 'scripts/data/luna-piccante.recipes.seed.json'
 const LUNA_KITCHEN_ID = 'ChIJ93_ggY-jj0cRTCyLcfBuK2w'
 const SYSTEM_ACTOR = 'system:seed-luna-recipes'
 const APP_ID = 'misebox-app'

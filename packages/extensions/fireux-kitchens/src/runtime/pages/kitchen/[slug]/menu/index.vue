@@ -5,7 +5,17 @@
         <h1 class="text-4xl font-semibold leading-tight sm:text-5xl">
           {{ menuTitle }}
         </h1>
-        <p class="mt-2 text-base text-[#526157]">Menu</p>
+        <div class="mt-3 flex items-center justify-between gap-4">
+          <p class="text-base text-[#526157]">Menu</p>
+          <button
+            type="button"
+            class="inline-flex h-9 items-center justify-center border border-[#9fb09f] px-3 text-sm font-medium text-[#17201a]"
+            :disabled="!visibleSections.length"
+            @click="copyMenu"
+          >
+            {{ copied ? 'Copied' : 'Copy' }}
+          </button>
+        </div>
       </header>
 
       <div v-if="pending" class="py-12 text-sm text-[#526157]">
@@ -23,7 +33,7 @@
         <section
           v-for="section in visibleSections"
           :key="section.id"
-          class="space-y-3"
+          class="space-y-4"
         >
           <h2 class="border-b border-[#cfdacf] pb-2 text-2xl font-semibold">
             {{ section.label }}
@@ -35,122 +45,27 @@
             class="py-3"
           >
             <h3 class="text-lg font-semibold">{{ entry.name }}</h3>
-            <p class="mt-1 text-base text-[#36473b]">
-              {{ entry.semantic_line }}
+            <p class="mt-2 text-sm text-[#36473b]">
+              <span class="font-medium text-[#17201a]">Recipes:</span>
+              {{ formatNames(entry.recipe_names) }}
+            </p>
+            <p class="mt-1 text-sm text-[#36473b]">
+              <span class="font-medium text-[#17201a]">Mise:</span>
+              {{ formatNames(entry.mise_names) }}
+            </p>
+            <p class="mt-1 text-sm text-[#36473b]">
+              <span class="font-medium text-[#17201a]">Ingredients:</span>
+              {{ formatNames(entry.ingredient_names) }}
             </p>
             <p v-if="entry.integrity_note" class="mt-2 text-sm text-[#b2362f]">
               {{ entry.integrity_note }}
             </p>
+            <p v-if="missingLabel(entry)" class="mt-1 text-sm text-[#b2362f]">
+              Missing: {{ missingLabel(entry) }}
+            </p>
           </article>
         </section>
       </div>
-
-      <section
-        v-if="prototypeMenu"
-        class="space-y-8 border-t border-[#cfdacf] py-8"
-      >
-        <header>
-          <h2 class="text-xl font-semibold">Semantic system map</h2>
-          <p class="mt-1 text-sm text-[#526157]">
-            Seed-backed data currently powering this public prototype.
-          </p>
-        </header>
-
-        <section class="space-y-3">
-          <h3 class="text-base font-semibold">Ingredients</h3>
-          <ul class="space-y-1 text-sm text-[#36473b]">
-            <li
-              v-for="ingredient in ingredients"
-              :key="ingredient.id"
-            >
-              <span class="font-medium text-[#17201a]">
-                {{ sourceName(ingredient) }}
-              </span>
-              <span class="text-[#6b776e]"> · {{ ingredient.id }}</span>
-            </li>
-          </ul>
-        </section>
-
-        <section class="space-y-3">
-          <h3 class="text-base font-semibold">Recipes</h3>
-          <ul class="space-y-1 text-sm text-[#36473b]">
-            <li
-              v-for="recipe in recipes"
-              :key="recipe.id"
-            >
-              <span class="font-medium text-[#17201a]">{{ sourceName(recipe) }}</span>
-              <span class="text-[#6b776e]"> · {{ recipe.id }}</span>
-            </li>
-          </ul>
-        </section>
-
-        <section class="space-y-3">
-          <h3 class="text-base font-semibold">Mise / Prep</h3>
-          <ul class="space-y-1 text-sm text-[#36473b]">
-            <li
-              v-for="item in mise"
-              :key="item.id"
-            >
-              <span class="font-medium text-[#17201a]">{{ sourceName(item) }}</span>
-              <span class="text-[#6b776e]"> · {{ item.id }}</span>
-            </li>
-          </ul>
-        </section>
-
-        <section class="space-y-3">
-          <h3 class="text-base font-semibold">Dishes</h3>
-          <ul class="space-y-3 text-sm text-[#36473b]">
-            <li
-              v-for="dish in dishes"
-              :key="dish.id"
-            >
-              <div>
-                <span class="font-medium text-[#17201a]">{{ dish.name }}</span>
-                <span class="text-[#6b776e]"> · {{ dish.id }}</span>
-              </div>
-              <div v-if="dish.recipe_ids.length" class="mt-1">
-                Recipes: {{ dish.recipe_ids.join(', ') }}
-              </div>
-              <div v-if="dish.mise_ids.length" class="mt-1">
-                Mise: {{ dish.mise_ids.join(', ') }}
-              </div>
-              <div v-if="dish.ingredient_ids.length" class="mt-1">
-                Ingredients: {{ dish.ingredient_ids.join(', ') }}
-              </div>
-              <p v-if="dish.integrity_note" class="mt-1 text-[#b2362f]">
-                {{ dish.integrity_note }}
-              </p>
-            </li>
-          </ul>
-        </section>
-
-        <section class="space-y-3">
-          <h3 class="text-base font-semibold">Menu Sections</h3>
-          <ul class="space-y-2 text-sm text-[#36473b]">
-            <li
-              v-for="section in sections"
-              :key="section.id"
-            >
-              <span class="font-medium text-[#17201a]">{{ section.label }}</span>
-              <span class="text-[#6b776e]"> · {{ section.id }}</span>
-              <span>
-                · {{ section.entries.length }}
-                {{ section.entries.length === 1 ? 'dish' : 'dishes' }}
-              </span>
-              <span v-if="section.render_excluded_ids.length">
-                · excludes {{ section.render_excluded_ids.join(', ') }}
-              </span>
-            </li>
-          </ul>
-        </section>
-
-        <section class="space-y-3">
-          <h3 class="text-base font-semibold">Menu JSON</h3>
-          <p class="text-sm text-[#526157]">
-            The full menu payload is available in the collapsed DevJson panel below.
-          </p>
-        </section>
-      </section>
 
       <DevJson
         class="mb-8"
@@ -165,13 +80,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 type PrototypeMenuEntry = {
   id: string
   dish_id: string
   name: string
   semantic_line: string
+  recipe_names?: string[]
+  mise_names?: string[]
+  ingredient_names?: string[]
+  missing_recipe_ids?: string[]
+  missing_mise_ids?: string[]
+  missing_ingredient_ids?: string[]
   integrity_note?: string
 }
 
@@ -182,27 +103,12 @@ type PrototypeMenuSection = {
   entries: PrototypeMenuEntry[]
 }
 
-type PrototypeSource = {
-  id: string
-  name?: string
-  title?: string
-  names?: Record<string, string>
-  recipe_ids?: string[]
-  mise_ids?: string[]
-  ingredient_ids?: string[]
-  integrity_note?: string
-}
-
 type PrototypeMenu = {
   kitchen?: {
     display_name?: string
     name?: string
   }
   sections?: PrototypeMenuSection[]
-  ingredients?: PrototypeSource[]
-  recipes?: PrototypeSource[]
-  mise?: PrototypeSource[]
-  dishes?: PrototypeSource[]
 }
 
 definePageMeta({
@@ -228,17 +134,58 @@ const sections = computed(() => prototypeMenu.value?.sections || [])
 const visibleSections = computed(() =>
   sections.value.filter((section) => section.entries.length > 0)
 )
-const ingredients = computed(() => prototypeMenu.value?.ingredients || [])
-const recipes = computed(() => prototypeMenu.value?.recipes || [])
-const mise = computed(() => prototypeMenu.value?.mise || [])
-const dishes = computed(() =>
-  (prototypeMenu.value?.dishes || []).map((dish) => ({
-    ...dish,
-    recipe_ids: dish.recipe_ids || [],
-    mise_ids: dish.mise_ids || [],
-    ingredient_ids: dish.ingredient_ids || [],
-  }))
-)
-const sourceName = (source: PrototypeSource) =>
-  source.names?.en || source.name || source.title || source.id
+const formatNames = (names?: string[]) =>
+  Array.isArray(names) && names.length ? names.join(', ') : '—'
+const missingLabel = (entry: PrototypeMenuEntry) => {
+  const missing = [
+    ...(entry.missing_recipe_ids || []).map((id) => `recipe:${id}`),
+    ...(entry.missing_mise_ids || []).map((id) => `mise:${id}`),
+    ...(entry.missing_ingredient_ids || []).map((id) => `ingredient:${id}`),
+  ]
+
+  return missing.join(', ')
+}
+const copyText = computed(() => {
+  const lines = [menuTitle.value, '']
+
+  for (const section of visibleSections.value) {
+    lines.push(section.label)
+    for (const entry of section.entries) {
+      lines.push(entry.name)
+      lines.push(`Recipes: ${formatNames(entry.recipe_names)}`)
+      lines.push(`Mise: ${formatNames(entry.mise_names)}`)
+      lines.push(`Ingredients: ${formatNames(entry.ingredient_names)}`)
+      if (entry.integrity_note) lines.push(`Integrity: ${entry.integrity_note}`)
+      const missing = missingLabel(entry)
+      if (missing) lines.push(`Missing: ${missing}`)
+      lines.push('')
+    }
+  }
+
+  return lines.join('\n').trim()
+})
+const copied = ref(false)
+
+async function copyMenu() {
+  if (!copyText.value) return
+
+  if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(copyText.value)
+  } else {
+    const textArea = document.createElement('textarea')
+    textArea.value = copyText.value
+    textArea.setAttribute('readonly', 'true')
+    textArea.style.position = 'fixed'
+    textArea.style.left = '-9999px'
+    document.body.appendChild(textArea)
+    textArea.select()
+    document.execCommand('copy')
+    textArea.remove()
+  }
+
+  copied.value = true
+  window.setTimeout(() => {
+    copied.value = false
+  }, 1500)
+}
 </script>
