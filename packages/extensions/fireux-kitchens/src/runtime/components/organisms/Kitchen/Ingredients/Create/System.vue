@@ -4,8 +4,8 @@
       <div class="space-y-1">
         <div class="text-sm font-semibold">Add Ingredient To Kitchen</div>
         <p class="text-xs text-dimmed">
-          Attach an ingredient to this kitchen. If it does not exist in global
-          yet, it will be created first.
+          Select a root ingredient for this kitchen. New ingredients are created
+          in the root library first, then selected here.
         </p>
       </div>
     </template>
@@ -54,9 +54,13 @@
 </template>
 
 <script setup lang="ts">
+import { doc, getDoc } from 'firebase/firestore';
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify';
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire';
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug';
 import { computed, ref } from 'vue';
-import { useKitchenIngredientAdd } from '../../../../../composables/fireux/firestore/kitchen/ingredients/mutations/useKitchenIngredientAdd';
+import { useIngredientCreate } from '../../../../../composables/fireux/firestore/ingredient/mutations/useIngredientCreate';
+import { useKitchenIngredientSelection } from '../../../../../composables/fireux/firestore/kitchen/ingredients/mutations/useKitchenIngredientSelection';
 import {
     createDefaultKitchenIngredientForm,
     type KitchenIngredientCreateForm,
@@ -72,7 +76,9 @@ const emit = defineEmits<{
 }>()
 
 const toast = useToastify()
-const { addIngredientToKitchen } = useKitchenIngredientAdd()
+const db = useFirestore()
+const { createIngredient } = useIngredientCreate()
+const { selectIngredient } = useKitchenIngredientSelection()
 
 const submitting = ref(false)
 const isClearConfirmOpen = ref(false)
@@ -90,21 +96,38 @@ const handleCreate = async () => {
     return
   }
 
+  const kitchenCollectionPath = String(props.kitchenCollectionPath || '').trim()
+  if (!kitchenCollectionPath) {
+    toast.error('Kitchen collection path missing')
+    return
+  }
+
+  const name = String(form.value.name || '').trim()
+  const ingredientId = normalizeSlug(name)
+  if (!ingredientId) {
+    toast.error('Ingredient name missing')
+    return
+  }
+
   if (submitting.value) return
   submitting.value = true
 
   try {
-    const kitchenCollectionPath = String(props.kitchenCollectionPath || '').trim()
-    const createdId = await addIngredientToKitchen(
+    let selectedId = ingredientId
+    const rootSnap = await getDoc(doc(db, 'ingredients', ingredientId))
+    if (!rootSnap.exists()) {
+      const created = await createIngredient({ name })
+      selectedId = created.id
+    }
+
+    await selectIngredient(
       resolvedKitchenId.value,
-      form.value,
-      kitchenCollectionPath
-        ? { kitchenCollectionPath }
-        : undefined
+      selectedId,
+      { kitchenCollectionPath }
     )
     toast.success('Ingredient added')
     clearDraft()
-    emit('created', createdId)
+    emit('created', selectedId)
   } catch (error: any) {
     toast.error(String(error?.message || 'Failed to add ingredient'))
   } finally {
