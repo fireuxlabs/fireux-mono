@@ -10,7 +10,7 @@
     </template>
 
     <div v-if="focus.hasSelection" class="space-y-4">
-      <KitchenCardsPill
+      <OrganismsKitchenCardsPill
         v-if="focusCard"
         v-bind="focusCard"
         :link="false"

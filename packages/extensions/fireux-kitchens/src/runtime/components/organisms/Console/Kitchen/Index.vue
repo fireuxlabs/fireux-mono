@@ -27,7 +27,7 @@
           </UButton>
         </div>
 
-        <KitchenCardsPill
+        <OrganismsKitchenCardsPill
           v-if="selectedKitchenCard"
           v-bind="selectedKitchenCard"
           :link="false"
@@ -47,7 +47,7 @@
         />
       </div>
 
-      <KitchenCollectionManager
+      <OrganismsKitchenCollectionManager
         v-if="kitchens.live.length"
         :collection="kitchens.live"
         title="Choose Live Kitchen"
@@ -83,7 +83,7 @@
         </div>
 
         <div class="space-y-2">
-          <KitchenCardsPill
+          <OrganismsKitchenCardsPill
             v-for="scenario in demoKitchenCards"
             :key="scenario.id"
             v-bind="scenario"
@@ -110,7 +110,7 @@
           Personal sandbox kitchen for experiments and console setup.
         </div>
 
-        <KitchenCardsPill
+        <OrganismsKitchenCardsPill
           v-if="testKitchenCard"
           v-bind="testKitchenCard"
           :link="false"

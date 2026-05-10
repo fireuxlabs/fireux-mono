@@ -233,13 +233,12 @@ function localizedText(value, language, fallback) {
 
 function buildIngredientPayload(ingredient, seed) {
   const language = sourceLanguage(seed)
+  const names = localizedText(ingredient.names, language, ingredient.name)
   return {
     id: ingredient.id,
     name: ingredient.name,
     source_language: language,
-    names: {
-      [language]: ingredient.name,
-    },
+    names,
     slug: ingredient.id,
     image_url: '',
     app_id: APP_ID,
@@ -312,6 +311,9 @@ function buildMenuPayload(seed, kitchenId, snap) {
       photo_url: '',
     },
     service_modes: Array.isArray(seed.menu.service_modes) ? seed.menu.service_modes : [],
+    ingredient_ids: seed.ingredients.map((ingredient) => ingredient.id),
+    recipe_ids: seed.recipes.map((recipe) => recipe.id),
+    dish_ids: seed.dishes.map((dish) => dish.id),
     sections: seed.sections.map((section, index) => {
       const payload = {
         id: section.id,
@@ -353,14 +355,32 @@ function buildKitchenIdentityPatch(seed) {
   }
 }
 
+function buildKitchenIngredientPayload(ingredient, snap) {
+  return {
+    id: ingredient.id,
+    ingredient_id: ingredient.id,
+    created: createdStamp(snap),
+    updated: updatedStamp(),
+  }
+}
+
 async function inspectFirestoreState({ db, kitchenRef, seed }) {
   const ingredients = []
+  const kitchenIngredients = []
   const recipes = []
   const dishes = []
 
   for (const ingredient of seed.ingredients) {
     const snap = await db.collection('ingredients').doc(ingredient.id).get()
     ingredients.push({ id: ingredient.id, exists: snap.exists, path: snap.ref.path, snap })
+
+    const kitchenSnap = await kitchenRef.collection('ingredients').doc(ingredient.id).get()
+    kitchenIngredients.push({
+      id: ingredient.id,
+      exists: kitchenSnap.exists,
+      path: kitchenSnap.ref.path,
+      snap: kitchenSnap,
+    })
   }
 
   for (const recipe of seed.recipes) {
@@ -377,10 +397,14 @@ async function inspectFirestoreState({ db, kitchenRef, seed }) {
 
   return {
     ingredients,
+    kitchenIngredients,
     recipes,
     dishes,
     menu: { id: seed.menu.id, exists: menuSnap.exists, path: menuSnap.ref.path, snap: menuSnap },
     missingIngredients: ingredients.filter((entry) => !entry.exists).map((entry) => entry.id),
+    missingKitchenIngredients: kitchenIngredients
+      .filter((entry) => !entry.exists)
+      .map((entry) => entry.id),
     missingRecipes: recipes.filter((entry) => !entry.exists).map((entry) => entry.id),
     missingDishes: dishes.filter((entry) => !entry.exists).map((entry) => entry.id),
     missingMenu: !menuSnap.exists ? seed.menu.id : '',
@@ -450,6 +474,7 @@ async function main() {
   const state = await inspectFirestoreState({ db, kitchenRef, seed })
   console.log('[seed] luna-menu-prototype firestore-check', {
     missingIngredients: state.missingIngredients,
+    missingKitchenIngredients: state.missingKitchenIngredients,
     missingRecipes: state.missingRecipes,
     missingDishes: state.missingDishes,
     missingMenu: state.missingMenu || null,
@@ -460,11 +485,13 @@ async function main() {
 
   const created = {
     ingredients: [],
+    kitchenIngredients: [],
     recipes: [],
     dishes: [],
     menus: [],
   }
   const updated = {
+    kitchenIngredients: [],
     recipes: [],
     dishes: [],
     menus: [],
@@ -487,6 +514,16 @@ async function main() {
 
       batch.set(entry.snap.ref, buildIngredientPayload(ingredient, seed))
       created.ingredients.push(entry.id)
+    }
+
+    for (const entry of state.kitchenIngredients) {
+      const ingredient = seed.ingredients.find((item) => item.id === entry.id)
+      if (!ingredient) continue
+      batch.set(entry.snap.ref, buildKitchenIngredientPayload(ingredient, entry.snap), {
+        merge: false,
+      })
+      if (entry.exists) updated.kitchenIngredients.push(entry.id)
+      else created.kitchenIngredients.push(entry.id)
     }
 
     for (const entry of state.recipes) {
@@ -518,6 +555,7 @@ async function main() {
     console.log('[dry-run] would write', {
       kitchen: kitchenRef.path,
       ingredients: state.ingredients.map((entry) => entry.path),
+      kitchenIngredients: state.kitchenIngredients.map((entry) => entry.path),
       recipes: state.recipes.map((entry) => entry.path),
       dishes: state.dishes.map((entry) => entry.path),
       menu: menuRef.path,
@@ -534,6 +572,7 @@ async function main() {
     },
     paths: {
       ingredients: 'ingredients',
+      kitchenIngredients: kitchenRef.collection('ingredients').path,
       recipes: kitchenRef.collection('recipes').path,
       dishes: kitchenRef.collection('dishes').path,
       menu: menuRef.path,

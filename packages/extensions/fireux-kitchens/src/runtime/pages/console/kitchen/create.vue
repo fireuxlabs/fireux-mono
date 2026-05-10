@@ -6,7 +6,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <KitchenCreateSystem
+        <OrganismsKitchenCreateSystem
           mode="console"
           return-to="/console/kitchen"
           cancel-to="/console/kitchen"

@@ -242,25 +242,39 @@ export default defineEventHandler(async (event) => {
   const menuSnap = activeMenus[0].doc
   const menu = { id: menuSnap.id, ...(menuSnap.data() || {}) } as Record<string, unknown>
   const rawSections = Array.isArray(menu.sections) ? menu.sections : []
+  const menuDishIds = normalizeList(menu.dish_ids)
+  const menuRecipeIds = normalizeList(menu.recipe_ids)
+  const menuIngredientIds = normalizeList(menu.ingredient_ids)
   const dishIds = Array.from(
     new Set(
-      rawSections.flatMap((section) =>
-        Array.isArray((section as Record<string, unknown>).items)
-          ? ((section as Record<string, unknown>).items as Record<string, unknown>[])
-              .map((item) => normalizeString(item.dish_id))
-              .filter(Boolean)
-          : []
-      )
+      [
+        ...menuDishIds,
+        ...rawSections.flatMap((section) =>
+          Array.isArray((section as Record<string, unknown>).items)
+            ? ((section as Record<string, unknown>).items as Record<string, unknown>[])
+                .map((item) => normalizeString(item.dish_id))
+                .filter(Boolean)
+            : []
+        ),
+      ]
     )
   )
   const dishes = await fetchDocsById(kitchenRef.collection('dishes'), dishIds)
   const dishesById = new Map(dishes.map((dish) => [dish.id, dish]))
   const recipeIds = Array.from(
-    new Set(dishes.flatMap((dish) => normalizeList((dish as Record<string, unknown>).recipe_ids)))
+    new Set([
+      ...menuRecipeIds,
+      ...dishes.flatMap((dish) => normalizeList((dish as Record<string, unknown>).recipe_ids)),
+    ])
   )
   const ingredientIds = Array.from(
     new Set(
-      dishes.flatMap((dish) => normalizeList((dish as Record<string, unknown>).ingredient_ids))
+      [
+        ...menuIngredientIds,
+        ...dishes.flatMap((dish) =>
+          normalizeList((dish as Record<string, unknown>).ingredient_ids)
+        ),
+      ]
     )
   )
   const recipes = await fetchDocsById(kitchenRef.collection('recipes'), recipeIds)

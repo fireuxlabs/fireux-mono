@@ -1,8 +1,14 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { attachDevCollectionMeta } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import {
+  useCollection,
+  useFirestoreResolver,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
-import type { Ref, ShallowRef } from 'vue'
-import { computed, shallowRef, unref, watch } from 'vue'
+import { collection, query as fsq, type Query, type QueryDocumentSnapshot } from 'firebase/firestore'
+import type { Ref } from 'vue'
+import { computed, ref, unref } from 'vue'
 import { resolveKitchenChildCollectionBasePath } from '../../../../app/kitchen-console/shared'
 import type {
     Ingredient,
@@ -49,21 +55,27 @@ export function useKitchenIngredientFetch(
       ? resolveKitchenCollectionPath(kitchenCollectionPath.value, resolvedKitchenId.value)
       : ''
   )
-  const databaseIdKey = computed(() => String(unref(options.databaseId) || '').trim())
+  const resolveDb = useFirestoreResolver(options.databaseId)
 
-  const kitchenCollectionRef = shallowRef(null) as ShallowRef<
-    Ref<KitchenIngredient[] | undefined> | null
-  >
-
-  watch(
-    [collectionPath, databaseIdKey],
-    ([nextPath]) => {
-      kitchenCollectionRef.value = nextPath
-        ? firestoreFetchCollection<KitchenIngredient>(nextPath)
-        : null
-    },
-    { immediate: true }
-  )
+  const kitchenQuery = computed<Query<KitchenIngredient> | null>(() => {
+    const path = collectionPath.value
+    if (!path) return null
+    return fsq(collection(resolveDb(), path)) as Query<KitchenIngredient>
+  })
+  const kitchenItems = import.meta.server
+    ? ref(undefined) as Ref<KitchenIngredient[] | undefined>
+    : useCollection<KitchenIngredient>(kitchenQuery, {
+        ssrKey: computed(() => collectionPath.value || 'kitchen-ingredients-empty'),
+        transform: (docSnap: QueryDocumentSnapshot<KitchenIngredient>) => {
+          const value = {
+            ...(docSnap.data() as KitchenIngredient),
+            id: docSnap.id,
+          } as KitchenIngredient & Record<string, unknown>
+          return collectionPath.value
+            ? attachDevCollectionMeta(value, collectionPath.value, docSnap.id) as KitchenIngredient
+            : value as KitchenIngredient
+        },
+      } as any) as Ref<KitchenIngredient[] | undefined>
 
   const globalIngredients = firestoreFetchCollection<Ingredient>(GLOBAL_COLLECTION_PATH)
 
@@ -78,9 +90,9 @@ export function useKitchenIngredientFetch(
   })
 
   const ingredients = computed<KitchenIngredientRecord[]>(() => {
-    const kitchenItems = kitchenCollectionRef.value?.value ?? []
+    const kitchenEntries = kitchenItems.value ?? []
 
-    return kitchenItems.map((entry) => {
+    return kitchenEntries.map((entry) => {
       const linkId = String((entry as any).ingredient_id || entry.id || '').trim()
       const global = ingredientById.value.get(linkId)
       const entryImage = String((entry as any).image_url || '').trim()
@@ -104,7 +116,7 @@ export function useKitchenIngredientFetch(
     if (!resolvedKitchenId.value) return false
 
     return (
-      kitchenCollectionRef.value?.value === undefined ||
+      kitchenItems.value === undefined ||
       globalIngredients.value === undefined
     )
   })

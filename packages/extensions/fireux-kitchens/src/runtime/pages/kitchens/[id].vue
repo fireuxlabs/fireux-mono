@@ -39,7 +39,7 @@
       </div>
 
       <div v-else class="space-y-4">
-        <KitchenCardsProfile
+        <OrganismsKitchenCardsProfile
           v-if="kitchenProfile"
           :model="kitchenProfile"
         />

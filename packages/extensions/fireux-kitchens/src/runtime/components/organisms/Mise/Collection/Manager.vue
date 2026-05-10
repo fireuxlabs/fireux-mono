@@ -39,19 +39,19 @@
       </div>
     </template>
 
-    <MiseCollectionList
+    <OrganismsMiseCollectionList
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
       <template #pill="{ card }">
-        <MiseCardsPill v-bind="card" :link="linkEnabled" />
+        <OrganismsMiseCardsPill v-bind="card" :link="linkEnabled" />
       </template>
 
       <template #cell="{ card }">
-        <MiseCardsCell v-bind="card" :link="linkEnabled" />
+        <OrganismsMiseCardsCell v-bind="card" :link="linkEnabled" />
       </template>
-    </MiseCollectionList>
+    </OrganismsMiseCollectionList>
 
     <p v-else class="text-sm text-dimmed">
       {{ query ? 'No mise tasks match your search.' : 'No mise tasks found.' }}

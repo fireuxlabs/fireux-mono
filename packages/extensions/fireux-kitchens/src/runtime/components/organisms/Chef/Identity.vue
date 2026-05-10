@@ -1,7 +1,7 @@
 <template>
   <section class="console-profile__section">
     <div class="console-profile__pills">
-      <ProfilesChefCardsPill
+      <OrganismsChefCardsPill
         v-if="chefCard"
         v-bind="chefCard"
         :link="Boolean(chefCard.to)"
@@ -32,7 +32,7 @@
     </UPageCard>
 
     <ClientOnly v-else>
-      <ProfilesChefCardsProfile
+      <OrganismsChefCardsProfile
         v-if="chefCard"
         :card="chefCard"
         :profile="resolvedCoreProfile"

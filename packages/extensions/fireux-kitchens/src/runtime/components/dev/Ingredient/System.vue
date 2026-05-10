@@ -32,7 +32,7 @@
         </div>
       </template>
 
-      <IngredientCollectionManager :collection="filteredCollection" />
+      <OrganismsIngredientCollectionManager :collection="filteredCollection" />
     </UCard>
   </section>
 </template>

@@ -23,7 +23,7 @@
       </div>
     </UFormField>
 
-    <IngredientCreateWrite v-model:form="form" />
+    <OrganismsIngredientCreateWrite v-model:form="form" />
 
     <div class="mt-4 flex justify-end gap-2">
       <UButton

@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-4">
-    <PlaceSearchSection
+    <OrganismsPlaceSearchSection
       type="kitchen"
       placeholder="Search by name or address"
       @confirmed="onPlaceConfirmed"

@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-6">
-    <RecipeCollectionManager
+    <OrganismsRecipeCollectionManager
       :collection="recipes"
       title="Recipes"
       description="Browse recipes for the selected kitchen."

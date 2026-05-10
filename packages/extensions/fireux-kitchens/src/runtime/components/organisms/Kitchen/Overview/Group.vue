@@ -27,7 +27,7 @@
     </div>
 
     <div v-if="groupCards.length" class="mt-4 space-y-2">
-      <KitchenCardsPill
+      <OrganismsKitchenCardsPill
         v-for="card in groupCards"
         :key="card.id"
         v-bind="card"

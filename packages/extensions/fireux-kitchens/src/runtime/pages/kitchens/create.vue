@@ -6,7 +6,7 @@
     />
 
     <UPageBody class="pagebody">
-      <KitchenCreateSystem mode="public" />
+      <OrganismsKitchenCreateSystem mode="public" />
     </UPageBody>
   </UPage>
 </template>

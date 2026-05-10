@@ -49,7 +49,7 @@
           </div>
 
           <div v-else class="space-y-4">
-            <ProfilesChefCardsProfile v-if="chefCard" :card="chefCard" :profile="profile" />
+            <OrganismsChefCardsProfile v-if="chefCard" :card="chefCard" :profile="profile" />
 
             <DevJson
               v-if="isDev && profile"

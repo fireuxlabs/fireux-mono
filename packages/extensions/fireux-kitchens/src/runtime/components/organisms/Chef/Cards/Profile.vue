@@ -1,6 +1,6 @@
 <template>
   <div class="mx-auto w-full max-w-3xl space-y-4">
-    <ProfilesChefCardsCell
+    <OrganismsChefCardsCell
       v-bind="card"
       :show-tagline="true"
       :link="Boolean(card.to)"

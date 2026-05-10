@@ -48,7 +48,7 @@
         </ul>
       </div>
 
-      <KitchenCreateWrite
+      <OrganismsKitchenCreateWrite
         :mode="resolvedMode"
         :return-to="returnTo"
         :cancel-to="cancelTo"

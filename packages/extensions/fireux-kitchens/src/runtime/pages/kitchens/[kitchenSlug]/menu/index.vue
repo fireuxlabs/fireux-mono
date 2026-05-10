@@ -1,5 +1,5 @@
 <template>
-  <MenuPreview :menu="kitchenMenu" />
+  <OrganismsMenuPreview :menu="kitchenMenu" />
 </template>
 
 <script setup lang="ts">

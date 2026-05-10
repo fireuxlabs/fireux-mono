@@ -39,18 +39,18 @@
       </div>
     </template>
 
-    <SupplierCollectionList
+    <OrganismsSupplierCollectionList
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
       <template #pill="{ card }">
-        <SupplierCardsPill v-bind="card" :link="linkEnabled" />
+        <OrganismsSupplierCardsPill v-bind="card" :link="linkEnabled" />
       </template>
       <template #cell="{ card }">
-        <SupplierCardsCell v-bind="card" :link="linkEnabled" />
+        <OrganismsSupplierCardsCell v-bind="card" :link="linkEnabled" />
       </template>
-    </SupplierCollectionList>
+    </OrganismsSupplierCollectionList>
 
     <p v-else class="text-sm text-dimmed">
       {{ query ? 'No suppliers match your search.' : 'No suppliers found.' }}

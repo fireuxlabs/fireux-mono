@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-6">
-    <TeamCollectionManager
+    <OrganismsTeamCollectionManager
       :collection="teamMembers"
       title="Team"
       description="Kitchen team members for the selected kitchen."

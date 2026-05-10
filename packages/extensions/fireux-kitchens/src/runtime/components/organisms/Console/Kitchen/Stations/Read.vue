@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-6">
-    <StationCollectionManager
+    <OrganismsStationCollectionManager
       :collection="stations"
       title="Stations"
       description="Kitchen work areas for the selected kitchen."

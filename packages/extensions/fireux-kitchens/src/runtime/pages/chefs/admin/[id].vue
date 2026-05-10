@@ -16,7 +16,7 @@
         </div>
 
         <div class="console-profile__pills">
-          <ProfilesChefCardsPill
+          <OrganismsChefCardsPill
             v-if="chefCard"
             v-bind="chefCard"
             :link="Boolean(chefCard.to)"
@@ -40,7 +40,7 @@
 
         <ClientOnly v-else>
           <div v-if="view === 'profile'" class="console-profile__section">
-            <ProfilesChefCardsProfile
+            <OrganismsChefCardsProfile
               v-if="chefCard"
               :card="chefCard"
               :profile="resolvedCoreProfile"
@@ -48,9 +48,9 @@
           </div>
 
           <div v-else class="console-profile__section">
-            <ProfilesChefEditCore :chef="resolvedCoreProfile" />
+            <OrganismsChefEditCore :chef="resolvedCoreProfile" />
 
-            <ProfilesChefEditApp
+            <OrganismsChefEditApp
               v-if="resolvedAppProfile"
               :chef="resolvedAppProfile"
             />

@@ -82,13 +82,13 @@
       </div>
     </template>
 
-    <KitchenCollectionList
+    <OrganismsKitchenCollectionList
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
       <template #pill="{ card }">
-        <KitchenCardsPill
+        <OrganismsKitchenCardsPill
           v-bind="card"
           :link="linkEnabled"
           :action="actionEnabled"
@@ -97,7 +97,7 @@
         />
       </template>
       <template #cell="{ card }">
-        <KitchenCardsCell
+        <OrganismsKitchenCardsCell
           v-bind="card"
           :link="linkEnabled"
           :action="actionEnabled"
@@ -105,7 +105,7 @@
           @action="emit('select', card.id)"
         />
       </template>
-    </KitchenCollectionList>
+    </OrganismsKitchenCollectionList>
 
     <p v-else>
       {{ query ? 'No kitchens match your search.' : 'No kitchens found.' }}

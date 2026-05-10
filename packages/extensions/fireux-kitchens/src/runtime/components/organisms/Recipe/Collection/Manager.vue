@@ -39,18 +39,18 @@
       </div>
     </template>
 
-    <RecipeCollectionList
+    <OrganismsRecipeCollectionList
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
       <template #pill="{ card }">
-        <RecipeCardsPill v-bind="card" :link="linkEnabled" />
+        <OrganismsRecipeCardsPill v-bind="card" :link="linkEnabled" />
       </template>
       <template #cell="{ card }">
-        <RecipeCardsCell v-bind="card" :link="linkEnabled" />
+        <OrganismsRecipeCardsCell v-bind="card" :link="linkEnabled" />
       </template>
-    </RecipeCollectionList>
+    </OrganismsRecipeCollectionList>
 
     <p v-else class="text-sm text-dimmed">
       {{ query ? 'No recipes match your search.' : 'No recipes found.' }}

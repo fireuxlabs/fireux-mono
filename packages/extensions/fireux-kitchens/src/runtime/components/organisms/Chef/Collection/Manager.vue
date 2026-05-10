@@ -41,18 +41,18 @@
       </div>
     </template>
 
-    <ProfilesChefCollectionList
+    <OrganismsChefCollectionList
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
       <template #pill="{ card }">
-        <ProfilesChefCardsPill v-bind="card" :link="linkEnabled" />
+        <OrganismsChefCardsPill v-bind="card" :link="linkEnabled" />
       </template>
       <template #cell="{ card }">
-        <ProfilesChefCardsCell v-bind="card" :link="linkEnabled" />
+        <OrganismsChefCardsCell v-bind="card" :link="linkEnabled" />
       </template>
-    </ProfilesChefCollectionList>
+    </OrganismsChefCollectionList>
 
     <p v-else>
       {{ query ? 'No chefs match your search.' : 'No chefs found.' }}

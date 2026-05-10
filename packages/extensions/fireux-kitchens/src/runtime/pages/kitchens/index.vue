@@ -6,7 +6,7 @@
       :description="pageDescription"
     />
     <UPageBody class="pagebody">
-      <KitchenCTA />
+      <OrganismsKitchenCTA />
 
       <div
         v-if="showDevNotes"
@@ -49,7 +49,7 @@
         <p>Loading kitchens…</p>
       </UCard>
 
-      <KitchenCollectionManager
+      <OrganismsKitchenCollectionManager
         v-else
         :collection="kitchens"
         :source-mode="sourceMode"

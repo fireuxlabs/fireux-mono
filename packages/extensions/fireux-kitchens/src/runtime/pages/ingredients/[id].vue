@@ -49,7 +49,7 @@
           </UButton>
         </div>
 
-        <IngredientCardsProfile
+        <OrganismsIngredientCardsProfile
           v-if="ingredientProfile"
           :model="ingredientProfile"
         />

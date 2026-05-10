@@ -29,11 +29,11 @@
 
     <template #body>
       <div class="console-profile">
-        <ConsoleKitchenIdentity v-if="view === 'identity' || !canWrite" />
+        <OrganismsConsoleKitchenIdentity v-if="view === 'identity' || !canWrite" />
 
         <ClientOnly v-else>
           <div class="console-profile__section">
-            <ConsoleKitchenEdit />
+            <OrganismsConsoleKitchenEdit />
           </div>
         </ClientOnly>
       </div>

@@ -17,7 +17,7 @@
           v-if="surface === 'kiosk'"
           :surface="menuSurface"
         />
-        <MenuQR
+        <OrganismsMenuQR
           v-else
           :menu="menuSurface"
         />

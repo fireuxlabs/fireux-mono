@@ -63,7 +63,9 @@
               v-for="ingredient in ingredients"
               :key="ingredient.id"
             >
-              <span class="font-medium text-[#17201a]">{{ ingredient.name }}</span>
+              <span class="font-medium text-[#17201a]">
+                {{ sourceName(ingredient) }}
+              </span>
               <span class="text-[#6b776e]"> · {{ ingredient.id }}</span>
             </li>
           </ul>
@@ -167,6 +169,7 @@ type PrototypeMenuSection = {
 type PrototypeSource = {
   id: string
   name?: string
+  names?: Record<string, string>
   recipe_ids?: string[]
   ingredient_ids?: string[]
   integrity_note?: string
@@ -215,4 +218,6 @@ const dishes = computed(() =>
     ingredient_ids: dish.ingredient_ids || [],
   }))
 )
+const sourceName = (source: PrototypeSource) =>
+  source.names?.en || source.name || source.id
 </script>

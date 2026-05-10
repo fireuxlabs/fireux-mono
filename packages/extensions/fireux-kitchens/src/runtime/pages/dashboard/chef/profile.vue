@@ -29,11 +29,11 @@
 
     <template #body>
       <div class="console-profile">
-        <ProfilesChefIdentity v-if="view === 'profile'" />
+        <OrganismsChefIdentity v-if="view === 'profile'" />
 
         <ClientOnly v-else>
           <div class="console-profile__section">
-            <ProfilesChefEditCore />
+            <OrganismsChefEditCore />
           </div>
         </ClientOnly>
       </div>

@@ -2,8 +2,8 @@
   <UPage>
     <UPageHeader class="pageheader" :title="pageTitle" />
     <UPageBody class="pagebody">
-      <KitchenCTA />
-      <KitchenCollectionManager
+      <OrganismsKitchenCTA />
+      <OrganismsKitchenCollectionManager
         :collection="collection"
         title="Available Kitchens"
         description=""

@@ -39,18 +39,18 @@
       </div>
     </template>
 
-    <IngredientCollectionList
+    <OrganismsIngredientCollectionList
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
       <template #pill="{ card }">
-        <IngredientCardsPill v-bind="card" :link="linkEnabled" />
+        <OrganismsIngredientCardsPill v-bind="card" :link="linkEnabled" />
       </template>
       <template #cell="{ card }">
-        <IngredientCardsCell v-bind="card" :link="linkEnabled" />
+        <OrganismsIngredientCardsCell v-bind="card" :link="linkEnabled" />
       </template>
-    </IngredientCollectionList>
+    </OrganismsIngredientCollectionList>
 
     <p v-else class="text-sm text-dimmed">
       {{

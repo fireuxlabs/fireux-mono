@@ -1,5 +1,5 @@
 <template>
-  <ProfilesChefCreateSystem v-bind="$attrs" />
+  <OrganismsChefCreateSystem v-bind="$attrs" />
 </template>
 
 <script setup lang="ts">

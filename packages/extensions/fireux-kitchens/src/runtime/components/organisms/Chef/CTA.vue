@@ -7,7 +7,7 @@
     orientation="horizontal"
   >
     <div v-if="hasProfile && profileCard" class="cta__body space-y-4">
-      <ProfilesChefCardsPreview v-bind="profileCard" :link="false" />
+      <OrganismsChefCardsPreview v-bind="profileCard" :link="false" />
 
       <div class="flex flex-wrap gap-2">
         <UButton color="primary" @click="openProfile">View profile</UButton>
@@ -16,7 +16,7 @@
     </div>
 
     <div v-else class="cta__body space-y-2">
-      <ProfilesChefCreateSystem />
+      <OrganismsChefCreateSystem />
     </div>
   </UPageCTA>
 </template>

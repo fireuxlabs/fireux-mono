@@ -10,7 +10,7 @@
       </div>
     </template>
 
-    <KitchenIngredientsCreateWrite v-model:form="form" />
+    <OrganismsKitchenIngredientsCreateWrite v-model:form="form" />
 
     <div class="mt-4 flex flex-wrap justify-end gap-2">
       <UButton

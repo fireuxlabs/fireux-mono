@@ -62,18 +62,18 @@
       </div>
     </template>
 
-    <DishCollectionList
+    <OrganismsDishCollectionList
       v-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
     >
       <template #pill="{ card }">
-        <DishCardsPill v-bind="card" :link="linkEnabled" />
+        <OrganismsDishCardsPill v-bind="card" :link="linkEnabled" />
       </template>
       <template #cell="{ card }">
-        <DishCardsCell v-bind="card" :link="linkEnabled" />
+        <OrganismsDishCardsCell v-bind="card" :link="linkEnabled" />
       </template>
-    </DishCollectionList>
+    </OrganismsDishCollectionList>
 
     <p v-else class="text-sm text-dimmed">
       {{
