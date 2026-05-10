@@ -12,20 +12,10 @@ const DEFAULT_SERVICE_ACCOUNT_PATH =
   'packages/ecosystem/fireux-misebox/src/config/firebase/service-account.json'
 const DEFAULT_DATABASE_ID = 'misebox'
 const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
+const DEFAULT_SEED_PATH = 'scripts/data/luna-piccante.menu.seed.json'
 const LUNA_KITCHEN_ID = 'ChIJ93_ggY-jj0cRTCyLcfBuK2w'
-const SOURCE_LANGUAGE = 'en'
 const SYSTEM_ACTOR = 'system:seed-luna-recipes'
 const APP_ID = 'misebox-app'
-
-const LUNA_RECIPES = [
-  { id: 'tomato-sauce', name: 'Tomato sauce' },
-  { id: 'cream-sauce', name: 'Cream sauce' },
-  { id: 'pesto-cream-sauce', name: 'Pesto cream sauce' },
-  { id: 'saffron-sauce', name: 'Saffron sauce' },
-  { id: 'cocktail-sauce', name: 'Cocktail sauce' },
-  { id: 'roasted-bread', name: 'Roasted bread' },
-  { id: 'pizza-dough', name: 'Pizza dough' },
-]
 
 const normalizeString = (value) => String(value ?? '').trim()
 
@@ -58,6 +48,23 @@ async function readServiceAccount(pathValue) {
   throw new Error(`Service account file not found: ${pathValue}`)
 }
 
+async function readSeed(pathValue) {
+  const root = findMonorepoRoot(process.cwd())
+  const candidates = isAbsolute(pathValue)
+    ? [pathValue]
+    : [resolve(process.cwd(), pathValue), resolve(root, pathValue)]
+
+  for (const candidate of candidates) {
+    if (!existsSync(candidate)) continue
+    return {
+      seed: JSON.parse(await readFile(candidate, 'utf8')),
+      resolvedPath: candidate,
+    }
+  }
+
+  throw new Error(`Seed file not found: ${pathValue}`)
+}
+
 function printHelp() {
   console.log(`
 Seed Luna Piccante recipe/prep docs.
@@ -69,6 +76,7 @@ Usage:
 
 Options:
   --commit                         Write missing recipe docs.
+  --seed <path>                    Seed JSON path. Defaults to scripts/data/luna-piccante.menu.seed.json.
   --project <id>                   Google/Firebase project id. Defaults to service-account project or misebox-78f9c.
   --database <id>                  Firestore database id. Defaults to misebox.
   --service-account <path>         Service account JSON path.
@@ -77,17 +85,39 @@ Options:
 `)
 }
 
-function buildRecipePayload(recipe, kitchenId) {
+function sourceLanguage(seed) {
+  return normalizeString(seed.source_language) || 'en'
+}
+
+function localizedText(value, language, fallback) {
+  const text = value && typeof value === 'object' && !Array.isArray(value)
+    ? Object.fromEntries(
+        Object.entries(value)
+          .map(([code, copy]) => [normalizeString(code).replace(/_/g, '-'), normalizeString(copy)])
+          .filter(([code, copy]) => code && copy)
+      )
+    : {}
+
+  if (!text[language] && normalizeString(fallback)) {
+    text[language] = normalizeString(fallback)
+  }
+
+  return text
+}
+
+function buildRecipePayload(recipe, kitchenId, language) {
+  const description = normalizeString(recipe.description)
+  const names = localizedText(recipe.names, language, recipe.name)
+  const descriptions = localizedText(recipe.descriptions, language, description)
+
   return {
     id: recipe.id,
     name: recipe.name,
     slug: recipe.id,
-    description: '',
-    source_language: SOURCE_LANGUAGE,
-    names: {
-      [SOURCE_LANGUAGE]: recipe.name,
-    },
-    descriptions: {},
+    description,
+    source_language: language,
+    names,
+    descriptions,
     kitchen_id: kitchenId,
     created: {
       at: FieldValue.serverTimestamp(),
@@ -109,6 +139,11 @@ async function main() {
   }
 
   const commit = Boolean(args.commit)
+  const seedPath =
+    typeof args.seed === 'string' ? normalizeString(args.seed) : DEFAULT_SEED_PATH
+  const { seed, resolvedPath: resolvedSeedPath } = await readSeed(seedPath)
+  const recipes = Array.isArray(seed.recipes) ? seed.recipes : []
+  const language = sourceLanguage(seed)
   const serviceAccountPath =
     typeof args['service-account'] === 'string'
       ? normalizeString(args['service-account'])
@@ -146,6 +181,7 @@ async function main() {
     commit,
     projectId,
     databaseId: databaseId || '(default)',
+    seed: resolvedSeedPath,
     serviceAccount: resolvedPath,
     kitchenPath: kitchenRef.path,
     recipesPath: recipesCollection.path,
@@ -166,7 +202,7 @@ async function main() {
   const skipped = []
   const batch = db.batch()
 
-  for (const recipe of LUNA_RECIPES) {
+  for (const recipe of recipes) {
     const ref = recipesCollection.doc(recipe.id)
     const snap = await ref.get()
 
@@ -177,12 +213,12 @@ async function main() {
 
     created.push({ id: recipe.id, path: ref.path })
     if (commit) {
-      batch.set(ref, buildRecipePayload(recipe, kitchenId))
+      batch.set(ref, buildRecipePayload(recipe, kitchenId, language))
     } else {
       console.log('[dry-run] create', {
         path: ref.path,
         name: recipe.name,
-        source_language: SOURCE_LANGUAGE,
+        source_language: language,
       })
     }
   }

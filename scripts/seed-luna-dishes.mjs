@@ -12,21 +12,10 @@ const DEFAULT_SERVICE_ACCOUNT_PATH =
   'packages/ecosystem/fireux-misebox/src/config/firebase/service-account.json'
 const DEFAULT_DATABASE_ID = 'misebox'
 const DEFAULT_KITCHEN_COLLECTION_PATH = 'kitchens'
+const DEFAULT_SEED_PATH = 'scripts/data/luna-piccante.menu.seed.json'
 const LUNA_KITCHEN_ID = 'ChIJ93_ggY-jj0cRTCyLcfBuK2w'
-const SOURCE_LANGUAGE = 'en'
 const SYSTEM_ACTOR = 'system:seed-luna-dishes'
 const APP_ID = 'misebox-app'
-
-const LUNA_DISHES = [
-  {
-    id: 'margherita',
-    name: 'Margherita',
-    description: 'Tomato sauce, mozzarella, oregano',
-    recipe_ids: ['pizza-dough', 'tomato-sauce'],
-    ingredient_ids: ['mozzarella', 'oregano'],
-    excluded_render_ids: ['pizza-dough'],
-  },
-]
 
 const normalizeString = (value) => String(value ?? '').trim()
 const normalizeLanguageCode = (value) => normalizeString(value).replace(/_/g, '-')
@@ -70,6 +59,23 @@ async function readServiceAccount(pathValue) {
   throw new Error(`Service account file not found: ${pathValue}`)
 }
 
+async function readSeed(pathValue) {
+  const root = findMonorepoRoot(process.cwd())
+  const candidates = isAbsolute(pathValue)
+    ? [pathValue]
+    : [resolve(process.cwd(), pathValue), resolve(root, pathValue)]
+
+  for (const candidate of candidates) {
+    if (!existsSync(candidate)) continue
+    return {
+      seed: JSON.parse(await readFile(candidate, 'utf8')),
+      resolvedPath: candidate,
+    }
+  }
+
+  throw new Error(`Seed file not found: ${pathValue}`)
+}
+
 function printHelp() {
   console.log(`
 Seed Luna Piccante dish proof docs.
@@ -81,6 +87,7 @@ Usage:
 
 Options:
   --commit                         Write missing dish docs.
+  --seed <path>                    Seed JSON path. Defaults to scripts/data/luna-piccante.menu.seed.json.
   --project <id>                   Google/Firebase project id. Defaults to service-account project or misebox-78f9c.
   --database <id>                  Firestore database id. Defaults to misebox.
   --service-account <path>         Service account JSON path.
@@ -90,19 +97,38 @@ Options:
 `)
 }
 
-function buildDishPayload(dish, kitchenId) {
+function sourceLanguage(seed) {
+  return normalizeString(seed.source_language) || 'en'
+}
+
+function excludedIdsForDish(seed, dishId) {
+  const sections = Array.isArray(seed.sections) ? seed.sections : []
+  const excluded = []
+
+  for (const section of sections) {
+    const items = Array.isArray(section.items) ? section.items : []
+    const hasDish = items.some((item) => normalizeString(item.dish_id) === dishId)
+    if (!hasDish) continue
+    excluded.push(...normalizeIdList(section.render_excluded_ids))
+  }
+
+  return Array.from(new Set(excluded))
+}
+
+function buildDishPayload(dish, kitchenId, language) {
+  const description = normalizeString(dish.description)
   return {
     id: dish.id,
     name: dish.name,
     slug: dish.id,
-    description: dish.description,
-    source_language: SOURCE_LANGUAGE,
+    description,
+    source_language: language,
     names: {
-      [SOURCE_LANGUAGE]: dish.name,
+      [language]: dish.name,
     },
-    descriptions: dish.description
+    descriptions: description
       ? {
-          [SOURCE_LANGUAGE]: dish.description,
+          [language]: description,
         }
       : {},
     recipe_ids: dish.recipe_ids,
@@ -180,6 +206,11 @@ async function main() {
   }
 
   const commit = Boolean(args.commit)
+  const seedPath =
+    typeof args.seed === 'string' ? normalizeString(args.seed) : DEFAULT_SEED_PATH
+  const { seed, resolvedPath: resolvedSeedPath } = await readSeed(seedPath)
+  const dishes = Array.isArray(seed.dishes) ? seed.dishes : []
+  const language = sourceLanguage(seed)
   const serviceAccountPath =
     typeof args['service-account'] === 'string'
       ? normalizeString(args['service-account'])
@@ -201,7 +232,7 @@ async function main() {
       ? normalizeString(args['kitchen-collection'])
       : DEFAULT_KITCHEN_COLLECTION_PATH
   const languageCode =
-    normalizeLanguageCode(args.language) || SOURCE_LANGUAGE
+    normalizeLanguageCode(args.language) || language
 
   if (!projectId) throw new Error('Project id is required')
   if (!kitchenId) throw new Error('Kitchen id is required')
@@ -221,6 +252,7 @@ async function main() {
     commit,
     projectId,
     databaseId: databaseId || '(default)',
+    seed: resolvedSeedPath,
     serviceAccount: resolvedPath,
     kitchenPath: kitchenRef.path,
     dishesPath: dishesCollection.path,
@@ -242,7 +274,7 @@ async function main() {
   const renderProofs = []
   const batch = db.batch()
 
-  for (const dish of LUNA_DISHES) {
+  for (const dish of dishes) {
     const recipeIds = normalizeIdList(dish.recipe_ids)
     const ingredientIds = normalizeIdList(dish.ingredient_ids)
     const recipes = await fetchSourceDocs(recipesCollection, recipeIds, 'recipes')
@@ -253,7 +285,7 @@ async function main() {
     )
     const ref = dishesCollection.doc(dish.id)
     const snap = await ref.get()
-    const payload = buildDishPayload(dish, kitchenId)
+    const payload = buildDishPayload(dish, kitchenId, language)
     const resolvedDish = snap.exists ? { id: snap.id, ...(snap.data() || {}) } : payload
 
     if (snap.exists) {
@@ -272,16 +304,17 @@ async function main() {
       }
     }
 
+    const excludedIds = excludedIdsForDish(seed, dish.id)
     renderProofs.push({
       dishId: dish.id,
       language: languageCode,
-      excludedIds: dish.excluded_render_ids,
+      excludedIds,
       line: resolveDishSemanticLine({
         dish: resolvedDish,
         recipes,
         ingredients,
         languageCode,
-        excludedIds: dish.excluded_render_ids,
+        excludedIds,
       }),
     })
   }

@@ -268,6 +268,12 @@ export default defineEventHandler(async (event) => {
   const recipesById = new Map(recipes.map((recipe) => [recipe.id, recipe]))
   const ingredientsById = new Map(ingredients.map((ingredient) => [ingredient.id, ingredient]))
   const sections = rawSections
+    .slice()
+    .sort((a, b) => {
+      const aSource = a as Record<string, unknown>
+      const bSource = b as Record<string, unknown>
+      return Number(aSource.sort_order ?? 0) - Number(bSource.sort_order ?? 0)
+    })
     .map((section) => {
       const source = section as Record<string, unknown>
       const excludedIds = normalizeList(source.render_excluded_ids)
@@ -276,6 +282,8 @@ export default defineEventHandler(async (event) => {
         ? (source.items as Record<string, unknown>[])
         : []
       const entries = items
+        .slice()
+        .sort((a, b) => Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0))
         .map((item) => {
           const dishId = normalizeString(item.dish_id)
           const dish = dishesById.get(dishId)
@@ -302,12 +310,12 @@ export default defineEventHandler(async (event) => {
         id: normalizeString(source.id),
         label: normalizeString(source.label),
         description: normalizeString(source.description),
+        sort_order: Number(source.sort_order ?? 0),
         render_excluded_ids: excludedIds,
         render_excluded_terms: excludedTerms,
         entries,
       }
     })
-    .filter((section) => section.entries.length > 0)
 
   return cleanForJson({
     route: {

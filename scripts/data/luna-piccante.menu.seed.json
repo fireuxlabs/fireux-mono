@@ -1,0 +1,152 @@
+{
+  "version": 1,
+  "source": "Luna Piccante public prototype seed. This file is the frozen source for the current route-first menu proof; uncertain food data must use integrity_note rather than guesses.",
+  "source_language": "en",
+  "kitchen": {
+    "id": "ChIJ93_ggY-jj0cRTCyLcfBuK2w",
+    "name": "Luna Piccante",
+    "slug": "luna-piccante"
+  },
+  "menu": {
+    "id": "luna-semantic-menu",
+    "name": "Luna Piccante Menu",
+    "description": "",
+    "active": true,
+    "service_modes": ["dine_in"]
+  },
+  "ingredients": [
+    {
+      "id": "mozzarella",
+      "name": "Mozzarella"
+    },
+    {
+      "id": "oregano",
+      "name": "Oregano"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "tomato-sauce",
+      "name": "Tomato sauce",
+      "names": {
+        "en": "tomato sauce"
+      },
+      "description": ""
+    },
+    {
+      "id": "cream-sauce",
+      "name": "Cream sauce",
+      "names": {
+        "en": "cream sauce"
+      },
+      "description": ""
+    },
+    {
+      "id": "pesto-cream-sauce",
+      "name": "Pesto cream sauce",
+      "names": {
+        "en": "pesto cream sauce"
+      },
+      "description": ""
+    },
+    {
+      "id": "saffron-sauce",
+      "name": "Saffron sauce",
+      "names": {
+        "en": "saffron sauce"
+      },
+      "description": ""
+    },
+    {
+      "id": "cocktail-sauce",
+      "name": "Cocktail sauce",
+      "names": {
+        "en": "cocktail sauce"
+      },
+      "description": ""
+    },
+    {
+      "id": "roasted-bread",
+      "name": "Roasted bread",
+      "names": {
+        "en": "roasted bread"
+      },
+      "description": ""
+    },
+    {
+      "id": "pizza-dough",
+      "name": "Pizza dough",
+      "names": {
+        "en": "pizza dough"
+      },
+      "description": ""
+    }
+  ],
+  "dishes": [
+    {
+      "id": "margherita",
+      "name": "Margherita",
+      "description": "Tomato sauce, mozzarella, oregano",
+      "recipe_ids": ["pizza-dough", "tomato-sauce"],
+      "ingredient_ids": ["mozzarella", "oregano"]
+    }
+  ],
+  "sections": [
+    {
+      "id": "starters",
+      "label": "Starters",
+      "items": []
+    },
+    {
+      "id": "soups",
+      "label": "Soups",
+      "items": []
+    },
+    {
+      "id": "salads",
+      "label": "Salads",
+      "items": []
+    },
+    {
+      "id": "risotto",
+      "label": "Risotto",
+      "items": []
+    },
+    {
+      "id": "gratin",
+      "label": "Gratin",
+      "items": []
+    },
+    {
+      "id": "pasta",
+      "label": "Pasta",
+      "items": []
+    },
+    {
+      "id": "pizza",
+      "label": "Pizza",
+      "render_excluded_ids": ["pizza-dough"],
+      "items": [
+        {
+          "id": "margherita",
+          "dish_id": "margherita"
+        }
+      ]
+    },
+    {
+      "id": "fish",
+      "label": "Fish",
+      "items": []
+    },
+    {
+      "id": "meat",
+      "label": "Meat",
+      "items": []
+    },
+    {
+      "id": "hot-stone",
+      "label": "Hot Stone",
+      "items": []
+    }
+  ]
+}
