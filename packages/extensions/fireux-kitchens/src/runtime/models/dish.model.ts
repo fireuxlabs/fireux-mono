@@ -9,11 +9,9 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * Path: /kitchens/<kitchenId>/dishes/<dishId>
  * Owner app scope: Kitchen
  *
- * Dish is the first guest-facing semantic composition layer. It links to
- * kitchen-owned mise/prep components and root/shared ingredients by id.
- * Recipe/method cards can live behind mise/prep items later; they are not
- * active Dish semantics. Steps, allergens, pricing, stock, images, and
- * service workflow are not active on the Dish model yet.
+ * Dish owns guest-facing food copy. Menus decide where dishes appear.
+ * Ingredients, prep, recipes, pricing, stock, images, and service workflow are
+ * not active on the public Dish model yet.
  */
 export type DishTranslatedText = Partial<Record<string, string>>
 
@@ -27,13 +25,8 @@ export const DishModel = {
   name: '' as string,
   slug: '' as string,
   description: '' as string,
-  source_language: '' as string,
   names: {} as DishTranslatedText,
   descriptions: {} as DishTranslatedText,
-  translated: false as boolean,
-  menu_placements: [] as DishMenuPlacement[],
-  mise_ids: [] as string[],
-  ingredient_ids: [] as string[],
   kitchen_id: '' as string,
   created: {
     at: {} as FirebaseTimestamp,
@@ -46,9 +39,11 @@ export const DishModel = {
   },
 } as const
 
-export type Dish = {
+type DishBase = {
   -readonly [K in keyof typeof DishModel]: (typeof DishModel)[K]
 }
+
+export type Dish = DishBase
 
 export type DishCreateInput = Omit<Dish, 'created' | 'updated'>
 export type DishUpdateInput = Partial<
@@ -123,13 +118,8 @@ export function normalizeDish(value: unknown): Dish {
     name: pickString(source.name),
     slug: pickString(source.slug),
     description: pickString(source.description),
-    source_language: pickString(source.source_language),
     names: normalizeDishTranslatedText(source.names),
     descriptions: normalizeDishTranslatedText(source.descriptions),
-    translated: source.translated === true,
-    menu_placements: normalizeDishMenuPlacements(source.menu_placements),
-    mise_ids: normalizeDishStringArray(source.mise_ids),
-    ingredient_ids: normalizeDishStringArray(source.ingredient_ids),
     kitchen_id: pickString(source.kitchen_id),
     created,
     updated,

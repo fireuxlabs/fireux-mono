@@ -16,8 +16,6 @@ const LUNA_KITCHEN_ID = 'ChIJ93_ggY-jj0cRTCyLcfBuK2w'
 const APP_ID = 'misebox-app'
 const SYSTEM_ACTOR = 'system:seed-luna-public-menus'
 const STALE_PUBLIC_MENU_NAMES = new Set(['Luna Piccante Menu', 'Pizzakarte'])
-const LUNA_PUBLIC_LANGUAGE_CODES = ['de', 'en', 'fr', 'it']
-
 const normalizeString = (value) => String(value ?? '').trim()
 const normalizeLabelKey = (value) =>
   normalizeString(value)
@@ -32,63 +30,44 @@ const normalizeLabelKey = (value) =>
 
 const SECTION_LABELS = new Map(
   [
-    [
-      'ANTIPASTI / VORSPEISEN',
-      { de: 'Vorspeisen', en: 'Starters', fr: 'Entrées', it: 'Antipasti' },
-    ],
-    ['ZUPPA / SUPPEN', { de: 'Suppen', en: 'Soups', fr: 'Soupes', it: 'Zuppe' }],
-    ['INSALATE / SALATE', { de: 'Salate', en: 'Salads', fr: 'Salades', it: 'Insalate' }],
-    ['RISOTTO', { de: 'Risotto', en: 'Risotto', fr: 'Risotto', it: 'Risotto' }],
-    [
-      'GRATINATO / GRATINIERT',
-      { de: 'Gratiniert', en: 'Gratin', fr: 'Gratiné', it: 'Gratinato' },
-    ],
-    [
-      'KINDER KARTE / BAMBINI',
-      { de: 'Kinderkarte', en: 'Kids Menu', fr: 'Menu enfant', it: 'Menù bambini' },
-    ],
-    ['PASTA', { de: 'Pasta', en: 'Pasta', fr: 'Pâtes', it: 'Pasta' }],
-    ['PESCE / FISCH', { de: 'Fisch', en: 'Fish', fr: 'Poisson', it: 'Pesce' }],
-    ['CARNE / FLEISCH', { de: 'Fleisch', en: 'Meat', fr: 'Viande', it: 'Carne' }],
-    [
-      'HEISSER STEIN / SPIESS',
-      {
-        de: 'Heisser Stein / Spiess',
-        en: 'Hot Stone / Skewers',
-        fr: 'Pierre chaude / Brochettes',
-        it: 'Pietra calda / Spiedini',
-      },
-    ],
-    ['BEILAGEN', { de: 'Beilagen', en: 'Side Dishes', fr: 'Accompagnements', it: 'Contorni' }],
-    ['PIZZA — POULET / CHICKEN', { de: 'Poulet', en: 'Chicken', fr: 'Poulet', it: 'Pollo' }],
-    [
-      'PIZZA — RINDSFLEISCH / BEEF',
-      { de: 'Rindsfleisch', en: 'Beef', fr: 'Bœuf', it: 'Manzo' },
-    ],
-    [
-      'PIZZA — FISCH & MEERESFRÜCHTE',
-      {
-        de: 'Fisch & Meeresfrüchte',
-        en: 'Fish & Seafood',
-        fr: 'Poisson & Fruits de mer',
-        it: 'Pesce & Frutti di mare',
-      },
-    ],
-    ['PIZZA — LAMMFLEISCH', { de: 'Lammfleisch', en: 'Lamb', fr: 'Agneau', it: 'Agnello' }],
-    ['PIZZA — KALBSFLEISCH', { de: 'Kalbsfleisch', en: 'Veal', fr: 'Veau', it: 'Vitello' }],
-    [
-      'PIZZA — VEGETARISCH & VEGAN',
-      {
-        de: 'Vegetarisch & Vegan',
-        en: 'Vegetarian & Vegan',
-        fr: 'Végétarien & Végan',
-        it: 'Vegetariano & Vegano',
-      },
-    ],
-    [
-      'PIZZA — SCHWEINEFLEISCH / PORK',
-      { de: 'Schweinefleisch', en: 'Pork', fr: 'Porc', it: 'Maiale' },
-    ],
+    ['Antipasti', { de: 'Vorspeisen', en: 'Starter' }],
+    ['ANTIPASTI', { de: 'Vorspeisen', en: 'Starter' }],
+    ['ANTIPASTI / VORSPEISEN', { de: 'Vorspeisen', en: 'Starter' }],
+    ['Zuppa', { de: 'Suppen', en: 'Soups' }],
+    ['ZUPPA', { de: 'Suppen', en: 'Soups' }],
+    ['ZUPPA / SUPPEN', { de: 'Suppen', en: 'Soups' }],
+    ['Insalate', { de: 'Salate', en: 'Salad' }],
+    ['INSALATE', { de: 'Salate', en: 'Salad' }],
+    ['INSALATE / SALATE', { de: 'Salate', en: 'Salad' }],
+    ['Risotto', { de: 'Risotto', en: 'Risotto' }],
+    ['RISOTTO', { de: 'Risotto', en: 'Risotto' }],
+    ['Gratinato', { de: 'Gratiniert', en: 'Au Gratin' }],
+    ['GRATINATO', { de: 'Gratiniert', en: 'Au Gratin' }],
+    ['GRATINATO / GRATINIERT', { de: 'Gratiniert', en: 'Au Gratin' }],
+    ['Kinder Karte', { de: 'Kinder Karte', en: 'Kids Dish' }],
+    ['KINDER KARTE', { de: 'Kinder Karte', en: 'Kids Dish' }],
+    ['KINDER KARTE / BAMBINI', { de: 'Kinder Karte', en: 'Kids Dish' }],
+    ['Pasta', { de: 'Pasta', en: 'Pasta' }],
+    ['PASTA', { de: 'Pasta', en: 'Pasta' }],
+    ['Pesce', { de: 'Fisch', en: 'Fish' }],
+    ['PESCE', { de: 'Fisch', en: 'Fish' }],
+    ['PESCE / FISCH', { de: 'Fisch', en: 'Fish' }],
+    ['Carne', { de: 'Fleisch', en: 'Meat' }],
+    ['CARNE', { de: 'Fleisch', en: 'Meat' }],
+    ['CARNE / FLEISCH', { de: 'Fleisch', en: 'Meat' }],
+    ['Heisser Stein', { de: 'Heisser Stein', en: 'Hot Stone' }],
+    ['HEISSER STEIN', { de: 'Heisser Stein', en: 'Hot Stone' }],
+    ['HEISSER STEIN / SPIESS', { de: 'Heisser Stein / Spiess', en: 'Hot Stone / Skewers' }],
+    ['Contorni', { de: 'Beilagen', en: 'Side Dish' }],
+    ['CONTORNI', { de: 'Beilagen', en: 'Side Dish' }],
+    ['BEILAGEN', { de: 'Beilagen', en: 'Side Dish' }],
+    ['Poulet', { de: 'Poulet', en: 'Chicken' }],
+    ['Rindsfleisch', { de: 'Rindsfleisch', en: 'Beef' }],
+    ['Fisch & Meeresfrüchte', { de: 'Fisch & Meeresfrüchte', en: 'Fish & Seafood' }],
+    ['Lammfleisch', { de: 'Lammfleisch', en: 'Lamb' }],
+    ['Kalbsfleisch', { de: 'Kalbsfleisch', en: 'Veal' }],
+    ['Vegetarisch & Vegan', { de: 'Vegetarisch & Vegan', en: 'Vegetarian & Vegan' }],
+    ['Schweinefleisch', { de: 'Schweinefleisch', en: 'Pork' }],
   ].map(([label, labels]) => [normalizeLabelKey(label), labels])
 )
 
@@ -97,14 +76,117 @@ function sectionLabels(label) {
   return match ? { ...match } : { de: label }
 }
 
+function certifiedLanguageMap(value) {
+  if (!value || typeof value !== 'object') return {}
+
+  return Object.fromEntries(
+    ['de', 'en']
+      .map((language) => [language, normalizeString(value[language])])
+      .filter(([, text]) => text)
+  )
+}
+
+const KEEP_UPPERCASE_WORDS = new Set(['BBQ'])
+const LOWERCASE_NAME_WORDS = new Set([
+  'al',
+  'alla',
+  'allo',
+  'all',
+  'd',
+  'da',
+  'de',
+  'del',
+  'della',
+  'di',
+  'e',
+  'mit',
+])
+
+function splitWordAffixes(value) {
+  const match = String(value).match(/^([^A-Za-zÀ-ÖØ-öø-ÿ0-9]*)(.*?)([^A-Za-zÀ-ÖØ-öø-ÿ0-9]*)$/u)
+  if (!match) return { prefix: '', core: value, suffix: '' }
+
+  return {
+    prefix: match[1] || '',
+    core: match[2] || '',
+    suffix: match[3] || '',
+  }
+}
+
+function capitalizeWord(value) {
+  if (!value) return ''
+
+  return value.charAt(0).toLocaleUpperCase('de-CH') + value.slice(1)
+}
+
+function formatNamePart(value, isFirstWord) {
+  const lower = value.toLocaleLowerCase('de-CH')
+  if (KEEP_UPPERCASE_WORDS.has(lower.toLocaleUpperCase('de-CH'))) {
+    return lower.toLocaleUpperCase('de-CH')
+  }
+  if (!isFirstWord && LOWERCASE_NAME_WORDS.has(lower)) return lower
+
+  return capitalizeWord(lower)
+}
+
+function formatNameWord(value, wordIndex) {
+  const { prefix, core, suffix } = splitWordAffixes(value)
+  if (!core) return value
+
+  const formatted = core
+    .split('-')
+    .map((hyphenPart, hyphenIndex) =>
+      hyphenPart
+        .split(/([´'’])/u)
+        .map((part, partIndex, parts) => {
+          if (part === '´' || part === "'" || part === '’') return part
+          if (!part) return part
+
+          const followsApostrophe =
+            partIndex > 0 && ['´', "'", '’'].includes(parts[partIndex - 1])
+          const isFirstPart =
+            wordIndex === 0 && hyphenIndex === 0 && partIndex === 0
+
+          if (followsApostrophe) {
+            return capitalizeWord(part.toLocaleLowerCase('de-CH'))
+          }
+
+          return formatNamePart(part, isFirstPart)
+        })
+        .join('')
+    )
+    .join('-')
+
+  return `${prefix}${formatted}${suffix}`
+}
+
+function naturalDishName(value) {
+  return normalizeString(value)
+    .split(/(\s+)/u)
+    .reduce(
+      (acc, part) => {
+        if (!part.trim()) {
+          acc.parts.push(part)
+          return acc
+        }
+
+        acc.parts.push(formatNameWord(part, acc.wordIndex))
+        acc.wordIndex += 1
+        return acc
+      },
+      { parts: [], wordIndex: 0 }
+    )
+    .parts.join('')
+}
+
 function dish(id, name, description = '') {
   return { id, name, description }
 }
 
 const MAIN_SECTIONS = [
   {
-    id: 'starters',
-    label: 'ANTIPASTI / VORSPEISEN',
+    id: 'antipasti',
+    label: 'Antipasti',
     items: [
       dish(
         'focaccia-aperitivo-pomodoro-bufala-e-parma',
@@ -139,16 +221,16 @@ const MAIN_SECTIONS = [
     ],
   },
   {
-    id: 'soups',
-    label: 'ZUPPA / SUPPEN',
+    id: 'zuppa',
+    label: 'Zuppa',
     items: [
       dish('minestrone', 'MINESTRONE', 'Italienische Gemüsesuppe'),
       dish('crema-di-pomodoro', 'CREMA DI POMODORO', 'Tomatencremesuppe'),
     ],
   },
   {
-    id: 'salads',
-    label: 'INSALATE / SALATE',
+    id: 'insalate',
+    label: 'Insalate',
     items: [
       dish('insalata-soncino', 'INSALATA SONCINO', 'Nüsslisalat mit Speck, Ei und Brotcroutons'),
       dish(
@@ -168,7 +250,7 @@ const MAIN_SECTIONS = [
   },
   {
     id: 'risotto',
-    label: 'RISOTTO',
+    label: 'Risotto',
     items: [
       dish('risotto-milanese', 'RISOTTO MILANESE', 'Safranrisotto mit Zwiebeln und Knoblauch'),
       dish(
@@ -184,8 +266,8 @@ const MAIN_SECTIONS = [
     ],
   },
   {
-    id: 'gratin',
-    label: 'GRATINATO / GRATINIERT',
+    id: 'gratinato',
+    label: 'Gratinato',
     items: [
       dish(
         'gnocchi-piemontese',
@@ -205,8 +287,8 @@ const MAIN_SECTIONS = [
     ],
   },
   {
-    id: 'kids',
-    label: 'KINDER KARTE / BAMBINI',
+    id: 'kinder-karte',
+    label: 'Kinder Karte',
     items: [
       dish('spaghetti-with-tomato-sauce', 'Spaghetti mit Tomatensauce', 'Spaghetti mit Tomatensauce'),
       dish('kids-spaghetti-bolognese', 'Spaghetti Bolognese', 'Spaghetti Bolognese'),
@@ -222,7 +304,7 @@ const MAIN_SECTIONS = [
   },
   {
     id: 'pasta',
-    label: 'PASTA',
+    label: 'Pasta',
     items: [
       dish(
         'paglia-e-fieno-bella-rebecca',
@@ -284,8 +366,8 @@ const MAIN_SECTIONS = [
     ],
   },
   {
-    id: 'fish',
-    label: 'PESCE / FISCH',
+    id: 'pesce',
+    label: 'Pesce',
     items: [
       dish(
         'gamberoni-alla-griglia',
@@ -301,8 +383,8 @@ const MAIN_SECTIONS = [
     ],
   },
   {
-    id: 'meat',
-    label: 'CARNE / FLEISCH',
+    id: 'carne',
+    label: 'Carne',
     items: [
       dish(
         'controfiletto-di-manzo-alla-griglia',
@@ -333,8 +415,8 @@ const MAIN_SECTIONS = [
     ],
   },
   {
-    id: 'hot-stone',
-    label: 'HEISSER STEIN / SPIESS',
+    id: 'heisser-stein',
+    label: 'Heisser Stein',
     items: [
       dish('rindsentrecote', 'RINDSENTRECÔTE', 'steak'),
       dish('schweinesteak', 'SCHWEINESTEAK', 'porksteak'),
@@ -344,8 +426,8 @@ const MAIN_SECTIONS = [
     ],
   },
   {
-    id: 'sides',
-    label: 'BEILAGEN',
+    id: 'contorni',
+    label: 'Contorni',
     items: [
       dish('contorni-beilagen', 'CONTORNI / BEILAGEN', 'Spaghetti, Penne, Pommes – Frites, Reis, Risotto oder Salat'),
       dish('upgrade-beilagen', 'Upgrade Beilagen', '+3.- Safranrisotto, hausgemachte Pasta, glutenfreie Pasta'),
@@ -354,26 +436,157 @@ const MAIN_SECTIONS = [
   },
 ]
 
+const MAIN_ENGLISH_DESCRIPTIONS = {
+  'focaccia-aperitivo-pomodoro-bufala-e-parma':
+    'Pizza dough with tomato cubes, garlic, onions, basil and olive oil, with bufala mozzarella and parma-ham',
+  'focaccia-prosciutto-di-parma':
+    'Pizza dough on olive oil and garlic with Parma-ham',
+  'carpaccio-di-manzo':
+    'Beef-carpaccio with parmesan stripes, olive oil and lemon juice on rucola',
+  'gamberetti-all-aglio':
+    'warm shrimps in olive oil with garlic, served on rucola and with roasted bread.',
+  'cocktail-di-gamberetti':
+    'Shrimps on homemade cocktail sauce served on roasted bread.',
+  bruschetta:
+    'tomato cubes with, fresh herbs, garlic, onions, basil and olive oil, served on roasted bread.',
+  minestrone:
+    'home made Italian vegetable -soup',
+  'crema-di-pomodoro':
+    'homemade tomato -creamsoup',
+  'insalata-soncino':
+    'Fieldsalad with bacon, egg and croutons',
+  'insalata-caprese':
+    'tomato an mozzarella bufala with Basil, olive oil and accetto',
+  burrata:
+    'Creamy cheese with tomatoes and basil on olive oil',
+  'insalata-gigante':
+    'Big Salade plate with egg',
+  'insalata-verde':
+    'Green salad',
+  'insalata-mista':
+    'Mixed salad',
+  'risotto-milanese':
+    'Saffron risotto with onions, garlic',
+  'risotto-pollo-e-zafferano':
+    'Risotto with chicken strips, onions, garlic on saffron sauce and parmesan strips',
+  'risotto-porcini':
+    'Risotto Grana Padano with porcini, garlic, onion',
+  'gnocchi-piemontese':
+    'gnocchi with king bolete, onion, garlic on marsala and cream sauce (au gratin)',
+  'lasagna-casalinga':
+    'homemade beef lasagne with tomato and cream sauce (au gratin)',
+  'cannelloni-fiorentina':
+    'homemade cannelloni pasta filled with spinach, curd cheese on tomato sauce (au gratin)',
+  'spaghetti-with-tomato-sauce':
+    'Spaghetti with Tomateosauce',
+  'kids-spaghetti-bolognese':
+    'Spaghetti Bolognese',
+  'kids-spaghetti-carbonara':
+    'Spaghetti Carbonara',
+  'kids-spaghetti-al-pesto':
+    'Spaghetti al Pesto',
+  'spaghetti-al-burro':
+    'Spaghetti with butter',
+  'gnocchi-al-burro':
+    'Gnocchi on butter',
+  capitano:
+    'Fish sticks with French fries.',
+  'chicken-nuggets':
+    'with French fries',
+  'portion-pommes-frites':
+    'French fries',
+  'risotto-bambini':
+    'Risotto with cheese',
+  'paglia-e-fieno-bella-rebecca':
+    'two-tone pasta with veal stipes, mushrooms, onion, garlic on cream sauce',
+  'fettuccine-nere-mare-e-monti':
+    'Black noodles with shrimps and king bolete, onion, garlic on cream sauce',
+  'fettuccine-nere-al-salmone':
+    'Black noodles with salmon, onion, garlic, fresh herbs on homemade tomato-cream sauce',
+  'penne-all-arrabbiata':
+    'Penne with roasted bacon cubes, fresh chili, onion, and garlic on homemade tomato sauce',
+  'penne-imperiale':
+    'Penne with shrimps, tomato cube, onion, garlic, fresh herbs, tomato-cream sauce',
+  'penne-alla-fiamma':
+    'Penne with beef cubes flambé, peppers, onion, garlic, tomato, mushrooms fresh herbs and paprika-cream sauce',
+  'spaghetti-aglio-olio-e-peperoncino':
+    'Spaghetti with garlic, olive oil, fresh chili',
+  'spaghetti-frutti-di-mare':
+    'Spaghetti with sea fruits, onion, garlic cherry-tomato, and olive oil on tomato-sauce',
+  'spaghetti-carbonara':
+    'Spaghetti with roasted bacon cubes, yolk, and grana Padano cheese on cream sauce',
+  'spaghetti-vegetariana':
+    'Spaghetti with vegetables, onion, garlic, and homemade tomato sauce',
+  'spaghetti-napoli':
+    'Spaghetti with homemade tomato sauce, onion, garlic, basil.',
+  'spaghetti-al-pesto':
+    'Spaghetti on homemade pesto cream sauce.',
+  'spaghetti-bolognese':
+    'Spaghetti with homemade beef sauce',
+  'gamberoni-alla-griglia':
+    'grilled tiger shrimps, served with vegetables and side dish.',
+  'gamberi-luna-piccante':
+    'Tiger shrimps flambé, with garlic, fresh herbs, basil, chili, and tomato, served with vegetables and side dish.',
+  'salmone-alla-griglia':
+    'Grilled salmon served with vegetables and side dish.',
+  'controfiletto-di-manzo-alla-griglia':
+    'Grilled steak served with vegetables and side dish.',
+  'controfiletto-di-manzo-al-pepe-verde':
+    'Grilled steak on green pepper sauce served with vegetables and side dish.',
+  'controfiletto-d-agnello-alla-griglia':
+    'grilled rosa lamp filet, served with vegetables and side dish.',
+  'controfiletto-d-agnello-alla-montanara':
+    'grilled rosa lamb filet on mushroom sauce, served with vegetables and side dish.',
+  'petto-di-pollo-alla-griglia':
+    'Grilled chicken breast, served with vegetables and side dish.',
+  'maiale-impanato':
+    'breaded pork cutlet, served with vegetables and side dish.',
+  'scaloppina-di-vitello-al-limone':
+    'veal cutlets on lemon cream sauce served with vegetables and side dish.',
+  'saltimbocca-alla-romana':
+    'Veal cutlet with parma ham and sage on marsala sauce served with vegetables and side dish.',
+  'scaloppina-di-vitello-alla-crema-di-funghi':
+    'Veal cutlets on champignon cream sauce served with vegetables and side dish.',
+  'affettato-alla-zurighese':
+    'veal fricassee `zurich style` on champignon cream sauce, served with vegetables and side dish.',
+  rindsentrecote:
+    'steak',
+  schweinesteak:
+    'porksteak',
+  'lamm-nierstuck':
+    'lamb',
+  'rindsfleisch-spiess':
+    'Beef-spit',
+  'gemischter-spiess':
+    'Mixed spit with pork and beef',
+  'contorni-beilagen':
+    'Spaghetti, Penne, french fies, rice, risotto or salad',
+  'upgrade-beilagen':
+    '+3.- safronrisotto, homemade pasta, glutenfree pasta',
+  'zusatzliche-beilage':
+    '+6.- further side dish',
+}
+
 const PIZZA_SECTIONS = [
   {
-    id: 'chicken',
-    label: 'PIZZA — POULET / CHICKEN',
+    id: 'poulet',
+    label: 'Poulet',
     items: [
       dish('curry', 'CURRY', 'Tomatensauce, Mozzarella, Curry-Poulet, Champignons, Origano'),
       dish('bbq', 'BBQ', 'Tomatensauce, Mozzarella, BBQ-Pouletfleisch, Champignons, Zwiebeln, Mais, Origano'),
     ],
   },
   {
-    id: 'beef',
-    label: 'PIZZA — RINDSFLEISCH / BEEF',
+    id: 'rindsfleisch',
+    label: 'Rindsfleisch',
     items: [
       dish('al-capone', 'AL CAPONE', 'Tomatensauce, Mozzarella, Rindsfleisch, Café de paris, grüner Pfeffer, Origano'),
       dish('lunatico', 'LUNATICO', 'Tomatensauce, Mozzarella, Rindsfleisch, grüner Pfeffer, Origano'),
     ],
   },
   {
-    id: 'fish-seafood',
-    label: 'PIZZA — FISCH & MEERESFRÜCHTE',
+    id: 'fisch-meeresfruchte',
+    label: 'Fisch & Meeresfrüchte',
     items: [
       dish('napoli', 'NAPOLI', 'Tomatensauce, Mozzarella, Sardellen, Kapern, Origano'),
       dish('salmone', 'SALMONE', 'Tomatensauce, Mozzarella, Rauchlachs, Origano'),
@@ -383,22 +596,22 @@ const PIZZA_SECTIONS = [
     ],
   },
   {
-    id: 'lamb',
-    label: 'PIZZA — LAMMFLEISCH',
+    id: 'lammfleisch',
+    label: 'Lammfleisch',
     items: [
       dish('agnello', 'AGNELLO', 'Tomatensauce, Mozzarella, Lammfleisch-Streifen, Knoblauch, Rosmarin'),
     ],
   },
   {
-    id: 'veal',
-    label: 'PIZZA — KALBSFLEISCH',
+    id: 'kalbsfleisch',
+    label: 'Kalbsfleisch',
     items: [
       dish('casanova', 'CASANOVA', 'Tomatensauce, Mozzarella, Kalbsfleisch, Spinat, Peperoncini, Origano'),
     ],
   },
   {
-    id: 'vegetarian-vegan',
-    label: 'PIZZA — VEGETARISCH & VEGAN',
+    id: 'vegetarisch-vegan',
+    label: 'Vegetarisch & Vegan',
     items: [
       dish('quattro-formaggi', 'QUATTRO FORMAGGI', 'Tomatensauce, Mozzarella, 3 Käsesorten, Origano'),
       dish('alla-piemontese', 'ALLA PIEMONTESE', 'Tomatensauce, Mozzarella, Steinpilze, Origano'),
@@ -414,8 +627,8 @@ const PIZZA_SECTIONS = [
     ],
   },
   {
-    id: 'pork',
-    label: 'PIZZA — SCHWEINEFLEISCH / PORK',
+    id: 'schweinefleisch',
+    label: 'Schweinefleisch',
     items: [
       dish('carbonara', 'CARBONARA', 'Tomatensauce, Mozzarella, Speck, Spiegelei, Parmesansplitter, Origano'),
       dish('lucifer', 'LUCIFER', 'Tomatensauce, Mozzarella, Speck, scharfe Salami, frische Peperoncini, Origano'),
@@ -442,8 +655,6 @@ const MENUS = [
     names: {
       de: 'Hauptkarte',
       en: 'Main Menu',
-      fr: 'Menu principal',
-      it: 'Menù principale',
     },
     resetNames: true,
     description: '',
@@ -456,9 +667,8 @@ const MENUS = [
     names: {
       de: 'Pizza',
       en: 'Pizza',
-      fr: 'Pizza',
-      it: 'Pizza',
     },
+    resetNames: true,
     description: '',
     sortOrder: 20,
     sections: PIZZA_SECTIONS,
@@ -570,20 +780,20 @@ function buildMenuPayload(menu, kitchenId, snap) {
   const existing = snap?.exists ? snap.data() || {} : {}
   const existingNames =
     !menu.resetNames && existing.names && typeof existing.names === 'object'
-      ? existing.names
+      ? certifiedLanguageMap(existing.names)
       : {}
+  const names = certifiedLanguageMap({
+    ...existingNames,
+    ...(menu.names && typeof menu.names === 'object' ? menu.names : {}),
+    de: menu.name,
+  })
 
   return {
     id: menu.id,
     kitchen_id: kitchenId,
     name: menu.name,
     description: menu.description,
-    source_language: 'de',
-    names: {
-      ...existingNames,
-      ...(menu.names && typeof menu.names === 'object' ? menu.names : {}),
-      de: menu.name,
-    },
+    names,
     descriptions: menu.description ? { de: menu.description } : {},
     active: true,
     defaults: {
@@ -603,27 +813,34 @@ function buildMenuPayload(menu, kitchenId, snap) {
 function buildDishPayload(item, kitchenId, snap) {
   const existing = snap?.exists ? snap.data() || {} : {}
   const description = normalizeString(item.description)
+  const name = naturalDishName(item.name)
   const existingDescriptions =
     existing.descriptions && typeof existing.descriptions === 'object'
-      ? existing.descriptions
+      ? certifiedLanguageMap(existing.descriptions)
       : {}
-  const names = Object.fromEntries(
-    LUNA_PUBLIC_LANGUAGE_CODES.map((language) => [language, item.name])
-  )
+  const existingNames =
+    existing.names && typeof existing.names === 'object'
+      ? certifiedLanguageMap(existing.names)
+      : {}
+  const englishDescription = normalizeString(MAIN_ENGLISH_DESCRIPTIONS[item.id])
+  const descriptions = {
+    ...existingDescriptions,
+    ...(description ? { de: description } : {}),
+    ...(englishDescription ? { en: englishDescription } : {}),
+  }
 
   return {
-    ...existing,
     id: item.id,
     kitchen_id: kitchenId,
-    name: item.name,
+    name,
     slug: item.id,
     description,
-    source_language: 'de',
-    names,
-    descriptions: description
-      ? { ...existingDescriptions, de: description }
-      : existingDescriptions,
-    translated: existing.translated === true,
+    names: {
+      ...existingNames,
+      de: name,
+      en: name,
+    },
+    descriptions,
     created: createdStamp(snap),
     updated: updatedStamp(),
   }
@@ -676,6 +893,16 @@ async function main() {
   const menuSnaps = await Promise.all(
     MENUS.map((menu) => kitchenRef.collection('menus').doc(menu.id).get())
   )
+  const renamedDishNames = menusOnly
+    ? []
+    : allDishEntries
+        .map((item, index) => {
+          const from = normalizeString(dishSnaps[index]?.data()?.name)
+          const to = naturalDishName(item.name)
+
+          return from && from !== to ? { id: item.id, from, to } : null
+        })
+        .filter(Boolean)
   const existingMenusSnap = await kitchenRef.collection('menus').get()
   const canonicalMenuIds = new Set(MENUS.map((menu) => menu.id))
   const staleMenuSnaps = existingMenusSnap.docs.filter((snap) => {
@@ -694,6 +921,7 @@ async function main() {
     kitchenPath: kitchenRef.path,
     menuIds: MENUS.map((menu) => menu.id),
     dishCount: menusOnly ? 0 : allDishEntries.length,
+    renamedDishCount: renamedDishNames.length,
   })
 
   const created = { dishes: [], menus: [] }
@@ -708,6 +936,7 @@ async function main() {
         name: 'Luna Piccante',
         slug: 'luna-picante',
         slug_aliases: ['luna-piccante'],
+        primary_language: 'de',
         language_settings: {
           default_language: 'de',
           supported_languages: ['de', 'en', 'it', 'fr'],
@@ -759,6 +988,8 @@ async function main() {
     created,
     updated,
     deleted,
+    renamedDishCount: renamedDishNames.length,
+    renamedDishNames,
   })
 }
 

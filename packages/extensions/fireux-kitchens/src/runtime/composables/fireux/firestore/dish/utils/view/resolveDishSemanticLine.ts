@@ -1,5 +1,3 @@
-import type { Dish } from '../../../../../../models/dish.model'
-
 type SemanticSource = {
   id: string
   name?: string
@@ -8,7 +6,7 @@ type SemanticSource = {
 }
 
 export type ResolveDishSemanticLineInput = {
-  dish: Pick<Dish, 'mise_ids' | 'ingredient_ids'> | null | undefined
+  dish: Record<string, unknown> | null | undefined
   mise?: SemanticSource[]
   ingredients?: SemanticSource[]
   languageCode?: string

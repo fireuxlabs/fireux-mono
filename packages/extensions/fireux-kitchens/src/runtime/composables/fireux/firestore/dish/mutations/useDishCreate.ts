@@ -6,8 +6,6 @@ import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useTranslationSeed } from 'fireux-translation/runtime/useTranslationSeed'
 import { computed, unref, type Ref } from 'vue'
 import {
-  normalizeDishMenuPlacements,
-  normalizeDishStringArray,
   type Dish,
   type DishCreateInput,
 } from '../../../../../models/dish.model'
@@ -19,10 +17,6 @@ type DishCreateDraft = {
   description?: string
   names?: unknown
   descriptions?: unknown
-  translated?: boolean
-  menu_placements?: unknown
-  mise_ids?: unknown
-  ingredient_ids?: unknown
 }
 
 type DishCreateOptions = {
@@ -76,13 +70,8 @@ async function buildDishPayload(
       name,
       slug: dishId,
       description,
-      source_language: nameSeed.sourceLanguage,
       names: nameSeed.text,
       descriptions: descriptionSeed?.text ?? {},
-      translated: draft.translated === true,
-      menu_placements: normalizeDishMenuPlacements(draft.menu_placements),
-      mise_ids: normalizeDishStringArray(draft.mise_ids),
-      ingredient_ids: normalizeDishStringArray(draft.ingredient_ids),
       kitchen_id: kitchenId,
     },
   }

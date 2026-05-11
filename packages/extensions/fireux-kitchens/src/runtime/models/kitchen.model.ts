@@ -65,6 +65,7 @@ export const KitchenModel = {
   slug: '',
   name: '',
   tagline: '',
+  primary_language: '',
   currency_code: 'CHF',
   short_name: '',
   short_address: '',
@@ -116,6 +117,7 @@ export type KitchenCreateInput = Omit<
       | 'slug'
       | 'name'
       | 'tagline'
+      | 'primary_language'
       | 'currency_code'
       | 'short_name'
       | 'short_address'
@@ -134,6 +136,7 @@ export type KitchenUpdateInput = Partial<
     | 'slug'
     | 'name'
     | 'tagline'
+    | 'primary_language'
     | 'currency_code'
     | 'short_name'
     | 'short_address'

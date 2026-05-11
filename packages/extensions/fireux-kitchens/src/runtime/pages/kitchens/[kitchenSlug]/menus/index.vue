@@ -1,74 +1,94 @@
 <template>
-  <main class="min-h-screen bg-[#f8faf7] text-[#17201a]">
-    <section class="mx-auto flex min-h-screen w-full max-w-3xl flex-col px-5 py-8 sm:px-8">
-      <NuxtLink
-        :to="menu.backToKitchen"
-        class="mb-8 inline-flex w-fit items-center gap-2 text-sm font-medium text-[#2f6b45]"
-      >
-        <span aria-hidden="true">&larr;</span>
-        Kitchen
-      </NuxtLink>
+  <main class="min-h-screen bg-[#fbfaf7] text-[#18221b]">
+    <section class="mx-auto flex min-h-screen w-full max-w-2xl flex-col px-5 py-8 sm:px-8">
+      <header class="space-y-6 border-b border-[#ded8cb] pb-6">
+        <div class="space-y-2">
+          <p class="text-sm font-medium text-[#6f766d]">
+            {{ kitchenName }}
+          </p>
+          <h1 class="text-4xl font-semibold tracking-normal sm:text-5xl">
+            {{ chromeLabels.chooseMenu }}
+          </h1>
+        </div>
 
-      <header class="border-b border-[#cfdacf] pb-6">
-        <p class="text-xs font-semibold uppercase text-[#b2362f]">
-          {{ kitchenName }}
-        </p>
-        <h1 class="mt-3 text-4xl font-semibold leading-tight sm:text-5xl">
-          Menus
-        </h1>
-        <p v-if="menu.kitchenAddress" class="mt-3 text-sm text-[#526157]">
-          {{ menu.kitchenAddress }}
-        </p>
-
-        <div class="mt-5 flex flex-wrap gap-2">
+        <div class="flex flex-wrap gap-2">
           <button
-            v-for="language in languageOptions"
-            :key="language"
+            v-for="option in languageOptions"
+            :key="option.code || 'default'"
             type="button"
-            class="rounded-full border px-3 py-1 text-sm font-medium transition"
-            :class="language === selectedLanguage
-              ? 'border-[#2f6b45] bg-[#2f6b45] text-white'
-              : 'border-[#cfdacf] text-[#526157] hover:border-[#2f6b45] hover:text-[#2f6b45]'"
-            @click="setLanguage(language)"
+            class="min-h-10 rounded-full border px-4 text-sm font-medium transition"
+            :class="
+              option.code === selectedLanguage
+                ? 'border-[#18221b] bg-[#18221b] text-white'
+                : 'border-[#ded8cb] bg-white/70 text-[#50594f] hover:border-[#18221b] hover:text-[#18221b]'
+            "
+            @click="setLanguage(option.code)"
           >
-            {{ languageLabel(language) }}
+            {{ chromeLabels[option.labelKey] }}
           </button>
         </div>
       </header>
 
-      <div v-if="menu.loading" class="py-12 text-sm text-[#526157]">
-        Loading menus...
+      <div
+        v-if="pending"
+        class="py-12 text-sm text-[#6f766d]"
+      >
+        {{ chromeLabels.loadingMenus }}
       </div>
 
-      <div v-else-if="!menu.resolvedKitchen" class="py-12">
-        <h2 class="text-xl font-semibold">Kitchen not found</h2>
-        <p class="mt-2 text-sm text-[#526157]">
-          The kitchen slug does not match a published kitchen.
+      <div
+        v-else-if="errorMessage"
+        class="py-12"
+      >
+        <h2 class="text-xl font-semibold">
+          {{ chromeLabels.failedToLoadMenus }}
+        </h2>
+        <p class="mt-2 text-sm text-[#6f766d]">
+          {{ errorMessage }}
         </p>
       </div>
 
-      <div v-else-if="!visibleMenus.length" class="py-12">
-        <h2 class="text-xl font-semibold">No menus available</h2>
-        <p class="mt-2 text-sm text-[#526157]">
-          This kitchen does not have public menus available yet.
+      <div
+        v-else-if="!menuCards.length"
+        class="py-12"
+      >
+        <h2 class="text-xl font-semibold">
+          {{ chromeLabels.noMenusAvailable }}
+        </h2>
+        <p class="mt-2 text-sm text-[#6f766d]">
+          {{ chromeLabels.noPublicMenus }}
         </p>
       </div>
 
-      <div v-else class="grid gap-4 py-8">
+      <div
+        v-else
+        class="grid gap-4 py-8"
+      >
         <NuxtLink
-          v-for="entry in visibleMenus"
-          :key="entry.id"
-          :to="entry.to"
-          class="block rounded-xl border border-[#cfdacf] bg-white/70 p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-[#2f6b45] hover:shadow-md"
+          v-for="menu in menuCards"
+          :key="menu.id"
+          :to="menu.to"
+          class="group block rounded-2xl border border-[#ded8cb] bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-[#18221b] hover:shadow-md"
         >
-          <div class="flex items-start justify-between gap-4">
-            <div class="min-w-0">
-              <h2 class="text-xl font-semibold">{{ entry.name }}</h2>
-              <p class="mt-2 text-sm text-[#526157]">
-                {{ entry.summary }}
+          <div class="flex min-h-24 items-center justify-between gap-4">
+            <div class="min-w-0 space-y-2">
+              <h2 class="text-2xl font-semibold tracking-normal">
+                {{ menu.name }}
+              </h2>
+              <p
+                v-if="menu.description"
+                class="text-sm leading-6 text-[#5f685d]"
+              >
+                {{ menu.description }}
               </p>
             </div>
-            <span class="mt-1 text-lg text-[#2f6b45]" aria-hidden="true">&rarr;</span>
+
+            <span
+              class="grid size-10 shrink-0 place-items-center rounded-full border border-[#ded8cb] text-lg transition group-hover:border-[#18221b] group-hover:bg-[#18221b] group-hover:text-white"
+              aria-hidden="true"
+            >
+              &rarr;
+            </span>
           </div>
         </NuxtLink>
       </div>
@@ -78,94 +98,151 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { navigateTo, useRoute } from '#imports'
-import { useKitchenMenu } from '../../../../composables/fireux/app/useKitchenMenu'
+import { navigateTo, useHead, useRoute } from '#imports'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { resolveKitchenRuntimeChildCollectionPath } from '../../../../composables/fireux/app/kitchen-console/shared'
+import {
+  getPublicKitchenChromeLabels,
+  normalizePublicKitchenLanguage,
+  PUBLIC_KITCHEN_LANGUAGE_OPTIONS,
+  resolvePublicKitchenChromeLanguage,
+} from '../../../../composables/fireux/app/public-kitchen-language'
+import { useKitchenCollection } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
+import type { Kitchen } from '../../../../models/kitchen.model'
 import type { Menu } from '../../../../models/menu.model'
 
 definePageMeta({
   layout: 'public-menu',
-  title: 'Kitchen Menus',
-  description: 'Choose a public menu.',
-  head: { title: 'Kitchen Menus' },
   name: 'KitchenPublicMenusIndexPage',
 })
 
-const CORE_PUBLIC_LANGUAGE_CODES = ['de', 'en', 'fr', 'it', 'es', 'pt', 'ja', 'zh-CN', 'ko', 'ar']
-const LANGUAGE_LABELS: Record<string, string> = {
-  de: '🇩🇪 de',
-  en: '🇬🇧 en',
-  fr: '🇫🇷 fr',
-  it: '🇮🇹 it',
-  es: '🇪🇸 es',
-  pt: '🇵🇹 pt',
-  ja: '🇯🇵 ja',
-  'zh-CN': '🇨🇳 zh-CN',
-  ko: '🇰🇷 ko',
-  ar: '🇸🇦 ar',
-}
+const languageOptions = PUBLIC_KITCHEN_LANGUAGE_OPTIONS
 
 const route = useRoute()
-const menu = useKitchenMenu()
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const normalizeLanguageCode = (value: unknown) => normalizeString(value).replace(/_/g, '-')
-const selectedLanguage = computed(() => normalizeLanguageCode(menu.requestedLanguageCode.value) || 'de')
-const defaultLanguage = computed(() => normalizeLanguageCode(menu.defaultLanguageCode.value) || 'de')
-const languageOptions = computed(() => {
-  const configured = Array.isArray((menu.resolvedKitchen.value as any)?.language_settings?.supported_languages)
-    ? (menu.resolvedKitchen.value as any).language_settings.supported_languages
-    : []
-  const seen = new Set<string>()
-  const languages: string[] = []
-
-  for (const value of ['de', ...configured, ...CORE_PUBLIC_LANGUAGE_CODES]) {
-    const language = normalizeLanguageCode(value)
-    if (!language || seen.has(language)) continue
-    seen.add(language)
-    languages.push(language)
-  }
-
-  return languages
+const routeKitchenSlug = computed(() => {
+  const raw = route.params.kitchenSlug
+  return Array.isArray(raw) ? normalizeString(raw[0]) : normalizeString(raw)
 })
+const selectedLanguage = computed(() => {
+  const raw = route.query.lang || route.query.language
+  const value = Array.isArray(raw) ? raw[0] : raw
+  return normalizePublicKitchenLanguage(value)
+})
+const passThroughQuery = computed(() =>
+  Object.fromEntries(
+    Object.entries(route.query).filter(
+      ([key]) => !['lang', 'language'].includes(key)
+    )
+  )
+)
+
+const { kitchens, pending: kitchensPending } = useKitchenCollection()
+const kitchen = computed<Kitchen | null>(() => {
+  const key = routeKitchenSlug.value
+  if (!key) return null
+
+  const keyLower = key.toLowerCase()
+  const list = kitchens.value ?? []
+  const found = list.find((entry) => {
+    const id = normalizeString(entry?.id)
+    const slug = normalizeString((entry as any)?.slug).toLowerCase()
+    const slugAliases = Array.isArray((entry as any)?.slug_aliases)
+      ? (entry as any).slug_aliases.map((alias: unknown) =>
+          normalizeString(alias).toLowerCase()
+        )
+      : []
+
+    return (
+      id === key ||
+      (slug.length > 0 && slug === keyLower) ||
+      slugAliases.includes(keyLower) ||
+      (id === 'ChIJ93_ggY-jj0cRTCyLcfBuK2w' &&
+        ['luna-picante', 'luna-piccante'].includes(keyLower))
+    )
+  })
+
+  return found ?? null
+})
+const kitchenId = computed(() => normalizeString(kitchen.value?.id))
+const { firestoreFetchCollection } = useFirestoreRead()
+const menusPath = computed(() =>
+  resolveKitchenRuntimeChildCollectionPath({
+    kitchenId: kitchenId.value,
+    collectionName: 'menus',
+  })
+)
+const menusRef = firestoreFetchCollection<Menu>(menusPath)
+const menus = computed(() => menusRef.value ?? [])
+const pending = computed(
+  () =>
+    Boolean(routeKitchenSlug.value) &&
+    (kitchensPending.value || Boolean(kitchenId.value && menusRef.value === undefined))
+)
 
 const kitchenName = computed(() =>
-  normalizeString((menu.resolvedKitchen.value as any)?.name) || 'Kitchen'
+  normalizeString(kitchen.value?.name)
 )
+const chromeLanguage = computed(() =>
+  resolvePublicKitchenChromeLanguage({
+    selectedLanguage: selectedLanguage.value,
+    primaryLanguage: (kitchen.value as any)?.primary_language,
+  })
+)
+const chromeLabels = computed(() =>
+  getPublicKitchenChromeLabels(chromeLanguage.value)
+)
+useHead({
+  title: computed(() => chromeLabels.value.chooseMenu),
+})
+const errorMessage = computed(() => '')
+const textForLanguage = (
+  defaultText: unknown,
+  translations: unknown,
+  language: string
+) => {
+  const fallback = normalizeString(defaultText)
+  if (!language || !translations || typeof translations !== 'object' || Array.isArray(translations)) {
+    return fallback
+  }
 
-const menuSummary = (source: Menu) => {
-  const sections = Array.isArray(source.sections) ? source.sections.length : 0
-  const items = Array.isArray(source.sections)
-    ? source.sections.reduce(
-        (total, section) => total + (Array.isArray(section?.items) ? section.items.length : 0),
-        0
-      )
-    : 0
-
-  if (sections && items) return `${sections} sections · ${items} dishes`
-  if (sections) return `${sections} sections`
-  return 'Open menu'
+  return normalizeString((translations as Record<string, unknown>)[language]) || fallback
 }
-
-const visibleMenus = computed(() =>
-  menu.sortedMenus.value
-    .filter((entry) => entry.active !== false)
-    .map((entry) => ({
-      id: entry.id,
-      name: menu.localizedMenuName(entry),
-      summary: menu.localizedMenuDescription(entry) || menuSummary(entry),
-      to: menu.resolveMenuTo(entry),
-    }))
-    .filter((entry) => Boolean(entry.id && entry.to))
+const languageQuery = (language = selectedLanguage.value) =>
+  language ? { ...passThroughQuery.value, lang: language } : passThroughQuery.value
+const menuTo = (menuId: string) => ({
+  path: `/kitchens/${encodeURIComponent(
+    routeKitchenSlug.value
+  )}/menus/${encodeURIComponent(menuId)}`,
+  query: languageQuery(),
+})
+const menuCards = computed(() =>
+  menus.value
+    .filter((menu) => menu.active !== false)
+    .sort(
+      (a, b) =>
+        Number(a.sort_order ?? 0) - Number(b.sort_order ?? 0) ||
+        normalizeString(a.name).localeCompare(normalizeString(b.name))
+    )
+    .map((menu) => {
+      const id = normalizeString(menu.id)
+      return {
+        id,
+        name: textForLanguage(menu.name, menu.names, selectedLanguage.value),
+        description: textForLanguage(
+          menu.description,
+          menu.descriptions,
+          selectedLanguage.value
+        ),
+        to: menuTo(id),
+      }
+    })
+    .filter((menu) => Boolean(menu.id && menu.name))
 )
-
-const languageLabel = (language: string) => LANGUAGE_LABELS[language] || language
-
 const setLanguage = async (language: string) => {
   await navigateTo({
     path: route.path,
-    query: {
-      ...route.query,
-      lang: language === defaultLanguage.value ? undefined : language,
-    },
+    query: languageQuery(language),
   })
 }
 </script>

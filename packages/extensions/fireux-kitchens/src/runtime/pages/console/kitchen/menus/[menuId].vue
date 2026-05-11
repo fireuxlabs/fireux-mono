@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="console-kitchen-menu-detail">
     <template #header>
-      <LayoutsConsoleNavbar title="Kitchen Menu" />
+      <LayoutsConsoleNavbar title="Menu Sections" />
     </template>
 
     <template #body>
@@ -19,8 +19,8 @@ definePageMeta({
   nav: {
     visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-menu-detail',
-    label: 'Menu Detail',
-    icon: 'i-lucide-book-open',
+    label: 'Menu Sections',
+    icon: 'i-lucide-list-tree',
     position: 'top',
     requiresSelection: true,
     hidden: true,

@@ -5,7 +5,8 @@ import { useKitchenConsole } from './useKitchenConsole'
 import { useKitchenConsoleDishes } from './useKitchenConsoleDishes'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
 
-export function useKitchenConsoleMenus() {
+export function useKitchenConsoleMenus(options: { includeDishes?: boolean } = {}) {
+  const includeDishes = options.includeDishes !== false
   const {
     selectedKitchen,
     selectedMode,
@@ -25,11 +26,13 @@ export function useKitchenConsoleMenus() {
     kitchenCollectionPath: rootCollection,
     databaseId,
   })
-  const {
-    dishes,
-    pending: dishesPending,
-    collectionPath: dishesCollectionPath,
-  } = useKitchenConsoleDishes({ resolveMenuSections: false })
+  const dishState = includeDishes
+    ? useKitchenConsoleDishes({ resolveMenuSections: false })
+    : {
+        dishes: computed(() => []),
+        pending: computed(() => false),
+        collectionPath: computed(() => ''),
+      }
   const page = useKitchenConsoleReadPage<Menu>({
     collectionName: 'menus',
     selectedKitchen,
@@ -47,11 +50,15 @@ export function useKitchenConsoleMenus() {
     rootCollection: rootCollection.value,
     databaseId: databaseId.value,
     collectionPath: collectionPath.value,
-    dishesCollectionPath: dishesCollectionPath.value,
     menusCount: menus.value.length,
-    dishesCount: dishes.value.length,
     pending: pending.value,
-    dishesPending: dishesPending.value,
+    ...(includeDishes
+      ? {
+          dishesCollectionPath: dishState.collectionPath.value,
+          dishesCount: dishState.dishes.value.length,
+          dishesPending: dishState.pending.value,
+        }
+      : {}),
     canWrite: canWrite.value,
   }))
 
@@ -65,7 +72,7 @@ export function useKitchenConsoleMenus() {
     databaseId,
     canWrite,
     menus,
-    dishes,
+    dishes: dishState.dishes,
     pending,
     debug,
   }

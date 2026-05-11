@@ -26,7 +26,7 @@ export function useKitchenConsoleMenu() {
     menus,
     dishes,
     pending,
-  } = useKitchenConsoleMenus()
+  } = useKitchenConsoleMenus({ includeDishes: false })
 
   const menuId = computed(() => {
     const raw = route.params.menuId

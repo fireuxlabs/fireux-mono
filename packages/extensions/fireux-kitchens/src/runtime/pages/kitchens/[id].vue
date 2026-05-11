@@ -39,10 +39,31 @@
       </div>
 
       <div v-else class="space-y-4">
-        <OrganismsKitchenCardsProfile
-          v-if="kitchenProfile"
-          :model="kitchenProfile"
-        />
+        <div class="flex items-start gap-3">
+          <div
+            v-if="kitchenImageUrl"
+            class="max-w-2xl flex-1 overflow-hidden rounded-lg border border-default bg-muted"
+          >
+            <img
+              :src="kitchenImageUrl"
+              :alt="kitchenImageAlt"
+              class="w-full object-contain"
+            >
+          </div>
+
+          <div class="inline-flex shrink-0 items-center gap-1 rounded-lg border border-default bg-default/80 p-1">
+            <UButton
+              v-for="language in publicLanguageOptions"
+              :key="language.code || 'original'"
+              size="xs"
+              :variant="selectedLanguage === language.code ? 'solid' : 'ghost'"
+              color="neutral"
+              @click="setPublicLanguage(language.code)"
+            >
+              {{ chromeLabels[language.labelKey] }}
+            </UButton>
+          </div>
+        </div>
 
         <DevJson
           v-if="isDev && kitchen"
@@ -56,23 +77,7 @@
               <template #header>
                 <div class="flex flex-wrap items-start justify-between gap-3">
                   <div class="space-y-1">
-                    <div class="text-sm font-semibold">Menus</div>
-                    <p class="text-xs text-dimmed">
-                      See available menus for this kitchen.
-                    </p>
-                  </div>
-
-                  <div class="flex flex-wrap gap-1">
-                    <UButton
-                      v-for="language in languageOptions"
-                      :key="language"
-                      size="xs"
-                      :variant="selectedLanguage === language ? 'solid' : 'soft'"
-                      color="neutral"
-                      @click="selectedLanguage = language"
-                    >
-                      {{ language }}
-                    </UButton>
+                    <div class="text-sm font-semibold">{{ chromeLabels.menus }}</div>
                   </div>
                 </div>
               </template>
@@ -86,15 +91,15 @@
                   icon="i-lucide-book-open-check"
                   :to="menusIndexLink"
                 >
-                  Open menus
+                  {{ chromeLabels.openMenus }}
                 </UButton>
 
                 <div v-if="menusLoading" class="py-4 text-sm text-dimmed">
-                  Loading menus...
+                  {{ chromeLabels.loadingMenus }}
                 </div>
 
                 <div v-else-if="!sortedMenus.length" class="py-4 text-sm text-dimmed">
-                  No menus available.
+                  {{ chromeLabels.noMenusAvailable }}
                 </div>
 
                 <div v-else class="grid gap-3 sm:grid-cols-2">
@@ -214,8 +219,13 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceClaim'
 import { computed, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { resolveKitchenRuntimeChildCollectionPath } from '../../composables/fireux/app/kitchen-console/shared'
+import {
+  getPublicKitchenChromeLabels,
+  normalizePublicKitchenLanguage,
+  PUBLIC_KITCHEN_LANGUAGE_OPTIONS,
+  resolvePublicKitchenChromeLanguage,
+} from '../../composables/fireux/app/public-kitchen-language'
 import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
-import { useKitchenProfileView } from '../../composables/fireux/firestore/kitchen/utils/view/useKitchenProfileView'
 import type { Kitchen } from '../../models/kitchen.model'
 import type { Menu } from '../../models/menu.model'
 
@@ -282,8 +292,6 @@ watch(
 const menus = computed(() => menusRef.value?.value ?? [])
 const menusLoading = computed(() => Boolean(kitchenId.value && !menusRef.value?.value))
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const normalizeLanguageCode = (value: unknown) => normalizeString(value).replace(/_/g, '-')
-const CORE_PUBLIC_LANGUAGE_CODES = ['de', 'en', 'fr', 'it', 'es', 'pt', 'ja', 'zh-CN', 'ko', 'ar']
 const sortedMenus = computed(() =>
   [...menus.value].sort(
     (a, b) =>
@@ -291,85 +299,77 @@ const sortedMenus = computed(() =>
       String(a?.name || '').localeCompare(String(b?.name || ''))
   )
 )
-const languageOptions = computed(() => {
-  const settings = (kitchen.value as Record<string, any> | null)?.language_settings
-  const configured = Array.isArray(settings?.supported_languages)
-    ? settings.supported_languages
-    : []
-  const seen = new Set<string>()
-  const languages: string[] = []
-
-  for (const value of ['de', ...configured, ...CORE_PUBLIC_LANGUAGE_CODES]) {
-    const language = normalizeLanguageCode(value)
-    if (!language || seen.has(language)) continue
-    seen.add(language)
-    languages.push(language)
-  }
-
-  return languages
+const publicLanguageOptions = PUBLIC_KITCHEN_LANGUAGE_OPTIONS
+const selectedLanguage = computed(() => {
+  const raw = route.query.lang || route.query.language
+  const value = Array.isArray(raw) ? raw[0] : raw
+  return normalizePublicKitchenLanguage(value)
 })
-const selectedLanguage = ref('de')
-const defaultLanguage = computed(() => {
+const primaryLanguage = computed(() => {
   const settings = (kitchen.value as Record<string, any> | null)?.language_settings
-  return normalizeLanguageCode(settings?.default_language) || 'de'
+  return (
+    normalizePublicKitchenLanguage((kitchen.value as any)?.primary_language) ||
+    normalizePublicKitchenLanguage(settings?.default_language) ||
+    'en'
+  )
 })
-
-watch(
-  [defaultLanguage, languageOptions],
-  ([nextDefault, nextOptions]) => {
-    if (nextOptions.includes(selectedLanguage.value)) return
-    selectedLanguage.value = nextOptions.includes(nextDefault)
-      ? nextDefault
-      : nextOptions[0] || 'de'
-  },
-  { immediate: true }
+const chromeLanguage = computed(() =>
+  resolvePublicKitchenChromeLanguage({
+    selectedLanguage: selectedLanguage.value,
+    primaryLanguage: primaryLanguage.value,
+  })
 )
+const chromeLabels = computed(() => getPublicKitchenChromeLabels(chromeLanguage.value))
+const publicLanguageQuery = (language = selectedLanguage.value) =>
+  language ? `?lang=${encodeURIComponent(language)}` : ''
+const routeQueryWithoutLanguage = computed(() =>
+  Object.fromEntries(
+    Object.entries(route.query).filter(
+      ([key]) => !['lang', 'language'].includes(key)
+    )
+  )
+)
+const setPublicLanguage = async (language: string) => {
+  await navigateTo({
+    path: route.path,
+    query: language
+      ? { ...routeQueryWithoutLanguage.value, lang: language }
+      : routeQueryWithoutLanguage.value,
+  })
+}
 const menuLink = (menuIdRaw: unknown) => {
   const publicKitchenKey = String((kitchen.value as any)?.slug || kitchenRouteKey.value || kitchenId.value).trim()
   const menuId = String(menuIdRaw || '').trim()
   if (!publicKitchenKey || !menuId) return ''
-  const languageQuery = selectedLanguage.value === defaultLanguage.value
-    ? ''
-    : `?lang=${encodeURIComponent(selectedLanguage.value)}`
-  return `/kitchens/${encodeURIComponent(publicKitchenKey)}/menus/${encodeURIComponent(menuId)}${languageQuery}`
+  return `/kitchens/${encodeURIComponent(publicKitchenKey)}/menus/${encodeURIComponent(menuId)}${publicLanguageQuery()}`
 }
 
 const menusIndexLink = computed(() => {
   const publicKitchenKey = String((kitchen.value as any)?.slug || kitchenRouteKey.value || kitchenId.value).trim()
   if (!publicKitchenKey) return ''
-  const languageQuery = selectedLanguage.value === defaultLanguage.value
-    ? ''
-    : `?lang=${encodeURIComponent(selectedLanguage.value)}`
-  return `/kitchens/${encodeURIComponent(publicKitchenKey)}/menus${languageQuery}`
+  return `/kitchens/${encodeURIComponent(publicKitchenKey)}/menus${publicLanguageQuery()}`
 })
 
 const localizedString = (
   map: unknown,
-  fallbackValues: unknown[] = []
+  defaultValue: unknown = ''
 ): string => {
+  if (!selectedLanguage.value) return normalizeString(defaultValue)
+
   if (map && typeof map === 'object' && !Array.isArray(map)) {
     const values = map as Record<string, unknown>
     const selected = normalizeString(values[selectedLanguage.value])
     if (selected) return selected
-    const defaultValue = normalizeString(values[defaultLanguage.value])
-    if (defaultValue) return defaultValue
-    const first = Object.values(values).map(normalizeString).find(Boolean)
-    if (first) return first
-  }
-
-  for (const value of fallbackValues) {
-    const next = normalizeString(value)
-    if (next) return next
   }
 
   return ''
 }
 
 const localizedMenuName = (menu: Menu) =>
-  localizedString((menu as any).names, [menu.name, menu.id])
+  localizedString((menu as any).names, menu.name)
 
 const localizedMenuDescription = (menu: Menu) =>
-  localizedString((menu as any).descriptions, [menu.description])
+  localizedString((menu as any).descriptions, menu.description)
 
 const menuSummary = (menu: Menu) => {
   const sections = Array.isArray(menu.sections) ? menu.sections.length : 0
@@ -380,12 +380,16 @@ const menuSummary = (menu: Menu) => {
       )
     : 0
 
-  if (sections && items) return `${sections} sections · ${items} dishes`
-  if (sections) return `${sections} sections`
-  return 'Open menu'
+  const sectionLabel = sections === 1 ? chromeLabels.value.section : chromeLabels.value.sections
+  const dishLabel = items === 1 ? chromeLabels.value.dish : chromeLabels.value.dishes
+
+  if (sections && items) return `${sections} ${sectionLabel} · ${items} ${dishLabel}`
+  if (sections) return `${sections} ${sectionLabel}`
+  return chromeLabels.value.openMenu
 }
 
-const { model: kitchenProfile } = useKitchenProfileView(kitchen)
+const kitchenImageUrl = computed(() => String((kitchen.value as any)?.image_url || '').trim())
+const kitchenImageAlt = computed(() => pageTitle.value)
 
 const { currentUser, isAdmin } = useUser()
 const claimedBy = computed(() => String(kitchen.value?.claimed_by || '').trim())

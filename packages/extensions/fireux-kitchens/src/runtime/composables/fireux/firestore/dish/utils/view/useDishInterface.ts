@@ -1,6 +1,5 @@
 import {
   safeString,
-  safeStringArray,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Dish } from '../../../../../../models/dish.model'
 
@@ -17,8 +16,6 @@ export namespace DishCard {
     summary: string
     name: string
     description: string
-    miseIds: string[]
-    ingredientIds: string[]
   }
 }
 
@@ -43,17 +40,12 @@ export function useDishInterface() {
     | 'description'
   >
 
-  type DishPreview = {
-    miseIds: string[]
-    ingredientIds: string[]
-  }
+  type DishPreview = Pick<DishCard.Card, 'id' | 'title' | 'description'>
 
   function map(dish: Dish): DishCard.Card {
     const id = safeString(dish.id).trim()
     const name = safeString(dish.name).trim()
     const description = safeString(dish.description).trim()
-    const miseIds = safeStringArray(dish.mise_ids)
-    const ingredientIds = safeStringArray(dish.ingredient_ids)
 
     return {
       id,
@@ -67,8 +59,6 @@ export function useDishInterface() {
       summary: description,
       name,
       description,
-      miseIds,
-      ingredientIds,
     }
   }
 
@@ -104,8 +94,9 @@ export function useDishInterface() {
     if (!base) return null
 
     return {
-      miseIds: base.miseIds,
-      ingredientIds: base.ingredientIds,
+      id: base.id,
+      title: base.title,
+      description: base.description,
     }
   }
 

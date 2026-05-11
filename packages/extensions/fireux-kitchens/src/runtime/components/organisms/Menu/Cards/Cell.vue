@@ -36,9 +36,8 @@
 
         </div>
 
-        <div v-if="showMeta" class="truncate text-xs text-dimmed">
-          <span v-if="meta">{{ meta }}</span>
-          <span v-else class="italic">missing</span>
+        <div v-if="showMeta && meta" class="truncate text-xs text-dimmed">
+          <span>{{ meta }}</span>
         </div>
 
         <div v-if="showTagline && description" class="truncate text-xs text-dimmed">
@@ -85,9 +84,8 @@
 
         </div>
 
-        <div v-if="showMeta" class="truncate text-xs text-dimmed">
-          <span v-if="meta">{{ meta }}</span>
-          <span v-else class="italic">missing</span>
+        <div v-if="showMeta && meta" class="truncate text-xs text-dimmed">
+          <span>{{ meta }}</span>
         </div>
 
         <div v-if="showTagline && description" class="truncate text-xs text-dimmed">

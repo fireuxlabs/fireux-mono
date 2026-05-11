@@ -1,6 +1,6 @@
 <template>
   <UCard v-if="dish">
-    <div class="space-y-5">
+    <div class="space-y-6">
       <div class="flex items-start gap-3">
         <UAvatar
           icon="i-lucide-utensils"
@@ -23,72 +23,51 @@
 
       <div class="console-summary-grid">
         <div class="console-summary-field">
-          Mise:
-          <span class="console-summary-value">{{ miseCount }}</span>
+          Names:
+          <span class="console-summary-value">{{ nameCount }}</span>
         </div>
         <div class="console-summary-field">
-          Ingredients:
-          <span class="console-summary-value">{{ ingredientCount }}</span>
+          Descriptions:
+          <span class="console-summary-value">{{ descriptionCount }}</span>
         </div>
       </div>
 
-      <div class="grid gap-3 md:grid-cols-2">
-        <UCard variant="soft">
-          <div class="space-y-3">
-            <div class="text-sm font-medium text-highlighted">Mise</div>
-            <div
-              v-if="miseIds.length"
-              class="flex flex-wrap gap-1.5"
-            >
-              <UButton
-                v-for="miseId in miseIds"
-                :key="miseId"
-                :to="`/console/kitchen/mise/${encodeURIComponent(miseId)}`"
-                size="xs"
-                color="neutral"
-                variant="soft"
-                icon="i-lucide-list-checks"
-              >
-                {{ miseId }}
-              </UButton>
-            </div>
-            <p
-              v-else
-              class="text-xs text-dimmed"
-            >
-              No mise links yet.
-            </p>
-          </div>
-        </UCard>
+      <section class="space-y-3">
+        <div class="text-sm font-semibold text-highlighted">
+          Attached copy
+        </div>
 
-        <UCard variant="soft">
-          <div class="space-y-3">
-            <div class="text-sm font-medium text-highlighted">Ingredients</div>
-            <div
-              v-if="ingredientIds.length"
-              class="flex flex-wrap gap-1.5"
-            >
-              <UButton
-                v-for="ingredientId in ingredientIds"
-                :key="ingredientId"
-                :to="`/ingredients/${encodeURIComponent(ingredientId)}`"
-                size="xs"
-                color="neutral"
-                variant="soft"
-                icon="i-lucide-carrot"
-              >
-                {{ ingredientId }}
-              </UButton>
+        <div
+          v-if="copyRows.length"
+          class="divide-y divide-default rounded-md border border-default"
+        >
+          <div
+            v-for="row in copyRows"
+            :key="row.language"
+            class="grid gap-2 px-3 py-3 text-sm sm:grid-cols-[64px_1fr]"
+          >
+            <div class="font-medium text-toned">
+              {{ row.language }}
             </div>
-            <p
-              v-else
-              class="text-xs text-dimmed"
-            >
-              No ingredient links yet.
-            </p>
+
+            <div class="min-w-0 space-y-1">
+              <div class="break-words font-medium text-highlighted">
+                {{ row.name || '—' }}
+              </div>
+              <div class="break-words text-dimmed">
+                {{ row.description || '—' }}
+              </div>
+            </div>
           </div>
-        </UCard>
-      </div>
+        </div>
+
+        <p
+          v-else
+          class="text-sm text-dimmed"
+        >
+          No attached language copy yet.
+        </p>
+      </section>
     </div>
   </UCard>
 </template>
@@ -101,14 +80,32 @@ const props = defineProps<{
   dish: Dish | null
 }>()
 
-const miseIds = computed(() =>
-  Array.isArray(props.dish?.mise_ids) ? props.dish.mise_ids : []
-)
+const normalizeString = (value: unknown) => String(value ?? '').trim()
+const normalizeStringMap = (value: unknown): Record<string, string> => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
 
-const ingredientIds = computed(() =>
-  Array.isArray(props.dish?.ingredient_ids) ? props.dish.ingredient_ids : []
-)
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .map(([key, entry]) => [normalizeString(key), normalizeString(entry)])
+      .filter(([key, entry]) => Boolean(key && entry))
+  )
+}
 
-const miseCount = computed(() => miseIds.value.length)
-const ingredientCount = computed(() => ingredientIds.value.length)
+const names = computed(() => normalizeStringMap(props.dish?.names))
+const descriptions = computed(() => normalizeStringMap(props.dish?.descriptions))
+const copyRows = computed(() =>
+  ['de', 'en']
+    .map((language) => ({
+      language,
+      name: names.value[language] || '',
+      description: descriptions.value[language] || '',
+    }))
+    .filter((row) => row.name || row.description)
+)
+const nameCount = computed(
+  () => copyRows.value.filter((row) => row.name).length
+)
+const descriptionCount = computed(
+  () => copyRows.value.filter((row) => row.description).length
+)
 </script>

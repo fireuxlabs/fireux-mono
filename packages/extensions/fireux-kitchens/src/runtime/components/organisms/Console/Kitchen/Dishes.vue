@@ -9,5 +9,5 @@
 <script setup lang="ts">
 import { useKitchenConsoleDishes } from '../../../../composables/fireux/app/kitchen-console/useKitchenConsoleDishes'
 
-const { canWrite } = useKitchenConsoleDishes()
+const { canWrite } = useKitchenConsoleDishes({ resolveMenuSections: false })
 </script>

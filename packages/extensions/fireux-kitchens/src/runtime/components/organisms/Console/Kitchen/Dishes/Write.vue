@@ -29,26 +29,6 @@
         </UFormField>
       </div>
 
-      <div class="grid gap-4 md:grid-cols-2">
-        <UFormField label="Mise ids">
-          <UTextarea
-            v-model="miseIds"
-            placeholder="tomato-sauce, pizza-dough"
-            :disabled="saving || !canCreateDish"
-            :rows="3"
-          />
-        </UFormField>
-
-        <UFormField label="Ingredient ids">
-          <UTextarea
-            v-model="ingredientIds"
-            placeholder="mozzarella, oregano"
-            :disabled="saving || !canCreateDish"
-            :rows="3"
-          />
-        </UFormField>
-      </div>
-
       <div class="flex flex-wrap items-center gap-2">
         <UButton
           type="submit"
@@ -75,7 +55,6 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { computed, ref } from 'vue'
 import { useKitchenConsoleDishes } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleDishes'
 import { useDishCreate } from '../../../../../composables/fireux/firestore/dish/mutations/useDishCreate'
-import { normalizeDishStringArray } from '../../../../../models/dish.model'
 
 const {
   kitchenId,
@@ -91,14 +70,10 @@ const toast = useToastify()
 
 const name = ref('')
 const description = ref('')
-const miseIds = ref('')
-const ingredientIds = ref('')
 const saving = ref(false)
 const message = ref('')
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const parseIds = (value: string) =>
-  normalizeDishStringArray(value.split(/[\n,]/g))
 const canCreateDish = computed(() =>
   canWrite.value && Boolean(normalizeString(kitchenId.value))
 )
@@ -124,15 +99,11 @@ const addDish = async () => {
       {
         name: dishName,
         description: normalizeString(description.value),
-        mise_ids: parseIds(miseIds.value),
-        ingredient_ids: parseIds(ingredientIds.value),
       },
       { kitchenId: normalizeString(kitchenId.value) }
     )
     name.value = ''
     description.value = ''
-    miseIds.value = ''
-    ingredientIds.value = ''
     message.value = `Created ${dishName}.`
     if (result.failedLanguages.length) {
       toast.add({

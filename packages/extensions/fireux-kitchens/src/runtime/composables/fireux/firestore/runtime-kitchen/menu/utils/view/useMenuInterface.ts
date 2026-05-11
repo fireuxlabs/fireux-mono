@@ -66,7 +66,8 @@ export function useMenuInterface() {
       order?: unknown
     }
     const active = Boolean(menu.active)
-    const items = (menu.sections ?? []).flatMap((section) => section.items ?? [])
+    const sections = menu.sections ?? []
+    const items = sections.flatMap((section) => section.items ?? [])
     const id = safeString(menu.id).trim()
     const rawName = safeString(menu.name).trim()
     const name = stripKitchenPrefix(rawName) || rawName
@@ -74,25 +75,27 @@ export function useMenuInterface() {
     const menuType = safeString(extra.menu_type).trim()
     const isActiveNow = active
     const windowLabel = ''
+    const description = safeString(menu.description).trim()
+    const itemLabel = `${items.length} ${items.length === 1 ? 'item' : 'items'}`
 
     return {
       id,
       to: `/console/kitchen/menus/${encodeURIComponent(id)}`,
       imageUrl: '',
       title: name,
-      subtitle: id,
+      subtitle: description,
       meta: [
         menuType ? `Type: ${menuType}` : '',
-        `Order: ${sortOrder}`,
+        itemLabel,
         windowLabel,
       ]
         .filter(Boolean)
         .join(' · '),
       status: active ? 'active' : 'inactive',
       badges: [],
-      summary: safeString(menu.description).trim(),
+      summary: description,
       name,
-      description: safeString(menu.description).trim(),
+      description,
       active,
       itemCount: items.length,
       isActiveNow,
@@ -132,7 +135,7 @@ export function useMenuInterface() {
       subtitle: base.subtitle,
       meta: base.meta,
       active: base.active,
-      description: base.description,
+      description: '',
       isActiveNow: base.isActiveNow,
     }
   }

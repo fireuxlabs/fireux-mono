@@ -12,27 +12,57 @@
         >
           <div class="ml-auto flex flex-wrap items-center justify-end gap-2">
             <div
-              v-if="showSectionToggle"
+              v-if="showFilters"
               class="flex flex-wrap items-center justify-end gap-1"
             >
-              <UButton
+              <UButtonGroup
+                v-if="showMenuFilter"
                 size="xs"
-                color="neutral"
-                :variant="activeSectionId === 'all' ? 'solid' : 'ghost'"
-                @click="setActiveSection('all')"
               >
-                All
-              </UButton>
-              <UButton
-                v-for="section in sections"
-                :key="section.id"
+                <UButton
+                  color="neutral"
+                  :variant="activeMenuId === 'all' ? 'solid' : 'ghost'"
+                  @click="setActiveMenu('all')"
+                >
+                  All
+                </UButton>
+                <UButton
+                  v-for="menu in menuFilters"
+                  :key="menu.id"
+                  color="neutral"
+                  :variant="activeMenuId === menu.id ? 'solid' : 'ghost'"
+                  @click="setActiveMenu(menu.id)"
+                >
+                  {{ filterButtonLabel(menu.label, menu.count) }}
+                </UButton>
+              </UButtonGroup>
+
+              <UButtonGroup
+                v-if="showSectionFilter"
                 size="xs"
-                color="neutral"
-                :variant="activeSectionId === section.id ? 'solid' : 'ghost'"
-                @click="setActiveSection(section.id)"
               >
-                {{ section.label }}
-              </UButton>
+                <UButton
+                  color="neutral"
+                  :variant="activeSectionId === 'all' ? 'solid' : 'ghost'"
+                  @click="setActiveSection('all')"
+                >
+                  All sections
+                </UButton>
+                <UButton
+                  v-for="section in availableSectionFilters"
+                  :key="section.id"
+                  color="neutral"
+                  :variant="activeSectionId === section.id ? 'solid' : 'ghost'"
+                  @click="setActiveSection(section.id)"
+                >
+                  {{
+                    filterButtonLabel(
+                      section.sectionLabel || section.label,
+                      section.count
+                    )
+                  }}
+                </UButton>
+              </UButtonGroup>
             </div>
             <UInput
               v-if="showSearchInput"
@@ -81,7 +111,7 @@
           ? 'No dishes match your search.'
           : activeSectionId === 'all'
             ? 'No dishes found.'
-            : 'No dishes found in this section.'
+            : 'No dishes found for this filter.'
       }}
     </p>
 
@@ -108,12 +138,17 @@ type DishCollectionSection = {
   label: string
   dishIds: string[]
   count?: number
+  menuId?: string
+  sectionId?: string
+  sectionLabel?: string
 }
 
 const props = withDefaults(
   defineProps<{
     collection?: Dish[]
     sections?: DishCollectionSection[]
+    menuFilters?: DishCollectionSection[]
+    sectionFilters?: DishCollectionSection[]
     title?: string
     description?: string
     searchPlaceholder?: string
@@ -150,12 +185,33 @@ const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
-const sections = computed(() => props.sections ?? [])
-const showSectionToggle = computed(() => sections.value.length > 0)
 const activeSectionId = ref('all')
+const activeMenuId = ref('all')
+const menuFilters = computed(() => props.menuFilters ?? props.sections ?? [])
+const sectionFilters = computed(() => props.sectionFilters ?? [])
+const showMenuFilter = computed(() => menuFilters.value.length > 0)
+const availableSectionFilters = computed(() => {
+  if (activeMenuId.value === 'all') return sectionFilters.value
+
+  return sectionFilters.value.filter((section) => section.menuId === activeMenuId.value)
+})
+const showSectionFilter = computed(
+  () => activeMenuId.value !== 'all' && availableSectionFilters.value.length > 0
+)
+const showFilters = computed(() => showMenuFilter.value || showSectionFilter.value)
 
 watch(
-  sections,
+  menuFilters,
+  (nextMenus) => {
+    if (activeMenuId.value === 'all') return
+    if (nextMenus.some((menu) => menu.id === activeMenuId.value)) return
+    activeMenuId.value = 'all'
+  },
+  { immediate: true }
+)
+
+watch(
+  availableSectionFilters,
   (nextSections) => {
     if (activeSectionId.value === 'all') return
     if (nextSections.some((section) => section.id === activeSectionId.value)) return
@@ -164,19 +220,50 @@ watch(
   { immediate: true }
 )
 
+const activeMenu = computed(() =>
+  menuFilters.value.find((menu) => menu.id === activeMenuId.value) ?? null
+)
 const activeSection = computed(() =>
-  sections.value.find((section) => section.id === activeSectionId.value) ?? null
+  availableSectionFilters.value.find((section) => section.id === activeSectionId.value) ?? null
 )
 
-const collectionFilteredBySection = computed(() => {
-  if (!activeSection.value) return collection.value
+const filterButtonLabel = (label: string, count?: number) => {
+  const suffix = typeof count === 'number' ? ` (${count})` : ''
+  return `${label}${suffix}`
+}
 
+const setActiveMenu = (menuId: string) => {
+  activeMenuId.value = String(menuId || 'all').trim() || 'all'
+  activeSectionId.value = 'all'
+}
+
+const setActiveSection = (sectionId: string) => {
+  activeSectionId.value = String(sectionId || 'all').trim() || 'all'
+}
+
+const filterDishIds = (source: DishCollectionSection | null) =>
+  new Set(
+    (source?.dishIds ?? [])
+      .map((dishId) => String(dishId || '').trim())
+      .filter(Boolean)
+  )
+
+const collectionFilteredByPlacement = computed(() => {
+  const menuDishIds = filterDishIds(activeMenu.value)
+  const sectionDishIds = filterDishIds(activeSection.value)
+  const orderSource = activeSection.value || activeMenu.value
   const order = new Map(
-    activeSection.value.dishIds.map((dishId, index) => [dishId, index])
+    (orderSource?.dishIds ?? []).map((dishId, index) => [
+      String(dishId || '').trim(),
+      index,
+    ])
   )
-  const filtered = collection.value.filter((dish) =>
-    order.has(String(dish?.id ?? '').trim())
-  )
+  const filtered = collection.value.filter((dish) => {
+    const dishId = String(dish?.id ?? '').trim()
+    if (menuDishIds.size && !menuDishIds.has(dishId)) return false
+    if (sectionDishIds.size && !sectionDishIds.has(dishId)) return false
+    return true
+  })
 
   return filtered.sort(
     (a, b) =>
@@ -186,18 +273,14 @@ const collectionFilteredBySection = computed(() => {
 })
 
 const fullCollectionCount = computed(() => collection.value.length)
-const totalCount = computed(() => collectionFilteredBySection.value.length)
+const totalCount = computed(() => collectionFilteredByPlacement.value.length)
 const showSearchInput = computed(
   () => showSearch.value && fullCollectionCount.value > 15
 )
 
-const setActiveSection = (sectionId: string) => {
-  activeSectionId.value = String(sectionId || 'all').trim() || 'all'
-}
-
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<Dish, NonNullable<ReturnType<typeof makeCard>>>({
-    items: collectionFilteredBySection,
+    items: collectionFilteredByPlacement,
     makeCard: (dish: Dish) => makeCard(dish),
     initialVariant: props.initialVariant,
   })

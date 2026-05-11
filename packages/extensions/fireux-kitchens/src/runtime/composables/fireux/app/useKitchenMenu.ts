@@ -75,6 +75,12 @@ const normalizeList = (value: unknown) =>
   Array.isArray(value)
     ? Array.from(new Set(value.map((entry) => normalizeString(entry)).filter(Boolean)))
     : []
+const legacyDishField = (dish: Dish | null | undefined, key: string) =>
+  dish ? (dish as unknown as Record<string, unknown>)[key] : undefined
+const legacyDishString = (dish: Dish | null | undefined, key: string) =>
+  normalizeString(legacyDishField(dish, key))
+const legacyDishList = (dish: Dish | null | undefined, key: string) =>
+  normalizeList(legacyDishField(dish, key))
 
 const sortBySortOrder = <T extends { sort_order?: number }>(items: T[]) =>
   [...items].sort(
@@ -362,7 +368,7 @@ export function useKitchenMenu() {
       id: `dish:${dish.id}:name`,
       textMap: dish.names,
       fallbackText: dish.name || dish.id,
-      sourceLanguage: dish.source_language || defaultLanguageCode.value,
+      sourceLanguage: legacyDishString(dish, 'source_language') || defaultLanguageCode.value,
     })
 
   const localizedMenuItemDescription = (
@@ -373,7 +379,7 @@ export function useKitchenMenu() {
       id: `menu-item:${item.id}:description`,
       textMap: (item as any).descriptions,
       fallbackText: item.description,
-      sourceLanguage: dish?.source_language || defaultLanguageCode.value,
+      sourceLanguage: legacyDishString(dish, 'source_language') || defaultLanguageCode.value,
     })
     if (itemText) return itemText
     if (!dish) return ''
@@ -382,7 +388,7 @@ export function useKitchenMenu() {
       id: `dish:${dish.id}:description`,
       textMap: dish.descriptions,
       fallbackText: dish.description,
-      sourceLanguage: dish.source_language || defaultLanguageCode.value,
+      sourceLanguage: legacyDishString(dish, 'source_language') || defaultLanguageCode.value,
     })
   }
 
@@ -569,7 +575,10 @@ export function useKitchenMenu() {
           id: `menu-item:${item.id}:description`,
           textMap: (item as any).descriptions,
           fallbackText: item.description,
-          sourceLanguage: dish?.source_language || (menu as any).source_language || defaultLanguageCode.value,
+          sourceLanguage:
+            legacyDishString(dish, 'source_language') ||
+            (menu as any).source_language ||
+            defaultLanguageCode.value,
         }).request)
 
         if (dish) {
@@ -577,7 +586,9 @@ export function useKitchenMenu() {
             id: `dish:${dish.id}:description`,
             textMap: dish.descriptions,
             fallbackText: dish.description,
-            sourceLanguage: dish.source_language || defaultLanguageCode.value,
+            sourceLanguage:
+              legacyDishString(dish, 'source_language') ||
+              defaultLanguageCode.value,
           }).request)
         }
       }
@@ -672,14 +683,16 @@ export function useKitchenMenu() {
   const usedMiseIds = computed(() =>
     Array.from(
       new Set(
-        usedDishes.value.flatMap((dish) => normalizeList(dish.mise_ids))
+        usedDishes.value.flatMap((dish) => legacyDishList(dish, 'mise_ids'))
       )
     )
   )
   const usedIngredientIds = computed(() =>
     Array.from(
       new Set(
-        usedDishes.value.flatMap((dish) => normalizeList(dish.ingredient_ids))
+        usedDishes.value.flatMap((dish) =>
+          legacyDishList(dish, 'ingredient_ids')
+        )
       )
     )
   )
@@ -720,8 +733,8 @@ export function useKitchenMenu() {
       names: dish.names || {},
       description: dish.description || '',
       descriptions: dish.descriptions || {},
-      mise_ids: dish.mise_ids,
-      ingredient_ids: dish.ingredient_ids,
+      mise_ids: legacyDishList(dish, 'mise_ids'),
+      ingredient_ids: legacyDishList(dish, 'ingredient_ids'),
     })),
     mise: usedMiseIds.value
       .map((id) => miseById.value.get(id))

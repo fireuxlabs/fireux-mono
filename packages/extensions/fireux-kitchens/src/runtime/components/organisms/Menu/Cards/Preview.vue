@@ -33,17 +33,31 @@
 
   <UCard v-else class="overflow-hidden">
     <div class="space-y-3">
-      <div class="flex items-center gap-3">
-        <UAvatar
-          :src="imageUrl || undefined"
-          icon="i-lucide-book-open-check"
-          size="xl"
-        />
+      <div class="flex items-stretch gap-3">
+        <div
+          v-if="movable"
+          class="flex shrink-0 items-center text-dimmed"
+          aria-hidden="true"
+        >
+          <UIcon name="i-lucide-grip-vertical" class="size-4" />
+        </div>
 
-        <div class="min-w-0 flex-1">
-          <div class="flex items-start justify-between gap-2">
+        <div class="flex min-w-0 flex-1 items-center gap-3">
+          <div class="shrink-0">
+            <UChip :color="isActiveNow ? 'success' : 'error'" position="top-left" inset>
+              <UAvatar
+                :src="imageUrl || undefined"
+                :icon="icon"
+                size="lg"
+              />
+            </UChip>
+          </div>
+
+          <div class="min-w-0 flex-1">
             <div class="min-w-0">
-              <div class="truncate text-base font-semibold">{{ title }}</div>
+              <div v-if="title" class="truncate text-base font-semibold">
+                {{ title }}
+              </div>
               <div
                 v-if="subtitle"
                 class="truncate text-xs text-dimmed"
@@ -52,21 +66,17 @@
               </div>
             </div>
 
-            <div class="flex shrink-0 items-center gap-1">
-              <div class="flex items-center gap-1 text-xs capitalize text-dimmed">
-                <UChip :color="isActiveNow ? 'success' : 'error'" inset />
-                <span>{{ isActiveNow ? 'active' : 'inactive' }}</span>
-              </div>
+            <div
+              v-if="showBody && description"
+              class="mt-1 line-clamp-2 text-xs text-dimmed"
+            >
+              {{ description }}
             </div>
           </div>
+        </div>
 
-          <div
-            v-if="showBody"
-            class="mt-1 line-clamp-2 text-xs text-dimmed"
-          >
-            <span v-if="description">{{ description }}</span>
-            <span v-else class="italic">missing</span>
-          </div>
+        <div v-if="$slots.actions" class="flex shrink-0 items-center">
+          <slot name="actions" />
         </div>
       </div>
 
@@ -100,9 +110,6 @@
         </div>
       </div>
 
-      <div v-if="$slots.actions" class="pt-1">
-        <slot name="actions" />
-      </div>
     </div>
   </UCard>
 </template>
@@ -124,11 +131,13 @@ type Props = {
   title?: string
   subtitle?: string
   isActiveNow?: boolean
+  icon?: string
   description?: string
   badges?: string[]
   details?: MenuPreviewDetail[]
   showBadges?: boolean
   showBody?: boolean
+  movable?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -138,11 +147,13 @@ const props = withDefaults(defineProps<Props>(), {
   title: '',
   subtitle: '',
   isActiveNow: false,
+  icon: 'i-lucide-book-open-check',
   description: '',
   badges: () => [],
   details: () => [],
   showBadges: true,
   showBody: true,
+  movable: false,
 })
 
 const sections = computed(() =>

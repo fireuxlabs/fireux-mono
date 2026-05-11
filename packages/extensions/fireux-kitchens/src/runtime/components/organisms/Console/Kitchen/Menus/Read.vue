@@ -1,13 +1,11 @@
 <template>
   <div class="space-y-6">
-    <OrganismsMenuCollectionManager
+    <OrganismsConsoleKitchenMenusPreview
       :collection="menus"
-      title="Menus"
-      description="Raw menu collection for the selected kitchen."
-      :link="true"
+      :can-write="canWrite"
+      :collection-path="collectionPath"
+      :database-id="databaseId"
     />
-
-    <OrganismsConsoleKitchenMenusPreview :collection="menus" :dishes="dishes" />
 
     <DevFireuxDebugPanel
       v-if="isDev"
@@ -21,6 +19,12 @@
 <script setup lang="ts">
 import { useKitchenConsoleMenus } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMenus'
 
-const { menus, dishes, debug } = useKitchenConsoleMenus()
+const {
+  menus,
+  collectionPath,
+  databaseId,
+  canWrite,
+  debug,
+} = useKitchenConsoleMenus({ includeDishes: false })
 const isDev = import.meta.dev
 </script>
