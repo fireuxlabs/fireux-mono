@@ -1,6 +1,6 @@
 import { useRoute } from '#imports'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
+import { computed, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useKitchenCollection } from '../firestore/kitchen/fetch/useKitchenCollection'
 import type { Menu } from '../../../models/menu.model'
 import type { Dish } from '../../../models/dish.model'
@@ -44,6 +44,15 @@ type SemanticMenuJsonSource = {
   names?: Partial<Record<string, string>>
 }
 
+type PublicTranslationRequest = {
+  id: string
+  sourceLanguage: string
+  targetLanguage: string
+  sourceText: string
+}
+
+const RESTAURANT_MENU_GLOSSARY_VERSION = 'restaurant_menu_v1'
+
 const normalizeList = (value: unknown) =>
   Array.isArray(value)
     ? Array.from(new Set(value.map((entry) => normalizeString(entry)).filter(Boolean)))
@@ -53,30 +62,6 @@ const sortBySortOrder = <T extends { sort_order?: number }>(items: T[]) =>
   [...items].sort(
     (a, b) => Number(a?.sort_order ?? 0) - Number(b?.sort_order ?? 0)
   )
-
-const localizedName = (
-  source: { name?: string; names?: Partial<Record<string, string>> },
-  languageCode: string
-) => {
-  const localized = source.names?.[languageCode]
-  return normalizeString(localized) || normalizeString(source.name)
-}
-
-const localizedDescription = (
-  source: { description?: string; descriptions?: Partial<Record<string, string>> },
-  languageCode: string
-) => {
-  const localized = source.descriptions?.[languageCode]
-  return normalizeString(localized) || normalizeString(source.description)
-}
-
-const localizedSectionLabel = (
-  source: { label?: string; labels?: Partial<Record<string, string>> },
-  languageCode: string
-) => {
-  const localized = source.labels?.[languageCode]
-  return normalizeString(localized) || normalizeString(source.label)
-}
 
 export function useKitchenMenu() {
   const route = useRoute()
@@ -219,6 +204,8 @@ export function useKitchenMenu() {
   const dishes = computed(() => dishesRef.value?.value ?? [])
   const mise = computed(() => miseRef.value?.value ?? [])
   const ingredients = computed(() => ingredientsRef.value ?? [])
+  const translationCache = ref<Record<string, string>>({})
+  const translationPendingKeys = new Set<string>()
   const currencyCode = computed(() =>
     normalizeString((resolvedKitchen.value as any)?.currency_code) || 'CHF'
   )
@@ -259,9 +246,135 @@ export function useKitchenMenu() {
     emptyMenuSubject: 'This kitchen',
     emptyMenuFallback: 'This kitchen has no active public menu right now.',
   })
+  const defaultLanguageCode = computed(() =>
+    normalizeString((resolvedKitchen.value as any)?.language_settings?.default_language) || 'de'
+  )
+
+  const normalizeTextMap = (value: unknown): Record<string, string> => {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
+
+    const map: Record<string, string> = {}
+    for (const [language, entry] of Object.entries(value as Record<string, unknown>)) {
+      const code = normalizeString(language).replace(/_/g, '-')
+      const text = normalizeString(entry)
+      if (code && text) map[code] = text
+    }
+    return map
+  }
+
+  const localTranslationKey = (input: PublicTranslationRequest) =>
+    [
+      input.id,
+      RESTAURANT_MENU_GLOSSARY_VERSION,
+      input.sourceLanguage,
+      input.targetLanguage,
+      input.sourceText,
+    ].join('\n')
+
+  const resolveTranslationSource = (input: {
+    id: string
+    textMap?: unknown
+    fallbackText?: unknown
+    sourceLanguage?: unknown
+  }): {
+    text: string
+    request: PublicTranslationRequest | null
+  } => {
+    const targetLanguage = requestedLanguageCode.value
+    const sourceLanguage =
+      normalizeString(input.sourceLanguage).replace(/_/g, '-') ||
+      defaultLanguageCode.value
+    const textMap = normalizeTextMap(input.textMap)
+    const inlineTarget = normalizeString(textMap[targetLanguage])
+    if (inlineTarget) return { text: inlineTarget, request: null }
+
+    const sourceText =
+      (targetLanguage !== 'en' ? normalizeString(textMap.en) : '') ||
+      normalizeString(textMap[sourceLanguage]) ||
+      normalizeString(input.fallbackText)
+    const requestSourceLanguage =
+      (targetLanguage !== 'en' && normalizeString(textMap.en) ? 'en' : sourceLanguage)
+
+    if (!sourceText) return { text: '', request: null }
+    if (targetLanguage === requestSourceLanguage || targetLanguage === 'en') {
+      return { text: sourceText, request: null }
+    }
+
+    const request = {
+      id: input.id,
+      sourceLanguage: requestSourceLanguage,
+      targetLanguage,
+      sourceText,
+    }
+    const cached = translationCache.value[localTranslationKey(request)]
+    return {
+      text: cached || sourceText,
+      request,
+    }
+  }
+
+  const localizedCachedText = (input: {
+    id: string
+    textMap?: unknown
+    fallbackText?: unknown
+    sourceLanguage?: unknown
+  }) => resolveTranslationSource(input).text
+
+  const localizedMenuName = (menu: Menu) =>
+    localizedCachedText({
+      id: `menu:${menu.id}:name`,
+      textMap: (menu as any).names,
+      fallbackText: menu.name || menu.id,
+      sourceLanguage: (menu as any).source_language || defaultLanguageCode.value,
+    })
+
+  const localizedMenuDescription = (menu: Menu) =>
+    localizedCachedText({
+      id: `menu:${menu.id}:description`,
+      textMap: (menu as any).descriptions,
+      fallbackText: menu.description,
+      sourceLanguage: (menu as any).source_language || defaultLanguageCode.value,
+    })
+
+  const localizedMenuSectionLabel = (menu: Menu, section: { id: string; label?: string; labels?: Partial<Record<string, string>> }) =>
+    localizedCachedText({
+      id: `menu:${menu.id}:section:${section.id}:label`,
+      textMap: (section as any).labels,
+      fallbackText: section.label || section.id,
+      sourceLanguage: (menu as any).source_language || defaultLanguageCode.value,
+    })
+
+  const localizedMenuItemName = (dish: Dish) =>
+    localizedCachedText({
+      id: `dish:${dish.id}:name`,
+      textMap: dish.names,
+      fallbackText: dish.name || dish.id,
+      sourceLanguage: dish.source_language || defaultLanguageCode.value,
+    })
+
+  const localizedMenuItemDescription = (
+    item: { id: string; description?: string; descriptions?: Partial<Record<string, string>> },
+    dish: Dish
+  ) => {
+    const itemText = localizedCachedText({
+      id: `menu-item:${item.id}:description`,
+      textMap: (item as any).descriptions,
+      fallbackText: item.description,
+      sourceLanguage: dish.source_language || defaultLanguageCode.value,
+    })
+    if (itemText) return itemText
+
+    return localizedCachedText({
+      id: `dish:${dish.id}:description`,
+      textMap: dish.descriptions,
+      fallbackText: dish.description,
+      sourceLanguage: dish.source_language || defaultLanguageCode.value,
+    })
+  }
+
   const headerTitle = computed(() =>
     menuView.selectedMenu.value
-      ? localizedName(menuView.selectedMenu.value, requestedLanguageCode.value)
+      ? localizedMenuName(menuView.selectedMenu.value)
       : menuView.headerTitle.value
   )
 
@@ -271,10 +384,11 @@ export function useKitchenMenu() {
     if (!menuId || !key) return undefined
 
     return {
-      path: `/kitchens/${encodeURIComponent(key)}/menu/${encodeURIComponent(
+      path: `/kitchens/${encodeURIComponent(key)}/menus/${encodeURIComponent(
         menuId
       )}`,
       query: {
+        lang: requestedLanguageCode.value || undefined,
         mode: requestedMode.value || undefined,
         table: requestedTable.value || undefined,
         cover: requestedCover.value || undefined,
@@ -310,9 +424,8 @@ export function useKitchenMenu() {
             const dish = dishesById.value.get(dishId)
             if (!dish) return null
 
-            const name = localizedName(dish, languageCode)
-            const itemDescription = localizedDescription(item, languageCode)
-            const dishDescription = localizedDescription(dish, languageCode)
+            const name = localizedMenuItemName(dish)
+            const description = localizedMenuItemDescription(item, dish)
             const semanticLine = resolveDishSemanticLine({
               dish,
               mise: mise.value,
@@ -330,7 +443,7 @@ export function useKitchenMenu() {
               id: item.id,
               dishId,
               name,
-              description: itemDescription || dishDescription,
+              description,
               semanticLine,
               integrityNote,
             }
@@ -339,13 +452,131 @@ export function useKitchenMenu() {
 
         return {
           id: section.id,
-          label: localizedSectionLabel(section, languageCode),
+          label: localizedMenuSectionLabel(menu, section),
           description: section.description,
           entries,
         }
       })
       .filter((section) => section.entries.length > 0)
   })
+
+  const publicTranslationRequests = computed<PublicTranslationRequest[]>(() => {
+    const menu = menuView.selectedMenu.value
+    const targetLanguage = requestedLanguageCode.value
+    if (!menu || targetLanguage === defaultLanguageCode.value || targetLanguage === 'en') {
+      return []
+    }
+
+    const requests = new Map<string, PublicTranslationRequest>()
+    const add = (request: PublicTranslationRequest | null) => {
+      if (!request) return
+      if (!request.sourceText || request.sourceLanguage === request.targetLanguage) return
+      const key = localTranslationKey(request)
+      if (translationCache.value[key] || translationPendingKeys.has(key)) return
+      requests.set(key, request)
+    }
+
+    add(resolveTranslationSource({
+      id: `menu:${menu.id}:name`,
+      textMap: (menu as any).names,
+      fallbackText: menu.name || menu.id,
+      sourceLanguage: (menu as any).source_language || defaultLanguageCode.value,
+    }).request)
+    add(resolveTranslationSource({
+      id: `menu:${menu.id}:description`,
+      textMap: (menu as any).descriptions,
+      fallbackText: menu.description,
+      sourceLanguage: (menu as any).source_language || defaultLanguageCode.value,
+    }).request)
+
+    for (const section of menu.sections || []) {
+      add(resolveTranslationSource({
+        id: `menu:${menu.id}:section:${section.id}:label`,
+        textMap: (section as any).labels,
+        fallbackText: section.label || section.id,
+        sourceLanguage: (menu as any).source_language || defaultLanguageCode.value,
+      }).request)
+
+      for (const item of section.items || []) {
+        const dishId = normalizeString(item.dish_id)
+        const dish = dishId ? dishesById.value.get(dishId) : null
+        if (!dish) continue
+
+        add(resolveTranslationSource({
+          id: `dish:${dish.id}:description`,
+          textMap: dish.descriptions,
+          fallbackText: dish.description,
+          sourceLanguage: dish.source_language || defaultLanguageCode.value,
+        }).request)
+      }
+    }
+
+    return Array.from(requests.values())
+  })
+
+  watch(
+    publicTranslationRequests,
+    async (requests) => {
+      if (import.meta.server || !requests.length) return
+
+      const targetLanguage = requestedLanguageCode.value
+      const pendingKeys = requests.map(localTranslationKey)
+      pendingKeys.forEach((key) => translationPendingKeys.add(key))
+
+      try {
+        const response = await fetch('/api/translation-cache', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            domain: 'restaurant_menu',
+            glossaryVersion: RESTAURANT_MENU_GLOSSARY_VERSION,
+            targetLanguage,
+            items: requests.map((request) => ({
+              id: request.id,
+              sourceLanguage: request.sourceLanguage,
+              sourceText: request.sourceText,
+            })),
+          }),
+        })
+
+        if (!response.ok) throw new Error(`Translation cache failed with status ${response.status}`)
+        const data = await response.json().catch(() => null) as {
+          items?: Array<{
+            id?: string
+            source_language?: string
+            target_language?: string
+            source_text?: string
+            translated_text?: string
+          }>
+          failures?: unknown[]
+        } | null
+        const nextCache = { ...translationCache.value }
+
+        for (const item of data?.items || []) {
+          const translated = normalizeString(item.translated_text)
+          if (!translated) continue
+          const key = localTranslationKey({
+            id: normalizeString(item.id),
+            sourceLanguage: normalizeString(item.source_language),
+            targetLanguage: normalizeString(item.target_language),
+            sourceText: normalizeString(item.source_text),
+          })
+          if (key) nextCache[key] = translated
+        }
+
+        translationCache.value = nextCache
+
+        if (data?.failures?.length && import.meta.dev) {
+          console.warn('[useKitchenMenu] translation cache failures', data.failures)
+        }
+      } catch (error) {
+        if (import.meta.dev) console.warn('[useKitchenMenu] translation cache request failed', error)
+      } finally {
+        pendingKeys.forEach((key) => translationPendingKeys.delete(key))
+      }
+    },
+    { immediate: true }
+  )
   const usedDishIds = computed(() =>
     Array.from(
       new Set(
@@ -454,6 +685,8 @@ export function useKitchenMenu() {
     isMenuSelectable: menuView.isMenuSelectable,
     isSelectedMenu: menuView.isSelectedMenu,
     resolveMenuTo,
+    localizedMenuName,
+    localizedMenuDescription,
     resolveVariantLabel: menuView.resolveVariantLabel,
     formatPrice: menuView.formatPrice,
     semanticSections,

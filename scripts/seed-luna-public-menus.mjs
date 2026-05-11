@@ -747,8 +747,9 @@ async function main() {
   console.log('[seed] luna-public-menus done', {
     commit,
     routes: [
-      '/kitchens/luna-picante/menu/main',
-      '/kitchens/luna-picante/menu/pizza',
+      '/kitchens/luna-picante/menus',
+      '/kitchens/luna-picante/menus/main',
+      '/kitchens/luna-picante/menus/pizza',
     ],
     paths: {
       kitchen: kitchenRef.path,

@@ -3,7 +3,6 @@
 </template>
 
 <script setup lang="ts">
-import MenuPreview from '../../../../components/organisms/Menu/Preview.vue'
 import { useKitchenMenu } from '../../../../composables/fireux/app/useKitchenMenu'
 
 definePageMeta({
