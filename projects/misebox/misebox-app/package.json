@@ -27,6 +27,7 @@
     "better-sqlite3": "^12.6.0",
     "dompurify": "^3.2.6",
     "firebase-functions": "^6.3.2",
+    "fireux-ai": "workspace:*",
     "fireux-companies": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-suppliers": "workspace:*",

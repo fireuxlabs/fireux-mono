@@ -24,6 +24,7 @@ const fireuxConfig = defineFireuxConfig({
     ['fireux-jobs', { workplaces: ['kitchen', 'ship', 'truck'] }],
     'fireux-products',
     'fireux-blogs',
+    'fireux-ai',
   ],
 })
 

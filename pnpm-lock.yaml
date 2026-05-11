@@ -355,6 +355,25 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
 
+  packages/extensions/fireux-ai:
+    dependencies:
+      fireux-core:
+        specifier: workspace:*
+        version: link:../../core/fireux-core
+    devDependencies:
+      '@nuxt/module-builder':
+        specifier: ^0.5.5
+        version: 0.5.5(@nuxt/kit@4.1.2(magicast@0.3.5))(sass@1.96.0)(typescript@5.9.2)
+      glob:
+        specifier: ^11.0.3
+        version: 11.0.3
+      mkdist:
+        specifier: ^1.5.3
+        version: 1.6.0(sass@1.96.0)(typescript@5.9.2)
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+
   packages/extensions/fireux-blogs:
     dependencies:
       '@tiptap/starter-kit':
@@ -1016,6 +1035,9 @@ importers:
       firebase-functions:
         specifier: ^6.3.2
         version: 6.6.0(firebase-admin@12.7.0)
+      fireux-ai:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-ai
       fireux-companies:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-companies
