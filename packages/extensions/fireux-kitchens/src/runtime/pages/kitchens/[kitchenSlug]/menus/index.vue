@@ -1,7 +1,14 @@
 <template>
-  <main class="luna-menu-index min-h-screen bg-[#f1e7d4] text-[#15120d]">
+  <main
+    class="luna-menu-index min-h-screen text-highlighted"
+    :dir="documentDirection"
+    :lang="documentLanguage"
+  >
     <section class="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-4 py-6 sm:px-8 sm:py-10">
-      <div class="luna-menu-sans mb-4 flex justify-end">
+      <div
+        class="luna-menu-sans mb-4 flex"
+        :class="isRtl ? 'justify-start' : 'justify-end'"
+      >
         <div class="inline-flex items-center gap-1 rounded-lg border border-default bg-default/80 p-1">
           <UButton
             v-for="option in languageOptions"
@@ -18,7 +25,7 @@
 
       <div
         v-if="pending"
-        class="luna-menu-paper luna-menu-sans py-12 text-center text-sm text-[#6f6756]"
+        class="luna-menu-paper luna-menu-sans py-12 text-center text-sm text-muted"
       >
         {{ chromeLabels.loadingMenus }}
       </div>
@@ -30,7 +37,7 @@
         <h2 class="text-xl font-semibold">
           {{ chromeLabels.noMenusAvailable }}
         </h2>
-        <p class="luna-menu-sans mt-2 text-sm text-[#6f6756]">
+        <p class="luna-menu-sans mt-2 text-sm text-muted">
           {{ chromeLabels.noPublicMenus }}
         </p>
       </div>
@@ -42,14 +49,14 @@
         <header class="mb-10 text-center">
           <p
             v-if="kitchenName"
-            class="luna-menu-sans text-xs font-semibold uppercase tracking-[0.22em] text-[#7d735e]"
+            class="luna-menu-sans text-xs font-semibold uppercase tracking-[0.22em] text-muted"
           >
             {{ kitchenName }}
           </p>
-          <h1 class="mt-2 text-4xl font-bold uppercase tracking-[0.14em] text-[#9f211e] sm:text-5xl">
+          <h1 class="mt-2 text-4xl font-bold uppercase tracking-[0.14em] text-primary sm:text-5xl">
             {{ chromeLabels.chooseMenu }}
           </h1>
-          <div class="mx-auto mt-5 h-px w-28 bg-[#9f211e]" />
+          <div class="mx-auto mt-5 h-px w-28 bg-primary" />
         </header>
 
         <div class="grid gap-4 sm:grid-cols-2">
@@ -57,7 +64,7 @@
             v-for="menu in menuCards"
             :key="menu.id"
             :to="menu.to"
-            class="group block border border-l-4 border-[#d7ceb8] bg-[#fffdf8] p-5 transition hover:-translate-y-0.5 hover:bg-white hover:shadow-lg"
+            class="group block border border-l-4 border-default bg-default p-5 text-highlighted transition hover:-translate-y-0.5 hover:bg-elevated hover:shadow-lg"
             :class="menuAccentClass(menu.id)"
           >
             <div class="flex min-h-32 flex-col justify-between gap-6">
@@ -67,19 +74,19 @@
                 </h2>
                 <p
                   v-if="menu.description"
-                  class="text-[1rem] font-medium leading-6 text-[#2f2a20]"
+                  class="text-[1rem] font-medium leading-6 text-toned"
                 >
                   {{ menu.description }}
                 </p>
               </div>
 
-              <div class="luna-menu-sans flex items-center justify-between text-xs font-semibold uppercase tracking-[0.16em] text-[#7d735e]">
+              <div class="luna-menu-sans flex items-center justify-between text-xs font-semibold uppercase tracking-[0.16em] text-muted">
                 <span>{{ chromeLabels.openMenu }}</span>
                 <span
-                  class="grid size-8 shrink-0 place-items-center rounded-full border border-[#d7ceb8] text-base transition group-hover:border-[#211f16] group-hover:bg-[#211f16] group-hover:text-white"
+                  class="grid size-8 shrink-0 place-items-center rounded-full border border-default text-base text-highlighted transition group-hover:bg-elevated"
                   aria-hidden="true"
                 >
-                  &rarr;
+                  {{ isRtl ? '←' : '→' }}
                 </span>
               </div>
             </div>
@@ -91,12 +98,16 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { collection, getDocs } from 'firebase/firestore'
+import { computed, ref, watch } from 'vue'
 import { navigateTo, useHead, useRoute } from '#imports'
+import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { resolveKitchenRuntimeChildCollectionPath } from '../../../../composables/fireux/app/kitchen-console/shared'
 import {
   getPublicKitchenChromeLabels,
+  isPublicKitchenCacheLanguage,
+  isPublicKitchenRtlLanguage,
   normalizePublicKitchenLanguage,
   PUBLIC_KITCHEN_LANGUAGE_OPTIONS,
   resolvePublicKitchenChromeLanguage,
@@ -160,6 +171,7 @@ const kitchen = computed<Kitchen | null>(() => {
 })
 const kitchenId = computed(() => normalizeString(kitchen.value?.id))
 const { firestoreFetchCollection } = useFirestoreRead()
+const resolveDb = useFirestoreResolver()
 const menusPath = computed(() =>
   resolveKitchenRuntimeChildCollectionPath({
     kitchenId: kitchenId.value,
@@ -168,6 +180,7 @@ const menusPath = computed(() =>
 )
 const menusRef = firestoreFetchCollection<Menu>(menusPath)
 const menus = computed(() => menusRef.value ?? [])
+const menuTranslationCache = ref<Record<string, string>>({})
 const pending = computed(
   () =>
     Boolean(routeKitchenSlug.value) &&
@@ -186,15 +199,23 @@ const chromeLanguage = computed(() =>
 const chromeLabels = computed(() =>
   getPublicKitchenChromeLabels(chromeLanguage.value)
 )
+const isRtl = computed(() => isPublicKitchenRtlLanguage(selectedLanguage.value))
+const documentDirection = computed(() => isRtl.value ? 'rtl' : 'ltr')
+const documentLanguage = computed(() => selectedLanguage.value || chromeLanguage.value)
 useHead({
   title: computed(() => chromeLabels.value.chooseMenu),
 })
 const textForLanguage = (
   defaultText: unknown,
   translations: unknown,
-  language: string
+  language: string,
+  cacheKey = ''
 ) => {
   const fallback = normalizeString(defaultText)
+  if (isPublicKitchenCacheLanguage(language)) {
+    return menuTranslationCache.value[cacheKey] || fallback
+  }
+
   if (!language || !translations || typeof translations !== 'object' || Array.isArray(translations)) {
     return fallback
   }
@@ -209,6 +230,54 @@ const menuTo = (menuId: string) => ({
   )}/menus/${encodeURIComponent(menuId)}`,
   query: languageQuery(),
 })
+const menuFieldId = (menu: Record<string, any>, field: string) =>
+  `menu:${normalizeString(menu.id)}:${field}`
+const menuCacheKey = (menuId: string, fieldId: string) => `${menuId}:${fieldId}`
+let menuCacheRequestId = 0
+
+watch(
+  [kitchenId, menus, selectedLanguage],
+  async ([activeKitchenId, activeMenus, activeLanguage]) => {
+    const requestId = ++menuCacheRequestId
+    menuTranslationCache.value = {}
+
+    if (import.meta.server || !isPublicKitchenCacheLanguage(activeLanguage) || !activeKitchenId) return
+
+    const visibleMenus = activeMenus
+      .filter((menu) => menu.active !== false)
+      .map((menu) => normalizeString(menu.id))
+      .filter(Boolean)
+
+    if (!visibleMenus.length) return
+
+    const nextCache: Record<string, string> = {}
+    await Promise.all(
+      visibleMenus.map(async (menuId) => {
+        const snapshot = await getDocs(
+          collection(
+            resolveDb(),
+            `kitchens/${activeKitchenId}/menus/${menuId}/translation_cache`
+          )
+        )
+
+        snapshot.forEach((doc) => {
+          const data = doc.data() as Record<string, unknown>
+          const fieldId = normalizeString(data.field_id)
+          const targetLanguage = normalizeString(data.target_language)
+          const translatedText = normalizeString(data.translated_text)
+          if (fieldId && targetLanguage === activeLanguage && translatedText) {
+            nextCache[menuCacheKey(menuId, fieldId)] = translatedText
+          }
+        })
+      })
+    )
+
+    if (requestId === menuCacheRequestId) {
+      menuTranslationCache.value = nextCache
+    }
+  },
+  { immediate: true }
+)
 const menuCards = computed(() =>
   menus.value
     .filter((menu) => menu.active !== false)
@@ -221,11 +290,17 @@ const menuCards = computed(() =>
       const id = normalizeString(menu.id)
       return {
         id,
-        name: textForLanguage(menu.name, menu.names, selectedLanguage.value),
+        name: textForLanguage(
+          menu.name,
+          menu.names,
+          selectedLanguage.value,
+          menuCacheKey(id, menuFieldId(menu as any, 'name'))
+        ),
         description: textForLanguage(
           menu.description,
           menu.descriptions,
-          selectedLanguage.value
+          selectedLanguage.value,
+          menuCacheKey(id, menuFieldId(menu as any, 'description'))
         ),
         to: menuTo(id),
       }
@@ -234,8 +309,8 @@ const menuCards = computed(() =>
 )
 const menuAccentClass = (menuId: string) =>
   menuId === 'pizza'
-    ? 'border-l-[#23633b] text-[#23633b]'
-    : 'border-l-[#9f211e] text-[#9f211e]'
+    ? 'border-l-primary text-primary'
+    : 'border-l-default'
 const setLanguage = async (language: string) => {
   await navigateTo({
     path: route.path,
@@ -250,15 +325,14 @@ const setLanguage = async (language: string) => {
 }
 
 .luna-menu-paper {
-  border: 1px solid #d7ceb8;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.62)),
-    #fffaf0;
-  box-shadow: 0 18px 50px rgba(65, 50, 26, 0.16);
+  border: 1px solid var(--ui-border);
+  background: var(--ui-bg);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
   padding: clamp(1.5rem, 4vw, 3rem);
 }
 
 .luna-menu-sans {
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
+
 </style>

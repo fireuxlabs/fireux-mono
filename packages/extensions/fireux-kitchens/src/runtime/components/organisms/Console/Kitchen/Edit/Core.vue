@@ -1,27 +1,56 @@
 <template>
   <ClientOnly>
-    <div v-if="selectedKitchen" class="space-y-6">
-      <UCard>
-        <template #header>
-          <div class="console-card-header">
-            <div class="console-card-header__title">Kitchen Identity</div>
-          </div>
-        </template>
+    <div
+      v-if="selectedKitchen"
+      class="grid gap-6 xl:grid-cols-[300px_minmax(0,1fr)]"
+    >
+      <div class="space-y-4">
+        <UCard>
+          <template #header>
+            <div class="console-card-header">
+              <div class="console-card-header__title">Kitchen Identity</div>
+              <p class="console-card-header__description">
+                Public profile image and core restaurant settings.
+              </p>
+            </div>
+          </template>
 
-        <div class="space-y-6">
-          <div class="flex flex-col items-center gap-2">
+          <div class="flex flex-col items-center gap-3 text-center">
             <MoleculesFormsFirestoreImagePicker
               :src="imageUrl"
               :alt="name || 'Kitchen'"
               :initials="imageInitials"
               :update-function="handleImageUpload"
             />
+
+            <div class="min-w-0">
+              <div class="truncate text-base font-semibold text-highlighted">
+                {{ name || 'Untitled kitchen' }}
+              </div>
+              <p v-if="shortAddress" class="text-sm text-dimmed">
+                {{ shortAddress }}
+              </p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-2">
+              <UBadge color="neutral" variant="soft">
+                {{ currencySummary }}
+              </UBadge>
+              <UBadge v-if="slug" color="neutral" variant="subtle">
+                {{ slug }}
+              </UBadge>
+            </div>
+
             <p v-if="imageUploading" class="text-xs text-gray-500">
               Uploading image…
             </p>
           </div>
+        </UCard>
+      </div>
 
-          <section class="border-t border-default pt-4">
+      <div class="space-y-4">
+        <UCard>
+          <template #header>
             <button
               type="button"
               class="flex w-full items-center justify-between gap-4 text-left"
@@ -33,7 +62,7 @@
                   Core
                 </span>
                 <span class="block text-sm text-dimmed">
-                  Name, slug, tagline, and currency.
+                  Name, slug, tagline, and currency display.
                 </span>
               </span>
 
@@ -42,8 +71,10 @@
                 class="size-4 shrink-0 text-muted"
               />
             </button>
+          </template>
 
-            <div v-show="editSections.core" class="mt-4 space-y-4">
+          <div v-show="editSections.core" class="grid gap-4 md:grid-cols-2">
+            <div class="md:col-span-2">
               <MoleculesFormsFirestoreSimpleField
                 label="Name"
                 :firebase-value="name"
@@ -51,7 +82,9 @@
                 :maxlength="120"
                 :update-function="handleName"
               />
+            </div>
 
+            <div>
               <MoleculesFormsFirestoreSimpleField
                 label="Short name"
                 :firebase-value="shortName"
@@ -59,25 +92,9 @@
                 :maxlength="80"
                 :update-function="handleShortName"
               />
+            </div>
 
-              <MoleculesFormsFirestoreSimpleField
-                label="Tagline"
-                :firebase-value="tagline"
-                placeholder="Short service tagline"
-                :maxlength="120"
-                :update-function="handleTagline"
-              />
-
-              <MoleculesFormsFirestoreSimpleField
-                label="Currency"
-                :firebase-value="currencyCode"
-                placeholder="CHF"
-                :maxlength="3"
-                :formatting-function="formatCurrencyField"
-                :validation-function="validateCurrencyField"
-                :update-function="handleCurrencyCode"
-              />
-
+            <div>
               <MoleculesFormsFirestoreSimpleField
                 label="Slug"
                 :firebase-value="slug"
@@ -88,9 +105,50 @@
                 :update-function="handleSlug"
               />
             </div>
-          </section>
 
-          <section class="border-t border-default pt-4">
+            <div class="md:col-span-2">
+              <MoleculesFormsFirestoreSimpleField
+                label="Tagline"
+                :firebase-value="tagline"
+                placeholder="Short service tagline"
+                :maxlength="120"
+                :update-function="handleTagline"
+              />
+            </div>
+
+            <div>
+              <MoleculesFormsFirestoreSimpleField
+                label="Currency"
+                :firebase-value="currencyCode"
+                placeholder="CHF"
+                :maxlength="3"
+                :formatting-function="formatCurrencyField"
+                :validation-function="validateCurrencyField"
+                :update-function="handleCurrencyCode"
+              />
+            </div>
+
+            <UFormField
+              label="Currency display"
+              :description="currencyFormatHelp"
+            >
+              <UButtonGroup size="sm">
+                <UButton
+                  v-for="option in currencyFormatChoices"
+                  :key="option.value"
+                  color="neutral"
+                  :variant="currencyFormat === option.value ? 'solid' : 'ghost'"
+                  @click="handleCurrencyFormatOption(option.value)"
+                >
+                  {{ option.label }}
+                </UButton>
+              </UButtonGroup>
+            </UFormField>
+          </div>
+        </UCard>
+
+        <UCard>
+          <template #header>
             <button
               type="button"
               class="flex w-full items-center justify-between gap-4 text-left"
@@ -111,8 +169,10 @@
                 class="size-4 shrink-0 text-muted"
               />
             </button>
+          </template>
 
-            <div v-show="editSections.address" class="mt-4 space-y-4">
+          <div v-show="editSections.address" class="grid gap-4 md:grid-cols-2">
+            <div>
               <MoleculesFormsFirestoreSimpleField
                 label="Short address"
                 :firebase-value="shortAddress"
@@ -120,7 +180,9 @@
                 :maxlength="160"
                 :update-function="handleShortAddress"
               />
+            </div>
 
+            <div>
               <MoleculesFormsFirestoreSimpleField
                 label="Formatted address"
                 :firebase-value="formattedAddress"
@@ -129,9 +191,11 @@
                 :update-function="handleFormattedAddress"
               />
             </div>
-          </section>
+          </div>
+        </UCard>
 
-          <section class="border-t border-default pt-4">
+        <UCard>
+          <template #header>
             <button
               type="button"
               class="flex w-full items-center justify-between gap-4 text-left"
@@ -152,8 +216,10 @@
                 class="size-4 shrink-0 text-muted"
               />
             </button>
+          </template>
 
-            <div v-show="editSections.languages" class="mt-4 space-y-4">
+          <div v-show="editSections.languages" class="space-y-4">
+            <div class="max-w-md">
               <UFormField label="Default language">
                 <UInputMenu
                   v-model="languageDefaultLanguage"
@@ -165,52 +231,54 @@
                   :disabled="languageSettingsSaving"
                 />
               </UFormField>
+            </div>
 
-              <div class="grid gap-4 sm:grid-cols-2">
-                <div
-                  v-for="group in languageGroups"
-                  :key="group.key"
-                  class="space-y-2"
-                >
-                  <p class="text-xs font-semibold text-muted">
-                    {{ group.label }}
-                  </p>
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div
+                v-for="group in languageGroups"
+                :key="group.key"
+                class="rounded-lg border border-default p-3"
+              >
+                <p class="mb-2 text-xs font-semibold text-muted">
+                  {{ group.label }}
+                </p>
 
-                  <div class="grid gap-2">
-                    <UCheckbox
-                      v-for="language in group.options"
-                      :key="language.code"
-                      :model-value="languageSelection[language.code] || false"
-                      :label="`${language.label} (${language.code})`"
-                      :disabled="languageSettingsSaving"
-                      @update:model-value="setLanguageSelected(language.code, $event)"
-                    />
-                  </div>
+                <div class="grid gap-2">
+                  <UCheckbox
+                    v-for="language in group.options"
+                    :key="language.code"
+                    :model-value="languageSelection[language.code] || false"
+                    :label="`${language.label} (${language.code})`"
+                    :disabled="languageSettingsSaving"
+                    @update:model-value="setLanguageSelected(language.code, $event)"
+                  />
                 </div>
               </div>
-
-              <div class="flex flex-wrap items-center gap-2">
-                <UButton
-                  icon="i-lucide-save"
-                  :loading="languageSettingsSaving"
-                  :disabled="!canSaveLanguageSettings"
-                  @click="handleLanguageSettings"
-                >
-                  Save languages
-                </UButton>
-
-                <p
-                  v-if="languageSettingsStatus"
-                  class="text-xs"
-                  :class="languageSettingsError ? 'text-error' : 'text-dimmed'"
-                >
-                  {{ languageSettingsStatus }}
-                </p>
-              </div>
             </div>
-          </section>
 
-          <section class="border-t border-default pt-4">
+            <div class="flex flex-wrap items-center gap-2">
+              <UButton
+                icon="i-lucide-save"
+                :loading="languageSettingsSaving"
+                :disabled="!canSaveLanguageSettings"
+                @click="handleLanguageSettings"
+              >
+                Save languages
+              </UButton>
+
+              <p
+                v-if="languageSettingsStatus"
+                class="text-xs"
+                :class="languageSettingsError ? 'text-error' : 'text-dimmed'"
+              >
+                {{ languageSettingsStatus }}
+              </p>
+            </div>
+          </div>
+        </UCard>
+
+        <UCard>
+          <template #header>
             <button
               type="button"
               class="flex w-full items-center justify-between gap-4 text-left"
@@ -231,8 +299,10 @@
                 class="size-4 shrink-0 text-muted"
               />
             </button>
+          </template>
 
-            <div v-show="editSections.openingHours" class="mt-4 space-y-4">
+          <div v-show="editSections.openingHours" class="space-y-4">
+            <div class="max-w-md">
               <UFormField label="Timezone">
                 <UInput
                   v-model="openingTimezone"
@@ -240,74 +310,74 @@
                   :disabled="openingHoursSaving"
                 />
               </UFormField>
+            </div>
 
-              <div class="space-y-2">
-                <div
-                  v-for="weekday in weekdays"
-                  :key="weekday.key"
-                  class="grid gap-3 rounded-md border border-default p-3 sm:grid-cols-[96px_1fr_1fr_auto]"
-                >
-                  <div class="flex items-center text-sm font-medium text-highlighted">
-                    {{ weekday.label }}
-                  </div>
+            <div class="space-y-2">
+              <div
+                v-for="weekday in weekdays"
+                :key="weekday.key"
+                class="grid gap-3 rounded-lg border border-default p-3 sm:grid-cols-[96px_1fr_1fr_auto]"
+              >
+                <div class="flex items-center text-sm font-medium text-highlighted">
+                  {{ weekday.label }}
+                </div>
 
-                  <UFormField label="Start">
-                    <UInput
-                      v-model="openingRows[weekday.key].start"
-                      type="time"
-                      :disabled="openingHoursSaving || openingRows[weekday.key].closed"
-                    />
-                  </UFormField>
+                <UFormField label="Start">
+                  <UInput
+                    v-model="openingRows[weekday.key].start"
+                    type="time"
+                    :disabled="openingHoursSaving || openingRows[weekday.key].closed"
+                  />
+                </UFormField>
 
-                  <UFormField label="End">
-                    <UInput
-                      v-model="openingRows[weekday.key].end"
-                      type="time"
-                      :disabled="openingHoursSaving || openingRows[weekday.key].closed"
-                    />
-                  </UFormField>
+                <UFormField label="End">
+                  <UInput
+                    v-model="openingRows[weekday.key].end"
+                    type="time"
+                    :disabled="openingHoursSaving || openingRows[weekday.key].closed"
+                  />
+                </UFormField>
 
-                  <div class="flex items-end">
-                    <USwitch
-                      v-model="openingRows[weekday.key].closed"
-                      label="Closed"
-                      :disabled="openingHoursSaving"
-                    />
-                  </div>
+                <div class="flex items-end">
+                  <USwitch
+                    v-model="openingRows[weekday.key].closed"
+                    label="Closed"
+                    :disabled="openingHoursSaving"
+                  />
                 </div>
               </div>
-
-              <UFormField label="Notes">
-                <UTextarea
-                  v-model="openingNotes"
-                  :rows="3"
-                  placeholder="Food service times to be confirmed."
-                  :disabled="openingHoursSaving"
-                />
-              </UFormField>
-
-              <div class="flex flex-wrap items-center gap-2">
-                <UButton
-                  icon="i-lucide-save"
-                  :loading="openingHoursSaving"
-                  :disabled="!canSaveOpeningHours"
-                  @click="handleOpeningHours"
-                >
-                  Save opening hours
-                </UButton>
-
-                <p
-                  v-if="openingHoursStatus"
-                  class="text-xs"
-                  :class="invalidOpeningRows.length ? 'text-error' : 'text-dimmed'"
-                >
-                  {{ openingHoursStatus }}
-                </p>
-              </div>
             </div>
-          </section>
-        </div>
-      </UCard>
+
+            <UFormField label="Notes">
+              <UTextarea
+                v-model="openingNotes"
+                :rows="3"
+                placeholder="Food service times to be confirmed."
+                :disabled="openingHoursSaving"
+              />
+            </UFormField>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <UButton
+                icon="i-lucide-save"
+                :loading="openingHoursSaving"
+                :disabled="!canSaveOpeningHours"
+                @click="handleOpeningHours"
+              >
+                Save opening hours
+              </UButton>
+
+              <p
+                v-if="openingHoursStatus"
+                class="text-xs"
+                :class="invalidOpeningRows.length ? 'text-error' : 'text-dimmed'"
+              >
+                {{ openingHoursStatus }}
+              </p>
+            </div>
+          </div>
+        </UCard>
+      </div>
     </div>
 
     <MoleculesStateCard v-else entity="kitchen identity" kind="document" loading />
@@ -327,6 +397,7 @@ import { computed, reactive, ref, watch } from 'vue'
 import { useKitchenConsoleIdentity } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleIdentity'
 import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 import type {
+  KitchenCurrencyFormat,
   KitchenLanguageSettings,
   KitchenOpeningHours,
   KitchenUpdateInput,
@@ -347,6 +418,20 @@ const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> 
 const name = computed(() => String(kitchen.value?.name ?? ''))
 const tagline = computed(() => String(kitchen.value?.tagline ?? ''))
 const currencyCode = computed(() => String(kitchen.value?.currency_code ?? 'CHF'))
+const currencyFormat = computed(() => String(kitchen.value?.currency_format ?? 'dash'))
+const currencyFormatLabel = computed(() => {
+  if (currencyFormat.value === 'symbol') return 'Symbol'
+  if (currencyFormat.value === 'code') return 'Code'
+  return 'Dash'
+})
+const currencySummary = computed(
+  () => `${currencyCode.value || 'CHF'} · ${currencyFormatLabel.value}`
+)
+const currencyFormatHelp = computed(() => {
+  if (currencyFormat.value === 'symbol') return 'Show symbols such as $27 or £27.'
+  if (currencyFormat.value === 'code') return 'Show the currency code beside the price.'
+  return 'Show Luna-style prices such as 27.-.'
+})
 const slug = computed(() => String(kitchen.value?.slug ?? ''))
 const shortName = computed(() => String(kitchen.value?.short_name ?? ''))
 const shortAddress = computed(() => String(kitchen.value?.short_address ?? ''))
@@ -435,6 +520,14 @@ const languagePickerItems = languageOptions.map((language) => ({
   label: `${language.label} (${language.code})`,
   value: language.code,
 }))
+const currencyFormatChoices: Array<{
+  label: string
+  value: KitchenCurrencyFormat
+}> = [
+  { label: 'Dash', value: 'dash' },
+  { label: 'Symbol', value: 'symbol' },
+  { label: 'Code', value: 'code' },
+]
 const languageByLowercase = new Map(
   languageOptions.map((language) => [language.code.toLowerCase(), language.code])
 )
@@ -623,6 +716,23 @@ const handleCurrencyCode = async (value: string) =>
     'Currency updated',
     'Failed to update currency'
   )
+
+const currencyFormatOptions = new Set<KitchenCurrencyFormat>(['dash', 'symbol', 'code'])
+const formatCurrencyFormatField = (value: string) =>
+  normalizeString(value).toLowerCase().replace(/[^a-z]/g, '').slice(0, 12)
+
+const handleCurrencyFormat = async (value: string) => {
+  const format = formatCurrencyFormatField(value) as KitchenCurrencyFormat
+
+  return updateIdentityField(
+    { currency_format: currencyFormatOptions.has(format) ? format : 'dash' },
+    'Currency display updated',
+    'Failed to update currency display'
+  )
+}
+
+const handleCurrencyFormatOption = async (value: KitchenCurrencyFormat) =>
+  handleCurrencyFormat(value)
 
 const formatSlugField = (value: string) => normalizeSlug(value, { maxLength: 80 })
 

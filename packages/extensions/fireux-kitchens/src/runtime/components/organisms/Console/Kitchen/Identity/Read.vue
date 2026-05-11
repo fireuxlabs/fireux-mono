@@ -9,160 +9,144 @@
 
     <template v-else>
       <UCard>
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <UAvatar
-            :src="imageUrl"
-            :alt="name || 'Kitchen'"
-            :text="imageInitials"
-            size="3xl"
-            class="shrink-0"
-          />
-
-          <div class="min-w-0 space-y-2">
-            <div>
-              <h2 class="text-xl font-semibold text-highlighted">
-                {{ name || 'Untitled kitchen' }}
-              </h2>
-              <p v-if="tagline" class="text-sm text-dimmed">
-                {{ tagline }}
-              </p>
+        <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-center">
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div class="size-24 shrink-0 overflow-hidden rounded-xl border border-default bg-muted sm:size-28">
+              <img
+                v-if="imageUrl"
+                :src="imageUrl"
+                :alt="name || 'Kitchen'"
+                class="size-full object-cover"
+              />
+              <div
+                v-else
+                class="flex size-full items-center justify-center text-2xl font-semibold text-muted"
+              >
+                {{ imageInitials }}
+              </div>
             </div>
 
-            <div class="flex flex-wrap gap-2">
-              <UBadge v-if="selectedMode" color="neutral" variant="subtle">
-                {{ selectedMode }}
-              </UBadge>
-              <UBadge v-if="placeId" color="neutral" variant="subtle">
-                Place linked
-              </UBadge>
+            <div class="min-w-0 space-y-3">
+              <div>
+                <h2 class="text-2xl font-semibold tracking-normal text-highlighted">
+                  {{ name || 'Untitled kitchen' }}
+                </h2>
+                <p v-if="tagline" class="mt-1 text-sm text-dimmed">
+                  {{ tagline }}
+                </p>
+                <p v-if="shortAddress || formattedAddress" class="mt-2 text-sm text-toned">
+                  {{ shortAddress || formattedAddress }}
+                </p>
+              </div>
+
+              <div class="flex flex-wrap gap-2">
+                <UBadge v-if="selectedMode" color="neutral" variant="subtle">
+                  {{ selectedMode }}
+                </UBadge>
+                <UBadge v-if="placeId" color="neutral" variant="subtle">
+                  Place linked
+                </UBadge>
+                <UBadge color="neutral" variant="soft">
+                  {{ currencyDisplaySummary }}
+                </UBadge>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+            <div class="rounded-lg border border-default px-3 py-2">
+              <div class="text-xs font-medium text-muted">Slug</div>
+              <div class="truncate text-sm font-medium text-highlighted">
+                {{ slug || 'Unset' }}
+              </div>
+            </div>
+            <div class="rounded-lg border border-default px-3 py-2">
+              <div class="text-xs font-medium text-muted">Primary language</div>
+              <div class="truncate text-sm font-medium text-highlighted">
+                {{ primaryLanguageLabel }}
+              </div>
+            </div>
+            <div class="rounded-lg border border-default px-3 py-2">
+              <div class="text-xs font-medium text-muted">Public address</div>
+              <div class="truncate text-sm font-medium text-highlighted">
+                {{ shortAddress || 'Unset' }}
+              </div>
             </div>
           </div>
         </div>
       </UCard>
 
-      <UCard>
-        <div class="console-summary-grid">
-          <div class="console-summary-field">
-            Short address:
-            <span class="console-summary-value">{{ shortAddress || 'Unset' }}</span>
-          </div>
-          <div class="console-summary-field">
-            Formatted address:
-            <span class="console-summary-value">{{ formattedAddress || 'Unset' }}</span>
-          </div>
-        </div>
-      </UCard>
+      <div class="grid gap-4 lg:grid-cols-3">
+        <UCard>
+          <template #header>
+            <div class="flex items-center gap-3">
+              <UIcon name="i-lucide-languages" class="size-5 text-muted" />
+              <div>
+                <div class="text-base font-semibold text-highlighted">
+                  Languages
+                </div>
+                <p class="text-sm text-dimmed">{{ languageSummary }}</p>
+              </div>
+            </div>
+          </template>
 
-      <UCard>
-        <template #header>
-          <button
-            type="button"
-            class="flex w-full items-center justify-between gap-4 text-left"
-            :aria-expanded="readSections.languages"
-            @click="toggleReadSection('languages')"
-          >
-            <span>
-              <span class="block text-base font-semibold text-highlighted">
-                Languages
+          <div class="space-y-3">
+            <div class="console-summary-field">
+              Default:
+              <span class="console-summary-value">{{ defaultLanguageLabel }}</span>
+            </div>
+            <div class="console-summary-field">
+              Supported:
+              <span class="console-summary-value">
+                {{ supportedLanguageLabels.join(', ') || 'Unset' }}
               </span>
-              <span class="block text-sm text-dimmed">
-                {{ languageSummary }}
-              </span>
-            </span>
-
-            <UIcon
-              :name="readSections.languages ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-              class="size-4 shrink-0 text-muted"
-            />
-          </button>
-        </template>
-
-        <div v-show="readSections.languages" class="console-summary-grid">
-          <div class="console-summary-field">
-            Default:
-            <span class="console-summary-value">
-              {{ defaultLanguageLabel }}
-            </span>
+            </div>
           </div>
-          <div class="console-summary-field">
-            Supported:
-            <span class="console-summary-value">
-              {{ supportedLanguageLabels.join(', ') || 'Unset' }}
-            </span>
+        </UCard>
+
+        <UCard>
+          <template #header>
+            <div class="flex items-center gap-3">
+              <UIcon name="i-lucide-wallet" class="size-5 text-muted" />
+              <div>
+                <div class="text-base font-semibold text-highlighted">
+                  Currency
+                </div>
+                <p class="text-sm text-dimmed">{{ currencyDisplaySummary }}</p>
+              </div>
+            </div>
+          </template>
+
+          <div class="space-y-3">
+            <div class="console-summary-field">
+              Code:
+              <span class="console-summary-value">{{ currencyCode || 'CHF' }}</span>
+            </div>
+            <div class="console-summary-field">
+              Display:
+              <span class="console-summary-value">{{ currencyFormatLabel }}</span>
+            </div>
+            <div class="console-summary-field">
+              Source:
+              <span class="console-summary-value">{{ source || 'Unset' }}</span>
+            </div>
           </div>
-        </div>
-      </UCard>
+        </UCard>
 
-      <UCard>
-        <template #header>
-          <button
-            type="button"
-            class="flex w-full items-center justify-between gap-4 text-left"
-            :aria-expanded="readSections.details"
-            @click="toggleReadSection('details')"
-          >
-            <span>
-              <span class="block text-base font-semibold text-highlighted">
-                Details
-              </span>
-              <span class="block text-sm text-dimmed">
-                Slug, source, place link, and currency.
-              </span>
-            </span>
+        <UCard>
+          <template #header>
+            <div class="flex items-center gap-3">
+              <UIcon name="i-lucide-clock" class="size-5 text-muted" />
+              <div>
+                <div class="text-base font-semibold text-highlighted">
+                  Opening Hours
+                </div>
+                <p class="text-sm text-dimmed">{{ openingSummary }}</p>
+              </div>
+            </div>
+          </template>
 
-            <UIcon
-              :name="readSections.details ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-              class="size-4 shrink-0 text-muted"
-            />
-          </button>
-        </template>
-
-        <div v-show="readSections.details" class="console-summary-grid">
-          <div class="console-summary-field">
-            Place ID:
-            <span class="console-summary-value">{{ placeId || 'Unset' }}</span>
-          </div>
-          <div class="console-summary-field">
-            Source:
-            <span class="console-summary-value">{{ source || 'Unset' }}</span>
-          </div>
-          <div class="console-summary-field">
-            Slug:
-            <span class="console-summary-value">{{ slug || 'Unset' }}</span>
-          </div>
-          <div class="console-summary-field">
-            Currency:
-            <span class="console-summary-value">{{ currencyCode || 'CHF' }}</span>
-          </div>
-        </div>
-      </UCard>
-
-      <UCard>
-        <template #header>
-          <button
-            type="button"
-            class="flex w-full items-center justify-between gap-4 text-left"
-            :aria-expanded="readSections.openingHours"
-            @click="toggleReadSection('openingHours')"
-          >
-            <span>
-              <span class="block text-base font-semibold text-highlighted">
-                Opening Hours
-              </span>
-              <span class="block text-sm text-dimmed">
-                {{ openingSummary }}
-              </span>
-            </span>
-
-            <UIcon
-              :name="readSections.openingHours ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
-              class="size-4 shrink-0 text-muted"
-            />
-          </button>
-        </template>
-
-        <template v-if="openingRows.length">
-          <div v-show="readSections.openingHours" class="space-y-3">
+          <div class="space-y-3">
             <div class="console-summary-field">
               Timezone:
               <span class="console-summary-value">
@@ -170,7 +154,7 @@
               </span>
             </div>
 
-            <div class="grid gap-2 sm:grid-cols-2">
+            <div v-if="openingRows.length" class="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
               <div
                 v-for="row in openingRows"
                 :key="row.key"
@@ -184,15 +168,13 @@
             <p v-if="openingNotes" class="text-sm text-dimmed">
               {{ openingNotes }}
             </p>
-          </div>
-        </template>
 
-        <template v-else>
-          <p v-show="readSections.openingHours" class="text-sm text-dimmed">
-            Opening hours are not set yet.
-          </p>
-        </template>
-      </UCard>
+            <p v-if="!openingRows.length" class="text-sm text-dimmed">
+              Opening hours are not set yet.
+            </p>
+          </div>
+        </UCard>
+      </div>
     </template>
 
     <DevFireuxDebugPanel
@@ -208,7 +190,7 @@
 import {
   FIREUX_LANGUAGE_OPTIONS,
 } from 'fireux-translation/runtime/languages'
-import { computed, reactive } from 'vue'
+import { computed } from 'vue'
 import { useKitchenConsoleIdentity } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleIdentity'
 import type {
   KitchenLanguageSettings,
@@ -233,24 +215,14 @@ const formattedAddress = computed(() => String(kitchen.value?.formatted_address 
 const source = computed(() => String(kitchen.value?.source ?? ''))
 const slug = computed(() => String(kitchen.value?.slug ?? ''))
 const currencyCode = computed(() => String(kitchen.value?.currency_code ?? 'CHF'))
+const currencyFormat = computed(() => String(kitchen.value?.currency_format ?? 'dash'))
+const primaryLanguage = computed(() => String(kitchen.value?.primary_language ?? ''))
 const languageSettings = computed(
   () => kitchen.value?.language_settings as KitchenLanguageSettings | undefined
 )
 const openingHours = computed(
   () => kitchen.value?.opening_hours as KitchenOpeningHours | undefined
 )
-
-type ReadSectionKey = 'languages' | 'details' | 'openingHours'
-
-const readSections = reactive<Record<ReadSectionKey, boolean>>({
-  languages: false,
-  details: false,
-  openingHours: false,
-})
-
-const toggleReadSection = (section: ReadSectionKey) => {
-  readSections[section] = !readSections[section]
-}
 
 const languageOptionsByCode = new Map(
   FIREUX_LANGUAGE_OPTIONS.map((language) => [language.code, language])
@@ -265,6 +237,9 @@ const defaultLanguage = computed(() =>
 const defaultLanguageLabel = computed(() =>
   defaultLanguage.value ? formatLanguage(defaultLanguage.value) : 'Unset'
 )
+const primaryLanguageLabel = computed(() =>
+  primaryLanguage.value ? formatLanguage(primaryLanguage.value) : defaultLanguageLabel.value
+)
 const supportedLanguages = computed(() =>
   Array.isArray(languageSettings.value?.supported_languages)
     ? languageSettings.value.supported_languages
@@ -278,6 +253,14 @@ const languageSummary = computed(() => {
   const defaultLabel = defaultLanguage.value || 'unset'
   return count ? `${defaultLabel} default, ${count} active` : 'Not set yet'
 })
+const currencyFormatLabel = computed(() => {
+  if (currencyFormat.value === 'symbol') return 'Symbol'
+  if (currencyFormat.value === 'code') return 'Code'
+  return 'Dash'
+})
+const currencyDisplaySummary = computed(
+  () => `${currencyCode.value || 'CHF'} · ${currencyFormatLabel.value}`
+)
 const weekdays: Array<{ key: Weekday; label: string }> = [
   { key: 'mon', label: 'Mon' },
   { key: 'tue', label: 'Tue' },

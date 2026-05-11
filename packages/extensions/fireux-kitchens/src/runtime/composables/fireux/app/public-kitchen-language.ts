@@ -1,4 +1,4 @@
-type PublicKitchenChromeLanguage = 'de' | 'en'
+type PublicKitchenChromeLanguage = 'de' | 'en' | 'fr' | 'ar'
 export type PublicKitchenLanguageCode = '' | PublicKitchenChromeLanguage
 
 export const PUBLIC_KITCHEN_LANGUAGE_OPTIONS: Array<{
@@ -8,6 +8,8 @@ export const PUBLIC_KITCHEN_LANGUAGE_OPTIONS: Array<{
   { code: '', label: 'Original' },
   { code: 'de', label: '🇩🇪' },
   { code: 'en', label: '🇬🇧' },
+  { code: 'fr', label: '🇫🇷' },
+  { code: 'ar', label: 'العربية' },
 ]
 
 export const PUBLIC_KITCHEN_CHROME_LABELS = {
@@ -47,13 +49,62 @@ export const PUBLIC_KITCHEN_CHROME_LABELS = {
     dish: 'dish',
     dishes: 'dishes',
   },
+  fr: {
+    menus: 'Menus',
+    chooseMenu: 'Choisir un menu',
+    openMenus: 'Ouvrir les menus',
+    openMenu: 'Ouvrir le menu',
+    loadingMenus: 'Chargement des menus...',
+    noMenusAvailable: 'Aucun menu disponible',
+    noPublicMenus: 'Cette cuisine n’a pas encore de menus publics.',
+    loadingMenu: 'Chargement du menu...',
+    kitchenNotFound: 'Cuisine introuvable',
+    menuNotFound: 'Menu introuvable',
+    noSectionsFound: 'Aucune section trouvée',
+    menuJson: 'Menu JSON',
+    section: 'section',
+    sections: 'sections',
+    dish: 'plat',
+    dishes: 'plats',
+  },
+  ar: {
+    menus: 'القوائم',
+    chooseMenu: 'اختر قائمة',
+    openMenus: 'افتح القوائم',
+    openMenu: 'افتح القائمة',
+    loadingMenus: 'جاري تحميل القوائم...',
+    noMenusAvailable: 'لا توجد قوائم متاحة',
+    noPublicMenus: 'لا توجد قوائم عامة متاحة لهذا المطعم بعد.',
+    loadingMenu: 'جاري تحميل القائمة...',
+    kitchenNotFound: 'لم يتم العثور على المطعم',
+    menuNotFound: 'لم يتم العثور على القائمة',
+    noSectionsFound: 'لم يتم العثور على أقسام',
+    menuJson: 'Menu JSON',
+    section: 'قسم',
+    sections: 'أقسام',
+    dish: 'طبق',
+    dishes: 'أطباق',
+  },
 } as const
 
 export function normalizePublicKitchenLanguage(
   value: unknown
 ): PublicKitchenLanguageCode {
   const language = String(value ?? '').trim().replace(/_/g, '-').toLowerCase()
-  return language === 'de' || language === 'en' ? language : ''
+  return language === 'de' || language === 'en' || language === 'fr' || language === 'ar'
+    ? language
+    : ''
+}
+
+export function isPublicKitchenCacheLanguage(
+  value: unknown
+): value is 'fr' | 'ar' {
+  const language = normalizePublicKitchenLanguage(value)
+  return language === 'fr' || language === 'ar'
+}
+
+export function isPublicKitchenRtlLanguage(value: unknown): boolean {
+  return normalizePublicKitchenLanguage(value) === 'ar'
 }
 
 export function resolvePublicKitchenChromeLanguage(input: {

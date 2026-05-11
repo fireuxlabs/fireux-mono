@@ -1,38 +1,31 @@
 <template>
-  <main class="luna-menu-surface min-h-screen bg-[#f1e7d4] text-[#15120d]">
+  <main
+    class="luna-menu-surface min-h-screen text-highlighted"
+    :dir="documentDirection"
+    :lang="documentLanguage"
+  >
     <section class="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 sm:py-10">
-      <div class="luna-menu-sans mb-4 flex justify-end">
+      <div
+        class="luna-menu-sans mb-4 flex"
+        :class="isRtl ? 'justify-start' : 'justify-end'"
+      >
         <div class="inline-flex items-center gap-1 rounded-lg border border-default bg-default/80 p-1">
           <UButton
-            :to="originalLanguageTo"
+            v-for="option in languageOptions"
+            :key="option.code || 'original'"
+            :to="languageTo(option.code)"
             size="xs"
-            :variant="!selectedLanguage ? 'solid' : 'ghost'"
+            :variant="selectedLanguage === option.code ? 'solid' : 'ghost'"
             color="neutral"
           >
-            {{ originalLanguageLabel }}
-          </UButton>
-          <UButton
-            :to="germanLanguageTo"
-            size="xs"
-            :variant="selectedLanguage === 'de' ? 'solid' : 'ghost'"
-            color="neutral"
-          >
-            {{ germanLanguageLabel }}
-          </UButton>
-          <UButton
-            :to="englishLanguageTo"
-            size="xs"
-            :variant="selectedLanguage === 'en' ? 'solid' : 'ghost'"
-            color="neutral"
-          >
-            {{ englishLanguageLabel }}
+            {{ option.label }}
           </UButton>
         </div>
       </div>
 
       <div
         v-if="loading"
-        class="luna-menu-paper luna-menu-sans py-12 text-center text-sm text-[#6f6756]"
+        class="luna-menu-paper luna-menu-sans py-12 text-center text-sm text-muted"
       >
         {{ chromeLabels.loadingMenu }}
       </div>
@@ -59,14 +52,14 @@
         <header class="mb-10 text-center">
           <p
             v-if="kitchenTitle"
-            class="luna-menu-sans text-xs font-semibold uppercase tracking-[0.22em] text-[#7d735e]"
+            class="luna-menu-sans text-xs font-semibold uppercase tracking-[0.22em] text-muted"
           >
             {{ kitchenTitle }}
           </p>
-          <h1 class="mt-2 text-4xl font-bold uppercase tracking-[0.14em] text-[#9f211e] sm:text-5xl">
+          <h1 class="mt-2 text-4xl font-bold uppercase tracking-[0.14em] text-primary sm:text-5xl">
             {{ menuTitle }}
           </h1>
-          <div class="mx-auto mt-5 h-px w-28 bg-[#9f211e]" />
+          <div class="mx-auto mt-5 h-px w-28 bg-primary" />
         </header>
 
         <div class="luna-menu-sections">
@@ -82,7 +75,7 @@
               <h2 class="text-[1.28rem] font-bold uppercase tracking-[0.13em]">
                 {{ section.label }}
               </h2>
-              <p v-if="section.description" class="luna-menu-sans mt-1 text-sm font-medium text-[#3b3529]">
+              <p v-if="section.description" class="luna-menu-sans mt-1 text-sm font-medium text-toned">
                 {{ section.description }}
               </p>
             </div>
@@ -90,20 +83,20 @@
             <article
               v-for="entry in section.entries"
               :key="entry.id || entry.dishId"
-              class="border-b border-[#e3dac6]/80 py-3 last:border-0"
+              class="border-b border-default py-3 last:border-0"
             >
-              <div class="flex items-start gap-4">
-                <h3 class="min-w-0 flex-1 text-[1.03rem] font-bold uppercase leading-snug tracking-[0.055em] text-[#15120d]">
+              <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                <h3 class="min-w-48 flex-1 text-[1.03rem] font-bold uppercase leading-snug tracking-[0.055em] text-highlighted">
                   {{ entry.name }}
                 </h3>
                 <div
                   v-if="entry.priceLabel"
-                  class="shrink-0 pt-0.5 text-[1rem] font-bold tabular-nums text-[#15120d]"
+                  class="luna-price-label ms-auto max-w-full text-right text-[1rem] font-bold tabular-nums leading-snug text-highlighted"
                 >
                   {{ entry.priceLabel }}
                 </div>
               </div>
-              <p v-if="entry.description" class="mt-1 text-[1rem] font-medium leading-relaxed text-[#2f2a20]">
+              <p v-if="entry.description" class="mt-1 text-[1rem] font-medium leading-relaxed text-toned">
                 {{ entry.description }}
               </p>
             </article>
@@ -129,6 +122,7 @@ import { computed, unref, type Ref } from 'vue'
 import { useRoute } from '#imports'
 import {
   getPublicKitchenChromeLabels,
+  isPublicKitchenRtlLanguage,
   PUBLIC_KITCHEN_LANGUAGE_OPTIONS,
   resolvePublicKitchenChromeLanguage,
 } from '../../../composables/fireux/app/public-kitchen-language'
@@ -158,6 +152,7 @@ type MenuPreviewState = {
   selectedLanguage?: MaybeRef<string>
   primaryLanguage?: MaybeRef<string>
   routePath?: MaybeRef<string>
+  menuTitle?: MaybeRef<string>
   debugData?: MaybeRef<unknown>
 }
 
@@ -166,9 +161,7 @@ const props = defineProps<{
 }>()
 
 const route = useRoute()
-const originalLanguageLabel = PUBLIC_KITCHEN_LANGUAGE_OPTIONS.find((option) => option.code === '')?.label || 'Original'
-const germanLanguageLabel = PUBLIC_KITCHEN_LANGUAGE_OPTIONS.find((option) => option.code === 'de')?.label || '🇩🇪'
-const englishLanguageLabel = PUBLIC_KITCHEN_LANGUAGE_OPTIONS.find((option) => option.code === 'en')?.label || '🇬🇧'
+const languageOptions = PUBLIC_KITCHEN_LANGUAGE_OPTIONS
 const loading = computed(() => Boolean(unref(props.menu.loading)))
 const resolvedKitchen = computed(() => unref(props.menu.resolvedKitchen))
 const selectedMenu = computed(() => unref(props.menu.selectedMenu))
@@ -176,6 +169,7 @@ const publicSections = computed(() => unref(props.menu.publicSections) || [])
 const selectedLanguage = computed(() => unref(props.menu.selectedLanguage) || '')
 const primaryLanguage = computed(() => unref(props.menu.primaryLanguage) || '')
 const routePath = computed(() => unref(props.menu.routePath) || route.path)
+const menuTitleOverride = computed(() => String(unref(props.menu.menuTitle) || '').trim())
 const passThroughQuery = computed(() =>
   Object.fromEntries(
     Object.entries(route.query).filter(
@@ -183,18 +177,12 @@ const passThroughQuery = computed(() =>
     )
   )
 )
-const originalLanguageTo = computed(() => ({
+const languageTo = (language: string) => ({
   path: routePath.value,
-  query: passThroughQuery.value,
-}))
-const germanLanguageTo = computed(() => ({
-  path: routePath.value,
-  query: { ...passThroughQuery.value, lang: 'de' },
-}))
-const englishLanguageTo = computed(() => ({
-  path: routePath.value,
-  query: { ...passThroughQuery.value, lang: 'en' },
-}))
+  query: language
+    ? { ...passThroughQuery.value, lang: language }
+    : passThroughQuery.value,
+})
 const chromeLanguage = computed(() =>
   resolvePublicKitchenChromeLanguage({
     selectedLanguage: selectedLanguage.value,
@@ -202,6 +190,9 @@ const chromeLanguage = computed(() =>
   })
 )
 const chromeLabels = computed(() => getPublicKitchenChromeLabels(chromeLanguage.value))
+const isRtl = computed(() => isPublicKitchenRtlLanguage(selectedLanguage.value))
+const documentDirection = computed(() => isRtl.value ? 'rtl' : 'ltr')
+const documentLanguage = computed(() => selectedLanguage.value || chromeLanguage.value)
 const debugData = computed(() => unref(props.menu.debugData))
 const kitchenTitle = computed(() =>
   String(resolvedKitchen.value?.name || '').trim()
@@ -219,6 +210,7 @@ const textForLanguage = (
   return String((translations as Record<string, unknown>)[language] ?? '').trim() || fallback
 }
 const menuTitle = computed(() =>
+  menuTitleOverride.value ||
   textForLanguage(
     selectedMenu.value?.name || chromeLabels.value.menus,
     selectedMenu.value?.names,
@@ -234,11 +226,11 @@ const normalizeToneText = (value: unknown) =>
 
 const sectionAccentClass = (section: MenuPreviewSection) => {
   const key = normalizeToneText(`${section.id} ${section.label}`)
-  if (/(poulet|chicken|schweinefleisch|pork|kalbsfleisch|veal)/.test(key)) {
-    return 'border-[#23633b] text-[#23633b]'
+  if (/(poulet|chicken|schweinefleisch|pork|kalbsfleisch|veal|vegetarisch|vegetarian|vegan)/.test(key)) {
+    return 'border-primary text-primary'
   }
 
-  return 'border-[#9f211e] text-[#9f211e]'
+  return 'border-error text-error'
 }
 </script>
 
@@ -248,12 +240,17 @@ const sectionAccentClass = (section: MenuPreviewSection) => {
 }
 
 .luna-menu-paper {
-  border: 1px solid #d7ceb8;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.62)),
-    #fffaf0;
-  box-shadow: 0 18px 50px rgba(65, 50, 26, 0.16);
+  border: 1px solid var(--ui-border);
+  background: var(--ui-bg);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
   padding: clamp(1.5rem, 4vw, 3rem);
+}
+
+.luna-price-label {
+  direction: ltr;
+  margin-inline-start: auto;
+  overflow-wrap: anywhere;
+  unicode-bidi: plaintext;
 }
 
 .luna-menu-sections {

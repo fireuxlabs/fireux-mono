@@ -24,14 +24,20 @@ export type MenuDesign = {
   text_hex?: string
 }
 
+export type MenuItemPriceOption = {
+  quantity: number
+  unit: 'piece' | 'gram' | string
+  price: number
+}
+
 export type MenuSectionItem = {
   id: string
   dish_id?: string
 
   label?: string
   labels?: Partial<Record<string, string>>
-  price: number
-  price_label?: string
+  price?: number
+  price_options?: MenuItemPriceOption[]
   sort_order: number
 
   // Optional item overrides (resolved at runtime from section/menu defaults)

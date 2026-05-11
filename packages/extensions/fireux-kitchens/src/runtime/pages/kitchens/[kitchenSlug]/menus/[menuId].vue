@@ -9,6 +9,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { resolveKitchenRuntimeChildCollectionPath } from '../../../../composables/fireux/app/kitchen-console/shared'
 import {
   getPublicKitchenChromeLabels,
+  isPublicKitchenCacheLanguage,
   normalizePublicKitchenLanguage,
   resolvePublicKitchenChromeLanguage,
 } from '../../../../composables/fireux/app/public-kitchen-language'
@@ -84,10 +85,27 @@ const dishesPath = computed(() =>
     collectionName: 'dishes',
   })
 )
+const translationCachePath = computed(() => {
+  if (!kitchenId.value || !routeMenuId.value) return ''
+  return `kitchens/${kitchenId.value}/menus/${routeMenuId.value}/translation_cache`
+})
 const menusRef = firestoreFetchCollection<Menu>(menusPath)
 const dishesRef = firestoreFetchCollection<Dish>(dishesPath)
+const translationCacheRef = firestoreFetchCollection<Record<string, any>>(translationCachePath)
 const menus = computed(() => menusRef.value ?? [])
 const dishes = computed(() => dishesRef.value ?? [])
+const translationCacheByField = computed(() => {
+  const map = new Map<string, string>()
+  for (const item of translationCacheRef.value ?? []) {
+    const fieldId = normalizeString((item as any).field_id)
+    const targetLanguage = normalizeString((item as any).target_language)
+    const translatedText = normalizeString((item as any).translated_text)
+    if (fieldId && targetLanguage === selectedLanguage.value && translatedText) {
+      map.set(fieldId, translatedText)
+    }
+  }
+  return map
+})
 const selectedMenu = computed<Menu | null>(() =>
   menus.value.find((menu) => normalizeString(menu.id) === routeMenuId.value) ?? null
 )
@@ -105,12 +123,25 @@ const loading = computed(
     (kitchensPending.value ||
       Boolean(kitchenId.value && (menusRef.value === undefined || dishesRef.value === undefined)))
 )
+const currencyCode = computed(() =>
+  normalizeString((resolvedKitchen.value as any)?.currency_code).toUpperCase() || 'CHF'
+)
+const currencyFormat = computed(() => {
+  const format = normalizeString((resolvedKitchen.value as any)?.currency_format).toLowerCase()
+  if (format === 'dash' || format === 'symbol' || format === 'code') return format
+  return currencyCode.value === 'CHF' ? 'dash' : 'symbol'
+})
 const textForLanguage = (
   defaultText: unknown,
   translations: unknown,
-  language: string
+  language: string,
+  cacheFieldId = ''
 ) => {
   const fallback = normalizeString(defaultText)
+  if (isPublicKitchenCacheLanguage(language)) {
+    return translationCacheByField.value.get(cacheFieldId) || fallback
+  }
+
   if (!language || !translations || typeof translations !== 'object' || Array.isArray(translations)) {
     return fallback
   }
@@ -120,9 +151,67 @@ const textForLanguage = (
 const formatPrice = (value: unknown) => {
   const amount = Number(value ?? 0)
   if (!Number.isFinite(amount) || amount <= 0) return ''
-  if (amount % 1 === 0) return `${amount}.-`
-  return amount.toFixed(2)
+  if (currencyFormat.value === 'dash') {
+    if (amount % 1 === 0) return `${amount}.-`
+    return amount.toFixed(2)
+  }
+
+  return new Intl.NumberFormat(selectedLanguage.value || 'de-CH', {
+    style: 'currency',
+    currency: currencyCode.value,
+    currencyDisplay: currencyFormat.value === 'code' ? 'code' : 'narrowSymbol',
+    minimumFractionDigits: amount % 1 === 0 ? 0 : 2,
+    maximumFractionDigits: 2,
+  }).format(amount)
 }
+const priceUnitLabel = (unit: unknown) => {
+  const normalizedUnit = normalizeString(unit).toLowerCase()
+  if (normalizedUnit === 'piece') {
+    if (selectedLanguage.value === 'ar') return 'قطع'
+    if (selectedLanguage.value === 'fr') return 'pièces'
+    return selectedLanguage.value === 'en' ? 'pcs' : 'Stk.'
+  }
+  if (normalizedUnit === 'gram') {
+    if (selectedLanguage.value === 'ar') return 'غ'
+    return selectedLanguage.value === 'en' || selectedLanguage.value === 'fr' ? 'g' : 'gr'
+  }
+  return normalizedUnit
+}
+const formatPriceOption = (option: Record<string, any>) => {
+  const quantity = Number(option.quantity ?? 0)
+  const price = formatPrice(option.price)
+  if (!Number.isFinite(quantity) || quantity <= 0 || !price) return ''
+
+  const unit = priceUnitLabel(option.unit)
+  const quantityLabel = unit === 'g' || unit === 'gr'
+    ? `${quantity}${unit}`
+    : `${quantity} ${unit}`.trim()
+
+  return `${quantityLabel} ${price}`.trim()
+}
+const formatMenuItemPrice = (item: Record<string, any>) => {
+  if (Array.isArray(item.price_options) && item.price_options.length) {
+    return item.price_options
+      .map((option: Record<string, any>) => formatPriceOption(option))
+      .filter(Boolean)
+      .join(' / ')
+  }
+
+  return formatPrice(item.price)
+}
+const menuFieldId = (menu: Record<string, any>, field: string) =>
+  `menu:${normalizeString(menu.id)}:${field}`
+const sectionFieldId = (menu: Record<string, any>, section: Record<string, any>, field: string) =>
+  `menu:${normalizeString(menu.id)}:section:${normalizeString(section.id)}:${field}`
+const itemFieldId = (
+  menu: Record<string, any>,
+  section: Record<string, any>,
+  item: Record<string, any>,
+  field: string
+) =>
+  `menu:${normalizeString(menu.id)}:section:${normalizeString(section.id)}:item:${normalizeString(item.id)}:${field}`
+const dishFieldId = (dish: Record<string, any>, field: string) =>
+  `dish:${normalizeString(dish.id)}:${field}`
 
 const publicSections = computed(() =>
   (Array.isArray((selectedMenu.value as any)?.sections)
@@ -144,36 +233,54 @@ const publicSections = computed(() =>
           const itemDescription = textForLanguage(
             item.description,
             item.descriptions,
-            selectedLanguage.value
+            selectedLanguage.value,
+            itemFieldId(selectedMenu.value as any, section, item, 'description')
           )
           const dishDescription = dish
-            ? textForLanguage(dish.description, (dish as any).descriptions, selectedLanguage.value)
+            ? textForLanguage(
+                dish.description,
+                (dish as any).descriptions,
+                selectedLanguage.value,
+                dishFieldId(dish as any, 'description')
+              )
             : ''
           const itemLabel = textForLanguage(
             item.label,
             item.labels,
-            selectedLanguage.value
+            selectedLanguage.value,
+            itemFieldId(selectedMenu.value as any, section, item, 'label')
           )
 
           return {
             id: normalizeString(item.id),
             dishId,
             name: dish
-              ? textForLanguage(dish.name, (dish as any).names, selectedLanguage.value)
+              ? textForLanguage(
+                  dish.name,
+                  (dish as any).names,
+                  selectedLanguage.value,
+                  dishFieldId(dish as any, 'name')
+                )
               : itemLabel,
             description: itemDescription || dishDescription,
-            priceLabel: normalizeString(item.price_label) || formatPrice(item.price),
+            priceLabel: formatMenuItemPrice(item),
           }
         })
         .filter((entry: { name: string; description: string }) => entry.name || entry.description)
 
       return {
         id: normalizeString(section.id),
-        label: textForLanguage(section.label, section.labels, selectedLanguage.value),
+        label: textForLanguage(
+          section.label,
+          section.labels,
+          selectedLanguage.value,
+          sectionFieldId(selectedMenu.value as any, section, 'label')
+        ),
         description: textForLanguage(
           section.description,
           section.descriptions,
-          selectedLanguage.value
+          selectedLanguage.value,
+          sectionFieldId(selectedMenu.value as any, section, 'description')
         ),
         entries,
       }
@@ -192,6 +299,16 @@ const chromeLanguage = computed(() =>
 const chromeLabels = computed(() =>
   getPublicKitchenChromeLabels(chromeLanguage.value)
 )
+const menuTitle = computed(() => {
+  const menu = selectedMenu.value as any
+  if (!menu) return chromeLabels.value.menus
+  return textForLanguage(
+    menu.name || chromeLabels.value.menus,
+    menu.names,
+    selectedLanguage.value,
+    menuFieldId(menu, 'name')
+  )
+})
 
 useHead({
   title: computed(() => chromeLabels.value.menus),
@@ -205,6 +322,7 @@ const publicMenuPreview = {
   selectedLanguage,
   primaryLanguage,
   routePath: computed(() => route.path),
+  menuTitle,
   debugData: computed(() => ({
     route: {
       slug: routeKitchenSlug.value,
@@ -215,6 +333,7 @@ const publicMenuPreview = {
       kitchen: kitchenId.value ? `kitchens/${kitchenId.value}` : '',
       menus: menusPath.value,
       dishes: dishesPath.value,
+      translation_cache: translationCachePath.value,
     },
     kitchen: resolvedKitchen.value
       ? {

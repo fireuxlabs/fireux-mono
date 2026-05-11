@@ -207,7 +207,7 @@ const MAIN_SECTIONS = [
       dish(
         'focaccia-prosciutto-di-parma',
         'FOCACCIA PROSCIUTTO DI PARMA',
-        'Pizzateig an Olivenöl und Knoblauch mit Parmaschniken'
+        'Pizzateig an Olivenöl und Knoblauch mit Parmaschinken'
       ),
       dish(
         'carpaccio-di-manzo',
@@ -247,7 +247,7 @@ const MAIN_SECTIONS = [
       dish(
         'insalata-caprese',
         'INSALATA CAPRESE',
-        'Tomatensalat mit Buffalamozzarella an Basilikum, Olivenöl und Accetto'
+        'Tomatensalat mit Buffalamozzarella an Basilikum, Olivenöl und Aceto'
       ),
       dish(
         'burrata',
@@ -307,7 +307,7 @@ const MAIN_SECTIONS = [
       dish('kids-spaghetti-al-pesto', 'Spaghetti al Pesto', 'Spaghetti al Pesto'),
       dish('spaghetti-al-burro', 'Spaghetti al burro', 'Spaghetti mit Butter'),
       dish('gnocchi-al-burro', 'GNOCCHI AL BURRO', 'Gnocchi an Butter'),
-      dish('capitano', 'CAPITANO', 'Fischstäbchen fritiert mit Pommes Frites'),
+      dish('capitano', 'CAPITANO', 'Fischstäbchen frittiert mit Pommes Frites'),
       dish('chicken-nuggets', 'CHICKEN NUGGETS', 'mit Pommes Frites'),
       dish('portion-pommes-frites', 'PORTION POMMES FRITES', 'Pommes Frites'),
       dish('risotto-bambini', 'RISOTTO BAMBINI', 'Grana Padano Risotto'),
@@ -325,7 +325,7 @@ const MAIN_SECTIONS = [
       dish(
         'fettuccine-nere-mare-e-monti',
         'FETTUCCINE NERE MARE E MONTI',
-        'Schwarze Nudeln mit Krevetten, Steinpilzen Zwiebeln, Knoblauch an Rahmsauce'
+        'Schwarze Nudeln mit Krevetten, Steinpilzen, Zwiebeln, Knoblauch an Rahmsauce'
       ),
       dish(
         'fettuccine-nere-al-salmone',
@@ -345,12 +345,12 @@ const MAIN_SECTIONS = [
       dish(
         'penne-alla-fiamma',
         'PENNE ALLA FIAMMA',
-        'Penne mit flambierten Rindfleischwürfeln, Peperoni, Zwiebeln, Knoblauch, frischen Tomaten, Pilzen, frische Kräuter und Paprika- Rahmsauce'
+        'Penne mit flambierten Rindfleischwürfeln, Peperoni, Zwiebeln, Knoblauch, frischen Tomaten, Pilzen, frische Kräuter und Paprika-Rahmsauce'
       ),
       dish(
         'spaghetti-aglio-olio-e-peperoncino',
         'SPAGHETTI AGLIO, OLIO E PEPERONCINO',
-        'Spaghetti mit Knoblauch, Oivenöl und Peperoncini'
+        'Spaghetti mit Knoblauch, Olivenöl und Peperoncini'
       ),
       dish(
         'spaghetti-frutti-di-mare',
@@ -405,7 +405,7 @@ const MAIN_SECTIONS = [
       dish(
         'controfiletto-di-manzo-al-pepe-verde',
         'CONTROFILETO DI MANZO AL PEPE VERDE',
-        'Rindsentrecôte vom Grill an grün-Pfeffersauce, serviert mit Gemüse und Beilage nach Wahl'
+        'Rindsentrecôte vom Grill an Grünpfeffersauce, serviert mit Gemüse und Beilage nach Wahl'
       ),
       dish(
         'controfiletto-d-agnello-alla-griglia',
@@ -415,10 +415,10 @@ const MAIN_SECTIONS = [
       dish(
         'controfiletto-d-agnello-alla-montanara',
         'CONTROFILETTO D´AGNELO ALLA MONTANARA',
-        'rosagebratenes Lammnierstück vom Grill an feiner Waldpilzen –Rahmsauce serviert mit Gemüse und Beilage nach Wahl'
+        'rosagebratenes Lammnierstück vom Grill an feiner Waldpilz-Rahmsauce serviert mit Gemüse und Beilage nach Wahl'
       ),
       dish('petto-di-pollo-alla-griglia', 'PETTO DI POLLO ALLA GRIGLIA', 'Pouletbrust vom Grill, serviert mit Gemüse und Beilage nach Wahl'),
-      dish('maiale-impanato', 'MAIALE IMPANATO', 'Pannierte Schweinschnitzel, serviert mit Gemüse und Beilage nach Wahl'),
+      dish('maiale-impanato', 'MAIALE IMPANATO', 'Panierte Schweinsschnitzel, serviert mit Gemüse und Beilage nach Wahl'),
       dish('scaloppina-di-vitello-al-limone', 'SCALOPPINA DI VITELLO AL LIMONE', 'Kalbsschnitzel an feiner Zitronensauce serviert mit Gemüse und Beilage nach Wahl'),
       dish('saltimbocca-alla-romana', 'SALTIMBOCCA ALLA ROMANA', 'Kalbsschnitzel mit Parmaschinken und Salbei an Marsalasauce serviert mit Gemüse und Beilage nach Wahl'),
       dish('scaloppina-di-vitello-alla-crema-di-funghi', 'SCALOPPINA DI VITELLO ALLA CREMA DI FUNGHI', 'Kalbschnitzel an hausgemachter Champignon-Rahmsauce serviert mit Gemüse und Beilage nach Wahl'),
@@ -491,9 +491,9 @@ const MAIN_SECTIONS = [
 
 const MAIN_ENGLISH_DESCRIPTIONS = {
   'focaccia-aperitivo-pomodoro-bufala-e-parma':
-    'Pizza dough with tomato cubes, garlic, onions, basil and olive oil, with bufala mozzarella and parma-ham',
+    'Pizza dough with tomato cubes, garlic, onions, basil and olive oil, with buffalo mozzarella and Parma ham',
   'focaccia-prosciutto-di-parma':
-    'Pizza dough on olive oil and garlic with Parma-ham',
+    'Pizza dough on olive oil and garlic with Parma ham',
   'carpaccio-di-manzo':
     'Beef-carpaccio with parmesan stripes, olive oil and lemon juice on rucola',
   'gamberetti-all-aglio':
@@ -509,7 +509,7 @@ const MAIN_ENGLISH_DESCRIPTIONS = {
   'insalata-soncino':
     'Fieldsalad with bacon, egg and croutons',
   'insalata-caprese':
-    'tomato an mozzarella bufala with Basil, olive oil and accetto',
+    'tomato and buffalo mozzarella with basil, olive oil and Aceto',
   burrata:
     'Creamy cheese with tomatoes and basil on olive oil',
   'insalata-gigante':
@@ -531,7 +531,7 @@ const MAIN_ENGLISH_DESCRIPTIONS = {
   'cannelloni-fiorentina':
     'homemade cannelloni pasta filled with spinach, curd cheese on tomato sauce (au gratin)',
   'spaghetti-with-tomato-sauce':
-    'Spaghetti with Tomateosauce',
+    'Spaghetti with tomato sauce',
   'kids-spaghetti-bolognese':
     'Spaghetti Bolognese',
   'kids-spaghetti-carbonara':
@@ -551,7 +551,7 @@ const MAIN_ENGLISH_DESCRIPTIONS = {
   'risotto-bambini':
     'Risotto with cheese',
   'paglia-e-fieno-bella-rebecca':
-    'two-tone pasta with veal stipes, mushrooms, onion, garlic on cream sauce',
+    'two-tone pasta with veal strips, mushrooms, onion, garlic on cream sauce',
   'fettuccine-nere-mare-e-monti':
     'Black noodles with shrimps and king bolete, onion, garlic on cream sauce',
   'fettuccine-nere-al-salmone':
@@ -565,9 +565,9 @@ const MAIN_ENGLISH_DESCRIPTIONS = {
   'spaghetti-aglio-olio-e-peperoncino':
     'Spaghetti with garlic, olive oil, fresh chili',
   'spaghetti-frutti-di-mare':
-    'Spaghetti with sea fruits, onion, garlic cherry-tomato, and olive oil on tomato-sauce',
+    'Spaghetti with seafood, onion, garlic, cherry tomato, and olive oil on tomato sauce',
   'spaghetti-carbonara':
-    'Spaghetti with roasted bacon cubes, yolk, and grana Padano cheese on cream sauce',
+    'Spaghetti with roasted bacon cubes, yolk, and Grana Padano cheese on cream sauce',
   'spaghetti-vegetariana':
     'Spaghetti with vegetables, onion, garlic, and homemade tomato sauce',
   'spaghetti-napoli':
@@ -587,7 +587,7 @@ const MAIN_ENGLISH_DESCRIPTIONS = {
   'controfiletto-di-manzo-al-pepe-verde':
     'Grilled steak on green pepper sauce served with vegetables and side dish.',
   'controfiletto-d-agnello-alla-griglia':
-    'grilled rosa lamp filet, served with vegetables and side dish.',
+    'grilled rare lamb fillet, served with vegetables and side dish.',
   'controfiletto-d-agnello-alla-montanara':
     'grilled rosa lamb filet on mushroom sauce, served with vegetables and side dish.',
   'petto-di-pollo-alla-griglia':
@@ -597,7 +597,7 @@ const MAIN_ENGLISH_DESCRIPTIONS = {
   'scaloppina-di-vitello-al-limone':
     'veal cutlets on lemon cream sauce served with vegetables and side dish.',
   'saltimbocca-alla-romana':
-    'Veal cutlet with parma ham and sage on marsala sauce served with vegetables and side dish.',
+    'Veal cutlet with Parma ham and sage on marsala sauce served with vegetables and side dish.',
   'scaloppina-di-vitello-alla-crema-di-funghi':
     'Veal cutlets on champignon cream sauce served with vegetables and side dish.',
   'affettato-alla-zurighese':
@@ -703,77 +703,77 @@ const PIZZA_SECTIONS = [
 
 const PIZZA_ENGLISH_DESCRIPTIONS = {
   curry:
-    'tomatosauce, mozzarella, curry chicken, mushrooms, oregano',
+    'tomato sauce, mozzarella, curry chicken, mushrooms, oregano',
   bbq:
-    'tomatosauce, mozzarella, BBQ-Chicken, mushrooms, onion, corn, oregano',
+    'tomato sauce, mozzarella, BBQ chicken, mushrooms, onion, corn, oregano',
   'al-capone':
-    'tomatosauce, mozzarella, beef strips, café de paris, green pepper, oregano',
+    'tomato sauce, mozzarella, beef strips, Café de Paris, green peppercorn, oregano',
   lunatico:
-    'tomatosauce, mozzarella, beef strips, green pepper, oregano',
+    'tomato sauce, mozzarella, beef strips, green peppercorn, oregano',
   napoli:
-    'tomatosauce, mozzarella, anchovies, capes, olives, oregano',
+    'tomato sauce, mozzarella, anchovies, capers, olives, oregano',
   salmone:
-    'tomatosauce, mozzarella, smoked salmon, ognion, oregano',
+    'tomato sauce, mozzarella, smoked salmon, onion, oregano',
   tonno:
-    'tomatosauce, mozzarella, thuna, ognion, caper, oregano',
+    'tomato sauce, mozzarella, tuna, onion, capers, oregano',
   gamberetti:
-    'tomatosauce, mozzarella, shrimps, garlic, oregano',
+    'tomato sauce, mozzarella, shrimps, garlic, oregano',
   'frutti-di-mare':
-    'tomatosauce, mozzarella, sea fruits, garlic, oregano',
+    'tomato sauce, mozzarella, seafood, garlic, oregano',
   agnello:
-    'tomatosauce, mozzarella, lamb strips, garlic, rosemary',
+    'tomato sauce, mozzarella, lamb strips, garlic, rosemary',
   casanova:
-    'tomatosauce, mozzarella, veal stips, spinach, chili, oregano',
+    'tomato sauce, mozzarella, veal strips, spinach, chili, oregano',
   'quattro-formaggi':
-    'tomatosauce, mozzarella, and 3 different chees, oregano',
+    'tomato sauce, mozzarella, three different cheeses, oregano',
   'alla-piemontese':
-    'tomatosauce, mozzarella, porcini, oregano',
+    'tomato sauce, mozzarella, porcini mushrooms, oregano',
   pinocchio:
-    'tomatosauce, mozzarella, corn, olives, red peppers, oregano',
+    'tomato sauce, mozzarella, corn, olives, red peppers, oregano',
   margherita:
-    'tomatosauce, mozzarella, oregano',
+    'tomato sauce, mozzarella, oregano',
   buffala:
-    'tomatosauce, mozzarella, cherry tomatoes, buffala mozzarella basil',
+    'tomato sauce, mozzarella, cherry tomatoes, buffalo mozzarella, basil',
   vegetariana:
-    'tomatosauce, mozzarella, spinach, red pepper,eggplant, oregano',
+    'tomato sauce, mozzarella, spinach, red pepper, eggplant, oregano',
   caprese:
-    'tomatosauce, mozzarella, tomato , ognions, oregano',
+    'tomato sauce, mozzarella, tomato, onions, oregano',
   tricolore:
-    'tomatosauce, mozzarella, frech tomato, spinach, curd chees, oregano',
+    'tomato sauce, mozzarella, fresh tomato, spinach, curd cheese, oregano',
   oliva:
-    'tomatosauce, mozzarella, black Olives, oregano',
+    'tomato sauce, mozzarella, black olives, oregano',
   melanzane:
-    'tomatosauce, mozzarella, aubergine, garlic, oregano',
+    'tomato sauce, mozzarella, eggplant, garlic, oregano',
   paprika:
-    'tomatosauce, mozzarella, red peppers, oregano',
+    'tomato sauce, mozzarella, red peppers, oregano',
   carbonara:
-    'tomatosauce, mozzarella, bacon, egg, grana padano, oregano',
+    'tomato sauce, mozzarella, bacon, egg, Grana Padano, oregano',
   lucifer:
-    'tomatosauce, mozzarella, bacon,spicy sausage, chilli, oregano',
+    'tomato sauce, mozzarella, bacon, spicy salami, chili, oregano',
   calzone:
-    'covered pizza with mozzarella, curd chees, ham, tomatosauce',
+    'covered pizza with mozzarella, curd cheese, ham, tomato sauce',
   'salame-nostrano':
-    'tomatosauce, mozzarella, salami (sausage), oregano',
+    'tomato sauce, mozzarella, salami, oregano',
   antonio:
-    'tomatosauce, mozzarella, ham, gorgonzola (blue cheese), pear, chili, oregano',
+    'tomato sauce, mozzarella, ham, Gorgonzola, pear, chili, oregano',
   'quattro-stagioni':
-    'tomatosauce, mozzarella, ham, champignons, artichokes, red pepper, oregano',
+    'tomato sauce, mozzarella, ham, mushrooms, artichokes, red pepper, oregano',
   prosciutto:
-    'tomatosauce, mozzarella, ham, oregano',
+    'tomato sauce, mozzarella, ham, oregano',
   'prosciutto-e-funghi':
-    'tomatosauce, mozzarella, ham, champignons, oregano',
+    'tomato sauce, mozzarella, ham, mushrooms, oregano',
   hawaii:
-    'tomatosauce, mozzarella, ham, pineapple, oregano',
+    'tomato sauce, mozzarella, ham, pineapple, oregano',
   gorgonzola:
-    'tomatosauce, mozzarella, ham, gorgonzola-chees',
+    'tomato sauce, mozzarella, ham, Gorgonzola cheese, oregano',
   boscaiolo:
-    'tomatosauce, mozzarella, salami (peperoni), bacon, ognion, egg, oregano',
+    'tomato sauce, mozzarella, salami, bacon, onion, egg, oregano',
   piccante:
-    'tomatosauce, mozzarella, hot salami (sausage), oregano',
+    'tomato sauce, mozzarella, spicy salami, oregano',
   parma:
-    'tomatosauce, mozzarella, parma-ham, oregano',
+    'tomato sauce, mozzarella, Parma ham, oregano',
   parmigiana:
-    'tomatosauce, mozzarella, parma-ham, parmesan, oregano',
+    'tomato sauce, mozzarella, eggplant, Parma ham, Grana Padano, oregano',
 }
 
 const ENGLISH_DESCRIPTIONS = {
@@ -788,8 +788,11 @@ const MENU_ITEM_PRICES = {
   'gamberetti-all-aglio': 20,
   'cocktail-di-gamberetti': 19,
   bruschetta: {
-    price: 10,
-    price_label: '3 Stk. 10.- / 4 Stk. 13.- / 5 Stk. 16.-',
+    price_options: [
+      { quantity: 3, unit: 'piece', price: 10 },
+      { quantity: 4, unit: 'piece', price: 13 },
+      { quantity: 5, unit: 'piece', price: 16 },
+    ],
   },
   minestrone: 10,
   'crema-di-pomodoro': 10,
@@ -842,16 +845,22 @@ const MENU_ITEM_PRICES = {
   'scaloppina-di-vitello-alla-crema-di-funghi': 39,
   'affettato-alla-zurighese': 36,
   rindsentrecote: {
-    price: 57,
-    price_label: '300gr 57.- / 400gr 66.-',
+    price_options: [
+      { quantity: 300, unit: 'gram', price: 57 },
+      { quantity: 400, unit: 'gram', price: 66 },
+    ],
   },
   schweinesteak: {
-    price: 47,
-    price_label: '300gr 47.- / 400gr 56.-',
+    price_options: [
+      { quantity: 300, unit: 'gram', price: 47 },
+      { quantity: 400, unit: 'gram', price: 56 },
+    ],
   },
   'lamm-nierstuck': {
-    price: 54,
-    price_label: '300gr 54.- / 400gr 63.-',
+    price_options: [
+      { quantity: 300, unit: 'gram', price: 54 },
+      { quantity: 400, unit: 'gram', price: 63 },
+    ],
   },
   'rindsfleisch-spiess': 49,
   'gemischter-spiess': 41,
@@ -1006,12 +1015,18 @@ function menuItemPrice(itemId) {
   const priceConfig = MENU_ITEM_PRICES[itemId]
   if (typeof priceConfig === 'number') return { price: priceConfig }
   if (!priceConfig || typeof priceConfig !== 'object') return { price: 0 }
+  if (Array.isArray(priceConfig.price_options)) {
+    return {
+      price_options: priceConfig.price_options.map((option) => ({
+        quantity: Number(option.quantity ?? 0) || 0,
+        unit: normalizeString(option.unit),
+        price: Number(option.price ?? 0) || 0,
+      })),
+    }
+  }
 
   return {
     price: Number(priceConfig.price ?? 0) || 0,
-    ...(normalizeString(priceConfig.price_label)
-      ? { price_label: normalizeString(priceConfig.price_label) }
-      : {}),
   }
 }
 
@@ -1215,6 +1230,8 @@ async function main() {
         slug: 'luna-picante',
         slug_aliases: ['luna-piccante'],
         primary_language: 'de',
+        currency_code: 'CHF',
+        currency_format: 'dash',
         language_settings: {
           default_language: 'de',
           supported_languages: ['de', 'en', 'it', 'fr'],

@@ -3,26 +3,26 @@
     <template #header>
       <LayoutsConsoleNavbar :title="navTitle">
         <template #right>
-          <div class="inline-flex items-center gap-1">
+          <UButtonGroup size="sm">
             <UButton
               icon="i-lucide-eye"
-              size="sm"
               :variant="view === 'identity' ? 'solid' : 'ghost'"
               color="neutral"
-              aria-label="View kitchen identity"
               @click="view = 'identity'"
-            />
+            >
+              Overview
+            </UButton>
 
             <UButton
               icon="i-lucide-notebook-pen"
-              size="sm"
               :variant="view === 'edit' ? 'solid' : 'ghost'"
               color="neutral"
-              aria-label="Edit kitchen identity"
               :disabled="!canWrite"
               @click="view = 'edit'"
-            />
-          </div>
+            >
+              Edit
+            </UButton>
+          </UButtonGroup>
         </template>
       </LayoutsConsoleNavbar>
     </template>
