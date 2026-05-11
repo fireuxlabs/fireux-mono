@@ -109,6 +109,7 @@ const menu = useKitchenMenu()
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const normalizeLanguageCode = (value: unknown) => normalizeString(value).replace(/_/g, '-')
 const selectedLanguage = computed(() => normalizeLanguageCode(menu.requestedLanguageCode.value) || 'de')
+const defaultLanguage = computed(() => normalizeLanguageCode(menu.defaultLanguageCode.value) || 'de')
 const languageOptions = computed(() => {
   const configured = Array.isArray((menu.resolvedKitchen.value as any)?.language_settings?.supported_languages)
     ? (menu.resolvedKitchen.value as any).language_settings.supported_languages
@@ -163,7 +164,7 @@ const setLanguage = async (language: string) => {
     path: route.path,
     query: {
       ...route.query,
-      lang: language,
+      lang: language === defaultLanguage.value ? undefined : language,
     },
   })
 }

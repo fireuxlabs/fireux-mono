@@ -1,6 +1,6 @@
 import { useRoute } from '#imports'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { computed, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useKitchenCollection } from '../firestore/kitchen/fetch/useKitchenCollection'
 import type { Menu } from '../../../models/menu.model'
 import type { Dish } from '../../../models/dish.model'
@@ -26,8 +26,26 @@ export type KitchenSemanticMenuEntry = {
   dishId: string
   name: string
   description: string
+  price: number
+  priceLabel: string
   semanticLine: string
   integrityNote: string
+}
+
+export type KitchenPublicMenuEntry = {
+  id: string
+  dishId: string
+  name: string
+  description: string
+  price: number
+  priceLabel: string
+}
+
+export type KitchenPublicMenuSection = {
+  id: string
+  label: string
+  description: string
+  entries: KitchenPublicMenuEntry[]
 }
 
 export type KitchenSemanticMenuSection = {
@@ -157,53 +175,39 @@ export function useKitchenMenu() {
     )
   )
 
-  const loading = computed(
-    () => Boolean(routeKitchenSlug.value) && kitchensPending.value
-  )
-
   const { firestoreFetchCollection } = useFirestoreRead()
-  const menusRef = shallowRef(null) as ShallowRef<
-    Ref<Menu[] | undefined> | null
-  >
-  const dishesRef = shallowRef(null) as ShallowRef<
-    Ref<Dish[] | undefined> | null
-  >
-  const miseRef = shallowRef(null) as ShallowRef<
-    Ref<KitchenMiseTask[] | undefined> | null
-  >
+  const menusPath = computed(() =>
+    resolveKitchenRuntimeChildCollectionPath({
+      kitchenId: kitchenId.value,
+      collectionName: 'menus',
+    })
+  )
+  const dishesPath = computed(() =>
+    resolveKitchenRuntimeChildCollectionPath({
+      kitchenId: kitchenId.value,
+      collectionName: 'dishes',
+    })
+  )
+  const misePath = computed(() =>
+    resolveKitchenRuntimeChildCollectionPath({
+      kitchenId: kitchenId.value,
+      collectionName: 'mise',
+    })
+  )
+  const menusRef = firestoreFetchCollection<Menu>(menusPath)
+  const dishesRef = firestoreFetchCollection<Dish>(dishesPath)
+  const miseRef = firestoreFetchCollection<KitchenMiseTask>(misePath)
   const ingredientsRef = firestoreFetchCollection<Ingredient>('ingredients')
 
-  watch(
-    kitchenId,
-    (nextKitchenId) => {
-      const menusPath = resolveKitchenRuntimeChildCollectionPath({
-        kitchenId: nextKitchenId,
-        collectionName: 'menus',
-      })
-      const dishesPath = resolveKitchenRuntimeChildCollectionPath({
-        kitchenId: nextKitchenId,
-        collectionName: 'dishes',
-      })
-      const misePath = resolveKitchenRuntimeChildCollectionPath({
-        kitchenId: nextKitchenId,
-        collectionName: 'mise',
-      })
-
-      menusRef.value = menusPath ? firestoreFetchCollection<Menu>(menusPath) : null
-      dishesRef.value = dishesPath
-        ? firestoreFetchCollection<Dish>(dishesPath)
-        : null
-      miseRef.value = misePath
-        ? firestoreFetchCollection<KitchenMiseTask>(misePath)
-        : null
-    },
-    { immediate: true }
-  )
-
-  const menus = computed(() => menusRef.value?.value ?? [])
-  const dishes = computed(() => dishesRef.value?.value ?? [])
-  const mise = computed(() => miseRef.value?.value ?? [])
+  const menus = computed(() => menusRef.value ?? [])
+  const dishes = computed(() => dishesRef.value ?? [])
+  const mise = computed(() => miseRef.value ?? [])
   const ingredients = computed(() => ingredientsRef.value ?? [])
+  const loading = computed(
+    () =>
+      Boolean(routeKitchenSlug.value) &&
+      (kitchensPending.value || Boolean(kitchenId.value && menusRef.value === undefined))
+  )
   const translationCache = ref<Record<string, string>>({})
   const translationPendingKeys = new Set<string>()
   const currencyCode = computed(() =>
@@ -285,13 +289,22 @@ export function useKitchenMenu() {
       normalizeString(input.sourceLanguage).replace(/_/g, '-') ||
       defaultLanguageCode.value
     const textMap = normalizeTextMap(input.textMap)
+    const rawSourceText = normalizeString(input.fallbackText)
+
+    if (targetLanguage === sourceLanguage || targetLanguage === defaultLanguageCode.value) {
+      return {
+        text: rawSourceText || normalizeString(textMap[targetLanguage]) || normalizeString(textMap[sourceLanguage]),
+        request: null,
+      }
+    }
+
     const inlineTarget = normalizeString(textMap[targetLanguage])
     if (inlineTarget) return { text: inlineTarget, request: null }
 
     const sourceText =
       (targetLanguage !== 'en' ? normalizeString(textMap.en) : '') ||
       normalizeString(textMap[sourceLanguage]) ||
-      normalizeString(input.fallbackText)
+      rawSourceText
     const requestSourceLanguage =
       (targetLanguage !== 'en' && normalizeString(textMap.en) ? 'en' : sourceLanguage)
 
@@ -354,15 +367,16 @@ export function useKitchenMenu() {
 
   const localizedMenuItemDescription = (
     item: { id: string; description?: string; descriptions?: Partial<Record<string, string>> },
-    dish: Dish
+    dish: Dish | null
   ) => {
     const itemText = localizedCachedText({
       id: `menu-item:${item.id}:description`,
       textMap: (item as any).descriptions,
       fallbackText: item.description,
-      sourceLanguage: dish.source_language || defaultLanguageCode.value,
+      sourceLanguage: dish?.source_language || defaultLanguageCode.value,
     })
     if (itemText) return itemText
+    if (!dish) return ''
 
     return localizedCachedText({
       id: `dish:${dish.id}:description`,
@@ -382,13 +396,17 @@ export function useKitchenMenu() {
     const menuId = normalizeString(menu?.id)
     const key = normalizeString(routeKitchenSlug.value || kitchenId.value)
     if (!menuId || !key) return undefined
+    const language = requestedLanguageCode.value
+    const languageQuery = language && language !== defaultLanguageCode.value
+      ? language
+      : undefined
 
     return {
       path: `/kitchens/${encodeURIComponent(key)}/menus/${encodeURIComponent(
         menuId
       )}`,
       query: {
-        lang: requestedLanguageCode.value || undefined,
+        lang: languageQuery,
         mode: requestedMode.value || undefined,
         table: requestedTable.value || undefined,
         cover: requestedCover.value || undefined,
@@ -406,6 +424,48 @@ export function useKitchenMenu() {
     const key = routeKitchenSlug.value || kitchenId.value
     return key ? `/kitchens/${encodeURIComponent(key)}` : '/kitchens'
   })
+
+  const publicSections = computed<KitchenPublicMenuSection[]>(() => {
+    const menu = menuView.selectedMenu.value
+    if (!menu || !Array.isArray(menu.sections)) return []
+
+    return sortBySortOrder(menu.sections)
+      .map((section) => {
+        const entries = sortBySortOrder(section.items || [])
+          .filter((item) => item?.active !== false)
+          .map((item) => {
+            const dishId = normalizeString(item.dish_id)
+            const dish = dishId ? dishesById.value.get(dishId) ?? null : null
+            const fallbackName =
+              normalizeString((item as Record<string, unknown>).label) ||
+              normalizeString(dishId) ||
+              normalizeString(item.id)
+            const name = dish ? localizedMenuItemName(dish) : fallbackName
+            const description = localizedMenuItemDescription(item, dish)
+
+            return {
+              id: item.id,
+              dishId,
+              name,
+              description,
+              price: Number(item.price || 0),
+              priceLabel: Number(item.price || 0) > 0
+                ? menuView.formatPrice(item.price)
+                : '',
+            }
+          })
+          .filter((entry) => entry.name || entry.description)
+
+        return {
+          id: section.id,
+          label: localizedMenuSectionLabel(menu, section),
+          description: section.description,
+          entries,
+        }
+      })
+      .filter((section) => section.entries.length > 0)
+  })
+
   const semanticSections = computed<KitchenSemanticMenuSection[]>(() => {
     const menu = menuView.selectedMenu.value
     if (!menu || !Array.isArray(menu.sections)) return []
@@ -444,6 +504,10 @@ export function useKitchenMenu() {
               dishId,
               name,
               description,
+              price: Number(item.price || 0),
+              priceLabel: Number(item.price || 0) > 0
+                ? menuView.formatPrice(item.price)
+                : '',
               semanticLine,
               integrityNote,
             }
@@ -500,14 +564,22 @@ export function useKitchenMenu() {
       for (const item of section.items || []) {
         const dishId = normalizeString(item.dish_id)
         const dish = dishId ? dishesById.value.get(dishId) : null
-        if (!dish) continue
 
         add(resolveTranslationSource({
-          id: `dish:${dish.id}:description`,
-          textMap: dish.descriptions,
-          fallbackText: dish.description,
-          sourceLanguage: dish.source_language || defaultLanguageCode.value,
+          id: `menu-item:${item.id}:description`,
+          textMap: (item as any).descriptions,
+          fallbackText: item.description,
+          sourceLanguage: dish?.source_language || (menu as any).source_language || defaultLanguageCode.value,
         }).request)
+
+        if (dish) {
+          add(resolveTranslationSource({
+            id: `dish:${dish.id}:description`,
+            textMap: dish.descriptions,
+            fallbackText: dish.description,
+            sourceLanguage: dish.source_language || defaultLanguageCode.value,
+          }).request)
+        }
       }
     }
 
@@ -667,6 +739,7 @@ export function useKitchenMenu() {
     requestedTable,
     requestedCover,
     requestedLanguageCode,
+    defaultLanguageCode,
     routeKitchenSlug,
     routeKitchenId: routeKitchenSlug,
     routeMenuId,
@@ -695,6 +768,7 @@ export function useKitchenMenu() {
     localizedMenuDescription,
     resolveVariantLabel: menuView.resolveVariantLabel,
     formatPrice: menuView.formatPrice,
+    publicSections,
     semanticSections,
     prototypeMenuJson,
     headerTitle,

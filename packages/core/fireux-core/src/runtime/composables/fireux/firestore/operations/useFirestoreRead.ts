@@ -11,7 +11,7 @@ import {
   type Query,
   type QueryDocumentSnapshot,
 } from 'firebase/firestore'
-import { ref, type Ref } from 'vue'
+import { computed, ref, unref, type Ref } from 'vue'
 import {
   useCollection,
   useDocument,
@@ -56,34 +56,48 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
 
   /** Run any Firestore Query (reactive) */
   const firestoreQuery = <T>(
-    q: Query<T>,
-    ssrKey?: string,
-    devCollectionPath?: string
+    q: Query<T> | Ref<Query<T> | null>,
+    ssrKey?: string | Ref<string>,
+    devCollectionPath?: string | Ref<string>
   ): Ref<T[] | undefined> => {
     if (import.meta.server) {
       return ref(undefined) as Ref<T[] | undefined>
     }
 
-    const options = ssrKey ? { ssrKey } : undefined
+    const resolvedSsrKey = typeof ssrKey === 'string' ? ssrKey : ''
+    const options = resolvedSsrKey ? { ssrKey: resolvedSsrKey } : undefined
     const binding = useCollection<T>(q, {
       ...options,
       transform: (docSnap: QueryDocumentSnapshot<T>) => {
         const value = { ...(docSnap.data() as T), id: docSnap.id } as T & Record<string, unknown>
-        return devCollectionPath
-          ? attachDevCollectionMeta(value, devCollectionPath, docSnap.id) as T
+        const resolvedDevCollectionPath = unref(devCollectionPath) || ''
+        return resolvedDevCollectionPath
+          ? attachDevCollectionMeta(value, resolvedDevCollectionPath, docSnap.id) as T
           : value as T
       },
     } as any)
-    guardFirestorePromise(binding as any, ssrKey || 'query')
+    guardFirestorePromise(binding as any, resolvedSsrKey || 'query')
     return (binding as any).data as Ref<T[] | undefined>
   }
 
   /** Fetch an entire collection (reactive) */
   const firestoreFetchCollection = <T>(
-    collectionPath: string
+    collectionPath: string | Ref<string | null | undefined>
   ): Ref<T[] | undefined> => {
-    const q = fsq(collection(resolveDb(), collectionPath)) as Query<T>
-    return firestoreQuery<T>(q, collectionPath, collectionPath)
+    if (typeof collectionPath === 'string') {
+      const q = fsq(collection(resolveDb(), collectionPath)) as Query<T>
+      return firestoreQuery<T>(q, collectionPath, collectionPath)
+    }
+
+    const resolvedCollectionPath = computed(() =>
+      String(unref(collectionPath) || '').trim()
+    )
+    const q = computed(() => {
+      const path = resolvedCollectionPath.value
+      return path ? fsq(collection(resolveDb(), path)) as Query<T> : null
+    })
+
+    return firestoreQuery<T>(q, undefined, resolvedCollectionPath)
   }
 
   /** Fetch a single document (reactive) */

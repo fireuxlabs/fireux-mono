@@ -328,13 +328,19 @@ const menuLink = (menuIdRaw: unknown) => {
   const publicKitchenKey = String((kitchen.value as any)?.slug || kitchenRouteKey.value || kitchenId.value).trim()
   const menuId = String(menuIdRaw || '').trim()
   if (!publicKitchenKey || !menuId) return ''
-  return `/kitchens/${encodeURIComponent(publicKitchenKey)}/menus/${encodeURIComponent(menuId)}?lang=${encodeURIComponent(selectedLanguage.value)}`
+  const languageQuery = selectedLanguage.value === defaultLanguage.value
+    ? ''
+    : `?lang=${encodeURIComponent(selectedLanguage.value)}`
+  return `/kitchens/${encodeURIComponent(publicKitchenKey)}/menus/${encodeURIComponent(menuId)}${languageQuery}`
 }
 
 const menusIndexLink = computed(() => {
   const publicKitchenKey = String((kitchen.value as any)?.slug || kitchenRouteKey.value || kitchenId.value).trim()
   if (!publicKitchenKey) return ''
-  return `/kitchens/${encodeURIComponent(publicKitchenKey)}/menus?lang=${encodeURIComponent(selectedLanguage.value)}`
+  const languageQuery = selectedLanguage.value === defaultLanguage.value
+    ? ''
+    : `?lang=${encodeURIComponent(selectedLanguage.value)}`
+  return `/kitchens/${encodeURIComponent(publicKitchenKey)}/menus${languageQuery}`
 })
 
 const localizedString = (
