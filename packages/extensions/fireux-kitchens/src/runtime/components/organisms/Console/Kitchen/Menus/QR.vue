@@ -128,7 +128,6 @@
 </template>
 
 <script setup lang="ts">
-import { useRequestURL } from '#imports'
 import { toDataURL } from 'qrcode'
 import { computed, ref, watch } from 'vue'
 import { useKitchenConsoleMenus } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMenus'
@@ -140,7 +139,7 @@ const {
   kitchenId,
 } = useKitchenConsoleMenus()
 
-const requestUrl = useRequestURL()
+const PUBLIC_MENU_ORIGIN = 'http://misebox.app'
 const selectedMenuId = ref('')
 const qrDataUrl = ref('')
 const isDev = import.meta.dev
@@ -172,7 +171,7 @@ const selectedMenu = computed(() =>
 const publicMenuPath = computed(() => {
   if (!kitchenSlug.value) return ''
 
-  const kitchenPath = `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menu`
+  const kitchenPath = `/kitchens/${encodeURIComponent(kitchenSlug.value)}/menus`
   return selectedMenuId.value
     ? `${kitchenPath}/${encodeURIComponent(selectedMenuId.value)}`
     : kitchenPath
@@ -180,7 +179,7 @@ const publicMenuPath = computed(() => {
 
 const publicMenuUrl = computed(() => {
   if (!publicMenuPath.value) return ''
-  return new URL(publicMenuPath.value, requestUrl.origin).toString()
+  return new URL(publicMenuPath.value, PUBLIC_MENU_ORIGIN).toString()
 })
 
 const qrTitle = computed(() =>

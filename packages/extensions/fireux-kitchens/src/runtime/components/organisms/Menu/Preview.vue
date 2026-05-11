@@ -226,11 +226,11 @@ const normalizeToneText = (value: unknown) =>
 
 const sectionAccentClass = (section: MenuPreviewSection) => {
   const key = normalizeToneText(`${section.id} ${section.label}`)
-  if (/(poulet|chicken|schweinefleisch|pork|kalbsfleisch|veal|vegetarisch|vegetarian|vegan)/.test(key)) {
+  if (key) {
     return 'border-primary text-primary'
   }
 
-  return 'border-error text-error'
+  return 'border-primary text-primary'
 }
 </script>
 

@@ -13,8 +13,8 @@ This README only explains the kitchen delta.
 
 - `index.vue`
 - `[id].vue`
-- `[kitchenSlug]/menu/index.vue`
-- `[kitchenSlug]/menu/[menuId].vue`
+- `[kitchenSlug]/menus/index.vue`
+- `[kitchenSlug]/menus/[menuId].vue`
 - `create.vue`
 - `edit/[id].vue`
 - `learn-more.vue`
@@ -24,7 +24,7 @@ This README only explains the kitchen delta.
 
 - `index.vue` is the public kitchen index
 - `index.vue` embeds the same chooser used by `/console/kitchen`
-- `[id].vue` and menu detail are public kitchen delivery
+- `[id].vue` and menus index/detail are public kitchen delivery
 - `create.vue` is the public kitchen create page
 - `edit/[id].vue` belongs to the public kitchen edit family
 
