@@ -2,13 +2,15 @@ import { createError, defineEventHandler, readBody } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
 import {
   buildTranslationCacheDoc,
-  getDefaultTranslationCacheDb,
-  makeTranslationCacheKey,
+  getTranslationDatabases,
+  makeMenuTranslationCacheKey,
+  makeTranslationGlossaryKey,
+  makeTranslationSourceHash,
+  menuTranslationCacheDocRef,
   RESTAURANT_MENU_GLOSSARY_VERSION,
   translateTextBatch,
-  translationCacheDocRef,
+  translationGlossaryDocRef,
 } from '../utils/translation-cache'
-import { getRestaurantGlossaryTranslation } from '../utils/restaurant-translation-glossary'
 
 type TranslationCacheRequestItem = {
   id?: unknown
@@ -19,6 +21,8 @@ type TranslationCacheRequestItem = {
 type TranslationCacheRequestBody = {
   domain?: unknown
   glossaryVersion?: unknown
+  kitchenId?: unknown
+  menuId?: unknown
   targetLanguage?: unknown
   items?: unknown
 }
@@ -42,6 +46,8 @@ export default defineEventHandler(async (event) => {
   const body = (await readBody(event).catch(() => null)) as TranslationCacheRequestBody | null
   const domain = normalizeDomain(body?.domain || 'restaurant_menu')
   const glossaryVersion = normalizeDomain(body?.glossaryVersion || RESTAURANT_MENU_GLOSSARY_VERSION)
+  const kitchenId = normalizeString(body?.kitchenId)
+  const menuId = normalizeString(body?.menuId)
   const targetLanguage = normalizeLanguageCode(body?.targetLanguage)
   const items = parseItems(body?.items)
 
@@ -56,64 +62,86 @@ export default defineEventHandler(async (event) => {
     return { items: [], failures: [] }
   }
 
+  if (!kitchenId || !menuId) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Kitchen id and menu id are required for menu translation cache',
+    })
+  }
+
   const normalizedItems = items.map((item, index) => {
     const sourceLanguage = normalizeLanguageCode(item.sourceLanguage)
     const sourceText = normalizeString(item.sourceText)
     const id = normalizeString(item.id) || String(index)
-    const cacheId = makeTranslationCacheKey({
-      domain,
-      glossaryVersion,
-      sourceLanguage,
+    const cacheId = makeMenuTranslationCacheKey({
+      fieldId: id,
       targetLanguage,
-      sourceText,
     })
 
     return {
       id,
       sourceLanguage,
       sourceText,
+      sourceHash: makeTranslationSourceHash(sourceText),
       cacheId,
+      glossaryId: makeTranslationGlossaryKey({
+        domain,
+        sourceLanguage,
+        sourceText,
+      }),
     }
   })
 
   const passThrough = normalizedItems.filter(
     (item) => !item.sourceText || !item.cacheId || item.sourceLanguage === targetLanguage
   )
-  const cacheable = normalizedItems.filter((item) => item.sourceText && item.cacheId)
+  const cacheable = normalizedItems.filter(
+    (item) =>
+      item.sourceText &&
+      item.sourceLanguage &&
+      item.cacheId &&
+      item.sourceLanguage !== targetLanguage
+  )
   const uniqueByCacheId = new Map<string, typeof cacheable[number]>()
   for (const item of cacheable) {
     if (!uniqueByCacheId.has(item.cacheId)) uniqueByCacheId.set(item.cacheId, item)
   }
 
-  const { db, account } = await getDefaultTranslationCacheDb()
+  const { defaultDb, nativeDb, account } = await getTranslationDatabases()
   const unique = Array.from(uniqueByCacheId.values())
-  const snapshots = await Promise.all(
-    unique.map((item) => translationCacheDocRef(db, item.cacheId).get())
+  const cacheSnapshots = await Promise.all(
+    unique.map((item) => menuTranslationCacheDocRef(nativeDb, {
+      kitchenId,
+      menuId,
+      id: item.cacheId,
+    }).get())
   )
   const byCacheId = new Map<string, {
     text: string
     provider: string
     cached: boolean
   }>()
-  const missing: typeof unique = []
-  let usageBatch = db.batch()
-  let usageOps = 0
+  const cacheMissing: typeof unique = []
+  let batch = nativeDb.batch()
+  let ops = 0
 
-  snapshots.forEach((snap, index) => {
+  cacheSnapshots.forEach((snap, index) => {
     const item = unique[index]
     const data = snap.data() || {}
     const translatedText = normalizeString(data.translated_text)
-    if (!snap.exists || !translatedText) {
-      missing.push(item)
+    const sourceHash = normalizeString(data.source_hash)
+
+    if (!snap.exists || !translatedText || sourceHash !== item.sourceHash) {
+      cacheMissing.push(item)
       return
     }
 
     byCacheId.set(item.cacheId, {
       text: translatedText,
-      provider: normalizeString(data.provider) || 'cache',
+      provider: normalizeString(data.provider) || 'menu_cache',
       cached: true,
     })
-    usageBatch.set(snap.ref, {
+    batch.set(snap.ref, {
       usage_count: FieldValue.increment(
         cacheable.filter((entry) => entry.cacheId === item.cacheId).length
       ),
@@ -122,46 +150,61 @@ export default defineEventHandler(async (event) => {
         by: 'system:translation-cache',
       },
     }, { merge: true })
-    usageOps += 1
+    ops += 1
   })
 
+  const glossarySnapshots = await Promise.all(
+    cacheMissing.map((item) => item.glossaryId
+      ? translationGlossaryDocRef(defaultDb, item.glossaryId).get()
+      : Promise.resolve(null)
+    )
+  )
+  const providerMissing: typeof unique = []
   const failures: Array<{ id: string; message: string }> = []
-  const providerMissing: typeof missing = []
 
-  for (const item of missing) {
-    const glossaryText = domain === 'restaurant_menu'
-      ? normalizeString(getRestaurantGlossaryTranslation({
-          sourceText: item.sourceText,
-          targetLanguage,
-        }))
-      : ''
+  glossarySnapshots.forEach((snap, index) => {
+    const item = cacheMissing[index]
+    if (!snap?.exists) {
+      providerMissing.push(item)
+      return
+    }
 
-    if (glossaryText) {
-      byCacheId.set(item.cacheId, {
-        text: glossaryText,
-        provider: 'restaurant_glossary',
-        cached: false,
-      })
-      usageBatch.set(
-        translationCacheDocRef(db, item.cacheId),
-        buildTranslationCacheDoc({
+    const data = snap.data() || {}
+    const translations =
+      data.translations && typeof data.translations === 'object'
+        ? data.translations as Record<string, unknown>
+        : {}
+    const translatedText = normalizeString(translations[targetLanguage])
+    if (!translatedText) {
+      providerMissing.push(item)
+      return
+    }
+
+    byCacheId.set(item.cacheId, {
+      text: translatedText,
+      provider: normalizeString(data.provider || data.kind) || 'translation_glossary',
+      cached: false,
+    })
+    batch.set(
+      menuTranslationCacheDocRef(nativeDb, { kitchenId, menuId, id: item.cacheId }),
+      {
+        ...buildTranslationCacheDoc({
           id: item.cacheId,
+          fieldId: item.id,
           domain,
           glossaryVersion,
           sourceLanguage: item.sourceLanguage,
           targetLanguage,
           sourceText: item.sourceText,
-          translatedText: glossaryText,
-          provider: 'restaurant_glossary',
+          translatedText,
+          provider: normalizeString(data.provider || data.kind) || 'translation_glossary',
         }),
-        { merge: false }
-      )
-      usageOps += 1
-      continue
-    }
-
-    providerMissing.push(item)
-  }
+        reviewed: data.verified === true,
+      },
+      { merge: false }
+    )
+    ops += 1
+  })
 
   const missingGroups = new Map<string, typeof providerMissing>()
   for (const item of providerMissing) {
@@ -191,21 +234,25 @@ export default defineEventHandler(async (event) => {
           provider: 'google',
           cached: false,
         })
-        usageBatch.set(
-          translationCacheDocRef(db, item.cacheId),
-          buildTranslationCacheDoc({
-            id: item.cacheId,
-            domain,
-            glossaryVersion,
-            sourceLanguage,
-            targetLanguage,
-            sourceText: item.sourceText,
-            translatedText,
-            provider: 'google',
-          }),
+        batch.set(
+          menuTranslationCacheDocRef(nativeDb, { kitchenId, menuId, id: item.cacheId }),
+          {
+            ...buildTranslationCacheDoc({
+              id: item.cacheId,
+              fieldId: item.id,
+              domain,
+              glossaryVersion,
+              sourceLanguage,
+              targetLanguage,
+              sourceText: item.sourceText,
+              translatedText,
+              provider: 'google',
+            }),
+            reviewed: false,
+          },
           { merge: false }
         )
-        usageOps += 1
+        ops += 1
       })
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
@@ -213,9 +260,11 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  if (usageOps > 0) await usageBatch.commit()
+  if (ops > 0) await batch.commit()
 
   return {
+    cache_path: `kitchens/${kitchenId}/menus/${menuId}/translation_cache`,
+    glossary_collection: 'translation_glossary',
     items: normalizedItems.map((item) => {
       const cached = item.cacheId ? byCacheId.get(item.cacheId) : null
       return {

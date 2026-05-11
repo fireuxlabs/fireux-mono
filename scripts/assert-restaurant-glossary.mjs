@@ -8,6 +8,10 @@ const glossaryPath = resolve(
   'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/app/kitchen-menu-glossary.ts'
 )
 const source = await readFile(glossaryPath, 'utf8')
+const seed = JSON.parse(
+  await readFile('scripts/data/restaurant-translation-glossary.seed.json', 'utf8')
+)
+const seedEntries = seed.entries || []
 const transpiled = ts.transpileModule(source, {
   compilerOptions: {
     module: ts.ModuleKind.ES2022,
@@ -50,4 +54,63 @@ for (const [input, expected] of cases) {
   }
 }
 
-console.log('[glossary] assertions passed', { cases: cases.length })
+const fieldCases = [
+  ['Hauptkarte', { en: 'Main Menu' }],
+  ['Peperoni', { en: 'bell pepper', it: 'peperone' }],
+  ['grüner Pfeffer', { en: 'green peppercorn', it: 'pepe verde' }],
+  ['Rahmsauce', { en: 'cream sauce', it: 'salsa alla panna' }],
+  ['Rindsentrecôte', { en: 'beef entrecôte', it: 'entrecôte di manzo' }],
+  ['Beilagen', { en: 'Side Dishes' }],
+  ['Parmaschinken', { it: 'prosciutto di Parma' }],
+  ['Heisser Stein', { en: 'Hot Stone', it: 'Pietra calda' }],
+  ['Spiess', { en: 'Skewer', it: 'Spiedino' }],
+]
+
+function normalize(value) {
+  return String(value ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase()
+    .replace(/[’‘`´]/g, "'")
+    .replace(/[–—]/g, '-')
+    .replace(/\s*[/|]\s*/g, ' / ')
+    .replace(/\s*&\s*/g, ' & ')
+    .replace(/\s*-\s*/g, ' - ')
+    .replace(/\s+/g, ' ')
+    .replace(/^[\s/|:;,.–—-]+|[\s/|:;,.–—-]+$/g, '')
+}
+
+function getSeedTranslation(sourceText, language) {
+  const key = normalize(sourceText)
+  const match = seedEntries.find((entry) => {
+    const values = [
+      entry.source_text,
+      ...(Array.isArray(entry.aliases) ? entry.aliases : []),
+      ...Object.values(entry.translations || {}),
+    ]
+    return values.some((value) => normalize(value) === key)
+  })
+
+  return String(match?.translations?.[language] ?? '').trim()
+}
+
+for (const [input, expectedFields] of fieldCases) {
+  for (const [language, expected] of Object.entries(expectedFields)) {
+    const actual = getSeedTranslation(input, language)
+    if (actual !== expected) {
+      console.error('[glossary] field assertion failed', {
+        input,
+        language,
+        expected,
+        actual,
+      })
+      process.exit(1)
+    }
+  }
+}
+
+console.log('[glossary] assertions passed', {
+  cases: cases.length,
+  fieldCases: fieldCases.length,
+})

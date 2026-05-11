@@ -520,6 +520,10 @@ export function useKitchenMenu() {
       if (import.meta.server || !requests.length) return
 
       const targetLanguage = requestedLanguageCode.value
+      const activeKitchenId = kitchenId.value
+      const activeMenuId = normalizeString(menuView.selectedMenu.value?.id)
+      if (!activeKitchenId || !activeMenuId) return
+
       const pendingKeys = requests.map(localTranslationKey)
       pendingKeys.forEach((key) => translationPendingKeys.add(key))
 
@@ -530,6 +534,8 @@ export function useKitchenMenu() {
           body: JSON.stringify({
             domain: 'restaurant_menu',
             glossaryVersion: RESTAURANT_MENU_GLOSSARY_VERSION,
+            kitchenId: activeKitchenId,
+            menuId: activeMenuId,
             targetLanguage,
             items: requests.map((request) => ({
               id: request.id,

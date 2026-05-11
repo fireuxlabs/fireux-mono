@@ -5,16 +5,20 @@ import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { isAbsolute, join, resolve } from 'node:path'
 
-export type TranslationCacheKeyInput = {
-  domain: string
-  glossaryVersion?: string
-  sourceLanguage: string
+export type MenuTranslationCacheKeyInput = {
+  fieldId: string
   targetLanguage: string
+}
+
+export type TranslationGlossaryKeyInput = {
+  domain: string
+  sourceLanguage: string
   sourceText: string
 }
 
 export type TranslationCacheDoc = {
   id: string
+  field_id?: string
   domain: string
   glossary_version: string
   source_language: string
@@ -22,7 +26,33 @@ export type TranslationCacheDoc = {
   source_text: string
   translated_text: string
   provider: string
+  reviewed?: boolean
   source_hash: string
+  usage_count: number
+  created: {
+    at: unknown
+    by: string
+    app_id: string
+  }
+  updated: {
+    at: unknown
+    by: string
+  }
+}
+
+export type TranslationGlossaryKind = 'glossary' | 'override'
+
+export type TranslationGlossaryDoc = {
+  id: string
+  domain: string
+  glossary_version: string
+  source_language: string
+  source_text: string
+  source_hash: string
+  kind: TranslationGlossaryKind
+  translations: Record<string, string>
+  verified: boolean
+  provider: string
   usage_count: number
   created: {
     at: unknown
@@ -49,6 +79,8 @@ const DEFAULT_SERVICE_ACCOUNT_PATH =
 const SYSTEM_ACTOR = 'system:translation-cache'
 const APP_ID = 'misebox-app'
 const CACHE_COLLECTION = 'translation_cache'
+const GLOSSARY_COLLECTION = 'translation_glossary'
+const NATIVE_DATABASE_ID = 'misebox'
 const DEFAULT_GLOSSARY_VERSION = 'restaurant_menu_v1'
 const TOKEN_URL = 'https://oauth2.googleapis.com/token'
 const TOKEN_SCOPE = 'https://www.googleapis.com/auth/cloud-translation'
@@ -120,20 +152,30 @@ export function makeTranslationSourceHash(sourceText: string) {
   return createHash('sha256').update(normalizeString(sourceText), 'utf8').digest('hex')
 }
 
-export function makeTranslationCacheKey(input: TranslationCacheKeyInput) {
-  const domain = normalizeDomain(input.domain)
-  const glossaryVersion = normalizeGlossaryVersion(input.glossaryVersion)
-  const sourceLanguage = normalizeLanguageCode(input.sourceLanguage)
+export function makeMenuTranslationCacheKey(input: MenuTranslationCacheKeyInput) {
+  const fieldId = normalizeString(input.fieldId)
   const targetLanguage = normalizeLanguageCode(input.targetLanguage)
+  const fieldHash = createHash('sha256')
+    .update([fieldId, targetLanguage].join('\n'), 'utf8')
+    .digest('hex')
+
+  if (!fieldId || !targetLanguage) return ''
+
+  return `${targetLanguage}__${fieldHash.slice(0, 40)}`
+}
+
+export function makeTranslationGlossaryKey(input: TranslationGlossaryKeyInput) {
+  const domain = normalizeDomain(input.domain)
+  const sourceLanguage = normalizeLanguageCode(input.sourceLanguage)
   const sourceText = normalizeString(input.sourceText)
   const sourceHash = createHash('sha256')
-    .update([domain, glossaryVersion, sourceLanguage, targetLanguage, sourceText].join('\n'), 'utf8')
+    .update([domain, sourceLanguage, sourceText].join('\n'), 'utf8')
     .digest('hex')
 
   if (!sourceText) return ''
-  if (!sourceLanguage || !targetLanguage || sourceLanguage === targetLanguage) return ''
+  if (!sourceLanguage) return ''
 
-  return `${domain}__${glossaryVersion}__${sourceLanguage}__${targetLanguage}__${sourceHash.slice(0, 40)}`
+  return `${domain}__${sourceLanguage}__${sourceHash.slice(0, 40)}`
 }
 
 async function resolveServiceAccount() {
@@ -154,13 +196,14 @@ async function resolveServiceAccount() {
   return readServiceAccount(pathValue)
 }
 
-export async function getDefaultTranslationCacheDb(): Promise<{
-  db: Firestore
+export async function getTranslationDatabases(): Promise<{
+  defaultDb: Firestore
+  nativeDb: Firestore
   account: ServiceAccount
 }> {
   const account = await resolveServiceAccount()
   const projectId = getServiceAccountField(account, 'project_id', 'projectId')
-  const appName = `misebox-translation-cache:${projectId}`
+  const appName = `misebox-translation:${projectId}`
   const existing = getApps().find((app) => app.name === appName)
   const app: App = existing || initializeApp(
     { credential: cert(account), projectId },
@@ -168,7 +211,8 @@ export async function getDefaultTranslationCacheDb(): Promise<{
   )
 
   return {
-    db: getFirestore(app),
+    defaultDb: getFirestore(app),
+    nativeDb: getFirestore(app, NATIVE_DATABASE_ID),
     account,
   }
 }
@@ -268,12 +312,30 @@ export async function translateTextBatch(
   return (data.translations || []).map((entry) => normalizeString(entry?.translatedText))
 }
 
-export function translationCacheDocRef(db: Firestore, id: string) {
-  return db.collection(CACHE_COLLECTION).doc(id)
+export function menuTranslationCacheDocRef(
+  db: Firestore,
+  input: {
+    kitchenId: string
+    menuId: string
+    id: string
+  }
+) {
+  return db
+    .collection('kitchens')
+    .doc(input.kitchenId)
+    .collection('menus')
+    .doc(input.menuId)
+    .collection(CACHE_COLLECTION)
+    .doc(input.id)
+}
+
+export function translationGlossaryDocRef(db: Firestore, id: string) {
+  return db.collection(GLOSSARY_COLLECTION).doc(id)
 }
 
 export function buildTranslationCacheDoc(input: {
   id: string
+  fieldId?: string
   domain: string
   glossaryVersion?: string
   sourceLanguage: string
@@ -284,6 +346,7 @@ export function buildTranslationCacheDoc(input: {
 }): TranslationCacheDoc {
   return {
     id: input.id,
+    ...(normalizeString(input.fieldId) ? { field_id: normalizeString(input.fieldId) } : {}),
     domain: normalizeDomain(input.domain),
     glossary_version: normalizeGlossaryVersion(input.glossaryVersion),
     source_language: normalizeLanguageCode(input.sourceLanguage),
@@ -305,7 +368,49 @@ export function buildTranslationCacheDoc(input: {
   }
 }
 
+export function buildTranslationGlossaryDoc(input: {
+  id: string
+  domain: string
+  glossaryVersion?: string
+  sourceLanguage: string
+  sourceText: string
+  translations: Record<string, string>
+  kind: TranslationGlossaryKind
+  provider: string
+  verified?: boolean
+}): TranslationGlossaryDoc {
+  const translations: Record<string, string> = {}
+  for (const [language, text] of Object.entries(input.translations || {})) {
+    const code = normalizeLanguageCode(language)
+    const value = normalizeString(text)
+    if (code && value) translations[code] = value
+  }
+
+  return {
+    id: input.id,
+    domain: normalizeDomain(input.domain),
+    glossary_version: normalizeGlossaryVersion(input.glossaryVersion),
+    source_language: normalizeLanguageCode(input.sourceLanguage),
+    source_text: normalizeString(input.sourceText),
+    source_hash: makeTranslationSourceHash(input.sourceText),
+    kind: input.kind,
+    translations,
+    verified: input.verified === true,
+    provider: normalizeString(input.provider) || 'unknown',
+    usage_count: 0,
+    created: {
+      at: FieldValue.serverTimestamp(),
+      by: SYSTEM_ACTOR,
+      app_id: APP_ID,
+    },
+    updated: {
+      at: FieldValue.serverTimestamp(),
+      by: SYSTEM_ACTOR,
+    },
+  }
+}
+
 export {
-  CACHE_COLLECTION as TRANSLATION_CACHE_COLLECTION,
+  GLOSSARY_COLLECTION as TRANSLATION_GLOSSARY_COLLECTION,
   DEFAULT_GLOSSARY_VERSION as RESTAURANT_MENU_GLOSSARY_VERSION,
 }

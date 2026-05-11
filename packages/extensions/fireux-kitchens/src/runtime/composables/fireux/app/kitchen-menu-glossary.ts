@@ -146,7 +146,7 @@ const RESTAURANT_MENU_GLOSSARY: RestaurantMenuGlossaryEntry[] = [
     },
   },
   {
-    aliases: ['heisser stein / spiess', 'heisser stein', 'spiess', 'hot stone / skewers'],
+    aliases: ['heisser stein / spiess', 'hot stone / skewers'],
     names: {
       de: 'Heisser Stein / Spiess',
       en: 'Hot Stone / Skewers',

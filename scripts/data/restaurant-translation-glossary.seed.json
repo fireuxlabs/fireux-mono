@@ -1,0 +1,331 @@
+{
+  "version": "restaurant_menu_v1",
+  "entries": [
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Hauptkarte",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "aliases": ["hauptmenu", "hauptmenü", "main menu"],
+      "translations": {
+        "de": "Hauptkarte",
+        "en": "Main Menu",
+        "it": "Menù principale"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Speisekarte",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "aliases": ["menu"],
+      "translations": {
+        "de": "Speisekarte",
+        "en": "Menu",
+        "it": "Menù"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Beilagen",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "aliases": ["contorni", "contorni / beilagen", "side dishes"],
+      "translations": {
+        "de": "Beilagen",
+        "en": "Side Dishes",
+        "it": "Contorni"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Vorspeisen",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "aliases": ["antipasti", "antipasti / vorspeisen", "starters"],
+      "translations": {
+        "de": "Vorspeisen",
+        "en": "Starters",
+        "it": "Antipasti"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Suppen",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "aliases": ["zuppa", "zuppa / suppen", "soups"],
+      "translations": {
+        "de": "Suppen",
+        "en": "Soups",
+        "it": "Zuppe"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Salate",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "aliases": ["insalate", "insalate / salate", "salads"],
+      "translations": {
+        "de": "Salate",
+        "en": "Salads",
+        "it": "Insalate"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Kinderkarte",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "aliases": ["kinder karte", "bambini", "kinder karte / bambini"],
+      "translations": {
+        "de": "Kinderkarte",
+        "en": "Kids Menu",
+        "it": "Menù bambini"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Fisch",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "aliases": ["pesce", "pesce / fisch", "fish"],
+      "translations": {
+        "de": "Fisch",
+        "en": "Fish",
+        "it": "Pesce"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Fleisch",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "aliases": ["carne", "carne / fleisch", "meat"],
+      "translations": {
+        "de": "Fleisch",
+        "en": "Meat",
+        "it": "Carne"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Heisser Stein",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "translations": {
+        "de": "Heisser Stein",
+        "en": "Hot Stone",
+        "it": "Pietra calda"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Spiess",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "translations": {
+        "de": "Spiess",
+        "en": "Skewer",
+        "it": "Spiedino"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Tomatensauce",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "translations": {
+        "de": "Tomatensauce",
+        "en": "tomato sauce",
+        "it": "salsa di pomodoro"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Pestorahmsauce",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "translations": {
+        "de": "Pestorahmsauce",
+        "en": "pesto cream sauce",
+        "it": "salsa alla panna e pesto"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Rahmsauce",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "translations": {
+        "de": "Rahmsauce",
+        "en": "cream sauce",
+        "it": "salsa alla panna"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Peperoni",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "translations": {
+        "de": "Peperoni",
+        "en": "bell pepper",
+        "it": "peperone"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "grüner Pfeffer",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "aliases": ["gruner pfeffer"],
+      "translations": {
+        "de": "grüner Pfeffer",
+        "en": "green peppercorn",
+        "it": "pepe verde"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Rindsentrecôte",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "aliases": ["rindsentrecote"],
+      "translations": {
+        "de": "Rindsentrecôte",
+        "en": "beef entrecôte",
+        "it": "entrecôte di manzo"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Parmaschinken",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "aliases": ["parma-schinken"],
+      "translations": {
+        "de": "Parmaschinken",
+        "en": "Parma ham",
+        "it": "prosciutto di Parma"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Vorderschinken",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "translations": {
+        "de": "Vorderschinken",
+        "en": "ham",
+        "it": "prosciutto cotto"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Nüsslisalat",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "aliases": ["nusslisalat"],
+      "translations": {
+        "de": "Nüsslisalat",
+        "en": "lamb’s lettuce",
+        "it": "valerianella"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Quark",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "translations": {
+        "de": "Quark",
+        "en": "quark",
+        "it": "quark"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Riesenkrevetten",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "translations": {
+        "de": "Riesenkrevetten",
+        "en": "king prawns",
+        "it": "gamberoni"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Krevetten",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "translations": {
+        "de": "Krevetten",
+        "en": "shrimps",
+        "it": "gamberi"
+      }
+    },
+    {
+      "domain": "restaurant_menu",
+      "source_language": "de",
+      "source_text": "Olivenöl",
+      "kind": "glossary",
+      "verified": true,
+      "provider": "manual",
+      "aliases": ["olivenol"],
+      "translations": {
+        "de": "Olivenöl",
+        "en": "olive oil",
+        "it": "olio d’oliva"
+      }
+    }
+  ]
+}
