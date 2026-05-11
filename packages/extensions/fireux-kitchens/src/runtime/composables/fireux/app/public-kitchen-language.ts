@@ -1,4 +1,4 @@
-type PublicKitchenChromeLanguage = 'de' | 'en' | 'fr' | 'ar'
+type PublicKitchenChromeLanguage = 'de' | 'en' | 'it' | 'fr' | 'ar'
 export type PublicKitchenLanguageCode = '' | PublicKitchenChromeLanguage
 
 export const PUBLIC_KITCHEN_LANGUAGE_OPTIONS: Array<{
@@ -8,6 +8,7 @@ export const PUBLIC_KITCHEN_LANGUAGE_OPTIONS: Array<{
   { code: '', label: 'Original' },
   { code: 'de', label: '🇩🇪' },
   { code: 'en', label: '🇬🇧' },
+  { code: 'it', label: '🇮🇹' },
   { code: 'fr', label: '🇫🇷' },
   { code: 'ar', label: 'العربية' },
 ]
@@ -48,6 +49,24 @@ export const PUBLIC_KITCHEN_CHROME_LABELS = {
     sections: 'sections',
     dish: 'dish',
     dishes: 'dishes',
+  },
+  it: {
+    menus: 'Menu',
+    chooseMenu: 'Scegli un menu',
+    openMenus: 'Apri i menu',
+    openMenu: 'Apri il menu',
+    loadingMenus: 'Caricamento dei menu...',
+    noMenusAvailable: 'Nessun menu disponibile',
+    noPublicMenus: 'Questo ristorante non ha ancora menu pubblici disponibili.',
+    loadingMenu: 'Caricamento del menu...',
+    kitchenNotFound: 'Ristorante non trovato',
+    menuNotFound: 'Menu non trovato',
+    noSectionsFound: 'Nessuna sezione trovata',
+    menuJson: 'Menu JSON',
+    section: 'sezione',
+    sections: 'sezioni',
+    dish: 'piatto',
+    dishes: 'piatti',
   },
   fr: {
     menus: 'Menus',
@@ -91,7 +110,7 @@ export function normalizePublicKitchenLanguage(
   value: unknown
 ): PublicKitchenLanguageCode {
   const language = String(value ?? '').trim().replace(/_/g, '-').toLowerCase()
-  return language === 'de' || language === 'en' || language === 'fr' || language === 'ar'
+  return language === 'de' || language === 'en' || language === 'it' || language === 'fr' || language === 'ar'
     ? language
     : ''
 }

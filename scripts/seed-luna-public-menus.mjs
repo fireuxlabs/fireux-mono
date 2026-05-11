@@ -30,44 +30,44 @@ const normalizeLabelKey = (value) =>
 
 const SECTION_LABELS = new Map(
   [
-    ['Antipasti', { de: 'Vorspeisen', en: 'Starter' }],
-    ['ANTIPASTI', { de: 'Vorspeisen', en: 'Starter' }],
-    ['ANTIPASTI / VORSPEISEN', { de: 'Vorspeisen', en: 'Starter' }],
-    ['Zuppa', { de: 'Suppen', en: 'Soups' }],
-    ['ZUPPA', { de: 'Suppen', en: 'Soups' }],
-    ['ZUPPA / SUPPEN', { de: 'Suppen', en: 'Soups' }],
-    ['Insalate', { de: 'Salate', en: 'Salad' }],
-    ['INSALATE', { de: 'Salate', en: 'Salad' }],
-    ['INSALATE / SALATE', { de: 'Salate', en: 'Salad' }],
-    ['Risotto', { de: 'Risotto', en: 'Risotto' }],
-    ['RISOTTO', { de: 'Risotto', en: 'Risotto' }],
-    ['Gratinato', { de: 'Gratiniert', en: 'Au Gratin' }],
-    ['GRATINATO', { de: 'Gratiniert', en: 'Au Gratin' }],
-    ['GRATINATO / GRATINIERT', { de: 'Gratiniert', en: 'Au Gratin' }],
-    ['Kinder Karte', { de: 'Kinder Karte', en: 'Kids Dish' }],
-    ['KINDER KARTE', { de: 'Kinder Karte', en: 'Kids Dish' }],
-    ['KINDER KARTE / BAMBINI', { de: 'Kinder Karte', en: 'Kids Dish' }],
-    ['Pasta', { de: 'Pasta', en: 'Pasta' }],
-    ['PASTA', { de: 'Pasta', en: 'Pasta' }],
-    ['Pesce', { de: 'Fisch', en: 'Fish' }],
-    ['PESCE', { de: 'Fisch', en: 'Fish' }],
-    ['PESCE / FISCH', { de: 'Fisch', en: 'Fish' }],
-    ['Carne', { de: 'Fleisch', en: 'Meat' }],
-    ['CARNE', { de: 'Fleisch', en: 'Meat' }],
-    ['CARNE / FLEISCH', { de: 'Fleisch', en: 'Meat' }],
-    ['Heisser Stein', { de: 'Heisser Stein', en: 'Hot Stone' }],
-    ['HEISSER STEIN', { de: 'Heisser Stein', en: 'Hot Stone' }],
-    ['HEISSER STEIN / SPIESS', { de: 'Heisser Stein / Spiess', en: 'Hot Stone / Skewers' }],
-    ['Contorni', { de: 'Beilagen', en: 'Side Dish' }],
-    ['CONTORNI', { de: 'Beilagen', en: 'Side Dish' }],
-    ['BEILAGEN', { de: 'Beilagen', en: 'Side Dish' }],
-    ['Poulet', { de: 'Poulet', en: 'Chicken' }],
-    ['Rindsfleisch', { de: 'Rindsfleisch', en: 'Beef' }],
-    ['Fisch & Meeresfrüchte', { de: 'Fisch & Meeresfrüchte', en: 'Fish & Seafood' }],
-    ['Lammfleisch', { de: 'Lammfleisch', en: 'Lamb' }],
-    ['Kalbsfleisch', { de: 'Kalbsfleisch', en: 'Veal' }],
-    ['Vegetarisch & Vegan', { de: 'Vegetarisch & Vegan', en: 'Vegetarian & Vegan' }],
-    ['Schweinefleisch', { de: 'Schweinefleisch', en: 'Pork' }],
+    ['Antipasti', { de: 'Vorspeisen', en: 'Starter', it: 'Antipasti' }],
+    ['ANTIPASTI', { de: 'Vorspeisen', en: 'Starter', it: 'Antipasti' }],
+    ['ANTIPASTI / VORSPEISEN', { de: 'Vorspeisen', en: 'Starter', it: 'Antipasti' }],
+    ['Zuppa', { de: 'Suppen', en: 'Soups', it: 'Zuppa' }],
+    ['ZUPPA', { de: 'Suppen', en: 'Soups', it: 'Zuppa' }],
+    ['ZUPPA / SUPPEN', { de: 'Suppen', en: 'Soups', it: 'Zuppa' }],
+    ['Insalate', { de: 'Salate', en: 'Salad', it: 'Insalate' }],
+    ['INSALATE', { de: 'Salate', en: 'Salad', it: 'Insalate' }],
+    ['INSALATE / SALATE', { de: 'Salate', en: 'Salad', it: 'Insalate' }],
+    ['Risotto', { de: 'Risotto', en: 'Risotto', it: 'Risotto' }],
+    ['RISOTTO', { de: 'Risotto', en: 'Risotto', it: 'Risotto' }],
+    ['Gratinato', { de: 'Gratiniert', en: 'Au Gratin', it: 'Gratinati' }],
+    ['GRATINATO', { de: 'Gratiniert', en: 'Au Gratin', it: 'Gratinati' }],
+    ['GRATINATO / GRATINIERT', { de: 'Gratiniert', en: 'Au Gratin', it: 'Gratinati' }],
+    ['Kinder Karte', { de: 'Kinder Karte', en: 'Kids Dish', it: 'Menu bambini' }],
+    ['KINDER KARTE', { de: 'Kinder Karte', en: 'Kids Dish', it: 'Menu bambini' }],
+    ['KINDER KARTE / BAMBINI', { de: 'Kinder Karte', en: 'Kids Dish', it: 'Menu bambini' }],
+    ['Pasta', { de: 'Pasta', en: 'Pasta', it: 'Pasta' }],
+    ['PASTA', { de: 'Pasta', en: 'Pasta', it: 'Pasta' }],
+    ['Pesce', { de: 'Fisch', en: 'Fish', it: 'Pesce' }],
+    ['PESCE', { de: 'Fisch', en: 'Fish', it: 'Pesce' }],
+    ['PESCE / FISCH', { de: 'Fisch', en: 'Fish', it: 'Pesce' }],
+    ['Carne', { de: 'Fleisch', en: 'Meat', it: 'Carne' }],
+    ['CARNE', { de: 'Fleisch', en: 'Meat', it: 'Carne' }],
+    ['CARNE / FLEISCH', { de: 'Fleisch', en: 'Meat', it: 'Carne' }],
+    ['Heisser Stein', { de: 'Heisser Stein', en: 'Hot Stone', it: 'Pietra calda' }],
+    ['HEISSER STEIN', { de: 'Heisser Stein', en: 'Hot Stone', it: 'Pietra calda' }],
+    ['HEISSER STEIN / SPIESS', { de: 'Heisser Stein / Spiess', en: 'Hot Stone / Skewers', it: 'Pietra calda / Spiedini' }],
+    ['Contorni', { de: 'Beilagen', en: 'Side Dish', it: 'Contorni' }],
+    ['CONTORNI', { de: 'Beilagen', en: 'Side Dish', it: 'Contorni' }],
+    ['BEILAGEN', { de: 'Beilagen', en: 'Side Dish', it: 'Contorni' }],
+    ['Poulet', { de: 'Poulet', en: 'Chicken', it: 'Pollo' }],
+    ['Rindsfleisch', { de: 'Rindsfleisch', en: 'Beef', it: 'Manzo' }],
+    ['Fisch & Meeresfrüchte', { de: 'Fisch & Meeresfrüchte', en: 'Fish & Seafood', it: 'Pesce e frutti di mare' }],
+    ['Lammfleisch', { de: 'Lammfleisch', en: 'Lamb', it: 'Agnello' }],
+    ['Kalbsfleisch', { de: 'Kalbsfleisch', en: 'Veal', it: 'Vitello' }],
+    ['Vegetarisch & Vegan', { de: 'Vegetarisch & Vegan', en: 'Vegetarian & Vegan', it: 'Vegetariano e vegano' }],
+    ['Schweinefleisch', { de: 'Schweinefleisch', en: 'Pork', it: 'Maiale' }],
   ].map(([label, labels]) => [normalizeLabelKey(label), labels])
 )
 
@@ -80,7 +80,7 @@ function certifiedLanguageMap(value) {
   if (!value || typeof value !== 'object') return {}
 
   return Object.fromEntries(
-    ['de', 'en']
+    ['de', 'en', 'it']
       .map((language) => [language, normalizeString(value[language])])
       .filter(([, text]) => text)
   )
@@ -448,10 +448,12 @@ const MAIN_SECTIONS = [
           labels: {
             de: 'Beilagen',
             en: 'Side dishes',
+            it: 'Contorni',
           },
           descriptions: {
             de: 'Spaghetti, Penne, Pommes – Frites, Reis, Risotto oder Salat',
             en: 'Spaghetti, penne, French fries, rice, risotto or salad',
+            it: 'Spaghetti, penne, patatine fritte, riso, risotto o insalata',
           },
         }
       ),
@@ -463,10 +465,12 @@ const MAIN_SECTIONS = [
           labels: {
             de: 'Upgrade Beilagen',
             en: 'Upgrade sides',
+            it: 'Supplemento contorni',
           },
           descriptions: {
             de: '+3.- Safranrisotto, hausgemachte Pasta, glutenfreie Pasta',
             en: '+3.- saffron risotto, homemade pasta, gluten-free pasta',
+            it: '+3.- risotto allo zafferano, pasta fatta in casa, pasta senza glutine',
           },
         }
       ),
@@ -478,10 +482,12 @@ const MAIN_SECTIONS = [
           labels: {
             de: 'Zusätzliche Beilage',
             en: 'Additional side dish',
+            it: 'Contorno aggiuntivo',
           },
           descriptions: {
             de: '+6.- je zusätzliche Beilage',
             en: '+6.- per additional side dish',
+            it: '+6.- per ogni contorno aggiuntivo',
           },
         }
       ),
@@ -781,6 +787,227 @@ const ENGLISH_DESCRIPTIONS = {
   ...PIZZA_ENGLISH_DESCRIPTIONS,
 }
 
+const MAIN_ITALIAN_DESCRIPTIONS = {
+  'focaccia-aperitivo-pomodoro-bufala-e-parma':
+    'Pasta per pizza con olio d’oliva e aglio, dadini di pomodoro con cipolle, aglio, basilico e olio d’oliva, mozzarella di bufala e prosciutto di Parma',
+  'focaccia-prosciutto-di-parma':
+    'Pasta per pizza con olio d’oliva e aglio e prosciutto di Parma',
+  'carpaccio-di-manzo':
+    'Carpaccio di manzo con Grana Padano, olio d’oliva e succo di limone, guarnito con rucola',
+  'gamberetti-all-aglio':
+    'Gamberoni caldi in olio d’oliva e aglio, serviti su rucola con fette di pane tostato',
+  'cocktail-di-gamberetti':
+    'Gamberetti con salsa cocktail fatta in casa, serviti con fette di pane tostato',
+  bruschetta:
+    'Dadini di pomodoro con erbe fresche, cipolle, aglio, basilico e olio d’oliva, serviti su fette di pane casereccio tostato',
+  minestrone:
+    'Minestrone di verdure all’italiana fatto in casa',
+  'crema-di-pomodoro':
+    'Crema di pomodoro fatta in casa',
+  'insalata-soncino':
+    'Insalata di valerianella con speck, uovo e crostini',
+  'insalata-caprese':
+    'Insalata di pomodori con mozzarella di bufala, basilico, olio d’oliva e aceto',
+  burrata:
+    'Specialità cremosa di formaggio fresco pugliese su pomodori e basilico con olio d’oliva',
+  'insalata-gigante':
+    'Grande piatto di insalata mista con uovo',
+  'insalata-verde':
+    'Insalata verde',
+  'insalata-mista':
+    'Insalata mista',
+  'risotto-milanese':
+    'Risotto allo zafferano con cipolle e aglio',
+  'risotto-pollo-e-zafferano':
+    'Risotto con straccetti di pollo, cipolle e aglio in salsa allo zafferano e Grana Padano',
+  'risotto-porcini':
+    'Risotto con Grana Padano, funghi porcini, aglio e cipolle',
+  'gnocchi-piemontese':
+    'Gnocchi con funghi porcini, cipolle e aglio in salsa al Marsala e panna, gratinati con Grana Padano e mozzarella',
+  'lasagna-casalinga':
+    'Lasagna fatta in casa con ripieno di manzo, gratinata con Grana Padano e mozzarella',
+  'cannelloni-fiorentina':
+    'Cannelloni fatti in casa ripieni di spinaci e ricotta, in salsa di pomodoro, gratinati con Grana Padano e mozzarella',
+  'spaghetti-with-tomato-sauce':
+    'Spaghetti al pomodoro',
+  'kids-spaghetti-bolognese':
+    'Spaghetti alla bolognese',
+  'kids-spaghetti-carbonara':
+    'Spaghetti alla carbonara',
+  'kids-spaghetti-al-pesto':
+    'Spaghetti al pesto',
+  'spaghetti-al-burro':
+    'Spaghetti al burro',
+  'gnocchi-al-burro':
+    'Gnocchi al burro',
+  capitano:
+    'Bastoncini di pesce fritti con patatine fritte',
+  'chicken-nuggets':
+    'Con patatine fritte',
+  'portion-pommes-frites':
+    'Patatine fritte',
+  'risotto-bambini':
+    'Risotto al Grana Padano',
+  'paglia-e-fieno-bella-rebecca':
+    'Pasta bicolore con straccetti di vitello, funghi di bosco, cipolle e aglio in salsa alla panna',
+  'fettuccine-nere-mare-e-monti':
+    'Fettuccine nere con gamberetti, funghi porcini, cipolle e aglio in salsa alla panna',
+  'fettuccine-nere-al-salmone':
+    'Fettuccine nere con salmone, cipolle, aglio ed erbe fresche in salsa di pomodoro e panna fatta in casa',
+  'penne-all-arrabbiata':
+    'Penne con speck, peperoncini, cipolle e aglio in salsa di pomodoro fatta in casa',
+  'penne-imperiale':
+    'Penne con gamberetti, dadini di pomodoro, cipolle, aglio ed erbe fresche in salsa di pomodoro e panna fatta in casa',
+  'penne-alla-fiamma':
+    'Penne con dadini di manzo flambé, peperoni, cipolle, aglio, pomodori freschi, funghi, erbe fresche e salsa alla panna e paprika',
+  'spaghetti-aglio-olio-e-peperoncino':
+    'Spaghetti con aglio, olio d’oliva e peperoncini',
+  'spaghetti-frutti-di-mare':
+    'Spaghetti con frutti di mare, aglio, cipolle, pomodorini e olio d’oliva in salsa di pomodoro fatta in casa',
+  'spaghetti-carbonara':
+    'Spaghetti con dadini di speck rosolati, tuorlo d’uovo e Grana Padano in salsa alla panna',
+  'spaghetti-vegetariana':
+    'Spaghetti con verdure, cipolle e aglio in salsa di pomodoro fatta in casa',
+  'spaghetti-napoli':
+    'Spaghetti con salsa di pomodoro fatta in casa, cipolle, aglio e basilico',
+  'spaghetti-al-pesto':
+    'Spaghetti in salsa cremosa al pesto fatta in casa',
+  'spaghetti-bolognese':
+    'Spaghetti con salsa di manzo fatta in casa e speziata',
+  'gamberoni-alla-griglia':
+    'Gamberoni alla griglia, serviti con verdure e contorno a scelta',
+  'gamberi-luna-piccante':
+    'Gamberoni saltati e flambé al cognac con peperoncini freschi, aglio, erbe fresche, basilico e pomodorini, serviti con verdure e contorno a scelta',
+  'salmone-alla-griglia':
+    'Filetto di salmone alla griglia, servito con verdure e contorno a scelta',
+  'controfiletto-di-manzo-alla-griglia':
+    'Entrecôte di manzo alla griglia, servita con verdure e contorno a scelta',
+  'controfiletto-di-manzo-al-pepe-verde':
+    'Entrecôte di manzo alla griglia con salsa al pepe verde, servita con verdure e contorno a scelta',
+  'controfiletto-d-agnello-alla-griglia':
+    'Filetto di agnello alla griglia, cottura rosa, servito con verdure e contorno a scelta',
+  'controfiletto-d-agnello-alla-montanara':
+    'Filetto di agnello alla griglia, cottura rosa, con delicata salsa alla panna e funghi di bosco, servito con verdure e contorno a scelta',
+  'petto-di-pollo-alla-griglia':
+    'Petto di pollo alla griglia, servito con verdure e contorno a scelta',
+  'maiale-impanato':
+    'Scaloppine di maiale impanate, servite con verdure e contorno a scelta',
+  'scaloppina-di-vitello-al-limone':
+    'Scaloppina di vitello in delicata salsa al limone, servita con verdure e contorno a scelta',
+  'saltimbocca-alla-romana':
+    'Scaloppina di vitello con prosciutto di Parma e salvia in salsa al Marsala, servita con verdure e contorno a scelta',
+  'scaloppina-di-vitello-alla-crema-di-funghi':
+    'Scaloppina di vitello in salsa cremosa ai champignon fatta in casa, servita con verdure e contorno a scelta',
+  'affettato-alla-zurighese':
+    'Straccetti di vitello alla zurighese in salsa alla panna e champignon, serviti con verdure e contorno a scelta',
+  rindsentrecote:
+    'Bistecca',
+  schweinesteak:
+    'Bistecca di maiale',
+  'lamm-nierstuck':
+    'Agnello',
+  'rindsfleisch-spiess':
+    'Spiedino di manzo',
+  'gemischter-spiess':
+    'Spiedino misto di maiale e manzo',
+}
+
+const PIZZA_ITALIAN_DESCRIPTIONS = {
+  curry:
+    'Salsa di pomodoro, mozzarella, pollo al curry, champignon, origano',
+  bbq:
+    'Salsa di pomodoro, mozzarella, pollo BBQ, champignon, cipolle, mais, origano',
+  'al-capone':
+    'Salsa di pomodoro, mozzarella, straccetti di manzo, Café de Paris, pepe verde, origano',
+  lunatico:
+    'Salsa di pomodoro, mozzarella, straccetti di manzo, pepe verde, origano',
+  napoli:
+    'Salsa di pomodoro, mozzarella, acciughe, capperi, origano',
+  salmone:
+    'Salsa di pomodoro, mozzarella, salmone affumicato, origano',
+  tonno:
+    'Salsa di pomodoro, mozzarella, tonno, anelli di cipolla, capperi, origano',
+  gamberetti:
+    'Salsa di pomodoro, mozzarella, gamberetti, aglio, origano',
+  'frutti-di-mare':
+    'Salsa di pomodoro, mozzarella, frutti di mare, aglio, origano',
+  agnello:
+    'Salsa di pomodoro, mozzarella, straccetti di agnello, aglio, rosmarino',
+  casanova:
+    'Salsa di pomodoro, mozzarella, vitello, spinaci, peperoncini, origano',
+  'quattro-formaggi':
+    'Salsa di pomodoro, mozzarella, 3 tipi di formaggio, origano',
+  'alla-piemontese':
+    'Salsa di pomodoro, mozzarella, funghi porcini, origano',
+  pinocchio:
+    'Salsa di pomodoro, mozzarella, olive, mais, peperoni, origano',
+  margherita:
+    'Salsa di pomodoro, mozzarella, origano',
+  buffala:
+    'Salsa di pomodoro, mozzarella, pomodorini, mozzarella di bufala, basilico',
+  vegetariana:
+    'Salsa di pomodoro, mozzarella, spinaci, peperoni, melanzane, origano',
+  caprese:
+    'Salsa di pomodoro, mozzarella, fette di pomodoro, cipolle, origano',
+  tricolore:
+    'Salsa di pomodoro, mozzarella, fette di pomodoro, spinaci, ricotta, origano',
+  oliva:
+    'Salsa di pomodoro, mozzarella, olive, origano',
+  melanzane:
+    'Salsa di pomodoro, mozzarella, melanzane, aglio, origano',
+  paprika:
+    'Salsa di pomodoro, mozzarella, peperoni, origano',
+  carbonara:
+    'Salsa di pomodoro, mozzarella, speck, uovo all’occhio di bue, scaglie di Grana Padano, origano',
+  lucifer:
+    'Salsa di pomodoro, mozzarella, speck, salame piccante, peperoncini freschi, origano',
+  calzone:
+    'Pizza chiusa con prosciutto cotto, ricotta e salsa di pomodoro',
+  'salame-nostrano':
+    'Salsa di pomodoro, mozzarella, salame, origano',
+  antonio:
+    'Salsa di pomodoro, mozzarella, prosciutto cotto, Gorgonzola, pera, peperoncini, origano',
+  'quattro-stagioni':
+    'Salsa di pomodoro, mozzarella, prosciutto cotto, champignon, carciofi, peperoni, origano',
+  prosciutto:
+    'Salsa di pomodoro, mozzarella, prosciutto cotto, origano',
+  'prosciutto-e-funghi':
+    'Salsa di pomodoro, mozzarella, prosciutto cotto, champignon, origano',
+  hawaii:
+    'Salsa di pomodoro, mozzarella, prosciutto cotto, ananas, origano',
+  gorgonzola:
+    'Salsa di pomodoro, mozzarella, prosciutto cotto, Gorgonzola, origano',
+  boscaiolo:
+    'Salsa di pomodoro, mozzarella, salame, speck, cipolle, uovo all’occhio di bue, origano',
+  piccante:
+    'Salsa di pomodoro, mozzarella, salame piccante, origano',
+  parma:
+    'Salsa di pomodoro, mozzarella, prosciutto di Parma, origano',
+  parmigiana:
+    'Salsa di pomodoro, mozzarella, melanzane, prosciutto di Parma, Grana Padano, origano',
+}
+
+const ITALIAN_DESCRIPTIONS = {
+  ...MAIN_ITALIAN_DESCRIPTIONS,
+  ...PIZZA_ITALIAN_DESCRIPTIONS,
+}
+
+const ITALIAN_NAMES = {
+  'spaghetti-with-tomato-sauce': 'Spaghetti al pomodoro',
+  'kids-spaghetti-bolognese': 'Spaghetti alla bolognese',
+  'kids-spaghetti-carbonara': 'Spaghetti alla carbonara',
+  'kids-spaghetti-al-pesto': 'Spaghetti al pesto',
+  'portion-pommes-frites': 'Porzione di patatine fritte',
+  'controfiletto-di-manzo-al-pepe-verde': 'Controfiletto di Manzo al Pepe Verde',
+  'controfiletto-d-agnello-alla-griglia': 'Controfiletto d’Agnello alla Griglia',
+  'controfiletto-d-agnello-alla-montanara': 'Controfiletto d’Agnello alla Montanara',
+  rindsentrecote: 'Entrecôte di manzo',
+  schweinesteak: 'Bistecca di maiale',
+  'lamm-nierstuck': 'Filetto di agnello',
+  'rindsfleisch-spiess': 'Spiedino di manzo',
+  'gemischter-spiess': 'Spiedino misto',
+}
+
 const MENU_ITEM_PRICES = {
   'focaccia-aperitivo-pomodoro-bufala-e-parma': 27,
   'focaccia-prosciutto-di-parma': 17,
@@ -909,6 +1136,7 @@ const MENUS = [
     names: {
       de: 'Hauptkarte',
       en: 'Main Menu',
+      it: 'Menu principale',
     },
     resetNames: true,
     description: '',
@@ -921,6 +1149,7 @@ const MENUS = [
     names: {
       de: 'Pizza',
       en: 'Pizza',
+      it: 'Pizza',
     },
     resetNames: true,
     description: '',
@@ -1114,10 +1343,13 @@ function buildDishPayload(item, kitchenId, snap) {
       ? certifiedLanguageMap(existing.names)
       : {}
   const englishDescription = normalizeString(ENGLISH_DESCRIPTIONS[item.id])
+  const italianDescription = normalizeString(ITALIAN_DESCRIPTIONS[item.id])
+  const italianName = normalizeString(ITALIAN_NAMES[item.id]) || name
   const descriptions = {
     ...existingDescriptions,
     ...(description ? { de: description } : {}),
     ...(englishDescription ? { en: englishDescription } : {}),
+    ...(italianDescription ? { it: italianDescription } : {}),
   }
 
   return {
@@ -1130,6 +1362,7 @@ function buildDishPayload(item, kitchenId, snap) {
       ...existingNames,
       de: name,
       en: name,
+      it: italianName,
     },
     descriptions,
     created: createdStamp(snap),
@@ -1234,7 +1467,7 @@ async function main() {
         currency_format: 'dash',
         language_settings: {
           default_language: 'de',
-          supported_languages: ['de', 'en', 'it', 'fr'],
+          supported_languages: ['de', 'en', 'it', 'fr', 'ar'],
         },
         updated: updatedStamp(),
       },

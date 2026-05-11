@@ -43,6 +43,18 @@ const selectedLanguage = computed(() => {
   const value = Array.isArray(raw) ? raw[0] : raw
   return normalizePublicKitchenLanguage(value)
 })
+const passThroughQuery = computed(() =>
+  Object.fromEntries(
+    Object.entries(route.query).filter(
+      ([key]) => !['lang', 'language'].includes(key)
+    )
+  )
+)
+const languageQuery = computed(() =>
+  selectedLanguage.value
+    ? { ...passThroughQuery.value, lang: selectedLanguage.value }
+    : passThroughQuery.value
+)
 
 const { kitchens, pending: kitchensPending } = useKitchenCollection()
 const resolvedKitchen = computed<Kitchen | null>(() => {
@@ -169,11 +181,12 @@ const priceUnitLabel = (unit: unknown) => {
   if (normalizedUnit === 'piece') {
     if (selectedLanguage.value === 'ar') return 'قطع'
     if (selectedLanguage.value === 'fr') return 'pièces'
+    if (selectedLanguage.value === 'it') return 'pz.'
     return selectedLanguage.value === 'en' ? 'pcs' : 'Stk.'
   }
   if (normalizedUnit === 'gram') {
     if (selectedLanguage.value === 'ar') return 'غ'
-    return selectedLanguage.value === 'en' || selectedLanguage.value === 'fr' ? 'g' : 'gr'
+    return selectedLanguage.value === 'en' || selectedLanguage.value === 'fr' || selectedLanguage.value === 'it' ? 'g' : 'gr'
   }
   return normalizedUnit
 }
@@ -183,7 +196,7 @@ const formatPriceOption = (option: Record<string, any>) => {
   if (!Number.isFinite(quantity) || quantity <= 0 || !price) return ''
 
   const unit = priceUnitLabel(option.unit)
-  const quantityLabel = unit === 'g' || unit === 'gr'
+  const quantityLabel = unit === 'gr'
     ? `${quantity}${unit}`
     : `${quantity} ${unit}`.trim()
 
@@ -309,6 +322,18 @@ const menuTitle = computed(() => {
     menuFieldId(menu, 'name')
   )
 })
+const breadcrumbItems = computed(() => [
+  {
+    label: chromeLabels.value.menus,
+    to: {
+      path: `/kitchens/${encodeURIComponent(routeKitchenSlug.value)}/menus`,
+      query: languageQuery.value,
+    },
+  },
+  {
+    label: menuTitle.value,
+  },
+])
 
 useHead({
   title: computed(() => chromeLabels.value.menus),
@@ -323,6 +348,7 @@ const publicMenuPreview = {
   primaryLanguage,
   routePath: computed(() => route.path),
   menuTitle,
+  breadcrumbItems,
   debugData: computed(() => ({
     route: {
       slug: routeKitchenSlug.value,

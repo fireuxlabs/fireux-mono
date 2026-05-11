@@ -1,15 +1,25 @@
 <template>
-  <main
-    class="luna-menu-surface min-h-screen text-highlighted"
-    :dir="documentDirection"
-    :lang="documentLanguage"
-  >
+  <main class="luna-menu-surface min-h-screen text-highlighted">
     <section class="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 sm:py-10">
-      <div
-        class="luna-menu-sans mb-4 flex"
-        :class="isRtl ? 'justify-start' : 'justify-end'"
-      >
-        <div class="inline-flex items-center gap-1 rounded-lg border border-default bg-default/80 p-1">
+      <div class="luna-menu-sans mb-6 flex flex-col gap-3 sm:flex-row sm:items-start">
+        <UBreadcrumb
+          v-if="breadcrumbItems.length"
+          :items="breadcrumbItems"
+          class="min-w-0 max-w-full flex-1 pt-1"
+          :ui="{
+            link: 'text-xs font-semibold uppercase tracking-[0.14em]',
+            linkLabel: 'truncate',
+            separator: 'text-muted',
+          }"
+        >
+          <template #separator>
+            <span class="mx-1.5 text-xs text-muted">/</span>
+          </template>
+        </UBreadcrumb>
+
+        <div v-else />
+
+        <div class="ml-auto inline-flex w-fit shrink-0 items-center gap-1 rounded-lg border border-default bg-default/80 p-1">
           <UButton
             v-for="option in languageOptions"
             :key="option.code || 'original'"
@@ -25,30 +35,35 @@
 
       <div
         v-if="loading"
-        class="luna-menu-paper luna-menu-sans py-12 text-center text-sm text-muted"
+        class="luna-menu-sans py-12 text-center text-sm text-muted"
       >
         {{ chromeLabels.loadingMenu }}
       </div>
 
-      <div v-else-if="!resolvedKitchen" class="luna-menu-paper py-12 text-center">
+      <div v-else-if="!resolvedKitchen" class="py-12 text-center">
         <h2 class="text-xl font-semibold">
           {{ chromeLabels.kitchenNotFound }}
         </h2>
       </div>
 
-      <div v-else-if="!selectedMenu" class="luna-menu-paper py-12 text-center">
+      <div v-else-if="!selectedMenu" class="py-12 text-center">
         <h2 class="text-xl font-semibold">
           {{ chromeLabels.menuNotFound }}
         </h2>
       </div>
 
-      <div v-else-if="!publicSections.length" class="luna-menu-paper py-12 text-center">
+      <div v-else-if="!publicSections.length" class="py-12 text-center">
         <h2 class="text-xl font-semibold">
           {{ chromeLabels.noSectionsFound }}
         </h2>
       </div>
 
-      <div v-else class="luna-menu-paper">
+      <div
+        v-else
+        class="luna-menu-content"
+        :dir="menuContentDirection"
+        :lang="menuContentLanguage"
+      >
         <header class="mb-10 text-center">
           <p
             v-if="kitchenTitle"
@@ -144,6 +159,11 @@ type MenuPreviewSection = {
   entries: MenuPreviewEntry[]
 }
 
+type MenuPreviewBreadcrumbItem = {
+  label: string
+  to?: string | Record<string, unknown>
+}
+
 type MenuPreviewState = {
   loading: MaybeRef<boolean>
   resolvedKitchen: MaybeRef<Record<string, any> | null>
@@ -153,6 +173,7 @@ type MenuPreviewState = {
   primaryLanguage?: MaybeRef<string>
   routePath?: MaybeRef<string>
   menuTitle?: MaybeRef<string>
+  breadcrumbItems?: MaybeRef<MenuPreviewBreadcrumbItem[]>
   debugData?: MaybeRef<unknown>
 }
 
@@ -166,6 +187,7 @@ const loading = computed(() => Boolean(unref(props.menu.loading)))
 const resolvedKitchen = computed(() => unref(props.menu.resolvedKitchen))
 const selectedMenu = computed(() => unref(props.menu.selectedMenu))
 const publicSections = computed(() => unref(props.menu.publicSections) || [])
+const breadcrumbItems = computed(() => unref(props.menu.breadcrumbItems) || [])
 const selectedLanguage = computed(() => unref(props.menu.selectedLanguage) || '')
 const primaryLanguage = computed(() => unref(props.menu.primaryLanguage) || '')
 const routePath = computed(() => unref(props.menu.routePath) || route.path)
@@ -191,8 +213,8 @@ const chromeLanguage = computed(() =>
 )
 const chromeLabels = computed(() => getPublicKitchenChromeLabels(chromeLanguage.value))
 const isRtl = computed(() => isPublicKitchenRtlLanguage(selectedLanguage.value))
-const documentDirection = computed(() => isRtl.value ? 'rtl' : 'ltr')
-const documentLanguage = computed(() => selectedLanguage.value || chromeLanguage.value)
+const menuContentDirection = computed(() => isRtl.value ? 'rtl' : 'ltr')
+const menuContentLanguage = computed(() => selectedLanguage.value || chromeLanguage.value)
 const debugData = computed(() => unref(props.menu.debugData))
 const kitchenTitle = computed(() =>
   String(resolvedKitchen.value?.name || '').trim()
@@ -239,11 +261,8 @@ const sectionAccentClass = (section: MenuPreviewSection) => {
   font-family: Georgia, 'Times New Roman', serif;
 }
 
-.luna-menu-paper {
-  border: 1px solid var(--ui-border);
-  background: var(--ui-bg);
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
-  padding: clamp(1.5rem, 4vw, 3rem);
+.luna-menu-content {
+  padding: 0;
 }
 
 .luna-price-label {
@@ -270,6 +289,10 @@ const sectionAccentClass = (section: MenuPreviewSection) => {
 }
 
 @media (min-width: 860px) {
+  .luna-menu-content {
+    padding: 2rem 3rem;
+  }
+
   .luna-menu-sections {
     column-count: 2;
   }

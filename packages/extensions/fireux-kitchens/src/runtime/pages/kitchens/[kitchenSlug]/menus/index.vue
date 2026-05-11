@@ -1,14 +1,7 @@
 <template>
-  <main
-    class="luna-menu-index min-h-screen text-highlighted"
-    :dir="documentDirection"
-    :lang="documentLanguage"
-  >
+  <main class="luna-menu-index min-h-screen text-highlighted">
     <section class="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-4 py-6 sm:px-8 sm:py-10">
-      <div
-        class="luna-menu-sans mb-4 flex"
-        :class="isRtl ? 'justify-start' : 'justify-end'"
-      >
+      <div class="luna-menu-sans mb-4 flex justify-end">
         <div class="inline-flex items-center gap-1 rounded-lg border border-default bg-default/80 p-1">
           <UButton
             v-for="option in languageOptions"
@@ -25,14 +18,14 @@
 
       <div
         v-if="pending"
-        class="luna-menu-paper luna-menu-sans py-12 text-center text-sm text-muted"
+        class="luna-menu-sans py-12 text-center text-sm text-muted"
       >
         {{ chromeLabels.loadingMenus }}
       </div>
 
       <div
         v-else-if="!menuCards.length"
-        class="luna-menu-paper py-12 text-center"
+        class="py-12 text-center"
       >
         <h2 class="text-xl font-semibold">
           {{ chromeLabels.noMenusAvailable }}
@@ -44,7 +37,9 @@
 
       <div
         v-else
-        class="luna-menu-paper"
+        class="luna-menu-content"
+        :dir="menuContentDirection"
+        :lang="menuContentLanguage"
       >
         <header class="mb-10 text-center">
           <p
@@ -69,7 +64,7 @@
           >
             <div class="flex min-h-32 flex-col justify-between gap-6">
               <div class="space-y-2">
-                <h2 class="text-2xl font-bold uppercase tracking-[0.09em]">
+                <h2 class="text-2xl font-bold uppercase tracking-[0.09em] text-highlighted">
                   {{ menu.name }}
                 </h2>
                 <p
@@ -200,8 +195,8 @@ const chromeLabels = computed(() =>
   getPublicKitchenChromeLabels(chromeLanguage.value)
 )
 const isRtl = computed(() => isPublicKitchenRtlLanguage(selectedLanguage.value))
-const documentDirection = computed(() => isRtl.value ? 'rtl' : 'ltr')
-const documentLanguage = computed(() => selectedLanguage.value || chromeLanguage.value)
+const menuContentDirection = computed(() => isRtl.value ? 'rtl' : 'ltr')
+const menuContentLanguage = computed(() => selectedLanguage.value || chromeLanguage.value)
 useHead({
   title: computed(() => chromeLabels.value.chooseMenu),
 })
@@ -309,7 +304,7 @@ const menuCards = computed(() =>
 )
 const menuAccentClass = (menuId: string) =>
   menuId === 'pizza'
-    ? 'border-l-primary text-primary'
+    ? 'border-l-primary'
     : 'border-l-default'
 const setLanguage = async (language: string) => {
   await navigateTo({
@@ -324,15 +319,18 @@ const setLanguage = async (language: string) => {
   font-family: Georgia, 'Times New Roman', serif;
 }
 
-.luna-menu-paper {
-  border: 1px solid var(--ui-border);
-  background: var(--ui-bg);
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
-  padding: clamp(1.5rem, 4vw, 3rem);
+.luna-menu-content {
+  padding: 0;
 }
 
 .luna-menu-sans {
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+@media (min-width: 860px) {
+  .luna-menu-content {
+    padding: 2rem 3rem;
+  }
 }
 
 </style>
