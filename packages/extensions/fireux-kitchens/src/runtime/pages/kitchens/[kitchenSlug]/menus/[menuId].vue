@@ -117,6 +117,12 @@ const textForLanguage = (
 
   return normalizeString((translations as Record<string, unknown>)[language]) || fallback
 }
+const formatPrice = (value: unknown) => {
+  const amount = Number(value ?? 0)
+  if (!Number.isFinite(amount) || amount <= 0) return ''
+  if (amount % 1 === 0) return `${amount}.-`
+  return amount.toFixed(2)
+}
 
 const publicSections = computed(() =>
   (Array.isArray((selectedMenu.value as any)?.sections)
@@ -143,14 +149,20 @@ const publicSections = computed(() =>
           const dishDescription = dish
             ? textForLanguage(dish.description, (dish as any).descriptions, selectedLanguage.value)
             : ''
+          const itemLabel = textForLanguage(
+            item.label,
+            item.labels,
+            selectedLanguage.value
+          )
 
           return {
             id: normalizeString(item.id),
             dishId,
             name: dish
               ? textForLanguage(dish.name, (dish as any).names, selectedLanguage.value)
-              : normalizeString(item.label),
+              : itemLabel,
             description: itemDescription || dishDescription,
+            priceLabel: normalizeString(item.price_label) || formatPrice(item.price),
           }
         })
         .filter((entry: { name: string; description: string }) => entry.name || entry.description)

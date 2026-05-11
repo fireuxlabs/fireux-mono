@@ -29,11 +29,14 @@ export type MenuSectionItem = {
   dish_id?: string
 
   label?: string
+  labels?: Partial<Record<string, string>>
   price: number
+  price_label?: string
   sort_order: number
 
   // Optional item overrides (resolved at runtime from section/menu defaults)
   description?: string
+  descriptions?: Partial<Record<string, string>>
   photo_url?: string
   active?: boolean
 }

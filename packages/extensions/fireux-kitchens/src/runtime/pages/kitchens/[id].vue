@@ -60,7 +60,7 @@
               color="neutral"
               @click="setPublicLanguage(language.code)"
             >
-              {{ chromeLabels[language.labelKey] }}
+              {{ language.label }}
             </UButton>
           </div>
         </div>

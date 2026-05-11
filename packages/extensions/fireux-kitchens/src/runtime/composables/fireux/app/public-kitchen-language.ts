@@ -1,26 +1,22 @@
-export type PublicKitchenLanguageCode = '' | 'de' | 'en'
-export type PublicKitchenChromeLanguage = 'de' | 'en'
+type PublicKitchenChromeLanguage = 'de' | 'en'
+export type PublicKitchenLanguageCode = '' | PublicKitchenChromeLanguage
 
 export const PUBLIC_KITCHEN_LANGUAGE_OPTIONS: Array<{
   code: PublicKitchenLanguageCode
-  labelKey: 'original' | 'german' | 'english'
+  label: string
 }> = [
-  { code: '', labelKey: 'original' },
-  { code: 'de', labelKey: 'german' },
-  { code: 'en', labelKey: 'english' },
+  { code: '', label: 'Original' },
+  { code: 'de', label: '🇩🇪' },
+  { code: 'en', label: '🇬🇧' },
 ]
 
 export const PUBLIC_KITCHEN_CHROME_LABELS = {
   de: {
-    original: 'Original',
-    german: '🇩🇪',
-    english: '🇬🇧',
     menus: 'Menüs',
     chooseMenu: 'Menü auswählen',
     openMenus: 'Menüs öffnen',
     openMenu: 'Menü öffnen',
     loadingMenus: 'Menüs werden geladen...',
-    failedToLoadMenus: 'Menüs konnten nicht geladen werden',
     noMenusAvailable: 'Keine Menüs verfügbar',
     noPublicMenus: 'Diese Küche hat noch keine öffentlichen Menüs.',
     loadingMenu: 'Menü wird geladen...',
@@ -34,15 +30,11 @@ export const PUBLIC_KITCHEN_CHROME_LABELS = {
     dishes: 'Gerichte',
   },
   en: {
-    original: 'Original',
-    german: '🇩🇪',
-    english: '🇬🇧',
     menus: 'Menus',
     chooseMenu: 'Choose a menu',
     openMenus: 'Open menus',
     openMenu: 'Open menu',
     loadingMenus: 'Loading menus...',
-    failedToLoadMenus: 'Failed to load menus',
     noMenusAvailable: 'No menus available',
     noPublicMenus: 'This kitchen does not have public menus available yet.',
     loadingMenu: 'Loading menu...',

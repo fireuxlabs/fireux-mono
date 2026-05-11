@@ -183,6 +183,17 @@ function dish(id, name, description = '') {
   return { id, name, description }
 }
 
+function menuLine(id, label, description = '', translations = {}) {
+  return {
+    id,
+    label,
+    description,
+    labels: translations.labels || {},
+    descriptions: translations.descriptions || {},
+    inline: true,
+  }
+}
+
 const MAIN_SECTIONS = [
   {
     id: 'antipasti',
@@ -429,9 +440,51 @@ const MAIN_SECTIONS = [
     id: 'contorni',
     label: 'Contorni',
     items: [
-      dish('contorni-beilagen', 'CONTORNI / BEILAGEN', 'Spaghetti, Penne, Pommes – Frites, Reis, Risotto oder Salat'),
-      dish('upgrade-beilagen', 'Upgrade Beilagen', '+3.- Safranrisotto, hausgemachte Pasta, glutenfreie Pasta'),
-      dish('zusatzliche-beilage', 'Zusätzliche Beilage', '+6.- je zusätzliche Beilage'),
+      menuLine(
+        'contorni-01',
+        'Contorni / Beilagen',
+        'Spaghetti, Penne, Pommes – Frites, Reis, Risotto oder Salat',
+        {
+          labels: {
+            de: 'Beilagen',
+            en: 'Side dishes',
+          },
+          descriptions: {
+            de: 'Spaghetti, Penne, Pommes – Frites, Reis, Risotto oder Salat',
+            en: 'Spaghetti, penne, French fries, rice, risotto or salad',
+          },
+        }
+      ),
+      menuLine(
+        'contorni-02',
+        'Upgrade Beilagen',
+        '+3.- Safranrisotto, hausgemachte Pasta, glutenfreie Pasta',
+        {
+          labels: {
+            de: 'Upgrade Beilagen',
+            en: 'Upgrade sides',
+          },
+          descriptions: {
+            de: '+3.- Safranrisotto, hausgemachte Pasta, glutenfreie Pasta',
+            en: '+3.- saffron risotto, homemade pasta, gluten-free pasta',
+          },
+        }
+      ),
+      menuLine(
+        'contorni-03',
+        'Zusätzliche Beilage',
+        '+6.- je zusätzliche Beilage',
+        {
+          labels: {
+            de: 'Zusätzliche Beilage',
+            en: 'Additional side dish',
+          },
+          descriptions: {
+            de: '+6.- je zusätzliche Beilage',
+            en: '+6.- per additional side dish',
+          },
+        }
+      ),
     ],
   },
 ]
@@ -648,6 +701,198 @@ const PIZZA_SECTIONS = [
   },
 ]
 
+const PIZZA_ENGLISH_DESCRIPTIONS = {
+  curry:
+    'tomatosauce, mozzarella, curry chicken, mushrooms, oregano',
+  bbq:
+    'tomatosauce, mozzarella, BBQ-Chicken, mushrooms, onion, corn, oregano',
+  'al-capone':
+    'tomatosauce, mozzarella, beef strips, café de paris, green pepper, oregano',
+  lunatico:
+    'tomatosauce, mozzarella, beef strips, green pepper, oregano',
+  napoli:
+    'tomatosauce, mozzarella, anchovies, capes, olives, oregano',
+  salmone:
+    'tomatosauce, mozzarella, smoked salmon, ognion, oregano',
+  tonno:
+    'tomatosauce, mozzarella, thuna, ognion, caper, oregano',
+  gamberetti:
+    'tomatosauce, mozzarella, shrimps, garlic, oregano',
+  'frutti-di-mare':
+    'tomatosauce, mozzarella, sea fruits, garlic, oregano',
+  agnello:
+    'tomatosauce, mozzarella, lamb strips, garlic, rosemary',
+  casanova:
+    'tomatosauce, mozzarella, veal stips, spinach, chili, oregano',
+  'quattro-formaggi':
+    'tomatosauce, mozzarella, and 3 different chees, oregano',
+  'alla-piemontese':
+    'tomatosauce, mozzarella, porcini, oregano',
+  pinocchio:
+    'tomatosauce, mozzarella, corn, olives, red peppers, oregano',
+  margherita:
+    'tomatosauce, mozzarella, oregano',
+  buffala:
+    'tomatosauce, mozzarella, cherry tomatoes, buffala mozzarella basil',
+  vegetariana:
+    'tomatosauce, mozzarella, spinach, red pepper,eggplant, oregano',
+  caprese:
+    'tomatosauce, mozzarella, tomato , ognions, oregano',
+  tricolore:
+    'tomatosauce, mozzarella, frech tomato, spinach, curd chees, oregano',
+  oliva:
+    'tomatosauce, mozzarella, black Olives, oregano',
+  melanzane:
+    'tomatosauce, mozzarella, aubergine, garlic, oregano',
+  paprika:
+    'tomatosauce, mozzarella, red peppers, oregano',
+  carbonara:
+    'tomatosauce, mozzarella, bacon, egg, grana padano, oregano',
+  lucifer:
+    'tomatosauce, mozzarella, bacon,spicy sausage, chilli, oregano',
+  calzone:
+    'covered pizza with mozzarella, curd chees, ham, tomatosauce',
+  'salame-nostrano':
+    'tomatosauce, mozzarella, salami (sausage), oregano',
+  antonio:
+    'tomatosauce, mozzarella, ham, gorgonzola (blue cheese), pear, chili, oregano',
+  'quattro-stagioni':
+    'tomatosauce, mozzarella, ham, champignons, artichokes, red pepper, oregano',
+  prosciutto:
+    'tomatosauce, mozzarella, ham, oregano',
+  'prosciutto-e-funghi':
+    'tomatosauce, mozzarella, ham, champignons, oregano',
+  hawaii:
+    'tomatosauce, mozzarella, ham, pineapple, oregano',
+  gorgonzola:
+    'tomatosauce, mozzarella, ham, gorgonzola-chees',
+  boscaiolo:
+    'tomatosauce, mozzarella, salami (peperoni), bacon, ognion, egg, oregano',
+  piccante:
+    'tomatosauce, mozzarella, hot salami (sausage), oregano',
+  parma:
+    'tomatosauce, mozzarella, parma-ham, oregano',
+  parmigiana:
+    'tomatosauce, mozzarella, parma-ham, parmesan, oregano',
+}
+
+const ENGLISH_DESCRIPTIONS = {
+  ...MAIN_ENGLISH_DESCRIPTIONS,
+  ...PIZZA_ENGLISH_DESCRIPTIONS,
+}
+
+const MENU_ITEM_PRICES = {
+  'focaccia-aperitivo-pomodoro-bufala-e-parma': 27,
+  'focaccia-prosciutto-di-parma': 17,
+  'carpaccio-di-manzo': 23,
+  'gamberetti-all-aglio': 20,
+  'cocktail-di-gamberetti': 19,
+  bruschetta: {
+    price: 10,
+    price_label: '3 Stk. 10.- / 4 Stk. 13.- / 5 Stk. 16.-',
+  },
+  minestrone: 10,
+  'crema-di-pomodoro': 10,
+  'insalata-soncino': 14,
+  'insalata-caprese': 19,
+  burrata: 20,
+  'insalata-gigante': 21,
+  'insalata-verde': 9,
+  'insalata-mista': 10,
+  'risotto-milanese': 24,
+  'risotto-pollo-e-zafferano': 28,
+  'risotto-porcini': 28,
+  'gnocchi-piemontese': 28,
+  'lasagna-casalinga': 26,
+  'cannelloni-fiorentina': 26,
+  'spaghetti-with-tomato-sauce': 10,
+  'kids-spaghetti-bolognese': 12,
+  'kids-spaghetti-carbonara': 12,
+  'kids-spaghetti-al-pesto': 12,
+  'spaghetti-al-burro': 10,
+  'gnocchi-al-burro': 11,
+  capitano: 12,
+  'chicken-nuggets': 12,
+  'portion-pommes-frites': 9,
+  'risotto-bambini': 11,
+  'paglia-e-fieno-bella-rebecca': 29,
+  'fettuccine-nere-mare-e-monti': 31,
+  'fettuccine-nere-al-salmone': 29,
+  'penne-all-arrabbiata': 22,
+  'penne-imperiale': 27,
+  'penne-alla-fiamma': 26,
+  'spaghetti-aglio-olio-e-peperoncino': 18,
+  'spaghetti-frutti-di-mare': 29,
+  'spaghetti-carbonara': 22,
+  'spaghetti-vegetariana': 23,
+  'spaghetti-napoli': 18,
+  'spaghetti-al-pesto': 19,
+  'spaghetti-bolognese': 22,
+  'gamberoni-alla-griglia': 45,
+  'gamberi-luna-piccante': 48,
+  'salmone-alla-griglia': 37,
+  'controfiletto-di-manzo-alla-griglia': 45,
+  'controfiletto-di-manzo-al-pepe-verde': 47,
+  'controfiletto-d-agnello-alla-griglia': 43,
+  'controfiletto-d-agnello-alla-montanara': 45,
+  'petto-di-pollo-alla-griglia': 29,
+  'maiale-impanato': 34,
+  'scaloppina-di-vitello-al-limone': 39,
+  'saltimbocca-alla-romana': 39,
+  'scaloppina-di-vitello-alla-crema-di-funghi': 39,
+  'affettato-alla-zurighese': 36,
+  rindsentrecote: {
+    price: 57,
+    price_label: '300gr 57.- / 400gr 66.-',
+  },
+  schweinesteak: {
+    price: 47,
+    price_label: '300gr 47.- / 400gr 56.-',
+  },
+  'lamm-nierstuck': {
+    price: 54,
+    price_label: '300gr 54.- / 400gr 63.-',
+  },
+  'rindsfleisch-spiess': 49,
+  'gemischter-spiess': 41,
+  curry: 25,
+  bbq: 26,
+  'al-capone': 29,
+  lunatico: 27,
+  napoli: 21,
+  salmone: 24,
+  tonno: 21,
+  gamberetti: 27,
+  'frutti-di-mare': 25,
+  agnello: 27,
+  casanova: 26,
+  'quattro-formaggi': 22,
+  'alla-piemontese': 23,
+  pinocchio: 23,
+  margherita: 16,
+  buffala: 25,
+  vegetariana: 24,
+  caprese: 21,
+  tricolore: 22,
+  oliva: 18,
+  melanzane: 21,
+  paprika: 21,
+  carbonara: 23,
+  lucifer: 24,
+  calzone: 21,
+  'salame-nostrano': 21,
+  antonio: 23,
+  'quattro-stagioni': 23,
+  prosciutto: 20,
+  'prosciutto-e-funghi': 21,
+  hawaii: 21,
+  gorgonzola: 22,
+  boscaiolo: 25,
+  piccante: 22,
+  parma: 24,
+  parmigiana: 25,
+}
+
 const MENUS = [
   {
     id: 'main',
@@ -757,6 +1002,19 @@ function createdStamp(snap) {
   }
 }
 
+function menuItemPrice(itemId) {
+  const priceConfig = MENU_ITEM_PRICES[itemId]
+  if (typeof priceConfig === 'number') return { price: priceConfig }
+  if (!priceConfig || typeof priceConfig !== 'object') return { price: 0 }
+
+  return {
+    price: Number(priceConfig.price ?? 0) || 0,
+    ...(normalizeString(priceConfig.price_label)
+      ? { price_label: normalizeString(priceConfig.price_label) }
+      : {}),
+  }
+}
+
 function buildSections(sections) {
   return sections.map((section, sectionIndex) => ({
     id: section.id,
@@ -764,15 +1022,29 @@ function buildSections(sections) {
     labels: sectionLabels(section.label),
     description: '',
     sort_order: sectionIndex + 1,
-    items: section.items.map((item, itemIndex) => ({
-      id: `${section.id}-${String(itemIndex + 1).padStart(2, '0')}`,
-      dish_id: item.id,
-      label: '',
-      description: '',
-      price: 0,
-      sort_order: itemIndex + 1,
-      active: true,
-    })),
+    items: section.items.map((item, itemIndex) => {
+      const itemBase = {
+        id: item.inline
+          ? item.id
+          : `${section.id}-${String(itemIndex + 1).padStart(2, '0')}`,
+        label: item.inline ? item.label : '',
+        description: item.inline ? item.description : '',
+        ...menuItemPrice(item.id),
+        sort_order: itemIndex + 1,
+        active: true,
+      }
+
+      return item.inline
+        ? {
+            ...itemBase,
+            labels: certifiedLanguageMap(item.labels),
+            descriptions: certifiedLanguageMap(item.descriptions),
+          }
+        : {
+            ...itemBase,
+            dish_id: item.id,
+          }
+    }),
   }))
 }
 
@@ -803,7 +1075,11 @@ function buildMenuPayload(menu, kitchenId, snap) {
     },
     service_modes: ['dine_in'],
     sections: buildSections(menu.sections),
-    dish_ids: menu.sections.flatMap((section) => section.items.map((item) => item.id)),
+    dish_ids: menu.sections.flatMap((section) =>
+      section.items
+        .filter((item) => !item.inline)
+        .map((item) => item.id)
+    ),
     sort_order: menu.sortOrder,
     created: createdStamp(snap),
     updated: updatedStamp(),
@@ -822,7 +1098,7 @@ function buildDishPayload(item, kitchenId, snap) {
     existing.names && typeof existing.names === 'object'
       ? certifiedLanguageMap(existing.names)
       : {}
-  const englishDescription = normalizeString(MAIN_ENGLISH_DESCRIPTIONS[item.id])
+  const englishDescription = normalizeString(ENGLISH_DESCRIPTIONS[item.id])
   const descriptions = {
     ...existingDescriptions,
     ...(description ? { de: description } : {}),
@@ -878,10 +1154,12 @@ async function main() {
   const kitchenRef = db.doc(`${kitchenCollectionPath}/${LUNA_KITCHEN_ID}`)
   const allDishEntries = Array.from(
     new Map(
-      MENUS.flatMap((menu) => menu.sections.flatMap((section) => section.items)).map((item) => [
-        item.id,
-        item,
-      ])
+      MENUS.flatMap((menu) => menu.sections.flatMap((section) => section.items))
+        .filter((item) => !item.inline)
+        .map((item) => [
+          item.id,
+          item,
+        ])
     ).values()
   )
 
