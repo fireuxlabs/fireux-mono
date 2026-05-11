@@ -33,7 +33,7 @@ const FRENCH_SECTION_LABELS = {
     zuppa: 'Soupes',
     insalate: 'Salades',
     risotto: 'Risotto',
-    gratinato: 'Gratiné',
+    gratinato: 'Gratinés',
     'kinder-karte': 'Menu enfant',
     pasta: 'Pâtes',
     pesce: 'Poisson',
@@ -83,11 +83,11 @@ const FRENCH_DISH_DESCRIPTIONS = {
   bruschetta:
     'Dés de tomates assaisonnés aux herbes fraîches, oignons, ail, basilic et huile d’olive, servis sur pain maison grillé',
   minestrone:
-    'Soupe italienne de légumes',
+    'Soupe italienne de légumes maison',
   'crema-di-pomodoro':
-    'Velouté de tomates',
+    'Crème de tomate maison',
   'insalata-soncino':
-    'Rampon avec lard, œuf et croûtons',
+    'Nüsslisalat avec lardons, œuf et croûtons',
   'insalata-caprese':
     'Salade de tomates avec mozzarella di bufala, basilic, huile d’olive et vinaigre',
   burrata:

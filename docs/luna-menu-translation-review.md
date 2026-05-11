@@ -20,7 +20,7 @@ Generated from Firestore kitchen `ChIJ93_ggY-jj0cRTCyLcfBuK2w`.
 | default | Hauptkarte |
 | de | Hauptkarte |
 | en | Main Menu |
-| it | Menu principale |
+| it | Menù principale |
 | fr | Menu principal |
 | ar | القائمة الرئيسية |
 
@@ -32,9 +32,9 @@ Generated from Firestore kitchen `ChIJ93_ggY-jj0cRTCyLcfBuK2w`.
 | --- | --- |
 | default | Antipasti |
 | de | Vorspeisen |
-| en | Starter |
+| en | Starters |
 | it | Antipasti |
-| fr | Démarreur |
+| fr | Entrées |
 | ar | مقبلات |
 
 ### Focaccia «Aperitivo» Pomodoro, Bufala e Parma
@@ -48,7 +48,7 @@ Price: 27.-
 | de | Focaccia «Aperitivo» Pomodoro, Bufala e Parma | Pizzateig an Olivenöl und Knoblauch mit verfeinerten Tomatenwürfeln (mit Zwiebeln, Knoblauch, Basilikum, Olivenöl) dazu Büffel-Mozzarella und Parmaschinken | 27.- |
 | en | Focaccia «Aperitivo» Pomodoro, Bufala e Parma | Pizza dough with tomato cubes, garlic, onions, basil and olive oil, with buffalo mozzarella and Parma ham | 27.- |
 | it | Focaccia «Aperitivo» Pomodoro, Bufala e Parma | Pasta per pizza con olio d’oliva e aglio, dadini di pomodoro con cipolle, aglio, basilico e olio d’oliva, mozzarella di bufala e prosciutto di Parma | 27.- |
-| fr | Focaccia «Aperitivo» Pomodoro, Bufala e Parma | Pâte à pizza garnie de dés de tomates, d'ail, d'oignons, de basilic et d'huile d'olive, avec de la mozzarella de bufflonne et du jambon de Parme | 27.- |
+| fr | Focaccia «Aperitivo» Pomodoro, Bufala e Parma | Pâte à pizza à l’huile d’olive et à l’ail avec dés de tomates assaisonnés, mozzarella di bufala et jambon de Parme | 27.- |
 | ar | Focaccia «Aperitivo» Pomodoro, Bufala e Parma | عجينة بيتزا بزيت الزيتون والثوم مع مكعبات طماطم متبّلة بالبصل والثوم والريحان وزيت الزيتون، مع موزاريلا بوفالا ولحم خنزير بارما | 27.- |
 
 ### Focaccia Prosciutto di Parma
@@ -62,7 +62,7 @@ Price: 17.-
 | de | Focaccia Prosciutto di Parma | Pizzateig an Olivenöl und Knoblauch mit Parmaschinken | 17.- |
 | en | Focaccia Prosciutto di Parma | Pizza dough on olive oil and garlic with Parma ham | 17.- |
 | it | Focaccia Prosciutto di Parma | Pasta per pizza con olio d’oliva e aglio e prosciutto di Parma | 17.- |
-| fr | Focaccia Prosciutto di Parma | Pâte à pizza à l'huile d'olive et à l'ail avec du jambon de Parme | 17.- |
+| fr | Focaccia Prosciutto di Parma | Pâte à pizza à l’huile d’olive et à l’ail avec jambon de Parme | 17.- |
 | ar | Focaccia Prosciutto di Parma | عجينة بيتزا بزيت الزيتون والثوم مع لحم خنزير بارما | 17.- |
 
 ### Carpaccio di Manzo
@@ -74,9 +74,9 @@ Price: 23.-
 | --- | --- | --- | --- |
 | default | Carpaccio di Manzo | Rindfleisch- Carpaccio mit Grana Padano, Olivenöl, und Zitronensaft garniert mit Rucola | 23.- |
 | de | Carpaccio di Manzo | Rindfleisch- Carpaccio mit Grana Padano, Olivenöl, und Zitronensaft garniert mit Rucola | 23.- |
-| en | Carpaccio di Manzo | Beef-carpaccio with parmesan stripes, olive oil and lemon juice on rucola | 23.- |
+| en | Carpaccio di Manzo | Beef carpaccio with Grana Padano shavings, olive oil and lemon juice, served with rocket | 23.- |
 | it | Carpaccio di Manzo | Carpaccio di manzo con Grana Padano, olio d’oliva e succo di limone, guarnito con rucola | 23.- |
-| fr | Carpaccio di Manzo | Carpaccio de bœuf aux copeaux de parmesan, huile d'olive et jus de citron sur roquette | 23.- |
+| fr | Carpaccio di Manzo | Carpaccio de bœuf avec Grana Padano, huile d’olive et jus de citron, garni de roquette | 23.- |
 | ar | Carpaccio di Manzo | كارباتشيو لحم بقر مع جبن غرانا بادانو وزيت الزيتون وعصير الليمون، مزين بالروكا | 23.- |
 
 ### Gamberetti all´Aglio
@@ -90,7 +90,7 @@ Price: 20.-
 | de | Gamberetti all´Aglio | warme Riesenkrevetten im Olivenöl und Knoblauch, serviert auf Rucola und mit gerösteten Brotscheiben | 20.- |
 | en | Gamberetti all´Aglio | warm shrimps in olive oil with garlic, served on rucola and with roasted bread. | 20.- |
 | it | Gamberetti all´Aglio | Gamberoni caldi in olio d’oliva e aglio, serviti su rucola con fette di pane tostato | 20.- |
-| fr | Gamberetti all´Aglio | Crevettes chaudes à l'huile d'olive et à l'ail, servies sur de la roquette et accompagnées de pain grillé. | 20.- |
+| fr | Gamberetti all´Aglio | Gambas chaudes à l’huile d’olive et à l’ail, servies sur roquette avec tranches de pain grillé | 20.- |
 | ar | Gamberetti all´Aglio | روبيان كبير دافئ بزيت الزيتون والثوم، يقدم على الروكا مع شرائح خبز محمصة | 20.- |
 
 ### Cocktail di Gamberetti
@@ -104,7 +104,7 @@ Price: 19.-
 | de | Cocktail di Gamberetti | Krevetten an hausgemachter Cocktailsauce, serviert mit gerösteten Brotscheiben | 19.- |
 | en | Cocktail di Gamberetti | Shrimps on homemade cocktail sauce served on roasted bread. | 19.- |
 | it | Cocktail di Gamberetti | Gamberetti con salsa cocktail fatta in casa, serviti con fette di pane tostato | 19.- |
-| fr | Cocktail di Gamberetti | Crevettes nappées d'une sauce cocktail maison, servies sur du pain grillé. | 19.- |
+| fr | Cocktail di Gamberetti | Crevettes à la sauce cocktail maison, servies avec tranches de pain grillé | 19.- |
 | ar | Cocktail di Gamberetti | روبيان مع صلصة كوكتيل منزلية، يقدم مع شرائح خبز محمصة | 19.- |
 
 ### Bruschetta
@@ -118,7 +118,7 @@ Price: 3 Stk. 10.- / 4 Stk. 13.- / 5 Stk. 16.-
 | de | Bruschetta | mit verfeinerten Tomatenwürfeln an frischen Kräutern (mit Zwiebeln, Knoblauch, Basilikum, Olivenöl) serviert auf hausgemachten, gerösteten Brotscheiben | 3 Stk. 10.- / 4 Stk. 13.- / 5 Stk. 16.- |
 | en | Bruschetta | tomato cubes with, fresh herbs, garlic, onions, basil and olive oil, served on roasted bread. | 3 pcs 10.- / 4 pcs 13.- / 5 pcs 16.- |
 | it | Bruschetta | Dadini di pomodoro con erbe fresche, cipolle, aglio, basilico e olio d’oliva, serviti su fette di pane casereccio tostato | 3 pz. 10.- / 4 pz. 13.- / 5 pz. 16.- |
-| fr | Bruschetta | Dés de tomates avec des herbes fraîches, de l'ail, des oignons, du basilic et de l'huile d'olive, servis sur du pain grillé. | 3 pièces 10.- / 4 pièces 13.- / 5 pièces 16.- |
+| fr | Bruschetta | Dés de tomates assaisonnés aux herbes fraîches, oignons, ail, basilic et huile d’olive, servis sur pain maison grillé | 3 pièces 10.- / 4 pièces 13.- / 5 pièces 16.- |
 | ar | Bruschetta | مكعبات طماطم متبّلة بالأعشاب الطازجة والبصل والثوم والريحان وزيت الزيتون، تقدم على شرائح خبز منزلية محمصة | 3 قطع 10.- / 4 قطع 13.- / 5 قطع 16.- |
 
 ## Section: Zuppa
@@ -130,7 +130,7 @@ Price: 3 Stk. 10.- / 4 Stk. 13.- / 5 Stk. 16.-
 | default | Zuppa |
 | de | Suppen |
 | en | Soups |
-| it | Zuppa |
+| it | Zuppe |
 | fr | Soupes |
 | ar | شوربات |
 
@@ -143,9 +143,9 @@ Price: 10.-
 | --- | --- | --- | --- |
 | default | Minestrone | Italienische Gemüsesuppe | 10.- |
 | de | Minestrone | Italienische Gemüsesuppe | 10.- |
-| en | Minestrone | home made Italian vegetable -soup | 10.- |
+| en | Minestrone | homemade Italian vegetable soup | 10.- |
 | it | Minestrone | Minestrone di verdure all’italiana fatto in casa | 10.- |
-| fr | Minestrone | soupe de légumes italienne maison | 10.- |
+| fr | Minestrone | Soupe italienne de légumes maison | 10.- |
 | ar | Minestrone | شوربة خضار إيطالية منزلية | 10.- |
 
 ### Crema di Pomodoro
@@ -157,9 +157,9 @@ Price: 10.-
 | --- | --- | --- | --- |
 | default | Crema di Pomodoro | Tomatencremesuppe | 10.- |
 | de | Crema di Pomodoro | Tomatencremesuppe | 10.- |
-| en | Crema di Pomodoro | homemade tomato -creamsoup | 10.- |
+| en | Crema di Pomodoro | homemade tomato cream soup | 10.- |
 | it | Crema di Pomodoro | Crema di pomodoro fatta in casa | 10.- |
-| fr | Crema di Pomodoro | soupe de tomates maison | 10.- |
+| fr | Crema di Pomodoro | Crème de tomate maison | 10.- |
 | ar | Crema di Pomodoro | شوربة كريمة الطماطم منزلية | 10.- |
 
 ## Section: Insalate
@@ -170,9 +170,9 @@ Price: 10.-
 | --- | --- |
 | default | Insalate |
 | de | Salate |
-| en | Salad |
+| en | Salads |
 | it | Insalate |
-| fr | Salade |
+| fr | Salades |
 | ar | سلطات |
 
 ### Insalata Soncino
@@ -186,8 +186,8 @@ Price: 14.-
 | de | Insalata Soncino | Nüsslisalat mit Speck, Ei und Brotcroutons | 14.- |
 | en | Insalata Soncino | Fieldsalad with bacon, egg and croutons | 14.- |
 | it | Insalata Soncino | Insalata di valerianella con speck, uovo e crostini | 14.- |
-| fr | Insalata Soncino | Salade champêtre avec bacon, œuf et croûtons | 14.- |
-| ar | Insalata Soncino | سلطة نüssli مع لحم خنزير مقدد وبيض وقطع خبز محمصة | 14.- |
+| fr | Insalata Soncino | Nüsslisalat avec lardons, œuf et croûtons | 14.- |
+| ar | Insalata Soncino | سلطة خضراء صغيرة مع لحم خنزير مقدد وبيض وقطع خبز محمصة | 14.- |
 
 ### Insalata Caprese
 
@@ -200,7 +200,7 @@ Price: 19.-
 | de | Insalata Caprese | Tomatensalat mit Buffalamozzarella an Basilikum, Olivenöl und Aceto | 19.- |
 | en | Insalata Caprese | tomato and buffalo mozzarella with basil, olive oil and Aceto | 19.- |
 | it | Insalata Caprese | Insalata di pomodori con mozzarella di bufala, basilico, olio d’oliva e aceto | 19.- |
-| fr | Insalata Caprese | tomate et mozzarella de bufflonne avec basilic, huile d'olive et Aceto | 19.- |
+| fr | Insalata Caprese | Salade de tomates avec mozzarella di bufala, basilic, huile d’olive et vinaigre | 19.- |
 | ar | Insalata Caprese | سلطة طماطم مع موزاريلا بوفالا والريحان وزيت الزيتون وخل أسيتو | 19.- |
 
 ### Burrata
@@ -214,7 +214,7 @@ Price: 20.-
 | de | Burrata | Cremige Frischkäse-Spezialität aus Apulien auf Tomaten und Basilikum an Olivenöl | 20.- |
 | en | Burrata | Creamy cheese with tomatoes and basil on olive oil | 20.- |
 | it | Burrata | Specialità cremosa di formaggio fresco pugliese su pomodori e basilico con olio d’oliva | 20.- |
-| fr | Burrata | Fromage crémeux aux tomates et au basilic, à l'huile d'olive | 20.- |
+| fr | Burrata | Spécialité crémeuse de fromage frais des Pouilles, sur tomates et basilic à l’huile d’olive | 20.- |
 | ar | Burrata | جبن بوراتا كريمي من بوليا على الطماطم والريحان مع زيت الزيتون | 20.- |
 
 ### Insalata Gigante
@@ -226,9 +226,9 @@ Price: 21.-
 | --- | --- | --- | --- |
 | default | Insalata Gigante | Grosser gemischter Salatteller mit Ei | 21.- |
 | de | Insalata Gigante | Grosser gemischter Salatteller mit Ei | 21.- |
-| en | Insalata Gigante | Big Salade plate with egg | 21.- |
+| en | Insalata Gigante | Large mixed salad plate with egg | 21.- |
 | it | Insalata Gigante | Grande piatto di insalata mista con uovo | 21.- |
-| fr | Insalata Gigante | Grande assiette de salade avec œuf | 21.- |
+| fr | Insalata Gigante | Grande assiette de salade composée avec œuf | 21.- |
 | ar | Insalata Gigante | طبق سلطة مشكلة كبير مع بيض | 21.- |
 
 ### Insalata Verde
@@ -256,7 +256,7 @@ Price: 10.-
 | de | Insalata Mista | Gemischter Salat | 10.- |
 | en | Insalata Mista | Mixed salad | 10.- |
 | it | Insalata Mista | Insalata mista | 10.- |
-| fr | Insalata Mista | Salade composée | 10.- |
+| fr | Insalata Mista | Salade mêlée | 10.- |
 | ar | Insalata Mista | سلطة مشكلة | 10.- |
 
 ## Section: Risotto
@@ -295,9 +295,9 @@ Price: 28.-
 | --- | --- | --- | --- |
 | default | Risotto Pollo e Zafferano | Risotto mit Poulet geschnetzeltem, Zwiebeln, Knoblauch an Safransauce und Grana Padano | 28.- |
 | de | Risotto Pollo e Zafferano | Risotto mit Poulet geschnetzeltem, Zwiebeln, Knoblauch an Safransauce und Grana Padano | 28.- |
-| en | Risotto Pollo e Zafferano | Risotto with chicken strips, onions, garlic on saffron sauce and parmesan strips | 28.- |
+| en | Risotto Pollo e Zafferano | risotto with chicken strips, onions and garlic in saffron sauce with Grana Padano | 28.- |
 | it | Risotto Pollo e Zafferano | Risotto con straccetti di pollo, cipolle e aglio in salsa allo zafferano e Grana Padano | 28.- |
-| fr | Risotto Pollo e Zafferano | Risotto aux lanières de poulet, oignons, ail, sauce au safran et copeaux de parmesan | 28.- |
+| fr | Risotto Pollo e Zafferano | Risotto avec émincé de poulet, oignons, ail, sauce au safran et Grana Padano | 28.- |
 | ar | Risotto Pollo e Zafferano | ريزوتو مع شرائح دجاج وبصل وثوم بصلصة الزعفران وجبن غرانا بادانو | 28.- |
 
 ### Risotto Porcini
@@ -311,7 +311,7 @@ Price: 28.-
 | de | Risotto Porcini | Risotto mit Grana Padano, Steinpilzen, Knoblauch, Zwiebeln | 28.- |
 | en | Risotto Porcini | Risotto Grana Padano with porcini, garlic, onion | 28.- |
 | it | Risotto Porcini | Risotto con Grana Padano, funghi porcini, aglio e cipolle | 28.- |
-| fr | Risotto Porcini | Risotto Grana Padano aux cèpes, ail, oignon | 28.- |
+| fr | Risotto Porcini | Risotto au Grana Padano avec cèpes, ail et oignons | 28.- |
 | ar | Risotto Porcini | ريزوتو مع غرانا بادانو وفطر بورشيني وثوم وبصل | 28.- |
 
 ## Section: Gratinato
@@ -324,7 +324,7 @@ Price: 28.-
 | de | Gratiniert |
 | en | Au Gratin |
 | it | Gratinati |
-| fr | Au Gratin |
+| fr | Gratinés |
 | ar | أطباق غراتان |
 
 ### Gnocchi Piemontese
@@ -336,9 +336,9 @@ Price: 28.-
 | --- | --- | --- | --- |
 | default | Gnocchi Piemontese | mit Steinpilzen, Zwiebeln, Knoblauch an Marsala – und Rahmsauce mit Grana Padano und Mozzarella gratiniert | 28.- |
 | de | Gnocchi Piemontese | mit Steinpilzen, Zwiebeln, Knoblauch an Marsala – und Rahmsauce mit Grana Padano und Mozzarella gratiniert | 28.- |
-| en | Gnocchi Piemontese | gnocchi with king bolete, onion, garlic on marsala and cream sauce (au gratin) | 28.- |
+| en | Gnocchi Piemontese | gnocchi with porcini mushrooms, onion and garlic in Marsala cream sauce, au gratin | 28.- |
 | it | Gnocchi Piemontese | Gnocchi con funghi porcini, cipolle e aglio in salsa al Marsala e panna, gratinati con Grana Padano e mozzarella | 28.- |
-| fr | Gnocchi Piemontese | Gnocchis au cèpe, oignon et ail, sauce marsala et crème (au gratin) | 28.- |
+| fr | Gnocchi Piemontese | Gnocchi aux cèpes, oignons et ail, sauce Marsala et crème, gratinés au Grana Padano et à la mozzarella | 28.- |
 | ar | Gnocchi Piemontese | نيوكي مع فطر بورشيني وبصل وثوم بصلصة مارسالا والكريمة، مغطى بغرانا بادانو وموزاريلا ومحمّر بالفرن | 28.- |
 
 ### Lasagna Casalinga
@@ -352,7 +352,7 @@ Price: 26.-
 | de | Lasagna Casalinga | hausgemachte Lasagne mit Rindsfleisch-Füllung mit Grana Padano und Mozzarella gratiniert | 26.- |
 | en | Lasagna Casalinga | homemade beef lasagne with tomato and cream sauce (au gratin) | 26.- |
 | it | Lasagna Casalinga | Lasagna fatta in casa con ripieno di manzo, gratinata con Grana Padano e mozzarella | 26.- |
-| fr | Lasagna Casalinga | Lasagnes maison au bœuf avec sauce tomate et crème (au gratin) | 26.- |
+| fr | Lasagna Casalinga | Lasagne maison farcie au bœuf, gratinée au Grana Padano et à la mozzarella | 26.- |
 | ar | Lasagna Casalinga | لازانيا منزلية محشوة بلحم البقر مع غرانا بادانو وموزاريلا ومحمّرة بالفرن | 26.- |
 
 ### Cannelloni Fiorentina
@@ -366,7 +366,7 @@ Price: 26.-
 | de | Cannelloni Fiorentina | hausgemachter Cannelloni gefüllt mit Spinat und Quark an Tomatensauce mit Grana Padano und Mozzarella gratiniert | 26.- |
 | en | Cannelloni Fiorentina | homemade cannelloni pasta filled with spinach, curd cheese on tomato sauce (au gratin) | 26.- |
 | it | Cannelloni Fiorentina | Cannelloni fatti in casa ripieni di spinaci e ricotta, in salsa di pomodoro, gratinati con Grana Padano e mozzarella | 26.- |
-| fr | Cannelloni Fiorentina | Pâtes cannellonis maison farcies aux épinards et au fromage blanc sur une sauce tomate gratinée | 26.- |
+| fr | Cannelloni Fiorentina | Cannelloni maison farcis aux épinards et au séré, sauce tomate, gratinés au Grana Padano et à la mozzarella | 26.- |
 | ar | Cannelloni Fiorentina | كانيلوني منزلية محشوة بالسبانخ والجبن القريش بصلصة الطماطم مع غرانا بادانو وموزاريلا ومحمّرة بالفرن | 26.- |
 
 ## Section: Kinder Karte
@@ -377,9 +377,9 @@ Price: 26.-
 | --- | --- |
 | default | Kinder Karte |
 | de | Kinder Karte |
-| en | Kids Dish |
+| en | Kids Menu |
 | it | Menu bambini |
-| fr | Plat pour enfants |
+| fr | Menu enfant |
 | ar | قائمة الأطفال |
 
 ### Spaghetti mit Tomatensauce
@@ -463,7 +463,7 @@ Price: 11.-
 | de | Gnocchi al Burro | Gnocchi an Butter | 11.- |
 | en | Gnocchi al Burro | Gnocchi on butter | 11.- |
 | it | Gnocchi al Burro | Gnocchi al burro | 11.- |
-| fr | Gnocchi al Burro | Gnocchis au beurre | 11.- |
+| fr | Gnocchi al Burro | Gnocchi au beurre | 11.- |
 | ar | Gnocchi al Burro | نيوكي بالزبدة | 11.- |
 
 ### Capitano
@@ -477,7 +477,7 @@ Price: 12.-
 | de | Capitano | Fischstäbchen frittiert mit Pommes Frites | 12.- |
 | en | Capitano | Fish sticks with French fries. | 12.- |
 | it | Capitano | Bastoncini di pesce fritti con patatine fritte | 12.- |
-| fr | Capitano | Bâtonnets de poisson avec des frites. | 12.- |
+| fr | Capitano | Bâtonnets de poisson frits avec frites | 12.- |
 | ar | Capitano | أصابع سمك مقلية مع بطاطس مقلية | 12.- |
 
 ### Chicken Nuggets
@@ -491,7 +491,7 @@ Price: 12.-
 | de | Chicken Nuggets | mit Pommes Frites | 12.- |
 | en | Chicken Nuggets | with French fries | 12.- |
 | it | Chicken Nuggets | Con patatine fritte | 12.- |
-| fr | Chicken Nuggets | avec des frites | 12.- |
+| fr | Chicken Nuggets | Avec frites | 12.- |
 | ar | Chicken Nuggets | مع بطاطس مقلية | 12.- |
 
 ### Portion Pommes Frites
@@ -505,7 +505,7 @@ Price: 9.-
 | de | Portion Pommes Frites | Pommes Frites | 9.- |
 | en | Portion Pommes Frites | French fries | 9.- |
 | it | Porzione di patatine fritte | Patatine fritte | 9.- |
-| fr | Portion Pommes Frites | frites | 9.- |
+| fr | Portion Pommes Frites | Frites | 9.- |
 | ar | Portion Pommes Frites | بطاطس مقلية | 9.- |
 
 ### Risotto Bambini
@@ -519,7 +519,7 @@ Price: 11.-
 | de | Risotto Bambini | Grana Padano Risotto | 11.- |
 | en | Risotto Bambini | Risotto with cheese | 11.- |
 | it | Risotto Bambini | Risotto al Grana Padano | 11.- |
-| fr | Risotto Bambini | Risotto au fromage | 11.- |
+| fr | Risotto Bambini | Risotto au Grana Padano | 11.- |
 | ar | Risotto Bambini | ريزوتو بغرانا بادانو | 11.- |
 
 ## Section: Pasta
@@ -546,7 +546,7 @@ Price: 29.-
 | de | Paglia e Fieno Bella Rebecca | Zweifarbige Teigwaren mit Kalbsgeschnetzeltem, Waldpilzen, Zwiebeln, Knoblauch an Rahmsauce | 29.- |
 | en | Paglia e Fieno Bella Rebecca | two-tone pasta with veal strips, mushrooms, onion, garlic on cream sauce | 29.- |
 | it | Paglia e Fieno Bella Rebecca | Pasta bicolore con straccetti di vitello, funghi di bosco, cipolle e aglio in salsa alla panna | 29.- |
-| fr | Paglia e Fieno Bella Rebecca | Pâtes bicolores aux lamelles de veau, champignons, oignons et ail, sauce à la crème | 29.- |
+| fr | Paglia e Fieno Bella Rebecca | Pâtes bicolores avec émincé de veau, champignons des bois, oignons et ail à la sauce crème | 29.- |
 | ar | Paglia e Fieno Bella Rebecca | معكرونة بلونين مع شرائح لحم عجل وفطر الغابة وبصل وثوم بصلصة الكريمة | 29.- |
 
 ### Fettuccine Nere Mare e Monti
@@ -558,9 +558,9 @@ Price: 31.-
 | --- | --- | --- | --- |
 | default | Fettuccine Nere Mare e Monti | Schwarze Nudeln mit Krevetten, Steinpilzen, Zwiebeln, Knoblauch an Rahmsauce | 31.- |
 | de | Fettuccine Nere Mare e Monti | Schwarze Nudeln mit Krevetten, Steinpilzen, Zwiebeln, Knoblauch an Rahmsauce | 31.- |
-| en | Fettuccine Nere Mare e Monti | Black noodles with shrimps and king bolete, onion, garlic on cream sauce | 31.- |
+| en | Fettuccine Nere Mare e Monti | Black noodles with shrimps and porcini mushrooms, onion and garlic in cream sauce | 31.- |
 | it | Fettuccine Nere Mare e Monti | Fettuccine nere con gamberetti, funghi porcini, cipolle e aglio in salsa alla panna | 31.- |
-| fr | Fettuccine Nere Mare e Monti | Nouilles noires aux crevettes et cèpes, oignon et ail, sauce à la crème | 31.- |
+| fr | Fettuccine Nere Mare e Monti | Pâtes noires avec crevettes, cèpes, oignons et ail à la sauce crème | 31.- |
 | ar | Fettuccine Nere Mare e Monti | معكرونة سوداء مع روبيان وفطر بورشيني وبصل وثوم بصلصة الكريمة | 31.- |
 
 ### Fettuccine Nere al Salmone
@@ -574,7 +574,7 @@ Price: 29.-
 | de | Fettuccine Nere al Salmone | Schwarze Nudeln mit Lachs, Zwiebeln, Knoblauch, frischen Kräutern an hausgemachter Tomaten-Rahmsauce | 29.- |
 | en | Fettuccine Nere al Salmone | Black noodles with salmon, onion, garlic, fresh herbs on homemade tomato-cream sauce | 29.- |
 | it | Fettuccine Nere al Salmone | Fettuccine nere con salmone, cipolle, aglio ed erbe fresche in salsa di pomodoro e panna fatta in casa | 29.- |
-| fr | Fettuccine Nere al Salmone | Nouilles noires au saumon, oignon, ail et fines herbes, nappées d'une sauce tomate-crème maison. | 29.- |
+| fr | Fettuccine Nere al Salmone | Pâtes noires avec saumon, oignons, ail et herbes fraîches à la sauce tomate-crème maison | 29.- |
 | ar | Fettuccine Nere al Salmone | معكرونة سوداء مع سلمون وبصل وثوم وأعشاب طازجة بصلصة طماطم وكريمة منزلية | 29.- |
 
 ### Penne all´Arrabbiata
@@ -588,7 +588,7 @@ Price: 22.-
 | de | Penne all´Arrabbiata | Penne mit Speck, Peperoncini, Zwiebeln und Knoblauch an hausgemachter Tomatensauce | 22.- |
 | en | Penne all´Arrabbiata | Penne with roasted bacon cubes, fresh chili, onion, and garlic on homemade tomato sauce | 22.- |
 | it | Penne all´Arrabbiata | Penne con speck, peperoncini, cipolle e aglio in salsa di pomodoro fatta in casa | 22.- |
-| fr | Penne all´Arrabbiata | Penne aux lardons grillés, piment frais, oignon et ail, le tout nappé d'une sauce tomate maison | 22.- |
+| fr | Penne all´Arrabbiata | Penne avec lard, piments, oignons et ail à la sauce tomate maison | 22.- |
 | ar | Penne all´Arrabbiata | بينيه مع لحم خنزير مقدد وفلفل حار وبصل وثوم بصلصة طماطم منزلية | 22.- |
 
 ### Penne Imperiale
@@ -602,7 +602,7 @@ Price: 27.-
 | de | Penne Imperiale | Penne mit Krevetten, Tomatenwürfeln, Zwiebeln, Knoblauch und frischen Kräutern an hausgemachter Tomaten-Rahmsauce | 27.- |
 | en | Penne Imperiale | Penne with shrimps, tomato cube, onion, garlic, fresh herbs, tomato-cream sauce | 27.- |
 | it | Penne Imperiale | Penne con gamberetti, dadini di pomodoro, cipolle, aglio ed erbe fresche in salsa di pomodoro e panna fatta in casa | 27.- |
-| fr | Penne Imperiale | Penne aux crevettes, dés de tomate, oignon, ail, fines herbes, sauce tomate-crème | 27.- |
+| fr | Penne Imperiale | Penne avec crevettes, dés de tomates, oignons, ail et herbes fraîches à la sauce tomate-crème maison | 27.- |
 | ar | Penne Imperiale | بينيه مع روبيان ومكعبات طماطم وبصل وثوم وأعشاب طازجة بصلصة طماطم وكريمة منزلية | 27.- |
 
 ### Penne alla Fiamma
@@ -616,7 +616,7 @@ Price: 26.-
 | de | Penne alla Fiamma | Penne mit flambierten Rindfleischwürfeln, Peperoni, Zwiebeln, Knoblauch, frischen Tomaten, Pilzen, frische Kräuter und Paprika-Rahmsauce | 26.- |
 | en | Penne alla Fiamma | Penne with beef cubes flambé, peppers, onion, garlic, tomato, mushrooms fresh herbs and paprika-cream sauce | 26.- |
 | it | Penne alla Fiamma | Penne con dadini di manzo flambé, peperoni, cipolle, aglio, pomodori freschi, funghi, erbe fresche e salsa alla panna e paprika | 26.- |
-| fr | Penne alla Fiamma | Penne aux dés de bœuf flambés, poivrons, oignon, ail, tomate, champignons, fines herbes et sauce crémeuse au paprika | 26.- |
+| fr | Penne alla Fiamma | Penne avec dés de bœuf flambés, poivrons, oignons, ail, tomates fraîches, champignons, herbes fraîches et sauce crème au paprika | 26.- |
 | ar | Penne alla Fiamma | بينيه مع مكعبات لحم بقر مشتعلة وفلفل وبصل وثوم وطماطم طازجة وفطر وأعشاب طازجة بصلصة كريمة البابريكا | 26.- |
 
 ### Spaghetti Aglio, Olio e Peperoncino
@@ -630,7 +630,7 @@ Price: 18.-
 | de | Spaghetti Aglio, Olio e Peperoncino | Spaghetti mit Knoblauch, Olivenöl und Peperoncini | 18.- |
 | en | Spaghetti Aglio, Olio e Peperoncino | Spaghetti with garlic, olive oil, fresh chili | 18.- |
 | it | Spaghetti Aglio, Olio e Peperoncino | Spaghetti con aglio, olio d’oliva e peperoncini | 18.- |
-| fr | Spaghetti Aglio, Olio e Peperoncino | Spaghettis à l'ail, à l'huile d'olive et au piment frais | 18.- |
+| fr | Spaghetti Aglio, Olio e Peperoncino | Spaghetti à l’ail, à l’huile d’olive et aux piments | 18.- |
 | ar | Spaghetti Aglio, Olio e Peperoncino | سباغيتي مع الثوم وزيت الزيتون والفلفل الحار | 18.- |
 
 ### Spaghetti Frutti di Mare
@@ -644,7 +644,7 @@ Price: 29.-
 | de | Spaghetti Frutti di Mare | Spaghetti mit Meeresfrüchten, Knoblauch, Zwiebeln, Cherrytomaten und Olivenöl an hausgemachter Tomatensauce | 29.- |
 | en | Spaghetti Frutti di Mare | Spaghetti with seafood, onion, garlic, cherry tomato, and olive oil on tomato sauce | 29.- |
 | it | Spaghetti Frutti di Mare | Spaghetti con frutti di mare, aglio, cipolle, pomodorini e olio d’oliva in salsa di pomodoro fatta in casa | 29.- |
-| fr | Spaghetti Frutti di Mare | Spaghetti aux fruits de mer, oignon, ail, tomates cerises et huile d'olive, sauce tomate | 29.- |
+| fr | Spaghetti Frutti di Mare | Spaghetti aux fruits de mer, ail, oignons, tomates cerises et huile d’olive à la sauce tomate maison | 29.- |
 | ar | Spaghetti Frutti di Mare | سباغيتي مع مأكولات بحرية وثوم وبصل وطماطم كرزية وزيت الزيتون بصلصة طماطم منزلية | 29.- |
 
 ### Spaghetti Carbonara
@@ -658,7 +658,7 @@ Price: 22.-
 | de | Spaghetti Carbonara | Spaghetti mit gebratenen Speckwürfeln, Eigelb und Grana Padano an Rahmsauce | 22.- |
 | en | Spaghetti Carbonara | Spaghetti with roasted bacon cubes, yolk, and Grana Padano cheese on cream sauce | 22.- |
 | it | Spaghetti Carbonara | Spaghetti con dadini di speck rosolati, tuorlo d’uovo e Grana Padano in salsa alla panna | 22.- |
-| fr | Spaghetti Carbonara | Spaghettis aux lardons rôtis, jaune d'œuf et Grana Padano, sauce à la crème | 22.- |
+| fr | Spaghetti Carbonara | Spaghetti avec dés de lard grillés, jaune d’œuf et Grana Padano à la sauce crème | 22.- |
 | ar | Spaghetti Carbonara | سباغيتي مع مكعبات لحم خنزير مقدد محمصة وصفار بيض وغرانا بادانو بصلصة الكريمة | 22.- |
 
 ### Spaghetti Vegetariana
@@ -672,7 +672,7 @@ Price: 23.-
 | de | Spaghetti Vegetariana | Spaghetti mit Gemüse, Zwiebeln, Knoblauch an hausgemachter Tomatensauce | 23.- |
 | en | Spaghetti Vegetariana | Spaghetti with vegetables, onion, garlic, and homemade tomato sauce | 23.- |
 | it | Spaghetti Vegetariana | Spaghetti con verdure, cipolle e aglio in salsa di pomodoro fatta in casa | 23.- |
-| fr | Spaghetti Vegetariana | Spaghetti aux légumes, oignon, ail et sauce tomate maison | 23.- |
+| fr | Spaghetti Vegetariana | Spaghetti aux légumes, oignons et ail à la sauce tomate maison | 23.- |
 | ar | Spaghetti Vegetariana | سباغيتي مع خضار وبصل وثوم بصلصة طماطم منزلية | 23.- |
 
 ### Spaghetti Napoli
@@ -686,7 +686,7 @@ Price: 18.-
 | de | Spaghetti Napoli | Spaghetti mit hausgemachter Tomatensauce, Zwiebeln, Knoblauch, Basilikum | 18.- |
 | en | Spaghetti Napoli | Spaghetti with homemade tomato sauce, onion, garlic, basil. | 18.- |
 | it | Spaghetti Napoli | Spaghetti con salsa di pomodoro fatta in casa, cipolle, aglio e basilico | 18.- |
-| fr | Spaghetti Napoli | Spaghettis à la sauce tomate maison, oignon, ail, basilic. | 18.- |
+| fr | Spaghetti Napoli | Spaghetti à la sauce tomate maison, oignons, ail et basilic | 18.- |
 | ar | Spaghetti Napoli | سباغيتي بصلصة طماطم منزلية وبصل وثوم وريحان | 18.- |
 
 ### Spaghetti al Pesto
@@ -700,7 +700,7 @@ Price: 19.-
 | de | Spaghetti al Pesto | Spaghetti an hausgemachter Pestorahmsauce | 19.- |
 | en | Spaghetti al Pesto | Spaghetti on homemade pesto cream sauce. | 19.- |
 | it | Spaghetti al Pesto | Spaghetti in salsa cremosa al pesto fatta in casa | 19.- |
-| fr | Spaghetti al Pesto | Spaghetti à la sauce crémeuse au pesto maison. | 19.- |
+| fr | Spaghetti al Pesto | Spaghetti à la sauce crème au pesto maison | 19.- |
 | ar | Spaghetti al Pesto | سباغيتي بصلصة بيستو وكريمة منزلية | 19.- |
 
 ### Spaghetti Bolognese
@@ -714,7 +714,7 @@ Price: 22.-
 | de | Spaghetti Bolognese | Spaghetti mit würziger, hausgemachter Rinds-Fleischsauce | 22.- |
 | en | Spaghetti Bolognese | Spaghetti with homemade beef sauce | 22.- |
 | it | Spaghetti Bolognese | Spaghetti con salsa di manzo fatta in casa e speziata | 22.- |
-| fr | Spaghetti Bolognese | Spaghettis à la sauce bolognaise maison | 22.- |
+| fr | Spaghetti Bolognese | Spaghetti à la sauce bolognaise maison au bœuf | 22.- |
 | ar | Spaghetti Bolognese | سباغيتي بصلصة لحم بقر منزلية متبّلة | 22.- |
 
 ## Section: Pesce
@@ -741,7 +741,7 @@ Price: 45.-
 | de | Gamberoni alla Griglia | Riesenkrevetten vom Grill, serviert mit Gemüse und Beilage nach Wahl | 45.- |
 | en | Gamberoni alla Griglia | grilled tiger shrimps, served with vegetables and side dish. | 45.- |
 | it | Gamberoni alla Griglia | Gamberoni alla griglia, serviti con verdure e contorno a scelta | 45.- |
-| fr | Gamberoni alla Griglia | Crevettes tigrées grillées, servies avec des légumes et un accompagnement. | 45.- |
+| fr | Gamberoni alla Griglia | Gambas grillées, servies avec légumes et accompagnement au choix | 45.- |
 | ar | Gamberoni alla Griglia | روبيان كبير مشوي، يقدم مع خضار وطبق جانبي حسب الاختيار | 45.- |
 
 ### Gamberi Luna Piccante
@@ -755,7 +755,7 @@ Price: 48.-
 | de | Gamberi Luna Piccante | gebratene Riesenkrevetten flambiert mit Cognac mit frischen Peperoncini, Knoblauch, frische Kräuter, Basilikum und Cherrytomaten serviert mit Gemüse und Beilage nach Wahl | 48.- |
 | en | Gamberi Luna Piccante | Tiger shrimps flambé, with garlic, fresh herbs, basil, chili, and tomato, served with vegetables and side dish. | 48.- |
 | it | Gamberi Luna Piccante | Gamberoni saltati e flambé al cognac con peperoncini freschi, aglio, erbe fresche, basilico e pomodorini, serviti con verdure e contorno a scelta | 48.- |
-| fr | Gamberi Luna Piccante | Crevettes tigrées flambées à l'ail, aux herbes fraîches, au basilic, au piment et à la tomate, servies avec des légumes et un accompagnement. | 48.- |
+| fr | Gamberi Luna Piccante | Gambas poêlées flambées au cognac avec piments frais, ail, herbes fraîches, basilic et tomates cerises, servies avec légumes et accompagnement au choix | 48.- |
 | ar | Gamberi Luna Piccante | روبيان كبير مقلي ومشتعل بالكونياك مع فلفل حار طازج وثوم وأعشاب طازجة وريحان وطماطم كرزية، يقدم مع خضار وطبق جانبي حسب الاختيار | 48.- |
 
 ### Salmone alla Griglia
@@ -769,7 +769,7 @@ Price: 37.-
 | de | Salmone alla Griglia | Lachsfilet vom Grill, serviert mit Gemüse und Beilage nach Wahl | 37.- |
 | en | Salmone alla Griglia | Grilled salmon served with vegetables and side dish. | 37.- |
 | it | Salmone alla Griglia | Filetto di salmone alla griglia, servito con verdure e contorno a scelta | 37.- |
-| fr | Salmone alla Griglia | Saumon grillé servi avec des légumes et un accompagnement. | 37.- |
+| fr | Salmone alla Griglia | Filet de saumon grillé, servi avec légumes et accompagnement au choix | 37.- |
 | ar | Salmone alla Griglia | فيليه سلمون مشوي، يقدم مع خضار وطبق جانبي حسب الاختيار | 37.- |
 
 ## Section: Carne
@@ -796,7 +796,7 @@ Price: 45.-
 | de | Controfiletto di Manzo alla Griglia | Rindsentrecôte vom Grill, serviert mit Gemüse und Beilage nach Wahl | 45.- |
 | en | Controfiletto di Manzo alla Griglia | Grilled steak served with vegetables and side dish. | 45.- |
 | it | Controfiletto di Manzo alla Griglia | Entrecôte di manzo alla griglia, servita con verdure e contorno a scelta | 45.- |
-| fr | Controfiletto di Manzo alla Griglia | Steak grillé servi avec des légumes et un accompagnement. | 45.- |
+| fr | Controfiletto di Manzo alla Griglia | Entrecôte de bœuf grillée, servie avec légumes et accompagnement au choix | 45.- |
 | ar | Controfiletto di Manzo alla Griglia | إنتريكوت لحم بقر مشوي، يقدم مع خضار وطبق جانبي حسب الاختيار | 45.- |
 
 ### Controfileto di Manzo al Pepe Verde
@@ -810,7 +810,7 @@ Price: 47.-
 | de | Controfileto di Manzo al Pepe Verde | Rindsentrecôte vom Grill an Grünpfeffersauce, serviert mit Gemüse und Beilage nach Wahl | 47.- |
 | en | Controfileto di Manzo al Pepe Verde | Grilled steak on green pepper sauce served with vegetables and side dish. | 47.- |
 | it | Controfiletto di Manzo al Pepe Verde | Entrecôte di manzo alla griglia con salsa al pepe verde, servita con verdure e contorno a scelta | 47.- |
-| fr | Controfileto di Manzo al Pepe Verde | Steak grillé sauce aux poivrons verts, servi avec des légumes et un accompagnement. | 47.- |
+| fr | Controfileto di Manzo al Pepe Verde | Entrecôte de bœuf grillée à la sauce au poivre vert, servie avec légumes et accompagnement au choix | 47.- |
 | ar | Controfileto di Manzo al Pepe Verde | إنتريكوت لحم بقر مشوي بصلصة الفلفل الأخضر، يقدم مع خضار وطبق جانبي حسب الاختيار | 47.- |
 
 ### Controfiletto d´Agnelo alla Griglia
@@ -824,7 +824,7 @@ Price: 43.-
 | de | Controfiletto d´Agnelo alla Griglia | rosagebratenes Lammnierstück vom Grill serviert mit Gemüse und Beilage nach Wahl | 43.- |
 | en | Controfiletto d´Agnelo alla Griglia | grilled rare lamb fillet, served with vegetables and side dish. | 43.- |
 | it | Controfiletto d’Agnello alla Griglia | Filetto di agnello alla griglia, cottura rosa, servito con verdure e contorno a scelta | 43.- |
-| fr | Controfiletto d´Agnelo alla Griglia | Filet d'agneau saignant grillé, servi avec des légumes et un accompagnement. | 43.- |
+| fr | Controfiletto d´Agnelo alla Griglia | Filet d’agneau rosé grillé, servi avec légumes et accompagnement au choix | 43.- |
 | ar | Controfiletto d´Agnelo alla Griglia | قطعة لحم ضأن مشوية وردية، تقدم مع خضار وطبق جانبي حسب الاختيار | 43.- |
 
 ### Controfiletto d´Agnelo alla Montanara
@@ -838,7 +838,7 @@ Price: 45.-
 | de | Controfiletto d´Agnelo alla Montanara | rosagebratenes Lammnierstück vom Grill an feiner Waldpilz-Rahmsauce serviert mit Gemüse und Beilage nach Wahl | 45.- |
 | en | Controfiletto d´Agnelo alla Montanara | grilled rosa lamb filet on mushroom sauce, served with vegetables and side dish. | 45.- |
 | it | Controfiletto d’Agnello alla Montanara | Filetto di agnello alla griglia, cottura rosa, con delicata salsa alla panna e funghi di bosco, servito con verdure e contorno a scelta | 45.- |
-| fr | Controfiletto d´Agnelo alla Montanara | Filet d'agneau Rosa grillé, sauce aux champignons, servi avec des légumes et un accompagnement. | 45.- |
+| fr | Controfiletto d´Agnelo alla Montanara | Filet d’agneau rosé grillé à la sauce crème aux champignons des bois, servi avec légumes et accompagnement au choix | 45.- |
 | ar | Controfiletto d´Agnelo alla Montanara | قطعة لحم ضأن مشوية وردية بصلصة كريمة فطر الغابة، تقدم مع خضار وطبق جانبي حسب الاختيار | 45.- |
 
 ### Petto di Pollo alla Griglia
@@ -852,7 +852,7 @@ Price: 29.-
 | de | Petto di Pollo alla Griglia | Pouletbrust vom Grill, serviert mit Gemüse und Beilage nach Wahl | 29.- |
 | en | Petto di Pollo alla Griglia | Grilled chicken breast, served with vegetables and side dish. | 29.- |
 | it | Petto di Pollo alla Griglia | Petto di pollo alla griglia, servito con verdure e contorno a scelta | 29.- |
-| fr | Petto di Pollo alla Griglia | Poitrine de poulet grillée, servie avec des légumes et un accompagnement. | 29.- |
+| fr | Petto di Pollo alla Griglia | Blanc de poulet grillé, servi avec légumes et accompagnement au choix | 29.- |
 | ar | Petto di Pollo alla Griglia | صدر دجاج مشوي، يقدم مع خضار وطبق جانبي حسب الاختيار | 29.- |
 
 ### Maiale Impanato
@@ -866,7 +866,7 @@ Price: 34.-
 | de | Maiale Impanato | Panierte Schweinsschnitzel, serviert mit Gemüse und Beilage nach Wahl | 34.- |
 | en | Maiale Impanato | breaded pork cutlet, served with vegetables and side dish. | 34.- |
 | it | Maiale Impanato | Scaloppine di maiale impanate, servite con verdure e contorno a scelta | 34.- |
-| fr | Maiale Impanato | Escalope de porc panée, servie avec des légumes et un accompagnement. | 34.- |
+| fr | Maiale Impanato | Escalope de porc panée, servie avec légumes et accompagnement au choix | 34.- |
 | ar | Maiale Impanato | شريحة لحم خنزير مغطاة بالبقسماط، تقدم مع خضار وطبق جانبي حسب الاختيار | 34.- |
 
 ### Scaloppina di Vitello al Limone
@@ -880,7 +880,7 @@ Price: 39.-
 | de | Scaloppina di Vitello al Limone | Kalbsschnitzel an feiner Zitronensauce serviert mit Gemüse und Beilage nach Wahl | 39.- |
 | en | Scaloppina di Vitello al Limone | veal cutlets on lemon cream sauce served with vegetables and side dish. | 39.- |
 | it | Scaloppina di Vitello al Limone | Scaloppina di vitello in delicata salsa al limone, servita con verdure e contorno a scelta | 39.- |
-| fr | Scaloppina di Vitello al Limone | Escalopes de veau sauce crème au citron, servies avec légumes et accompagnement. | 39.- |
+| fr | Scaloppina di Vitello al Limone | Escalope de veau à la sauce citron, servie avec légumes et accompagnement au choix | 39.- |
 | ar | Scaloppina di Vitello al Limone | شريحة لحم عجل بصلصة ليمون ناعمة، تقدم مع خضار وطبق جانبي حسب الاختيار | 39.- |
 
 ### Saltimbocca alla Romana
@@ -894,7 +894,7 @@ Price: 39.-
 | de | Saltimbocca alla Romana | Kalbsschnitzel mit Parmaschinken und Salbei an Marsalasauce serviert mit Gemüse und Beilage nach Wahl | 39.- |
 | en | Saltimbocca alla Romana | Veal cutlet with Parma ham and sage on marsala sauce served with vegetables and side dish. | 39.- |
 | it | Saltimbocca alla Romana | Scaloppina di vitello con prosciutto di Parma e salvia in salsa al Marsala, servita con verdure e contorno a scelta | 39.- |
-| fr | Saltimbocca alla Romana | Escalope de veau au jambon de Parme et à la sauge, sauce marsala, servie avec des légumes et un accompagnement. | 39.- |
+| fr | Saltimbocca alla Romana | Escalope de veau avec jambon de Parme et sauge à la sauce Marsala, servie avec légumes et accompagnement au choix | 39.- |
 | ar | Saltimbocca alla Romana | شريحة لحم عجل مع لحم خنزير بارما والمريمية بصلصة مارسالا، تقدم مع خضار وطبق جانبي حسب الاختيار | 39.- |
 
 ### Scaloppina di Vitello alla Crema di Funghi
@@ -908,7 +908,7 @@ Price: 39.-
 | de | Scaloppina di Vitello alla Crema di Funghi | Kalbschnitzel an hausgemachter Champignon-Rahmsauce serviert mit Gemüse und Beilage nach Wahl | 39.- |
 | en | Scaloppina di Vitello alla Crema di Funghi | Veal cutlets on champignon cream sauce served with vegetables and side dish. | 39.- |
 | it | Scaloppina di Vitello alla Crema di Funghi | Scaloppina di vitello in salsa cremosa ai champignon fatta in casa, servita con verdure e contorno a scelta | 39.- |
-| fr | Scaloppina di Vitello alla Crema di Funghi | Escalopes de veau sauce crème aux champignons, servies avec légumes et accompagnement. | 39.- |
+| fr | Scaloppina di Vitello alla Crema di Funghi | Escalope de veau à la sauce crème aux champignons, servie avec légumes et accompagnement au choix | 39.- |
 | ar | Scaloppina di Vitello alla Crema di Funghi | شريحة لحم عجل بصلصة كريمة الفطر المنزلية، تقدم مع خضار وطبق جانبي حسب الاختيار | 39.- |
 
 ### Affettato alla Zurighese
@@ -922,7 +922,7 @@ Price: 36.-
 | de | Affettato alla Zurighese | “Zürcher Art“ Kalbsgeschnetzeltes an Champignonrahmsauce serviert mit Gemüse und Beilage nach Wahl | 36.- |
 | en | Affettato alla Zurighese | veal fricassee `zurich style` on champignon cream sauce, served with vegetables and side dish. | 36.- |
 | it | Affettato alla Zurighese | Straccetti di vitello alla zurighese in salsa alla panna e champignon, serviti con verdure e contorno a scelta | 36.- |
-| fr | Affettato alla Zurighese | Fricassée de veau « à la zurichoise » sur une sauce crémeuse aux champignons, servie avec des légumes et un accompagnement. | 36.- |
+| fr | Affettato alla Zurighese | Émincé de veau à la zurichoise à la sauce crème aux champignons, servi avec légumes et accompagnement au choix | 36.- |
 | ar | Affettato alla Zurighese | شرائح لحم عجل على طريقة زيورخ بصلصة كريمة الفطر، تقدم مع خضار وطبق جانبي حسب الاختيار | 36.- |
 
 ## Section: Heisser Stein
@@ -945,9 +945,9 @@ Price: 300gr 57.- / 400gr 66.-
 
 | Mode | Name | Description | Price |
 | --- | --- | --- | --- |
-| default | Rindsentrecôte | steak | 300gr 57.- / 400gr 66.- |
-| de | Rindsentrecôte | steak | 300gr 57.- / 400gr 66.- |
-| en | Rindsentrecôte | steak | 300 g 57.- / 400 g 66.- |
+| default | Rindsentrecôte | Steak | 300gr 57.- / 400gr 66.- |
+| de | Rindsentrecôte | Steak | 300gr 57.- / 400gr 66.- |
+| en | Rindsentrecôte | Steak | 300 g 57.- / 400 g 66.- |
 | it | Entrecôte di manzo | Bistecca | 300 g 57.- / 400 g 66.- |
 | fr | Rindsentrecôte | Steak de bœuf | 300 g 57.- / 400 g 66.- |
 | ar | إنتريكوت لحم بقر | ستيك | 300 غ 57.- / 400 غ 66.- |
@@ -959,9 +959,9 @@ Price: 300gr 47.- / 400gr 56.-
 
 | Mode | Name | Description | Price |
 | --- | --- | --- | --- |
-| default | Schweinesteak | porksteak | 300gr 47.- / 400gr 56.- |
-| de | Schweinesteak | porksteak | 300gr 47.- / 400gr 56.- |
-| en | Schweinesteak | porksteak | 300 g 47.- / 400 g 56.- |
+| default | Schweinesteak | Schweinesteak | 300gr 47.- / 400gr 56.- |
+| de | Schweinesteak | Schweinesteak | 300gr 47.- / 400gr 56.- |
+| en | Schweinesteak | Pork steak | 300 g 47.- / 400 g 56.- |
 | it | Bistecca di maiale | Bistecca di maiale | 300 g 47.- / 400 g 56.- |
 | fr | Schweinesteak | Steak de porc | 300 g 47.- / 400 g 56.- |
 | ar | ستيك لحم خنزير | ستيك لحم خنزير | 300 غ 47.- / 400 غ 56.- |
@@ -973,9 +973,9 @@ Price: 300gr 54.- / 400gr 63.-
 
 | Mode | Name | Description | Price |
 | --- | --- | --- | --- |
-| default | Lamm-Nierstück | lamb | 300gr 54.- / 400gr 63.- |
-| de | Lamm-Nierstück | lamb | 300gr 54.- / 400gr 63.- |
-| en | Lamm-Nierstück | lamb | 300 g 54.- / 400 g 63.- |
+| default | Lamm-Nierstück | Lamm | 300gr 54.- / 400gr 63.- |
+| de | Lamm-Nierstück | Lamm | 300gr 54.- / 400gr 63.- |
+| en | Lamm-Nierstück | Lamb | 300 g 54.- / 400 g 63.- |
 | it | Filetto di agnello | Agnello | 300 g 54.- / 400 g 63.- |
 | fr | Lamm-Nierstück | Agneau | 300 g 54.- / 400 g 63.- |
 | ar | قطعة لحم ضأن | لحم ضأن | 300 غ 54.- / 400 غ 63.- |
@@ -987,9 +987,9 @@ Price: 49.-
 
 | Mode | Name | Description | Price |
 | --- | --- | --- | --- |
-| default | Rindsfleisch Spiess | Beef-spit | 49.- |
-| de | Rindsfleisch Spiess | Beef-spit | 49.- |
-| en | Rindsfleisch Spiess | Beef-spit | 49.- |
+| default | Rindsfleisch Spiess | Rindsfleisch-Spiess | 49.- |
+| de | Rindsfleisch Spiess | Rindsfleisch-Spiess | 49.- |
+| en | Rindsfleisch Spiess | Beef skewer | 49.- |
 | it | Spiedino di manzo | Spiedino di manzo | 49.- |
 | fr | Rindsfleisch Spiess | Brochette de bœuf | 49.- |
 | ar | سيخ لحم بقر | سيخ لحم بقر | 49.- |
@@ -1001,9 +1001,9 @@ Price: 41.-
 
 | Mode | Name | Description | Price |
 | --- | --- | --- | --- |
-| default | Gemischter Spiess | SCHWEINS -UND RINDSFLEISCH | 41.- |
-| de | Gemischter Spiess | SCHWEINS -UND RINDSFLEISCH | 41.- |
-| en | Gemischter Spiess | Mixed spit with pork and beef | 41.- |
+| default | Gemischter Spiess | Schweins- und Rindsfleisch | 41.- |
+| de | Gemischter Spiess | Schweins- und Rindsfleisch | 41.- |
+| en | Gemischter Spiess | Mixed skewer with pork and beef | 41.- |
 | it | Spiedino misto | Spiedino misto di maiale e manzo | 41.- |
 | fr | Gemischter Spiess | Brochette mixte de porc et de bœuf | 41.- |
 | ar | سيخ مشكل | سيخ مشكل من لحم الخنزير ولحم البقر | 41.- |
@@ -1018,7 +1018,7 @@ Price: 41.-
 | de | Beilagen |
 | en | Side Dish |
 | it | Contorni |
-| fr | Accompagnement |
+| fr | Accompagnements |
 | ar | أطباق جانبية |
 
 ### Contorni / Beilagen

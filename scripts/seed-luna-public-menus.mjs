@@ -30,23 +30,23 @@ const normalizeLabelKey = (value) =>
 
 const SECTION_LABELS = new Map(
   [
-    ['Antipasti', { de: 'Vorspeisen', en: 'Starter', it: 'Antipasti' }],
-    ['ANTIPASTI', { de: 'Vorspeisen', en: 'Starter', it: 'Antipasti' }],
-    ['ANTIPASTI / VORSPEISEN', { de: 'Vorspeisen', en: 'Starter', it: 'Antipasti' }],
-    ['Zuppa', { de: 'Suppen', en: 'Soups', it: 'Zuppa' }],
-    ['ZUPPA', { de: 'Suppen', en: 'Soups', it: 'Zuppa' }],
-    ['ZUPPA / SUPPEN', { de: 'Suppen', en: 'Soups', it: 'Zuppa' }],
-    ['Insalate', { de: 'Salate', en: 'Salad', it: 'Insalate' }],
-    ['INSALATE', { de: 'Salate', en: 'Salad', it: 'Insalate' }],
-    ['INSALATE / SALATE', { de: 'Salate', en: 'Salad', it: 'Insalate' }],
+    ['Antipasti', { de: 'Vorspeisen', en: 'Starters', it: 'Antipasti' }],
+    ['ANTIPASTI', { de: 'Vorspeisen', en: 'Starters', it: 'Antipasti' }],
+    ['ANTIPASTI / VORSPEISEN', { de: 'Vorspeisen', en: 'Starters', it: 'Antipasti' }],
+    ['Zuppa', { de: 'Suppen', en: 'Soups', it: 'Zuppe' }],
+    ['ZUPPA', { de: 'Suppen', en: 'Soups', it: 'Zuppe' }],
+    ['ZUPPA / SUPPEN', { de: 'Suppen', en: 'Soups', it: 'Zuppe' }],
+    ['Insalate', { de: 'Salate', en: 'Salads', it: 'Insalate' }],
+    ['INSALATE', { de: 'Salate', en: 'Salads', it: 'Insalate' }],
+    ['INSALATE / SALATE', { de: 'Salate', en: 'Salads', it: 'Insalate' }],
     ['Risotto', { de: 'Risotto', en: 'Risotto', it: 'Risotto' }],
     ['RISOTTO', { de: 'Risotto', en: 'Risotto', it: 'Risotto' }],
     ['Gratinato', { de: 'Gratiniert', en: 'Au Gratin', it: 'Gratinati' }],
     ['GRATINATO', { de: 'Gratiniert', en: 'Au Gratin', it: 'Gratinati' }],
     ['GRATINATO / GRATINIERT', { de: 'Gratiniert', en: 'Au Gratin', it: 'Gratinati' }],
-    ['Kinder Karte', { de: 'Kinder Karte', en: 'Kids Dish', it: 'Menu bambini' }],
-    ['KINDER KARTE', { de: 'Kinder Karte', en: 'Kids Dish', it: 'Menu bambini' }],
-    ['KINDER KARTE / BAMBINI', { de: 'Kinder Karte', en: 'Kids Dish', it: 'Menu bambini' }],
+    ['Kinder Karte', { de: 'Kinder Karte', en: 'Kids Menu', it: 'Menu bambini' }],
+    ['KINDER KARTE', { de: 'Kinder Karte', en: 'Kids Menu', it: 'Menu bambini' }],
+    ['KINDER KARTE / BAMBINI', { de: 'Kinder Karte', en: 'Kids Menu', it: 'Menu bambini' }],
     ['Pasta', { de: 'Pasta', en: 'Pasta', it: 'Pasta' }],
     ['PASTA', { de: 'Pasta', en: 'Pasta', it: 'Pasta' }],
     ['Pesce', { de: 'Fisch', en: 'Fish', it: 'Pesce' }],
@@ -429,11 +429,11 @@ const MAIN_SECTIONS = [
     id: 'heisser-stein',
     label: 'Heisser Stein',
     items: [
-      dish('rindsentrecote', 'RINDSENTRECÔTE', 'steak'),
-      dish('schweinesteak', 'SCHWEINESTEAK', 'porksteak'),
-      dish('lamm-nierstuck', 'LAMM-NIERSTÜCK', 'lamb'),
-      dish('rindsfleisch-spiess', 'RINDSFLEISCH SPIESS', 'Beef-spit'),
-      dish('gemischter-spiess', 'GEMISCHTER SPIESS', 'SCHWEINS -UND RINDSFLEISCH'),
+      dish('rindsentrecote', 'RINDSENTRECÔTE', 'Steak'),
+      dish('schweinesteak', 'SCHWEINESTEAK', 'Schweinesteak'),
+      dish('lamm-nierstuck', 'LAMM-NIERSTÜCK', 'Lamm'),
+      dish('rindsfleisch-spiess', 'RINDSFLEISCH SPIESS', 'Rindsfleisch-Spiess'),
+      dish('gemischter-spiess', 'GEMISCHTER SPIESS', 'Schweins- und Rindsfleisch'),
     ],
   },
   {
@@ -501,7 +501,7 @@ const MAIN_ENGLISH_DESCRIPTIONS = {
   'focaccia-prosciutto-di-parma':
     'Pizza dough on olive oil and garlic with Parma ham',
   'carpaccio-di-manzo':
-    'Beef-carpaccio with parmesan stripes, olive oil and lemon juice on rucola',
+    'Beef carpaccio with Grana Padano shavings, olive oil and lemon juice, served with rocket',
   'gamberetti-all-aglio':
     'warm shrimps in olive oil with garlic, served on rucola and with roasted bread.',
   'cocktail-di-gamberetti':
@@ -509,9 +509,9 @@ const MAIN_ENGLISH_DESCRIPTIONS = {
   bruschetta:
     'tomato cubes with, fresh herbs, garlic, onions, basil and olive oil, served on roasted bread.',
   minestrone:
-    'home made Italian vegetable -soup',
+    'homemade Italian vegetable soup',
   'crema-di-pomodoro':
-    'homemade tomato -creamsoup',
+    'homemade tomato cream soup',
   'insalata-soncino':
     'Fieldsalad with bacon, egg and croutons',
   'insalata-caprese':
@@ -519,7 +519,7 @@ const MAIN_ENGLISH_DESCRIPTIONS = {
   burrata:
     'Creamy cheese with tomatoes and basil on olive oil',
   'insalata-gigante':
-    'Big Salade plate with egg',
+    'Large mixed salad plate with egg',
   'insalata-verde':
     'Green salad',
   'insalata-mista':
@@ -527,11 +527,11 @@ const MAIN_ENGLISH_DESCRIPTIONS = {
   'risotto-milanese':
     'Saffron risotto with onions, garlic',
   'risotto-pollo-e-zafferano':
-    'Risotto with chicken strips, onions, garlic on saffron sauce and parmesan strips',
+    'risotto with chicken strips, onions and garlic in saffron sauce with Grana Padano',
   'risotto-porcini':
     'Risotto Grana Padano with porcini, garlic, onion',
   'gnocchi-piemontese':
-    'gnocchi with king bolete, onion, garlic on marsala and cream sauce (au gratin)',
+    'gnocchi with porcini mushrooms, onion and garlic in Marsala cream sauce, au gratin',
   'lasagna-casalinga':
     'homemade beef lasagne with tomato and cream sauce (au gratin)',
   'cannelloni-fiorentina':
@@ -559,7 +559,7 @@ const MAIN_ENGLISH_DESCRIPTIONS = {
   'paglia-e-fieno-bella-rebecca':
     'two-tone pasta with veal strips, mushrooms, onion, garlic on cream sauce',
   'fettuccine-nere-mare-e-monti':
-    'Black noodles with shrimps and king bolete, onion, garlic on cream sauce',
+    'Black noodles with shrimps and porcini mushrooms, onion and garlic in cream sauce',
   'fettuccine-nere-al-salmone':
     'Black noodles with salmon, onion, garlic, fresh herbs on homemade tomato-cream sauce',
   'penne-all-arrabbiata':
@@ -609,15 +609,15 @@ const MAIN_ENGLISH_DESCRIPTIONS = {
   'affettato-alla-zurighese':
     'veal fricassee `zurich style` on champignon cream sauce, served with vegetables and side dish.',
   rindsentrecote:
-    'steak',
+    'Steak',
   schweinesteak:
-    'porksteak',
+    'Pork steak',
   'lamm-nierstuck':
-    'lamb',
+    'Lamb',
   'rindsfleisch-spiess':
-    'Beef-spit',
+    'Beef skewer',
   'gemischter-spiess':
-    'Mixed spit with pork and beef',
+    'Mixed skewer with pork and beef',
   'contorni-beilagen':
     'Spaghetti, Penne, french fies, rice, risotto or salad',
   'upgrade-beilagen':
@@ -1136,7 +1136,7 @@ const MENUS = [
     names: {
       de: 'Hauptkarte',
       en: 'Main Menu',
-      it: 'Menu principale',
+      it: 'Menù principale',
     },
     resetNames: true,
     description: '',
