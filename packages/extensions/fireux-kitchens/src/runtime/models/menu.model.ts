@@ -47,6 +47,7 @@ export type MenuItemDefaults = {
 export type MenuSection = {
   id: string
   label: string
+  labels?: Partial<Record<string, string>>
   description: string
   items: MenuSectionItem[]
   sort_order: number

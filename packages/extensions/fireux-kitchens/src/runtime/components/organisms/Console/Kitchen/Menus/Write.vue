@@ -173,6 +173,31 @@
                     />
                   </UFormField>
 
+                  <div class="space-y-3 rounded-lg border border-default p-3">
+                    <div>
+                      <div class="text-sm font-medium text-highlighted">
+                        Name translations
+                      </div>
+                      <p class="text-xs text-dimmed">
+                        Target-language menu names are manual until restaurant glossary overrides are ready.
+                      </p>
+                    </div>
+
+                    <div class="grid gap-3 sm:grid-cols-2">
+                      <UFormField
+                        v-for="language in menuLanguageCodes"
+                        :key="language"
+                        :label="language"
+                      >
+                        <UInput
+                          :model-value="draftNameTranslation(language)"
+                          :disabled="busy || language === menuSourceLanguage"
+                          @update:model-value="setDraftNameTranslation(language, $event)"
+                        />
+                      </UFormField>
+                    </div>
+                  </div>
+
                   <div class="grid gap-4 sm:grid-cols-2">
                     <UFormField label="Order">
                       <UInput
@@ -516,6 +541,7 @@ import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/fir
 import { useTranslationSeed } from 'fireux-translation/runtime/useTranslationSeed'
 import { deleteDoc, doc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { computed, reactive, ref, watch } from 'vue'
+import { getRestaurantMenuGlossaryNames } from '../../../../../composables/fireux/app/kitchen-menu-glossary'
 import { useKitchenConsoleMenus } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMenus'
 import type {
   Menu,
@@ -563,6 +589,8 @@ type SectionDraft = {
 type MenuDraft = {
   name: string
   description: string
+  names: Record<string, string>
+  descriptions: Record<string, string>
   active: boolean
   defaults?: Partial<MenuItemDefaults>
   service_modes: MenuServiceMode[]
@@ -608,6 +636,15 @@ const newSection = reactive({
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const normalizeLanguageCode = (value: unknown) => normalizeString(value).replace(/_/g, '-')
+const normalizeStringMap = (value: unknown): Record<string, string> => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>)
+      .map(([key, entry]) => [normalizeLanguageCode(key), normalizeString(entry)])
+      .filter(([key, entry]) => Boolean(key && entry))
+  )
+}
 const normalizeCurrency = (value: unknown) =>
   normalizeString(value).toUpperCase() || 'CHF'
 const nextLocalKey = (prefix: string) => `${prefix}-${Date.now()}-${localCounter++}`
@@ -778,6 +815,8 @@ function menuToDraft(menu: Menu): MenuDraft {
   return {
     name: normalizeString(menu.name),
     description: normalizeString(menu.description),
+    names: normalizeStringMap(menu.names),
+    descriptions: normalizeStringMap(menu.descriptions),
     active: menu.active !== false,
     defaults: menu.defaults ? { ...menu.defaults } : undefined,
     service_modes: Array.isArray(menu.service_modes) && menu.service_modes.length
@@ -822,6 +861,32 @@ function itemToDraft(item: MenuSectionItem): ItemDraft {
 
 function selectMenu(menuId: unknown) {
   selectedMenuId.value = normalizeString(menuId)
+}
+
+function draftNameTranslation(language: string) {
+  if (!draft.value) return ''
+  if (language === menuSourceLanguage.value) return draft.value.name
+
+  return normalizeString(draft.value.names[language])
+}
+
+function setDraftNameTranslation(language: string, value: unknown) {
+  if (!draft.value) return
+
+  const code = normalizeLanguageCode(language)
+  if (!code) return
+
+  if (code === menuSourceLanguage.value) {
+    draft.value.name = normalizeString(value)
+    return
+  }
+
+  const next = normalizeString(value)
+  if (next) {
+    draft.value.names[code] = next
+  } else {
+    delete draft.value.names[code]
+  }
 }
 
 function resetNewMenu() {
@@ -975,6 +1040,8 @@ function draftToPatch(source: MenuDraft): Partial<Menu> {
       sort_order: numberValue(section.sort_order, 0),
       items,
     }
+    const sectionLabels = getRestaurantMenuGlossaryNames(nextSection.label)
+    if (sectionLabels) nextSection.labels = sectionLabels
 
     if (section.defaults) nextSection.defaults = { ...section.defaults }
 
@@ -999,23 +1066,31 @@ function draftToPatch(source: MenuDraft): Partial<Menu> {
 async function buildMenuTranslationPatch(source: {
   name: unknown
   description?: unknown
+  names?: unknown
+  descriptions?: unknown
 }) {
   const name = normalizeString(source.name)
   const description = normalizeString(source.description)
   const sourceLanguage = menuSourceLanguage.value
   const languageCodes = menuLanguageCodes.value
+  // TODO: Restaurant menu terms need glossary overrides before generic translation.
+  // Examples: Hauptkarte -> Main Menu, Speisekarte -> Menu, Beilagen -> Side Dishes,
+  // Vorspeisen -> Starters.
+  const glossaryNames = getRestaurantMenuGlossaryNames(name)
   const nameSeed = await seedTranslations({
     text: name,
     sourceLanguage,
     languageCodes,
-    translate: true,
+    existingText: glossaryNames || source.names,
+    translate: false,
   })
   const descriptionSeed = description
     ? await seedTranslations({
         text: description,
         sourceLanguage: nameSeed.sourceLanguage,
         languageCodes,
-        translate: true,
+        existingText: source.descriptions,
+        translate: false,
       })
     : null
 
@@ -1144,6 +1219,8 @@ async function saveDraft() {
     const translated = await buildMenuTranslationPatch({
       name: patch.name,
       description: patch.description,
+      names: draft.value.names,
+      descriptions: draft.value.descriptions,
     })
     const { failedLanguages, ...translatedFields } = translated
     const payload: Partial<Menu> = {

@@ -16,8 +16,86 @@ const LUNA_KITCHEN_ID = 'ChIJ93_ggY-jj0cRTCyLcfBuK2w'
 const APP_ID = 'misebox-app'
 const SYSTEM_ACTOR = 'system:seed-luna-public-menus'
 const STALE_PUBLIC_MENU_NAMES = new Set(['Luna Piccante Menu', 'Pizzakarte'])
+const LUNA_PUBLIC_LANGUAGE_CODES = ['de', 'en', 'fr', 'it']
 
 const normalizeString = (value) => String(value ?? '').trim()
+const normalizeLabelKey = (value) =>
+  normalizeString(value)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[–—]/g, '-')
+    .replace(/\s*-\s*/g, ' - ')
+    .replace(/\s*[/|]\s*/g, ' / ')
+    .replace(/\s*&\s*/g, ' & ')
+    .replace(/\s+/g, ' ')
+
+const SECTION_LABELS = new Map(
+  [
+    [
+      'ANTIPASTI / VORSPEISEN',
+      { de: 'Vorspeisen', en: 'Starters', fr: 'Entrées', it: 'Antipasti' },
+    ],
+    ['ZUPPA / SUPPEN', { de: 'Suppen', en: 'Soups', fr: 'Soupes', it: 'Zuppe' }],
+    ['INSALATE / SALATE', { de: 'Salate', en: 'Salads', fr: 'Salades', it: 'Insalate' }],
+    ['RISOTTO', { de: 'Risotto', en: 'Risotto', fr: 'Risotto', it: 'Risotto' }],
+    [
+      'GRATINATO / GRATINIERT',
+      { de: 'Gratiniert', en: 'Gratin', fr: 'Gratiné', it: 'Gratinato' },
+    ],
+    [
+      'KINDER KARTE / BAMBINI',
+      { de: 'Kinderkarte', en: 'Kids Menu', fr: 'Menu enfant', it: 'Menù bambini' },
+    ],
+    ['PASTA', { de: 'Pasta', en: 'Pasta', fr: 'Pâtes', it: 'Pasta' }],
+    ['PESCE / FISCH', { de: 'Fisch', en: 'Fish', fr: 'Poisson', it: 'Pesce' }],
+    ['CARNE / FLEISCH', { de: 'Fleisch', en: 'Meat', fr: 'Viande', it: 'Carne' }],
+    [
+      'HEISSER STEIN / SPIESS',
+      {
+        de: 'Heisser Stein / Spiess',
+        en: 'Hot Stone / Skewers',
+        fr: 'Pierre chaude / Brochettes',
+        it: 'Pietra calda / Spiedini',
+      },
+    ],
+    ['BEILAGEN', { de: 'Beilagen', en: 'Side Dishes', fr: 'Accompagnements', it: 'Contorni' }],
+    ['PIZZA — POULET / CHICKEN', { de: 'Poulet', en: 'Chicken', fr: 'Poulet', it: 'Pollo' }],
+    [
+      'PIZZA — RINDSFLEISCH / BEEF',
+      { de: 'Rindsfleisch', en: 'Beef', fr: 'Bœuf', it: 'Manzo' },
+    ],
+    [
+      'PIZZA — FISCH & MEERESFRÜCHTE',
+      {
+        de: 'Fisch & Meeresfrüchte',
+        en: 'Fish & Seafood',
+        fr: 'Poisson & Fruits de mer',
+        it: 'Pesce & Frutti di mare',
+      },
+    ],
+    ['PIZZA — LAMMFLEISCH', { de: 'Lammfleisch', en: 'Lamb', fr: 'Agneau', it: 'Agnello' }],
+    ['PIZZA — KALBSFLEISCH', { de: 'Kalbsfleisch', en: 'Veal', fr: 'Veau', it: 'Vitello' }],
+    [
+      'PIZZA — VEGETARISCH & VEGAN',
+      {
+        de: 'Vegetarisch & Vegan',
+        en: 'Vegetarian & Vegan',
+        fr: 'Végétarien & Végan',
+        it: 'Vegetariano & Vegano',
+      },
+    ],
+    [
+      'PIZZA — SCHWEINEFLEISCH / PORK',
+      { de: 'Schweinefleisch', en: 'Pork', fr: 'Porc', it: 'Maiale' },
+    ],
+  ].map(([label, labels]) => [normalizeLabelKey(label), labels])
+)
+
+function sectionLabels(label) {
+  const match = SECTION_LABELS.get(normalizeLabelKey(label))
+  return match ? { ...match } : { de: label }
+}
 
 function dish(id, name, description = '') {
   return { id, name, description }
@@ -361,6 +439,13 @@ const MENUS = [
   {
     id: 'main',
     name: 'Hauptkarte',
+    names: {
+      de: 'Hauptkarte',
+      en: 'Main Menu',
+      fr: 'Menu principal',
+      it: 'Menù principale',
+    },
+    resetNames: true,
     description: '',
     sortOrder: 10,
     sections: MAIN_SECTIONS,
@@ -368,6 +453,12 @@ const MENUS = [
   {
     id: 'pizza',
     name: 'Pizza',
+    names: {
+      de: 'Pizza',
+      en: 'Pizza',
+      fr: 'Pizza',
+      it: 'Pizza',
+    },
     description: '',
     sortOrder: 20,
     sections: PIZZA_SECTIONS,
@@ -426,10 +517,11 @@ Seed Luna Picante public menus from the source PDFs.
 Dry-run by default. Pass --commit to write.
 
 Usage:
-  node scripts/seed-luna-public-menus.mjs [--commit]
+  node scripts/seed-luna-public-menus.mjs [--commit] [--menus-only]
 
 Options:
   --commit                         Write Firestore docs.
+  --menus-only                     Write kitchen/menu docs only; skip dish docs.
   --project <id>                   Firebase project id.
   --database <id>                  Firestore database id. Defaults to misebox.
   --service-account <path>         Service account JSON path.
@@ -459,6 +551,7 @@ function buildSections(sections) {
   return sections.map((section, sectionIndex) => ({
     id: section.id,
     label: section.label,
+    labels: sectionLabels(section.label),
     description: '',
     sort_order: sectionIndex + 1,
     items: section.items.map((item, itemIndex) => ({
@@ -475,6 +568,10 @@ function buildSections(sections) {
 
 function buildMenuPayload(menu, kitchenId, snap) {
   const existing = snap?.exists ? snap.data() || {} : {}
+  const existingNames =
+    !menu.resetNames && existing.names && typeof existing.names === 'object'
+      ? existing.names
+      : {}
 
   return {
     id: menu.id,
@@ -483,7 +580,8 @@ function buildMenuPayload(menu, kitchenId, snap) {
     description: menu.description,
     source_language: 'de',
     names: {
-      ...(existing.names && typeof existing.names === 'object' ? existing.names : {}),
+      ...existingNames,
+      ...(menu.names && typeof menu.names === 'object' ? menu.names : {}),
       de: menu.name,
     },
     descriptions: menu.description ? { de: menu.description } : {},
@@ -505,6 +603,13 @@ function buildMenuPayload(menu, kitchenId, snap) {
 function buildDishPayload(item, kitchenId, snap) {
   const existing = snap?.exists ? snap.data() || {} : {}
   const description = normalizeString(item.description)
+  const existingDescriptions =
+    existing.descriptions && typeof existing.descriptions === 'object'
+      ? existing.descriptions
+      : {}
+  const names = Object.fromEntries(
+    LUNA_PUBLIC_LANGUAGE_CODES.map((language) => [language, item.name])
+  )
 
   return {
     ...existing,
@@ -514,17 +619,11 @@ function buildDishPayload(item, kitchenId, snap) {
     slug: item.id,
     description,
     source_language: 'de',
-    names: {
-      ...(existing.names && typeof existing.names === 'object' ? existing.names : {}),
-      de: item.name,
-    },
-    descriptions: {
-      ...(existing.descriptions && typeof existing.descriptions === 'object'
-        ? existing.descriptions
-        : {}),
-      de: description,
-    },
-    translated: false,
+    names,
+    descriptions: description
+      ? { ...existingDescriptions, de: description }
+      : existingDescriptions,
+    translated: existing.translated === true,
     created: createdStamp(snap),
     updated: updatedStamp(),
   }
@@ -553,6 +652,7 @@ async function main() {
       ? normalizeString(args['kitchen-collection'])
       : DEFAULT_KITCHEN_COLLECTION_PATH
   const commit = Boolean(args.commit)
+  const menusOnly = Boolean(args['menus-only'] || args.menusOnly)
   const app = initializeApp(
     { credential: cert(account), projectId },
     'seed-luna-public-menus'
@@ -568,9 +668,11 @@ async function main() {
     ).values()
   )
 
-  const dishSnaps = await Promise.all(
-    allDishEntries.map((item) => kitchenRef.collection('dishes').doc(item.id).get())
-  )
+  const dishSnaps = menusOnly
+    ? []
+    : await Promise.all(
+        allDishEntries.map((item) => kitchenRef.collection('dishes').doc(item.id).get())
+      )
   const menuSnaps = await Promise.all(
     MENUS.map((menu) => kitchenRef.collection('menus').doc(menu.id).get())
   )
@@ -585,12 +687,13 @@ async function main() {
 
   console.log('[seed] luna-public-menus start', {
     commit,
+    menusOnly,
     projectId,
     databaseId,
     serviceAccount: resolvedServiceAccountPath,
     kitchenPath: kitchenRef.path,
     menuIds: MENUS.map((menu) => menu.id),
-    dishCount: allDishEntries.length,
+    dishCount: menusOnly ? 0 : allDishEntries.length,
   })
 
   const created = { dishes: [], menus: [] }
@@ -614,12 +717,14 @@ async function main() {
       { merge: true }
     )
 
-    allDishEntries.forEach((item, index) => {
-      const snap = dishSnaps[index]
-      batch.set(snap.ref, buildDishPayload(item, LUNA_KITCHEN_ID, snap), { merge: false })
-      if (snap.exists) updated.dishes.push(item.id)
-      else created.dishes.push(item.id)
-    })
+    if (!menusOnly) {
+      allDishEntries.forEach((item, index) => {
+        const snap = dishSnaps[index]
+        batch.set(snap.ref, buildDishPayload(item, LUNA_KITCHEN_ID, snap), { merge: false })
+        if (snap.exists) updated.dishes.push(item.id)
+        else created.dishes.push(item.id)
+      })
+    }
 
     MENUS.forEach((menu, index) => {
       const snap = menuSnaps[index]

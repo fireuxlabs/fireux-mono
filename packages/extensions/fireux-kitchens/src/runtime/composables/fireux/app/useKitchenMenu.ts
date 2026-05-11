@@ -70,6 +70,14 @@ const localizedDescription = (
   return normalizeString(localized) || normalizeString(source.description)
 }
 
+const localizedSectionLabel = (
+  source: { label?: string; labels?: Partial<Record<string, string>> },
+  languageCode: string
+) => {
+  const localized = source.labels?.[languageCode]
+  return normalizeString(localized) || normalizeString(source.label)
+}
+
 export function useKitchenMenu() {
   const route = useRoute()
 
@@ -331,7 +339,7 @@ export function useKitchenMenu() {
 
         return {
           id: section.id,
-          label: section.label,
+          label: localizedSectionLabel(section, languageCode),
           description: section.description,
           entries,
         }
