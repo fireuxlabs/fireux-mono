@@ -152,11 +152,15 @@ Recent repo truth:
   - `(default)` is the registry/public-mirror database for `project` and `ecosystem`
   - the named ecosystem database is the operational database, including canonical `apps`
 - the generic console shell now lives in the runtime seam:
-  - `useConsoleState()` is the shared console-layout contract
-  - `useRuntimeXConsole()` adapts each family into that shared contract
-- the generic console data seam now also lives in the runtime seam:
-  - `useConsoleXData()` owns mode split, pending composition, ready state, and the final `{ data }` return shape
-  - `useRuntimeXData()` adapts each family by composing family fetch seams into that shared contract
+  - `packages/core/fireux-core/src/runtime/composables/fireux/app/console/**` is the shared console spine
+  - `useConsole()` owns selected target and `live` / `demo` / `test` mode state
+  - `useConsoleHeader()` owns selected-target header publication for the shared console layout
+- the generic console entry and overview seams now also live in the runtime seam:
+  - `useConsoleIndex()` owns family entry / chooser composition
+  - `useConsoleOverview()` owns selected-target overview grouping
+  - `useKitchenConsole()`, `useSupplierConsole()`, `useProjectConsole()`, and `usePortfolioConsole()` are domain adapters into the shared spine
+- `/api/fireux-console` helpers such as `fireuxConsoleProjectFacade.ts` and `fireux-console.ts` are endpoint payload plumbing, not the selected-target console runtime architecture
+- `docs/changelog/runtime/README.md` is historical and should not be treated as current console canon
 - main console page ownership is now explicit:
   - the shared console layout and generic runtime seam live in core
   - `Project` main console pages are app-owned

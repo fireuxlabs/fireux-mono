@@ -111,7 +111,7 @@ Current role:
 - console shell for kitchen, portfolio, supplier, project, product, and admin console surfaces
 - entry-mode support via `route.meta.consoleEntry`
 - scoped console nav
-- generic sidebar header driven by `useConsoleState()`
+- generic sidebar header driven by `useConsoleHeader()`
 - shared footer actions and notifications
 
 Current contract:
@@ -120,7 +120,10 @@ Current contract:
   - `title`
   - `subtitle`
 - the layout does not inject family-specific pill components
-- family-specific `useRuntimeXConsole()` adapters publish header data into the shared runtime console seam
+- `useConsole()` owns selected target and `live` / `demo` / `test` mode state
+- `useConsoleIndex()` and `useConsoleOverview()` provide the shared family entry and selected-target overview seams
+- family-specific `useXConsole` adapters publish header data into the shared runtime console seam, including `useKitchenConsole()`, `useSupplierConsole()`, `useProjectConsole()`, and `usePortfolioConsole()`
+- `/api/fireux-console` helpers such as `fireuxConsoleProjectFacade.ts` and `fireux-console.ts` are endpoint payload plumbing, not console layout/runtime canon
 
 Used by:
 - kitchen console
