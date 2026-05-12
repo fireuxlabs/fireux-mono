@@ -120,6 +120,17 @@
       }
     },
     {
+      "name": "Sproochli dev (3011)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:sproochli",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 9
+      }
+    },
+    {
       "name": "Granite dev (3007)",
       "type": "node-terminal",
       "request": "launch",
@@ -127,7 +138,7 @@
       "cwd": "${workspaceFolder}",
       "presentation": {
         "group": "Dev Servers",
-        "order": 9
+        "order": 10
       }
     },
     {
@@ -138,7 +149,7 @@
       "cwd": "${workspaceFolder}",
       "presentation": {
         "group": "Dev Servers",
-        "order": 10
+        "order": 11
       }
     }
   ],
@@ -173,6 +184,7 @@
         "FireUX Tenant dev (3005)",
         "Bringli dev (3006)",
         "Find My SEO dev (3010)",
+        "Sproochli dev (3011)",
         "Granite dev (3007)",
         "La Tap Berne dev (3008)"
       ]

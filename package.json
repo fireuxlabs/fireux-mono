@@ -21,6 +21,7 @@
     "dev:tenant": "node scripts/dev-app-with-smoke.mjs --app tenant",
     "dev:bringli": "node scripts/dev-app-with-smoke.mjs --app bringli",
     "dev:find-my-seo": "node scripts/dev-app-with-smoke.mjs --app find-my-seo",
+    "dev:sproochli": "node scripts/dev-app-with-smoke.mjs --app sproochli",
     "dev:granite": "node scripts/dev-app-with-smoke.mjs --app granite",
     "dev:la-tap-berne": "node scripts/dev-app-with-smoke.mjs --app la-tap-berne",
     "dev:all": "node scripts/dev-app-group.mjs --group all",

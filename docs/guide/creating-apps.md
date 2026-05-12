@@ -33,6 +33,7 @@ Start the dev server (see commands above) and open the target port (default 3000
 
 ## 6) Next
 
+- Add a first-class new app: `new-app.creation.md`
 - Review profiles model: `profiles.md`
 - Learn architecture basics: `../architecture/`
 

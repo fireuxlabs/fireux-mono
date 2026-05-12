@@ -274,6 +274,34 @@
       }
     },
     {
+      "label": "pnpm dev:sproochli",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "dev:sproochli"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "fireux-dev",
+        "pattern": {
+          "regexp": "^(?!)",
+          "message": 0
+        },
+        "background": {
+          "activeOnStart": true,
+          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
+    },
+    {
       "label": "pnpm dev:granite",
       "type": "shell",
       "command": "pnpm",

@@ -1,0 +1,30 @@
+{
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "sproochli-ssr",
+      "runtime": "nodejs22",
+      "entryPoint": "sproochli"
+    }
+  ],
+  "hosting": {
+    "site": "sproochli",
+    "public": ".output/public",
+    "cleanUrls": true,
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "function": {
+          "functionId": "sproochli",
+          "codebase": "sproochli-ssr",
+          "region": "europe-west1"
+        }
+      }
+    ]
+  }
+}

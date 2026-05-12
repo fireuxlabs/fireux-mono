@@ -12,4 +12,5 @@ Authority: Tier2 (Operational)
 Practical how-tos for working with FireUX. Start with these:
 
 - Create an app: `creating-apps.md`
+- Add a first-class new app: `new-app.creation.md`
 - Work with profiles: `profiles.md`

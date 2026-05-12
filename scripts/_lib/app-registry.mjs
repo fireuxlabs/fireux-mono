@@ -113,6 +113,18 @@ export const APP_REGISTRY = {
     consoleFamilies: [],
     launchOrder: 8,
   },
+  sproochli: {
+    key: 'sproochli',
+    name: 'Sproochli',
+    appId: 'sproochli',
+    ecosystem: 'fireux',
+    databaseId: 'fireux',
+    role: 'standalone',
+    workspace: './projects/fireux/sproochli',
+    port: 3011,
+    consoleFamilies: ['info'],
+    launchOrder: 9,
+  },
   granite: {
     key: 'granite',
     name: 'Granite',
@@ -123,7 +135,7 @@ export const APP_REGISTRY = {
     workspace: './projects/granite/granite-app',
     port: 3007,
     consoleFamilies: ['portfolio'],
-    launchOrder: 9,
+    launchOrder: 10,
   },
   'la-tap-berne': {
     key: 'la-tap-berne',
@@ -135,14 +147,14 @@ export const APP_REGISTRY = {
     workspace: './projects/misebox/la-tap-berne',
     port: 3008,
     consoleFamilies: [],
-    launchOrder: 10,
+    launchOrder: 11,
   },
 }
 
 export const APP_GROUPS = {
   all: ['fireux', 'misebox', 'cleanbox'],
   'all-extended': ['fireux', 'misebox', 'cleanbox', 'niederhorn', 'richies', 'tenant'],
-  full: ['fireux', 'misebox', 'cleanbox', 'niederhorn', 'richies', 'tenant', 'bringli', 'find-my-seo', 'granite', 'la-tap-berne'],
+  full: ['fireux', 'misebox', 'cleanbox', 'niederhorn', 'richies', 'tenant', 'bringli', 'find-my-seo', 'sproochli', 'granite', 'la-tap-berne'],
 }
 
 export const APP_KEYS = Object.keys(APP_REGISTRY)
