@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "files": [],
   "references": [
+    { "path": "fireux-ai" },
     { "path": "fireux-blogs" },
     { "path": "fireux-companies" },
     { "path": "fireux-compliance" },
@@ -13,6 +14,7 @@
     { "path": "fireux-places" },
     { "path": "fireux-products" },
     { "path": "fireux-properties" },
+    { "path": "fireux-sproochli" },
     { "path": "fireux-tasks" }
   ],
   "compilerOptions": { "skipLibCheck": true }

@@ -1,5 +1,4 @@
-import { computed, ref, watch, type MaybeRefOrGetter } from 'vue'
-import { toValue } from '#imports'
+import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
 
 type DevCollectionDocMeta = {
   collectionPath: string

@@ -27,11 +27,11 @@ export const UserModel = {
   handle: '',
   email: '',
   bio: '',
-  profiles: [],
-  projects: [],
-  userOf: [],
-  adminOf: [],
-  notifications: [],
+  profiles: [] as string[],
+  projects: [] as string[],
+  userOf: [] as string[],
+  adminOf: [] as string[],
+  notifications: [] as UserNotification[],
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -43,8 +43,20 @@ export const UserModel = {
   },
 } as const
 
-export type User = {
-  [K in keyof typeof UserModel]: (typeof UserModel)[K]
+export interface User {
+  id: string
+  display_name: string
+  avatar: string
+  handle: string
+  email: string
+  bio: string
+  profiles: string[]
+  projects: string[]
+  userOf: string[]
+  adminOf: string[]
+  notifications: UserNotification[]
+  created: typeof UserModel.created
+  updated: typeof UserModel.updated
 }
 
 /**
@@ -56,7 +68,7 @@ export const AppUserModel = {
   role: 'user' as 'user' | 'admin',
   is_premium: false,
   console_enabled: false,
-  console_scopes: [],
+  console_scopes: [] as string[],
   notifications: [] as UserNotification[],
 
   created: {
@@ -70,8 +82,15 @@ export const AppUserModel = {
   },
 } as const
 
-export type AppUser = {
-  [K in keyof typeof AppUserModel]: (typeof AppUserModel)[K]
+export interface AppUser {
+  id: string
+  role: 'user' | 'admin'
+  is_premium: boolean
+  console_enabled: boolean
+  console_scopes: string[]
+  notifications: UserNotification[]
+  created: typeof AppUserModel.created
+  updated: typeof AppUserModel.updated
 }
 
 export type UserCreateInput = Omit<User, 'id' | 'created' | 'updated'>

@@ -28,6 +28,7 @@
     "dompurify": "^3.2.6",
     "firebase-functions": "^6.3.2",
     "fireux-ai": "workspace:*",
+    "fireux-blogs": "workspace:*",
     "fireux-companies": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-suppliers": "workspace:*",
@@ -36,6 +37,7 @@
     "fireux-orders": "workspace:*",
     "fireux-misebox": "workspace:*",
     "fireux-places": "workspace:*",
+    "fireux-products": "workspace:*",
     "nuxt": "4.1.2",
     "vue": "3.5.20",
     "vue-router": "4.5.1"

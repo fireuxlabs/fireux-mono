@@ -10,6 +10,12 @@
       "path": "core/fireux-ecosystem-controller"
     },
     {
+      "path": "core/fireux-translation"
+    },
+    {
+      "path": "extensions/fireux-ai"
+    },
+    {
       "path": "extensions/fireux-blogs"
     },
     {
@@ -23,6 +29,9 @@
     },
     {
       "path": "extensions/fireux-kitchens"
+    },
+    {
+      "path": "extensions/fireux-orders"
     },
     {
       "path": "extensions/fireux-suppliers"

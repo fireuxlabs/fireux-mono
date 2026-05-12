@@ -17,6 +17,9 @@ This section defines the documentation authority model. It is not an agent conte
 - `docs/runtime-contract.md`
 - `docs/seo-canon.md`
 - `packages/extensions/fireux-*/docs/contract.md`
+- `packages/extensions/fireux-*/docs/canon.md`
+
+Package `README.md` is overview, mission, and how-to by default, not authority. For new packages, `docs/canon.md` is the preferred Tier1 package authority name. Existing `docs/contract.md` remains Tier1 and should not be renamed only for naming consistency.
 
 ### Tier2 (operational)
 - `docs/copilot-documentation/**`

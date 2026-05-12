@@ -12,6 +12,9 @@ Repository: fireux-mono
 - `docs/runtime-contract.md`
 - `docs/seo-canon.md`
 - `packages/extensions/fireux-*/docs/contract.md`
+- `packages/extensions/fireux-*/docs/canon.md`
+
+Package `README.md` is overview, mission, and how-to by default, not authority. For new packages, `docs/canon.md` is the preferred Tier1 package authority name. Existing `docs/contract.md` remains Tier1 and should not be renamed only for naming consistency.
 
 ### Tier2 (operational docs)
 - `docs/README.md`
@@ -32,7 +35,7 @@ If any Tier2/Tier3 doc conflicts with Tier1, Tier1 wins.
 ## Where to look first
 1. The user task and any directly named files.
 2. `AGENTS.md` (this file).
-3. For package/app work, the nearest local `AGENTS.md`, `AI.md`, `README.md`, or `docs/contract.md` only when relevant.
+3. For package/app work, the nearest local `AGENTS.md`, `AI.md`, `README.md`, `docs/contract.md`, or `docs/canon.md` only when relevant.
 
 ## Context loading rules
 - Do not read broad docs by default.

@@ -44,6 +44,24 @@
       "fireux-translation/runtime/*": [
         "./packages/core/fireux-translation/src/runtime/*"
       ],
+      "fireux-ai": [
+        "./packages/extensions/fireux-ai/src/module.ts"
+      ],
+      "fireux-ai/*": [
+        "./packages/extensions/fireux-ai/src/*"
+      ],
+      "fireux-ai/runtime/*": [
+        "./packages/extensions/fireux-ai/src/runtime/*"
+      ],
+      "fireux-blogs": [
+        "./packages/extensions/fireux-blogs/src/module.ts"
+      ],
+      "fireux-blogs/*": [
+        "./packages/extensions/fireux-blogs/src/*"
+      ],
+      "fireux-blogs/runtime/*": [
+        "./packages/extensions/fireux-blogs/src/runtime/*"
+      ],
       "fireux-jobs": [
         "./packages/extensions/fireux-jobs/src/module.ts"
       ],
@@ -107,6 +125,15 @@
       "fireux-orders/runtime/*": [
         "./packages/extensions/fireux-orders/src/runtime/*"
       ],
+      "fireux-products": [
+        "./packages/extensions/fireux-products/src/module.ts"
+      ],
+      "fireux-products/*": [
+        "./packages/extensions/fireux-products/src/*"
+      ],
+      "fireux-products/runtime/*": [
+        "./packages/extensions/fireux-products/src/runtime/*"
+      ],
       "fireux-properties": [
         "./packages/extensions/fireux-properties/src/module.ts"
       ],
@@ -115,6 +142,24 @@
       ],
       "fireux-properties/runtime/*": [
         "./packages/extensions/fireux-properties/src/runtime/*"
+      ],
+      "fireux-sproochli": [
+        "./packages/extensions/fireux-sproochli/src/module.ts"
+      ],
+      "fireux-sproochli/*": [
+        "./packages/extensions/fireux-sproochli/src/*"
+      ],
+      "fireux-sproochli/runtime/*": [
+        "./packages/extensions/fireux-sproochli/src/runtime/*"
+      ],
+      "fireux-suppliers": [
+        "./packages/extensions/fireux-suppliers/src/module.ts"
+      ],
+      "fireux-suppliers/*": [
+        "./packages/extensions/fireux-suppliers/src/*"
+      ],
+      "fireux-suppliers/runtime/*": [
+        "./packages/extensions/fireux-suppliers/src/runtime/*"
       ],
       "fireux-tasks": [
         "./packages/extensions/fireux-tasks/src/module.ts"
@@ -155,6 +200,12 @@
       "@fireux-translation/*": [
         "./packages/core/fireux-translation/src/*"
       ],
+      "@fireux-ai/*": [
+        "./packages/extensions/fireux-ai/src/*"
+      ],
+      "@fireux-blogs/*": [
+        "./packages/extensions/fireux-blogs/src/*"
+      ],
       "@fireux-jobs/*": [
         "./packages/extensions/fireux-jobs/src/*"
       ],
@@ -176,8 +227,17 @@
       "@fireux-orders/*": [
         "./packages/extensions/fireux-orders/src/*"
       ],
+      "@fireux-products/*": [
+        "./packages/extensions/fireux-products/src/*"
+      ],
       "@fireux-properties/*": [
         "./packages/extensions/fireux-properties/src/*"
+      ],
+      "@fireux-sproochli/*": [
+        "./packages/extensions/fireux-sproochli/src/*"
+      ],
+      "@fireux-suppliers/*": [
+        "./packages/extensions/fireux-suppliers/src/*"
       ],
       "@fireux-tasks/*": [
         "./packages/extensions/fireux-tasks/src/*"
