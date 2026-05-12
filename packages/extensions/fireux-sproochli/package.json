@@ -7,6 +7,7 @@
   "types": "./src/module.ts",
   "exports": {
     ".": "./src/module.ts",
+    "./runtime/info": "./src/runtime/info/index.ts",
     "./runtime/*": "./src/runtime/*",
     "./package.json": "./package.json"
   },
