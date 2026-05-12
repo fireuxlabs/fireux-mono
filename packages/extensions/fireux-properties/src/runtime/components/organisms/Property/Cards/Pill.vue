@@ -61,7 +61,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-import type { PropertyCard } from '../../../../composables/fireux/firestore/portfolio/property/utils/view/usePropertyInterface'
+import type { PropertyCard } from '../../../../composables/fireux/console/portfolio/property/utils/view/usePropertyInterface'
 
 type PillProps = Pick<PropertyCard.Card, 'to' | 'imageUrl' | 'title' | 'subtitle' | 'meta'> & {
   showSubtitle?: boolean

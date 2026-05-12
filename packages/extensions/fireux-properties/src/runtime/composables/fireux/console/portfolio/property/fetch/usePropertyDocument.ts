@@ -2,7 +2,7 @@ import { computed } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import {
   useActivePortfolio,
-  useRuntimePortfolioPath,
+  usePortfolioConsoleChildPath,
 } from '../../../../app/portfolio-console/useActivePortfolio'
 import type { Property } from '../../../../../../models/property.model'
 
@@ -13,7 +13,7 @@ export function usePropertyDocument(
   runtimePortfolio = useActivePortfolio()
 ) {
   const { firestoreFetchDoc } = useFirestoreRead()
-  const propertiesPath = useRuntimePortfolioPath(runtimePortfolio, 'properties')
+  const propertiesPath = usePortfolioConsoleChildPath(runtimePortfolio, 'properties')
 
   const normalizedPropertyId = computed(() =>
     typeof propertyId === 'function' ? normalizeId(propertyId()) : normalizeId(propertyId)

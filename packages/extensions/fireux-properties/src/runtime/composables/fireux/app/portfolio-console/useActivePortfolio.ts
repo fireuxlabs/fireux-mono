@@ -66,7 +66,7 @@ export function useActivePortfolio(): ActivePortfolioRuntime {
   }
 }
 
-export function useRuntimePortfolioPath(
+export function usePortfolioConsoleChildPath(
   runtimePortfolio: Pick<ActivePortfolioRuntime, 'collectionPath' | 'id'>,
   childCollection: string
 ) {

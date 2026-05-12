@@ -2,7 +2,7 @@ import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import {
   useActivePortfolio,
-  useRuntimePortfolioPath,
+  usePortfolioConsoleChildPath,
 } from '../../../../app/portfolio-console/useActivePortfolio'
 import type { Unit } from '../../../../../../models/unit.model'
 
@@ -14,7 +14,7 @@ export function usePropertyUnitCollection(
 ) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<Unit[] | undefined> | null>
-  const propertiesPath = useRuntimePortfolioPath(runtimePortfolio, 'properties')
+  const propertiesPath = usePortfolioConsoleChildPath(runtimePortfolio, 'properties')
 
   const normalizedPropertyId = computed(() =>
     typeof propertyId === 'function' ? normalizeId(propertyId()) : normalizeId(propertyId)

@@ -111,6 +111,14 @@ const KNOWN_CONSOLE_OPERATION_SLICES_BY_ENTITY = new Map([
       'team',
     ]),
   ],
+  [
+    'portfolio',
+    new Set([
+      'client',
+      'property',
+      'unit',
+    ]),
+  ],
 ])
 
 const ALLOWED_FORBIDDEN_CONTEXT =
