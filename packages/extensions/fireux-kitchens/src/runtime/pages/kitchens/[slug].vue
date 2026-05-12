@@ -218,7 +218,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceClaim'
 import { computed, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
-import { resolveKitchenRuntimeChildCollectionPath } from '../../composables/fireux/app/kitchen-console/shared'
+import { resolveKitchenChildCollectionPath } from '../../composables/fireux/app/kitchen-console/shared'
 import {
   getPublicKitchenChromeLabels,
   normalizePublicKitchenLanguage,
@@ -272,7 +272,7 @@ const menusRef = shallowRef(null) as ShallowRef<Ref<Menu[] | undefined> | null>
 watch(
   kitchenId,
   (nextKitchenId) => {
-    const menuPath = resolveKitchenRuntimeChildCollectionPath({
+    const menuPath = resolveKitchenChildCollectionPath({
       kitchenId: nextKitchenId,
       collectionName: 'menus',
     })

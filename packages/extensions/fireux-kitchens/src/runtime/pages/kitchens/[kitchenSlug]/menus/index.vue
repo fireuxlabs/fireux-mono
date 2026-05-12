@@ -98,7 +98,7 @@ import { computed, ref, watch } from 'vue'
 import { navigateTo, useHead, useRoute } from '#imports'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { resolveKitchenRuntimeChildCollectionPath } from '../../../../composables/fireux/app/kitchen-console/shared'
+import { resolveKitchenChildCollectionPath } from '../../../../composables/fireux/app/kitchen-console/shared'
 import {
   getPublicKitchenChromeLabels,
   isPublicKitchenCacheLanguage,
@@ -154,7 +154,7 @@ const kitchenId = computed(() => normalizeString(kitchen.value?.id))
 const { firestoreFetchCollection } = useFirestoreRead()
 const resolveDb = useFirestoreResolver()
 const menusPath = computed(() =>
-  resolveKitchenRuntimeChildCollectionPath({
+  resolveKitchenChildCollectionPath({
     kitchenId: kitchenId.value,
     collectionName: 'menus',
   })

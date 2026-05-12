@@ -74,9 +74,9 @@ export function useKitchenFetch(
   const liveRead = useFirestoreRead()
   const simulationRead = useFirestoreRead({ databaseId: simulationDatabaseId })
   const idRef = isRef(id) ? id : computed(() => String(id || '').trim())
-  const sourceRef = isRef(options.source)
-    ? options.source
-    : computed<KitchenFetchSource>(() => options.source || 'live')
+  const sourceRef = computed<KitchenFetchSource>(
+    () => (isRef(options.source) ? options.source.value : options.source) ?? 'live'
+  )
   const pathRef = computed(() => {
     const configuredPath = isRef(options.collectionPath)
       ? options.collectionPath.value

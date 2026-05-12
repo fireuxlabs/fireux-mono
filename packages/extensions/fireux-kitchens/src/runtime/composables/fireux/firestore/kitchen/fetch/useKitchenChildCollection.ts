@@ -9,19 +9,19 @@ import type { Ref } from 'vue'
 import { computed, ref, unref } from 'vue'
 import {
   normalizeString,
-  resolveKitchenRuntimeChildCollectionPath,
-  resolveKitchenRuntimeCollectionBasePath,
+  resolveKitchenChildCollectionPath,
+  resolveKitchenCollectionBasePath,
 } from '../../../app/kitchen-console/shared'
 
-type UseKitchenConsoleCollectionOptions = {
+type UseKitchenChildCollectionOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
   databaseId?: string | Ref<string | null | undefined>
 }
 
-export function useKitchenConsoleCollection<T>(
+export function useKitchenChildCollection<T>(
   collectionName: string,
   kitchenId: Ref<string> | string,
-  options: UseKitchenConsoleCollectionOptions = {}
+  options: UseKitchenChildCollectionOptions = {}
 ) {
   const { appId } = useFireUXConfig()
   const resolveDb = useFirestoreResolver(options.databaseId)
@@ -31,11 +31,11 @@ export function useKitchenConsoleCollection<T>(
   )
 
   const kitchenCollectionPath = computed(() =>
-    resolveKitchenRuntimeCollectionBasePath(unref(options.kitchenCollectionPath), appId)
+    resolveKitchenCollectionBasePath(unref(options.kitchenCollectionPath), appId)
   )
 
   const collectionPath = computed(() =>
-    resolveKitchenRuntimeChildCollectionPath({
+    resolveKitchenChildCollectionPath({
       kitchenCollectionPath: kitchenCollectionPath.value,
       kitchenId: resolvedKitchenId.value,
       collectionName,

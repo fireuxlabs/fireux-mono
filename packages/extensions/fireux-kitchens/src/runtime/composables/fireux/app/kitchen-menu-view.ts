@@ -8,7 +8,7 @@ import type { Dish } from '../../../models/dish.model'
 import {
   resolveMenuItemView,
   type ResolvedMenuItemView,
-} from '../firestore/runtime-kitchen/menu/utils/view/resolveMenuItemView'
+} from '../firestore/kitchen/menu/utils/view/resolveMenuItemView'
 import { normalizeString } from './kitchen-console/shared'
 import { resolveMenuDesign } from './kitchen-menu-design'
 

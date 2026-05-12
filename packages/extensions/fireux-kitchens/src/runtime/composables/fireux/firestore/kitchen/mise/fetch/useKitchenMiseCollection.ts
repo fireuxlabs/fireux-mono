@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
 import type { KitchenMiseTask } from '../../../../../../models/kitchen-mise.model'
-import { useKitchenConsoleCollection } from '../../fetch/useKitchenConsoleCollection'
+import { useKitchenChildCollection } from '../../fetch/useKitchenChildCollection'
 
 type UseKitchenMiseCollectionOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
@@ -11,7 +11,7 @@ export function useKitchenMiseCollection(
   kitchenId: Ref<string> | string,
   options: UseKitchenMiseCollectionOptions = {}
 ) {
-  const state = useKitchenConsoleCollection<KitchenMiseTask>('mise', kitchenId, options)
+  const state = useKitchenChildCollection<KitchenMiseTask>('mise', kitchenId, options)
 
   return {
     kitchenId: state.kitchenId,

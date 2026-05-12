@@ -98,7 +98,7 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import type { MenuCard } from '../../../../composables/fireux/firestore/runtime-kitchen/menu/utils/view/useMenuInterface'
+import type { MenuCard } from '../../../../composables/fireux/firestore/kitchen/menu/utils/view/useMenuInterface'
 
 type Props = Pick<
   MenuCard.Card,

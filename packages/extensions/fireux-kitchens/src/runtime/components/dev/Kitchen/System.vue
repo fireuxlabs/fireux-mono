@@ -107,7 +107,7 @@ import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDri
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Place } from 'fireux-places/runtime/models/place.model'
 import { computed, ref, shallowRef, watch, type Ref } from 'vue'
-import { useKitchenConsoleCollection } from '../../../composables/fireux/firestore/runtime-kitchen/fetch/useKitchenConsoleCollection'
+import { useKitchenChildCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenChildCollection'
 import {
   ROOT_KITCHEN_COLLECTION_PATH,
   resolveKitchenConsoleCollectionPath,
@@ -250,52 +250,52 @@ const selectedHydratedKitchen = computed(() => hydratedById.value.get(selectedKi
 const selectedPlace = computed(() => placeById.value.get(selectedKitchenId.value) ?? null)
 const selectedKitchenApp = computed(() => kitchenAppById.value.get(selectedKitchenId.value) ?? null)
 
-const rootMenus = useKitchenConsoleCollection<Record<string, unknown>>('menus', selectedKitchenId, {
+const rootMenus = useKitchenChildCollection<Record<string, unknown>>('menus', selectedKitchenId, {
   kitchenCollectionPath: rootKitchenCollectionPath,
 })
-const overlayMenus = useKitchenConsoleCollection<Record<string, unknown>>('menus', selectedKitchenId, {
+const overlayMenus = useKitchenChildCollection<Record<string, unknown>>('menus', selectedKitchenId, {
   kitchenCollectionPath: overlayKitchenCollectionPath,
 })
 
-const rootDishes = useKitchenConsoleCollection<Record<string, unknown>>('dishes', selectedKitchenId, {
+const rootDishes = useKitchenChildCollection<Record<string, unknown>>('dishes', selectedKitchenId, {
   kitchenCollectionPath: rootKitchenCollectionPath,
 })
-const overlayDishes = useKitchenConsoleCollection<Record<string, unknown>>('dishes', selectedKitchenId, {
+const overlayDishes = useKitchenChildCollection<Record<string, unknown>>('dishes', selectedKitchenId, {
   kitchenCollectionPath: overlayKitchenCollectionPath,
 })
 
-const rootRecipes = useKitchenConsoleCollection<Record<string, unknown>>('recipes', selectedKitchenId, {
+const rootRecipes = useKitchenChildCollection<Record<string, unknown>>('recipes', selectedKitchenId, {
   kitchenCollectionPath: rootKitchenCollectionPath,
 })
-const overlayRecipes = useKitchenConsoleCollection<Record<string, unknown>>('recipes', selectedKitchenId, {
+const overlayRecipes = useKitchenChildCollection<Record<string, unknown>>('recipes', selectedKitchenId, {
   kitchenCollectionPath: overlayKitchenCollectionPath,
 })
 
-const rootMise = useKitchenConsoleCollection<Record<string, unknown>>('mise', selectedKitchenId, {
+const rootMise = useKitchenChildCollection<Record<string, unknown>>('mise', selectedKitchenId, {
   kitchenCollectionPath: rootKitchenCollectionPath,
 })
-const overlayMise = useKitchenConsoleCollection<Record<string, unknown>>('mise', selectedKitchenId, {
+const overlayMise = useKitchenChildCollection<Record<string, unknown>>('mise', selectedKitchenId, {
   kitchenCollectionPath: overlayKitchenCollectionPath,
 })
 
-const rootIngredients = useKitchenConsoleCollection<Record<string, unknown>>('ingredients', selectedKitchenId, {
+const rootIngredients = useKitchenChildCollection<Record<string, unknown>>('ingredients', selectedKitchenId, {
   kitchenCollectionPath: rootKitchenCollectionPath,
 })
-const overlayIngredients = useKitchenConsoleCollection<Record<string, unknown>>('ingredients', selectedKitchenId, {
+const overlayIngredients = useKitchenChildCollection<Record<string, unknown>>('ingredients', selectedKitchenId, {
   kitchenCollectionPath: overlayKitchenCollectionPath,
 })
 
-const rootOrders = useKitchenConsoleCollection<Record<string, unknown>>('orders', selectedKitchenId, {
+const rootOrders = useKitchenChildCollection<Record<string, unknown>>('orders', selectedKitchenId, {
   kitchenCollectionPath: rootKitchenCollectionPath,
 })
-const overlayOrders = useKitchenConsoleCollection<Record<string, unknown>>('orders', selectedKitchenId, {
+const overlayOrders = useKitchenChildCollection<Record<string, unknown>>('orders', selectedKitchenId, {
   kitchenCollectionPath: overlayKitchenCollectionPath,
 })
 
-const rootSuppliers = useKitchenConsoleCollection<Record<string, unknown>>('suppliers', selectedKitchenId, {
+const rootSuppliers = useKitchenChildCollection<Record<string, unknown>>('suppliers', selectedKitchenId, {
   kitchenCollectionPath: rootKitchenCollectionPath,
 })
-const overlaySuppliers = useKitchenConsoleCollection<Record<string, unknown>>('suppliers', selectedKitchenId, {
+const overlaySuppliers = useKitchenChildCollection<Record<string, unknown>>('suppliers', selectedKitchenId, {
   kitchenCollectionPath: overlayKitchenCollectionPath,
 })
 

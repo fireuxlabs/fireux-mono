@@ -102,6 +102,33 @@ Updated: 2026-04-27
     - operate on child records
 - `collection` is a storage term and must not be used as the primary business/runtime term for this console model.
 
+## Console Entity Bucket Canon
+- Console-backed root-plus-app families use four buckets:
+  - Root entity = public/business identity.
+  - App overlay = who can operate that entity inside one app.
+  - Console runtime = selected target plus mode.
+  - Child records = operational records beneath the selected target.
+- Generic storage shape:
+  - `<entities>/{entityId}`
+  - `apps/{appId}/<entities>/{entityId}`
+  - `apps/{appId}/<entities>/{entityId}/<childCollection>/{childId}`
+- Generic model naming:
+  - root entity: `Kitchen`, `Supplier`, `Portfolio`, `Project`
+  - app overlay: `AppKitchen`, `AppSupplier`, `AppPortfolio`, `AppProject`
+  - avoid mixed architecture names such as `RuntimeKitchen`, `KitchenFacade`, or `KitchenConsoleEntity`
+- Generic runtime shape:
+  - `ConsoleMode = live | demo | test`
+  - console selection stores family, selected target id, and mode
+  - runtime selection is UI/application state, not storage
+- Generic folder shape:
+  - `app/<entity>-console/**` owns console adapters and selected runtime behavior.
+  - `firestore/<entity>/**` owns Firestore storage, fetches, mutations, view helpers, and child-record slices.
+  - `firestore/<entity>/<child-slice>/**` owns child operation data such as menu, mise, orders, team, station, or suppliers.
+- No mixed-bucket runtime folders:
+  - do not create `firestore/runtime-<entity>`
+  - do not create `firestore/runtime-kitchen`
+  - storage/fetch/write helpers must stay under `firestore/<entity>`
+
 ## Family Entry Semantics
 - `/console` = choose family.
 - `/console/X` = family entry page for that family.
@@ -184,9 +211,9 @@ Updated: 2026-04-27
   - create forms
   - create systems
   - other explicit "make a new X" actions
-- `createX` may run in:
-  - `public` mode: create the root record only
-  - `console` mode: create the root record and the app-hosted console overlay
+- `createX` intentionally creates or ensures the root record.
+- For root-plus-app families, when an app context exists, the shared `useConsoleEnsure` seam may also ensure the app-hosted console overlay.
+- Route mode affects entry and return UX; it must not be described as the only determinant of whether an app overlay exists.
 - `ensureX` is the idempotent bootstrap/setup-if-missing entrypoint.
 - `ensureX` is used for:
   - `test` mode entry
@@ -207,7 +234,7 @@ Updated: 2026-04-27
 - Dev fixture files under repo `demo/**` are optional developer tooling only.
 - Console/runtime behavior must never depend on `demo/**`.
 
-## Collection Path Policy (Kitchen Runtime)
+## Collection Path Policy (Kitchen Console)
 - `live` -> `kitchens/{kitchenId}`
 - `demo` -> no Firestore collection path (scenario-backed)
 - `test` -> `misebox-simulation/kitchens/{kitchenId}`
@@ -225,6 +252,9 @@ Updated: 2026-04-27
   - `/blog/[slug]` reads `blogs/{slug}` or the contract-declared blog collection equivalent
   - `/places/[slug]` reads `places/{slug}` only if Place declares slug-id mode
 - When a `slug` field exists on a slug-id entity, it is a mirrored public/display field and must equal the Firestore document id.
+- For a field-slug entity, public route identity is an explicit `slug` field while stored identity remains the document id.
+- Field-slug mode is allowed only when the entity contract declares it and defines the lookup/write rule.
+- Field-slug routes must not silently fall back to document id for public URLs.
 - Public `[slug]` routes must not query by slug field directly by default.
 - Public `[slug]` routes must not silently fall back through chains such as:
   - `slug || id`
@@ -247,6 +277,7 @@ Updated: 2026-04-27
 ## Public Route Strategy Types
 - Every public/indexable identity must declare exactly one strategy in its extension contract:
   - `slug-id`: public slug equals Firestore document id.
+  - `field-slug`: public slug is an explicit field while stored identity remains document id.
   - `handle-index`: public handle resolves to a stable user id through the declared user handle index/field contract.
   - `id-only`: public route is not slug based.
 - Public link generators, SEO paths, sitemap entries, and JSON-LD URLs must follow the declared strategy.
@@ -263,7 +294,7 @@ Updated: 2026-04-27
 | fireux-core | Ecosystem | id | id-only |
 | fireux-places | Place | id | id-only |
 | fireux-companies | Company | id | id-only |
-| fireux-kitchens | Kitchen | id | id-only |
+| fireux-kitchens | Kitchen | slug | field-slug |
 | fireux-kitchens | Recipe publication | slug | slug-id |
 | fireux-kitchens | Chef | id | id-only |
 | fireux-kitchens | Ingredient | id | id-only |

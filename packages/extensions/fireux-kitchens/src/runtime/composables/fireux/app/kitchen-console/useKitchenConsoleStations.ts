@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useKitchenConsoleCollection } from '../../firestore/runtime-kitchen/fetch/useKitchenConsoleCollection'
+import { useKitchenChildCollection } from '../../firestore/kitchen/fetch/useKitchenChildCollection'
 import type { KitchenStation } from '../../../../models/kitchen-station.model'
 import { useKitchenConsole } from './useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
@@ -20,7 +20,7 @@ export function useKitchenConsoleStations() {
     items: liveStations,
     pending: livePending,
     collectionPath,
-  } = useKitchenConsoleCollection<KitchenStation>('stations', fetchKitchenId, {
+  } = useKitchenChildCollection<KitchenStation>('stations', fetchKitchenId, {
     kitchenCollectionPath: rootCollection,
     databaseId,
   })

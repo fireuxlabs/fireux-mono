@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { MiseEnPlaceCard } from '../../../../composables/fireux/firestore/runtime-kitchen/mise/utils/view/useMiseEnPlaceInterface';
+import type { MiseEnPlaceCard } from '../../../../composables/fireux/firestore/kitchen/mise/utils/view/useMiseEnPlaceInterface';
 
 withDefaults(
   defineProps<{

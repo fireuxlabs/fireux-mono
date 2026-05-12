@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import type { SupplierSurface } from 'fireux-suppliers/runtime/composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
-import { useKitchenSupplierFetch } from '../../firestore/runtime-kitchen/suppliers/fetch/useKitchenSupplierFetch'
+import { useKitchenSupplierFetch } from '../../firestore/kitchen/suppliers/fetch/useKitchenSupplierFetch'
 import { useKitchenConsole } from './useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
 

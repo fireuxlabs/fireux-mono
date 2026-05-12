@@ -37,7 +37,7 @@ export namespace ChefCard {
 }
 
 export function useChefInterface(
-  profile?: ProfileRefs<Chef> | null,
+  profileRefs?: ProfileRefs<Chef> | null,
   userRef?: Ref<User | null | undefined>
 ) {
   type ChefPill = ChefCard.Card
@@ -104,7 +104,7 @@ export function useChefInterface(
     target?: ChefTarget | null,
     userOverride?: UserLike | null
   ): ChefCard.Card | null {
-    const p = target ?? profile?.coreProfile?.value ?? null
+    const p = target ?? profileRefs?.coreProfile?.value ?? null
     if (!p) return null
 
     const mapped = map(

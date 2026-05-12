@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useKitchenConsoleCollection } from '../../firestore/runtime-kitchen/fetch/useKitchenConsoleCollection'
+import { useKitchenChildCollection } from '../../firestore/kitchen/fetch/useKitchenChildCollection'
 import type {
   KitchenTeamJoinRequest,
   KitchenTeamMember,
@@ -23,7 +23,7 @@ export function useKitchenConsoleTeam() {
     items: liveTeamMembers,
     pending: livePending,
     collectionPath,
-  } = useKitchenConsoleCollection<KitchenTeamMember>('team', fetchKitchenId, {
+  } = useKitchenChildCollection<KitchenTeamMember>('team', fetchKitchenId, {
     kitchenCollectionPath: rootCollection,
     databaseId,
   })
@@ -31,7 +31,7 @@ export function useKitchenConsoleTeam() {
     items: liveJoinRequests,
     pending: liveJoinRequestsPending,
     collectionPath: joinRequestsPath,
-  } = useKitchenConsoleCollection<KitchenTeamJoinRequest>(
+  } = useKitchenChildCollection<KitchenTeamJoinRequest>(
     'joinRequests',
     fetchKitchenId,
     {

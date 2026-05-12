@@ -38,7 +38,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useKitchenConsoleStations } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleStations'
-import { useKitchenStationCreate } from '../../../../../composables/fireux/firestore/runtime-kitchen/station/mutations/useKitchenStationCreate'
+import { useKitchenStationCreate } from '../../../../../composables/fireux/firestore/kitchen/station/mutations/useKitchenStationCreate'
 
 const {
   selectedMode,

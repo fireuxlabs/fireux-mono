@@ -31,7 +31,7 @@ definePageMeta({
     layouts: ['dashboard'],
   },
   title: 'Kitchens',
-  description: 'Select a runtime kitchen context.',
+  description: 'Select a kitchen console context.',
   layout: 'dashboard',
   requiresAuth: true,
   name: 'DashboardKitchensIndexPage',

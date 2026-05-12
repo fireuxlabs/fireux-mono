@@ -9,7 +9,7 @@ import type { KitchenMiseTask } from '../../../models/kitchen-mise.model'
 import { resolveDishSemanticLine } from '../firestore/dish/utils/view/resolveDishSemanticLine'
 import {
   normalizeString,
-  resolveKitchenRuntimeChildCollectionPath,
+  resolveKitchenChildCollectionPath,
 } from './kitchen-console/shared'
 import {
   normalizeKitchenMenuMode,
@@ -169,19 +169,19 @@ export function useKitchenMenu() {
 
   const { firestoreFetchCollection } = useFirestoreRead()
   const menusPath = computed(() =>
-    resolveKitchenRuntimeChildCollectionPath({
+    resolveKitchenChildCollectionPath({
       kitchenId: kitchenId.value,
       collectionName: 'menus',
     })
   )
   const dishesPath = computed(() =>
-    resolveKitchenRuntimeChildCollectionPath({
+    resolveKitchenChildCollectionPath({
       kitchenId: kitchenId.value,
       collectionName: 'dishes',
     })
   )
   const misePath = computed(() =>
-    resolveKitchenRuntimeChildCollectionPath({
+    resolveKitchenChildCollectionPath({
       kitchenId: kitchenId.value,
       collectionName: 'mise',
     })

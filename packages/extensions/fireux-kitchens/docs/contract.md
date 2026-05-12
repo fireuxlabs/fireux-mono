@@ -48,7 +48,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `apps/{appId}/kitchens/{kitchenId}/orders/{orderId}`
   - `apps/{appId}/kitchens/{kitchenId}/team/{memberId}`
   - `apps/{appId}/kitchens/{kitchenId}/costs/{costId}`
-- Runtime kitchen mode mapping follows `docs/runtime-contract.md`.
+- Kitchen console mode mapping follows `docs/runtime-contract.md`.
 
 ## 5) Routes (public vs internal; slug vs id)
 - Public slug-based pages currently include:
@@ -80,7 +80,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Treated as a core entity surface set.
 
 ## 7) Runtime dependencies
-- Runtime kitchen selection state (`selectedId`, `mode`).
+- Kitchen console selection state (`selectedId`, `mode`).
 - Mode-aware data loading (`live`, `demo`).
 
 ## 7b) Interface seam
@@ -104,7 +104,6 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `useKitchenCreate`, `useKitchenUpdate`
 - `useIngredientCreate`, `useIngredientDelete`
 - `useKitchenMiseCreate`
-- `useKitchenMenuStackCreate`
 - `useKitchenOrderCreate`
 - `useChefCreate`, `useChefUpdate`, `useChefDelete`
 - `createKitchen` = intentional kitchen creation

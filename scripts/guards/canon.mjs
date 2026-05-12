@@ -33,6 +33,21 @@ const SCAN_EXTS = new Set([
   '.vue',
 ])
 
+const DOC_SCAN_EXTS = new Set([...SCAN_EXTS, '.md'])
+
+const FORBIDDEN_KITCHEN_BUCKET_TERMS = [
+  'firestore/runtime-kitchen',
+  'runtime-kitchen',
+  'RuntimeKitchen',
+  'runtimeKitchen',
+  'useRuntimeKitchen',
+  'useKitchenMenuStackCreate',
+  'useKitchenMenuStackFetch',
+]
+
+const ALLOWED_FORBIDDEN_CONTEXT =
+  /\b(avoid|do not|must not|non-canon|forbidden|mixed-bucket|cannot return)\b/i
+
 function isDirectory(p) {
   try {
     return statSync(p).isDirectory()
@@ -41,7 +56,7 @@ function isDirectory(p) {
   }
 }
 
-function walkFiles(rootDir) {
+function walkFiles(rootDir, exts = SCAN_EXTS) {
   const out = []
   const stack = [rootDir]
 
@@ -69,13 +84,24 @@ function walkFiles(rootDir) {
       if (!entry.isFile()) continue
 
       const ext = path.extname(entry.name)
-      if (!SCAN_EXTS.has(ext)) continue
+      if (!exts.has(ext)) continue
 
       out.push(fullPath)
     }
   }
 
   return out
+}
+
+function shouldSkipKitchenBucketScan(repoRoot, absPath) {
+  const rel = toRepoRelative(repoRoot, absPath)
+  const parts = rel.split(path.sep)
+
+  if (parts.includes('changelog')) return true
+  if (rel.startsWith(`docs${path.sep}ai${path.sep}`)) return true
+  if (rel.startsWith(`docs${path.sep}reports${path.sep}`)) return true
+
+  return false
 }
 
 function findAllMatches(text, re) {
@@ -168,6 +194,82 @@ function checkObjectFolderCasing(repoRoot) {
   return violations
 }
 
+function scanKitchenBucketTerms(repoRoot, absPath) {
+  const violations = []
+  if (shouldSkipKitchenBucketScan(repoRoot, absPath)) return violations
+
+  let raw = ''
+  try {
+    raw = readFileSync(absPath, 'utf8')
+  } catch {
+    return violations
+  }
+
+  const lines = raw.split('\n')
+  lines.forEach((lineText, index) => {
+    if (ALLOWED_FORBIDDEN_CONTEXT.test(lineText)) return
+
+    for (const term of FORBIDDEN_KITCHEN_BUCKET_TERMS) {
+      if (!lineText.includes(term)) continue
+      violations.push(
+        `- Forbidden kitchen bucket term "${term}" in ${toRepoRelative(
+          repoRoot,
+          absPath
+        )}:${index + 1}`
+      )
+    }
+  })
+
+  return violations
+}
+
+function checkForbiddenKitchenBucketNames(repoRoot) {
+  const violations = []
+  const forbiddenDir = path.join(
+    repoRoot,
+    'packages',
+    'extensions',
+    'fireux-kitchens',
+    'src',
+    'runtime',
+    'composables',
+    'fireux',
+    'firestore',
+    'runtime-kitchen'
+  )
+
+  if (isDirectory(forbiddenDir)) {
+    violations.push(
+      `- Forbidden mixed-bucket directory exists: ${toRepoRelative(
+        repoRoot,
+        forbiddenDir
+      )}`
+    )
+  }
+
+  const scanTargets = [
+    path.join(repoRoot, 'packages', 'extensions', 'fireux-kitchens', 'src'),
+    path.join(repoRoot, 'packages', 'extensions', 'fireux-kitchens', 'docs'),
+    path.join(repoRoot, 'packages', 'core', 'fireux-docs', 'src', 'runtime'),
+    path.join(repoRoot, 'docs', 'fireux-canon.md'),
+    path.join(repoRoot, 'docs', 'runtime-contract.md'),
+    path.join(repoRoot, 'docs', 'seo-canon.md'),
+  ].filter((p) => existsSync(p))
+
+  for (const target of scanTargets) {
+    if (isDirectory(target)) {
+      for (const file of walkFiles(target, DOC_SCAN_EXTS)) {
+        violations.push(...scanKitchenBucketTerms(repoRoot, file))
+      }
+      continue
+    }
+
+    violations.push(...scanKitchenBucketTerms(repoRoot, target))
+  }
+
+  return violations
+}
+
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
 
@@ -175,6 +277,7 @@ export async function run(ctx) {
 
   // 1) Structural checks (directories)
   violations.push(...checkObjectFolderCasing(repoRoot))
+  violations.push(...checkForbiddenKitchenBucketNames(repoRoot))
 
   // 2) Content checks (imports/markers)
   const scanRoots = [path.join(repoRoot, 'packages'), path.join(repoRoot, 'projects')]
@@ -228,6 +331,7 @@ export async function run(ctx) {
       '- Remove any legacy/back-compat shims (no double paths)',
       '- Ensure Firestore objects live under: composables/fireux/firestore/objects/<thing> (lowercase)',
       '- Do not create composables under: firestore/products/product',
+      '- Do not create mixed-bucket kitchen paths such as firestore/runtime-kitchen',
     ]
 
     throw new Error(lines.join('\n'))

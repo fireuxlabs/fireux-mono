@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useKitchenOrdersFetch } from '../../firestore/runtime-kitchen/orders/fetch/useKitchenOrdersFetch'
+import { useKitchenOrdersFetch } from '../../firestore/kitchen/orders/fetch/useKitchenOrdersFetch'
 import type { KitchenOrder } from '../../../../models/order.model'
 import { useKitchenConsole } from './useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'

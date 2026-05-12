@@ -73,7 +73,7 @@
 import { computed } from 'vue'
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-import { useMenuInterface } from '../../../../composables/fireux/firestore/runtime-kitchen/menu/utils/view/useMenuInterface'
+import { useMenuInterface } from '../../../../composables/fireux/firestore/kitchen/menu/utils/view/useMenuInterface'
 import type { Menu } from '../../../../models/menu.model'
 
 const props = withDefaults(

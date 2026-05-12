@@ -18,6 +18,9 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Portfolio console authority is user-based in the app-hosted overlay.
 - `owner_label` is presentation only; it is not the console ownership rule.
 - If a future operator/team profile is added, it remains a prerequisite or presentation layer over the same overlay governance pattern.
+- Decision note: current implementation drift creates some portfolios with `id = slug`.
+  Keep this contract id-based until a future portfolio identity pass explicitly chooses
+  between id-based identity and slug-id public routing.
 
 ## 4) Collections + paths
 - `portfolios/{portfolioId}`

@@ -6,7 +6,7 @@ type ResolveKitchenChildCollectionBasePathOptions = {
   appId?: string | null | undefined
 }
 
-type ResolveKitchenRuntimeChildCollectionPathOptions = {
+type ResolveKitchenChildCollectionPathOptions = {
   kitchenCollectionPath?: string | null | undefined
   kitchenId?: string | null | undefined
   collectionName?: string | null | undefined
@@ -24,7 +24,7 @@ export const resolveKitchenConsoleCollectionPath = (
   return resolvedAppId ? `apps/${resolvedAppId}/kitchens` : 'kitchens'
 }
 
-export const resolveKitchenRuntimeCollectionBasePath = (
+export const resolveKitchenCollectionBasePath = (
   kitchenCollectionPath?: string | null | undefined,
   appId?: string | null | undefined
 ): string => {
@@ -36,16 +36,16 @@ export const resolveKitchenRuntimeCollectionBasePath = (
 export const resolveKitchenChildCollectionBasePath = (
   options: ResolveKitchenChildCollectionBasePathOptions = {}
 ): string => {
-  return resolveKitchenRuntimeCollectionBasePath(
+  return resolveKitchenCollectionBasePath(
     options.kitchenCollectionPath,
     options.appId
   )
 }
 
-export const resolveKitchenRuntimeChildCollectionPath = (
-  options: ResolveKitchenRuntimeChildCollectionPathOptions = {}
+export const resolveKitchenChildCollectionPath = (
+  options: ResolveKitchenChildCollectionPathOptions = {}
 ): string => {
-  const basePath = resolveKitchenRuntimeCollectionBasePath(
+  const basePath = resolveKitchenCollectionBasePath(
     options.kitchenCollectionPath,
     options.appId
   )

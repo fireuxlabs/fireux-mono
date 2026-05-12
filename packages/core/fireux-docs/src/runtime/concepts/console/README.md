@@ -196,7 +196,7 @@ The local family docs should explain only the delta.
 Examples:
 - `Kitchen`
   - Chef profile gating
-  - runtime kitchen mode and kitchen id
+  - kitchen console mode and selected kitchen id
   - demo kitchen scenario ids
 - `Supplier`
   - company/operator assumptions

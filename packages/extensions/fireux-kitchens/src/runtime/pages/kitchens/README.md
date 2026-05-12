@@ -33,7 +33,7 @@ Kitchen-specific delta:
 - the collection below the chooser is public kitchen browsing, not console entry
 - public kitchen URLs use `kitchen.slug`; `kitchen.id` remains the stored Firestore identity
 - public create is place-backed and creates or ensures `kitchens/<id>`
-- public create does not ensure `apps/<appId>/kitchens/<id>`
+- when app context exists, the shared console ensure seam may also ensure `apps/<appId>/kitchens/<id>`
 - entering live kitchen routes normally ensure a Chef profile first
 
 ## Short Version
