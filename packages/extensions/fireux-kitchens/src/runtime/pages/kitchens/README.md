@@ -12,7 +12,7 @@ This README only explains the kitchen delta.
 ## Current Routes
 
 - `index.vue`
-- `[id].vue`
+- `[slug].vue`
 - `[kitchenSlug]/menus/index.vue`
 - `[kitchenSlug]/menus/[menuId].vue`
 - `create.vue`
@@ -24,13 +24,14 @@ This README only explains the kitchen delta.
 
 - `index.vue` is the public kitchen index
 - `index.vue` embeds the same chooser used by `/console/kitchen`
-- `[id].vue` and menus index/detail are public kitchen delivery
+- `[slug].vue` and menus index/detail are public kitchen delivery
 - `create.vue` is the public kitchen create page
 - `edit/[id].vue` belongs to the public kitchen edit family
 
 Kitchen-specific delta:
 - the public index can browse kitchens and also enter the kitchen chooser
 - the collection below the chooser is public kitchen browsing, not console entry
+- public kitchen URLs use `kitchen.slug`; `kitchen.id` remains the stored Firestore identity
 - public create is place-backed and creates or ensures `kitchens/<id>`
 - public create does not ensure `apps/<appId>/kitchens/<id>`
 - entering live kitchen routes normally ensure a Chef profile first

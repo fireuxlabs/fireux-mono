@@ -123,7 +123,7 @@
         v-if="isDev && debugData !== undefined"
         class="mt-10"
         :title="chromeLabels.menuJson"
-        context="/kitchens/[slug]/menus/[menuId] · raw default menu read"
+        context="/kitchens/[slug]/menus/[menuId] · public slug route"
         :data="debugData"
         :default-open="true"
         :hide-when-empty="false"

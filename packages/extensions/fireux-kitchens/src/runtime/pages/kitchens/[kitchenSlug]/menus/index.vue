@@ -139,27 +139,13 @@ const passThroughQuery = computed(() =>
 
 const { kitchens, pending: kitchensPending } = useKitchenCollection()
 const kitchen = computed<Kitchen | null>(() => {
-  const key = routeKitchenSlug.value
-  if (!key) return null
+  const slugKey = routeKitchenSlug.value.toLowerCase()
+  if (!slugKey) return null
 
-  const keyLower = key.toLowerCase()
   const list = kitchens.value ?? []
   const found = list.find((entry) => {
-    const id = normalizeString(entry?.id)
     const slug = normalizeString((entry as any)?.slug).toLowerCase()
-    const slugAliases = Array.isArray((entry as any)?.slug_aliases)
-      ? (entry as any).slug_aliases.map((alias: unknown) =>
-          normalizeString(alias).toLowerCase()
-        )
-      : []
-
-    return (
-      id === key ||
-      (slug.length > 0 && slug === keyLower) ||
-      slugAliases.includes(keyLower) ||
-      (id === 'ChIJ93_ggY-jj0cRTCyLcfBuK2w' &&
-        ['luna-picante', 'luna-piccante'].includes(keyLower))
-    )
+    return slug.length > 0 && slug === slugKey
   })
 
   return found ?? null

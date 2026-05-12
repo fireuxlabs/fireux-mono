@@ -32,7 +32,7 @@
 
       <div v-else-if="!kitchen" class="space-y-2">
         <h1 class="text-lg font-semibold">Kitchen Not Found</h1>
-        <p>The kitchen you are looking for does not exist.</p>
+        <p>The kitchen you are looking for does not exist or is not public-ready.</p>
         <NuxtLink to="/kitchens" class="text-primary hover:underline">
           &larr; Back
         </NuxtLink>
@@ -68,7 +68,7 @@
         <DevJson
           v-if="isDev && kitchen"
           :title="'Kitchen (Doc)'"
-          context="Kitchen detail page · kitchens/[id] · hydrated kitchen doc"
+          context="Kitchen detail page · kitchens/[slug] · hydrated kitchen doc"
           :data="kitchen"
           :default-open="false"
         />
@@ -244,8 +244,8 @@ const hasChildRoute = computed(() => {
   return /\/kitchens\/[^/]+\/menus?(?:\/|$)/.test(path)
 })
 
-const kitchenRouteKey = computed(() => {
-  const raw = route.params.id
+const kitchenSlug = computed(() => {
+  const raw = route.params.slug
   return Array.isArray(raw)
     ? String(raw[0] ?? '').trim()
     : String(raw ?? '').trim()
@@ -253,26 +253,18 @@ const kitchenRouteKey = computed(() => {
 
 const { kitchens, pending: kitchensPending } = useKitchenCollection()
 const kitchen = computed<Kitchen | null>(() => {
-  const key = kitchenRouteKey.value
-  if (!key) return null
-  const keyLower = key.toLowerCase()
+  const slugKey = kitchenSlug.value.toLowerCase()
+  if (!slugKey) return null
   const list = kitchens.value ?? []
   const found = list.find((entry) => {
-    const id = String(entry?.id ?? '').trim()
     const slug = String((entry as any)?.slug ?? '').trim().toLowerCase()
-    const slugAliases = Array.isArray((entry as any)?.slug_aliases)
-      ? (entry as any).slug_aliases.map((alias: unknown) =>
-          String(alias ?? '').trim().toLowerCase()
-        )
-      : []
-
-    return id === key || (slug.length > 0 && slug === keyLower) || slugAliases.includes(keyLower)
+    return slug.length > 0 && slug === slugKey
   })
   return found ?? null
 })
 
 const kitchenId = computed(() => String(kitchen.value?.id ?? '').trim())
-const loading = computed(() => Boolean(kitchenRouteKey.value) && kitchensPending.value)
+const loading = computed(() => Boolean(kitchenSlug.value) && kitchensPending.value)
 
 const { firestoreFetchCollection } = useFirestoreRead()
 const menusRef = shallowRef(null) as ShallowRef<Ref<Menu[] | undefined> | null>
@@ -338,16 +330,16 @@ const setPublicLanguage = async (language: string) => {
   })
 }
 const menuLink = (menuIdRaw: unknown) => {
-  const publicKitchenKey = String((kitchen.value as any)?.slug || kitchenRouteKey.value || kitchenId.value).trim()
+  const publicKitchenSlug = String((kitchen.value as any)?.slug || '').trim()
   const menuId = String(menuIdRaw || '').trim()
-  if (!publicKitchenKey || !menuId) return ''
-  return `/kitchens/${encodeURIComponent(publicKitchenKey)}/menus/${encodeURIComponent(menuId)}${publicLanguageQuery()}`
+  if (!publicKitchenSlug || !menuId) return ''
+  return `/kitchens/${encodeURIComponent(publicKitchenSlug)}/menus/${encodeURIComponent(menuId)}${publicLanguageQuery()}`
 }
 
 const menusIndexLink = computed(() => {
-  const publicKitchenKey = String((kitchen.value as any)?.slug || kitchenRouteKey.value || kitchenId.value).trim()
-  if (!publicKitchenKey) return ''
-  return `/kitchens/${encodeURIComponent(publicKitchenKey)}/menus${publicLanguageQuery()}`
+  const publicKitchenSlug = String((kitchen.value as any)?.slug || '').trim()
+  if (!publicKitchenSlug) return ''
+  return `/kitchens/${encodeURIComponent(publicKitchenSlug)}/menus${publicLanguageQuery()}`
 })
 
 const localizedString = (

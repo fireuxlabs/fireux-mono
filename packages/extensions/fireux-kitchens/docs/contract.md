@@ -18,7 +18,12 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `Chef`
 
 ## 3) Identity rule
-- Live kitchen identity is place-backed and id-based; console runtime selection is state-based.
+- Live kitchen stored identity is place-backed and id-based; console runtime selection is state-based.
+- Public kitchen route identity is slug-based:
+  - `kitchen.id` remains the Firestore document/root identity.
+  - `kitchen.slug` is required before a kitchen is ready for public URL publishing.
+  - public `/kitchens/**` URLs must use slug, not id.
+  - `slug_aliases` are not canon yet; future alias/redirect support needs an explicit SEO route decision.
 - Chef association (`chef.kitchen_ids`) and workplace/profile links are relationship signals only.
 - Kitchen console authority is user-based:
   - a user can operate a kitchen when their uid is in the scoped kitchen `team_ids`
@@ -46,11 +51,13 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Runtime kitchen mode mapping follows `docs/runtime-contract.md`.
 
 ## 5) Routes (public vs internal; slug vs id)
-- Public/internal id-based pages currently include:
-  - `/kitchens/[id]`
-  - `/kitchens/[id]/menus`
-  - `/kitchens/[id]/menus/[menuId]`
+- Public slug-based pages currently include:
+  - `/kitchens/[slug]`
+  - `/kitchens/[slug]/menus`
+  - `/kitchens/[slug]/menus/[menuId]`
   - `/ingredients/[id]`
+- The active public kitchen route family is `/kitchens/**`; singular `/kitchen/**` is legacy/stale.
+- Stored kitchen identity remains `kitchens/{kitchenId}` even when the public URL uses slug.
 - Console/internal:
   - `/console/kitchen/*`
 - Console selection is runtime-state based, not query-param selection.
@@ -107,3 +114,5 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - No silent fallback switching between live/demo.
 - No silent fallback selection of active kitchen inside console flows.
 - No treating profile linkage or workplace history as console permission.
+- No treating slug as stored Kitchen identity.
+- No using `slug || id` for public kitchen URLs; missing slug means not public-ready.

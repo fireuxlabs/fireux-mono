@@ -74,16 +74,14 @@ const resolveKitchenPath = (target: {
   slug?: string
   route_scope?: 'live' | 'demo' | 'test'
 }) => {
-  const id = safeString(target.id)
   const slug = safeString(target.slug)
-  const key = slug || id
-  if (!key) return ''
+  if (!slug) return ''
 
   if (target.route_scope === 'demo') {
-    return `/demo/kitchens/${encodeURIComponent(key)}`
+    return `/demo/kitchens/${encodeURIComponent(slug)}`
   }
 
-  return `/kitchens/${encodeURIComponent(key)}`
+  return `/kitchens/${encodeURIComponent(slug)}`
 }
 
 export function useKitchenInterface() {

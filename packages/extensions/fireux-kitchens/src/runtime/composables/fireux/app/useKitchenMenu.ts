@@ -136,28 +136,14 @@ export function useKitchenMenu() {
 
   const { kitchens, pending: kitchensPending } = useKitchenCollection()
   const resolvedKitchen = computed(() => {
-    const key = routeKitchenSlug.value
-    if (!key) return null
+    const slugKey = routeKitchenSlug.value.toLowerCase()
+    if (!slugKey) return null
 
-    const keyLower = key.toLowerCase()
     const list = kitchens.value ?? []
 
     const found = list.find((entry) => {
-      const id = normalizeString(entry?.id)
       const slug = normalizeString((entry as any)?.slug).toLowerCase()
-      const slugAliases = Array.isArray((entry as any)?.slug_aliases)
-        ? (entry as any).slug_aliases.map((alias: unknown) =>
-            normalizeString(alias).toLowerCase()
-          )
-        : []
-
-      return (
-        id === key ||
-        (slug.length > 0 && slug === keyLower) ||
-        slugAliases.includes(keyLower) ||
-        (id === 'ChIJ93_ggY-jj0cRTCyLcfBuK2w' &&
-          ['luna-picante', 'luna-piccante'].includes(keyLower))
-      )
+      return slug.length > 0 && slug === slugKey
     })
 
     return found ?? null
@@ -400,15 +386,15 @@ export function useKitchenMenu() {
 
   const resolveMenuTo = (menu: Menu) => {
     const menuId = normalizeString(menu?.id)
-    const key = normalizeString(routeKitchenSlug.value || kitchenId.value)
-    if (!menuId || !key) return undefined
+    const slug = normalizeString(routeKitchenSlug.value)
+    if (!menuId || !slug) return undefined
     const language = requestedLanguageCode.value
     const languageQuery = language && language !== defaultLanguageCode.value
       ? language
       : undefined
 
     return {
-      path: `/kitchens/${encodeURIComponent(key)}/menus/${encodeURIComponent(
+      path: `/kitchens/${encodeURIComponent(slug)}/menus/${encodeURIComponent(
         menuId
       )}`,
       query: {
@@ -427,8 +413,8 @@ export function useKitchenMenu() {
   }
 
   const backToKitchen = computed(() => {
-    const key = routeKitchenSlug.value || kitchenId.value
-    return key ? `/kitchens/${encodeURIComponent(key)}` : '/kitchens'
+    const slug = routeKitchenSlug.value
+    return slug ? `/kitchens/${encodeURIComponent(slug)}` : '/kitchens'
   })
 
   const publicSections = computed<KitchenPublicMenuSection[]>(() => {
@@ -754,7 +740,6 @@ export function useKitchenMenu() {
     requestedLanguageCode,
     defaultLanguageCode,
     routeKitchenSlug,
-    routeKitchenId: routeKitchenSlug,
     routeMenuId,
     loading,
     resolvedKitchen,
