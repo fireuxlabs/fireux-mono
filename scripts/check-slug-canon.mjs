@@ -20,6 +20,9 @@ const SKIP_DIRS = new Set([
   'build',
   'coverage',
 ])
+const SKIP_REL_PREFIXES = [
+  'docs/ai',
+]
 const EXTENSIONS = new Set([
   '.js',
   '.mjs',
@@ -85,8 +88,14 @@ const allowText = [
   'must not',
 ]
 
-function shouldSkipDir(name) {
-  return SKIP_DIRS.has(name)
+function shouldSkipDir(dirPath) {
+  const name = path.basename(dirPath)
+  if (SKIP_DIRS.has(name)) return true
+
+  const rel = path.relative(root, dirPath).split(path.sep).join('/')
+  return SKIP_REL_PREFIXES.some(
+    (prefix) => rel === prefix || rel.startsWith(`${prefix}/`)
+  )
 }
 
 function shouldReadFile(filePath) {
@@ -96,13 +105,13 @@ function shouldReadFile(filePath) {
 function collectFiles(dir, out = []) {
   if (!existsSync(dir)) return out
   for (const entry of readdirSync(dir)) {
-    if (shouldSkipDir(entry)) continue
-    const fullPath = path.join(dir, entry)
-    const stats = statSync(fullPath)
-    if (stats.isDirectory()) {
-      collectFiles(fullPath, out)
-      continue
-    }
+      const fullPath = path.join(dir, entry)
+      const stats = statSync(fullPath)
+      if (stats.isDirectory()) {
+        if (shouldSkipDir(fullPath)) continue
+        collectFiles(fullPath, out)
+        continue
+      }
     if (stats.isFile() && shouldReadFile(fullPath)) {
       out.push(fullPath)
     }

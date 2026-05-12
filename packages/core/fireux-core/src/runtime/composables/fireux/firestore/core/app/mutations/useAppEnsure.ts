@@ -4,7 +4,6 @@ import { deleteField, doc, getDoc } from 'firebase/firestore'
 import { useRuntimeConfig } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { $fetch } from 'ofetch'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import { useFirestoreEcosystemEnsure } from '../../../system/ecosystem/mutations/useFirestoreEcosystemEnsure'
 import { useProjectEnsure } from '../../project/mutations/useProjectEnsure'
@@ -195,10 +194,17 @@ export function useAppEnsure() {
       throw new Error('[useAppEnsure] Missing appId for media sync')
     }
 
-    return await $fetch<AppMediaSyncResponse>('/api/internal/app/sync-media', {
+    const response = await fetch('/api/internal/app/sync-media', {
       method: 'POST',
-      body: { appId: targetAppId },
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ appId: targetAppId }),
     })
+
+    if (!response.ok) {
+      throw new Error(`[useAppEnsure] Media sync failed (${response.status})`)
+    }
+
+    return await response.json() as AppMediaSyncResponse
   }
 
   async function ensureApp(): Promise<EnsureAppResult> {

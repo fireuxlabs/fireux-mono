@@ -4,7 +4,7 @@ import { useCollection, useFirestore } from 'fireux-core/runtime/composables/fir
 import type { Ref } from 'vue'
 import { computed, watchEffect } from 'vue'
 import type {
-    CoreProfileBase,
+    ProfileBase,
     ProfileConfig,
 } from '../../../../../../models/core/profile.model'
 import type { User } from '../../../../../../models/core/user.model'
@@ -21,7 +21,7 @@ type UserSummary = {
 }
 
 export function useProfileCollection<
-  TProfile extends CoreProfileBase = CoreProfileBase
+  TProfile extends ProfileBase = ProfileBase
 >(config: ProfileConfig) {
   const db = useFirestore()
   const nuxtApp = useNuxtApp()

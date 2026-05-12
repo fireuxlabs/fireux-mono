@@ -4,8 +4,8 @@ import type {
   InfoLanguageMode,
   InfoPage,
   InfoPageTranslationCache,
+  InfoPlace,
   LocalizedTextMap,
-  Place,
   PublicInfoPageResponse,
 } from './types'
 
@@ -172,7 +172,7 @@ export function resolveInfoPageForLanguage(
 }
 
 export function buildPublicInfoResponse(
-  place: Place,
+  place: InfoPlace,
   page: InfoPage,
   requestedLanguage: unknown,
   cache?: InfoPageTranslationCache

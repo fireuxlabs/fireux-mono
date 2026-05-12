@@ -44,12 +44,12 @@ export function createDemoApp(input: DemoAppInput): App {
     admin_ids: [],
     ban_reasons: [],
     created: {
-      at: {},
+      at: { seconds: 0, nanoseconds: 0 },
       by: undefined,
       app_id: undefined,
     },
     updated: {
-      at: {},
+      at: { seconds: 0, nanoseconds: 0 },
       by: undefined,
     },
   }

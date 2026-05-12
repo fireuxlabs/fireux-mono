@@ -265,7 +265,6 @@ export default defineEventHandler<EnvCheckResponse>((_event: H3Event) => {
   const appConfig = useAppConfig() as Record<string, any>
   const publicRuntime = (runtimeConfig?.public ?? {}) as Record<string, any>
   const fireux = (publicRuntime.fireux ?? {}) as Record<string, any>
-  const runtimeFireux = (runtimeConfig?.fireux ?? {}) as Record<string, any>
   const firebaseEcosystem = (publicRuntime.firebaseEcosystem?.firebase ?? {}) as Record<
     string,
     any
@@ -273,7 +272,6 @@ export default defineEventHandler<EnvCheckResponse>((_event: H3Event) => {
   const firebaseApp = (publicRuntime.firebaseApp ?? {}) as Record<string, any>
   const appConfigColors = (appConfig?.ui?.colors ?? {}) as Record<string, any>
   const ecosystem = fireux.ecosystem as string | undefined
-  const role = fireux.role as string | undefined
   const appNamespace =
     (typeof fireux.id === 'string' ? fireux.id.trim() : '') ||
     env.APP_ID?.trim()

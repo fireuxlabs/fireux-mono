@@ -1,6 +1,6 @@
 import type { ProjectStatus, ProjectType } from '../../../../../../models/system/project.model'
 import type { EcosystemSurface } from '../../ecosystem/utils/view/useEcosystemInterface'
-import type { ProjectSurface } from './view/useProjectInterface'
+import type { ProjectSurface } from '../../../core/project/utils/view/useProjectInterface'
 
 const normalizeString = (value: unknown) => String(value || '').trim()
 
@@ -42,7 +42,7 @@ function normalizeProjectType(value: unknown): ProjectType | '' {
   return ''
 }
 
-function normalizeProjectStatus(value: unknown): ProjectStatus {
+function normalizeProjectStatus(value: unknown): ProjectStatus | '' {
   const normalized = normalizeString(value)
   if (
     normalized === 'draft' ||
@@ -52,7 +52,31 @@ function normalizeProjectStatus(value: unknown): ProjectStatus {
   ) {
     return normalized
   }
-  return 'active'
+  return ''
+}
+
+function requireString(value: unknown, label: string) {
+  const normalized = normalizeString(value)
+  if (!normalized) {
+    throw new Error(`Project endpoint did not return ${label}`)
+  }
+  return normalized
+}
+
+function requireProjectStatus(value: unknown): ProjectStatus {
+  const status = normalizeProjectStatus(value)
+  if (!status) {
+    throw new Error('Project endpoint did not return a valid project status')
+  }
+  return status
+}
+
+function requireProjectType(value: unknown): ProjectType {
+  const projectType = normalizeProjectType(value)
+  if (!projectType) {
+    throw new Error('Project endpoint did not return a valid project type')
+  }
+  return projectType
 }
 
 export function normalizeFireuxConsoleEndpoint(value: string) {
@@ -103,31 +127,26 @@ export function readProjectPublicFacade(
   }
 
   const project = next.project
-  const ecosystem = next.ecosystem
-  const firebaseProjectId = normalizeString(project.firebase_project_id)
-  if (!firebaseProjectId) {
-    throw new Error('Project endpoint did not return a project id')
-  }
+  const projectId = requireString(project.id, 'project id')
+  const firebaseProjectId = requireString(
+    project.firebase_project_id,
+    'firebase project id'
+  )
 
   const normalizedEndpoint = normalizeFireuxConsoleEndpoint(normalizedUrl)
-  const ecosystemId = normalizeString(
-    project.ecosystem_id ||
-      ecosystem?.slug ||
-      ecosystem?.id
-  )
-  const normalizedProjectType = normalizeProjectType(project.project_type)
+  const ecosystemId = normalizeString(project.ecosystem_id)
+  const status = requireProjectStatus(project.status)
+  const projectType = requireProjectType(project.project_type)
 
   return {
-    id: normalizeString(project.id || ecosystemId || firebaseProjectId),
-    name: normalizeString(project.name || ecosystem?.name),
-    description: normalizeString(project.description || ecosystem?.description),
-    slug: normalizeString(project.slug || ecosystem?.slug || project.id || firebaseProjectId),
-    image_url: normalizeString(project.image_url || ecosystem?.image_url),
-    status: normalizeProjectStatus(project.status || ecosystem?.status),
-    project_type: normalizedProjectType || (ecosystemId ? 'ecosystem_app' : 'standalone_app'),
-    source_url: normalizeString(
-      project.source_url || ecosystem?.source_url || new URL(normalizedEndpoint).origin
-    ),
+    id: projectId,
+    name: normalizeString(project.name),
+    description: normalizeString(project.description),
+    slug: normalizeString(project.slug),
+    image_url: normalizeString(project.image_url),
+    status,
+    project_type: projectType,
+    source_url: normalizeString(project.source_url),
     console_endpoint_url: normalizeString(project.console_endpoint_url || normalizedEndpoint),
     app_id: normalizeString(project.app_id),
     ecosystem_id: ecosystemId,

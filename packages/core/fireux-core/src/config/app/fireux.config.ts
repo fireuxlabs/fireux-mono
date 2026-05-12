@@ -7,7 +7,7 @@ import { setRuntime, type RuntimeAppRole } from './runtime'
 import type { FireuxSeoConfig } from './seo'
 import { configViteWorkspace } from './vite'
 import { resolveFireuxBrandAssets } from '../../utils/brandAssets'
-import type { FireuxMetaContent } from '../../console/models/system/meta-content.model'
+import type { FireuxMetaContent } from '../../runtime/models/system/meta-content.model'
 
 declare module '@nuxt/schema' {
   interface NuxtConfig {

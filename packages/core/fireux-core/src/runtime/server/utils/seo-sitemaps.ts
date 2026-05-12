@@ -218,8 +218,15 @@ function resolveCanonicalDocPath(
   const normalizedPath = normalizePath(rawPath)
   if (normalizedPath) return normalizedPath
 
-  const slug = normalizeSlug(data[entity.slugField]) || docId
-  if (!slug) return null
+  const slug = normalizeSlug(data[entity.slugField])
+  if (!slug) {
+    if (import.meta.dev) {
+      console.warn(
+        `[seo-sitemaps] Skipping ${entity.entityKey}/${docId}: missing ${entity.slugField}`
+      )
+    }
+    return null
+  }
   const encodedSlug = encodeURIComponent(slug)
   const routePrefix = normalizePath(entity.routePrefix || `/${entity.entityKey}`)
   if (!routePrefix) return null

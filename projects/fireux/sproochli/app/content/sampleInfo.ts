@@ -1,8 +1,8 @@
 import {
   buildPublicInfoResponse,
+  type InfoPlace,
   type InfoPage,
   type InfoPageTranslationCache,
-  type Place,
   type PublicInfoPageResponse,
 } from 'fireux-sproochli/runtime/info'
 
@@ -20,7 +20,7 @@ export const sproochliLanguages: Array<{
   { code: 'ar', label: 'العربية', source: 'cached' },
 ]
 
-export const samplePlaces: Place[] = [
+export const samplePlaces: InfoPlace[] = [
   {
     id: 'place-bern-bike-rental',
     slug: 'bern-bike-rental',

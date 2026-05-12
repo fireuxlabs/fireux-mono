@@ -6,7 +6,7 @@ import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import type { Ref } from 'vue'
 import type {
   AppProfileBase,
-  CoreProfileBase,
+  ProfileBase,
   ProfileConfig,
 } from '../../../../../../models/core/profile.model'
 
@@ -16,7 +16,7 @@ import type {
  * - Returns refs directly (no computed merge)
  */
 export type ProfileRefs2<
-  TCore extends CoreProfileBase = CoreProfileBase,
+  TCore extends ProfileBase = ProfileBase,
   TApp extends AppProfileBase = AppProfileBase,
 > = {
   coreProfile: Ref<TCore | undefined | null>
@@ -25,12 +25,12 @@ export type ProfileRefs2<
 
 // Back-compat alias (most call sites only provide the core doc type)
 export type ProfileRefs<
-  TCore extends CoreProfileBase = CoreProfileBase,
+  TCore extends ProfileBase = ProfileBase,
   TApp extends AppProfileBase = AppProfileBase,
 > = ProfileRefs2<TCore, TApp>
 
 export function useProfileFetch<
-  TCore extends CoreProfileBase = CoreProfileBase,
+  TCore extends ProfileBase = ProfileBase,
   TApp extends AppProfileBase = AppProfileBase,
 >(
   id: string | null | undefined | Ref<string | null | undefined>,

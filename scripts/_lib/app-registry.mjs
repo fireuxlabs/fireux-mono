@@ -122,7 +122,7 @@ export const APP_REGISTRY = {
     role: 'standalone',
     workspace: './projects/fireux/sproochli',
     port: 3011,
-    consoleFamilies: ['info'],
+    consoleFamilies: [],
     launchOrder: 9,
   },
   granite: {

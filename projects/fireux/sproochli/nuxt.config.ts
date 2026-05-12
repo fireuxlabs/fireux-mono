@@ -9,7 +9,7 @@ const fireuxConfig = defineFireuxConfig({
   shortName: 'Sproochli',
   meta: metaContent,
   role: 'standalone',
-  consoleFamilies: ['info'],
+  consoleFamilies: [],
   seo: {
     siteUrl: 'https://sproochli.web.app',
   },

@@ -3,7 +3,7 @@ import { useAuth } from '../../../firebase/useAuth'
 import { useProfileFetch } from './fetch/useProfileFetch'
 import type {
   AppProfileBase,
-  CoreProfileBase,
+  ProfileBase,
   ProfileConfig,
 } from '../../../../../models/core/profile.model'
 
@@ -13,7 +13,7 @@ import type {
  * - No computed, no ensure/update/delete (handled by domain facades)
  */
 export function useProfile<
-  TCore extends CoreProfileBase = CoreProfileBase,
+  TCore extends ProfileBase = ProfileBase,
   TApp extends AppProfileBase = AppProfileBase,
 >(config: ProfileConfig) {
   const { uid } = useAuth()
@@ -21,5 +21,4 @@ export function useProfile<
 
   return { profile, pending }
 }
-
 

@@ -1,4 +1,4 @@
-import { computed, shallowRef, watch, type Ref } from 'vue'
+import { computed, type Ref } from 'vue'
 import { useFirestoreRead } from '../fireux/firestore/operations/useFirestoreRead'
 
 export function useDevStorageCollection<T>(collectionPath: Ref<string> | string) {
@@ -8,17 +8,8 @@ export function useDevStorageCollection<T>(collectionPath: Ref<string> | string)
     String(typeof collectionPath === 'string' ? collectionPath : collectionPath.value || '').trim()
   )
 
-  const sourceRef = shallowRef<Ref<T[] | undefined> | null>(null)
-
-  watch(
-    resolvedCollectionPath,
-    (nextPath) => {
-      sourceRef.value = nextPath ? firestoreFetchCollection<T>(nextPath) : null
-    },
-    { immediate: true }
-  )
-
-  const items = computed<T[]>(() => sourceRef.value?.value ?? [])
+  const source = firestoreFetchCollection<T>(resolvedCollectionPath)
+  const items = computed<T[]>(() => source.value ?? [])
 
   return {
     collectionPath: resolvedCollectionPath,

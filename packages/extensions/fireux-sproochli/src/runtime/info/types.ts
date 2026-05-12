@@ -8,7 +8,7 @@ export type LocalizedTextMap = Partial<Record<InfoLanguageCode, string>>
 
 export type InfoBlockType = 'text' | 'warning' | 'list' | 'contact' | 'link'
 
-export type Place = {
+export type InfoPlace = {
   id: string
   slug: string
   name: string
@@ -16,6 +16,9 @@ export type Place = {
   supported_languages: InfoLanguageCode[]
   contact?: string
 }
+
+// Compatibility alias: Sproochli Place means InfoPlace, not fireux-places Place.
+export type Place = InfoPlace
 
 export type InfoBlock = {
   id: string
@@ -93,7 +96,7 @@ export type PublicInfoPage = Omit<InfoPage, 'sections'> & {
 }
 
 export type PublicInfoPageResponse = {
-  place: Place
+  place: InfoPlace
   page: PublicInfoPage
   language: InfoLanguageCode
   requested_language: string

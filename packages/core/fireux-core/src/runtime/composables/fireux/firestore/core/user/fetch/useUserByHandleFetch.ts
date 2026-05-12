@@ -12,18 +12,10 @@ import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/v
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import { normalizeUserHandle } from '../utils/identity/useUserHandleIdentity'
 import { useUserFetch } from './useUserFetch'
-import { useUser } from '../useUser'
 
 type HandleUserMatch = {
   id?: string
   handle?: string
-}
-
-function looksLikeUid(value: string): boolean {
-  const v = String(value || '').trim()
-  if (!v) return false
-  if (v.includes('@') || v.includes('/')) return false
-  return /^[a-zA-Z0-9]{20,64}$/.test(v)
 }
 
 export function useUserByHandleFetch(
@@ -32,18 +24,12 @@ export function useUserByHandleFetch(
   const db = useFirestore()
   const { firestoreQuery } = useFirestoreRead()
   const nuxtApp = useNuxtApp()
-  const { user: sessionUser } = useUser()
   const rawHandle = computed(() => (isRef(handle) ? handle.value : handle))
   const rawTrimmed = computed(() => String(rawHandle.value ?? '').trim())
   const normalizedHandle = computed(() => {
     const raw = rawTrimmed.value
     const withoutAt = raw.startsWith('@') ? raw.slice(1) : raw
     return normalizeUserHandle(withoutAt)
-  })
-  const uidDirect = computed(() => {
-    const raw = rawTrimmed.value
-    if (!raw || raw.startsWith('@')) return null
-    return looksLikeUid(raw) ? raw : null
   })
   const userMatchCache = new Map<string, Ref<HandleUserMatch[] | undefined>>()
 
@@ -66,7 +52,6 @@ export function useUserByHandleFetch(
     normalizedHandle,
     (value) => {
       if (!value) return
-      if (uidDirect.value) return
       ensureUserMatch(value)
     },
     { immediate: true }
@@ -74,13 +59,13 @@ export function useUserByHandleFetch(
 
   const userMatchRows = computed<HandleUserMatch[] | undefined>(() => {
     const value = normalizedHandle.value
-    if (!value || uidDirect.value) return undefined
+    if (!value) return undefined
     return ensureUserMatch(value)?.value
   })
 
   const matchedUser = computed(() => {
     const value = normalizedHandle.value
-    if (!value || uidDirect.value) return undefined
+    if (!value) return undefined
     const rows = userMatchRows.value
     if (!rows?.length) return undefined
     return (
@@ -90,26 +75,14 @@ export function useUserByHandleFetch(
   })
 
   const uid = computed(() => {
-    if (uidDirect.value) return uidDirect.value
     const value = String(matchedUser.value?.id || '').trim()
     return value || null
   })
 
   const refs = useUserFetch(uid)
-  const shouldSuggestCanonicalUid = computed(() => {
-    const raw = uidDirect.value
-    const sessionId = String(sessionUser.value?.id ?? '').trim()
-    if (!raw || !sessionId) return false
-    return raw.toLowerCase() === sessionId.toLowerCase() && raw !== sessionId
-  })
-  const canonicalUid = computed(() => {
-    if (!shouldSuggestCanonicalUid.value) return null
-    return String(sessionUser.value?.id ?? '').trim() || null
-  })
   const resolving = computed(() => {
     const value = normalizedHandle.value
     if (!value) return false
-    if (uidDirect.value) return false
     if (uid.value) return false
     return userMatchRows.value === undefined
   })
@@ -121,11 +94,7 @@ export function useUserByHandleFetch(
   return {
     ...refs,
     uid,
-    canonicalUid,
-    shouldSuggestCanonicalUid,
-    handle: computed(() =>
-      uidDirect.value ? rawTrimmed.value : normalizedHandle.value
-    ),
+    handle: normalizedHandle,
     resolving,
     missing,
   }
