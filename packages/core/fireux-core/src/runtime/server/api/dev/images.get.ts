@@ -1,7 +1,7 @@
 import { readdir } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { defineEventHandler } from 'h3'
+import { createError, defineEventHandler } from 'h3'
 import { useRuntimeConfig } from '#imports'
 
 type ImageEntry = {
@@ -63,6 +63,10 @@ function getCorePublicDir(): string {
 }
 
 export default defineEventHandler(async () => {
+  if (!import.meta.dev) {
+    throw createError({ statusCode: 404, statusMessage: 'Not found' })
+  }
+
   const groups: ImageGroup[] = []
 
   // App public dir (when running inside a project)

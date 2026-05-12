@@ -103,7 +103,8 @@ const {
   stringifyErrorMessage: '[Json] Unable to stringify data',
 })
 
-const shouldRender = computed(() => !props.hideWhenEmpty || !isEmpty.value)
+const isDev = import.meta.dev
+const shouldRender = computed(() => isDev && (!props.hideWhenEmpty || !isEmpty.value))
 const lastCopyResult = ref<'idle' | 'copied' | 'failed'>('idle')
 const { copyText, copying } = useDevClipboard()
 const copyLabel = computed(() => {

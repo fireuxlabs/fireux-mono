@@ -77,7 +77,7 @@ const FRENCH_DISH_DESCRIPTIONS = {
   'carpaccio-di-manzo':
     'Carpaccio de bœuf avec Grana Padano, huile d’olive et jus de citron, garni de roquette',
   'gamberetti-all-aglio':
-    'Gambas chaudes à l’huile d’olive et à l’ail, servies sur roquette avec tranches de pain grillé',
+    'Crevettes chaudes à l’huile d’olive et à l’ail, servies sur roquette avec tranches de pain grillé',
   'cocktail-di-gamberetti':
     'Crevettes à la sauce cocktail maison, servies avec tranches de pain grillé',
   bruschetta:
@@ -91,7 +91,7 @@ const FRENCH_DISH_DESCRIPTIONS = {
   'insalata-caprese':
     'Salade de tomates avec mozzarella di bufala, basilic, huile d’olive et vinaigre',
   burrata:
-    'Spécialité crémeuse de fromage frais des Pouilles, sur tomates et basilic à l’huile d’olive',
+    'Burrata crémeuse des Pouilles, servie avec tomates, basilic et huile d’olive',
   'insalata-gigante':
     'Grande assiette de salade composée avec œuf',
   'insalata-verde':
@@ -137,7 +137,7 @@ const FRENCH_DISH_DESCRIPTIONS = {
   'fettuccine-nere-al-salmone':
     'Pâtes noires avec saumon, oignons, ail et herbes fraîches à la sauce tomate-crème maison',
   'penne-all-arrabbiata':
-    'Penne avec lard, piments, oignons et ail à la sauce tomate maison',
+    'Penne avec lardons, piments, oignons et ail à la sauce tomate maison',
   'penne-imperiale':
     'Penne avec crevettes, dés de tomates, oignons, ail et herbes fraîches à la sauce tomate-crème maison',
   'penne-alla-fiamma':
@@ -147,7 +147,7 @@ const FRENCH_DISH_DESCRIPTIONS = {
   'spaghetti-frutti-di-mare':
     'Spaghetti aux fruits de mer, ail, oignons, tomates cerises et huile d’olive à la sauce tomate maison',
   'spaghetti-carbonara':
-    'Spaghetti avec dés de lard grillés, jaune d’œuf et Grana Padano à la sauce crème',
+    'Spaghetti avec dés de lardons grillés, jaune d’œuf et Grana Padano à la sauce crème',
   'spaghetti-vegetariana':
     'Spaghetti aux légumes, oignons et ail à la sauce tomate maison',
   'spaghetti-napoli':

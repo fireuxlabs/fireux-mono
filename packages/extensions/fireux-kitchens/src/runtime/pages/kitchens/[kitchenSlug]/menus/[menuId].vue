@@ -349,33 +349,37 @@ const publicMenuPreview = {
   routePath: computed(() => route.path),
   menuTitle,
   breadcrumbItems,
-  debugData: computed(() => ({
-    route: {
-      slug: routeKitchenSlug.value,
-      menu_id: routeMenuId.value,
-      mode: selectedLanguage.value || 'default',
-    },
-    firestore_paths: {
-      kitchen: kitchenId.value ? `kitchens/${kitchenId.value}` : '',
-      menus: menusPath.value,
-      dishes: dishesPath.value,
-      translation_cache: translationCachePath.value,
-    },
-    kitchen: resolvedKitchen.value
+  debugData: computed(() =>
+    import.meta.dev
       ? {
-          id: resolvedKitchen.value.id,
-          name: normalizeString(resolvedKitchen.value.name),
-          primary_language: primaryLanguage.value,
-          slug: normalizeString((resolvedKitchen.value as any).slug) || routeKitchenSlug.value,
+          route: {
+            slug: routeKitchenSlug.value,
+            menu_id: routeMenuId.value,
+            mode: selectedLanguage.value || 'default',
+          },
+          firestore_paths: {
+            kitchen: kitchenId.value ? `kitchens/${kitchenId.value}` : '',
+            menus: menusPath.value,
+            dishes: dishesPath.value,
+            translation_cache: translationCachePath.value,
+          },
+          kitchen: resolvedKitchen.value
+            ? {
+                id: resolvedKitchen.value.id,
+                name: normalizeString(resolvedKitchen.value.name),
+                primary_language: primaryLanguage.value,
+                slug: normalizeString((resolvedKitchen.value as any).slug) || routeKitchenSlug.value,
+              }
+            : null,
+          menu: selectedMenu.value
+            ? {
+                id: selectedMenu.value.id,
+                description: normalizeString(selectedMenu.value.description),
+              }
+            : null,
+          sections: publicSections.value,
         }
-      : null,
-    menu: selectedMenu.value
-      ? {
-          id: selectedMenu.value.id,
-          description: normalizeString(selectedMenu.value.description),
-        }
-      : null,
-    sections: publicSections.value,
-  })),
+      : undefined
+  ),
 }
 </script>

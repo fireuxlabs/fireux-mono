@@ -58,9 +58,9 @@ const SECTION_LABELS = new Map(
     ['Heisser Stein', { de: 'Heisser Stein', en: 'Hot Stone', it: 'Pietra calda' }],
     ['HEISSER STEIN', { de: 'Heisser Stein', en: 'Hot Stone', it: 'Pietra calda' }],
     ['HEISSER STEIN / SPIESS', { de: 'Heisser Stein / Spiess', en: 'Hot Stone / Skewers', it: 'Pietra calda / Spiedini' }],
-    ['Contorni', { de: 'Beilagen', en: 'Side Dish', it: 'Contorni' }],
-    ['CONTORNI', { de: 'Beilagen', en: 'Side Dish', it: 'Contorni' }],
-    ['BEILAGEN', { de: 'Beilagen', en: 'Side Dish', it: 'Contorni' }],
+    ['Contorni', { de: 'Beilagen', en: 'Side Dishes', it: 'Contorni' }],
+    ['CONTORNI', { de: 'Beilagen', en: 'Side Dishes', it: 'Contorni' }],
+    ['BEILAGEN', { de: 'Beilagen', en: 'Side Dishes', it: 'Contorni' }],
     ['Poulet', { de: 'Poulet', en: 'Chicken', it: 'Pollo' }],
     ['Rindsfleisch', { de: 'Rindsfleisch', en: 'Beef', it: 'Manzo' }],
     ['Fisch & Meeresfrüchte', { de: 'Fisch & Meeresfrüchte', en: 'Fish & Seafood', it: 'Pesce e frutti di mare' }],
@@ -404,17 +404,17 @@ const MAIN_SECTIONS = [
       ),
       dish(
         'controfiletto-di-manzo-al-pepe-verde',
-        'CONTROFILETO DI MANZO AL PEPE VERDE',
+        'CONTROFILETTO DI MANZO AL PEPE VERDE',
         'Rindsentrecôte vom Grill an Grünpfeffersauce, serviert mit Gemüse und Beilage nach Wahl'
       ),
       dish(
         'controfiletto-d-agnello-alla-griglia',
-        'CONTROFILETTO D´AGNELO ALLA GRIGLIA',
+        'CONTROFILETTO D´AGNELLO ALLA GRIGLIA',
         'rosagebratenes Lammnierstück vom Grill serviert mit Gemüse und Beilage nach Wahl'
       ),
       dish(
         'controfiletto-d-agnello-alla-montanara',
-        'CONTROFILETTO D´AGNELO ALLA MONTANARA',
+        'CONTROFILETTO D´AGNELLO ALLA MONTANARA',
         'rosagebratenes Lammnierstück vom Grill an feiner Waldpilz-Rahmsauce serviert mit Gemüse und Beilage nach Wahl'
       ),
       dish('petto-di-pollo-alla-griglia', 'PETTO DI POLLO ALLA GRIGLIA', 'Pouletbrust vom Grill, serviert mit Gemüse und Beilage nach Wahl'),
@@ -503,9 +503,9 @@ const MAIN_ENGLISH_DESCRIPTIONS = {
   'carpaccio-di-manzo':
     'Beef carpaccio with Grana Padano shavings, olive oil and lemon juice, served with rocket',
   'gamberetti-all-aglio':
-    'warm shrimps in olive oil with garlic, served on rucola and with roasted bread.',
+    'Warm prawns in olive oil and garlic, served on rocket with toasted bread',
   'cocktail-di-gamberetti':
-    'Shrimps on homemade cocktail sauce served on roasted bread.',
+    'Prawns with homemade cocktail sauce, served with toasted bread',
   bruschetta:
     'tomato cubes with, fresh herbs, garlic, onions, basil and olive oil, served on roasted bread.',
   minestrone:
@@ -619,9 +619,9 @@ const MAIN_ENGLISH_DESCRIPTIONS = {
   'gemischter-spiess':
     'Mixed skewer with pork and beef',
   'contorni-beilagen':
-    'Spaghetti, Penne, french fies, rice, risotto or salad',
+    'Spaghetti, penne, French fries, rice, risotto or salad',
   'upgrade-beilagen':
-    '+3.- safronrisotto, homemade pasta, glutenfree pasta',
+    '+3.- saffron risotto, homemade pasta, gluten-free pasta',
   'zusatzliche-beilage':
     '+6.- further side dish',
 }
@@ -694,7 +694,7 @@ const PIZZA_SECTIONS = [
       dish('calzone', 'CALZONE', 'zugedeckte Pizza mit Vorderschinken, Quark, Tomatensauce'),
       dish('salame-nostrano', 'SALAME NOSTRANO', 'Tomatensauce, Mozzarella, Salami, Origano'),
       dish('antonio', 'ANTONIO', 'Tomatensauce, Mozzarella, Vorderschinken, Gorgonzola, Birne, Peperoncini, Origano'),
-      dish('quattro-stagioni', 'QUATTRO STAGION', 'Tomatensauce, Mozzarella, Vorderschinken, Champignons, Artischocken, Peperoni, Origano'),
+      dish('quattro-stagioni', 'QUATTRO STAGIONI', 'Tomatensauce, Mozzarella, Vorderschinken, Champignons, Artischocken, Peperoni, Origano'),
       dish('prosciutto', 'PROSCIUTTO', 'Tomatensauce, Mozzarella, Vorderschinken, Origano'),
       dish('prosciutto-e-funghi', 'PROSCIUTTO E FUNGHI', 'Tomatensauce, Mozzarella, Vorderschinken, Champignons, Origano'),
       dish('hawaii', 'HAWAII', 'Tomatensauce, Mozzarella, Vorderschinken, Ananas, Origano'),

@@ -88,9 +88,9 @@ Price: 20.-
 | --- | --- | --- | --- |
 | default | Gamberetti all´Aglio | warme Riesenkrevetten im Olivenöl und Knoblauch, serviert auf Rucola und mit gerösteten Brotscheiben | 20.- |
 | de | Gamberetti all´Aglio | warme Riesenkrevetten im Olivenöl und Knoblauch, serviert auf Rucola und mit gerösteten Brotscheiben | 20.- |
-| en | Gamberetti all´Aglio | warm shrimps in olive oil with garlic, served on rucola and with roasted bread. | 20.- |
+| en | Gamberetti all´Aglio | Warm prawns in olive oil and garlic, served on rocket with toasted bread | 20.- |
 | it | Gamberetti all´Aglio | Gamberoni caldi in olio d’oliva e aglio, serviti su rucola con fette di pane tostato | 20.- |
-| fr | Gamberetti all´Aglio | Gambas chaudes à l’huile d’olive et à l’ail, servies sur roquette avec tranches de pain grillé | 20.- |
+| fr | Gamberetti all´Aglio | Crevettes chaudes à l’huile d’olive et à l’ail, servies sur roquette avec tranches de pain grillé | 20.- |
 | ar | Gamberetti all´Aglio | روبيان كبير دافئ بزيت الزيتون والثوم، يقدم على الروكا مع شرائح خبز محمصة | 20.- |
 
 ### Cocktail di Gamberetti
@@ -102,7 +102,7 @@ Price: 19.-
 | --- | --- | --- | --- |
 | default | Cocktail di Gamberetti | Krevetten an hausgemachter Cocktailsauce, serviert mit gerösteten Brotscheiben | 19.- |
 | de | Cocktail di Gamberetti | Krevetten an hausgemachter Cocktailsauce, serviert mit gerösteten Brotscheiben | 19.- |
-| en | Cocktail di Gamberetti | Shrimps on homemade cocktail sauce served on roasted bread. | 19.- |
+| en | Cocktail di Gamberetti | Prawns with homemade cocktail sauce, served with toasted bread | 19.- |
 | it | Cocktail di Gamberetti | Gamberetti con salsa cocktail fatta in casa, serviti con fette di pane tostato | 19.- |
 | fr | Cocktail di Gamberetti | Crevettes à la sauce cocktail maison, servies avec tranches de pain grillé | 19.- |
 | ar | Cocktail di Gamberetti | روبيان مع صلصة كوكتيل منزلية، يقدم مع شرائح خبز محمصة | 19.- |
@@ -214,7 +214,7 @@ Price: 20.-
 | de | Burrata | Cremige Frischkäse-Spezialität aus Apulien auf Tomaten und Basilikum an Olivenöl | 20.- |
 | en | Burrata | Creamy cheese with tomatoes and basil on olive oil | 20.- |
 | it | Burrata | Specialità cremosa di formaggio fresco pugliese su pomodori e basilico con olio d’oliva | 20.- |
-| fr | Burrata | Spécialité crémeuse de fromage frais des Pouilles, sur tomates et basilic à l’huile d’olive | 20.- |
+| fr | Burrata | Burrata crémeuse des Pouilles, servie avec tomates, basilic et huile d’olive | 20.- |
 | ar | Burrata | جبن بوراتا كريمي من بوليا على الطماطم والريحان مع زيت الزيتون | 20.- |
 
 ### Insalata Gigante
@@ -588,7 +588,7 @@ Price: 22.-
 | de | Penne all´Arrabbiata | Penne mit Speck, Peperoncini, Zwiebeln und Knoblauch an hausgemachter Tomatensauce | 22.- |
 | en | Penne all´Arrabbiata | Penne with roasted bacon cubes, fresh chili, onion, and garlic on homemade tomato sauce | 22.- |
 | it | Penne all´Arrabbiata | Penne con speck, peperoncini, cipolle e aglio in salsa di pomodoro fatta in casa | 22.- |
-| fr | Penne all´Arrabbiata | Penne avec lard, piments, oignons et ail à la sauce tomate maison | 22.- |
+| fr | Penne all´Arrabbiata | Penne avec lardons, piments, oignons et ail à la sauce tomate maison | 22.- |
 | ar | Penne all´Arrabbiata | بينيه مع لحم خنزير مقدد وفلفل حار وبصل وثوم بصلصة طماطم منزلية | 22.- |
 
 ### Penne Imperiale
@@ -658,7 +658,7 @@ Price: 22.-
 | de | Spaghetti Carbonara | Spaghetti mit gebratenen Speckwürfeln, Eigelb und Grana Padano an Rahmsauce | 22.- |
 | en | Spaghetti Carbonara | Spaghetti with roasted bacon cubes, yolk, and Grana Padano cheese on cream sauce | 22.- |
 | it | Spaghetti Carbonara | Spaghetti con dadini di speck rosolati, tuorlo d’uovo e Grana Padano in salsa alla panna | 22.- |
-| fr | Spaghetti Carbonara | Spaghetti avec dés de lard grillés, jaune d’œuf et Grana Padano à la sauce crème | 22.- |
+| fr | Spaghetti Carbonara | Spaghetti avec dés de lardons grillés, jaune d’œuf et Grana Padano à la sauce crème | 22.- |
 | ar | Spaghetti Carbonara | سباغيتي مع مكعبات لحم خنزير مقدد محمصة وصفار بيض وغرانا بادانو بصلصة الكريمة | 22.- |
 
 ### Spaghetti Vegetariana
@@ -799,47 +799,47 @@ Price: 45.-
 | fr | Controfiletto di Manzo alla Griglia | Entrecôte de bœuf grillée, servie avec légumes et accompagnement au choix | 45.- |
 | ar | Controfiletto di Manzo alla Griglia | إنتريكوت لحم بقر مشوي، يقدم مع خضار وطبق جانبي حسب الاختيار | 45.- |
 
-### Controfileto di Manzo al Pepe Verde
+### Controfiletto di Manzo al Pepe Verde
 
 ID: `controfiletto-di-manzo-al-pepe-verde`
 Price: 47.-
 
 | Mode | Name | Description | Price |
 | --- | --- | --- | --- |
-| default | Controfileto di Manzo al Pepe Verde | Rindsentrecôte vom Grill an Grünpfeffersauce, serviert mit Gemüse und Beilage nach Wahl | 47.- |
-| de | Controfileto di Manzo al Pepe Verde | Rindsentrecôte vom Grill an Grünpfeffersauce, serviert mit Gemüse und Beilage nach Wahl | 47.- |
-| en | Controfileto di Manzo al Pepe Verde | Grilled steak on green pepper sauce served with vegetables and side dish. | 47.- |
+| default | Controfiletto di Manzo al Pepe Verde | Rindsentrecôte vom Grill an Grünpfeffersauce, serviert mit Gemüse und Beilage nach Wahl | 47.- |
+| de | Controfiletto di Manzo al Pepe Verde | Rindsentrecôte vom Grill an Grünpfeffersauce, serviert mit Gemüse und Beilage nach Wahl | 47.- |
+| en | Controfiletto di Manzo al Pepe Verde | Grilled steak on green pepper sauce served with vegetables and side dish. | 47.- |
 | it | Controfiletto di Manzo al Pepe Verde | Entrecôte di manzo alla griglia con salsa al pepe verde, servita con verdure e contorno a scelta | 47.- |
-| fr | Controfileto di Manzo al Pepe Verde | Entrecôte de bœuf grillée à la sauce au poivre vert, servie avec légumes et accompagnement au choix | 47.- |
-| ar | Controfileto di Manzo al Pepe Verde | إنتريكوت لحم بقر مشوي بصلصة الفلفل الأخضر، يقدم مع خضار وطبق جانبي حسب الاختيار | 47.- |
+| fr | Controfiletto di Manzo al Pepe Verde | Entrecôte de bœuf grillée à la sauce au poivre vert, servie avec légumes et accompagnement au choix | 47.- |
+| ar | Controfiletto di Manzo al Pepe Verde | إنتريكوت لحم بقر مشوي بصلصة الفلفل الأخضر، يقدم مع خضار وطبق جانبي حسب الاختيار | 47.- |
 
-### Controfiletto d´Agnelo alla Griglia
+### Controfiletto d´Agnello alla Griglia
 
 ID: `controfiletto-d-agnello-alla-griglia`
 Price: 43.-
 
 | Mode | Name | Description | Price |
 | --- | --- | --- | --- |
-| default | Controfiletto d´Agnelo alla Griglia | rosagebratenes Lammnierstück vom Grill serviert mit Gemüse und Beilage nach Wahl | 43.- |
-| de | Controfiletto d´Agnelo alla Griglia | rosagebratenes Lammnierstück vom Grill serviert mit Gemüse und Beilage nach Wahl | 43.- |
-| en | Controfiletto d´Agnelo alla Griglia | grilled rare lamb fillet, served with vegetables and side dish. | 43.- |
+| default | Controfiletto d´Agnello alla Griglia | rosagebratenes Lammnierstück vom Grill serviert mit Gemüse und Beilage nach Wahl | 43.- |
+| de | Controfiletto d´Agnello alla Griglia | rosagebratenes Lammnierstück vom Grill serviert mit Gemüse und Beilage nach Wahl | 43.- |
+| en | Controfiletto d´Agnello alla Griglia | grilled rare lamb fillet, served with vegetables and side dish. | 43.- |
 | it | Controfiletto d’Agnello alla Griglia | Filetto di agnello alla griglia, cottura rosa, servito con verdure e contorno a scelta | 43.- |
-| fr | Controfiletto d´Agnelo alla Griglia | Filet d’agneau rosé grillé, servi avec légumes et accompagnement au choix | 43.- |
-| ar | Controfiletto d´Agnelo alla Griglia | قطعة لحم ضأن مشوية وردية، تقدم مع خضار وطبق جانبي حسب الاختيار | 43.- |
+| fr | Controfiletto d´Agnello alla Griglia | Filet d’agneau rosé grillé, servi avec légumes et accompagnement au choix | 43.- |
+| ar | Controfiletto d´Agnello alla Griglia | قطعة لحم ضأن مشوية وردية، تقدم مع خضار وطبق جانبي حسب الاختيار | 43.- |
 
-### Controfiletto d´Agnelo alla Montanara
+### Controfiletto d´Agnello alla Montanara
 
 ID: `controfiletto-d-agnello-alla-montanara`
 Price: 45.-
 
 | Mode | Name | Description | Price |
 | --- | --- | --- | --- |
-| default | Controfiletto d´Agnelo alla Montanara | rosagebratenes Lammnierstück vom Grill an feiner Waldpilz-Rahmsauce serviert mit Gemüse und Beilage nach Wahl | 45.- |
-| de | Controfiletto d´Agnelo alla Montanara | rosagebratenes Lammnierstück vom Grill an feiner Waldpilz-Rahmsauce serviert mit Gemüse und Beilage nach Wahl | 45.- |
-| en | Controfiletto d´Agnelo alla Montanara | grilled rosa lamb filet on mushroom sauce, served with vegetables and side dish. | 45.- |
+| default | Controfiletto d´Agnello alla Montanara | rosagebratenes Lammnierstück vom Grill an feiner Waldpilz-Rahmsauce serviert mit Gemüse und Beilage nach Wahl | 45.- |
+| de | Controfiletto d´Agnello alla Montanara | rosagebratenes Lammnierstück vom Grill an feiner Waldpilz-Rahmsauce serviert mit Gemüse und Beilage nach Wahl | 45.- |
+| en | Controfiletto d´Agnello alla Montanara | grilled rosa lamb filet on mushroom sauce, served with vegetables and side dish. | 45.- |
 | it | Controfiletto d’Agnello alla Montanara | Filetto di agnello alla griglia, cottura rosa, con delicata salsa alla panna e funghi di bosco, servito con verdure e contorno a scelta | 45.- |
-| fr | Controfiletto d´Agnelo alla Montanara | Filet d’agneau rosé grillé à la sauce crème aux champignons des bois, servi avec légumes et accompagnement au choix | 45.- |
-| ar | Controfiletto d´Agnelo alla Montanara | قطعة لحم ضأن مشوية وردية بصلصة كريمة فطر الغابة، تقدم مع خضار وطبق جانبي حسب الاختيار | 45.- |
+| fr | Controfiletto d´Agnello alla Montanara | Filet d’agneau rosé grillé à la sauce crème aux champignons des bois, servi avec légumes et accompagnement au choix | 45.- |
+| ar | Controfiletto d´Agnello alla Montanara | قطعة لحم ضأن مشوية وردية بصلصة كريمة فطر الغابة، تقدم مع خضار وطبق جانبي حسب الاختيار | 45.- |
 
 ### Petto di Pollo alla Griglia
 
@@ -1016,7 +1016,7 @@ Price: 41.-
 | --- | --- |
 | default | Contorni |
 | de | Beilagen |
-| en | Side Dish |
+| en | Side Dishes |
 | it | Contorni |
 | fr | Accompagnements |
 | ar | أطباق جانبية |
@@ -1542,19 +1542,19 @@ Price: 23.-
 | fr | Antonio | Sauce tomate, mozzarella, jambon, gorgonzola, poire, piments, origan | 23.- |
 | ar | Antonio | صلصة طماطم، موزاريلا، لحم خنزير، جورجونزولا، كمثرى، فلفل حار، أوريغانو | 23.- |
 
-### Quattro Stagion
+### Quattro Stagioni
 
 ID: `quattro-stagioni`
 Price: 23.-
 
 | Mode | Name | Description | Price |
 | --- | --- | --- | --- |
-| default | Quattro Stagion | Tomatensauce, Mozzarella, Vorderschinken, Champignons, Artischocken, Peperoni, Origano | 23.- |
-| de | Quattro Stagion | Tomatensauce, Mozzarella, Vorderschinken, Champignons, Artischocken, Peperoni, Origano | 23.- |
-| en | Quattro Stagion | tomato sauce, mozzarella, ham, mushrooms, artichokes, red pepper, oregano | 23.- |
-| it | Quattro Stagion | Salsa di pomodoro, mozzarella, prosciutto cotto, champignon, carciofi, peperoni, origano | 23.- |
-| fr | Quattro Stagion | Sauce tomate, mozzarella, jambon, champignons, artichauts, poivrons, origan | 23.- |
-| ar | Quattro Stagion | صلصة طماطم، موزاريلا، لحم خنزير، فطر، خرشوف، فلفل أحمر، أوريغانو | 23.- |
+| default | Quattro Stagioni | Tomatensauce, Mozzarella, Vorderschinken, Champignons, Artischocken, Peperoni, Origano | 23.- |
+| de | Quattro Stagioni | Tomatensauce, Mozzarella, Vorderschinken, Champignons, Artischocken, Peperoni, Origano | 23.- |
+| en | Quattro Stagioni | tomato sauce, mozzarella, ham, mushrooms, artichokes, red pepper, oregano | 23.- |
+| it | Quattro Stagioni | Salsa di pomodoro, mozzarella, prosciutto cotto, champignon, carciofi, peperoni, origano | 23.- |
+| fr | Quattro Stagioni | Sauce tomate, mozzarella, jambon, champignons, artichauts, poivrons, origan | 23.- |
+| ar | Quattro Stagioni | صلصة طماطم، موزاريلا، لحم خنزير، فطر، خرشوف، فلفل أحمر، أوريغانو | 23.- |
 
 ### Prosciutto
 

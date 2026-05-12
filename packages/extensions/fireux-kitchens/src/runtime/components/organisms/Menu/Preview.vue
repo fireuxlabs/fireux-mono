@@ -120,7 +120,7 @@
       </div>
 
       <DevJson
-        v-if="debugData !== undefined"
+        v-if="isDev && debugData !== undefined"
         class="mt-10"
         :title="chromeLabels.menuJson"
         context="/kitchens/[slug]/menus/[menuId] · raw default menu read"
@@ -212,6 +212,7 @@ const chromeLanguage = computed(() =>
   })
 )
 const chromeLabels = computed(() => getPublicKitchenChromeLabels(chromeLanguage.value))
+const isDev = import.meta.dev
 const isRtl = computed(() => isPublicKitchenRtlLanguage(selectedLanguage.value))
 const menuContentDirection = computed(() => isRtl.value ? 'rtl' : 'ltr')
 const menuContentLanguage = computed(() => selectedLanguage.value || chromeLanguage.value)
