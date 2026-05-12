@@ -60,7 +60,7 @@ import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/v
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug';
 import { computed, ref } from 'vue';
 import { useIngredientCreate } from '../../../../../composables/fireux/firestore/ingredient/mutations/useIngredientCreate';
-import { useKitchenIngredientSelection } from '../../../../../composables/fireux/firestore/kitchen/ingredients/mutations/useKitchenIngredientSelection';
+import { useKitchenIngredientSelection } from '../../../../../composables/fireux/console/kitchen/ingredients/mutations/useKitchenIngredientSelection';
 import {
     createDefaultKitchenIngredientForm,
     type KitchenIngredientCreateForm,

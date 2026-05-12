@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
 import type { Menu } from '../../../../../../models/menu.model'
-import { useKitchenChildCollection } from '../../fetch/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../collections/useKitchenChildCollection'
 
 type UseKitchenMenuCollectionOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

@@ -3,7 +3,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, unref, type Ref } from 'vue'
 import { normalizeDish, type Dish } from '../../../../../models/dish.model'
-import { resolveKitchenConsoleCollectionPath } from '../../../app/kitchen-console/shared'
+import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/paths'
 import { useKitchenSelection } from '../../../app/kitchen-console/useKitchenSelection'
 
 const resolveDishesPath = (kitchenCollectionPath: string, kitchenId: string) =>

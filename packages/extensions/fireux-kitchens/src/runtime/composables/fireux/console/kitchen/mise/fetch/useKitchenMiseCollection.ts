@@ -1,6 +1,6 @@
 import type { Ref } from 'vue'
 import type { KitchenMiseTask } from '../../../../../../models/kitchen-mise.model'
-import { useKitchenChildCollection } from '../../fetch/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../collections/useKitchenChildCollection'
 
 type UseKitchenMiseCollectionOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

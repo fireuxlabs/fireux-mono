@@ -175,7 +175,7 @@ import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { MenuSection } from '../../../../../../models/menu.model'
 import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMenu'
-import type { MenuCard } from '../../../../../../composables/fireux/firestore/kitchen/menu/utils/view/useMenuInterface'
+import type { MenuCard } from '../../../../../../composables/fireux/console/kitchen/menu/utils/view/useMenuInterface'
 
 const {
   menu,

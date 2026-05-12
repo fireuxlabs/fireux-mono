@@ -9,7 +9,7 @@ import {
   type Dish,
   type DishCreateInput,
 } from '../../../../../models/dish.model'
-import { resolveKitchenConsoleCollectionPath } from '../../../app/kitchen-console/shared'
+import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/paths'
 import { useKitchenSelection } from '../../../app/kitchen-console/useKitchenSelection'
 
 type DishCreateDraft = {

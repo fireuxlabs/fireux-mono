@@ -4,7 +4,7 @@ import type { Dish } from '../../../../models/dish.model'
 import type { Menu } from '../../../../models/menu.model'
 import { useKitchenConsole } from './useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
-import { useKitchenMenuCollection } from '../../firestore/kitchen/menu/fetch/useKitchenMenuCollection'
+import { useKitchenMenuCollection } from '../../console/kitchen/menu/fetch/useKitchenMenuCollection'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const normalizeNumber = (value: unknown) => Number(value ?? 0) || 0

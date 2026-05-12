@@ -6,7 +6,7 @@ import {
   type Recipe,
   type RecipeUpdateInput,
 } from '../../../../../models/recipe.model'
-import { resolveKitchenConsoleCollectionPath } from '../../../app/kitchen-console/shared'
+import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/paths'
 import { useKitchenSelection } from '../../../app/kitchen-console/useKitchenSelection'
 
 const trim = (value: unknown) => String(value || '').trim()

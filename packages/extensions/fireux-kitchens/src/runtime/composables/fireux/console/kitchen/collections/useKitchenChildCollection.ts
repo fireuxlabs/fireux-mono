@@ -11,7 +11,7 @@ import {
   normalizeString,
   resolveKitchenChildCollectionPath,
   resolveKitchenCollectionBasePath,
-} from '../../../app/kitchen-console/shared'
+} from '../paths'
 
 type UseKitchenChildCollectionOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>

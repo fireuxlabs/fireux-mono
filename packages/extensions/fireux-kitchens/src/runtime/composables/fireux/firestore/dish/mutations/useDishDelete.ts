@@ -1,7 +1,7 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
 import { computed, unref, type Ref } from 'vue'
-import { resolveKitchenConsoleCollectionPath } from '../../../app/kitchen-console/shared'
+import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/paths'
 import { useKitchenSelection } from '../../../app/kitchen-console/useKitchenSelection'
 
 const trim = (value: unknown) => String(value || '').trim()

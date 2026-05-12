@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useKitchenChildCollection } from '../../firestore/kitchen/fetch/useKitchenChildCollection'
+import { useKitchenChildCollection } from '../../console/kitchen/collections/useKitchenChildCollection'
 import type {
   KitchenTeamJoinRequest,
   KitchenTeamMember,

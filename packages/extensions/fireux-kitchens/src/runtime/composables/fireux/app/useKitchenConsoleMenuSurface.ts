@@ -5,7 +5,7 @@ import type { OrderLine } from 'fireux-orders/runtime/models/order.model'
 import type { Menu } from '../../../models/menu.model'
 import type {
   ResolvedMenuItemView,
-} from '../firestore/kitchen/menu/utils/view/resolveMenuItemView'
+} from '../console/kitchen/menu/utils/view/resolveMenuItemView'
 import { useKitchenConsoleMenus } from './kitchen-console/useKitchenConsoleMenus'
 import { useKitchenConsole } from './kitchen-console/useKitchenConsole'
 import {

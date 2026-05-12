@@ -9,7 +9,7 @@ import {
   type RecipeCreateInput,
   type Recipe as RecipeDoc,
 } from '../../../../../models/recipe.model'
-import { resolveKitchenConsoleCollectionPath } from '../../../app/kitchen-console/shared'
+import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/paths'
 import { useKitchenSelection } from '../../../app/kitchen-console/useKitchenSelection'
 
 type RecipeCreateDraft = {

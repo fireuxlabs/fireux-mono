@@ -83,7 +83,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-import type { MiseEnPlaceCard } from '../../../../composables/fireux/firestore/kitchen/mise/utils/view/useMiseEnPlaceInterface'
+import type { MiseEnPlaceCard } from '../../../../composables/fireux/console/kitchen/mise/utils/view/useMiseEnPlaceInterface'
 
 type Props = Pick<
   MiseEnPlaceCard.Card,

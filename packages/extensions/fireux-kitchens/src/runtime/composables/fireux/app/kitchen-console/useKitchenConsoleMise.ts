@@ -1,6 +1,6 @@
 import { computed } from 'vue'
-import { useKitchenMiseCollection } from '../../firestore/kitchen/mise/fetch/useKitchenMiseCollection'
-import { useKitchenMiseToggleDone } from '../../firestore/kitchen/mise/mutations/useKitchenMiseToggleDone'
+import { useKitchenMiseCollection } from '../../console/kitchen/mise/fetch/useKitchenMiseCollection'
+import { useKitchenMiseToggleDone } from '../../console/kitchen/mise/mutations/useKitchenMiseToggleDone'
 import type { KitchenMiseTask } from '../../../../models/kitchen-mise.model'
 import { useKitchenConsole } from './useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'

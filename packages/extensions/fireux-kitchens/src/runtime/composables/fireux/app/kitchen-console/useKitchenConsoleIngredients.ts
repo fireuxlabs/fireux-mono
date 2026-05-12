@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import type { IngredientInterfaceItem } from '../../firestore/ingredient/utils/view/useIngredientInterface'
-import { useKitchenIngredients } from '../../firestore/kitchen/ingredients/fetch/useKitchenIngredients'
+import { useKitchenIngredients } from '../../console/kitchen/ingredients/fetch/useKitchenIngredients'
 import { useKitchenConsole } from './useKitchenConsole'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
 

@@ -8,8 +8,8 @@ import type { Dish } from '../../../models/dish.model'
 import {
   resolveMenuItemView,
   type ResolvedMenuItemView,
-} from '../firestore/kitchen/menu/utils/view/resolveMenuItemView'
-import { normalizeString } from './kitchen-console/shared'
+} from '../console/kitchen/menu/utils/view/resolveMenuItemView'
+import { normalizeString } from '../console/kitchen/paths'
 import { resolveMenuDesign } from './kitchen-menu-design'
 
 type MaybeRef<T> = T | Ref<T> | ComputedRef<T>

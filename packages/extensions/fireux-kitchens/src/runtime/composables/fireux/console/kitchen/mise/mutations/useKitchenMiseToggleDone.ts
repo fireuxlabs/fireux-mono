@@ -4,7 +4,7 @@ import {
   readRuntimeSimulationFirestoreDatabaseId,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed } from 'vue'
-import { resolveKitchenConsoleCollectionPath } from '../../../../app/kitchen-console/shared'
+import { resolveKitchenConsoleCollectionPath } from '../../paths'
 import type { KitchenMiseTask } from '../../../../../../models/kitchen-mise.model'
 
 type ToggleKitchenMiseDoneInput = {

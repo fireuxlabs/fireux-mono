@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { useKitchenMenuCollection } from '../../firestore/kitchen/menu/fetch/useKitchenMenuCollection'
+import { useKitchenMenuCollection } from '../../console/kitchen/menu/fetch/useKitchenMenuCollection'
 import type { Menu } from '../../../../models/menu.model'
 import { useKitchenConsole } from './useKitchenConsole'
 import { useKitchenConsoleDishes } from './useKitchenConsoleDishes'
