@@ -127,6 +127,7 @@ FireUX adds structure on top of ordinary composable usage:
 - Firestore reads and writes stay explicit under `fireux/firestore/`
 - usual Firestore entity stacks stay boring: `fetch/`, `mutations/`, `utils/`
 - console operation records live under `fireux/console/<entity>/`, not as child buckets under `fireux/firestore/<entity>/`
+- console operation stacks may have entity-specific child folders, but not vague architecture buckets such as `runtime-*`, `facade`, `stack`, `manager`, `processor`, `handler`, or `resolver`
 - FireUX app/runtime helpers stay explicit under `fireux/app/`
 - generic helpers should not quietly absorb FireUX-specific behavior
 

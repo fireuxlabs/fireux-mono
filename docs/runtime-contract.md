@@ -134,6 +134,8 @@ Updated: 2026-04-27
   - do not create `firestore/runtime-kitchen`
   - do not create vague architecture buckets such as `facade`, `stack`, `manager`, `processor`, or `handler` under `firestore/<entity>`
   - console operation helpers must live under `console/<entity>`, not under the usual root entity stack
+  - `console/<entity>` may contain flexible child operation folders, but must not contain vague architecture buckets such as `runtime-*`, `facade`, `stack`, `manager`, `processor`, `handler`, or `resolver`
+  - do not invent generic console resolver/facade composables such as `useChildEntityConsoleResolver`, `useConsoleChildResolver`, `useRuntimeX`, or `useXFacade`
 
 ## Family Entry Semantics
 - `/console` = choose family.

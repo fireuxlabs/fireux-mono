@@ -53,6 +53,66 @@ const FORBIDDEN_FIRESTORE_ARCHITECTURE_SEGMENTS = new Set([
   'handler',
 ])
 
+const FORBIDDEN_CONSOLE_ARCHITECTURE_SEGMENTS = new Set([
+  'facade',
+  'stack',
+  'manager',
+  'processor',
+  'handler',
+  'resolver',
+])
+
+const FORBIDDEN_CONSOLE_COMPOSABLE_PATTERNS = [
+  {
+    label: 'useChildEntityConsoleResolver',
+    re: /\buseChildEntityConsoleResolver\b/g,
+  },
+  {
+    label: 'useConsoleChildResolver',
+    re: /\buseConsoleChildResolver\b/g,
+  },
+  {
+    label: 'useRuntime*',
+    re: /\buseRuntime[A-Z][A-Za-z0-9_]*\b/g,
+  },
+  {
+    label: '*Facade*',
+    re: /\b[A-Za-z0-9_]*Facade[A-Za-z0-9_]*\b/g,
+  },
+]
+
+const FIRESTORE_ENTITY_STACK_ALLOWED_CHILDREN = new Set([
+  'fetch',
+  'mutations',
+  'utils',
+])
+
+const FIRESTORE_ENTITY_STACK_EXCEPTION_CHILDREN = new Map([
+  [
+    'packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles',
+    new Set(['Agent', 'Professional']),
+  ],
+  [
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/profiles',
+    new Set(['Chef']),
+  ],
+])
+
+const KNOWN_CONSOLE_OPERATION_SLICES_BY_ENTITY = new Map([
+  [
+    'kitchen',
+    new Set([
+      'ingredients',
+      'menu',
+      'mise',
+      'orders',
+      'station',
+      'suppliers',
+      'team',
+    ]),
+  ],
+])
+
 const ALLOWED_FORBIDDEN_CONTEXT =
   /\b(avoid|do not|must not|non-canon|forbidden|mixed-bucket|cannot return)\b/i
 
@@ -356,14 +416,204 @@ function checkForbiddenFirestoreStackFolders(repoRoot) {
   return violations
 }
 
+function listChildDirectories(dir) {
+  try {
+    return readdirSync(dir, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && !SKIP_DIRS.has(entry.name))
+      .map((entry) => entry.name)
+      .sort()
+  } catch {
+    return []
+  }
+}
+
+function findFirestoreEntityStackRoots(repoRoot) {
+  const roots = []
+  const coreFirestoreRoot = path.join(
+    repoRoot,
+    'packages',
+    'core',
+    'fireux-core',
+    'src',
+    'runtime',
+    'composables',
+    'fireux',
+    'firestore',
+    'core'
+  )
+
+  if (isDirectory(coreFirestoreRoot)) {
+    for (const child of listChildDirectories(coreFirestoreRoot)) {
+      roots.push(path.join(coreFirestoreRoot, child))
+    }
+  }
+
+  const extensionsRoot = path.join(repoRoot, 'packages', 'extensions')
+  if (!isDirectory(extensionsRoot)) return roots
+
+  for (const extensionName of listChildDirectories(extensionsRoot)) {
+    const firestoreRoot = path.join(
+      extensionsRoot,
+      extensionName,
+      'src',
+      'runtime',
+      'composables',
+      'fireux',
+      'firestore'
+    )
+
+    if (!isDirectory(firestoreRoot)) continue
+
+    for (const child of listChildDirectories(firestoreRoot)) {
+      roots.push(path.join(firestoreRoot, child))
+    }
+  }
+
+  return roots
+}
+
+function checkFirestoreEntityStackShape(repoRoot) {
+  const violations = []
+  const warnings = []
+
+  for (const entityRoot of findFirestoreEntityStackRoots(repoRoot)) {
+    const relRoot = toRepoRelative(repoRoot, entityRoot)
+    const entity = path.basename(entityRoot)
+    const allowedExceptionChildren =
+      FIRESTORE_ENTITY_STACK_EXCEPTION_CHILDREN.get(relRoot) ?? new Set()
+
+    for (const child of listChildDirectories(entityRoot)) {
+      if (FIRESTORE_ENTITY_STACK_ALLOWED_CHILDREN.has(child)) continue
+      if (allowedExceptionChildren.has(child)) continue
+
+      const childRel = `${relRoot}/${child}`
+      const knownConsoleSlices =
+        KNOWN_CONSOLE_OPERATION_SLICES_BY_ENTITY.get(entity) ?? new Set()
+
+      if (knownConsoleSlices.has(child)) {
+        violations.push(
+          `- Console operation folder belongs under composables/fireux/console/${entity}: ${childRel}`
+        )
+        continue
+      }
+
+      warnings.push(
+        `- Non-standard Firestore entity stack folder: ${childRel}`
+      )
+    }
+  }
+
+  return { violations, warnings }
+}
+
+function findConsoleOperationStackRoots(repoRoot) {
+  const roots = []
+  const coreConsoleRoot = path.join(
+    repoRoot,
+    'packages',
+    'core',
+    'fireux-core',
+    'src',
+    'runtime',
+    'composables',
+    'fireux',
+    'console'
+  )
+
+  if (isDirectory(coreConsoleRoot)) roots.push(coreConsoleRoot)
+
+  const extensionsRoot = path.join(repoRoot, 'packages', 'extensions')
+  if (!isDirectory(extensionsRoot)) return roots
+
+  for (const extensionName of listChildDirectories(extensionsRoot)) {
+    const consoleRoot = path.join(
+      extensionsRoot,
+      extensionName,
+      'src',
+      'runtime',
+      'composables',
+      'fireux',
+      'console'
+    )
+
+    if (isDirectory(consoleRoot)) roots.push(consoleRoot)
+  }
+
+  return roots
+}
+
+function checkConsoleOperationStackShape(repoRoot) {
+  const violations = []
+
+  for (const consoleRoot of findConsoleOperationStackRoots(repoRoot)) {
+    for (const dir of walkDirs(consoleRoot)) {
+      const rel = toRepoRelative(repoRoot, dir)
+      const segment = path.basename(dir)
+      const normalized = segment.toLowerCase()
+
+      if (normalized.startsWith('runtime-')) {
+        violations.push(
+          `- Forbidden runtime bucket under console operation stack: ${rel}`
+        )
+        continue
+      }
+
+      if (FORBIDDEN_CONSOLE_ARCHITECTURE_SEGMENTS.has(normalized)) {
+        violations.push(
+          `- Forbidden architecture bucket under console operation stack: ${rel}`
+        )
+      }
+    }
+
+    for (const file of walkFiles(consoleRoot)) {
+      const rel = toRepoRelative(repoRoot, file)
+      const fileBase = path.basename(file, path.extname(file))
+
+      if (
+        fileBase === 'useChildEntityConsoleResolver' ||
+        fileBase === 'useConsoleChildResolver' ||
+        fileBase.startsWith('useRuntime') ||
+        fileBase.includes('Facade')
+      ) {
+        violations.push(
+          `- Forbidden generic console composable file under console operation stack: ${rel}`
+        )
+      }
+
+      let raw = ''
+      try {
+        raw = readFileSync(file, 'utf8')
+      } catch {
+        continue
+      }
+
+      for (const pattern of FORBIDDEN_CONSOLE_COMPOSABLE_PATTERNS) {
+        for (const hit of findAllMatches(raw, pattern.re)) {
+          const { line } = lineInfo(raw, hit.index)
+          violations.push(
+            `- Forbidden generic console composable "${hit.match}" under console operation stack: ${rel}:${line}`
+          )
+        }
+      }
+    }
+  }
+
+  return violations
+}
+
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
 
   const violations = []
+  const warnings = []
 
   // 1) Structural checks (directories)
   violations.push(...checkObjectFolderCasing(repoRoot))
   violations.push(...checkForbiddenFirestoreStackFolders(repoRoot))
+  const firestoreStackShape = checkFirestoreEntityStackShape(repoRoot)
+  violations.push(...firestoreStackShape.violations)
+  warnings.push(...firestoreStackShape.warnings)
+  violations.push(...checkConsoleOperationStackShape(repoRoot))
   violations.push(...checkForbiddenKitchenBucketNames(repoRoot))
 
   // 2) Content checks (imports/markers)
@@ -421,9 +671,15 @@ export async function run(ctx) {
       '- Do not create mixed-bucket kitchen paths such as firestore/runtime-kitchen',
       '- Keep usual Firestore entity stacks boring: fetch/, mutations/, utils/',
       '- Put console operation buckets under: composables/fireux/console/<entity>/',
+      '- Keep console operation buckets flexible, but do not add vague architecture buckets such as runtime-*, facade, stack, manager, processor, handler, or resolver',
     ]
 
     throw new Error(lines.join('\n'))
+  }
+
+  if (warnings.length) {
+    console.log('[guard] ⚠️ Firestore entity stack audit findings (report-only):')
+    for (const warning of warnings) console.log(warning)
   }
 
   console.log('[guard] ✅ canon conventions valid')
