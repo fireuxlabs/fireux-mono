@@ -40,6 +40,8 @@ Examples:
 
 Visibility source of truth:
 - app config declares visible families through `consoleFamilies`
+- app config uses canonical family keys such as `projects`, `kitchens`, `portfolios`, and `suppliers`
+- core maps canonical family keys to route segments such as `/console/projects`, `/console/kitchen`, `/console/portfolio`, and `/console/supplier`
 - `/console` does not infer visible families by scanning every registered console route
 - an app with `consoleFamilies: []` should not expose console entry at all
 
@@ -58,7 +60,8 @@ Meaning:
 This route is console entry, not yet the operational workspace.
 
 Vocabulary at this layer:
-- family = `projects`, `kitchen`, `portfolio`, `supplier`
+- family key = `projects`, `kitchens`, `portfolios`, `suppliers`
+- route segment = `projects`, `kitchen`, `portfolio`, `supplier`
 - target = the selected root entity in that family
 - workspace = the console shell once a target is selected
 

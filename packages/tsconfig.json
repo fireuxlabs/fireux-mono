@@ -7,7 +7,13 @@
       "path": "core/fireux-core"
     },
     {
+      "path": "core/fireux-docs"
+    },
+    {
       "path": "core/fireux-ecosystem-controller"
+    },
+    {
+      "path": "core/fireux-nuxtfire"
     },
     {
       "path": "core/fireux-translation"

@@ -120,7 +120,7 @@ Updated: 2026-04-27
 - Structural, routing, identity, and selection rule changes must update:
   - `docs/fireux-canon.md`
   - `docs/runtime-contract.md`
-  - Relevant `packages/extensions/fireux-*/docs/contract.md`
+  - Relevant `packages/extensions/fireux-*/docs/contract.md` or `packages/extensions/fireux-*/docs/canon.md`
 
 ## Conflicts Resolved
 - Authority is now explicit: Tier1 canon/contract docs override Tier2/Tier3 docs.

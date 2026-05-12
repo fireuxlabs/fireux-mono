@@ -1,8 +1,93 @@
-import { defineEventHandler, readBody, createError, type H3Event } from 'h3'
+import { useRuntimeConfig } from '#imports'
+import { timingSafeEqual } from 'node:crypto'
+import {
+  defineEventHandler,
+  readBody,
+  createError,
+  getHeader,
+  type H3Event,
+} from 'h3'
 import { initializeApp, getApps, cert } from 'firebase-admin/app'
 import { promises as fs } from 'fs'
 import { join } from 'path'
 import { getRuntimeFirestore } from '../../utils/getRuntimeFirestore'
+
+function firstString(...values: unknown[]): string {
+  for (const value of values) {
+    if (typeof value !== 'string') continue
+    const trimmed = value.trim()
+    if (trimmed) return trimmed
+  }
+  return ''
+}
+
+function safeEquals(value: string, expected: string): boolean {
+  const left = Buffer.from(value)
+  const right = Buffer.from(expected)
+  return left.length === right.length && timingSafeEqual(left, right)
+}
+
+function serviceKeyFromRequest(event: H3Event): string {
+  const authorization = firstString(getHeader(event, 'authorization'))
+  const bearer = authorization.match(/^Bearer\s+(.+)$/i)?.[1]
+  return firstString(
+    getHeader(event, 'x-fireux-core-service-key'),
+    getHeader(event, 'x-fireux-internal-key'),
+    bearer
+  )
+}
+
+function configuredServiceKey(event: H3Event): string {
+  const runtime = useRuntimeConfig(event) as any
+  const fireuxCore = runtime?.fireuxCore || {}
+  const fireux = runtime?.fireux || {}
+  return firstString(
+    process.env.FIREUX_CORE_SERVICE_KEY,
+    process.env.FIREUX_INTERNAL_API_KEY,
+    fireuxCore.serviceKey,
+    fireuxCore.internalApiKey,
+    fireux.serviceKey,
+    fireux.internalApiKey
+  )
+}
+
+function assertDevOrInternalAccess(event: H3Event) {
+  if (import.meta.dev) return
+
+  const serviceKey = configuredServiceKey(event)
+  if (!serviceKey) {
+    throw createError({ statusCode: 404, statusMessage: 'Not found' })
+  }
+
+  if (!safeEquals(serviceKeyFromRequest(event), serviceKey)) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'Unauthorized FireUX internal request.',
+    })
+  }
+}
+
+function normalizeString(value: unknown): string {
+  return String(value || '').trim()
+}
+
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object' && !Array.isArray(value)
+}
+
+function isValidCollectionPath(value: string): boolean {
+  if (!value || value.includes('..')) return false
+  const segments = value.split('/').filter(Boolean)
+  return segments.length > 0 && segments.length % 2 === 1
+}
+
+function isValidDocumentId(value: string): boolean {
+  return Boolean(value && !value.includes('/') && value !== '.' && value !== '..')
+}
+
+function isHttpError(error: unknown): error is { statusCode: number } {
+  return !!error && typeof error === 'object' && 'statusCode' in error
+}
 
 // Function to initialize Firebase Admin with dynamic service account
 async function initializeFirebaseAdmin() {
@@ -130,6 +215,8 @@ async function initializeFirebaseAdmin() {
 }
 
 export default defineEventHandler(async (event: H3Event) => {
+  assertDevOrInternalAccess(event)
+
   try {
     console.log('🔧 [update-document] Starting request...')
     console.log('🔧 [update-document] Current Firebase apps:', getApps().length)
@@ -143,9 +230,16 @@ export default defineEventHandler(async (event: H3Event) => {
     )
 
     const body = await readBody(event)
-    console.log('📝 update-document received:', body)
+    if (!isPlainRecord(body)) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Invalid request body.',
+      })
+    }
 
     const { collection, documentId, data, merge = true, ping } = body
+    const collectionPath = normalizeString(collection)
+    const normalizedDocumentId = normalizeString(documentId)
 
     // Handle ping/pong for testing
     if (ping) {
@@ -153,21 +247,26 @@ export default defineEventHandler(async (event: H3Event) => {
     }
 
     // Validate required fields
-    if (!collection || !documentId || !data) {
+    if (
+      !isValidCollectionPath(collectionPath) ||
+      !isValidDocumentId(normalizedDocumentId) ||
+      !isPlainRecord(data)
+    ) {
       throw createError({
         statusCode: 400,
-        statusMessage: 'Missing required fields: collection, documentId, data',
+        statusMessage:
+          'Missing or invalid required fields: collection, documentId, data',
       })
     }
 
-    console.log(`📝 [update-document] Updating ${collection}/${documentId}`)
+    console.log(`📝 [update-document] Updating ${collectionPath}/${normalizedDocumentId}`)
 
     // Ensure admin app initialization happens before resolving the runtime database.
     void app
     const db = getRuntimeFirestore()
 
     // Update the document
-    const docRef = db.collection(collection).doc(documentId)
+    const docRef = db.collection(collectionPath).doc(normalizedDocumentId)
 
     if (merge) {
       await docRef.set(data, { merge: true })
@@ -181,12 +280,14 @@ export default defineEventHandler(async (event: H3Event) => {
 
     return {
       success: true,
-      collection,
-      documentId,
-      message: `Document updated in ${collection}/${documentId}`,
+      collection: collectionPath,
+      documentId: normalizedDocumentId,
+      message: `Document updated in ${collectionPath}/${normalizedDocumentId}`,
       pong: ping ? `pong-${ping}` : undefined,
     }
   } catch (error) {
+    if (isHttpError(error)) throw error
+
     console.error('❌ [update-document] Error:', error)
 
     const errorMessage =

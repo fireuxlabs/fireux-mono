@@ -7,46 +7,21 @@ import {
 } from 'firebase-admin/app'
 import { createError } from 'h3'
 import type { App } from '../../models/core/app.model'
-import type { ProjectStatus, ProjectType } from '../../models/system/project.model'
-import type { EcosystemSurface } from '../../composables/fireux/firestore/system/ecosystem/utils/view/useEcosystemInterface'
-import type { ProjectSurface } from '../../composables/fireux/firestore/core/project/utils/view/useProjectInterface'
-import { normalizeSlug } from '../../utils/slug/normalizeSlug'
+import type { ProjectStatus } from '../../models/system/project.model'
+import type {
+  FireuxConsoleAppRef,
+  FireuxConsoleEcosystem,
+  FireuxConsolePayload,
+  FireuxConsoleProject,
+} from '../../types/fireux-console'
 import { getRuntimeFirestore } from './getRuntimeFirestore'
 import { getFirestore } from 'firebase-admin/firestore'
 
-type FireuxConsoleProject = Pick<
-  ProjectSurface,
-  | 'id'
-  | 'name'
-  | 'slug'
-  | 'description'
-  | 'image_url'
-  | 'status'
-  | 'project_type'
-  | 'source_url'
-  | 'console_endpoint_url'
-  | 'app_id'
-  | 'ecosystem_id'
-  | 'firebase_project_id'
->
-
-type FireuxConsoleEcosystem = EcosystemSurface & { id: string }
-type FireuxConsoleAppRef = {
-  id: string
-  url: string
-}
 type DefaultAppRecord = Partial<App> & { id: string }
 
 type FireuxConsoleProjectControl = {
   main_app_id: string
   main_ecosystem_id: string
-}
-
-export type FireuxConsolePayload = {
-  ok: true
-  project: FireuxConsoleProject
-  ecosystem: FireuxConsoleEcosystem | null
-  apps: FireuxConsoleAppRef[]
 }
 
 function readEnv(name: string) {
@@ -104,8 +79,31 @@ function normalizeLifecycleStatus(value: unknown): ProjectStatus {
   return 'active'
 }
 
-function normalizeProjectType(hasEcosystem: boolean): ProjectType {
-  return hasEcosystem ? 'ecosystem_app' : 'standalone_app'
+function requireLifecycleStatus(value: unknown, label: string): ProjectStatus {
+  const normalized = normalizeString(value)
+  if (
+    normalized === 'draft' ||
+    normalized === 'active' ||
+    normalized === 'paused' ||
+    normalized === 'archived'
+  ) {
+    return normalized
+  }
+
+  throw createError({
+    statusCode: 502,
+    statusMessage: `FireUX console endpoint is missing ${label}.`,
+  })
+}
+
+function requireString(value: unknown, label: string): string {
+  const normalized = normalizeString(value)
+  if (normalized) return normalized
+
+  throw createError({
+    statusCode: 502,
+    statusMessage: `FireUX console endpoint is missing ${label}.`,
+  })
 }
 
 function getServiceAccountFromEnv() {
@@ -153,17 +151,17 @@ async function readProjectControl(projectId: string): Promise<FireuxConsoleProje
   const snapshot = await db.collection('project').doc(projectId).get()
 
   if (!snapshot.exists) {
-    return {
-      main_app_id: '',
-      main_ecosystem_id: '',
-    }
+    throw createError({
+      statusCode: 404,
+      statusMessage: `FireUX console control doc not found for "${projectId}".`,
+    })
   }
 
   const data = snapshot.data() as Record<string, unknown>
 
   return {
-    main_app_id: firstString(data, ['main_app_id']),
-    main_ecosystem_id: firstString(data, ['main_ecosystem_id']),
+    main_app_id: requireString(data.main_app_id, 'main_app_id'),
+    main_ecosystem_id: requireString(data.main_ecosystem_id, 'main_ecosystem_id'),
   }
 }
 
@@ -177,11 +175,11 @@ function normalizeApp(docId: string, data: Record<string, unknown>): DefaultAppR
     id: docId,
     project_id: firstString(data, ['project_id']),
     ecosystem_id: firstString(data, ['ecosystem_id']),
-    slug: firstString(data, ['slug']) || docId,
+    slug: firstString(data, ['slug']),
     status: normalizeLifecycleStatus(data.status),
     team: firstString(data, ['team']),
-    app_name: firstString(data, ['app_name', 'name', 'app_short_name']) || docId,
-    app_short_name: firstString(data, ['app_short_name', 'app_name', 'name']) || docId,
+    app_name: firstString(data, ['app_name', 'name']),
+    app_short_name: firstString(data, ['app_short_name']),
     role: firstString(data, ['role']),
     ecosystem: firstString(data, ['ecosystem']),
     tagline: firstString(data, ['tagline']),
@@ -190,7 +188,6 @@ function normalizeApp(docId: string, data: Record<string, unknown>): DefaultAppR
     long_bio: firstString(data, ['long_bio']),
     social_links: {
       website:
-        firstString(data, ['source_url', 'site_url', 'app_url', 'url']) ||
         normalizeString(socialLinks.website),
       twitter: normalizeString(socialLinks.twitter),
       github: normalizeString(socialLinks.github),
@@ -254,36 +251,20 @@ function toAppRef(app: DefaultAppRecord): FireuxConsoleAppRef {
   }
 }
 
-function normalizeEcosystemId(docId: string, data: Record<string, unknown>) {
-  const slug = firstString(data, ['slug'])
-  if (slug) return slug
-
-  const storedId = firstString(data, ['id'])
-  if (storedId.startsWith('fireux-')) {
-    return storedId.replace(/^fireux-/, '')
-  }
-  if (storedId) return storedId
-
-  const normalizedDocId = normalizeString(docId)
-  if (normalizedDocId.startsWith('fireux-')) {
-    return normalizedDocId.replace(/^fireux-/, '')
-  }
-
-  return normalizedDocId
-}
-
 function normalizeEcosystem(docId: string, data: Record<string, unknown>): FireuxConsoleEcosystem {
-  const ecosystemId = normalizeEcosystemId(docId, data)
+  void docId
+  const ecosystemId = requireString(data.id, 'ecosystem id')
+  const slug = requireString(data.slug, 'ecosystem slug')
 
   return {
     id: ecosystemId,
-    project_id: firstString(data, ['project_id']),
-    name: firstString(data, ['name']),
-    slug: firstString(data, ['slug']) || ecosystemId,
+    project_id: requireString(data.project_id, 'ecosystem project_id'),
+    name: requireString(data.name, 'ecosystem name'),
+    slug,
     description: firstString(data, ['description']),
     image_url: firstString(data, ['image_url']),
     source_url: firstString(data, ['source_url']),
-    status: normalizeLifecycleStatus(data.status),
+    status: requireLifecycleStatus(data.status, 'ecosystem status'),
     team: firstString(data, ['team']),
     apps: toStringArray(data.apps),
     created:
@@ -308,8 +289,6 @@ async function readCurrentEcosystem(
     normalizeEcosystem(doc.id, (doc.data() as Record<string, unknown>) || {})
   )
 
-  if (!docs.length) return null
-
   if (target) {
     const exact =
       docs.find((entry) => entry.id === target) ||
@@ -318,7 +297,10 @@ async function readCurrentEcosystem(
     if (exact) return exact
   }
 
-  return docs[0] ?? null
+  throw createError({
+    statusCode: 404,
+    statusMessage: `FireUX console ecosystem "${target}" not found.`,
+  })
 }
 
 function buildProject(
@@ -328,26 +310,16 @@ function buildProject(
   ecosystem: FireuxConsoleEcosystem | null
 ): FireuxConsoleProject {
   const sourceUrl =
-    normalizeString(ecosystem?.source_url) ||
-    normalizeString(mainApp?.social_links?.website) ||
-    ''
+    requireString(ecosystem?.source_url, 'project source_url')
 
   const name =
-    normalizeString(ecosystem?.name) ||
-    normalizeString(mainApp?.app_name) ||
-    normalizeString(mainApp?.app_short_name) ||
-    firebaseProjectId
+    requireString(ecosystem?.name, 'project name')
 
   const slug =
-    normalizeString(ecosystem?.slug) ||
-    normalizeString(mainApp?.project_id) ||
-    normalizeString(control.main_ecosystem_id) ||
-    normalizeString(mainApp?.ecosystem_id) ||
-    normalizeSlug(name) ||
-    firebaseProjectId
+    requireString(ecosystem?.slug, 'project slug')
 
   return {
-    id: slug,
+    id: firebaseProjectId,
     name,
     slug,
     description:
@@ -359,15 +331,13 @@ function buildProject(
       normalizeString(ecosystem?.image_url) ||
       normalizeString(mainApp?.media?.logo_url) ||
       normalizeString(mainApp?.media?.thumbnail_url),
-    status: normalizeLifecycleStatus(ecosystem?.status || mainApp?.status),
-    project_type: normalizeProjectType(Boolean(ecosystem)),
+    status: requireLifecycleStatus(ecosystem?.status, 'project status'),
+    project_type: 'ecosystem_app',
     source_url: sourceUrl,
     console_endpoint_url: sourceUrl ? `${sourceUrl.replace(/\/+$/, '')}/api/fireux-console` : '',
-    app_id: normalizeString(control.main_app_id) || normalizeString(mainApp?.id),
+    app_id: requireString(control.main_app_id, 'project app_id'),
     ecosystem_id:
-      normalizeString(ecosystem?.slug) ||
-      normalizeString(control.main_ecosystem_id) ||
-      normalizeString(mainApp?.ecosystem_id),
+      requireString(ecosystem?.id, 'project ecosystem_id'),
     firebase_project_id: firebaseProjectId,
   }
 }
@@ -389,10 +359,14 @@ export async function buildFireuxConsoleResponse(
   const ecosystem = await readCurrentEcosystem(control)
 
   const mainApp =
-    apps.find((entry) => entry.id === control.main_app_id) ||
-    apps.find((entry) => entry.role === 'global') ||
-    apps[0] ||
-    null
+    apps.find((entry) => entry.id === control.main_app_id) || null
+
+  if (!mainApp) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: `FireUX console app "${control.main_app_id}" not found.`,
+    })
+  }
 
   return {
     ok: true,

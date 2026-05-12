@@ -12,7 +12,8 @@
     { "path": "granite/granite-app" },
     { "path": "misebox/la-tap-berne" },
     { "path": "misebox/misebox-app" },
-    { "path": "misebox/niederhorn" }
+    { "path": "misebox/niederhorn" },
+    { "path": "templates/fireux-template" }
   ],
   "compilerOptions": {
     "skipLibCheck": true

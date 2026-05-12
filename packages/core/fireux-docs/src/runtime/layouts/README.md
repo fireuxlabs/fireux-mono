@@ -13,8 +13,6 @@ Most runtime layouts are owned by `fireux-core`.
 Current layout files found:
 
 - `packages/core/fireux-core/src/runtime/layouts/auth.vue`
-- `packages/core/fireux-core/src/runtime/layouts/changelog.vue`
-- `packages/core/fireux-core/src/runtime/layouts/chat.vue`
 - `packages/core/fireux-core/src/runtime/layouts/console.vue`
 - `packages/core/fireux-core/src/runtime/layouts/dashboard.vue`
 - `packages/core/fireux-core/src/runtime/layouts/default.vue`
@@ -22,8 +20,6 @@ Current layout files found:
 - `packages/core/fireux-core/src/runtime/layouts/dev.vue`
 - `packages/core/fireux-core/src/runtime/layouts/docs.vue`
 - `packages/core/fireux-core/src/runtime/layouts/landing.vue`
-- `packages/core/fireux-core/src/runtime/layouts/portfolio.vue`
-- `packages/core/fireux-core/src/runtime/layouts/starter.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/layouts/kitchen-menu.vue`
 
 Repo truth today:
@@ -188,15 +184,14 @@ File:
 - `packages/core/fireux-core/src/runtime/layouts/design.vue`
 
 Status:
-- active by reference, but suspicious in implementation
+- active
 
 Current role:
 - used by FireUX design atom pages
 
 Important note:
-- this layout currently renders `<CoreDefault />`
-- no `CoreDefault` component or file is found elsewhere in the repo
-- so `design` should be treated as a verification target, not clean canon
+- `design` currently uses the same neutral public shell pattern as `default`
+- keep the layout name for route intent; only split styling when design pages need a distinct shell
 
 Used by:
 - `projects/fireux/fireux-app/app/pages/design/atoms/colors.vue`
@@ -223,77 +218,13 @@ Used by:
 - `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[id]/menu/index.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[id]/menu/[menuId].vue`
 
-## Unused Layouts
-
-These layout files exist, but no page currently references them.
-
-### `changelog`
-
-File:
-- `packages/core/fireux-core/src/runtime/layouts/changelog.vue`
-
-Status:
-- unused
-
-Shape:
-- content/docs-style layout with injected navigation
-
-Assessment:
-- likely stale
-- overlaps with the active `docs` family
-
-### `chat`
-
-File:
-- `packages/core/fireux-core/src/runtime/layouts/chat.vue`
-
-Status:
-- unused
-
-Shape:
-- client-only shell with default header/footer and free page center
-
-Assessment:
-- likely stale
-- no current route family proves its need
-
-### `portfolio`
-
-File:
-- `packages/core/fireux-core/src/runtime/layouts/portfolio.vue`
-
-Status:
-- unused
-
-Shape:
-- older wrapper with explicit `menuBarLinks` and `mobileLinks` props passed into header
-
-Assessment:
-- legacy
-- predates the cleaner shared shell direction
-
-### `starter`
-
-File:
-- `packages/core/fireux-core/src/runtime/layouts/starter.vue`
-
-Status:
-- unused
-
-Shape:
-- another old wrapper with explicit nav prop wiring
-
-Assessment:
-- legacy
-- no live route family depends on it
-
 ## Similarity Groups
 
 ### Neutral Public Shells
 
 - `default`
 - `landing`
-- `design` (intended)
+- `design`
 
 Shared idea:
 - public-facing wrapper around `NuxtPage`
@@ -301,7 +232,7 @@ Shared idea:
 
 Important difference:
 - `default` and `landing` are currently identical in implementation
-- `design` is meant to sit in this family, but its implementation looks stale
+- `design` currently shares the same neutral shell while preserving route intent
 
 ### Operational Shells
 
@@ -324,7 +255,6 @@ Important differences:
 - `auth`
 - `docs`
 - `kitchen-menu`
-- `changelog` (unused)
 
 Shared idea:
 - narrow-purpose layout with a very specific delivery job
@@ -353,16 +283,6 @@ Key difference:
 - `dashboard` is profile/workspace oriented
 - `console` is scoped entity-operation oriented
 
-### `docs` vs `changelog`
-
-Shared mechanics:
-- content navigation
-- content-first delivery
-
-Key difference:
-- `docs` is active and wired
-- `changelog` is currently unreferenced and should not be treated as active canon
-
 ### Core-owned vs package-owned
 
 Current repo truth:
@@ -375,14 +295,11 @@ Current repo truth:
 1. Keep the shared layout system centered in `fireux-core`.
 2. Add a package-owned layout only when the package truly owns a unique delivery shell.
 3. Do not keep unused layout files around as silent canon.
-4. Treat `design.vue` as a cleanup target because its implementation does not match current repo reality.
-5. Treat `default` and `landing` as intentionally simple until a real visual split is needed.
+4. Treat `default`, `landing`, and `design` as intentionally simple until a real visual split is needed.
 
 ## Short Version
 
 The real layout system is:
 
-- shared core shells: `default`, `landing`, `dashboard`, `console`, `dev`, `auth`, `docs`
+- shared core shells: `default`, `landing`, `design`, `dashboard`, `console`, `dev`, `auth`, `docs`
 - one active package-owned specialized shell: `kitchen-menu`
-- four currently unused legacy files: `changelog`, `chat`, `portfolio`, `starter`
-- one suspicious active alias: `design`

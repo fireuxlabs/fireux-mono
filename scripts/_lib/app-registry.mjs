@@ -1,5 +1,9 @@
 const SHARED_ROUTES = ['/', '/dashboard', '/dashboard/user-profile']
 
+// Registry consoleFamilies are smoke-test route segments.
+// App config uses canonical family keys such as `kitchens`, `suppliers`, and
+// `portfolios`; core maps those to `/console/kitchen`, `/console/supplier`,
+// and `/console/portfolio`.
 function unique(values) {
   return [...new Set(values)]
 }

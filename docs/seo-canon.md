@@ -46,7 +46,7 @@ Updated: 2026-03-31
 - Each extension with public pages must expose:
   - `use<Entity>Seo` helper for metadata
   - `build<Entity>JsonLd` helper for structured data
-- Extensions must keep SEO helpers aligned with their `docs/contract.md`.
+- Extensions must keep SEO helpers aligned with their `docs/contract.md` or `docs/canon.md`.
 
 ## Conflicts Resolved
 - Current permissive robots files do not define canon; this file defines intended indexing rules.

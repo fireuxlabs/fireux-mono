@@ -1,6 +1,7 @@
 // FILE: packages/core/fireux-core/src/runtime/server/api/internal/app/env-check.ts
 import { useAppConfig, useRuntimeConfig } from '#imports'
-import { defineEventHandler, type H3Event } from 'h3'
+import { timingSafeEqual } from 'node:crypto'
+import { createError, defineEventHandler, getHeader, type H3Event } from 'h3'
 import {
   join,
   isAbsolute,
@@ -13,6 +14,61 @@ import imageSize from 'image-size'
 import { fileURLToPath } from 'node:url'
 
 type ISizeCalculationResult = ReturnType<typeof imageSize>
+
+function firstString(...values: unknown[]): string {
+  for (const value of values) {
+    if (typeof value !== 'string') continue
+    const trimmed = value.trim()
+    if (trimmed) return trimmed
+  }
+  return ''
+}
+
+function safeEquals(value: string, expected: string): boolean {
+  const left = Buffer.from(value)
+  const right = Buffer.from(expected)
+  return left.length === right.length && timingSafeEqual(left, right)
+}
+
+function serviceKeyFromRequest(event: H3Event): string {
+  const authorization = firstString(getHeader(event, 'authorization'))
+  const bearer = authorization.match(/^Bearer\s+(.+)$/i)?.[1]
+  return firstString(
+    getHeader(event, 'x-fireux-core-service-key'),
+    getHeader(event, 'x-fireux-internal-key'),
+    bearer
+  )
+}
+
+function configuredServiceKey(event: H3Event): string {
+  const runtime = useRuntimeConfig(event) as any
+  const fireuxCore = runtime?.fireuxCore || {}
+  const fireux = runtime?.fireux || {}
+  return firstString(
+    process.env.FIREUX_CORE_SERVICE_KEY,
+    process.env.FIREUX_INTERNAL_API_KEY,
+    fireuxCore.serviceKey,
+    fireuxCore.internalApiKey,
+    fireux.serviceKey,
+    fireux.internalApiKey
+  )
+}
+
+function assertDevOrInternalAccess(event: H3Event) {
+  if (import.meta.dev) return
+
+  const serviceKey = configuredServiceKey(event)
+  if (!serviceKey) {
+    throw createError({ statusCode: 404, statusMessage: 'Not found' })
+  }
+
+  if (!safeEquals(serviceKeyFromRequest(event), serviceKey)) {
+    throw createError({
+      statusCode: 401,
+      statusMessage: 'Unauthorized FireUX internal request.',
+    })
+  }
+}
 
 /** Typed shape consumed by the client */
 interface EnvVarEntry {
@@ -259,7 +315,9 @@ interface EnvCheckResponse {
   brandAssets: BrandAssetCheck[]
 }
 
-export default defineEventHandler<EnvCheckResponse>((_event: H3Event) => {
+export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
+  assertDevOrInternalAccess(event)
+
   const env = process.env as Record<string, string | undefined>
   const runtimeConfig = useRuntimeConfig()
   const appConfig = useAppConfig() as Record<string, any>

@@ -19,21 +19,22 @@
         Developer Note
       </p>
       <ul data-dev-note-body class="list-disc space-y-1 pl-4">
-        <li v-if="isConsoleMode">
-          Ensures
-          <code>projects/&lt;id&gt;</code>
-          and
-          <code>apps/&lt;appId&gt;/projects/&lt;id&gt;</code>.
-        </li>
-        <li v-else>
-          Creates or ensures
+        <li>
+          The project mutation creates or ensures
           <code>projects/&lt;id&gt;</code>.
         </li>
-        <li v-if="isConsoleMode">
-          Adds the current user to the project
-          <code>team_ids</code>.
+        <li>
+          When an app context exists, the shared console ensure seam also ensures
+          <code>apps/&lt;appId&gt;/projects/&lt;id&gt;</code>.
         </li>
-        <li v-else>Does not create the app-hosted project console overlay.</li>
+        <li>
+          Route mode changes the entry and return flow, not the root/app write rule.
+        </li>
+        <li>
+          Adds the current user to project
+          <code>team_ids</code>
+          data when records are created.
+        </li>
         <li>
           Success routes to
           <code>{{ successTo }}</code>.
@@ -82,7 +83,7 @@ const headerTitle = computed(() =>
 const headerDescription = computed(() =>
   isConsoleMode.value
     ? 'We’ll ensure the project console for this app and create the public project only if it is missing.'
-    : 'We’ll create the public project record from the endpoint metadata. Console setup happens later.'
+    : 'We’ll create the public project record from endpoint metadata when project ingest is rebuilt.'
 )
 const successTo = computed(() => {
   const explicit = String(props.returnTo || '').trim()

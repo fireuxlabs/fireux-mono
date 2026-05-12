@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "files": [],
+  "references": [
+    { "path": "fireux-core" },
+    { "path": "fireux-docs" },
+    { "path": "fireux-ecosystem-controller" },
+    { "path": "fireux-nuxtfire" },
+    { "path": "fireux-translation" }
+  ],
+  "compilerOptions": {
+    "skipLibCheck": true
+  }
+}

@@ -27,21 +27,22 @@
           Developer Note
         </p>
         <ul data-dev-note-body class="list-disc space-y-1 pl-4">
-          <li v-if="isConsoleMode">
-            Ensures
-            <code>suppliers/&lt;id&gt;</code>
-            and
-            <code>apps/&lt;appId&gt;/suppliers/&lt;id&gt;</code>.
-          </li>
-          <li v-else>
-            Creates or ensures
+          <li>
+            The supplier mutation creates or ensures
             <code>suppliers/&lt;id&gt;</code>.
           </li>
-          <li v-if="isConsoleMode">
-            Adds the current operator to the supplier
-            <code>team_ids</code>.
+          <li>
+            When an app context exists, the shared console ensure seam also ensures
+            <code>apps/&lt;appId&gt;/suppliers/&lt;id&gt;</code>.
           </li>
-          <li v-else>Does not create the app-hosted supplier console overlay.</li>
+          <li>
+            Route mode changes the entry and return flow, not the root/app write rule.
+          </li>
+          <li>
+            Adds the current operator to supplier
+            <code>team_ids</code>
+            data when records are created.
+          </li>
           <li>
             Success routes to
             <code>{{ successTo }}</code>.
@@ -97,7 +98,7 @@ const headerTitle = computed(() =>
 const headerDescription = computed(() =>
   isConsoleMode.value
     ? 'We’ll ensure the supplier console for this app and create the public supplier only if it is missing.'
-    : 'We’ll create the public supplier record. Console setup happens later.'
+    : 'We’ll create or ensure the public supplier record. App context may also ensure the overlay.'
 )
 const successTo = computed(() => {
   if (returnTo.value.startsWith('/')) return returnTo.value

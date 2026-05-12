@@ -23,20 +23,20 @@
           <li>Needs a confirmed real place selection.</li>
           <li v-if="isConsoleMode">Requires an authenticated user on the console route.</li>
           <li v-else>If entered from the kitchen CTA, the flow normally ensures a Chef profile first.</li>
-          <li v-if="isConsoleMode">
-            Ensures
-            <code>kitchens/&lt;id&gt;</code>
-            and
-            <code>apps/&lt;appId&gt;/kitchens/&lt;id&gt;</code>.
-          </li>
-          <li v-else>
-            Creates or ensures
+          <li>
+            The kitchen mutation creates or ensures
             <code>kitchens/&lt;id&gt;</code>.
           </li>
-          <li v-if="isConsoleMode">
-            Ensures the app-scoped kitchen record and links the kitchen to the chef profile association.
+          <li>
+            When an app context exists, the shared console ensure seam also ensures
+            <code>apps/&lt;appId&gt;/kitchens/&lt;id&gt;</code>.
           </li>
-          <li v-else>Does not create the app-hosted kitchen console overlay.</li>
+          <li>
+            Route mode changes the entry and return flow, not the root/app write rule.
+          </li>
+          <li v-if="isConsoleMode">
+            Console entry also links the kitchen to the chef profile association and selects it for runtime.
+          </li>
           <li v-if="isConsoleMode">
             Success routes to
             <code>{{ successTo }}</code>.
@@ -89,7 +89,7 @@ const headerTitle = computed(() =>
 const headerDescription = computed(() =>
   isConsoleMode.value
     ? 'We’ll connect this location to your console overlay. Nothing is duplicated.'
-    : 'We’ll create the public kitchen entity for a real venue. Nothing is duplicated.'
+    : 'We’ll create or ensure the public kitchen entity for a real venue. App context may also ensure the overlay.'
 )
 const successTo = computed(() => {
   if (returnTo.value.startsWith('/')) return returnTo.value
