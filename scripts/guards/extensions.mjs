@@ -25,21 +25,8 @@ const REQUIRED_L1 = [
   'tsconfig.json',
 ]
 
+const ALLOWED_L1 = ['docs']
 const ALLOWED_NOISE = ['node_modules', 'tsconfig.tsbuildinfo', '.DS_Store']
-
-// Narrow exceptions for extension-level contract docs (docs/contract.md).
-// Keep this explicit instead of globally allowing arbitrary extra folders.
-const ALLOWED_EXTRA_BY_PACKAGE = {
-  'fireux-blogs': ['docs'],
-  'fireux-companies': ['docs'],
-  'fireux-properties': ['docs'],
-  'fireux-suppliers': ['docs'],
-  'fireux-jobs': ['docs'],
-  'fireux-kitchens': ['docs'],
-  'fireux-orders': ['docs'],
-  'fireux-places': ['docs'],
-  'fireux-products': ['docs'],
-}
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
@@ -58,7 +45,7 @@ export async function run(ctx) {
 
   for (const pkgName of extensionPackages) {
     const pkgPath = path.join(extRoot, pkgName)
-    const v = checkExtensionPackage(pkgPath, pkgName)
+    const v = checkExtensionPackage(pkgPath)
     if (v) violations.push(v)
   }
 
@@ -69,16 +56,15 @@ export async function run(ctx) {
   console.log('[guard] ✅ extension packages valid')
 }
 
-function checkExtensionPackage(pkgPath, pkgName) {
+function checkExtensionPackage(pkgPath) {
   const entries = readdirSync(pkgPath).filter((n) => n !== '.DS_Store')
-  const extraAllowed = ALLOWED_EXTRA_BY_PACKAGE[pkgName] ?? []
 
   const missing = REQUIRED_L1.filter((r) => !entries.includes(r))
   const unexpected = entries.filter(
     (e) =>
       !REQUIRED_L1.includes(e) &&
       !ALLOWED_NOISE.includes(e) &&
-      !extraAllowed.includes(e)
+      !ALLOWED_L1.includes(e)
   )
 
   if (!missing.length && !unexpected.length) return null
@@ -104,7 +90,8 @@ function checkExtensionPackage(pkgPath, pkgName) {
   lines.push(
     '',
     '[guard] Fix:',
-    `- Extension packages MUST expose exactly: ${REQUIRED_L1.join(', ')}`,
+    `- Extension packages MUST expose required L1: ${REQUIRED_L1.join(', ')}`,
+    `- Optional L1 entries: ${ALLOWED_L1.join(', ')}`,
     '- Move implementation details into /src',
     '- Delete dist/ and other build output before committing'
   )
