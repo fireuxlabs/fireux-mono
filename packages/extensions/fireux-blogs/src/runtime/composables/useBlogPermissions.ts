@@ -8,7 +8,8 @@ export function useBlogPermissions() {
 
   // Allow global/tenant admin only.
   const canPublishBlog = computed(() => {
-    return isAdmin.value === true || appUser.value?.canPost === true
+    const blogAccess = appUser.value as { canPost?: boolean } | null
+    return isAdmin.value === true || blogAccess?.canPost === true
   })
 
   return { canPublishBlog }

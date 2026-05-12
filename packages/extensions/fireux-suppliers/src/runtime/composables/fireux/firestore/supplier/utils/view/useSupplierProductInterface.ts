@@ -1,5 +1,5 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { SupplierProduct } from '../../../../../models/supplier/Supplier.model'
+import type { SupplierProduct } from '../../../../../../models/supplier/Supplier.model'
 
 export type SupplierProductInterfaceItem = Partial<SupplierProduct> &
   Pick<SupplierProduct, 'id' | 'supplier_id' | 'product_id'> & {

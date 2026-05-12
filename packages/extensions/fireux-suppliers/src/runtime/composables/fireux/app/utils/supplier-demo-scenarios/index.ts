@@ -44,6 +44,8 @@ type DemoSupplierProductSeed = Pick<
 
 export type DemoSupplierProductItem = SupplierProduct
 
+const DEMO_TIMESTAMP = { seconds: 0, nanoseconds: 0 } as const
+
 const demoSuppliers: DemoSupplierListItem[] = [
   {
     id: 'city-butchers',
@@ -366,12 +368,12 @@ const cloneProductItem = (
   active: item.active !== false,
   metadata: item.metadata ?? {},
   created: {
-    at: {},
+    at: DEMO_TIMESTAMP,
     by: undefined,
     app_id: undefined,
   },
   updated: {
-    at: {},
+    at: DEMO_TIMESTAMP,
     by: undefined,
   },
 })

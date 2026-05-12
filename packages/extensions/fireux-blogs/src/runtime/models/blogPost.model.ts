@@ -8,6 +8,14 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type BlogPostType = 'article' | 'product'
 
+type WidenLiteral<T> =
+  T extends string ? string
+  : T extends number ? number
+  : T extends boolean ? boolean
+  : T extends readonly (infer U)[] ? WidenLiteral<U>[]
+  : T extends Record<string, unknown> ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
+  : T
+
 export type BlogAuthor = {
   id: string
   display_name: string
@@ -68,9 +76,7 @@ export const BlogPostModel = {
 
 export const BlogPost = BlogPostModel
 
-export type BlogPost = {
-  [K in keyof typeof BlogPostModel]: (typeof BlogPostModel)[K]
-}
+export type BlogPost = WidenLiteral<typeof BlogPostModel>
 
 export type BlogPostCreateInput = Omit<BlogPost, 'created' | 'updated'>
 export type BlogPostUpdateInput = Partial<

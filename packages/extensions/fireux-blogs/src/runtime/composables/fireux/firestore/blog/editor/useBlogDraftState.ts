@@ -32,7 +32,7 @@ const defaultBlogPost: BlogPostEntry = {
   cta_link: '',
   cta_text: '',
   type: 'article',
-  product_id: undefined,
+  product_id: '',
 }
 
 /**
@@ -92,7 +92,7 @@ export function useBlogDraftState() {
       cta_link: '',
       cta_text: '',
       type: 'article',
-      product_id: undefined,
+      product_id: '',
       source_app_id: tenantId,
       source_ecosystem_id: useFireUXConfig().ecosystem,
       owner_type: 'app',

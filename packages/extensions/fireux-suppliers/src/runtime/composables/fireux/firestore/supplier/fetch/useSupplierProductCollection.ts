@@ -1,5 +1,5 @@
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { computed, isRef, shallowRef, watch, type Ref } from 'vue'
+import { computed, isRef, type Ref } from 'vue'
 import type { SupplierProduct } from '../../../../../models/supplier/Supplier.model'
 
 const DEFAULT_SUPPLIER_COLLECTION_PATH = 'suppliers'
@@ -50,23 +50,13 @@ export function useSupplierProductCollection(
       supplierCollectionPath.value
     )
   })
-  const sourceRef = shallowRef<Ref<SupplierProduct[] | undefined> | null>(null)
-
-  watch(
-    collectionPath,
-    (nextPath) => {
-      sourceRef.value = nextPath
-        ? firestoreFetchCollection<SupplierProduct>(nextPath)
-        : null
-    },
-    { immediate: true }
-  )
+  const sourceRef = firestoreFetchCollection<SupplierProduct>(collectionPath)
 
   const supplierProducts = computed<SupplierProduct[]>(() =>
-    sourceRef.value?.value ?? []
+    sourceRef.value ?? []
   )
   const pending = computed(
-    () => Boolean(collectionPath.value) && sourceRef.value?.value === undefined
+    () => Boolean(collectionPath.value) && sourceRef.value === undefined
   )
 
   return {
