@@ -9,7 +9,7 @@ import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCol
 import { collection, query as fsq, type Query, type QueryDocumentSnapshot } from 'firebase/firestore'
 import type { Ref } from 'vue'
 import { computed, ref, unref } from 'vue'
-import { resolveKitchenChildCollectionBasePath } from '../../paths'
+import { resolveKitchenChildCollectionBasePath } from '../../collections/useKitchenChildCollection'
 import type {
   Ingredient,
   KitchenIngredient,

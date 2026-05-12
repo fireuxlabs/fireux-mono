@@ -1,6 +1,6 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { resolveKitchenConsoleCollectionPath } from '../../paths'
+import { resolveKitchenConsoleCollectionPath } from '../../collections/useKitchenChildCollection'
 import {
     KitchenMiseTaskModel,
     type KitchenMiseChecklistItem,

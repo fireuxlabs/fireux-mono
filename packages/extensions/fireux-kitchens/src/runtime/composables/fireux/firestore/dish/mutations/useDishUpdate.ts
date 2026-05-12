@@ -8,7 +8,7 @@ import {
   type Dish,
   type DishUpdateInput,
 } from '../../../../../models/dish.model'
-import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/paths'
+import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/collections/useKitchenChildCollection'
 import { useKitchenSelection } from '../../../app/kitchen-console/useKitchenSelection'
 
 const trim = (value: unknown) => String(value || '').trim()

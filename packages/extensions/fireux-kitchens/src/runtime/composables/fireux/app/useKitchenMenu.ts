@@ -10,7 +10,7 @@ import { resolveDishSemanticLine } from '../firestore/dish/utils/view/resolveDis
 import {
   normalizeString,
   resolveKitchenChildCollectionPath,
-} from '../console/kitchen/paths'
+} from '../console/kitchen/collections/useKitchenChildCollection'
 import {
   normalizeKitchenMenuMode,
   useResolvedKitchenMenuView,

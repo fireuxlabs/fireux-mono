@@ -9,7 +9,7 @@ import {
   resolveMenuItemView,
   type ResolvedMenuItemView,
 } from '../console/kitchen/menu/utils/view/resolveMenuItemView'
-import { normalizeString } from '../console/kitchen/paths'
+import { normalizeString } from '../console/kitchen/collections/useKitchenChildCollection'
 import { resolveMenuDesign } from './kitchen-menu-design'
 
 type MaybeRef<T> = T | Ref<T> | ComputedRef<T>

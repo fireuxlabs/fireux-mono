@@ -6,7 +6,7 @@
 import { computed } from 'vue'
 import { useHead, useRoute } from '#imports'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { resolveKitchenChildCollectionPath } from '../../../../composables/fireux/console/kitchen/paths'
+import { resolveKitchenChildCollectionPath } from '../../../../composables/fireux/console/kitchen/collections/useKitchenChildCollection'
 import {
   getPublicKitchenChromeLabels,
   isPublicKitchenCacheLanguage,

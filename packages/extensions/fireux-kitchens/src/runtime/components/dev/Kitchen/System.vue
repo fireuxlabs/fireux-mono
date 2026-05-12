@@ -111,7 +111,7 @@ import { useKitchenChildCollection } from '../../../composables/fireux/console/k
 import {
   ROOT_KITCHEN_COLLECTION_PATH,
   resolveKitchenConsoleCollectionPath,
-} from '../../../composables/fireux/console/kitchen/paths'
+} from '../../../composables/fireux/console/kitchen/collections/useKitchenChildCollection'
 import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import type { AppKitchen, Kitchen } from '../../../models/kitchen.model'
 import { KitchenModel as KitchenModelRuntime } from '../../../models/kitchen.model'

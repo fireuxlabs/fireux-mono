@@ -45,6 +45,14 @@ const FORBIDDEN_KITCHEN_BUCKET_TERMS = [
   'useKitchenMenuStackFetch',
 ]
 
+const FORBIDDEN_FIRESTORE_ARCHITECTURE_SEGMENTS = new Set([
+  'facade',
+  'stack',
+  'manager',
+  'processor',
+  'handler',
+])
+
 const ALLOWED_FORBIDDEN_CONTEXT =
   /\b(avoid|do not|must not|non-canon|forbidden|mixed-bucket|cannot return)\b/i
 
@@ -87,6 +95,34 @@ function walkFiles(rootDir, exts = SCAN_EXTS) {
       if (!exts.has(ext)) continue
 
       out.push(fullPath)
+    }
+  }
+
+  return out
+}
+
+function walkDirs(rootDir) {
+  const out = []
+  const stack = [rootDir]
+
+  while (stack.length) {
+    const current = stack.pop()
+    if (!current) continue
+
+    let entries = []
+    try {
+      entries = readdirSync(current, { withFileTypes: true })
+    } catch {
+      continue
+    }
+
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue
+      if (SKIP_DIRS.has(entry.name)) continue
+
+      const fullPath = path.join(current, entry.name)
+      out.push(fullPath)
+      stack.push(fullPath)
     }
   }
 
@@ -270,6 +306,56 @@ function checkForbiddenKitchenBucketNames(repoRoot) {
   return violations
 }
 
+function findSegmentSequence(parts, sequence) {
+  for (let index = 0; index <= parts.length - sequence.length; index += 1) {
+    const slice = parts.slice(index, index + sequence.length)
+    if (slice.every((part, offset) => part === sequence[offset])) return index
+  }
+  return -1
+}
+
+function checkForbiddenFirestoreStackFolders(repoRoot) {
+  const violations = []
+  const packagesRoot = path.join(repoRoot, 'packages')
+  if (!existsSync(packagesRoot)) return violations
+
+  const firestoreSequence = [
+    'src',
+    'runtime',
+    'composables',
+    'fireux',
+    'firestore',
+  ]
+
+  for (const dir of walkDirs(packagesRoot)) {
+    const rel = toRepoRelative(repoRoot, dir)
+    const parts = rel.split(path.sep)
+    const firestoreIndex = findSegmentSequence(parts, firestoreSequence)
+    if (firestoreIndex < 0) continue
+
+    const afterFirestore = parts.slice(firestoreIndex + firestoreSequence.length)
+    if (!afterFirestore.length) continue
+
+    const segment = afterFirestore[afterFirestore.length - 1]
+    const normalized = segment.toLowerCase()
+
+    if (normalized.startsWith('runtime-')) {
+      violations.push(
+        `- Forbidden Firestore runtime bucket: ${rel}`
+      )
+      continue
+    }
+
+    if (FORBIDDEN_FIRESTORE_ARCHITECTURE_SEGMENTS.has(normalized)) {
+      violations.push(
+        `- Forbidden architecture bucket under Firestore entity stack: ${rel}`
+      )
+    }
+  }
+
+  return violations
+}
+
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
 
@@ -277,6 +363,7 @@ export async function run(ctx) {
 
   // 1) Structural checks (directories)
   violations.push(...checkObjectFolderCasing(repoRoot))
+  violations.push(...checkForbiddenFirestoreStackFolders(repoRoot))
   violations.push(...checkForbiddenKitchenBucketNames(repoRoot))
 
   // 2) Content checks (imports/markers)
@@ -332,6 +419,8 @@ export async function run(ctx) {
       '- Ensure Firestore objects live under: composables/fireux/firestore/objects/<thing> (lowercase)',
       '- Do not create composables under: firestore/products/product',
       '- Do not create mixed-bucket kitchen paths such as firestore/runtime-kitchen',
+      '- Keep usual Firestore entity stacks boring: fetch/, mutations/, utils/',
+      '- Put console operation buckets under: composables/fireux/console/<entity>/',
     ]
 
     throw new Error(lines.join('\n'))

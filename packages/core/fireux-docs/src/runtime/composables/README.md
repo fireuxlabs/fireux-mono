@@ -72,21 +72,28 @@ Roadmap:
 
 1. Leave `dev/` and `shared/` alone for now.
 2. Start repo-wide audit inside `composables/fireux/`.
-3. Canonise Firestore composables by storage ownership/path:
+3. Canonise normal Firestore entity composables as the usual root entity stack:
 
 ```text
-composables/fireux/firestore/<rootEntity>/
-composables/fireux/firestore/<rootEntity>/<scopedChild>/
+composables/fireux/firestore/<entity>/fetch/
+composables/fireux/firestore/<entity>/mutations/
+composables/fireux/firestore/<entity>/utils/
 ```
 
-4. Keep app/runtime composables as adapters:
+4. Put console-backed entity operation data in a separate console stack:
+
+```text
+composables/fireux/console/<entity>/
+```
+
+5. Keep app/runtime composables as adapters:
 
 ```text
 composables/fireux/app/<context>-runtime/
 composables/fireux/app/<context>-console/
 ```
 
-5. Only after `fireux/` is stable, revisit the small `shared/` follow-ups.
+6. Only after `fireux/` is stable, revisit the small `shared/` follow-ups.
 
 ## FireUX Canon Seams
 
@@ -118,6 +125,8 @@ FireUX adds structure on top of ordinary composable usage:
 
 - console state gets explicit seams rather than ad hoc page logic
 - Firestore reads and writes stay explicit under `fireux/firestore/`
+- usual Firestore entity stacks stay boring: `fetch/`, `mutations/`, `utils/`
+- console operation records live under `fireux/console/<entity>/`, not as child buckets under `fireux/firestore/<entity>/`
 - FireUX app/runtime helpers stay explicit under `fireux/app/`
 - generic helpers should not quietly absorb FireUX-specific behavior
 

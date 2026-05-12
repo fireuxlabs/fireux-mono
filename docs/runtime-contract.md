@@ -103,6 +103,11 @@ Updated: 2026-04-27
 - `collection` is a storage term and must not be used as the primary business/runtime term for this console model.
 
 ## Console Entity Bucket Canon
+- Usual Firestore entity composable stacks are deliberately boring:
+  - `firestore/<entity>/fetch/**` owns root entity reads.
+  - `firestore/<entity>/mutations/**` owns root entity writes.
+  - `firestore/<entity>/utils/**` owns root entity helpers, view/interface, identity, and validation.
+- `firestore/<entity>` means root entity data access. It must not become a dumping ground for console operations or runtime state.
 - Console-backed root-plus-app families use four buckets:
   - Root entity = public/business identity.
   - App overlay = who can operate that entity inside one app.
@@ -122,12 +127,13 @@ Updated: 2026-04-27
   - runtime selection is UI/application state, not storage
 - Generic folder shape:
   - `app/<entity>-console/**` owns console adapters and selected runtime behavior.
-  - `firestore/<entity>/**` owns Firestore storage, fetches, mutations, view helpers, and child-record slices.
-  - `firestore/<entity>/<child-slice>/**` owns child operation data such as menu, mise, orders, team, station, or suppliers.
+  - `firestore/<entity>/**` owns the usual root entity stack: `fetch/`, `mutations/`, and `utils/`.
+  - `console/<entity>/**` owns console operation data around a selected target, including child records such as menu, mise, orders, team, station, or suppliers.
 - No mixed-bucket runtime folders:
   - do not create `firestore/runtime-<entity>`
   - do not create `firestore/runtime-kitchen`
-  - storage/fetch/write helpers must stay under `firestore/<entity>`
+  - do not create vague architecture buckets such as `facade`, `stack`, `manager`, `processor`, or `handler` under `firestore/<entity>`
+  - console operation helpers must live under `console/<entity>`, not under the usual root entity stack
 
 ## Family Entry Semantics
 - `/console` = choose family.
