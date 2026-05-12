@@ -9,9 +9,12 @@ import {
 import { createRequire } from 'node:module'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
 import { STRIPE_API_VERSION } from '../../stripe/version'
+import { assertProductsServiceAccess } from '../../utils/assertProductsServiceAccess'
 
 export default defineEventHandler(async (event: H3Event) => {
   try {
+    assertProductsServiceAccess(event)
+
     // Quick guard: if no secret key, return 501 (not configured) instead of crashing
     const secret = process.env.STRIPE_SECRET_KEY
     if (!secret) {

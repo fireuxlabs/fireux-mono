@@ -42,6 +42,10 @@ async function writeTemplateLicense(payload: {
   )
 }
 
+function allowsUnsignedStripeWebhook() {
+  return import.meta.dev
+}
+
 export default defineEventHandler(async (event: H3Event) => {
   const secret = process.env.STRIPE_SECRET_KEY
   if (!secret) {
@@ -86,6 +90,13 @@ export default defineEventHandler(async (event: H3Event) => {
     }
     stripeEvent = stripe.webhooks.constructEvent(rawBody, signature, webhookSecret)
   } else {
+    if (!allowsUnsignedStripeWebhook()) {
+      throw createError({
+        statusCode: 403,
+        statusMessage: 'Stripe webhook signature verification is not configured',
+      })
+    }
+
     stripeEvent = JSON.parse(rawBody)
   }
 

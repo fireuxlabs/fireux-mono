@@ -6,8 +6,11 @@ import {
   type H3Event,
 } from 'h3'
 import { STRIPE_API_VERSION } from '../../stripe/version'
+import { assertProductsServiceAccess } from '../../utils/assertProductsServiceAccess'
 
 export default defineEventHandler(async (event: H3Event) => {
+  assertProductsServiceAccess(event)
+
   const secret = process.env.STRIPE_SECRET_KEY
   if (!secret) {
     throw createError({

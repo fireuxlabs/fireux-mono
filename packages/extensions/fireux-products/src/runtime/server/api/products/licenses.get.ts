@@ -1,7 +1,10 @@
 import { createError, defineEventHandler, getQuery, type H3Event } from 'h3'
 import { getProductsAdmin } from '../../utils/getAdmin'
+import { assertProductsServiceAccess } from '../../utils/assertProductsServiceAccess'
 
 export default defineEventHandler(async (event: H3Event) => {
+  assertProductsServiceAccess(event)
+
   try {
     const query = getQuery(event)
     const appId = String(query?.appId || '').trim()
