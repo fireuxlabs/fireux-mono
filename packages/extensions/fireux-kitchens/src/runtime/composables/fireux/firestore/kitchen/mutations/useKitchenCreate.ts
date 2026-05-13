@@ -1,4 +1,14 @@
-import { doc, getDoc } from 'firebase/firestore'
+import {
+  collection,
+  deleteField,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  serverTimestamp,
+  setDoc,
+  where,
+} from 'firebase/firestore'
 import type {
   ConsoleCreateMode,
   ConsoleEnsureResult,
@@ -15,6 +25,7 @@ import {
   readRuntimeSimulationFirestoreDatabaseId,
   useFirestore,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import { computed } from 'vue'
 import {
   resolveTestKitchenName,
@@ -28,6 +39,27 @@ import type {
 } from '../../../../../models/kitchen.model'
 
 const normalizeString = (value: unknown) => String(value || '').trim()
+const KITCHEN_SLUG_MAX_LENGTH = 80
+
+const validateKitchenSlug = (value: unknown) =>
+  validateSlug(value, {
+    label: 'Kitchen slug',
+    namespace: 'kitchens',
+    reservedScope: 'root',
+    maxLength: KITCHEN_SLUG_MAX_LENGTH,
+  })
+
+const withSlugSuffix = (baseSlug: string, index: number) => {
+  const suffix = `-${index}`
+  const maxBaseLength = KITCHEN_SLUG_MAX_LENGTH - suffix.length
+  const base =
+    baseSlug
+      .slice(0, maxBaseLength)
+      .replace(/-+$/g, '') || 'kitchen'
+
+  return `${base}${suffix}`
+}
+
 const requireSimulationDatabaseId = () => {
   const databaseId = readRuntimeSimulationFirestoreDatabaseId()
   if (!databaseId) {
@@ -87,6 +119,106 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     ? setSimulationDocument
     : setDocument
   const shouldEnsurePlace = options.ensurePlace ?? !isTestKitchenCollection
+
+  async function kitchenSlugIsAvailable(slug: string, excludeKitchenId: string) {
+    const slugQuery = query(
+      collection(activeDb, collectionPath),
+      where('slug', '==', slug)
+    )
+    const snapshot = await getDocs(slugQuery)
+
+    return !snapshot.docs.some((docSnap) => docSnap.id !== excludeKitchenId)
+  }
+
+  async function resolveUniqueKitchenSlug(input: {
+    kitchenId: string
+    explicitSlug?: unknown
+    placeSlug?: unknown
+    name?: unknown
+    shortName?: unknown
+    fallback?: unknown
+  }) {
+    const explicitSlug = normalizeString(input.explicitSlug)
+
+    if (explicitSlug) {
+      const validation = validateKitchenSlug(explicitSlug)
+      if (!validation.isValid) {
+        throw new Error(validation.message || 'Kitchen slug is invalid.')
+      }
+      return reserveKitchenSlug(validation.slug, input.kitchenId)
+    }
+
+    const candidates = [
+      input.placeSlug,
+      input.name,
+      input.shortName,
+      input.fallback,
+    ]
+
+    for (const candidate of candidates) {
+      const raw = normalizeString(candidate)
+      if (!raw) continue
+
+      const validation = validateKitchenSlug(raw)
+      if (!validation.isValid || !validation.slug) continue
+
+      return reserveKitchenSlug(validation.slug, input.kitchenId)
+    }
+
+    throw new Error('Kitchen slug is required.')
+  }
+
+  async function reserveKitchenSlug(baseSlug: string, kitchenId: string) {
+    if (await kitchenSlugIsAvailable(baseSlug, kitchenId)) return baseSlug
+
+    for (let index = 2; index < 1000; index += 1) {
+      const candidate = withSlugSuffix(baseSlug, index)
+      if (await kitchenSlugIsAvailable(candidate, kitchenId)) return candidate
+    }
+
+    throw new Error(`Unable to generate an available kitchen slug for "${baseSlug}".`)
+  }
+
+  async function repairExistingKitchenSlug(input: {
+    kitchenId: string
+    ref: ReturnType<typeof doc>
+    existing: Record<string, unknown>
+    explicitSlug?: unknown
+    placeSlug?: unknown
+    name?: unknown
+    shortName?: unknown
+    fallback?: unknown
+  }) {
+    const currentSlug = normalizeString(input.existing.slug)
+    const validation = currentSlug ? validateKitchenSlug(currentSlug) : null
+    const hasValidSlug =
+      validation?.isValid === true && validation.slug === currentSlug
+
+    if (hasValidSlug) return currentSlug
+
+    const slug = await resolveUniqueKitchenSlug({
+      kitchenId: input.kitchenId,
+      explicitSlug: input.explicitSlug,
+      placeSlug: input.placeSlug || currentSlug,
+      name: input.name || input.existing.name,
+      shortName: input.shortName || input.existing.short_name,
+      fallback: input.fallback,
+    })
+
+    await setDoc(
+      input.ref,
+      {
+        slug,
+        slug_aliases: deleteField(),
+        updated: {
+          at: serverTimestamp(),
+        },
+      },
+      { merge: true }
+    )
+
+    return slug
+  }
 
   async function createTestKitchen(
     input: KitchenTestCreateInput = {}
@@ -264,10 +396,15 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       resolvedPayload.image_shade = resolvedImageShade
     }
 
-    const resolvedSlug = explicitSlug || placeSlug
-    if (resolvedSlug) {
-      resolvedPayload.slug = resolvedSlug
-    }
+    const resolvedSlug = await resolveUniqueKitchenSlug({
+      kitchenId: resolvedId,
+      explicitSlug,
+      placeSlug,
+      name: resolvedName,
+      shortName: resolvedShortName,
+      fallback: resolvedId,
+    })
+    resolvedPayload.slug = resolvedSlug
 
     const resolvedSource = explicitSource || placeSource
     if (resolvedSource) {
@@ -277,9 +414,20 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     const ref = doc(activeDb, collectionPath, resolvedId)
     const snap = await getDoc(ref)
     if (snap.exists()) {
+      const seoSlug = await repairExistingKitchenSlug({
+        kitchenId: resolvedId,
+        ref,
+        existing: snap.data() as Record<string, unknown>,
+        explicitSlug,
+        placeSlug,
+        name: resolvedName,
+        shortName: resolvedShortName,
+        fallback: resolvedId,
+      })
+
       if (!isTestKitchenCollection) {
         await upsertSeoIndexDoc('seo_index_kitchens', resolvedId, {
-          path: `/kitchens/${resolvedId}`,
+          path: `/kitchens/${seoSlug}`,
           isPublic: true,
         })
       }
@@ -296,7 +444,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     )
     if (!isTestKitchenCollection) {
       await upsertSeoIndexDoc('seo_index_kitchens', resolvedId, {
-        path: `/kitchens/${resolvedId}`,
+        path: `/kitchens/${resolvedSlug}`,
         isPublic: true,
       })
     }

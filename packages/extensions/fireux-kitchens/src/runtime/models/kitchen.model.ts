@@ -32,6 +32,8 @@ export type KitchenOpeningHours = {
 export type KitchenLanguageSettings = {
   default_language: string
   supported_languages: string[]
+  attached_languages?: string[]
+  cache_languages?: string[]
 }
 
 export type KitchenCurrencyFormat = 'dash' | 'symbol' | 'code'

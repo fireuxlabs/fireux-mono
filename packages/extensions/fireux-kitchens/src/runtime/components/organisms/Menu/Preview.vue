@@ -123,7 +123,7 @@
         v-if="isDev && debugData !== undefined"
         class="mt-10"
         :title="chromeLabels.menuJson"
-        context="/kitchens/[slug]/menus/[menuId] · public slug route"
+        context="/kitchens/[slug]/menus/[menuId] · slug route"
         :data="debugData"
         :default-open="true"
         :hide-when-empty="false"
@@ -138,7 +138,7 @@ import { useRoute } from '#imports'
 import {
   getPublicKitchenChromeLabels,
   isPublicKitchenRtlLanguage,
-  PUBLIC_KITCHEN_LANGUAGE_OPTIONS,
+  resolvePublicKitchenLanguageOptions,
   resolvePublicKitchenChromeLanguage,
 } from '../../../composables/fireux/app/public-kitchen-language'
 
@@ -182,9 +182,11 @@ const props = defineProps<{
 }>()
 
 const route = useRoute()
-const languageOptions = PUBLIC_KITCHEN_LANGUAGE_OPTIONS
 const loading = computed(() => Boolean(unref(props.menu.loading)))
 const resolvedKitchen = computed(() => unref(props.menu.resolvedKitchen))
+const languageOptions = computed(() =>
+  resolvePublicKitchenLanguageOptions(resolvedKitchen.value)
+)
 const selectedMenu = computed(() => unref(props.menu.selectedMenu))
 const publicSections = computed(() => unref(props.menu.publicSections) || [])
 const breadcrumbItems = computed(() => unref(props.menu.breadcrumbItems) || [])

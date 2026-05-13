@@ -388,7 +388,7 @@
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
+import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import {
   FIREUX_LANGUAGE_OPTIONS,
   type FireuxLanguageOption,
@@ -737,7 +737,7 @@ const handleCurrencyFormatOption = async (value: KitchenCurrencyFormat) =>
 const formatSlugField = (value: string) => normalizeSlug(value, { maxLength: 80 })
 
 const validateSlugField = (value: string) => {
-  const validation = validatePublicSlug(formatSlugField(value), {
+  const validation = validateSlug(formatSlugField(value), {
     label: 'Kitchen slug',
     namespace: 'kitchens',
     reservedScope: 'root',

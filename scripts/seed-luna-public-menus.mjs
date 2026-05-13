@@ -1461,13 +1461,14 @@ async function main() {
       {
         name: 'Luna Piccante',
         slug: 'luna-picante',
-        slug_aliases: ['luna-piccante'],
         primary_language: 'de',
         currency_code: 'CHF',
         currency_format: 'dash',
         language_settings: {
           default_language: 'de',
           supported_languages: ['de', 'en', 'it', 'fr', 'ar'],
+          attached_languages: ['de', 'en', 'it'],
+          cache_languages: ['fr', 'ar'],
         },
         updated: updatedStamp(),
       },

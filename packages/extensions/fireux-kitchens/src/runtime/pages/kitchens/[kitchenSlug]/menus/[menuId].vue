@@ -168,11 +168,19 @@ const priceUnitLabel = (unit: unknown) => {
     if (selectedLanguage.value === 'ar') return 'قطع'
     if (selectedLanguage.value === 'fr') return 'pièces'
     if (selectedLanguage.value === 'it') return 'pz.'
+    if (selectedLanguage.value === 'es') return 'uds.'
+    if (selectedLanguage.value === 'pt') return 'un.'
     return selectedLanguage.value === 'en' ? 'pcs' : 'Stk.'
   }
   if (normalizedUnit === 'gram') {
     if (selectedLanguage.value === 'ar') return 'غ'
-    return selectedLanguage.value === 'en' || selectedLanguage.value === 'fr' || selectedLanguage.value === 'it' ? 'g' : 'gr'
+    return selectedLanguage.value === 'en' ||
+      selectedLanguage.value === 'fr' ||
+      selectedLanguage.value === 'it' ||
+      selectedLanguage.value === 'es' ||
+      selectedLanguage.value === 'pt'
+      ? 'g'
+      : 'gr'
   }
   return normalizedUnit
 }

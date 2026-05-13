@@ -646,7 +646,6 @@ async function main() {
         name: 'La Tapberne',
         display_name: 'La Tapberne',
         slug: KITCHEN_SLUG,
-        slug_aliases: ['la-tapberne', 'la-tap-berne'],
         type: 'Tapas-Gastro-Pub',
         description: 'Tapas-Gastro-Pub · Comida Casera',
         address: 'Herrenackerstrasse 49, 3800 Matten bei Interlaken',

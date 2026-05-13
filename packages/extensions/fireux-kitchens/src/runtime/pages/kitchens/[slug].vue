@@ -42,12 +42,12 @@
         <div class="flex items-start gap-3">
           <div
             v-if="kitchenImageUrl"
-            class="max-w-2xl flex-1 overflow-hidden rounded-lg border border-default bg-muted"
+            class="flex max-h-48 max-w-2xl flex-1 items-center justify-center overflow-hidden rounded-lg border border-default bg-muted p-3 sm:max-h-64"
           >
             <img
               :src="kitchenImageUrl"
               :alt="kitchenImageAlt"
-              class="w-full object-contain"
+              class="h-auto max-h-40 max-w-full object-contain sm:max-h-56"
             >
           </div>
 
@@ -222,7 +222,7 @@ import { resolveKitchenChildCollectionPath } from '../../composables/fireux/cons
 import {
   getPublicKitchenChromeLabels,
   normalizePublicKitchenLanguage,
-  PUBLIC_KITCHEN_LANGUAGE_OPTIONS,
+  resolvePublicKitchenLanguageOptions,
   resolvePublicKitchenChromeLanguage,
 } from '../../composables/fireux/app/public-kitchen-language'
 import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
@@ -291,7 +291,9 @@ const sortedMenus = computed(() =>
       String(a?.name || '').localeCompare(String(b?.name || ''))
   )
 )
-const publicLanguageOptions = PUBLIC_KITCHEN_LANGUAGE_OPTIONS
+const publicLanguageOptions = computed(() =>
+  resolvePublicKitchenLanguageOptions(kitchen.value)
+)
 const selectedLanguage = computed(() => {
   const raw = route.query.lang || route.query.language
   const value = Array.isArray(raw) ? raw[0] : raw
@@ -354,7 +356,7 @@ const localizedString = (
     if (selected) return selected
   }
 
-  return ''
+  return normalizeString(defaultValue)
 }
 
 const localizedMenuName = (menu: Menu) =>

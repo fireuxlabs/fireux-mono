@@ -1,16 +1,33 @@
-type PublicKitchenChromeLanguage = 'de' | 'en' | 'it' | 'fr' | 'ar'
+type PublicKitchenChromeLanguage = 'de' | 'en' | 'it' | 'fr' | 'ar' | 'es' | 'pt'
 export type PublicKitchenLanguageCode = '' | PublicKitchenChromeLanguage
+
+export type PublicKitchenLanguageOption = {
+  code: PublicKitchenLanguageCode
+  label: string
+}
+
+const PUBLIC_KITCHEN_LANGUAGE_LABELS: Record<PublicKitchenChromeLanguage, string> = {
+  de: '🇩🇪',
+  en: '🇬🇧',
+  it: '🇮🇹',
+  fr: '🇫🇷',
+  ar: 'العربية',
+  es: '🇪🇸',
+  pt: '🇵🇹',
+}
 
 export const PUBLIC_KITCHEN_LANGUAGE_OPTIONS: Array<{
   code: PublicKitchenLanguageCode
   label: string
 }> = [
   { code: '', label: 'Original' },
-  { code: 'de', label: '🇩🇪' },
-  { code: 'en', label: '🇬🇧' },
-  { code: 'it', label: '🇮🇹' },
-  { code: 'fr', label: '🇫🇷' },
-  { code: 'ar', label: 'العربية' },
+  { code: 'de', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.de },
+  { code: 'en', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.en },
+  { code: 'it', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.it },
+  { code: 'fr', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.fr },
+  { code: 'ar', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.ar },
+  { code: 'es', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.es },
+  { code: 'pt', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.pt },
 ]
 
 export const PUBLIC_KITCHEN_CHROME_LABELS = {
@@ -86,6 +103,42 @@ export const PUBLIC_KITCHEN_CHROME_LABELS = {
     dish: 'plat',
     dishes: 'plats',
   },
+  es: {
+    menus: 'Menús',
+    chooseMenu: 'Elige un menú',
+    openMenus: 'Abrir menús',
+    openMenu: 'Abrir menú',
+    loadingMenus: 'Cargando menús...',
+    noMenusAvailable: 'No hay menús disponibles',
+    noPublicMenus: 'Este restaurante aún no tiene menús públicos disponibles.',
+    loadingMenu: 'Cargando menú...',
+    kitchenNotFound: 'Restaurante no encontrado',
+    menuNotFound: 'Menú no encontrado',
+    noSectionsFound: 'No se encontraron secciones',
+    menuJson: 'Menu JSON',
+    section: 'sección',
+    sections: 'secciones',
+    dish: 'plato',
+    dishes: 'platos',
+  },
+  pt: {
+    menus: 'Menus',
+    chooseMenu: 'Escolha um menu',
+    openMenus: 'Abrir menus',
+    openMenu: 'Abrir menu',
+    loadingMenus: 'A carregar menus...',
+    noMenusAvailable: 'Nenhum menu disponível',
+    noPublicMenus: 'Este restaurante ainda não tem menus públicos disponíveis.',
+    loadingMenu: 'A carregar menu...',
+    kitchenNotFound: 'Restaurante não encontrado',
+    menuNotFound: 'Menu não encontrado',
+    noSectionsFound: 'Nenhuma secção encontrada',
+    menuJson: 'Menu JSON',
+    section: 'secção',
+    sections: 'secções',
+    dish: 'prato',
+    dishes: 'pratos',
+  },
   ar: {
     menus: 'القوائم',
     chooseMenu: 'اختر قائمة',
@@ -110,16 +163,22 @@ export function normalizePublicKitchenLanguage(
   value: unknown
 ): PublicKitchenLanguageCode {
   const language = String(value ?? '').trim().replace(/_/g, '-').toLowerCase()
-  return language === 'de' || language === 'en' || language === 'it' || language === 'fr' || language === 'ar'
+  return language === 'de' ||
+    language === 'en' ||
+    language === 'it' ||
+    language === 'fr' ||
+    language === 'ar' ||
+    language === 'es' ||
+    language === 'pt'
     ? language
     : ''
 }
 
 export function isPublicKitchenCacheLanguage(
   value: unknown
-): value is 'fr' | 'ar' {
+): value is 'fr' | 'ar' | 'es' | 'pt' {
   const language = normalizePublicKitchenLanguage(value)
-  return language === 'fr' || language === 'ar'
+  return language === 'fr' || language === 'ar' || language === 'es' || language === 'pt'
 }
 
 export function isPublicKitchenRtlLanguage(value: unknown): boolean {
@@ -145,4 +204,53 @@ export function getPublicKitchenChromeLabels(
   })
 
   return PUBLIC_KITCHEN_CHROME_LABELS[chromeLanguage]
+}
+
+export function resolvePublicKitchenLanguageOptions(
+  kitchen: unknown
+): PublicKitchenLanguageOption[] {
+  const kitchenRecord =
+    kitchen && typeof kitchen === 'object'
+      ? (kitchen as Record<string, unknown>)
+      : null
+  const settings =
+    kitchen && typeof kitchen === 'object'
+      ? (kitchen as Record<string, unknown>).language_settings
+      : null
+  const seen = new Set<PublicKitchenLanguageCode>([''])
+  const options: PublicKitchenLanguageOption[] = [{ code: '', label: 'Original' }]
+  const languageSettings =
+    settings && typeof settings === 'object' && !Array.isArray(settings)
+      ? (settings as Record<string, unknown>)
+      : {}
+  const addLanguage = (value: unknown) => {
+    const code = normalizePublicKitchenLanguage(value)
+    if (!code || seen.has(code)) return
+
+    seen.add(code)
+    options.push({
+      code,
+      label: PUBLIC_KITCHEN_LANGUAGE_LABELS[code],
+    })
+  }
+
+  addLanguage(kitchenRecord?.primary_language)
+  addLanguage(languageSettings.default_language)
+
+  for (const key of [
+    'attached_languages',
+    'certified_languages',
+    'cache_languages',
+    'cached_languages',
+    'supported_languages',
+  ]) {
+    const languages = languageSettings[key]
+    if (!Array.isArray(languages)) continue
+
+    for (const value of languages) {
+      addLanguage(value)
+    }
+  }
+
+  return options
 }

@@ -13,7 +13,7 @@
       color="warning"
       variant="soft"
       title="Missing kitchen slug"
-      description="Add a public slug in Kitchen Identity before creating menu QR codes."
+      description="Add a kitchen slug in Kitchen Identity before creating menu QR codes."
     />
 
     <div v-else class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">

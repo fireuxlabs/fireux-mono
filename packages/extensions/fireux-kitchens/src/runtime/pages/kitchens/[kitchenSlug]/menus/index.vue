@@ -104,7 +104,7 @@ import {
   isPublicKitchenCacheLanguage,
   isPublicKitchenRtlLanguage,
   normalizePublicKitchenLanguage,
-  PUBLIC_KITCHEN_LANGUAGE_OPTIONS,
+  resolvePublicKitchenLanguageOptions,
   resolvePublicKitchenChromeLanguage,
 } from '../../../../composables/fireux/app/public-kitchen-language'
 import { useKitchenCollection } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
@@ -115,8 +115,6 @@ definePageMeta({
   layout: 'public-menu',
   name: 'KitchenPublicMenusIndexPage',
 })
-
-const languageOptions = PUBLIC_KITCHEN_LANGUAGE_OPTIONS
 
 const route = useRoute()
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -151,6 +149,9 @@ const kitchen = computed<Kitchen | null>(() => {
   return found ?? null
 })
 const kitchenId = computed(() => normalizeString(kitchen.value?.id))
+const languageOptions = computed(() =>
+  resolvePublicKitchenLanguageOptions(kitchen.value)
+)
 const { firestoreFetchCollection } = useFirestoreRead()
 const resolveDb = useFirestoreResolver()
 const menusPath = computed(() =>
