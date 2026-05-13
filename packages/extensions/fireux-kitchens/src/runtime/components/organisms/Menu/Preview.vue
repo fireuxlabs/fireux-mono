@@ -1,7 +1,7 @@
 <template>
   <main
     class="public-menu-surface min-h-screen"
-    :class="publicMenuSurfaceClass"
+    :class="menuDesignSurfaceClass"
   >
     <section class="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 sm:py-10">
       <div class="public-menu-sans mb-6 flex flex-col gap-3 sm:flex-row sm:items-start">
@@ -193,14 +193,14 @@ const languageOptions = computed(() =>
   resolvePublicKitchenLanguageOptions(resolvedKitchen.value)
 )
 const selectedMenu = computed(() => unref(props.menu.selectedMenu))
-const publicMenuDesign = computed(() =>
+const menuDesign = computed(() =>
   resolvePublicMenuDesign(
-    resolvedKitchen.value?.public_menu_design,
-    selectedMenu.value?.public_menu_design
+    resolvedKitchen.value?.design,
+    selectedMenu.value?.design
   )
 )
-const publicMenuSurfaceClass = computed(
-  () => `public-menu-surface--${publicMenuDesign.value.color_mode}`
+const menuDesignSurfaceClass = computed(
+  () => `public-menu-surface--${menuDesign.value.color_mode}`
 )
 const publicSections = computed(() => unref(props.menu.publicSections) || [])
 const breadcrumbItems = computed(() => unref(props.menu.breadcrumbItems) || [])

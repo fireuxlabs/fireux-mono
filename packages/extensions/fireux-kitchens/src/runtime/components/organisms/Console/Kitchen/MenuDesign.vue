@@ -80,17 +80,17 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, ref, watch } from 'vue'
-import { useKitchenConsoleMenuDesign } from '../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMenuDesign'
+import { useKitchenConsoleDesign } from '../../../../composables/fireux/app/kitchen-console/useKitchenConsoleDesign'
 import type { PublicMenuColorMode } from '../../../../composables/fireux/app/public-menu-design'
 
 const {
   selectedKitchen,
   canWrite,
   pending,
-  publicMenuDesign,
-  savePublicMenuDesign,
+  design,
+  saveDesign,
   debug,
-} = useKitchenConsoleMenuDesign()
+} = useKitchenConsoleDesign()
 const toast = useToastify()
 const isDev = import.meta.dev
 
@@ -115,7 +115,7 @@ const colorMode = ref<PublicMenuColorMode>('light')
 const saving = ref(false)
 
 watch(
-  publicMenuDesign,
+  design,
   (next) => {
     colorMode.value = next.color_mode
   },
@@ -133,7 +133,7 @@ const canSave = computed(
     canWrite.value &&
     !saving.value &&
     !pending.value &&
-    colorMode.value !== publicMenuDesign.value.color_mode
+    colorMode.value !== design.value.color_mode
 )
 
 function selectColorMode(nextMode: PublicMenuColorMode) {
@@ -156,7 +156,7 @@ async function handleSave() {
   saving.value = true
 
   try {
-    await savePublicMenuDesign({ color_mode: colorMode.value })
+    await saveDesign({ color_mode: colorMode.value })
     toast.add({ title: 'Menu design saved', icon: 'i-heroicons-check-circle' })
   } catch (error) {
     toast.add({

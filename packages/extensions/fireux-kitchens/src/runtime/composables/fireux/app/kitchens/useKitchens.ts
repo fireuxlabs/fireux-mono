@@ -38,6 +38,9 @@ export function useKitchens() {
   const { kitchens, pending } = useKitchenCollection({
     source: sourceMode,
   })
+  const publicKitchens = computed(() =>
+    kitchens.value.filter((kitchen) => kitchen?.show === true)
+  )
   const devSourceLabel = computed(() => {
     if (sourceMode.value === 'demo') return 'local demo scenario'
     if (sourceMode.value === 'test') {
@@ -45,7 +48,7 @@ export function useKitchens() {
     }
     return 'runtime database/kitchens'
   })
-  const devKitchenCount = computed(() => kitchens.value.length)
+  const devKitchenCount = computed(() => publicKitchens.value.length)
   const devTestProbe = ref('not run')
 
   watch(routePath, (path) => {
@@ -87,7 +90,7 @@ export function useKitchens() {
     pageTitle,
     pageDescription,
     sourceMode,
-    kitchens,
+    kitchens: publicKitchens,
     pending,
     showDevNotes,
     routePath,

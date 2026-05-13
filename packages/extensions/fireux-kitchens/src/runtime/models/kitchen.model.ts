@@ -40,7 +40,7 @@ export type KitchenLanguageSettings = {
 }
 
 export type KitchenCurrencyFormat = 'dash' | 'symbol' | 'code'
-export type KitchenPublicMenuDesign = {
+export type KitchenDesign = {
   color_mode: 'light' | 'dark'
 }
 
@@ -71,6 +71,7 @@ export const KitchenModel = {
   id: '',
   ...FireuxAppScope,
   is_test_kitchen: false,
+  show: false,
   place_id: '',
   slug: '',
   name: '',
@@ -78,7 +79,7 @@ export const KitchenModel = {
   primary_language: '',
   currency_code: 'CHF',
   currency_format: 'dash' as KitchenCurrencyFormat,
-  public_menu_design: undefined as KitchenPublicMenuDesign | undefined,
+  design: undefined as KitchenDesign | undefined,
   short_name: '',
   short_address: '',
   formatted_address: '',
@@ -112,6 +113,7 @@ export type KitchenCreateInput = Omit<
   | 'app_scope_state'
   | 'app_scope_app_id'
   | 'is_test_kitchen'
+  | 'show'
   | 'slug'
   | 'name'
   | 'tagline'
@@ -126,13 +128,14 @@ export type KitchenCreateInput = Omit<
       | 'app_scope_state'
       | 'app_scope_app_id'
       | 'is_test_kitchen'
+      | 'show'
       | 'slug'
       | 'name'
       | 'tagline'
       | 'primary_language'
       | 'currency_code'
       | 'currency_format'
-      | 'public_menu_design'
+      | 'design'
       | 'short_name'
       | 'short_address'
       | 'formatted_address'
@@ -146,6 +149,7 @@ export type KitchenUpdateInput = Partial<
   Pick<
     Kitchen,
     | 'is_test_kitchen'
+    | 'show'
     | 'place_id'
     | 'slug'
     | 'name'
@@ -153,7 +157,7 @@ export type KitchenUpdateInput = Partial<
     | 'primary_language'
     | 'currency_code'
     | 'currency_format'
-    | 'public_menu_design'
+    | 'design'
     | 'short_name'
     | 'short_address'
     | 'formatted_address'

@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { doc, serverTimestamp, setDoc } from 'firebase/firestore'
+import { deleteField, doc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
@@ -9,18 +9,18 @@ import {
 } from '../public-menu-design'
 import { useKitchenConsole } from './useKitchenConsole'
 
-export function useKitchenConsoleMenuDesign() {
+export function useKitchenConsoleDesign() {
   const state = useKitchenConsole()
   const resolveDb = useFirestoreResolver(state.databaseId)
 
-  const publicMenuDesign = computed(() =>
+  const design = computed(() =>
     resolvePublicMenuDesign(
       (state.selectedKitchen.value as Record<string, unknown> | null)
-        ?.public_menu_design
+        ?.design
     )
   )
 
-  async function savePublicMenuDesign(nextDesign: PublicMenuDesign) {
+  async function saveDesign(nextDesign: PublicMenuDesign) {
     if (!state.canWrite.value) {
       throw new Error('This kitchen is read-only.')
     }
@@ -47,9 +47,10 @@ export function useKitchenConsoleMenuDesign() {
     await setDoc(
       kitchenRef,
       {
-        public_menu_design: {
+        design: {
           color_mode: colorMode,
         },
+        public_menu_design: deleteField(),
         updated: {
           at: serverTimestamp() as any,
           by: user.uid,
@@ -65,17 +66,17 @@ export function useKitchenConsoleMenuDesign() {
     rootCollection: state.rootCollection.value,
     databaseId: state.databaseId.value,
     canWrite: state.canWrite.value,
-    publicMenuDesign: publicMenuDesign.value,
+    design: design.value,
   }))
 
   return {
     ...state,
-    publicMenuDesign,
-    savePublicMenuDesign,
+    design,
+    saveDesign,
     debug,
   }
 }
 
-export type KitchenConsoleMenuDesignState = ReturnType<
-  typeof useKitchenConsoleMenuDesign
+export type KitchenConsoleDesignState = ReturnType<
+  typeof useKitchenConsoleDesign
 >

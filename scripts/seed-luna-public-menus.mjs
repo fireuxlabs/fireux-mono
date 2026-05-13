@@ -1461,12 +1461,14 @@ async function main() {
       {
         name: 'Luna Piccante',
         slug: 'luna-picante',
+        show: false,
         primary_language: 'de',
         currency_code: 'CHF',
         currency_format: 'dash',
-        public_menu_design: {
+        design: {
           color_mode: 'light',
         },
+        public_menu_design: FieldValue.delete(),
         language_settings: {
           default_language: 'de',
           supported_languages: ['de', 'en', 'it', 'fr', 'ar'],

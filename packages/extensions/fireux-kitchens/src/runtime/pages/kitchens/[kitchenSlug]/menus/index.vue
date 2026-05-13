@@ -1,7 +1,7 @@
 <template>
   <main
     class="public-menu-surface public-menu-index min-h-screen"
-    :class="publicMenuSurfaceClass"
+    :class="menuDesignSurfaceClass"
   >
     <section class="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-4 py-6 sm:px-8 sm:py-10">
       <div class="public-menu-sans mb-4 flex justify-end">
@@ -154,11 +154,11 @@ const kitchen = computed<Kitchen | null>(() => {
   return found ?? null
 })
 const kitchenId = computed(() => normalizeString(kitchen.value?.id))
-const publicMenuDesign = computed(() =>
-  resolvePublicMenuDesign((kitchen.value as any)?.public_menu_design)
+const menuDesign = computed(() =>
+  resolvePublicMenuDesign((kitchen.value as any)?.design)
 )
-const publicMenuSurfaceClass = computed(
-  () => `public-menu-surface--${publicMenuDesign.value.color_mode}`
+const menuDesignSurfaceClass = computed(
+  () => `public-menu-surface--${menuDesign.value.color_mode}`
 )
 const languageOptions = computed(() =>
   resolvePublicKitchenLanguageOptions(kitchen.value)

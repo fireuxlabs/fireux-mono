@@ -597,15 +597,17 @@ async function main() {
         name: 'La Tapberne',
         display_name: 'La Tapberne',
         slug: KITCHEN_SLUG,
+        show: true,
         type: 'Tapas-Gastro-Pub',
         description: 'Tapas-Gastro-Pub · Comida Casera',
         address: 'Herrenackerstrasse 49, 3800 Matten bei Interlaken',
         primary_language: 'de',
         currency_code: 'CHF',
         currency_format: 'dash',
-        public_menu_design: {
+        design: {
           color_mode: 'dark',
         },
+        public_menu_design: FieldValue.delete(),
         language_settings: {
           default_language: 'de',
           supported_languages: [],
