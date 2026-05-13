@@ -99,7 +99,9 @@ Important:
 Examples:
 - `kitchens/<kitchenId>`
 - `apps/<appId>/kitchens/<kitchenId>`
-- `apps/<appId>/kitchens/<kitchenId>/menus/<menuId>`
+- `kitchens/<kitchenId>/menus/<menuId>`
+- `kitchens/<kitchenId>/dishes/<dishId>`
+- `apps/<appId>/kitchens/<kitchenId>/mise/<taskId>`
 - `apps/<appId>/kitchens/<kitchenId>/orders/<orderId>`
 - `portfolios/<portfolioId>`
 - `apps/<appId>/portfolios/<portfolioId>`

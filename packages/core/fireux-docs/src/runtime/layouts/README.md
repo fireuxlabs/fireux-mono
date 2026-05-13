@@ -215,8 +215,8 @@ Current role:
 - minimal footer
 
 Used by:
-- `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[id]/menu/index.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[id]/menu/[menuId].vue`
+- `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[kitchenSlug]/menus/index.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[kitchenSlug]/menus/[menuId].vue`
 
 ## Similarity Groups
 

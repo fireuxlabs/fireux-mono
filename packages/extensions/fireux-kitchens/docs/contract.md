@@ -1,6 +1,6 @@
 # fireux-kitchens Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-04-27
+Updated: 2026-05-13
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -42,13 +42,24 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `kitchens/{kitchenId}/dishes/{dishId}`
 - App-scoped operational kitchen children:
   - `apps/{appId}/kitchens/{kitchenId}/ingredients/{ingredientId}`
-  - `apps/{appId}/kitchens/{kitchenId}/supplier-ingredients/{ingredientId}`
   - `apps/{appId}/kitchens/{kitchenId}/recipes/{recipeId}`
   - `apps/{appId}/kitchens/{kitchenId}/mise/{taskId}`
   - `apps/{appId}/kitchens/{kitchenId}/orders/{orderId}`
   - `apps/{appId}/kitchens/{kitchenId}/team/{memberId}`
+  - `apps/{appId}/kitchens/{kitchenId}/stations/{stationId}`
+  - `apps/{appId}/kitchens/{kitchenId}/suppliers/{supplierId}`
   - `apps/{appId}/kitchens/{kitchenId}/costs/{costId}`
 - Kitchen console mode mapping follows `docs/runtime-contract.md`.
+
+## 4b) Public menu publishing
+- Public menu publishing uses root public children only:
+  - `kitchens/{kitchenId}/menus/{menuId}`
+  - `kitchens/{kitchenId}/dishes/{dishId}`
+- Public menu and dish copy is translated directly from menu/dish text.
+- Public menu translation must not depend on private working `mise`.
+- Public menu code must not require kitchen operation lines to render or translate public copy.
+- Future nutrition or production support may let `Dish` reference ingredients, mise, or recipes.
+- Those references are operational/data-enrichment links, not the public menu translation source.
 
 ## 5) Routes (public vs internal; slug vs id)
 - Public slug-based pages currently include:
@@ -66,6 +77,13 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `demo`: curated demo kitchens
   - `test`: Firestore-backed test kitchens
   - `live`: my real kitchens for this app
+- Kitchen data-source canon:
+  - live kitchens are the authority target shape
+  - test kitchens are writable proof of the intended live shape
+  - demo kitchens are read-only aids and must not define canon by themselves
+  - Deano Smash / Deanos is the current rich demo aid
+  - Daniel's test kitchen is the writable proof target for the same kitchen concept
+  - future real kitchens, such as Smash City, should drive final shape decisions
 - `test` canon is one personal kitchen per signed-in user:
   - `misebox-simulation/kitchens/{uid}`
   - ensured on entry to `/console/kitchen` in `test` mode

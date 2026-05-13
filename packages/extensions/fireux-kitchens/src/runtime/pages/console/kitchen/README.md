@@ -1,7 +1,7 @@
 # Console Kitchen Pages
 
 Authority: Operational
-Updated: 2026-04-16
+Updated: 2026-05-13
 Scope: `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/*`.
 
 This folder owns the kitchen console workspace.
@@ -40,6 +40,9 @@ Kitchen-specific delta:
 - console create creates the public kitchen first when missing
 - console create seeds user-based console authority and may also link the kitchen to the Chef profile as a prerequisite/relationship side effect
 - operational records live under `apps/<appId>/kitchens/<kitchenId>/...`
+- app-scoped operation children include ingredients, mise, recipes, orders, team, stations, and suppliers
+- public menus and dishes are root public children, not private console operation records
+- public menu translation must not depend on private working `mise`
 
 Kitchen is currently the reference implementation of the shared console-entry pattern.
 It proves:

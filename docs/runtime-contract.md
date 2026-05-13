@@ -237,15 +237,49 @@ Updated: 2026-04-27
   - `supplier/test` ensures one `test-suppliers/{uid}`
 - Test target creation happens on entry to that family's console page in `test` mode, not in auth/bootstrap middleware.
 
+## Console Data Source Canon
+- `live` / real is the source-of-truth target shape.
+- `test` is the writable proving ground for the intended real shape.
+- `demo` is a read-only aid for development, demos, and UX exploration.
+- Runtime code must not bend to preserve stale demo data.
+- If demo and test disagree, prefer the test/real shape and update demo.
+- Family-entry test data should prove the same minimum target shape used by live.
+- Demo/test/live targets should expose the same minimum console target shape to `useConsoleIndex`, header, and overview:
+  - stable `id`
+  - display `name` or `title`
+  - optional `subtitle`
+  - optional `image_url`
+  - runtime `mode`
+  - source information
+  - app overlay authority when the family is app-scoped
+
 ## Demo Data Policy
 - Runtime demo data must come from domain `demo-scenarios/` registries.
+- Demo data is not canon by itself.
+- Demo scenario fields are not canon unless promoted into Tier1 or package contract docs.
+- Demo data must bend toward the desired live/test shape.
 - Dev fixture files under repo `demo/**` are optional developer tooling only.
 - Console/runtime behavior must never depend on `demo/**`.
 
 ## Collection Path Policy (Kitchen Console)
-- `live` -> `kitchens/{kitchenId}`
-- `demo` -> no Firestore collection path (scenario-backed)
-- `test` -> `misebox-simulation/kitchens/{kitchenId}`
+- Kitchen root target paths:
+  - `live` -> `kitchens/{kitchenId}`
+  - `demo` -> no Firestore collection path (scenario-backed)
+  - `test` -> `misebox-simulation/kitchens/{kitchenId}`
+- Kitchen public menu publishing uses root public children:
+  - `kitchens/{kitchenId}/menus/{menuId}`
+  - `kitchens/{kitchenId}/dishes/{dishId}`
+- Kitchen console operations use app-scoped children:
+  - `apps/{appId}/kitchens/{kitchenId}/ingredients/{ingredientId}`
+  - `apps/{appId}/kitchens/{kitchenId}/mise/{taskId}`
+  - `apps/{appId}/kitchens/{kitchenId}/recipes/{recipeId}`
+  - `apps/{appId}/kitchens/{kitchenId}/orders/{orderId}`
+  - `apps/{appId}/kitchens/{kitchenId}/team/{memberId}`
+  - `apps/{appId}/kitchens/{kitchenId}/stations/{stationId}`
+  - `apps/{appId}/kitchens/{kitchenId}/suppliers/{supplierId}`
+- Public menu and dish copy is translated directly from menu/dish text.
+- Public menu code must not depend on private working `mise` or console operation lines.
+- Future nutrition/production support may link dishes to ingredients, mise, or recipes, but those links are enrichment/operations data rather than public menu translation canon.
 
 ## Route Policy (ID, Slug, Handle)
 - Internal/admin/console routes may use `[id]`.

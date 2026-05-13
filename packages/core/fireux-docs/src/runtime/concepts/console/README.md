@@ -69,15 +69,22 @@ Do not add another business layer here.
 If a family often has one target versus many, that is cardinality, not a new console architecture.
 
 Meaning by mode:
-- `demo`: show curated demo targets
-- `test`: show test targets
 - `live`: show the current user's real targets for that family
+- `test`: show writable targets that prove the intended real shape
+- `demo`: show curated read-only targets for development, demos, and UX exploration
 
 The route answers:
 - which console family is active
 - which mode is active
 - which targets are available in that mode
 - which target should be entered next
+
+Mode source canon:
+- real/live is the source-of-truth target shape
+- test is the writable proving ground for that shape
+- demo is a read-only aid, not authority
+- demo data bends toward test/real shape; runtime code must not bend around stale demo data
+- demo/test/live targets should expose the same minimum console target shape for family entry, header, and overview
 
 ### 2b) Selected Target Overview
 
@@ -152,7 +159,8 @@ The canonical shape is:
 - `/console/X/create` = console create
 
 The canonical mode rule is:
-- `live` and `demo` are runtime modes, not separate console architectures
+- `live`, `test`, and `demo` are runtime modes, not separate console architectures
+- `live` is authority, `test` proves the writable path, and `demo` teaches without writing
 - explicit `/demo` routes may still exist as transitional or convenience seams
 - those seams should only set runtime mode and then enter the normal console routes
 
@@ -198,12 +206,16 @@ Examples:
   - Chef profile gating
   - kitchen console mode and selected kitchen id
   - demo kitchen scenario ids
+  - family-specific demo/test/live delta, such as Deano Smash as read-only demo and Daniel's test kitchen as writable proof
 - `Supplier`
   - company/operator assumptions
+  - supplier demo/test/live target and catalogue/product deltas
 - `Portfolio`
   - manager/team assumptions
+  - portfolio demo/test/live target and property/client/unit deltas
 - `Project`
   - project membership assumptions
+  - project demo/test/live target and system metadata deltas
 
 ## Short Version
 

@@ -4,7 +4,7 @@ description: Kitchen model canon for public identity, app overlay, and authority
 ---
 
 Authority: Operational
-Updated: 2026-04-19
+Updated: 2026-05-13
 
 `Kitchen` belongs in the runtime `models` spine.
 
@@ -35,16 +35,23 @@ Kitchen authority rule:
 Kitchen identity rule:
 
 - live kitchen identity is place-backed
-- current public/internal kitchen routes remain id-based
-- slug rollout remains a later contract decision rather than current canon
+- stored Kitchen identity remains `kitchens/<kitchenId>`
+- public kitchen URL identity is `kitchen.slug`
+- missing slug means the kitchen is not public-ready
 
 ## Model Boundaries
 
 `Kitchen` should stay clearly separated from:
 
 - root public child records such as menus and dishes
-- app-scoped operational children such as recipes, mise, orders, or team records
+- app-scoped operational children such as ingredients, recipes, mise, orders, team, stations, or supplier records
 - profile extensions such as `Chef`
+
+Public menu publishing rule:
+
+- menus and dishes live as root public children under `kitchens/<kitchenId>`
+- public menu and dish copy is translated directly from menu/dish text
+- public menu delivery must not depend on private working `mise`
 
 ## Short Version
 

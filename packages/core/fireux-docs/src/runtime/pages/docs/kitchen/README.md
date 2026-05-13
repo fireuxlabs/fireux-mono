@@ -37,11 +37,11 @@ The main current `Kitchen` route surfaces are:
 
 - `/kitchens`
   public family surface
-- `/kitchens/[id]`
+- `/kitchens/[slug]`
   public kitchen detail
-- `/kitchens/[id]/menu`
+- `/kitchens/[slug]/menus`
   public kitchen menu surface
-- `/kitchens/[id]/menu/[menuId]`
+- `/kitchens/[slug]/menus/[menuId]`
   public kitchen menu detail
 - `/console/kitchen`
   console family entry and target selection

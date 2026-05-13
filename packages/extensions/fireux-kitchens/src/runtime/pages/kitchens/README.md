@@ -1,7 +1,7 @@
 # Kitchens Pages
 
 Authority: Operational
-Updated: 2026-03-25
+Updated: 2026-05-13
 Scope: `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/*`.
 
 This folder owns the public `Kitchen` route tree.
@@ -35,6 +35,11 @@ Kitchen-specific delta:
 - public create is place-backed and creates or ensures `kitchens/<id>`
 - when app context exists, the shared console ensure seam may also ensure `apps/<appId>/kitchens/<id>`
 - entering live kitchen routes normally ensure a Chef profile first
+- public menu publishing reads root public children:
+  - `kitchens/<kitchenId>/menus/<menuId>`
+  - `kitchens/<kitchenId>/dishes/<dishId>`
+- public menu and dish copy is translated directly from menu/dish text
+- public menu delivery must not depend on private working `mise` or console operation lines
 
 ## Short Version
 
