@@ -1,6 +1,6 @@
 # fireux-products Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-04-26
+Updated: 2026-05-13
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -17,6 +17,14 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 4) Collections + paths
 - `products/{productId}`
 - `products/{productId}/prices/{priceId}` (optional)
+
+Composable stack canon:
+- `firestore/product/fetch` owns root Product reads.
+- `firestore/product/mutations` owns root Product writes.
+- `firestore/product/utils` owns root Product helpers, validation, and view/interface utilities.
+- `firestore/product/price/fetch` is the only allowed ProductPrice child reader exception because it reads `products/{productId}/prices/{priceId}`.
+- product create draft state belongs under `app/product-create`, not under `firestore/product`.
+- product fulfillment/onboarding UI state belongs under `app/product-onboarding`, not under `firestore/product`.
 
 SupplierProduct records should wrap canonical `Product` identity rather than replace it. Supplier-specific sale/procurement fields belong in supplier-owned records at `suppliers/{supplierId}/products/{supplierProductId}` with a `product_id` link. SupplierCatalogue records are presentation/grouping surfaces for those supplier product offers.
 

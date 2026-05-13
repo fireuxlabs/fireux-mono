@@ -73,7 +73,7 @@
 <script setup lang="ts">
 import { useRuntimeConfig } from '#imports'
 import { computed } from 'vue'
-import { useCreateProductState } from '../../../../composables/fireux/firestore/product/state/useCreateProductState'
+import { useCreateProductState } from '../../../../composables/fireux/app/product-create/useCreateProductState'
 
 const { product } = await useCreateProductState()
 

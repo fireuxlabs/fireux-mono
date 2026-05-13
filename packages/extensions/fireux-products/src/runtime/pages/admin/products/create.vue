@@ -54,8 +54,8 @@ import { useProductPermissions } from '../../../composables/useProductPermission
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
 import { useProductCreate } from '../../../composables/fireux/firestore/product/mutations/useProductCreate'
-import { useCreatePricesState } from '../../../composables/fireux/firestore/product/price/state/useCreatePricesState'
-import { useCreateProductState } from '../../../composables/fireux/firestore/product/state/useCreateProductState'
+import { useCreatePricesState } from '../../../composables/fireux/app/product-create/useCreatePricesState'
+import { useCreateProductState } from '../../../composables/fireux/app/product-create/useCreateProductState'
 import type { StripePriceInput } from '../../../models/product.model'
 
 definePageMeta({

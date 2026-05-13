@@ -51,8 +51,8 @@
 <script setup lang="ts">
 import type { RadioGroupItem, RadioGroupValue } from '@nuxt/ui';
 import { computed } from 'vue';
-import { useCreatePricesState } from '../../../../composables/fireux/firestore/product/price/state/useCreatePricesState';
-import { useCreateProductState } from '../../../../composables/fireux/firestore/product/state/useCreateProductState';
+import { useCreatePricesState } from '../../../../composables/fireux/app/product-create/useCreatePricesState';
+import { useCreateProductState } from '../../../../composables/fireux/app/product-create/useCreateProductState';
 
 const props = defineProps<{
   index: number

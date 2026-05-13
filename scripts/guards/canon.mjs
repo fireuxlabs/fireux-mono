@@ -96,6 +96,10 @@ const FIRESTORE_ENTITY_STACK_EXCEPTION_CHILDREN = new Map([
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/profiles',
     new Set(['Chef']),
   ],
+  [
+    'packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product',
+    new Set(['price']),
+  ],
 ])
 
 const KNOWN_CONSOLE_OPERATION_SLICES_BY_ENTITY = new Map([
@@ -514,6 +518,50 @@ function checkFirestoreEntityStackShape(repoRoot) {
   return { violations, warnings }
 }
 
+function checkProductsFirestoreStackShape(repoRoot) {
+  const violations = []
+  const productRoot = path.join(
+    repoRoot,
+    'packages',
+    'extensions',
+    'fireux-products',
+    'src',
+    'runtime',
+    'composables',
+    'fireux',
+    'firestore',
+    'product'
+  )
+
+  const forbiddenRootChildren = ['state', 'onboarding']
+  for (const child of forbiddenRootChildren) {
+    const childPath = path.join(productRoot, child)
+    if (!isDirectory(childPath)) continue
+    violations.push(
+      `- Product UI/runtime state belongs under composables/fireux/app, not Firestore: ${toRepoRelative(
+        repoRoot,
+        childPath
+      )}`
+    )
+  }
+
+  const priceRoot = path.join(productRoot, 'price')
+  if (isDirectory(priceRoot)) {
+    for (const child of listChildDirectories(priceRoot)) {
+      if (child === 'fetch') continue
+      const childPath = path.join(priceRoot, child)
+      violations.push(
+        `- ProductPrice Firestore child exception only allows fetch/: ${toRepoRelative(
+          repoRoot,
+          childPath
+        )}`
+      )
+    }
+  }
+
+  return violations
+}
+
 function findConsoleOperationStackRoots(repoRoot) {
   const roots = []
   const coreConsoleRoot = path.join(
@@ -621,6 +669,7 @@ export async function run(ctx) {
   const firestoreStackShape = checkFirestoreEntityStackShape(repoRoot)
   violations.push(...firestoreStackShape.violations)
   warnings.push(...firestoreStackShape.warnings)
+  violations.push(...checkProductsFirestoreStackShape(repoRoot))
   violations.push(...checkConsoleOperationStackShape(repoRoot))
   violations.push(...checkForbiddenKitchenBucketNames(repoRoot))
 

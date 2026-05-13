@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useProductFulfillmentOnboarding } from '../../../../composables/fireux/firestore/product/onboarding/useProductFulfillmentOnboarding'
+import { useProductFulfillmentOnboarding } from '../../../../composables/fireux/app/product-onboarding/useProductFulfillmentOnboarding'
 import type { FirebaseProduct } from '../../../../models/product.model'
 import ProductViewOnboardingAssets from './OnboardingAssets.vue'
 import ProductViewOnboardingContent from './OnboardingContent.vue'

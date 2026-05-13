@@ -13,6 +13,74 @@ function normalizeEmailKey(email: string) {
   return email.trim().toLowerCase().replace(/[^a-z0-9._-]/g, '_')
 }
 
+function normalizeString(value: unknown): string {
+  return String(value || '').trim()
+}
+
+function isSafeDocumentSegment(value: string) {
+  return Boolean(value && !value.includes('/') && value !== '.' && value !== '..')
+}
+
+function isEmailLike(value: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+}
+
+function validateLicenseMetadata(session: any) {
+  const metadata = session?.metadata || {}
+  const email = normalizeString(
+    session?.customer_details?.email || session?.customer_email
+  ).toLowerCase()
+  const appId = normalizeString(metadata.appId)
+  const productId = normalizeString(metadata.productId)
+  const productSlug = normalizeString(metadata.slug)
+  const flow = normalizeString(metadata.flow)
+  const checkoutSessionId = normalizeString(session?.id)
+
+  const missing: string[] = []
+  if (!email) missing.push('email')
+  if (!appId) missing.push('metadata.appId')
+  if (!productId) missing.push('metadata.productId')
+  if (!productSlug) missing.push('metadata.slug')
+  if (!checkoutSessionId) missing.push('checkoutSessionId')
+
+  const invalid: string[] = []
+  if (email && !isEmailLike(email)) invalid.push('email')
+  if (appId && !isSafeDocumentSegment(appId)) invalid.push('metadata.appId')
+  if (productId && !isSafeDocumentSegment(productId)) {
+    invalid.push('metadata.productId')
+  }
+  if (productSlug && !isSafeDocumentSegment(productSlug)) {
+    invalid.push('metadata.slug')
+  }
+  if (checkoutSessionId && !isSafeDocumentSegment(checkoutSessionId)) {
+    invalid.push('checkoutSessionId')
+  }
+  if (productId && productSlug && productId !== productSlug) {
+    invalid.push('metadata.productId/metadata.slug mismatch')
+  }
+  if (flow !== 'template_access') {
+    invalid.push('metadata.flow')
+  }
+
+  if (missing.length || invalid.length) {
+    console.warn('[fireux-products] Skipping license write for invalid Stripe metadata', {
+      event: 'checkout.session.completed',
+      missing,
+      invalid,
+      checkoutSessionId,
+    })
+    return null
+  }
+
+  return {
+    appId,
+    email,
+    checkoutSessionId,
+    productId,
+    productSlug,
+  }
+}
+
 async function writeTemplateLicense(payload: {
   appId: string
   email: string
@@ -102,24 +170,10 @@ export default defineEventHandler(async (event: H3Event) => {
 
   if (stripeEvent?.type === 'checkout.session.completed') {
     const session = stripeEvent.data?.object
-    const email =
-      String(
-        session?.customer_details?.email || session?.customer_email || ''
-      ).trim()
-    const metadata = session?.metadata || {}
-    const appId = String(metadata.appId || '').trim()
-    const productId = String(metadata.productId || '').trim()
-    const productSlug = String(metadata.slug || '').trim()
-    const checkoutSessionId = String(session?.id || '').trim()
+    const licensePayload = validateLicenseMetadata(session)
 
-    if (email && appId && productId && productSlug && checkoutSessionId) {
-      await writeTemplateLicense({
-        appId,
-        email,
-        productId,
-        productSlug,
-        checkoutSessionId,
-      })
+    if (licensePayload) {
+      await writeTemplateLicense(licensePayload)
     }
   }
 
