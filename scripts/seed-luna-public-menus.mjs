@@ -1464,6 +1464,9 @@ async function main() {
         primary_language: 'de',
         currency_code: 'CHF',
         currency_format: 'dash',
+        public_menu_design: {
+          color_mode: 'light',
+        },
         language_settings: {
           default_language: 'de',
           supported_languages: ['de', 'en', 'it', 'fr', 'ar'],

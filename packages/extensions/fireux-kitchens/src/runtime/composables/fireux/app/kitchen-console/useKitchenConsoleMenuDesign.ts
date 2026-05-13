@@ -1,102 +1,78 @@
 import { computed } from 'vue'
 import { doc, serverTimestamp, setDoc } from 'firebase/firestore'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { Menu, MenuDesign } from '../../../../models/menu.model'
 import {
-  DEFAULT_MENU_DESIGN,
-  normalizeMenuDesignHex,
-  resolveMenuDesign,
-} from '../kitchen-menu-design'
-import { useKitchenConsoleMenus } from './useKitchenConsoleMenus'
-
-const MAIN_MENU_ID = 'main'
+  normalizePublicMenuColorMode,
+  resolvePublicMenuDesign,
+  type PublicMenuDesign,
+} from '../public-menu-design'
+import { useKitchenConsole } from './useKitchenConsole'
 
 export function useKitchenConsoleMenuDesign() {
-  const state = useKitchenConsoleMenus()
-  const { appId } = useFireUXConfig()
+  const state = useKitchenConsole()
   const resolveDb = useFirestoreResolver(state.databaseId)
 
-  const mainMenu = computed<Menu | null>(
-    () =>
-      state.menus.value.find((menu) => String(menu?.id || '') === MAIN_MENU_ID) ??
-      null
+  const publicMenuDesign = computed(() =>
+    resolvePublicMenuDesign(
+      (state.selectedKitchen.value as Record<string, unknown> | null)
+        ?.public_menu_design
+    )
   )
 
-  const menuDesign = computed(() => resolveMenuDesign(mainMenu.value?.design))
-
-  async function saveMenuDesign(nextDesign: MenuDesign) {
+  async function savePublicMenuDesign(nextDesign: PublicMenuDesign) {
     if (!state.canWrite.value) {
       throw new Error('This kitchen is read-only.')
     }
 
     const kitchenId = state.kitchenId.value
-    const collectionPath = state.collectionPath.value
+    const rootCollection = state.rootCollection.value
 
     if (!kitchenId) {
       throw new Error('No kitchen selected.')
     }
 
-    if (!collectionPath) {
-      throw new Error('Menu settings path is not available.')
+    if (!rootCollection) {
+      throw new Error('Kitchen settings path is not available.')
     }
 
-    if (state.pending.value) {
-      throw new Error('Menu settings are still loading.')
+    const colorMode = normalizePublicMenuColorMode(nextDesign.color_mode)
+    if (!colorMode) {
+      throw new Error('Choose light or dark menu mode.')
     }
 
     const user = await useRequireUser()
-    const menuRef = doc(resolveDb(), collectionPath, MAIN_MENU_ID)
-    const design: Required<MenuDesign> = {
-      background_hex: normalizeMenuDesignHex(
-        nextDesign.background_hex,
-        DEFAULT_MENU_DESIGN.background_hex
-      ),
-      text_hex: normalizeMenuDesignHex(
-        nextDesign.text_hex,
-        DEFAULT_MENU_DESIGN.text_hex
-      ),
-    }
-    const stamp = serverTimestamp()
-    const payload: Partial<Menu> = {
-      kitchen_id: kitchenId,
-      design,
-      updated: {
-        at: stamp as any,
-        by: user.uid,
-      },
-    }
+    const kitchenRef = doc(resolveDb(), rootCollection, kitchenId)
 
-    if (!mainMenu.value) {
-      Object.assign(payload, {
-        name: 'Public Menu',
-        description: '',
-        active: false,
-        defaults: {
-          active: true,
-          description: '',
-          photo_url: '',
+    await setDoc(
+      kitchenRef,
+      {
+        public_menu_design: {
+          color_mode: colorMode,
         },
-        service_modes: ['dine_in'],
-        sections: [],
-        sort_order: 0,
-        created: {
-          at: stamp as any,
+        updated: {
+          at: serverTimestamp() as any,
           by: user.uid,
-          app_id: appId,
         },
-      })
-    }
-
-    await setDoc(menuRef, payload, { merge: true })
+      },
+      { merge: true }
+    )
   }
+
+  const debug = computed(() => ({
+    mode: state.selectedMode.value,
+    kitchenId: state.kitchenId.value,
+    rootCollection: state.rootCollection.value,
+    databaseId: state.databaseId.value,
+    canWrite: state.canWrite.value,
+    publicMenuDesign: publicMenuDesign.value,
+  }))
 
   return {
     ...state,
-    mainMenu,
-    menuDesign,
-    saveMenuDesign,
+    publicMenuDesign,
+    savePublicMenuDesign,
+    debug,
   }
 }
 

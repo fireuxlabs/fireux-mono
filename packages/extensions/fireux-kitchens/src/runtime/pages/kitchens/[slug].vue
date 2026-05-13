@@ -212,8 +212,10 @@
 
 <script setup lang="ts">
 import { navigateTo, useHead, useRoute } from '#imports'
+import { collection, getDocs } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceClaim'
@@ -221,9 +223,11 @@ import { computed, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue
 import { resolveKitchenChildCollectionPath } from '../../composables/fireux/console/kitchen/collections/useKitchenChildCollection'
 import {
   getPublicKitchenChromeLabels,
+  isPublicKitchenCacheLanguage,
   normalizePublicKitchenLanguage,
   resolvePublicKitchenLanguageOptions,
   resolvePublicKitchenChromeLanguage,
+  resolvePublicTranslatedText,
 } from '../../composables/fireux/app/public-kitchen-language'
 import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import type { Kitchen } from '../../models/kitchen.model'
@@ -267,6 +271,7 @@ const kitchenId = computed(() => String(kitchen.value?.id ?? '').trim())
 const loading = computed(() => Boolean(kitchenSlug.value) && kitchensPending.value)
 
 const { firestoreFetchCollection } = useFirestoreRead()
+const resolveDb = useFirestoreResolver()
 const menusRef = shallowRef(null) as ShallowRef<Ref<Menu[] | undefined> | null>
 
 watch(
@@ -282,7 +287,12 @@ watch(
 )
 
 const menus = computed(() => menusRef.value?.value ?? [])
-const menusLoading = computed(() => Boolean(kitchenId.value && !menusRef.value?.value))
+const menuTranslationCache = ref<Record<string, string>>({})
+const menuTranslationCachePending = ref(false)
+const menusLoading = computed(() =>
+  Boolean(kitchenId.value && !menusRef.value?.value) ||
+  menuTranslationCachePending.value
+)
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const sortedMenus = computed(() =>
   [...menus.value].sort(
@@ -344,26 +354,91 @@ const menusIndexLink = computed(() => {
   return `/kitchens/${encodeURIComponent(publicKitchenSlug)}/menus${publicLanguageQuery()}`
 })
 
+const menuFieldId = (menu: Record<string, any>, field: string) =>
+  `menu:${normalizeString(menu.id)}:${field}`
+const menuCacheKey = (menuId: string, fieldId: string) => `${menuId}:${fieldId}`
+let menuCacheRequestId = 0
+
+watch(
+  [kitchenId, menus, selectedLanguage],
+  async ([activeKitchenId, activeMenus, activeLanguage]) => {
+    const requestId = ++menuCacheRequestId
+    menuTranslationCache.value = {}
+    menuTranslationCachePending.value = false
+
+    if (import.meta.server || !isPublicKitchenCacheLanguage(activeLanguage) || !activeKitchenId) return
+
+    const visibleMenus = activeMenus
+      .filter((menu) => menu.active !== false)
+      .map((menu) => normalizeString(menu.id))
+      .filter(Boolean)
+
+    if (!visibleMenus.length) return
+
+    menuTranslationCachePending.value = true
+    const nextCache: Record<string, string> = {}
+    try {
+      await Promise.all(
+        visibleMenus.map(async (menuId) => {
+          const snapshot = await getDocs(
+            collection(
+              resolveDb(),
+              `kitchens/${activeKitchenId}/menus/${menuId}/translation_cache`
+            )
+          )
+
+          snapshot.forEach((doc) => {
+            const data = doc.data() as Record<string, unknown>
+            const fieldId = normalizeString(data.field_id)
+            const targetLanguage = normalizeString(data.target_language)
+            const translatedText = normalizeString(data.translated_text)
+            if (fieldId && targetLanguage === activeLanguage && translatedText) {
+              nextCache[menuCacheKey(menuId, fieldId)] = translatedText
+            }
+          })
+        })
+      )
+
+      if (requestId === menuCacheRequestId) {
+        menuTranslationCache.value = nextCache
+      }
+    } finally {
+      if (requestId === menuCacheRequestId) {
+        menuTranslationCachePending.value = false
+      }
+    }
+  },
+  { immediate: true }
+)
+
 const localizedString = (
   map: unknown,
-  defaultValue: unknown = ''
+  defaultValue: unknown = '',
+  cacheKey = ''
 ): string => {
-  if (!selectedLanguage.value) return normalizeString(defaultValue)
-
-  if (map && typeof map === 'object' && !Array.isArray(map)) {
-    const values = map as Record<string, unknown>
-    const selected = normalizeString(values[selectedLanguage.value])
-    if (selected) return selected
-  }
-
-  return normalizeString(defaultValue)
+  return resolvePublicTranslatedText({
+    defaultText: defaultValue,
+    translations: map,
+    selectedLanguage: selectedLanguage.value,
+    cacheText: isPublicKitchenCacheLanguage(selectedLanguage.value)
+      ? menuTranslationCache.value[cacheKey]
+      : '',
+  }).text
 }
 
 const localizedMenuName = (menu: Menu) =>
-  localizedString((menu as any).names, menu.name)
+  localizedString(
+    (menu as any).names,
+    menu.name,
+    menuCacheKey(normalizeString(menu.id), menuFieldId(menu as any, 'name'))
+  )
 
 const localizedMenuDescription = (menu: Menu) =>
-  localizedString((menu as any).descriptions, menu.description)
+  localizedString(
+    (menu as any).descriptions,
+    menu.description,
+    menuCacheKey(normalizeString(menu.id), menuFieldId(menu as any, 'description'))
+  )
 
 const menuSummary = (menu: Menu) => {
   const sections = Array.isArray(menu.sections) ? menu.sections.length : 0

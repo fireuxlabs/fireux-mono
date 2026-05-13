@@ -20,13 +20,7 @@ const SYSTEM_ACTOR = 'system:seed-la-tapberne-public-menus'
 const normalizeString = (value) => String(value ?? '').trim()
 
 function dish(input) {
-  return {
-    deName: input.name,
-    enName: input.name,
-    deDescription: '',
-    enDescription: '',
-    ...input,
-  }
+  return input
 }
 
 const SECTIONS = [
@@ -350,24 +344,13 @@ const SECTIONS = [
 
 const MENU = {
   id: 'main',
-  name: 'La Tapberne Menu',
-  description: 'Tapas-Gastro-Pub · Comida Casera',
-  names: {
-    de: 'La Tapberne Karte',
-    en: 'La Tapberne Menu',
-  },
-  descriptions: {
-    de: 'Tapas-Gastro-Pub · Hausgemachte Küche',
-    en: 'Tapas-Gastro-Pub · Homemade food',
-  },
+  name: 'Comida Casera',
+  description: '',
   note: 'Alle Preise in CHF inkl. MwSt.',
   sections: SECTIONS,
 }
 
-const UNCLEAR_ITEMS = [
-  'The Vegi Smashburger description is not readable in the supplied photos.',
-  'Hot Dog Vegi description is not readable in the supplied photos.',
-]
+const UNCLEAR_ITEMS = []
 
 function findMonorepoRoot(startDir) {
   let dir = startDir
@@ -437,19 +420,6 @@ function logSeed(label, payload) {
   console.log(label, JSON.stringify(payload, null, 2))
 }
 
-function defaultDescriptionFor(item) {
-  const defaultDescription = normalizeString(item.defaultDescription)
-  if (defaultDescription) return defaultDescription
-
-  const deDescription = normalizeString(item.deDescription)
-  const enDescription = normalizeString(item.enDescription)
-  if (deDescription && enDescription && deDescription !== enDescription) {
-    return `${deDescription} / ${enDescription}`
-  }
-
-  return deDescription || enDescription
-}
-
 function updatedStamp() {
   return {
     at: FieldValue.serverTimestamp(),
@@ -472,7 +442,6 @@ function buildSections(sections) {
   return sections.map((section, sectionIndex) => ({
     id: section.id,
     label: section.label,
-    labels: section.labels,
     description: '',
     sort_order: sectionIndex + 1,
     items: section.items.map((item, itemIndex) => ({
@@ -493,13 +462,7 @@ function buildMenuPayload(menu, kitchenId, snap) {
     kitchen_id: kitchenId,
     name: menu.name,
     description: menu.description,
-    names: menu.names,
-    descriptions: menu.descriptions,
     note: menu.note,
-    notes: {
-      de: menu.note,
-      en: 'All prices in CHF incl. VAT.',
-    },
     active: true,
     defaults: {
       active: true,
@@ -516,24 +479,12 @@ function buildMenuPayload(menu, kitchenId, snap) {
 }
 
 function buildDishPayload(item, kitchenId, snap) {
-  const defaultDescription = defaultDescriptionFor(item)
-  const deDescription = normalizeString(item.deDescription)
-  const enDescription = normalizeString(item.enDescription)
-
   return {
     id: item.id,
     kitchen_id: kitchenId,
     name: item.name,
     slug: item.id,
-    description: defaultDescription,
-    names: {
-      de: normalizeString(item.deName) || item.name,
-      en: normalizeString(item.enName) || item.name,
-    },
-    descriptions: {
-      ...(deDescription ? { de: deDescription } : {}),
-      ...(enDescription ? { en: enDescription } : {}),
-    },
+    description: '',
     created: createdStamp(snap),
     updated: updatedStamp(),
   }
@@ -652,13 +603,17 @@ async function main() {
         primary_language: 'de',
         currency_code: 'CHF',
         currency_format: 'dash',
+        public_menu_design: {
+          color_mode: 'dark',
+        },
         language_settings: {
           default_language: 'de',
-          supported_languages: ['de', 'en', 'es', 'fr', 'pt'],
-          attached_languages: ['de', 'en'],
-          cache_languages: ['es', 'fr', 'pt'],
+          supported_languages: [],
+          public_languages: FieldValue.delete(),
+          attached_languages: [],
+          cache_languages: [],
         },
-        supported_languages: ['de', 'en', 'es', 'fr', 'pt'],
+        supported_languages: [],
         active: true,
         updated: updatedStamp(),
         created: createdStamp(kitchenSnap),
@@ -686,8 +641,6 @@ async function main() {
     routes: [
       '/kitchens/la-tapberne/menus',
       '/kitchens/la-tapberne/menus/main',
-      '/kitchens/la-tapberne/menus/main?lang=de',
-      '/kitchens/la-tapberne/menus/main?lang=en',
     ],
     paths: {
       kitchen: kitchenRef.path,

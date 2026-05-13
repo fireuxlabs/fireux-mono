@@ -24,55 +24,25 @@
           description="Switch to a writable kitchen mode before editing these settings."
         />
 
-        <div class="grid gap-4 sm:grid-cols-2">
-          <UFormField
-            label="Background colour"
-            :error="backgroundError"
+        <div class="grid gap-3 sm:grid-cols-2">
+          <button
+            v-for="option in colorModeOptions"
+            :key="option.value"
+            type="button"
+            class="rounded-lg border p-4 text-left transition"
+            :class="modeButtonClass(option.value)"
+            :disabled="!canWrite"
+            :aria-pressed="colorMode === option.value"
+            @click="selectColorMode(option.value)"
           >
-            <div class="flex items-center gap-2">
-              <input
-                type="color"
-                class="h-10 w-12 rounded-md border border-default bg-transparent p-1 disabled:opacity-50"
-                :value="backgroundPickerValue"
-                :disabled="!canWrite"
-                aria-label="Menu background colour"
-                @input="handleBackgroundPicker"
-              >
-              <UInput
-                v-model="backgroundHex"
-                placeholder="#FFF8EF"
-                :disabled="!canWrite"
-                class="min-w-0 flex-1"
-              />
-            </div>
-          </UFormField>
-
-          <UFormField
-            label="Text colour"
-            :error="textError"
-          >
-            <div class="flex items-center gap-2">
-              <input
-                type="color"
-                class="h-10 w-12 rounded-md border border-default bg-transparent p-1 disabled:opacity-50"
-                :value="textPickerValue"
-                :disabled="!canWrite"
-                aria-label="Menu text colour"
-                @input="handleTextPicker"
-              >
-              <UInput
-                v-model="textHex"
-                placeholder="#1F1A17"
-                :disabled="!canWrite"
-                class="min-w-0 flex-1"
-              />
-            </div>
-          </UFormField>
+            <span class="text-sm font-semibold">{{ option.label }}</span>
+            <span class="mt-1 block text-sm text-muted">{{ option.description }}</span>
+          </button>
         </div>
 
         <div
-          class="rounded-lg border border-default p-4 shadow-sm"
-          :style="previewStyle"
+          class="menu-design-preview rounded-lg border p-4 shadow-sm"
+          :class="previewClass"
         >
           <p class="text-xs font-semibold uppercase tracking-[0.14em] opacity-70">
             Public menu preview
@@ -110,59 +80,49 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, ref, watch } from 'vue'
-import {
-  DEFAULT_MENU_DESIGN,
-  expandMenuDesignHex,
-  isMenuDesignHex,
-  normalizeMenuDesignHex,
-} from '../../../../composables/fireux/app/kitchen-menu-design'
 import { useKitchenConsoleMenuDesign } from '../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMenuDesign'
+import type { PublicMenuColorMode } from '../../../../composables/fireux/app/public-menu-design'
 
 const {
   selectedKitchen,
   canWrite,
   pending,
-  menuDesign,
-  saveMenuDesign,
+  publicMenuDesign,
+  savePublicMenuDesign,
   debug,
 } = useKitchenConsoleMenuDesign()
 const toast = useToastify()
 const isDev = import.meta.dev
 
-const backgroundHex = ref(DEFAULT_MENU_DESIGN.background_hex)
-const textHex = ref(DEFAULT_MENU_DESIGN.text_hex)
+const colorModeOptions: Array<{
+  value: PublicMenuColorMode
+  label: string
+  description: string
+}> = [
+  {
+    value: 'light',
+    label: 'Light menu',
+    description: 'White paper, dark text. Good for Luna Piccante.',
+  },
+  {
+    value: 'dark',
+    label: 'Dark menu',
+    description: 'Black paper, light text. Good for La Tapberne.',
+  },
+]
+
+const colorMode = ref<PublicMenuColorMode>('light')
 const saving = ref(false)
 
 watch(
-  menuDesign,
+  publicMenuDesign,
   (next) => {
-    backgroundHex.value = next.background_hex
-    textHex.value = next.text_hex
+    colorMode.value = next.color_mode
   },
   { immediate: true }
 )
 
-const backgroundError = computed(() =>
-  isMenuDesignHex(backgroundHex.value) ? undefined : 'Use #RGB or #RRGGBB.'
-)
-const textError = computed(() =>
-  isMenuDesignHex(textHex.value) ? undefined : 'Use #RGB or #RRGGBB.'
-)
-
-const backgroundPickerValue = computed(() =>
-  expandMenuDesignHex(backgroundHex.value, DEFAULT_MENU_DESIGN.background_hex)
-)
-const textPickerValue = computed(() =>
-  expandMenuDesignHex(textHex.value, DEFAULT_MENU_DESIGN.text_hex)
-)
-
-const previewStyle = computed(() => ({
-  backgroundColor: normalizeMenuDesignHex(
-    backgroundHex.value,
-    DEFAULT_MENU_DESIGN.background_hex
-  ),
-  color: normalizeMenuDesignHex(textHex.value, DEFAULT_MENU_DESIGN.text_hex),
-}))
+const previewClass = computed(() => `menu-design-preview--${colorMode.value}`)
 
 const kitchenName = computed(() =>
   String(selectedKitchen.value?.name || 'Kitchen')
@@ -173,20 +133,21 @@ const canSave = computed(
     canWrite.value &&
     !saving.value &&
     !pending.value &&
-    isMenuDesignHex(backgroundHex.value) &&
-    isMenuDesignHex(textHex.value)
+    colorMode.value !== publicMenuDesign.value.color_mode
 )
 
-function pickerValue(event: Event) {
-  return String((event.target as HTMLInputElement | null)?.value || '')
+function selectColorMode(nextMode: PublicMenuColorMode) {
+  if (!canWrite.value) return
+  colorMode.value = nextMode
 }
 
-function handleBackgroundPicker(event: Event) {
-  backgroundHex.value = pickerValue(event).toUpperCase()
-}
-
-function handleTextPicker(event: Event) {
-  textHex.value = pickerValue(event).toUpperCase()
+function modeButtonClass(mode: PublicMenuColorMode) {
+  return [
+    colorMode.value === mode
+      ? 'border-primary bg-primary/10 text-primary'
+      : 'border-default bg-default text-highlighted hover:bg-elevated',
+    !canWrite.value ? 'cursor-not-allowed opacity-60' : '',
+  ]
 }
 
 async function handleSave() {
@@ -195,16 +156,7 @@ async function handleSave() {
   saving.value = true
 
   try {
-    await saveMenuDesign({
-      background_hex: normalizeMenuDesignHex(
-        backgroundHex.value,
-        DEFAULT_MENU_DESIGN.background_hex
-      ),
-      text_hex: normalizeMenuDesignHex(
-        textHex.value,
-        DEFAULT_MENU_DESIGN.text_hex
-      ),
-    })
+    await savePublicMenuDesign({ color_mode: colorMode.value })
     toast.add({ title: 'Menu design saved', icon: 'i-heroicons-check-circle' })
   } catch (error) {
     toast.add({
@@ -218,3 +170,17 @@ async function handleSave() {
   }
 }
 </script>
+
+<style scoped>
+.menu-design-preview--light {
+  background: #fffaf2;
+  border-color: rgba(34, 25, 20, 0.16);
+  color: #211915;
+}
+
+.menu-design-preview--dark {
+  background: #090806;
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #fff7e8;
+}
+</style>

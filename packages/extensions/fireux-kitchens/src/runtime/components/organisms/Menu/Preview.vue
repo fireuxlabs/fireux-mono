@@ -1,25 +1,28 @@
 <template>
-  <main class="luna-menu-surface min-h-screen text-highlighted">
+  <main
+    class="public-menu-surface min-h-screen"
+    :class="publicMenuSurfaceClass"
+  >
     <section class="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 sm:py-10">
-      <div class="luna-menu-sans mb-6 flex flex-col gap-3 sm:flex-row sm:items-start">
+      <div class="public-menu-sans mb-6 flex flex-col gap-3 sm:flex-row sm:items-start">
         <UBreadcrumb
           v-if="breadcrumbItems.length"
           :items="breadcrumbItems"
           class="min-w-0 max-w-full flex-1 pt-1"
           :ui="{
-            link: 'text-xs font-semibold uppercase tracking-[0.14em]',
+            link: 'public-menu-muted text-xs font-semibold uppercase tracking-[0.14em]',
             linkLabel: 'truncate',
-            separator: 'text-muted',
+            separator: 'public-menu-muted',
           }"
         >
           <template #separator>
-            <span class="mx-1.5 text-xs text-muted">/</span>
+            <span class="public-menu-muted mx-1.5 text-xs">/</span>
           </template>
         </UBreadcrumb>
 
         <div v-else />
 
-        <div class="ml-auto inline-flex w-fit shrink-0 items-center gap-1 rounded-lg border border-default bg-default/80 p-1">
+        <div class="public-menu-toolbar ml-auto inline-flex w-fit shrink-0 items-center gap-1 rounded-lg border p-1">
           <UButton
             v-for="option in languageOptions"
             :key="option.code || 'original'"
@@ -35,7 +38,7 @@
 
       <div
         v-if="loading"
-        class="luna-menu-sans py-12 text-center text-sm text-muted"
+        class="public-menu-sans public-menu-muted py-12 text-center text-sm"
       >
         {{ chromeLabels.loadingMenu }}
       </div>
@@ -60,28 +63,28 @@
 
       <div
         v-else
-        class="luna-menu-content"
+        class="public-menu-content"
         :dir="menuContentDirection"
         :lang="menuContentLanguage"
       >
         <header class="mb-10 text-center">
           <p
             v-if="kitchenTitle"
-            class="luna-menu-sans text-xs font-semibold uppercase tracking-[0.22em] text-muted"
+            class="public-menu-sans public-menu-muted text-xs font-semibold uppercase tracking-[0.22em]"
           >
             {{ kitchenTitle }}
           </p>
-          <h1 class="mt-2 text-4xl font-bold uppercase tracking-[0.14em] text-primary sm:text-5xl">
+          <h1 class="public-menu-accent mt-2 text-4xl font-bold uppercase tracking-[0.14em] sm:text-5xl">
             {{ menuTitle }}
           </h1>
-          <div class="mx-auto mt-5 h-px w-28 bg-primary" />
+          <div class="public-menu-accent-bg mx-auto mt-5 h-px w-28" />
         </header>
 
-        <div class="luna-menu-sections">
+        <div class="public-menu-sections">
           <section
             v-for="section in publicSections"
             :key="section.id"
-            class="luna-menu-section"
+            class="public-menu-section"
           >
             <div
               class="mb-4 border-b-2 pb-2"
@@ -90,7 +93,7 @@
               <h2 class="text-[1.28rem] font-bold uppercase tracking-[0.13em]">
                 {{ section.label }}
               </h2>
-              <p v-if="section.description" class="luna-menu-sans mt-1 text-sm font-medium text-toned">
+              <p v-if="section.description" class="public-menu-sans public-menu-toned mt-1 text-sm font-medium">
                 {{ section.description }}
               </p>
             </div>
@@ -98,20 +101,20 @@
             <article
               v-for="entry in section.entries"
               :key="entry.id || entry.dishId"
-              class="border-b border-default py-3 last:border-0"
+              class="public-menu-entry border-b py-3 last:border-0"
             >
               <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                <h3 class="min-w-48 flex-1 text-[1.03rem] font-bold uppercase leading-snug tracking-[0.055em] text-highlighted">
+                <h3 class="public-menu-text min-w-48 flex-1 text-[1.03rem] font-bold uppercase leading-snug tracking-[0.055em]">
                   {{ entry.name }}
                 </h3>
                 <div
                   v-if="entry.priceLabel"
-                  class="luna-price-label ms-auto max-w-full text-right text-[1rem] font-bold tabular-nums leading-snug text-highlighted"
+                  class="public-menu-price-label public-menu-text ms-auto max-w-full text-right text-[1rem] font-bold tabular-nums leading-snug"
                 >
                   {{ entry.priceLabel }}
                 </div>
               </div>
-              <p v-if="entry.description" class="mt-1 text-[1rem] font-medium leading-relaxed text-toned">
+              <p v-if="entry.description" class="public-menu-toned mt-1 text-[1rem] font-medium leading-relaxed">
                 {{ entry.description }}
               </p>
             </article>
@@ -140,7 +143,9 @@ import {
   isPublicKitchenRtlLanguage,
   resolvePublicKitchenLanguageOptions,
   resolvePublicKitchenChromeLanguage,
+  resolvePublicTranslatedText,
 } from '../../../composables/fireux/app/public-kitchen-language'
+import { resolvePublicMenuDesign } from '../../../composables/fireux/app/public-menu-design'
 
 type MaybeRef<T> = T | Ref<T>
 
@@ -188,6 +193,15 @@ const languageOptions = computed(() =>
   resolvePublicKitchenLanguageOptions(resolvedKitchen.value)
 )
 const selectedMenu = computed(() => unref(props.menu.selectedMenu))
+const publicMenuDesign = computed(() =>
+  resolvePublicMenuDesign(
+    resolvedKitchen.value?.public_menu_design,
+    selectedMenu.value?.public_menu_design
+  )
+)
+const publicMenuSurfaceClass = computed(
+  () => `public-menu-surface--${publicMenuDesign.value.color_mode}`
+)
 const publicSections = computed(() => unref(props.menu.publicSections) || [])
 const breadcrumbItems = computed(() => unref(props.menu.breadcrumbItems) || [])
 const selectedLanguage = computed(() => unref(props.menu.selectedLanguage) || '')
@@ -227,12 +241,11 @@ const textForLanguage = (
   translations: unknown,
   language: string
 ) => {
-  const fallback = String(defaultText ?? '').trim()
-  if (!language || !translations || typeof translations !== 'object' || Array.isArray(translations)) {
-    return fallback
-  }
-
-  return String((translations as Record<string, unknown>)[language] ?? '').trim() || fallback
+  return resolvePublicTranslatedText({
+    defaultText,
+    translations,
+    selectedLanguage: language,
+  }).text
 }
 const menuTitle = computed(() =>
   menuTitleOverride.value ||
@@ -252,51 +265,107 @@ const normalizeToneText = (value: unknown) =>
 const sectionAccentClass = (section: MenuPreviewSection) => {
   const key = normalizeToneText(`${section.id} ${section.label}`)
   if (key) {
-    return 'border-primary text-primary'
+    return 'public-menu-section-heading'
   }
 
-  return 'border-primary text-primary'
+  return 'public-menu-section-heading'
 }
 </script>
 
 <style scoped>
-.luna-menu-surface {
+.public-menu-surface {
+  --public-menu-bg: #fffaf2;
+  --public-menu-panel: rgba(255, 255, 255, 0.82);
+  --public-menu-text: #211915;
+  --public-menu-toned: #4f4037;
+  --public-menu-muted: #756a60;
+  --public-menu-border: rgba(34, 25, 20, 0.16);
+  --public-menu-accent: var(--ui-primary);
+  background: var(--public-menu-bg);
+  color: var(--public-menu-text);
   font-family: Georgia, 'Times New Roman', serif;
 }
 
-.luna-menu-content {
+.public-menu-surface--dark {
+  --public-menu-bg: #090806;
+  --public-menu-panel: rgba(255, 255, 255, 0.06);
+  --public-menu-text: #fff7e8;
+  --public-menu-toned: #e2d2b8;
+  --public-menu-muted: #bba98b;
+  --public-menu-border: rgba(255, 255, 255, 0.18);
+}
+
+.public-menu-content {
   padding: 0;
 }
 
-.luna-price-label {
+.public-menu-toolbar {
+  background: var(--public-menu-panel);
+  border-color: var(--public-menu-border);
+}
+
+.public-menu-price-label {
   direction: ltr;
   margin-inline-start: auto;
   overflow-wrap: anywhere;
   unicode-bidi: plaintext;
 }
 
-.luna-menu-sections {
+.public-menu-sections {
   column-count: 1;
   column-gap: 2.5rem;
 }
 
-.luna-menu-section {
+.public-menu-section {
   break-inside: avoid;
   display: inline-block;
   margin: 0 0 2.25rem;
   width: 100%;
 }
 
-.luna-menu-sans {
+.public-menu-section-heading {
+  border-color: var(--public-menu-accent);
+  color: var(--public-menu-accent);
+}
+
+.public-menu-entry {
+  border-color: var(--public-menu-border);
+}
+
+.public-menu-text {
+  color: var(--public-menu-text);
+}
+
+.public-menu-toned {
+  color: var(--public-menu-toned);
+}
+
+.public-menu-muted {
+  color: var(--public-menu-muted);
+}
+
+.public-menu-surface :deep(.public-menu-muted) {
+  color: var(--public-menu-muted);
+}
+
+.public-menu-accent {
+  color: var(--public-menu-accent);
+}
+
+.public-menu-accent-bg {
+  background: var(--public-menu-accent);
+}
+
+.public-menu-sans {
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 @media (min-width: 860px) {
-  .luna-menu-content {
+  .public-menu-content {
     padding: 2rem 3rem;
   }
 
-  .luna-menu-sections {
+  .public-menu-sections {
     column-count: 2;
   }
 }

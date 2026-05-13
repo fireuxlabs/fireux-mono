@@ -1,8 +1,11 @@
 <template>
-  <main class="luna-menu-index min-h-screen text-highlighted">
+  <main
+    class="public-menu-surface public-menu-index min-h-screen"
+    :class="publicMenuSurfaceClass"
+  >
     <section class="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-4 py-6 sm:px-8 sm:py-10">
-      <div class="luna-menu-sans mb-4 flex justify-end">
-        <div class="inline-flex items-center gap-1 rounded-lg border border-default bg-default/80 p-1">
+      <div class="public-menu-sans mb-4 flex justify-end">
+        <div class="public-menu-toolbar inline-flex items-center gap-1 rounded-lg border p-1">
           <UButton
             v-for="option in languageOptions"
             :key="option.code || 'default'"
@@ -18,7 +21,7 @@
 
       <div
         v-if="pending"
-        class="luna-menu-sans py-12 text-center text-sm text-muted"
+        class="public-menu-sans public-menu-muted py-12 text-center text-sm"
       >
         {{ chromeLabels.loadingMenus }}
       </div>
@@ -30,28 +33,28 @@
         <h2 class="text-xl font-semibold">
           {{ chromeLabels.noMenusAvailable }}
         </h2>
-        <p class="luna-menu-sans mt-2 text-sm text-muted">
+        <p class="public-menu-sans public-menu-muted mt-2 text-sm">
           {{ chromeLabels.noPublicMenus }}
         </p>
       </div>
 
       <div
         v-else
-        class="luna-menu-content"
+        class="public-menu-content"
         :dir="menuContentDirection"
         :lang="menuContentLanguage"
       >
         <header class="mb-10 text-center">
           <p
             v-if="kitchenName"
-            class="luna-menu-sans text-xs font-semibold uppercase tracking-[0.22em] text-muted"
+            class="public-menu-sans public-menu-muted text-xs font-semibold uppercase tracking-[0.22em]"
           >
             {{ kitchenName }}
           </p>
-          <h1 class="mt-2 text-4xl font-bold uppercase tracking-[0.14em] text-primary sm:text-5xl">
+          <h1 class="public-menu-accent mt-2 text-4xl font-bold uppercase tracking-[0.14em] sm:text-5xl">
             {{ chromeLabels.chooseMenu }}
           </h1>
-          <div class="mx-auto mt-5 h-px w-28 bg-primary" />
+          <div class="public-menu-accent-bg mx-auto mt-5 h-px w-28" />
         </header>
 
         <div class="grid gap-4 sm:grid-cols-2">
@@ -59,26 +62,26 @@
             v-for="menu in menuCards"
             :key="menu.id"
             :to="menu.to"
-            class="group block border border-l-4 border-default bg-default p-5 text-highlighted transition hover:-translate-y-0.5 hover:bg-elevated hover:shadow-lg"
+            class="public-menu-card group block border border-l-4 p-5 transition hover:-translate-y-0.5 hover:shadow-lg"
             :class="menuAccentClass(menu.id)"
           >
             <div class="flex min-h-32 flex-col justify-between gap-6">
               <div class="space-y-2">
-                <h2 class="text-2xl font-bold uppercase tracking-[0.09em] text-highlighted">
+                <h2 class="public-menu-text text-2xl font-bold uppercase tracking-[0.09em]">
                   {{ menu.name }}
                 </h2>
                 <p
                   v-if="menu.description"
-                  class="text-[1rem] font-medium leading-6 text-toned"
+                  class="public-menu-toned text-[1rem] font-medium leading-6"
                 >
                   {{ menu.description }}
                 </p>
               </div>
 
-              <div class="luna-menu-sans flex items-center justify-between text-xs font-semibold uppercase tracking-[0.16em] text-muted">
+              <div class="public-menu-sans public-menu-muted flex items-center justify-between text-xs font-semibold uppercase tracking-[0.16em]">
                 <span>{{ chromeLabels.openMenu }}</span>
                 <span
-                  class="grid size-8 shrink-0 place-items-center rounded-full border border-default text-base text-highlighted transition group-hover:bg-elevated"
+                  class="public-menu-arrow grid size-8 shrink-0 place-items-center rounded-full border text-base transition"
                   aria-hidden="true"
                 >
                   {{ isRtl ? '←' : '→' }}
@@ -106,7 +109,9 @@ import {
   normalizePublicKitchenLanguage,
   resolvePublicKitchenLanguageOptions,
   resolvePublicKitchenChromeLanguage,
+  resolvePublicTranslatedText,
 } from '../../../../composables/fireux/app/public-kitchen-language'
+import { resolvePublicMenuDesign } from '../../../../composables/fireux/app/public-menu-design'
 import { useKitchenCollection } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import type { Kitchen } from '../../../../models/kitchen.model'
 import type { Menu } from '../../../../models/menu.model'
@@ -149,6 +154,12 @@ const kitchen = computed<Kitchen | null>(() => {
   return found ?? null
 })
 const kitchenId = computed(() => normalizeString(kitchen.value?.id))
+const publicMenuDesign = computed(() =>
+  resolvePublicMenuDesign((kitchen.value as any)?.public_menu_design)
+)
+const publicMenuSurfaceClass = computed(
+  () => `public-menu-surface--${publicMenuDesign.value.color_mode}`
+)
 const languageOptions = computed(() =>
   resolvePublicKitchenLanguageOptions(kitchen.value)
 )
@@ -163,10 +174,13 @@ const menusPath = computed(() =>
 const menusRef = firestoreFetchCollection<Menu>(menusPath)
 const menus = computed(() => menusRef.value ?? [])
 const menuTranslationCache = ref<Record<string, string>>({})
+const menuTranslationCachePending = ref(false)
 const pending = computed(
   () =>
     Boolean(routeKitchenSlug.value) &&
-    (kitchensPending.value || Boolean(kitchenId.value && menusRef.value === undefined))
+    (kitchensPending.value ||
+      Boolean(kitchenId.value && menusRef.value === undefined) ||
+      menuTranslationCachePending.value)
 )
 
 const kitchenName = computed(() =>
@@ -193,16 +207,14 @@ const textForLanguage = (
   language: string,
   cacheKey = ''
 ) => {
-  const fallback = normalizeString(defaultText)
-  if (isPublicKitchenCacheLanguage(language)) {
-    return menuTranslationCache.value[cacheKey] || fallback
-  }
-
-  if (!language || !translations || typeof translations !== 'object' || Array.isArray(translations)) {
-    return fallback
-  }
-
-  return normalizeString((translations as Record<string, unknown>)[language]) || fallback
+  return resolvePublicTranslatedText({
+    defaultText,
+    translations,
+    selectedLanguage: language,
+    cacheText: isPublicKitchenCacheLanguage(language)
+      ? menuTranslationCache.value[cacheKey]
+      : '',
+  }).text
 }
 const languageQuery = (language = selectedLanguage.value) =>
   language ? { ...passThroughQuery.value, lang: language } : passThroughQuery.value
@@ -222,6 +234,7 @@ watch(
   async ([activeKitchenId, activeMenus, activeLanguage]) => {
     const requestId = ++menuCacheRequestId
     menuTranslationCache.value = {}
+    menuTranslationCachePending.value = false
 
     if (import.meta.server || !isPublicKitchenCacheLanguage(activeLanguage) || !activeKitchenId) return
 
@@ -232,30 +245,37 @@ watch(
 
     if (!visibleMenus.length) return
 
+    menuTranslationCachePending.value = true
     const nextCache: Record<string, string> = {}
-    await Promise.all(
-      visibleMenus.map(async (menuId) => {
-        const snapshot = await getDocs(
-          collection(
-            resolveDb(),
-            `kitchens/${activeKitchenId}/menus/${menuId}/translation_cache`
+    try {
+      await Promise.all(
+        visibleMenus.map(async (menuId) => {
+          const snapshot = await getDocs(
+            collection(
+              resolveDb(),
+              `kitchens/${activeKitchenId}/menus/${menuId}/translation_cache`
+            )
           )
-        )
 
-        snapshot.forEach((doc) => {
-          const data = doc.data() as Record<string, unknown>
-          const fieldId = normalizeString(data.field_id)
-          const targetLanguage = normalizeString(data.target_language)
-          const translatedText = normalizeString(data.translated_text)
-          if (fieldId && targetLanguage === activeLanguage && translatedText) {
-            nextCache[menuCacheKey(menuId, fieldId)] = translatedText
-          }
+          snapshot.forEach((doc) => {
+            const data = doc.data() as Record<string, unknown>
+            const fieldId = normalizeString(data.field_id)
+            const targetLanguage = normalizeString(data.target_language)
+            const translatedText = normalizeString(data.translated_text)
+            if (fieldId && targetLanguage === activeLanguage && translatedText) {
+              nextCache[menuCacheKey(menuId, fieldId)] = translatedText
+            }
+          })
         })
-      })
-    )
+      )
 
-    if (requestId === menuCacheRequestId) {
-      menuTranslationCache.value = nextCache
+      if (requestId === menuCacheRequestId) {
+        menuTranslationCache.value = nextCache
+      }
+    } finally {
+      if (requestId === menuCacheRequestId) {
+        menuTranslationCachePending.value = false
+      }
     }
   },
   { immediate: true }
@@ -289,10 +309,7 @@ const menuCards = computed(() =>
     })
     .filter((menu) => Boolean(menu.id && menu.name))
 )
-const menuAccentClass = (menuId: string) =>
-  menuId === 'pizza'
-    ? 'border-l-primary'
-    : 'border-l-default'
+const menuAccentClass = () => 'public-menu-card--accent'
 const setLanguage = async (language: string) => {
   await navigateTo({
     path: route.path,
@@ -302,20 +319,76 @@ const setLanguage = async (language: string) => {
 </script>
 
 <style scoped>
-.luna-menu-index {
+.public-menu-surface {
+  --public-menu-bg: #fffaf2;
+  --public-menu-panel: rgba(255, 255, 255, 0.82);
+  --public-menu-panel-hover: rgba(255, 255, 255, 0.96);
+  --public-menu-text: #211915;
+  --public-menu-toned: #4f4037;
+  --public-menu-muted: #756a60;
+  --public-menu-border: rgba(34, 25, 20, 0.16);
+  --public-menu-accent: var(--ui-primary);
+  background: var(--public-menu-bg);
+  color: var(--public-menu-text);
   font-family: Georgia, 'Times New Roman', serif;
 }
 
-.luna-menu-content {
+.public-menu-surface--dark {
+  --public-menu-bg: #090806;
+  --public-menu-panel: rgba(255, 255, 255, 0.06);
+  --public-menu-panel-hover: rgba(255, 255, 255, 0.1);
+  --public-menu-text: #fff7e8;
+  --public-menu-toned: #e2d2b8;
+  --public-menu-muted: #bba98b;
+  --public-menu-border: rgba(255, 255, 255, 0.18);
+}
+
+.public-menu-content {
   padding: 0;
 }
 
-.luna-menu-sans {
+.public-menu-sans {
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
+.public-menu-toolbar,
+.public-menu-card,
+.public-menu-arrow {
+  background: var(--public-menu-panel);
+  border-color: var(--public-menu-border);
+}
+
+.public-menu-card:hover,
+.public-menu-arrow {
+  background: var(--public-menu-panel-hover);
+}
+
+.public-menu-card--accent {
+  border-left-color: var(--public-menu-accent);
+}
+
+.public-menu-text {
+  color: var(--public-menu-text);
+}
+
+.public-menu-toned {
+  color: var(--public-menu-toned);
+}
+
+.public-menu-muted {
+  color: var(--public-menu-muted);
+}
+
+.public-menu-accent {
+  color: var(--public-menu-accent);
+}
+
+.public-menu-accent-bg {
+  background: var(--public-menu-accent);
+}
+
 @media (min-width: 860px) {
-  .luna-menu-content {
+  .public-menu-content {
     padding: 2rem 3rem;
   }
 }

@@ -12,6 +12,7 @@ import {
   isPublicKitchenCacheLanguage,
   normalizePublicKitchenLanguage,
   resolvePublicKitchenChromeLanguage,
+  resolvePublicTranslatedText,
 } from '../../../../composables/fireux/app/public-kitchen-language'
 import { useKitchenCollection } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import type { Dish } from '../../../../models/dish.model'
@@ -119,7 +120,13 @@ const loading = computed(
   () =>
     Boolean(routeKitchenSlug.value) &&
     (kitchensPending.value ||
-      Boolean(kitchenId.value && (menusRef.value === undefined || dishesRef.value === undefined)))
+      Boolean(
+        kitchenId.value &&
+          (menusRef.value === undefined ||
+            dishesRef.value === undefined ||
+            (isPublicKitchenCacheLanguage(selectedLanguage.value) &&
+              translationCacheRef.value === undefined))
+      ))
 )
 const currencyCode = computed(() =>
   normalizeString((resolvedKitchen.value as any)?.currency_code).toUpperCase() || 'CHF'
@@ -135,16 +142,14 @@ const textForLanguage = (
   language: string,
   cacheFieldId = ''
 ) => {
-  const fallback = normalizeString(defaultText)
-  if (isPublicKitchenCacheLanguage(language)) {
-    return translationCacheByField.value.get(cacheFieldId) || fallback
-  }
-
-  if (!language || !translations || typeof translations !== 'object' || Array.isArray(translations)) {
-    return fallback
-  }
-
-  return normalizeString((translations as Record<string, unknown>)[language]) || fallback
+  return resolvePublicTranslatedText({
+    defaultText,
+    translations,
+    selectedLanguage: language,
+    cacheText: isPublicKitchenCacheLanguage(language)
+      ? translationCacheByField.value.get(cacheFieldId)
+      : '',
+  }).text
 }
 const formatPrice = (value: unknown) => {
   const amount = Number(value ?? 0)
