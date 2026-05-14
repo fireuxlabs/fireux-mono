@@ -1,7 +1,7 @@
 ---
 title: New App Creation
 description: Checklist and improvement notes for adding a first-class FireUX app.
-updated: 2026-05-12
+updated: 2026-05-14
 ---
 
 # New App Creation
@@ -104,8 +104,9 @@ Do not hand-edit generated VS Code task/launch files unless the generator itself
 
 FireUX apps have two levels of registration:
 
-- `(default)` database: bootstrap registry and public mirror records.
-- Named operational database: canonical app and domain records.
+- `(default)` database: bootstrap registry, control records, and public mirror records.
+- Ecosystem database such as `fireux`: ecosystem runtime, app catalog, and control-plane records.
+- Named standalone app database: canonical product/domain records for that app.
 
 For a FireUX-owned app, ensure:
 
@@ -122,7 +123,54 @@ scripts/_lib/app-registry.mjs databaseId: '<appId>'
 Firebase project has Firestore database '<appId>'
 ```
 
+Do not store day-to-day standalone app domain records in `(default)`.
 Do not store day-to-day standalone app domain records in the shared `fireux` database once the app has its own database. Use the shared `fireux` database for the FireUX app catalog; use the app database for product data.
+
+## Firebase Web App Config
+
+Every deployable app must be checked against its Firebase console web app snippet.
+
+Shared ecosystem/project-level values usually live in ecosystem config:
+
+```text
+authDomain
+projectId
+storageBucket
+messagingSenderId
+default databaseId
+ecosystem default apiKey
+```
+
+App-level values live in app env/deploy configuration:
+
+```text
+APP_DOMAIN
+NUXT_FIREBASE_APP_ID
+NUXT_FIREBASE_MEASUREMENT_ID
+NUXT_FIREBASE_API_KEY
+```
+
+`NUXT_FIREBASE_API_KEY` is override-capable because Firebase web apps in one Firebase project can use different API keys.
+Do not assume all apps in an ecosystem use the same API key.
+
+Runtime resolution for `apiKey` is:
+
+```text
+NUXT_FIREBASE_API_KEY
+then ecosystem Firebase apiKey
+```
+
+Use the ecosystem default only when that app's Firebase snippet genuinely uses the ecosystem key.
+Otherwise set `NUXT_FIREBASE_API_KEY` for the app locally and in the deployed hosting/function environment.
+
+Known FireUX-project example:
+
+```text
+fireux-app / tenant use one Firebase API key.
+sproochli / buenohost use a different Firebase API key.
+```
+
+This is expected and canonical.
 
 Run the app catalog migration after adding registry data:
 
@@ -137,19 +185,19 @@ fireux/apps/<appId>
 (default)/ecosystem/fireux-fireux.apps
 ```
 
-If the app has static proof data, add a seed script before pretending the console is real. The seed script should say where it migrates from and where it writes. For example, Sproochli's first BNB proof migrates from:
+If the app has static proof data, add a seed script before pretending the console is real. The seed script should say where it migrates from and where it writes. For example, BuenoHost's first BNB proof migrates from:
 
 ```text
-projects/fireux/sproochli/app/content/bnbGuides.ts
+projects/fireux/buenohost/app/content/bnbGuides.ts
 ```
 
 into:
 
 ```text
-sproochli/sproochli_sites/{siteId}
-sproochli/sproochli_sites/{siteId}/pages/{pageId}
-sproochli/sproochli_sites/{siteId}/pages/{pageId}/sections/{sectionId}
-sproochli/sproochli_sites/{siteId}/maintainers/{maintainerId}
+buenohost/buenohost_sites/{siteId}
+buenohost/buenohost_sites/{siteId}/pages/{pageId}
+buenohost/buenohost_sites/{siteId}/pages/{pageId}/sections/{sectionId}
+buenohost/buenohost_sites/{siteId}/maintainers/{maintainerId}
 ```
 
 ## App Media And Storage
@@ -251,7 +299,7 @@ git diff --check
 If useful, run a local server and verify the public HTML/API:
 
 ```sh
-CI=1 APP_DOMAIN=localhost NUXT_FIREBASE_APP_ID=ci pnpm --filter ./projects/<ecosystem>/<app> exec nuxi dev --port <port> --host 127.0.0.1
+CI=1 APP_DOMAIN=localhost NUXT_FIREBASE_API_KEY=ci NUXT_FIREBASE_APP_ID=ci pnpm --filter ./projects/<ecosystem>/<app> exec nuxi dev --port <port> --host 127.0.0.1
 curl -sS -I 'http://127.0.0.1:<port>/'
 ```
 
@@ -272,6 +320,7 @@ These are improvement notes from adding `projects/fireux/sproochli`:
 9. Standalone app creation must create the named Firestore database or the runtime config will correctly point at a database that does not exist yet.
 10. App media scripts must stay aligned with the nested `media.*` canon and include the `cover` object, not only logo/wordmarks.
 11. Static proof content should get a seed script immediately so the console and database have a visible migration source.
+12. Firebase web app API keys are not guaranteed to be ecosystem-wide. New app creation must record `NUXT_FIREBASE_API_KEY` when the Firebase console snippet differs from the ecosystem default.
 
 ## Recommended Tooling Improvements
 

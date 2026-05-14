@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-04-27
+Updated: 2026-05-14
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -70,6 +70,27 @@ Updated: 2026-04-27
 - Real-mode target visibility should come from explicit overlay governance and only use root hints where the family contract allows it.
 - App branding is app-local for every app role.
 - The canonical brand asset path is `/public/img/app/*` for global, tenant, and standalone apps.
+
+## Firebase Web App Config Canon
+- Firebase project values are ecosystem-level unless the Firebase console proves otherwise:
+  - `authDomain`
+  - `projectId`
+  - `storageBucket`
+  - `messagingSenderId`
+  - default Firestore `databaseId`
+- Firebase web app identity is app-level:
+  - `NUXT_FIREBASE_APP_ID`
+  - `NUXT_FIREBASE_MEASUREMENT_ID`
+  - `APP_DOMAIN`
+  - app Firestore `databaseId`
+- Firebase web app `apiKey` is override-capable at app level.
+- Do not assume one API key per Firebase project. Firebase web apps in the same project can use different API keys.
+- Runtime config must resolve `apiKey` with app override first, then ecosystem default:
+  - app env `NUXT_FIREBASE_API_KEY`
+  - ecosystem Firebase default `apiKey`
+- Ecosystem defaults are fallbacks for apps in that ecosystem, not proof that every app uses that key.
+- New app setup must capture the Firebase console web app snippet and record app-specific values in app env/deploy configuration.
+- Production deploy configuration must be checked app by app across every ecosystem; local `.env` files are not the deployed source of truth.
 
 ## Create vs Ensure Canon
 - `createX` means intentional creation of a real target.

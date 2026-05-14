@@ -1,6 +1,6 @@
 # Runtime Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-04-27
+Updated: 2026-05-14
 ## Purpose
 - Define runtime selection, mode, collection path, and route policy across FireUX domains.
 
@@ -9,10 +9,34 @@ Updated: 2026-04-27
 - FireUX may use multiple Firestore databases inside one Firebase project.
 - Database meaning must be explicit and fixed by canon, not inferred from fallback behavior.
 - Current FireUX project split:
-  - `(default)` = project control data and standalone-app data
-  - `fireux` = FireUX ecosystem runtime data
+  - `(default)` = bootstrap, control, mirror, and cross-app registry data
+  - `fireux` = FireUX ecosystem runtime, catalog, and control-plane data
+  - named standalone app databases such as `sproochli` and `buenohost` = standalone product data
 - Runtime database selection must come from ecosystem/runtime config, not per-entity overrides.
 - Entity fetch/write patterns stay the same; only the resolved Firestore database changes.
+- Do not store day-to-day standalone app product data in `(default)`.
+- Do not store standalone app product data in `fireux` once the app has its own named database.
+
+## Firebase Runtime Config Contract
+- Ecosystem Firebase config owns shared Firebase project values:
+  - `authDomain`
+  - `projectId`
+  - `storageBucket`
+  - `messagingSenderId`
+  - ecosystem default `apiKey`
+  - ecosystem default Firestore `databaseId`
+- App runtime config owns app web identity:
+  - `APP_DOMAIN`
+  - `NUXT_FIREBASE_APP_ID`
+  - `NUXT_FIREBASE_MEASUREMENT_ID`
+  - app `databaseId`
+- App runtime config may also own `NUXT_FIREBASE_API_KEY`.
+- `NUXT_FIREBASE_API_KEY` exists because Firebase web apps in the same Firebase project may use different API keys.
+- Firebase app config resolution order for `apiKey` is:
+  - app-level `NUXT_FIREBASE_API_KEY`
+  - ecosystem-level Firebase `apiKey`
+- Missing app-specific `apiKey` is allowed only when the app intentionally uses the ecosystem default key.
+- New or migrated apps must be audited against the Firebase console web app snippet before deployment.
 
 ## Entity Loading Contract
 - Entity index pages delivered through `Index.vue` + `CollectionManager` must use the normal client-side Firestore read path.
