@@ -1,6 +1,6 @@
 <template>
-  <div class="space-y-8">
-    <section class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+  <div class="min-w-0 space-y-8">
+    <section class="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
       <div class="space-y-5">
         <div class="flex flex-wrap gap-2">
           <UBadge color="primary" variant="soft">
@@ -18,7 +18,7 @@
           <p class="text-sm font-semibold uppercase text-muted">
             {{ resolvedGuide.property.name }}
           </p>
-          <h1 class="max-w-3xl text-4xl font-semibold tracking-normal text-highlighted sm:text-5xl">
+          <h1 class="max-w-3xl text-3xl font-semibold tracking-normal text-highlighted sm:text-5xl">
             {{ resolvedGuide.title }}
           </h1>
           <p class="max-w-2xl text-base leading-7 text-muted sm:text-lg">
@@ -26,11 +26,11 @@
           </p>
         </div>
 
-        <div class="flex flex-wrap gap-3">
-          <UButton :href="`tel:${phoneHref}`" icon="i-lucide-phone" color="primary">
+        <div class="grid gap-3 sm:flex sm:flex-wrap">
+          <UButton :href="`tel:${phoneHref}`" icon="i-lucide-phone" color="primary" block class="sm:w-auto">
             Call Natalie
           </UButton>
-          <UButton :href="`mailto:${resolvedGuide.property.email}`" icon="i-lucide-mail" color="neutral" variant="soft">
+          <UButton :href="`mailto:${resolvedGuide.property.email}`" icon="i-lucide-mail" color="neutral" variant="soft" block class="sm:w-auto">
             Email
           </UButton>
         </div>
@@ -41,7 +41,7 @@
               <Icon name="i-lucide-calendar-heart" class="size-5" />
             </div>
             <div>
-              <h2 class="text-2xl font-semibold text-highlighted">
+              <h2 class="text-xl font-semibold text-highlighted sm:text-2xl">
                 {{ resolvedGuide.guest_message.title }}
               </h2>
               <p v-if="resolvedGuide.guest_message.subtitle" class="mt-1 text-sm text-muted">
@@ -76,19 +76,11 @@
           </div>
           <div>
             <dt class="font-medium text-muted">Address</dt>
-            <dd>{{ resolvedGuide.property.address }}</dd>
+            <dd class="break-words">{{ resolvedGuide.property.address }}</dd>
           </div>
         </dl>
       </UCard>
     </section>
-
-    <UAlert
-      icon="i-lucide-shield-alert"
-      color="warning"
-      variant="soft"
-      title="Privacy check before public launch"
-      :description="resolvedGuide.privacy_note"
-    />
 
     <UCard v-if="welcomeSection">
       <template #header>
@@ -175,7 +167,7 @@
               <Icon :name="section.icon" class="size-5" />
             </div>
             <div>
-              <h2 class="text-xl font-semibold">{{ section.title }}</h2>
+              <h2 class="text-lg font-semibold sm:text-xl">{{ section.title }}</h2>
               <p class="mt-1 text-sm leading-6 text-muted">{{ section.summary }}</p>
             </div>
           </div>

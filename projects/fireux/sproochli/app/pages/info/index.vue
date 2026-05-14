@@ -36,10 +36,6 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  alias: ['/info/index'],
-})
-
 useSeoMeta({
   title: 'Info · Sproochli',
   description: 'Information pages in Sproochli.',

@@ -17,35 +17,41 @@
     </template>
 
     <div class="profile__body">
-      <section v-if="showDescription" class="profile__section">
+      <section v-if="showDescription && profileSummary" class="profile__section">
         <div class="profile__label">Summary</div>
         <div class="profile__value">
-          <span v-if="bioOverride || summary || bio">{{ bioOverride || summary || bio }}</span>
-          <span v-else class="italic">missing</span>
+          <span>{{ profileSummary }}</span>
         </div>
       </section>
 
-      <section v-if="showMeta" class="profile__section">
+      <section v-if="showMeta && title" class="profile__section">
         <div class="profile__label">Title</div>
         <div class="profile__value">
-          <span v-if="title">{{ title }}</span>
-          <span v-else class="italic">missing</span>
+          <span>{{ title }}</span>
         </div>
       </section>
 
-      <section v-if="showMeta" class="profile__section">
+      <section v-if="showMeta && profiles.length" class="profile__section">
         <div class="profile__label">Profiles</div>
         <div class="profile__value">
-          <span v-if="profiles.length">{{ profiles.join(', ') }}</span>
-          <span v-else class="italic">missing</span>
+          <span>{{ profiles.join(', ') }}</span>
         </div>
       </section>
 
-      <section v-if="showMeta" class="profile__section">
+      <section v-if="showMeta && (appCards.length || appsLabel)" class="profile__section">
         <div class="profile__label">Apps</div>
         <div class="profile__value">
-          <span v-if="appsLabel">{{ appsLabel }}</span>
-          <span v-else class="italic">missing</span>
+          <div v-if="appCards.length" class="profile__apps">
+            <AppCardsPill
+              v-for="appCard in appCards"
+              :key="appCard.id"
+              v-bind="appCard"
+              :link="Boolean(appCard.to)"
+              :show-badges="false"
+              class="profile__app-pill"
+            />
+          </div>
+          <span v-else-if="appsLabel">{{ appsLabel }}</span>
         </div>
       </section>
 
@@ -62,14 +68,14 @@
           <div class="profile__kv">
             <div class="profile__k">Created</div>
             <div class="profile__v">
-              <span v-if="user?.created?.at">set</span>
+              <span v-if="createdAtLabel">{{ createdAtLabel }}</span>
               <span v-else class="opacity-70">missing</span>
             </div>
           </div>
           <div class="profile__kv">
             <div class="profile__k">Updated</div>
             <div class="profile__v">
-              <span v-if="user?.updated?.at">set</span>
+              <span v-if="updatedAtLabel">{{ updatedAtLabel }}</span>
               <span v-else class="opacity-70">missing</span>
             </div>
           </div>
@@ -93,6 +99,12 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from '#imports'
+
+import { useAppCollection } from '../../../../composables/fireux/firestore/core/app/fetch/useAppCollection'
+import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+import { formatFirestoreTimestamp } from '../../../../utils/formatTimestamp'
+
 type Props = {
   avatarUrl: string
   displayName: string
@@ -106,6 +118,7 @@ type Props = {
 
   user?: {
     id?: string
+    userOf?: string[]
     created?: {
       at?: unknown
     } | null
@@ -122,7 +135,7 @@ type Props = {
   showDetails?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   badges: () => [],
   title: '',
   summary: '',
@@ -133,4 +146,51 @@ withDefaults(defineProps<Props>(), {
   showMeta: true,
   showDetails: true,
 })
+
+const { apps } = useAppCollection()
+const { pill: appToPill } = useAppInterface()
+
+const profileSummary = computed(() =>
+  String(props.bioOverride || props.summary || props.bio || '').trim()
+)
+
+const appIds = computed(() => {
+  const rawIds = Array.isArray(props.user?.userOf) ? props.user.userOf : []
+  return Array.from(
+    new Set(rawIds.map((id) => String(id || '').trim()).filter(Boolean))
+  )
+})
+
+const appCards = computed(() => {
+  if (!appIds.value.length) return []
+
+  const ids = new Set(appIds.value)
+  return (apps.value ?? [])
+    .filter((app) => ids.has(String(app.id || '').trim()))
+    .map((app) => appToPill(app as any))
+    .filter((card): card is NonNullable<typeof card> => Boolean(card))
+})
+
+const createdAtLabel = computed(() => formatTimestampLabel(props.user?.created?.at))
+const updatedAtLabel = computed(() => formatTimestampLabel(props.user?.updated?.at))
+
+function formatTimestampLabel(value: unknown): string {
+  return (
+    formatFirestoreTimestamp(value as any, {
+      fallback: '',
+      locale: 'en-GB',
+    }) || ''
+  )
+}
 </script>
+
+<style scoped>
+.profile__apps {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.profile__app-pill {
+  max-width: 22rem;
+}
+</style>

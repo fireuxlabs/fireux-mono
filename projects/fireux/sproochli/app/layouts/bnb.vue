@@ -3,11 +3,11 @@
     <header class="border-b border-default bg-default">
       <UContainer class="flex items-center justify-between gap-4 py-4">
         <NuxtLink to="/" class="inline-flex items-center gap-3 text-sm font-semibold text-primary">
-          <img src="/img/app/logo.svg" alt="" class="size-8 rounded" />
+          <img src="/img/app/logo.png" alt="" class="size-8 rounded" />
           <span>Sproochli</span>
         </NuxtLink>
 
-        <UButton to="/bnb/index" icon="i-lucide-house" color="neutral" variant="ghost">
+        <UButton to="/bnb" icon="i-lucide-house" color="neutral" variant="ghost">
           BNB
         </UButton>
       </UContainer>
@@ -15,11 +15,11 @@
 
     <UContainer
       v-if="guide"
-      class="grid gap-6 py-6 lg:grid-cols-[16rem_minmax(0,1fr)] lg:py-8"
+      class="grid min-w-0 gap-6 py-6 lg:grid-cols-[16rem_minmax(0,1fr)] lg:py-8"
     >
-      <aside class="lg:pt-1">
+      <aside class="min-w-0 lg:pt-1">
         <nav class="lg:sticky lg:top-6" aria-label="BNB guide navigation">
-          <div class="flex gap-2 overflow-x-auto pb-2 lg:grid lg:overflow-visible lg:pb-0">
+          <div class="flex max-w-full gap-2 overflow-x-auto pb-2 lg:grid lg:overflow-visible lg:pb-0">
             <NuxtLink
               :to="`/bnb/${guide.slug}`"
               class="shrink-0 rounded-md px-3 py-2 text-sm text-muted hover:bg-elevated hover:text-default"
@@ -40,7 +40,9 @@
         </nav>
       </aside>
 
-      <slot />
+      <div class="min-w-0">
+        <slot />
+      </div>
     </UContainer>
 
     <UContainer v-else class="py-8">

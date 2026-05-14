@@ -322,6 +322,10 @@ Options:
 
       const entry = {
         id,
+        databaseId:
+          typeof data.database_id === 'string' && data.database_id.trim()
+            ? data.database_id.trim()
+            : '',
         ok: true,
         checks: [],
         listedObjects: undefined,

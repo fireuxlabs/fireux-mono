@@ -129,9 +129,9 @@ export const APP_REGISTRY = {
     consoleFamilies: ['bnb'],
     smokeRoutes: [
       '/',
-      '/bnb/index',
-      '/info/index',
-      '/menus/index',
+      '/bnb',
+      '/info',
+      '/menus',
       '/info/bern-bike-rental/rental-instructions',
       '/bnb/holiday-with-nats',
       '/bnb/holiday-with-nats/wifi',

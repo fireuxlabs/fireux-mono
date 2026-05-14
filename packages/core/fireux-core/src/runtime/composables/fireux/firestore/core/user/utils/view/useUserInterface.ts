@@ -86,7 +86,7 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
 
       bio: safeString(user.bio),
       profiles,
-      appsLabel: appCount ? `${appCount} apps` : '',
+      appsLabel: appCount ? `${appCount} app${appCount === 1 ? '' : 's'}` : '',
     }
   }
 

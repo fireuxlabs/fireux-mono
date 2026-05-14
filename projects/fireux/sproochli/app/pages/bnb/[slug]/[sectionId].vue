@@ -1,5 +1,5 @@
 <template>
-  <div v-if="resolvedGuide && resolvedSection" class="space-y-8">
+  <div v-if="resolvedGuide && resolvedSection" class="min-w-0 space-y-8">
     <section class="space-y-5">
       <NuxtLink
         :to="`/bnb/${resolvedGuide.slug}`"
@@ -19,7 +19,7 @@
           </UBadge>
         </div>
 
-        <div class="flex items-start gap-4">
+        <div class="grid gap-4 sm:flex sm:items-start">
           <div class="rounded-md bg-primary/10 p-3 text-primary">
             <Icon :name="resolvedSection.icon" class="size-7" />
           </div>
@@ -27,7 +27,7 @@
             <p class="text-sm font-semibold uppercase text-muted">
               {{ resolvedGuide.title }}
             </p>
-            <h1 class="mt-2 text-4xl font-semibold tracking-normal text-highlighted sm:text-5xl">
+            <h1 class="mt-2 text-3xl font-semibold tracking-normal text-highlighted sm:text-5xl">
               {{ resolvedSection.title }}
             </h1>
             <p class="mt-3 max-w-2xl text-base leading-7 text-muted sm:text-lg">
@@ -59,13 +59,15 @@
         </ul>
       </UCard>
 
-      <div class="flex flex-wrap gap-3">
+      <div class="grid gap-3 sm:flex sm:flex-wrap">
         <UButton
           v-if="previousSection"
           :to="topicPath(previousSection.id)"
           icon="i-lucide-arrow-left"
           color="neutral"
           variant="soft"
+          block
+          class="sm:w-auto"
         >
           {{ previousSection.title }}
         </UButton>
@@ -75,6 +77,8 @@
           trailing-icon="i-lucide-arrow-right"
           color="primary"
           variant="soft"
+          block
+          class="sm:w-auto"
         >
           {{ nextSection.title }}
         </UButton>

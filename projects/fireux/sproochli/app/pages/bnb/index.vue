@@ -9,7 +9,7 @@
       <p class="text-sm font-semibold uppercase text-primary">
         BNB
       </p>
-      <h1 id="bnb-title" class="text-5xl font-semibold tracking-normal text-highlighted">
+      <h1 id="bnb-title" class="text-4xl font-semibold tracking-normal text-highlighted sm:text-5xl">
         BNB guest guides
       </h1>
       <p class="text-base leading-7 text-muted">
@@ -34,7 +34,6 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'bnb',
-  alias: ['/bnb/index'],
 })
 
 useSeoMeta({

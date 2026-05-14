@@ -31,10 +31,6 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  alias: ['/menus/index'],
-})
-
 useSeoMeta({
   title: 'Menus · Sproochli',
   description: 'Read-only translated menu pages in Sproochli.',

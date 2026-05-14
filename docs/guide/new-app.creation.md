@@ -39,6 +39,8 @@ Read at least these before adding files:
 - `docs/README.md`
 - `docs/runtime-contract.md`
 - `docs/console/README.md` when adding `/console/**`
+- `docs/guide/app-branding-brief.md` when asking a designer for app assets
+- `docs/guide/app-assets-dump.md` when adding or replacing app logos/wordmarks/covers
 
 For a standalone app inside the FireUX ecosystem, `projects/fireux/find-my-seo-app` is currently the closest reference. For a global ecosystem app, inspect `projects/fireux/fireux-app`, `projects/bringli/bringli-app`, or the matching ecosystem app.
 
@@ -153,6 +155,7 @@ sproochli/sproochli_sites/{siteId}/maintainers/{maintainerId}
 ## App Media And Storage
 
 Every app should have repo-local public assets and Storage-backed canonical media.
+See `docs/guide/app-assets-dump.md` for the designer handoff and drop-in workflow.
 
 Repo-local source files:
 

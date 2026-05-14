@@ -4,10 +4,10 @@ export const sproochliProductSentence = 'Multilingual QR pages for real-world pl
 
 export const sproochliRoutes = [
   { label: 'Home', path: '/', kind: 'public' },
-  { label: 'BNB Guides', path: '/bnb/index', kind: 'public' },
+  { label: 'BNB Guides', path: '/bnb', kind: 'public' },
   { label: 'Holiday with Nats Wi-Fi', path: '/bnb/holiday-with-nats/wifi', kind: 'public' },
   { label: 'Bike Rental Instructions', path: '/info/bern-bike-rental/rental-instructions', kind: 'public' },
-  { label: 'Read-only Menus', path: '/menus/index', kind: 'public' },
+  { label: 'Read-only Menus', path: '/menus', kind: 'public' },
 ] as const
 
 export const metaContent = defineFireuxMeta({

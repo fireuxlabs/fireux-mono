@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-14T14:57:21.968Z",
+  "generatedAt": "2026-05-14T15:33:26.888Z",
   "targets": [
     {
       "ecosystemId": "fireux-fireux",
@@ -22,6 +22,7 @@
       "apps": {
         "bringli-app": {
           "id": "bringli-app",
+          "databaseId": "",
           "ok": false,
           "checks": [
             {
@@ -99,6 +100,7 @@
         },
         "cleanbox-app": {
           "id": "cleanbox-app",
+          "databaseId": "",
           "ok": false,
           "checks": [
             {
@@ -176,6 +178,7 @@
         },
         "find-my-seo-app": {
           "id": "find-my-seo-app",
+          "databaseId": "",
           "ok": true,
           "checks": [
             {
@@ -238,6 +241,7 @@
         },
         "fireux-app": {
           "id": "fireux-app",
+          "databaseId": "",
           "ok": true,
           "checks": [
             {
@@ -300,6 +304,7 @@
         },
         "fireux-tenant": {
           "id": "fireux-tenant",
+          "databaseId": "",
           "ok": true,
           "checks": [
             {
@@ -362,6 +367,7 @@
         },
         "granite-app": {
           "id": "granite-app",
+          "databaseId": "",
           "ok": false,
           "checks": [
             {
@@ -439,6 +445,7 @@
         },
         "la-tap-berne": {
           "id": "la-tap-berne",
+          "databaseId": "",
           "ok": false,
           "checks": [
             {
@@ -516,6 +523,7 @@
         },
         "misebox-app": {
           "id": "misebox-app",
+          "databaseId": "",
           "ok": false,
           "checks": [
             {
@@ -593,6 +601,7 @@
         },
         "niederhorn": {
           "id": "niederhorn",
+          "databaseId": "",
           "ok": false,
           "checks": [
             {
@@ -670,6 +679,7 @@
         },
         "richies-reinigung": {
           "id": "richies-reinigung",
+          "databaseId": "",
           "ok": false,
           "checks": [
             {
@@ -747,13 +757,14 @@
         },
         "sproochli": {
           "id": "sproochli",
+          "databaseId": "sproochli",
           "ok": true,
           "checks": [
             {
               "kind": "thumbnail",
               "firestoreField": "thumbnail_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Fsproochli%2Fmedia%2Fthumbnail?alt=media&token=1a6c0fefbee73f349462c0b243154263",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Fsproochli%2Fmedia%2Fthumbnail?alt=media&token=c31a5121bb7e2a463829714e99596fb9",
               "storageObjectPath": "apps/sproochli/media/thumbnail",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
@@ -764,7 +775,7 @@
               "kind": "logo",
               "firestoreField": "logo_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Fsproochli%2Fmedia%2Flogo?alt=media&token=17ca37363b6fb69aa970390ada22dace",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Fsproochli%2Fmedia%2Flogo?alt=media&token=0293a95ade5a1bff31f3fb93ac0e684d",
               "storageObjectPath": "apps/sproochli/media/logo",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
@@ -775,7 +786,7 @@
               "kind": "wordmarkLight",
               "firestoreField": "wordmark_light_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Fsproochli%2Fmedia%2Fwordmark-light?alt=media&token=b2a0fc71b96458968efb55c51e879021",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Fsproochli%2Fmedia%2Fwordmark-light?alt=media&token=1cf204e69d44de263d3173b4f858d43a",
               "storageObjectPath": "apps/sproochli/media/wordmark-light",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
@@ -786,7 +797,7 @@
               "kind": "wordmarkDark",
               "firestoreField": "wordmark_dark_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Fsproochli%2Fmedia%2Fwordmark-dark?alt=media&token=85fe58feb09a6782041f7b1d92f2cc19",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Fsproochli%2Fmedia%2Fwordmark-dark?alt=media&token=0026ed0063b9e52bb999417644e87dee",
               "storageObjectPath": "apps/sproochli/media/wordmark-dark",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
@@ -797,7 +808,7 @@
               "kind": "cover",
               "firestoreField": "cover_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Fsproochli%2Fmedia%2Fcover?alt=media&token=df856cc68c0295cbbcaac9601c16804a",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Fsproochli%2Fmedia%2Fcover?alt=media&token=6698ec8b4121224398fc4f1ac67bee5e",
               "storageObjectPath": "apps/sproochli/media/cover",
               "storageExists": true,
               "urlMatchesExpectedObject": true,

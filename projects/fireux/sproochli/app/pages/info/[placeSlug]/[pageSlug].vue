@@ -3,7 +3,7 @@
     <UContainer class="py-8">
       <div class="mx-auto max-w-3xl space-y-8">
         <header class="space-y-5">
-          <NuxtLink to="/info/index" class="inline-flex items-center gap-2 text-sm font-semibold text-primary">
+          <NuxtLink to="/info" class="inline-flex items-center gap-2 text-sm font-semibold text-primary">
             <Icon name="i-lucide-arrow-left" class="size-4" />
             Info
           </NuxtLink>

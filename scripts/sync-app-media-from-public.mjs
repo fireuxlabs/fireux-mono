@@ -110,6 +110,26 @@ function firebaseDownloadUrl(bucketName, objectPath, token) {
   return `https://firebasestorage.googleapis.com/v0/b/${bucketName}/o/${encoded}?alt=media&token=${token}`
 }
 
+function mediaPatch(urls) {
+  return {
+    media: {
+      thumbnail_url: urls['thumbnail'] ?? '',
+      logo_url: urls['logo'] ?? '',
+      wordmark_light_url: urls['wordmark-light'] ?? '',
+      wordmark_dark_url: urls['wordmark-dark'] ?? '',
+      cover_url: urls['cover'] ?? '',
+    },
+    // Remove legacy fields if they exist.
+    thumbnail_url: admin.firestore.FieldValue.delete(),
+    logo_url: admin.firestore.FieldValue.delete(),
+    wordmark_light_url: admin.firestore.FieldValue.delete(),
+    wordmark_dark_url: admin.firestore.FieldValue.delete(),
+    cover_url: admin.firestore.FieldValue.delete(),
+    avatar_url: admin.firestore.FieldValue.delete(),
+    wordmark_url: admin.firestore.FieldValue.delete(),
+  }
+}
+
 async function uploadWithToken(bucket, bucketName, objectPath, localFilePath) {
   const token = randomToken()
   await bucket.upload(localFilePath, {
@@ -222,6 +242,7 @@ Reads targets from temp/app-media-audit.json.
     const firestore = databaseId ? getFirestore(app, databaseId) : app.firestore()
 
     for (const appId of appIds) {
+      const appMeta = eco?.apps?.[appId] ?? {}
       const resolved = []
       const missing = []
 
@@ -268,27 +289,26 @@ Reads targets from temp/app-media-audit.json.
       }
 
       await firestore.collection('apps').doc(appId).set(
-        {
-          media: {
-            thumbnail_url: urls['thumbnail'] ?? '',
-            logo_url: urls['logo'] ?? '',
-            wordmark_light_url: urls['wordmark-light'] ?? '',
-            wordmark_dark_url: urls['wordmark-dark'] ?? '',
-            cover_url: urls['cover'] ?? '',
-          },
-          // Remove legacy fields if they exist.
-          thumbnail_url: admin.firestore.FieldValue.delete(),
-          logo_url: admin.firestore.FieldValue.delete(),
-          wordmark_light_url: admin.firestore.FieldValue.delete(),
-          wordmark_dark_url: admin.firestore.FieldValue.delete(),
-          cover_url: admin.firestore.FieldValue.delete(),
-          avatar_url: admin.firestore.FieldValue.delete(),
-          wordmark_url: admin.firestore.FieldValue.delete(),
-        },
+        mediaPatch(urls),
         { merge: true }
       )
 
-      console.log(`[ok] ${ecoId}/${appId}: uploaded 5 objects + wrote Firestore URLs`)
+      const appDatabaseId =
+        typeof appMeta.databaseId === 'string' && appMeta.databaseId.trim()
+          ? appMeta.databaseId.trim()
+          : ''
+
+      if (appDatabaseId && appDatabaseId !== databaseId) {
+        const appDb = getFirestore(app, appDatabaseId)
+        await appDb.collection('apps').doc(appId).set(mediaPatch(urls), { merge: true })
+      }
+
+      console.log(
+        `[ok] ${ecoId}/${appId}: uploaded 5 objects + wrote Firestore URLs` +
+          (appDatabaseId && appDatabaseId !== databaseId
+            ? ` + app database ${appDatabaseId}`
+            : '')
+      )
     }
   }
 

@@ -1,5 +1,5 @@
-Primary Purple: #6C3CF0
-Dark Purple: #4A2A99
-Accent Pink: #FF7FB0
-Cream Background: #F7F3EE
-Dark Neutral: #111111
+Primary: #6C3AED
+Secondary: #4828CC
+Accent: #FF5CA8
+Dark: #0F0F1A
+Light: #FFFFFF

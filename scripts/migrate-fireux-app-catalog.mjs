@@ -315,6 +315,8 @@ async function main() {
     scanned: 0,
     created: 0,
     updated: 0,
+    appDatabaseCreated: 0,
+    appDatabaseUpdated: 0,
   }
 
   for (const seed of appEntries) {
@@ -322,6 +324,10 @@ async function main() {
     const snap = await ref.get()
     const existing = snap.exists ? snap.data() || {} : {}
     const patch = buildPatch(seed, existing)
+    const shouldWriteAppDatabase =
+      seed.role === 'standalone' &&
+      seed.databaseId &&
+      seed.databaseId !== databaseId
 
     stats.scanned += 1
     if (snap.exists) stats.updated += 1
@@ -331,6 +337,13 @@ async function main() {
       console.log('[dry-run] set', ref.path, patch)
       if (seed.ecosystem === 'fireux') {
         console.log('[dry-run] arrayUnion ecosystem/fireux-fireux.apps', seed.appId)
+      }
+      if (shouldWriteAppDatabase) {
+        console.log(
+          '[dry-run] set app database',
+          `${seed.databaseId}/apps/${seed.appId}`,
+          patch
+        )
       }
       continue
     }
@@ -349,6 +362,17 @@ async function main() {
         },
         { merge: true }
       )
+    }
+
+    if (shouldWriteAppDatabase) {
+      const appDb = getFirestore(adminApp, seed.databaseId)
+      const appDbRef = appDb.collection('apps').doc(seed.appId)
+      const appDbSnap = await appDbRef.get()
+      const canonicalSnap = await ref.get()
+      const canonicalPatch = canonicalSnap.exists ? canonicalSnap.data() || patch : patch
+      await appDbRef.set(canonicalPatch, { merge: true })
+      if (appDbSnap.exists) stats.appDatabaseUpdated += 1
+      else stats.appDatabaseCreated += 1
     }
   }
 
