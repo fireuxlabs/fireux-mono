@@ -29,83 +29,104 @@
           class="overflow-hidden"
         >
           <div class="flex h-full flex-col gap-5">
-            <div class="flex items-start gap-4">
-              <div class="grid size-16 shrink-0 place-items-center overflow-hidden rounded-lg border border-default bg-elevated">
+            <header class="space-y-2">
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="text-sm font-semibold text-highlighted">
+                    {{ card.kitchenName }}
+                  </p>
+                  <h2 class="mt-1 text-xl font-semibold tracking-normal text-highlighted">
+                    {{ card.menuName }}
+                  </h2>
+                </div>
+                <UBadge
+                  v-if="card.hidden"
+                  size="xs"
+                  color="neutral"
+                  variant="soft"
+                  class="shrink-0"
+                >
+                  Hidden
+                </UBadge>
+              </div>
+              <p
+                v-if="card.address"
+                class="text-xs text-dimmed"
+              >
+                {{ card.address }}
+              </p>
+            </header>
+
+            <div class="grid gap-3 sm:grid-cols-2">
+              <div class="grid h-40 place-items-center overflow-hidden rounded-lg border border-default bg-elevated">
                 <img
                   v-if="card.imageUrl"
                   :src="card.imageUrl"
                   :alt="`${card.kitchenName} logo`"
-                  class="max-h-14 max-w-14 object-contain"
+                  class="h-full w-full object-cover"
                 >
                 <span
                   v-else
-                  class="text-xl font-semibold text-highlighted"
+                  class="text-4xl font-semibold text-highlighted"
                   aria-hidden="true"
                 >
                   {{ card.initials }}
                 </span>
               </div>
 
-              <div class="min-w-0 flex-1">
-                <p class="text-sm font-semibold text-highlighted">
-                  {{ card.kitchenName }}
-                </p>
-                <p
-                  v-if="card.address"
-                  class="mt-0.5 text-xs text-dimmed"
-                >
-                  {{ card.address }}
-                </p>
-                <h2 class="mt-3 text-xl font-semibold tracking-normal text-highlighted">
-                  {{ card.menuName }}
-                </h2>
-                <p
-                  v-if="card.menuDescription"
-                  class="mt-1 text-sm leading-6 text-toned"
-                >
-                  {{ card.menuDescription }}
-                </p>
-              </div>
-            </div>
-
-            <div class="mt-auto grid gap-4 sm:grid-cols-[120px_minmax(0,1fr)]">
-              <div class="grid size-28 place-items-center rounded-lg border border-default bg-white p-2">
+              <div class="grid h-40 place-items-center rounded-lg border border-default bg-white p-3">
                 <img
                   v-if="qrDataUrls[card.kitchenId]"
                   :src="qrDataUrls[card.kitchenId]"
                   :alt="`${card.kitchenName} public menu QR code`"
-                  class="size-24"
+                  class="size-32"
                 >
                 <div
                   v-else
-                  class="grid size-24 place-items-center rounded-md bg-elevated text-center text-[11px] text-dimmed"
+                  class="grid size-32 place-items-center rounded-md bg-elevated text-center text-xs text-dimmed"
                 >
                   QR pending
                 </div>
               </div>
+            </div>
 
-              <div class="flex min-w-0 flex-col justify-between gap-3">
-                <p class="break-all text-xs leading-5 text-dimmed">
-                  {{ card.publicUrl }}
-                </p>
+            <div class="space-y-2">
+              <p
+                v-if="card.menuDescription"
+                class="text-sm leading-6 text-toned"
+              >
+                {{ card.menuDescription }}
+              </p>
+              <p class="break-all text-xs leading-5 text-dimmed">
+                {{ card.publicUrl }}
+              </p>
+            </div>
 
-                <div class="flex flex-wrap gap-2">
-                  <UButton
-                    :to="card.publicPath"
-                    icon="i-lucide-external-link"
-                  >
-                    Open menu
-                  </UButton>
-                  <UButton
-                    :to="card.kitchenPath"
-                    color="neutral"
-                    variant="soft"
-                    icon="i-lucide-store"
-                  >
-                    Kitchen
-                  </UButton>
-                </div>
-              </div>
+            <div class="mt-auto flex flex-wrap gap-2">
+              <UButton
+                :to="card.publicPath"
+                icon="i-lucide-external-link"
+              >
+                Open menu
+              </UButton>
+              <UButton
+                :to="card.kitchenPath"
+                color="neutral"
+                variant="soft"
+                icon="i-lucide-store"
+              >
+                Kitchen
+              </UButton>
+              <UButton
+                v-if="canCopyLinks"
+                type="button"
+                color="neutral"
+                variant="ghost"
+                icon="i-lucide-copy"
+                @click="copyPublicUrl(card)"
+              >
+                Copy link
+              </UButton>
             </div>
           </div>
         </UCard>
@@ -120,7 +141,7 @@ import { toDataURL } from 'qrcode'
 import { computed, ref, watch } from 'vue'
 import { useHead } from '#imports'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
+import { useKitchenPublicAccess } from '../../composables/fireux/app/kitchens/useKitchenPublicAccess'
 import { resolveKitchenChildCollectionPath } from '../../composables/fireux/console/kitchen/collections/useKitchenChildCollection'
 import type { Menu } from '../../models/menu.model'
 
@@ -156,6 +177,7 @@ type ShowcaseCard = {
   kitchenPath: string
   publicPath: string
   publicUrl: string
+  hidden: boolean
 }
 
 const PUBLIC_MENU_ORIGIN = 'https://misebox.app'
@@ -163,13 +185,15 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 const normalizeSlug = (value: unknown) => normalizeString(value).toLowerCase()
 
 const resolveDb = useFirestoreResolver()
-const { kitchens, pending: kitchensPending } = useKitchenCollection()
+const { kitchens, pending: kitchensPending } = useKitchenPublicAccess()
 const menuStates = ref<Record<string, ShowcaseMenuState>>({})
 const qrDataUrls = ref<Record<string, string>>({})
+const canCopyLinks = computed(() =>
+  import.meta.client && Boolean(globalThis.navigator?.clipboard)
+)
 
 const visibleKitchens = computed(() =>
   kitchens.value
-    .filter((kitchen) => kitchen?.show === true)
     .sort((a, b) =>
       normalizeString(a.name).localeCompare(normalizeString(b.name))
     )
@@ -233,6 +257,7 @@ const showcaseCards = computed(() =>
         kitchenPath,
         publicPath,
         publicUrl,
+        hidden: kitchen.show !== true,
       }
     })
     .filter(isShowcaseCard)
@@ -332,4 +357,9 @@ watch(
 useHead({
   title: 'Misebox | Public Menus',
 })
+
+const copyPublicUrl = async (card: ShowcaseCard) => {
+  if (!canCopyLinks.value) return
+  await navigator.clipboard.writeText(card.publicUrl)
+}
 </script>

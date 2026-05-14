@@ -744,6 +744,18 @@ function activate(context) {
       url: 'http://localhost:3006',
     },
     {
+      key: 'sproochli',
+      name: 'Sproochli',
+      icon: '$(globe)',
+      port: 3011,
+      commandId: 'fireuxToolbar.startSproochli',
+      taskLabel: 'dev:sproochli (3011)',
+      terminalName: 'Sproochli (3011)',
+      pnpmCommand: 'pnpm dev:sproochli --host',
+      tooltip: 'Start Sproochli dev (port 3011)',
+      url: 'http://localhost:3011',
+    },
+    {
       key: 'granite',
       name: 'Granite',
       icon: '$(database)',

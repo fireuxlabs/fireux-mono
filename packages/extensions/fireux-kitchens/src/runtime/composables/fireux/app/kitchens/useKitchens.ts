@@ -7,10 +7,8 @@ import {
   readRuntimeSimulationFirestoreDatabaseId,
   useFirestoreResolver,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import {
-  useKitchenCollection,
-  type KitchenCollectionSource,
-} from '../../firestore/kitchen/fetch/useKitchenCollection'
+import type { KitchenCollectionSource } from '../../firestore/kitchen/fetch/useKitchenCollection'
+import { useKitchenPublicAccess } from './useKitchenPublicAccess'
 
 export function useKitchens() {
   const pageTitle = 'Kitchens'
@@ -35,12 +33,9 @@ export function useKitchens() {
     resolveSourceMode(routePath.value)
   )
   const showDevNotes = computed(() => import.meta.dev && notesVisible.value)
-  const { kitchens, pending } = useKitchenCollection({
+  const { kitchens, pending } = useKitchenPublicAccess({
     source: sourceMode,
   })
-  const publicKitchens = computed(() =>
-    kitchens.value.filter((kitchen) => kitchen?.show === true)
-  )
   const devSourceLabel = computed(() => {
     if (sourceMode.value === 'demo') return 'local demo scenario'
     if (sourceMode.value === 'test') {
@@ -48,7 +43,7 @@ export function useKitchens() {
     }
     return 'runtime database/kitchens'
   })
-  const devKitchenCount = computed(() => publicKitchens.value.length)
+  const devKitchenCount = computed(() => kitchens.value.length)
   const devTestProbe = ref('not run')
 
   watch(routePath, (path) => {
@@ -90,7 +85,7 @@ export function useKitchens() {
     pageTitle,
     pageDescription,
     sourceMode,
-    kitchens: publicKitchens,
+    kitchens,
     pending,
     showDevNotes,
     routePath,

@@ -102,6 +102,7 @@
           :link="linkEnabled"
           :action="actionEnabled"
           :show-source="showBadges"
+          :show-badges="showBadges"
           @action="emit('select', card.id)"
         />
       </template>

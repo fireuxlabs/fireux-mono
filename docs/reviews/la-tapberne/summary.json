@@ -1,0 +1,99 @@
+{
+  "projectId": "misebox-78f9c",
+  "databaseId": "misebox",
+  "serviceAccount": "/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/packages/ecosystem/fireux-misebox/src/config/firebase/service-account.json",
+  "kitchenPath": "kitchens/ChIJ08WSgYSjj0cRD6oE3RwUFk0",
+  "menuPath": "kitchens/ChIJ08WSgYSjj0cRD6oE3RwUFk0/menus/main",
+  "outputDir": "/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/docs/reviews/la-tapberne",
+  "languages": [
+    "default",
+    "de",
+    "en",
+    "es",
+    "pt",
+    "fr",
+    "it",
+    "ar",
+    "he",
+    "ko",
+    "ja"
+  ],
+  "cacheLanguages": [
+    "fr",
+    "it",
+    "ar",
+    "he",
+    "ko",
+    "ja"
+  ],
+  "cacheDocLanguages": [
+    "ar",
+    "bo",
+    "fr",
+    "he",
+    "it",
+    "ja",
+    "ko"
+  ],
+  "cacheLanguagesNotExported": [],
+  "exportedButNotPublicCache": [],
+  "extraCacheDocLanguages": [
+    "bo"
+  ],
+  "incompleteCacheLanguages": [],
+  "missingByLanguage": {
+    "default": 0,
+    "de": 0,
+    "en": 0,
+    "es": 0,
+    "pt": 0,
+    "fr": 0,
+    "it": 0,
+    "ar": 0,
+    "he": 0,
+    "ko": 0,
+    "ja": 0
+  },
+  "totalMissing": 0,
+  "blankDescriptions": {
+    "": 33,
+    "de": 2,
+    "en": 2,
+    "es": 2,
+    "pt": 2,
+    "fr": 2,
+    "it": 2,
+    "ar": 2,
+    "he": 2,
+    "ko": 2,
+    "ja": 2
+  },
+  "preservedNames": {
+    "": 0,
+    "de": 33,
+    "en": 23,
+    "es": 21,
+    "pt": 21,
+    "fr": 21,
+    "it": 21,
+    "ar": 22,
+    "he": 22,
+    "ko": 22,
+    "ja": 22
+  },
+  "files": [
+    "/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/docs/reviews/la-tapberne/default.md",
+    "/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/docs/reviews/la-tapberne/de.md",
+    "/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/docs/reviews/la-tapberne/en.md",
+    "/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/docs/reviews/la-tapberne/es.md",
+    "/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/docs/reviews/la-tapberne/pt.md",
+    "/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/docs/reviews/la-tapberne/fr.md",
+    "/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/docs/reviews/la-tapberne/it.md",
+    "/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/docs/reviews/la-tapberne/ar.md",
+    "/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/docs/reviews/la-tapberne/he.md",
+    "/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/docs/reviews/la-tapberne/ko.md",
+    "/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/docs/reviews/la-tapberne/ja.md",
+    "/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/docs/reviews/la-tapberne/all-languages.md",
+    "/Users/danielwatson/Developer/FireUX/FireUX-Mono/fireux-mono/docs/reviews/la-tapberne/summary.json"
+  ]
+}

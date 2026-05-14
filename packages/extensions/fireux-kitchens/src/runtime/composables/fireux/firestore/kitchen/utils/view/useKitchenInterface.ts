@@ -42,6 +42,7 @@ export namespace KitchenCard {
 export type KitchenSurface = {
   id?: string
   slug?: string
+  show?: boolean
   route_scope?: 'live' | 'demo' | 'test'
   is_test_kitchen?: boolean
   place_id?: string
@@ -113,6 +114,8 @@ export function useKitchenInterface() {
     const formattedAddress = safeString(kitchen.formatted_address)
     const imageUrl = safeString(kitchen.image_url)
 
+    const badges = kitchen.show === false ? ['Hidden'] : []
+
     return {
       id,
       to: resolveKitchenPath({ id, slug, route_scope: kitchen.route_scope }),
@@ -121,7 +124,7 @@ export function useKitchenInterface() {
       subtitle: shortAddress,
 
       name,
-      badges: [],
+      badges,
 
       shortName,
       formattedAddress,

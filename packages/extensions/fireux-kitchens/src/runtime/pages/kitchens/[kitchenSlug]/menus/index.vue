@@ -97,7 +97,7 @@
 
 <script setup lang="ts">
 import { collection, getDocs } from 'firebase/firestore'
-import { computed, ref, watch } from 'vue'
+import { computed, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { navigateTo, useHead, useRoute } from '#imports'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
@@ -109,6 +109,7 @@ import {
   normalizePublicKitchenLanguage,
   resolvePublicKitchenLanguageOptions,
   resolvePublicKitchenChromeLanguage,
+  resolvePublicKitchenLanguageState,
   resolvePublicTranslatedText,
 } from '../../../../composables/fireux/app/public-kitchen-language'
 import { resolvePublicMenuDesign } from '../../../../composables/fireux/app/public-menu-design'
@@ -163,6 +164,12 @@ const menuDesignSurfaceClass = computed(
 const languageOptions = computed(() =>
   resolvePublicKitchenLanguageOptions(kitchen.value)
 )
+const selectedLanguageUsesCache = computed(() => {
+  const language = selectedLanguage.value
+  if (!language || !isPublicKitchenCacheLanguage(language)) return false
+
+  return resolvePublicKitchenLanguageState(kitchen.value).cachedLanguages.includes(language)
+})
 const { firestoreFetchCollection } = useFirestoreRead()
 const resolveDb = useFirestoreResolver()
 const menusPath = computed(() =>
@@ -171,15 +178,24 @@ const menusPath = computed(() =>
     collectionName: 'menus',
   })
 )
-const menusRef = firestoreFetchCollection<Menu>(menusPath)
-const menus = computed(() => menusRef.value ?? [])
+const menusRef = shallowRef(null) as ShallowRef<Ref<Menu[] | undefined> | null>
+
+watch(
+  menusPath,
+  (nextPath) => {
+    menusRef.value = nextPath ? firestoreFetchCollection<Menu>(nextPath) : null
+  },
+  { immediate: true }
+)
+
+const menus = computed(() => menusRef.value?.value ?? [])
 const menuTranslationCache = ref<Record<string, string>>({})
 const menuTranslationCachePending = ref(false)
 const pending = computed(
   () =>
     Boolean(routeKitchenSlug.value) &&
     (kitchensPending.value ||
-      Boolean(kitchenId.value && menusRef.value === undefined) ||
+      Boolean(kitchenId.value && menusRef.value?.value === undefined) ||
       menuTranslationCachePending.value)
 )
 
@@ -211,7 +227,7 @@ const textForLanguage = (
     defaultText,
     translations,
     selectedLanguage: language,
-    cacheText: isPublicKitchenCacheLanguage(language)
+    cacheText: selectedLanguageUsesCache.value
       ? menuTranslationCache.value[cacheKey]
       : '',
   }).text
@@ -230,13 +246,13 @@ const menuCacheKey = (menuId: string, fieldId: string) => `${menuId}:${fieldId}`
 let menuCacheRequestId = 0
 
 watch(
-  [kitchenId, menus, selectedLanguage],
-  async ([activeKitchenId, activeMenus, activeLanguage]) => {
+  [kitchenId, menus, selectedLanguage, selectedLanguageUsesCache],
+  async ([activeKitchenId, activeMenus, activeLanguage, activeLanguageUsesCache]) => {
     const requestId = ++menuCacheRequestId
     menuTranslationCache.value = {}
     menuTranslationCachePending.value = false
 
-    if (import.meta.server || !isPublicKitchenCacheLanguage(activeLanguage) || !activeKitchenId) return
+    if (import.meta.server || !activeLanguageUsesCache || !activeKitchenId) return
 
     const visibleMenus = activeMenus
       .filter((menu) => menu.active !== false)
@@ -320,27 +336,28 @@ const setLanguage = async (language: string) => {
 
 <style scoped>
 .public-menu-surface {
-  --public-menu-bg: #fffaf2;
-  --public-menu-panel: rgba(255, 255, 255, 0.82);
+  --public-menu-bg: #fffdf8;
+  --public-menu-panel: rgba(255, 255, 255, 0.86);
   --public-menu-panel-hover: rgba(255, 255, 255, 0.96);
-  --public-menu-text: #211915;
-  --public-menu-toned: #4f4037;
-  --public-menu-muted: #756a60;
-  --public-menu-border: rgba(34, 25, 20, 0.16);
-  --public-menu-accent: var(--ui-primary);
+  --public-menu-text: #1f1a16;
+  --public-menu-toned: #52483f;
+  --public-menu-muted: #7a7067;
+  --public-menu-border: rgba(44, 36, 28, 0.16);
+  --public-menu-accent: #7b5534;
   background: var(--public-menu-bg);
   color: var(--public-menu-text);
   font-family: Georgia, 'Times New Roman', serif;
 }
 
 .public-menu-surface--dark {
-  --public-menu-bg: #090806;
-  --public-menu-panel: rgba(255, 255, 255, 0.06);
-  --public-menu-panel-hover: rgba(255, 255, 255, 0.1);
-  --public-menu-text: #fff7e8;
-  --public-menu-toned: #e2d2b8;
-  --public-menu-muted: #bba98b;
-  --public-menu-border: rgba(255, 255, 255, 0.18);
+  --public-menu-bg: #080705;
+  --public-menu-panel: rgba(255, 244, 216, 0.07);
+  --public-menu-panel-hover: rgba(255, 244, 216, 0.11);
+  --public-menu-text: #fffaf0;
+  --public-menu-toned: #d9c9ab;
+  --public-menu-muted: #a99778;
+  --public-menu-border: rgba(238, 205, 127, 0.22);
+  --public-menu-accent: #f0c84d;
 }
 
 .public-menu-content {

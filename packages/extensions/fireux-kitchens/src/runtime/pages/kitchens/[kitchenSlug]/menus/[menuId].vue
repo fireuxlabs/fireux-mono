@@ -3,15 +3,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { collection, getDocs } from 'firebase/firestore'
+import { computed, ref, watch } from 'vue'
 import { useHead, useRoute } from '#imports'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { resolveKitchenChildCollectionPath } from '../../../../composables/fireux/console/kitchen/collections/useKitchenChildCollection'
 import {
   getPublicKitchenChromeLabels,
   isPublicKitchenCacheLanguage,
   normalizePublicKitchenLanguage,
   resolvePublicKitchenChromeLanguage,
+  resolvePublicKitchenLanguageState,
   resolvePublicTranslatedText,
 } from '../../../../composables/fireux/app/public-kitchen-language'
 import { useKitchenCollection } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
@@ -71,7 +73,7 @@ const resolvedKitchen = computed<Kitchen | null>(() => {
   return found ?? null
 })
 const kitchenId = computed(() => normalizeString(resolvedKitchen.value?.id))
-const { firestoreFetchCollection } = useFirestoreRead()
+const resolveDb = useFirestoreResolver()
 const menusPath = computed(() =>
   resolveKitchenChildCollectionPath({
     kitchenId: kitchenId.value,
@@ -88,14 +90,14 @@ const translationCachePath = computed(() => {
   if (!kitchenId.value || !routeMenuId.value) return ''
   return `kitchens/${kitchenId.value}/menus/${routeMenuId.value}/translation_cache`
 })
-const menusRef = firestoreFetchCollection<Menu>(menusPath)
-const dishesRef = firestoreFetchCollection<Dish>(dishesPath)
-const translationCacheRef = firestoreFetchCollection<Record<string, any>>(translationCachePath)
-const menus = computed(() => menusRef.value ?? [])
-const dishes = computed(() => dishesRef.value ?? [])
+const menus = ref<Menu[]>([])
+const dishes = ref<Dish[]>([])
+const translationCacheRows = ref<Record<string, any>[]>([])
+const menuDataPending = ref(false)
+let menuDataRequestId = 0
 const translationCacheByField = computed(() => {
   const map = new Map<string, string>()
-  for (const item of translationCacheRef.value ?? []) {
+  for (const item of translationCacheRows.value) {
     const fieldId = normalizeString((item as any).field_id)
     const targetLanguage = normalizeString((item as any).target_language)
     const translatedText = normalizeString((item as any).translated_text)
@@ -105,6 +107,90 @@ const translationCacheByField = computed(() => {
   }
   return map
 })
+const selectedLanguageUsesCache = computed(() => {
+  const language = selectedLanguage.value
+  if (!language || !isPublicKitchenCacheLanguage(language)) return false
+
+  return resolvePublicKitchenLanguageState(resolvedKitchen.value).cachedLanguages.includes(language)
+})
+
+watch(
+  [kitchenId, routeMenuId, selectedLanguageUsesCache],
+  async ([activeKitchenId, activeMenuId, activeLanguageUsesCache]) => {
+    const requestId = ++menuDataRequestId
+    menus.value = []
+    dishes.value = []
+    translationCacheRows.value = []
+
+    if (!activeKitchenId) {
+      menuDataPending.value = false
+      return
+    }
+
+    menuDataPending.value = true
+
+    try {
+      const [menusSnap, dishesSnap, translationCacheSnap] = await Promise.all([
+        getDocs(
+          collection(
+            resolveDb(),
+            resolveKitchenChildCollectionPath({
+              kitchenId: activeKitchenId,
+              collectionName: 'menus',
+            })
+          )
+        ),
+        getDocs(
+          collection(
+            resolveDb(),
+            resolveKitchenChildCollectionPath({
+              kitchenId: activeKitchenId,
+              collectionName: 'dishes',
+            })
+          )
+        ),
+        activeLanguageUsesCache && activeMenuId
+          ? getDocs(
+              collection(
+                resolveDb(),
+                `kitchens/${activeKitchenId}/menus/${activeMenuId}/translation_cache`
+              )
+            )
+          : Promise.resolve(null),
+      ])
+
+      if (requestId !== menuDataRequestId) return
+
+      menus.value = menusSnap.docs.map((doc) => ({
+        ...(doc.data() as Menu),
+        id: doc.id,
+      }))
+      dishes.value = dishesSnap.docs.map((doc) => ({
+        ...(doc.data() as Dish),
+        id: doc.id,
+      }))
+      translationCacheRows.value = translationCacheSnap
+        ? translationCacheSnap.docs.map((doc) => ({
+            ...doc.data(),
+            id: doc.id,
+          }))
+        : []
+    } catch (error) {
+      if (requestId === menuDataRequestId) {
+        console.error('[public-menu] Failed to load menu data', error)
+        menus.value = []
+        dishes.value = []
+        translationCacheRows.value = []
+      }
+    } finally {
+      if (requestId === menuDataRequestId) {
+        menuDataPending.value = false
+      }
+    }
+  },
+  { immediate: true }
+)
+
 const selectedMenu = computed<Menu | null>(() =>
   menus.value.find((menu) => normalizeString(menu.id) === routeMenuId.value) ?? null
 )
@@ -119,14 +205,7 @@ const dishesById = computed(() => {
 const loading = computed(
   () =>
     Boolean(routeKitchenSlug.value) &&
-    (kitchensPending.value ||
-      Boolean(
-        kitchenId.value &&
-          (menusRef.value === undefined ||
-            dishesRef.value === undefined ||
-            (isPublicKitchenCacheLanguage(selectedLanguage.value) &&
-              translationCacheRef.value === undefined))
-      ))
+    (kitchensPending.value || menuDataPending.value)
 )
 const currencyCode = computed(() =>
   normalizeString((resolvedKitchen.value as any)?.currency_code).toUpperCase() || 'CHF'
@@ -146,7 +225,7 @@ const textForLanguage = (
     defaultText,
     translations,
     selectedLanguage: language,
-    cacheText: isPublicKitchenCacheLanguage(language)
+    cacheText: selectedLanguageUsesCache.value
       ? translationCacheByField.value.get(cacheFieldId)
       : '',
   }).text
@@ -171,6 +250,9 @@ const priceUnitLabel = (unit: unknown) => {
   const normalizedUnit = normalizeString(unit).toLowerCase()
   if (normalizedUnit === 'piece') {
     if (selectedLanguage.value === 'ar') return 'قطع'
+    if (selectedLanguage.value === 'he') return 'יח׳'
+    if (selectedLanguage.value === 'ko') return '개'
+    if (selectedLanguage.value === 'ja') return '個'
     if (selectedLanguage.value === 'fr') return 'pièces'
     if (selectedLanguage.value === 'it') return 'pz.'
     if (selectedLanguage.value === 'es') return 'uds.'
@@ -179,11 +261,14 @@ const priceUnitLabel = (unit: unknown) => {
   }
   if (normalizedUnit === 'gram') {
     if (selectedLanguage.value === 'ar') return 'غ'
+    if (selectedLanguage.value === 'he') return 'גרם'
     return selectedLanguage.value === 'en' ||
       selectedLanguage.value === 'fr' ||
       selectedLanguage.value === 'it' ||
       selectedLanguage.value === 'es' ||
-      selectedLanguage.value === 'pt'
+      selectedLanguage.value === 'pt' ||
+      selectedLanguage.value === 'ko' ||
+      selectedLanguage.value === 'ja'
       ? 'g'
       : 'gr'
   }

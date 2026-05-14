@@ -35,6 +35,16 @@
           >
             {{ sourceLabel }}
           </UBadge>
+          <UBadge
+            v-for="badge in visibleBadges"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+            class="shrink-0"
+          >
+            {{ badge }}
+          </UBadge>
         </div>
 
         <div v-if="showTagline" class="truncate text-xs text-dimmed">
@@ -81,6 +91,16 @@
           >
             {{ sourceLabel }}
           </UBadge>
+          <UBadge
+            v-for="badge in visibleBadges"
+            :key="badge"
+            variant="soft"
+            color="neutral"
+            size="xs"
+            class="shrink-0"
+          >
+            {{ badge }}
+          </UBadge>
         </div>
 
         <div v-if="showTagline" class="truncate text-xs text-dimmed">
@@ -97,11 +117,12 @@ import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import type { KitchenCard } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
-type Props = Pick<KitchenCard.Card, 'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'> & {
+type Props = Pick<KitchenCard.Card, 'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade' | 'badges'> & {
   source?: 'google' | 'fireux' | 'manual'
   prop?: string
   showSubtitle?: boolean
   showSource?: boolean
+  showBadges?: boolean
   showTagline?: boolean
   link?: boolean
   action?: boolean
@@ -116,6 +137,7 @@ const props = withDefaults(defineProps<Props>(), {
   prop: '',
   showSubtitle: true,
   showSource: false,
+  showBadges: true,
   showTagline: true,
   link: false,
   action: false,
@@ -141,6 +163,9 @@ const sourceLabel = computed(() =>
       : props.source === 'google'
         ? 'Google'
         : ''
+)
+const visibleBadges = computed(() =>
+  props.showBadges === false ? [] : props.badges ?? []
 )
 
 const onClick = (event?: MouseEvent) => {

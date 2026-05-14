@@ -274,25 +274,28 @@ const sectionAccentClass = (section: MenuPreviewSection) => {
 
 <style scoped>
 .public-menu-surface {
-  --public-menu-bg: #fffaf2;
-  --public-menu-panel: rgba(255, 255, 255, 0.82);
-  --public-menu-text: #211915;
-  --public-menu-toned: #4f4037;
-  --public-menu-muted: #756a60;
-  --public-menu-border: rgba(34, 25, 20, 0.16);
-  --public-menu-accent: var(--ui-primary);
+  --public-menu-bg: #fffdf8;
+  --public-menu-panel: rgba(255, 255, 255, 0.86);
+  --public-menu-text: #1f1a16;
+  --public-menu-toned: #52483f;
+  --public-menu-muted: #7a7067;
+  --public-menu-border: rgba(44, 36, 28, 0.16);
+  --public-menu-accent: #7b5534;
+  --public-menu-price: #2b211a;
   background: var(--public-menu-bg);
   color: var(--public-menu-text);
   font-family: Georgia, 'Times New Roman', serif;
 }
 
 .public-menu-surface--dark {
-  --public-menu-bg: #090806;
-  --public-menu-panel: rgba(255, 255, 255, 0.06);
-  --public-menu-text: #fff7e8;
-  --public-menu-toned: #e2d2b8;
-  --public-menu-muted: #bba98b;
-  --public-menu-border: rgba(255, 255, 255, 0.18);
+  --public-menu-bg: #080705;
+  --public-menu-panel: rgba(255, 244, 216, 0.07);
+  --public-menu-text: #fffaf0;
+  --public-menu-toned: #d9c9ab;
+  --public-menu-muted: #a99778;
+  --public-menu-border: rgba(238, 205, 127, 0.22);
+  --public-menu-accent: #f0c84d;
+  --public-menu-price: #f6d873;
 }
 
 .public-menu-content {
@@ -305,6 +308,7 @@ const sectionAccentClass = (section: MenuPreviewSection) => {
 }
 
 .public-menu-price-label {
+  color: var(--public-menu-price);
   direction: ltr;
   margin-inline-start: auto;
   overflow-wrap: anywhere;

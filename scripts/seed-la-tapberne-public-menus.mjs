@@ -6,6 +6,10 @@ import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { isAbsolute, join, resolve } from 'node:path'
 import { parseArgs } from './_lib/args.mjs'
+import {
+  LA_TAPBERNE_ATTACHED_LANGUAGES,
+  LA_TAPBERNE_TRANSLATIONS,
+} from './seed-la-tapberne-translation-cache.mjs'
 
 const DEFAULT_PROJECT_ID = 'misebox-78f9c'
 const DEFAULT_SERVICE_ACCOUNT_PATH =
@@ -16,6 +20,7 @@ const FALLBACK_KITCHEN_ID = 'la-tapberne'
 const KITCHEN_SLUG = 'la-tapberne'
 const APP_ID = 'misebox-app'
 const SYSTEM_ACTOR = 'system:seed-la-tapberne-public-menus'
+const ATTACHED_LANGUAGES = LA_TAPBERNE_ATTACHED_LANGUAGES
 
 const normalizeString = (value) => String(value ?? '').trim()
 
@@ -345,8 +350,20 @@ const SECTIONS = [
 const MENU = {
   id: 'main',
   name: 'Comida Casera',
+  names: {
+    de: 'Comida Casera',
+    en: 'Comida Casera',
+  },
   description: '',
+  descriptions: {
+    de: 'Tapas-Gastro-Pub · Hausgemachte Küche',
+    en: 'Tapas-Gastro-Pub · Homemade food',
+  },
   note: 'Alle Preise in CHF inkl. MwSt.',
+  notes: {
+    de: 'Alle Preise in CHF inkl. MwSt.',
+    en: 'All prices in CHF incl. VAT.',
+  },
   sections: SECTIONS,
 }
 
@@ -438,11 +455,54 @@ function createdStamp(snap) {
   }
 }
 
+function languageMap(input, keys) {
+  return Object.fromEntries(
+    keys.map(([language, key, fallback]) => [
+      language,
+      normalizeString(input?.[key] ?? fallback ?? ''),
+    ])
+  )
+}
+
+function itemNames(item) {
+  return {
+    ...languageMap(item, [
+    ['de', 'deName', item.name],
+    ['en', 'enName', item.name],
+    ]),
+    es: normalizeString(LA_TAPBERNE_TRANSLATIONS.es?.dishes?.[item.id]?.name ?? item.name),
+    pt: normalizeString(LA_TAPBERNE_TRANSLATIONS.pt?.dishes?.[item.id]?.name ?? item.name),
+  }
+}
+
+function itemDescriptions(item) {
+  return {
+    ...languageMap(item, [
+    ['de', 'deDescription', ''],
+    ['en', 'enDescription', ''],
+    ]),
+    es: normalizeString(LA_TAPBERNE_TRANSLATIONS.es?.dishes?.[item.id]?.description ?? ''),
+    pt: normalizeString(LA_TAPBERNE_TRANSLATIONS.pt?.dishes?.[item.id]?.description ?? ''),
+  }
+}
+
 function buildSections(sections) {
   return sections.map((section, sectionIndex) => ({
     id: section.id,
     label: section.label,
+    labels: {
+      de: normalizeString(section.labels?.de ?? section.label),
+      en: normalizeString(section.labels?.en ?? section.label),
+      es: normalizeString(LA_TAPBERNE_TRANSLATIONS.es?.sections?.[section.id] ?? section.label),
+      pt: normalizeString(LA_TAPBERNE_TRANSLATIONS.pt?.sections?.[section.id] ?? section.label),
+    },
     description: '',
+    descriptions: {
+      de: normalizeString(section.descriptions?.de ?? ''),
+      en: normalizeString(section.descriptions?.en ?? ''),
+      es: '',
+      pt: '',
+    },
     sort_order: sectionIndex + 1,
     items: section.items.map((item, itemIndex) => ({
       id: `${section.id}-${String(itemIndex + 1).padStart(2, '0')}`,
@@ -461,8 +521,26 @@ function buildMenuPayload(menu, kitchenId, snap) {
     id: menu.id,
     kitchen_id: kitchenId,
     name: menu.name,
+    names: {
+      de: normalizeString(menu.names?.de ?? menu.name),
+      en: normalizeString(menu.names?.en ?? menu.name),
+      es: normalizeString(LA_TAPBERNE_TRANSLATIONS.es?.menu?.name ?? menu.name),
+      pt: normalizeString(LA_TAPBERNE_TRANSLATIONS.pt?.menu?.name ?? menu.name),
+    },
     description: menu.description,
+    descriptions: {
+      de: normalizeString(menu.descriptions?.de ?? ''),
+      en: normalizeString(menu.descriptions?.en ?? ''),
+      es: normalizeString(LA_TAPBERNE_TRANSLATIONS.es?.menu?.description ?? ''),
+      pt: normalizeString(LA_TAPBERNE_TRANSLATIONS.pt?.menu?.description ?? ''),
+    },
     note: menu.note,
+    notes: {
+      de: normalizeString(menu.notes?.de ?? menu.note),
+      en: normalizeString(menu.notes?.en ?? menu.note),
+      es: normalizeString(LA_TAPBERNE_TRANSLATIONS.es?.menu?.note ?? menu.note),
+      pt: normalizeString(LA_TAPBERNE_TRANSLATIONS.pt?.menu?.note ?? menu.note),
+    },
     active: true,
     defaults: {
       active: true,
@@ -485,6 +563,8 @@ function buildDishPayload(item, kitchenId, snap) {
     name: item.name,
     slug: item.id,
     description: '',
+    names: itemNames(item),
+    descriptions: itemDescriptions(item),
     created: createdStamp(snap),
     updated: updatedStamp(),
   }
@@ -541,6 +621,17 @@ async function main() {
     dishes: existingDishesSnap.size,
     translation_cache: translationCacheSnaps.reduce((count, snap) => count + snap.size, 0),
   }
+  const existingLanguageSettings = kitchenSnap.exists
+    && kitchenSnap.data()?.language_settings
+    && typeof kitchenSnap.data()?.language_settings === 'object'
+    && !Array.isArray(kitchenSnap.data()?.language_settings)
+    ? kitchenSnap.data().language_settings
+    : {}
+  const preservedCacheLanguages = reset
+    ? []
+    : Array.isArray(existingLanguageSettings.cache_languages)
+      ? existingLanguageSettings.cache_languages
+      : []
   const effectiveMenuSnap = reset ? undefined : menuSnap
   const effectiveDishSnaps = reset ? [] : dishSnaps
   const planned = {
@@ -571,6 +662,7 @@ async function main() {
     menuIds: [MENU.id],
     sectionCount: MENU.sections.length,
     dishCount: dishEntries.length,
+    attachedLanguages: ATTACHED_LANGUAGES,
     resetPlan,
     unclearItems: UNCLEAR_ITEMS,
     planned,
@@ -610,12 +702,12 @@ async function main() {
         public_menu_design: FieldValue.delete(),
         language_settings: {
           default_language: 'de',
-          supported_languages: [],
+          supported_languages: ATTACHED_LANGUAGES,
           public_languages: FieldValue.delete(),
-          attached_languages: [],
-          cache_languages: [],
+          attached_languages: ATTACHED_LANGUAGES,
+          cache_languages: preservedCacheLanguages,
         },
-        supported_languages: [],
+        supported_languages: ATTACHED_LANGUAGES,
         active: true,
         updated: updatedStamp(),
         created: createdStamp(kitchenSnap),
@@ -655,12 +747,14 @@ async function main() {
           menus: 1,
           dishes: dishEntries.length,
           deleted: reset ? resetPlan : { menus: 0, dishes: 0, translation_cache: 0 },
+          attachedLanguages: ATTACHED_LANGUAGES,
         }
       : {
           kitchen: 0,
           menus: 0,
           dishes: 0,
           deleted: { menus: 0, dishes: 0, translation_cache: 0 },
+          attachedLanguages: [],
         },
     resetPlan,
     planned,
