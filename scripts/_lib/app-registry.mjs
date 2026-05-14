@@ -122,11 +122,20 @@ export const APP_REGISTRY = {
     name: 'Sproochli',
     appId: 'sproochli',
     ecosystem: 'fireux',
-    databaseId: 'fireux',
+    databaseId: 'sproochli',
     role: 'standalone',
     workspace: './projects/fireux/sproochli',
     port: 3011,
-    consoleFamilies: [],
+    consoleFamilies: ['bnb'],
+    smokeRoutes: [
+      '/',
+      '/bnb/index',
+      '/info/index',
+      '/menus/index',
+      '/info/bern-bike-rental/rental-instructions',
+      '/bnb/holiday-with-nats',
+      '/bnb/holiday-with-nats/wifi',
+    ],
     launchOrder: 9,
   },
   granite: {
@@ -170,11 +179,15 @@ export function getAppRegistryEntry(key) {
     throw new Error(`[app-registry] Unknown app "${key}". Expected one of: ${APP_KEYS.join(', ')}`)
   }
 
+  const smokeRoutes = app.smokeRoutes?.length
+    ? unique(app.smokeRoutes)
+    : unique([...SHARED_ROUTES, ...consoleRoutes(app.consoleFamilies)])
+
   return {
     ...app,
     filter: app.workspace,
     baseUrl: `http://localhost:${app.port}`,
-    smokeRoutes: unique([...SHARED_ROUTES, ...consoleRoutes(app.consoleFamilies)]),
+    smokeRoutes,
   }
 }
 

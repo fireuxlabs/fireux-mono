@@ -1,5 +1,6 @@
 // FILE: packages/core/fireux-core/config/app/fireux.config.ts
 import type { NuxtConfig } from '@nuxt/schema'
+import { defineNuxtModule } from '@nuxt/kit'
 
 import { configNitroFirebase } from './nitro'
 import { configPwa } from './pwa'
@@ -25,6 +26,8 @@ export type FireuxAppConfig = {
   id: string
   name: string
   shortName: string
+  /** Optional app-owned Firestore database id. Standalone apps should set this. */
+  databaseId?: string
   /** Optional app thumbnail path/URL (role-aware defaults apply when omitted). */
   appThumbnail?: string
   /** Optional app logo path/URL (preferred). Role-aware defaults apply when omitted. */
@@ -121,10 +124,29 @@ function validateFireuxAppConfig(app: FireuxAppConfig): void {
   }
 }
 
+function createAppDatabaseRuntimeModule(databaseId?: string) {
+  const resolvedDatabaseId = typeof databaseId === 'string' ? databaseId.trim() : ''
+  if (!resolvedDatabaseId) return null
+
+  return defineNuxtModule({
+    meta: {
+      name: 'fireux-app-database-runtime',
+    },
+    setup(_options, nuxt) {
+      const runtime = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
+      const pub = ((runtime.public ||= {}) as Record<string, any>)
+      const ecosystem = ((pub.firebaseEcosystem ||= {}) as Record<string, any>)
+      const firebase = ((ecosystem.firebase ||= {}) as Record<string, any>)
+      firebase.databaseId = resolvedDatabaseId
+    },
+  })
+}
+
 export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   validateFireuxAppConfig(app)
 
   const nuxt: NuxtConfig = {}
+  const appDatabaseRuntimeModule = createAppDatabaseRuntimeModule(app.databaseId)
   const brandAssets = resolveFireuxBrandAssets({
     role: app.role,
     appLogo: app.appLogo,
@@ -168,6 +190,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     '@nuxt/ui',
     '@nuxt/icon',
     `fireux-${app.ecosystem}`,
+    ...(appDatabaseRuntimeModule ? [appDatabaseRuntimeModule] : []),
     // VueFire/Firebase wiring lives in fireux-nuxtfire.
     'fireux-nuxtfire',
     'fireux-core',

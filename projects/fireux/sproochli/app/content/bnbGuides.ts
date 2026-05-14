@@ -10,6 +10,7 @@ export type BnbGuideSection = {
   summary: string
   icon: string
   priority?: boolean
+  enabled?: boolean
   items: BnbGuideItem[]
 }
 
@@ -18,6 +19,10 @@ export type BnbGuide = {
   slug: string
   language: 'en'
   title: string
+  guest_message?: {
+    title: string
+    subtitle?: string
+  }
   property: {
     name: string
     type: string
@@ -33,11 +38,38 @@ export type BnbGuide = {
   sections: BnbGuideSection[]
 }
 
+export const standardBnbTopicIds = [
+  'emergency',
+  'wifi',
+  'check-in',
+  'checkout',
+  'keys',
+  'house-rules',
+  'quiet-hours',
+  'smoking',
+  'heating-cooling',
+  'kitchen',
+  'appliances',
+  'laundry',
+  'bathroom',
+  'parking',
+  'rubbish-recycling',
+  'shops',
+  'restaurants',
+  'transport',
+  'things-to-do',
+  'useful-contacts',
+] as const
+
 export const holidayWithNatsGuide: BnbGuide = {
   type: 'sproochli-bnb-demo',
   slug: 'holiday-with-nats',
   language: 'en',
   title: 'Holiday with Nats',
+  guest_message: {
+    title: 'Welcome Family Watson',
+    subtitle: 'Today - 27th of March',
+  },
   property: {
     name: 'Penthouse Holiday Apartment',
     type: 'BNB / guest guide',
@@ -57,6 +89,7 @@ export const holidayWithNatsGuide: BnbGuide = {
       title: 'Welcome',
       summary: 'A quick welcome and the key host details for your stay.',
       icon: 'i-lucide-home',
+      enabled: true,
       items: [
         { value: 'Welcome to the Penthouse Holiday Apartment.' },
         { label: 'Apartment Manager', value: 'Natalie' },
@@ -74,6 +107,7 @@ export const holidayWithNatsGuide: BnbGuide = {
       summary: 'Emergency equipment, medical contacts and urgent numbers.',
       icon: 'i-lucide-siren',
       priority: true,
+      enabled: true,
       items: [
         { value: 'The apartment is fitted with smoke alarms.' },
         { value: 'Fire extinguisher: by the downstairs main entrance.' },
@@ -99,6 +133,7 @@ export const holidayWithNatsGuide: BnbGuide = {
       summary: 'Internet access for guests.',
       icon: 'i-lucide-wifi',
       priority: true,
+      enabled: true,
       items: [
         { label: 'Network', value: 'Penthouse', tone: 'important' },
         { label: 'Password', value: 'penthouse2020', tone: 'important' },
@@ -109,6 +144,7 @@ export const holidayWithNatsGuide: BnbGuide = {
       title: 'House Rules',
       summary: 'Simple rules to protect the apartment and respect neighbours.',
       icon: 'i-lucide-clipboard-check',
+      enabled: true,
       items: [
         { value: 'Close all windows and doors before going out.' },
         { value: 'Water damage caused by rain may be charged.', tone: 'warning' },
@@ -127,6 +163,7 @@ export const holidayWithNatsGuide: BnbGuide = {
       summary: 'What to do before leaving the apartment.',
       icon: 'i-lucide-door-open',
       priority: true,
+      enabled: true,
       items: [
         { value: 'Check out by 10:00 unless agreed otherwise.', tone: 'important' },
         { value: 'Put leftover dishes in the dishwasher and start the cleaning cycle.' },
@@ -138,10 +175,11 @@ export const holidayWithNatsGuide: BnbGuide = {
       ],
     },
     {
-      id: 'heating',
-      title: 'Heating',
+      id: 'heating-cooling',
+      title: 'Heating & Cooling',
       summary: 'How to use the radiators responsibly.',
       icon: 'i-lucide-thermometer',
+      enabled: true,
       items: [
         { value: 'Radiators have dials from 1 to 5.' },
         { value: 'Do not put the heating on high and open the windows.' },
@@ -150,10 +188,11 @@ export const holidayWithNatsGuide: BnbGuide = {
     },
     {
       id: 'keys',
-      title: 'Keys',
+      title: 'Keys & Access',
       summary: 'Key safe instructions for going out and checking out.',
       icon: 'i-lucide-key-round',
       priority: true,
+      enabled: true,
       items: [
         { value: 'The key safe box can be used when going out.' },
         { label: 'Code', value: '2020', tone: 'important' },
@@ -165,6 +204,7 @@ export const holidayWithNatsGuide: BnbGuide = {
       title: 'Parking',
       summary: 'Parking and visitor parking information.',
       icon: 'i-lucide-car',
+      enabled: true,
       items: [
         { value: 'Underground parking is available.' },
         { value: 'Do not leave the car engine running unnecessarily.' },
@@ -172,23 +212,16 @@ export const holidayWithNatsGuide: BnbGuide = {
       ],
     },
     {
-      id: 'recycling',
-      title: 'Recycling',
-      summary: 'What can go into the apartment recycling container.',
+      id: 'rubbish-recycling',
+      title: 'Rubbish & Recycling',
+      summary: 'How to recycle and dispose of general household rubbish.',
       icon: 'i-lucide-recycle',
+      enabled: true,
       items: [
         { value: 'The recycling container is on the balcony.' },
         { value: 'Cardboard can go in recycling.' },
         { value: 'Do not put general garbage there.', tone: 'warning' },
         { value: 'No food containers.' },
-      ],
-    },
-    {
-      id: 'rubbish-garbage',
-      title: 'Rubbish / Garbage',
-      summary: 'How to dispose of general household rubbish.',
-      icon: 'i-lucide-trash-2',
-      items: [
         { value: 'Use the white AVAG bags provided under the sink.' },
         { value: 'Put full bags in the grey container outside by visitor parking.' },
         { value: 'Use the key to unlock the padlock.' },
@@ -200,6 +233,7 @@ export const holidayWithNatsGuide: BnbGuide = {
       title: 'Apartment Info',
       summary: 'Useful details about the apartment equipment and facilities.',
       icon: 'i-lucide-info',
+      enabled: true,
       items: [
         { value: 'USB chargers are supplied; do not take or move installed chargers.' },
         { value: 'Dishwasher: select a program, add a dishwasher tab, then press start.' },
@@ -215,6 +249,7 @@ export const holidayWithNatsGuide: BnbGuide = {
       title: 'Local Information',
       summary: 'Nearby shops, post office and bus stop details.',
       icon: 'i-lucide-map-pin',
+      enabled: true,
       items: [
         { value: 'CO-OP supermarket is downstairs and open Mon-Sun 08:00-20:00.' },
         { value: 'The Post Office is inside CO-OP.' },
@@ -228,6 +263,7 @@ export const holidayWithNatsGuide: BnbGuide = {
       title: 'Bike Rentals',
       summary: 'Bike and activity rental options nearby.',
       icon: 'i-lucide-bike',
+      enabled: true,
       items: [
         { value: 'Amacher Bike Shop rents electric bikes.' },
         {
@@ -241,6 +277,7 @@ export const holidayWithNatsGuide: BnbGuide = {
       title: 'Grocery Shopping',
       summary: 'Easy grocery options around the apartment.',
       icon: 'i-lucide-shopping-basket',
+      enabled: true,
       items: [
         { value: 'CO-OP supermarket is downstairs for everyday groceries.' },
         { value: 'Lidl is nearby and open daily 08:00-21:00.' },
@@ -252,6 +289,7 @@ export const holidayWithNatsGuide: BnbGuide = {
       title: 'Transport',
       summary: 'Simple walking directions and public transport pointers.',
       icon: 'i-lucide-train',
+      enabled: true,
       items: [
         {
           label: 'Interlaken West',
@@ -273,4 +311,19 @@ export const bnbGuides = [holidayWithNatsGuide] as const
 
 export function resolveBnbGuide(slug: string): BnbGuide | null {
   return bnbGuides.find((guide) => guide.slug === slug) ?? null
+}
+
+export function getEnabledBnbSections(guide: BnbGuide): BnbGuideSection[] {
+  return guide.sections.filter((section) => section.enabled !== false)
+}
+
+export function getBnbGuestTopics(guide: BnbGuide): BnbGuideSection[] {
+  return getEnabledBnbSections(guide).filter((section) => section.id !== 'welcome')
+}
+
+export function resolveBnbSection(slug: string, sectionId: string): BnbGuideSection | null {
+  const guide = resolveBnbGuide(slug)
+  if (!guide) return null
+
+  return getBnbGuestTopics(guide).find((section) => section.id === sectionId) ?? null
 }

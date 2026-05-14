@@ -10,6 +10,7 @@ Updated: 2026-05-12
 - `InfoPage`: a multilingual public information page made of ordered sections and blocks.
 - `InfoPlace`: the info-page owner/context used by Sproochli routes and responses.
 - `InfoPlace` is not canonical `fireux-places` `Place`.
+- `Maintainer`: a person trusted to keep Sproochli content accurate. This term covers BNB hosts, apartment managers, restaurant/menu managers, shop owners, and local info editors.
 
 Current runtime types still export `Place` for the Sproochli info-page context. Treat that type as Sproochli `InfoPlace` semantics, not as FireUX canonical Place identity. Renaming or adding an `InfoPlace` export is future alignment, not implemented canon yet.
 
@@ -37,5 +38,6 @@ Current runtime types still export `Place` for the Sproochli info-page context. 
 - Not an editor, QR generator, restaurant, menu, supplier, or kitchen package.
 
 ## 7) Future / Not Canon Yet
-- Firestore storage paths, editor workflows, translation generation, QR creation, and package-owned public routes are not canon yet.
-- If Sproochli later stores records, this canon must be updated before declaring collection paths or mutation entrypoints authoritative.
+- The Sproochli app owns its product storage path: `sproochli_sites/{siteId}` with `maintainers`, `pages`, `sections`, and `translation_cache` subcollections.
+- The shared package does not yet own mutation entrypoints for those records.
+- Editor workflows, translation generation, QR creation, and package-owned public routes are not canon yet.

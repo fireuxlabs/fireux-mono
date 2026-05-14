@@ -76,6 +76,7 @@ Use `defineFireuxConfig(...)` in `nuxt.config.ts`. The important identity fields
 - `id`
 - `name`
 - `shortName`
+- `databaseId` for standalone apps with their own named Firestore database
 - `role`
 - `consoleFamilies`
 - `modules`
@@ -90,11 +91,107 @@ After adding the app folder, wire the repo-level registration points:
 
 1. Add the app to `projects/tsconfig.json`.
 2. Add the app to `scripts/_lib/app-registry.mjs`.
-3. Run `pnpm sync:dev-workspace` so `package.json`, `.vscode/tasks.json`, and `.vscode/launch.json` are generated from the registry.
-4. Check `package.json` has the expected `dev:<key>` script.
-5. If Firebase deploy is in scope, keep `firebase.json` aligned with the app id and hosting site.
+3. If the app is standalone, give it its own `databaseId` in both the app config and the registry.
+4. Run `pnpm sync:dev-workspace` so `package.json`, `.vscode/tasks.json`, and `.vscode/launch.json` are generated from the registry.
+5. Check `package.json` has the expected `dev:<key>` script.
+6. If Firebase deploy is in scope, keep `firebase.json` aligned with the app id and hosting site.
 
 Do not hand-edit generated VS Code task/launch files unless the generator itself is wrong.
+
+## Firebase And Firestore Registration
+
+FireUX apps have two levels of registration:
+
+- `(default)` database: bootstrap registry and public mirror records.
+- Named operational database: canonical app and domain records.
+
+For a FireUX-owned app, ensure:
+
+```text
+(default)/ecosystem/fireux-fireux.apps contains <appId>
+fireux/apps/<appId> exists
+```
+
+For standalone apps, also ensure the operational database exists and the app points at it:
+
+```text
+defineFireuxConfig({ databaseId: '<appId>' })
+scripts/_lib/app-registry.mjs databaseId: '<appId>'
+Firebase project has Firestore database '<appId>'
+```
+
+Do not store day-to-day standalone app domain records in the shared `fireux` database once the app has its own database. Use the shared `fireux` database for the FireUX app catalog; use the app database for product data.
+
+Run the app catalog migration after adding registry data:
+
+```sh
+node scripts/migrate-fireux-app-catalog.mjs --app <appId> --commit
+```
+
+That migration should create/update:
+
+```text
+fireux/apps/<appId>
+(default)/ecosystem/fireux-fireux.apps
+```
+
+If the app has static proof data, add a seed script before pretending the console is real. The seed script should say where it migrates from and where it writes. For example, Sproochli's first BNB proof migrates from:
+
+```text
+projects/fireux/sproochli/app/content/bnbGuides.ts
+```
+
+into:
+
+```text
+sproochli/sproochli_sites/{siteId}
+sproochli/sproochli_sites/{siteId}/pages/{pageId}
+sproochli/sproochli_sites/{siteId}/pages/{pageId}/sections/{sectionId}
+sproochli/sproochli_sites/{siteId}/maintainers/{maintainerId}
+```
+
+## App Media And Storage
+
+Every app should have repo-local public assets and Storage-backed canonical media.
+
+Repo-local source files:
+
+```text
+projects/<ecosystem>/<app>/public/img/app/thumbnail.png
+projects/<ecosystem>/<app>/public/img/app/logo.png
+projects/<ecosystem>/<app>/public/img/app/wordmark-light.png
+projects/<ecosystem>/<app>/public/img/app/wordmark-dark.png
+projects/<ecosystem>/<app>/public/img/app/cover.png
+```
+
+Canonical Storage objects:
+
+```text
+apps/<appId>/media/thumbnail
+apps/<appId>/media/logo
+apps/<appId>/media/wordmark-light
+apps/<appId>/media/wordmark-dark
+apps/<appId>/media/cover
+```
+
+Canonical Firestore fields live under `apps/<appId>.media`:
+
+```text
+media.thumbnail_url
+media.logo_url
+media.wordmark_light_url
+media.wordmark_dark_url
+media.cover_url
+```
+
+Use:
+
+```sh
+node scripts/audit-app-media.mjs --ecosystem <ecosystemId>
+node scripts/sync-app-media-from-public.mjs --ecosystem <ecosystemId> --app <appId> --apply
+```
+
+Do not write app image URLs only to legacy top-level fields such as `thumbnail_url`.
 
 ## Routes And Console
 
@@ -107,6 +204,16 @@ Console routes should follow `docs/console/README.md`:
 - Visible families come from `consoleFamilies`, not route scanning.
 
 If a console placeholder is intentionally light, keep it honest: show the domain name, rough entities, draft/published state, and what is coming next. Avoid creating fake editor complexity.
+
+Apps with console routes should keep `app/app.vue` canonical and thin:
+
+```vue
+<template>
+  <AppShell />
+</template>
+```
+
+Put app-specific behavior in pages, layouts, content, or extension modules, not in `app.vue`.
 
 ## Server Routes
 
@@ -159,6 +266,9 @@ These are improvement notes from adding `projects/fireux/sproochli`:
 6. API links in pages should use `<a href>` instead of `NuxtLink`; otherwise Vue Router may warn about unmatched API paths during SSR.
 7. The canonical reference app for “standalone inside FireUX” should be named in docs. Right now that knowledge is discoverable only by inspection.
 8. Firebase hosting config is still copy-forward. A small helper that derives `codebase`, `entryPoint`, function region, and site defaults from app registry data would reduce mistakes.
+9. Standalone app creation must create the named Firestore database or the runtime config will correctly point at a database that does not exist yet.
+10. App media scripts must stay aligned with the nested `media.*` canon and include the `cover` object, not only logo/wordmarks.
+11. Static proof content should get a seed script immediately so the console and database have a visible migration source.
 
 ## Recommended Tooling Improvements
 

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Sproochli logo mark">
+  <rect width="512" height="512" rx="96" fill="#FFF8F0"/>
+  <path d="M82 126h348a68 68 0 0 1 68 68v40a68 68 0 0 1-68 68H174l-48 54v-54H82a68 68 0 0 1-68-68v-40a68 68 0 0 1 68-68z" fill="#3A246B"/>
+  <text x="256" y="237" text-anchor="middle" font-family="Arial Rounded MT Bold, Arial, sans-serif" font-size="82" font-weight="800" fill="#fff">sproochli</text>
+  <rect x="148" y="306" width="216" height="166" rx="28" fill="#fff" stroke="#9B7AF0" stroke-width="8"/>
+  <text x="256" y="420" text-anchor="middle" font-family="monospace" font-size="92" font-weight="900" fill="#3A246B">▦▧</text>
+</svg>

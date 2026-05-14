@@ -3,8 +3,8 @@
  * Syncs app media from local /public/img/app/* into Firebase Storage and Firestore.
  *
  * Canon:
- * - Storage objects: apps/{appId}/media/{thumbnail|logo|wordmark-light|wordmark-dark}
- * - Firestore fields: thumbnail_url, logo_url, wordmark_light_url, wordmark_dark_url
+ * - Storage objects: apps/{appId}/media/{thumbnail|logo|wordmark-light|wordmark-dark|cover}
+ * - Firestore fields: media.{thumbnail_url|logo_url|wordmark_light_url|wordmark_dark_url|cover_url}
  *
  * Uses per-ecosystem service accounts from temp/app-media-audit.json.
  *
@@ -20,6 +20,7 @@ import path from 'node:path'
 import process from 'node:process'
 import crypto from 'node:crypto'
 import admin from 'firebase-admin'
+import { getFirestore } from 'firebase-admin/firestore'
 
 import { parseArgs } from './_lib/args.mjs'
 
@@ -160,6 +161,7 @@ Reads targets from temp/app-media-audit.json.
     { kind: 'logo', relative: path.join('img', 'app', 'logo.png') },
     { kind: 'wordmark-light', relative: path.join('img', 'app', 'wordmark-light.png') },
     { kind: 'wordmark-dark', relative: path.join('img', 'app', 'wordmark-dark.png') },
+    { kind: 'cover', relative: path.join('img', 'app', 'cover.png') },
   ]
 
   const ecosystemIds = Object.keys(ecosystems)
@@ -178,6 +180,10 @@ Reads targets from temp/app-media-audit.json.
   for (const ecoId of ecosystemIds) {
     const eco = ecosystems[ecoId]
     const projectId = eco?.projectId
+    const databaseId =
+      typeof eco?.databaseId === 'string' && eco.databaseId !== '(default)'
+        ? eco.databaseId
+        : ''
     const bucketName = eco?.bucket
     const serviceAccountRel = eco?.serviceAccount
 
@@ -213,7 +219,7 @@ Reads targets from temp/app-media-audit.json.
     )
 
     const bucket = app.storage().bucket()
-    const firestore = app.firestore()
+    const firestore = databaseId ? getFirestore(app, databaseId) : app.firestore()
 
     for (const appId of appIds) {
       const resolved = []
@@ -263,18 +269,26 @@ Reads targets from temp/app-media-audit.json.
 
       await firestore.collection('apps').doc(appId).set(
         {
-          thumbnail_url: urls['thumbnail'] ?? '',
-          logo_url: urls['logo'] ?? '',
-          wordmark_light_url: urls['wordmark-light'] ?? '',
-          wordmark_dark_url: urls['wordmark-dark'] ?? '',
+          media: {
+            thumbnail_url: urls['thumbnail'] ?? '',
+            logo_url: urls['logo'] ?? '',
+            wordmark_light_url: urls['wordmark-light'] ?? '',
+            wordmark_dark_url: urls['wordmark-dark'] ?? '',
+            cover_url: urls['cover'] ?? '',
+          },
           // Remove legacy fields if they exist.
+          thumbnail_url: admin.firestore.FieldValue.delete(),
+          logo_url: admin.firestore.FieldValue.delete(),
+          wordmark_light_url: admin.firestore.FieldValue.delete(),
+          wordmark_dark_url: admin.firestore.FieldValue.delete(),
+          cover_url: admin.firestore.FieldValue.delete(),
           avatar_url: admin.firestore.FieldValue.delete(),
           wordmark_url: admin.firestore.FieldValue.delete(),
         },
         { merge: true }
       )
 
-      console.log(`[ok] ${ecoId}/${appId}: uploaded 4 objects + wrote Firestore URLs`)
+      console.log(`[ok] ${ecoId}/${appId}: uploaded 5 objects + wrote Firestore URLs`)
     }
   }
 

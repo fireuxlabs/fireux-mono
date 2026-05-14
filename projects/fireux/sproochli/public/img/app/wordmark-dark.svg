@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 192">
+<style>
+.txt {
+font: 800 92px 'Arial Rounded MT Bold', Arial, sans-serif;
+fill: #6C3CF0;
+stroke: white;
+stroke-width: 12;
+paint-order: stroke fill;
+}
+</style>
+<text x="384" y="110" text-anchor="middle" class="txt">sproochli</text>
+<circle cx="531" cy="48" r="6" fill="#FF7FB0"/>
+</svg>

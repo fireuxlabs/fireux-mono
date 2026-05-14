@@ -7,13 +7,16 @@ const fireuxConfig = defineFireuxConfig({
   id: 'sproochli',
   name: 'Sproochli',
   shortName: 'Sproochli',
+  databaseId: 'sproochli',
   meta: metaContent,
   role: 'standalone',
-  consoleFamilies: [],
+  consoleFamilies: ['bnb'],
   seo: {
     siteUrl: 'https://sproochli.web.app',
   },
   modules: ['fireux-sproochli'],
 })
 
-export default defineNuxtConfig(fireuxConfig)
+export default defineNuxtConfig({
+  ...fireuxConfig,
+})

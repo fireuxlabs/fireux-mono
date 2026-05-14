@@ -63,6 +63,9 @@ function discoverEcosystemFirebaseConfigs() {
     const storageBucket =
       extractFirst(text, /\bstorageBucket\s*:\s*'([^']+)'/) ??
       extractFirst(text, /\bstorageBucket\s*:\s*"([^"]+)"/)
+    const databaseId =
+      extractFirst(text, /\bdatabaseId\s*:\s*'([^']+)'/) ??
+      extractFirst(text, /\bdatabaseId\s*:\s*"([^"]+)"/)
     const name =
       extractFirst(text, /\bname\s*:\s*'([^']+)'/) ??
       extractFirst(text, /\bname\s*:\s*"([^"]+)"/)
@@ -73,6 +76,7 @@ function discoverEcosystemFirebaseConfigs() {
       ecosystemId: id,
       ecosystemName: name || id,
       projectId,
+      databaseId: databaseId || '',
       storageBucket,
       serviceAccountPath: fs.existsSync(serviceAccountPath)
         ? serviceAccountPath
@@ -194,6 +198,7 @@ Reads apps from Firestore collection 'apps' and checks Firebase Storage objects 
 - apps/{appId}/media/logo
 - apps/{appId}/media/wordmark-light
 - apps/{appId}/media/wordmark-dark
+- apps/{appId}/media/cover
 
 Also validates Firestore URL fields match the expected object path.
 
@@ -232,6 +237,7 @@ Options:
       ecosystemId: t.ecosystemId,
       ecosystemName: t.ecosystemName,
       projectId: t.projectId,
+      databaseId: t.databaseId || '(default)',
       bucket: t.storageBucket,
       sourceFile: t.sourceFile,
     })),
@@ -266,6 +272,11 @@ Options:
       objectPath: (id) => `apps/${id}/media/wordmark-dark`,
       field: 'wordmark_dark_url',
     },
+    {
+      kind: 'cover',
+      objectPath: (id) => `apps/${id}/media/cover`,
+      field: 'cover_url',
+    },
   ]
 
   for (const target of targets) {
@@ -279,7 +290,7 @@ Options:
       `audit:${target.projectId}`
     )
 
-    const db = getFirestore(app)
+    const db = target.databaseId ? getFirestore(app, target.databaseId) : getFirestore(app)
     const bucket = getStorage(app).bucket(target.storageBucket)
 
     const appsSnap = await db.collection('apps').get()
@@ -288,6 +299,7 @@ Options:
       ecosystemId: target.ecosystemId,
       ecosystemName: target.ecosystemName,
       projectId: target.projectId,
+      databaseId: target.databaseId || '(default)',
       bucket: target.storageBucket,
       serviceAccount: target.serviceAccountPath
         ? path.relative(repoRoot(), target.serviceAccountPath)
@@ -304,6 +316,9 @@ Options:
     for (const doc of appsSnap.docs) {
       const id = doc.id
       const data = doc.data() || {}
+      const media = data.media && typeof data.media === 'object' && !Array.isArray(data.media)
+        ? data.media
+        : {}
 
       const entry = {
         id,
@@ -321,7 +336,12 @@ Options:
         const file = bucket.file(objectPath)
         const [exists] = await file.exists()
 
-        const value = typeof data[spec.field] === 'string' ? data[spec.field] : ''
+        const value =
+          typeof media[spec.field] === 'string'
+            ? media[spec.field]
+            : typeof data[spec.field] === 'string'
+              ? data[spec.field]
+              : ''
 
         const hasField = Boolean(value)
         const urlMatches = hasField

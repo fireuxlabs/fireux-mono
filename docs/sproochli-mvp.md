@@ -58,32 +58,52 @@ The public JSON endpoint is intentional product infrastructure, not only develop
 
 ## Sample Data Model
 
+The shared human term for people who keep Sproochli content accurate is:
+
+```text
+Maintainer
+```
+
+A maintainer can be a BNB host, apartment manager, restaurant manager, bike-shop owner, or trusted info editor. Roles can be `owner`, `manager`, `editor`, or `viewer`, but the collection name stays `maintainers` across BNB, menu, and info branches.
+
 ```ts
-type Place = {
+type SproochliSite = {
   id: string
   slug: string
+  type: 'bnb' | 'menu' | 'info'
   name: string
+  title: string
+  status: 'draft' | 'published' | 'archived'
   primary_language: string
-  supported_languages: string[]
-  contact?: string
+  original_language: string
+  published: boolean
 }
 
-type InfoPage = {
+type SproochliMaintainer = {
   id: string
-  place_id: string
+  display_name: string
+  maintainer_type: 'host' | 'manager' | 'owner' | 'info_editor'
+  role: 'owner' | 'manager' | 'editor' | 'viewer'
+  email?: string
+  phone?: string
+  uid?: string
+}
+
+type SproochliPage = {
+  id: string
   slug: string
   title: string
   description: string
   original_language: string
   titles: Record<string, string>
   descriptions: Record<string, string>
-  sections: InfoSection[]
+  sections: SproochliSection[]
   active: boolean
   published: boolean
   sort_order: number
 }
 
-type InfoSection = {
+type SproochliSection = {
   id: string
   title: string
   titles: Record<string, string>
@@ -93,7 +113,7 @@ type InfoSection = {
   sort_order: number
 }
 
-type InfoBlock = {
+type SproochliBlock = {
   id: string
   type: 'text' | 'warning' | 'list' | 'contact' | 'link'
   title?: string
@@ -104,22 +124,41 @@ type InfoBlock = {
 }
 ```
 
-The current sample data lives in `projects/fireux/sproochli/app/content/sampleInfo.ts`. Generic types and resolver helpers live in `packages/extensions/fireux-sproochli/src/runtime/info`.
-
-## Future Firestore Paths
+The current static proof data lives in:
 
 ```text
-places/{placeId}
-places/{placeId}/info_pages/{pageId}
-places/{placeId}/info_pages/{pageId}/sections/{sectionId}
-places/{placeId}/info_pages/{pageId}/translation_cache/{language}
-translation_glossary/{termId}
+projects/fireux/sproochli/app/content/bnbGuides.ts
+projects/fireux/sproochli/app/content/sampleInfo.ts
 ```
 
-The translation cache path requested for the first Firestore pass is:
+The first seed path for Nat's BNB guide is:
 
 ```text
-places/{placeId}/info_pages/{pageId}/translation_cache/{language}
+node scripts/seed-sproochli-bnb-guides.mjs --commit
+```
+
+That migrates the static BNB proof into the Sproochli app database. Generic types and resolver helpers live in `packages/extensions/fireux-sproochli/src/runtime/info`.
+
+## Firestore Paths
+
+```text
+sproochli_sites/{siteId}
+sproochli_sites/{siteId}/maintainers/{maintainerId}
+sproochli_sites/{siteId}/guest_messages/{messageId}
+sproochli_sites/{siteId}/pages/{pageId}
+sproochli_sites/{siteId}/pages/{pageId}/sections/{sectionId}
+sproochli_sites/{siteId}/pages/{pageId}/translation_cache/{language}
+sproochli_translation_glossary/{termId}
+```
+
+For the first BNB proof:
+
+```text
+sproochli_sites/holiday-with-nats
+sproochli_sites/holiday-with-nats/maintainers/natalie
+sproochli_sites/holiday-with-nats/guest_messages/current
+sproochli_sites/holiday-with-nats/pages/guest-guide
+sproochli_sites/holiday-with-nats/pages/guest-guide/sections/{sectionId}
 ```
 
 ## Next Steps

@@ -1,47 +1,189 @@
 {
-  "generatedAt": "2026-01-04T20:57:43.981Z",
+  "generatedAt": "2026-05-14T14:57:21.968Z",
   "targets": [
     {
-      "ecosystemId": "fireux-cleanbox",
-      "ecosystemName": "cleanbox",
-      "projectId": "cleanbox-f15bc",
-      "bucket": "cleanbox-f15bc.firebasestorage.app",
-      "sourceFile": "packages/ecosystem/fireux-cleanbox/src/config/firebase/ecosystem.config.ts"
-    },
-    {
-      "ecosystemId": "fireux",
-      "ecosystemName": "FireUX",
+      "ecosystemId": "fireux-fireux",
+      "ecosystemName": "fireux",
       "projectId": "fireux-2005",
+      "databaseId": "fireux",
       "bucket": "fireux-2005.firebasestorage.app",
       "sourceFile": "packages/ecosystem/fireux-fireux/src/config/firebase/ecosystem.config.ts"
-    },
-    {
-      "ecosystemId": "fireux-misebox",
-      "ecosystemName": "misebox",
-      "projectId": "misebox-78f9c",
-      "bucket": "misebox-78f9c.appspot.com",
-      "sourceFile": "packages/ecosystem/fireux-misebox/src/config/firebase/ecosystem.config.ts"
     }
   ],
   "ecosystems": {
-    "fireux-cleanbox": {
-      "ecosystemId": "fireux-cleanbox",
-      "ecosystemName": "cleanbox",
-      "projectId": "cleanbox-f15bc",
-      "bucket": "cleanbox-f15bc.firebasestorage.app",
-      "serviceAccount": "packages/ecosystem/fireux-cleanbox/src/config/firebase/service-account.json",
-      "appCount": 2,
+    "fireux-fireux": {
+      "ecosystemId": "fireux-fireux",
+      "ecosystemName": "fireux",
+      "projectId": "fireux-2005",
+      "databaseId": "fireux",
+      "bucket": "fireux-2005.firebasestorage.app",
+      "serviceAccount": "packages/ecosystem/fireux-fireux/src/config/firebase/service-account.json",
+      "appCount": 11,
       "apps": {
+        "bringli-app": {
+          "id": "bringli-app",
+          "ok": false,
+          "checks": [
+            {
+              "kind": "thumbnail",
+              "firestoreField": "thumbnail_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://bringli.web.app/img/app/thumbnail.png",
+              "storageObjectPath": "apps/bringli-app/media/thumbnail",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            },
+            {
+              "kind": "logo",
+              "firestoreField": "logo_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://bringli.web.app/img/app/logo.png",
+              "storageObjectPath": "apps/bringli-app/media/logo",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            },
+            {
+              "kind": "wordmarkLight",
+              "firestoreField": "wordmark_light_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://bringli.web.app/img/app/wordmark-light.png",
+              "storageObjectPath": "apps/bringli-app/media/wordmark-light",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            },
+            {
+              "kind": "wordmarkDark",
+              "firestoreField": "wordmark_dark_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://bringli.web.app/img/app/wordmark-dark.png",
+              "storageObjectPath": "apps/bringli-app/media/wordmark-dark",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            },
+            {
+              "kind": "cover",
+              "firestoreField": "cover_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://bringli.web.app/img/app/cover.png",
+              "storageObjectPath": "apps/bringli-app/media/cover",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            }
+          ],
+          "legacy": {}
+        },
         "cleanbox-app": {
           "id": "cleanbox-app",
+          "ok": false,
+          "checks": [
+            {
+              "kind": "thumbnail",
+              "firestoreField": "thumbnail_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://cleanbox.web.app/img/app/thumbnail.png",
+              "storageObjectPath": "apps/cleanbox-app/media/thumbnail",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            },
+            {
+              "kind": "logo",
+              "firestoreField": "logo_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://cleanbox.web.app/img/app/logo.png",
+              "storageObjectPath": "apps/cleanbox-app/media/logo",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            },
+            {
+              "kind": "wordmarkLight",
+              "firestoreField": "wordmark_light_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://cleanbox.web.app/img/app/wordmark-light.png",
+              "storageObjectPath": "apps/cleanbox-app/media/wordmark-light",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            },
+            {
+              "kind": "wordmarkDark",
+              "firestoreField": "wordmark_dark_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://cleanbox.web.app/img/app/wordmark-dark.png",
+              "storageObjectPath": "apps/cleanbox-app/media/wordmark-dark",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            },
+            {
+              "kind": "cover",
+              "firestoreField": "cover_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://cleanbox.web.app/img/app/cover.png",
+              "storageObjectPath": "apps/cleanbox-app/media/cover",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            }
+          ],
+          "legacy": {}
+        },
+        "find-my-seo-app": {
+          "id": "find-my-seo-app",
           "ok": true,
           "checks": [
             {
               "kind": "thumbnail",
               "firestoreField": "thumbnail_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/cleanbox-f15bc.firebasestorage.app/o/apps%2Fcleanbox-app%2Fmedia%2Fthumbnail?alt=media&token=da2aa82547394839c0f84cd5a7feda1e",
-              "storageObjectPath": "apps/cleanbox-app/media/thumbnail",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffind-my-seo-app%2Fmedia%2Fthumbnail?alt=media&token=1f5b5ca674af6ea9e406430cd6c14804",
+              "storageObjectPath": "apps/find-my-seo-app/media/thumbnail",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
               "status": "ok",
@@ -51,8 +193,8 @@
               "kind": "logo",
               "firestoreField": "logo_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/cleanbox-f15bc.firebasestorage.app/o/apps%2Fcleanbox-app%2Fmedia%2Flogo?alt=media&token=30d2e3324e39ca729341ce14233f3898",
-              "storageObjectPath": "apps/cleanbox-app/media/logo",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffind-my-seo-app%2Fmedia%2Flogo?alt=media&token=9a3d0c2e3e30fa3968b5a5f4b0d83893",
+              "storageObjectPath": "apps/find-my-seo-app/media/logo",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
               "status": "ok",
@@ -62,8 +204,8 @@
               "kind": "wordmarkLight",
               "firestoreField": "wordmark_light_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/cleanbox-f15bc.firebasestorage.app/o/apps%2Fcleanbox-app%2Fmedia%2Fwordmark-light?alt=media&token=e9e0bffa5f2b8ea5b28993b71aabc5c6",
-              "storageObjectPath": "apps/cleanbox-app/media/wordmark-light",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffind-my-seo-app%2Fmedia%2Fwordmark-light?alt=media&token=9e7ab81f37cd37abebc39835aa8d434b",
+              "storageObjectPath": "apps/find-my-seo-app/media/wordmark-light",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
               "status": "ok",
@@ -73,8 +215,19 @@
               "kind": "wordmarkDark",
               "firestoreField": "wordmark_dark_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/cleanbox-f15bc.firebasestorage.app/o/apps%2Fcleanbox-app%2Fmedia%2Fwordmark-dark?alt=media&token=5b506060520b6f494a5bcb202381cd65",
-              "storageObjectPath": "apps/cleanbox-app/media/wordmark-dark",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffind-my-seo-app%2Fmedia%2Fwordmark-dark?alt=media&token=31c621c5e0d0972de3c52bf6cb54d0aa",
+              "storageObjectPath": "apps/find-my-seo-app/media/wordmark-dark",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "cover",
+              "firestoreField": "cover_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffind-my-seo-app%2Fmedia%2Fcover?alt=media&token=c840b4e338215a321fc03ec9420f0393",
+              "storageObjectPath": "apps/find-my-seo-app/media/cover",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
               "status": "ok",
@@ -83,72 +236,6 @@
           ],
           "legacy": {}
         },
-        "richies-reinigung": {
-          "id": "richies-reinigung",
-          "ok": true,
-          "checks": [
-            {
-              "kind": "thumbnail",
-              "firestoreField": "thumbnail_url",
-              "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/cleanbox-f15bc.firebasestorage.app/o/apps%2Frichies-reinigung%2Fmedia%2Fthumbnail?alt=media&token=42edf25450f0715826cc0b34fd6995d5",
-              "storageObjectPath": "apps/richies-reinigung/media/thumbnail",
-              "storageExists": true,
-              "urlMatchesExpectedObject": true,
-              "status": "ok",
-              "issues": []
-            },
-            {
-              "kind": "logo",
-              "firestoreField": "logo_url",
-              "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/cleanbox-f15bc.firebasestorage.app/o/apps%2Frichies-reinigung%2Fmedia%2Flogo?alt=media&token=59b92b6665e70329dc5a59b533ffbf30",
-              "storageObjectPath": "apps/richies-reinigung/media/logo",
-              "storageExists": true,
-              "urlMatchesExpectedObject": true,
-              "status": "ok",
-              "issues": []
-            },
-            {
-              "kind": "wordmarkLight",
-              "firestoreField": "wordmark_light_url",
-              "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/cleanbox-f15bc.firebasestorage.app/o/apps%2Frichies-reinigung%2Fmedia%2Fwordmark-light?alt=media&token=4b2c82b6818ac54a37853b642968e2a1",
-              "storageObjectPath": "apps/richies-reinigung/media/wordmark-light",
-              "storageExists": true,
-              "urlMatchesExpectedObject": true,
-              "status": "ok",
-              "issues": []
-            },
-            {
-              "kind": "wordmarkDark",
-              "firestoreField": "wordmark_dark_url",
-              "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/cleanbox-f15bc.firebasestorage.app/o/apps%2Frichies-reinigung%2Fmedia%2Fwordmark-dark?alt=media&token=13ff0671d217b56eb8aa34a152bec6f7",
-              "storageObjectPath": "apps/richies-reinigung/media/wordmark-dark",
-              "storageExists": true,
-              "urlMatchesExpectedObject": true,
-              "status": "ok",
-              "issues": []
-            }
-          ],
-          "legacy": {}
-        }
-      },
-      "totals": {
-        "ok": 2,
-        "warn": 0,
-        "error": 0
-      }
-    },
-    "fireux": {
-      "ecosystemId": "fireux",
-      "ecosystemName": "FireUX",
-      "projectId": "fireux-2005",
-      "bucket": "fireux-2005.firebasestorage.app",
-      "serviceAccount": "packages/ecosystem/fireux-fireux/src/config/firebase/service-account.json",
-      "appCount": 2,
-      "apps": {
         "fireux-app": {
           "id": "fireux-app",
           "ok": true,
@@ -157,7 +244,7 @@
               "kind": "thumbnail",
               "firestoreField": "thumbnail_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-app%2Fmedia%2Fthumbnail?alt=media&token=ea1bb8e3f685374bf2ba1dfd84712bc5",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-app%2Fmedia%2Fthumbnail?alt=media&token=164e63b23284c538330e4d1872e0b951",
               "storageObjectPath": "apps/fireux-app/media/thumbnail",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
@@ -168,7 +255,7 @@
               "kind": "logo",
               "firestoreField": "logo_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-app%2Fmedia%2Flogo?alt=media&token=c1c2096059a9827df12efd77b4538979",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-app%2Fmedia%2Flogo?alt=media&token=bd7f52b2066b1ca1875f2966256c922d",
               "storageObjectPath": "apps/fireux-app/media/logo",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
@@ -179,7 +266,7 @@
               "kind": "wordmarkLight",
               "firestoreField": "wordmark_light_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-app%2Fmedia%2Fwordmark-light?alt=media&token=84679415d28bcd7929ba98b4616f0430",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-app%2Fmedia%2Fwordmark-light?alt=media&token=20b3e6829616f704c41224f656df5974",
               "storageObjectPath": "apps/fireux-app/media/wordmark-light",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
@@ -190,8 +277,19 @@
               "kind": "wordmarkDark",
               "firestoreField": "wordmark_dark_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-app%2Fmedia%2Fwordmark-dark?alt=media&token=295b9c6067dc5ef643126b8857940514",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-app%2Fmedia%2Fwordmark-dark?alt=media&token=f851f437aa64391f11288f5239acfcf5",
               "storageObjectPath": "apps/fireux-app/media/wordmark-dark",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "cover",
+              "firestoreField": "cover_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-app%2Fmedia%2Fcover?alt=media&token=625d6cb394aa0ebe68f8fa3c86669742",
+              "storageObjectPath": "apps/fireux-app/media/cover",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
               "status": "ok",
@@ -208,7 +306,7 @@
               "kind": "thumbnail",
               "firestoreField": "thumbnail_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-tenant%2Fmedia%2Fthumbnail?alt=media&token=149a707ac2bfc76e03c6e67751c0f647",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-tenant%2Fmedia%2Fthumbnail?alt=media&token=193981d81563b94271137c2958b9aba0",
               "storageObjectPath": "apps/fireux-tenant/media/thumbnail",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
@@ -219,7 +317,7 @@
               "kind": "logo",
               "firestoreField": "logo_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-tenant%2Fmedia%2Flogo?alt=media&token=2b338e179f314cc8524603c4e5b996bd",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-tenant%2Fmedia%2Flogo?alt=media&token=5926a5a2bb12693bfc8e59c5a45828a8",
               "storageObjectPath": "apps/fireux-tenant/media/logo",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
@@ -230,7 +328,7 @@
               "kind": "wordmarkLight",
               "firestoreField": "wordmark_light_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-tenant%2Fmedia%2Fwordmark-light?alt=media&token=3086509c523a25c1e2693ea6e6f09dde",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-tenant%2Fmedia%2Fwordmark-light?alt=media&token=33ccd9038ca9a735639befec3a1575a6",
               "storageObjectPath": "apps/fireux-tenant/media/wordmark-light",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
@@ -241,74 +339,19 @@
               "kind": "wordmarkDark",
               "firestoreField": "wordmark_dark_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-tenant%2Fmedia%2Fwordmark-dark?alt=media&token=4ad8a94462de6a0136f3cb9830df8c4e",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-tenant%2Fmedia%2Fwordmark-dark?alt=media&token=0ad13c4eb2cee2238fd772f127e3cfe4",
               "storageObjectPath": "apps/fireux-tenant/media/wordmark-dark",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
               "status": "ok",
               "issues": []
-            }
-          ],
-          "legacy": {}
-        }
-      },
-      "totals": {
-        "ok": 2,
-        "warn": 0,
-        "error": 0
-      }
-    },
-    "fireux-misebox": {
-      "ecosystemId": "fireux-misebox",
-      "ecosystemName": "misebox",
-      "projectId": "misebox-78f9c",
-      "bucket": "misebox-78f9c.appspot.com",
-      "serviceAccount": "packages/ecosystem/fireux-misebox/src/config/firebase/service-account.json",
-      "appCount": 2,
-      "apps": {
-        "misebox-app": {
-          "id": "misebox-app",
-          "ok": true,
-          "checks": [
-            {
-              "kind": "thumbnail",
-              "firestoreField": "thumbnail_url",
-              "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fmedia%2Fthumbnail?alt=media&token=4ed759bb7663edd1ff929fefb1378ff8",
-              "storageObjectPath": "apps/misebox-app/media/thumbnail",
-              "storageExists": true,
-              "urlMatchesExpectedObject": true,
-              "status": "ok",
-              "issues": []
             },
             {
-              "kind": "logo",
-              "firestoreField": "logo_url",
+              "kind": "cover",
+              "firestoreField": "cover_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fmedia%2Flogo?alt=media&token=21c345781892cae9584b93697b4691ee",
-              "storageObjectPath": "apps/misebox-app/media/logo",
-              "storageExists": true,
-              "urlMatchesExpectedObject": true,
-              "status": "ok",
-              "issues": []
-            },
-            {
-              "kind": "wordmarkLight",
-              "firestoreField": "wordmark_light_url",
-              "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fmedia%2Fwordmark-light?alt=media&token=d719ee5d6d9b9024d8303aa931ce7d15",
-              "storageObjectPath": "apps/misebox-app/media/wordmark-light",
-              "storageExists": true,
-              "urlMatchesExpectedObject": true,
-              "status": "ok",
-              "issues": []
-            },
-            {
-              "kind": "wordmarkDark",
-              "firestoreField": "wordmark_dark_url",
-              "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fmisebox-app%2Fmedia%2Fwordmark-dark?alt=media&token=9b9d28cead9274ef15e68a51282074a8",
-              "storageObjectPath": "apps/misebox-app/media/wordmark-dark",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Ffireux-tenant%2Fmedia%2Fcover?alt=media&token=a125c4d02bf5ebad1250b17d16490df8",
+              "storageObjectPath": "apps/fireux-tenant/media/cover",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
               "status": "ok",
@@ -317,16 +360,401 @@
           ],
           "legacy": {}
         },
+        "granite-app": {
+          "id": "granite-app",
+          "ok": false,
+          "checks": [
+            {
+              "kind": "thumbnail",
+              "firestoreField": "thumbnail_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://granite-os.web.app/img/app/thumbnail.png",
+              "storageObjectPath": "apps/granite-app/media/thumbnail",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            },
+            {
+              "kind": "logo",
+              "firestoreField": "logo_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://granite-os.web.app/img/app/logo.png",
+              "storageObjectPath": "apps/granite-app/media/logo",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            },
+            {
+              "kind": "wordmarkLight",
+              "firestoreField": "wordmark_light_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://granite-os.web.app/img/app/wordmark-light.png",
+              "storageObjectPath": "apps/granite-app/media/wordmark-light",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            },
+            {
+              "kind": "wordmarkDark",
+              "firestoreField": "wordmark_dark_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://granite-os.web.app/img/app/wordmark-dark.png",
+              "storageObjectPath": "apps/granite-app/media/wordmark-dark",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            },
+            {
+              "kind": "cover",
+              "firestoreField": "cover_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://granite-os.web.app/img/app/cover.png",
+              "storageObjectPath": "apps/granite-app/media/cover",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            }
+          ],
+          "legacy": {}
+        },
+        "la-tap-berne": {
+          "id": "la-tap-berne",
+          "ok": false,
+          "checks": [
+            {
+              "kind": "thumbnail",
+              "firestoreField": "thumbnail_url",
+              "firestoreHasUrl": false,
+              "firestoreUrl": "",
+              "storageObjectPath": "apps/la-tap-berne/media/thumbnail",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Missing Firestore URL field"
+              ]
+            },
+            {
+              "kind": "logo",
+              "firestoreField": "logo_url",
+              "firestoreHasUrl": false,
+              "firestoreUrl": "",
+              "storageObjectPath": "apps/la-tap-berne/media/logo",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Missing Firestore URL field"
+              ]
+            },
+            {
+              "kind": "wordmarkLight",
+              "firestoreField": "wordmark_light_url",
+              "firestoreHasUrl": false,
+              "firestoreUrl": "",
+              "storageObjectPath": "apps/la-tap-berne/media/wordmark-light",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Missing Firestore URL field"
+              ]
+            },
+            {
+              "kind": "wordmarkDark",
+              "firestoreField": "wordmark_dark_url",
+              "firestoreHasUrl": false,
+              "firestoreUrl": "",
+              "storageObjectPath": "apps/la-tap-berne/media/wordmark-dark",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Missing Firestore URL field"
+              ]
+            },
+            {
+              "kind": "cover",
+              "firestoreField": "cover_url",
+              "firestoreHasUrl": false,
+              "firestoreUrl": "",
+              "storageObjectPath": "apps/la-tap-berne/media/cover",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Missing Firestore URL field"
+              ]
+            }
+          ],
+          "legacy": {}
+        },
+        "misebox-app": {
+          "id": "misebox-app",
+          "ok": false,
+          "checks": [
+            {
+              "kind": "thumbnail",
+              "firestoreField": "thumbnail_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://misebox.app/img/app/thumbnail.png",
+              "storageObjectPath": "apps/misebox-app/media/thumbnail",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            },
+            {
+              "kind": "logo",
+              "firestoreField": "logo_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://misebox.app/img/app/logo.png",
+              "storageObjectPath": "apps/misebox-app/media/logo",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            },
+            {
+              "kind": "wordmarkLight",
+              "firestoreField": "wordmark_light_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://misebox.app/img/app/wordmark-light.png",
+              "storageObjectPath": "apps/misebox-app/media/wordmark-light",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            },
+            {
+              "kind": "wordmarkDark",
+              "firestoreField": "wordmark_dark_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://misebox.app/img/app/wordmark-dark.png",
+              "storageObjectPath": "apps/misebox-app/media/wordmark-dark",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            },
+            {
+              "kind": "cover",
+              "firestoreField": "cover_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://misebox.app/img/app/cover.png",
+              "storageObjectPath": "apps/misebox-app/media/cover",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Firestore URL does not match expected object path"
+              ]
+            }
+          ],
+          "legacy": {}
+        },
         "niederhorn": {
           "id": "niederhorn",
+          "ok": false,
+          "checks": [
+            {
+              "kind": "thumbnail",
+              "firestoreField": "thumbnail_url",
+              "firestoreHasUrl": false,
+              "firestoreUrl": "",
+              "storageObjectPath": "apps/niederhorn/media/thumbnail",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Missing Firestore URL field"
+              ]
+            },
+            {
+              "kind": "logo",
+              "firestoreField": "logo_url",
+              "firestoreHasUrl": false,
+              "firestoreUrl": "",
+              "storageObjectPath": "apps/niederhorn/media/logo",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Missing Firestore URL field"
+              ]
+            },
+            {
+              "kind": "wordmarkLight",
+              "firestoreField": "wordmark_light_url",
+              "firestoreHasUrl": false,
+              "firestoreUrl": "",
+              "storageObjectPath": "apps/niederhorn/media/wordmark-light",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Missing Firestore URL field"
+              ]
+            },
+            {
+              "kind": "wordmarkDark",
+              "firestoreField": "wordmark_dark_url",
+              "firestoreHasUrl": false,
+              "firestoreUrl": "",
+              "storageObjectPath": "apps/niederhorn/media/wordmark-dark",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Missing Firestore URL field"
+              ]
+            },
+            {
+              "kind": "cover",
+              "firestoreField": "cover_url",
+              "firestoreHasUrl": false,
+              "firestoreUrl": "",
+              "storageObjectPath": "apps/niederhorn/media/cover",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Missing Firestore URL field"
+              ]
+            }
+          ],
+          "legacy": {}
+        },
+        "richies-reinigung": {
+          "id": "richies-reinigung",
+          "ok": false,
+          "checks": [
+            {
+              "kind": "thumbnail",
+              "firestoreField": "thumbnail_url",
+              "firestoreHasUrl": false,
+              "firestoreUrl": "",
+              "storageObjectPath": "apps/richies-reinigung/media/thumbnail",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Missing Firestore URL field"
+              ]
+            },
+            {
+              "kind": "logo",
+              "firestoreField": "logo_url",
+              "firestoreHasUrl": false,
+              "firestoreUrl": "",
+              "storageObjectPath": "apps/richies-reinigung/media/logo",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Missing Firestore URL field"
+              ]
+            },
+            {
+              "kind": "wordmarkLight",
+              "firestoreField": "wordmark_light_url",
+              "firestoreHasUrl": false,
+              "firestoreUrl": "",
+              "storageObjectPath": "apps/richies-reinigung/media/wordmark-light",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Missing Firestore URL field"
+              ]
+            },
+            {
+              "kind": "wordmarkDark",
+              "firestoreField": "wordmark_dark_url",
+              "firestoreHasUrl": false,
+              "firestoreUrl": "",
+              "storageObjectPath": "apps/richies-reinigung/media/wordmark-dark",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Missing Firestore URL field"
+              ]
+            },
+            {
+              "kind": "cover",
+              "firestoreField": "cover_url",
+              "firestoreHasUrl": false,
+              "firestoreUrl": "",
+              "storageObjectPath": "apps/richies-reinigung/media/cover",
+              "storageExists": false,
+              "urlMatchesExpectedObject": false,
+              "status": "error",
+              "issues": [
+                "Missing storage object",
+                "Missing Firestore URL field"
+              ]
+            }
+          ],
+          "legacy": {}
+        },
+        "sproochli": {
+          "id": "sproochli",
           "ok": true,
           "checks": [
             {
               "kind": "thumbnail",
               "firestoreField": "thumbnail_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fniederhorn%2Fmedia%2Fthumbnail?alt=media&token=ab29ba2d132ac7a646f03ddebfe1fb93",
-              "storageObjectPath": "apps/niederhorn/media/thumbnail",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Fsproochli%2Fmedia%2Fthumbnail?alt=media&token=1a6c0fefbee73f349462c0b243154263",
+              "storageObjectPath": "apps/sproochli/media/thumbnail",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
               "status": "ok",
@@ -336,8 +764,8 @@
               "kind": "logo",
               "firestoreField": "logo_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fniederhorn%2Fmedia%2Flogo?alt=media&token=67028f8e3922d5b9e046c9484ef8fad2",
-              "storageObjectPath": "apps/niederhorn/media/logo",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Fsproochli%2Fmedia%2Flogo?alt=media&token=17ca37363b6fb69aa970390ada22dace",
+              "storageObjectPath": "apps/sproochli/media/logo",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
               "status": "ok",
@@ -347,8 +775,8 @@
               "kind": "wordmarkLight",
               "firestoreField": "wordmark_light_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fniederhorn%2Fmedia%2Fwordmark-light?alt=media&token=e864e877ef6e1c7c67f27cf52aedbecc",
-              "storageObjectPath": "apps/niederhorn/media/wordmark-light",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Fsproochli%2Fmedia%2Fwordmark-light?alt=media&token=b2a0fc71b96458968efb55c51e879021",
+              "storageObjectPath": "apps/sproochli/media/wordmark-light",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
               "status": "ok",
@@ -358,8 +786,19 @@
               "kind": "wordmarkDark",
               "firestoreField": "wordmark_dark_url",
               "firestoreHasUrl": true,
-              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/apps%2Fniederhorn%2Fmedia%2Fwordmark-dark?alt=media&token=11dde4a51ad030d1ade8581138fa58c3",
-              "storageObjectPath": "apps/niederhorn/media/wordmark-dark",
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Fsproochli%2Fmedia%2Fwordmark-dark?alt=media&token=85fe58feb09a6782041f7b1d92f2cc19",
+              "storageObjectPath": "apps/sproochli/media/wordmark-dark",
+              "storageExists": true,
+              "urlMatchesExpectedObject": true,
+              "status": "ok",
+              "issues": []
+            },
+            {
+              "kind": "cover",
+              "firestoreField": "cover_url",
+              "firestoreHasUrl": true,
+              "firestoreUrl": "https://firebasestorage.googleapis.com/v0/b/fireux-2005.firebasestorage.app/o/apps%2Fsproochli%2Fmedia%2Fcover?alt=media&token=df856cc68c0295cbbcaac9601c16804a",
+              "storageObjectPath": "apps/sproochli/media/cover",
               "storageExists": true,
               "urlMatchesExpectedObject": true,
               "status": "ok",
@@ -370,17 +809,17 @@
         }
       },
       "totals": {
-        "ok": 2,
+        "ok": 4,
         "warn": 0,
-        "error": 0
+        "error": 7
       }
     }
   },
   "totals": {
-    "ecosystems": 3,
-    "apps": 6,
-    "ok": 6,
+    "ecosystems": 1,
+    "apps": 11,
+    "ok": 4,
     "warn": 0,
-    "error": 0
+    "error": 7
   }
 }

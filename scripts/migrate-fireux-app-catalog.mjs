@@ -22,7 +22,7 @@ import { readFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { cert, initializeApp } from 'firebase-admin/app'
-import { Timestamp, getFirestore } from 'firebase-admin/firestore'
+import { FieldValue, Timestamp, getFirestore } from 'firebase-admin/firestore'
 import { parseArgs } from './_lib/args.mjs'
 import { APP_REGISTRY } from './_lib/app-registry.mjs'
 
@@ -63,6 +63,14 @@ const APP_OVERRIDES = {
     tagline: 'Standalone FireUX-hosted SEO product.',
     description:
       'Standalone FireUX-hosted product app inside the fireux ecosystem.',
+  },
+  sproochli: {
+    name: 'Sproochli',
+    shortName: 'Sproochli',
+    siteUrl: 'https://sproochli.web.app',
+    tagline: 'Multilingual guest guides, read-only menus, and information pages.',
+    description:
+      'Standalone FireUX app for Sproochli BNB guides, read-only menus, and practical translated information pages.',
   },
   'misebox-app': {
     name: 'Misebox',
@@ -151,6 +159,7 @@ function buildAppSeed(entry) {
     role,
     launchOrder: Number(entry.launchOrder || 0),
     workspace: normalizeString(entry.workspace),
+    databaseId: normalizeString(entry.databaseId || DATABASE_ID),
     consoleFamilies: Array.isArray(entry.consoleFamilies)
       ? uniqueStrings(entry.consoleFamilies)
       : [],
@@ -178,6 +187,7 @@ function buildPatch(seed, existing = {}) {
     status: normalizeString(existing.status) || 'active',
     project_id: seed.projectId,
     ecosystem_id: seed.ecosystem,
+    database_id: seed.databaseId,
     app_name: seed.name,
     app_short_name: seed.shortName,
     role: seed.role,
@@ -189,6 +199,7 @@ function buildPatch(seed, existing = {}) {
       workspace: seed.workspace,
       launch_order: seed.launchOrder,
       console_families: seed.consoleFamilies,
+      database_id: seed.databaseId,
     },
     created: {
       at: existingCreated || now,
@@ -279,6 +290,7 @@ async function main() {
     `migrate-fireux-app-catalog-${Date.now()}`
   )
   const db = getFirestore(adminApp, databaseId)
+  const defaultDb = getFirestore(adminApp)
 
   const appEntries = Object.values(APP_REGISTRY)
     .map((entry) => buildAppSeed(entry))
@@ -294,6 +306,7 @@ async function main() {
       id: entry.appId,
       ecosystem: entry.ecosystem,
       role: entry.role,
+      database_id: entry.databaseId,
       fireux_size: entry.size,
     })),
   })
@@ -316,10 +329,27 @@ async function main() {
 
     if (!commit) {
       console.log('[dry-run] set', ref.path, patch)
+      if (seed.ecosystem === 'fireux') {
+        console.log('[dry-run] arrayUnion ecosystem/fireux-fireux.apps', seed.appId)
+      }
       continue
     }
 
     await ref.set(patch, { merge: true })
+
+    if (seed.ecosystem === 'fireux') {
+      const defaultEcosystemRef = defaultDb.collection('ecosystem').doc('fireux-fireux')
+      await defaultEcosystemRef.set(
+        {
+          apps: FieldValue.arrayUnion(seed.appId),
+          updated: {
+            at: Timestamp.now(),
+            by: MIGRATION_ACTOR,
+          },
+        },
+        { merge: true }
+      )
+    }
   }
 
   console.log('[migrate] fireux app catalog complete', stats)
