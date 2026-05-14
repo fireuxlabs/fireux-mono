@@ -17,6 +17,16 @@ const fireuxConfig = defineFireuxConfig({
   modules: [],
 })
 
+const fireuxRuntimeConfig = (fireuxConfig.runtimeConfig || {}) as Record<string, any>
+const fireuxPublicRuntimeConfig = (fireuxRuntimeConfig.public || {}) as Record<string, any>
+
 export default defineNuxtConfig({
   ...fireuxConfig,
+  runtimeConfig: {
+    ...fireuxRuntimeConfig,
+    public: {
+      ...fireuxPublicRuntimeConfig,
+      sproochliBaseUrl: process.env.NUXT_PUBLIC_SPROOCHLI_BASE_URL || '',
+    },
+  },
 })

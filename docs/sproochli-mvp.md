@@ -36,6 +36,50 @@ Misebox can later reuse generic public JSON and translation helpers from `fireux
 
 The MVP intentionally does not build AI translation, glossary management, or editor workflows yet.
 
+## Cross-App Translation Canon
+
+Sproochli translates structured documents owned by other apps. It does not take ownership of those documents.
+
+Examples:
+
+```text
+BuenoHost owns BNB guest guides.
+Misebox owns kitchen menus.
+Sproochli owns translations of those structured documents.
+```
+
+Every translatable document needs a stable reference:
+
+```ts
+{
+  source_app: 'buenohost',
+  document_type: 'bnb-guide',
+  document_slug: 'holiday-with-nats',
+  source_language: 'en'
+}
+```
+
+Public language availability is controlled by Sproochli and must mean published/reviewed only. Planned languages, draft languages, and generated-but-unreviewed languages must not appear in public selectors.
+
+First public availability endpoint:
+
+```text
+GET /api/public/translations/available?source_app=buenohost&document_type=bnb-guide&document_slug=holiday-with-nats
+```
+
+Current response for Holiday with Nats:
+
+```json
+{
+  "source_app": "buenohost",
+  "document_type": "bnb-guide",
+  "document_slug": "holiday-with-nats",
+  "source_language": "en",
+  "available_languages": [],
+  "translations_ready": false
+}
+```
+
 ## Sample Routes
 
 - `/`
@@ -124,20 +168,23 @@ type SproochliBlock = {
 }
 ```
 
-The current static proof data lives in:
+Current Sproochli static proof data lives in:
 
 ```text
-projects/fireux/sproochli/app/content/bnbGuides.ts
 projects/fireux/sproochli/app/content/sampleInfo.ts
 ```
 
-The first seed path for Nat's BNB guide is:
+Older BNB prototype files under `projects/fireux/sproochli` are legacy proof surfaces. BuenoHost now owns guest manuals.
+
+The first seed path for Nat's BuenoHost BNB guide is:
 
 ```text
-node scripts/seed-sproochli-bnb-guides.mjs --commit
+node scripts/seed-buenohost-bnb-guides.mjs --commit
 ```
 
-That migrates the static BNB proof into the Sproochli app database. Generic types and resolver helpers live in `packages/extensions/fireux-sproochli/src/runtime/info`.
+That migrates the static BNB proof into the BuenoHost app database. Sproochli may later store translations for that document by `translation_ref`, but it must not become the owner of the guest-guide content.
+
+Generic types and resolver helpers live in `packages/extensions/fireux-sproochli/src/runtime/info`.
 
 ## Firestore Paths
 

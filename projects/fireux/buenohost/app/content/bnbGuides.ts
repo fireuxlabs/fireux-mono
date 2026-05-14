@@ -14,11 +14,19 @@ export type BnbGuideSection = {
   items: BnbGuideItem[]
 }
 
+export type BnbGuideTranslationRef = {
+  source_app: 'buenohost'
+  document_type: 'bnb-guide'
+  document_slug: string
+  source_language: 'en'
+}
+
 export type BnbGuide = {
   type: 'buenohost-bnb-guide'
   slug: string
   language: 'en'
   title: string
+  translation_ref: BnbGuideTranslationRef
   guest_message?: {
     title: string
     subtitle?: string
@@ -66,6 +74,12 @@ export const holidayWithNatsGuide: BnbGuide = {
   slug: 'holiday-with-nats',
   language: 'en',
   title: 'Holiday with Nats',
+  translation_ref: {
+    source_app: 'buenohost',
+    document_type: 'bnb-guide',
+    document_slug: 'holiday-with-nats',
+    source_language: 'en',
+  },
   guest_message: {
     title: 'Welcome Family Watson',
     subtitle: 'Today - 27th of March',

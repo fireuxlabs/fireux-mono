@@ -33,7 +33,102 @@
           <UButton :href="`mailto:${resolvedGuide.property.email}`" icon="i-lucide-mail" color="neutral" variant="soft" block class="sm:w-auto">
             Email
           </UButton>
+          <UButton
+            icon="i-lucide-languages"
+            color="primary"
+            variant="soft"
+            block
+            class="sm:w-auto"
+            :trailing-icon="showTranslations ? 'i-lucide-chevron-up' : 'i-lucide-chevron-down'"
+            :aria-expanded="showTranslations"
+            aria-controls="sproochli-translations"
+            :loading="translationAvailabilityPending"
+            @click="toggleTranslations"
+          >
+            Translate with Sproochli
+          </UButton>
         </div>
+
+        <UCard v-if="showTranslations" id="sproochli-translations">
+          <div class="space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="space-y-1">
+                <div class="flex items-center gap-2">
+                  <Icon name="i-lucide-sparkles" class="size-4 text-primary" />
+                  <h2 class="font-semibold text-highlighted">
+                    Translate with Sproochli
+                  </h2>
+                </div>
+                <p class="text-sm leading-6 text-muted">
+                  BuenoHost owns this guide. Sproochli owns any translated versions.
+                </p>
+              </div>
+              <UBadge color="primary" variant="soft">
+                Sproochli
+              </UBadge>
+            </div>
+
+            <UAlert
+              v-if="translationAvailabilityPending"
+              color="primary"
+              variant="soft"
+              icon="i-lucide-loader"
+              title="Checking Sproochli"
+              description="Looking for published translations for this guest guide."
+            />
+
+            <UAlert
+              v-else-if="translationAvailabilityError"
+              color="warning"
+              variant="soft"
+              icon="i-lucide-circle-alert"
+              title="Translations could not be checked"
+              :description="translationAvailabilityError"
+            />
+
+            <div v-else-if="availableTranslations.length" class="grid gap-2 sm:grid-cols-2">
+              <div
+                v-for="translation in availableTranslations"
+                :key="translation.code"
+                class="rounded-md border border-default bg-default px-3 py-2"
+                :dir="translation.direction || 'ltr'"
+                :lang="translation.code"
+              >
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <p class="font-semibold text-highlighted">
+                      {{ translation.native_label || translation.label || translation.code }}
+                    </p>
+                    <p class="text-xs text-muted">
+                      {{ translation.label || translation.code }}
+                    </p>
+                  </div>
+                  <UBadge color="primary" variant="soft">
+                    Published
+                  </UBadge>
+                </div>
+              </div>
+            </div>
+
+            <UAlert
+              v-else
+              color="neutral"
+              variant="soft"
+              icon="i-lucide-info"
+              title="Translations not ready yet"
+              description="This guide is currently available in its original English version only."
+            />
+
+            <div class="rounded-md border border-dashed border-default bg-muted/30 p-4 text-sm text-muted">
+              <div class="flex items-start gap-3">
+                <Icon name="i-lucide-languages" class="mt-0.5 size-4 text-primary" />
+                <p>
+                  Sproochli will only show languages here after they are translated, reviewed, and published.
+                </p>
+              </div>
+            </div>
+          </div>
+        </UCard>
 
         <UCard v-if="resolvedGuide.guest_message">
           <div class="flex items-start gap-3">
@@ -204,6 +299,7 @@ definePageMeta({
 })
 
 const route = useRoute()
+const runtimeConfig = useRuntimeConfig()
 const guide = computed(() => resolveBnbGuide(String(route.params.slug || '')))
 
 if (!guide.value) {
@@ -220,6 +316,43 @@ const guestTopics = computed(() => getBnbGuestTopics(resolvedGuide.value))
 const prioritySections = computed(() => guestTopics.value.filter((section) => section.priority))
 const regularSections = computed(() => guestTopics.value.filter((section) => !section.priority))
 const phoneHref = computed(() => resolvedGuide.value.property.phone.replace(/\s+/g, ''))
+const showTranslations = ref(false)
+const translationAvailability = ref<TranslationAvailabilityResponse | null>(null)
+const translationAvailabilityPending = ref(false)
+const translationAvailabilityError = ref('')
+const availableTranslations = computed(() => translationAvailability.value?.available_languages ?? [])
+
+const sproochliBaseUrl = computed(() => {
+  const configured = String(runtimeConfig.public.sproochliBaseUrl || '').trim().replace(/\/+$/, '')
+  if (configured) return configured
+  return import.meta.dev ? 'http://localhost:3011' : 'https://sproochli.web.app'
+})
+
+const translationAvailabilityUrl = computed(() => {
+  const ref = resolvedGuide.value.translation_ref
+  const search = new URLSearchParams({
+    source_app: ref.source_app,
+    document_type: ref.document_type,
+    document_slug: ref.document_slug,
+  })
+  return `${sproochliBaseUrl.value}/api/public/translations/available?${search.toString()}`
+})
+
+type PublishedTranslation = {
+  code: string
+  label?: string
+  native_label?: string
+  direction?: 'ltr' | 'rtl'
+}
+
+type TranslationAvailabilityResponse = {
+  source_app: string
+  document_type: string
+  document_slug: string
+  source_language: string
+  available_languages: PublishedTranslation[]
+  translations_ready: boolean
+}
 
 function topicPath(sectionId: string) {
   return `/bnb/${resolvedGuide.value.slug}/${sectionId}`
@@ -229,6 +362,31 @@ function itemClass(tone: BnbGuideItem['tone']) {
   if (tone === 'important') return 'border-primary/20 bg-primary/10 text-default'
   if (tone === 'warning') return 'border-warning/20 bg-warning/10 text-default'
   return 'bg-default text-default'
+}
+
+async function toggleTranslations() {
+  showTranslations.value = !showTranslations.value
+  if (!showTranslations.value) return
+  if (translationAvailability.value || translationAvailabilityPending.value) return
+
+  await loadTranslationAvailability()
+}
+
+async function loadTranslationAvailability() {
+  translationAvailabilityPending.value = true
+  translationAvailabilityError.value = ''
+
+  try {
+    const response = await fetch(translationAvailabilityUrl.value)
+    if (!response.ok) throw new Error(`Sproochli returned ${response.status}`)
+    translationAvailability.value = await response.json() as TranslationAvailabilityResponse
+  } catch (error) {
+    translationAvailabilityError.value = error instanceof Error
+      ? error.message
+      : 'Sproochli is not reachable right now.'
+  } finally {
+    translationAvailabilityPending.value = false
+  }
 }
 
 useSeoMeta({

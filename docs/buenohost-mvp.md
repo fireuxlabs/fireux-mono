@@ -73,4 +73,28 @@ properties/{propertyId}/guest_messages/{messageId}
 properties/{propertyId}/maintainers/{maintainerId}
 ```
 
-Sproochli may later store translations for these structured documents, but BuenoHost remains the source of truth for the host guide.
+Sproochli stores translations for these structured documents, but BuenoHost remains the source of truth for the host guide.
+
+Every BuenoHost guide that can be translated should expose a stable translation reference:
+
+```ts
+{
+  source_app: 'buenohost',
+  document_type: 'bnb-guide',
+  document_slug: 'holiday-with-nats',
+  source_language: 'en'
+}
+```
+
+The public guide can ask Sproochli for published translation availability:
+
+```text
+GET /api/public/translations/available?source_app=buenohost&document_type=bnb-guide&document_slug=holiday-with-nats
+```
+
+Important rule:
+
+```text
+Only published/reviewed translations are public.
+Draft, planned, or missing translations must not be shown as available.
+```
