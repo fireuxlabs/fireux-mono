@@ -1,8 +1,8 @@
 # Sproochli MVP
 
-Sproochli is a standalone FireUX ecosystem app for multilingual QR pages for real-world places. A place or business can publish short public information pages that visitors open from a QR code, with the page rendered server-side and readable as plain HTML and JSON.
+Sproochli is the translation product. It translates structured documents owned by other apps, stores/reuses translation cache, and enforces strict no-fallback language behavior.
 
-The standalone product app lives at:
+The standalone translation product app lives at:
 
 ```text
 projects/fireux/sproochli
@@ -20,9 +20,9 @@ The name comes from "Sprooch", Swiss German/Bernese-style for language or speech
 
 Sproochli is not Misebox and should not depend on Misebox domain models. It is generic place information infrastructure, not a kitchen, chef, supplier, menu, recipe, or restaurant system.
 
-The app lives under the FireUX ecosystem as `projects/fireux/sproochli` and uses `fireux-fireux`, `fireux-sproochli`, plus core FireUX app configuration. It does not import `fireux-kitchens`, `fireux-suppliers`, or Misebox app code.
+The app lives under the FireUX ecosystem as `projects/fireux/sproochli` and uses `fireux-fireux`, `fireux-sproochli`, plus core FireUX app configuration. It does not import `fireux-kitchens`, `fireux-suppliers`, Misebox app code, or BuenoHost guest-guide ownership code.
 
-The shared `fireux-sproochli` package is also generic. It owns info-page types, language helpers, RTL helpers, translation resolution, and public response building. It should not import Misebox or any kitchen/menu/supplier/chef models.
+The shared `fireux-sproochli` package is also generic. It owns language helpers, RTL helpers, translation resolution, translation cache conventions, and public response helpers. It should not import Misebox kitchen/menu models or BuenoHost guest-manual models.
 
 Misebox can later reuse generic public JSON and translation helpers from `fireux-sproochli` for menu-readable endpoints without Sproochli depending on Misebox.
 

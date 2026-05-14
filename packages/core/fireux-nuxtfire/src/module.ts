@@ -194,6 +194,7 @@ type FirebaseEcosystemConfig = {
 }
 
 type FirebaseAppConfig = {
+  apiKey?: string
   appId?: string
   measurementId?: string
 }
@@ -229,7 +230,10 @@ export default defineNuxtModule({
 
     const { eco, app } = pickFirebaseRuntime(nuxt)
 
-    const apiKey = requireNonEmpty(eco.apiKey, 'public.firebaseEcosystem.firebase.apiKey')
+    const apiKey = requireNonEmpty(
+      app.apiKey || eco.apiKey,
+      'public.firebaseApp.apiKey or public.firebaseEcosystem.firebase.apiKey'
+    )
     const authDomain = requireNonEmpty(
       eco.authDomain,
       'public.firebaseEcosystem.firebase.authDomain'

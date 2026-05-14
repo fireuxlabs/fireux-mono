@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="BuenoHost logo mark">
+  <rect width="512" height="512" rx="112" fill="none"/>
+  <path d="M90 214 256 82l166 132v206a38 38 0 0 1-38 38H128a38 38 0 0 1-38-38V214z" fill="#0F766E"/>
+  <path d="M154 206 256 124l102 82" fill="none" stroke="#ECFEFF" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="164" y="248" width="184" height="144" rx="26" fill="#ECFEFF"/>
+  <text x="256" y="344" text-anchor="middle" font-family="Arial Rounded MT Bold, Arial, sans-serif" font-size="92" font-weight="800" fill="#0F172A">BH</text>
+</svg>

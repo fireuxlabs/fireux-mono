@@ -131,6 +131,17 @@
       }
     },
     {
+      "name": "BuenoHost dev (3012)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:buenohost",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 10
+      }
+    },
+    {
       "name": "Granite dev (3007)",
       "type": "node-terminal",
       "request": "launch",
@@ -138,7 +149,7 @@
       "cwd": "${workspaceFolder}",
       "presentation": {
         "group": "Dev Servers",
-        "order": 10
+        "order": 11
       }
     },
     {
@@ -149,7 +160,7 @@
       "cwd": "${workspaceFolder}",
       "presentation": {
         "group": "Dev Servers",
-        "order": 11
+        "order": 12
       }
     }
   ],
@@ -185,6 +196,7 @@
         "Bringli dev (3006)",
         "Find My SEO dev (3010)",
         "Sproochli dev (3011)",
+        "BuenoHost dev (3012)",
         "Granite dev (3007)",
         "La Tap Berne dev (3008)"
       ]

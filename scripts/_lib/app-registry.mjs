@@ -138,6 +138,24 @@ export const APP_REGISTRY = {
     ],
     launchOrder: 9,
   },
+  buenohost: {
+    key: 'buenohost',
+    name: 'BuenoHost',
+    appId: 'buenohost',
+    ecosystem: 'fireux',
+    databaseId: 'buenohost',
+    role: 'standalone',
+    workspace: './projects/fireux/buenohost',
+    port: 3012,
+    consoleFamilies: ['bnb'],
+    smokeRoutes: [
+      '/',
+      '/bnb',
+      '/bnb/holiday-with-nats',
+      '/bnb/holiday-with-nats/wifi',
+    ],
+    launchOrder: 10,
+  },
   granite: {
     key: 'granite',
     name: 'Granite',
@@ -148,7 +166,7 @@ export const APP_REGISTRY = {
     workspace: './projects/granite/granite-app',
     port: 3007,
     consoleFamilies: ['portfolio'],
-    launchOrder: 10,
+    launchOrder: 11,
   },
   'la-tap-berne': {
     key: 'la-tap-berne',
@@ -160,14 +178,14 @@ export const APP_REGISTRY = {
     workspace: './projects/misebox/la-tap-berne',
     port: 3008,
     consoleFamilies: [],
-    launchOrder: 11,
+    launchOrder: 12,
   },
 }
 
 export const APP_GROUPS = {
   all: ['fireux', 'misebox', 'cleanbox'],
   'all-extended': ['fireux', 'misebox', 'cleanbox', 'niederhorn', 'richies', 'tenant'],
-  full: ['fireux', 'misebox', 'cleanbox', 'niederhorn', 'richies', 'tenant', 'bringli', 'find-my-seo', 'sproochli', 'granite', 'la-tap-berne'],
+  full: ['fireux', 'misebox', 'cleanbox', 'niederhorn', 'richies', 'tenant', 'bringli', 'find-my-seo', 'sproochli', 'buenohost', 'granite', 'la-tap-berne'],
 }
 
 export const APP_KEYS = Object.keys(APP_REGISTRY)

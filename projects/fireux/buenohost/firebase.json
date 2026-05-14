@@ -1,0 +1,30 @@
+{
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "buenohost-ssr",
+      "runtime": "nodejs22",
+      "entryPoint": "buenohost"
+    }
+  ],
+  "hosting": {
+    "site": "buenohost",
+    "public": ".output/public",
+    "cleanUrls": true,
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "function": {
+          "functionId": "buenohost",
+          "codebase": "buenohost-ssr",
+          "region": "europe-west1"
+        }
+      }
+    ]
+  }
+}

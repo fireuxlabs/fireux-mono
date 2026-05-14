@@ -756,6 +756,18 @@ function activate(context) {
       url: 'http://localhost:3011',
     },
     {
+      key: 'buenohost',
+      name: 'BuenoHost',
+      icon: '$(key)',
+      port: 3012,
+      commandId: 'fireuxToolbar.startBuenoHost',
+      taskLabel: 'pnpm dev:buenohost',
+      terminalName: 'BuenoHost (3012)',
+      pnpmCommand: 'pnpm dev:buenohost --host',
+      tooltip: 'Start BuenoHost dev (port 3012)',
+      url: 'http://localhost:3012',
+    },
+    {
       key: 'granite',
       name: 'Granite',
       icon: '$(database)',

@@ -101,6 +101,11 @@
         "icon": "$(database)"
       },
       {
+        "command": "fireuxToolbar.startBuenoHost",
+        "title": "Dev: BuenoHost",
+        "icon": "$(key)"
+      },
+      {
         "command": "fireuxToolbar.mirrorSync",
         "title": "Mirror Sync",
         "icon": "$(files)",

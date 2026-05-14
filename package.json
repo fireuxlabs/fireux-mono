@@ -70,7 +70,8 @@
     "seo:sitemap-counts": "node scripts/seo-sitemap-counts.mjs",
     "meta:report": "node scripts/page-meta-report.mjs",
     "reports:regenerate": "node scripts/reports/regenerate-reports.mjs",
-    "sync:dev-workspace:check": "node scripts/sync-dev-workspace.mjs --check"
+    "sync:dev-workspace:check": "node scripts/sync-dev-workspace.mjs --check",
+    "dev:buenohost": "node scripts/dev-app-with-smoke.mjs --app buenohost"
   },
   "engines": {
     "node": ">=20.11 <23",

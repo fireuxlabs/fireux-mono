@@ -68,9 +68,17 @@ const APP_OVERRIDES = {
     name: 'Sproochli',
     shortName: 'Sproochli',
     siteUrl: 'https://sproochli.web.app',
-    tagline: 'Multilingual guest guides, read-only menus, and information pages.',
+    tagline: 'Translation services for structured documents.',
     description:
-      'Standalone FireUX app for Sproochli BNB guides, read-only menus, and practical translated information pages.',
+      'Standalone FireUX app for translation cache, language readiness, and strict translated document delivery across FireUX products.',
+  },
+  buenohost: {
+    name: 'BuenoHost',
+    shortName: 'BuenoHost',
+    siteUrl: 'https://buenohost.web.app',
+    tagline: 'Guest guides for holiday homes and BNB hosts.',
+    description:
+      'Standalone FireUX app for mobile guest manuals, host information, emergency notes, Wi-Fi, checkout, and local guidance.',
   },
   'misebox-app': {
     name: 'Misebox',
