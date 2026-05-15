@@ -1,5 +1,6 @@
-// Local demo payloads for Professionals (git-ignored).
-// These files are for dev-only UI prototyping and are not part of the repo.
+// Repo-level demo payloads for Professionals.
+// Use these records for dev surfaces, examples, and explicit preflight demos.
+// They are not canonical storage or runtime contracts.
 
 import { demoUserList } from './user.demo'
 

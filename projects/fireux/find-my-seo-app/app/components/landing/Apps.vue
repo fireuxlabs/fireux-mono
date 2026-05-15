@@ -10,11 +10,11 @@
         </div>
 
         <div class="flex flex-wrap gap-3">
-          <UButton to="/seo-providers" color="primary" icon="i-lucide-briefcase-business">
+          <UButton to="/professionals" color="primary" icon="i-lucide-briefcase-business">
             Open directory
           </UButton>
-          <UButton to="/dashboard/seo" variant="outline" icon="i-lucide-layout-dashboard">
-            Open dashboard
+          <UButton to="/dashboard/professional" variant="outline" icon="i-lucide-layout-dashboard">
+            Provider dashboard
           </UButton>
         </div>
       </div>

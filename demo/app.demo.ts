@@ -1,7 +1,6 @@
-// Local demo payloads for Apps (git-ignored).
-// These files are for dev-only UI prototyping and are not part of the repo.
-//
-// FILE: demo/app.demo.ts
+// Repo-level demo payloads for Apps.
+// Use these records for dev surfaces, examples, and explicit preflight demos.
+// They are not canonical storage or runtime contracts.
 
 import { AppModel as AppModelRuntime, type App } from 'fireux-core/runtime/models/core/app.model'
 import { createEmptyAppSocialLinks } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/factories/createEmptyAppSocialLinks'

@@ -10,11 +10,11 @@ const fireuxConfig = defineFireuxConfig({
   databaseId: 'buenohost',
   meta: metaContent,
   role: 'standalone',
-  consoleFamilies: ['bnb'],
+  consoleFamilies: ['portfolios'],
   seo: {
     siteUrl: 'https://buenohost.web.app',
   },
-  modules: [],
+  modules: ['fireux-properties'],
 })
 
 const fireuxRuntimeConfig = (fireuxConfig.runtimeConfig || {}) as Record<string, any>

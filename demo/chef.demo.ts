@@ -1,5 +1,6 @@
-// Local demo payloads for Chefs (git-ignored).
-// These files are for dev-only UI prototyping and are not part of the repo.
+// Repo-level demo payloads for Chefs.
+// Use these records for dev surfaces, examples, and explicit preflight demos.
+// They are not canonical storage or runtime contracts.
 
 import type { Chef } from '../packages/extensions/fireux-kitchens/src/runtime/models/profiles/Chef/Chef.model'
 import { ChefModel } from '../packages/extensions/fireux-kitchens/src/runtime/models/profiles/Chef/Chef.model'

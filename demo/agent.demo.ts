@@ -1,5 +1,6 @@
-// Local demo payloads for Agents (git-ignored).
-// These files are for dev-only UI prototyping and are not part of the repo.
+// Repo-level demo payloads for Agents.
+// Use these records for dev surfaces, examples, and explicit preflight demos.
+// They are not canonical storage or runtime contracts.
 
 type AgentBase = {
   id: string

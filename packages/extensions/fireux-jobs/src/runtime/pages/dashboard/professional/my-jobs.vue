@@ -1,8 +1,8 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/my-jobs.vue -->
 <template>
-  <UDashboardPanel id="console-professional-my-jobs">
+  <UDashboardPanel id="dashboard-professional-my-work">
     <template #header>
-      <LayoutsDashboardNavbar title="My Jobs" />
+      <LayoutsDashboardNavbar title="My Work" />
     </template>
 
     <template #body>
@@ -11,8 +11,8 @@
           <UAlert
             icon="i-lucide-briefcase"
             color="neutral"
-            title="My Jobs"
-            description="Track saved, drafted, and published jobs here."
+            title="My Work"
+            description="Track saved jobs, applications, assigned work and availability here."
           />
 
           <div class="grid gap-4 lg:grid-cols-3">
@@ -22,11 +22,11 @@
                   class="flex items-center gap-2 text-sm uppercase tracking-wide text-dimmed"
                 >
                   <UIcon name="i-lucide-clipboard-list" />
-                  Drafts
+                  Applications
                 </div>
               </template>
               <p class="text-sm text-muted">
-                Drafted jobs will appear here once the data source is wired up.
+                Applications will appear here once the data source is wired up.
               </p>
             </UCard>
 
@@ -63,11 +63,11 @@
                 class="flex items-center gap-2 text-sm uppercase tracking-wide text-dimmed"
               >
                 <UIcon name="i-lucide-send" />
-                Published
+                Assigned work
               </div>
             </template>
             <p class="text-sm text-muted">
-              Published jobs will display here after integration.
+              Assigned jobs and project work will display here after integration.
             </p>
           </UCard>
         </section>
@@ -82,8 +82,8 @@ definePageMeta({
   layout: 'dashboard',
   nav: {
     visibility: { modules: ['fireux-jobs'] },
-    key: 'dashboard-professional-my-jobs',
-    label: 'My Jobs',
+    key: 'dashboard-professional-my-work',
+    label: 'My Work',
     icon: 'i-lucide-briefcase-business',
     position: 'middle',
     desktop: false,

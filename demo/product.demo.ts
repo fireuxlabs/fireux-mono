@@ -1,7 +1,6 @@
-// Local demo payloads for Products (git-ignored).
-// These files are for dev-only UI prototyping and are not part of the repo.
-//
-// FILE: demo/product.demo.ts
+// Repo-level demo payloads for Products.
+// Use these records for dev surfaces, examples, and explicit preflight demos.
+// They are not canonical storage or runtime contracts.
 
 import { useProductInterface } from 'fireux-products/runtime/composables/fireux/firestore/product/utils/view/useProductInterface'
 import type { FirebaseProduct, ProductPrice } from 'fireux-products/runtime/models/product.model'

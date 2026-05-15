@@ -15,8 +15,8 @@
             This landing page sends buyers straight into the providers already strongest in that work.
           </p>
           <div class="flex gap-3">
-            <UButton to="/seo-providers?sector=eCommerce" color="primary">Browse eCommerce SEO providers</UButton>
-            <UButton to="/seo-providers" variant="soft">See all providers</UButton>
+            <UButton to="/professionals?sector=eCommerce" color="primary">Browse eCommerce SEO providers</UButton>
+            <UButton to="/professionals" variant="soft">See all providers</UButton>
           </div>
         </div>
       </UCard>

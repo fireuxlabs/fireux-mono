@@ -42,7 +42,7 @@ Read at least these before adding files:
 - `docs/guide/app-branding-brief.md` when asking a designer for app assets
 - `docs/guide/app-assets-dump.md` when adding or replacing app logos/wordmarks/covers
 
-For a standalone app inside the FireUX ecosystem, `projects/fireux/find-my-seo-app` is currently the closest reference. For a global ecosystem app, inspect `projects/fireux/fireux-app`, `projects/bringli/bringli-app`, or the matching ecosystem app.
+For a standalone app inside the FireUX ecosystem, inspect `projects/fireux/sproochli`, `projects/fireux/buenohost`, or `projects/fireux/find-my-seo-app`. For a global ecosystem app, inspect `projects/fireux/fireux-app`, `projects/bringli/bringli-app`, or the matching ecosystem app.
 
 ## Create The App In The Right Layer
 

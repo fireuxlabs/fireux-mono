@@ -1,0 +1,17 @@
+Find My SEO brand colours
+
+Primary Orange: #F97316
+Deep Ink: #07111F
+Slate: #1F2937
+Muted Slate: #64748B
+Cloud: #F8FAFC
+White: #FFFFFF
+
+Nuxt UI
+primary: orange
+neutral: slate
+
+Usage
+- App brand assets live in public/img/app.
+- Demo provider avatars/logos stay URL-backed in demo/*.demo.ts.
+- Cover copy should describe the professional pool, not an all-in-one SEO platform.

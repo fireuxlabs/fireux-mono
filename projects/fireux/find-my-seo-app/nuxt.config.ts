@@ -7,11 +7,12 @@ const fireuxConfig = defineFireuxConfig({
   id: 'find-my-seo-app',
   name: 'Find My SEO',
   shortName: 'FindMySEO',
+  databaseId: 'find-my-seo',
   meta: metaContent,
   role: 'standalone',
   consoleFamilies: [],
   seo: {
-    siteUrl: 'https://stitch-seo.web.app',
+    siteUrl: 'https://find-my-seo.web.app',
   },
   modules: [],
 })

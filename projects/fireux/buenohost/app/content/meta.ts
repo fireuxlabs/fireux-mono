@@ -7,7 +7,7 @@ export const buenoHostRoutes = [
   { label: 'BNB Guides', path: '/bnb', kind: 'public' },
   { label: 'Alpine View Demo', path: '/bnb/alpine-view-demo', kind: 'public' },
   { label: 'Alpine View Demo Wi-Fi', path: '/bnb/alpine-view-demo/wifi', kind: 'public' },
-  { label: 'BNB Console', path: '/console/bnb', kind: 'console' },
+  { label: 'Host Dashboard', path: '/console/portfolio', kind: 'console' },
 ] as const
 
 export const metaContent = defineFireuxMeta({
@@ -30,7 +30,7 @@ export const metaContent = defineFireuxMeta({
     promise_html:
       'Hosts keep house rules, Wi-Fi, emergency contacts, checkout notes, parking, and local recommendations in one clean guest-facing guide.',
     console_bridge_html:
-      'A standalone FireUX app for structured guest manuals. Sproochli can translate these guides later, but BuenoHost owns the host information.',
+      'A standalone FireUX app for structured guest manuals on top of the shared fireux-properties engine. Sproochli can translate these guides later, but BuenoHost owns the host information.',
     about_p1:
       'BuenoHost is for hosts who want fewer repeated questions and clearer guest arrivals.',
     about_p2:
@@ -61,8 +61,8 @@ export const metaContent = defineFireuxMeta({
       to: '/bnb',
     },
     console: {
-      label: 'BuenoHost',
-      to: '/',
+      label: 'Open host dashboard',
+      to: '/console/portfolio',
     },
   },
   lists: {

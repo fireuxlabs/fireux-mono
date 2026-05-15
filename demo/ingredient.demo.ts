@@ -1,5 +1,6 @@
-// Local demo payloads for Ingredients (git-ignored).
-// These files are for dev-only UI prototyping and are not part of the repo.
+// Repo-level demo payloads for Ingredients.
+// Use these records for dev surfaces, examples, and explicit preflight demos.
+// They are not canonical storage or runtime contracts.
 
 import type { Ingredient } from 'fireux-kitchens/runtime/models/ingredient.model'
 import { IngredientModel as IngredientModelRuntime } from 'fireux-kitchens/runtime/models/ingredient.model'

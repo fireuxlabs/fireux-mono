@@ -1,8 +1,8 @@
 <template>
   <UPage>
     <UPageHeader
-      title="Browse SEO providers"
-      description="Compare consultants and agencies by specialism, sector fit, project type, and trust signals."
+      title="Browse SEO professionals"
+      description="Compare consultants and agencies by specialism, sector fit, reviews, availability, and trust signals."
     />
 
     <UPageBody class="space-y-6">
@@ -43,7 +43,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { appMeta } from '../../content/meta'
-import { allProjectTypeOptions, allSectorOptions, allSpecialismOptions, seoProviders } from '../../content/findMySeo'
+import { demoSeoProjectTypeOptions, demoSeoProviderList, demoSeoSectorOptions, demoSeoSpecialismOptions } from '../../../../../../demo/find-my-seo.demo'
 
 useSeoMeta({
   title: appMeta.seoBrowse.title,
@@ -57,9 +57,9 @@ const selectedSpecialism = ref('All specialisms')
 const selectedProjectType = ref('All project types')
 const selectedSector = ref('All sectors')
 
-const specialismOptions = ['All specialisms', ...allSpecialismOptions]
-const projectTypeOptions = ['All project types', ...allProjectTypeOptions]
-const sectorOptions = ['All sectors', ...allSectorOptions]
+const specialismOptions = ['All specialisms', ...demoSeoSpecialismOptions]
+const projectTypeOptions = ['All project types', ...demoSeoProjectTypeOptions]
+const sectorOptions = ['All sectors', ...demoSeoSectorOptions]
 
 watch(
   () => route.query.sector,
@@ -72,7 +72,7 @@ watch(
 const filteredProviders = computed(() => {
   const q = query.value.trim().toLowerCase()
 
-  return [...seoProviders]
+  return [...demoSeoProviderList]
     .sort((left, right) => {
       if (left.isFeatured !== right.isFeatured) {
         return left.isFeatured ? -1 : 1

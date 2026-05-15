@@ -3,7 +3,15 @@
     <div class="space-y-4">
       <div class="space-y-2">
         <div class="flex items-start justify-between gap-3">
-          <div class="space-y-1">
+          <div class="flex min-w-0 gap-3">
+            <UAvatar
+              :src="primaryMediaUrl || undefined"
+              :alt="provider.displayName"
+              :icon="primaryMediaIcon"
+              size="lg"
+              class="shrink-0"
+            />
+            <div class="min-w-0 space-y-1">
             <div class="flex flex-wrap items-center gap-2">
               <p class="text-lg font-semibold">{{ provider.displayName }}</p>
               <UBadge color="neutral" variant="soft">{{ providerTypeLabel }}</UBadge>
@@ -13,6 +21,20 @@
             <p class="text-sm text-dimmed">
               {{ provider.headline }}
             </p>
+            <div v-if="provider.brandName" class="flex items-center gap-2 text-sm text-muted">
+              <UAvatar
+                v-if="brandLogoUrl"
+                :src="brandLogoUrl"
+                :alt="provider.brandName"
+                size="xs"
+                class="shrink-0"
+              />
+              <span>{{ provider.brandName }}</span>
+            </div>
+            <p class="text-sm text-toned">
+              {{ provider.locationLabel }} · {{ provider.rating.toFixed(1) }} rating · {{ provider.reviewCount }} reviews
+            </p>
+            </div>
           </div>
           <UBadge color="neutral" variant="soft">{{ provider.availabilityStatus }}</UBadge>
         </div>
@@ -55,10 +77,10 @@
       </p>
 
       <div class="flex gap-3">
-        <UButton :to="`/seo-providers/${provider.slug}`" color="primary">
+        <UButton :to="`/professionals/${provider.slug}`" color="primary">
           View profile
         </UButton>
-        <UButton variant="soft" :to="`/seo-providers/${provider.slug}#enquire`">
+        <UButton variant="soft" :to="`/professionals/${provider.slug}#enquire`">
           Request quote
         </UButton>
       </div>
@@ -68,12 +90,27 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { SeoProvider } from '../../content/findMySeo'
-import { providerLabel } from '../../content/findMySeo'
+import type { DemoSeoProvider } from '../../../../../../demo/find-my-seo.demo'
+import { demoSeoProviderLabel } from '../../../../../../demo/find-my-seo.demo'
 
 const props = defineProps<{
-  provider: SeoProvider
+  provider: DemoSeoProvider
 }>()
 
-const providerTypeLabel = computed(() => providerLabel(props.provider))
+const providerTypeLabel = computed(() => demoSeoProviderLabel(props.provider))
+const primaryMediaUrl = computed(() =>
+  props.provider.entityType === 'company'
+    ? props.provider.logoUrl || props.provider.avatarUrl || ''
+    : props.provider.avatarUrl || props.provider.logoUrl || ''
+)
+const primaryMediaIcon = computed(() =>
+  props.provider.entityType === 'company' ? 'i-lucide-building-2' : 'i-lucide-user'
+)
+const brandLogoUrl = computed(() => {
+  if (!props.provider.logoUrl || props.provider.logoUrl === primaryMediaUrl.value) {
+    return ''
+  }
+
+  return props.provider.logoUrl
+})
 </script>

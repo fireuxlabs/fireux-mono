@@ -1,5 +1,6 @@
-// Local demo payloads for Profiles (git-ignored).
-// These files are for dev-only UI prototyping and are not part of the repo.
+// Repo-level demo payloads for Profiles.
+// Use these records for dev surfaces, examples, and explicit preflight demos.
+// They are not canonical storage or runtime contracts.
 
 export const demoProfile = {
   id: 'profile_demo_001',

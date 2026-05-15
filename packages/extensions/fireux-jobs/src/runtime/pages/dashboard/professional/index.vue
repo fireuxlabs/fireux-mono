@@ -1,6 +1,6 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/index.vue -->
 <template>
-  <UDashboardPanel id="console-professional-home">
+  <UDashboardPanel id="dashboard-professional-home">
     <template #header>
       <LayoutsDashboardNavbar title="Professional" />
     </template>
@@ -25,7 +25,7 @@
               />
               <UButton
                 to="/dashboard/professional/my-jobs"
-                label="View my jobs"
+                label="View my work"
                 variant="soft"
                 color="neutral"
                 size="sm"
@@ -92,7 +92,7 @@ definePageMeta({
   nav: {
     visibility: { modules: ['fireux-jobs'] },
     key: 'dashboard-professional-home',
-    label: 'Professional',
+    label: 'Professional Dashboard',
     icon: 'i-lucide-user-star',
     position: 'middle',
     desktop: false,

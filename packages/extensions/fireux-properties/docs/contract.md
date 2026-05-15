@@ -1,10 +1,14 @@
 # fireux-properties Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-04-27
+Updated: 2026-05-15
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
 - Own portfolio-domain runtime and portfolio console behavior.
+- Provide the shared property engine for separate product shells such as:
+  - BuenoHost: short-stay and guest operations surfaces.
+  - Granite: estate, portfolio, and investment management surfaces.
+- Product shells may use different labels, navigation, and page emphasis while sharing the same canonical `portfolios` console family key, `/console/portfolio` route, and property data model.
 
 ## 2) Core entities
 - `Portfolio`
@@ -36,6 +40,10 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `/portfolios`
   - `/portfolios/[id]`
   - `/console/portfolio/*`
+- Console family key:
+  - `portfolios`
+- Console route segment:
+  - `portfolio`
 - `/console/portfolio` is the family entry page:
   - `demo`: curated demo portfolios
   - `test`: Firestore-backed test portfolios
@@ -75,3 +83,4 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - No silent fallback selection of active portfolio inside console flows.
 - No treating `owner_label`, team naming, or branding context as console permission.
 - No implicit switch from public portfolio browsing to console authority.
+- No combining BuenoHost and Granite into one app shell just because they share this engine.

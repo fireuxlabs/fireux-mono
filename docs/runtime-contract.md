@@ -1,6 +1,6 @@
 # Runtime Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-14
+Updated: 2026-05-15
 ## Purpose
 - Define runtime selection, mode, collection path, and route policy across FireUX domains.
 
@@ -106,10 +106,15 @@ Updated: 2026-05-14
 - `console family` = the top-level console bucket exposed by app config.
   - Current canon:
     - `projects`
-    - `kitchen`
-    - `portfolio`
-    - `supplier`
-- `runtime target` = the selected root entity inside a console family.
+    - `kitchens`
+    - `portfolios`
+    - `suppliers`
+  - Current route mapping:
+    - `projects` -> `/console/projects`
+    - `kitchens` -> `/console/kitchen`
+    - `portfolios` -> `/console/portfolio`
+    - `suppliers` -> `/console/supplier`
+  - `runtime target` = the selected root entity inside a console family.
   - Example:
     - selected `Project`
     - selected `Kitchen`
@@ -278,11 +283,15 @@ Updated: 2026-05-14
   - app overlay authority when the family is app-scoped
 
 ## Demo Data Policy
-- Runtime demo data must come from domain `demo-scenarios/` registries.
+- Runtime demo data must come from domain-owned demo scenario registries.
+- Accepted registry locations are package-owned `demo-scenarios.ts`, `demo-scenarios/**`, or `<domain>-demo-scenarios/**` files under runtime app/composable code.
 - Demo data is not canon by itself.
 - Demo scenario fields are not canon unless promoted into Tier1 or package contract docs.
 - Demo data must bend toward the desired live/test shape.
-- Dev fixture files under repo `demo/**` are optional developer tooling only.
+- Dev fixture files under repo `demo/*.demo.ts` are repo-level demo entity/view payloads.
+- Repo-level `demo/*.demo.ts` may feed dev surfaces, examples, and explicit preflight product pages, but not console/runtime source selection.
+- Repo-level `demo/*.demo.ts` must not be treated as Firestore storage, Nuxt Content, or runtime model canon.
+- App-local `app/content/*` is for app copy, metadata, and static page content; do not put entity demo records there.
 - Console/runtime behavior must never depend on `demo/**`.
 
 ## Collection Path Policy (Kitchen Console)

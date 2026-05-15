@@ -1,17 +1,17 @@
-import type { LeadDraft, LeadInquiry, LeadStatus, SeoProvider } from '../content/findMySeo'
-import { buildLeadId, initialLeadInbox, operatorInboxEmail } from '../content/findMySeo'
+import type { DemoSeoLeadDraft, DemoSeoLeadInquiry, DemoSeoLeadStatus, DemoSeoProvider } from '../../../../../demo/find-my-seo.demo'
+import { buildDemoSeoLeadId, demoFindMySeoOperatorInboxEmail, demoSeoLeadInbox } from '../../../../../demo/find-my-seo.demo'
 
-const cloneLead = (lead: LeadInquiry): LeadInquiry => ({ ...lead })
+const cloneLead = (lead: DemoSeoLeadInquiry): DemoSeoLeadInquiry => ({ ...lead })
 
 export const useFindMySeoLeads = () => {
-  const leads = useState<LeadInquiry[]>('find-my-seo-leads', () => initialLeadInbox.map(cloneLead))
+  const leads = useState<DemoSeoLeadInquiry[]>('find-my-seo-leads', () => demoSeoLeadInbox.map(cloneLead))
 
-  const submitLead = (provider: SeoProvider, draft: LeadDraft) => {
-    const deliveryEmail = provider.contactEmail || operatorInboxEmail
+  const submitLead = (provider: DemoSeoProvider, draft: DemoSeoLeadDraft) => {
+    const deliveryEmail = provider.contactEmail || demoFindMySeoOperatorInboxEmail
     const deliveryState = provider.contactEmail ? 'sent' : 'failed'
 
-    const lead: LeadInquiry = {
-      id: buildLeadId(),
+    const lead: DemoSeoLeadInquiry = {
+      id: buildDemoSeoLeadId(),
       providerEntityType: provider.entityType,
       providerEntityId: provider.id,
       providerSlug: provider.slug,
@@ -35,7 +35,7 @@ export const useFindMySeoLeads = () => {
     return lead
   }
 
-  const updateLeadStatus = (leadId: string, status: LeadStatus) => {
+  const updateLeadStatus = (leadId: string, status: DemoSeoLeadStatus) => {
     leads.value = leads.value.map((lead) => (lead.id === leadId ? { ...lead, status } : lead))
   }
 

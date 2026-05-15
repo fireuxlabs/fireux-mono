@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Find My SEO logo">
+  <defs><style>.orange{stroke:#F97316;fill:none;stroke-linecap:round;stroke-linejoin:round}.ink{stroke:#07111F;fill:none;stroke-linecap:round;stroke-linejoin:round}.fill-white{fill:#fff}</style></defs>
+  <path class="orange" stroke-width="30" d="M134 139 256 69l122 70v141l-122 70-82-47"/>
+  <circle cx="244" cy="238" r="92" fill="#fff" stroke="#07111F" stroke-width="26"/>
+  <path class="ink" stroke-width="32" d="m310 305 83 83"/>
+  <path class="ink" stroke-width="9" d="m197 262 32-35 37 21 32-45"/>
+  <circle cx="197" cy="262" r="13" fill="#F97316"/>
+  <circle cx="229" cy="227" r="13" fill="#F97316"/>
+  <circle cx="266" cy="248" r="13" fill="#07111F"/>
+  <circle cx="298" cy="203" r="13" fill="#F97316"/>
+</svg>

@@ -19,8 +19,8 @@
           <UButton to="/bnb" icon="i-lucide-house" color="neutral" variant="ghost">
             Guides
           </UButton>
-          <UButton to="/console/bnb" icon="i-lucide-layout-dashboard" color="primary" variant="soft">
-            Console
+          <UButton to="/console/portfolio" icon="i-lucide-layout-dashboard" color="primary" variant="soft">
+            Host dashboard
           </UButton>
         </nav>
       </header>
@@ -103,7 +103,7 @@
         <div class="space-y-2">
           <p class="text-xs font-semibold uppercase text-primary">BuenoHost</p>
           <h2 id="branches-title" class="text-2xl font-semibold text-highlighted">
-            Public guide first, console next
+            Guest guide first, host dashboard next
           </h2>
         </div>
 
@@ -161,10 +161,10 @@ const actions = [
     icon: 'i-lucide-list',
   },
   {
-    label: 'Console',
+    label: 'Host dashboard',
     description: 'Host workspace',
-    longDescription: 'A console route for managing guide content, sections, publication status and future live data.',
-    to: '/console/bnb',
+    longDescription: 'A host dashboard route for managing properties, guest guides, stays, cleaning and issues.',
+    to: '/console/portfolio',
     icon: 'i-lucide-layout-dashboard',
   },
 ]

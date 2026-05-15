@@ -14,7 +14,7 @@ const items = [
   {
     title: 'Browse providers',
     description: 'Search consultants and agencies by specialism, sector fit, and project type before you enquire.',
-    to: '/seo-providers',
+    to: '/professionals',
     icon: 'i-lucide-search',
   },
   {
@@ -26,7 +26,7 @@ const items = [
   {
     title: 'Create your profile',
     description: 'Open the lightweight onboarding path for SEO users and start collecting leads.',
-    to: '/get-started',
+    to: '/dashboard/professional',
     icon: 'i-lucide-rocket',
   },
 ]

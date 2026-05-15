@@ -9,32 +9,32 @@ const sourceMeta = {
       headline: 'Proof And Clarity',
     },
     heroPrimaryLine:
-      'Find My SEO is the <strong>trust-first hiring app</strong> for businesses that need credible SEO help. Compare specialists by <strong>sector fit</strong>, <strong>delivery proof</strong>, and <strong>case studies</strong> before you send a lead.',
-    primaryCtaLabel: 'Get started',
-    secondaryCtaLabel: 'Browse SEO providers',
-    secondaryCtaTo: '/seo-providers',
+      '<strong>Connect your project with SEO professionals.</strong> Compare specialists by service, sector, and proof.',
+    primaryCtaLabel: 'Find an SEO specialist',
+    secondaryCtaLabel: 'Create a provider profile',
+    secondaryCtaTo: '/dashboard/professional',
     consoleBridgeLine:
-      'A standalone FireUX-hosted product app for <strong>discovery</strong>, <strong>profile trust</strong>, and <strong>better-fit enquiries</strong> without heavy console weight.',
+      'A standalone app for <strong>SEO discovery</strong>, <strong>profile trust</strong>, and <strong>better-fit enquiries</strong>.',
     heroBullets: [
-      'Search by specialism, sector, and project type',
-      'Structured profiles with proof and case studies',
-      'Simple lead capture for quote requests',
-      'Light dashboard for profile and case-study management',
+      'Search by specialism and sector',
+      'Profiles with proof',
+      'Lead capture for enquiries',
+      'Light provider dashboard',
     ],
     rightPanelItems: [
       {
         title: 'Directory',
-        description: 'Search SEO providers by fit instead of guessing from polished agency or freelancer copy.',
+        description: 'Match projects with SEO professionals.',
         icon: 'i-lucide-search',
       },
       {
         title: 'Proof',
-        description: 'Compare outcomes, services, and case studies in one consistent shape.',
+        description: 'Compare services, outcomes and case studies.',
         icon: 'i-lucide-badge-check',
       },
       {
         title: 'Leads',
-        description: 'Turn profile interest into lightweight project enquiries quickly.',
+        description: 'Turn profile visits into enquiries.',
         icon: 'i-lucide-mail-plus',
       },
     ],
@@ -50,8 +50,8 @@ const sourceMeta = {
       supportingCopy:
         'This app is intentionally thin. The Phase 1 loop is search, compare, review proof, and send a lead. It is not an SEO operating system and it is not a console-heavy workspace.',
       primaryAction: {
-        label: 'Browse SEO providers',
-        to: '/seo-providers',
+        label: 'Browse SEO professionals',
+        to: '/professionals',
       },
       secondaryAction: {
         label: 'Open get started',
@@ -200,11 +200,12 @@ const sourceMeta = {
         { label: 'Get Started', path: '/get-started', kind: 'public' },
         { label: 'About', path: '/about', kind: 'public' },
         { label: 'Road Map', path: '/road-map', kind: 'public' },
-        { label: 'SEO Providers', path: '/seo-providers', kind: 'public' },
+        { label: 'SEO Professionals', path: '/professionals', kind: 'public' },
+        { label: 'Technical SEO', path: '/categories/technical-seo', kind: 'public' },
         { label: 'SEO for SaaS', path: '/seo-for-saas', kind: 'public' },
         { label: 'SEO for eCommerce', path: '/seo-for-ecommerce', kind: 'public' },
         { label: 'Case Studies', path: '/case-studies', kind: 'public' },
-        { label: 'SEO Dashboard', path: '/dashboard/seo', kind: 'console' },
+        { label: 'Provider Dashboard', path: '/dashboard/professional', kind: 'console' },
       ],
     },
     relationshipMap: `
@@ -234,7 +235,7 @@ Lead
         'Start with public profiles, structured proof, and simple lead capture. Keep the dashboard light until the app earns deeper workflow complexity.',
       primaryAction: {
         label: 'Open directory',
-        to: '/seo-providers',
+        to: '/professionals',
       },
       secondaryAction: {
         label: 'Review product shape',
@@ -346,6 +347,11 @@ export const appMeta = {
   seoHome: sourceMeta.landing.seo,
   seoAbout: sourceMeta.about.seo,
   seoGetStarted: sourceMeta.getStarted.seo,
+  seoBrowse: {
+    title: 'Browse SEO professionals · Find My SEO',
+    description:
+      'Compare curated SEO consultants and agencies by specialism, sector fit, proof, reviews, and availability.',
+  },
 
   roadmap: sourceMeta.roadmap,
 } as const
@@ -360,7 +366,7 @@ const consoleRoutes = appMeta.routes
 
 export const metaContent = defineFireuxMeta({
   app: {
-    id: 'find-my-seo',
+    id: 'find-my-seo-app',
     name: appMeta.name,
     ecosystem: 'fireux',
   },
@@ -368,7 +374,7 @@ export const metaContent = defineFireuxMeta({
     big_personality: appMeta.brand.bigPersonality,
     headline: appMeta.brand.headline,
     highlight_terms: [
-      'trust-first hiring app',
+      'SEO specialist marketplace',
       'sector fit',
       'delivery proof',
       'case studies',
@@ -404,7 +410,7 @@ export const metaContent = defineFireuxMeta({
   cta: {
     primary: {
       label: appMeta.landingPrimaryCtaLabel,
-      to: '/get-started',
+      to: '/professionals',
     },
     secondary:
       appMeta.landingSecondaryCtaLabel && appMeta.landingSecondaryCtaTo

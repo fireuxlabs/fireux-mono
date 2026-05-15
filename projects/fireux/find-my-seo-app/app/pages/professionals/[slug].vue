@@ -2,12 +2,34 @@
   <UPage v-if="provider">
     <UPageHeader :title="provider.displayName" :description="provider.headline">
       <template #headline>
-        <div class="flex flex-wrap gap-2">
-          <UBadge color="neutral" variant="soft">{{ providerTypeLabel }}</UBadge>
-          <UBadge v-if="provider.isFeatured" color="primary" variant="soft">Featured by Charlie</UBadge>
-          <UBadge v-if="provider.isVerified" color="success" variant="soft">Verified by Find My SEO</UBadge>
-          <UBadge variant="soft">{{ provider.locationLabel }}</UBadge>
-          <UBadge variant="soft">{{ provider.availabilityStatus }}</UBadge>
+        <div class="flex flex-wrap items-center gap-3">
+          <UAvatar
+            :src="primaryMediaUrl || undefined"
+            :alt="provider.displayName"
+            :icon="primaryMediaIcon"
+            size="xl"
+            class="shrink-0"
+          />
+          <div class="min-w-0 space-y-2">
+            <div v-if="provider.brandName" class="flex items-center gap-2 text-sm text-muted">
+              <UAvatar
+                v-if="brandLogoUrl"
+                :src="brandLogoUrl"
+                :alt="provider.brandName"
+                size="xs"
+                class="shrink-0"
+              />
+              <span>{{ provider.brandName }}</span>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <UBadge color="neutral" variant="soft">{{ providerTypeLabel }}</UBadge>
+              <UBadge v-if="provider.isFeatured" color="primary" variant="soft">Featured by Charlie</UBadge>
+              <UBadge v-if="provider.isVerified" color="success" variant="soft">Verified by Find My SEO</UBadge>
+              <UBadge variant="soft">{{ provider.locationLabel }}</UBadge>
+              <UBadge variant="soft">{{ provider.availabilityStatus }}</UBadge>
+              <UBadge variant="soft">{{ provider.rating.toFixed(1) }} rating · {{ provider.reviewCount }} reviews</UBadge>
+            </div>
+          </div>
         </div>
       </template>
     </UPageHeader>
@@ -99,7 +121,7 @@
 
         <UCard v-if="provider.testimonials.length">
           <div class="space-y-4">
-            <h2 class="text-2xl font-semibold">Testimonials</h2>
+            <h2 class="text-2xl font-semibold">DemoSeoTestimonials</h2>
             <div v-for="testimonial in provider.testimonials" :key="testimonial.quote" class="rounded-xl border border-default p-4">
               <p class="text-sm leading-6 text-toned">"{{ testimonial.quote }}"</p>
               <p v-if="testimonial.name || testimonial.company" class="mt-3 text-sm text-dimmed">
@@ -195,21 +217,21 @@
   <UPage v-else>
     <UPageHeader title="Provider not found" description="This SEO provider is unavailable." />
     <UPageBody>
-      <UButton to="/seo-providers" color="primary">Back to directory</UButton>
+      <UButton to="/professionals" color="primary">Back to directory</UButton>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
-import type { LeadDraft } from '../../content/findMySeo'
-import { caseStudiesForProvider, providerBySlug, providerLabel } from '../../content/findMySeo'
+import type { DemoSeoLeadDraft } from '../../../../../../demo/find-my-seo.demo'
+import { demoSeoCaseStudiesForProvider, demoSeoProviderLabel, findDemoSeoProviderBySlug } from '../../../../../../demo/find-my-seo.demo'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
-const provider = computed(() => providerBySlug(slug.value))
+const provider = computed(() => findDemoSeoProviderBySlug(slug.value))
 const caseStudies = computed(() =>
-  provider.value ? caseStudiesForProvider(provider.value.id) : []
+  provider.value ? demoSeoCaseStudiesForProvider(provider.value.id) : []
 )
 const { submitLead } = useFindMySeoLeads()
 
@@ -217,7 +239,7 @@ const submittedLead = ref(false)
 const successMessage = ref('')
 const submissionColor = ref<'success' | 'warning'>('success')
 const submissionTitle = ref('Enquiry captured')
-const draft = reactive<LeadDraft>({
+const draft = reactive<DemoSeoLeadDraft>({
   contactName: '',
   contactEmail: '',
   companyName: '',
@@ -230,8 +252,27 @@ const draft = reactive<LeadDraft>({
 })
 
 const providerTypeLabel = computed(() =>
-  provider.value ? providerLabel(provider.value) : 'Provider'
+  provider.value ? demoSeoProviderLabel(provider.value) : 'Provider'
 )
+const primaryMediaUrl = computed(() => {
+  if (!provider.value) {
+    return ''
+  }
+
+  return provider.value.entityType === 'company'
+    ? provider.value.logoUrl || provider.value.avatarUrl || ''
+    : provider.value.avatarUrl || provider.value.logoUrl || ''
+})
+const primaryMediaIcon = computed(() =>
+  provider.value?.entityType === 'company' ? 'i-lucide-building-2' : 'i-lucide-user'
+)
+const brandLogoUrl = computed(() => {
+  if (!provider.value?.logoUrl || provider.value.logoUrl === primaryMediaUrl.value) {
+    return ''
+  }
+
+  return provider.value.logoUrl
+})
 
 const emailDirectHref = computed(() => {
   if (!provider.value?.contactEmail) {

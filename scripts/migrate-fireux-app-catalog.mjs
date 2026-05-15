@@ -59,7 +59,7 @@ const APP_OVERRIDES = {
   'find-my-seo-app': {
     name: 'Find My SEO',
     shortName: 'FindMySEO',
-    siteUrl: 'https://stitch-seo.web.app',
+    siteUrl: 'https://find-my-seo.web.app',
     tagline: 'Standalone FireUX-hosted SEO product.',
     description:
       'Standalone FireUX-hosted product app inside the fireux ecosystem.',

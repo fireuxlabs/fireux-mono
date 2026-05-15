@@ -1,5 +1,6 @@
-// Local demo payloads for Companies (git-ignored).
-// These files are for dev-only UI prototyping and are not part of the repo.
+// Repo-level demo payloads for Companies.
+// Use these records for dev surfaces, examples, and explicit preflight demos.
+// They are not canonical storage or runtime contracts.
 
 import type { Company, CompanyView } from 'fireux-companies/runtime/models/company.model'
 import type { Place } from 'fireux-places/runtime/models/place.model'

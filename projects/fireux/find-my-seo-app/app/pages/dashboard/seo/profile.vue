@@ -38,7 +38,7 @@
             <UFormField label="Trust note">
               <UTextarea :model-value="provider.trustNote" :rows="3" />
             </UFormField>
-            <UFormField label="Testimonials">
+            <UFormField label="DemoSeoTestimonials">
               <UTextarea :model-value="testimonialPreview" :rows="5" />
             </UFormField>
             <UButton color="primary">Save listing</UButton>
@@ -53,7 +53,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { seoProviders } from '../../../content/findMySeo'
+import { demoSeoProviderList } from '../../../../../../../demo/find-my-seo.demo'
 
 definePageMeta({
   layout: 'default',
@@ -64,7 +64,7 @@ const route = useRoute()
 
 const provider = computed(() => {
   const slug = typeof route.query.provider === 'string' ? route.query.provider : ''
-  return seoProviders.find((item) => item.slug === slug) ?? seoProviders[0]
+  return demoSeoProviderList.find((item) => item.slug === slug) ?? demoSeoProviderList[0]
 })
 
 const testimonialPreview = computed(() =>

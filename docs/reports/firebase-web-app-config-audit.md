@@ -63,7 +63,7 @@ For each app:
 | `richies` | `richies-reinigung` | `cleanbox` | `cleanbox` | `./projects/cleanbox/richies-reinigung` | 3004 | todo |
 | `tenant` | `fireux-tenant` | `fireux` | `fireux` | `./projects/fireux/tenant` | 3005 | confirmed |
 | `bringli` | `bringli-app` | `bringli` | `bringli` | `./projects/bringli/bringli-app` | 3006 | todo |
-| `find-my-seo` | `find-my-seo-app` | `fireux` | `fireux` | `./projects/fireux/find-my-seo-app` | 3010 | todo |
+| `find-my-seo` | `find-my-seo-app` | `fireux` | `find-my-seo` | `./projects/fireux/find-my-seo-app` | 3010 | confirmed |
 | `sproochli` | `sproochli` | `fireux` | `sproochli` | `./projects/fireux/sproochli` | 3011 | confirmed |
 | `buenohost` | `buenohost` | `fireux` | `buenohost` | `./projects/fireux/buenohost` | 3012 | confirmed |
 | `granite` | `granite-app` | `granite` | `granite` | `./projects/granite/granite-app` | 3007 | todo |

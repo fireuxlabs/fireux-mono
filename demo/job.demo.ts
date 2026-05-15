@@ -1,5 +1,6 @@
-// Dev-only demo payloads for Jobs (git-ignored).
-// These files are for dev-only UI prototyping and are not part of the repo.
+// Repo-level demo payloads for Jobs.
+// Use these records for dev surfaces, examples, and explicit preflight demos.
+// They are not canonical storage or runtime contracts.
 
 import { useJobInterface } from 'fireux-jobs/runtime/composables/fireux/firestore/jobs/utils/view/useJobInterface'
 import type { Job, JobResolved } from 'fireux-jobs/runtime/models/job.model'

@@ -7,7 +7,7 @@
 
     <UPageBody>
       <div class="space-y-4">
-        <UCard v-for="study in seoCaseStudies" :key="study.id">
+        <UCard v-for="study in demoSeoCaseStudyList" :key="study.id">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div class="space-y-2">
               <p class="text-lg font-semibold">{{ study.title }}</p>
@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { seoCaseStudies, seoProviders } from '../../../content/findMySeo'
+import { demoSeoCaseStudyList, demoSeoProviderList } from '../../../../../../../demo/find-my-seo.demo'
 
 definePageMeta({
   layout: 'default',
@@ -36,5 +36,5 @@ definePageMeta({
 })
 
 const ownerName = (providerId: string) =>
-  seoProviders.find((provider) => provider.id === providerId)?.displayName ?? 'SEO provider'
+  demoSeoProviderList.find((provider) => provider.id === providerId)?.displayName ?? 'SEO provider'
 </script>

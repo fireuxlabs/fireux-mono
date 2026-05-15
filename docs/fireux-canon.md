@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-14
+Updated: 2026-05-15
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -37,6 +37,11 @@ Updated: 2026-05-14
   - `Supplier`
   - `Portfolio`
   - `Project`
+- Canonical console family keys are plural where the runtime uses a collection-like key:
+  - `projects` -> `/console/projects`
+  - `kitchens` -> `/console/kitchen`
+  - `portfolios` -> `/console/portfolio`
+  - `suppliers` -> `/console/supplier`
 - Identity roots such as `User` and profile roots do not use `app_scope_state`; their app records are overlays for membership, capability, and presentation.
 - Generic project collection and console project selection are not the same seam.
 - `useProjectCollection()` stays generic.
@@ -49,6 +54,14 @@ Updated: 2026-05-14
 - Standalone apps are not tenant children and are not ecosystem globals.
 - Standalone apps may use shared core/runtime foundations but must not claim project control or ecosystem-controller ownership.
 - Phase 1 canon allows standalone apps only in the `fireux` ecosystem.
+- Landing page kind canon is:
+  - `ecosystem`: broad parent-brand landing page for an ecosystem main app.
+  - `product`: focused single-product landing page for tenant and standalone apps.
+- Ecosystem landing pages may explain the wider ecosystem, multiple modules/apps, parent-brand promise, and cross-product connections.
+- Product landing pages should lead with one job-to-be-done, primary CTA, demo/public records when useful, benefits, how-it-works, and trust/proof signals.
+- Tenant apps and standalone apps use the same product landing shape for now.
+- Tenant product pages may show a small parent ecosystem badge/link.
+- Standalone product pages should feel complete by themselves and must not rely on explaining FireUX or a parent ecosystem.
 
 ## Behavioral Canon
 - No silent fallbacks for selection, routing, or identity decisions.
@@ -70,6 +83,33 @@ Updated: 2026-05-14
 - Real-mode target visibility should come from explicit overlay governance and only use root hints where the family contract allows it.
 - App branding is app-local for every app role.
 - The canonical brand asset path is `/public/img/app/*` for global, tenant, and standalone apps.
+
+## Demo Data Canon
+- Demo data is never canon by itself.
+- Demo data must bend toward the desired live/test shape; runtime code must not bend around stale demo data.
+- `test` data is separate from demo data:
+  - `test` is writable and proves the intended live shape.
+  - `demo` is curated, read-only, and used for development, demos, UX exploration, and explicit preflight product surfaces.
+- Console/runtime demo data must live in the owning domain package as a demo scenario registry.
+- Current accepted demo scenario registry shapes are:
+  - `packages/*/src/runtime/composables/fireux/app/**/demo-scenarios.ts`
+  - `packages/*/src/runtime/composables/fireux/app/**/**/*-demo-scenarios/index.ts`
+  - `packages/*/src/runtime/composables/fireux/app/**/demo-scenarios/**`
+- Repo-level `demo/*.demo.ts` files are for demo entity/view payloads, dev surfaces, examples, and explicit preflight product records.
+- Repo-level `demo/*.demo.ts` files are not Firestore storage, Nuxt Content, canonical runtime models, or console scenario registries.
+- App-local `app/content/*` is for app copy, metadata, and static page content, not entity demo records.
+- Demo file naming is:
+  - repo-level fixtures: `demo/<domain>.demo.ts`
+  - package runtime scenarios: `demo-scenarios` or `<domain>-demo-scenarios` under the owning runtime package.
+- Demo export naming should make the demo status explicit:
+  - types: `Demo<Entity>`
+  - lists: `demo<Entity>List`
+  - UI/view surfaces: `demo<Entity>SurfaceList`, `demo<Entity>PreviewList`, or similarly explicit names.
+  - scenario helpers: `getDemo<Entity>()`, `getDemo<Entity>s()`, and `getDemo<Entity>Scenarios()` where applicable.
+- Demo entity media should be URL-backed in demo data unless the task is specifically testing a local asset pipeline.
+- App brand assets stay in `/public/img/app/*`; entity demo avatars/logos should not be stored under app `public` folders by default.
+- Use storage-shaped field names when a demo record intentionally mirrors storage (`image_url`, `avatar_url`, `logo_url`).
+- Use view-shaped field names when a demo record intentionally feeds UI cards/surfaces (`imageUrl`, `avatarUrl`, `logoUrl`).
 
 ## Firebase Web App Config Canon
 - Firebase project values are ecosystem-level unless the Firebase console proves otherwise:
