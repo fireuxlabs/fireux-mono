@@ -5,8 +5,9 @@ export const buenoHostProductSentence = 'Guest guides for holiday homes, BNBs, a
 export const buenoHostRoutes = [
   { label: 'Home', path: '/', kind: 'public' },
   { label: 'BNB Guides', path: '/bnb', kind: 'public' },
-  { label: 'Holiday with Nats', path: '/bnb/holiday-with-nats', kind: 'public' },
-  { label: 'Holiday with Nats Wi-Fi', path: '/bnb/holiday-with-nats/wifi', kind: 'public' },
+  { label: 'Alpine View Demo', path: '/bnb/alpine-view-demo', kind: 'public' },
+  { label: 'Alpine View Demo Wi-Fi', path: '/bnb/alpine-view-demo/wifi', kind: 'public' },
+  { label: 'BNB Console', path: '/console/bnb', kind: 'console' },
 ] as const
 
 export const metaContent = defineFireuxMeta({
@@ -53,7 +54,7 @@ export const metaContent = defineFireuxMeta({
   cta: {
     primary: {
       label: 'View sample guide',
-      to: '/bnb/holiday-with-nats',
+      to: '/bnb/alpine-view-demo',
     },
     secondary: {
       label: 'Browse BNB guides',

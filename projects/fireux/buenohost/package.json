@@ -2,6 +2,9 @@
   "name": "buenohost-app",
   "private": true,
   "type": "module",
+  "imports": {
+    "#internal/nuxt/paths": "./app/nuxt-internal-paths.mjs"
+  },
   "scripts": {
     "dev": "nuxi dev --port 3012",
     "build": "nuxi build",

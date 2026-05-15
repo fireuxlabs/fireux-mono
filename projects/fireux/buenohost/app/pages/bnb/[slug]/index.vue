@@ -1,5 +1,5 @@
 <template>
-  <div class="min-w-0 space-y-8">
+  <div v-if="resolvedGuide" class="min-w-0 space-y-8">
     <section class="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
       <div class="space-y-5">
         <div class="flex flex-wrap gap-2">
@@ -284,6 +284,22 @@
       <p>{{ resolvedGuide.footer }}</p>
     </footer>
   </div>
+  <UCard v-else>
+    <div class="space-y-3">
+      <UBadge color="warning" variant="soft">
+        Error 404
+      </UBadge>
+      <h1 class="text-3xl font-semibold text-highlighted">
+        BNB guide not found
+      </h1>
+      <p class="text-muted">
+        This guide is not available in BuenoHost.
+      </p>
+      <UButton to="/bnb" color="primary" variant="soft">
+        Back to BNB guides
+      </UButton>
+    </div>
+  </UCard>
 </template>
 
 <script setup lang="ts">
@@ -302,12 +318,7 @@ const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
 const guide = computed(() => resolveBnbGuide(String(route.params.slug || '')))
 
-if (!guide.value) {
-  throw createError({
-    statusCode: 404,
-    statusMessage: 'BNB guide not found',
-  })
-}
+if (!guide.value) setResponseStatus(404)
 
 const resolvedGuide = computed(() => guide.value!)
 const enabledSections = computed(() => getEnabledBnbSections(resolvedGuide.value))
@@ -390,7 +401,15 @@ async function loadTranslationAvailability() {
 }
 
 useSeoMeta({
-  title: computed(() => `${resolvedGuide.value.title} · ${resolvedGuide.value.property.name}`),
-  description: computed(() => `Guest guide for ${resolvedGuide.value.property.name}`),
+  title: computed(() =>
+    resolvedGuide.value
+      ? `${resolvedGuide.value.title} · ${resolvedGuide.value.property.name}`
+      : 'BNB guide not found'
+  ),
+  description: computed(() =>
+    resolvedGuide.value
+      ? `Guest guide for ${resolvedGuide.value.property.name}`
+      : 'BNB guide not found'
+  ),
 })
 </script>

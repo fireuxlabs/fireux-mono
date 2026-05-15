@@ -1,103 +1,422 @@
 <template>
-  <main class="min-h-screen bg-default text-default">
-    <UContainer class="py-8 sm:py-12">
-      <header class="flex items-center justify-between gap-4">
-        <NuxtLink to="/" class="inline-flex items-center gap-3">
-          <img src="/img/app/logo.png" alt="" class="size-10 rounded-xl" />
-          <span class="text-lg font-semibold text-highlighted">BuenoHost</span>
+  <main class="buenohost-home min-h-screen bg-default text-default">
+    <UContainer class="buenohost-shell py-8 sm:py-10">
+      <header class="buenohost-topbar">
+        <NuxtLink to="/" class="inline-flex items-center" aria-label="BuenoHost home">
+          <img
+            src="/img/app/wordmark-dark.png"
+            alt="BuenoHost"
+            class="h-12 w-auto dark:hidden"
+          />
+          <img
+            src="/img/app/wordmark-light.png"
+            alt="BuenoHost"
+            class="hidden h-12 w-auto dark:block"
+          />
         </NuxtLink>
-        <UButton to="/bnb" icon="i-lucide-house" color="neutral" variant="soft">
-          Guides
-        </UButton>
+
+        <nav class="flex items-center gap-2" aria-label="Primary">
+          <UButton to="/bnb" icon="i-lucide-house" color="neutral" variant="ghost">
+            Guides
+          </UButton>
+          <UButton to="/console/bnb" icon="i-lucide-layout-dashboard" color="primary" variant="soft">
+            Console
+          </UButton>
+        </nav>
       </header>
 
-      <section class="grid gap-10 py-12 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-center lg:py-20">
-        <div class="space-y-8">
-          <div class="space-y-4">
-            <UBadge color="primary" variant="soft">
-              Short-stay guest guides
-            </UBadge>
-            <h1 class="max-w-4xl text-4xl font-semibold tracking-normal text-highlighted sm:text-6xl">
-              Airbnb support pages that guests actually use.
-            </h1>
-            <p class="max-w-2xl text-lg leading-8 text-muted">
-              BuenoHost turns house manuals into clean mobile guides for Wi-Fi, keys, checkout,
-              emergency contacts, parking, rules and local recommendations.
-            </p>
-          </div>
+      <section class="buenohost-hero" aria-labelledby="buenohost-title">
+        <div class="buenohost-hero__copy">
+          <UBadge color="primary" variant="soft" size="lg">
+            Guest guides for short stays
+          </UBadge>
 
-          <div class="grid gap-3 sm:flex sm:flex-wrap">
-            <UButton to="/bnb/holiday-with-nats" icon="i-lucide-eye" size="xl" block class="sm:w-auto">
-              View sample guide
-            </UButton>
-            <UButton to="/bnb" icon="i-lucide-list" size="xl" color="neutral" variant="soft" block class="sm:w-auto">
-              Browse guides
-            </UButton>
-          </div>
+          <h1 id="buenohost-title" class="buenohost-title text-highlighted">
+            House manuals guests can actually use.
+          </h1>
 
-          <div class="grid gap-3 sm:grid-cols-3">
-            <UCard v-for="feature in features" :key="feature.title">
-              <div class="space-y-3">
-                <div class="inline-flex rounded-lg bg-primary/10 p-2 text-primary">
-                  <Icon :name="feature.icon" class="size-5" />
-                </div>
-                <h2 class="font-semibold text-highlighted">{{ feature.title }}</h2>
-                <p class="text-sm leading-6 text-muted">{{ feature.copy }}</p>
-              </div>
-            </UCard>
+          <p class="max-w-xl text-base leading-7 text-muted sm:text-lg">
+            BuenoHost turns Wi-Fi, check-in, checkout, safety notes, parking and local tips into a polished mobile guide with a console shape ready behind it.
+          </p>
+
+          <nav class="grid gap-3 sm:grid-cols-3" aria-label="BuenoHost actions">
+            <UButton
+              v-for="action in actions"
+              :key="action.to"
+              :to="action.to"
+              :icon="action.icon"
+              size="xl"
+              color="neutral"
+              variant="ghost"
+              block
+              class="buenohost-action"
+            >
+              <span class="min-w-0 text-left">
+                <span class="block truncate">{{ action.label }}</span>
+                <span class="block text-xs font-normal opacity-85">{{ action.description }}</span>
+              </span>
+            </UButton>
+          </nav>
+
+          <div class="buenohost-proof" aria-label="BuenoHost workflow">
+            <div v-for="step in workflow" :key="step.label" class="buenohost-proof__item">
+              <Icon :name="step.icon" class="size-4" />
+              <span>{{ step.label }}</span>
+            </div>
           </div>
         </div>
 
-        <UCard>
-          <template #header>
-            <div class="flex items-center gap-2">
-              <Icon name="i-lucide-calendar-heart" class="size-5 text-primary" />
-              <h2 class="font-semibold">Stay-ready information</h2>
-            </div>
-          </template>
+        <div class="buenohost-hero__visual" aria-label="BuenoHost brand preview">
+          <div class="buenohost-cover">
+            <img
+              src="/img/app/cover.png"
+              alt="BuenoHost brand cover"
+              class="aspect-video w-full object-cover"
+            />
+            <div class="buenohost-cover__shine" />
+          </div>
 
-          <ul class="space-y-3 text-sm">
-            <li v-for="item in checklist" :key="item" class="flex gap-3">
-              <Icon name="i-lucide-check" class="mt-0.5 size-4 shrink-0 text-primary" />
-              <span>{{ item }}</span>
-            </li>
-          </ul>
-        </UCard>
+          <div class="buenohost-stack">
+            <div class="buenohost-logo-tile">
+              <img
+                src="/img/app/logo.png"
+                alt="BuenoHost logo"
+                class="size-full object-contain"
+              />
+            </div>
+
+            <div class="buenohost-wordmark-tile">
+              <img
+                src="/img/app/wordmark.png"
+                alt="BuenoHost wordmark"
+                class="max-h-12 w-full object-contain"
+              />
+              <p class="text-sm leading-6 text-muted">
+                Host information, guest-facing pages, console-ready data.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="buenohost-branches" aria-labelledby="branches-title">
+        <div class="space-y-2">
+          <p class="text-xs font-semibold uppercase text-primary">BuenoHost</p>
+          <h2 id="branches-title" class="text-2xl font-semibold text-highlighted">
+            Public guide first, console next
+          </h2>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-3">
+          <UButton
+            v-for="action in actions"
+            :key="action.to"
+            :to="action.to"
+            color="neutral"
+            variant="ghost"
+            block
+            class="buenohost-branch"
+          >
+            <span class="grid w-full gap-3 text-left">
+              <span class="buenohost-branch__icon">
+                <Icon :name="action.icon" class="size-5" />
+              </span>
+              <span>
+                <span class="block">{{ action.label }}</span>
+                <span class="mt-1 block text-sm font-normal leading-6 opacity-80">
+                  {{ action.longDescription }}
+                </span>
+              </span>
+            </span>
+          </UButton>
+        </div>
       </section>
     </UContainer>
   </main>
 </template>
 
 <script setup lang="ts">
-const features = [
-  {
-    title: 'Clear arrivals',
-    copy: 'Give guests the important details before they message the host.',
-    icon: 'i-lucide-key-round',
-  },
-  {
-    title: 'Fewer repeated questions',
-    copy: 'Keep Wi-Fi, checkout, parking and rubbish instructions in one obvious place.',
-    icon: 'i-lucide-message-circle-off',
-  },
-  {
-    title: 'Translation-ready',
-    copy: 'Sproochli can translate the structured guide when the host is ready.',
-    icon: 'i-lucide-languages',
-  },
-]
-
-const checklist = [
-  'Emergency contacts and safety equipment',
-  'Wi-Fi, keys, access and checkout',
-  'House rules, quiet hours and smoking notes',
-  'Parking, rubbish, recycling and local shops',
-  'Personal host messages for each stay later',
-]
+definePageMeta({
+  layout: false,
+})
 
 useSeoMeta({
-  title: 'BuenoHost - Guest guides for BNB and holiday apartment hosts',
-  description:
-    'Mobile guest guides for BNB and holiday apartment hosts with Wi-Fi, keys, checkout, emergency contacts, house rules and local information.',
+  title: 'BuenoHost',
+  description: 'Mobile guest guides and console-ready host information for holiday homes and BNBs.',
 })
+
+const actions = [
+  {
+    label: 'Demo guide',
+    description: 'Guest-facing sample',
+    longDescription: 'A demo-safe public BNB guide with Wi-Fi, access, checkout, safety and local information.',
+    to: '/bnb/alpine-view-demo',
+    icon: 'i-lucide-house',
+  },
+  {
+    label: 'Guides',
+    description: 'Public guide list',
+    longDescription: 'Browse the available BuenoHost guide records before moving them into live host storage.',
+    to: '/bnb',
+    icon: 'i-lucide-list',
+  },
+  {
+    label: 'Console',
+    description: 'Host workspace',
+    longDescription: 'A console route for managing guide content, sections, publication status and future live data.',
+    to: '/console/bnb',
+    icon: 'i-lucide-layout-dashboard',
+  },
+]
+
+const workflow = [
+  {
+    label: 'Property',
+    icon: 'i-lucide-building-2',
+  },
+  {
+    label: 'Guide',
+    icon: 'i-lucide-layout-list',
+  },
+  {
+    label: 'Publish',
+    icon: 'i-lucide-send',
+  },
+  {
+    label: 'Guest',
+    icon: 'i-lucide-smartphone',
+  },
+]
 </script>
+
+<style scoped>
+.buenohost-home {
+  --buenohost-primary: #0f766e;
+  --buenohost-secondary: #0891b2;
+  --buenohost-accent: #f59e0b;
+  --buenohost-dark: #0f172a;
+}
+
+.buenohost-shell {
+  display: grid;
+  gap: 4rem;
+}
+
+.buenohost-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.buenohost-hero {
+  display: grid;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.buenohost-hero__copy,
+.buenohost-hero__visual {
+  display: grid;
+  gap: 1.5rem;
+  animation: buenohost-rise 520ms ease-out both;
+}
+
+.buenohost-hero__visual {
+  animation-delay: 90ms;
+}
+
+.buenohost-title {
+  max-width: 44rem;
+  font-size: 3.75rem;
+  font-weight: 650;
+  letter-spacing: 0;
+  line-height: 0.98;
+}
+
+.buenohost-action,
+.buenohost-branch {
+  min-height: 4.25rem;
+  justify-content: flex-start;
+  border: 0;
+  background:
+    linear-gradient(135deg, var(--buenohost-primary), var(--buenohost-secondary) 62%, var(--buenohost-accent));
+  color: white;
+  box-shadow: 0 18px 36px rgb(15 118 110 / 22%);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    filter 180ms ease;
+}
+
+.buenohost-action:hover,
+.buenohost-branch:hover {
+  transform: translateY(-2px);
+  filter: saturate(1.08);
+  box-shadow: 0 22px 44px rgb(15 118 110 / 30%);
+}
+
+.buenohost-proof {
+  display: grid;
+  gap: 0.75rem;
+  max-width: 42rem;
+}
+
+.buenohost-proof__item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.5rem;
+  border: 1px solid color-mix(in srgb, var(--buenohost-primary) 20%, transparent);
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.8rem;
+  color: var(--buenohost-primary);
+  background: color-mix(in srgb, var(--buenohost-primary) 8%, transparent);
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.buenohost-cover {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--ui-border);
+  border-radius: 0.75rem;
+  background: var(--ui-bg-elevated);
+  box-shadow: 0 24px 70px rgb(15 23 42 / 18%);
+}
+
+.buenohost-cover__shine {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(110deg, transparent 24%, rgb(255 255 255 / 22%) 44%, transparent 62%);
+  transform: translateX(-100%);
+  animation: buenohost-shine 3.8s ease-in-out infinite;
+}
+
+.buenohost-stack {
+  display: grid;
+  grid-template-columns: 7rem minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.buenohost-logo-tile,
+.buenohost-wordmark-tile {
+  border: 1px solid var(--ui-border);
+  border-radius: 0.75rem;
+  background: var(--ui-bg-elevated);
+}
+
+.buenohost-logo-tile {
+  display: grid;
+  aspect-ratio: 1;
+  place-items: center;
+  padding: 1rem;
+  animation: buenohost-float 5.5s ease-in-out infinite;
+}
+
+.buenohost-wordmark-tile {
+  display: grid;
+  align-content: center;
+  gap: 0.75rem;
+  min-height: 7rem;
+  padding: 1rem;
+}
+
+.buenohost-branches {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.buenohost-branch {
+  min-height: 11rem;
+  align-items: stretch;
+  padding: 1rem;
+}
+
+.buenohost-branch__icon {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  border-radius: 0.5rem;
+  background: rgb(255 255 255 / 16%);
+}
+
+@media (min-width: 640px) {
+  .buenohost-proof {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .buenohost-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(22rem, 32rem);
+  }
+}
+
+@media (max-width: 639px) {
+  .buenohost-title {
+    font-size: 2.75rem;
+  }
+
+  .buenohost-stack {
+    grid-template-columns: 1fr;
+  }
+
+  .buenohost-logo-tile {
+    width: 8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .buenohost-action,
+  .buenohost-branch,
+  .buenohost-cover__shine,
+  .buenohost-hero__copy,
+  .buenohost-hero__visual,
+  .buenohost-logo-tile {
+    animation: none;
+    transition: none;
+  }
+
+  .buenohost-action:hover,
+  .buenohost-branch:hover {
+    transform: none;
+  }
+}
+
+@keyframes buenohost-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes buenohost-shine {
+  0%,
+  42% {
+    transform: translateX(-100%);
+  }
+
+  72%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes buenohost-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+</style>

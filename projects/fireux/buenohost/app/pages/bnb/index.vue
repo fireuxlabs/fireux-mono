@@ -17,21 +17,23 @@
       </p>
     </div>
 
-    <UCard>
+    <UCard v-for="guide in bnbGuides" :key="guide.slug">
       <UButton
-        to="/bnb/holiday-with-nats"
+        :to="`/bnb/${guide.slug}`"
         icon="i-lucide-house"
         size="xl"
         color="primary"
         block
       >
-        Holiday with Nats
+        {{ guide.title }}
       </UButton>
     </UCard>
   </section>
 </template>
 
 <script setup lang="ts">
+import { bnbGuides } from '../../content/bnbGuides'
+
 definePageMeta({
   layout: 'bnb',
 })

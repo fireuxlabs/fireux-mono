@@ -1,9 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 192" role="img" aria-label="BuenoHost wordmark">
-  <style>
-    .word {
-      font: 800 82px 'Arial Rounded MT Bold', Arial, sans-serif;
-      fill: #0F766E;
-    }
-  </style>
-  <text x="384" y="116" text-anchor="middle" class="word">BuenoHost</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 192">
+<style>
+.dark { font: 800 88px Arial, sans-serif; fill: #0F172A; }
+.blue { font: 800 88px Arial, sans-serif; fill: #2563EB; }
+</style>
+<text x="120" y="120" class="dark">bueno</text>
+<text x="430" y="120" class="blue">host</text>
 </svg>
