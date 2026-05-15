@@ -64,10 +64,7 @@ const createProfile = async () => {
   createError.value = null
 
   try {
-    const result = await ensure()
-    if (result.coreProfile) {
-      coreProfile.value = result.coreProfile as any
-    }
+    await ensure()
   } catch (error) {
     createError.value = (error as Error)?.message || 'Failed to create profile.'
   } finally {

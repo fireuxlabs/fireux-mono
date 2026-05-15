@@ -36,7 +36,10 @@
               </span>
             </div>
 
-            <div class="flex items-center justify-between gap-3">
+            <div
+              v-if="canManageAppMembership"
+              class="flex items-center justify-between gap-3"
+            >
               <div class="text-xs text-gray-600 space-y-1">
                 <p>appUser.role: {{ appUserRole }}</p>
                 <p>appUser.is_premium: {{ String(isAppPremium) }}</p>
@@ -52,7 +55,10 @@
               />
             </div>
 
-            <div class="flex items-center justify-between gap-3">
+            <div
+              v-if="canManageAppMembership"
+              class="flex items-center justify-between gap-3"
+            >
               <div class="text-xs text-gray-600 space-y-1">
                 <p>Premium users can own multiple live console targets.</p>
               </div>
@@ -68,6 +74,10 @@
               <p>
                 App overlay updates are managed by tenant administrators.
                 Contact an admin to adjust your role.
+              </p>
+              <p v-if="!canManageAppMembership" class="mt-1">
+                You can view your app membership here, but only app admins can
+                change roles or entitlements.
               </p>
             </div>
           </div>
@@ -97,7 +107,7 @@ import type { User } from '../../../../models/core/user.model'
 
 const props = defineProps<{ user: User | null; userRefs?: UserRefs }>()
 
-const { appUser } = useUser()
+const { appUser, isAdmin } = useUser()
 const { app, setAppUserAdmin, setAppUserPremium } = useApp()
 
 const overlay = computed(() =>
@@ -115,11 +125,13 @@ const appAdmins = computed(() =>
 const appUserRole = computed(() => overlay.value?.role ?? 'user')
 const isAppAdmin = computed(() => appUserRole.value === 'admin')
 const isAppPremium = computed(() => overlay.value?.is_premium === true)
+const canManageAppMembership = computed(() => isAdmin.value === true)
 const togglingAdmin = ref(false)
 const togglingPremium = ref(false)
 
 const handleToggleAdmin = async (nextValue: boolean) => {
   if (!props.user?.id) return
+  if (!canManageAppMembership.value) return
   togglingAdmin.value = true
   try {
     console.log('1) toggle-start', {
@@ -140,6 +152,7 @@ const handleToggleAdmin = async (nextValue: boolean) => {
 
 const handleTogglePremium = async (nextValue: boolean) => {
   if (!props.user?.id) return
+  if (!canManageAppMembership.value) return
   togglingPremium.value = true
   try {
     await setAppUserPremium(props.user.id, nextValue)

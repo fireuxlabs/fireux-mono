@@ -7,7 +7,7 @@
 
     <ClientOnly>
       <div v-if="user" class="space-y-6">
-        <UCard>
+        <UCard v-if="canManageAppMembership">
           <div class="flex items-center justify-between gap-3">
             <div class="text-xs text-gray-600 space-y-1">
               <p>appUser.role: {{ appUserRole }}</p>
@@ -126,6 +126,7 @@ const resolvedAppUser = computed(() =>
 )
 const appUserRole = computed(() => resolvedAppUser.value?.role ?? 'user')
 const isAppAdmin = computed(() => appUserRole.value === 'admin')
+const canManageAppMembership = computed(() => userApi.isAdmin.value === true)
 const isOnlyAdmin = computed(
   () => isAppAdmin.value && appAdmins.value.length <= 1
 )
@@ -133,6 +134,10 @@ const togglingAdmin = ref(false)
 
 const handleToggleAdmin = async (nextValue: boolean) => {
   if (!props.user?.id) return
+  if (!canManageAppMembership.value) {
+    toast.error('Only app admins can update app admin status')
+    return
+  }
   togglingAdmin.value = true
   try {
     console.log('1) toggle-start', {
