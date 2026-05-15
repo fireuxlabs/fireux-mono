@@ -1,7 +1,7 @@
 ---
 title: New App Creation
 description: Checklist and improvement notes for adding a first-class FireUX app.
-updated: 2026-05-14
+updated: 2026-05-15
 ---
 
 # New App Creation
@@ -35,6 +35,7 @@ Read at least these before adding files:
 - `projects/<ecosystem>/<existing-app>/app/pages/**`
 - `packages/ecosystem/fireux-<ecosystem>/src/module.ts`
 - `scripts/_lib/app-registry.mjs`
+- `tools/vscode-fireux-toolbar/extension.js`
 - `projects/tsconfig.json`
 - `docs/README.md`
 - `docs/runtime-contract.md`
@@ -94,11 +95,43 @@ After adding the app folder, wire the repo-level registration points:
 1. Add the app to `projects/tsconfig.json`.
 2. Add the app to `scripts/_lib/app-registry.mjs`.
 3. If the app is standalone, give it its own `databaseId` in both the app config and the registry.
-4. Run `pnpm sync:dev-workspace` so `package.json`, `.vscode/tasks.json`, and `.vscode/launch.json` are generated from the registry.
-5. Check `package.json` has the expected `dev:<key>` script.
-6. If Firebase deploy is in scope, keep `firebase.json` aligned with the app id and hosting site.
+4. Add the app to the Explorer `FireUX Servers` launcher in `tools/vscode-fireux-toolbar/extension.js`.
+5. When a new Firestore database is created for a demo/preflight app, add explicit temporary rules for that database.
+6. Run `pnpm sync:dev-workspace` so `package.json`, `.vscode/tasks.json`, and `.vscode/launch.json` are generated from the registry.
+7. Check `package.json` has the expected `dev:<key>` script.
+8. If Firebase deploy is in scope, keep `firebase.json` aligned with the app id and hosting site.
+9. Before any real deploy, confirm the Firestore rules are acceptable for this ship.
 
 Do not hand-edit generated VS Code task/launch files unless the generator itself is wrong.
+
+## Explorer Server Launcher
+
+The Explorer `FireUX Servers` panel is owned by the local VS Code toolbar extension:
+
+```text
+tools/vscode-fireux-toolbar/extension.js
+```
+
+This list is not generated from `scripts/_lib/app-registry.mjs` yet. When creating a new app, add an entry to the extension's `apps` array with:
+
+```js
+{
+  key: '<app-key>',
+  name: '<Display Name>',
+  icon: '$(search)',
+  port: 3010,
+  commandId: 'fireuxToolbar.startDisplayName',
+  taskLabel: 'pnpm dev:<app-key>',
+  terminalName: '<Display Name> (3010)',
+  pnpmCommand: 'pnpm dev:<app-key> --host',
+  tooltip: 'Start <Display Name> dev (port 3010)',
+  url: 'http://localhost:3010',
+}
+```
+
+Keep `key`, `port`, and launch order aligned with `scripts/_lib/app-registry.mjs`. The `taskLabel` should match the generated VS Code task label, and `pnpmCommand` is the fallback terminal command when the task is unavailable.
+
+Do not add a one-off `server:<key>` root script just to make the Explorer server launcher work. Add the app to the toolbar server list instead, then reload the VS Code window or restart the toolbar extension host.
 
 ## Firebase And Firestore Registration
 
@@ -125,6 +158,32 @@ Firebase project has Firestore database '<appId>'
 
 Do not store day-to-day standalone app domain records in `(default)`.
 Do not store day-to-day standalone app domain records in the shared `fireux` database once the app has its own database. Use the shared `fireux` database for the FireUX app catalog; use the app database for product data.
+
+## Firestore Rules For New Databases
+
+When creating a new named Firestore database for a demo or preflight app, start by setting explicit temporary rules for that database so the new app can read and write while the product shape is still moving.
+
+Temporary demo/preflight rule shape:
+
+```js
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
+```
+
+This is a setup convenience, not a shipping rule. Mark it as temporary in the deploy notes or task, and make sure it is applied to the app's named database, not only `(default)`.
+
+Before a real client, staging, or production ship:
+
+- Replace `allow read, write: if true` with rules scoped to the app's real public, signed-in, admin, and membership surfaces.
+- Confirm the deployed rules target the database the app actually uses through `databaseId`.
+- Treat open rules as a launch blocker unless the deployment is explicitly a private demo/preflight.
 
 ## Firebase Web App Config
 
@@ -296,6 +355,12 @@ CI=1 pnpm --filter ./projects/<ecosystem>/<app> exec nuxi prepare
 git diff --check
 ```
 
+Before deploying, add a human deploy check:
+
+```text
+Firestore rules checked for <databaseId>; temporary open rules are acceptable for this ship: yes/no.
+```
+
 If useful, run a local server and verify the public HTML/API:
 
 ```sh
@@ -346,6 +411,7 @@ The generator should:
 - add `server/api/fireux-console.get.ts` only if still needed for that app class
 - update `projects/tsconfig.json`
 - update `scripts/_lib/app-registry.mjs`
+- update `tools/vscode-fireux-toolbar/extension.js` so the app appears in the Explorer `FireUX Servers` launcher
 - run `pnpm sync:dev-workspace`
 - print the exact fast checks to run
 

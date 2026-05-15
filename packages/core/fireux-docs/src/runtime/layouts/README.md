@@ -90,10 +90,10 @@ Current role:
 
 Used by:
 - core dashboard pages
+- user profile dashboard
 - chef dashboard
 - agent dashboard
 - professional dashboard
-- supplier dashboard
 
 #### `console`
 
@@ -280,7 +280,7 @@ Shared mechanics:
 - notifications slideover
 
 Key difference:
-- `dashboard` is profile/workspace oriented
+- `dashboard` is user/profile oriented
 - `console` is scoped entity-operation oriented
 
 ### Core-owned vs package-owned

@@ -79,6 +79,9 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 import { computed } from 'vue'
 import { useProfessionalInterface } from '../../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import type { Professional } from '../../../../models/profiles/Professional/Professional.model'
+import ProfilesProfessionalCardsCell from '../Cards/Cell.vue'
+import ProfilesProfessionalCardsPill from '../Cards/Pill.vue'
+import ProfilesProfessionalCollectionList from './List.vue'
 
 type ProfessionalEntry = Professional & { user?: unknown }
 

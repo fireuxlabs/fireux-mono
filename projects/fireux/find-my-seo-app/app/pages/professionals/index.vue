@@ -6,44 +6,40 @@
     />
 
     <UPageBody class="space-y-6">
-      <UCard>
-        <div class="grid gap-3 md:grid-cols-4">
-          <UInput v-model="query" placeholder="Search provider, service, or sector..." />
-          <select v-model="selectedSpecialism" class="rounded-md border border-default bg-default px-3 py-2 text-sm">
-            <option v-for="option in specialismOptions" :key="option" :value="option">{{ option }}</option>
-          </select>
-          <select v-model="selectedProjectType" class="rounded-md border border-default bg-default px-3 py-2 text-sm">
-            <option v-for="option in projectTypeOptions" :key="option" :value="option">{{ option }}</option>
-          </select>
-          <select v-model="selectedSector" class="rounded-md border border-default bg-default px-3 py-2 text-sm">
-            <option v-for="option in sectorOptions" :key="option" :value="option">{{ option }}</option>
-          </select>
-        </div>
-      </UCard>
-
-      <div class="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-        <FindmyseoProviderCard
-          v-for="provider in filteredProviders"
-          :key="provider.id"
-          :provider="provider"
-        />
-      </div>
+      <ProfessionalCollectionManager
+        :collection="filteredCollection"
+        title="Professionals"
+        description="Browse SEO professionals using the shared professional collection surface."
+        initial-variant="cell"
+      />
 
       <UAlert
-        v-if="!filteredProviders.length"
+        v-if="activeSector"
         color="neutral"
         variant="soft"
-        title="No matches yet"
-        description="Try a broader search or reset one of the filters."
+        title="Sector filter"
+        :description="`Showing professionals with ${activeSector} experience.`"
       />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
+import ProfessionalCollectionManager from 'fireux-jobs/runtime/components/organisms/Professional/Collection/Manager.vue'
 import { appMeta } from '../../content/meta'
-import { demoSeoProjectTypeOptions, demoSeoProviderList, demoSeoSectorOptions, demoSeoSpecialismOptions } from '../../../../../../demo/find-my-seo.demo'
+import { demoSeoProfessionalCollection } from '../../../../../../demo/find-my-seo.demo'
+
+definePageMeta({
+  nav: {
+    key: 'professionals',
+    label: 'Professionals',
+    icon: 'i-lucide-users',
+    desktop: true,
+    mobile: true,
+    layouts: ['landing'],
+  },
+})
 
 useSeoMeta({
   title: appMeta.seoBrowse.title,
@@ -52,62 +48,23 @@ useSeoMeta({
 
 const route = useRoute()
 
-const query = ref('')
-const selectedSpecialism = ref('All specialisms')
-const selectedProjectType = ref('All project types')
-const selectedSector = ref('All sectors')
-
-const specialismOptions = ['All specialisms', ...demoSeoSpecialismOptions]
-const projectTypeOptions = ['All project types', ...demoSeoProjectTypeOptions]
-const sectorOptions = ['All sectors', ...demoSeoSectorOptions]
-
-watch(
-  () => route.query.sector,
-  (sector) => {
-    selectedSector.value = typeof sector === 'string' && sectorOptions.includes(sector) ? sector : 'All sectors'
-  },
-  { immediate: true }
+const activeSector = computed(() =>
+  typeof route.query.sector === 'string' ? route.query.sector.trim() : ''
 )
 
-const filteredProviders = computed(() => {
-  const q = query.value.trim().toLowerCase()
-
-  return [...demoSeoProviderList]
+const filteredCollection = computed(() =>
+  demoSeoProfessionalCollection
+    .filter((item) =>
+      activeSector.value
+        ? item.seoProvider.sectorExperience.includes(activeSector.value)
+        : true
+    )
     .sort((left, right) => {
-      if (left.isFeatured !== right.isFeatured) {
-        return left.isFeatured ? -1 : 1
+      if (left.seoProvider.isFeatured !== right.seoProvider.isFeatured) {
+        return left.seoProvider.isFeatured ? -1 : 1
       }
 
-      return left.displayName.localeCompare(right.displayName)
+      return left.user.display_name.localeCompare(right.user.display_name)
     })
-    .filter((item) => {
-      const searchMatch =
-        !q ||
-        [
-          item.displayName,
-          item.brandName,
-          item.headline,
-          ...item.specialisms,
-          ...item.sectorExperience,
-          ...item.servicesOffered,
-        ]
-          .join(' ')
-          .toLowerCase()
-          .includes(q)
-
-      const specialismMatch =
-        selectedSpecialism.value === 'All specialisms' ||
-        item.specialisms.includes(selectedSpecialism.value)
-
-      const projectTypeMatch =
-        selectedProjectType.value === 'All project types' ||
-        item.projectTypes.includes(selectedProjectType.value)
-
-      const sectorMatch =
-        selectedSector.value === 'All sectors' ||
-        item.sectorExperience.includes(selectedSector.value)
-
-      return searchMatch && specialismMatch && projectTypeMatch && sectorMatch
-    })
-})
+)
 </script>

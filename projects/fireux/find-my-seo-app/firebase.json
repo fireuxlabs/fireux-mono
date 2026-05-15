@@ -1,4 +1,10 @@
 {
+  "firestore": [
+    {
+      "database": "find-my-seo",
+      "rules": "firestore.rules"
+    }
+  ],
   "functions": [
     {
       "source": ".output/server",

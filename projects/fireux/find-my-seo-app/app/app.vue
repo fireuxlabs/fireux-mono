@@ -1,8 +1,10 @@
 <template>
-  <FindmyseoPreflightBanner v-if="showPreflightBanner" />
-  <NuxtLayout>
-    <NuxtPage />
-  </NuxtLayout>
+  <UApp>
+    <FindmyseoPreflightBanner v-if="showPreflightBanner" />
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
+  </UApp>
 </template>
 
 <script setup lang="ts">

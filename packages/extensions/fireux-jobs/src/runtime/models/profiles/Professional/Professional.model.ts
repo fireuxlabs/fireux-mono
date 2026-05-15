@@ -58,6 +58,14 @@ export type Professional = {
   [K in keyof typeof ProfessionalModel]: (typeof ProfessionalModel)[K]
 }
 
+export type ProfessionalUserSummary = {
+  id: string
+  display_name: string
+  avatar?: string
+  handle?: string
+  email?: string
+}
+
 export const AppProfessionalModel = {
   id: '',
   ...AppProfileStamps,

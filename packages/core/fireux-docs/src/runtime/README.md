@@ -106,6 +106,7 @@ This is the key FireUX addition to the plain Nuxt runtime spine.
 
 Current examples:
 
+- `concepts/dashboard-canon.md`
 - `concepts/create/`
 - `concepts/connect/`
 - `concepts/read/`

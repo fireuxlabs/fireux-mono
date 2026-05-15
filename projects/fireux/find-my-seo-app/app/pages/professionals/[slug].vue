@@ -259,13 +259,9 @@ const primaryMediaUrl = computed(() => {
     return ''
   }
 
-  return provider.value.entityType === 'company'
-    ? provider.value.logoUrl || provider.value.avatarUrl || ''
-    : provider.value.avatarUrl || provider.value.logoUrl || ''
+  return provider.value.avatarUrl || provider.value.logoUrl || ''
 })
-const primaryMediaIcon = computed(() =>
-  provider.value?.entityType === 'company' ? 'i-lucide-building-2' : 'i-lucide-user'
-)
+const primaryMediaIcon = computed(() => 'i-lucide-user')
 const brandLogoUrl = computed(() => {
   if (!provider.value?.logoUrl || provider.value.logoUrl === primaryMediaUrl.value) {
     return ''

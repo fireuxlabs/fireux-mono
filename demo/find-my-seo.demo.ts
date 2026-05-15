@@ -1,8 +1,11 @@
 // Repo-level demo payloads for Find My SEO.
 // Use these records for dev surfaces, examples, and explicit preflight demos.
 // They are not canonical storage or runtime contracts.
+// Professional identity fields intentionally mirror fireux-jobs Professional.
 
-export type DemoSeoProviderEntityType = 'professional' | 'company'
+import type { Professional } from 'fireux-jobs/runtime/models/profiles/Professional/Professional.model'
+
+export type DemoSeoProviderEntityType = 'professional'
 export type DemoSeoProviderType = 'consultant' | 'agency'
 export type DemoSeoLeadStatus = 'new' | 'contacted' | 'closed'
 export type DemoSeoLeadDeliveryState = 'pending' | 'sent' | 'failed'
@@ -13,7 +16,23 @@ export type DemoSeoTestimonial = {
   company?: string
 }
 
-export type DemoSeoProvider = {
+export type DemoSeoProfessionalProfile = Pick<
+  Professional,
+  'id' | 'title' | 'subtitle' | 'tagline' | 'summary' | 'bio' | 'image' | 'positions' | 'tags'
+>
+
+export type DemoSeoProfessionalCollectionEntry = Professional & {
+  to: string
+  user: {
+    id: string
+    display_name: string
+    avatar?: string
+    handle?: string
+  }
+  seoProvider: DemoSeoProvider
+}
+
+export type DemoSeoProviderBase = {
   id: string
   entityType: DemoSeoProviderEntityType
   providerType: DemoSeoProviderType
@@ -47,6 +66,15 @@ export type DemoSeoProvider = {
   proofHighlights: string[]
   featuredCaseStudyIds: string[]
 }
+
+export type DemoSeoProfessionalProvider = DemoSeoProviderBase & {
+  entityType: 'professional'
+  professionalId: string
+  professional: DemoSeoProfessionalProfile
+}
+
+export type DemoSeoProvider = DemoSeoProfessionalProvider
+type DemoSeoProviderSeed = DemoSeoProviderBase
 
 export type DemoSeoCaseStudy = {
   id: string
@@ -107,7 +135,70 @@ const demoHumanAvatar = (photoId: string) =>
 const demoProviderLogo = (seed: string) =>
   `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(`find-my-seo-${seed}`)}`
 
-export const demoSeoProviderList: DemoSeoProvider[] = [
+const resolveDemoSeoProviderLabel = (provider: Pick<DemoSeoProvider, 'providerType'>) =>
+  provider.providerType === 'agency' ? 'Agency' : 'Consultant'
+
+const toDemoProfessionalProfile = (provider: DemoSeoProviderSeed): DemoSeoProfessionalProfile => ({
+  id: provider.id,
+  title: provider.headline,
+  subtitle: provider.locationLabel,
+  tagline: provider.pricingGuidance,
+  summary: provider.summary,
+  bio: provider.bio,
+  image: provider.avatarUrl || provider.logoUrl || '',
+  positions: provider.specialisms,
+  tags: [...provider.specialisms, ...provider.sectorExperience],
+})
+
+const toDemoSeoProvider = (provider: DemoSeoProviderSeed): DemoSeoProvider => ({
+  ...provider,
+  entityType: 'professional',
+  professionalId: provider.id,
+  professional: toDemoProfessionalProfile(provider),
+})
+
+const demoStamp = {
+  at: {} as Professional['created']['at'],
+  by: undefined,
+}
+
+const toDemoSeoProfessionalEntry = (
+  provider: DemoSeoProvider
+): DemoSeoProfessionalCollectionEntry => ({
+  id: provider.id,
+  to: `/professionals/${provider.slug}`,
+  title: provider.headline,
+  subtitle: provider.locationLabel,
+  tagline: provider.pricingGuidance,
+  summary: provider.summary,
+  bio: provider.bio,
+  image: provider.avatarUrl || provider.logoUrl || '',
+  positions: provider.specialisms,
+  tags: [
+    resolveDemoSeoProviderLabel(provider),
+    ...(provider.isFeatured ? ['Featured'] : []),
+    ...(provider.isVerified ? ['Verified'] : []),
+    ...provider.specialisms.slice(0, 2),
+  ],
+  relevant_experience: [],
+  other_experience: [],
+  languages: [],
+  certifications: [],
+  education: [],
+  volunteering: [],
+  projects: [],
+  created: demoStamp,
+  updated: demoStamp,
+  user: {
+    id: provider.id,
+    display_name: provider.displayName,
+    avatar: provider.avatarUrl || provider.logoUrl || '',
+    handle: provider.slug,
+  },
+  seoProvider: provider,
+})
+
+const demoSeoProviderSeeds: DemoSeoProviderSeed[] = [
   {
     id: 'professional-alex-mercer',
     entityType: 'professional',
@@ -197,18 +288,19 @@ export const demoSeoProviderList: DemoSeoProvider[] = [
     featuredCaseStudyIds: ['case-commerce-authority'],
   },
   {
-    id: 'company-serpforged',
-    entityType: 'company',
+    id: 'professional-sera-james',
+    entityType: 'professional',
     providerType: 'agency',
-    slug: 'serpforged-b2b-seo-agency',
-    displayName: 'SERP Forged',
+    slug: 'sera-james-serpforged-b2b-seo',
+    displayName: 'Sera James',
     brandName: 'SERP Forged',
+    avatarUrl: demoHumanAvatar('1573496359142-b8d87734a5a2'),
     logoUrl: demoProviderLogo('serp-forged'),
-    headline: 'B2B SEO agency for pipeline-focused SaaS and demand generation teams',
+    headline: 'B2B SEO agency lead for pipeline-focused SaaS and demand generation teams',
     summary:
-      'SERP Forged combines technical, content, and reporting support for SaaS teams that need SEO tied to pipeline, not vanity traffic.',
+      'Sera leads SERP Forged, combining technical, content, and reporting support for SaaS teams that need SEO tied to pipeline, not vanity traffic.',
     bio:
-      'This agency suits teams that want operator depth without building a full in-house SEO function. They package strategy, implementation, and reporting in one retained delivery model.',
+      'Sera suits teams that want operator depth without building a full in-house SEO function. Her agency packages strategy, implementation, and reporting in one retained delivery model.',
     locationLabel: 'Remote-first, UK',
     remoteAvailable: true,
     teamSizeLabel: '8-person specialist team',
@@ -220,7 +312,7 @@ export const demoSeoProviderList: DemoSeoProvider[] = [
     availabilityStatus: 'Discovery slots available this month',
     rating: 4.9,
     reviewCount: 31,
-    contactEmail: 'hello@serpforged.example',
+    contactEmail: 'sera@serpforged.example',
     isVerified: true,
     isFeatured: true,
     source: 'demo',
@@ -240,18 +332,19 @@ export const demoSeoProviderList: DemoSeoProvider[] = [
     featuredCaseStudyIds: ['case-saas-pipeline'],
   },
   {
-    id: 'company-canvas-growth',
-    entityType: 'company',
+    id: 'professional-imogen-ward',
+    entityType: 'professional',
     providerType: 'agency',
-    slug: 'canvas-growth-ecommerce-agency',
-    displayName: 'Canvas Growth',
+    slug: 'imogen-ward-canvas-growth-ecommerce-seo',
+    displayName: 'Imogen Ward',
     brandName: 'Canvas Growth',
+    avatarUrl: demoHumanAvatar('1551836022-d5d88e9218df'),
     logoUrl: demoProviderLogo('canvas-growth'),
-    headline: 'eCommerce SEO agency for category growth, merchandising, and technical clean-up',
+    headline: 'eCommerce SEO agency lead for category growth, merchandising, and technical clean-up',
     summary:
-      'Canvas Growth helps retail and eCommerce teams align category structure, content support, and technical performance around revenue-driving search demand.',
+      'Imogen leads Canvas Growth, helping retail and eCommerce teams align category structure, content support, and technical performance around revenue-driving search demand.',
     bio:
-      'Canvas Growth is a fit for teams that need both category-level strategy and implementation support. Their strongest positioning is around commercial categories, internal linking, and search-led merchandising.',
+      'Imogen is a fit for teams that need both category-level strategy and implementation support. Her strongest positioning is around commercial categories, internal linking, and search-led merchandising.',
     locationLabel: 'Bristol, UK',
     remoteAvailable: true,
     teamSizeLabel: '12-person agency team',
@@ -263,7 +356,7 @@ export const demoSeoProviderList: DemoSeoProvider[] = [
     availabilityStatus: 'Next onboarding window opens in 3 weeks',
     rating: 4.7,
     reviewCount: 22,
-    contactEmail: 'team@canvasgrowth.example',
+    contactEmail: 'imogen@canvasgrowth.example',
     isVerified: false,
     isFeatured: false,
     source: 'demo',
@@ -271,7 +364,7 @@ export const demoSeoProviderList: DemoSeoProvider[] = [
     trustNote: 'Case studies reviewed by Find My SEO.',
     testimonials: [
       {
-        quote: 'Canvas helped us join merchandising, content, and SEO planning in a way we had never managed internally.',
+        quote: 'Imogen helped us join merchandising, content, and SEO planning in a way we had never managed internally.',
         name: 'eCommerce Director',
         company: 'Retail brand',
       },
@@ -503,18 +596,19 @@ export const demoSeoProviderList: DemoSeoProvider[] = [
     featuredCaseStudyIds: ['case-wordpress-template-cleanup'],
   },
   {
-    id: 'company-bright-crawl',
-    entityType: 'company',
+    id: 'professional-leon-keller',
+    entityType: 'professional',
     providerType: 'agency',
-    slug: 'bright-crawl-technical-seo-agency',
-    displayName: 'Bright Crawl',
+    slug: 'leon-keller-bright-crawl-technical-seo',
+    displayName: 'Leon Keller',
     brandName: 'Bright Crawl',
+    avatarUrl: demoHumanAvatar('1519085360753-af0119f7cbe7'),
     logoUrl: demoProviderLogo('bright-crawl'),
-    headline: 'Technical SEO agency for enterprise audits, migrations, and governance',
+    headline: 'Technical SEO agency lead for enterprise audits, migrations, and governance',
     summary:
-      'Bright Crawl gives larger teams the audit depth and delivery structure needed to move SEO fixes through engineering backlogs.',
+      'Leon leads Bright Crawl, giving larger teams the audit depth and delivery structure needed to move SEO fixes through engineering backlogs.',
     bio:
-      'This agency is a fit for companies with complex sites, multiple stakeholders, and the need for clear prioritisation across engineering, product, and marketing.',
+      'Leon is a fit for companies with complex sites, multiple stakeholders, and the need for clear prioritisation across engineering, product, and marketing.',
     locationLabel: 'Remote-first, EU',
     remoteAvailable: true,
     teamSizeLabel: '15-person technical team',
@@ -526,7 +620,7 @@ export const demoSeoProviderList: DemoSeoProvider[] = [
     availabilityStatus: 'Discovery slots open',
     rating: 4.8,
     reviewCount: 24,
-    contactEmail: 'hello@brightcrawl.example',
+    contactEmail: 'leon@brightcrawl.example',
     isVerified: true,
     isFeatured: true,
     source: 'demo',
@@ -534,7 +628,7 @@ export const demoSeoProviderList: DemoSeoProvider[] = [
     trustNote: 'Reviewed example profile for enterprise technical SEO.',
     testimonials: [
       {
-        quote: 'Bright Crawl made our SEO backlog legible to product and engineering.',
+        quote: 'Leon made our SEO backlog legible to product and engineering.',
         name: 'Product Director',
         company: 'B2B marketplace',
       },
@@ -546,6 +640,11 @@ export const demoSeoProviderList: DemoSeoProvider[] = [
     featuredCaseStudyIds: ['case-enterprise-technical-governance'],
   },
 ]
+
+export const demoSeoProviderList: DemoSeoProvider[] = demoSeoProviderSeeds.map(toDemoSeoProvider)
+
+export const demoSeoProfessionalCollection: DemoSeoProfessionalCollectionEntry[] =
+  demoSeoProviderList.map(toDemoSeoProfessionalEntry)
 
 export const demoSeoCaseStudyList: DemoSeoCaseStudy[] = [
   {
@@ -590,8 +689,8 @@ export const demoSeoCaseStudyList: DemoSeoCaseStudy[] = [
   },
   {
     id: 'case-saas-pipeline',
-    ownerEntityType: 'company',
-    ownerEntityId: 'company-serpforged',
+    ownerEntityType: 'professional',
+    ownerEntityId: 'professional-sera-james',
     slug: 'saas-pipeline-led-seo-program',
     status: 'published',
     title: 'SaaS pipeline-led SEO program',
@@ -610,8 +709,8 @@ export const demoSeoCaseStudyList: DemoSeoCaseStudy[] = [
   },
   {
     id: 'case-retail-category-growth',
-    ownerEntityType: 'company',
-    ownerEntityId: 'company-canvas-growth',
+    ownerEntityType: 'professional',
+    ownerEntityId: 'professional-imogen-ward',
     slug: 'retail-category-growth',
     status: 'published',
     title: 'Retail category growth reset',
@@ -730,8 +829,8 @@ export const demoSeoCaseStudyList: DemoSeoCaseStudy[] = [
   },
   {
     id: 'case-enterprise-technical-governance',
-    ownerEntityType: 'company',
-    ownerEntityId: 'company-bright-crawl',
+    ownerEntityType: 'professional',
+    ownerEntityId: 'professional-leon-keller',
     slug: 'enterprise-technical-governance',
     status: 'published',
     title: 'Enterprise technical governance',
@@ -771,11 +870,11 @@ export const demoSeoLeadInbox: DemoSeoLeadInquiry[] = [
   },
   {
     id: 'lead-002',
-    providerEntityType: 'company',
-    providerEntityId: 'company-serpforged',
-    providerSlug: 'serpforged-b2b-seo-agency',
-    providerDisplayName: 'SERP Forged',
-    deliveryEmail: 'hello@serpforged.example',
+    providerEntityType: 'professional',
+    providerEntityId: 'professional-sera-james',
+    providerSlug: 'sera-james-serpforged-b2b-seo',
+    providerDisplayName: 'Sera James',
+    deliveryEmail: 'sera@serpforged.example',
     status: 'contacted',
     contactName: 'Luca Meyer',
     contactEmail: 'luca@classloom.example',
@@ -796,8 +895,7 @@ export const findDemoSeoProviderBySlug = (slug: string) =>
 export const demoSeoCaseStudiesForProvider = (providerId: string) =>
   demoSeoCaseStudyList.filter((item) => item.ownerEntityId === providerId && item.status === 'published')
 
-export const demoSeoProviderLabel = (provider: Pick<DemoSeoProvider, 'providerType'>) =>
-  provider.providerType === 'agency' ? 'Agency' : 'Consultant'
+export const demoSeoProviderLabel = resolveDemoSeoProviderLabel
 
 export const demoFeaturedSeoProviderList = demoSeoProviderList.filter((item) => item.isFeatured).slice(0, 6)
 

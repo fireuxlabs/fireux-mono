@@ -714,6 +714,9 @@ importers:
       firebase-functions:
         specifier: ^6.3.2
         version: 6.6.0(firebase-admin@12.7.0)
+      fireux-blogs:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-blogs
       fireux-cleanbox:
         specifier: workspace:*
         version: link:../../../packages/ecosystem/fireux-cleanbox
@@ -729,6 +732,9 @@ importers:
       fireux-places:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-places
+      fireux-products:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-products
       nuxt:
         specifier: 4.1.2
         version: 4.1.2(@parcel/watcher@2.5.1)(@types/node@22.18.1)(@vue/compiler-sfc@3.5.21)(better-sqlite3@12.6.0)(db0@0.3.2(better-sqlite3@12.6.0))(eslint@9.35.0(jiti@2.6.1))(ioredis@5.7.0)(lightningcss@1.30.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.50.1)(sass@1.96.0)(terser@5.44.0)(typescript@5.9.2)(vite@7.1.5(@types/node@22.18.1)(jiti@2.6.1)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(yaml@2.8.2)
@@ -792,6 +798,49 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
 
+  projects/fireux/buenohost:
+    dependencies:
+      '@nuxt/icon':
+        specifier: 2.x
+        version: 2.0.0(magicast@0.3.5)(vite@7.1.5(@types/node@22.18.1)(jiti@2.6.1)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(vue@3.5.20(typescript@5.9.2))
+      '@nuxt/ui':
+        specifier: ^4.0.0-alpha.2
+        version: 4.0.0-alpha.2(@babel/parser@7.28.4)(change-case@5.4.4)(db0@0.3.2(better-sqlite3@12.6.0))(embla-carousel@8.6.0)(ioredis@5.7.0)(magicast@0.3.5)(qrcode@1.5.4)(typescript@5.9.2)(vite@7.1.5(@types/node@22.18.1)(jiti@2.6.1)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(vue-router@4.5.1(vue@3.5.20(typescript@5.9.2)))(vue@3.5.20(typescript@5.9.2))(zod@3.25.76)
+      firebase-functions:
+        specifier: ^6.3.2
+        version: 6.6.0(firebase-admin@12.7.0)
+      fireux-core:
+        specifier: workspace:*
+        version: link:../../../packages/core/fireux-core
+      fireux-fireux:
+        specifier: workspace:*
+        version: link:../../../packages/ecosystem/fireux-fireux
+      fireux-properties:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-properties
+      nuxt:
+        specifier: 4.1.2
+        version: 4.1.2(@parcel/watcher@2.5.1)(@types/node@22.18.1)(@vue/compiler-sfc@3.5.21)(better-sqlite3@12.6.0)(db0@0.3.2(better-sqlite3@12.6.0))(eslint@9.35.0(jiti@2.6.1))(ioredis@5.7.0)(lightningcss@1.30.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.50.1)(sass@1.96.0)(terser@5.44.0)(typescript@5.9.2)(vite@7.1.5(@types/node@22.18.1)(jiti@2.6.1)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(yaml@2.8.2)
+      vue:
+        specifier: 3.5.20
+        version: 3.5.20(typescript@5.9.2)
+      vue-router:
+        specifier: 4.5.1
+        version: 4.5.1(vue@3.5.20(typescript@5.9.2))
+    devDependencies:
+      '@iconify-json/heroicons':
+        specifier: ^1.2.2
+        version: 1.2.2
+      '@iconify-json/lucide':
+        specifier: ^1.2.62
+        version: 1.2.82
+      '@vite-pwa/nuxt':
+        specifier: ^1.0.4
+        version: 1.0.4(magicast@0.3.5)(vite@7.1.5(@types/node@22.18.1)(jiti@2.6.1)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+
   projects/fireux/find-my-seo-app:
     dependencies:
       '@nuxt/icon':
@@ -809,6 +858,9 @@ importers:
       fireux-fireux:
         specifier: workspace:*
         version: link:../../../packages/ecosystem/fireux-fireux
+      fireux-jobs:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-jobs
       nuxt:
         specifier: 4.1.2
         version: 4.1.2(@parcel/watcher@2.5.1)(@types/node@22.18.1)(@vue/compiler-sfc@3.5.21)(better-sqlite3@12.6.0)(db0@0.3.2(better-sqlite3@12.6.0))(eslint@9.35.0(jiti@2.6.1))(ioredis@5.7.0)(lightningcss@1.30.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.50.1)(sass@1.96.0)(terser@5.44.0)(typescript@5.9.2)(vite@7.1.5(@types/node@22.18.1)(jiti@2.6.1)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(yaml@2.8.2)
@@ -849,12 +901,18 @@ importers:
       firebase-functions:
         specifier: ^6.3.2
         version: 6.6.0(firebase-admin@12.7.0)
+      fireux-blogs:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-blogs
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
       fireux-fireux:
         specifier: workspace:*
         version: link:../../../packages/ecosystem/fireux-fireux
+      fireux-products:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-products
       nuxt:
         specifier: 4.1.2
         version: 4.1.2(@parcel/watcher@2.5.1)(@types/node@22.18.1)(@vue/compiler-sfc@3.5.21)(better-sqlite3@12.6.0)(db0@0.3.2(better-sqlite3@12.6.0))(eslint@9.35.0(jiti@2.6.1))(ioredis@5.7.0)(lightningcss@1.30.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.50.1)(sass@1.96.0)(terser@5.44.0)(typescript@5.9.2)(vite@7.1.5(@types/node@22.18.1)(jiti@2.6.1)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(yaml@2.8.2)
@@ -1100,6 +1158,9 @@ importers:
       fireux-ai:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-ai
+      fireux-blogs:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-blogs
       fireux-companies:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-companies
@@ -1121,6 +1182,9 @@ importers:
       fireux-places:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-places
+      fireux-products:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-products
       fireux-suppliers:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-suppliers

@@ -47,6 +47,8 @@ Important FireUX rule:
 
 - route visibility and ownership matter more than visual similarity
 
+For dashboard profile-extension canon, see `runtime/concepts/dashboard-canon.md`.
+
 ## FireUX Console Override
 
 FireUX adds a stronger console-entry canon than plain Nuxt gives us.

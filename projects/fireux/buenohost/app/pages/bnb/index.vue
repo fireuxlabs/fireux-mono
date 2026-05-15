@@ -36,6 +36,14 @@ import { bnbGuides } from '../../content/bnbGuides'
 
 definePageMeta({
   layout: 'bnb',
+  nav: {
+    key: 'properties',
+    label: 'Properties',
+    icon: 'i-lucide-house',
+    desktop: true,
+    mobile: true,
+    layouts: ['landing'],
+  },
 })
 
 useSeoMeta({

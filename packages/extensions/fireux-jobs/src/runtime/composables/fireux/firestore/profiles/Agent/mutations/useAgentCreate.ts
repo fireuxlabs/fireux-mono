@@ -2,11 +2,12 @@
 // Sketch: Agent create (core + app, conditional)
 // One doc, one action, one name. No wiring yet.
 
-import { doc, getDoc } from 'firebase/firestore'
+import { arrayUnion, doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserEnsure'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { AppAgent, Agent } from '../../../../../../models/profiles/Agent/Agent.model'
@@ -15,6 +16,7 @@ import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/pr
 export function useAgentCreate() {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
+  const { updateDocument } = useFirestoreUpdate()
   const { ensureUser } = useUserEnsure()
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
 
@@ -76,6 +78,22 @@ export function useAgentCreate() {
       path: `/agents/${uid}`,
       isPublic: true,
     })
+
+    if (agentConfig.id) {
+      try {
+        await updateDocument('users', uid, {
+          profiles: arrayUnion(agentConfig.id) as unknown as string[],
+        })
+      } catch (error) {
+        if (import.meta.dev) {
+          console.warn('[useAgentCreate] failed to tag user profile', {
+            uid,
+            profileId: agentConfig.id,
+            error,
+          })
+        }
+      }
+    }
 
     return { createdCore, createdApp, id: uid }
   }

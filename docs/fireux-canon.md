@@ -62,6 +62,13 @@ Updated: 2026-05-15
 - Tenant apps and standalone apps use the same product landing shape for now.
 - Tenant product pages may show a small parent ecosystem badge/link.
 - Standalone product pages should feel complete by themselves and must not rely on explaining FireUX or a parent ecosystem.
+- Product landing heroes use a compact repeated shape:
+  - optional product badge/label
+  - one product-specific H1
+  - exactly two hero CTAs
+  - one short supporting sentence
+- Product landing heroes should use Nuxt UI primitives first. Avoid ecosystem-style module overviews, three-way hero action grids, large bespoke hero visuals, and heavy scoped CSS until the product surface is stable.
+- Product apps must not expose orphan console-family routes. If the app does not have a selected workspace/entity family, use public routes and a personal/provider dashboard instead of adding a console family.
 
 ## Behavioral Canon
 - No silent fallbacks for selection, routing, or identity decisions.

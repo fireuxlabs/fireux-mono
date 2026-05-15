@@ -79,10 +79,11 @@ export function useProfessionalInterface(
     const summary = resolveProfileSummary([p.summary, p.bio])
     const badges = resolveProfileBadges([p.tags])
     const secondaryAvatarUrl = resolveSecondaryAvatarUrl(image, avatar)
+    const explicitTo = safeString((p as any).to).trim()
 
     return {
       id,
-      to: `/${professionalConfig.collectionName}/${encodeURIComponent(id)}`,
+      to: explicitTo || `/${professionalConfig.collectionName}/${encodeURIComponent(id)}`,
       imageUrl: image || avatar,
       avatarUrl: avatar,
       secondaryAvatarUrl,

@@ -99,13 +99,9 @@ const props = defineProps<{
 
 const providerTypeLabel = computed(() => demoSeoProviderLabel(props.provider))
 const primaryMediaUrl = computed(() =>
-  props.provider.entityType === 'company'
-    ? props.provider.logoUrl || props.provider.avatarUrl || ''
-    : props.provider.avatarUrl || props.provider.logoUrl || ''
+  props.provider.avatarUrl || props.provider.logoUrl || ''
 )
-const primaryMediaIcon = computed(() =>
-  props.provider.entityType === 'company' ? 'i-lucide-building-2' : 'i-lucide-user'
-)
+const primaryMediaIcon = computed(() => 'i-lucide-user')
 const brandLogoUrl = computed(() => {
   if (!props.provider.logoUrl || props.provider.logoUrl === primaryMediaUrl.value) {
     return ''

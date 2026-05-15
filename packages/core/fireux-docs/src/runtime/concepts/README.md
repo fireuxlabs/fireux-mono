@@ -27,6 +27,8 @@ The current concept map is:
 
 - `console/`
   console-backed entry, selection, and workspace meaning
+- `dashboard-canon.md`
+  authenticated user and profile-extension dashboard meaning
 - `spine/`
   how FireUX extends the plain Nuxt runtime spine
 - `stacks/`
@@ -34,9 +36,10 @@ The current concept map is:
 - `connect/`
   relationship and authority meaning across those systems
 
-This keeps three big FireUX ideas visible:
+This keeps the main FireUX runtime ideas visible:
 
 - the console is a major first-class concept
+- the dashboard is the user/profile-extension area
 - the spine is the FireUX bolt-on to Nuxt runtime structure
 - stacks describe entities as runtime systems rather than isolated files
 
@@ -51,6 +54,19 @@ Console is a real concept because console-backed families span:
 - selected-target workspaces
 - mode selection
 - public create versus console create
+
+### `dashboard-canon.md`
+
+Dashboard is a real concept because user/profile work spans:
+
+- the shared dashboard layout
+- user profile pages
+- profile extension pages
+- the top-left profile selector
+- profile create/ensure flows
+
+Current dashboard profile identities are `user`, `professional`, `chef`, and `agent`.
+Dashboard is not a console family.
 
 ### `spine/`
 

@@ -3,6 +3,7 @@ import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/v
 import {
   createAppProfileSeed,
   createProfileSeed,
+  type ProfileBase,
   type ProfileConfig,
 } from '../../../../../../models/core/profile.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
@@ -12,6 +13,8 @@ import { requireUid } from '../../../utils/useEnsureCommon'
 type EnsureResult = {
   createdCore: boolean
   createdApp: boolean
+  id: string
+  coreProfile: ProfileBase | null
 }
 
 /**
@@ -105,7 +108,15 @@ export function useProfileEnsure(config: ProfileConfig) {
       }
     }
 
-    return { createdCore, createdApp }
+    const refreshedCoreSnapshot = await getDoc(coreRef)
+    const refreshedCoreProfile = refreshedCoreSnapshot.exists()
+      ? ({
+          ...(refreshedCoreSnapshot.data() as any),
+          id: refreshedCoreSnapshot.id,
+        } as ProfileBase)
+      : null
+
+    return { createdCore, createdApp, id: uid, coreProfile: refreshedCoreProfile }
   }
 
   return { ensure }

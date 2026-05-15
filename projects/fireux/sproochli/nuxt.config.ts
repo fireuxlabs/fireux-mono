@@ -10,7 +10,7 @@ const fireuxConfig = defineFireuxConfig({
   databaseId: 'sproochli',
   meta: metaContent,
   role: 'standalone',
-  consoleFamilies: ['bnb'],
+  consoleFamilies: [],
   seo: {
     siteUrl: 'https://sproochli.web.app',
   },
