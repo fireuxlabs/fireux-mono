@@ -43,7 +43,7 @@ Sproochli translates structured documents owned by other apps. It does not take 
 Examples:
 
 ```text
-BuenoHost owns BNB guest guides.
+BuenoHost owns guest guides.
 Misebox owns kitchen menus.
 Sproochli owns translations of those structured documents.
 ```
@@ -53,7 +53,7 @@ Every translatable document needs a stable reference:
 ```ts
 {
   source_app: 'buenohost',
-  document_type: 'bnb-guide',
+  document_type: 'guest-guide',
   document_slug: 'holiday-with-nats',
   source_language: 'en'
 }
@@ -64,7 +64,7 @@ Public language availability is controlled by Sproochli and must mean published/
 First public availability endpoint:
 
 ```text
-GET /api/public/translations/available?source_app=buenohost&document_type=bnb-guide&document_slug=holiday-with-nats
+GET /api/public/translations/available?source_app=buenohost&document_type=guest-guide&document_slug=holiday-with-nats
 ```
 
 Current response for Holiday with Nats:
@@ -72,7 +72,7 @@ Current response for Holiday with Nats:
 ```json
 {
   "source_app": "buenohost",
-  "document_type": "bnb-guide",
+  "document_type": "guest-guide",
   "document_slug": "holiday-with-nats",
   "source_language": "en",
   "available_languages": [],
@@ -108,13 +108,13 @@ The shared human term for people who keep Sproochli content accurate is:
 Maintainer
 ```
 
-A maintainer can be a BNB host, apartment manager, restaurant manager, bike-shop owner, or trusted info editor. Roles can be `owner`, `manager`, `editor`, or `viewer`, but the collection name stays `maintainers` across BNB, menu, and info branches.
+A maintainer can be a short-stay host, apartment manager, restaurant manager, bike-shop owner, or trusted info editor. Roles can be `owner`, `manager`, `editor`, or `viewer`, but the collection name stays `maintainers` across guest-guide, menu, and info branches.
 
 ```ts
 type SproochliSite = {
   id: string
   slug: string
-  type: 'bnb' | 'menu' | 'info'
+  type: 'guest-guide' | 'menu' | 'info'
   name: string
   title: string
   status: 'draft' | 'published' | 'archived'
@@ -174,15 +174,15 @@ Current Sproochli static proof data lives in:
 projects/fireux/sproochli/app/demo/sampleInfo.ts
 ```
 
-Older BNB prototype files under `projects/fireux/sproochli` are legacy proof surfaces. BuenoHost now owns guest manuals.
+Older guest-stay prototype files under `projects/fireux/sproochli` are legacy proof surfaces. BuenoHost now owns guest manuals.
 
-The first seed path for Nat's BuenoHost BNB guide is:
+The first seed path for Nat's BuenoHost guest guide is:
 
 ```text
-node scripts/seed-buenohost-bnb-guides.mjs --commit
+node scripts/seed-buenohost-guest-guides.mjs --commit
 ```
 
-That migrates the static BNB proof into the BuenoHost app database. Sproochli may later store translations for that document by `translation_ref`, but it must not become the owner of the guest-guide content.
+That migrates the static guest-guide proof into the BuenoHost app database. Sproochli may later store translations for that document by `translation_ref`, but it must not become the owner of the guest-guide content.
 
 Generic types and resolver helpers live in `packages/extensions/fireux-sproochli/src/runtime/info`.
 
@@ -198,7 +198,7 @@ sproochli_sites/{siteId}/pages/{pageId}/translation_cache/{language}
 sproochli_translation_glossary/{termId}
 ```
 
-For the first BNB proof:
+For the first guest-guide proof:
 
 ```text
 sproochli_sites/holiday-with-nats

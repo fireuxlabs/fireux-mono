@@ -246,19 +246,19 @@ fireux/apps/<appId>
 (default)/ecosystem/fireux-fireux.apps
 ```
 
-If the app has static proof data, add a seed script before pretending the console is real. The seed script should say where it migrates from and where it writes. For example, BuenoHost's first BNB proof migrates from:
+If the app has static proof data, add a seed script before pretending the console is real. The seed script should say where it migrates from and where it writes. For example, BuenoHost's first guest-guide proof migrates from:
 
 ```text
-projects/fireux/buenohost/app/demo/bnbGuides.ts
+projects/fireux/buenohost/app/demo/guestGuides.ts
 ```
 
 into:
 
 ```text
-buenohost/buenohost_sites/{siteId}
-buenohost/buenohost_sites/{siteId}/pages/{pageId}
-buenohost/buenohost_sites/{siteId}/pages/{pageId}/sections/{sectionId}
-buenohost/buenohost_sites/{siteId}/maintainers/{maintainerId}
+buenohost/properties/{propertyId}
+buenohost/properties/{propertyId}/guest_guides/{guideId}
+buenohost/properties/{propertyId}/guest_guides/{guideId}/sections/{sectionId}
+buenohost/properties/{propertyId}/maintainers/{maintainerId}
 ```
 
 ## App Media And Storage

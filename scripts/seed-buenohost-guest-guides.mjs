@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
-  Seed BuenoHost BNB guide data into Firestore.
+  Seed BuenoHost guest guide data into Firestore.
 
   Canon:
   - BuenoHost standalone app data lives in the app database: buenohost
@@ -10,8 +10,8 @@
   - Guide sections live at properties/{propertyId}/guest_guides/{guideId}/sections/{sectionId}
 
   Usage:
-    node scripts/seed-buenohost-bnb-guides.mjs
-    node scripts/seed-buenohost-bnb-guides.mjs --commit
+    node scripts/seed-buenohost-guest-guides.mjs
+    node scripts/seed-buenohost-guest-guides.mjs --commit
 */
 
 import { readFile } from 'node:fs/promises'
@@ -26,13 +26,13 @@ const SERVICE_ACCOUNT_PATH =
   'packages/ecosystem/fireux-fireux/src/config/firebase/service-account.json'
 const PROJECT_ID = 'fireux-2005'
 const DATABASE_ID = 'buenohost'
-const ACTOR = 'system:seed-buenohost-bnb-guides'
+const ACTOR = 'system:seed-buenohost-guest-guides'
 const APP_ID = 'buenohost'
 
 const holidayWithNats = {
   id: 'holiday-with-nats',
   slug: 'holiday-with-nats',
-  type: 'bnb',
+  type: 'guest-guide',
   title: 'Holiday with Nats',
   status: 'draft',
   published: false,
@@ -40,7 +40,7 @@ const holidayWithNats = {
   primary_language: 'en',
   property: {
     name: 'Penthouse Holiday Apartment',
-    type: 'BNB / guest guide',
+    type: 'guest guide',
     manager: 'Apartment Manager Natalie',
     phone: '+41 78 604 69 00',
     email: 'bookwithnats@gmail.com',
@@ -91,7 +91,7 @@ const holidayWithNats = {
       id: 'guest-guide',
       slug: 'guest-guide',
       title: 'Guest Guide',
-      page_type: 'bnb_guest_guide',
+      page_type: 'guest_guide',
       language: 'en',
       sections: [
         {
@@ -387,7 +387,7 @@ async function main() {
       credential: serviceAccount.credential,
       projectId,
     },
-    `seed-buenohost-bnb-guides-${Date.now()}`
+    `seed-buenohost-guest-guides-${Date.now()}`
   )
   const db = getFirestore(adminApp, databaseId)
   const now = Timestamp.now()
@@ -411,7 +411,7 @@ async function main() {
     standard_topic_ids: holidayWithNats.standard_topic_ids,
     source: {
       kind: 'static-proof',
-      file: 'projects/fireux/buenohost/app/demo/bnbGuides.ts',
+      file: 'projects/fireux/buenohost/app/demo/guestGuides.ts',
       original_file: 'House Manual 2019.docx',
     },
     updated: stamp(now),
@@ -452,7 +452,7 @@ async function main() {
     })),
   ]
 
-  console.log('[seed] BuenoHost BNB guides', {
+  console.log('[seed] BuenoHost guest guides', {
     projectId,
     databaseId,
     commit,
@@ -480,7 +480,7 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error('[seed] BuenoHost BNB guides failed')
+  console.error('[seed] BuenoHost guest guides failed')
   console.error(error)
   process.exit(1)
 })

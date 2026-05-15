@@ -11,11 +11,8 @@
       </template>
 
       <template #links>
-        <UButton to="/bnb/alpine-view-demo" color="primary" icon="i-lucide-house">
+        <UButton to="/properties/alpine-view-apartment/guide" color="primary" icon="i-lucide-book-open">
           Open demo guide
-        </UButton>
-        <UButton to="/properties/alpine-view-apartment" variant="soft" icon="i-lucide-message-circle">
-          Message the host
         </UButton>
       </template>
     </UPageHeader>
@@ -37,6 +34,6 @@ definePageMeta({
 
 useSeoMeta({
   title: 'BuenoHost',
-  description: 'Mobile guest guides and console-ready host information for holiday homes and BNBs.',
+  description: 'Mobile guest guides and console-ready host information for holiday homes and short-stay properties.',
 })
 </script>

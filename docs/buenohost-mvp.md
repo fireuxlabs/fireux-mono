@@ -18,9 +18,9 @@ Current proof routes:
 
 ```text
 /
-/bnb
-/bnb/holiday-with-nats
-/bnb/holiday-with-nats/:sectionId
+/properties/{propertySlug}
+/properties/{propertySlug}/guide
+/properties/{propertySlug}/guide/{sectionId}
 ```
 
 ## Product Shape
@@ -48,13 +48,13 @@ Hosts should later be able to enable, disable, and edit sections from a console.
 The current proof uses app-local demo data:
 
 ```text
-projects/fireux/buenohost/app/demo/bnbGuides.ts
+projects/fireux/buenohost/app/demo/guestGuides.ts
 ```
 
 Nats has a seed script so the same content can live in the BuenoHost Firestore database:
 
 ```text
-scripts/seed-buenohost-bnb-guides.mjs
+scripts/seed-buenohost-guest-guides.mjs
 ```
 
 The BuenoHost app database is:
@@ -80,7 +80,7 @@ Every BuenoHost guide that can be translated should expose a stable translation 
 ```ts
 {
   source_app: 'buenohost',
-  document_type: 'bnb-guide',
+  document_type: 'guest-guide',
   document_slug: 'holiday-with-nats',
   source_language: 'en'
 }
@@ -89,7 +89,7 @@ Every BuenoHost guide that can be translated should expose a stable translation 
 The public guide can ask Sproochli for published translation availability:
 
 ```text
-GET /api/public/translations/available?source_app=buenohost&document_type=bnb-guide&document_slug=holiday-with-nats
+GET /api/public/translations/available?source_app=buenohost&document_type=guest-guide&document_slug=holiday-with-nats
 ```
 
 Important rule:

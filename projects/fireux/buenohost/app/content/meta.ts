@@ -1,13 +1,12 @@
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 
-export const buenoHostProductSentence = 'Guest guides for holiday homes, BNBs, and serviced apartments.'
+export const buenoHostProductSentence = 'Guest guides for holiday homes, short-stay properties, and serviced apartments.'
 
 export const buenoHostRoutes = [
   { label: 'Home', path: '/', kind: 'public' },
   { label: 'Alpine View Property', path: '/properties/alpine-view-apartment', kind: 'public' },
-  { label: 'BNB Guides', path: '/bnb', kind: 'public' },
-  { label: 'Alpine View Demo', path: '/bnb/alpine-view-demo', kind: 'public' },
-  { label: 'Alpine View Demo Wi-Fi', path: '/bnb/alpine-view-demo/wifi', kind: 'public' },
+  { label: 'Alpine View Guest Guide', path: '/properties/alpine-view-apartment/guide', kind: 'public' },
+  { label: 'Alpine View Wi-Fi', path: '/properties/alpine-view-apartment/guide/wifi', kind: 'public' },
   { label: 'Properties', path: '/console/portfolio/properties', kind: 'console' },
   { label: 'Host Dashboard', path: '/console/portfolio', kind: 'console' },
 ] as const
@@ -28,7 +27,7 @@ export const metaContent = defineFireuxMeta({
       'local instructions',
     ],
     positioning_html:
-      'BuenoHost turns host information into <strong>mobile guest guides</strong> for holiday homes, BNBs, and serviced apartments.',
+      'BuenoHost turns host information into <strong>mobile guest guides</strong> for holiday homes, short-stay properties, and serviced apartments.',
     promise_html:
       'Hosts keep house rules, Wi-Fi, emergency contacts, checkout notes, parking, and local recommendations in one clean guest-facing guide.',
     console_bridge_html:
@@ -39,27 +38,27 @@ export const metaContent = defineFireuxMeta({
       'The MVP starts with static guide pages, then grows into an editable host console for reusable guest manual sections.',
   },
   seo: {
-    title: 'BuenoHost - Guest guides for holiday homes and BNB hosts',
+    title: 'BuenoHost - Guest guides for holiday homes and short-stay hosts',
     description:
-      'Create mobile guest guides for holiday homes, BNBs and serviced apartments with Wi-Fi, house rules, checkout, emergency contacts and local information.',
+      'Create mobile guest guides for holiday homes, short-stay properties and serviced apartments with Wi-Fi, house rules, checkout, emergency contacts and local information.',
     keywords: [
-      'BNB guest guide',
+      'short-stay guest guide',
       'Airbnb house manual',
       'holiday apartment guide',
       'guest information app',
       'host information system',
     ],
-    audience: ['holiday apartment hosts', 'BNB hosts', 'property managers'],
+    audience: ['holiday apartment hosts', 'short-stay hosts', 'property managers'],
     categories: ['guest guides', 'host tools', 'holiday rentals'],
     primary_topic: 'mobile guest guides for short-stay accommodation',
   },
   cta: {
     primary: {
       label: 'View sample guide',
-      to: '/bnb/alpine-view-demo',
+      to: '/properties/alpine-view-apartment/guide',
     },
     secondary: {
-      label: 'Message the host',
+      label: 'View demo property',
       to: '/properties/alpine-view-apartment',
     },
     console: {

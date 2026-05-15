@@ -1,35 +1,35 @@
-export type BnbGuideItem = {
+export type GuestGuideItem = {
   label?: string
   value: string
   tone?: 'default' | 'important' | 'warning'
 }
 
-export type BnbGuideSection = {
+export type GuestGuideSection = {
   id: string
   title: string
   summary: string
   icon: string
   priority?: boolean
   enabled?: boolean
-  items: BnbGuideItem[]
+  items: GuestGuideItem[]
 }
 
-export type BnbGuideTranslationRef = {
+export type GuestGuideTranslationRef = {
   source_app: 'buenohost'
-  document_type: 'bnb-guide'
+  document_type: 'guest-guide'
   document_slug: string
   source_language: 'en'
 }
 
-export type BnbGuide = {
-  type: 'buenohost-bnb-guide'
+export type GuestGuide = {
+  type: 'buenohost-guest-guide'
   slug: string
   portfolio_id?: string
   property_id?: string
   language: 'en'
   title: string
   status: 'demo' | 'live'
-  translation_ref: BnbGuideTranslationRef
+  translation_ref: GuestGuideTranslationRef
   guest_message?: {
     title: string
     subtitle?: string
@@ -46,10 +46,10 @@ export type BnbGuide = {
   }
   privacy_note: string
   footer: string
-  sections: BnbGuideSection[]
+  sections: GuestGuideSection[]
 }
 
-export const standardBnbTopicIds = [
+export const standardGuestGuideTopicIds = [
   'emergency',
   'wifi',
   'check-in',
@@ -72,8 +72,8 @@ export const standardBnbTopicIds = [
   'useful-contacts',
 ] as const
 
-export const alpineViewDemoGuide: BnbGuide = {
-  type: 'buenohost-bnb-guide',
+export const alpineViewGuestGuide: GuestGuide = {
+  type: 'buenohost-guest-guide',
   slug: 'alpine-view-demo',
   portfolio_id: 'alpine-stay-collection',
   property_id: 'alpine-view-apartment',
@@ -82,7 +82,7 @@ export const alpineViewDemoGuide: BnbGuide = {
   status: 'demo',
   translation_ref: {
     source_app: 'buenohost',
-    document_type: 'bnb-guide',
+    document_type: 'guest-guide',
     document_slug: 'alpine-view-demo',
     source_language: 'en',
   },
@@ -92,7 +92,7 @@ export const alpineViewDemoGuide: BnbGuide = {
   },
   property: {
     name: 'Alpine View Apartment',
-    type: 'Demo BNB / guest guide',
+    type: 'Demo guest guide',
     original_language: 'en',
     primary_language: 'en',
     manager: 'BuenoHost Demo Team',
@@ -275,23 +275,23 @@ export const alpineViewDemoGuide: BnbGuide = {
   ],
 }
 
-export const bnbGuides = [alpineViewDemoGuide] as const
+export const guestGuides = [alpineViewGuestGuide] as const
 
-export function resolveBnbGuide(slug: string): BnbGuide | null {
-  return bnbGuides.find((guide) => guide.slug === slug) ?? null
+export function resolveGuestGuide(slug: string): GuestGuide | null {
+  return guestGuides.find((guide) => guide.slug === slug) ?? null
 }
 
-export function getEnabledBnbSections(guide: BnbGuide): BnbGuideSection[] {
+export function getEnabledGuestGuideSections(guide: GuestGuide): GuestGuideSection[] {
   return guide.sections.filter((section) => section.enabled !== false)
 }
 
-export function getBnbGuestTopics(guide: BnbGuide): BnbGuideSection[] {
-  return getEnabledBnbSections(guide).filter((section) => section.id !== 'welcome')
+export function getGuestGuideTopics(guide: GuestGuide): GuestGuideSection[] {
+  return getEnabledGuestGuideSections(guide).filter((section) => section.id !== 'welcome')
 }
 
-export function resolveBnbSection(slug: string, sectionId: string): BnbGuideSection | null {
-  const guide = resolveBnbGuide(slug)
+export function resolveGuestGuideSection(slug: string, sectionId: string): GuestGuideSection | null {
+  const guide = resolveGuestGuide(slug)
   if (!guide) return null
 
-  return getBnbGuestTopics(guide).find((section) => section.id === sectionId) ?? null
+  return getGuestGuideTopics(guide).find((section) => section.id === sectionId) ?? null
 }

@@ -48,6 +48,8 @@
     <UContainer v-else class="py-8">
       <slot />
     </UContainer>
+
+    <LayoutsSharedFloatingChatButton />
   </main>
 </template>
 

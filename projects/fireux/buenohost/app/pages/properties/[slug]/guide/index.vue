@@ -4,7 +4,7 @@
       <div class="space-y-5">
         <div class="flex flex-wrap gap-2">
           <UBadge color="primary" variant="soft">
-            BNB guest guide
+            Guest guide
           </UBadge>
           <UBadge color="neutral" variant="outline">
             {{ resolvedGuide.language.toUpperCase() }}
@@ -16,7 +16,7 @@
 
         <div class="space-y-3">
           <p class="text-sm font-semibold uppercase text-muted">
-            {{ resolvedGuide.property.name }}
+            {{ resolvedProperty.name }}
           </p>
           <h1 class="max-w-3xl text-3xl font-semibold tracking-normal text-highlighted sm:text-5xl">
             {{ resolvedGuide.title }}
@@ -248,7 +248,7 @@
           Guest guide
         </p>
         <h2 class="text-2xl font-semibold">
-          Standard BNB topics
+          Guest guide topics
         </h2>
         <p class="max-w-2xl text-sm leading-6 text-muted">
           Hosts can enable the topics that matter for each property. Disabled topics simply disappear from the guest guide.
@@ -290,13 +290,13 @@
         Error 404
       </UBadge>
       <h1 class="text-3xl font-semibold text-highlighted">
-        BNB guide not found
+        Guest guide not found
       </h1>
       <p class="text-muted">
         This guide is not available in BuenoHost.
       </p>
-      <UButton to="/bnb" color="primary" variant="soft">
-        Back to BNB guides
+      <UButton to="/properties/alpine-view-apartment" color="primary" variant="soft">
+        Back to properties
       </UButton>
     </div>
   </UCard>
@@ -304,26 +304,29 @@
 
 <script setup lang="ts">
 import {
-  getBnbGuestTopics,
-  getEnabledBnbSections,
-  resolveBnbGuide,
-  type BnbGuideItem,
-} from '../../../demo/bnbGuides'
+  getGuestGuideTopics,
+  getEnabledGuestGuideSections,
+  resolveGuestGuide,
+  type GuestGuideItem,
+} from '../../../../demo/guestGuides'
+import { findDemoBuenoHostPublicProperty } from '../../../../demo/properties'
 
 definePageMeta({
-  layout: 'bnb',
+  layout: 'guest-guide',
 })
 
 const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
-const guide = computed(() => resolveBnbGuide(String(route.params.slug || '')))
+const property = computed(() => findDemoBuenoHostPublicProperty(String(route.params.slug || '')))
+const guide = computed(() => property.value ? resolveGuestGuide(property.value.guide_slug) : null)
 
 if (!guide.value) setResponseStatus(404)
 
+const resolvedProperty = computed(() => property.value!)
 const resolvedGuide = computed(() => guide.value!)
-const enabledSections = computed(() => getEnabledBnbSections(resolvedGuide.value))
+const enabledSections = computed(() => getEnabledGuestGuideSections(resolvedGuide.value))
 const welcomeSection = computed(() => enabledSections.value.find((section) => section.id === 'welcome'))
-const guestTopics = computed(() => getBnbGuestTopics(resolvedGuide.value))
+const guestTopics = computed(() => getGuestGuideTopics(resolvedGuide.value))
 const prioritySections = computed(() => guestTopics.value.filter((section) => section.priority))
 const regularSections = computed(() => guestTopics.value.filter((section) => !section.priority))
 const phoneHref = computed(() => resolvedGuide.value.property.phone.replace(/\s+/g, ''))
@@ -366,10 +369,10 @@ type TranslationAvailabilityResponse = {
 }
 
 function topicPath(sectionId: string) {
-  return `/bnb/${resolvedGuide.value.slug}/${sectionId}`
+  return `/properties/${resolvedProperty.value.slug}/guide/${sectionId}`
 }
 
-function itemClass(tone: BnbGuideItem['tone']) {
+function itemClass(tone: GuestGuideItem['tone']) {
   if (tone === 'important') return 'border-primary/20 bg-primary/10 text-default'
   if (tone === 'warning') return 'border-warning/20 bg-warning/10 text-default'
   return 'bg-default text-default'
@@ -404,12 +407,12 @@ useSeoMeta({
   title: computed(() =>
     resolvedGuide.value
       ? `${resolvedGuide.value.title} · ${resolvedGuide.value.property.name}`
-      : 'BNB guide not found'
+      : 'Guest guide not found'
   ),
   description: computed(() =>
     resolvedGuide.value
       ? `Guest guide for ${resolvedGuide.value.property.name}`
-      : 'BNB guide not found'
+      : 'Guest guide not found'
   ),
 })
 </script>

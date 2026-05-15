@@ -12,7 +12,7 @@
 
       <template #links>
         <UButton
-          :to="`/bnb/${property.guide_slug}`"
+          :to="`/properties/${property.slug}/guide`"
           color="neutral"
           variant="soft"
           icon="i-lucide-book-open"

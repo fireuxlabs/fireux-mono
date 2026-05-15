@@ -2,7 +2,7 @@
   <div v-if="resolvedGuide && resolvedSection" class="min-w-0 space-y-8">
     <section class="space-y-5">
       <NuxtLink
-        :to="`/bnb/${resolvedGuide.slug}`"
+        :to="`/properties/${resolvedProperty.slug}/guide`"
         class="inline-flex items-center gap-2 text-sm font-semibold text-primary"
       >
         <Icon name="i-lucide-arrow-left" class="size-4" />
@@ -12,7 +12,7 @@
       <div class="space-y-3">
         <div class="flex flex-wrap gap-2">
           <UBadge color="primary" variant="soft">
-            BNB guest guide
+            Guest guide
           </UBadge>
           <UBadge color="neutral" variant="outline">
             {{ resolvedGuide.property.name }}
@@ -91,7 +91,7 @@
         Error 404
       </UBadge>
       <h1 class="text-3xl font-semibold text-highlighted">
-        BNB guide section not found
+        Guest guide section not found
       </h1>
       <p class="text-muted">
         This topic is not enabled for this guest guide.
@@ -105,22 +105,27 @@
 
 <script setup lang="ts">
 import {
-  getBnbGuestTopics,
-  resolveBnbGuide,
-  resolveBnbSection,
-  type BnbGuideItem,
-} from '../../../demo/bnbGuides'
+  getGuestGuideTopics,
+  resolveGuestGuide,
+  resolveGuestGuideSection,
+  type GuestGuideItem,
+} from '../../../../demo/guestGuides'
+import { findDemoBuenoHostPublicProperty } from '../../../../demo/properties'
 
 definePageMeta({
-  layout: 'bnb',
+  layout: 'guest-guide',
 })
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
 const sectionId = computed(() => String(route.params.sectionId || ''))
-const guide = computed(() => resolveBnbGuide(slug.value))
-const section = computed(() => resolveBnbSection(slug.value, sectionId.value))
+const property = computed(() => findDemoBuenoHostPublicProperty(slug.value))
+const guide = computed(() => property.value ? resolveGuestGuide(property.value.guide_slug) : null)
+const section = computed(() =>
+  property.value ? resolveGuestGuideSection(property.value.guide_slug, sectionId.value) : null
+)
 
+const resolvedProperty = computed(() => property.value)
 const resolvedGuide = computed(() => guide.value)
 const resolvedSection = computed(() => section.value)
 
@@ -129,7 +134,7 @@ if (!resolvedGuide.value || !resolvedSection.value) {
 }
 
 const guestTopics = computed(() =>
-  resolvedGuide.value ? getBnbGuestTopics(resolvedGuide.value) : []
+  resolvedGuide.value ? getGuestGuideTopics(resolvedGuide.value) : []
 )
 const currentIndex = computed(() =>
   guestTopics.value.findIndex((topic) => topic.id === resolvedSection.value?.id)
@@ -144,10 +149,10 @@ const nextSection = computed(() =>
 )
 
 function topicPath(targetSectionId: string) {
-  return `/bnb/${resolvedGuide.value?.slug || slug.value}/${targetSectionId}`
+  return `/properties/${resolvedProperty.value?.slug || slug.value}/guide/${targetSectionId}`
 }
 
-function itemClass(tone: BnbGuideItem['tone']) {
+function itemClass(tone: GuestGuideItem['tone']) {
   if (tone === 'important') return 'border-primary/20 bg-primary/10 text-default'
   if (tone === 'warning') return 'border-warning/20 bg-warning/10 text-default'
   return 'bg-default text-default'
@@ -157,8 +162,8 @@ useSeoMeta({
   title: computed(() =>
     resolvedGuide.value && resolvedSection.value
       ? `${resolvedSection.value.title} · ${resolvedGuide.value.title}`
-      : 'BNB guide section not found'
+      : 'Guest guide section not found'
   ),
-  description: computed(() => resolvedSection.value?.summary || 'BNB guide section not found'),
+  description: computed(() => resolvedSection.value?.summary || 'Guest guide section not found'),
 })
 </script>

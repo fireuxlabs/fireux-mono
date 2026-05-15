@@ -11,6 +11,20 @@ import { useUserHandleClaim } from '../../mutations/useUserHandleClaim'
 import { createUserNotification } from '../ensureHelpers'
 import { useUserFormattingAndValidation } from '../validation/useUserFormatting'
 
+function avatarFileExtension(source: File | Blob): string {
+  const name =
+    typeof File !== 'undefined' && source instanceof File ? source.name : ''
+  const fromName = name.match(/\.([a-z0-9]+)$/i)?.[1]?.toLowerCase()
+  if (fromName) return fromName
+
+  const mime = source.type.toLowerCase()
+  if (mime === 'image/jpeg') return 'jpg'
+  if (mime === 'image/png') return 'png'
+  if (mime === 'image/webp') return 'webp'
+  if (mime === 'image/gif') return 'gif'
+  return 'jpg'
+}
+
 export function useCoreUserUpdate(user: UserRefs) {
   const { updateDocument } = useFirestoreUpdate()
   const { uploadImage } = useImageStorage()
@@ -64,7 +78,8 @@ export function useCoreUserUpdate(user: UserRefs) {
     },
     uploadAvatar: async (source: File | Blob) => {
       const id = requireCoreId()
-      const path = `users/${id}/avatar`
+      const extension = avatarFileExtension(source)
+      const path = `users/${id}/avatar/${Date.now()}.${extension}`
       const url = await uploadImage(path, source)
       await updateCore({ avatar: url })
       return url

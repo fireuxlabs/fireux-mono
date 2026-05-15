@@ -179,16 +179,6 @@ async function sendMessage() {
 
 definePageMeta({
   layout: 'landing',
-  nav: {
-    key: 'chat',
-    label: 'Chat',
-    icon: 'i-lucide-message-circle',
-    position: 'top',
-    order: 90,
-    desktop: true,
-    mobile: true,
-    layouts: ['landing'],
-  },
 })
 
 useSeoMeta({

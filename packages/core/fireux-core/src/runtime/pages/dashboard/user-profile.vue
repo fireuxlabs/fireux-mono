@@ -117,6 +117,9 @@ const appId = computed(() => fireuxConfig.appId || '')
 const databaseId = computed(() =>
   String(runtimeConfig.public?.firebaseEcosystem?.firebase?.databaseId || '')
 )
+const storageBucket = computed(() =>
+  String(runtimeConfig.public?.firebaseEcosystem?.firebase?.storageBucket || '')
+)
 const authUid = computed(() => uid.value || coreUser.value?.id || '')
 
 const resolvedUser = computed(() => currentUser.value ?? null)
@@ -145,6 +148,7 @@ const adminDebug = computed(() => ({
   runtime: {
     appId: appId.value || null,
     databaseId: databaseId.value || '(default)',
+    storageBucket: storageBucket.value || null,
     authUid: authUid.value || null,
   },
   computed: {
@@ -159,6 +163,7 @@ const adminDebug = computed(() => ({
     adminOf: coreUser.value?.adminOf ?? [],
     userOf: coreUser.value?.userOf ?? [],
     profiles: coreUser.value?.profiles ?? [],
+    avatar: coreUser.value?.avatar ?? null,
   },
   appUser: {
     path:
