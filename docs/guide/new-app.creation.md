@@ -161,7 +161,7 @@ Do not store day-to-day standalone app domain records in the shared `fireux` dat
 
 ## Firestore Rules For New Databases
 
-When creating a new named Firestore database for a demo or preflight app, start by setting explicit temporary rules for that database so the new app can read and write while the product shape is still moving.
+When creating a new named Firestore database for a demo or preflight app, manually set explicit temporary rules for that database in Firebase/Firestore so the new app can read and write while the product shape is still moving.
 
 Temporary demo/preflight rule shape:
 
@@ -178,6 +178,8 @@ service cloud.firestore {
 ```
 
 This is a setup convenience, not a shipping rule. Mark it as temporary in the deploy notes or task, and make sure it is applied to the app's named database, not only `(default)`.
+
+Current canon: app `firebase.json` files should not carry temporary Firestore rules wiring. Rules are manual Firestore state during preflight until repo-managed rules are intentionally canonized later.
 
 Before a real client, staging, or production ship:
 

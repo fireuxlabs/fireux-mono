@@ -29,6 +29,8 @@ The current concept map is:
   console-backed entry, selection, and workspace meaning
 - `dashboard-canon.md`
   authenticated user and profile-extension dashboard meaning
+- `firestore-rules-canon.md`
+  manual Firestore rules workflow for app databases during preflight, demo, and shipping phases
 - `spine/`
   how FireUX extends the plain Nuxt runtime spine
 - `stacks/`
@@ -67,6 +69,12 @@ Dashboard is a real concept because user/profile work spans:
 
 Current dashboard profile identities are `user`, `professional`, `chef`, and `agent`.
 Dashboard is not a console family.
+
+### `firestore-rules-canon.md`
+
+Firestore rules are currently managed manually in Firebase/Firestore for each app database.
+
+Dev and preflight databases may temporarily use open rules while product shape is moving. Those rules are not production rules, and every real client/staging/production ship must replace them with scoped public, signed-in, admin, and membership rules.
 
 ### `spine/`
 
