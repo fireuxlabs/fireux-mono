@@ -117,6 +117,7 @@ export const APP_REGISTRY = {
     consoleFamilies: [],
     smokeRoutes: [
       '/',
+      '/chat',
       '/professionals',
       '/professionals/alex-mercer-technical-seo',
       '/categories/technical-seo',
@@ -140,6 +141,7 @@ export const APP_REGISTRY = {
     consoleFamilies: [],
     smokeRoutes: [
       '/',
+      '/chat',
       '/bnb',
       '/info',
       '/menus',
@@ -161,6 +163,8 @@ export const APP_REGISTRY = {
     consoleFamilies: ['portfolios'],
     smokeRoutes: [
       '/',
+      '/chat',
+      '/properties/alpine-view-apartment',
       '/bnb',
       '/bnb/alpine-view-demo',
       '/bnb/alpine-view-demo/wifi',

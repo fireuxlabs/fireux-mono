@@ -14,8 +14,8 @@
         <UButton to="/bnb/alpine-view-demo" color="primary" icon="i-lucide-house">
           Open demo guide
         </UButton>
-        <UButton to="/console/portfolio" variant="soft" icon="i-lucide-layout-dashboard">
-          Host dashboard
+        <UButton to="/properties/alpine-view-apartment" variant="soft" icon="i-lucide-message-circle">
+          Message the host
         </UButton>
       </template>
     </UPageHeader>

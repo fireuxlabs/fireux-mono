@@ -308,7 +308,7 @@ import {
   getEnabledBnbSections,
   resolveBnbGuide,
   type BnbGuideItem,
-} from '../../../content/bnbGuides'
+} from '../../../demo/bnbGuides'
 
 definePageMeta({
   layout: 'bnb',

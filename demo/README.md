@@ -39,6 +39,18 @@ demo<Entity>PreviewList
 
 For runtime console scenarios, do not add files here. Put them in the owning package runtime as `demo-scenarios` or `<domain>-demo-scenarios`.
 
+## App-Local Demo Data
+
+If a demo record only exists for one app surface, put it under that app's demo folder:
+
+```txt
+projects/<ecosystem>/<app>/app/demo/<domain>.ts
+```
+
+Use this for app-specific guest guides, public menus, sample info pages, provider cards, and other curated records.
+
+Keep `app/content` for app copy and metadata, usually `app/content/meta.ts`.
+
 ## Media
 
 App brand assets belong in:

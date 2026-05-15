@@ -169,6 +169,28 @@ Preferred model-file shape for system models:
 - `XCreateInput`
 - `XUpdateInput`
 
+### Communication
+
+How people talk to an app, operator, provider, host, or workspace.
+
+Examples:
+- `Conversation`
+- `ConversationMessage`
+
+Communication canon:
+- conversation root records live at `conversations/<conversationId>`
+- message child records live at `conversations/<conversationId>/messages/<messageId>`
+- apps provide `app_id`, `kind`, and `related_entity` context
+- product apps do not create app-local chat/enquiry storage for the same behaviour
+
+Current conversation kinds:
+- `property_enquiry`
+- `guest_support`
+- `provider_lead`
+- `general`
+
+Public enquiry creation is allowed as a product surface, but shipping rules must restrict reads and follow-up writes to participants, app operators, or trusted server endpoints.
+
 ### Domain Root
 
 What exists independently of an app-scoped record.

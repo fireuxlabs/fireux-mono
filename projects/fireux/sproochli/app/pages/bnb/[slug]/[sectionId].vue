@@ -109,7 +109,7 @@ import {
   resolveBnbGuide,
   resolveBnbSection,
   type BnbGuideItem,
-} from '../../../content/bnbGuides'
+} from '../../../demo/bnbGuides'
 
 definePageMeta({
   layout: 'bnb',

@@ -52,7 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import { getBnbGuestTopics, resolveBnbGuide } from '../content/bnbGuides'
+import { getBnbGuestTopics, resolveBnbGuide } from '../demo/bnbGuides'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))

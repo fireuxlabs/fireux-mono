@@ -84,6 +84,16 @@
                   </UButton>
                 </div>
               </UPageCard>
+
+              <UPageCard
+                title="Chat"
+                description="Read and reply to public conversations for this app."
+                variant="subtle"
+              >
+                <UButton to="/dashboard/admin/chat" color="primary" class="w-fit">
+                  Open chat inbox
+                </UButton>
+              </UPageCard>
             </div>
           </div>
 

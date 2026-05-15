@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { bnbGuides } from '../../content/bnbGuides'
+import { bnbGuides } from '../../demo/bnbGuides'
 
 definePageMeta({
   layout: 'bnb',

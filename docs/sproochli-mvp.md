@@ -171,7 +171,7 @@ type SproochliBlock = {
 Current Sproochli static proof data lives in:
 
 ```text
-projects/fireux/sproochli/app/content/sampleInfo.ts
+projects/fireux/sproochli/app/demo/sampleInfo.ts
 ```
 
 Older BNB prototype files under `projects/fireux/sproochli` are legacy proof surfaces. BuenoHost now owns guest manuals.

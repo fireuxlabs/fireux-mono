@@ -35,6 +35,17 @@ userId: 'demo-user-seo-alex'
 professionalId: 'professional-alex-mercer'
 ```
 
+## Placement Rule
+
+Use one demo location for one job:
+
+- `demo/*.demo.ts` is for repo-wide fixtures and reusable view payloads.
+- `packages/*/src/runtime/**/demo-scenarios*` is for package-owned runtime and console scenarios.
+- `projects/<ecosystem>/<app>/app/demo/*.ts` is for app-local demo records.
+- `projects/<ecosystem>/<app>/app/content/*` is for app copy and metadata, not demo records.
+
+Do not put guest guides, sample info pages, public menus, provider cards, avatars, logos, or entity records in `app/content`.
+
 ## Collection Fetch Rule
 
 Collection composables read live Firestore by default.

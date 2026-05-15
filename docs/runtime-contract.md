@@ -58,6 +58,17 @@ Updated: 2026-05-15
   - place lookup services
   - notifications, proxies, and other true service seams
 
+## Communication Runtime Contract
+- Conversations are shared root records with app and related entity context.
+- Canon path:
+  - `conversations/{conversationId}`
+  - `conversations/{conversationId}/messages/{messageId}`
+- Apps may create public enquiry conversations directly only while rules and product state allow it.
+- Shipping apps must restrict conversation reads/writes to participants, app operators, or trusted server endpoints.
+- Public product pages should use conversation creation instead of exposing private operational details such as access codes, lockbox notes, or stay-specific guest instructions.
+- `/chat` is the shared public app-admin chat entry point.
+- `/dashboard/admin/chat` is the shared app-admin inbox and requires app admin access.
+
 ## Project Root Contract
 - `Project` is a root/core entity.
 - Canonical root project data lives at:

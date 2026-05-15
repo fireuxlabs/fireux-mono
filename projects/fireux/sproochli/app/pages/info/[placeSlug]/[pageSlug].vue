@@ -73,7 +73,7 @@ import {
   resolveSproochliInfoPage,
   sproochliLanguages,
   type SproochliLanguage,
-} from '../../../content/sampleInfo'
+} from '../../../demo/sampleInfo'
 import type { InfoBlockType } from 'fireux-sproochli/runtime/info'
 
 const route = useRoute()

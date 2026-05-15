@@ -411,7 +411,7 @@ async function main() {
     standard_topic_ids: holidayWithNats.standard_topic_ids,
     source: {
       kind: 'static-proof',
-      file: 'projects/fireux/buenohost/app/content/bnbGuides.ts',
+      file: 'projects/fireux/buenohost/app/demo/bnbGuides.ts',
       original_file: 'House Manual 2019.docx',
     },
     updated: stamp(now),

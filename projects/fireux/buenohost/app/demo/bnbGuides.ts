@@ -24,6 +24,8 @@ export type BnbGuideTranslationRef = {
 export type BnbGuide = {
   type: 'buenohost-bnb-guide'
   slug: string
+  portfolio_id?: string
+  property_id?: string
   language: 'en'
   title: string
   status: 'demo' | 'live'
@@ -73,6 +75,8 @@ export const standardBnbTopicIds = [
 export const alpineViewDemoGuide: BnbGuide = {
   type: 'buenohost-bnb-guide',
   slug: 'alpine-view-demo',
+  portfolio_id: 'alpine-stay-collection',
+  property_id: 'alpine-view-apartment',
   language: 'en',
   title: 'Alpine View Demo Stay',
   status: 'demo',

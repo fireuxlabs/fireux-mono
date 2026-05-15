@@ -249,7 +249,7 @@ fireux/apps/<appId>
 If the app has static proof data, add a seed script before pretending the console is real. The seed script should say where it migrates from and where it writes. For example, BuenoHost's first BNB proof migrates from:
 
 ```text
-projects/fireux/buenohost/app/content/bnbGuides.ts
+projects/fireux/buenohost/app/demo/bnbGuides.ts
 ```
 
 into:

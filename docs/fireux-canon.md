@@ -97,6 +97,29 @@ Current learned examples:
 - Product landing heroes should use Nuxt UI primitives first. Avoid ecosystem-style module overviews, three-way hero action grids, large bespoke hero visuals, and heavy scoped CSS until the product surface is stable.
 - Product apps must not expose orphan console-family routes. If the app does not have a selected workspace/entity family, use public routes and a personal/provider dashboard instead of adding a console family.
 
+## Communication Canon
+- Chat, enquiries, leads, and support messages belong to one shared communication engine.
+- `Conversation` is the root communication record.
+- `ConversationMessage` is the message child record.
+- Canonical storage is:
+  - `conversations/{conversationId}`
+  - `conversations/{conversationId}/messages/{messageId}`
+- Product apps provide labels and related entity context; they must not invent app-local chat storage for the same pattern.
+- Current conversation kinds are:
+  - `property_enquiry`
+  - `guest_support`
+  - `provider_lead`
+  - `general`
+- The first universal chat pattern is app admin chat:
+  - public `/chat` lets any visitor start a `general` conversation about the current app.
+  - app admins answer from `/dashboard/admin/chat`.
+  - the related entity is the current app: `related_entity.family = 'apps'`.
+- Chat UI should use Nuxt UI chat primitives where available, while FireUX owns the Firestore conversation shape.
+- Public enquiry forms may create conversations, but private follow-up, reads, and replies must be participant-scoped or server-mediated before shipping.
+- BuenoHost uses conversations for property enquiries and guest support so public property pages can collect direct-booking interest without exposing private guest-guide details.
+- Find My SEO should converge provider leads onto conversations when moving beyond demo-only lead capture.
+- Sproochli may use conversations for visitor/operator support, translation requests, or owner follow-up.
+
 ## Entity Stack Canon
 - Entity stack DNA:
   - `XModel` stores truth.
@@ -187,9 +210,12 @@ Current learned examples:
   - `packages/*/src/runtime/composables/fireux/app/**/demo-scenarios/**`
 - Repo-level `demo/*.demo.ts` files are for demo entity/view payloads, dev surfaces, examples, and explicit preflight product records.
 - Repo-level `demo/*.demo.ts` files are not Firestore storage, Nuxt Content, canonical runtime models, or console scenario registries.
-- App-local `app/content/*` is for app copy, metadata, and static page content, not entity demo records.
+- App-local `app/content/*` is for app copy and metadata, not entity demo records.
+- App-specific demo records live under `app/demo/*.ts` when they are only useful to that app surface.
+- Do not place demo guides, public menus, sample info pages, provider cards, avatars, logos, or entity records in `app/content`.
 - Demo file naming is:
   - repo-level fixtures: `demo/<domain>.demo.ts`
+  - app-local fixtures: `projects/<ecosystem>/<app>/app/demo/<domain>.ts`
   - package runtime scenarios: `demo-scenarios` or `<domain>-demo-scenarios` under the owning runtime package.
 - Demo export naming should make the demo status explicit:
   - types: `Demo<Entity>`

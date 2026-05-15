@@ -45,10 +45,10 @@ Hosts should later be able to enable, disable, and edit sections from a console.
 
 ## Data Canon
 
-The current proof uses static app content:
+The current proof uses app-local demo data:
 
 ```text
-projects/fireux/buenohost/app/content/bnbGuides.ts
+projects/fireux/buenohost/app/demo/bnbGuides.ts
 ```
 
 Nats has a seed script so the same content can live in the BuenoHost Firestore database:
