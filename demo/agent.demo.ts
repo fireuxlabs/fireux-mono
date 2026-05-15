@@ -2,12 +2,13 @@
 // Use these records for dev surfaces, examples, and explicit preflight demos.
 // They are not canonical storage or runtime contracts.
 
+import { demoUserList } from './user.demo'
+
 type AgentBase = {
   id: string
+  userId: string
   to: string
-  avatarUrl: string
   secondaryAvatarUrl: string
-  displayName: string
   tagline: string
   badges: string[]
   bioShort: string
@@ -16,13 +17,22 @@ type AgentBase = {
   websiteUrl: string
 }
 
+const demoUsersById = new Map(demoUserList.map((user) => [user.id, user]))
+
+const requireDemoUser = (userId: string) => {
+  const user = demoUsersById.get(userId)
+  if (!user) {
+    throw new Error(`[agent.demo] Missing shared demo user: ${userId}`)
+  }
+  return user
+}
+
 export const demoAgentBaseList = [
   {
     id: 'agent_demo_001',
+    userId: 'demo-user-agent-mila',
     to: '',
-    avatarUrl: 'https://images.unsplash.com/photo-1528892952291-009c663ce843?auto=format&fit=crop&w=240&q=80',
     secondaryAvatarUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=160&q=80',
-    displayName: 'Mila Ortiz',
     tagline: 'Hospitality placements · Alpine & coastal',
     badges: ['Alpine', 'Executive'],
     bioShort: 'Matchmaking kitchens with talent across Europe and the U.S.',
@@ -32,10 +42,9 @@ export const demoAgentBaseList = [
   },
   {
     id: 'agent_demo_002',
+    userId: 'demo-user-agent-ethan',
     to: '',
-    avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=240&q=80',
     secondaryAvatarUrl: 'https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=160&q=80',
-    displayName: 'Ethan Brooks',
     tagline: 'Seasonal staffing · Resorts & retreats',
     badges: ['Seasonal', 'Remote'],
     bioShort: 'Specializes in short-term placements and resort openings.',
@@ -45,10 +54,9 @@ export const demoAgentBaseList = [
   },
   {
     id: 'agent_demo_003',
+    userId: 'demo-user-agent-sofia',
     to: '',
-    avatarUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=240&q=80',
     secondaryAvatarUrl: 'https://images.unsplash.com/photo-1528892952291-009c663ce843?auto=format&fit=crop&w=160&q=80',
-    displayName: 'Sofia Ibarra',
     tagline: 'Private chef placements · EU + UK',
     badges: ['Private', 'Executive'],
     bioShort: 'Pairs premium kitchens with executive-level talent.',
@@ -58,40 +66,38 @@ export const demoAgentBaseList = [
   },
 ] satisfies AgentBase[]
 
-export const demoAgentList = demoAgentBaseList.map((base) => ({
-  id: base.id,
-  user_id: `user_${base.id}`,
-  display_name: base.displayName,
-  tagline: base.tagline,
-}))
+export const demoAgentList = demoAgentBaseList.map((base) => {
+  const user = requireDemoUser(base.userId)
 
-const buildAgentPill = (base: (typeof demoAgentBaseList)[number]) => ({
-  to: base.to,
-  avatarUrl: base.avatarUrl,
-  secondaryAvatarUrl: base.secondaryAvatarUrl,
-  displayName: base.displayName,
-  tagline: base.tagline,
-  badges: base.badges,
+  return {
+    id: base.id,
+    user_id: user.id,
+    display_name: user.display_name,
+    tagline: base.tagline,
+  }
 })
 
+const buildAgentPill = (base: (typeof demoAgentBaseList)[number]) => {
+  const user = requireDemoUser(base.userId)
+
+  return {
+    to: base.to,
+    avatarUrl: user.avatar,
+    secondaryAvatarUrl: base.secondaryAvatarUrl,
+    displayName: user.display_name,
+    tagline: base.tagline,
+    badges: base.badges,
+  }
+}
+
 const buildAgentCell = (base: (typeof demoAgentBaseList)[number]) => ({
-  to: base.to,
-  avatarUrl: base.avatarUrl,
-  secondaryAvatarUrl: base.secondaryAvatarUrl,
-  displayName: base.displayName,
-  tagline: base.tagline,
-  badges: base.badges,
+  ...buildAgentPill(base),
   bioShort: base.bioShort,
 })
 
 const buildAgentPreview = (base: (typeof demoAgentBaseList)[number]) => ({
+  ...buildAgentPill(base),
   id: base.id,
-  to: base.to,
-  avatarUrl: base.avatarUrl,
-  secondaryAvatarUrl: base.secondaryAvatarUrl,
-  displayName: base.displayName,
-  tagline: base.tagline,
-  badges: base.badges,
   summary: base.bioShort,
   contactEmail: base.contactEmail,
   contactPhone: base.contactPhone,

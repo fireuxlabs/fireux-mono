@@ -4,7 +4,7 @@
 
 export const demoSupplier = {
   id: 'supplier_demo_001',
-  user_id: 'user_demo_001',
+  user_id: 'demo-user-supplier-contact',
   company_name: 'Harbor Provisions',
   service_region: 'Zurich and Central Switzerland',
 }

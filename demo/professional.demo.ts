@@ -18,7 +18,7 @@ type ProfessionalBase = {
 export const demoProfessionalBaseList = [
   {
     id: 'professional_demo_001',
-    userId: 'user_demo_001',
+    userId: 'demo-user-chef-ava',
     to: '',
     image: 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=480&q=80',
     title: 'Senior Sous Chef',
@@ -26,7 +26,7 @@ export const demoProfessionalBaseList = [
   },
   {
     id: 'professional_demo_002',
-    userId: 'user_demo_002',
+    userId: 'demo-user-chef-luca',
     to: '',
     image: 'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=480&q=80',
     title: 'Pastry Chef',
@@ -34,7 +34,7 @@ export const demoProfessionalBaseList = [
   },
   {
     id: 'professional_demo_003',
-    userId: 'user_demo_003',
+    userId: 'demo-user-chef-noor',
     to: '',
     image: 'https://images.unsplash.com/photo-1529692236671-f1de46e43e74?auto=format&fit=crop&w=480&q=80',
     title: 'Line Cook',

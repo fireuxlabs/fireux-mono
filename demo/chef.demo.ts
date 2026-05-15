@@ -23,7 +23,7 @@ const demoUsersById = new Map(demoUserList.map((user) => [user.id, user]))
 const demoChefBaseList: ChefBase[] = [
   {
     id: 'chef_demo_001',
-    userId: 'user_demo_001',
+    userId: 'demo-user-chef-ava',
     kitchenId: 'stack-sizzle',
     chefHeadline: 'Service-led grill lead',
     summary: 'Fast casual kitchen lead focused on prep rhythm and reliable service handoff.',
@@ -35,7 +35,7 @@ const demoChefBaseList: ChefBase[] = [
   },
   {
     id: 'chef_demo_002',
-    userId: 'user_demo_002',
+    userId: 'demo-user-chef-luca',
     kitchenId: 'takumi-ramen',
     chefHeadline: 'Broth and noodle specialist',
     summary: 'Focused on ramen prep systems, tare balance, and consistent bowl execution.',
@@ -47,7 +47,7 @@ const demoChefBaseList: ChefBase[] = [
   },
   {
     id: 'chef_demo_003',
-    userId: 'user_demo_003',
+    userId: 'demo-user-chef-noor',
     kitchenId: 'broth-bloom',
     chefHeadline: 'Late-service operations lead',
     summary: 'Known for calm pass management, clean station setup, and dependable late service.',

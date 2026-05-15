@@ -28,13 +28,13 @@ import type {
  * - If that changes later, update the models README first, then this file.
  */
 export const ProfessionalModel = {
-  id: '',
-  title: '',
-  subtitle: '',
-  tagline: '',
-  summary: '',
-  bio: '',
-  image: '',
+  id: '' as string,
+  title: '' as string,
+  subtitle: '' as string,
+  tagline: '' as string,
+  summary: '' as string,
+  bio: '' as string,
+  image: '' as string,
   positions: [] as string[],
   tags: [] as string[],
   relevant_experience: [] as RelevantExperienceItem[],

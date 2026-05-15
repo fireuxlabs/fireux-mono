@@ -1,7 +1,7 @@
 # Concepts Directory
 
 Authority: Operational
-Updated: 2026-04-17
+Updated: 2026-05-15
 Scope: `packages/core/fireux-docs/src/runtime/concepts/*`.
 
 Learn how FireUX runtime concepts are documented when they span more than one runtime branch.
@@ -29,6 +29,8 @@ The current concept map is:
   console-backed entry, selection, and workspace meaning
 - `dashboard-canon.md`
   authenticated user and profile-extension dashboard meaning
+- `demo-data-canon.md`
+  demo identity, profile fixture, app membership, and collection source behaviour
 - `firestore-rules-canon.md`
   manual Firestore rules workflow for app databases during preflight, demo, and shipping phases
 - `spine/`
@@ -69,6 +71,18 @@ Dashboard is a real concept because user/profile work spans:
 
 Current dashboard profile identities are `user`, `professional`, `chef`, and `agent`.
 Dashboard is not a console family.
+
+### `demo-data-canon.md`
+
+Demo data is a real concept because demo records can touch:
+
+- root identity
+- profile extensions
+- app membership overlays
+- product demo providers
+- live/test/demo collection source modes
+
+The core rule is that demo data bends toward live and test shape. Live collection reads stay live unless demo mode is explicit.
 
 ### `firestore-rules-canon.md`
 

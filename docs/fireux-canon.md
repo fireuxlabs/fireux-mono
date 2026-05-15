@@ -5,6 +5,33 @@ Updated: 2026-05-15
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
 
+## Pattern-First Constitution
+- Every change starts by identifying the family it belongs to before inventing a local solution.
+- Look for the repeated FireUX shape first; only create a delta when the existing family pattern cannot truthfully carry the behaviour.
+- Deltas must be named as deltas. A product label, route label, demo fixture, or tenant copy difference is not automatically a new architecture.
+- When a new repeated pattern is discovered, update this canon and the relevant runtime/extension docs in the same change or before the pattern is reused.
+- When a local implementation reveals something that should be shared, fold it into the owning family instead of copying it app by app.
+- The goal is deliberate repetition: the same concept should look and behave the same across apps, packages, and entities unless the domain has a real reason to differ.
+
+Current learned examples:
+- User identity:
+  - `User` is the person.
+  - `Professional`, `Chef`, and `Agent` are profile capabilities.
+  - `AppUser` is app membership.
+  - Console entities are operated workspaces.
+- Product apps:
+  - tenant and standalone product landings share one focused product shape.
+  - ecosystem main apps use a broader ecosystem shape.
+- Dashboard versus console:
+  - dashboard is for the signed-in user and profile extensions.
+  - console is for selected operational workspaces such as kitchens, suppliers, portfolios, and projects.
+- Demo data:
+  - demo records follow live/test shape.
+  - demo mode is explicit.
+  - live collection reads must not silently become demo reads.
+- Entity stacks:
+  - start from the standard model, fetch, collection, interface, component, and page seams before adding new entity-specific structure.
+
 ## Structural Canon
 - Extensions own domain logic and contracts.
 - Apps consume extension domains; apps do not fork extension canon behavior.
@@ -70,6 +97,54 @@ Updated: 2026-05-15
 - Product landing heroes should use Nuxt UI primitives first. Avoid ecosystem-style module overviews, three-way hero action grids, large bespoke hero visuals, and heavy scoped CSS until the product surface is stable.
 - Product apps must not expose orphan console-family routes. If the app does not have a selected workspace/entity family, use public routes and a personal/provider dashboard instead of adding a console family.
 
+## Entity Stack Canon
+- Entity stack DNA:
+  - `XModel` stores truth.
+  - `useXFetch()` reads one.
+  - `useXCollection()` reads many.
+  - `useXInterface()` shapes UI.
+  - `useXCreate()` creates.
+  - `useXUpdate()` patches.
+  - `useXDelete()` removes.
+  - `useXEnsure()` bootstraps.
+  - `useXConsole()` selects and operates a workspace.
+  - dashboard/profile routes manage identity.
+- Entities should start from the standard FireUX stack before adding domain-specific seams:
+  - `XModel`, `X`, `XCreateInput`, `XUpdateInput`
+  - `useXFetch()`, `useXCollection()`, `useXInterface()`
+  - `useXCreate()`, `useXUpdate()`, and `useXDelete()` where writes exist
+  - `useXEnsure()` only where bootstrap/setup-if-missing is intended
+  - `X/Collection/Manager.vue` where browse/manage UI exists
+  - `X/Cards/*` or equivalent shared surfaces for `Pill`, `Cell`, `Preview`, and `Profile`
+- Missing stack seams should be treated as alignment opportunities, not proof that the entity needs a new architecture.
+- Hydrated/read-time composites belong in fetch/runtime/interface seams, not in stored model files.
+- If an entity cannot follow the standard stack, document which family it belongs to and why the delta is real.
+- `pnpm audit:usex` is report-only tooling for spotting repeated stack seams, missing seams, local deltas, and naming drift. It is not a blocking guard until the repo is intentionally tightened.
+
+### Entity Mode Matrix
+
+| Mode | Canon meaning | Expected seams | Current examples |
+| --- | --- | --- | --- |
+| Root entity | Canonical stored thing | `XModel`, `useXFetch`, `useXCollection`, `useXInterface`, writes where allowed, collection/card surfaces where browsable | `App`, `Blog`, `Chef`, `Company`, `Dish`, `Ecosystem`, `Job`, `Kitchen`, `Portfolio`, `Product`, `Professional`, `Recipe`, `Supplier`, `User` |
+| Console workspace entity | Root entity that can be selected and operated | root stack plus `useXConsole`/selection and `/console/<family>` surfaces | `Kitchen`, `Supplier`, `Portfolio`, `Project` |
+| Identity/profile capability | Something a signed-in user can be or manage about themself | dashboard/profile routes, profile fetch/ensure/update, no console family by default | `Professional`, `Chef`, `Agent`, base `Profile` |
+| App membership overlay | App-specific role/capability for a user | `useAppUserCollection`, app-user update helpers, app membership UI; not a root entity stack | `AppUser` |
+| Scoped child entity | Operational record owned by a parent workspace/entity | scoped collection/fetch helpers, interface/card surfaces only where needed, writes through parent-aware mutations | `Task`, `Document`, `Compliance`, `PropertyUnit`, `PortfolioTask`, `PortfolioDocument`, `KitchenMise`, `KitchenOrder` |
+| Root plus scoped usage | Root truth linked into a workspace by a scoped usage record | root model/collection/interface plus scoped relationship helper | `Ingredient` root plus `KitchenIngredient` usage records |
+| System/adapter seam | Runtime helper around stack behaviour, not an entity | adapter/ensure/selection helpers; no full entity UI stack required | `Console`, `Firestore`, selection helpers |
+
+### Create And Edit Mode Matrix
+
+| Mode | Canon meaning | Current examples |
+| --- | --- | --- |
+| `quick-create` | User completes a small form and immediately creates the record | `Company`, `Place`, `Ingredient`, simple profile/entity creates |
+| `ensure-create` | Setup-if-missing and safe to rerun | `User`, `Profile`, `App`, `Ecosystem`, console target setup where canon allows |
+| `draft-preview-create` | Local draft state, preview, then publish/create | `Product` |
+| `onboarding-create` | Multi-step setup that may produce an entity plus supporting config/assets | `App`, product onboarding flows |
+| `simple-edit` | One document or root record is patched directly through `useXUpdate` or entity update helpers | `Company`, `Place`, `Kitchen`, `Supplier`, `Portfolio`, `Job`, `Blog`, `Dish`, `Recipe` |
+| `split-overlay-edit` | Edit is split because root truth and overlay truth are different records | `User` core/app edit, profile capability edits, root/scoped usage entities |
+| `scoped-console-edit` | Edits happen inside a selected workspace and must carry parent/console context | `Kitchen`, `Supplier`, `Portfolio`, project/portfolio child records |
+
 ## Behavioral Canon
 - No silent fallbacks for selection, routing, or identity decisions.
 - Interface composables are view-only (format/mapping for UI surfaces).
@@ -97,6 +172,14 @@ Updated: 2026-05-15
 - `test` data is separate from demo data:
   - `test` is writable and proves the intended live shape.
   - `demo` is curated, read-only, and used for development, demos, UX exploration, and explicit preflight product surfaces.
+- Demo identity must keep person, profile, app membership, and operated entity separate:
+  - a demo user is a person
+  - a demo professional, chef, or agent is a profile capability that person can use in a given context
+  - a demo app user is where that person belongs
+  - a demo console entity is what that person operates
+- Demo profile records should reference shared demo users by `userId`; do not inline root identity fields into product-owned provider/profile records unless the record is intentionally a UI-only view payload.
+- `useUserCollection()` and `useAppUserCollection()` read live Firestore by default. Demo user lists must not silently replace live collection reads.
+- Add demo collection source modes only as explicit options, following the existing `source: 'live' | 'test' | 'demo'` pattern.
 - Console/runtime demo data must live in the owning domain package as a demo scenario registry.
 - Current accepted demo scenario registry shapes are:
   - `packages/*/src/runtime/composables/fireux/app/**/demo-scenarios.ts`

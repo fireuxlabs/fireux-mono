@@ -87,6 +87,12 @@ Note: The repository `AI/` folder was moved to `docs/ai/`. See `docs/ai/` for AI
   - `docs/ai/**` (Tier3 only)
 
 ## Working rules for agents
+- Work pattern-first:
+  - identify the family/concept before implementing
+  - look for the repeated repo pattern hidden in existing apps/packages
+  - patch the shared family or documented canon before adding app-local deltas
+  - treat missing `useXFetch`, `useXCollection`, `useXInterface`, model, card, collection-manager, dashboard, or console seams as alignment clues
+  - when a new reusable pattern is discovered, update `docs/fireux-canon.md` and the relevant `fireux-docs` runtime concept/branch doc
 - Keep changes small and localized.
 - Prefer automation and repeatability.
 - Never exfiltrate secrets; use environment variables.

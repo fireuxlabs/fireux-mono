@@ -39,7 +39,7 @@ export namespace ProfessionalCard {
 }
 
 export function useProfessionalInterface(
-  profile?: ProfileRefs<Professional> | null,
+  profileRefs?: ProfileRefs<Professional> | null,
   userRef?: Ref<UserLike | null | undefined>
 ) {
   type ProfessionalPill = ProfessionalCard.Card
@@ -64,7 +64,7 @@ export function useProfessionalInterface(
     target?: ProfessionalTarget | null | undefined,
     userOverride?: UserLike | null
   ): ProfessionalCard.Card | null {
-    const p = target ?? profile?.coreProfile?.value ?? null
+    const p = target ?? profileRefs?.coreProfile?.value ?? null
     if (!p) return null
 
     const user = target?.user ?? userOverride ?? userRef?.value ?? null

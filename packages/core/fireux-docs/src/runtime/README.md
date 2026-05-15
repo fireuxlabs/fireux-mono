@@ -1,7 +1,7 @@
 # Runtime Directory
 
 Authority: Operational
-Updated: 2026-04-17
+Updated: 2026-05-15
 Scope: `packages/*/fireux-*/src/runtime` only.
 Does not apply to consuming app `app/`, `server/`, or root `public/` directories.
 
@@ -107,6 +107,7 @@ This is the key FireUX addition to the plain Nuxt runtime spine.
 Current examples:
 
 - `concepts/dashboard-canon.md`
+- `concepts/demo-data-canon.md`
 - `concepts/create/`
 - `concepts/connect/`
 - `concepts/read/`

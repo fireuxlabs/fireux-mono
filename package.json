@@ -55,6 +55,7 @@
     "gen:cta-innards": "node scripts/generate-cta-innards.mjs",
     "gen:cta-trees": "node scripts/generate-cta-parent-trees.mjs",
     "audit:app-media": "node scripts/audit-app-media.mjs",
+    "audit:usex": "node scripts/audit-usex-stack.mjs",
     "list:app-media-trash": "node scripts/list-app-media-trash.mjs",
     "delete:app-media-trash": "node scripts/delete-app-media-trash.mjs",
     "delete:app-media-folders": "node scripts/delete-app-media-folders.mjs",

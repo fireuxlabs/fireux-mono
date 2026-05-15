@@ -1,7 +1,7 @@
 # Stacks Concept
 
 Authority: Operational
-Updated: 2026-04-18
+Updated: 2026-05-15
 Scope: FireUX entity-stack meaning across `models/`, `composables/`, `components/`, `pages/`, `server/`, and docs.
 
 This page documents the FireUX `stacks` concept.
@@ -51,6 +51,68 @@ It should not replace:
 - shared lower docs such as CRUD notes when those are reused across stacks
 
 Instead, it should connect them.
+
+## Pattern-First Rule
+
+Before adding an entity-specific file, route, or composable, ask which existing stack family it belongs to.
+
+The default expectation is deliberate repetition:
+
+```text
+XModel          stores truth
+useXFetch      reads one
+useXCollection reads many
+useXInterface  shapes UI
+useXCreate     creates
+useXUpdate     patches
+useXDelete     removes
+useXEnsure     bootstraps
+useXConsole    selects and operates a workspace
+dashboard      manages identity/profile extensions
+```
+
+The surrounding runtime surfaces then follow the same family:
+
+- collection manager surfaces through the entity's organism collection manager when a browse/manage UI exists
+- card/profile surfaces through the shared `Pill`, `Cell`, `Preview`, and `Profile` vocabulary where useful
+- console adapters only for workspace/console entities
+- dashboard/profile routes only for signed-in user identity and profile-extension work
+
+Missing seams are alignment clues. They should usually prompt a small shared stack cleanup before app-local invention.
+
+If a new repeated pattern appears, promote it into `docs/fireux-canon.md` and the relevant stack/concept doc before it spreads as copy-paste.
+
+Use `pnpm audit:usex` to print a report-only map of current `useX` stack seams. The audit is intentionally non-blocking while existing entity stacks are being normalized.
+
+## Mode Matrix
+
+The same stack DNA can appear in different modes. Do not force every mode to have every seam.
+
+| Mode | What it means | Expected stack shape | Current examples |
+| --- | --- | --- | --- |
+| Root entity | Canonical stored thing | model, fetch-one, collection-many, interface, writes where allowed, collection/card surfaces where browsable | `App`, `Blog`, `Chef`, `Company`, `Dish`, `Ecosystem`, `Job`, `Kitchen`, `Portfolio`, `Product`, `Professional`, `Recipe`, `Supplier`, `User` |
+| Console workspace entity | Root entity that can be selected and operated | root stack plus console selection/runtime surfaces | `Kitchen`, `Supplier`, `Portfolio`, `Project` |
+| Identity/profile capability | Something a signed-in user can be or manage about themself | dashboard/profile routes and profile create/update/ensure; no console family by default | `Professional`, `Chef`, `Agent`, base `Profile` |
+| App membership overlay | App-specific membership and capability for a user | app-user collection/update helpers and membership UI; not a root entity stack | `AppUser` |
+| Scoped child entity | Operational record owned by a parent entity/workspace | parent-aware collection/fetch/writes; interface/card surfaces only where useful | `Task`, `Document`, `Compliance`, `PropertyUnit`, `PortfolioTask`, `PortfolioDocument`, `KitchenMise`, `KitchenOrder` |
+| Root plus scoped usage | Root truth linked into a workspace by a scoped usage record | root collection/interface plus scoped relationship helper | `Ingredient` root plus `KitchenIngredient` usage records |
+| System/adapter seam | Runtime helper around stack behaviour, not a stored domain entity | ensure/selection/adapter helpers; no full entity UI stack required | `Console`, `Firestore`, selection helpers |
+
+## Create And Edit Modes
+
+CRUD uses shared Firestore primitives, but user-facing create/edit flows are allowed to differ by mode.
+
+| Mode | What it means | Current examples |
+| --- | --- | --- |
+| `quick-create` | Small form creates a real record immediately | `Company`, `Place`, `Ingredient`, simple profile/entity creates |
+| `ensure-create` | Bootstrap/setup-if-missing and safe to rerun | `User`, `Profile`, `App`, `Ecosystem`, console target setup where canon allows |
+| `draft-preview-create` | Local draft state, preview, then publish/create | `Product` |
+| `onboarding-create` | Multi-step setup that may create an entity plus supporting config/assets | `App`, product onboarding flows |
+| `simple-edit` | One root record is patched through entity update helpers | `Company`, `Place`, `Kitchen`, `Supplier`, `Portfolio`, `Job`, `Blog`, `Dish`, `Recipe` |
+| `split-overlay-edit` | Edit is split because root truth and overlay truth are different records | `User` core/app edit, profile capability edits, root/scoped usage entities |
+| `scoped-console-edit` | Edit happens inside a selected workspace and must carry parent/console context | `Kitchen`, `Supplier`, `Portfolio`, project/portfolio child records |
+
+These modes explain why a stack can be conforming without being identical. A child record or adapter can be healthy with fewer seams if the missing seams are not part of its mode.
 
 ## Canon Terms
 

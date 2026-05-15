@@ -31,10 +31,6 @@ const publicRoutes = appMeta.routes
   .filter((route) => route.kind === 'public')
   .map((route) => route.path)
 
-const consoleRoutes = appMeta.routes
-  .filter((route) => route.kind === 'console')
-  .map((route) => route.path)
-
 const dashboardRoutes = appMeta.routes
   .filter((route) => route.kind === 'dashboard')
   .map((route) => route.path)
@@ -111,6 +107,6 @@ export const metaContent = defineFireuxMeta({
   routes: {
     public: publicRoutes,
     dashboard: dashboardRoutes,
-    console: consoleRoutes,
+    console: [],
   },
 })

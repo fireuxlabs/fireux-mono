@@ -226,6 +226,7 @@
 import { computed, reactive, ref } from 'vue'
 import type { DemoSeoLeadDraft } from '../../../../../../demo/find-my-seo.demo'
 import { demoSeoCaseStudiesForProvider, demoSeoProviderLabel, findDemoSeoProviderBySlug } from '../../../../../../demo/find-my-seo.demo'
+import { useFindMySeoLeads } from '../../composables/useFindMySeoLeads'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))

@@ -4,6 +4,7 @@
 // Professional identity fields intentionally mirror fireux-jobs Professional.
 
 import type { Professional } from 'fireux-jobs/runtime/models/profiles/Professional/Professional.model'
+import { demoUserList } from './user.demo'
 
 export type DemoSeoProviderEntityType = 'professional'
 export type DemoSeoProviderType = 'consultant' | 'agency'
@@ -34,12 +35,11 @@ export type DemoSeoProfessionalCollectionEntry = Professional & {
 
 export type DemoSeoProviderBase = {
   id: string
+  userId: string
   entityType: DemoSeoProviderEntityType
   providerType: DemoSeoProviderType
   slug: string
-  displayName: string
   brandName?: string
-  avatarUrl?: string
   logoUrl?: string
   headline: string
   summary: string
@@ -70,6 +70,15 @@ export type DemoSeoProviderBase = {
 export type DemoSeoProfessionalProvider = DemoSeoProviderBase & {
   entityType: 'professional'
   professionalId: string
+  displayName: string
+  avatarUrl: string
+  user: {
+    id: string
+    display_name: string
+    avatar: string
+    handle: string
+    email: string
+  }
   professional: DemoSeoProfessionalProfile
 }
 
@@ -129,33 +138,57 @@ export type DemoSeoLeadDraft = {
 
 export const demoFindMySeoOperatorInboxEmail = 'operator@findmyseo.example'
 
-const demoHumanAvatar = (photoId: string) =>
-  `https://images.unsplash.com/photo-${photoId}?auto=format&fit=crop&w=240&q=80`
-
 const demoProviderLogo = (seed: string) =>
   `https://api.dicebear.com/9.x/shapes/svg?seed=${encodeURIComponent(`find-my-seo-${seed}`)}`
+
+const demoUsersById = new Map(demoUserList.map((user) => [user.id, user]))
+
+const requireDemoUser = (userId: string) => {
+  const user = demoUsersById.get(userId)
+  if (!user) {
+    throw new Error(`[find-my-seo.demo] Missing shared demo user: ${userId}`)
+  }
+  return user
+}
 
 const resolveDemoSeoProviderLabel = (provider: Pick<DemoSeoProvider, 'providerType'>) =>
   provider.providerType === 'agency' ? 'Agency' : 'Consultant'
 
-const toDemoProfessionalProfile = (provider: DemoSeoProviderSeed): DemoSeoProfessionalProfile => ({
+const toDemoProfessionalProfile = (
+  provider: DemoSeoProviderSeed,
+  user: ReturnType<typeof requireDemoUser>
+): DemoSeoProfessionalProfile => ({
   id: provider.id,
   title: provider.headline,
   subtitle: provider.locationLabel,
   tagline: provider.pricingGuidance,
   summary: provider.summary,
   bio: provider.bio,
-  image: provider.avatarUrl || provider.logoUrl || '',
+  image: user.avatar || provider.logoUrl || '',
   positions: provider.specialisms,
   tags: [...provider.specialisms, ...provider.sectorExperience],
 })
 
-const toDemoSeoProvider = (provider: DemoSeoProviderSeed): DemoSeoProvider => ({
-  ...provider,
-  entityType: 'professional',
-  professionalId: provider.id,
-  professional: toDemoProfessionalProfile(provider),
-})
+const toDemoSeoProvider = (provider: DemoSeoProviderSeed): DemoSeoProvider => {
+  const user = requireDemoUser(provider.userId)
+
+  return {
+    ...provider,
+    entityType: 'professional',
+    professionalId: provider.id,
+    displayName: user.display_name,
+    avatarUrl: user.avatar,
+    contactEmail: provider.contactEmail || user.email,
+    user: {
+      id: user.id,
+      display_name: user.display_name,
+      avatar: user.avatar,
+      handle: user.handle,
+      email: user.email,
+    },
+    professional: toDemoProfessionalProfile(provider, user),
+  }
+}
 
 const demoStamp = {
   at: {} as Professional['created']['at'],
@@ -190,10 +223,10 @@ const toDemoSeoProfessionalEntry = (
   created: demoStamp,
   updated: demoStamp,
   user: {
-    id: provider.id,
-    display_name: provider.displayName,
-    avatar: provider.avatarUrl || provider.logoUrl || '',
-    handle: provider.slug,
+    id: provider.user.id,
+    display_name: provider.user.display_name,
+    avatar: provider.user.avatar,
+    handle: provider.user.handle,
   },
   seoProvider: provider,
 })
@@ -201,12 +234,11 @@ const toDemoSeoProfessionalEntry = (
 const demoSeoProviderSeeds: DemoSeoProviderSeed[] = [
   {
     id: 'professional-alex-mercer',
+    userId: 'demo-user-seo-alex',
     entityType: 'professional',
     providerType: 'consultant',
     slug: 'alex-mercer-technical-seo',
-    displayName: 'Alex Mercer',
     brandName: 'Mercer Search',
-    avatarUrl: demoHumanAvatar('1528892952291-009c663ce843'),
     logoUrl: demoProviderLogo('mercer-search'),
     headline: 'Technical SEO consultant for replatforming and recovery work',
     summary:
@@ -245,12 +277,11 @@ const demoSeoProviderSeeds: DemoSeoProviderSeed[] = [
   },
   {
     id: 'professional-nina-shaw',
+    userId: 'demo-user-seo-nina',
     entityType: 'professional',
     providerType: 'consultant',
     slug: 'nina-shaw-content-seo',
-    displayName: 'Nina Shaw',
     brandName: 'Shaw Organic',
-    avatarUrl: demoHumanAvatar('1544723795-3fb6469f5b39'),
     logoUrl: demoProviderLogo('shaw-organic'),
     headline: 'Content-led SEO strategist for editorial and category growth',
     summary:
@@ -289,12 +320,11 @@ const demoSeoProviderSeeds: DemoSeoProviderSeed[] = [
   },
   {
     id: 'professional-sera-james',
+    userId: 'demo-user-seo-sera',
     entityType: 'professional',
     providerType: 'agency',
     slug: 'sera-james-serpforged-b2b-seo',
-    displayName: 'Sera James',
     brandName: 'SERP Forged',
-    avatarUrl: demoHumanAvatar('1573496359142-b8d87734a5a2'),
     logoUrl: demoProviderLogo('serp-forged'),
     headline: 'B2B SEO agency lead for pipeline-focused SaaS and demand generation teams',
     summary:
@@ -333,12 +363,11 @@ const demoSeoProviderSeeds: DemoSeoProviderSeed[] = [
   },
   {
     id: 'professional-imogen-ward',
+    userId: 'demo-user-seo-imogen',
     entityType: 'professional',
     providerType: 'agency',
     slug: 'imogen-ward-canvas-growth-ecommerce-seo',
-    displayName: 'Imogen Ward',
     brandName: 'Canvas Growth',
-    avatarUrl: demoHumanAvatar('1551836022-d5d88e9218df'),
     logoUrl: demoProviderLogo('canvas-growth'),
     headline: 'eCommerce SEO agency lead for category growth, merchandising, and technical clean-up',
     summary:
@@ -377,12 +406,11 @@ const demoSeoProviderSeeds: DemoSeoProviderSeed[] = [
   },
   {
     id: 'professional-maya-reeves',
+    userId: 'demo-user-seo-maya',
     entityType: 'professional',
     providerType: 'consultant',
     slug: 'maya-reeves-local-seo',
-    displayName: 'Maya Reeves',
     brandName: 'Map Pack Studio',
-    avatarUrl: demoHumanAvatar('1494790108377-be9c29b29330'),
     logoUrl: demoProviderLogo('map-pack-studio'),
     headline: 'Local SEO specialist for service businesses and multi-location brands',
     summary:
@@ -421,12 +449,11 @@ const demoSeoProviderSeeds: DemoSeoProviderSeed[] = [
   },
   {
     id: 'professional-omar-haddad',
+    userId: 'demo-user-seo-omar',
     entityType: 'professional',
     providerType: 'consultant',
     slug: 'omar-haddad-international-seo',
-    displayName: 'Omar Haddad',
     brandName: 'Borderless Search',
-    avatarUrl: demoHumanAvatar('1506794778202-cad84cf45f1d'),
     logoUrl: demoProviderLogo('borderless-search'),
     headline: 'International SEO consultant for multilingual and multi-market sites',
     summary:
@@ -465,12 +492,11 @@ const demoSeoProviderSeeds: DemoSeoProviderSeed[] = [
   },
   {
     id: 'professional-ella-priest',
+    userId: 'demo-user-seo-ella',
     entityType: 'professional',
     providerType: 'consultant',
     slug: 'ella-priest-digital-pr',
-    displayName: 'Ella Priest',
     brandName: 'Signal PR',
-    avatarUrl: demoHumanAvatar('1534528741775-53994a69daeb'),
     logoUrl: demoProviderLogo('signal-pr'),
     headline: 'Digital PR and link building specialist for authority-led SEO',
     summary:
@@ -509,12 +535,11 @@ const demoSeoProviderSeeds: DemoSeoProviderSeed[] = [
   },
   {
     id: 'professional-josh-tan',
+    userId: 'demo-user-seo-josh',
     entityType: 'professional',
     providerType: 'consultant',
     slug: 'josh-tan-shopify-seo',
-    displayName: 'Josh Tan',
     brandName: 'Shop Rank Lab',
-    avatarUrl: demoHumanAvatar('1500648767791-00dcc994a43e'),
     logoUrl: demoProviderLogo('shop-rank-lab'),
     headline: 'Shopify SEO expert for growing DTC and retail stores',
     summary:
@@ -553,12 +578,11 @@ const demoSeoProviderSeeds: DemoSeoProviderSeed[] = [
   },
   {
     id: 'professional-priya-narayan',
+    userId: 'demo-user-seo-priya',
     entityType: 'professional',
     providerType: 'consultant',
     slug: 'priya-narayan-wordpress-seo',
-    displayName: 'Priya Narayan',
     brandName: 'WP Search Works',
-    avatarUrl: demoHumanAvatar('1517841905240-472988babdf9'),
     logoUrl: demoProviderLogo('wp-search-works'),
     headline: 'WordPress SEO consultant for publishers, services, and content-heavy sites',
     summary:
@@ -597,12 +621,11 @@ const demoSeoProviderSeeds: DemoSeoProviderSeed[] = [
   },
   {
     id: 'professional-leon-keller',
+    userId: 'demo-user-seo-leon',
     entityType: 'professional',
     providerType: 'agency',
     slug: 'leon-keller-bright-crawl-technical-seo',
-    displayName: 'Leon Keller',
     brandName: 'Bright Crawl',
-    avatarUrl: demoHumanAvatar('1519085360753-af0119f7cbe7'),
     logoUrl: demoProviderLogo('bright-crawl'),
     headline: 'Technical SEO agency lead for enterprise audits, migrations, and governance',
     summary:
