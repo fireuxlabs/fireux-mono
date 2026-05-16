@@ -4,12 +4,24 @@ export const buenoHostProductSentence = 'Guest guides for holiday homes, short-s
 
 export const buenoHostRoutes = [
   { label: 'Home', path: '/', kind: 'public' },
-  { label: 'Alpine View Property', path: '/properties/alpine-view-apartment', kind: 'public' },
-  { label: 'Alpine View Guest Guide', path: '/properties/alpine-view-apartment/guide', kind: 'public' },
-  { label: 'Alpine View Wi-Fi', path: '/properties/alpine-view-apartment/guide/wifi', kind: 'public' },
+  { label: 'Property page', path: '/properties/:slug', kind: 'public_pattern' },
+  { label: 'Guest guide', path: '/properties/:slug/guide', kind: 'public_pattern' },
+  { label: 'Guest guide topic', path: '/properties/:slug/guide/:sectionId', kind: 'public_pattern' },
   { label: 'Properties', path: '/console/portfolio/properties', kind: 'console' },
   { label: 'Host Dashboard', path: '/console/portfolio', kind: 'console' },
 ] as const
+
+const publicRoutes = buenoHostRoutes
+  .filter((route) => route.kind === 'public')
+  .map((route) => route.path)
+
+const publicRoutePatterns = buenoHostRoutes
+  .filter((route) => route.kind === 'public_pattern')
+  .map((route) => route.path)
+
+const consoleRoutes = buenoHostRoutes
+  .filter((route) => route.kind === 'console')
+  .map((route) => route.path)
 
 export const metaContent = defineFireuxMeta({
   app: {
@@ -54,12 +66,12 @@ export const metaContent = defineFireuxMeta({
   },
   cta: {
     primary: {
-      label: 'View sample guide',
-      to: '/properties/alpine-view-apartment/guide',
+      label: 'Open host dashboard',
+      to: '/console/portfolio',
     },
     secondary: {
-      label: 'View demo property',
-      to: '/properties/alpine-view-apartment',
+      label: 'View properties',
+      to: '/console/portfolio/properties',
     },
     console: {
       label: 'View properties',
@@ -104,7 +116,8 @@ Property
 
 `,
   routes: {
-    public: buenoHostRoutes.filter((route) => route.kind === 'public').map((route) => route.path),
-    console: buenoHostRoutes.filter((route) => route.kind === 'console').map((route) => route.path),
+    public: publicRoutes,
+    public_patterns: publicRoutePatterns,
+    console: consoleRoutes,
   },
 })

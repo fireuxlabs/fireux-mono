@@ -1,6 +1,6 @@
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 import { defineNuxtConfig } from 'nuxt/config'
-import { metaContent } from './app/content/meta'
+import { metaContent } from './app/meta'
 
 const fireuxConfig = defineFireuxConfig({
   ecosystem: 'fireux',

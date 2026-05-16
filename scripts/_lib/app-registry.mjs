@@ -164,9 +164,9 @@ export const APP_REGISTRY = {
     smokeRoutes: [
       '/',
       '/chat',
-      '/properties/alpine-view-apartment',
-      '/properties/alpine-view-apartment/guide',
-      '/properties/alpine-view-apartment/guide/wifi',
+      '/properties/holiday-with-nats',
+      '/properties/holiday-with-nats/guide',
+      '/properties/holiday-with-nats/guide/wifi',
       '/console/portfolio',
     ],
     launchOrder: 10,

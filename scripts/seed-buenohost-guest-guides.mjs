@@ -17,7 +17,7 @@
 import { readFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { cert, initializeApp } from 'firebase-admin/app'
+import { cert, deleteApp, initializeApp } from 'firebase-admin/app'
 import { Timestamp, getFirestore } from 'firebase-admin/firestore'
 import { parseArgs } from './_lib/args.mjs'
 
@@ -28,6 +28,65 @@ const PROJECT_ID = 'fireux-2005'
 const DATABASE_ID = 'buenohost'
 const ACTOR = 'system:seed-buenohost-guest-guides'
 const APP_ID = 'buenohost'
+
+const holidayWithNatsSourceNotes = [
+  {
+    id: 'ask-nat-check-in-time',
+    status: 'needs_source_confirmation',
+    owner: 'natalie',
+    field: 'arrival.check_in_time',
+    note: 'House Manual 2019.docx does not state a check-in time.',
+  },
+  {
+    id: 'ask-nat-arrival-building-entry',
+    status: 'needs_source_confirmation',
+    owner: 'natalie',
+    field: 'arrival.entry_steps',
+    note: 'House Manual 2019.docx does not give exact arrival or building entry steps.',
+  },
+  {
+    id: 'ask-nat-key-safe-current',
+    status: 'needs_source_confirmation',
+    owner: 'natalie',
+    field: 'keys.safe_location_and_code',
+    note: 'House Manual 2019.docx says guests can use the key safe box and code 2020, but the exact location and whether the code is still current must be confirmed.',
+  },
+  {
+    id: 'ask-nat-wifi-current',
+    status: 'needs_source_confirmation',
+    owner: 'natalie',
+    field: 'wifi.credentials',
+    note: 'House Manual 2019.docx lists Wi-Fi as Penthouse / penthouse2020; confirm this is still current before live use.',
+  },
+  {
+    id: 'ask-nat-key-return',
+    status: 'needs_source_confirmation',
+    owner: 'natalie',
+    field: 'checkout.key_return',
+    note: 'House Manual 2019.docx says to leave the key back where guests found it; confirm the exact checkout key return instruction.',
+  },
+  {
+    id: 'ask-nat-public-contact-safety',
+    status: 'needs_source_confirmation',
+    owner: 'natalie',
+    field: 'property.public_contact',
+    note: 'Confirm whether the phone, email, and address from House Manual 2019.docx are safe to show in a public demo or live public page.',
+  },
+  {
+    id: 'ask-nat-local-recommendations',
+    status: 'needs_source_confirmation',
+    owner: 'natalie',
+    field: 'local_area.recommendations',
+    note: 'House Manual 2019.docx includes bike rentals and grocery shopping, but no restaurant or things-to-do recommendations beyond those. Ask Nat if she wants to add any.',
+  },
+  {
+    id: 'ask-nat-parking-detail',
+    status: 'needs_source_confirmation',
+    owner: 'natalie',
+    field: 'parking.detail',
+    note: 'House Manual 2019.docx says underground parking and temporary visitor parking are available, but does not give a bay number or garage access detail.',
+  },
+]
 
 const holidayWithNats = {
   id: 'holiday-with-nats',
@@ -49,6 +108,7 @@ const holidayWithNats = {
   privacy_note:
     'Local proof content from the source manual. Phone and email should be confirmed before public deployment.',
   footer: 'Powered by BuenoHost.',
+  source_notes: holidayWithNatsSourceNotes,
   standard_topic_ids: [
     'emergency',
     'wifi',
@@ -84,6 +144,7 @@ const holidayWithNats = {
       phone: '+41 78 604 69 00',
       email: 'bookwithnats@gmail.com',
       source: 'House Manual 2019.docx',
+      notes: holidayWithNatsSourceNotes,
     },
   ],
   pages: [
@@ -409,9 +470,13 @@ async function main() {
     privacy_note: holidayWithNats.privacy_note,
     footer: holidayWithNats.footer,
     standard_topic_ids: holidayWithNats.standard_topic_ids,
+    standard_topic_ids_note:
+      'Standard topic IDs describe the BuenoHost section library. Use sourced_topic_ids and section documents for facts actually present in the source manual.',
+    sourced_topic_ids: guidePage.sections.map((section) => section.id),
+    source_notes: holidayWithNats.source_notes,
     source: {
       kind: 'static-proof',
-      file: 'projects/fireux/buenohost/app/demo/guestGuides.ts',
+      file: 'scripts/seed-buenohost-guest-guides.mjs',
       original_file: 'House Manual 2019.docx',
     },
     updated: stamp(now),
@@ -424,6 +489,7 @@ async function main() {
     page_type: guidePage.page_type,
     language: guidePage.language,
     section_order: guidePage.sections.map((section) => section.id),
+    source_notes: holidayWithNats.source_notes,
     updated: stamp(now),
   }
 
@@ -463,13 +529,19 @@ async function main() {
     writes: writes.length,
   })
 
-  for (const write of writes) {
-    if (!commit) {
+  if (!commit) {
+    for (const write of writes) {
       console.log('[dry-run] set', write.ref.path, write.patch)
-      continue
     }
-    await write.ref.set(write.patch, { merge: true })
+  } else {
+    const batch = db.batch()
+    for (const write of writes) {
+      batch.set(write.ref, write.patch, { merge: true })
+    }
+    await batch.commit()
   }
+
+  await deleteApp(adminApp)
 
   console.log('[seed] complete', {
     commit,

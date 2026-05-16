@@ -20,7 +20,7 @@
 
             <div class="flex flex-wrap justify-center gap-3">
               <UButton
-                to="/properties/alpine-view-apartment/guide"
+                to="/properties/holiday-with-nats/guide"
                 color="primary"
                 icon="i-lucide-qr-code"
               >
@@ -39,7 +39,7 @@
           <NuxtLink
             :to="demoGuidePath"
             class="mx-auto block max-w-3xl rounded-lg border border-default bg-muted/30 p-4 text-left transition hover:-translate-y-0.5 hover:shadow-lg"
-            aria-label="Open the Alpine View guest guide"
+            aria-label="Open the Holiday with Nats guest guide"
           >
             <div class="grid gap-5 md:grid-cols-[minmax(0,1fr)_18rem] md:items-center">
               <div class="space-y-4 px-1 sm:px-4">
@@ -56,13 +56,13 @@
 
                 <div class="space-y-2">
                   <p class="text-sm font-medium text-primary">
-                    Alpine View Apartment
+                    Penthouse Holiday Apartment
                   </p>
                   <h2 class="text-2xl font-semibold tracking-normal text-highlighted">
                     Scan once. Get everything about your stay.
                   </h2>
                   <p class="max-w-xl text-sm text-muted">
-                    The QR opens a mobile guide with arrival details, WiFi, house rules, checkout and local notes.
+                    The QR opens a mobile guide with WiFi, keys, house rules, checkout and local notes from the manual.
                   </p>
                 </div>
 
@@ -84,7 +84,7 @@
                     <img
                       v-if="qrDataUrl"
                       :src="qrDataUrl"
-                      alt="QR code for the Alpine View guest guide"
+                      alt="QR code for the Holiday with Nats guest guide"
                       class="size-60 sm:size-64"
                     >
                     <div
@@ -145,7 +145,7 @@
 import { toDataURL } from 'qrcode'
 import { onMounted, ref } from '#imports'
 
-const demoGuidePath = '/properties/alpine-view-apartment/guide'
+const demoGuidePath = '/properties/holiday-with-nats/guide'
 const qrTargetUrl = ref('')
 const qrDataUrl = ref('')
 const heroPoints = [
@@ -155,9 +155,9 @@ const heroPoints = [
 ]
 const guideTopics = [
   'WiFi',
-  'Check-in',
-  'Parking',
+  'Keys',
   'Checkout',
+  'Safety',
 ]
 const features = [
   {

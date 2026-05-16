@@ -31,7 +31,7 @@ Read at least these before adding files:
 
 - `projects/<ecosystem>/<existing-app>/nuxt.config.ts`
 - `projects/<ecosystem>/<existing-app>/package.json`
-- `projects/<ecosystem>/<existing-app>/app/content/meta.ts`
+- `projects/<ecosystem>/<existing-app>/app/meta.ts` for current apps, or legacy `app/content/meta.ts` if the app has not been aligned yet
 - `projects/<ecosystem>/<existing-app>/app/pages/**`
 - `packages/ecosystem/fireux-<ecosystem>/src/module.ts`
 - `scripts/_lib/app-registry.mjs`
@@ -67,7 +67,7 @@ A thin first-class app usually needs:
 - `app/app.vue`
 - `app/app.config.ts`
 - `app/error.vue`
-- `app/content/meta.ts`
+- `app/meta.ts`
 - `app/pages/index.vue`
 - any public pages under `app/pages/**`
 - any server routes under `server/api/**`
@@ -87,6 +87,8 @@ Use `defineFireuxConfig(...)` in `nuxt.config.ts`. The important identity fields
 - `seo.siteUrl` when known
 
 App id is stable kebab-case. Display names can change; ids should not drift.
+
+App `app/meta.ts` is identity and product metadata, not demo data. Do not list concrete demo entity routes there, such as `/properties/holiday-with-nats` or `/professionals/demo-person`. Put demo records in `app/demo/*`, and put concrete demo smoke routes in `scripts/_lib/app-registry.mjs`.
 
 ## Registration Checklist
 
@@ -408,7 +410,7 @@ The generator should:
 
 - create the app folder from an existing template
 - write `defineFireuxConfig(...)`
-- add `app/content/meta.ts`
+- add `app/meta.ts`
 - add minimal pages
 - add `server/api/fireux-console.get.ts` only if still needed for that app class
 - update `projects/tsconfig.json`

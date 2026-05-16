@@ -295,7 +295,7 @@
       <p class="text-muted">
         This guide is not available in BuenoHost.
       </p>
-      <UButton to="/properties/alpine-view-apartment" color="primary" variant="soft">
+      <UButton to="/properties/holiday-with-nats" color="primary" variant="soft">
         Back to properties
       </UButton>
     </div>
