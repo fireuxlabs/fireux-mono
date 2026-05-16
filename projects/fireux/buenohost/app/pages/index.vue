@@ -8,7 +8,7 @@
           </UBadge>
 
           <div class="space-y-4">
-            <h1 class="max-w-4xl text-4xl font-semibold tracking-normal text-highlighted sm:text-5xl lg:text-6xl">
+            <h1 class="max-w-5xl text-5xl font-semibold leading-tight tracking-normal text-highlighted sm:text-6xl lg:text-7xl">
               The digital stay companion for your guests.
             </h1>
             <p class="max-w-2xl text-lg text-muted">
@@ -96,9 +96,6 @@
                     </UBadge>
                   </div>
 
-                  <p class="text-sm text-slate-600">
-                    No app install. Always up to date.
-                  </p>
                 </div>
               </NuxtLink>
             </div>
@@ -147,6 +144,9 @@
               </div>
 
               <div class="mt-auto space-y-3">
+                <h4 class="font-medium text-highlighted">
+                  Try before you buy
+                </h4>
                 <p class="text-sm text-muted">
                   Upload your current welcome document. We’ll turn it into a hosted guest URL with a QR code.
                 </p>
@@ -170,6 +170,48 @@
         aria-label="Pricing"
       >
         <UPricingPlans :plans="pricingPlans" />
+      </section>
+
+      <section
+        class="space-y-6"
+        aria-labelledby="host-console-demo"
+      >
+        <div class="max-w-2xl space-y-2">
+          <UButton
+            id="host-console-demo"
+            to="/console/portfolio"
+            size="xl"
+            variant="subtle"
+            color="primary"
+            icon="i-lucide-circle-play"
+          >
+            Demo the host console
+          </UButton>
+          <p class="text-muted">
+            The BuenoHost console lets you manage standard sections, add custom information, tailor welcomes and publish changes to your QR-linked guest pages.
+          </p>
+        </div>
+
+        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <UCard
+            v-for="feature in consoleFeatures"
+            :key="feature.title"
+            variant="subtle"
+          >
+            <div class="space-y-3">
+              <UIcon :name="feature.icon" class="size-6 text-primary" />
+              <div>
+                <h3 class="font-semibold text-highlighted">
+                  {{ feature.title }}
+                </h3>
+                <p class="mt-1 text-sm text-muted">
+                  {{ feature.description }}
+                </p>
+              </div>
+            </div>
+          </UCard>
+        </div>
+
       </section>
     </UPageBody>
   </UPage>
@@ -232,7 +274,7 @@ const pricingPlans = [
     title: 'BuenoHost',
     description: 'Includes your first property and two room QR codes.',
     price: '£10',
-    billingPeriod: '/month',
+    billingPeriod: '/ month',
     highlight: true,
     scale: true,
     features: [
@@ -253,9 +295,9 @@ const pricingPlans = [
   {
     id: 'extra-properties',
     title: 'Extra Properties',
-    description: 'For additional apartments, houses, holiday stays, tenant properties or buildings.',
+    description: 'Add additional properties to the same console.',
     price: '+ £5',
-    billingPeriod: '/month each',
+    billingPeriod: '/ month',
     features: [
       'Increase your portfolio',
       'Separate URLs and QR codes',
@@ -264,7 +306,7 @@ const pricingPlans = [
       'Portfolio overview',
     ],
     button: {
-      label: 'Add another property',
+      label: 'Add additional property',
       to: '#upload',
       color: 'neutral',
       variant: 'soft',
@@ -273,10 +315,10 @@ const pricingPlans = [
   },
   {
     id: 'room-qr-codes',
-    title: 'Room QR Codes',
-    description: 'For room-specific QR codes, room notes or different instructions inside the same property.',
-    price: 'from £2',
-    billingPeriod: '/month each',
+    title: 'Extra rooms',
+    description: 'Add additional rooms to your properties.',
+    price: '+ £2',
+    billingPeriod: '/ month',
     features: [
       'Room-specific QR codes',
       'Room notes and instructions',
@@ -285,12 +327,35 @@ const pricingPlans = [
       'Useful for guesthouses and shared stays',
     ],
     button: {
-      label: 'Add room QR codes',
+      label: 'Add additional Room',
       to: '#upload',
       color: 'neutral',
       variant: 'soft',
       trailingIcon: 'i-lucide-arrow-right',
     },
+  },
+] as const
+
+const consoleFeatures = [
+  {
+    title: 'Out of the box',
+    description: 'Start with ready-made sections for welcome, check-in, emergency and local guide information.',
+    icon: 'i-lucide-layout-list',
+  },
+  {
+    title: 'Create your own',
+    description: 'Tailor your manual with custom sections for anything your property, building or room needs.',
+    icon: 'i-lucide-square-plus',
+  },
+  {
+    title: 'Welcome',
+    description: 'Set the first message guests see with arrival notes, Wi-Fi, host contact and key first steps.',
+    icon: 'i-lucide-message-square-heart',
+  },
+  {
+    title: 'Publish',
+    description: 'Push new information to your QR code without reprinting the manual.',
+    icon: 'i-lucide-qr-code',
   },
 ] as const
 
