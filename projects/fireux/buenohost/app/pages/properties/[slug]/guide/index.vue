@@ -28,7 +28,7 @@
 
         <div class="grid gap-3 sm:flex sm:flex-wrap">
           <UButton :href="`tel:${phoneHref}`" icon="i-lucide-phone" color="primary" block class="sm:w-auto">
-            Call Natalie
+            Call {{ resolvedGuide.property.manager }}
           </UButton>
           <UButton :href="`mailto:${resolvedGuide.property.email}`" icon="i-lucide-mail" color="neutral" variant="soft" block class="sm:w-auto">
             Email
@@ -295,7 +295,7 @@
       <p class="text-muted">
         This guide is not available in BuenoHost.
       </p>
-      <UButton to="/properties/holiday-with-nats" color="primary" variant="soft">
+      <UButton to="/properties/demo-stay" color="primary" variant="soft">
         Back to properties
       </UButton>
     </div>

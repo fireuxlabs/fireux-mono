@@ -92,7 +92,7 @@ Property
     -> GuestMessage
 
 `,
-} as const
+}
 
 export const metaContent = defineFireuxMeta({
   app: {

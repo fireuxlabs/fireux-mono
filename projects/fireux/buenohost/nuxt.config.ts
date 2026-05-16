@@ -26,7 +26,11 @@ export default defineNuxtConfig({
     ...fireuxRuntimeConfig,
     public: {
       ...fireuxPublicRuntimeConfig,
+      fireuxBaseUrl: process.env.NUXT_PUBLIC_FIREUX_BASE_URL || '',
+      miseboxBaseUrl: process.env.NUXT_PUBLIC_MISEBOX_BASE_URL || '',
+      cleanboxBaseUrl: process.env.NUXT_PUBLIC_CLEANBOX_BASE_URL || '',
       sproochliBaseUrl: process.env.NUXT_PUBLIC_SPROOCHLI_BASE_URL || '',
+      findMySeoBaseUrl: process.env.NUXT_PUBLIC_FIND_MY_SEO_BASE_URL || '',
     },
   },
 })

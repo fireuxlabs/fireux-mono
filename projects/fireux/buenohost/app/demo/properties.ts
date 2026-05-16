@@ -23,6 +23,30 @@ export type DemoBuenoHostPublicProperty = {
 
 export const demoBuenoHostPublicProperties: DemoBuenoHostPublicProperty[] = [
   {
+    id: 'demo-stay',
+    slug: 'demo-stay',
+    guide_slug: 'demo-stay',
+    name: 'Luxurious Mountain Chalet',
+    location_label: 'Example alpine stay',
+    address_display: 'Demo address hidden for public sample',
+    address_mode: 'area',
+    manager_name: 'Demo Host',
+    contact_mode: 'chat',
+    booking_mode: 'enquiry',
+    headline: 'A public sample guest guide for the BuenoHost landing page.',
+    summary:
+      'A fictional alpine property that shows how a house manual becomes a mobile stay companion without exposing a real host or address.',
+    price_hint: 'Demo only',
+    availability_hint: 'Demo only',
+    image_url:
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80',
+    amenities: ['Wi-Fi', 'Guest guide', 'Check-in notes', 'Parking', 'Local guide'],
+    public_notes: [
+      'This is a fictional public sample for product demonstration.',
+      'No real guest, host, address or access details are shown.',
+    ],
+  },
+  {
     id: 'holiday-with-nats',
     slug: 'holiday-with-nats',
     guide_slug: 'holiday-with-nats',

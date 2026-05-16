@@ -383,7 +383,146 @@ export const holidayWithNatsGuestGuide: GuestGuide = {
   ],
 }
 
-export const guestGuides = [holidayWithNatsGuestGuide] as const
+export const demoStayGuestGuide: GuestGuide = {
+  type: 'buenohost-guest-guide',
+  slug: 'demo-stay',
+  property_id: 'demo-stay',
+  language: 'en',
+  title: 'Demo Stay Companion',
+  status: 'demo',
+  translation_ref: {
+    source_app: 'buenohost',
+    document_type: 'guest-guide',
+    document_slug: 'demo-stay',
+    source_language: 'en',
+  },
+  guest_message: {
+    title: 'Welcome to your stay',
+    subtitle: 'Everything useful in one mobile house manual.',
+  },
+  property: {
+    name: 'Luxurious Mountain Chalet',
+    type: 'Guest guide',
+    original_language: 'en',
+    primary_language: 'en',
+    manager: 'Demo Host',
+    phone: '+41 00 000 00 00',
+    email: 'hello@example.invalid',
+    address: 'Example alpine stay',
+  },
+  privacy_note: 'Fictional public sample. No real host, guest, address or access details are shown.',
+  footer: 'Powered by BuenoHost.',
+  sections: [
+    {
+      id: 'welcome',
+      title: 'Welcome',
+      summary: 'Arrival note, Wi-Fi, host contact and first steps.',
+      icon: 'i-lucide-home',
+      priority: true,
+      enabled: true,
+      items: [
+        { value: 'Welcome to Luxurious Mountain Chalet.' },
+        { label: 'Wi-Fi', value: 'DemoStay Guest / demo-stay-2026', tone: 'important' },
+        { label: 'Host contact', value: 'Use the BuenoHost chat button for demo support.' },
+        { value: 'Keep this guide open during your stay for check-in, house rules and local tips.' },
+      ],
+    },
+    {
+      id: 'check-in',
+      title: 'Check-in',
+      summary: 'Arrival, access, keys and settling-in details.',
+      icon: 'i-lucide-key-round',
+      priority: true,
+      enabled: true,
+      items: [
+        { label: 'Arrival', value: 'Check in from 15:00.', tone: 'important' },
+        { label: 'Access', value: 'Use the building entry code shared by your host before arrival.' },
+        { label: 'Keys', value: 'Collect keys from the labelled lockbox beside the apartment door.' },
+        { value: 'Message the host if anything does not match your arrival instructions.' },
+      ],
+    },
+    {
+      id: 'parking',
+      title: 'Parking',
+      summary: 'Where to park and what to avoid.',
+      icon: 'i-lucide-car',
+      priority: true,
+      enabled: true,
+      items: [
+        { value: 'One visitor space is available behind the building.' },
+        { value: 'Do not park in numbered resident bays.' },
+        { value: 'Street parking is available nearby where signed.' },
+      ],
+    },
+    {
+      id: 'checkout',
+      title: 'Checkout',
+      summary: 'Departure steps before leaving.',
+      icon: 'i-lucide-door-open',
+      priority: true,
+      enabled: true,
+      items: [
+        { label: 'Departure', value: 'Check out by 10:00.', tone: 'important' },
+        { value: 'Load used dishes into the dishwasher.' },
+        { value: 'Take rubbish to the marked bins outside.' },
+        { value: 'Return keys to the lockbox and scramble the code.' },
+      ],
+    },
+    {
+      id: 'house-rules',
+      title: 'House Rules',
+      summary: 'Simple rules for a smooth stay.',
+      icon: 'i-lucide-clipboard-check',
+      enabled: true,
+      items: [
+        { value: 'Quiet hours from 22:00.' },
+        { value: 'No smoking inside.' },
+        { value: 'Close windows before leaving the apartment.' },
+        { value: 'Report damage or urgent issues to the host.' },
+      ],
+    },
+    {
+      id: 'apartment-info',
+      title: 'Apartment Guide',
+      summary: 'Useful instructions for heating, appliances and recycling.',
+      icon: 'i-lucide-info',
+      enabled: true,
+      items: [
+        { value: 'Heating controls are in the hallway.' },
+        { value: 'Appliance manuals are stored in the kitchen drawer.' },
+        { value: 'Use labelled bins for rubbish and recycling.' },
+      ],
+    },
+    {
+      id: 'emergency',
+      title: 'Emergency',
+      summary: 'Urgent numbers, medical help and safety equipment.',
+      icon: 'i-lucide-siren',
+      priority: true,
+      enabled: true,
+      items: [
+        { label: 'Emergency services', value: '112', tone: 'important' },
+        { label: 'Host support', value: '+41 00 000 00 00', tone: 'important' },
+        { value: 'First aid kit: kitchen cupboard.' },
+        { value: 'Fire extinguisher: building entrance.' },
+      ],
+    },
+    {
+      id: 'local-information',
+      title: 'Local Guide',
+      summary: 'Shops, transport and nearby recommendations.',
+      icon: 'i-lucide-map-pin',
+      enabled: true,
+      items: [
+        { value: 'Corner shop: 3 minutes on foot.' },
+        { value: 'Train station: 10 minutes on foot.' },
+        { value: 'Coffee and breakfast: ask the host for the current favourite.' },
+      ],
+    },
+  ],
+}
+
+export const guestGuides = [demoStayGuestGuide, holidayWithNatsGuestGuide] as const
 
 export function resolveGuestGuide(slug: string): GuestGuide | null {
   return guestGuides.find((guide) => guide.slug === slug) ?? null
