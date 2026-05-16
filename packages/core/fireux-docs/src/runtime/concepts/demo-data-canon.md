@@ -42,9 +42,36 @@ Use one demo location for one job:
 - `demo/*.demo.ts` is for repo-wide fixtures and reusable view payloads.
 - `packages/*/src/runtime/**/demo-scenarios*` is for package-owned runtime and console scenarios.
 - `projects/<ecosystem>/<app>/app/demo/*.ts` is for app-local demo records.
-- `projects/<ecosystem>/<app>/app/content/*` is for app copy and metadata, not demo records.
+- `projects/<ecosystem>/<app>/app/meta.ts` is for app identity, positioning, product language, SEO language, CTAs, lists, and conceptual entities.
 
-Do not put guest guides, sample info pages, public menus, provider cards, avatars, logos, or entity records in `app/content`.
+Do not put guest guides, sample info pages, public menus, provider cards, avatars, logos, entity records, concrete demo slugs, or smoke routes in app meta.
+
+## Source Evidence Rule
+
+When demo data starts from a real-world source, such as a host manual, the source is evidence.
+
+Do not invent missing fields just because the product shape expects them. If the source lacks check-in time, arrival steps, current Wi-Fi confirmation, parking bay details, or public-contact approval, keep the missing state explicit with source notes or follow-up questions.
+
+Product language can evolve around the idea, but source-backed records must distinguish:
+
+- facts present in the source
+- normalized placement of those facts
+- missing facts to ask for
+- demo-only placeholders
+
+Practical pattern:
+
+```ts
+source_notes: [
+  {
+    id: 'ask-owner-check-in-time',
+    status: 'needs_source_confirmation',
+    owner: 'property-owner',
+    field: 'arrival.check_in_time',
+    note: 'Source manual does not state a check-in time.',
+  },
+]
+```
 
 ## Collection Fetch Rule
 

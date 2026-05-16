@@ -96,6 +96,12 @@ Current learned examples:
   - one short supporting sentence
 - Product landing heroes should use Nuxt UI primitives first. Avoid ecosystem-style module overviews, three-way hero action grids, large bespoke hero visuals, and heavy scoped CSS until the product surface is stable.
 - Product apps must not expose orphan console-family routes. If the app does not have a selected workspace/entity family, use public routes and a personal/provider dashboard instead of adding a console family.
+- App meta is for identity, positioning, product language, SEO language, CTAs, lists, and conceptual entities.
+- App meta must not be used as a route registry or demo route holder.
+- Concrete demo slugs and sample entity routes belong in app-local demo fixtures and smoke tooling, not in app meta.
+- Stable route patterns belong to routing/page canon, app registries, or docs for that app family.
+- Product language should be allowed to evolve independently from demo records and route wiring.
+- Source material from real people, such as a host manual, is evidence. Do not invent missing fields to make it fit a data shape; add source notes and questions instead.
 
 ## Communication Canon
 - Chat, enquiries, leads, and support messages belong to one shared communication engine.

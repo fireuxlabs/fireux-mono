@@ -1,68 +1,44 @@
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 
-export const buenoHostProductSentence = 'Guest guides for holiday homes, short-stay properties, and serviced apartments.'
+export const buenoHostProductSentence =
+  'Digital stay companions for rooms, apartments, holidays, and serviced stays.'
 
-export const buenoHostRoutes = [
-  { label: 'Home', path: '/', kind: 'public' },
-  { label: 'Property page', path: '/properties/:slug', kind: 'public_pattern' },
-  { label: 'Guest guide', path: '/properties/:slug/guide', kind: 'public_pattern' },
-  { label: 'Guest guide topic', path: '/properties/:slug/guide/:sectionId', kind: 'public_pattern' },
-  { label: 'Properties', path: '/console/portfolio/properties', kind: 'console' },
-  { label: 'Host Dashboard', path: '/console/portfolio', kind: 'console' },
-] as const
-
-const publicRoutes = buenoHostRoutes
-  .filter((route) => route.kind === 'public')
-  .map((route) => route.path)
-
-const publicRoutePatterns = buenoHostRoutes
-  .filter((route) => route.kind === 'public_pattern')
-  .map((route) => route.path)
-
-const consoleRoutes = buenoHostRoutes
-  .filter((route) => route.kind === 'console')
-  .map((route) => route.path)
-
-export const metaContent = defineFireuxMeta({
-  app: {
-    id: 'buenohost',
-    name: 'BuenoHost',
-    ecosystem: 'fireux',
-  },
+export const buenoHostLanguage = {
   copy: {
     big_personality: 'Better Stays',
-    headline: 'Less Host Admin',
+    headline: 'Digital Stay Companion',
     highlight_terms: [
-      'guest guides',
-      'holiday homes',
-      'check-in information',
-      'local instructions',
+      'digital stay companion',
+      'guest information',
+      'local guide',
+      'check-in details',
     ],
     positioning_html:
-      'BuenoHost turns host information into <strong>mobile guest guides</strong> for holiday homes, short-stay properties, and serviced apartments.',
+      'BuenoHost turns any room, apartment or holiday into a <strong>digital stay companion</strong> and local guide for your guests.',
     promise_html:
-      'Hosts keep house rules, Wi-Fi, emergency contacts, checkout notes, parking, and local recommendations in one clean guest-facing guide.',
+      'Hosts keep Wi-Fi, check-in details, parking, house rules, checkout notes, emergency contacts, and local recommendations in one clean guest-facing experience.',
     console_bridge_html:
-      'A standalone FireUX app for structured guest manuals on top of the shared fireux-properties engine. Sproochli can translate these guides later, but BuenoHost owns the host information.',
+      'A standalone FireUX app for structured guest information on top of the shared fireux-properties engine. BuenoHost owns the property-facing stay companion experience, with optional services able to connect later.',
     about_p1:
-      'BuenoHost is for hosts who want fewer repeated questions and clearer guest arrivals.',
+      'BuenoHost is for hosts and property managers who want clearer guest arrivals, fewer repeated questions, and a more professional stay experience.',
     about_p2:
-      'The MVP starts with static guide pages, then grows into an editable host console for reusable guest manual sections.',
+      'The MVP starts with public stay companion pages, then grows into an editable host console for reusable property information, local guide sections, and stay-specific notes.',
   },
   seo: {
-    title: 'BuenoHost - Guest guides for holiday homes and short-stay hosts',
+    title: 'BuenoHost - Digital stay companions for guests',
     description:
-      'Create mobile guest guides for holiday homes, short-stay properties and serviced apartments with Wi-Fi, house rules, checkout, emergency contacts and local information.',
+      'Create a digital stay companion for rooms, apartments, holidays and serviced stays with Wi-Fi, check-in details, parking, house rules, checkout notes and local information.',
     keywords: [
-      'short-stay guest guide',
+      'digital stay companion',
+      'guest information app',
       'Airbnb house manual',
       'holiday apartment guide',
-      'guest information app',
+      'local guide for guests',
       'host information system',
     ],
     audience: ['holiday apartment hosts', 'short-stay hosts', 'property managers'],
-    categories: ['guest guides', 'host tools', 'holiday rentals'],
-    primary_topic: 'mobile guest guides for short-stay accommodation',
+    categories: ['guest experience', 'host tools', 'digital stay companion'],
+    primary_topic: 'digital stay companions for guest accommodation',
   },
   cta: {
     primary: {
@@ -80,28 +56,29 @@ export const metaContent = defineFireuxMeta({
   },
   lists: {
     hero_bullets: [
-      'Wi-Fi, keys, checkout and emergency info',
-      'Host messages and stay-specific notes',
-      'Reusable sections that hosts can enable or hide',
+      'Wi-Fi, check-in, parking and checkout details',
+      'Local recommendations and stay-specific notes',
+      'Reusable sections hosts can enable, hide or update',
     ],
     about_ticks: [
-      'Information-first guest experience',
-      'Built for short-stay hosts and property managers',
-      'Translation-ready through Sproochli later',
+      'A guest-ready digital stay companion',
+      'Built for hosts and property managers',
+      'Designed for rooms, apartments, holidays and serviced stays',
     ],
   },
   entities: [
     {
       id: 'Property',
-      purpose: 'The holiday home, apartment, or serviced unit guests are staying in.',
+      purpose: 'The room, apartment, holiday, or serviced stay guests are using.',
     },
     {
-      id: 'GuestGuide',
-      purpose: 'The public mobile guide guests open before or during a stay.',
+      id: 'StayCompanion',
+      purpose: 'The public mobile experience guests open before or during a stay.',
     },
     {
       id: 'GuideSection',
-      purpose: 'A reusable guest information topic such as Wi-Fi, keys, checkout, or parking.',
+      purpose:
+        'A reusable guest information topic such as Wi-Fi, check-in, checkout, parking, or local recommendations.',
     },
     {
       id: 'GuestMessage',
@@ -110,14 +87,18 @@ export const metaContent = defineFireuxMeta({
   ],
   relations_ascii: `
 Property
-  -> GuestGuide
+  -> StayCompanion
     -> GuideSection
     -> GuestMessage
 
 `,
-  routes: {
-    public: publicRoutes,
-    public_patterns: publicRoutePatterns,
-    console: consoleRoutes,
+} as const
+
+export const metaContent = defineFireuxMeta({
+  app: {
+    id: 'buenohost',
+    name: 'BuenoHost',
+    ecosystem: 'fireux',
   },
+  ...buenoHostLanguage,
 })

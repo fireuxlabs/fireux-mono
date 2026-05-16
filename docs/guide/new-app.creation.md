@@ -88,7 +88,9 @@ Use `defineFireuxConfig(...)` in `nuxt.config.ts`. The important identity fields
 
 App id is stable kebab-case. Display names can change; ids should not drift.
 
-App `app/meta.ts` is identity and product metadata, not demo data. Do not list concrete demo entity routes there, such as `/properties/holiday-with-nats` or `/professionals/demo-person`. Put demo records in `app/demo/*`, and put concrete demo smoke routes in `scripts/_lib/app-registry.mjs`.
+App `app/meta.ts` is identity, positioning, product language, SEO language, CTAs, lists, and conceptual entities. It is not demo data, and it is not the route registry. Do not list concrete demo entity routes there, such as `/properties/holiday-with-nats` or `/professionals/demo-person`. Put demo records in `app/demo/*`, and put concrete demo smoke routes in `scripts/_lib/app-registry.mjs`.
+
+Within `app/meta.ts`, keep product language/copy separate from any runtime wiring. A simple pattern is `appLanguage` for `copy`, `seo`, `cta`, `lists`, and `entities`, then compose that into the exported `metaContent`.
 
 ## Registration Checklist
 

@@ -90,7 +90,7 @@ export type FireuxMetaEntity = {
 export type FireuxMetaExamples = Record<string, unknown>
 
 export type FireuxMetaRoutes = {
-  /** Public or SEO-safe routes. */
+  /** @deprecated App meta is no longer the route registry. Use app registries, pages, and routing docs instead. Public or SEO-safe routes. */
   public?: string[]
   /** Operational routes. */
   console?: string[]
@@ -132,6 +132,7 @@ export type FireuxMetaContent = {
    */
   examples?: FireuxMetaExamples
 
+  /** @deprecated App meta is product language/identity, not route canon. */
   routes?: FireuxMetaRoutes
 }
 
