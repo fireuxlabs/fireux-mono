@@ -106,7 +106,7 @@
             <div id="upload" class="flex h-full flex-col gap-5">
               <div class="space-y-2">
                 <h2 id="sample-guide-title" class="text-2xl font-semibold tracking-normal text-highlighted">
-                  A mobile house manual for your tenants and short stays.
+                  A mobile house manual for tenants and short stays.
                 </h2>
                 <p class="text-muted">
                   BuenoHost organises your check-in, parking, house rules, apartment details, local guide, checkout and emergency information into one mobile house manual.
@@ -167,57 +167,9 @@
       </section>
 
       <section
-        class="space-y-6"
-        aria-labelledby="sections-title"
+        aria-label="Pricing"
       >
-        <div class="max-w-2xl space-y-2">
-          <UBadge color="neutral" variant="soft">
-            What the guest sees
-          </UBadge>
-          <h2 id="sections-title" class="text-3xl font-semibold tracking-normal text-highlighted">
-            Clear sections instead of a long document.
-          </h2>
-          <p class="text-muted">
-            Each topic becomes a simple guest screen the host can update later.
-          </p>
-        </div>
-
-        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <UCard
-            v-for="section in sectionPreviews"
-            :key="section.title"
-            variant="subtle"
-          >
-            <div class="space-y-3">
-              <UIcon :name="section.icon" class="size-6 text-primary" />
-              <div>
-                <h3 class="font-semibold text-highlighted">
-                  {{ section.title }}
-                </h3>
-                <p class="mt-1 text-sm text-muted">
-                  {{ section.description }}
-                </p>
-              </div>
-            </div>
-          </UCard>
-        </div>
-      </section>
-
-      <section
-        class="rounded-lg border border-default bg-muted/30 p-5"
-        aria-labelledby="sticker-context-title"
-      >
-        <div class="max-w-2xl space-y-2">
-          <UBadge color="neutral" variant="soft">
-            Sample sticker and guest app
-          </UBadge>
-          <h2 id="sticker-context-title" class="text-xl font-semibold tracking-normal text-highlighted">
-            One sticker, one guest experience.
-          </h2>
-          <p class="text-sm text-muted">
-            Put the QR code on a welcome card, folder or fridge sticker. Guests scan once and get the latest stay information.
-          </p>
-        </div>
+        <UPricingPlans :plans="pricingPlans" />
       </section>
     </UPageBody>
   </UPage>
@@ -247,8 +199,8 @@ const guestAppPreview = [
     icon: 'i-lucide-hand-heart',
   },
   {
-    title: 'Check-in /out',
-    description: 'Access keys, parking and arrival and departure info.',
+    title: 'Check-in & checkout',
+    description: 'Access, keys, parking, arrival details and departure steps.',
     icon: 'i-lucide-key-round',
   },
   {
@@ -274,48 +226,72 @@ const extraInfoBullets = [
   'Balcony and outdoor notes',
 ]
 
-const sectionPreviews = [
+const pricingPlans = [
   {
-    title: 'Welcome',
-    description: 'Arrival note, Wi-Fi, host contact and key first steps.',
-    icon: 'i-lucide-home',
+    id: 'buenohost',
+    title: 'BuenoHost',
+    description: 'Includes your first property and two room QR codes.',
+    price: '£10',
+    billingPeriod: '/month',
+    highlight: true,
+    scale: true,
+    features: [
+      '1 property',
+      '2 rooms (if required)',
+      'AI-ready document processing',
+      'Operational host console',
+      'Hosted guest URL and QR tools',
+    ],
+    button: {
+      label: 'Start with BuenoHost',
+      to: '#upload',
+      color: 'primary',
+      variant: 'solid',
+      trailingIcon: 'i-lucide-arrow-right',
+    },
   },
   {
-    title: 'Check-in',
-    description: 'Arrival, access, keys and settling-in details.',
-    icon: 'i-lucide-door-open',
+    id: 'extra-properties',
+    title: 'Extra Properties',
+    description: 'For additional apartments, houses, holiday stays, tenant properties or buildings.',
+    price: '+ £5',
+    billingPeriod: '/month each',
+    features: [
+      'Extra apartments',
+      'Holiday stays',
+      'Tenant properties',
+      'Buildings',
+      'Shared host dashboard',
+    ],
+    button: {
+      label: 'Add another property',
+      to: '#upload',
+      color: 'neutral',
+      variant: 'soft',
+      trailingIcon: 'i-lucide-arrow-right',
+    },
   },
   {
-    title: 'House Rules',
-    description: 'Important rules without making the stay feel negative.',
-    icon: 'i-lucide-clipboard-check',
+    id: 'room-qr-codes',
+    title: 'Extra Room QR Codes',
+    description: 'For room-specific QR codes, room notes or different guest instructions inside the same property.',
+    price: 'from £2',
+    billingPeriod: '/month each',
+    features: [
+      'Room-level QR codes',
+      'Guest room pages',
+      'Shared house notes',
+      'Serviced building support',
+    ],
+    button: {
+      label: 'Add room QR codes',
+      to: '#upload',
+      color: 'neutral',
+      variant: 'soft',
+      trailingIcon: 'i-lucide-arrow-right',
+    },
   },
-  {
-    title: 'Parking',
-    description: 'Where to park, what to avoid and building notes.',
-    icon: 'i-lucide-car',
-  },
-  {
-    title: 'Checkout',
-    description: 'Dishes, keys, rubbish and leaving instructions.',
-    icon: 'i-lucide-log-out',
-  },
-  {
-    title: 'Emergency',
-    description: 'Phone numbers, medical help and urgent contacts.',
-    icon: 'i-lucide-siren',
-  },
-  {
-    title: 'Apartment Guide',
-    description: 'Heating, appliances, recycling, TV and useful notes.',
-    icon: 'i-lucide-house',
-  },
-  {
-    title: 'Local Guide',
-    description: 'Nearby shops, transport, food and activities.',
-    icon: 'i-lucide-map',
-  },
-]
+] as const
 
 onMounted(async () => {
   qrTargetUrl.value = new URL(demoGuidePath, window.location.origin).toString()
