@@ -106,10 +106,10 @@
             <div id="upload" class="flex h-full flex-col gap-5">
               <div class="space-y-2">
                 <h2 id="sample-guide-title" class="text-2xl font-semibold tracking-normal text-highlighted">
-                  The house manual becomes a mobile guide.
+                  A mobile house manual for your tenants and short stays.
                 </h2>
                 <p class="text-muted">
-                  Nat’s manual already has Wi-Fi, parking, rules, emergency info, checkout notes and local tips. BuenoHost gives that content a better guest shape.
+                  BuenoHost organises your check-in, parking, house rules, apartment details, local guide, checkout and emergency information into one mobile house manual.
                 </p>
               </div>
 
@@ -133,17 +133,33 @@
                 </div>
               </div>
 
+              <div class="rounded-lg border border-default bg-muted/30 p-4">
+                <ul class="grid gap-x-4 gap-y-1 text-sm text-muted sm:grid-cols-2">
+                  <li
+                    v-for="item in extraInfoBullets"
+                    :key="item"
+                    class="flex gap-2"
+                  >
+                    <UIcon name="i-lucide-check" class="mt-0.5 size-4 shrink-0 text-primary" />
+                    <span>{{ item }}</span>
+                  </li>
+                </ul>
+              </div>
+
               <div class="mt-auto space-y-3">
                 <p class="text-sm text-muted">
-                  Upload your existing house manual, guest PDF or welcome document. BuenoHost turns it into a clean mobile guest experience with a shareable URL, QR code and editable host console.
+                  Upload your current welcome document. We’ll turn it into a hosted guest URL with a QR code.
                 </p>
                 <UButton
                   href="#upload"
                   color="primary"
-                  icon="i-lucide-upload"
+                  icon="i-lucide-file-up"
                 >
-                  Upload your house manual
+                  Upload your welcome document
                 </UButton>
+                <p class="text-xs text-muted">
+                  Formats: PDF, DOCX, Pages, images, or plain text.
+                </p>
               </div>
             </div>
           </div>
@@ -231,8 +247,13 @@ const guestAppPreview = [
     icon: 'i-lucide-hand-heart',
   },
   {
+    title: 'Check-in /out',
+    description: 'Access keys, parking and arrival and departure info.',
+    icon: 'i-lucide-key-round',
+  },
+  {
     title: 'Emergency',
-    description: 'Urgent numbers and safety equipment.',
+    description: 'Urgent numbers, medical help and safety equipment.',
     icon: 'i-lucide-siren',
   },
   {
@@ -240,6 +261,17 @@ const guestAppPreview = [
     description: 'Shops, transport and nearby recommendations.',
     icon: 'i-lucide-map-pin',
   },
+]
+
+const extraInfoBullets = [
+  'House rules',
+  'Rubbish and recycling',
+  'Appliance manuals',
+  'Heating and air con instructions',
+  'Live updates',
+  'Laundry instructions',
+  'TV and streaming',
+  'Balcony and outdoor notes',
 ]
 
 const sectionPreviews = [
