@@ -13,7 +13,7 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function usePortfolioSelection() {
   const { selectedId, selectedMode, selectEntity, clearSelection } =
-    useConsole('portfolios')
+    useConsole('portfolio')
 
   const setRuntimePortfolio = (selectionPatch: RuntimePortfolioSelectionInput = {}) => {
     const nextId =

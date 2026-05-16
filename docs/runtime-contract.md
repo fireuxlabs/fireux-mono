@@ -1,6 +1,6 @@
 # Runtime Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-15
+Updated: 2026-05-16
 ## Purpose
 - Define runtime selection, mode, collection path, and route policy across FireUX domains.
 
@@ -82,7 +82,7 @@ Updated: 2026-05-15
 - `useProjectFetch()` = one project.
 - `useProjectCollection()` = many projects.
 - Public `/projects` must use the generic project collection.
-- Console `/console/projects` must use a user-scoped project view on top of the generic seam rather than redefining the generic collection.
+- Console `/console/project` must use a user-scoped project view on top of the generic seam rather than redefining the generic collection.
 
 ## Tenant App Contract
 - Tenant apps are canonical thin child apps hosted inside a FireUX ecosystem.
@@ -110,7 +110,7 @@ Updated: 2026-05-15
 ## Runtime Selection Rules
 - Console/runtime entity selection is state-based.
 - Console pages must resolve active context from runtime state, not route query selection.
-- Query params may carry view/context options for public pages, but not canonical console entity selection.
+- Query params may carry view/context options for public routes, but not canonical console entity selection.
 - No silent selection fallbacks:
   - Do not auto-switch entities/modes when required state is missing.
   - Surface missing selection explicitly.
@@ -118,31 +118,59 @@ Updated: 2026-05-15
 ## Console Vocabulary
 - `console family` = the top-level console bucket exposed by app config.
   - Current canon:
-    - `projects`
-    - `kitchens`
-    - `portfolios`
-    - `suppliers`
+    - `project`
+    - `property`
+    - `kitchen`
+    - `portfolio`
+    - `supplier`
   - Current route mapping:
-    - `projects` -> `/console/projects`
-    - `kitchens` -> `/console/kitchen`
-    - `portfolios` -> `/console/portfolio`
-    - `suppliers` -> `/console/supplier`
+    - `project` -> `/console/project`
+    - `property` -> `/console/property`
+    - `kitchen` -> `/console/kitchen`
+    - `portfolio` -> `/console/portfolio`
+    - `supplier` -> `/console/supplier`
   - `runtime target` = the selected root entity inside a console family.
   - Example:
     - selected `Project`
+    - selected `Property`
     - selected `Kitchen`
     - selected `Portfolio`
     - selected `Supplier`
 - `console workspace` = the console shell plus runtime mode around a selected target.
 - `child records` = records beneath the selected runtime target.
 - Cardinality does not introduce a new architecture layer.
-  - A family may often resolve to one target (`supplier`) or many (`kitchen`, `portfolio`, `projects`).
+  - A family may often resolve to one target (`supplier`) or many (`kitchen`, `portfolio`, `project`).
   - The canon remains:
     - choose family
     - select target
     - enter workspace
     - operate on child records
 - `collection` is a storage term and must not be used as the primary business/runtime term for this console model.
+
+## Console Canon Enforcement
+- A console family is current only when all of these exist:
+  - route family under `runtime/pages/console/<routeSegment>` or the owning app's `app/pages/console/<routeSegment>`
+  - app config lists the canonical family key in `consoleFamilies` when the app should expose it
+  - app registry smoke routes include at least the family entry when the app is part of local smoke coverage
+  - Tier1 package/app docs list the family key, route segment, and current child routes
+- If the route family does not exist, the family is proposed, not current.
+- If `consoleFamilies` does not list the family, the app must not present a user-facing CTA to that console family.
+- If a product needs a console to inspect its canon, keep or add the minimal scaffold route before removing accidental old console access.
+- Console family route segments are singular. A console can manage multiple targets,
+  but that is handled by `/console/<family>` target listing, not by plural route
+  segment naming.
+- Route shape under `pages/console/<family>` follows the Kitchen reference:
+  - simple current or scaffold pages may be single files such as `overview.vue`, `create.vue`, or `team.vue`
+  - complex pages use child directories with `index.vue` plus detail files, such as `menus/index.vue` and `menus/[menuId].vue`
+- Family child routes should be concrete domain operation nouns. Generic names such as `pages` are suspicious unless the domain child is explicitly named that way by Tier1 canon.
+- Reference comparisons must use real route trees:
+  - list the existing children
+  - identify missing children
+  - patch the route scaffold before claiming alignment
+- `index` and `overview` are shared console semantics:
+  - `/console/X` = family index/target entry
+  - `/console/X/overview` = selected target overview
+  - do not count them as domain-specific child operation canon when comparing families
 
 ## Console Entity Bucket Canon
 - Usual Firestore entity composable stacks are deliberately boring:
@@ -209,7 +237,8 @@ Updated: 2026-05-15
   - and any family-specific canonical claim rule explicitly allowed in a Tier1 extension contract
 - Root ownership and relationship fields may support discovery or migration, but they do not replace overlay governance unless the Tier1 family contract explicitly says so.
 - Family-specific guidance:
-  - `projects`: overlay governance is primary; `owner_user_id` is a root ownership hint only.
+  - `project`: overlay governance is primary; `owner_user_id` is a root ownership hint only.
+  - `property`: property console governance is scaffolded; do not borrow another app's console family to operate properties.
   - `kitchen`: overlay governance or allowed claim rules; chef/profile linkage is not enough.
   - `portfolio`: overlay governance is primary; `owner_label` is presentation only.
   - `supplier`: overlay governance is primary; supplier/operator relationship is not enough.

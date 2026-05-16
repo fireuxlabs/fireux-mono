@@ -19,27 +19,27 @@
     </header>
 
     <UContainer
-      v-if="pages && property"
+      v-if="info && property"
       class="grid min-w-0 gap-6 py-6 lg:grid-cols-[16rem_minmax(0,1fr)] lg:py-8"
     >
       <aside class="min-w-0 lg:pt-1">
-        <nav class="lg:sticky lg:top-6" aria-label="Property pages navigation">
+        <nav class="lg:sticky lg:top-6" aria-label="Property info navigation">
           <div class="flex max-w-full gap-2 overflow-x-auto pb-2 lg:grid lg:overflow-visible lg:pb-0">
             <NuxtLink
-              :to="`/properties/${property.slug}/pages`"
+              :to="`/properties/${property.slug}/info`"
               class="shrink-0 rounded-md px-3 py-2 text-sm text-muted hover:bg-elevated hover:text-default"
-              :class="{ 'bg-elevated font-semibold text-default': !currentPageId }"
+              :class="{ 'bg-elevated font-semibold text-default': !currentInfoId }"
             >
               Welcome
             </NuxtLink>
             <NuxtLink
-              v-for="page in topics"
-              :key="page.id"
-              :to="`/properties/${property.slug}/pages/${page.id}`"
+              v-for="topic in topics"
+              :key="topic.id"
+              :to="`/properties/${property.slug}/info/${topic.id}`"
               class="shrink-0 rounded-md px-3 py-2 text-sm text-muted hover:bg-elevated hover:text-default"
-              :class="{ 'bg-elevated font-semibold text-default': currentPageId === page.id }"
+              :class="{ 'bg-elevated font-semibold text-default': currentInfoId === topic.id }"
             >
-              {{ page.title }}
+              {{ topic.title }}
             </NuxtLink>
           </div>
         </nav>
@@ -60,13 +60,13 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { getPropertyPageTopics, resolvePropertyPages } from '../demo/propertyPages'
+import { getPropertyInfoTopics, resolvePropertyInfo } from '../demo/propertyInfo'
 import { findDemoBuenoHostPublicProperty } from '../demo/properties'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
 const property = computed(() => findDemoBuenoHostPublicProperty(slug.value))
-const pages = computed(() => (property.value ? resolvePropertyPages(property.value.slug) : null))
-const topics = computed(() => (pages.value ? getPropertyPageTopics(pages.value) : []))
-const currentPageId = computed(() => String(route.params.pageId || ''))
+const info = computed(() => (property.value ? resolvePropertyInfo(property.value.slug) : null))
+const topics = computed(() => (info.value ? getPropertyInfoTopics(info.value) : []))
+const currentInfoId = computed(() => String(route.params.infoId || ''))
 </script>

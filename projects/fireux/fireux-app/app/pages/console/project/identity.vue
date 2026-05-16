@@ -1,12 +1,12 @@
 <template>
-  <UDashboardPanel id="console-projects-ecosystem">
+  <UDashboardPanel id="console-project-identity">
     <template #header>
-      <LayoutsConsoleNavbar title="Project Ecosystem" />
+      <LayoutsConsoleNavbar title="Project Identity" />
     </template>
 
     <template #body>
-      <section class="space-y-6">
-        <ConsoleProjectEcosystem />
+      <section class="space-y-4">
+        <ConsoleProjectIdentity />
       </section>
     </template>
   </UDashboardPanel>
@@ -16,13 +16,12 @@
 definePageMeta({
   layout: 'console',
   nav: {
-    visibility: { ecosystems: ['fireux'] },
-    key: 'console-projects-ecosystem',
-    label: 'Ecosystem',
-    icon: 'i-lucide-orbit',
+    key: 'console-project-identity',
+    label: 'Identity',
+    icon: 'i-lucide-info',
     position: 'top',
     requiresSelection: true,
-    order: 20,
+    order: 3,
     desktop: true,
     mobile: true,
     layouts: ['console'],

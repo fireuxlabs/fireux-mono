@@ -7,5 +7,5 @@ definePageMeta({
   layout: 'console',
 })
 
-await navigateTo('/console/projects', { replace: true })
+await navigateTo('/console/project', { replace: true })
 </script>

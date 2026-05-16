@@ -9,7 +9,7 @@ const fireuxConfig = defineFireuxConfig({
   shortName: 'Granite',
   meta: metaContent,
   role: 'global',
-  consoleFamilies: ['portfolios'],
+  consoleFamilies: ['portfolio'],
   modules: [
     'fireux-properties',
     'fireux-compliance',

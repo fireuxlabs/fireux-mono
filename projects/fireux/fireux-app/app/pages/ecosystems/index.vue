@@ -53,13 +53,13 @@ const actions = [
   {
     label: 'Project',
     cta: 'Open Project Console',
-    to: '/console/projects',
+    to: '/console/project',
     icon: 'i-lucide-layout-dashboard',
   },
   {
     label: 'Manage',
     cta: 'Manage ecosystems',
-    to: '/console/projects/ecosystem',
+    to: '/console/project/ecosystem',
     icon: 'i-lucide-orbit',
   },
   {

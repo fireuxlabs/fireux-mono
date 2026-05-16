@@ -9,7 +9,7 @@ const fireuxConfig = defineFireuxConfig({
   shortName: 'Bringli',
   meta: metaContent,
   role: 'global',
-  consoleFamilies: ['suppliers'],
+  consoleFamilies: ['supplier'],
   modules: ['fireux-suppliers'],
 })
 

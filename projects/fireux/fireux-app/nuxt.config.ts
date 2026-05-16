@@ -9,7 +9,7 @@ const fireuxConfig = defineFireuxConfig({
   shortName: 'FireUX',
   meta: metaContent,
   role: 'global',
-  consoleFamilies: ['projects'],
+  consoleFamilies: ['project'],
   modules: [
     [
       'fireux-products',

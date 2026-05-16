@@ -13,7 +13,7 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useKitchenSelection() {
   const { selectedId, selectedMode, selectEntity, clearSelection } =
-    useConsole('kitchens')
+    useConsole('kitchen')
 
   const setKitchenSelection = (selectionPatch: KitchenSelectionInput = {}) => {
     const nextId =

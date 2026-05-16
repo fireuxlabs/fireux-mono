@@ -8,8 +8,8 @@
       <section class="space-y-4">
         <ProjectCreateSystem
           mode="console"
-          return-to="/console/projects"
-          cancel-to="/console/projects"
+          return-to="/console/project"
+          cancel-to="/console/project"
         />
       </section>
     </template>
@@ -22,7 +22,7 @@ import ProjectCreateSystem from 'fireux-core/runtime/components/organisms/Projec
 definePageMeta({
   layout: 'console',
   nav: {
-    key: 'console-projects-create',
+    key: 'console-project-create',
     label: 'Create',
     icon: 'i-lucide-plus',
     position: 'bottom',

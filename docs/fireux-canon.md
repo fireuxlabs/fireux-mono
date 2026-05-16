@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-15
+Updated: 2026-05-16
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -12,6 +12,27 @@ Updated: 2026-05-15
 - When a new repeated pattern is discovered, update this canon and the relevant runtime/extension docs in the same change or before the pattern is reused.
 - When a local implementation reveals something that should be shared, fold it into the owning family instead of copying it app by app.
 - The goal is deliberate repetition: the same concept should look and behave the same across apps, packages, and entities unless the domain has a real reason to differ.
+
+## Canon Enforcement Contract
+- FireUX canon is not a suggestion layer. If a shape is declared as current canon, the repo must contain enough working structure for a developer or user to find and exercise it.
+- A proposed shape must be labelled `proposed`, `scaffold`, `TODO`, or `future`. Do not describe proposed routes, stores, or console families as current canon.
+- No paper canon:
+  - a console family is not current unless its route family exists
+  - an app console entry is not current unless `consoleFamilies` exposes it
+  - a public route is not current unless the page files exist
+  - a storage/composable bucket is not current unless files live in the documented bucket
+  - a data shape is not current unless either live/test/demo fixtures use it or the docs explicitly say it is migration-only
+- The minimum enforcement ladder for current canon is:
+  - Tier1 doc states the rule
+  - route/file tree implements the shape
+  - app config and app registry expose the shape when it is app-visible
+  - validation or guard catches the drift that has already hurt us
+  - old names are removed, blocked, or marked historical only
+- When comparing families, compare real files and routes first. Do not infer a canon just because a related product has a similar word in its copy.
+- If a family has a strong reference implementation, such as Kitchen for console entry and child operation shape, a new family should either match the reference or document the exact delta before adding user-facing routes.
+- If a canon decision removes an accidental surface, replace it with the intended surface in the same patch when the user needs it to inspect or operate the app.
+- Do not leave an app without a working path to inspect its own canon shape.
+- Guards should start narrow and become stricter as each drift area is cleaned. A guard that is too broad to pass is not enforcement; it is noise.
 
 Current learned examples:
 - User identity:
@@ -64,11 +85,13 @@ Current learned examples:
   - `Supplier`
   - `Portfolio`
   - `Project`
-- Canonical console family keys are plural where the runtime uses a collection-like key:
-  - `projects` -> `/console/projects`
-  - `kitchens` -> `/console/kitchen`
-  - `portfolios` -> `/console/portfolio`
-  - `suppliers` -> `/console/supplier`
+- Canonical console family keys are singular. Cardinality is handled by the
+  family entry surface, not by plural route buckets:
+  - `project` -> `/console/project`
+  - `property` -> `/console/property`
+  - `kitchen` -> `/console/kitchen`
+  - `portfolio` -> `/console/portfolio`
+  - `supplier` -> `/console/supplier`
 - Identity roots such as `User` and profile roots do not use `app_scope_state`; their app records are overlays for membership, capability, and presentation.
 - Generic project collection and console project selection are not the same seam.
 - `useProjectCollection()` stays generic.
@@ -96,6 +119,7 @@ Current learned examples:
   - one short supporting sentence
 - Product landing heroes should use Nuxt UI primitives first. Avoid ecosystem-style module overviews, three-way hero action grids, large bespoke hero visuals, and heavy scoped CSS until the product surface is stable.
 - Product apps must not expose orphan console-family routes. If the app does not have a selected workspace/entity family, use public routes and a personal/provider dashboard instead of adding a console family.
+- Product apps that do expose a console family must expose a real family route and a discoverable CTA. Do not point product CTAs at another product's console just because that route exists.
 - App meta is for identity, positioning, product language, SEO language, CTAs, lists, and conceptual entities.
 - App meta must not be used as a route registry or demo route holder.
 - Concrete demo slugs and sample entity routes belong in app-local demo fixtures and smoke tooling, not in app meta.

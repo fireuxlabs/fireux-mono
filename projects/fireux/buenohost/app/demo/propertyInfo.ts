@@ -1,27 +1,27 @@
-export type PropertyPageItem = {
+export type PropertyInfoItem = {
   label?: string
   value: string
   tone?: 'default' | 'important' | 'warning'
 }
 
-export type PropertyPage = {
+export type PropertyInfoTopic = {
   id: string
   title: string
   summary: string
   icon: string
   priority?: boolean
   enabled?: boolean
-  items: PropertyPageItem[]
+  items: PropertyInfoItem[]
 }
 
-export type PropertyPagesTranslationRef = {
+export type PropertyInfoTranslationRef = {
   source_app: 'buenohost'
-  document_type: 'property-pages'
+  document_type: 'property-info'
   document_slug: string
   source_language: 'en'
 }
 
-export type PropertyPageSourceNote = {
+export type PropertyInfoSourceNote = {
   id: string
   status: 'needs_source_confirmation'
   owner: string
@@ -29,14 +29,14 @@ export type PropertyPageSourceNote = {
   note: string
 }
 
-export type PropertyPageCollection = {
-  type: 'buenohost-property-pages'
+export type PropertyInfoCollection = {
+  type: 'buenohost-property-info'
   slug: string
   property_id?: string
   language: 'en'
   title: string
   status: 'demo' | 'live'
-  translation_ref: PropertyPagesTranslationRef
+  translation_ref: PropertyInfoTranslationRef
   stay_message?: {
     title: string
     subtitle?: string
@@ -53,11 +53,11 @@ export type PropertyPageCollection = {
   }
   privacy_note: string
   footer: string
-  source_notes?: PropertyPageSourceNote[]
-  pages: PropertyPage[]
+  source_notes?: PropertyInfoSourceNote[]
+  topics: PropertyInfoTopic[]
 }
 
-export const standardPropertyPageIds = [
+export const standardPropertyInfoTopicIds = [
   'emergency',
   'wifi',
   'check-in',
@@ -80,7 +80,7 @@ export const standardPropertyPageIds = [
   'useful-contacts',
 ] as const
 
-export const holidayWithNatsSourceNotes: PropertyPageSourceNote[] = [
+export const holidayWithNatsSourceNotes: PropertyInfoSourceNote[] = [
   {
     id: 'ask-nat-check-in-time',
     status: 'needs_source_confirmation',
@@ -139,8 +139,8 @@ export const holidayWithNatsSourceNotes: PropertyPageSourceNote[] = [
   },
 ]
 
-export const holidayWithNatsPropertyPages: PropertyPageCollection = {
-  type: 'buenohost-property-pages',
+export const holidayWithNatsPropertyInfo: PropertyInfoCollection = {
+  type: 'buenohost-property-info',
   slug: 'holiday-with-nats',
   property_id: 'holiday-with-nats',
   language: 'en',
@@ -148,7 +148,7 @@ export const holidayWithNatsPropertyPages: PropertyPageCollection = {
   status: 'demo',
   translation_ref: {
     source_app: 'buenohost',
-    document_type: 'property-pages',
+    document_type: 'property-info',
     document_slug: 'holiday-with-nats',
     source_language: 'en',
   },
@@ -158,7 +158,7 @@ export const holidayWithNatsPropertyPages: PropertyPageCollection = {
   },
   property: {
     name: 'Penthouse Holiday Apartment',
-    type: 'Property pages',
+    type: 'Property info',
     original_language: 'en',
     primary_language: 'en',
     manager: 'Apartment Manager Natalie',
@@ -170,7 +170,7 @@ export const holidayWithNatsPropertyPages: PropertyPageCollection = {
     'Local proof content from the source manual. Phone and email should be confirmed before public deployment.',
   footer: 'Powered by BuenoHost.',
   source_notes: holidayWithNatsSourceNotes,
-  pages: [
+  topics: [
     {
       id: 'welcome',
       title: 'Welcome',
@@ -382,8 +382,8 @@ export const holidayWithNatsPropertyPages: PropertyPageCollection = {
   ],
 }
 
-export const demoStayPropertyPages: PropertyPageCollection = {
-  type: 'buenohost-property-pages',
+export const demoStayPropertyInfo: PropertyInfoCollection = {
+  type: 'buenohost-property-info',
   slug: 'demo-stay',
   property_id: 'demo-stay',
   language: 'en',
@@ -391,7 +391,7 @@ export const demoStayPropertyPages: PropertyPageCollection = {
   status: 'demo',
   translation_ref: {
     source_app: 'buenohost',
-    document_type: 'property-pages',
+    document_type: 'property-info',
     document_slug: 'demo-stay',
     source_language: 'en',
   },
@@ -401,7 +401,7 @@ export const demoStayPropertyPages: PropertyPageCollection = {
   },
   property: {
     name: 'Luxurious Mountain Chalet',
-    type: 'Property pages',
+    type: 'Property info',
     original_language: 'en',
     primary_language: 'en',
     manager: 'Demo Host',
@@ -411,7 +411,7 @@ export const demoStayPropertyPages: PropertyPageCollection = {
   },
   privacy_note: 'Fictional public sample. No real host, guest, address or access details are shown.',
   footer: 'Powered by BuenoHost.',
-  pages: [
+  topics: [
     {
       id: 'welcome',
       title: 'Welcome',
@@ -423,7 +423,7 @@ export const demoStayPropertyPages: PropertyPageCollection = {
         { value: 'Welcome to Luxurious Mountain Chalet.' },
         { label: 'Wi-Fi', value: 'DemoStay Guest / demo-stay-2026', tone: 'important' },
         { label: 'Host contact', value: 'Use the BuenoHost chat button for demo support.' },
-        { value: 'Keep these property pages open during your stay for check-in, house rules and local tips.' },
+        { value: 'Keep these property info open during your stay for check-in, house rules and local tips.' },
       ],
     },
     {
@@ -521,23 +521,23 @@ export const demoStayPropertyPages: PropertyPageCollection = {
   ],
 }
 
-export const propertyPageCollections = [demoStayPropertyPages, holidayWithNatsPropertyPages] as const
+export const propertyInfoCollections = [demoStayPropertyInfo, holidayWithNatsPropertyInfo] as const
 
-export function resolvePropertyPages(slug: string): PropertyPageCollection | null {
-  return propertyPageCollections.find((pages) => pages.slug === slug) ?? null
+export function resolvePropertyInfo(slug: string): PropertyInfoCollection | null {
+  return propertyInfoCollections.find((info) => info.slug === slug) ?? null
 }
 
-export function getEnabledPropertyPages(pages: PropertyPageCollection): PropertyPage[] {
-  return pages.pages.filter((page) => page.enabled !== false)
+export function getEnabledPropertyInfoTopics(info: PropertyInfoCollection): PropertyInfoTopic[] {
+  return info.topics.filter((topic) => topic.enabled !== false)
 }
 
-export function getPropertyPageTopics(pages: PropertyPageCollection): PropertyPage[] {
-  return getEnabledPropertyPages(pages).filter((page) => page.id !== 'welcome')
+export function getPropertyInfoTopics(info: PropertyInfoCollection): PropertyInfoTopic[] {
+  return getEnabledPropertyInfoTopics(info).filter((topic) => topic.id !== 'welcome')
 }
 
-export function resolvePropertyPage(slug: string, pageId: string): PropertyPage | null {
-  const pages = resolvePropertyPages(slug)
-  if (!pages) return null
+export function resolvePropertyInfoTopic(slug: string, infoId: string): PropertyInfoTopic | null {
+  const info = resolvePropertyInfo(slug)
+  if (!info) return null
 
-  return getPropertyPageTopics(pages).find((page) => page.id === pageId) ?? null
+  return getPropertyInfoTopics(info).find((topic) => topic.id === infoId) ?? null
 }

@@ -1,9 +1,8 @@
 const SHARED_ROUTES = ['/', '/dashboard', '/dashboard/user-profile']
 
 // Registry consoleFamilies are smoke-test route segments.
-// App config uses canonical family keys such as `kitchens`, `suppliers`, and
-// `portfolios`; core maps those to `/console/kitchen`, `/console/supplier`,
-// and `/console/portfolio`.
+// Console family keys and route segments are singular:
+// `project`, `property`, `kitchen`, `portfolio`, and `supplier`.
 function unique(values) {
   return [...new Set(values)]
 }
@@ -30,7 +29,7 @@ export const APP_REGISTRY = {
     role: 'global',
     workspace: './projects/fireux/fireux-app',
     port: 3000,
-    consoleFamilies: ['projects'],
+    consoleFamilies: ['project'],
     launchOrder: 1,
   },
   misebox: {
@@ -160,13 +159,14 @@ export const APP_REGISTRY = {
     role: 'standalone',
     workspace: './projects/fireux/buenohost',
     port: 3012,
-    consoleFamilies: [],
+    consoleFamilies: ['property'],
     smokeRoutes: [
       '/',
       '/chat',
       '/properties/holiday-with-nats',
-      '/properties/holiday-with-nats/pages',
-      '/properties/holiday-with-nats/pages/wifi',
+      '/properties/holiday-with-nats/info',
+      '/properties/holiday-with-nats/info/wifi',
+      '/console/property',
     ],
     launchOrder: 10,
   },

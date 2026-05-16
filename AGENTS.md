@@ -91,6 +91,9 @@ Note: The repository `AI/` folder was moved to `docs/ai/`. See `docs/ai/` for AI
   - identify the family/concept before implementing
   - look for the repeated repo pattern hidden in existing apps/packages
   - patch the shared family or documented canon before adding app-local deltas
+  - do not treat documentation-only canon as implemented canon; verify the matching routes, config, app registry, file tree, and guard/check coverage
+  - if a shape is proposed or scaffold-only, label it that way instead of presenting it as current behavior
+  - never remove an accidental working surface without adding or preserving the intended inspection/operation path when the user needs it
   - treat missing `useXFetch`, `useXCollection`, `useXInterface`, model, card, collection-manager, dashboard, or console seams as alignment clues
   - when a new reusable pattern is discovered, update `docs/fireux-canon.md` and the relevant `fireux-docs` runtime concept/branch doc
 - Keep changes small and localized.

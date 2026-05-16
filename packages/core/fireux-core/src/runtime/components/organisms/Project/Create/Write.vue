@@ -10,7 +10,7 @@
     <DevJson
       v-if="isDev"
       title="Project Create Debug"
-      context="console/projects · endpoint ingest disabled"
+      context="console/project · endpoint ingest disabled"
       :data="debugState"
       :default-open="true"
     />

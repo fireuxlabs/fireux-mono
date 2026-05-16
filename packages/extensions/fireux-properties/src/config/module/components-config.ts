@@ -18,6 +18,18 @@ export function configureComponents(resolver: Resolver) {
     { global: true }
   )
 
+  registerComponentsDir(resolver, './runtime/components/organisms/Console/Properties', {
+    global: true,
+    pathPrefix: true,
+    prefix: 'ConsoleProperties',
+  })
+  registerComponentAlias(
+    resolver,
+    './runtime/components/organisms/Console/Properties/Index.vue',
+    'ConsoleProperties',
+    { global: true }
+  )
+
   registerComponentsDir(resolver, './runtime/components/organisms/Portfolio', {
     global: true,
     pathPrefix: true,

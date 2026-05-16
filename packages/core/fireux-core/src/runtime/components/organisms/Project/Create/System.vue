@@ -88,6 +88,6 @@ const headerDescription = computed(() =>
 const successTo = computed(() => {
   const explicit = String(props.returnTo || '').trim()
   if (explicit.startsWith('/')) return explicit
-  return isConsoleMode.value ? '/console/projects' : '/projects'
+  return isConsoleMode.value ? '/console/project' : '/projects'
 })
 </script>

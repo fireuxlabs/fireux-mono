@@ -31,14 +31,14 @@ export const demoBuenoHostPublicProperties: DemoBuenoHostPublicProperty[] = [
     manager_name: 'Demo Host',
     contact_mode: 'chat',
     booking_mode: 'enquiry',
-    headline: 'Public sample property pages for the BuenoHost landing page.',
+    headline: 'Public sample property info for the BuenoHost landing page.',
     summary:
       'A fictional alpine property that shows how a house manual becomes a mobile stay companion without exposing a real host or address.',
     price_hint: 'Demo only',
     availability_hint: 'Demo only',
     image_url:
       'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80',
-    amenities: ['Wi-Fi', 'Property pages', 'Check-in notes', 'Parking', 'Local recommendations'],
+    amenities: ['Wi-Fi', 'Property info', 'Check-in notes', 'Parking', 'Local recommendations'],
     public_notes: [
       'This is a fictional public sample for product demonstration.',
       'No real guest, host, address or access details are shown.',
@@ -54,14 +54,14 @@ export const demoBuenoHostPublicProperties: DemoBuenoHostPublicProperty[] = [
     manager_name: 'Apartment Manager Natalie',
     contact_mode: 'chat',
     booking_mode: 'enquiry',
-    headline: 'Manual-backed property pages for a real short-stay apartment.',
+    headline: 'Manual-backed property info for a real short-stay apartment.',
     summary:
       'Local proof property built from the source house manual. Missing booking, pricing and arrival details are flagged for host confirmation.',
     price_hint: 'Ask host',
     availability_hint: 'Ask host',
     image_url:
       'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80',
-    amenities: ['Wi-Fi', 'Property pages', 'Kitchen', 'Parking', 'Local transport'],
+    amenities: ['Wi-Fi', 'Property info', 'Kitchen', 'Parking', 'Local transport'],
     public_notes: [
       'Phone, email and address are present in the manual and need confirmation before a live public launch.',
       'Check-in time and building entry steps are missing from the source manual.',

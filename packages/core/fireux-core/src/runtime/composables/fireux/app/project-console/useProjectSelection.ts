@@ -12,7 +12,7 @@ type RuntimeProjectSelectionInput = {
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useProjectSelection() {
-  const { selectedId, selectedMode, selectEntity, clearSelection } = useConsole('projects')
+  const { selectedId, selectedMode, selectEntity, clearSelection } = useConsole('project')
 
   const setRuntimeProject = (selectionPatch: RuntimeProjectSelectionInput = {}) => {
     const nextId =

@@ -15,7 +15,7 @@
         <ul class="list-disc space-y-2 pl-5 text-sm">
           <li>Projects collection: <code>projects</code>.</li>
           <li>Runtime project model: <code>FireuxProjectModel</code>.</li>
-          <li>Console scope: <code>/console/projects/*</code>.</li>
+          <li>Console scope: <code>/console/project/*</code>.</li>
         </ul>
       </UCard>
 
@@ -30,15 +30,15 @@
             <p class="text-dimmed">Public project index sourced from <code>db.collections.projects</code>.</p>
           </div>
           <div class="rounded border border-default p-3">
-            <p class="font-mono">/console/projects</p>
+            <p class="font-mono">/console/project</p>
             <p class="text-dimmed">Project console home.</p>
           </div>
           <div class="rounded border border-default p-3">
-            <p class="font-mono">/console/projects/ecosystem</p>
+            <p class="font-mono">/console/project/ecosystem</p>
             <p class="text-dimmed">Project console section for ecosystems.</p>
           </div>
           <div class="rounded border border-default p-3">
-            <p class="font-mono">/console/projects/apps</p>
+            <p class="font-mono">/console/project/apps</p>
             <p class="text-dimmed">Project console section for apps.</p>
           </div>
         </div>

@@ -55,9 +55,9 @@ The main current `Project` route surfaces are:
   public generic collection surface
 - `/projects/[slug]`
   public detail surface using project `slug`
-- `/console/projects`
+- `/console/project`
   console family entry and user-scoped target selection
-- `/console/projects/overview`
+- `/console/project/overview`
   selected-target workspace overview
 
 Additional project child pages may exist beneath the selected workspace.

@@ -6,7 +6,7 @@ BuenoHost owns guest manual and short-stay host information.
 
 It is separate from Sproochli, Misebox, and Granite:
 
-- BuenoHost owns properties, public property pages, host messages, and future host editing.
+- BuenoHost owns properties, public property info, host messages, and future host editing.
 - Sproochli owns translation services and translation cache for structured documents owned by other apps.
 - Misebox owns kitchen/menu structure.
 - Granite owns portfolio management. BuenoHost properties may later be compatible with Granite portfolios, but BuenoHost is not a portfolio management tool.
@@ -22,13 +22,16 @@ Current proof routes:
 ```text
 /
 /properties/{propertySlug}
-/properties/{propertySlug}/pages
-/properties/{propertySlug}/pages/{pageId}
+/properties/{propertySlug}/info
+/properties/{propertySlug}/info/{infoId}
+/console/property
+/console/property/overview
+/console/property/qr
 ```
 
 ## Product Shape
 
-BuenoHost is information-first. Public property pages should answer the questions guests ask most often:
+BuenoHost is information-first. Public property info should answer the questions guests ask most often:
 
 - Emergency
 - Wi-Fi
@@ -44,23 +47,29 @@ BuenoHost is information-first. Public property pages should answer the question
 - Transport
 - Useful contacts
 
-Hosts should later be able to enable, disable, and edit property pages from host tools.
+Hosts should later be able to enable, disable, and edit property info from host tools.
+
+The current Property console scaffold is route-shape only. It exists so the
+child areas can be compared against Kitchen before data/write behavior is
+wired. `/console/property` and `/console/property/overview` follow the
+shared core console entry/overview shape. Property-owned child routes should be
+added only when their canon is explicit; the current child route is QR.
 
 Kitchen-shaped rule:
 
 ```text
 Kitchen -> public child menus/dishes
-Property -> public child pages
+Property -> public child info/topics
 ```
 
-Do not add a separate `guest guide` product bucket. The property owns its public pages directly.
+Do not add a separate `guest guide` product bucket. The property owns its public info directly.
 
 ## Data Canon
 
 The current proof uses app-local demo data:
 
 ```text
-projects/fireux/buenohost/app/demo/propertyPages.ts
+projects/fireux/buenohost/app/demo/propertyInfo.ts
 ```
 
 Nats has a seed script that should be renamed when the data migration is done:
@@ -79,28 +88,28 @@ BuenoHost property data should use:
 
 ```text
 properties/{propertyId}
-properties/{propertyId}/pages/{pageId}
+properties/{propertyId}/info/{infoId}
 properties/{propertyId}/messages/{messageId}
 properties/{propertyId}/maintainers/{maintainerId}
 ```
 
-Sproochli stores translations for these structured documents, but BuenoHost remains the source of truth for the property pages.
+Sproochli stores translations for these structured documents, but BuenoHost remains the source of truth for the property info.
 
-Every BuenoHost property page set that can be translated should expose a stable translation reference:
+Every BuenoHost property info topic set that can be translated should expose a stable translation reference:
 
 ```ts
 {
   source_app: 'buenohost',
-  document_type: 'property-pages',
+  document_type: 'property-info',
   document_slug: 'holiday-with-nats',
   source_language: 'en'
 }
 ```
 
-The public property pages can ask Sproochli for published translation availability:
+The public property info can ask Sproochli for published translation availability:
 
 ```text
-GET /api/public/translations/available?source_app=buenohost&document_type=property-pages&document_slug=holiday-with-nats
+GET /api/public/translations/available?source_app=buenohost&document_type=property-info&document_slug=holiday-with-nats
 ```
 
 Important rule:

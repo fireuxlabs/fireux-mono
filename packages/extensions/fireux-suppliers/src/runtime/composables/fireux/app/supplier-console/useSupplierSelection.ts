@@ -13,7 +13,7 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useSupplierSelection() {
   const { selectedId, selectedMode, selectEntity, clearSelection } =
-    useConsole('suppliers')
+    useConsole('supplier')
 
   const setRuntimeSupplier = (selectionPatch: RuntimeSupplierSelectionInput = {}) => {
     const nextId =

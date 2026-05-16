@@ -1,13 +1,13 @@
 <template>
-  <div v-if="resolvedPages" class="min-w-0 space-y-8">
+  <div v-if="resolvedInfo" class="min-w-0 space-y-8">
     <section class="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
       <div class="space-y-5">
         <div class="flex flex-wrap gap-2">
           <UBadge color="primary" variant="soft">
-            Property pages
+            Property info
           </UBadge>
           <UBadge color="neutral" variant="outline">
-            {{ resolvedPages.language.toUpperCase() }}
+            {{ resolvedInfo.language.toUpperCase() }}
           </UBadge>
           <UBadge color="neutral" variant="soft">
             Static proof
@@ -22,15 +22,15 @@
             {{ resolvedProperty.name }}
           </h1>
           <p class="max-w-2xl text-base leading-7 text-muted sm:text-lg">
-            {{ welcomePage?.summary || 'Clean mobile property pages for your stay.' }}
+            {{ welcomePage?.summary || 'Clean mobile property info for your stay.' }}
           </p>
         </div>
 
         <div class="grid gap-3 sm:flex sm:flex-wrap">
           <UButton :href="`tel:${phoneHref}`" icon="i-lucide-phone" color="primary" block class="sm:w-auto">
-            Call {{ resolvedPages.property.manager }}
+            Call {{ resolvedInfo.property.manager }}
           </UButton>
-          <UButton :href="`mailto:${resolvedPages.property.email}`" icon="i-lucide-mail" color="neutral" variant="soft" block class="sm:w-auto">
+          <UButton :href="`mailto:${resolvedInfo.property.email}`" icon="i-lucide-mail" color="neutral" variant="soft" block class="sm:w-auto">
             Email
           </UButton>
           <UButton
@@ -60,7 +60,7 @@
                   </h2>
                 </div>
                 <p class="text-sm leading-6 text-muted">
-                  BuenoHost owns these property pages. Sproochli owns any translated versions.
+                  BuenoHost owns this property info. Sproochli owns any translated versions.
                 </p>
               </div>
               <UBadge color="primary" variant="soft">
@@ -74,7 +74,7 @@
               variant="soft"
               icon="i-lucide-loader"
               title="Checking Sproochli"
-              description="Looking for published translations for these property pages."
+              description="Looking for published translations for this property info."
             />
 
             <UAlert
@@ -116,7 +116,7 @@
               variant="soft"
               icon="i-lucide-info"
               title="Translations not ready yet"
-              description="These property pages are currently available in their original English version only."
+              description="This property info is currently available in its original English version only."
             />
 
             <div class="rounded-md border border-dashed border-default bg-muted/30 p-4 text-sm text-muted">
@@ -130,17 +130,17 @@
           </div>
         </UCard>
 
-        <UCard v-if="resolvedPages.stay_message">
+        <UCard v-if="resolvedInfo.stay_message">
           <div class="flex items-start gap-3">
             <div class="rounded-md bg-primary/10 p-2 text-primary">
               <Icon name="i-lucide-calendar-heart" class="size-5" />
             </div>
             <div>
               <h2 class="text-xl font-semibold text-highlighted sm:text-2xl">
-                {{ resolvedPages.stay_message.title }}
+                {{ resolvedInfo.stay_message.title }}
               </h2>
-              <p v-if="resolvedPages.stay_message.subtitle" class="mt-1 text-sm text-muted">
-                {{ resolvedPages.stay_message.subtitle }}
+              <p v-if="resolvedInfo.stay_message.subtitle" class="mt-1 text-sm text-muted">
+                {{ resolvedInfo.stay_message.subtitle }}
               </p>
             </div>
           </div>
@@ -159,19 +159,19 @@
         <dl class="space-y-3 text-sm">
           <div>
             <dt class="font-medium text-muted">Manager</dt>
-            <dd>{{ resolvedPages.property.manager }}</dd>
+            <dd>{{ resolvedInfo.property.manager }}</dd>
           </div>
           <div>
             <dt class="font-medium text-muted">Phone</dt>
-            <dd>{{ resolvedPages.property.phone }}</dd>
+            <dd>{{ resolvedInfo.property.phone }}</dd>
           </div>
           <div>
             <dt class="font-medium text-muted">Email</dt>
-            <dd class="break-words">{{ resolvedPages.property.email }}</dd>
+            <dd class="break-words">{{ resolvedInfo.property.email }}</dd>
           </div>
           <div>
             <dt class="font-medium text-muted">Address</dt>
-            <dd class="break-words">{{ resolvedPages.property.address }}</dd>
+            <dd class="break-words">{{ resolvedInfo.property.address }}</dd>
           </div>
         </dl>
       </UCard>
@@ -216,72 +216,72 @@
       </div>
 
       <div class="grid gap-4 md:grid-cols-2">
-        <UCard v-for="page in priorityPages" :key="page.id">
+        <UCard v-for="topic in priorityTopics" :key="topic.id">
           <template #header>
             <div class="flex items-start gap-3">
               <div class="rounded-md bg-primary/10 p-2 text-primary">
-                <Icon :name="page.icon" class="size-5" />
+                <Icon :name="topic.icon" class="size-5" />
               </div>
               <div>
-                <h3 class="font-semibold">{{ page.title }}</h3>
-                <p class="mt-1 text-sm text-muted">{{ page.summary }}</p>
+                <h3 class="font-semibold">{{ topic.title }}</h3>
+                <p class="mt-1 text-sm text-muted">{{ topic.summary }}</p>
               </div>
             </div>
           </template>
           <UButton
-            :to="topicPath(page.id)"
+            :to="topicPath(topic.id)"
             icon="i-lucide-arrow-right"
             trailing
             block
             color="primary"
             variant="soft"
           >
-            Open {{ page.title }}
+            Open {{ topic.title }}
           </UButton>
         </UCard>
       </div>
     </section>
 
-    <section aria-label="Property pages topics" class="space-y-4">
+    <section aria-label="Property info topics" class="space-y-4">
       <div class="space-y-1">
         <p class="text-xs font-semibold uppercase text-primary">
-          Property pages
+          Property info
         </p>
         <h2 class="text-2xl font-semibold">
-          Property page topics
+          Property info topics
         </h2>
         <p class="max-w-2xl text-sm leading-6 text-muted">
-          Hosts can enable the pages that matter for each property. Disabled pages simply disappear from the public property pages.
+          Hosts can enable the info topics that matter for each property. Disabled topics simply disappear from public property info.
         </p>
       </div>
 
-      <UCard v-for="page in regularPages" :key="page.id">
+      <UCard v-for="topic in regularTopics" :key="topic.id">
         <template #header>
           <div class="flex items-start gap-3">
             <div class="rounded-md bg-elevated p-2 text-muted">
-              <Icon :name="page.icon" class="size-5" />
+              <Icon :name="topic.icon" class="size-5" />
             </div>
             <div>
-              <h2 class="text-lg font-semibold sm:text-xl">{{ page.title }}</h2>
-              <p class="mt-1 text-sm leading-6 text-muted">{{ page.summary }}</p>
+              <h2 class="text-lg font-semibold sm:text-xl">{{ topic.title }}</h2>
+              <p class="mt-1 text-sm leading-6 text-muted">{{ topic.summary }}</p>
             </div>
           </div>
         </template>
 
         <UButton
-          :to="topicPath(page.id)"
+          :to="topicPath(topic.id)"
           icon="i-lucide-arrow-right"
           trailing
           color="neutral"
           variant="soft"
         >
-          Open {{ page.title }}
+          Open {{ topic.title }}
         </UButton>
       </UCard>
     </section>
 
     <footer class="border-t border-default pt-6 text-sm text-muted">
-      <p>{{ resolvedPages.footer }}</p>
+      <p>{{ resolvedInfo.footer }}</p>
     </footer>
   </div>
   <UCard v-else>
@@ -290,10 +290,10 @@
         Error 404
       </UBadge>
       <h1 class="text-3xl font-semibold text-highlighted">
-        Property pages not found
+        Property info not found
       </h1>
       <p class="text-muted">
-        These property pages are not available in BuenoHost.
+        This property info is not available in BuenoHost.
       </p>
       <UButton to="/properties/demo-stay" color="primary" variant="soft">
         Back to properties
@@ -306,32 +306,32 @@
 import { computed, ref } from 'vue'
 import { setResponseStatus, useRuntimeConfig } from '#imports'
 import {
-  getPropertyPageTopics,
-  getEnabledPropertyPages,
-  resolvePropertyPages,
-  type PropertyPageItem,
-} from '../../../../demo/propertyPages'
+  getPropertyInfoTopics,
+  getEnabledPropertyInfoTopics,
+  resolvePropertyInfo,
+  type PropertyInfoItem,
+} from '../../../../demo/propertyInfo'
 import { findDemoBuenoHostPublicProperty } from '../../../../demo/properties'
 
 definePageMeta({
-  layout: 'property-pages',
+  layout: 'property-info',
 })
 
 const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
 const property = computed(() => findDemoBuenoHostPublicProperty(String(route.params.slug || '')))
-const pages = computed(() => property.value ? resolvePropertyPages(property.value.slug) : null)
+const info = computed(() => property.value ? resolvePropertyInfo(property.value.slug) : null)
 
-if (!pages.value) setResponseStatus(404)
+if (!info.value) setResponseStatus(404)
 
 const resolvedProperty = computed(() => property.value!)
-const resolvedPages = computed(() => pages.value!)
-const enabledPages = computed(() => getEnabledPropertyPages(resolvedPages.value))
-const welcomePage = computed(() => enabledPages.value.find((page) => page.id === 'welcome'))
-const pageTopics = computed(() => getPropertyPageTopics(resolvedPages.value))
-const priorityPages = computed(() => pageTopics.value.filter((page) => page.priority))
-const regularPages = computed(() => pageTopics.value.filter((page) => !page.priority))
-const phoneHref = computed(() => resolvedPages.value.property.phone.replace(/\s+/g, ''))
+const resolvedInfo = computed(() => info.value!)
+const enabledTopics = computed(() => getEnabledPropertyInfoTopics(resolvedInfo.value))
+const welcomePage = computed(() => enabledTopics.value.find((topic) => topic.id === 'welcome'))
+const infoTopics = computed(() => getPropertyInfoTopics(resolvedInfo.value))
+const priorityTopics = computed(() => infoTopics.value.filter((topic) => topic.priority))
+const regularTopics = computed(() => infoTopics.value.filter((topic) => !topic.priority))
+const phoneHref = computed(() => resolvedInfo.value.property.phone.replace(/\s+/g, ''))
 const showTranslations = ref(false)
 const translationAvailability = ref<TranslationAvailabilityResponse | null>(null)
 const translationAvailabilityPending = ref(false)
@@ -345,7 +345,7 @@ const sproochliBaseUrl = computed(() => {
 })
 
 const translationAvailabilityUrl = computed(() => {
-  const ref = resolvedPages.value.translation_ref
+  const ref = resolvedInfo.value.translation_ref
   const search = new URLSearchParams({
     source_app: ref.source_app,
     document_type: ref.document_type,
@@ -370,11 +370,11 @@ type TranslationAvailabilityResponse = {
   translations_ready: boolean
 }
 
-function topicPath(pageId: string) {
-  return `/properties/${resolvedProperty.value.slug}/pages/${pageId}`
+function topicPath(infoId: string) {
+  return `/properties/${resolvedProperty.value.slug}/info/${infoId}`
 }
 
-function itemClass(tone: PropertyPageItem['tone']) {
+function itemClass(tone: PropertyInfoItem['tone']) {
   if (tone === 'important') return 'border-primary/20 bg-primary/10 text-default'
   if (tone === 'warning') return 'border-warning/20 bg-warning/10 text-default'
   return 'bg-default text-default'
@@ -407,14 +407,14 @@ async function loadTranslationAvailability() {
 
 useSeoMeta({
   title: computed(() =>
-    resolvedPages.value
-      ? `${resolvedPages.value.title} · ${resolvedPages.value.property.name}`
-      : 'Property pages not found'
+    resolvedInfo.value
+      ? `${resolvedInfo.value.title} · ${resolvedInfo.value.property.name}`
+      : 'Property info not found'
   ),
   description: computed(() =>
-    resolvedPages.value
-      ? `Property pages for ${resolvedPages.value.property.name}`
-      : 'Property pages not found'
+    resolvedInfo.value
+      ? `Property info for ${resolvedInfo.value.property.name}`
+      : 'Property info not found'
   ),
 })
 </script>

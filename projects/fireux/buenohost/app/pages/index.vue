@@ -12,7 +12,7 @@
               The digital stay companion for your guests.
             </h1>
             <p class="max-w-2xl text-lg text-muted">
-              Turn any room, apartment or holiday into a digital stay companion with clear property pages.
+              Turn any room, apartment or holiday into a digital stay companion with clear property info.
             </p>
           </div>
         </div>
@@ -20,14 +20,14 @@
 
       <section
         class="space-y-6"
-        aria-labelledby="sample-pages-title"
+        aria-labelledby="sample-info-title"
       >
         <UCard variant="subtle">
           <div class="grid gap-8 lg:grid-cols-[22rem_minmax(0,1fr)] lg:items-center">
             <div class="space-y-4">
               <div class="mx-auto flex max-w-sm flex-col items-center gap-2">
                 <UButton
-                  :to="demoPagesPath"
+                  :to="demoInfoPath"
                   color="primary"
                   variant="soft"
                   icon="i-lucide-qr-code"
@@ -42,7 +42,7 @@
               </div>
 
               <NuxtLink
-                :to="demoPagesPath"
+                :to="demoInfoPath"
                 class="mx-auto block w-full max-w-sm rounded-lg border border-default bg-white p-5 text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
                 aria-label="Open the demo stay companion"
               >
@@ -102,7 +102,7 @@
 
             <div id="upload" class="flex h-full flex-col gap-5">
               <div class="space-y-2">
-                <h2 id="sample-pages-title" class="text-2xl font-semibold tracking-normal text-highlighted">
+                <h2 id="sample-info-title" class="text-2xl font-semibold tracking-normal text-highlighted">
                   A mobile house manual for tenants and short stays.
                 </h2>
                 <p class="text-muted">
@@ -174,21 +174,21 @@
 
       <section
         class="space-y-6"
-        aria-labelledby="property-pages-demo"
+        aria-labelledby="property-info-demo"
       >
         <div class="max-w-2xl space-y-2">
           <UButton
-            id="property-pages-demo"
-            :to="demoPagesPath"
+            id="property-info-demo"
+            to="/console/property"
             size="xl"
             variant="subtle"
             color="primary"
             icon="i-lucide-circle-play"
           >
-            Demo the property pages
+            Demo the host console
           </UButton>
           <p class="text-muted">
-            Preview the public information shape before host editing is added.
+            Open the Property console shape before data wiring is added.
           </p>
         </div>
 
@@ -286,7 +286,7 @@ import { toDataURL } from 'qrcode'
 import { computed, onMounted, ref } from 'vue'
 import { useRuntimeConfig, useSeoMeta } from '#imports'
 
-const demoPagesPath = '/properties/demo-stay/pages'
+const demoInfoPath = '/properties/demo-stay/info'
 const qrTargetUrl = ref('')
 const qrDataUrl = ref('')
 const runtimeConfig = useRuntimeConfig()
@@ -409,7 +409,7 @@ const pricingPlans = [
     features: [
       'Add more properties',
       'Separate URLs and QR codes',
-      'Reusable or specific property pages',
+      'Reusable or specific property info',
       'Property-level public information',
       'Account-level overview later',
     ],
@@ -447,12 +447,12 @@ const pricingPlans = [
 const consoleFeatures = [
   {
     title: 'Out of the box',
-    description: 'Start with ready-made pages for welcome, check-in, emergency and local recommendations.',
+    description: 'Start with ready-made info for welcome, check-in, emergency and local recommendations.',
     icon: 'i-lucide-layout-list',
   },
   {
     title: 'Create your own',
-    description: 'Tailor your manual with custom pages for anything your property, building or room needs.',
+    description: 'Tailor your manual with custom topics for anything your property, building or room needs.',
     icon: 'i-lucide-square-plus',
   },
   {
@@ -488,7 +488,7 @@ const integrationCards: IntegrationCard[] = [
   },
   {
     title: 'Find My SEO',
-    description: 'Work with SEO specialists to promote independent property pages beyond booking platforms.',
+    description: 'Work with SEO specialists to promote independent property info beyond booking platforms.',
     icon: 'i-lucide-search-check',
     appKey: 'findMySeo',
   },
@@ -584,7 +584,7 @@ async function fetchIntegrationAppInfo(appKey: IntegrationAppKey): Promise<void>
 }
 
 onMounted(async () => {
-  qrTargetUrl.value = new URL(demoPagesPath, window.location.origin).toString()
+  qrTargetUrl.value = new URL(demoInfoPath, window.location.origin).toString()
   qrDataUrl.value = await toDataURL(qrTargetUrl.value, {
     width: 512,
     margin: 1,
