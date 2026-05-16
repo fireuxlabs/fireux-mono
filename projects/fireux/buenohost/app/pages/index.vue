@@ -258,9 +258,9 @@ const pricingPlans = [
     billingPeriod: '/month each',
     features: [
       'Increase your portfolio',
-      'Separate guest URLs and QR codes',
+      'Separate URLs and QR codes',
       'Multi-property host console',
-      'Reusable house manual sections',
+      'Reusable or specific manual sections',
       'Portfolio overview',
     ],
     button: {
@@ -273,15 +273,16 @@ const pricingPlans = [
   },
   {
     id: 'room-qr-codes',
-    title: 'Extra Room QR Codes',
-    description: 'For room-specific QR codes, room notes or different guest instructions inside the same property.',
+    title: 'Room QR Codes',
+    description: 'For room-specific QR codes, room notes or different instructions inside the same property.',
     price: 'from £2',
     billingPeriod: '/month each',
     features: [
-      'Room-level QR codes',
-      'Guest room pages',
-      'Shared house notes',
-      'Serviced building support',
+      'Room-specific QR codes',
+      'Room notes and instructions',
+      'Shared property information',
+      'Different details per room',
+      'Useful for guesthouses and shared stays',
     ],
     button: {
       label: 'Add room QR codes',
