@@ -1,7 +1,7 @@
 {
   "name": "fireux-properties",
   "version": "0.1.0",
-  "description": "Portfolio, property, and unit domain extension for Granite",
+  "description": "Property and portfolio domain extension for FireUX apps",
   "private": true,
   "main": "./src/module.ts",
   "types": "./src/module.ts",

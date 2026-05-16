@@ -1,12 +1,15 @@
 # BuenoHost MVP
+Authority: Tier1 (Authoritative)
+Updated: 2026-05-16
 
 BuenoHost owns guest manual and short-stay host information.
 
-It is separate from Sproochli:
+It is separate from Sproochli, Misebox, and Granite:
 
-- BuenoHost owns properties, guest guides, guide sections, host messages, and future host console editing.
+- BuenoHost owns properties, public property pages, host messages, and future host editing.
 - Sproochli owns translation services and translation cache for structured documents owned by other apps.
 - Misebox owns kitchen/menu structure.
+- Granite owns portfolio management. BuenoHost properties may later be compatible with Granite portfolios, but BuenoHost is not a portfolio management tool.
 
 The first proof app lives at:
 
@@ -19,13 +22,13 @@ Current proof routes:
 ```text
 /
 /properties/{propertySlug}
-/properties/{propertySlug}/guide
-/properties/{propertySlug}/guide/{sectionId}
+/properties/{propertySlug}/pages
+/properties/{propertySlug}/pages/{pageId}
 ```
 
 ## Product Shape
 
-BuenoHost is information-first. A guide should answer the questions guests ask most often:
+BuenoHost is information-first. Public property pages should answer the questions guests ask most often:
 
 - Emergency
 - Wi-Fi
@@ -41,17 +44,26 @@ BuenoHost is information-first. A guide should answer the questions guests ask m
 - Transport
 - Useful contacts
 
-Hosts should later be able to enable, disable, and edit sections from a console.
+Hosts should later be able to enable, disable, and edit property pages from host tools.
+
+Kitchen-shaped rule:
+
+```text
+Kitchen -> public child menus/dishes
+Property -> public child pages
+```
+
+Do not add a separate `guest guide` product bucket. The property owns its public pages directly.
 
 ## Data Canon
 
 The current proof uses app-local demo data:
 
 ```text
-projects/fireux/buenohost/app/demo/guestGuides.ts
+projects/fireux/buenohost/app/demo/propertyPages.ts
 ```
 
-Nats has a seed script so the same content can live in the BuenoHost Firestore database:
+Nats has a seed script that should be renamed when the data migration is done:
 
 ```text
 scripts/seed-buenohost-guest-guides.mjs
@@ -63,33 +75,32 @@ The BuenoHost app database is:
 buenohost
 ```
 
-Guest guide data should use:
+BuenoHost property data should use:
 
 ```text
 properties/{propertyId}
-properties/{propertyId}/guest_guides/{guideId}
-properties/{propertyId}/guest_guides/{guideId}/sections/{sectionId}
-properties/{propertyId}/guest_messages/{messageId}
+properties/{propertyId}/pages/{pageId}
+properties/{propertyId}/messages/{messageId}
 properties/{propertyId}/maintainers/{maintainerId}
 ```
 
-Sproochli stores translations for these structured documents, but BuenoHost remains the source of truth for the host guide.
+Sproochli stores translations for these structured documents, but BuenoHost remains the source of truth for the property pages.
 
-Every BuenoHost guide that can be translated should expose a stable translation reference:
+Every BuenoHost property page set that can be translated should expose a stable translation reference:
 
 ```ts
 {
   source_app: 'buenohost',
-  document_type: 'guest-guide',
+  document_type: 'property-pages',
   document_slug: 'holiday-with-nats',
   source_language: 'en'
 }
 ```
 
-The public guide can ask Sproochli for published translation availability:
+The public property pages can ask Sproochli for published translation availability:
 
 ```text
-GET /api/public/translations/available?source_app=buenohost&document_type=guest-guide&document_slug=holiday-with-nats
+GET /api/public/translations/available?source_app=buenohost&document_type=property-pages&document_slug=holiday-with-nats
 ```
 
 Important rule:

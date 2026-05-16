@@ -4,11 +4,14 @@ Updated: 2026-05-15
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
-- Own portfolio-domain runtime and portfolio console behavior.
-- Provide the shared property engine for separate product shells such as:
-  - BuenoHost: short-stay and guest operations surfaces.
-  - Granite: estate, portfolio, and investment management surfaces.
-- Product shells may use different labels, navigation, and page emphasis while sharing the same canonical `portfolios` console family key, `/console/portfolio` route, and property data model.
+- Own portfolio-domain runtime and portfolio console behavior for Granite.
+- Provide shared property models and surfaces that product shells may use without adopting Portfolio as their app role.
+- BuenoHost is a standalone property information system:
+  - BuenoHost owns public property pages under `/properties/{propertySlug}/pages`.
+  - BuenoHost is not a portfolio management tool.
+  - BuenoHost must not expose the Portfolio console family unless a future property-console decision explicitly adds one.
+- Granite owns estate, portfolio, and investment management surfaces.
+- Properties may later be compatible with Granite portfolios, but Portfolio remains the Granite management grouping, not the required BuenoHost app shape.
 
 ## 2) Core entities
 - `Portfolio`
@@ -16,6 +19,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `Property`
   - `Client`
   - finance/incidents/documents children as the family evolves
+- BuenoHost may use `Property` as a root/public information entity without creating a Portfolio.
 
 ## 3) Identity rule
 - Portfolio identity is id-based (`portfolio.id` is canonical).
@@ -34,12 +38,21 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `app_scope_app_id`
 - Portfolio-owned operational children live under:
   - `apps/{appId}/portfolios/{portfolioId}/{childCollection}/{childId}`
+- BuenoHost public property information uses a Kitchen-shaped public child pattern:
+  - `properties/{propertyId}`
+  - `properties/{propertyId}/pages/{pageId}`
+  - `properties/{propertyId}/messages/{messageId}`
+  - `properties/{propertyId}/maintainers/{maintainerId}`
 
 ## 5) Routes (public vs internal; slug vs id)
 - Current id-based routes:
   - `/portfolios`
   - `/portfolios/[id]`
   - `/console/portfolio/*`
+- BuenoHost public routes:
+  - `/properties/[slug]`
+  - `/properties/[slug]/pages`
+  - `/properties/[slug]/pages/[pageId]`
 - Console family key:
   - `portfolios`
 - Console route segment:
@@ -84,3 +97,4 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - No treating `owner_label`, team naming, or branding context as console permission.
 - No implicit switch from public portfolio browsing to console authority.
 - No combining BuenoHost and Granite into one app shell just because they share this engine.
+- No adding a `guest guide` bucket between BuenoHost `Property` and its public pages.

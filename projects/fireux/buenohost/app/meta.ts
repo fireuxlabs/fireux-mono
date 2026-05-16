@@ -10,11 +10,11 @@ export const buenoHostLanguage = {
     highlight_terms: [
       'digital stay companion',
       'guest information',
-      'local guide',
+      'local recommendations',
       'check-in details',
     ],
     positioning_html:
-      'BuenoHost turns any room, apartment or holiday into a <strong>digital stay companion</strong> and local guide for your guests.',
+      'BuenoHost turns any room, apartment or holiday into a <strong>digital stay companion</strong> with clear property pages for your guests.',
     promise_html:
       'Hosts keep Wi-Fi, check-in details, parking, house rules, checkout notes, emergency contacts, and local recommendations in one clean guest-facing experience.',
     console_bridge_html:
@@ -22,7 +22,7 @@ export const buenoHostLanguage = {
     about_p1:
       'BuenoHost is for hosts and property managers who want clearer guest arrivals, fewer repeated questions, and a more professional stay experience.',
     about_p2:
-      'The MVP starts with public stay companion pages, then grows into an editable host console for reusable property information, local guide sections, and stay-specific notes.',
+      'The MVP starts with public property pages, then grows into editable host tools for reusable property information, local recommendations, and stay-specific notes.',
   },
   seo: {
     title: 'BuenoHost - Digital stay companions for guests',
@@ -32,8 +32,8 @@ export const buenoHostLanguage = {
       'digital stay companion',
       'guest information app',
       'Airbnb house manual',
-      'holiday apartment guide',
-      'local guide for guests',
+      'holiday apartment guest information',
+      'local recommendations for guests',
       'host information system',
     ],
     audience: ['holiday apartment hosts', 'short-stay hosts', 'property managers'],
@@ -42,23 +42,23 @@ export const buenoHostLanguage = {
   },
   cta: {
     primary: {
-      label: 'Open host dashboard',
-      to: '/console/portfolio',
+      label: 'View demo property',
+      to: '/properties/demo-stay',
     },
     secondary: {
-      label: 'View properties',
-      to: '/console/portfolio/properties',
+      label: 'View property pages',
+      to: '/properties/demo-stay/pages',
     },
     console: {
-      label: 'View properties',
-      to: '/console/portfolio/properties',
+      label: 'View property pages',
+      to: '/properties/demo-stay/pages',
     },
   },
   lists: {
     hero_bullets: [
       'Wi-Fi, check-in, parking and checkout details',
       'Local recommendations and stay-specific notes',
-      'Reusable sections hosts can enable, hide or update',
+      'Reusable pages hosts can enable, hide or update',
     ],
     about_ticks: [
       'A guest-ready digital stay companion',
@@ -76,7 +76,7 @@ export const buenoHostLanguage = {
       purpose: 'The public mobile experience guests open before or during a stay.',
     },
     {
-      id: 'GuideSection',
+      id: 'PropertyPage',
       purpose:
         'A reusable guest information topic such as Wi-Fi, check-in, checkout, parking, or local recommendations.',
     },
@@ -88,7 +88,7 @@ export const buenoHostLanguage = {
   relations_ascii: `
 Property
   -> StayCompanion
-    -> GuideSection
+    -> PropertyPage
     -> GuestMessage
 
 `,

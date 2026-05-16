@@ -12,7 +12,7 @@
               The digital stay companion for your guests.
             </h1>
             <p class="max-w-2xl text-lg text-muted">
-              Turn any room, apartment or holiday into a digital stay companion and local guide.
+              Turn any room, apartment or holiday into a digital stay companion with clear property pages.
             </p>
           </div>
         </div>
@@ -20,14 +20,14 @@
 
       <section
         class="space-y-6"
-        aria-labelledby="sample-guide-title"
+        aria-labelledby="sample-pages-title"
       >
         <UCard variant="subtle">
           <div class="grid gap-8 lg:grid-cols-[22rem_minmax(0,1fr)] lg:items-center">
             <div class="space-y-4">
               <div class="mx-auto flex max-w-sm flex-col items-center gap-2">
                 <UButton
-                  :to="demoGuidePath"
+                  :to="demoPagesPath"
                   color="primary"
                   variant="soft"
                   icon="i-lucide-qr-code"
@@ -42,7 +42,7 @@
               </div>
 
               <NuxtLink
-                :to="demoGuidePath"
+                :to="demoPagesPath"
                 class="mx-auto block w-full max-w-sm rounded-lg border border-default bg-white p-5 text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
                 aria-label="Open the demo stay companion"
               >
@@ -102,11 +102,11 @@
 
             <div id="upload" class="flex h-full flex-col gap-5">
               <div class="space-y-2">
-                <h2 id="sample-guide-title" class="text-2xl font-semibold tracking-normal text-highlighted">
+                <h2 id="sample-pages-title" class="text-2xl font-semibold tracking-normal text-highlighted">
                   A mobile house manual for tenants and short stays.
                 </h2>
                 <p class="text-muted">
-                  BuenoHost organises your check-in, parking, house rules, apartment details, local guide, checkout and emergency information into one mobile house manual.
+                  BuenoHost organises your check-in, parking, house rules, apartment details, local recommendations, checkout and emergency information into one mobile house manual.
                 </p>
               </div>
 
@@ -174,21 +174,21 @@
 
       <section
         class="space-y-6"
-        aria-labelledby="host-console-demo"
+        aria-labelledby="property-pages-demo"
       >
         <div class="max-w-2xl space-y-2">
           <UButton
-            id="host-console-demo"
-            to="/console/portfolio"
+            id="property-pages-demo"
+            :to="demoPagesPath"
             size="xl"
             variant="subtle"
             color="primary"
             icon="i-lucide-circle-play"
           >
-            Demo the host console
+            Demo the property pages
           </UButton>
           <p class="text-muted">
-            Test out our console, or configure your own.
+            Preview the public information shape before host editing is added.
           </p>
         </div>
 
@@ -283,9 +283,10 @@
 
 <script setup lang="ts">
 import { toDataURL } from 'qrcode'
-import { computed, onMounted, ref, useRuntimeConfig } from '#imports'
+import { computed, onMounted, ref } from 'vue'
+import { useRuntimeConfig, useSeoMeta } from '#imports'
 
-const demoGuidePath = '/properties/demo-stay/guide'
+const demoPagesPath = '/properties/demo-stay/pages'
 const qrTargetUrl = ref('')
 const qrDataUrl = ref('')
 const runtimeConfig = useRuntimeConfig()
@@ -338,7 +339,7 @@ const stickerTopics = [
   'Parking',
   'Checkout',
   'House rules',
-  'Local guide',
+  'Local recommendations',
 ]
 
 const guestAppPreview = [
@@ -358,7 +359,7 @@ const guestAppPreview = [
     icon: 'i-lucide-siren',
   },
   {
-    title: 'Local Guide',
+    title: 'Local Recommendations',
     description: 'Shops, transport and nearby recommendations.',
     icon: 'i-lucide-map-pin',
   },
@@ -402,15 +403,15 @@ const pricingPlans = [
   {
     id: 'extra-properties',
     title: 'Extra Properties',
-    description: 'Add additional properties to the same console.',
+    description: 'Add additional properties to the same BuenoHost account.',
     price: '+ £5',
     billingPeriod: '/ month',
     features: [
-      'Increase your portfolio',
+      'Add more properties',
       'Separate URLs and QR codes',
-      'Multi-property host console',
-      'Reusable or specific manual sections',
-      'Portfolio overview',
+      'Reusable or specific property pages',
+      'Property-level public information',
+      'Account-level overview later',
     ],
     button: {
       label: 'Add additional property',
@@ -446,12 +447,12 @@ const pricingPlans = [
 const consoleFeatures = [
   {
     title: 'Out of the box',
-    description: 'Start with ready-made sections for welcome, check-in, emergency and local guide information.',
+    description: 'Start with ready-made pages for welcome, check-in, emergency and local recommendations.',
     icon: 'i-lucide-layout-list',
   },
   {
     title: 'Create your own',
-    description: 'Tailor your manual with custom sections for anything your property, building or room needs.',
+    description: 'Tailor your manual with custom pages for anything your property, building or room needs.',
     icon: 'i-lucide-square-plus',
   },
   {
@@ -583,7 +584,7 @@ async function fetchIntegrationAppInfo(appKey: IntegrationAppKey): Promise<void>
 }
 
 onMounted(async () => {
-  qrTargetUrl.value = new URL(demoGuidePath, window.location.origin).toString()
+  qrTargetUrl.value = new URL(demoPagesPath, window.location.origin).toString()
   qrDataUrl.value = await toDataURL(qrTargetUrl.value, {
     width: 512,
     margin: 1,

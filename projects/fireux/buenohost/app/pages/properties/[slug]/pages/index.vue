@@ -1,13 +1,13 @@
 <template>
-  <div v-if="resolvedGuide" class="min-w-0 space-y-8">
+  <div v-if="resolvedPages" class="min-w-0 space-y-8">
     <section class="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
       <div class="space-y-5">
         <div class="flex flex-wrap gap-2">
           <UBadge color="primary" variant="soft">
-            Guest guide
+            Property pages
           </UBadge>
           <UBadge color="neutral" variant="outline">
-            {{ resolvedGuide.language.toUpperCase() }}
+            {{ resolvedPages.language.toUpperCase() }}
           </UBadge>
           <UBadge color="neutral" variant="soft">
             Static proof
@@ -19,18 +19,18 @@
             {{ resolvedProperty.name }}
           </p>
           <h1 class="max-w-3xl text-3xl font-semibold tracking-normal text-highlighted sm:text-5xl">
-            {{ resolvedGuide.title }}
+            {{ resolvedProperty.name }}
           </h1>
           <p class="max-w-2xl text-base leading-7 text-muted sm:text-lg">
-            {{ welcomeSection?.summary || 'A clean mobile guest guide for your stay.' }}
+            {{ welcomePage?.summary || 'Clean mobile property pages for your stay.' }}
           </p>
         </div>
 
         <div class="grid gap-3 sm:flex sm:flex-wrap">
           <UButton :href="`tel:${phoneHref}`" icon="i-lucide-phone" color="primary" block class="sm:w-auto">
-            Call {{ resolvedGuide.property.manager }}
+            Call {{ resolvedPages.property.manager }}
           </UButton>
-          <UButton :href="`mailto:${resolvedGuide.property.email}`" icon="i-lucide-mail" color="neutral" variant="soft" block class="sm:w-auto">
+          <UButton :href="`mailto:${resolvedPages.property.email}`" icon="i-lucide-mail" color="neutral" variant="soft" block class="sm:w-auto">
             Email
           </UButton>
           <UButton
@@ -60,7 +60,7 @@
                   </h2>
                 </div>
                 <p class="text-sm leading-6 text-muted">
-                  BuenoHost owns this guide. Sproochli owns any translated versions.
+                  BuenoHost owns these property pages. Sproochli owns any translated versions.
                 </p>
               </div>
               <UBadge color="primary" variant="soft">
@@ -74,7 +74,7 @@
               variant="soft"
               icon="i-lucide-loader"
               title="Checking Sproochli"
-              description="Looking for published translations for this guest guide."
+              description="Looking for published translations for these property pages."
             />
 
             <UAlert
@@ -116,7 +116,7 @@
               variant="soft"
               icon="i-lucide-info"
               title="Translations not ready yet"
-              description="This guide is currently available in its original English version only."
+              description="These property pages are currently available in their original English version only."
             />
 
             <div class="rounded-md border border-dashed border-default bg-muted/30 p-4 text-sm text-muted">
@@ -130,17 +130,17 @@
           </div>
         </UCard>
 
-        <UCard v-if="resolvedGuide.guest_message">
+        <UCard v-if="resolvedPages.stay_message">
           <div class="flex items-start gap-3">
             <div class="rounded-md bg-primary/10 p-2 text-primary">
               <Icon name="i-lucide-calendar-heart" class="size-5" />
             </div>
             <div>
               <h2 class="text-xl font-semibold text-highlighted sm:text-2xl">
-                {{ resolvedGuide.guest_message.title }}
+                {{ resolvedPages.stay_message.title }}
               </h2>
-              <p v-if="resolvedGuide.guest_message.subtitle" class="mt-1 text-sm text-muted">
-                {{ resolvedGuide.guest_message.subtitle }}
+              <p v-if="resolvedPages.stay_message.subtitle" class="mt-1 text-sm text-muted">
+                {{ resolvedPages.stay_message.subtitle }}
               </p>
             </div>
           </div>
@@ -159,40 +159,40 @@
         <dl class="space-y-3 text-sm">
           <div>
             <dt class="font-medium text-muted">Manager</dt>
-            <dd>{{ resolvedGuide.property.manager }}</dd>
+            <dd>{{ resolvedPages.property.manager }}</dd>
           </div>
           <div>
             <dt class="font-medium text-muted">Phone</dt>
-            <dd>{{ resolvedGuide.property.phone }}</dd>
+            <dd>{{ resolvedPages.property.phone }}</dd>
           </div>
           <div>
             <dt class="font-medium text-muted">Email</dt>
-            <dd class="break-words">{{ resolvedGuide.property.email }}</dd>
+            <dd class="break-words">{{ resolvedPages.property.email }}</dd>
           </div>
           <div>
             <dt class="font-medium text-muted">Address</dt>
-            <dd class="break-words">{{ resolvedGuide.property.address }}</dd>
+            <dd class="break-words">{{ resolvedPages.property.address }}</dd>
           </div>
         </dl>
       </UCard>
     </section>
 
-    <UCard v-if="welcomeSection">
+    <UCard v-if="welcomePage">
       <template #header>
         <div class="flex items-start gap-3">
           <div class="rounded-md bg-primary/10 p-2 text-primary">
-            <Icon :name="welcomeSection.icon" class="size-5" />
+            <Icon :name="welcomePage.icon" class="size-5" />
           </div>
           <div>
-            <h2 class="text-xl font-semibold">{{ welcomeSection.title }}</h2>
-            <p class="mt-1 text-sm leading-6 text-muted">{{ welcomeSection.summary }}</p>
+            <h2 class="text-xl font-semibold">{{ welcomePage.title }}</h2>
+            <p class="mt-1 text-sm leading-6 text-muted">{{ welcomePage.summary }}</p>
           </div>
         </div>
       </template>
 
       <ul class="grid gap-2">
         <li
-          v-for="item in welcomeSection.items"
+          v-for="item in welcomePage.items"
           :key="item.label || item.value"
           class="rounded-md border border-default px-3 py-2 text-sm"
           :class="itemClass(item.tone)"
@@ -216,72 +216,72 @@
       </div>
 
       <div class="grid gap-4 md:grid-cols-2">
-        <UCard v-for="section in prioritySections" :key="section.id">
+        <UCard v-for="page in priorityPages" :key="page.id">
           <template #header>
             <div class="flex items-start gap-3">
               <div class="rounded-md bg-primary/10 p-2 text-primary">
-                <Icon :name="section.icon" class="size-5" />
+                <Icon :name="page.icon" class="size-5" />
               </div>
               <div>
-                <h3 class="font-semibold">{{ section.title }}</h3>
-                <p class="mt-1 text-sm text-muted">{{ section.summary }}</p>
+                <h3 class="font-semibold">{{ page.title }}</h3>
+                <p class="mt-1 text-sm text-muted">{{ page.summary }}</p>
               </div>
             </div>
           </template>
           <UButton
-            :to="topicPath(section.id)"
+            :to="topicPath(page.id)"
             icon="i-lucide-arrow-right"
             trailing
             block
             color="primary"
             variant="soft"
           >
-            Open {{ section.title }}
+            Open {{ page.title }}
           </UButton>
         </UCard>
       </div>
     </section>
 
-    <section aria-label="Guest guide topics" class="space-y-4">
+    <section aria-label="Property pages topics" class="space-y-4">
       <div class="space-y-1">
         <p class="text-xs font-semibold uppercase text-primary">
-          Guest guide
+          Property pages
         </p>
         <h2 class="text-2xl font-semibold">
-          Guest guide topics
+          Property page topics
         </h2>
         <p class="max-w-2xl text-sm leading-6 text-muted">
-          Hosts can enable the topics that matter for each property. Disabled topics simply disappear from the guest guide.
+          Hosts can enable the pages that matter for each property. Disabled pages simply disappear from the public property pages.
         </p>
       </div>
 
-      <UCard v-for="section in regularSections" :key="section.id">
+      <UCard v-for="page in regularPages" :key="page.id">
         <template #header>
           <div class="flex items-start gap-3">
             <div class="rounded-md bg-elevated p-2 text-muted">
-              <Icon :name="section.icon" class="size-5" />
+              <Icon :name="page.icon" class="size-5" />
             </div>
             <div>
-              <h2 class="text-lg font-semibold sm:text-xl">{{ section.title }}</h2>
-              <p class="mt-1 text-sm leading-6 text-muted">{{ section.summary }}</p>
+              <h2 class="text-lg font-semibold sm:text-xl">{{ page.title }}</h2>
+              <p class="mt-1 text-sm leading-6 text-muted">{{ page.summary }}</p>
             </div>
           </div>
         </template>
 
         <UButton
-          :to="topicPath(section.id)"
+          :to="topicPath(page.id)"
           icon="i-lucide-arrow-right"
           trailing
           color="neutral"
           variant="soft"
         >
-          Open {{ section.title }}
+          Open {{ page.title }}
         </UButton>
       </UCard>
     </section>
 
     <footer class="border-t border-default pt-6 text-sm text-muted">
-      <p>{{ resolvedGuide.footer }}</p>
+      <p>{{ resolvedPages.footer }}</p>
     </footer>
   </div>
   <UCard v-else>
@@ -290,10 +290,10 @@
         Error 404
       </UBadge>
       <h1 class="text-3xl font-semibold text-highlighted">
-        Guest guide not found
+        Property pages not found
       </h1>
       <p class="text-muted">
-        This guide is not available in BuenoHost.
+        These property pages are not available in BuenoHost.
       </p>
       <UButton to="/properties/demo-stay" color="primary" variant="soft">
         Back to properties
@@ -303,33 +303,35 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
+import { setResponseStatus, useRuntimeConfig } from '#imports'
 import {
-  getGuestGuideTopics,
-  getEnabledGuestGuideSections,
-  resolveGuestGuide,
-  type GuestGuideItem,
-} from '../../../../demo/guestGuides'
+  getPropertyPageTopics,
+  getEnabledPropertyPages,
+  resolvePropertyPages,
+  type PropertyPageItem,
+} from '../../../../demo/propertyPages'
 import { findDemoBuenoHostPublicProperty } from '../../../../demo/properties'
 
 definePageMeta({
-  layout: 'guest-guide',
+  layout: 'property-pages',
 })
 
 const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
 const property = computed(() => findDemoBuenoHostPublicProperty(String(route.params.slug || '')))
-const guide = computed(() => property.value ? resolveGuestGuide(property.value.guide_slug) : null)
+const pages = computed(() => property.value ? resolvePropertyPages(property.value.slug) : null)
 
-if (!guide.value) setResponseStatus(404)
+if (!pages.value) setResponseStatus(404)
 
 const resolvedProperty = computed(() => property.value!)
-const resolvedGuide = computed(() => guide.value!)
-const enabledSections = computed(() => getEnabledGuestGuideSections(resolvedGuide.value))
-const welcomeSection = computed(() => enabledSections.value.find((section) => section.id === 'welcome'))
-const guestTopics = computed(() => getGuestGuideTopics(resolvedGuide.value))
-const prioritySections = computed(() => guestTopics.value.filter((section) => section.priority))
-const regularSections = computed(() => guestTopics.value.filter((section) => !section.priority))
-const phoneHref = computed(() => resolvedGuide.value.property.phone.replace(/\s+/g, ''))
+const resolvedPages = computed(() => pages.value!)
+const enabledPages = computed(() => getEnabledPropertyPages(resolvedPages.value))
+const welcomePage = computed(() => enabledPages.value.find((page) => page.id === 'welcome'))
+const pageTopics = computed(() => getPropertyPageTopics(resolvedPages.value))
+const priorityPages = computed(() => pageTopics.value.filter((page) => page.priority))
+const regularPages = computed(() => pageTopics.value.filter((page) => !page.priority))
+const phoneHref = computed(() => resolvedPages.value.property.phone.replace(/\s+/g, ''))
 const showTranslations = ref(false)
 const translationAvailability = ref<TranslationAvailabilityResponse | null>(null)
 const translationAvailabilityPending = ref(false)
@@ -343,7 +345,7 @@ const sproochliBaseUrl = computed(() => {
 })
 
 const translationAvailabilityUrl = computed(() => {
-  const ref = resolvedGuide.value.translation_ref
+  const ref = resolvedPages.value.translation_ref
   const search = new URLSearchParams({
     source_app: ref.source_app,
     document_type: ref.document_type,
@@ -368,11 +370,11 @@ type TranslationAvailabilityResponse = {
   translations_ready: boolean
 }
 
-function topicPath(sectionId: string) {
-  return `/properties/${resolvedProperty.value.slug}/guide/${sectionId}`
+function topicPath(pageId: string) {
+  return `/properties/${resolvedProperty.value.slug}/pages/${pageId}`
 }
 
-function itemClass(tone: GuestGuideItem['tone']) {
+function itemClass(tone: PropertyPageItem['tone']) {
   if (tone === 'important') return 'border-primary/20 bg-primary/10 text-default'
   if (tone === 'warning') return 'border-warning/20 bg-warning/10 text-default'
   return 'bg-default text-default'
@@ -405,14 +407,14 @@ async function loadTranslationAvailability() {
 
 useSeoMeta({
   title: computed(() =>
-    resolvedGuide.value
-      ? `${resolvedGuide.value.title} · ${resolvedGuide.value.property.name}`
-      : 'Guest guide not found'
+    resolvedPages.value
+      ? `${resolvedPages.value.title} · ${resolvedPages.value.property.name}`
+      : 'Property pages not found'
   ),
   description: computed(() =>
-    resolvedGuide.value
-      ? `Guest guide for ${resolvedGuide.value.property.name}`
-      : 'Guest guide not found'
+    resolvedPages.value
+      ? `Property pages for ${resolvedPages.value.property.name}`
+      : 'Property pages not found'
   ),
 })
 </script>

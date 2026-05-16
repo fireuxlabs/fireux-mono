@@ -1,27 +1,27 @@
-export type GuestGuideItem = {
+export type PropertyPageItem = {
   label?: string
   value: string
   tone?: 'default' | 'important' | 'warning'
 }
 
-export type GuestGuideSection = {
+export type PropertyPage = {
   id: string
   title: string
   summary: string
   icon: string
   priority?: boolean
   enabled?: boolean
-  items: GuestGuideItem[]
+  items: PropertyPageItem[]
 }
 
-export type GuestGuideTranslationRef = {
+export type PropertyPagesTranslationRef = {
   source_app: 'buenohost'
-  document_type: 'guest-guide'
+  document_type: 'property-pages'
   document_slug: string
   source_language: 'en'
 }
 
-export type GuestGuideSourceNote = {
+export type PropertyPageSourceNote = {
   id: string
   status: 'needs_source_confirmation'
   owner: string
@@ -29,16 +29,15 @@ export type GuestGuideSourceNote = {
   note: string
 }
 
-export type GuestGuide = {
-  type: 'buenohost-guest-guide'
+export type PropertyPageCollection = {
+  type: 'buenohost-property-pages'
   slug: string
-  portfolio_id?: string
   property_id?: string
   language: 'en'
   title: string
   status: 'demo' | 'live'
-  translation_ref: GuestGuideTranslationRef
-  guest_message?: {
+  translation_ref: PropertyPagesTranslationRef
+  stay_message?: {
     title: string
     subtitle?: string
   }
@@ -54,11 +53,11 @@ export type GuestGuide = {
   }
   privacy_note: string
   footer: string
-  source_notes?: GuestGuideSourceNote[]
-  sections: GuestGuideSection[]
+  source_notes?: PropertyPageSourceNote[]
+  pages: PropertyPage[]
 }
 
-export const standardGuestGuideTopicIds = [
+export const standardPropertyPageIds = [
   'emergency',
   'wifi',
   'check-in',
@@ -81,7 +80,7 @@ export const standardGuestGuideTopicIds = [
   'useful-contacts',
 ] as const
 
-export const holidayWithNatsSourceNotes: GuestGuideSourceNote[] = [
+export const holidayWithNatsSourceNotes: PropertyPageSourceNote[] = [
   {
     id: 'ask-nat-check-in-time',
     status: 'needs_source_confirmation',
@@ -140,8 +139,8 @@ export const holidayWithNatsSourceNotes: GuestGuideSourceNote[] = [
   },
 ]
 
-export const holidayWithNatsGuestGuide: GuestGuide = {
-  type: 'buenohost-guest-guide',
+export const holidayWithNatsPropertyPages: PropertyPageCollection = {
+  type: 'buenohost-property-pages',
   slug: 'holiday-with-nats',
   property_id: 'holiday-with-nats',
   language: 'en',
@@ -149,17 +148,17 @@ export const holidayWithNatsGuestGuide: GuestGuide = {
   status: 'demo',
   translation_ref: {
     source_app: 'buenohost',
-    document_type: 'guest-guide',
+    document_type: 'property-pages',
     document_slug: 'holiday-with-nats',
     source_language: 'en',
   },
-  guest_message: {
+  stay_message: {
     title: 'Welcome Family Watson',
     subtitle: 'Today - 27th of March',
   },
   property: {
     name: 'Penthouse Holiday Apartment',
-    type: 'Guest guide',
+    type: 'Property pages',
     original_language: 'en',
     primary_language: 'en',
     manager: 'Apartment Manager Natalie',
@@ -171,7 +170,7 @@ export const holidayWithNatsGuestGuide: GuestGuide = {
     'Local proof content from the source manual. Phone and email should be confirmed before public deployment.',
   footer: 'Powered by BuenoHost.',
   source_notes: holidayWithNatsSourceNotes,
-  sections: [
+  pages: [
     {
       id: 'welcome',
       title: 'Welcome',
@@ -383,8 +382,8 @@ export const holidayWithNatsGuestGuide: GuestGuide = {
   ],
 }
 
-export const demoStayGuestGuide: GuestGuide = {
-  type: 'buenohost-guest-guide',
+export const demoStayPropertyPages: PropertyPageCollection = {
+  type: 'buenohost-property-pages',
   slug: 'demo-stay',
   property_id: 'demo-stay',
   language: 'en',
@@ -392,17 +391,17 @@ export const demoStayGuestGuide: GuestGuide = {
   status: 'demo',
   translation_ref: {
     source_app: 'buenohost',
-    document_type: 'guest-guide',
+    document_type: 'property-pages',
     document_slug: 'demo-stay',
     source_language: 'en',
   },
-  guest_message: {
+  stay_message: {
     title: 'Welcome to your stay',
     subtitle: 'Everything useful in one mobile house manual.',
   },
   property: {
     name: 'Luxurious Mountain Chalet',
-    type: 'Guest guide',
+    type: 'Property pages',
     original_language: 'en',
     primary_language: 'en',
     manager: 'Demo Host',
@@ -412,7 +411,7 @@ export const demoStayGuestGuide: GuestGuide = {
   },
   privacy_note: 'Fictional public sample. No real host, guest, address or access details are shown.',
   footer: 'Powered by BuenoHost.',
-  sections: [
+  pages: [
     {
       id: 'welcome',
       title: 'Welcome',
@@ -424,7 +423,7 @@ export const demoStayGuestGuide: GuestGuide = {
         { value: 'Welcome to Luxurious Mountain Chalet.' },
         { label: 'Wi-Fi', value: 'DemoStay Guest / demo-stay-2026', tone: 'important' },
         { label: 'Host contact', value: 'Use the BuenoHost chat button for demo support.' },
-        { value: 'Keep this guide open during your stay for check-in, house rules and local tips.' },
+        { value: 'Keep these property pages open during your stay for check-in, house rules and local tips.' },
       ],
     },
     {
@@ -483,7 +482,7 @@ export const demoStayGuestGuide: GuestGuide = {
     },
     {
       id: 'apartment-info',
-      title: 'Apartment Guide',
+      title: 'Apartment Info',
       summary: 'Useful instructions for heating, appliances and recycling.',
       icon: 'i-lucide-info',
       enabled: true,
@@ -509,7 +508,7 @@ export const demoStayGuestGuide: GuestGuide = {
     },
     {
       id: 'local-information',
-      title: 'Local Guide',
+      title: 'Local Information',
       summary: 'Shops, transport and nearby recommendations.',
       icon: 'i-lucide-map-pin',
       enabled: true,
@@ -522,23 +521,23 @@ export const demoStayGuestGuide: GuestGuide = {
   ],
 }
 
-export const guestGuides = [demoStayGuestGuide, holidayWithNatsGuestGuide] as const
+export const propertyPageCollections = [demoStayPropertyPages, holidayWithNatsPropertyPages] as const
 
-export function resolveGuestGuide(slug: string): GuestGuide | null {
-  return guestGuides.find((guide) => guide.slug === slug) ?? null
+export function resolvePropertyPages(slug: string): PropertyPageCollection | null {
+  return propertyPageCollections.find((pages) => pages.slug === slug) ?? null
 }
 
-export function getEnabledGuestGuideSections(guide: GuestGuide): GuestGuideSection[] {
-  return guide.sections.filter((section) => section.enabled !== false)
+export function getEnabledPropertyPages(pages: PropertyPageCollection): PropertyPage[] {
+  return pages.pages.filter((page) => page.enabled !== false)
 }
 
-export function getGuestGuideTopics(guide: GuestGuide): GuestGuideSection[] {
-  return getEnabledGuestGuideSections(guide).filter((section) => section.id !== 'welcome')
+export function getPropertyPageTopics(pages: PropertyPageCollection): PropertyPage[] {
+  return getEnabledPropertyPages(pages).filter((page) => page.id !== 'welcome')
 }
 
-export function resolveGuestGuideSection(slug: string, sectionId: string): GuestGuideSection | null {
-  const guide = resolveGuestGuide(slug)
-  if (!guide) return null
+export function resolvePropertyPage(slug: string, pageId: string): PropertyPage | null {
+  const pages = resolvePropertyPages(slug)
+  if (!pages) return null
 
-  return getGuestGuideTopics(guide).find((section) => section.id === sectionId) ?? null
+  return getPropertyPageTopics(pages).find((page) => page.id === pageId) ?? null
 }

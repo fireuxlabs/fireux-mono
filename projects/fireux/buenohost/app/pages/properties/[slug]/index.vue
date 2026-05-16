@@ -12,12 +12,12 @@
 
       <template #links>
         <UButton
-          :to="`/properties/${property.slug}/guide`"
+          :to="`/properties/${property.slug}/pages`"
           color="neutral"
           variant="soft"
           icon="i-lucide-book-open"
         >
-          View guest guide
+          View property pages
         </UButton>
       </template>
     </UPageHeader>
