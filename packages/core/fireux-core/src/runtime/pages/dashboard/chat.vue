@@ -1,27 +1,60 @@
 <template>
-  <UDashboardPanel id="admin-chat">
+  <UDashboardPanel id="chat">
     <template #header>
-      <LayoutsDashboardNavbar title="Admin Chat" />
+      <LayoutsDashboardNavbar title="Chat" />
     </template>
 
     <template #body>
-      <div class="grid gap-4 lg:grid-cols-[20rem_minmax(0,1fr)]">
+      <div class="grid gap-4 lg:grid-cols-[22rem_minmax(0,1fr)]">
         <UCard>
-          <div class="space-y-4">
+          <div class="space-y-5">
             <div>
-              <h2 class="font-semibold">Conversations</h2>
+              <div class="flex items-center justify-between gap-3">
+                <h2 class="font-semibold">Conversations</h2>
+
+                <UBadge color="neutral" variant="soft">
+                  {{ conversationsLabel }}
+                </UBadge>
+              </div>
+
               <p class="text-sm text-muted">
                 Public messages sent to {{ fireux.appShortName || fireux.appName }}.
               </p>
             </div>
+
+            <div class="grid grid-cols-3 gap-2">
+              <UCard
+                v-for="metric in conversationMetrics"
+                :key="metric.label"
+                variant="subtle"
+                :ui="{ body: 'p-3' }"
+              >
+                <div class="text-lg font-semibold">{{ metric.value }}</div>
+                <div class="text-xs text-muted">{{ metric.label }}</div>
+              </UCard>
+            </div>
+
+            <UAlert
+              v-if="pending"
+              color="neutral"
+              variant="soft"
+              title="Loading conversations"
+              description="Checking the shared conversation inbox for this app."
+            />
 
             <UAlert
               v-if="!conversationSurfaces.length && !pending"
               color="neutral"
               variant="soft"
               title="No conversations yet"
-              description="When visitors use /chat, their messages appear here."
-            />
+              description="When visitors use public chat, their messages appear here."
+            >
+              <template #actions>
+                <UButton to="/chat" color="primary" variant="soft" size="sm">
+                  Open public chat
+                </UButton>
+              </template>
+            </UAlert>
 
             <div class="grid gap-2">
               <UButton
@@ -32,11 +65,28 @@
                 class="justify-start"
                 @click="selectConversation(conversation.id)"
               >
-                <span class="min-w-0 text-left">
-                  <span class="block truncate font-medium">
-                    {{ conversation.contact_label }}
+                <span class="min-w-0 flex-1 text-left">
+                  <span class="flex min-w-0 items-center gap-3">
+                    <UIcon
+                      :name="iconForKind(conversation.kind)"
+                      class="size-4 shrink-0 opacity-70"
+                    />
+
+                    <span class="block truncate font-medium">
+                      {{ conversation.contact_label }}
+                    </span>
+
+                    <UBadge
+                      :color="statusColor(conversation.status)"
+                      variant="soft"
+                      size="xs"
+                      class="ml-auto shrink-0"
+                    >
+                      {{ conversation.status }}
+                    </UBadge>
                   </span>
-                  <span class="block truncate text-xs opacity-75">
+
+                  <span class="mt-1 block truncate text-xs opacity-75">
                     {{ conversation.last_message_preview || conversation.related_label }}
                   </span>
                 </span>
@@ -52,7 +102,7 @@
                 {{ selectedConversation?.title || 'Conversation' }}
               </h2>
               <p class="text-sm text-muted">
-                {{ selectedConversation?.subtitle || 'App admin chat' }}
+                {{ selectedConversation?.subtitle || 'App chat' }}
               </p>
             </div>
 
@@ -84,9 +134,18 @@
             v-else
             color="neutral"
             variant="soft"
-            title="Select a conversation"
-            description="Choose a visitor conversation to read and reply."
-          />
+            title="Inbox is ready"
+            description="Use public chat to create the first conversation, then answer it here."
+          >
+            <template #actions>
+              <UButton to="/chat" color="primary" variant="soft" size="sm">
+                Open public chat
+              </UButton>
+              <UButton to="/dashboard/admin" color="neutral" variant="ghost" size="sm">
+                Back to admin
+              </UButton>
+            </template>
+          </UAlert>
         </UCard>
       </div>
     </template>
@@ -96,12 +155,16 @@
 <script setup lang="ts">
 import { computed, definePageMeta, ref } from '#imports'
 import { useRoute, useRouter } from 'vue-router'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
-import { useConversationCollection } from '../../../composables/fireux/firestore/core/conversation/fetch/useConversationCollection'
-import { useConversationMessages } from '../../../composables/fireux/firestore/core/conversation/fetch/useConversationMessages'
-import { useConversationMessageCreate } from '../../../composables/fireux/firestore/core/conversation/mutations/useConversationMessageCreate'
-import { useConversationInterface } from '../../../composables/fireux/firestore/core/conversation/utils/view/useConversationInterface'
-import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
+import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useConversationCollection } from '../../composables/fireux/firestore/core/conversation/fetch/useConversationCollection'
+import { useConversationMessages } from '../../composables/fireux/firestore/core/conversation/fetch/useConversationMessages'
+import { useConversationMessageCreate } from '../../composables/fireux/firestore/core/conversation/mutations/useConversationMessageCreate'
+import { useConversationInterface } from '../../composables/fireux/firestore/core/conversation/utils/view/useConversationInterface'
+import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
+import type {
+  ConversationKind,
+  ConversationStatus,
+} from '../../models/core/conversation.model'
 
 type ChatStatus = 'ready' | 'submitted' | 'streaming' | 'error'
 
@@ -125,6 +188,27 @@ const conversationSurfaces = computed(() =>
     .map((conversation) => toConversationSurface(conversation))
     .filter(Boolean)
 )
+const openCount = computed(
+  () =>
+    conversationSurfaces.value.filter(
+      (conversation) => conversation.status === 'open'
+    ).length
+)
+const pendingCount = computed(
+  () =>
+    conversationSurfaces.value.filter(
+      (conversation) => conversation.status === 'pending'
+    ).length
+)
+const conversationsLabel = computed(() => {
+  const count = conversationSurfaces.value.length
+  return count === 1 ? '1 total' : `${count} total`
+})
+const conversationMetrics = computed(() => [
+  { label: 'Open', value: openCount.value },
+  { label: 'Pending', value: pendingCount.value },
+  { label: 'Total', value: conversationSurfaces.value.length },
+])
 const selectedConversationId = computed(() =>
   String(route.query.conversation || conversationSurfaces.value[0]?.id || '').trim()
 )
@@ -156,6 +240,20 @@ function selectConversation(id: string) {
   })
 }
 
+function iconForKind(kind: ConversationKind) {
+  if (kind === 'property_enquiry') return 'i-lucide-home'
+  if (kind === 'guest_support') return 'i-lucide-life-buoy'
+  if (kind === 'provider_lead') return 'i-lucide-user-round-search'
+  return 'i-lucide-message-circle'
+}
+
+function statusColor(status: ConversationStatus) {
+  if (status === 'open') return 'success'
+  if (status === 'pending') return 'warning'
+  if (status === 'closed') return 'neutral'
+  return 'neutral'
+}
+
 async function sendReply() {
   const body = reply.value.trim()
   if (!body || !selectedConversationId.value || submitting.value) return
@@ -182,11 +280,11 @@ async function sendReply() {
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    key: 'dashboard-admin-chat',
+    key: 'dashboard-chat',
     label: 'Chat',
     icon: 'i-lucide-message-circle',
     position: 'top',
-    order: 11,
+    order: 9,
     desktop: true,
     mobile: true,
     layouts: ['dashboard'],

@@ -12,9 +12,13 @@
 
       <template #links>
         <UButton to="/professionals" color="primary" icon="i-lucide-search">
-          Find an SEO specialist
+          Browse professionals
         </UButton>
-        <UButton to="/dashboard/professional/profile" variant="soft" icon="i-lucide-user-plus">
+        <UButton
+          to="/dashboard/professional/profile"
+          variant="soft"
+          icon="i-lucide-user-plus"
+        >
           Create a provider profile
         </UButton>
       </template>

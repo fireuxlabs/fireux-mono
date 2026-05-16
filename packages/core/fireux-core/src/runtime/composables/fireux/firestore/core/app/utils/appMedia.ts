@@ -1,7 +1,11 @@
 // Canonical app media naming:
+// - Local files: public/img/app/{thumbnail|logo|wordmark-light|wordmark-dark|cover}.*
+// - Browser URLs: /img/app/{thumbnail|logo|wordmark-light|wordmark-dark|cover}.*
 // - Storage objects: apps/<appId>/media/{thumbnail|logo|wordmark-light|wordmark-dark|cover}
 // - Firestore fields:
 //   {media.thumbnail_url|media.logo_url|media.wordmark_light_url|media.wordmark_dark_url|media.cover_url}
+import { normalizePublicImgAsset } from '../../../../../../../utils/brandAssets'
+
 export type AppImageKind =
   | 'thumbnail'
   | 'logo'
@@ -95,7 +99,7 @@ export function isWordmarkKind(kind: AppImageKind): boolean {
 }
 
 function safeUrl(value: unknown): string {
-  return typeof value === 'string' ? value.trim() : ''
+  return typeof value === 'string' ? normalizePublicImgAsset(value) : ''
 }
 
 /**

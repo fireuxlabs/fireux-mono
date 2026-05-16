@@ -45,42 +45,18 @@
           <div class="panels-masonry__item mb-10">
             <div class="grid gap-4 md:grid-cols-2">
               <UPageCard
-                title="Products"
-                description="Create and manage your product catalog."
+                title="App record"
+                description="Review the canonical app record, media, admins, and public profile."
                 variant="subtle"
               >
                 <div class="flex flex-wrap gap-2">
-                  <UButton to="/admin/products" color="primary" class="w-fit">
-                    View products
-                  </UButton>
                   <UButton
-                    to="/admin/products/create"
-                    variant="soft"
+                    v-if="appRecordPath"
+                    :to="appRecordPath"
+                    color="primary"
                     class="w-fit"
                   >
-                    Create product
-                  </UButton>
-                  <UButton to="/admin/licenses" variant="outline" class="w-fit">
-                    Template licenses
-                  </UButton>
-                </div>
-              </UPageCard>
-
-              <UPageCard
-                title="Blog"
-                description="Publish updates and announcements."
-                variant="subtle"
-              >
-                <div class="flex flex-wrap gap-2">
-                  <UButton to="/admin/blogs" color="primary" class="w-fit">
-                    View posts
-                  </UButton>
-                  <UButton
-                    to="/admin/blogs/create"
-                    variant="soft"
-                    class="w-fit"
-                  >
-                    Create post
+                    Open app record
                   </UButton>
                 </div>
               </UPageCard>
@@ -90,7 +66,7 @@
                 description="Read and reply to public conversations for this app."
                 variant="subtle"
               >
-                <UButton to="/dashboard/admin/chat" color="primary" class="w-fit">
+                <UButton to="/dashboard/chat" color="primary" class="w-fit">
                   Open chat inbox
                 </UButton>
               </UPageCard>
@@ -120,6 +96,9 @@ const { model: appProfileModel } = useAppProfileView(app)
 
 const appCard = computed(() => appToCard(app.value))
 const userCard = computed(() => userToCard(user.value))
+const appRecordPath = computed(() =>
+  app.value?.id ? `/apps/${encodeURIComponent(app.value.id)}` : ''
+)
 
 definePageMeta({
   layout: 'dashboard',

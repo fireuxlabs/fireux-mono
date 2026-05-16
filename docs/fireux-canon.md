@@ -112,7 +112,7 @@ Current learned examples:
   - `general`
 - The first universal chat pattern is app admin chat:
   - public `/chat` lets any visitor start a `general` conversation about the current app.
-  - app admins answer from `/dashboard/admin/chat`.
+  - app admins answer from `/dashboard/chat`.
   - the related entity is the current app: `related_entity.family = 'apps'`.
 - Chat UI should use Nuxt UI chat primitives where available, while FireUX owns the Firestore conversation shape.
 - Public enquiry forms may create conversations, but private follow-up, reads, and replies must be participant-scoped or server-mediated before shipping.
@@ -188,6 +188,8 @@ Current learned examples:
 - Real-mode target visibility should come from explicit overlay governance and only use root hints where the family contract allows it.
 - App branding is app-local for every app role.
 - The canonical brand asset path is `/public/img/app/*` for global, tenant, and standalone apps.
+- `/public` is filesystem-only; rendered/runtime URLs must start with `/img/...`.
+- App brand/media values in config or Firestore must be either external absolute URLs or canonical public-image URLs such as `/img/app/thumbnail.png`; bare filenames such as `thumbnail.png` and `wordmark-dark.png` are compatibility input only and must be normalized before rendering.
 
 ## Demo Data Canon
 - Demo data is never canon by itself.

@@ -1,23 +1,14 @@
-import { defineNuxtRouteMiddleware, navigateTo } from '#imports'
-import { useAuth } from '../composables/fireux/firebase/useAuth'
-import { useUser } from '../composables/fireux/firestore/core/user/useUser'
+import { defineNuxtRouteMiddleware, navigateTo, useRuntimeConfig } from '#imports'
+import {
+  resolveClientAppAdmin,
+  resolveClientAuthState,
+} from '../utils/routeAuthGuard'
 
 const AUTH_WAIT_TIMEOUT_MS = 2500
 const USER_WAIT_TIMEOUT_MS = 1500
 
 function isConsolePath(path: string) {
   return path === '/console' || path.startsWith('/console/')
-}
-
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-async function waitFor(ready: () => boolean, timeoutMs: number) {
-  const deadline = Date.now() + timeoutMs
-  while (!ready() && Date.now() < deadline) {
-    await sleep(50)
-  }
 }
 
 export default defineNuxtRouteMiddleware(async (to) => {
@@ -30,20 +21,28 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const requiresAuth = Boolean(meta.requiresAuth)
   if (!requiresAuth) return
 
-  const { isAuthenticated, hasAuthState } = useAuth()
-  await waitFor(() => hasAuthState.value, AUTH_WAIT_TIMEOUT_MS)
+  const auth = await resolveClientAuthState(AUTH_WAIT_TIMEOUT_MS)
 
-  if (!isAuthenticated.value) {
+  if (!auth.isAuthenticated) {
     return navigateTo(`/auth?redirect=${encodeURIComponent(to.fullPath)}`)
   }
 
   const needsAdmin = Array.isArray(meta.roles) && meta.roles.includes('admin')
   if (!needsAdmin) return
 
-  const { isAdmin, isResolved } = useUser()
-  await waitFor(() => isResolved.value, USER_WAIT_TIMEOUT_MS)
+  const runtime = useRuntimeConfig()
+  const appId = String(runtime.public?.fireux?.id || '').trim()
+  const databaseId = String(
+    runtime.public?.firebaseEcosystem?.firebase?.databaseId || ''
+  ).trim()
+  const isAdmin = await resolveClientAppAdmin({
+    uid: auth.uid,
+    appId,
+    databaseId,
+    timeoutMs: USER_WAIT_TIMEOUT_MS,
+  })
 
-  if (!isAdmin.value) {
+  if (!isAdmin) {
     return navigateTo('/dashboard')
   }
 })

@@ -34,12 +34,31 @@ type ResolveBrandAssetInput = {
   appThumbnail?: string | null
 }
 
-function normalizeAsset(
+const IMAGE_FILENAME_RE = /^[A-Za-z0-9._-]+\.(?:avif|gif|ico|jpe?g|png|svg|webp)$/i
+
+export function normalizePublicImgAsset(
   value: string | null | undefined,
-  fallback: string
+  fallback = ''
 ): string {
   const normalized = typeof value === 'string' ? value.trim() : ''
-  return normalized || fallback
+  if (!normalized) return fallback
+  if (
+    normalized.startsWith('data:') ||
+    normalized.startsWith('blob:') ||
+    /^https?:\/\//i.test(normalized)
+  ) {
+    return normalized
+  }
+  if (normalized.startsWith('/img/')) return normalized
+  if (normalized.startsWith('img/')) return `/${normalized}`
+  if (normalized.startsWith('/public/img/')) {
+    return normalized.replace(/^\/public/, '')
+  }
+  if (normalized.startsWith('public/img/')) {
+    return `/${normalized.replace(/^public\//, '')}`
+  }
+  if (IMAGE_FILENAME_RE.test(normalized)) return `/img/app/${normalized}`
+  return fallback
 }
 
 export function resolveFireuxBrandAssets(
@@ -49,7 +68,7 @@ export function resolveFireuxBrandAssets(
 
   return {
     ...base,
-    logo: normalizeAsset(input.appLogo, base.logo),
-    thumbnail: normalizeAsset(input.appThumbnail, base.thumbnail),
+    logo: normalizePublicImgAsset(input.appLogo, base.logo),
+    thumbnail: normalizePublicImgAsset(input.appThumbnail, base.thumbnail),
   }
 }

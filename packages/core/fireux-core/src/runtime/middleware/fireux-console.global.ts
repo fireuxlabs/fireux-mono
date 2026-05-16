@@ -1,11 +1,12 @@
-import { defineNuxtRouteMiddleware, navigateTo } from '#imports'
-import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
+import { defineNuxtRouteMiddleware, navigateTo, useRuntimeConfig } from '#imports'
 import {
   normalizeConsoleFamily,
   toConsoleFamilyPath,
 } from '../composables/fireux/app/routing/consoleRoutes'
-import { useAuth } from '../composables/fireux/firebase/useAuth'
-import { useUser } from '../composables/fireux/firestore/core/user/useUser'
+import {
+  resolveClientAppAdmin,
+  resolveClientAuthState,
+} from '../utils/routeAuthGuard'
 
 const AUTH_WAIT_TIMEOUT_MS = 2500
 const USER_WAIT_TIMEOUT_MS = 1500
@@ -18,28 +19,26 @@ function isConsoleRootPath(path: string) {
   return path === '/console' || path === '/console/'
 }
 
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
-async function waitFor(ready: () => boolean, timeoutMs: number) {
-  const deadline = Date.now() + timeoutMs
-  while (!ready() && Date.now() < deadline) {
-    await sleep(50)
-  }
-}
-
 export default defineNuxtRouteMiddleware(async (to) => {
   if (import.meta.server) return
 
   const path = String(to.path || '')
   if (!isConsolePath(path)) return
+  const runtime = useRuntimeConfig()
+  const fireuxRuntime = () =>
+    (runtime.public?.fireux || {}) as Record<string, unknown>
+  const appId = () => String(fireuxRuntime().id || '').trim()
+  const databaseId = () =>
+    String(runtime.public?.firebaseEcosystem?.firebase?.databaseId || '').trim()
+  const consoleFamilies = () =>
+    Array.isArray(fireuxRuntime().consoleFamilies)
+      ? (fireuxRuntime().consoleFamilies as unknown[])
+      : []
 
   if (isConsoleRootPath(path)) {
-    const { consoleFamilies } = useFireUXConfig()
     const firstFamily = Array.from(
       new Set(
-        (consoleFamilies || [])
+        consoleFamilies()
           .map((value) => normalizeConsoleFamily(value))
           .filter(Boolean)
       )
@@ -52,20 +51,23 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const requiresAuth = Boolean(meta.requiresAuth)
   if (!requiresAuth) return
 
-  const { isAuthenticated, hasAuthState } = useAuth()
-  await waitFor(() => hasAuthState.value, AUTH_WAIT_TIMEOUT_MS)
+  const auth = await resolveClientAuthState(AUTH_WAIT_TIMEOUT_MS)
 
-  if (!isAuthenticated.value) {
+  if (!auth.isAuthenticated) {
     return navigateTo(`/auth?redirect=${encodeURIComponent(to.fullPath)}`)
   }
 
   const needsAdmin = Array.isArray(meta.roles) && meta.roles.includes('admin')
   if (!needsAdmin) return
 
-  const { isAdmin, isResolved } = useUser()
-  await waitFor(() => isResolved.value, USER_WAIT_TIMEOUT_MS)
+  const isAdmin = await resolveClientAppAdmin({
+    uid: auth.uid,
+    appId: appId(),
+    databaseId: databaseId(),
+    timeoutMs: USER_WAIT_TIMEOUT_MS,
+  })
 
-  if (!isAdmin.value) {
+  if (!isAdmin) {
     return navigateTo('/dashboard')
   }
 })

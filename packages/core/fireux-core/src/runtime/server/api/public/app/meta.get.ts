@@ -3,6 +3,7 @@ import { createError, defineEventHandler, setResponseHeaders, type H3Event } fro
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import type { FireuxMetaContent } from '../../../../models/system/meta-content.model'
 import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
+import { normalizePublicImgAsset } from '../../../../../utils/brandAssets'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && !Array.isArray(value)
@@ -45,7 +46,7 @@ function normalizeSiteUrl(input: unknown): string | undefined {
 }
 
 function toAbsoluteUrl(input: unknown, siteOrigin?: string): string | undefined {
-  const value = asString(input)
+  const value = normalizePublicImgAsset(asString(input))
   if (!value) return undefined
   if (/^https?:\/\//i.test(value)) return value
   if (value.startsWith('/') && siteOrigin) return `${siteOrigin}${value}`

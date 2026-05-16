@@ -67,7 +67,7 @@ Updated: 2026-05-15
 - Shipping apps must restrict conversation reads/writes to participants, app operators, or trusted server endpoints.
 - Public product pages should use conversation creation instead of exposing private operational details such as access codes, lockbox notes, or stay-specific guest instructions.
 - `/chat` is the shared public app-admin chat entry point.
-- `/dashboard/admin/chat` is the shared app-admin inbox and requires app admin access.
+- `/dashboard/chat` is the shared app-admin inbox and requires app admin access.
 
 ## Project Root Contract
 - `Project` is a root/core entity.
@@ -92,6 +92,7 @@ Updated: 2026-05-15
   - no console family by default
 - Tenant apps must consume shared runtime/app contracts rather than defining tenant-local project control behavior.
 - Tenant apps must ship and use their own local app assets under `/public/img/app`.
+- Runtime URLs for local app assets must use `/img/app/*`; never render or store browser-facing `public/img/*` or bare filenames.
 - Shared core brand assets may act as runtime fallback visuals, but they are not the canonical tenant branding path.
 
 ## Standalone App Contract
@@ -102,6 +103,7 @@ Updated: 2026-05-15
   - indexable unless a page explicitly opts out
   - no tenant auth chrome
   - app-local branding/assets expected when available
+- Standalone app local brand assets follow the same path canon as tenants: files in `/public/img/app`, URLs as `/img/app/*`.
 - Standalone apps must not auto-load ecosystem-controller-only governance surfaces.
 - Phase 1 canon allows standalone apps only in the `fireux` ecosystem.
 

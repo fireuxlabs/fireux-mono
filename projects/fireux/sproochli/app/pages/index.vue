@@ -1,21 +1,25 @@
 <template>
   <UPage>
     <UPageHeader
-      title="Make QR information easy in every language."
-      description="Simple public pages help guests read instructions, menus and local notes from one QR link."
+      title="Publish simple visitor information in every language."
+      description="Create QR-ready pages for instructions, menus and local notes."
     >
       <template #headline>
         <UBadge color="primary" variant="soft">
-          Multilingual QR pages
+          QR information pages
         </UBadge>
       </template>
 
       <template #links>
-        <UButton to="/bnb/holiday-with-nats" color="primary" icon="i-lucide-house">
-          Open guest guide
-        </UButton>
-        <UButton to="/info/bern-bike-rental/rental-instructions" variant="soft" icon="i-lucide-info">
+        <UButton
+          to="/info/bern-bike-rental/rental-instructions"
+          color="primary"
+          icon="i-lucide-info"
+        >
           View info page
+        </UButton>
+        <UButton to="/menus" variant="soft" icon="i-lucide-book-open">
+          View menus
         </UButton>
       </template>
     </UPageHeader>
