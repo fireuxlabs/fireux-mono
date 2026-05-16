@@ -257,11 +257,11 @@ const pricingPlans = [
     price: '+ £5',
     billingPeriod: '/month each',
     features: [
-      'Extra apartments',
-      'Holiday stays',
-      'Tenant properties',
-      'Buildings',
-      'Shared host dashboard',
+      'Increase your portfolio',
+      'Separate guest URLs and QR codes',
+      'Multi-property host console',
+      'Reusable house manual sections',
+      'Portfolio overview',
     ],
     button: {
       label: 'Add another property',
