@@ -24,12 +24,6 @@ export function configureComponents(resolver: Resolver) {
     { global: true }
   )
 
-  registerComponentsDir(resolver, './runtime/components/organisms/Console/Kitchen', {
-    global: true,
-    pathPrefix: true,
-    prefix: 'OrganismsConsoleKitchen',
-  })
-
   registerComponentsDir(resolver, './runtime/components/organisms/Kitchen', {
     global: true,
     pathPrefix: true,

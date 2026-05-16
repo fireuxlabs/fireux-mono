@@ -1,6 +1,6 @@
 <template>
   <section class="console-surface space-y-6">
-    <OrganismsConsoleKitchenMenusItemsRead />
-    <OrganismsConsoleKitchenMenusItemsWrite />
+    <ConsoleKitchenMenusItemsRead />
+    <ConsoleKitchenMenusItemsWrite />
   </section>
 </template>

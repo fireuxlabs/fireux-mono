@@ -15,8 +15,8 @@
     />
 
     <div v-else class="space-y-6">
-      <OrganismsConsoleKitchenEditCore />
-      <OrganismsConsoleKitchenEditApp :kitchen="selectedKitchen" />
+      <ConsoleKitchenEditCore />
+      <ConsoleKitchenEditApp :kitchen="selectedKitchen" />
     </div>
   </section>
 </template>

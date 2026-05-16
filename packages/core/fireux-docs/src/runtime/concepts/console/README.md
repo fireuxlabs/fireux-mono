@@ -193,6 +193,11 @@ The canonical route-file shape is:
 - Complex operation pages use child folders with `index.vue` and detail routes, following the Kitchen pattern.
 - The family folder name is singular even when the entry surface lists many targets.
 
+The canonical family entry component shape is:
+- use `ConsoleEntityIndex` from `fireux-core` for the repeated live/demo/test target-selection shell.
+- keep domain data hooks, cards, collection managers, and create/ensure behaviour in the owning family.
+- do not copy the whole target-selection shell into every console family.
+
 ## Kitchen As Reference Variant
 
 `Kitchen` is the clearest current implementation of this concept.

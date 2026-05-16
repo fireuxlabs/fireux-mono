@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { navigateTo } from '#imports'
-import type { PropertyCard } from '../../../../composables/fireux/console/portfolio/property/utils/view/usePropertyInterface'
+import type { PropertyCard } from '../../../../composables/fireux/firestore/property/utils/view/usePropertyInterface'
 
 type Props = Pick<
   PropertyCard.Card,

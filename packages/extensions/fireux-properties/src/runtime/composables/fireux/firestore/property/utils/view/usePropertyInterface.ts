@@ -1,4 +1,4 @@
-import type { Property } from '../../../../../../../models/property.model'
+import type { Property } from '../../../../../../models/property.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 const defaultCurrency = 'GBP'

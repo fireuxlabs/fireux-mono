@@ -48,14 +48,19 @@
         <PropertyCardsPill
           v-bind="card"
           :link="linkEnabled"
+          :action="actionEnabled"
           :show-meta="true"
+          :show-badges="showBadges"
+          @action="emit('select', card.id)"
         />
       </template>
       <template #cell="{ card }">
         <PropertyCardsCell
           v-bind="card"
           :link="linkEnabled"
+          :action="actionEnabled"
           :show-meta="true"
+          @action="emit('select', card.id)"
         />
       </template>
     </PropertyCollectionList>
@@ -66,8 +71,8 @@
 
     <div v-if="isDev">
       <DevJson
-        :title="'Properties (JSON)'"
-        context="collection manager · properties"
+        :title="devJsonTitle"
+        :context="devJsonContext"
         :data="devJsonData"
         :default-open="false"
       />
@@ -79,7 +84,7 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import { usePropertyInterface } from '../../../../composables/fireux/console/portfolio/property/utils/view/usePropertyInterface'
+import { usePropertyInterface } from '../../../../composables/fireux/firestore/property/utils/view/usePropertyInterface'
 import type { Property } from '../../../../models/property.model'
 import PropertyCardsCell from '../Cards/Cell.vue'
 import PropertyCardsPill from '../Cards/Pill.vue'
@@ -96,18 +101,31 @@ const props = withDefaults(
     showCount?: boolean
     initialVariant?: 'pill' | 'cell'
     link?: boolean
+    action?: boolean
+    showBadges?: boolean
+    devJsonTitle?: string
+    devJsonContext?: string
   }>(),
   {
+    collection: () => [],
     title: 'Properties',
-    description: 'Portfolio-scoped properties.',
+    description: 'Browse property records available to this runtime.',
     searchPlaceholder: 'Search properties...',
     showSearch: true,
     showVariantToggle: true,
     showCount: true,
     initialVariant: 'pill',
     link: true,
+    action: false,
+    showBadges: true,
+    devJsonTitle: 'Properties (JSON)',
+    devJsonContext: 'collection manager · properties',
   }
 )
+
+const emit = defineEmits<{
+  (event: 'select', propertyId: string): void
+}>()
 
 const {
   interface: makeCard,
@@ -126,6 +144,8 @@ const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
+const actionEnabled = computed(() => props.action === true)
+const showBadges = computed(() => props.showBadges !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => showSearch.value && totalCount.value > 15
@@ -159,6 +179,12 @@ const countLabel = computed(() =>
   showSearchInput.value && query.value
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
+)
+const devJsonTitle = computed(() =>
+  String(props.devJsonTitle || 'Properties (JSON)').trim()
+)
+const devJsonContext = computed(() =>
+  String(props.devJsonContext || 'collection manager · properties').trim()
 )
 const isDev = import.meta.dev
 </script>

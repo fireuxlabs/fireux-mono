@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-6">
-    <OrganismsConsoleKitchenMenusPreview
+    <ConsoleKitchenMenusPreview
       :collection="menus"
       :can-write="canWrite"
       :collection-path="collectionPath"

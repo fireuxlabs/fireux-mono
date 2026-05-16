@@ -1,54 +1,32 @@
 <template>
-  <section class="space-y-6">
-    <UAlert
-      v-if="!suppliers.live.length"
-      color="neutral"
-      variant="soft"
-      title="No live suppliers found"
-      description="No live suppliers are currently available in this workspace."
-    />
+  <ConsoleEntityIndex
+    entity-label="Supplier"
+    entity-lower-label="supplier"
+    entity-plural-lower-label="suppliers"
+    :live-count="suppliers.live.length"
+    :has-selected="Boolean(selectedSupplier)"
+    :selected-card="selectedSupplierCard"
+    :demo-cards="demoSupplierCards"
+    :test-card="testSupplierCard"
+    v-model:show-simulations="state.showSimulations"
+    :creating-test="state.creatingTest"
+    :can-create-test="Boolean(actions.createTest)"
+    :debug="debug"
+    @clear="clearSelectedSupplier"
+    @select-demo="actions.selectDemo"
+    @select-test="actions.selectTest"
+    @create-test="actions.createTest?.()"
+  >
+    <template #selected-card="{ card }">
+      <SupplierCardsPill
+        v-bind="card"
+        :link="false"
+        :show-badges="false"
+      />
+    </template>
 
-    <div class="space-y-6">
-      <div class="space-y-2">
-        <div class="flex items-center justify-between gap-3">
-          <div class="text-xs uppercase tracking-[0.16em] text-toned">
-            {{ selectedSupplier ? 'Selected Supplier' : 'Select a supplier' }}
-          </div>
-
-          <UButton
-            v-if="selectedSupplier"
-            color="neutral"
-            variant="ghost"
-            size="sm"
-            icon="i-lucide-x"
-            @click="clearSelectedSupplier"
-          >
-            Clear
-          </UButton>
-        </div>
-
-        <SupplierCardsPill
-          v-if="selectedSupplierCard"
-          v-bind="selectedSupplierCard"
-          :link="false"
-          :show-badges="false"
-        />
-
-        <p v-else class="text-sm text-dimmed">
-          Choose a live, demo, or test supplier to load it into the console.
-        </p>
-      </div>
-
-      <div v-if="isDev">
-        <DevFireuxDebugPanel
-          title="Supplier index"
-          scope="console"
-          :data="debug"
-        />
-      </div>
-
+    <template #live-collection>
       <SupplierCollectionManager
-        v-if="suppliers.live.length"
         :collection="suppliers.live"
         title="Choose Live Supplier"
         description="Select the live supplier you want to work on."
@@ -57,85 +35,33 @@
         :show-badges="false"
         @select="actions.selectLive"
       />
-    </div>
+    </template>
 
-    <section v-if="suppliers.demo.length" class="w-full max-w-xl space-y-3">
-      <div class="flex items-center gap-3">
-        <div class="h-px flex-1 bg-default/60" />
-        <div class="text-xs uppercase tracking-[0.16em] text-toned">Or</div>
-        <div class="h-px flex-1 bg-default/60" />
-      </div>
+    <template #demo-card="{ card, select }">
+      <SupplierCardsPill
+        v-bind="card"
+        :link="false"
+        :action="true"
+        :show-badges="false"
+        @action="select(card.id)"
+      />
+    </template>
 
-      <div class="space-y-2">
-        <div class="text-sm font-medium text-highlighted">Try a supplier simulation</div>
-
-        <USwitch
-          v-model="state.showSimulations"
-          unchecked-icon="i-lucide-x"
-          checked-icon="i-lucide-check"
-          label="Show supplier simulations"
-        />
-      </div>
-
-      <div v-if="state.showSimulations" class="space-y-2">
-        <div class="text-sm text-dimmed">
-          Read-only demo suppliers wired into the same console stack.
-        </div>
-
-        <div class="space-y-2">
-          <SupplierCardsPill
-            v-for="scenario in demoSupplierCards"
-            :key="scenario.id"
-            v-bind="scenario"
-            :link="false"
-            :action="true"
-            :show-badges="false"
-            @action="actions.selectDemo(scenario.id)"
-          />
-        </div>
-      </div>
-    </section>
-
-    <section v-if="suppliers.test || actions.createTest" class="w-full max-w-xl space-y-3">
-      <div class="flex items-center gap-3">
-        <div class="h-px flex-1 bg-default/60" />
-        <div class="text-xs uppercase tracking-[0.16em] text-toned">Or</div>
-        <div class="h-px flex-1 bg-default/60" />
-      </div>
-
-      <div class="space-y-2">
-        <div class="text-sm font-medium text-highlighted">Use your test supplier</div>
-
-        <div class="text-sm text-dimmed">
-          Personal sandbox supplier for experiments and console setup.
-        </div>
-
-        <SupplierCardsPill
-          v-if="testSupplierCard"
-          v-bind="testSupplierCard"
-          :link="false"
-          :action="true"
-          :show-badges="false"
-          @action="actions.selectTest"
-        />
-
-        <UButton
-          v-else-if="actions.createTest"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-plus"
-          :loading="state.creatingTest"
-          @click="actions.createTest"
-        >
-          Create Test Supplier
-        </UButton>
-      </div>
-    </section>
-  </section>
+    <template #test-card="{ card, select }">
+      <SupplierCardsPill
+        v-bind="card"
+        :link="false"
+        :action="true"
+        :show-badges="false"
+        @action="select"
+      />
+    </template>
+  </ConsoleEntityIndex>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import ConsoleEntityIndex from 'fireux-core/runtime/components/organisms/Console/EntityIndex.vue'
 import {
   useSupplierInterface,
   type SupplierSurface,
@@ -168,8 +94,6 @@ const selectedSupplierCard = computed<SupplierPillCard | null>(() => {
 
   return pill(supplier) ?? null
 })
-
-const isDev = import.meta.dev
 
 const testSupplierCard = computed<SupplierPillCard | null>(() => {
   const supplier = suppliers.value.test

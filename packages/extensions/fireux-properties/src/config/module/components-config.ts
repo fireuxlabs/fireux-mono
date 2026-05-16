@@ -43,4 +43,18 @@ export function configureComponents(resolver: Resolver) {
     'Portfolio',
     { global: true }
   )
+
+  registerComponentsDir(resolver, './runtime/components/organisms/Property', {
+    global: true,
+    pathPrefix: true,
+    prefix: 'Property',
+    priority: 1,
+  })
+
+  registerComponentAliases(
+    resolver,
+    './runtime/components/organisms/Property',
+    'Property',
+    { global: true }
+  )
 }

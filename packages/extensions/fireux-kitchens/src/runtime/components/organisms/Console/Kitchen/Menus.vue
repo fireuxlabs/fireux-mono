@@ -1,6 +1,6 @@
 <template>
   <section class="console-surface space-y-6">
-    <OrganismsConsoleKitchenMenusRead v-if="selectedKitchen" />
+    <ConsoleKitchenMenusRead v-if="selectedKitchen" />
 
     <UAlert
       v-else
