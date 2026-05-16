@@ -57,10 +57,37 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `/console/property`
   - `/console/property/overview`
   - `/console/property/qr`
+  - `/console/property/welcome`
+  - `/console/property/check-in`
+  - `/console/property/checkout`
+  - `/console/property/emergency`
+  - `/console/property/house-rules`
+  - `/console/property/apartment-guide`
+  - `/console/property/rubbish-recycling`
+  - `/console/property/parking`
+  - `/console/property/local-guide`
+  - `/console/property/updates`
 - `/console/property` and `/console/property/overview` follow the shared core console index/overview semantics.
 - Property-owned child routes must be added only when their canon is explicit.
-- Current Property-owned child route:
+- Current Property-owned child routes:
   - `/console/property/qr`
+  - `/console/property/welcome`
+  - `/console/property/check-in`
+  - `/console/property/checkout`
+  - `/console/property/emergency`
+  - `/console/property/house-rules`
+  - `/console/property/apartment-guide`
+  - `/console/property/rubbish-recycling`
+  - `/console/property/parking`
+  - `/console/property/local-guide`
+  - `/console/property/updates`
+- Property info child routes are flat while they remain simple section editors.
+- Property info child pages use a shared key/value editor shape:
+  - page key
+  - title
+  - summary
+  - rows of label/value/tone
+- If a child concept becomes a collection or detail workflow, it should graduate to a folder route like other console entity children.
 - Console family key:
   - `portfolio`
 - BuenoHost property console family key:
