@@ -52,7 +52,7 @@ export function usePortfolioCollection(
   options: UsePortfolioCollectionOptions = {}
 ) {
   const db = useFirestore()
-  const { firestoreFetchCollection, firestoreFetchDocsByIds, firestoreQuery } = useFirestoreRead()
+  const { firestoreFetchCollection, firestoreLoadDocsByIds, firestoreQuery } = useFirestoreRead()
   const { appId } = useFireUXConfig()
   const sourceMode = computed<PortfolioCollectionSource>(() => {
     if (isRef(options.source)) return options.source.value ?? 'live'
@@ -107,7 +107,7 @@ export function usePortfolioCollection(
   const liveRootSource = firestoreFetchCollection<PortfolioCollectionDoc>(
     DEFAULT_COLLECTION_PATH
   )
-  const liveRootDocs = firestoreFetchDocsByIds<PortfolioCollectionDoc>({
+  const liveRootDocs = firestoreLoadDocsByIds<PortfolioCollectionDoc>({
     collectionPath: DEFAULT_COLLECTION_PATH,
     ids: allowedPortfolioIds,
   })

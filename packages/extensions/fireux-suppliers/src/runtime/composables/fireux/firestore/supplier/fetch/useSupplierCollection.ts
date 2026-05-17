@@ -68,7 +68,7 @@ export function useSupplierCollection(
   options: UseSupplierCollectionOptions = {}
 ) {
   const db = useFirestore()
-  const { firestoreFetchCollection, firestoreFetchDocsByIds, firestoreQuery } = useFirestoreRead()
+  const { firestoreFetchCollection, firestoreLoadDocsByIds, firestoreQuery } = useFirestoreRead()
   const { appId } = useFireUXConfig()
   const sourceMode = computed<SupplierCollectionSource>(() => {
     if (isRef(options.source)) return options.source.value ?? 'live'
@@ -126,7 +126,7 @@ export function useSupplierCollection(
       .map((supplier) => resolveSupplierId(supplier))
       .filter(Boolean)
   )
-  const liveRootDocs = firestoreFetchDocsByIds<SupplierCollectionDoc>({
+  const liveRootDocs = firestoreLoadDocsByIds<SupplierCollectionDoc>({
     collectionPath: DEFAULT_COLLECTION_PATH,
     ids: allowedSupplierIds,
   })

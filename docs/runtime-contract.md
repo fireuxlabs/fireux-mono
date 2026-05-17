@@ -1,6 +1,6 @@
 # Runtime Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-16
+Updated: 2026-05-17
 ## Purpose
 - Define runtime selection, mode, collection path, and route policy across FireUX domains.
 
@@ -229,7 +229,8 @@ Updated: 2026-05-16
   - which workspace sections are available for that target
   - where the operator should go next
 
-## Real Mode Access Rule
+## Dev Runtime Authority Rule
+- This section is dev runtime authority and app correctness, not a Firestore security-rules implementation task.
 - `live` family entry must show authorized operator targets, not all documents in the backing collection.
 - Authorized operator targets means targets where the current user's uid is present in `operator_ids`.
 - Client-side filtering after a broad root collection read is not authority.
@@ -243,12 +244,12 @@ Updated: 2026-05-16
 - Family-specific guidance:
   - `project`: root `projects/{projectId}.operator_ids` is current authority; `owner_user_id` is a root ownership hint only.
   - app-scoped console entities use `apps/{appId}/{family}/{targetId}.operator_ids` as the live authority source.
-- Mutation composables must re-check console authority before writes; page-level visibility is not enough.
-- Firestore rules must enforce the same operator authority model before shipping.
   - `property`: property console governance is scaffolded; do not borrow another app's console family to operate properties.
   - `kitchen`: overlay governance or allowed claim rules; chef/profile linkage is not enough.
   - `portfolio`: overlay governance is primary; `owner_label` is presentation only.
   - `supplier`: overlay governance is primary; supplier/operator relationship is not enough.
+- Mutation composables must re-check console authority before writes; page-level visibility is not enough.
+- Firestore rules parity is a later production/ship task; dev/preflight work should still avoid training the runtime into unsafe read/write patterns.
 
 ## Root App Scope State
 - Root-plus-app families must store the root facade's app relationship explicitly:

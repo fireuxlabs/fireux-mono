@@ -1,7 +1,7 @@
 # Composables Directory
 
 Authority: Operational
-Updated: 2026-05-08
+Updated: 2026-05-17
 Scope: `packages/*/fireux-*/src/runtime/composables` only.
 
 This page documents FireUX rules for `runtime/composables/`.
@@ -125,6 +125,9 @@ FireUX adds structure on top of ordinary composable usage:
 
 - console state gets explicit seams rather than ad hoc page logic
 - Firestore reads and writes stay explicit under `fireux/firestore/`
+- Firestore read helper names must describe their runtime semantics:
+  - `firestoreFetchCollection`, `firestoreFetchDoc`, and `firestoreQuery` are reactive VueFire read bindings
+  - `firestoreLoadDocsByIds` is an exact-doc loader that reloads when path/ids change, but is not a live listener for later document updates
 - usual Firestore entity stacks stay boring: `fetch/`, `mutations/`, `utils/`
 - console operation records live under `fireux/console/<entity>/`, not as child buckets under `fireux/firestore/<entity>/`
 - console operation stacks may have entity-specific child folders, but not vague architecture buckets such as `runtime-*`, `facade`, `stack`, `manager`, `processor`, `handler`, or `resolver`

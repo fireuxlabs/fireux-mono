@@ -89,7 +89,7 @@ export function useKitchenCollection(
   )
   const resolveSimulationDb = useFirestoreResolver(simulationDatabaseId)
   const { appId } = useFireUXConfig()
-  const { firestoreFetchCollection, firestoreFetchDocsByIds, firestoreQuery } = useFirestoreRead()
+  const { firestoreFetchCollection, firestoreLoadDocsByIds, firestoreQuery } = useFirestoreRead()
   const simulationRead = useFirestoreRead({ databaseId: simulationDatabaseId })
   const sourceMode = computed<KitchenCollectionSource>(() => {
     if (isRef(options.source)) return options.source.value ?? 'live'
@@ -173,7 +173,7 @@ export function useKitchenCollection(
       .map((kitchen) => String(kitchen?.id || '').trim())
       .filter(Boolean)
   )
-  const liveFirestoreDocs = firestoreFetchDocsByIds<KitchenCollectionDoc>({
+  const liveFirestoreDocs = firestoreLoadDocsByIds<KitchenCollectionDoc>({
     collectionPath: DEFAULT_COLLECTION_PATH,
     ids: allowedKitchenIds,
   })

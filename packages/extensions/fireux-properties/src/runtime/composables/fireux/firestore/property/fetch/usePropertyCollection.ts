@@ -61,7 +61,7 @@ export function usePropertyCollection(
   const { appId } = useFireUXConfig()
   const { uid } = useAuth()
   const { currentUser, avatarSrc } = useUser()
-  const { firestoreFetchCollection, firestoreFetchDocsByIds, firestoreQuery } =
+  const { firestoreFetchCollection, firestoreLoadDocsByIds, firestoreQuery } =
     useFirestoreRead()
 
   const sourceMode = computed<PropertyCollectionSource>(() => {
@@ -113,7 +113,7 @@ export function usePropertyCollection(
       .map((property) => resolvePropertyId(property))
       .filter(Boolean)
   )
-  const liveRootDocs = firestoreFetchDocsByIds<PropertyCollectionDoc>({
+  const liveRootDocs = firestoreLoadDocsByIds<PropertyCollectionDoc>({
     collectionPath: DEFAULT_COLLECTION_PATH,
     ids: allowedPropertyIds,
   })

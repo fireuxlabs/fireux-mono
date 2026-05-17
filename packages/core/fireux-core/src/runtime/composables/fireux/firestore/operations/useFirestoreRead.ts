@@ -26,7 +26,7 @@ type UseFirestoreReadOptions = {
 
 type MaybeRef<T> = T | Ref<T>
 
-type FirestoreFetchDocsByIdsOptions = {
+type FirestoreLoadDocsByIdsOptions = {
   collectionPath: string | Ref<string | null | undefined>
   ids: MaybeRef<(string | number | null | undefined)[] | null | undefined>
 }
@@ -134,11 +134,14 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
     return (binding as any).data as Ref<T | undefined>
   }
 
-  /** Fetch exact documents by id without reading the whole collection. */
-  const firestoreFetchDocsByIds = <T>({
+  /**
+   * Load exact documents by id without reading the whole collection.
+   * Reloads when collectionPath/ids change, but does not live-listen to doc updates.
+   */
+  const firestoreLoadDocsByIds = <T>({
     collectionPath,
     ids,
-  }: FirestoreFetchDocsByIdsOptions): {
+  }: FirestoreLoadDocsByIdsOptions): {
     docs: Ref<T[] | undefined>
     pending: Ref<boolean>
   } => {
@@ -247,7 +250,7 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
   return {
     firestoreFetchCollection,
     firestoreFetchDoc,
-    firestoreFetchDocsByIds,
+    firestoreLoadDocsByIds,
     firestoreQuery,
     firestorePrefixSearch,
   }
