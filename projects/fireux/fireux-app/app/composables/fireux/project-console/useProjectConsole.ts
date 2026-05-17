@@ -1,11 +1,11 @@
 import { computed, isRef } from 'vue'
 import {
   normalizeConsoleString as normalizeString,
-  resolveConsoleCanWrite,
   resolveConsoleRootCollection,
   useConsole,
   type ConsoleMode,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
 import {
   usePublishConsoleHeader,
   type ConsoleHeaderData,
@@ -61,7 +61,11 @@ export function useProjectConsole(
   const rootCollection = computed(() =>
     resolveConsoleRootCollection('projects', selectedMode.value)
   )
-  const canWrite = computed(() => resolveConsoleCanWrite(selectedMode.value))
+  const canWrite = computed(() => {
+    if (selectedMode.value === 'demo') return false
+    if (selectedMode.value === 'test') return Boolean(userId.value && projectId.value === userId.value)
+    return targetHasOperator(selectedProject.value, userId.value)
+  })
 
   const header = computed<ConsoleHeaderData>(() => {
     const project = selectedProject.value

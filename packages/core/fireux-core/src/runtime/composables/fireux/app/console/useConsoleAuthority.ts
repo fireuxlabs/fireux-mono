@@ -1,0 +1,107 @@
+import { doc, getDoc } from 'firebase/firestore'
+import { useFirestore } from '../../firestore/vuefire'
+import { normalizeConsoleString as normalizeString, type ConsoleMode } from './useConsole'
+
+export type ConsoleAuthorityFamily =
+  | 'kitchens'
+  | 'suppliers'
+  | 'portfolios'
+  | 'properties'
+  | 'projects'
+
+export type ConsoleAuthorityOperation = 'read' | 'write'
+
+export type AssertCanOperateTargetOptions = {
+  mode: ConsoleMode
+  family: ConsoleAuthorityFamily
+  targetId: string
+  uid: string
+  appId?: string
+  operation?: ConsoleAuthorityOperation
+}
+
+const rootAuthorityFamilies = new Set<ConsoleAuthorityFamily>(['projects'])
+
+export function normalizeConsoleOperatorIds(value: unknown): string[] {
+  if (!Array.isArray(value)) return []
+
+  return Array.from(
+    new Set(value.map((item) => normalizeString(item)).filter(Boolean))
+  )
+}
+
+export function targetHasOperator(target: unknown, uid: string): boolean {
+  const operatorIds = normalizeConsoleOperatorIds(
+    (target as Record<string, unknown> | null | undefined)?.operator_ids
+  )
+  const normalizedUid = normalizeString(uid)
+
+  return Boolean(normalizedUid && operatorIds.includes(normalizedUid))
+}
+
+export function useConsoleAuthority() {
+  const db = useFirestore()
+
+  async function assertCanOperateTarget({
+    mode,
+    family,
+    targetId,
+    uid,
+    appId,
+    operation = 'write',
+  }: AssertCanOperateTargetOptions): Promise<void> {
+    const normalizedUid = normalizeString(uid)
+    const normalizedTargetId = normalizeString(targetId)
+    const normalizedAppId = normalizeString(appId)
+
+    if (!normalizedUid) {
+      throw new Error(`Console ${operation} denied: missing user id.`)
+    }
+    if (!normalizedTargetId) {
+      throw new Error(`Console ${operation} denied: missing target id.`)
+    }
+
+    if (mode === 'demo' && operation === 'write') {
+      throw new Error('Console write denied: demo targets are read-only.')
+    }
+
+    if (mode === 'test') {
+      if (normalizedTargetId !== normalizedUid) {
+        throw new Error(
+          'Console write denied: test targets must belong to the current user.'
+        )
+      }
+      return
+    }
+
+    if (mode !== 'live') {
+      throw new Error(`Console ${operation} denied: unsupported mode "${mode}".`)
+    }
+
+    const targetRef = rootAuthorityFamilies.has(family)
+      ? doc(db, family, normalizedTargetId)
+      : (() => {
+          if (!normalizedAppId) {
+            throw new Error(
+              `Console ${operation} denied: missing app id for ${family}.`
+            )
+          }
+          return doc(db, 'apps', normalizedAppId, family, normalizedTargetId)
+        })()
+
+    const snapshot = await getDoc(targetRef)
+    if (!snapshot.exists()) {
+      throw new Error(
+        `Console ${operation} denied: authority target does not exist.`
+      )
+    }
+
+    if (!targetHasOperator(snapshot.data(), normalizedUid)) {
+      throw new Error(`Console ${operation} denied: user is not an operator.`)
+    }
+  }
+
+  return {
+    assertCanOperateTarget,
+  }
+}

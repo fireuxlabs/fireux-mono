@@ -5,13 +5,14 @@ import {
   limit as fslimit,
   query as fsq,
   getDocs,
+  getDoc,
   orderBy,
   startAt,
   type DocumentSnapshot,
   type Query,
   type QueryDocumentSnapshot,
 } from 'firebase/firestore'
-import { computed, ref, unref, type Ref } from 'vue'
+import { computed, ref, unref, watch, type Ref } from 'vue'
 import {
   useCollection,
   useDocument,
@@ -21,6 +22,13 @@ import { attachDevCollectionMeta } from 'fireux-core/runtime/composables/dev/use
 
 type UseFirestoreReadOptions = {
   databaseId?: string | Ref<string | null | undefined> | null | undefined
+}
+
+type MaybeRef<T> = T | Ref<T>
+
+type FirestoreFetchDocsByIdsOptions = {
+  collectionPath: string | Ref<string | null | undefined>
+  ids: MaybeRef<(string | number | null | undefined)[] | null | undefined>
 }
 
 function isOfflineFirestoreError(error: unknown): boolean {
@@ -126,6 +134,95 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
     return (binding as any).data as Ref<T | undefined>
   }
 
+  /** Fetch exact documents by id without reading the whole collection. */
+  const firestoreFetchDocsByIds = <T>({
+    collectionPath,
+    ids,
+  }: FirestoreFetchDocsByIdsOptions): {
+    docs: Ref<T[] | undefined>
+    pending: Ref<boolean>
+  } => {
+    const docs = ref<T[] | undefined>(undefined) as Ref<T[] | undefined>
+    const pending = ref(false)
+    let requestId = 0
+
+    const normalizedCollectionPath = computed(() =>
+      String(unref(collectionPath) || '').trim()
+    )
+    const normalizedIds = computed(() => {
+      const values = unref(ids) ?? []
+      return Array.from(
+        new Set(
+          values
+            .map((value) => String(value ?? '').trim())
+            .filter(Boolean)
+        )
+      )
+    })
+
+    watch(
+      () => ({
+        collectionPath: normalizedCollectionPath.value,
+        ids: normalizedIds.value,
+      }),
+      async ({ collectionPath, ids }) => {
+        const currentRequestId = ++requestId
+
+        if (!collectionPath || !ids.length || import.meta.server) {
+          docs.value = []
+          pending.value = false
+          return
+        }
+
+        pending.value = true
+
+        try {
+          const snapshots = await Promise.all(
+            ids.map((id) => getDoc(doc(resolveDb(), collectionPath, id)))
+          )
+
+          if (currentRequestId !== requestId) return
+
+          docs.value = snapshots.reduce<T[]>((acc, docSnap) => {
+            const raw = docSnap.data()
+            if (!raw) return acc
+
+            const value = {
+              ...(raw as Record<string, unknown>),
+              id: docSnap.id,
+            } as unknown as T & Record<string, unknown>
+
+            acc.push(attachDevCollectionMeta(value, collectionPath, docSnap.id) as T)
+            return acc
+          }, [])
+        } catch (error) {
+          if (import.meta.dev) {
+            if (isOfflineFirestoreError(error)) {
+              console.warn(
+                `[useFirestoreRead] offline exact-doc read ignored (${collectionPath})`,
+                error
+              )
+            } else {
+              console.error(
+                `[useFirestoreRead] exact-doc read failed (${collectionPath})`,
+                error
+              )
+            }
+          }
+          if (currentRequestId === requestId) docs.value = []
+        } finally {
+          if (currentRequestId === requestId) pending.value = false
+        }
+      },
+      { immediate: true, deep: true }
+    )
+
+    return {
+      docs,
+      pending,
+    }
+  }
+
   /**
    * Convenience prefix search for “starts with” text fields.
    * Requires the field to be indexed and (ideally) lowercased.
@@ -150,6 +247,7 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
   return {
     firestoreFetchCollection,
     firestoreFetchDoc,
+    firestoreFetchDocsByIds,
     firestoreQuery,
     firestorePrefixSearch,
   }

@@ -17,14 +17,6 @@
     @select-test="actions.selectTest"
     @create-test="actions.createTest?.()"
   >
-    <template #selected-card="{ card }">
-      <KitchenCardsPill
-        v-bind="card"
-        :link="false"
-        :show-badges="false"
-      />
-    </template>
-
     <template #live-collection>
       <KitchenCollectionManager
         :collection="kitchens.live"
@@ -34,26 +26,6 @@
         :action="true"
         :show-badges="false"
         @select="actions.selectLive"
-      />
-    </template>
-
-    <template #demo-card="{ card, select }">
-      <KitchenCardsPill
-        v-bind="card"
-        :link="false"
-        :action="true"
-        :show-badges="false"
-        @action="select(card.id)"
-      />
-    </template>
-
-    <template #test-card="{ card, select }">
-      <KitchenCardsPill
-        v-bind="card"
-        :link="false"
-        :action="true"
-        :show-badges="false"
-        @action="select"
       />
     </template>
   </ConsoleEntityIndex>

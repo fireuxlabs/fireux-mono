@@ -89,7 +89,7 @@ export function useKitchenCollection(
   )
   const resolveSimulationDb = useFirestoreResolver(simulationDatabaseId)
   const { appId } = useFireUXConfig()
-  const { firestoreFetchCollection, firestoreQuery } = useFirestoreRead()
+  const { firestoreFetchCollection, firestoreFetchDocsByIds, firestoreQuery } = useFirestoreRead()
   const simulationRead = useFirestoreRead({ databaseId: simulationDatabaseId })
   const sourceMode = computed<KitchenCollectionSource>(() => {
     if (isRef(options.source)) return options.source.value ?? 'live'
@@ -124,8 +124,6 @@ export function useKitchenCollection(
       route_scope: 'demo',
     }))
   )
-  const liveFirestoreSource =
-    firestoreFetchCollection<KitchenCollectionDoc>(DEFAULT_COLLECTION_PATH)
   const livePlacesSource = firestoreFetchCollection<Place>('places')
   const testFirestoreSource = simulationDatabaseId.value
     ? (() => {
@@ -148,7 +146,7 @@ export function useKitchenCollection(
       if (!simulationDatabaseId.value) requireSimulationDatabaseId()
       return testFirestoreSource
     }
-    return liveFirestoreSource
+    return liveFirestoreDocs.docs
   })
   const overlaySource = computed(() => {
     if (sourceMode.value !== 'live') return null
@@ -167,16 +165,21 @@ export function useKitchenCollection(
       `apps/${currentAppId.value}/${DEFAULT_COLLECTION_PATH}`
     )
   })
+  const allowedKitchenIds = computed(() =>
+    (overlaySource.value?.value ?? [])
+      .map((kitchen) => String(kitchen?.id || '').trim())
+      .filter(Boolean)
+  )
+  const liveFirestoreDocs = firestoreFetchDocsByIds<KitchenCollectionDoc>({
+    collectionPath: DEFAULT_COLLECTION_PATH,
+    ids: allowedKitchenIds,
+  })
   const placesSource = computed(() => {
     if (!shouldHydrate.value) return null
     return livePlacesSource
   })
   const collectionItems = computed<KitchenCollectionDoc[]>(() => {
-    const allowedKitchenIds = new Set(
-      (overlaySource.value?.value ?? [])
-        .map((kitchen) => String(kitchen?.id || '').trim())
-        .filter(Boolean)
-    )
+    const allowedKitchenIdSet = new Set(allowedKitchenIds.value)
     const placesById = new Map<string, Place>()
     for (const place of placesSource.value?.value ?? []) {
       const placeId = String(place?.id || '').trim()
@@ -190,7 +193,7 @@ export function useKitchenCollection(
         const kitchenId = String(kitchen?.id || '').trim()
         if (!kitchenId) return null
         if (hasFilter.value && !filterIdSet.value.has(kitchenId)) return null
-        if (hasOperatorFilter.value && !allowedKitchenIds.has(kitchenId)) return null
+        if (hasOperatorFilter.value && !allowedKitchenIdSet.has(kitchenId)) return null
 
         const resolvedPlaceId = String(kitchen?.place_id || kitchenId).trim()
         const place =
@@ -229,7 +232,7 @@ export function useKitchenCollection(
     if (hasOperatorFilter.value && currentAppId.value && overlaySource.value?.value === undefined) {
       return true
     }
-    return firestoreSource.value?.value === undefined
+    return firestoreSource.value?.value === undefined || liveFirestoreDocs.pending.value
   })
 
   return {

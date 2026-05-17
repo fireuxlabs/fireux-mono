@@ -72,7 +72,7 @@ Do not add another business layer here.
 If a family often has one target versus many, that is cardinality, not a new console architecture.
 
 Meaning by mode:
-- `live`: show the current user's real targets for that family
+- `live`: show authorized operator targets for that family
 - `test`: show writable targets that prove the intended real shape
 - `demo`: show curated read-only targets for development, demos, and UX exploration
 
@@ -88,6 +88,14 @@ Mode source canon:
 - demo is a read-only aid, not authority
 - demo data bends toward test/real shape; runtime code must not bend around stale demo data
 - demo/test/live targets should expose the same minimum console target shape for family entry, header, and overview
+
+Live authority canon:
+- `operator_ids` is the current console authority field.
+- app-scoped console families query `apps/{appId}/{family}` with `operator_ids array-contains uid`, then fetch only the authorized root target docs.
+- project console authority is root-level: query `projects` with `operator_ids array-contains uid`.
+- broad root collection reads plus client-side filtering are not authority.
+- writes must re-check authority in mutations; Firestore rules must enforce the same model before shipping.
+- `team_ids` is transitional compatibility only.
 
 ### 2b) Selected Target Overview
 

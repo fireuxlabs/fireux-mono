@@ -1,11 +1,11 @@
 import { computed, isRef } from 'vue'
 import {
   normalizeConsoleString as normalizeString,
-  resolveConsoleCanWrite,
   resolveConsoleRootCollection,
   useConsole,
   type ConsoleMode,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAuthority'
 import {
   readRuntimeFirestoreDatabaseId,
   readRuntimeSimulationFirestoreDatabaseId,
@@ -75,7 +75,11 @@ export function useKitchenConsole(
         ? 'kitchens'
         : resolveConsoleRootCollection('kitchens', selectedMode.value)
   )
-  const canWrite = computed(() => resolveConsoleCanWrite(selectedMode.value))
+  const canWrite = computed(() => {
+    if (selectedMode.value === 'demo') return false
+    if (selectedMode.value === 'test') return Boolean(userId.value && kitchenId.value === userId.value)
+    return targetHasOperator(selectedKitchen.value, userId.value)
+  })
 
   const header = computed<ConsoleHeaderData>(() => {
     const kitchen = selectedKitchen.value

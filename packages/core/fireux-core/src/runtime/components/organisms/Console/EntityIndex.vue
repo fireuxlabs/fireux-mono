@@ -27,7 +27,12 @@
           </UButton>
         </div>
 
-        <slot v-if="selectedCard" name="selected-card" :card="selectedCard" />
+        <slot v-if="selectedCard" name="selected-card" :card="selectedCard">
+          <ConsoleEntityIndexCard
+            :card="selectedCard"
+            :show-badges="false"
+          />
+        </slot>
 
         <p v-else class="text-sm text-dimmed">
           {{ selectDescriptionResolved }}
@@ -77,7 +82,14 @@
             name="demo-card"
             :card="card"
             :select="selectDemo"
-          />
+          >
+            <ConsoleEntityIndexCard
+              :card="card"
+              :action="true"
+              :show-badges="false"
+              @action="selectDemo(card.id)"
+            />
+          </slot>
         </div>
       </div>
     </section>
@@ -103,7 +115,14 @@
           name="test-card"
           :card="testCard"
           :select="selectTest"
-        />
+        >
+          <ConsoleEntityIndexCard
+            :card="testCard"
+            :action="true"
+            :show-badges="false"
+            @action="selectTest"
+          />
+        </slot>
 
         <UButton
           v-else-if="canCreateTest"
@@ -122,10 +141,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-
-type ConsoleEntityIndexCard = {
-  id: string
-} & Record<string, unknown>
+import ConsoleEntityIndexCard from './EntityIndexCard.vue'
+import type { ConsoleEntityIndexCard as ConsoleEntityIndexCardType } from './types'
 
 const props = withDefaults(
   defineProps<{
@@ -134,9 +151,9 @@ const props = withDefaults(
     entityPluralLowerLabel?: string
     liveCount?: number
     hasSelected?: boolean
-    selectedCard?: ConsoleEntityIndexCard | null
-    demoCards?: ConsoleEntityIndexCard[]
-    testCard?: ConsoleEntityIndexCard | null
+    selectedCard?: ConsoleEntityIndexCardType | null
+    demoCards?: ConsoleEntityIndexCardType[]
+    testCard?: ConsoleEntityIndexCardType | null
     showSimulations?: boolean
     creatingTest?: boolean
     canCreateTest?: boolean

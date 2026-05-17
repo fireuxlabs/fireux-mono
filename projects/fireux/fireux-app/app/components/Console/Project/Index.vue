@@ -18,14 +18,6 @@
     @select-test="actions.selectTest"
     @create-test="actions.createTest?.()"
   >
-    <template #selected-card="{ card }">
-      <ProjectCardsPill
-        v-bind="card"
-        :link="false"
-        :show-badges="false"
-      />
-    </template>
-
     <template #live-collection>
       <ProjectCollectionManager
         :collection="projects.live"
@@ -35,26 +27,6 @@
         :action="true"
         :show-badges="false"
         @select="actions.selectLive"
-      />
-    </template>
-
-    <template #demo-card="{ card, select }">
-      <ProjectCardsPill
-        v-bind="card"
-        :link="false"
-        :action="true"
-        :show-badges="false"
-        @action="select(card.id)"
-      />
-    </template>
-
-    <template #test-card="{ card, select }">
-      <ProjectCardsPill
-        v-bind="card"
-        :link="false"
-        :action="true"
-        :show-badges="false"
-        @action="select"
       />
     </template>
   </ConsoleEntityIndex>

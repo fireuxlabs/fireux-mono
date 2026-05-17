@@ -1,7 +1,14 @@
+import {
+  collection,
+  query as fsq,
+  where,
+  type Query,
+} from 'firebase/firestore'
 import { computed, isRef, type Ref } from 'vue'
 import { getDemoProjectScenarios } from 'fireux-core/runtime/composables/fireux/app/utils/project-demo-scenarios/demo-scenarios/index'
 import type { ProjectSurface } from '../utils/view/useProjectInterface'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 const PROJECT_COLLECTION_PATH = 'projects'
 const TEST_PROJECT_COLLECTION_PATH = 'test-projects'
@@ -26,7 +33,8 @@ const toDemoProjectSurface = (
 export function useProjectCollection(
   options: UseProjectCollectionOptions = {}
 ) {
-  const { firestoreFetchCollection } = useFirestoreRead()
+  const db = useFirestore()
+  const { firestoreFetchCollection, firestoreQuery } = useFirestoreRead()
   const sourceMode = computed<ProjectCollectionSource>(() => {
     if (isRef(options.source)) return options.source.value ?? 'live'
     return options.source ?? 'live'
@@ -56,6 +64,21 @@ export function useProjectCollection(
   )
   const firestoreSource = computed(() => {
     if (sourceMode.value === 'demo') return null
+
+    if (sourceMode.value === 'live') {
+      if (!hasOperatorFilter.value || !filterOperatorId.value) return null
+
+      const q = fsq(
+        collection(db, PROJECT_COLLECTION_PATH),
+        where('operator_ids', 'array-contains', filterOperatorId.value)
+      ) as Query<ProjectSurface>
+
+      return firestoreQuery<ProjectSurface>(
+        q,
+        `${PROJECT_COLLECTION_PATH}-operator-${filterOperatorId.value}`,
+        PROJECT_COLLECTION_PATH
+      )
+    }
 
     const collectionPath =
       sourceMode.value === 'test'

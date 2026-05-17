@@ -1,6 +1,13 @@
+import {
+  collection,
+  query as fsq,
+  where,
+  type Query,
+} from 'firebase/firestore'
 import { computed, isRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Supplier } from '../../../../../models/supplier/Supplier.model'
 import { getDemoSuppliers } from '../../../app/utils/supplier-demo-scenarios'
 
@@ -60,15 +67,12 @@ function toDemoSupplierSurface(
 export function useSupplierCollection(
   options: UseSupplierCollectionOptions = {}
 ) {
-  const { firestoreFetchCollection } = useFirestoreRead()
+  const db = useFirestore()
+  const { firestoreFetchCollection, firestoreFetchDocsByIds, firestoreQuery } = useFirestoreRead()
   const { appId } = useFireUXConfig()
   const sourceMode = computed<SupplierCollectionSource>(() => {
     if (isRef(options.source)) return options.source.value ?? 'live'
     return options.source ?? 'live'
-  })
-  const liveSource = computed(() => {
-    if (sourceMode.value !== 'live') return null
-    return firestoreFetchCollection<SupplierCollectionDoc>(DEFAULT_COLLECTION_PATH)
   })
   const testSource = computed(() => {
     if (sourceMode.value !== 'test') return null
@@ -77,7 +81,17 @@ export function useSupplierCollection(
   const resolvedAppId = computed(() => normalizeString(appId))
   const overlaySource = computed(() => {
     if (sourceMode.value !== 'live' || !resolvedAppId.value) return null
-    return firestoreFetchCollection<AppSupplierOverlay>(
+
+    if (!hasOperatorFilter.value || !filterOperatorId.value) return null
+
+    const q = fsq(
+      collection(db, 'apps', resolvedAppId.value, DEFAULT_COLLECTION_PATH),
+      where('operator_ids', 'array-contains', filterOperatorId.value)
+    ) as Query<AppSupplierOverlay>
+
+    return firestoreQuery<AppSupplierOverlay>(
+      q,
+      `apps-${resolvedAppId.value}-${DEFAULT_COLLECTION_PATH}-operator-${filterOperatorId.value}`,
       `apps/${resolvedAppId.value}/${DEFAULT_COLLECTION_PATH}`
     )
   })
@@ -104,12 +118,21 @@ export function useSupplierCollection(
   const demoItems = computed<SupplierCollectionDoc[]>(() =>
     getDemoSuppliers().map(toDemoSupplierSurface)
   )
+  const allowedSupplierIds = computed(() =>
+    (overlaySource.value?.value ?? [])
+      .map((supplier) => resolveSupplierId(supplier))
+      .filter(Boolean)
+  )
+  const liveRootDocs = firestoreFetchDocsByIds<SupplierCollectionDoc>({
+    collectionPath: DEFAULT_COLLECTION_PATH,
+    ids: allowedSupplierIds,
+  })
 
   const liveItems = computed<SupplierCollectionDoc[]>(() => {
     const rootById = new Map<string, SupplierCollectionDoc>()
     const overlayById = new Map<string, AppSupplierOverlay>()
 
-    for (const supplier of liveSource.value?.value ?? []) {
+    for (const supplier of liveRootDocs.docs.value ?? []) {
       const id = resolveSupplierId(supplier)
       if (!id) continue
       rootById.set(id, {
@@ -130,7 +153,7 @@ export function useSupplierCollection(
     const merged: SupplierCollectionDoc[] = []
     const seen = new Set<string>()
 
-    for (const supplier of liveSource.value?.value ?? []) {
+    for (const supplier of liveRootDocs.docs.value ?? []) {
       const id = resolveSupplierId(supplier)
       if (!id || seen.has(id)) continue
       seen.add(id)
@@ -190,7 +213,8 @@ export function useSupplierCollection(
     if (sourceMode.value === 'demo') return false
     if (sourceMode.value === 'test') return testSource.value?.value === undefined
     return (
-      liveSource.value?.value === undefined ||
+      liveRootDocs.docs.value === undefined ||
+      liveRootDocs.pending.value ||
       (overlaySource.value ? overlaySource.value.value === undefined : false)
     )
   })

@@ -75,10 +75,11 @@ Updated: 2026-05-16
   - `projects/<projectId>`
 - Root project identity, ownership, and team membership live on that root record.
 - Current canonical root project fields are:
-  - `team_ids`
+  - `operator_ids`
   - `owner_user_id`
   - `slug`
-- App-scoped project overlays may exist for app/console behavior, but they must not also own or duplicate root team membership.
+- `team_ids` is transitional compatibility only and is not the current console authority field.
+- App-scoped project overlays may exist for app/console behavior, but they must not also own or duplicate root operator authority.
 - `useProjectFetch()` = one project.
 - `useProjectCollection()` = many projects.
 - Public `/projects` must use the generic project collection.
@@ -229,15 +230,21 @@ Updated: 2026-05-16
   - where the operator should go next
 
 ## Real Mode Access Rule
-- `live` family entry must show `my Xs`, not all documents in the backing collection.
-- `my Xs` means targets the current user can operate through the app-hosted console overlay.
-- Canon authority source for real-mode access is the overlay governance shape:
-  - `team_ids`
+- `live` family entry must show authorized operator targets, not all documents in the backing collection.
+- Authorized operator targets means targets where the current user's uid is present in `operator_ids`.
+- Client-side filtering after a broad root collection read is not authority.
+- Console live source reads must query authority first, then fetch only exact authorized target docs.
+- Canon authority source for real-mode access is:
+  - `operator_ids`
   - `join_requests` as optional workflow state
   - and any family-specific canonical claim rule explicitly allowed in a Tier1 extension contract
-- Root ownership and relationship fields may support discovery or migration, but they do not replace overlay governance unless the Tier1 family contract explicitly says so.
+- `team_ids` may remain as transitional compatibility for older records, but it must not be documented as current canon.
+- Root ownership and relationship fields may support discovery or migration, but they do not replace operator authority unless the Tier1 family contract explicitly says so.
 - Family-specific guidance:
-  - `project`: overlay governance is primary; `owner_user_id` is a root ownership hint only.
+  - `project`: root `projects/{projectId}.operator_ids` is current authority; `owner_user_id` is a root ownership hint only.
+  - app-scoped console entities use `apps/{appId}/{family}/{targetId}.operator_ids` as the live authority source.
+- Mutation composables must re-check console authority before writes; page-level visibility is not enough.
+- Firestore rules must enforce the same operator authority model before shipping.
   - `property`: property console governance is scaffolded; do not borrow another app's console family to operate properties.
   - `kitchen`: overlay governance or allowed claim rules; chef/profile linkage is not enough.
   - `portfolio`: overlay governance is primary; `owner_label` is presentation only.
