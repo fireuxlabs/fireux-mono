@@ -12,12 +12,14 @@ const updateStamp = () => ({
   by: undefined,
 })
 
-type PropertySeed = Omit<Property, 'created' | 'updated' | 'operator_ids'> & {
+type PropertySeed = Omit<Property, 'created' | 'updated' | 'operator_ids' | 'slug'> & {
   operator_ids?: string[]
+  slug?: string
 }
 
 const toProperty = (seed: PropertySeed): Property => ({
   ...seed,
+  slug: seed.slug ?? seed.id,
   operator_ids: seed.operator_ids ?? [],
   created: stamp(),
   updated: updateStamp(),
@@ -90,39 +92,6 @@ export const getDemoPropertySimulations = (): Property[] => [
     status: 'active',
   }),
 ]
-
-const natsPropertyOperatorIds = ['yZ1nY4RtxnMnJwcVZnaMBigqM1A2']
-
-export const getLocalLiveProperties = (operatorId = ''): Property[] => {
-  const normalizedOperatorId = operatorId.trim()
-  if (!normalizedOperatorId || !natsPropertyOperatorIds.includes(normalizedOperatorId)) {
-    return []
-  }
-
-  return [
-    toProperty({
-      id: 'holiday-with-nats',
-      portfolio_id: 'buenohost-live-properties',
-      operator_ids: natsPropertyOperatorIds,
-      identity: identity({
-        name: 'Penthouse Holiday Apartment',
-        address_line: 'Hobachergassli',
-        city: 'Matten bei Interlaken',
-        postcode: '3800',
-        country: 'Switzerland',
-        place_id: 'holiday-with-nats',
-        image_url:
-          'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=640&h=360&q=80',
-        property_type: 'residential',
-        unit_count: 1,
-        estimated_value: 0,
-        estimated_value_currency: 'CHF',
-      }),
-      manual: manual(),
-      status: 'active',
-    }),
-  ]
-}
 
 export const createTestPropertySimulation = (
   userId: string,

@@ -2,7 +2,7 @@
   <div v-if="resolvedInfo && resolvedSection" class="min-w-0 space-y-8">
     <section class="space-y-5">
       <NuxtLink
-        :to="companionPath"
+        :to="infoPath"
         class="inline-flex items-center gap-2 text-sm font-semibold text-primary"
       >
         <Icon name="i-lucide-arrow-left" class="size-4" />
@@ -12,7 +12,7 @@
       <div class="space-y-3">
         <div class="flex flex-wrap gap-2">
           <UBadge color="primary" variant="soft">
-            Stay companion
+            Property info
           </UBadge>
           <UBadge color="neutral" variant="outline">
             {{ propertyName }}
@@ -91,10 +91,10 @@
         Error 404
       </UBadge>
       <h1 class="text-3xl font-semibold text-highlighted">
-        Companion section not found
+        Property info section not found
       </h1>
       <p class="text-muted">
-        This companion section is not enabled for this property.
+        This property info section is not enabled for this property.
       </p>
       <UButton to="/" color="primary" variant="soft">
         Back to BuenoHost
@@ -107,24 +107,24 @@
 import { computed } from 'vue'
 import { setResponseStatus } from '#imports'
 import {
-  getPropertyCompanionSections,
+  getPropertyInfoSections,
   resolvePropertyInfo,
-  resolvePropertyCompanionSection,
+  resolvePropertyInfoSection,
   type PropertyInfoItem,
 } from '../../../../demo/propertyInfo'
 import { findDemoBuenoHostPublicProperty } from '../../../../demo/properties'
 
 definePageMeta({
-  layout: 'property-companion',
+  layout: 'property-info',
 })
 
 const route = useRoute()
-const propertyId = computed(() => String(route.params.id || ''))
-const sectionId = computed(() => String(route.params.sectionId || ''))
-const property = computed(() => findDemoBuenoHostPublicProperty(propertyId.value))
+const propertySlug = computed(() => String(route.params.slug || ''))
+const infoId = computed(() => String(route.params.infoId || ''))
+const property = computed(() => findDemoBuenoHostPublicProperty(propertySlug.value))
 const info = computed(() => property.value ? resolvePropertyInfo(property.value.slug) : null)
 const section = computed(() =>
-  property.value ? resolvePropertyCompanionSection(property.value.slug, sectionId.value) : null
+  property.value ? resolvePropertyInfoSection(property.value.slug, infoId.value) : null
 )
 
 const resolvedProperty = computed(() => property.value)
@@ -136,27 +136,27 @@ if (!resolvedInfo.value || !resolvedSection.value) {
   setResponseStatus(404)
 }
 
-const companionSections = computed(() =>
-  resolvedInfo.value ? getPropertyCompanionSections(resolvedInfo.value) : []
+const infoSections = computed(() =>
+  resolvedInfo.value ? getPropertyInfoSections(resolvedInfo.value) : []
 )
 const currentIndex = computed(() =>
-  companionSections.value.findIndex((section) => section.id === resolvedSection.value?.id)
+  infoSections.value.findIndex((section) => section.id === resolvedSection.value?.id)
 )
 const previousSection = computed(() =>
-  currentIndex.value > 0 ? companionSections.value[currentIndex.value - 1] : null
+  currentIndex.value > 0 ? infoSections.value[currentIndex.value - 1] : null
 )
 const nextSection = computed(() =>
-  currentIndex.value >= 0 && currentIndex.value < companionSections.value.length - 1
-    ? companionSections.value[currentIndex.value + 1]
+  currentIndex.value >= 0 && currentIndex.value < infoSections.value.length - 1
+    ? infoSections.value[currentIndex.value + 1]
     : null
 )
-const companionPath = computed(() =>
-  resolvedProperty.value ? `/properties/${resolvedProperty.value.slug}/companion` : '/'
+const infoPath = computed(() =>
+  resolvedProperty.value ? `/properties/${resolvedProperty.value.slug}/info` : '/'
 )
 
 function sectionPath(targetSectionId: string) {
   if (!resolvedProperty.value) return ''
-  return `/properties/${resolvedProperty.value.slug}/companion/${targetSectionId}`
+  return `/properties/${resolvedProperty.value.slug}/info/${targetSectionId}`
 }
 
 function itemClass(tone: PropertyInfoItem['tone']) {
@@ -169,8 +169,8 @@ useSeoMeta({
   title: computed(() =>
     resolvedInfo.value && resolvedSection.value
       ? `${resolvedSection.value.title} · ${resolvedInfo.value.title}`
-      : 'Companion section not found'
+      : 'Property info section not found'
   ),
-  description: computed(() => resolvedSection.value?.summary || 'Companion section not found'),
+  description: computed(() => resolvedSection.value?.summary || 'Property info section not found'),
 })
 </script>

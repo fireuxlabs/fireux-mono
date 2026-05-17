@@ -1,7 +1,7 @@
 # Stacks Concept
 
 Authority: Operational
-Updated: 2026-05-15
+Updated: 2026-05-17
 Scope: FireUX entity-stack meaning across `models/`, `composables/`, `components/`, `pages/`, `server/`, and docs.
 
 This page documents the FireUX `stacks` concept.
@@ -86,9 +86,13 @@ Use `pnpm audit:usex` to print a report-only map of current `useX` stack seams. 
 
 ## Public Entity Route Add-Ons
 
-Shared entity routes should stay simple first: collection at `/xs`, detail at `/xs/:id`.
+Shared entity routes should stay simple first: plural collection at `/xs`, public detail at `/xs/:publicKey`, and public operator bridge at `/xs/:publicKey/operator`.
 
-App-specific public experiences can add a named child route when the experience is real domain behaviour rather than a generic detail page. For example, BuenoHost uses `/properties/:id/companion` for the guest-facing stay companion instead of overloading the property detail page.
+Console entity routes use singular family roots, such as `/console/property` and `/console/property/overview`.
+
+App-specific public experiences can add a named child route when the experience is real domain behaviour rather than a generic detail page. For example, BuenoHost uses `/properties/:slug/info` for public property information instead of overloading the property detail page.
+
+Do not use `/admin` as a public entity operation route. Public target-operation bridges use `/operator`; app/platform administration uses admin language only inside actual admin surfaces.
 
 When a child experience has a home plus sections, keep that distinction in runtime helpers rather than page-local filters. Prefer helpers like `getXHome()` and `getXSections()` so layouts, detail pages, QR targets, and smoke routes consume the same shape.
 

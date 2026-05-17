@@ -118,6 +118,9 @@ export function useSupplierCollection(
   const demoItems = computed<SupplierCollectionDoc[]>(() =>
     getDemoSuppliers().map(toDemoSupplierSurface)
   )
+  const liveRootSource = firestoreFetchCollection<SupplierCollectionDoc>(
+    DEFAULT_COLLECTION_PATH
+  )
   const allowedSupplierIds = computed(() =>
     (overlaySource.value?.value ?? [])
       .map((supplier) => resolveSupplierId(supplier))
@@ -183,6 +186,7 @@ export function useSupplierCollection(
   const collectionItems = computed<SupplierCollectionDoc[]>(() => {
     if (sourceMode.value === 'demo') return demoItems.value
     if (sourceMode.value === 'test') return testSource.value?.value ?? []
+    if (!hasOperatorFilter.value) return liveRootSource.value ?? []
     return liveItems.value
   })
 
@@ -212,6 +216,7 @@ export function useSupplierCollection(
   const pending = computed(() => {
     if (sourceMode.value === 'demo') return false
     if (sourceMode.value === 'test') return testSource.value?.value === undefined
+    if (!hasOperatorFilter.value) return liveRootSource.value === undefined
     return (
       liveRootDocs.docs.value === undefined ||
       liveRootDocs.pending.value ||

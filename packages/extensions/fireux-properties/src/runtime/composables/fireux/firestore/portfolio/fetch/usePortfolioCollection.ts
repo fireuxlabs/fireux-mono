@@ -104,6 +104,9 @@ export function usePortfolioCollection(
       .map((portfolio) => resolvePortfolioId(portfolio))
       .filter(Boolean)
   )
+  const liveRootSource = firestoreFetchCollection<PortfolioCollectionDoc>(
+    DEFAULT_COLLECTION_PATH
+  )
   const liveRootDocs = firestoreFetchDocsByIds<PortfolioCollectionDoc>({
     collectionPath: DEFAULT_COLLECTION_PATH,
     ids: allowedPortfolioIds,
@@ -164,6 +167,7 @@ export function usePortfolioCollection(
   const collectionItems = computed<PortfolioCollectionDoc[]>(() => {
     if (sourceMode.value === 'demo') return []
     if (sourceMode.value === 'test') return testSource.value?.value ?? []
+    if (!hasOperatorFilter.value) return liveRootSource.value ?? []
     return liveItems.value
   })
 
@@ -193,6 +197,7 @@ export function usePortfolioCollection(
   const pending = computed(() => {
     if (sourceMode.value === 'demo') return false
     if (sourceMode.value === 'test') return testSource.value?.value === undefined
+    if (!hasOperatorFilter.value) return liveRootSource.value === undefined
     return (
       liveRootDocs.docs.value === undefined ||
       liveRootDocs.pending.value ||

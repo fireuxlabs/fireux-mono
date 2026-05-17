@@ -5,27 +5,25 @@ import {
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import type { Property } from '../../../../models/property.model'
 import {
-  createTestPropertySimulation,
-  getDemoPropertySimulations,
-  getLocalLiveProperties,
-} from './demo-scenarios'
+  usePropertyCollection,
+  type PropertyCollectionFilter,
+} from '../../firestore/property/fetch/usePropertyCollection'
 
 export function usePropertyConsoleIndex() {
   const { uid } = useAuth()
-  const { currentUser, avatarSrc } = useUser()
   const userId = computed(() => normalizeString(uid.value))
-  const liveProperties = computed<Property[]>(() => getLocalLiveProperties(userId.value))
-  const demoProperties = computed<Property[]>(() => getDemoPropertySimulations())
-  const testProperty = computed<Property | null>(() =>
-    createTestPropertySimulation(
-      userId.value,
-      normalizeString(currentUser.value?.display_name),
-      normalizeString(avatarSrc.value)
-    )
+  const liveFilter = computed<PropertyCollectionFilter>(() =>
+    userId.value ? { operatorId: userId.value } : { ids: [] }
   )
+  const { properties: liveProperties } = usePropertyCollection({
+    source: 'live',
+    filter: liveFilter,
+  })
+  const { properties: demoProperties } = usePropertyCollection({ source: 'demo' })
+  const { properties: testProperties } = usePropertyCollection({ source: 'test' })
+  const testProperty = computed<Property | null>(() => testProperties.value[0] ?? null)
   const {
     selectedId,
     selectedMode,

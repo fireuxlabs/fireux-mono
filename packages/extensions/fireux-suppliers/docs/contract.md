@@ -1,6 +1,6 @@
 # fireux-suppliers Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-04-27
+Updated: 2026-05-17
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -37,9 +37,12 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Current id-based routes:
   - `/suppliers`
   - `/suppliers/[id]`
+  - `/suppliers/[id]/operator`
   - `/console/supplier/*`
-  - `/suppliers/admin/[id]`
   - `/dashboard/supplier/*`
+- `/suppliers/[id]/operator` is the public-to-private operator bridge.
+- `/suppliers/admin/[id]` is legacy redirect-only and must not be treated as supplier route canon.
+- Public `admin` route language is prohibited because app/platform admin is not the same thing as operating one supplier target.
 - `/console/supplier` is the family entry page:
   - `demo`: curated demo suppliers
   - `test`: Firestore-backed test suppliers

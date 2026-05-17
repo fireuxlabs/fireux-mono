@@ -1,7 +1,7 @@
 # Suppliers Pages
 
 Authority: Operational
-Updated: 2026-03-26
+Updated: 2026-05-17
 Scope: `packages/extensions/fireux-suppliers/src/runtime/pages/suppliers/*`.
 
 This folder owns the public `Supplier` route tree.
@@ -13,6 +13,7 @@ This README only explains the supplier delta.
 
 - `index.vue`
 - `[id].vue`
+- `[id]/operator.vue`
 - `create.vue`
 - `admin/[id].vue`
 - `learn-more.vue`
@@ -20,7 +21,8 @@ This README only explains the supplier delta.
 ## Local Contract
 
 - `index.vue`, `[id].vue`, and `learn-more.vue` are public supplier pages
-- `admin/[id].vue` is a privileged management surface
+- `[id]/operator.vue` is the public-to-private operator bridge
+- `admin/[id].vue` is legacy redirect-only; public supplier route canon uses `operator`
 - `create.vue` is the public root-create page for `Supplier`
 - `console/supplier/create.vue` is the operational console create page
 

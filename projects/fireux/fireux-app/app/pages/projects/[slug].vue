@@ -4,7 +4,19 @@
       class="pageheader"
       :title="pageTitle"
       :description="pageDescription"
-    />
+    >
+      <template #links>
+        <UButton
+          v-if="operatorTo"
+          :to="operatorTo"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-key-round"
+        >
+          Operator
+        </UButton>
+      </template>
+    </UPageHeader>
 
     <UPageBody class="pagebody space-y-6">
       <UAlert
@@ -163,7 +175,7 @@
 import { computed } from 'vue'
 import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useProjectFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectFetch'
+import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
 import {
   useProjectInterface,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
@@ -177,14 +189,25 @@ const route = useRoute()
 const { appName } = useFireUXConfig()
 const { profile } = useProjectInterface()
 
-const routeId = computed<string | null>(() => String(route.params.id || '').trim() || null)
-const { project, pending } = useProjectFetch(routeId, { source: 'live' })
+const routeSlug = computed<string | null>(() => String(route.params.slug || '').trim() || null)
+const operatorTo = computed(() =>
+  routeSlug.value ? `/projects/${encodeURIComponent(routeSlug.value)}/operator` : ''
+)
+const { projects, pending } = useProjectCollection({ source: 'live' })
+const project = computed(() => {
+  const slug = String(routeSlug.value || '').toLowerCase()
+  if (!slug) return null
+
+  return projects.value.find(
+    (entry) => String(entry.slug || '').trim().toLowerCase() === slug
+  ) ?? null
+})
 
 const projectCard = computed(() => profile(project.value))
 const pageTitle = computed(
   () =>
     projectCard.value?.title ||
-    String(project.value?.name || project.value?.slug || routeId.value || 'Project').trim()
+    String(project.value?.name || project.value?.slug || routeSlug.value || 'Project').trim()
 )
 const pageDescription = computed(() => {
   if (project.value?.description) return String(project.value.description).trim()

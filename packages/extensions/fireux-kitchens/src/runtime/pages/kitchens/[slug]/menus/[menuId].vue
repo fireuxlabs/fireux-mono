@@ -30,7 +30,7 @@ definePageMeta({
 const route = useRoute()
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const routeKitchenSlug = computed(() => {
-  const raw = route.params.kitchenSlug
+  const raw = route.params.slug
   return Array.isArray(raw)
     ? normalizeString(raw[0])
     : normalizeString(raw)

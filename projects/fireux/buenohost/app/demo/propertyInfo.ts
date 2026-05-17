@@ -476,18 +476,18 @@ export function getEnabledPropertyInfoTopics(info: PropertyInfoCollection): Prop
   return info.topics.filter((topic) => topic.enabled !== false)
 }
 
-export function getPropertyCompanionHome(info: PropertyInfoCollection): PropertyInfoTopic | null {
+export function getPropertyInfoHome(info: PropertyInfoCollection): PropertyInfoTopic | null {
   return getEnabledPropertyInfoTopics(info).find((topic) => topic.id === 'welcome') ?? null
 }
 
-export function getPropertyCompanionSections(info: PropertyInfoCollection): PropertyInfoTopic[] {
-  const home = getPropertyCompanionHome(info)
+export function getPropertyInfoSections(info: PropertyInfoCollection): PropertyInfoTopic[] {
+  const home = getPropertyInfoHome(info)
   return getEnabledPropertyInfoTopics(info).filter((topic) => topic.id !== home?.id)
 }
 
-export function resolvePropertyCompanionSection(slug: string, sectionId: string): PropertyInfoTopic | null {
+export function resolvePropertyInfoSection(slug: string, infoId: string): PropertyInfoTopic | null {
   const info = resolvePropertyInfo(slug)
   if (!info) return null
 
-  return getPropertyCompanionSections(info).find((topic) => topic.id === sectionId) ?? null
+  return getPropertyInfoSections(info).find((topic) => topic.id === infoId) ?? null
 }

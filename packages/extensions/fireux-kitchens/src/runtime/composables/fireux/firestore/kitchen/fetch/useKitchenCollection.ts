@@ -125,6 +125,9 @@ export function useKitchenCollection(
     }))
   )
   const livePlacesSource = firestoreFetchCollection<Place>('places')
+  const liveRootSource = firestoreFetchCollection<KitchenCollectionDoc>(
+    DEFAULT_COLLECTION_PATH
+  )
   const testFirestoreSource = simulationDatabaseId.value
     ? (() => {
         const q = fsq(
@@ -146,7 +149,7 @@ export function useKitchenCollection(
       if (!simulationDatabaseId.value) requireSimulationDatabaseId()
       return testFirestoreSource
     }
-    return liveFirestoreDocs.docs
+    return hasOperatorFilter.value ? liveFirestoreDocs.docs : liveRootSource
   })
   const overlaySource = computed(() => {
     if (sourceMode.value !== 'live') return null

@@ -1,7 +1,7 @@
 # Kitchens Pages
 
 Authority: Operational
-Updated: 2026-05-13
+Updated: 2026-05-17
 Scope: `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/*`.
 
 This folder owns the public `Kitchen` route tree.
@@ -13,8 +13,9 @@ This README only explains the kitchen delta.
 
 - `index.vue`
 - `[slug].vue`
-- `[kitchenSlug]/menus/index.vue`
-- `[kitchenSlug]/menus/[menuId].vue`
+- `[slug]/menus/index.vue`
+- `[slug]/menus/[menuId].vue`
+- `[slug]/operator.vue`
 - `create.vue`
 - `edit/[id].vue`
 - `learn-more.vue`
@@ -25,6 +26,7 @@ This README only explains the kitchen delta.
 - `index.vue` is the public kitchen index
 - `index.vue` embeds the same chooser used by `/console/kitchen`
 - `[slug].vue` and menus index/detail are public kitchen delivery
+- `[slug]/operator.vue` is the public-to-private operator bridge
 - `create.vue` is the public kitchen create page
 - `edit/[id].vue` belongs to the public kitchen edit family
 

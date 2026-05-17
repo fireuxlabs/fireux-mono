@@ -1,6 +1,6 @@
 # fireux-kitchens Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-13
+Updated: 2026-05-17
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -66,7 +66,10 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `/kitchens/[slug]`
   - `/kitchens/[slug]/menus`
   - `/kitchens/[slug]/menus/[menuId]`
+  - `/kitchens/[slug]/operator`
   - `/ingredients/[id]`
+- `/kitchens/[slug]/operator` is the public-to-private operator bridge.
+- The operator bridge may show sign-in, request-access, or console-entry state, but it must not edit the kitchen directly.
 - The active public kitchen route family is `/kitchens/**`; singular `/kitchen/**` is legacy/stale.
 - Stored kitchen identity remains `kitchens/{kitchenId}` even when the public URL uses slug.
 - Console/internal:

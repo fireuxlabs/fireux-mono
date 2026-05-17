@@ -1,7 +1,7 @@
 # Layouts Directory
 
 Authority: Operational
-Updated: 2026-04-05
+Updated: 2026-05-17
 Scope: `packages/*/fireux-*/src/runtime/layouts` and actual runtime layout usage across `packages/` and `projects/`.
 
 This directory documents the real runtime layout system, not an abstract ideal.
@@ -215,8 +215,8 @@ Current role:
 - minimal footer
 
 Used by:
-- `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[kitchenSlug]/menus/index.vue`
-- `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[kitchenSlug]/menus/[menuId].vue`
+- `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[slug]/menus/index.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/pages/kitchens/[slug]/menus/[menuId].vue`
 
 ## Similarity Groups
 

@@ -286,7 +286,7 @@ import { toDataURL } from 'qrcode'
 import { computed, onMounted, ref } from 'vue'
 import { useRuntimeConfig, useSeoMeta } from '#imports'
 
-const demoInfoPath = '/properties/demo-stay/companion'
+const demoInfoPath = '/properties/demo-stay/info'
 const qrTargetUrl = ref('')
 const qrDataUrl = ref('')
 const runtimeConfig = useRuntimeConfig()

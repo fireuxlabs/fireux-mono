@@ -7,15 +7,15 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Family: Portfolio-scoped
- * Storage: scoped operational record
- * Owner app scope: Portfolio
- * Scope: portfolio-owned property records
+ * Family: Property
+ * Storage: root/public property record, with optional console app overlay
+ * Owner app scope: Property console / product shell
+ * Scope: BuenoHost-style property information records
  *
  * Decision note:
- * - Property currently belongs to portfolio operations rather than to a shared root canon.
- * - Keep ownership explicit through `portfolio_id` while that rule holds.
- * - If that changes later, update the models README first, then this file.
+ * - BuenoHost can use Property as a root information entity without Portfolio.
+ * - Portfolio/Granite compatibility can reference Property later, but Portfolio is
+ *   not the required owner for Property console canon.
  */
 
 export const PropertyIdentityModel = {
@@ -116,6 +116,7 @@ export const PropertyManualModel = {
 
 export const PropertyModel = {
   id: '' as string,
+  slug: '' as string,
   portfolio_id: '' as string,
   ...FireuxConsoleAccessModel,
   identity: PropertyIdentityModel,

@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-16
+Updated: 2026-05-17
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -178,9 +178,18 @@ Current learned examples:
 
 ### Public Entity Route Add-Ons
 
-- Shared entity roots use the plain collection/detail shape first, such as `/properties` and `/properties/:id`.
-- App-specific public experiences sit under an explicit child noun, such as `/properties/:id/companion`.
-- Child pages use stable semantic ids, such as `/properties/:id/companion/:sectionId`.
+- Shared public entity roots use plural collection/detail routes first, such as `/properties` and `/properties/:publicKey`.
+- Console entity routes use singular family routes, such as `/console/property` and `/console/property/overview`.
+- Public entity operation bridges use `/operator`, such as `/properties/:publicKey/operator`.
+- Do not use `/admin` as a public entity route word. Admin means app/platform administration; operator means access to operate this public target.
+- App-specific public experiences sit under an explicit child noun, such as `/properties/:slug/info`.
+- Child pages use stable semantic ids, such as `/properties/:slug/info/:infoId`.
+- Current public key canon:
+  - Kitchen: `slug`
+  - Property: `slug`
+  - Project: `slug`
+  - Supplier: `id`
+  - Portfolio: `id`
 - Do not encode a special child home page by filtering it out inside pages. Promote that split into named helpers, for example `getXHome()` and `getXSections()`, so public pages, layouts, smoke routes, and QR targets all share the same source shape.
 
 ### Entity Mode Matrix

@@ -12,12 +12,12 @@
 
       <template #links>
         <UButton
-          :to="`/properties/${property.slug}/companion`"
+          :to="`/properties/${property.slug}/info`"
           color="neutral"
           variant="soft"
           icon="i-lucide-book-open"
         >
-          View stay companion
+          View property info
         </UButton>
       </template>
     </UPageHeader>
@@ -182,7 +182,7 @@ import { useConversationCreate } from 'fireux-core/runtime/composables/fireux/fi
 import { findDemoBuenoHostPublicProperty } from '../../demo/properties'
 
 const route = useRoute()
-const slug = computed(() => String(route.params.id || ''))
+const slug = computed(() => String(route.params.slug || ''))
 const property = computed(() => findDemoBuenoHostPublicProperty(slug.value))
 const { createConversation } = useConversationCreate()
 

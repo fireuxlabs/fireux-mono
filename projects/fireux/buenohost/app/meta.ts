@@ -46,8 +46,8 @@ export const buenoHostLanguage = {
       to: '/console/property',
     },
     secondary: {
-      label: 'View stay companion',
-      to: '/properties/demo-stay/companion',
+      label: 'View property info',
+      to: '/properties/demo-stay/info',
     },
     console: {
       label: 'Open host console',

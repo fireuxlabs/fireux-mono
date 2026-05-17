@@ -73,9 +73,11 @@ export function usePropertyInterface() {
         .filter(Boolean)
         .join(' · ') || 'No metadata'
 
+    const slug = safeString((target as any).slug)
+
     return {
       id,
-      to: `/properties/${encodeURIComponent(id)}`,
+      to: slug ? `/properties/${encodeURIComponent(slug)}` : '',
       title,
       subtitle,
       meta,

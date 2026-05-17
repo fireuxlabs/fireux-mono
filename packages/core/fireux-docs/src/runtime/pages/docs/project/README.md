@@ -65,7 +65,7 @@ Additional project child pages may exist beneath the selected workspace.
 Sibling page rule:
 
 - public project routing should use sibling route files such as `projects/index.vue` and `projects/[slug].vue`
-- do not pair `projects.vue` with `projects/[id].vue` unless the parent explicitly renders `<NuxtPage />`
+- do not pair `projects.vue` with `projects/[slug].vue` unless the parent explicitly renders `<NuxtPage />`
 
 ## FireUX Page Rule For Project
 

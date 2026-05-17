@@ -4,13 +4,13 @@
       <template #ctas>
         <UButton
           v-if="supplierRecord && isAdminUser && docId"
-          icon="i-lucide-shield"
+          icon="i-lucide-key-round"
           size="xs"
           color="primary"
           variant="solid"
-          :to="`/suppliers/admin/${docId}`"
+          :to="`/suppliers/${docId}/operator`"
         >
-          Admin
+          Operator
         </UButton>
         <UButton
           v-if="supplierRecord && isSelf"

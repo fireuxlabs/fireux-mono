@@ -66,7 +66,9 @@ export function useProjectCollection(
     if (sourceMode.value === 'demo') return null
 
     if (sourceMode.value === 'live') {
-      if (!hasOperatorFilter.value || !filterOperatorId.value) return null
+      if (!hasOperatorFilter.value || !filterOperatorId.value) {
+        return firestoreFetchCollection<ProjectSurface>(PROJECT_COLLECTION_PATH)
+      }
 
       const q = fsq(
         collection(db, PROJECT_COLLECTION_PATH),

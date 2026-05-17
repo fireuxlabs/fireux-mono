@@ -1,6 +1,6 @@
 # fireux-properties Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-16
+Updated: 2026-05-17
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -38,8 +38,10 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `app_scope_app_id`
 - Portfolio-owned operational children live under:
   - `apps/{appId}/portfolios/{portfolioId}/{childCollection}/{childId}`
-- BuenoHost public property information uses a Kitchen-shaped public child pattern:
+- BuenoHost `Property` follows the same root/app console collection canon as other console entities:
   - `properties/{propertyId}`
+  - `apps/{appId}/properties/{propertyId}`
+- BuenoHost public property information uses a Kitchen-shaped public child pattern:
   - `properties/{propertyId}/info/{infoId}`
   - `properties/{propertyId}/messages/{messageId}`
   - `properties/{propertyId}/maintainers/{maintainerId}`
@@ -48,11 +50,16 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Current id-based routes:
   - `/portfolios`
   - `/portfolios/[id]`
+  - `/portfolios/[id]/operator`
   - `/console/portfolio/*`
+- `/portfolios/[id]/operator` is the public-to-private operator bridge for the id-based Portfolio contract.
 - BuenoHost public routes:
   - `/properties/[slug]`
   - `/properties/[slug]/info`
   - `/properties/[slug]/info/[infoId]`
+  - `/properties/[slug]/operator`
+- `/properties/[slug]/operator` is the public-to-private operator bridge for the slug-based Property contract.
+- `companion` is legacy BuenoHost route language; public property information route canon is `info`.
 - BuenoHost console scaffold routes:
   - `/console/property`
   - `/console/property/overview`
@@ -68,6 +75,10 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `/console/property/local-guide`
   - `/console/property/updates`
 - `/console/property` and `/console/property/overview` follow the shared core console index/overview semantics.
+- `/console/property` live targets are authority-scoped through:
+  - `apps/{appId}/properties/{propertyId}`
+  - `operator_ids` contains the user
+- Public/unfiltered property lists read root `properties/{propertyId}` records and must not borrow Portfolio authority.
 - Property-owned child routes must be added only when their canon is explicit.
 - Current Property-owned child routes:
   - `/console/property/qr`

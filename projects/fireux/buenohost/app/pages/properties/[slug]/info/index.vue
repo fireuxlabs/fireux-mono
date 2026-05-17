@@ -4,7 +4,7 @@
       <div class="space-y-5">
         <div class="flex flex-wrap gap-2">
           <UBadge color="primary" variant="soft">
-            Stay companion
+            Property info
           </UBadge>
           <UBadge color="neutral" variant="outline">
             {{ resolvedInfo.language.toUpperCase() }}
@@ -22,7 +22,7 @@
             {{ resolvedProperty.identity.name }}
           </h1>
           <p class="max-w-2xl text-base leading-7 text-muted sm:text-lg">
-            {{ companionHome?.summary || 'Clean mobile stay information for your guests.' }}
+            {{ infoHome?.summary || 'Clean mobile stay information for your guests.' }}
           </p>
         </div>
 
@@ -60,7 +60,7 @@
                   </h2>
                 </div>
                 <p class="text-sm leading-6 text-muted">
-                  BuenoHost owns this stay companion. Sproochli owns any translated versions.
+                  BuenoHost owns this property info. Sproochli owns any translated versions.
                 </p>
               </div>
               <UBadge color="primary" variant="soft">
@@ -74,7 +74,7 @@
               variant="soft"
               icon="i-lucide-loader"
               title="Checking Sproochli"
-              description="Looking for published translations for this stay companion."
+              description="Looking for published translations for this property info."
             />
 
             <UAlert
@@ -116,7 +116,7 @@
               variant="soft"
               icon="i-lucide-info"
               title="Translations not ready yet"
-              description="This stay companion is currently available in its original English version only."
+              description="This property info is currently available in its original English version only."
             />
 
             <div class="rounded-md border border-dashed border-default bg-muted/30 p-4 text-sm text-muted">
@@ -177,22 +177,22 @@
       </UCard>
     </section>
 
-    <UCard v-if="companionHome">
+    <UCard v-if="infoHome">
       <template #header>
         <div class="flex items-start gap-3">
           <div class="rounded-md bg-primary/10 p-2 text-primary">
-            <Icon :name="companionHome.icon" class="size-5" />
+            <Icon :name="infoHome.icon" class="size-5" />
           </div>
           <div>
-            <h2 class="text-xl font-semibold">{{ companionHome.title }}</h2>
-            <p class="mt-1 text-sm leading-6 text-muted">{{ companionHome.summary }}</p>
+            <h2 class="text-xl font-semibold">{{ infoHome.title }}</h2>
+            <p class="mt-1 text-sm leading-6 text-muted">{{ infoHome.summary }}</p>
           </div>
         </div>
       </template>
 
       <ul class="grid gap-2">
         <li
-          v-for="item in companionHome.items"
+          v-for="item in infoHome.items"
           :key="item.label || item.value"
           class="rounded-md border border-default px-3 py-2 text-sm"
           :class="itemClass(item.tone)"
@@ -242,16 +242,16 @@
       </div>
     </section>
 
-    <section aria-label="Stay companion sections" class="space-y-4">
+    <section aria-label="Property info sections" class="space-y-4">
       <div class="space-y-1">
         <p class="text-xs font-semibold uppercase text-primary">
-          Stay companion
+          Property info
         </p>
         <h2 class="text-2xl font-semibold">
-          Companion sections
+          Info sections
         </h2>
         <p class="max-w-2xl text-sm leading-6 text-muted">
-          Hosts can enable the sections that matter for each property. Disabled sections simply disappear from the guest companion.
+          Hosts can enable the sections that matter for each property. Disabled sections simply disappear from the guest information surface.
         </p>
       </div>
 
@@ -290,10 +290,10 @@
         Error 404
       </UBadge>
       <h1 class="text-3xl font-semibold text-highlighted">
-        Stay companion not found
+        Property info not found
       </h1>
       <p class="text-muted">
-        This stay companion is not available in BuenoHost.
+        This property info is not available in BuenoHost.
       </p>
       <UButton to="/properties/demo-stay" color="primary" variant="soft">
         Back to properties
@@ -306,30 +306,30 @@
 import { computed, ref } from 'vue'
 import { setResponseStatus, useRuntimeConfig } from '#imports'
 import {
-  getPropertyCompanionHome,
-  getPropertyCompanionSections,
+  getPropertyInfoHome,
+  getPropertyInfoSections,
   resolvePropertyInfo,
   type PropertyInfoItem,
 } from '../../../../demo/propertyInfo'
 import { findDemoBuenoHostPublicProperty } from '../../../../demo/properties'
 
 definePageMeta({
-  layout: 'property-companion',
+  layout: 'property-info',
 })
 
 const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
-const property = computed(() => findDemoBuenoHostPublicProperty(String(route.params.id || '')))
+const property = computed(() => findDemoBuenoHostPublicProperty(String(route.params.slug || '')))
 const info = computed(() => property.value ? resolvePropertyInfo(property.value.slug) : null)
 
 if (!info.value) setResponseStatus(404)
 
 const resolvedProperty = computed(() => property.value!)
 const resolvedInfo = computed(() => info.value!)
-const companionHome = computed(() => getPropertyCompanionHome(resolvedInfo.value))
-const companionSections = computed(() => getPropertyCompanionSections(resolvedInfo.value))
-const priorityTopics = computed(() => companionSections.value.filter((topic) => topic.priority))
-const regularTopics = computed(() => companionSections.value.filter((topic) => !topic.priority))
+const infoHome = computed(() => getPropertyInfoHome(resolvedInfo.value))
+const infoSections = computed(() => getPropertyInfoSections(resolvedInfo.value))
+const priorityTopics = computed(() => infoSections.value.filter((topic) => topic.priority))
+const regularTopics = computed(() => infoSections.value.filter((topic) => !topic.priority))
 const phoneHref = computed(() => resolvedProperty.value.manual.welcome.phone.replace(/\s+/g, ''))
 const showTranslations = ref(false)
 const translationAvailability = ref<TranslationAvailabilityResponse | null>(null)
@@ -369,8 +369,8 @@ type TranslationAvailabilityResponse = {
   translations_ready: boolean
 }
 
-function sectionPath(sectionId: string) {
-  return `/properties/${resolvedProperty.value.slug}/companion/${sectionId}`
+function sectionPath(infoId: string) {
+  return `/properties/${resolvedProperty.value.slug}/info/${infoId}`
 }
 
 function itemClass(tone: PropertyInfoItem['tone']) {
@@ -408,12 +408,12 @@ useSeoMeta({
   title: computed(() =>
     resolvedInfo.value
       ? `${resolvedInfo.value.title} · ${resolvedProperty.value.identity.name}`
-      : 'Stay companion not found'
+      : 'Property info not found'
   ),
   description: computed(() =>
     resolvedInfo.value
-      ? `Stay companion for ${resolvedProperty.value.identity.name}`
-      : 'Stay companion not found'
+      ? `Property info for ${resolvedProperty.value.identity.name}`
+      : 'Property info not found'
   ),
 })
 </script>
