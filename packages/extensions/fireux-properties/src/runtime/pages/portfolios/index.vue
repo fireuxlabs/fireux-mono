@@ -38,6 +38,9 @@ definePageMeta({
     desktop: true,
     mobile: true,
     layouts: ['default'],
+    visibility: {
+      apps: ['granite-app'],
+    },
   },
   title: 'Portfolios',
   description: 'Browse portfolios.',

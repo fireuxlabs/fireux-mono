@@ -49,24 +49,25 @@ export function usePropertyInterface() {
     const id = safeString(target.id)
     if (!id) return null
 
-    const title = safeString(target.name) || id
+    const identity = target.identity
+    const title = safeString(identity.name) || id
     const subtitle =
       [
-        safeString(target.address_line),
-        safeString(target.city),
-        safeString(target.postcode),
+        safeString(identity.address_line),
+        safeString(identity.city),
+        safeString(identity.postcode),
       ]
         .filter(Boolean)
         .join(' · ') || 'Address not set'
     const estimatedValue = formatEstimatedValue(
-      target.estimated_value,
-      target.estimated_value_currency
+      identity.estimated_value,
+      identity.estimated_value_currency
     )
 
     const meta =
       [
-        safeString(target.property_type),
-        `units ${Number.isFinite(target.unit_count) ? target.unit_count : 0}`,
+        safeString(identity.property_type),
+        `units ${Number.isFinite(identity.unit_count) ? identity.unit_count : 0}`,
         estimatedValue ? `est. ${estimatedValue}` : '',
       ]
         .filter(Boolean)
@@ -78,7 +79,7 @@ export function usePropertyInterface() {
       title,
       subtitle,
       meta,
-      imageUrl: safeString(target.image_url) || propertyImagePlaceholder(id),
+      imageUrl: safeString(identity.image_url) || propertyImagePlaceholder(id),
       status: '',
       badges: [],
       summary: '',

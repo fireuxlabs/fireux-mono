@@ -5,12 +5,14 @@
     </template>
 
     <template #body>
-      <ConsolePropertiesInfoEditor page-key="checkout" />
+      <PropertyInfoEditor page-key="checkout" />
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
+import PropertyInfoEditor from '../../../components/organisms/Console/Properties/InfoEditor.vue'
+
 definePageMeta({
   layout: 'console',
   nav: {

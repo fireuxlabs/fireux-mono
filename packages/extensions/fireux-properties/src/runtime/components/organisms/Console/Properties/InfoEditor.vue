@@ -8,120 +8,63 @@
       description="Choose a live property, test property or simulation before editing this section."
     />
 
-    <template v-else>
-      <PropertyCardsPill
-        v-if="selectedPropertyCard"
-        v-bind="selectedPropertyCard"
-        :link="false"
-        :show-badges="false"
+    <form v-else class="space-y-5" @submit.prevent="save">
+      <DevFireuxDebugPanel
+        v-if="isDev"
+        title="Property section"
+        scope="console"
+        :data="debug"
       />
 
-      <UCard>
-        <template #header>
-          <div class="flex flex-wrap items-start justify-between gap-3">
-            <div class="space-y-1">
-              <div class="flex items-center gap-2">
-                <UIcon :name="page.icon" class="size-5 text-primary" />
-                <h2 class="text-xl font-semibold text-highlighted">
-                  {{ page.title }}
-                </h2>
-              </div>
-              <p class="text-sm text-muted">
-                {{ page.description }}
-              </p>
-            </div>
-            <UBadge color="neutral" variant="soft">
-              {{ selectedModeLabel }}
-            </UBadge>
-          </div>
-        </template>
+      <div class="space-y-1">
+        <div class="flex items-center gap-2">
+          <UIcon :name="draft.icon" class="size-5 text-primary" />
+          <h2 class="text-lg font-semibold text-highlighted">
+            {{ draft.title }}
+          </h2>
+        </div>
+        <p class="text-sm text-muted">
+          {{ draft.summary }}
+        </p>
+      </div>
 
-        <form class="space-y-5" @submit.prevent="save">
-          <div class="grid gap-4 md:grid-cols-2">
-            <UFormField label="Title">
-              <UInput v-model="draft.title" />
-            </UFormField>
-            <UFormField label="Section key">
-              <UInput :model-value="page.key" disabled />
-            </UFormField>
-          </div>
-
-          <UFormField label="Summary">
-            <UTextarea v-model="draft.summary" :rows="3" />
+      <div class="grid gap-4 md:grid-cols-2">
+        <div
+          v-for="field in draft.fields"
+          :key="field.key"
+        >
+          <UFormField :label="field.label">
+            <UTextarea
+              v-if="field.type === 'textarea'"
+              v-model="field.value"
+              :placeholder="field.placeholder"
+              :rows="3"
+            />
+            <UInput
+              v-else
+              v-model="field.value"
+              :placeholder="field.placeholder"
+            />
           </UFormField>
+        </div>
+      </div>
 
-          <div class="space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-3">
-              <h3 class="font-semibold text-highlighted">
-                Information rows
-              </h3>
-              <UButton
-                type="button"
-                color="neutral"
-                variant="soft"
-                icon="i-lucide-plus"
-                @click="addItem"
-              >
-                Add row
-              </UButton>
-            </div>
-
-            <UCard
-              v-for="(item, index) in draft.items"
-              :key="item.id"
-              variant="subtle"
-            >
-              <div class="grid gap-3 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.5fr)_10rem_auto] lg:items-end">
-                <UFormField label="Label">
-                  <UInput v-model="item.label" placeholder="Label" />
-                </UFormField>
-                <UFormField label="Value">
-                  <UTextarea v-model="item.value" placeholder="Information" :rows="2" />
-                </UFormField>
-                <UFormField label="Tone">
-                  <USelect v-model="item.tone" :items="toneOptions" />
-                </UFormField>
-                <UButton
-                  type="button"
-                  color="neutral"
-                  variant="ghost"
-                  icon="i-lucide-trash-2"
-                  aria-label="Remove row"
-                  @click="removeItem(index)"
-                />
-              </div>
-            </UCard>
-          </div>
-
-          <div class="flex flex-wrap items-center gap-3">
-            <UButton type="submit" color="primary" icon="i-lucide-save">
-              Save section
-            </UButton>
-            <UButton
-              type="button"
-              color="neutral"
-              variant="soft"
-              icon="i-lucide-rotate-ccw"
-              @click="resetDraft"
-            >
-              Reset
-            </UButton>
-            <p v-if="savedMessage" class="text-sm text-muted">
-              {{ savedMessage }}
-            </p>
-          </div>
-        </form>
-      </UCard>
-    </template>
+      <div class="flex flex-wrap items-center gap-3">
+        <UButton type="submit" color="primary" icon="i-lucide-save">
+          Save
+        </UButton>
+        <p v-if="savedMessage" class="text-sm text-muted">
+          {{ savedMessage }}
+        </p>
+      </div>
+    </form>
   </section>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { resolveConsoleModeLabel } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { usePropertyConsoleIndex } from '../../../../composables/fireux/app/property-console/usePropertyConsoleIndex'
-import { usePropertyInterface } from '../../../../composables/fireux/firestore/property/utils/view/usePropertyInterface'
 
 type PropertyInfoPageKey =
   | 'welcome'
@@ -135,13 +78,12 @@ type PropertyInfoPageKey =
   | 'local-guide'
   | 'updates'
 
-type PropertyInfoTone = 'default' | 'important' | 'warning'
-
-type PropertyInfoItem = {
-  id: string
+type PropertyInfoField = {
+  key: string
   label: string
   value: string
-  tone: PropertyInfoTone
+  placeholder?: string
+  type?: 'text' | 'textarea'
 }
 
 type PropertyInfoPage = {
@@ -150,18 +92,12 @@ type PropertyInfoPage = {
   description: string
   icon: string
   summary: string
-  items: PropertyInfoItem[]
+  fields: PropertyInfoField[]
 }
 
 const props = defineProps<{
   pageKey: PropertyInfoPageKey
 }>()
-
-const toneOptions = [
-  { label: 'Default', value: 'default' },
-  { label: 'Important', value: 'important' },
-  { label: 'Warning', value: 'warning' },
-] as const
 
 const pageDefaults: Record<PropertyInfoPageKey, PropertyInfoPage> = {
   welcome: {
@@ -170,10 +106,14 @@ const pageDefaults: Record<PropertyInfoPageKey, PropertyInfoPage> = {
     description: 'Arrival note, Wi-Fi, host contact and first steps.',
     icon: 'i-lucide-hand-heart',
     summary: 'Key arrival information guests need first.',
-    items: [
-      row('welcome-note', 'Welcome note', 'Welcome to the property.'),
-      row('wifi', 'Wi-Fi', 'Add the network name and password.', 'important'),
-      row('host-contact', 'Host contact', 'Add the preferred guest contact method.'),
+    fields: [
+      field('welcome_note', 'Welcome note', 'Welcome to the Penthouse Holiday Apartment.', 'textarea'),
+      field('manager', 'Manager', 'Apartment Manager Natalie'),
+      field('phone', 'Phone', '+41 78 604 69 00'),
+      field('email', 'Email', 'bookwithnats@gmail.com'),
+      field('address', 'Address', 'Modern Penthouse Apartment, Hobachergassli, 3800 Matten bei Interlaken', 'textarea'),
+      field('wifi_network', 'Wi-Fi network', 'Penthouse'),
+      field('wifi_password', 'Wi-Fi password', 'penthouse2020'),
     ],
   },
   'check-in': {
@@ -182,10 +122,13 @@ const pageDefaults: Record<PropertyInfoPageKey, PropertyInfoPage> = {
     description: 'Arrival time, access, keys, parking on arrival and settling-in instructions.',
     icon: 'i-lucide-key-round',
     summary: 'How guests arrive and get settled.',
-    items: [
-      row('arrival-time', 'Arrival time', 'Add the check-in time.', 'important'),
-      row('access', 'Access', 'Add building entry and access notes.'),
-      row('keys', 'Keys', 'Add key or lockbox instructions.'),
+    fields: [
+      field('check_in_time', 'Check-in time', 'Needs host confirmation'),
+      field('arrival_steps', 'Arrival steps', 'Needs exact arrival and building entry steps', 'textarea'),
+      field('key_safe', 'Key safe', 'Guests can use the key safe box when going out.', 'textarea'),
+      field('key_safe_location', 'Key safe location', 'Needs exact key safe location', 'textarea'),
+      field('key_safe_code', 'Key safe code', '2020'),
+      field('key_safe_warning', 'Key safe warning', 'Never change the code.'),
     ],
   },
   checkout: {
@@ -194,10 +137,13 @@ const pageDefaults: Record<PropertyInfoPageKey, PropertyInfoPage> = {
     description: 'Departure time, dishes, rubbish, key return and final checks.',
     icon: 'i-lucide-door-open',
     summary: 'What guests should do before leaving.',
-    items: [
-      row('departure-time', 'Departure time', 'Add the checkout time.', 'important'),
-      row('dishes', 'Dishes', 'Add dish or dishwasher instructions.'),
-      row('keys', 'Key return', 'Add where guests should leave the key.'),
+    fields: [
+      field('checkout_time', 'Checkout time', '10:00 unless agreed otherwise.'),
+      field('dishes', 'Dishes', 'Put leftover dishes in the dishwasher and start the cleaning cycle.', 'textarea'),
+      field('key_return', 'Key return', 'Return the key where you found it. Exact instruction needs confirmation.', 'textarea'),
+      field('tidy_state', 'Tidy state', 'Leave the apartment in the same tidy manner that you found it.', 'textarea'),
+      field('final_checks', 'Final checks', 'Turn heating off and close windows and doors before leaving.', 'textarea'),
+      field('charges', 'Charges', 'Extra cleaning or damage caused by neglect may be charged.', 'textarea'),
     ],
   },
   emergency: {
@@ -206,10 +152,16 @@ const pageDefaults: Record<PropertyInfoPageKey, PropertyInfoPage> = {
     description: 'Urgent numbers, medical help, host escalation and safety equipment.',
     icon: 'i-lucide-siren',
     summary: 'Urgent help and safety information.',
-    items: [
-      row('emergency-number', 'Emergency services', 'Add the main emergency number.', 'important'),
-      row('host-urgent', 'Urgent host contact', 'Add urgent host contact instructions.', 'important'),
-      row('first-aid', 'First aid', 'Add first aid kit location.'),
+    fields: [
+      field('police', 'Police', '117'),
+      field('fire', 'Fire Department', '118'),
+      field('ambulance', 'Ambulance', '144'),
+      field('helicopter_rescue', 'Helicopter Rescue', '1414'),
+      field('hospital', 'Interlaken Hospital', '+41 (0) 33 826 25 00, Weissenaustrasse 27, 3800 Interlaken', 'textarea'),
+      field('first_aid', 'First aid kit', 'Kitchen drawer to the right of the microwave.'),
+      field('walk_in_clinic', 'Walk-in clinic', 'Interlaken West train station, Bahnhofstrasse 28, 3800 Interlaken. Mon-Fri 08:00-12:00 and 13:00-18:00.', 'textarea'),
+      field('hani_emergency', 'HANI Emergency', 'Interlaken Hospital, Weissenaustrasse 27, 3800 Unterseen. Out-of-hours medical service.', 'textarea'),
+      field('fire_equipment', 'Fire equipment', 'Smoke alarms are fitted. Fire extinguisher by the downstairs main entrance. Fire blanket under the kitchen sink.', 'textarea'),
     ],
   },
   'house-rules': {
@@ -218,10 +170,13 @@ const pageDefaults: Record<PropertyInfoPageKey, PropertyInfoPage> = {
     description: 'Noise, smoking, windows, neighbour respect, damage notes and stay rules.',
     icon: 'i-lucide-clipboard-check',
     summary: 'Important rules for a smooth stay.',
-    items: [
-      row('quiet-hours', 'Quiet hours', 'Add quiet hour guidance.'),
-      row('smoking', 'Smoking', 'Add smoking rules.', 'warning'),
-      row('windows', 'Windows and doors', 'Add closing or safety instructions.'),
+    fields: [
+      field('quiet_hours', 'Quiet hours', 'No loud noise after 22:00. Leave the balcony by 22:00 because noise travels.', 'textarea'),
+      field('smoking', 'Smoking', 'This is a non-smoking apartment. Smoking is only allowed on the balcony using the ashtray.', 'textarea'),
+      field('windows_doors', 'Windows and doors', 'Close all windows and doors before going out.', 'textarea'),
+      field('bathrooms', 'Bathrooms', 'Bathrooms are not wet rooms. Mop up water from floors to prevent leaks and damage.', 'textarea'),
+      field('beds_sofa', 'Beds and sofa', 'Do not eat in bed or on the sofa because stains are difficult to remove.', 'textarea'),
+      field('damage_notes', 'Damage notes', 'Water damage caused by rain, extra cleaning or damage caused by neglect may be charged.', 'textarea'),
     ],
   },
   'apartment-guide': {
@@ -230,10 +185,14 @@ const pageDefaults: Record<PropertyInfoPageKey, PropertyInfoPage> = {
     description: 'Heating, appliances, TV, chargers, tap water, bathroom notes, laundry and balcony details.',
     icon: 'i-lucide-info',
     summary: 'Useful instructions for the property.',
-    items: [
-      row('heating', 'Heating', 'Add heating or air con instructions.'),
-      row('appliances', 'Appliances', 'Add appliance notes.'),
-      row('tv', 'TV and streaming', 'Add TV or streaming instructions.'),
+    fields: [
+      field('heating', 'Heating', 'Radiators have dials from 1 to 5. Do not put heating on high and open windows. Turn heating off on departure.', 'textarea'),
+      field('dishwasher', 'Dishwasher', 'Select a program, add a dishwasher tab, then press start. Never put washing-up liquid in the dishwasher.', 'textarea'),
+      field('chargers', 'Chargers', 'USB chargers are supplied. Do not take or move installed chargers.'),
+      field('games_books', 'Games and books', 'Adult and children board games and books are available. Please treat them with respect.', 'textarea'),
+      field('iron_board', 'Iron and ironing board', 'The ironing board is on the landing between the two bedrooms.'),
+      field('tv', 'TV', 'Cable TV and DVDs are available.'),
+      field('tap_water', 'Tap water', 'Tap water is 100% drinkable.'),
     ],
   },
   'rubbish-recycling': {
@@ -242,10 +201,11 @@ const pageDefaults: Record<PropertyInfoPageKey, PropertyInfoPage> = {
     description: 'Bags, bins, recycling location, collection notes and what not to put where.',
     icon: 'i-lucide-recycle',
     summary: 'How guests should handle rubbish and recycling.',
-    items: [
-      row('rubbish', 'Rubbish', 'Add rubbish bag or bin instructions.'),
-      row('recycling', 'Recycling', 'Add recycling location and rules.'),
-      row('collection', 'Collection', 'Add collection or drop-off notes.'),
+    fields: [
+      field('rubbish_bags', 'Rubbish bags', 'Use the white AVAG bags provided under the sink.'),
+      field('main_bin', 'Main bin', 'Put full bags in the grey container outside by visitor parking. Use the key to unlock the padlock.', 'textarea'),
+      field('recycling', 'Recycling', 'The recycling container is on the balcony. Cardboard can go in recycling.', 'textarea'),
+      field('not_allowed', 'Do not recycle', 'Do not put general garbage or food containers in recycling.'),
     ],
   },
   parking: {
@@ -254,10 +214,10 @@ const pageDefaults: Record<PropertyInfoPageKey, PropertyInfoPage> = {
     description: 'Visitor parking, garage or bay details, access notes and places guests must avoid.',
     icon: 'i-lucide-car',
     summary: 'Where guests can park.',
-    items: [
-      row('parking-location', 'Parking location', 'Add where guests should park.', 'important'),
-      row('garage-access', 'Garage access', 'Add garage or bay access details.'),
-      row('avoid', 'Avoid', 'Add places guests must not park.', 'warning'),
+    fields: [
+      field('parking_location', 'Parking location', 'Underground parking is available. Bay number or garage access details need confirmation.', 'textarea'),
+      field('visitor_parking', 'Visitor parking', 'Temporary visitor parking is to the right of the main entrance.'),
+      field('avoid', 'Avoid', 'Do not leave the car engine running unnecessarily.'),
     ],
   },
   'local-guide': {
@@ -266,10 +226,15 @@ const pageDefaults: Record<PropertyInfoPageKey, PropertyInfoPage> = {
     description: 'Shops, transport, taxis, bike rentals, restaurants, things to do and useful nearby places.',
     icon: 'i-lucide-map-pin',
     summary: 'Nearby places and local recommendations.',
-    items: [
-      row('shops', 'Shops', 'Add nearby shops.'),
-      row('transport', 'Transport', 'Add transport notes.'),
-      row('recommendations', 'Recommendations', 'Add personal recommendations.'),
+    fields: [
+      field('shops', 'Shops', 'CO-OP supermarket is downstairs and open Mon-Sun 08:00-20:00. Lidl is open daily 08:00-21:00.', 'textarea'),
+      field('post_office', 'Post Office', 'The Post Office is inside the CO-OP supermarket.'),
+      field('transport', 'Transport', 'The bus stop is on the main street by Tells restaurant. Use buses 104 and 105 for local connections.', 'textarea'),
+      field('taxis', 'Taxis', 'Bahnhof Taxi: +41 (0) 33 822 50 50. A Taxi: +41 (0) 33 822 60 60.', 'textarea'),
+      field('bike_rentals', 'Bike rentals', 'Amacher Bike Shop rents electric bikes. Daniels Fun Rentals offers mountain bikes, scooters, ATVs, funcars, e-bikeboards and quads.', 'textarea'),
+      field('walking_west', 'Walking to Interlaken West', 'Walk left from the apartment, through the alley, then continue towards the main Interlaken high street and West station.', 'textarea'),
+      field('walking_ost', 'Walking to Interlaken Ost', 'Walk right from the apartment, left at the end of the road, over the roundabout and continue towards Ost station.', 'textarea'),
+      field('recommendations', 'Recommendations', 'Restaurant and things-to-do recommendations need host confirmation.', 'textarea'),
     ],
   },
   updates: {
@@ -278,22 +243,34 @@ const pageDefaults: Record<PropertyInfoPageKey, PropertyInfoPage> = {
     description: 'Temporary guest notices such as access changes, roadworks, broken appliances or weather notes.',
     icon: 'i-lucide-megaphone',
     summary: 'Current notices for guests.',
-    items: [
-      row('notice', 'Notice', 'Add a current guest notice.', 'important'),
-      row('expires', 'Expires', 'Add when this update stops applying.'),
+    fields: [
+      field('current_notice', 'Current notice', 'No current guest notices.'),
+      field('starts', 'Starts', ''),
+      field('expires', 'Expires', ''),
     ],
   },
 }
 
 const toast = useToastify()
-const { selectedProperty, selectedMode } = usePropertyConsoleIndex()
-const { pill } = usePropertyInterface()
+const {
+  selectedProperty,
+  selectedMode,
+  propertyId,
+  debug: consoleDebug,
+} = usePropertyConsoleIndex()
 const draft = ref(clonePage(pageDefaults[props.pageKey]))
 const savedMessage = ref('')
+const isDev = import.meta.dev
 
-const page = computed(() => pageDefaults[props.pageKey])
-const selectedModeLabel = computed(() => resolveConsoleModeLabel(selectedMode.value))
-const selectedPropertyCard = computed(() => pill(selectedProperty.value))
+const debug = computed(() => ({
+  pageKey: props.pageKey,
+  selectedMode: selectedMode.value,
+  propertyId: propertyId.value,
+  selectedProperty: selectedProperty.value,
+  draft: draft.value,
+  console: consoleDebug.value,
+  persistence: 'scaffold draft only; Firestore property info pages are not wired yet',
+}))
 
 watch(
   () => props.pageKey,
@@ -301,33 +278,26 @@ watch(
   { immediate: true }
 )
 
-function row(
-  id: string,
+function field(
+  key: string,
   label: string,
   value: string,
-  tone: PropertyInfoTone = 'default'
-): PropertyInfoItem {
-  return { id, label, value, tone }
+  type: PropertyInfoField['type'] = 'text',
+  placeholder = ''
+): PropertyInfoField {
+  return { key, label, value, type, placeholder }
 }
 
 function clonePage(page: PropertyInfoPage): PropertyInfoPage {
   return {
     ...page,
-    items: page.items.map((item) => ({ ...item })),
+    fields: page.fields.map((item) => ({ ...item })),
   }
 }
 
 function resetDraft() {
   draft.value = clonePage(pageDefaults[props.pageKey])
   savedMessage.value = ''
-}
-
-function addItem() {
-  draft.value.items.push(row(`row-${Date.now()}`, '', ''))
-}
-
-function removeItem(index: number) {
-  draft.value.items.splice(index, 1)
 }
 
 function save() {

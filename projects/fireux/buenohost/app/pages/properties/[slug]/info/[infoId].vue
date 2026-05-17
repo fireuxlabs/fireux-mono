@@ -15,7 +15,7 @@
             Property info
           </UBadge>
           <UBadge color="neutral" variant="outline">
-            {{ resolvedInfo.property.name }}
+            {{ propertyName }}
           </UBadge>
         </div>
 
@@ -130,6 +130,7 @@ const topic = computed(() =>
 const resolvedProperty = computed(() => property.value)
 const resolvedInfo = computed(() => info.value)
 const resolvedTopic = computed(() => topic.value)
+const propertyName = computed(() => resolvedProperty.value?.identity.name || '')
 
 if (!resolvedInfo.value || !resolvedTopic.value) {
   setResponseStatus(404)

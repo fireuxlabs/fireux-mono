@@ -16,10 +16,10 @@
 
         <div class="space-y-3">
           <p class="text-sm font-semibold uppercase text-muted">
-            {{ resolvedProperty.name }}
+            {{ resolvedProperty.identity.name }}
           </p>
           <h1 class="max-w-3xl text-3xl font-semibold tracking-normal text-highlighted sm:text-5xl">
-            {{ resolvedProperty.name }}
+            {{ resolvedProperty.identity.name }}
           </h1>
           <p class="max-w-2xl text-base leading-7 text-muted sm:text-lg">
             {{ welcomePage?.summary || 'Clean mobile property info for your stay.' }}
@@ -28,9 +28,9 @@
 
         <div class="grid gap-3 sm:flex sm:flex-wrap">
           <UButton :href="`tel:${phoneHref}`" icon="i-lucide-phone" color="primary" block class="sm:w-auto">
-            Call {{ resolvedInfo.property.manager }}
+            Call {{ resolvedProperty.manual.welcome.manager }}
           </UButton>
-          <UButton :href="`mailto:${resolvedInfo.property.email}`" icon="i-lucide-mail" color="neutral" variant="soft" block class="sm:w-auto">
+          <UButton :href="`mailto:${resolvedProperty.manual.welcome.email}`" icon="i-lucide-mail" color="neutral" variant="soft" block class="sm:w-auto">
             Email
           </UButton>
           <UButton
@@ -159,19 +159,19 @@
         <dl class="space-y-3 text-sm">
           <div>
             <dt class="font-medium text-muted">Manager</dt>
-            <dd>{{ resolvedInfo.property.manager }}</dd>
+            <dd>{{ resolvedProperty.manual.welcome.manager }}</dd>
           </div>
           <div>
             <dt class="font-medium text-muted">Phone</dt>
-            <dd>{{ resolvedInfo.property.phone }}</dd>
+            <dd>{{ resolvedProperty.manual.welcome.phone }}</dd>
           </div>
           <div>
             <dt class="font-medium text-muted">Email</dt>
-            <dd class="break-words">{{ resolvedInfo.property.email }}</dd>
+            <dd class="break-words">{{ resolvedProperty.manual.welcome.email }}</dd>
           </div>
           <div>
             <dt class="font-medium text-muted">Address</dt>
-            <dd class="break-words">{{ resolvedInfo.property.address }}</dd>
+            <dd class="break-words">{{ resolvedProperty.manual.welcome.address }}</dd>
           </div>
         </dl>
       </UCard>
@@ -331,7 +331,7 @@ const welcomePage = computed(() => enabledTopics.value.find((topic) => topic.id 
 const infoTopics = computed(() => getPropertyInfoTopics(resolvedInfo.value))
 const priorityTopics = computed(() => infoTopics.value.filter((topic) => topic.priority))
 const regularTopics = computed(() => infoTopics.value.filter((topic) => !topic.priority))
-const phoneHref = computed(() => resolvedInfo.value.property.phone.replace(/\s+/g, ''))
+const phoneHref = computed(() => resolvedProperty.value.manual.welcome.phone.replace(/\s+/g, ''))
 const showTranslations = ref(false)
 const translationAvailability = ref<TranslationAvailabilityResponse | null>(null)
 const translationAvailabilityPending = ref(false)
@@ -408,12 +408,12 @@ async function loadTranslationAvailability() {
 useSeoMeta({
   title: computed(() =>
     resolvedInfo.value
-      ? `${resolvedInfo.value.title} · ${resolvedInfo.value.property.name}`
+      ? `${resolvedInfo.value.title} · ${resolvedProperty.value.identity.name}`
       : 'Property info not found'
   ),
   description: computed(() =>
     resolvedInfo.value
-      ? `Property info for ${resolvedInfo.value.property.name}`
+      ? `Property info for ${resolvedProperty.value.identity.name}`
       : 'Property info not found'
   ),
 })

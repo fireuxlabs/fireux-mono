@@ -41,16 +41,6 @@ export type PropertyInfoCollection = {
     title: string
     subtitle?: string
   }
-  property: {
-    name: string
-    type: string
-    original_language: 'en'
-    primary_language: 'en'
-    manager: string
-    phone: string
-    email: string
-    address: string
-  }
   privacy_note: string
   footer: string
   source_notes?: PropertyInfoSourceNote[]
@@ -58,26 +48,16 @@ export type PropertyInfoCollection = {
 }
 
 export const standardPropertyInfoTopicIds = [
-  'emergency',
-  'wifi',
+  'welcome',
   'check-in',
   'checkout',
-  'keys',
+  'emergency',
   'house-rules',
-  'quiet-hours',
-  'smoking',
-  'heating-cooling',
-  'kitchen',
-  'appliances',
-  'laundry',
-  'bathroom',
-  'parking',
+  'apartment-guide',
   'rubbish-recycling',
-  'shops',
-  'restaurants',
-  'transport',
-  'things-to-do',
-  'useful-contacts',
+  'parking',
+  'local-guide',
+  'updates',
 ] as const
 
 export const holidayWithNatsSourceNotes: PropertyInfoSourceNote[] = [
@@ -85,28 +65,28 @@ export const holidayWithNatsSourceNotes: PropertyInfoSourceNote[] = [
     id: 'ask-nat-check-in-time',
     status: 'needs_source_confirmation',
     owner: 'natalie',
-    field: 'arrival.check_in_time',
+    field: 'check-in.check_in_time',
     note: 'House Manual 2019.docx does not state a check-in time.',
   },
   {
     id: 'ask-nat-arrival-building-entry',
     status: 'needs_source_confirmation',
     owner: 'natalie',
-    field: 'arrival.entry_steps',
+    field: 'check-in.arrival_steps',
     note: 'House Manual 2019.docx does not give exact arrival or building entry steps.',
   },
   {
     id: 'ask-nat-key-safe-current',
     status: 'needs_source_confirmation',
     owner: 'natalie',
-    field: 'keys.safe_location_and_code',
+    field: 'check-in.key_safe',
     note: 'House Manual 2019.docx says guests can use the key safe box and code 2020, but the exact location and whether the code is still current must be confirmed.',
   },
   {
     id: 'ask-nat-wifi-current',
     status: 'needs_source_confirmation',
     owner: 'natalie',
-    field: 'wifi.credentials',
+    field: 'welcome.wifi_credentials',
     note: 'House Manual 2019.docx lists Wi-Fi as Penthouse / penthouse2020; confirm this is still current before live use.',
   },
   {
@@ -120,14 +100,14 @@ export const holidayWithNatsSourceNotes: PropertyInfoSourceNote[] = [
     id: 'ask-nat-public-contact-safety',
     status: 'needs_source_confirmation',
     owner: 'natalie',
-    field: 'property.public_contact',
+    field: 'welcome.public_contact',
     note: 'Confirm whether the phone, email, and address from House Manual 2019.docx are safe to show in a public demo or live public page.',
   },
   {
     id: 'ask-nat-local-recommendations',
     status: 'needs_source_confirmation',
     owner: 'natalie',
-    field: 'local_area.recommendations',
+    field: 'local-guide.recommendations',
     note: 'House Manual 2019.docx includes bike rentals and grocery shopping, but no restaurant or things-to-do recommendations beyond those. Ask Nat if she wants to add any.',
   },
   {
@@ -156,16 +136,6 @@ export const holidayWithNatsPropertyInfo: PropertyInfoCollection = {
     title: 'Welcome Family Watson',
     subtitle: 'Today - 27th of March',
   },
-  property: {
-    name: 'Penthouse Holiday Apartment',
-    type: 'Property info',
-    original_language: 'en',
-    primary_language: 'en',
-    manager: 'Apartment Manager Natalie',
-    phone: '+41 78 604 69 00',
-    email: 'bookwithnats@gmail.com',
-    address: 'Modern Penthouse Apartment, Hobachergassli, 3800 Matten bei Interlaken',
-  },
   privacy_note:
     'Local proof content from the source manual. Phone and email should be confirmed before public deployment.',
   footer: 'Powered by BuenoHost.',
@@ -174,8 +144,9 @@ export const holidayWithNatsPropertyInfo: PropertyInfoCollection = {
     {
       id: 'welcome',
       title: 'Welcome',
-      summary: 'A quick welcome and the key host details for your stay.',
+      summary: 'Arrival note, Wi-Fi, host contact and first steps.',
       icon: 'i-lucide-home',
+      priority: true,
       enabled: true,
       items: [
         { value: 'Welcome to the Penthouse Holiday Apartment.' },
@@ -183,12 +154,44 @@ export const holidayWithNatsPropertyInfo: PropertyInfoCollection = {
         { label: 'Phone', value: '+41 78 604 69 00', tone: 'important' },
         { label: 'Email', value: 'bookwithnats@gmail.com', tone: 'important' },
         { label: 'Address', value: 'Modern Penthouse Apartment, Hobachergassli, 3800 Matten bei Interlaken' },
+        { label: 'Wi-Fi network', value: 'Penthouse', tone: 'important' },
+        { label: 'Wi-Fi password', value: 'penthouse2020', tone: 'important' },
+      ],
+    },
+    {
+      id: 'check-in',
+      title: 'Check-in',
+      summary: 'Arrival, access, keys and settling-in details.',
+      icon: 'i-lucide-key-round',
+      priority: true,
+      enabled: true,
+      items: [
+        { label: 'Check-in time', value: 'Needs host confirmation', tone: 'warning' },
+        { label: 'Arrival steps', value: 'Exact arrival and building entry steps need host confirmation.', tone: 'warning' },
+        { label: 'Key safe', value: 'Guests can use the key safe box when going out.' },
+        { label: 'Key safe code', value: '2020', tone: 'important' },
+        { value: 'Never change the key safe code.', tone: 'warning' },
+      ],
+    },
+    {
+      id: 'checkout',
+      title: 'Checkout',
+      summary: 'Departure steps before leaving.',
+      icon: 'i-lucide-door-open',
+      priority: true,
+      enabled: true,
+      items: [
+        { label: 'Checkout time', value: '10:00 unless agreed otherwise.', tone: 'important' },
+        { value: 'Put leftover dishes in the dishwasher and start the cleaning cycle.' },
+        { value: 'Return the key where you found it.' },
+        { value: 'Leave the apartment in the same tidy manner that you found it.' },
+        { value: 'Extra cleaning or damage caused by neglect may be charged.', tone: 'warning' },
       ],
     },
     {
       id: 'emergency',
       title: 'Emergency',
-      summary: 'Emergency equipment, medical contacts and urgent numbers.',
+      summary: 'Urgent numbers, medical help and safety equipment.',
       icon: 'i-lucide-siren',
       priority: true,
       enabled: true,
@@ -202,49 +205,8 @@ export const holidayWithNatsPropertyInfo: PropertyInfoCollection = {
         { label: 'Ambulance', value: '144', tone: 'important' },
         { label: 'Helicopter Rescue', value: '1414', tone: 'important' },
         { label: 'Interlaken Hospital', value: '+41 (0) 33 826 25 00', tone: 'important' },
-        { label: 'Bahnhof Taxi', value: '+41 (0) 33 822 50 50' },
-        { label: 'A Taxi', value: '+41 (0) 33 822 60 60' },
-        { value: 'Walk-in clinic: Interlaken West train station, Bahnhofstrasse 28, 3800 Interlaken.' },
-        { value: 'HANI Emergency is available at Interlaken Hospital.' },
-      ],
-    },
-    {
-      id: 'wifi',
-      title: 'Wi-Fi',
-      summary: 'Internet access for guests.',
-      icon: 'i-lucide-wifi',
-      priority: true,
-      enabled: true,
-      items: [
-        { label: 'Network', value: 'Penthouse', tone: 'important' },
-        { label: 'Password', value: 'penthouse2020', tone: 'important' },
-      ],
-    },
-    {
-      id: 'checkout',
-      title: 'Checkout',
-      summary: 'What to do before leaving the apartment.',
-      icon: 'i-lucide-door-open',
-      priority: true,
-      enabled: true,
-      items: [
-        { value: 'Check out by 10:00 unless agreed otherwise.', tone: 'important' },
-        { value: 'Put leftover dishes in the dishwasher and start the cleaning cycle.' },
-        { value: 'Return the key where you found it.' },
-        { value: 'Extra cleaning or damage caused by neglect may be charged.', tone: 'warning' },
-      ],
-    },
-    {
-      id: 'keys',
-      title: 'Keys & Access',
-      summary: 'Key safe instructions for going out and checking out.',
-      icon: 'i-lucide-key-round',
-      priority: true,
-      enabled: true,
-      items: [
-        { value: 'The key safe box can be used when going out.' },
-        { label: 'Code', value: '2020', tone: 'important' },
-        { value: 'Never change the code.', tone: 'warning' },
+        { label: 'Walk-in clinic', value: 'Interlaken West train station, Bahnhofstrasse 28, 3800 Interlaken.' },
+        { label: 'HANI Emergency', value: 'Interlaken Hospital, Weissenaustrasse 27, 3800 Unterseen.' },
       ],
     },
     {
@@ -266,21 +228,9 @@ export const holidayWithNatsPropertyInfo: PropertyInfoCollection = {
       ],
     },
     {
-      id: 'heating-cooling',
-      title: 'Heating & Cooling',
-      summary: 'How to use the radiators responsibly.',
-      icon: 'i-lucide-thermometer',
-      enabled: true,
-      items: [
-        { value: 'Radiators have dials from 1 to 5.' },
-        { value: 'Do not put the heating on high and open the windows.' },
-        { value: 'Turn the heating off on departure.' },
-      ],
-    },
-    {
-      id: 'apartment-info',
-      title: 'Apartment Info',
-      summary: 'Useful details about the apartment equipment and facilities.',
+      id: 'apartment-guide',
+      title: 'Apartment Guide',
+      summary: 'Heating, appliances, tap water, TV and useful apartment notes.',
       icon: 'i-lucide-info',
       enabled: true,
       items: [
@@ -289,20 +239,11 @@ export const holidayWithNatsPropertyInfo: PropertyInfoCollection = {
         { value: 'Never put washing-up liquid in the dishwasher.', tone: 'warning' },
         { value: 'Games and books are available; please treat them with respect.' },
         { value: 'The ironing board is on the landing between the bedrooms.' },
+        { value: 'Radiators have dials from 1 to 5.' },
+        { value: 'Do not put the heating on high and open the windows.' },
+        { value: 'Turn the heating off on departure.' },
         { value: 'Tap water is 100% drinkable.' },
         { value: 'Cable TV and DVDs are available.' },
-      ],
-    },
-    {
-      id: 'parking',
-      title: 'Parking',
-      summary: 'Parking and visitor parking information.',
-      icon: 'i-lucide-car',
-      enabled: true,
-      items: [
-        { value: 'Underground parking is available.' },
-        { value: 'Do not leave the car engine running unnecessarily.' },
-        { value: 'Temporary visitor parking is to the right of the main entrance.' },
       ],
     },
     {
@@ -323,9 +264,21 @@ export const holidayWithNatsPropertyInfo: PropertyInfoCollection = {
       ],
     },
     {
-      id: 'local-information',
-      title: 'Local Information',
-      summary: 'Nearby shops, post office and bus stop details.',
+      id: 'parking',
+      title: 'Parking',
+      summary: 'Parking and visitor parking information.',
+      icon: 'i-lucide-car',
+      enabled: true,
+      items: [
+        { value: 'Underground parking is available.' },
+        { value: 'Do not leave the car engine running unnecessarily.' },
+        { value: 'Temporary visitor parking is to the right of the main entrance.' },
+      ],
+    },
+    {
+      id: 'local-guide',
+      title: 'Local Guide',
+      summary: 'Shops, transport, bike rentals and nearby directions.',
       icon: 'i-lucide-map-pin',
       enabled: true,
       items: [
@@ -334,49 +287,28 @@ export const holidayWithNatsPropertyInfo: PropertyInfoCollection = {
         { value: 'Lidl is open daily 08:00-21:00.' },
         { value: 'The bus stop is on the main street by Tells restaurant.' },
         { value: 'Use buses 104 and 105 for local connections.' },
-      ],
-    },
-    {
-      id: 'bike-rentals',
-      title: 'Bike Rentals',
-      summary: 'Bike and activity rental options nearby.',
-      icon: 'i-lucide-bike',
-      enabled: true,
-      items: [
         { value: 'Amacher Bike Shop rents electric bikes.' },
         { value: 'Daniels Fun Rentals offers mountain bikes, scooters, ATVs, funcars, e-bikeboards and quads.' },
-      ],
-    },
-    {
-      id: 'grocery-shopping',
-      title: 'Grocery Shopping',
-      summary: 'Easy grocery options around the apartment.',
-      icon: 'i-lucide-shopping-basket',
-      enabled: true,
-      items: [
-        { value: 'CO-OP supermarket is downstairs for everyday groceries.' },
-        { value: 'Lidl is nearby and open daily 08:00-21:00.' },
-        { value: 'Bring purchases back directly to the apartment and keep shared spaces clear.' },
-      ],
-    },
-    {
-      id: 'transport',
-      title: 'Transport',
-      summary: 'Simple walking directions and public transport pointers.',
-      icon: 'i-lucide-train',
-      enabled: true,
-      items: [
         {
           label: 'Interlaken West',
-          value:
-            'Walk from Hobachergassli towards the main road, continue towards central Interlaken and follow signs for Interlaken West station.',
+          value: 'Walk left from the apartment, through the alley, then continue towards the main Interlaken high street and West station.',
         },
         {
           label: 'Interlaken Ost',
-          value:
-            'Walk towards the main road and continue east through Interlaken, or take a local bus connection towards Interlaken Ost.',
+          value: 'Walk right from the apartment, left at the end of the road, over the roundabout and continue towards Ost station.',
         },
-        { value: 'Bus 104/105 details should be confirmed against the current timetable.' },
+        { label: 'Bahnhof Taxi', value: '+41 (0) 33 822 50 50' },
+        { label: 'A Taxi', value: '+41 (0) 33 822 60 60' },
+      ],
+    },
+    {
+      id: 'updates',
+      title: 'Updates',
+      summary: 'Current notices for guests.',
+      icon: 'i-lucide-megaphone',
+      enabled: true,
+      items: [
+        { value: 'No current guest notices.' },
       ],
     },
   ],
@@ -387,7 +319,7 @@ export const demoStayPropertyInfo: PropertyInfoCollection = {
   slug: 'demo-stay',
   property_id: 'demo-stay',
   language: 'en',
-  title: 'Demo Stay Companion',
+  title: 'Luxurious Mountain Chalet',
   status: 'demo',
   translation_ref: {
     source_app: 'buenohost',
@@ -398,16 +330,6 @@ export const demoStayPropertyInfo: PropertyInfoCollection = {
   stay_message: {
     title: 'Welcome to your stay',
     subtitle: 'Everything useful in one mobile house manual.',
-  },
-  property: {
-    name: 'Luxurious Mountain Chalet',
-    type: 'Property info',
-    original_language: 'en',
-    primary_language: 'en',
-    manager: 'Demo Host',
-    phone: '+41 00 000 00 00',
-    email: 'hello@example.invalid',
-    address: 'Example alpine stay',
   },
   privacy_note: 'Fictional public sample. No real host, guest, address or access details are shown.',
   footer: 'Powered by BuenoHost.',
@@ -421,7 +343,8 @@ export const demoStayPropertyInfo: PropertyInfoCollection = {
       enabled: true,
       items: [
         { value: 'Welcome to Luxurious Mountain Chalet.' },
-        { label: 'Wi-Fi', value: 'DemoStay Guest / demo-stay-2026', tone: 'important' },
+        { label: 'Wi-Fi network', value: 'DemoStay Guest', tone: 'important' },
+        { label: 'Wi-Fi password', value: 'demo-stay-2026', tone: 'important' },
         { label: 'Host contact', value: 'Use the BuenoHost chat button for demo support.' },
         { value: 'Keep these property info open during your stay for check-in, house rules and local tips.' },
       ],
@@ -441,19 +364,6 @@ export const demoStayPropertyInfo: PropertyInfoCollection = {
       ],
     },
     {
-      id: 'parking',
-      title: 'Parking',
-      summary: 'Where to park and what to avoid.',
-      icon: 'i-lucide-car',
-      priority: true,
-      enabled: true,
-      items: [
-        { value: 'One visitor space is available behind the building.' },
-        { value: 'Do not park in numbered resident bays.' },
-        { value: 'Street parking is available nearby where signed.' },
-      ],
-    },
-    {
       id: 'checkout',
       title: 'Checkout',
       summary: 'Departure steps before leaving.',
@@ -465,31 +375,6 @@ export const demoStayPropertyInfo: PropertyInfoCollection = {
         { value: 'Load used dishes into the dishwasher.' },
         { value: 'Take rubbish to the marked bins outside.' },
         { value: 'Return keys to the lockbox and scramble the code.' },
-      ],
-    },
-    {
-      id: 'house-rules',
-      title: 'House Rules',
-      summary: 'Simple rules for a smooth stay.',
-      icon: 'i-lucide-clipboard-check',
-      enabled: true,
-      items: [
-        { value: 'Quiet hours from 22:00.' },
-        { value: 'No smoking inside.' },
-        { value: 'Close windows before leaving the apartment.' },
-        { value: 'Report damage or urgent issues to the host.' },
-      ],
-    },
-    {
-      id: 'apartment-info',
-      title: 'Apartment Info',
-      summary: 'Useful instructions for heating, appliances and recycling.',
-      icon: 'i-lucide-info',
-      enabled: true,
-      items: [
-        { value: 'Heating controls are in the hallway.' },
-        { value: 'Appliance manuals are stored in the kitchen drawer.' },
-        { value: 'Use labelled bins for rubbish and recycling.' },
       ],
     },
     {
@@ -507,8 +392,58 @@ export const demoStayPropertyInfo: PropertyInfoCollection = {
       ],
     },
     {
-      id: 'local-information',
-      title: 'Local Information',
+      id: 'house-rules',
+      title: 'House Rules',
+      summary: 'Simple rules for a smooth stay.',
+      icon: 'i-lucide-clipboard-check',
+      enabled: true,
+      items: [
+        { value: 'Quiet hours from 22:00.' },
+        { value: 'No smoking inside.' },
+        { value: 'Close windows before leaving the apartment.' },
+        { value: 'Report damage or urgent issues to the host.' },
+      ],
+    },
+    {
+      id: 'apartment-guide',
+      title: 'Apartment Guide',
+      summary: 'Useful instructions for heating, appliances and the apartment.',
+      icon: 'i-lucide-info',
+      enabled: true,
+      items: [
+        { value: 'Heating controls are in the hallway.' },
+        { value: 'Appliance manuals are stored in the kitchen drawer.' },
+        { value: 'Tap water is drinkable.' },
+      ],
+    },
+    {
+      id: 'rubbish-recycling',
+      title: 'Rubbish & Recycling',
+      summary: 'Where to put rubbish and recycling.',
+      icon: 'i-lucide-recycle',
+      enabled: true,
+      items: [
+        { value: 'Use labelled bins for rubbish and recycling.' },
+        { value: 'Take rubbish to the marked bins outside before checkout.' },
+        { value: 'Ask the host if a bin label does not match your rubbish.' },
+      ],
+    },
+    {
+      id: 'parking',
+      title: 'Parking',
+      summary: 'Where to park and what to avoid.',
+      icon: 'i-lucide-car',
+      priority: true,
+      enabled: true,
+      items: [
+        { value: 'One visitor space is available behind the building.' },
+        { value: 'Do not park in numbered resident bays.' },
+        { value: 'Street parking is available nearby where signed.' },
+      ],
+    },
+    {
+      id: 'local-guide',
+      title: 'Local Guide',
       summary: 'Shops, transport and nearby recommendations.',
       icon: 'i-lucide-map-pin',
       enabled: true,
@@ -516,6 +451,16 @@ export const demoStayPropertyInfo: PropertyInfoCollection = {
         { value: 'Corner shop: 3 minutes on foot.' },
         { value: 'Train station: 10 minutes on foot.' },
         { value: 'Coffee and breakfast: ask the host for the current favourite.' },
+      ],
+    },
+    {
+      id: 'updates',
+      title: 'Updates',
+      summary: 'Current notices for guests.',
+      icon: 'i-lucide-megaphone',
+      enabled: true,
+      items: [
+        { value: 'No current guest notices.' },
       ],
     },
   ],

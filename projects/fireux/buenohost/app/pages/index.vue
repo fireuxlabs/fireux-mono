@@ -291,6 +291,7 @@ const qrTargetUrl = ref('')
 const qrDataUrl = ref('')
 const runtimeConfig = useRuntimeConfig()
 const publicConfig = runtimeConfig.public as Record<string, unknown>
+const defaultBuenoHostBaseUrl = 'https://buenohost.web.app'
 
 type IntegrationAppKey = 'fireux' | 'misebox' | 'cleanbox' | 'sproochli' | 'findMySeo'
 
@@ -584,7 +585,10 @@ async function fetchIntegrationAppInfo(appKey: IntegrationAppKey): Promise<void>
 }
 
 onMounted(async () => {
-  qrTargetUrl.value = new URL(demoInfoPath, window.location.origin).toString()
+  const configuredBaseUrl = configString('buenoHostBaseUrl')
+  const baseUrl = configuredBaseUrl || (import.meta.client ? window.location.origin : defaultBuenoHostBaseUrl)
+
+  qrTargetUrl.value = new URL(demoInfoPath, normalizeBaseUrl(baseUrl)).toString()
   qrDataUrl.value = await toDataURL(qrTargetUrl.value, {
     width: 512,
     margin: 1,

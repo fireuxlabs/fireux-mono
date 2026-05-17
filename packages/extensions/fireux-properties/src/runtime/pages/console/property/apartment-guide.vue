@@ -5,12 +5,14 @@
     </template>
 
     <template #body>
-      <ConsolePropertiesInfoEditor page-key="apartment-guide" />
+      <PropertyInfoEditor page-key="apartment-guide" />
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
+import PropertyInfoEditor from '../../../components/organisms/Console/Properties/InfoEditor.vue'
+
 definePageMeta({
   layout: 'console',
   nav: {

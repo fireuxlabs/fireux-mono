@@ -5,12 +5,14 @@
     </template>
 
     <template #body>
-      <ConsolePropertiesInfoEditor page-key="emergency" />
+      <PropertyInfoEditor page-key="emergency" />
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
+import PropertyInfoEditor from '../../../components/organisms/Console/Properties/InfoEditor.vue'
+
 definePageMeta({
   layout: 'console',
   nav: {

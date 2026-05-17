@@ -3,8 +3,8 @@
     <UAlert
       color="neutral"
       variant="soft"
-      title="Property detail is not wired yet"
-      description="The live portfolio seam is now being normalized first. Property detail can be reintroduced later on top of the simplified portfolio runtime."
+      title="Property"
+      description="This shared property route is a fallback. App-specific property pages should provide the live guest or console experience."
     />
   </div>
 </template>
@@ -13,6 +13,6 @@
 definePageMeta({
   layout: 'default',
   title: 'Property detail',
-  description: 'Property detail is temporarily parked while the live portfolio seam is normalized.',
+  description: 'Shared property route fallback.',
 })
 </script>

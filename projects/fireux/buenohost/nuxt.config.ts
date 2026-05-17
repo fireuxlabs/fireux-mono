@@ -27,6 +27,7 @@ export default defineNuxtConfig({
     public: {
       ...fireuxPublicRuntimeConfig,
       fireuxBaseUrl: process.env.NUXT_PUBLIC_FIREUX_BASE_URL || '',
+      buenoHostBaseUrl: process.env.NUXT_PUBLIC_BUENOHOST_BASE_URL || 'https://buenohost.web.app',
       miseboxBaseUrl: process.env.NUXT_PUBLIC_MISEBOX_BASE_URL || '',
       cleanboxBaseUrl: process.env.NUXT_PUBLIC_CLEANBOX_BASE_URL || '',
       sproochliBaseUrl: process.env.NUXT_PUBLIC_SPROOCHLI_BASE_URL || '',

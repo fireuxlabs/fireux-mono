@@ -1,7 +1,7 @@
 <template>
   <UPage v-if="property">
     <UPageHeader
-      :title="property.name"
+      :title="property.identity.name"
       :description="property.headline"
     >
       <template #headline>
@@ -26,8 +26,8 @@
       <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_24rem]">
         <div class="space-y-6">
           <img
-            :src="property.image_url"
-            :alt="property.name"
+            :src="property.identity.image_url"
+            :alt="property.identity.name"
             class="aspect-[16/9] w-full rounded-lg object-cover"
           />
 
@@ -35,7 +35,7 @@
             <div class="space-y-4">
               <div>
                 <p class="text-sm font-semibold text-primary">
-                  {{ property.location_label }}
+                  {{ property.identity.city || property.identity.country }}
                 </p>
                 <p class="mt-2 text-sm leading-6 text-toned">
                   {{ property.summary }}
@@ -48,7 +48,7 @@
                     Address
                   </p>
                   <p class="mt-1 text-sm">
-                    {{ property.address_display }}
+                    {{ property.manual.welcome.address || property.identity.address_line }}
                   </p>
                 </div>
                 <div>
@@ -56,7 +56,7 @@
                     Manager
                   </p>
                   <p class="mt-1 text-sm">
-                    {{ property.manager_name }}
+                    {{ property.manual.welcome.manager }}
                   </p>
                 </div>
                 <div>
@@ -179,10 +179,10 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
 import { useConversationCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/conversation/mutations/useConversationCreate'
-import { findDemoBuenoHostPublicProperty } from '../../../demo/properties'
+import { findDemoBuenoHostPublicProperty } from '../../demo/properties'
 
 const route = useRoute()
-const slug = computed(() => String(route.params.slug || ''))
+const slug = computed(() => String(route.params.id || ''))
 const property = computed(() => findDemoBuenoHostPublicProperty(slug.value))
 const { createConversation } = useConversationCreate()
 
@@ -225,7 +225,7 @@ async function handleSubmit() {
         family: 'properties',
         id: property.value.id,
         path: `properties/${property.value.id}`,
-        label: property.value.name,
+        label: property.value.identity.name,
       },
       guest_contact: {
         name: draft.name,
@@ -258,7 +258,7 @@ async function handleSubmit() {
 useSeoMeta({
   title: computed(() =>
     property.value
-      ? `${property.value.name} | BuenoHost`
+      ? `${property.value.identity.name} | BuenoHost`
       : 'Property | BuenoHost'
   ),
   description: computed(() =>
