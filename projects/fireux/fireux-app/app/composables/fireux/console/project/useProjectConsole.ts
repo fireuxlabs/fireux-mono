@@ -50,7 +50,7 @@ export function useProjectConsole(
     ProjectSurface,
     ProjectSurface,
     ProjectSurface
-  >('projects', {
+  >('project', {
     liveItems: liveProjects,
     demoItems: demoProjects,
     testItem: testProject,
@@ -94,7 +94,7 @@ export function useProjectConsole(
     }
   })
 
-  usePublishConsoleHeader('projects', header)
+  usePublishConsoleHeader('project', header)
 
   const clearSelectedProject = () => {
     clearSelection()

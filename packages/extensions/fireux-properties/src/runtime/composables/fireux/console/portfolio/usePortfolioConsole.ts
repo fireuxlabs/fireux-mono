@@ -72,7 +72,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
     PortfolioConsoleEntity,
     PortfolioConsoleEntity,
     PortfolioConsoleEntity
-  >('portfolios', {
+  >('portfolio', {
     liveItems: livePortfolios,
     demoItems: demoPortfolios,
     testItem: testPortfolio,
@@ -141,7 +141,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
     }
   })
 
-  usePublishConsoleHeader('portfolios', header)
+  usePublishConsoleHeader('portfolio', header)
 
   const clearSelectedPortfolio = () => {
     clearSelection()

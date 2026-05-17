@@ -56,7 +56,7 @@ export function useSupplierConsole(
     selectedEntity,
     selectEntity,
     clearSelection,
-  } = useConsole<SupplierSurface, SupplierSurface, SupplierSurface>('suppliers', {
+  } = useConsole<SupplierSurface, SupplierSurface, SupplierSurface>('supplier', {
     liveItems: liveSuppliers,
     demoItems: demoSuppliers,
     testItem: testSupplier,
@@ -95,7 +95,7 @@ export function useSupplierConsole(
     }
   })
 
-  usePublishConsoleHeader('suppliers', header)
+  usePublishConsoleHeader('supplier', header)
 
   const clearSelectedSupplier = () => {
     clearSelection()

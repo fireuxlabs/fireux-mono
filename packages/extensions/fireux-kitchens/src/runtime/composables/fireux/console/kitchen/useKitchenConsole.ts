@@ -53,7 +53,7 @@ export function useKitchenConsole(
     KitchenSurface,
     KitchenSurface,
     KitchenSurface
-  >('kitchens', {
+  >('kitchen', {
     liveItems: liveKitchens,
     demoItems: demoKitchens,
     testItem: testKitchen,
@@ -108,7 +108,7 @@ export function useKitchenConsole(
     }
   })
 
-  usePublishConsoleHeader('kitchens', header)
+  usePublishConsoleHeader('kitchen', header)
 
   const clearSelectedKitchen = () => {
     clearSelection()
