@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { useSupplierConsoleCatalogue } from '../../../../../composables/fireux/app/supplier-console/useSupplierConsoleCatalogue'
+import { useSupplierConsoleCatalogue } from '../../../../../composables/fireux/console/supplier/operations/useSupplierConsoleCatalogue'
 
 const {
   catalogues,

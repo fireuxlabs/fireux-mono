@@ -69,7 +69,7 @@ import { computed } from 'vue'
 import type {
   EcosystemInterfaceInput,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
-import { useProjectConsoleEcosystem } from '../../../../../composables/fireux/project-console/useProjectConsoleEcosystem'
+import { useProjectConsoleEcosystem } from '../../../../../composables/fireux/console/project/operations/useProjectConsoleEcosystem'
 
 const {
   selectedProject,

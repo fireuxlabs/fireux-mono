@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProjectConsoleOverview } from '../../../composables/fireux/project-console/useProjectConsoleOverview'
+import { useProjectConsoleOverview } from '../../../composables/fireux/console/project/useProjectConsoleOverview'
 
 const { focus, group, debug } = useProjectConsoleOverview()
 </script>

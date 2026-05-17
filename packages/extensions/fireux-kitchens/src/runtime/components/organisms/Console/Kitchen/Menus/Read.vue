@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleMenus } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMenus'
+import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenus'
 
 const {
   menus,

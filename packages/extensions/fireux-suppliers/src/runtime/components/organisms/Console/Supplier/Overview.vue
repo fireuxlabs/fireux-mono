@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { useSupplierConsoleOverview } from '../../../../composables/fireux/app/supplier-console/useSupplierConsoleOverview'
+import { useSupplierConsoleOverview } from '../../../../composables/fireux/console/supplier/useSupplierConsoleOverview'
 
 const { focus, group, debug } = useSupplierConsoleOverview()
 </script>

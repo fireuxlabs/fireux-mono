@@ -80,17 +80,22 @@ composables/fireux/firestore/<entity>/mutations/
 composables/fireux/firestore/<entity>/utils/
 ```
 
-4. Put console-backed entity operation data in a separate console stack:
+4. Put console-backed entity runtime seams and operation data in a separate console stack:
 
 ```text
 composables/fireux/console/<entity>/
+  useXConsole.ts
+  useXConsoleIndex.ts
+  useXConsoleOverview.ts
+  useXSelection.ts
+  operations/
 ```
 
-5. Keep app/runtime composables as adapters:
+5. Keep shared app/runtime composables under `fireux/app/`.
 
 ```text
 composables/fireux/app/<context>-runtime/
-composables/fireux/app/<context>-console/
+composables/fireux/app/console/
 ```
 
 6. Only after `fireux/` is stable, revisit the small `shared/` follow-ups.
@@ -129,8 +134,9 @@ FireUX adds structure on top of ordinary composable usage:
   - `firestoreFetchCollection`, `firestoreFetchDoc`, and `firestoreQuery` are reactive VueFire read bindings
   - `firestoreLoadDocsByIds` is an exact-doc loader that reloads when path/ids change, but is not a live listener for later document updates
 - usual Firestore entity stacks stay boring: `fetch/`, `mutations/`, `utils/`
-- console operation records live under `fireux/console/<entity>/`, not as child buckets under `fireux/firestore/<entity>/`
-- console operation stacks may have entity-specific child folders, but not vague architecture buckets such as `runtime-*`, `facade`, `stack`, `manager`, `processor`, `handler`, or `resolver`
+- console-backed entity runtime seams live at the root of `fireux/console/<entity>/`
+- console operation records live under `fireux/console/<entity>/operations/`, not as child buckets under `fireux/firestore/<entity>/`
+- console operation stacks may have entity-specific child folders under `operations/`, but not vague architecture buckets such as `runtime-*`, `facade`, `stack`, `manager`, `processor`, `handler`, or `resolver`
 - FireUX app/runtime helpers stay explicit under `fireux/app/`
 - generic helpers should not quietly absorb FireUX-specific behavior
 

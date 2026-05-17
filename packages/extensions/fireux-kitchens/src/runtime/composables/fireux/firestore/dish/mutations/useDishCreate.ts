@@ -9,8 +9,8 @@ import {
   type Dish,
   type DishCreateInput,
 } from '../../../../../models/dish.model'
-import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/collections/useKitchenChildCollection'
-import { useKitchenSelection } from '../../../app/kitchen-console/useKitchenSelection'
+import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
+import { useKitchenSelection } from '../../../console/kitchen/useKitchenSelection'
 
 type DishCreateDraft = {
   name: string

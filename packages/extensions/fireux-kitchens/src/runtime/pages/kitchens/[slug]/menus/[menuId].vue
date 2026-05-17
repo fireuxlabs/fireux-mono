@@ -7,7 +7,7 @@ import { collection, getDocs } from 'firebase/firestore'
 import { computed, ref, watch } from 'vue'
 import { useHead, useRoute } from '#imports'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { resolveKitchenChildCollectionPath } from '../../../../composables/fireux/console/kitchen/collections/useKitchenChildCollection'
+import { resolveKitchenChildCollectionPath } from '../../../../composables/fireux/console/kitchen/operations/collections/useKitchenChildCollection'
 import {
   getPublicKitchenChromeLabels,
   isPublicKitchenCacheLanguage,

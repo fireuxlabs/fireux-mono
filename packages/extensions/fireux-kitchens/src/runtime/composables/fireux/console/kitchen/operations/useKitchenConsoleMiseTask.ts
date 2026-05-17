@@ -1,0 +1,66 @@
+import { useRoute } from '#imports'
+import { computed } from 'vue'
+import type { KitchenMiseTask } from '../../../../../models/kitchen-mise.model'
+import { useKitchenConsoleMise } from './useKitchenConsoleMise'
+
+const normalizeString = (value: unknown) => String(value ?? '').trim()
+
+export function useKitchenConsoleMiseTask() {
+  const route = useRoute()
+  const {
+    selectedKitchen,
+    selectedMode,
+    kitchenId,
+    rootCollection,
+    collectionPath,
+    canWrite,
+    miseTasks,
+    pending,
+  } = useKitchenConsoleMise()
+
+  const miseId = computed(() => {
+    const raw = route.params.miseId
+    return normalizeString(Array.isArray(raw) ? raw[0] : raw)
+  })
+
+  const task = computed<KitchenMiseTask | null>(
+    () =>
+      miseTasks.value.find((item) => normalizeString(item?.id) === miseId.value) ??
+      null
+  )
+
+  const canEditMise = computed(
+    () =>
+      canWrite.value &&
+      selectedMode.value === 'test' &&
+      rootCollection.value === 'kitchens'
+  )
+
+  const debug = computed(() => ({
+    mode: selectedMode.value,
+    kitchenId: kitchenId.value,
+    rootCollection: rootCollection.value,
+    collectionPath: collectionPath.value,
+    miseId: miseId.value,
+    hasMiseTask: Boolean(task.value),
+    pending: pending.value,
+    canWrite: canWrite.value,
+    canEditMise: canEditMise.value,
+  }))
+
+  return {
+    selectedKitchen,
+    selectedMode,
+    kitchenId,
+    rootCollection,
+    collectionPath,
+    canWrite,
+    canEditMise,
+    miseTasks,
+    pending,
+    miseId,
+    task,
+    miseTask: task,
+    debug,
+  }
+}

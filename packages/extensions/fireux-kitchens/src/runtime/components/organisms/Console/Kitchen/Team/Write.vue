@@ -92,8 +92,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useKitchenConsoleTeam } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleTeam'
-import { useKitchenTeamMemberCreate } from '../../../../../composables/fireux/console/kitchen/team/mutations/useKitchenTeamMemberCreate'
+import { useKitchenConsoleTeam } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleTeam'
+import { useKitchenTeamMemberCreate } from '../../../../../composables/fireux/console/kitchen/operations/team/mutations/useKitchenTeamMemberCreate'
 import type { KitchenTeamJoinRequest } from '../../../../../models/kitchen-team.model'
 
 const {

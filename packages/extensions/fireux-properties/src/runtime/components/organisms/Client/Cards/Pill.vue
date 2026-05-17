@@ -61,7 +61,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-import type { ClientCard } from '../../../../composables/fireux/console/portfolio/client/utils/view/useClientInterface'
+import type { ClientCard } from '../../../../composables/fireux/console/portfolio/operations/client/utils/view/useClientInterface'
 
 type PillProps = Pick<ClientCard.Card, 'to' | 'imageUrl' | 'title' | 'subtitle' | 'meta' | 'status'> & {
   showSubtitle?: boolean

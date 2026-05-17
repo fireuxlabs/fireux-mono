@@ -172,7 +172,7 @@
 import {
   useActivePortfolio,
   useRuntimePortfolioPath,
-} from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
+} from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import { computed, ref } from 'vue'
 import { usePortfolioDocumentCollection } from '../../../composables/fireux/firestore/portfolio/document/fetch/usePortfolioDocumentCollection'
 import { usePortfolioDocumentLinkCollection } from '../../../composables/fireux/firestore/portfolio/document/fetch/usePortfolioDocumentLinkCollection'

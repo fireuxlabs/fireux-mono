@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useActivePortfolio } from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
+import { useActivePortfolio } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 
 definePageMeta({
   layout: 'dev',

@@ -62,7 +62,7 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useSupplierConsoleIdentity } from '../../../../composables/fireux/app/supplier-console/useSupplierConsoleIdentity'
+import { useSupplierConsoleIdentity } from '../../../../composables/fireux/console/supplier/operations/useSupplierConsoleIdentity'
 import { useSupplierUpdate } from '../../../../composables/fireux/firestore/supplier/mutations/useSupplierUpdate'
 
 const {

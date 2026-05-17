@@ -394,7 +394,7 @@ import {
   type FireuxLanguageOption,
 } from 'fireux-translation/runtime/languages'
 import { computed, reactive, ref, watch } from 'vue'
-import { useKitchenConsoleIdentity } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleIdentity'
+import { useKitchenConsoleIdentity } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIdentity'
 import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 import type {
   KitchenCurrencyFormat,

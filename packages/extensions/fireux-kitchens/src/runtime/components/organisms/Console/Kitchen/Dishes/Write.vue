@@ -53,7 +53,7 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, ref } from 'vue'
-import { useKitchenConsoleDishes } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleDishes'
+import { useKitchenConsoleDishes } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleDishes'
 import { useDishCreate } from '../../../../../composables/fireux/firestore/dish/mutations/useDishCreate'
 
 const {

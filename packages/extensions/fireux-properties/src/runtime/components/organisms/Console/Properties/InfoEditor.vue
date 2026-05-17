@@ -64,7 +64,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { usePropertyConsoleIndex } from '../../../../composables/fireux/app/property-console/usePropertyConsoleIndex'
+import { usePropertyConsoleIndex } from '../../../../composables/fireux/console/property/usePropertyConsoleIndex'
 
 type PropertyInfoPageKey =
   | 'welcome'

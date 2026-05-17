@@ -75,7 +75,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenConsoleMise } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMise'
+import { useKitchenConsoleMise } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMise'
 import type { KitchenMiseTask } from '../../../../../models/kitchen-mise.model'
 
 const { miseTasks, canToggleMise, toggleDone } = useKitchenConsoleMise()

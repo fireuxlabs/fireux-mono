@@ -542,7 +542,7 @@ import { useTranslationSeed } from 'fireux-translation/runtime/useTranslationSee
 import { deleteDoc, doc, serverTimestamp, setDoc } from 'firebase/firestore'
 import { computed, reactive, ref, watch } from 'vue'
 import { getRestaurantMenuGlossaryNames } from '../../../../../composables/fireux/app/kitchen-menu-glossary'
-import { useKitchenConsoleMenus } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMenus'
+import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenus'
 import type {
   Menu,
   MenuItemDefaults,

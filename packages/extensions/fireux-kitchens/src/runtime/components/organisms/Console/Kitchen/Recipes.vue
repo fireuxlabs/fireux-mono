@@ -7,7 +7,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleRecipes } from '../../../../composables/fireux/app/kitchen-console/useKitchenConsoleRecipes'
+import { useKitchenConsoleRecipes } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleRecipes'
 
 const { canWrite } = useKitchenConsoleRecipes()
 </script>

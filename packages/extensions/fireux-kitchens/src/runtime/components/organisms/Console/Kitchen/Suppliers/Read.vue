@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleSuppliers } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleSuppliers'
+import { useKitchenConsoleSuppliers } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleSuppliers'
 
 const { suppliers, debug } = useKitchenConsoleSuppliers()
 const isDev = import.meta.dev

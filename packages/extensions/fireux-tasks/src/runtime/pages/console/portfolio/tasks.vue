@@ -139,7 +139,7 @@
 import {
   useActivePortfolio,
   useRuntimePortfolioPath,
-} from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
+} from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import { computed, ref } from 'vue'
 import { usePortfolioTaskCollection } from '../../../composables/fireux/firestore/tasks/fetch/usePortfolioTaskCollection'
 import { useTaskCreate } from '../../../composables/fireux/firestore/tasks/mutations/useTaskCreate'

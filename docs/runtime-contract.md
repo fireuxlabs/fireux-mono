@@ -197,15 +197,20 @@ Updated: 2026-05-17
   - console selection stores family, selected target id, and mode
   - runtime selection is UI/application state, not storage
 - Generic folder shape:
-  - `app/<entity>-console/**` owns console adapters and selected runtime behavior.
+  - `app/console/**` owns the shared generic console spine.
   - `firestore/<entity>/**` owns the usual root entity stack: `fetch/`, `mutations/`, and `utils/`.
-  - `console/<entity>/**` owns console operation data around a selected target, including child records such as menu, mise, orders, team, station, or suppliers.
+  - `console/<entity>/useXConsole.ts` owns the selected target runtime adapter for that entity.
+  - `console/<entity>/useXConsoleIndex.ts` owns the target selector/index seam for that entity.
+  - `console/<entity>/useXConsoleOverview.ts` owns the selected target overview seam for that entity.
+  - `console/<entity>/useXSelection.ts` owns the selected id/mode helper for that entity.
+  - `console/<entity>/operations/**` owns console operation data and workflows around a selected target, including child records such as menu, mise, orders, team, station, or suppliers.
 - No mixed-bucket runtime folders:
+  - do not create `app/<entity>-console`
   - do not create `firestore/runtime-<entity>`
   - do not create `firestore/runtime-kitchen`
   - do not create vague architecture buckets such as `facade`, `stack`, `manager`, `processor`, or `handler` under `firestore/<entity>`
-  - console operation helpers must live under `console/<entity>`, not under the usual root entity stack
-  - `console/<entity>` may contain flexible child operation folders, but must not contain vague architecture buckets such as `runtime-*`, `facade`, `stack`, `manager`, `processor`, `handler`, or `resolver`
+  - console operation helpers must live under `console/<entity>/operations`, not under the usual root entity stack
+  - `console/<entity>/operations` may contain flexible child operation folders, but must not contain vague architecture buckets such as `runtime-*`, `facade`, `stack`, `manager`, `processor`, `handler`, or `resolver`
   - do not invent generic console resolver/facade composables such as `useChildEntityConsoleResolver`, `useConsoleChildResolver`, `useRuntimeX`, or `useXFacade`
 
 ## Family Entry Semantics

@@ -6,7 +6,7 @@ import type { Menu } from '../../../models/menu.model'
 import { getDemoKitchenCollection } from './utils/kitchen-demo-scenarios'
 import type {
   ResolvedMenuItemView,
-} from '../console/kitchen/menu/utils/view/resolveMenuItemView'
+} from '../console/kitchen/operations/menu/utils/view/resolveMenuItemView'
 import { useKitchenFetch } from '../firestore/kitchen/fetch/useKitchenFetch'
 import {
   normalizeKitchenMenuCurrency,

@@ -562,6 +562,37 @@ function checkProductsFirestoreStackShape(repoRoot) {
   return violations
 }
 
+function checkForbiddenEntityConsoleAppBuckets(repoRoot) {
+  const violations = []
+  const appConsoleRoots = [
+    path.join(repoRoot, 'packages'),
+    path.join(repoRoot, 'projects'),
+  ].filter((p) => existsSync(p))
+
+  for (const root of appConsoleRoots) {
+    for (const dir of walkDirs(root)) {
+      const rel = toRepoRelative(repoRoot, dir)
+      const parts = rel.split(path.sep)
+      const appIndex = findSegmentSequence(parts, [
+        'composables',
+        'fireux',
+        'app',
+      ])
+      if (appIndex < 0) continue
+
+      const bucket = parts[appIndex + 3]
+      if (!bucket || !bucket.endsWith('-console')) continue
+      if (bucket === 'console') continue
+
+      violations.push(
+        `- Domain console composables belong under composables/fireux/console/<entity>, not app/${bucket}: ${rel}`
+      )
+    }
+  }
+
+  return violations
+}
+
 function findConsoleOperationStackRoots(repoRoot) {
   const roots = []
   const coreConsoleRoot = path.join(
@@ -595,6 +626,25 @@ function findConsoleOperationStackRoots(repoRoot) {
     if (isDirectory(consoleRoot)) roots.push(consoleRoot)
   }
 
+  const projectsRoot = path.join(repoRoot, 'projects')
+  if (!isDirectory(projectsRoot)) return roots
+
+  for (const ecosystemName of listChildDirectories(projectsRoot)) {
+    const ecosystemRoot = path.join(projectsRoot, ecosystemName)
+    for (const projectName of listChildDirectories(ecosystemRoot)) {
+      const consoleRoot = path.join(
+        ecosystemRoot,
+        projectName,
+        'app',
+        'composables',
+        'fireux',
+        'console'
+      )
+
+      if (isDirectory(consoleRoot)) roots.push(consoleRoot)
+    }
+  }
+
   return roots
 }
 
@@ -602,6 +652,20 @@ function checkConsoleOperationStackShape(repoRoot) {
   const violations = []
 
   for (const consoleRoot of findConsoleOperationStackRoots(repoRoot)) {
+    for (const entity of listChildDirectories(consoleRoot)) {
+      const entityRoot = path.join(consoleRoot, entity)
+      for (const child of listChildDirectories(entityRoot)) {
+        if (child === 'operations') continue
+
+        violations.push(
+          `- Console entity root may only contain seam files and operations/: ${toRepoRelative(
+            repoRoot,
+            path.join(entityRoot, child)
+          )}`
+        )
+      }
+    }
+
     for (const dir of walkDirs(consoleRoot)) {
       const rel = toRepoRelative(repoRoot, dir)
       const segment = path.basename(dir)
@@ -670,6 +734,7 @@ export async function run(ctx) {
   violations.push(...firestoreStackShape.violations)
   warnings.push(...firestoreStackShape.warnings)
   violations.push(...checkProductsFirestoreStackShape(repoRoot))
+  violations.push(...checkForbiddenEntityConsoleAppBuckets(repoRoot))
   violations.push(...checkConsoleOperationStackShape(repoRoot))
   violations.push(...checkForbiddenKitchenBucketNames(repoRoot))
 
@@ -727,7 +792,8 @@ export async function run(ctx) {
       '- Do not create composables under: firestore/products/product',
       '- Do not create mixed-bucket kitchen paths such as firestore/runtime-kitchen',
       '- Keep usual Firestore entity stacks boring: fetch/, mutations/, utils/',
-      '- Put console operation buckets under: composables/fireux/console/<entity>/',
+      '- Put console entity seams under: composables/fireux/console/<entity>/',
+      '- Put console operation buckets under: composables/fireux/console/<entity>/operations/',
       '- Keep console operation buckets flexible, but do not add vague architecture buckets such as runtime-*, facade, stack, manager, processor, handler, or resolver',
     ]
 

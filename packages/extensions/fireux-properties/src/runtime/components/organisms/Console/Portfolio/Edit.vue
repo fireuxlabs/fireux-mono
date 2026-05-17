@@ -76,7 +76,7 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { usePortfolioConsoleIdentity } from '../../../../composables/fireux/app/portfolio-console/usePortfolioConsoleIdentity'
+import { usePortfolioConsoleIdentity } from '../../../../composables/fireux/console/portfolio/operations/usePortfolioConsoleIdentity'
 import { usePortfolioUpdate } from '../../../../composables/fireux/firestore/portfolio/mutations/usePortfolioUpdate'
 import type { PortfolioUpdateInput } from '../../../../models/portfolio.model'
 

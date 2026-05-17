@@ -61,7 +61,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePortfolioConsoleIdentity } from '../../../composables/fireux/app/portfolio-console/usePortfolioConsoleIdentity'
+import { usePortfolioConsoleIdentity } from '../../../composables/fireux/console/portfolio/operations/usePortfolioConsoleIdentity'
 
 const {
   selectedPortfolio,

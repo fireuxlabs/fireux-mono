@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsole } from '../../../../composables/fireux/app/kitchen-console/useKitchenConsole'
+import { useKitchenConsole } from '../../../../composables/fireux/console/kitchen/useKitchenConsole'
 
 const { selectedKitchen } = useKitchenConsole()
 </script>

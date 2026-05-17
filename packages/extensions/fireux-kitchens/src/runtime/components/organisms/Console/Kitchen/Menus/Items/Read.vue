@@ -75,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleMenuSection } from '../../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMenuSection'
+import { useKitchenConsoleMenuSection } from '../../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenuSection'
 
 const {
   menuId,

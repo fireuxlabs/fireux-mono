@@ -39,7 +39,7 @@ import {
   useProjectInterface,
   type ProjectSurface,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
-import { useProjectConsoleIndex } from '../../../composables/fireux/project-console/useProjectConsoleIndex'
+import { useProjectConsoleIndex } from '../../../composables/fireux/console/project/useProjectConsoleIndex'
 
 type ProjectPillCard = NonNullable<
   ReturnType<ReturnType<typeof useProjectInterface>['pill']>

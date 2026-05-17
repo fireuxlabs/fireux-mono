@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleStations } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleStations'
+import { useKitchenConsoleStations } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleStations'
 import StationCollectionManager from '../../../Station/Collection/Manager.vue'
 
 const { stations, debug } = useKitchenConsoleStations()

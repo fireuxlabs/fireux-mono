@@ -35,7 +35,7 @@
 import { computed } from 'vue'
 import ConsoleEntityIndex from 'fireux-core/runtime/components/organisms/Console/EntityIndex.vue'
 import { usePortfolioInterface } from '../../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
-import { usePortfolioConsoleIndex } from '../../../../composables/fireux/app/portfolio-console/usePortfolioConsoleIndex'
+import { usePortfolioConsoleIndex } from '../../../../composables/fireux/console/portfolio/usePortfolioConsoleIndex'
 
 const {
   state,

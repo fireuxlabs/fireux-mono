@@ -8,8 +8,8 @@ import type { Dish } from '../../../models/dish.model'
 import {
   resolveMenuItemView,
   type ResolvedMenuItemView,
-} from '../console/kitchen/menu/utils/view/resolveMenuItemView'
-import { normalizeString } from '../console/kitchen/collections/useKitchenChildCollection'
+} from '../console/kitchen/operations/menu/utils/view/resolveMenuItemView'
+import { normalizeString } from '../console/kitchen/operations/collections/useKitchenChildCollection'
 import { resolveMenuDesign } from './kitchen-menu-design'
 
 type MaybeRef<T> = T | Ref<T> | ComputedRef<T>

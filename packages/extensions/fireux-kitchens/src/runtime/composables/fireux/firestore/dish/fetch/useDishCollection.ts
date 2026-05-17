@@ -3,7 +3,7 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import type { Ref, ShallowRef } from 'vue'
 import { computed, shallowRef, unref, watch } from 'vue'
 import { normalizeDish, type Dish } from '../../../../../models/dish.model'
-import { resolveKitchenChildCollectionBasePath } from '../../../console/kitchen/collections/useKitchenChildCollection'
+import { resolveKitchenChildCollectionBasePath } from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
 
 const resolveDishesPath = (kitchenCollectionPath: string, kitchenId: string) =>
   `${kitchenCollectionPath}/${kitchenId}/dishes`

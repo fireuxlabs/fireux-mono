@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleIdentity } from '../../../composables/fireux/app/kitchen-console/useKitchenConsoleIdentity'
+import { useKitchenConsoleIdentity } from '../../../composables/fireux/console/kitchen/operations/useKitchenConsoleIdentity'
 import { ref } from 'vue'
 
 const navTitle = 'Kitchen Identity'

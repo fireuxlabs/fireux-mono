@@ -35,7 +35,7 @@
 import { computed } from 'vue'
 import ConsoleEntityIndex from 'fireux-core/runtime/components/organisms/Console/EntityIndex.vue'
 import { useKitchenInterface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { useKitchenConsoleIndex } from '../../../../composables/fireux/app/kitchen-console/useKitchenConsoleIndex'
+import { useKitchenConsoleIndex } from '../../../../composables/fireux/console/kitchen/useKitchenConsoleIndex'
 
 type KitchenPillCard = NonNullable<
   ReturnType<ReturnType<typeof useKitchenInterface>['pill']>

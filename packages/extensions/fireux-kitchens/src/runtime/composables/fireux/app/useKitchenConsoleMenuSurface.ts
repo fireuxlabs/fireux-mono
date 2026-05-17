@@ -5,9 +5,9 @@ import type { OrderLine } from 'fireux-orders/runtime/models/order.model'
 import type { Menu } from '../../../models/menu.model'
 import type {
   ResolvedMenuItemView,
-} from '../console/kitchen/menu/utils/view/resolveMenuItemView'
-import { useKitchenConsoleMenus } from './kitchen-console/useKitchenConsoleMenus'
-import { useKitchenConsole } from './kitchen-console/useKitchenConsole'
+} from '../console/kitchen/operations/menu/utils/view/resolveMenuItemView'
+import { useKitchenConsoleMenus } from '../console/kitchen/operations/useKitchenConsoleMenus'
+import { useKitchenConsole } from '../console/kitchen/useKitchenConsole'
 import {
   normalizeKitchenMenuCurrency,
   normalizeKitchenMenuMode,

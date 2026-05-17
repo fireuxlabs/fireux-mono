@@ -80,7 +80,7 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, ref, watch } from 'vue'
-import { useKitchenConsoleDesign } from '../../../../composables/fireux/app/kitchen-console/useKitchenConsoleDesign'
+import { useKitchenConsoleDesign } from '../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleDesign'
 import type { PublicMenuColorMode } from '../../../../composables/fireux/app/public-menu-design'
 
 const {

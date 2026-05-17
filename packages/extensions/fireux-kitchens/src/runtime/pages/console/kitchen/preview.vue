@@ -31,7 +31,7 @@ import { computed } from 'vue'
 import KitchenMenuSurfaceKiosk from '../../../components/organisms/Menu/Public/KioskMenuSurface.vue'
 import MenuQR from '../../../components/organisms/Menu/QR.vue'
 import { useKitchenConsoleMenuSurface } from '../../../composables/fireux/app/useKitchenConsoleMenuSurface'
-import { useKitchenConsole } from '../../../composables/fireux/app/kitchen-console/useKitchenConsole'
+import { useKitchenConsole } from '../../../composables/fireux/console/kitchen/useKitchenConsole'
 
 definePageMeta({
   layout: 'console',

@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleOverview } from '../../../../composables/fireux/app/kitchen-console/useKitchenConsoleOverview'
+import { useKitchenConsoleOverview } from '../../../../composables/fireux/console/kitchen/useKitchenConsoleOverview'
 
 const { focus, group, debug } = useKitchenConsoleOverview()
 </script>

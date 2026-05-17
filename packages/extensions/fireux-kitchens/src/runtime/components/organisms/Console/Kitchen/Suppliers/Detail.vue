@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleSupplier } from '../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleSupplier'
+import { useKitchenConsoleSupplier } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleSupplier'
 import SupplierProfile from '../../../Supplier/Cards/Profile.vue'
 
 const { supplier, supplierId, pending, debug } = useKitchenConsoleSupplier()

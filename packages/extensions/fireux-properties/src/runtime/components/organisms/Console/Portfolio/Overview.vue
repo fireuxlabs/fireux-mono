@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import { usePortfolioConsoleOverview } from '../../../../composables/fireux/app/portfolio-console/usePortfolioConsoleOverview'
+import { usePortfolioConsoleOverview } from '../../../../composables/fireux/console/portfolio/usePortfolioConsoleOverview'
 
 const { focus, group, debug } = usePortfolioConsoleOverview()
 </script>

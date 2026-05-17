@@ -7,7 +7,7 @@ Scope: `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/*`
 This folder owns the kitchen console workspace.
 
 Use `packages/core/fireux-docs/src/runtime/concepts/console-entry/README.md` for the shared console-entry concept.
-This README only explains the kitchen-console delta.
+This README only explains the Kitchen family delta.
 
 ## Current Routes
 
@@ -55,5 +55,5 @@ It proves:
 
 ## Short Version
 
-This folder is the kitchen-console half of the shared console-entry concept.
+This folder is the Kitchen family half of the shared console-entry concept.
 Treat it as the current reference implementation of that pattern.

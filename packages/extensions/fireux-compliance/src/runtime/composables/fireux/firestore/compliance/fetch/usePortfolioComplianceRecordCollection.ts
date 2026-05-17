@@ -3,9 +3,9 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import {
   useActivePortfolio,
   useRuntimePortfolioPath,
-} from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
+} from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import type { ComplianceRecord } from '../../../../../models/compliance-record.model'
-import type { DemoComplianceRecord } from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/demo-scenarios'
+import type { DemoComplianceRecord } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/demo-scenarios'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
 

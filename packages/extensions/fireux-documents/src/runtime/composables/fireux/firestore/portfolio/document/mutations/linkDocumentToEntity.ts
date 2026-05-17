@@ -2,7 +2,7 @@ import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/fires
 import {
   useActivePortfolio,
   useRuntimePortfolioPath,
-} from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
+} from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import { useTaskCreate } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/mutations/useTaskCreate'
 import { useTaskProjection } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/utils/projection/useTaskProjection'
 import type { DocumentLink, DocumentLinkTargetType } from '../../../../../../models/document-link.model'

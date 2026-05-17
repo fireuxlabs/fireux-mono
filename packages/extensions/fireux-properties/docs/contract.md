@@ -9,7 +9,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - BuenoHost is a standalone property information system:
   - BuenoHost owns public property info under `/properties/{propertySlug}/info`.
   - BuenoHost is not a portfolio management tool.
-  - BuenoHost must not expose the Portfolio console family unless a future property-console decision explicitly adds one.
+  - BuenoHost must not expose the Portfolio console family unless a future Property console decision explicitly adds one.
 - Granite owns estate, portfolio, and investment management surfaces.
 - Properties may later be compatible with Granite portfolios, but Portfolio remains the Granite management grouping, not the required BuenoHost app shape.
 
@@ -107,6 +107,12 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `portfolio`
 - BuenoHost property console route segment:
   - `property`
+- Property console composables follow the shared console entity bucket canon:
+  - `composables/fireux/console/property/usePropertyConsole.ts`
+  - `composables/fireux/console/property/usePropertyConsoleIndex.ts`
+  - `composables/fireux/console/property/usePropertyConsoleOverview.ts`
+  - `composables/fireux/console/property/usePropertySelection.ts`
+  - property operation helpers live under `composables/fireux/console/property/operations/**`
 - `/console/portfolio` is the family entry page:
   - `demo`: curated demo portfolios
   - `test`: Firestore-backed test portfolios

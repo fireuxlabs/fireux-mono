@@ -3,8 +3,8 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import {
   useActivePortfolio,
   useRuntimePortfolioPath,
-} from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
-import type { DemoDocument } from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/demo-scenarios'
+} from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
+import type { DemoDocument } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/demo-scenarios'
 import type { Document } from '../../../../../../models/document.model'
 
 const normalizeId = (value: unknown) => String(value || '').trim()

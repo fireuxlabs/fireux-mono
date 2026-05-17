@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProjectConsoleIdentity } from '../../../../composables/fireux/project-console/useProjectConsoleIdentity'
+import { useProjectConsoleIdentity } from '../../../../composables/fireux/console/project/operations/useProjectConsoleIdentity'
 
 const { name, description, imageUrl, debug } = useProjectConsoleIdentity()
 const isDev = import.meta.dev

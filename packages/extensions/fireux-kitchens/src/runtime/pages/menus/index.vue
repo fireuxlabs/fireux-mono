@@ -142,7 +142,7 @@ import { computed, ref, watch } from 'vue'
 import { useHead } from '#imports'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useKitchenPublicAccess } from '../../composables/fireux/app/kitchens/useKitchenPublicAccess'
-import { resolveKitchenChildCollectionPath } from '../../composables/fireux/console/kitchen/collections/useKitchenChildCollection'
+import { resolveKitchenChildCollectionPath } from '../../composables/fireux/console/kitchen/operations/collections/useKitchenChildCollection'
 import type { Menu } from '../../models/menu.model'
 
 definePageMeta({

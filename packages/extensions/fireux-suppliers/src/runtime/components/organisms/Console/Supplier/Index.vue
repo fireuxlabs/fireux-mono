@@ -38,7 +38,7 @@ import {
   useSupplierInterface,
   type SupplierSurface,
 } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
-import { useSupplierConsoleIndex } from '../../../../composables/fireux/app/supplier-console/useSupplierConsoleIndex'
+import { useSupplierConsoleIndex } from '../../../../composables/fireux/console/supplier/useSupplierConsoleIndex'
 
 const {
   state,

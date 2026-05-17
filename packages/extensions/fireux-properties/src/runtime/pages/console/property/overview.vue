@@ -113,7 +113,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { resolveConsoleModeLabel } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { usePropertyConsoleIndex } from '../../../composables/fireux/app/property-console/usePropertyConsoleIndex'
+import { usePropertyConsoleIndex } from '../../../composables/fireux/console/property/usePropertyConsoleIndex'
 
 definePageMeta({
   layout: 'console',

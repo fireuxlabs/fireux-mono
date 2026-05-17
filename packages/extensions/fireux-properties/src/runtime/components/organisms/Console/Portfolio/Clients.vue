@@ -40,7 +40,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { usePortfolioConsole } from '../../../../composables/fireux/app/portfolio-console/usePortfolioConsole'
+import { usePortfolioConsole } from '../../../../composables/fireux/console/portfolio/usePortfolioConsole'
 
 const {
   selectedPortfolio,

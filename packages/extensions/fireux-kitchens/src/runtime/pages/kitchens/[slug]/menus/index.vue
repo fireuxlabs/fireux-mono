@@ -101,7 +101,7 @@ import { computed, ref, shallowRef, watch, type Ref, type ShallowRef } from 'vue
 import { navigateTo, useHead, useRoute } from '#imports'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { resolveKitchenChildCollectionPath } from '../../../../composables/fireux/console/kitchen/collections/useKitchenChildCollection'
+import { resolveKitchenChildCollectionPath } from '../../../../composables/fireux/console/kitchen/operations/collections/useKitchenChildCollection'
 import {
   getPublicKitchenChromeLabels,
   isPublicKitchenCacheLanguage,

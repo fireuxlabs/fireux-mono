@@ -2,7 +2,7 @@ import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/fires
 import {
   useActivePortfolio,
   useRuntimePortfolioPath,
-} from 'fireux-properties/runtime/composables/fireux/app/portfolio-console/useActivePortfolio'
+} from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import type { Task, TaskCreateInput } from '../../../../../models/task.model'
 
 const normalize = (value: unknown) => String(value || '').trim()

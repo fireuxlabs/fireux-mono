@@ -9,8 +9,8 @@ import {
   type RecipeCreateInput,
   type Recipe as RecipeDoc,
 } from '../../../../../models/recipe.model'
-import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/collections/useKitchenChildCollection'
-import { useKitchenSelection } from '../../../app/kitchen-console/useKitchenSelection'
+import { resolveKitchenConsoleCollectionPath } from '../../../console/kitchen/operations/collections/useKitchenChildCollection'
+import { useKitchenSelection } from '../../../console/kitchen/useKitchenSelection'
 
 type RecipeCreateDraft = {
   name: string

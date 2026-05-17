@@ -174,8 +174,8 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { MenuSection } from '../../../../../../models/menu.model'
-import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMenu'
-import type { MenuCard } from '../../../../../../composables/fireux/console/kitchen/menu/utils/view/useMenuInterface'
+import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenu'
+import type { MenuCard } from '../../../../../../composables/fireux/console/kitchen/operations/menu/utils/view/useMenuInterface'
 
 const {
   menu,

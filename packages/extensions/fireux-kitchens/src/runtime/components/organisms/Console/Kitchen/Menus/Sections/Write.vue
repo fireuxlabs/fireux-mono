@@ -110,7 +110,7 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Menu, MenuSection } from '../../../../../../models/menu.model'
-import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/app/kitchen-console/useKitchenConsoleMenu'
+import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleMenu'
 
 type SectionDraft = {
   local_key: string
