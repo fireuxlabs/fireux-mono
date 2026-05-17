@@ -25,6 +25,7 @@ export const cedarLoopScenario = (): DemoProjectScenario => ({
     ecosystem_id: 'cedar',
     firebase_project_id: 'cedar-loop',
     owner_user_id: 'demo-user',
+    operator_ids: ['demo-user'],
     team_ids: ['demo-user'],
   },
   projects: [
@@ -44,6 +45,7 @@ export const cedarLoopScenario = (): DemoProjectScenario => ({
       ecosystem_id: 'cedar',
       firebase_project_id: 'cedar-loop',
       owner_user_id: 'demo-user',
+      operator_ids: ['demo-user'],
       team_ids: ['demo-user'],
     },
   ],

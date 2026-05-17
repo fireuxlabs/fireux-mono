@@ -86,8 +86,8 @@ For the current `Project` stack, the shared contract is:
 
 - `Project` has model truth
 - `App` and `Ecosystem` link to `Project`
-- root `projects/<projectId>` owns project identity and team membership
-- `team_ids` and `owner_user_id` belong on the root project, not the app overlay
+- root `projects/<projectId>` owns project identity and console access
+- `operator_ids` and `owner_user_id` belong on the root project, not the app overlay
 - `useProjectCollection()` stays generic
 - console project selection/scope lives in the console seam rather than redefining the generic collection
 - project-facing runtime surfaces should keep infrastructure truth explicit

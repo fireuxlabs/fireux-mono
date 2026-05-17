@@ -83,6 +83,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       slug,
       owner_label: userLabel,
       region_label: userLabel,
+      operator_ids: [id],
     }
 
     const imageUrl = normalizeString(input.image_url)
@@ -235,6 +236,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       ensureRoot,
       createOverlay: async () =>
         ({
+          operator_ids: uid.value ? [uid.value] : ([] as string[]),
           team_ids: uid.value ? [uid.value] : ([] as string[]),
           join_requests: [] as string[],
         }) as AppPortfolio,

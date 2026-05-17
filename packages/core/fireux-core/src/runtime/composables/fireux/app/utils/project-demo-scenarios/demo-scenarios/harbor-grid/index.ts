@@ -25,6 +25,7 @@ export const harborGridScenario = (): DemoProjectScenario => ({
     ecosystem_id: 'harbor',
     firebase_project_id: 'harbor-grid',
     owner_user_id: 'demo-user',
+    operator_ids: ['demo-user'],
     team_ids: ['demo-user'],
   },
   projects: [
@@ -44,6 +45,7 @@ export const harborGridScenario = (): DemoProjectScenario => ({
       ecosystem_id: 'harbor',
       firebase_project_id: 'harbor-grid',
       owner_user_id: 'demo-user',
+      operator_ids: ['demo-user'],
       team_ids: ['demo-user'],
     },
   ],

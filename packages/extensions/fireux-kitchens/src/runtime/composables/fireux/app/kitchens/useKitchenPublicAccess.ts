@@ -34,7 +34,7 @@ export function useKitchenPublicAccess(
   )
   const isAdmin = computed(() => user.isAdmin.value === true)
   const managedFilter = computed<KitchenCollectionFilter>(() =>
-    userId.value ? { teamId: userId.value } : { ids: [] }
+    userId.value ? { operatorId: userId.value } : { ids: [] }
   )
   const allState = useKitchenCollection({
     source: sourceMode,

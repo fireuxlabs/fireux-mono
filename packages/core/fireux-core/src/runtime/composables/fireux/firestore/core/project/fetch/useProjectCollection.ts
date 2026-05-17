@@ -9,6 +9,7 @@ const TEST_PROJECT_COLLECTION_PATH = 'test-projects'
 export type ProjectCollectionFilterValue = string | number | null | undefined
 export type ProjectCollectionFilter = {
   ids?: ProjectCollectionFilterValue[] | null | undefined
+  operatorId?: ProjectCollectionFilterValue
   teamId?: ProjectCollectionFilterValue
 }
 export type ProjectCollectionSource = 'live' | 'demo' | 'test'
@@ -35,10 +36,11 @@ export function useProjectCollection(
     return options.filter ?? undefined
   })
   const hasFilter = computed(() => Array.isArray(resolvedFilter.value?.ids))
-  const filterTeamId = computed(() =>
-    String(resolvedFilter.value?.teamId ?? '').trim()
+  const filterOperatorId = computed(() =>
+    String(resolvedFilter.value?.operatorId ?? resolvedFilter.value?.teamId ?? '').trim()
   )
-  const hasTeamFilter = computed(() =>
+  const hasOperatorFilter = computed(() =>
+    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'operatorId') ||
     Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'teamId')
   )
   const filterIdSet = computed(
@@ -72,12 +74,12 @@ export function useProjectCollection(
       const id = String(project?.id || '').trim()
       if (!id) return acc
       if (hasFilter.value && !filterIdSet.value.has(id)) return acc
-      if (hasTeamFilter.value) {
-        if (!filterTeamId.value) return acc
-        const teamIds = Array.isArray(project?.team_ids)
-          ? project.team_ids.map((value) => String(value ?? '').trim())
+      if (hasOperatorFilter.value) {
+        if (!filterOperatorId.value) return acc
+        const operatorIds = Array.isArray(project?.operator_ids)
+          ? project.operator_ids.map((value) => String(value ?? '').trim())
           : []
-        if (!teamIds.includes(filterTeamId.value)) return acc
+        if (!operatorIds.includes(filterOperatorId.value)) return acc
       }
 
       acc.push({

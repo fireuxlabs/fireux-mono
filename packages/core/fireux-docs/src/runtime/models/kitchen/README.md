@@ -28,7 +28,7 @@ Rule of thumb:
 Kitchen authority rule:
 
 - kitchen console access comes from the app overlay
-- canonical authority field is overlay `team_ids`
+- canonical authority field is overlay `operator_ids`
 - `Chef` linkage or workplace/profile history is relationship only
 - relationship does not grant console access
 

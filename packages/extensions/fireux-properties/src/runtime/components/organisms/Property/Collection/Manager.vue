@@ -10,7 +10,37 @@
         <div
           class="collection-manager__controls flex flex-1 items-center gap-2"
         >
-          <div class="ml-auto flex items-center gap-2">
+          <div class="ml-auto flex flex-wrap items-center gap-2">
+            <div
+              v-if="showSourceToggle"
+              class="inline-flex items-center gap-1 rounded-md border border-default p-0.5"
+            >
+              <UButton
+                size="xs"
+                :variant="sourceMode === 'live' ? 'solid' : 'ghost'"
+                color="neutral"
+                @click="emit('update:sourceMode', 'live')"
+              >
+                Live
+              </UButton>
+              <UButton
+                size="xs"
+                :variant="sourceMode === 'demo' ? 'solid' : 'ghost'"
+                color="neutral"
+                @click="emit('update:sourceMode', 'demo')"
+              >
+                Demo
+              </UButton>
+              <UButton
+                size="xs"
+                :variant="sourceMode === 'test' ? 'solid' : 'ghost'"
+                color="neutral"
+                @click="emit('update:sourceMode', 'test')"
+              >
+                Test
+              </UButton>
+            </div>
+
             <UInput
               v-if="showSearchInput"
               v-model="query"
@@ -93,6 +123,7 @@ import PropertyCollectionList from './List.vue'
 const props = withDefaults(
   defineProps<{
     collection?: Property[]
+    sourceMode?: 'live' | 'demo' | 'test'
     title?: string
     description?: string
     searchPlaceholder?: string
@@ -102,12 +133,14 @@ const props = withDefaults(
     initialVariant?: 'pill' | 'cell'
     link?: boolean
     action?: boolean
+    showSourceToggle?: boolean
     showBadges?: boolean
     devJsonTitle?: string
     devJsonContext?: string
   }>(),
   {
     collection: () => [],
+    sourceMode: 'live',
     title: 'Properties',
     description: 'Browse property records available to this runtime.',
     searchPlaceholder: 'Search properties...',
@@ -117,6 +150,7 @@ const props = withDefaults(
     initialVariant: 'pill',
     link: true,
     action: false,
+    showSourceToggle: false,
     showBadges: true,
     devJsonTitle: 'Properties (JSON)',
     devJsonContext: 'collection manager · properties',
@@ -125,6 +159,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (event: 'select', propertyId: string): void
+  (event: 'update:sourceMode', value: 'live' | 'demo' | 'test'): void
 }>()
 
 const {
@@ -145,7 +180,13 @@ const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
 const actionEnabled = computed(() => props.action === true)
+const showSourceToggle = computed(() => props.showSourceToggle === true)
 const showBadges = computed(() => props.showBadges !== false)
+const sourceMode = computed<'live' | 'demo' | 'test'>(() => {
+  if (props.sourceMode === 'demo') return 'demo'
+  if (props.sourceMode === 'test') return 'test'
+  return 'live'
+})
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => showSearch.value && totalCount.value > 15

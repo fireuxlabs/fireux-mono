@@ -1,4 +1,7 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import {
+  FireuxConsoleAccessModel,
+  type FireuxStamped,
+} from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -114,6 +117,7 @@ export const PropertyManualModel = {
 export const PropertyModel = {
   id: '' as string,
   portfolio_id: '' as string,
+  ...FireuxConsoleAccessModel,
   identity: PropertyIdentityModel,
   manual: PropertyManualModel,
   status: 'active' as 'active' | 'inactive',

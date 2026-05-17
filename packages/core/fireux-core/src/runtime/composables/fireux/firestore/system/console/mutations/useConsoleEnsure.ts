@@ -80,7 +80,7 @@ export function useConsoleEnsure() {
     const collectionName = consoleCollectionByType[type]
     const overlaysQuery = query(
       collection(db, 'apps', currentAppId, collectionName),
-      where('team_ids', 'array-contains', currentUid)
+      where('operator_ids', 'array-contains', currentUid)
     )
     const overlaysSnap = await getDocs(overlaysQuery)
 

@@ -26,7 +26,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `slug_aliases` are not canon yet; future alias/redirect support needs an explicit SEO route decision.
 - Chef association (`chef.kitchen_ids`) and workplace/profile links are relationship signals only.
 - Kitchen console authority is user-based:
-  - a user can operate a kitchen when their uid is in the scoped kitchen `team_ids`
+  - a user can operate a kitchen when their uid is in the scoped kitchen `operator_ids`
   - profile association alone does not grant console access
 - `Chef` is a kitchen-domain profile extension of `User`, not a separate console owner.
 
@@ -90,7 +90,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - not created during auth
 - `my real kitchens` means kitchens the current user can operate through the app overlay:
   - `apps/{appId}/kitchens/{kitchenId}`
-  - `team_ids` contains the user
+  - `operator_ids` contains the user
 - Chef linkage, workplace history, or profile association may support prerequisites or presentation, but they are not the console-access rule.
 
 ## 6) Surfaces supported

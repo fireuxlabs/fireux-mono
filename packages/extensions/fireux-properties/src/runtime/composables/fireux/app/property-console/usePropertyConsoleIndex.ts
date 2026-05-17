@@ -17,7 +17,7 @@ export function usePropertyConsoleIndex() {
   const { uid } = useAuth()
   const { currentUser, avatarSrc } = useUser()
   const userId = computed(() => normalizeString(uid.value))
-  const liveProperties = computed<Property[]>(() => getLocalLiveProperties())
+  const liveProperties = computed<Property[]>(() => getLocalLiveProperties(userId.value))
   const demoProperties = computed<Property[]>(() => getDemoPropertySimulations())
   const testProperty = computed<Property | null>(() =>
     createTestPropertySimulation(

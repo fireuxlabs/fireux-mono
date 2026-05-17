@@ -60,6 +60,7 @@ if (help) {
   console.log('  - app-user-mirrors-rebuild')
   console.log('  - profile-app-overlays-backfill')
   console.log('  - console-entity-teams')
+  console.log('  - console-entity-operators')
   console.log('  - kitchen-storage-normalize')
   console.log('  - users-canonical-shape')
   console.log('  - users-delete-root')
@@ -2670,7 +2671,7 @@ async function runApplyDriftPayload() {
 }
 
 async function runConsoleEntityTeams() {
-  console.log('[migrate] console-entity-teams start', {
+  console.log('[migrate] console-entity-operators start', {
     projectId,
     databaseId: databaseId || '(default)',
     commit,
@@ -2684,6 +2685,7 @@ async function runConsoleEntityTeams() {
 
   let processedApps = 0
   let processedDocs = 0
+  let processedRootProjects = 0
   let updatedDocs = 0
   let skippedDocs = 0
 
@@ -2700,12 +2702,28 @@ async function runConsoleEntityTeams() {
         processedDocs += 1
         const data = overlayDoc.data() || {}
         const currentTeamIds = sortedUniqueStrings(data.team_ids)
+        const currentOperatorIds = sortedUniqueStrings(data.operator_ids)
         const nextTeamIds = sortedUniqueStrings([
+          ...asStringArray(data.team_ids),
+          ...asStringArray(data.admin_ids),
+        ])
+        const nextOperatorIds = sortedUniqueStrings([
+          ...asStringArray(data.operator_ids),
           ...asStringArray(data.team_ids),
           ...asStringArray(data.admin_ids),
         ])
         const patch = {}
         let needs = false
+
+        if (!valuesEqual(currentOperatorIds, nextOperatorIds)) {
+          patch.operator_ids = nextOperatorIds
+          needs = true
+        }
+
+        if (!Array.isArray(data.operator_ids)) {
+          patch.operator_ids = nextOperatorIds
+          needs = true
+        }
 
         if (!valuesEqual(currentTeamIds, nextTeamIds)) {
           patch.team_ids = nextTeamIds
@@ -2750,12 +2768,58 @@ async function runConsoleEntityTeams() {
     }
   }
 
+  const rootProjectsSnap = await db.collection('projects').get()
+  for (const projectDoc of rootProjectsSnap.docs) {
+    processedRootProjects += 1
+    processedDocs += 1
+    const data = projectDoc.data() || {}
+    const currentOperatorIds = sortedUniqueStrings(data.operator_ids)
+    const nextOperatorIds = sortedUniqueStrings([
+      ...asStringArray(data.operator_ids),
+      ...asStringArray(data.team_ids),
+      asString(data.owner_user_id, ''),
+    ])
+    const patch = {}
+    let needs = false
+
+    if (!valuesEqual(currentOperatorIds, nextOperatorIds)) {
+      patch.operator_ids = nextOperatorIds
+      needs = true
+    }
+
+    if (!Array.isArray(data.operator_ids)) {
+      patch.operator_ids = nextOperatorIds
+      needs = true
+    }
+
+    if (!needs) {
+      skippedDocs += 1
+      continue
+    }
+
+    updatedDocs += 1
+
+    if (commit) {
+      batch.update(projectDoc.ref, patch)
+      batchOps += 1
+    } else {
+      console.log('[dry-run]', projectDoc.ref.path, patch)
+    }
+
+    if (commit && batchOps >= 400) {
+      await batch.commit()
+      batch = db.batch()
+      batchOps = 0
+    }
+  }
+
   if (commit && batchOps > 0) {
     await batch.commit()
   }
 
-  console.log('[migrate] console-entity-teams done', {
+  console.log('[migrate] console-entity-operators done', {
     processedApps,
+    processedRootProjects,
     processedDocs,
     updatedDocs,
     skippedDocs,
@@ -3112,6 +3176,7 @@ const recipes = {
   'app-user-mirrors-rebuild': runAppUserMirrorsRebuild,
   'profile-app-overlays-backfill': runProfileAppOverlaysBackfill,
   'console-entity-teams': runConsoleEntityTeams,
+  'console-entity-operators': runConsoleEntityTeams,
   'kitchen-storage-normalize': runKitchenStorageNormalize,
   'users-delete-root': runUsersDeleteRoot,
   'users-canonical-shape': runUsersCanonicalShape,

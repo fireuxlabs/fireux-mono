@@ -84,6 +84,14 @@ If a new repeated pattern appears, promote it into `docs/fireux-canon.md` and th
 
 Use `pnpm audit:usex` to print a report-only map of current `useX` stack seams. The audit is intentionally non-blocking while existing entity stacks are being normalized.
 
+## Public Entity Route Add-Ons
+
+Shared entity routes should stay simple first: collection at `/xs`, detail at `/xs/:id`.
+
+App-specific public experiences can add a named child route when the experience is real domain behaviour rather than a generic detail page. For example, BuenoHost uses `/properties/:id/companion` for the guest-facing stay companion instead of overloading the property detail page.
+
+When a child experience has a home plus sections, keep that distinction in runtime helpers rather than page-local filters. Prefer helpers like `getXHome()` and `getXSections()` so layouts, detail pages, QR targets, and smoke routes consume the same shape.
+
 ## Mode Matrix
 
 The same stack DNA can appear in different modes. Do not force every mode to have every seam.

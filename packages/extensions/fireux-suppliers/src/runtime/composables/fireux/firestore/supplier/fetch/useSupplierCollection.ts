@@ -6,10 +6,12 @@ import { getDemoSuppliers } from '../../../app/utils/supplier-demo-scenarios'
 
 type SupplierCollectionDoc = Partial<Supplier> & {
   id?: string
+  operator_ids?: string[]
   team_ids?: string[]
 }
 
 type AppSupplierOverlay = SupplierCollectionDoc & {
+  operator_ids?: string[]
   team_ids?: string[]
 }
 
@@ -19,6 +21,7 @@ const TEST_COLLECTION_PATH = 'test-suppliers'
 export type SupplierCollectionFilterValue = string | number | null | undefined
 export type SupplierCollectionFilter = {
   ids?: SupplierCollectionFilterValue[] | null | undefined
+  operatorId?: SupplierCollectionFilterValue
   teamId?: SupplierCollectionFilterValue
 }
 export type SupplierCollectionSource = 'live' | 'demo' | 'test'
@@ -83,10 +86,11 @@ export function useSupplierCollection(
     return options.filter ?? undefined
   })
   const hasFilter = computed(() => Array.isArray(resolvedFilter.value?.ids))
-  const filterTeamId = computed(() =>
-    normalizeString(resolvedFilter.value?.teamId)
+  const filterOperatorId = computed(() =>
+    normalizeString(resolvedFilter.value?.operatorId ?? resolvedFilter.value?.teamId)
   )
-  const hasTeamFilter = computed(() =>
+  const hasOperatorFilter = computed(() =>
+    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'operatorId') ||
     Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'teamId')
   )
   const filterIdSet = computed(
@@ -164,12 +168,12 @@ export function useSupplierCollection(
       const id = resolveSupplierId(supplier)
       if (!id) return acc
       if (hasFilter.value && !filterIdSet.value.has(id)) return acc
-      if (hasTeamFilter.value) {
-        if (!filterTeamId.value) return acc
-        const teamIds = Array.isArray(supplier?.team_ids)
-          ? supplier.team_ids.map((value) => normalizeString(value))
+      if (hasOperatorFilter.value) {
+        if (!filterOperatorId.value) return acc
+        const operatorIds = Array.isArray(supplier?.operator_ids)
+          ? supplier.operator_ids.map((value) => normalizeString(value))
           : []
-        if (!teamIds.includes(filterTeamId.value)) return acc
+        if (!operatorIds.includes(filterOperatorId.value)) return acc
       }
 
       acc.push({

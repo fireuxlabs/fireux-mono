@@ -19,6 +19,7 @@ import type { KitchenSurface } from '../utils/view/useKitchenInterface'
 type KitchenCollectionDoc = KitchenSurface
 type AppKitchenCollectionDoc = {
   id?: string
+  operator_ids?: string[]
   team_ids?: string[]
 }
 
@@ -35,6 +36,7 @@ const requireSimulationDatabaseId = () => {
 export type KitchenCollectionFilterValue = string | number | null | undefined
 export type KitchenCollectionFilter = {
   ids?: KitchenCollectionFilterValue[] | null | undefined
+  operatorId?: KitchenCollectionFilterValue
   teamId?: KitchenCollectionFilterValue
 }
 export type KitchenCollectionSource = 'live' | 'demo' | 'test'
@@ -99,10 +101,11 @@ export function useKitchenCollection(
   })
   const currentAppId = computed(() => String(appId || '').trim())
   const hasFilter = computed(() => Array.isArray(resolvedFilter.value?.ids))
-  const filterTeamId = computed(() =>
-    String(resolvedFilter.value?.teamId ?? '').trim()
+  const filterOperatorId = computed(() =>
+    String(resolvedFilter.value?.operatorId ?? resolvedFilter.value?.teamId ?? '').trim()
   )
-  const hasTeamFilter = computed(() =>
+  const hasOperatorFilter = computed(() =>
+    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'operatorId') ||
     Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'teamId')
   )
   const filterIdSet = computed(
@@ -149,18 +152,18 @@ export function useKitchenCollection(
   })
   const overlaySource = computed(() => {
     if (sourceMode.value !== 'live') return null
-    if (!hasTeamFilter.value || !filterTeamId.value || !currentAppId.value) {
+    if (!hasOperatorFilter.value || !filterOperatorId.value || !currentAppId.value) {
       return null
     }
 
     const q = fsq(
       collection(db, 'apps', currentAppId.value, DEFAULT_COLLECTION_PATH),
-      where('team_ids', 'array-contains', filterTeamId.value)
+      where('operator_ids', 'array-contains', filterOperatorId.value)
     ) as Query<AppKitchenCollectionDoc>
 
     return firestoreQuery<AppKitchenCollectionDoc>(
       q,
-      `apps-${currentAppId.value}-${DEFAULT_COLLECTION_PATH}-team-${filterTeamId.value}`,
+      `apps-${currentAppId.value}-${DEFAULT_COLLECTION_PATH}-operator-${filterOperatorId.value}`,
       `apps/${currentAppId.value}/${DEFAULT_COLLECTION_PATH}`
     )
   })
@@ -180,14 +183,14 @@ export function useKitchenCollection(
       if (placeId) placesById.set(placeId, place)
     }
 
-    const rootItems = firestoreSource.value?.value ?? []
+    const rootItems = (firestoreSource.value?.value ?? []) as KitchenCollectionDoc[]
 
     return rootItems
       .map((kitchen) => {
         const kitchenId = String(kitchen?.id || '').trim()
         if (!kitchenId) return null
         if (hasFilter.value && !filterIdSet.value.has(kitchenId)) return null
-        if (hasTeamFilter.value && !allowedKitchenIds.has(kitchenId)) return null
+        if (hasOperatorFilter.value && !allowedKitchenIds.has(kitchenId)) return null
 
         const resolvedPlaceId = String(kitchen?.place_id || kitchenId).trim()
         const place =
@@ -223,7 +226,7 @@ export function useKitchenCollection(
   const count = computed(() => kitchens.value.length)
   const pending = computed(() => {
     if (sourceMode.value === 'demo') return false
-    if (hasTeamFilter.value && currentAppId.value && overlaySource.value?.value === undefined) {
+    if (hasOperatorFilter.value && currentAppId.value && overlaySource.value?.value === undefined) {
       return true
     }
     return firestoreSource.value?.value === undefined

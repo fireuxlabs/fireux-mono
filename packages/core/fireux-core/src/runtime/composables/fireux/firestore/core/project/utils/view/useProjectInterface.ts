@@ -34,6 +34,7 @@ export type ProjectSurface = {
   ecosystem_id?: string
   firebase_project_id?: string
   owner_user_id?: string
+  operator_ids?: string[]
   team_ids?: string[]
   created?: Project['created']
   updated?: Project['updated']

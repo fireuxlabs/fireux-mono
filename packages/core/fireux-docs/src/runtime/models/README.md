@@ -119,7 +119,7 @@ For app-scoped domains, the stored ownership pattern is shared:
 
 - the app-hosted record is the scoped record
 - app authority is user-based through:
-  - `team_ids`
+  - `operator_ids`
   - `join_requests`
 
 Optional family-specific operator profiles do not replace that app-scoped pattern.

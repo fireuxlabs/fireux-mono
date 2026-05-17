@@ -106,8 +106,17 @@ const currentLayout = computed(() =>
 )
 const { desktop, mobile } = useNav(currentLayout)
 
+const normalizePath = (value: unknown) => {
+  const path = String(value ?? '').trim() || '/'
+  return path.length > 1 ? path.replace(/\/+$/, '') : path
+}
+
 const desktopItems = computed(() =>
-  Array.isArray(desktop.value) ? desktop.value.filter(Boolean) : []
+  Array.isArray(desktop.value)
+    ? desktop.value
+        .filter(Boolean)
+        .filter((item) => normalizePath(item.to) !== normalizePath(route.path))
+    : []
 )
 const mobileItems = computed(() =>
   Array.isArray(mobile.value) ? mobile.value.filter(Boolean) : []

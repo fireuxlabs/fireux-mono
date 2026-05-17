@@ -12,7 +12,7 @@
               The digital stay companion for your guests.
             </h1>
             <p class="max-w-2xl text-lg text-muted">
-              Turn any room, apartment or holiday into a digital stay companion with clear property info.
+              Turn any room, apartment or holiday into a digital stay companion and local guide.
             </p>
           </div>
         </div>
@@ -174,11 +174,11 @@
 
       <section
         class="space-y-6"
-        aria-labelledby="property-info-demo"
+        aria-labelledby="companion-console-demo"
       >
         <div class="max-w-2xl space-y-2">
           <UButton
-            id="property-info-demo"
+            id="companion-console-demo"
             to="/console/property"
             size="xl"
             variant="subtle"
@@ -286,7 +286,7 @@ import { toDataURL } from 'qrcode'
 import { computed, onMounted, ref } from 'vue'
 import { useRuntimeConfig, useSeoMeta } from '#imports'
 
-const demoInfoPath = '/properties/demo-stay/info'
+const demoInfoPath = '/properties/demo-stay/companion'
 const qrTargetUrl = ref('')
 const qrDataUrl = ref('')
 const runtimeConfig = useRuntimeConfig()
@@ -410,8 +410,8 @@ const pricingPlans = [
     features: [
       'Add more properties',
       'Separate URLs and QR codes',
-      'Reusable or specific property info',
-      'Property-level public information',
+      'Reusable or specific manual sections',
+      'Property-level stay companion',
       'Account-level overview later',
     ],
     button: {
@@ -431,7 +431,7 @@ const pricingPlans = [
     features: [
       'Room-specific QR codes',
       'Room notes and instructions',
-      'Shared property information',
+      'Shared property manual',
       'Different details per room',
       'Useful for guesthouses and shared stays',
     ],
@@ -448,12 +448,12 @@ const pricingPlans = [
 const consoleFeatures = [
   {
     title: 'Out of the box',
-    description: 'Start with ready-made info for welcome, check-in, emergency and local recommendations.',
+    description: 'Start with ready-made sections for welcome, check-in, emergency and local recommendations.',
     icon: 'i-lucide-layout-list',
   },
   {
     title: 'Create your own',
-    description: 'Tailor your manual with custom topics for anything your property, building or room needs.',
+    description: 'Tailor your manual with custom sections for anything your property, building or room needs.',
     icon: 'i-lucide-square-plus',
   },
   {
@@ -489,7 +489,7 @@ const integrationCards: IntegrationCard[] = [
   },
   {
     title: 'Find My SEO',
-    description: 'Work with SEO specialists to promote independent property info beyond booking platforms.',
+    description: 'Work with SEO specialists to promote your stay companion beyond booking platforms.',
     icon: 'i-lucide-search-check',
     appKey: 'findMySeo',
   },

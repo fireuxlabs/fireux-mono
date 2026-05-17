@@ -84,16 +84,26 @@ export type FireuxAppScope = {
   [K in keyof typeof FireuxAppScope]: (typeof FireuxAppScope)[K]
 }
 
+export const FireuxConsoleAccessModel = {
+  operator_ids: [] as string[],
+} as const
+
+export type FireuxConsoleAccess = {
+  [K in keyof typeof FireuxConsoleAccessModel]: (typeof FireuxConsoleAccessModel)[K]
+}
+
 /**
  * Canonical app-scoped support shape.
  *
  * Console entity rule:
- * - users operate console entities through `team_ids`
+ * - users operate console entities through `operator_ids`
+ * - `team_ids` is transitional compatibility for older stored records and surfaces
  * - join requests remain optional workflow state
  * - profiles such as Chef are domain extensions, not the stored access principal
  */
 export const FireuxAppOverlayModel = {
   id: '' as string,
+  ...FireuxConsoleAccessModel,
   team_ids: [] as string[],
   join_requests: [] as string[],
   created: {

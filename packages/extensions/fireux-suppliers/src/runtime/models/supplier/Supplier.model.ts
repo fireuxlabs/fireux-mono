@@ -3,6 +3,7 @@ import type {
   FireuxStamped,
 } from 'fireux-core/runtime/models/core/meta.model'
 import {
+  FireuxConsoleAccessModel,
   FireuxAppOverlayModel,
   FireuxAppScope,
 } from 'fireux-core/runtime/models/core/meta.model'
@@ -43,6 +44,7 @@ type WidenLiteral<T> =
 export const SupplierModel = {
   id: '',
   ...FireuxAppScope,
+  ...FireuxConsoleAccessModel,
   company_id: '',
 
   // Public-facing supplier identity
@@ -80,9 +82,9 @@ export type AppSupplier = FireuxAppOverlay
 
 export type SupplierCreateInput = Omit<
   Supplier,
-  'id' | 'created' | 'updated' | 'app_scope_state' | 'app_scope_app_id' | 'tagline'
+  'id' | 'created' | 'updated' | 'app_scope_state' | 'app_scope_app_id' | 'operator_ids' | 'tagline'
 > &
-  Partial<Pick<Supplier, 'app_scope_state' | 'app_scope_app_id' | 'tagline'>>
+  Partial<Pick<Supplier, 'app_scope_state' | 'app_scope_app_id' | 'operator_ids' | 'tagline'>>
 
 export type SupplierUpdateInput = Partial<Omit<Supplier, 'id' | 'created' | 'updated'>>
 

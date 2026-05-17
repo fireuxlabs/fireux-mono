@@ -259,6 +259,8 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       name?: string
       short_address?: string
       image_url?: string
+      operator_ids?: string[]
+      team_ids?: string[]
       simulation_kind?: string
       can_write?: boolean
       is_test_kitchen?: boolean
@@ -271,6 +273,8 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
         name,
         short_address: resolveTestKitchenShortAddress(),
         image_url: imageUrl,
+        operator_ids: [testId],
+        team_ids: [testId],
         simulation_kind: 'test',
         can_write: true,
         is_test_kitchen: true,
@@ -471,7 +475,12 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
         }),
       createOverlay: async () =>
         ({
-          ...(uid.value ? { team_ids: [String(uid.value).trim()] } : {}),
+          ...(uid.value
+            ? {
+                operator_ids: [String(uid.value).trim()],
+                team_ids: [String(uid.value).trim()],
+              }
+            : {}),
         }) as AppKitchen,
     })
   }

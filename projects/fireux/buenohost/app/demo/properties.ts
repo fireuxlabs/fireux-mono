@@ -62,12 +62,12 @@ export const demoBuenoHostPublicProperties: DemoBuenoHostPublicProperty[] = [
     contact_mode: 'chat',
     booking_mode: 'enquiry',
     status: 'active',
-    headline: 'Public sample property info for the BuenoHost landing page.',
+    headline: 'Public sample stay companion for the BuenoHost landing page.',
     summary:
       'A fictional alpine property that shows how a house manual becomes a mobile stay companion without exposing a real host or address.',
     price_hint: 'Demo only',
     availability_hint: 'Demo only',
-    amenities: ['Wi-Fi', 'Property info', 'Check-in notes', 'Parking', 'Local recommendations'],
+    amenities: ['Wi-Fi', 'Stay companion', 'Check-in notes', 'Parking', 'Local recommendations'],
     public_notes: [
       'This is a fictional public sample for product demonstration.',
       'No real guest, host, address or access details are shown.',
@@ -107,12 +107,12 @@ export const demoBuenoHostPublicProperties: DemoBuenoHostPublicProperty[] = [
     contact_mode: 'chat',
     booking_mode: 'enquiry',
     status: 'active',
-    headline: 'Manual-backed property info for a real short-stay apartment.',
+    headline: 'Manual-backed stay companion for a real short-stay apartment.',
     summary:
       'Local proof property built from the source house manual. Missing booking, pricing and arrival details are flagged for host confirmation.',
     price_hint: 'Ask host',
     availability_hint: 'Ask host',
-    amenities: ['Wi-Fi', 'Property info', 'Kitchen', 'Parking', 'Local transport'],
+    amenities: ['Wi-Fi', 'Stay companion', 'Kitchen', 'Parking', 'Local transport'],
     public_notes: [
       'Phone, email and address are present in the manual and need confirmation before a live public launch.',
       'Check-in time and building entry steps are missing from the source manual.',

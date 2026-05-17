@@ -3,6 +3,7 @@ import type {
   FireuxStamped,
 } from 'fireux-core/runtime/models/core/meta.model'
 import {
+  FireuxConsoleAccessModel,
   FireuxAppOverlayModel,
   FireuxAppScope,
 } from 'fireux-core/runtime/models/core/meta.model'
@@ -70,6 +71,7 @@ export const KITCHEN_STARTER_LANGUAGE_SETTINGS: KitchenLanguageSettings = {
 export const KitchenModel = {
   id: '',
   ...FireuxAppScope,
+  ...FireuxConsoleAccessModel,
   is_test_kitchen: false,
   show: false,
   place_id: '',
@@ -127,6 +129,7 @@ export type KitchenCreateInput = Omit<
       Kitchen,
       | 'app_scope_state'
       | 'app_scope_app_id'
+      | 'operator_ids'
       | 'is_test_kitchen'
       | 'show'
       | 'slug'
@@ -149,6 +152,7 @@ export type KitchenUpdateInput = Partial<
   Pick<
     Kitchen,
     | 'is_test_kitchen'
+    | 'operator_ids'
     | 'show'
     | 'place_id'
     | 'slug'

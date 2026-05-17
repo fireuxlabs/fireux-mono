@@ -106,7 +106,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - not created during auth
 - `my real portfolios` means portfolios the current user can operate through the app overlay:
   - `apps/{appId}/portfolios/{portfolioId}`
-  - `team_ids` contains the user
+  - `operator_ids` contains the user
 - Console selection is runtime-state based, not query-param selection.
 
 ## 6) Surfaces supported

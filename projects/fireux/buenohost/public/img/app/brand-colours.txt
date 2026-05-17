@@ -1,4 +1,36 @@
-Primary: #2563EB
-Accent: #14B8A6
-Dark: #0F172A
-Light: #F8FAFC
+BuenoHost asset pack
+
+Suggested app.config.ts:
+
+export default defineAppConfig({
+  ui: {
+    colors: {
+      primary: 'cyan',
+      neutral: 'zinc',
+    },
+  },
+})
+
+Palette used in exports:
+- cyan-900: #164E63
+- cyan-700: #0E7490
+- cyan-600: #0891B2
+- cyan-500: #06B6D4
+- teal-600: #0D9488
+- teal-500: #14B8A6
+- zinc-950: #09090B
+
+Required canon files:
+- thumbnail.png 512x512
+- logo.png 512x512
+- wordmark-light.png 768x192
+- wordmark-dark.png 768x192
+- cover.png 1280x720
+
+Optional files:
+- favicon.ico
+- pwa/icon-192.png
+- pwa/icon-512.png
+- logo.svg
+- wordmark-light.svg
+- wordmark-dark.svg

@@ -3,6 +3,7 @@ import type {
   FireuxStamped,
 } from 'fireux-core/runtime/models/core/meta.model'
 import {
+  FireuxConsoleAccessModel,
   FireuxAppOverlayModel,
   FireuxAppScope,
 } from 'fireux-core/runtime/models/core/meta.model'
@@ -38,6 +39,7 @@ export type PortfolioStatus = 'active' | 'archived'
 export const PortfolioModel = {
   id: '',
   ...FireuxAppScope,
+  ...FireuxConsoleAccessModel,
 
   name: '',
   tagline: '',
@@ -75,11 +77,12 @@ export type PortfolioCreateInput = Omit<
   | 'updated'
   | 'app_scope_state'
   | 'app_scope_app_id'
+  | 'operator_ids'
   | 'tagline'
   | 'image_url'
 > &
   Partial<
-    Pick<Portfolio, 'app_scope_state' | 'app_scope_app_id' | 'tagline' | 'image_url'>
+    Pick<Portfolio, 'app_scope_state' | 'app_scope_app_id' | 'operator_ids' | 'tagline' | 'image_url'>
   > & {
     slug?: string
   }

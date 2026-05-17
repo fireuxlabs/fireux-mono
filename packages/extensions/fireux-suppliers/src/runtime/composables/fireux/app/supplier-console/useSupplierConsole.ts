@@ -36,7 +36,7 @@ export function useSupplierConsole(
 
     return {
       ...explicitFilter,
-      teamId: userId.value,
+      operatorId: userId.value,
     }
   })
   const { suppliers: liveSuppliers } = useSupplierCollection({

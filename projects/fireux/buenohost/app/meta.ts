@@ -14,7 +14,7 @@ export const buenoHostLanguage = {
       'check-in details',
     ],
     positioning_html:
-      'BuenoHost turns any room, apartment or holiday into a <strong>digital stay companion</strong> with clear property info for your guests.',
+      'BuenoHost turns any room, apartment or holiday into a <strong>digital stay companion</strong> for your guests.',
     promise_html:
       'Hosts keep Wi-Fi, check-in details, parking, house rules, checkout notes, emergency contacts, and local recommendations in one clean guest-facing experience.',
     console_bridge_html:
@@ -22,7 +22,7 @@ export const buenoHostLanguage = {
     about_p1:
       'BuenoHost is for hosts and property managers who want clearer guest arrivals, fewer repeated questions, and a more professional stay experience.',
     about_p2:
-      'The MVP starts with public property info, then grows into editable host tools for reusable property information, local recommendations, and stay-specific notes.',
+      'The MVP starts with public stay companions, then grows into editable host tools for reusable manual sections, local recommendations, and stay-specific notes.',
   },
   seo: {
     title: 'BuenoHost - Digital stay companions for guests',
@@ -46,8 +46,8 @@ export const buenoHostLanguage = {
       to: '/console/property',
     },
     secondary: {
-      label: 'View property info',
-      to: '/properties/demo-stay/info',
+      label: 'View stay companion',
+      to: '/properties/demo-stay/companion',
     },
     console: {
       label: 'Open host console',
@@ -58,7 +58,7 @@ export const buenoHostLanguage = {
     hero_bullets: [
       'Wi-Fi, check-in, parking and checkout details',
       'Local recommendations and stay-specific notes',
-      'Reusable info topics hosts can enable, hide or update',
+      'Reusable companion sections hosts can enable, hide or update',
     ],
     about_ticks: [
       'A guest-ready digital stay companion',
@@ -76,9 +76,9 @@ export const buenoHostLanguage = {
       purpose: 'The public mobile experience guests open before or during a stay.',
     },
     {
-      id: 'PropertyInfoTopic',
+      id: 'CompanionSection',
       purpose:
-        'A reusable guest information topic such as Wi-Fi, check-in, checkout, parking, or local recommendations.',
+        'A reusable stay companion section such as check-in, checkout, parking, emergency, or local recommendations.',
     },
     {
       id: 'GuestMessage',
@@ -88,7 +88,7 @@ export const buenoHostLanguage = {
   relations_ascii: `
 Property
   -> StayCompanion
-    -> PropertyInfoTopic
+    -> CompanionSection
     -> GuestMessage
 
 `,

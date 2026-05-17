@@ -48,7 +48,7 @@ For the current `Kitchen` stack, the shared contract is:
 
 - `Kitchen` is a root public entity
 - the app overlay hosts kitchen console operation
-- overlay `team_ids` is the authority rule for console access
+- overlay `operator_ids` is the authority rule for console access
 - `Chef` linkage is relationship only
 - `useKitchenCollection()` stays the generic public collection seam
 - kitchen console visibility/scope belongs in kitchen console seams rather than redefining the generic collection

@@ -49,7 +49,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
 
     return {
       ...explicitFilter,
-      teamId: normalizedUid.value,
+      operatorId: normalizedUid.value,
     }
   })
   const { portfolios: livePortfolios } = usePortfolioCollection({

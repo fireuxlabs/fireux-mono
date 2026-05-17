@@ -38,7 +38,7 @@ export function useProjectConsole(
 
     return {
       ...explicitFilter,
-      teamId: userId.value,
+      operatorId: userId.value,
     }
   })
   const { projects: liveProjects } = useProjectCollection({

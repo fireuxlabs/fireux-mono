@@ -22,6 +22,7 @@ function normalizeAppSupplier(raw: AppSupplier, fallbackId: string): AppSupplier
   return {
     ...raw,
     id: raw.id ?? fallbackId,
+    operator_ids: asStringArray(raw.operator_ids),
     team_ids: asStringArray(raw.team_ids),
     join_requests: asStringArray(raw.join_requests),
   }

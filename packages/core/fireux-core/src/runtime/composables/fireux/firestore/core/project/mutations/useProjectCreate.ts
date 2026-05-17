@@ -93,6 +93,7 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
         slug,
         description: userLabel,
         image_url: imageUrl,
+        operator_ids: [id],
       },
       {
         creator: true,
@@ -193,6 +194,7 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
         ecosystem_id: ecosystemId,
         firebase_project_id: firebaseProjectId,
         owner_user_id: user.uid,
+        operator_ids: [user.uid],
         team_ids: [user.uid],
       }
 
@@ -221,6 +223,7 @@ export function useProjectCreate(options: ProjectCreateOptions = {}) {
       ensureRoot,
       createOverlay: async () =>
         ({
+          operator_ids: [user.uid],
           team_ids: [user.uid],
         }) as AppProject,
     })

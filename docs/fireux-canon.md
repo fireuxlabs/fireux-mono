@@ -64,6 +64,8 @@ Current learned examples:
 - `/console/X` is the family entry page, not the operational home of one already-selected target.
 - `/console/X/overview` is the workspace overview for the selected runtime target.
 - In `live` mode, `/console/X` should show the current user's real targets for that family.
+- Live console visibility is governed by `operator_ids`.
+- If a user can see an entity in a live console, their uid must be in that entity's `operator_ids`.
 - Canon docs override operational docs and tooling/history docs on conflict.
 - App pages do not justify app-local storage on their own.
 - Root-first entities may be filtered by explicit scope fields instead of being duplicated under app paths.
@@ -71,7 +73,7 @@ Current learned examples:
 - Canonical project identity lives on the root `projects/<projectId>` record.
 - Root project membership and ownership fields live on that root record, not on app overlays.
 - Current canonical root project membership/ownership fields are:
-  - `team_ids`
+  - `operator_ids`
   - `owner_user_id`
 - Current canonical public routing field on the root project is:
   - `slug`
@@ -173,6 +175,13 @@ Current learned examples:
 - Hydrated/read-time composites belong in fetch/runtime/interface seams, not in stored model files.
 - If an entity cannot follow the standard stack, document which family it belongs to and why the delta is real.
 - `pnpm audit:usex` is report-only tooling for spotting repeated stack seams, missing seams, local deltas, and naming drift. It is not a blocking guard until the repo is intentionally tightened.
+
+### Public Entity Route Add-Ons
+
+- Shared entity roots use the plain collection/detail shape first, such as `/properties` and `/properties/:id`.
+- App-specific public experiences sit under an explicit child noun, such as `/properties/:id/companion`.
+- Child pages use stable semantic ids, such as `/properties/:id/companion/:sectionId`.
+- Do not encode a special child home page by filtering it out inside pages. Promote that split into named helpers, for example `getXHome()` and `getXSections()`, so public pages, layouts, smoke routes, and QR targets all share the same source shape.
 
 ### Entity Mode Matrix
 

@@ -79,6 +79,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
     const payload: Partial<Supplier> = {
       supplier_organization_name: name,
       supplier_headline: userLabel,
+      operator_ids: [id],
     }
 
     if (imageUrl) {
@@ -160,6 +161,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
       ensureRoot,
       createOverlay: async () => {
         const payload: Omit<AppSupplier, 'created' | 'updated' | 'id'> = {
+          operator_ids: uid ? [uid] : ([] as string[]),
           team_ids: uid ? [uid] : ([] as string[]),
           join_requests: [] as string[],
         }

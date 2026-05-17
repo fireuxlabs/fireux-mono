@@ -346,7 +346,7 @@ export const demoStayPropertyInfo: PropertyInfoCollection = {
         { label: 'Wi-Fi network', value: 'DemoStay Guest', tone: 'important' },
         { label: 'Wi-Fi password', value: 'demo-stay-2026', tone: 'important' },
         { label: 'Host contact', value: 'Use the BuenoHost chat button for demo support.' },
-        { value: 'Keep these property info open during your stay for check-in, house rules and local tips.' },
+        { value: 'Keep this stay companion open during your stay for check-in, house rules and local tips.' },
       ],
     },
     {
@@ -476,13 +476,18 @@ export function getEnabledPropertyInfoTopics(info: PropertyInfoCollection): Prop
   return info.topics.filter((topic) => topic.enabled !== false)
 }
 
-export function getPropertyInfoTopics(info: PropertyInfoCollection): PropertyInfoTopic[] {
-  return getEnabledPropertyInfoTopics(info).filter((topic) => topic.id !== 'welcome')
+export function getPropertyCompanionHome(info: PropertyInfoCollection): PropertyInfoTopic | null {
+  return getEnabledPropertyInfoTopics(info).find((topic) => topic.id === 'welcome') ?? null
 }
 
-export function resolvePropertyInfoTopic(slug: string, infoId: string): PropertyInfoTopic | null {
+export function getPropertyCompanionSections(info: PropertyInfoCollection): PropertyInfoTopic[] {
+  const home = getPropertyCompanionHome(info)
+  return getEnabledPropertyInfoTopics(info).filter((topic) => topic.id !== home?.id)
+}
+
+export function resolvePropertyCompanionSection(slug: string, sectionId: string): PropertyInfoTopic | null {
   const info = resolvePropertyInfo(slug)
   if (!info) return null
 
-  return getPropertyInfoTopics(info).find((topic) => topic.id === infoId) ?? null
+  return getPropertyCompanionSections(info).find((topic) => topic.id === sectionId) ?? null
 }

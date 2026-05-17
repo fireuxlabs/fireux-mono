@@ -50,7 +50,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - not created during auth
 - `my real suppliers` means suppliers the current user can operate through the app overlay:
   - `apps/{appId}/suppliers/{supplierId}`
-  - `team_ids` contains the user
+  - `operator_ids` contains the user
 - Supplier relationship or operator linkage may inform onboarding or claiming, but it is not the access rule by itself.
 
 ## 6) Surfaces supported

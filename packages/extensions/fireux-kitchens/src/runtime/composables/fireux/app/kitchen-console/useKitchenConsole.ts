@@ -41,7 +41,7 @@ export function useKitchenConsole(
 
     return {
       ...explicitFilter,
-      teamId: userId.value,
+      operatorId: userId.value,
     }
   })
   const { kitchens: liveKitchens } = useKitchenCollection({

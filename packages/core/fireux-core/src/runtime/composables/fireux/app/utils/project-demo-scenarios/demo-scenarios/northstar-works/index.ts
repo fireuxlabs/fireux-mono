@@ -25,6 +25,7 @@ export const northstarWorksScenario = (): DemoProjectScenario => ({
     ecosystem_id: 'northstar',
     firebase_project_id: 'northstar-works',
     owner_user_id: 'demo-user',
+    operator_ids: ['demo-user'],
     team_ids: ['demo-user'],
   },
   projects: [
@@ -44,6 +45,7 @@ export const northstarWorksScenario = (): DemoProjectScenario => ({
       ecosystem_id: 'northstar',
       firebase_project_id: 'northstar-works',
       owner_user_id: 'demo-user',
+      operator_ids: ['demo-user'],
       team_ids: ['demo-user'],
     },
   ],

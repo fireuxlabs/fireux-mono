@@ -12,12 +12,12 @@
 
       <template #links>
         <UButton
-          :to="`/properties/${property.slug}/info`"
+          :to="`/properties/${property.slug}/companion`"
           color="neutral"
           variant="soft"
           icon="i-lucide-book-open"
         >
-          View property info
+          View stay companion
         </UButton>
       </template>
     </UPageHeader>

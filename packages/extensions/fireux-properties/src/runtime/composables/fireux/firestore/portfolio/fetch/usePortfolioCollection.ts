@@ -5,9 +5,11 @@ import type { Portfolio } from '../../../../../models/portfolio.model'
 
 type PortfolioCollectionDoc = Partial<Portfolio> & {
   id?: string
+  operator_ids?: string[]
   team_ids?: string[]
 }
 type AppPortfolioOverlay = PortfolioCollectionDoc & {
+  operator_ids?: string[]
   team_ids?: string[]
 }
 
@@ -17,6 +19,7 @@ const TEST_COLLECTION_PATH = 'test-portfolios'
 export type PortfolioCollectionFilterValue = string | number | null | undefined
 export type PortfolioCollectionFilter = {
   ids?: PortfolioCollectionFilterValue[] | null | undefined
+  operatorId?: PortfolioCollectionFilterValue
   teamId?: PortfolioCollectionFilterValue
 }
 export type PortfolioCollectionSource = 'live' | 'demo' | 'test'
@@ -67,10 +70,11 @@ export function usePortfolioCollection(
     return options.filter ?? undefined
   })
   const hasFilter = computed(() => Array.isArray(resolvedFilter.value?.ids))
-  const filterTeamId = computed(() =>
-    normalizeString(resolvedFilter.value?.teamId)
+  const filterOperatorId = computed(() =>
+    normalizeString(resolvedFilter.value?.operatorId ?? resolvedFilter.value?.teamId)
   )
-  const hasTeamFilter = computed(() =>
+  const hasOperatorFilter = computed(() =>
+    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'operatorId') ||
     Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'teamId')
   )
   const filterIdSet = computed(
@@ -145,12 +149,12 @@ export function usePortfolioCollection(
       const id = resolvePortfolioId(portfolio)
       if (!id) return acc
       if (hasFilter.value && !filterIdSet.value.has(id)) return acc
-      if (hasTeamFilter.value) {
-        if (!filterTeamId.value) return acc
-        const teamIds = Array.isArray(portfolio?.team_ids)
-          ? portfolio.team_ids.map((value) => normalizeString(value))
+      if (hasOperatorFilter.value) {
+        if (!filterOperatorId.value) return acc
+        const operatorIds = Array.isArray(portfolio?.operator_ids)
+          ? portfolio.operator_ids.map((value) => normalizeString(value))
           : []
-        if (!teamIds.includes(filterTeamId.value)) return acc
+        if (!operatorIds.includes(filterOperatorId.value)) return acc
       }
 
       acc.push({
