@@ -1,7 +1,5 @@
-import {
-  useConsole,
-  type ConsoleMode,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 
 type KitchenSelectionInput = {
   selectedId?: string
@@ -9,31 +7,21 @@ type KitchenSelectionInput = {
   mode?: ConsoleMode
 }
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-
 export function useKitchenSelection() {
-  const { selectedId, selectedMode, selectEntity, clearSelection } =
-    useConsole('kitchen')
+  const selection = useConsoleSelection({ family: 'kitchen' })
 
   const setKitchenSelection = (selectionPatch: KitchenSelectionInput = {}) => {
-    const nextId =
-      selectionPatch.selectedId !== undefined || selectionPatch.kitchenId !== undefined
-        ? normalizeString(selectionPatch.selectedId ?? selectionPatch.kitchenId)
-        : selectedId.value
-
-    const nextMode = selectionPatch.mode ?? selectedMode.value
-
-    selectEntity(nextId, nextMode)
-  }
-
-  const clearKitchenSelection = () => {
-    clearSelection()
+    selection.setSelection({
+      selectedId: selectionPatch.selectedId,
+      id: selectionPatch.kitchenId,
+      mode: selectionPatch.mode,
+    })
   }
 
   return {
-    selectedId,
-    mode: selectedMode,
+    selectedId: selection.selectedId,
+    mode: selection.mode,
     setKitchenSelection,
-    clearKitchenSelection,
+    clearKitchenSelection: selection.clearSelection,
   }
 }

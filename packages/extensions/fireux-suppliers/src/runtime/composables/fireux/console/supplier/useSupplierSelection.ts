@@ -1,7 +1,5 @@
-import {
-  useConsole,
-  type ConsoleMode,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 
 type RuntimeSupplierSelectionInput = {
   selectedId?: string
@@ -9,31 +7,21 @@ type RuntimeSupplierSelectionInput = {
   mode?: ConsoleMode
 }
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-
 export function useSupplierSelection() {
-  const { selectedId, selectedMode, selectEntity, clearSelection } =
-    useConsole('supplier')
+  const selection = useConsoleSelection({ family: 'supplier' })
 
   const setRuntimeSupplier = (selectionPatch: RuntimeSupplierSelectionInput = {}) => {
-    const nextId =
-      selectionPatch.selectedId !== undefined || selectionPatch.supplierId !== undefined
-        ? normalizeString(selectionPatch.selectedId ?? selectionPatch.supplierId)
-        : selectedId.value
-
-    const nextMode = selectionPatch.mode ?? selectedMode.value
-
-    selectEntity(nextId, nextMode)
-  }
-
-  const clearRuntimeSupplier = () => {
-    clearSelection()
+    selection.setSelection({
+      selectedId: selectionPatch.selectedId,
+      id: selectionPatch.supplierId,
+      mode: selectionPatch.mode,
+    })
   }
 
   return {
-    selectedId,
-    mode: selectedMode,
+    selectedId: selection.selectedId,
+    mode: selection.mode,
     setRuntimeSupplier,
-    clearRuntimeSupplier,
+    clearRuntimeSupplier: selection.clearSelection,
   }
 }

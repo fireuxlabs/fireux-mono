@@ -1,7 +1,5 @@
-import {
-  useConsole,
-  type ConsoleMode,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import type { ConsoleMode } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 
 type RuntimeProjectSelectionInput = {
   selectedId?: string
@@ -9,30 +7,21 @@ type RuntimeProjectSelectionInput = {
   mode?: ConsoleMode
 }
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-
 export function useProjectSelection() {
-  const { selectedId, selectedMode, selectEntity, clearSelection } = useConsole('project')
+  const selection = useConsoleSelection({ family: 'project' })
 
   const setRuntimeProject = (selectionPatch: RuntimeProjectSelectionInput = {}) => {
-    const nextId =
-      selectionPatch.selectedId !== undefined || selectionPatch.projectId !== undefined
-        ? normalizeString(selectionPatch.selectedId ?? selectionPatch.projectId)
-        : selectedId.value
-
-    const nextMode = selectionPatch.mode ?? selectedMode.value
-
-    selectEntity(nextId, nextMode)
-  }
-
-  const clearRuntimeProject = () => {
-    clearSelection()
+    selection.setSelection({
+      selectedId: selectionPatch.selectedId,
+      id: selectionPatch.projectId,
+      mode: selectionPatch.mode,
+    })
   }
 
   return {
-    selectedId,
-    mode: selectedMode,
+    selectedId: selection.selectedId,
+    mode: selection.mode,
     setRuntimeProject,
-    clearRuntimeProject,
+    clearRuntimeProject: selection.clearSelection,
   }
 }
