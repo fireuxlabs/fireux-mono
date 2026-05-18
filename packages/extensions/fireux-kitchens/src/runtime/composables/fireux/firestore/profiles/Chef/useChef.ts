@@ -1,4 +1,4 @@
-// FILE: packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/profiles/Chef/useChef.ts
+// FILE: packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/profiles/Chef/useChef.ts
 
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
 import { chefConfig } from './config/chefConfig'
@@ -12,12 +12,17 @@ import { useChefInterface } from './utils/view/useChefInterface'
 export type { ChefCard, Chef }
 
 /**
- * useChef
- * - Runtime facade for Chef profiles
+ * FireUX stack family: Identity/profile capability.
+ * Entity: Chef.
+ *
+ * Chef is a kitchen-domain profile capability, not a console workspace.
+ * Kitchen links are relationship data; Kitchen authority belongs to Kitchen
+ * operator/membership seams.
+ *
  * - Exposes:
- *   - raw refs: profile, coreProfile, appProfile, pending
+ *   - raw refs: profileRefs, coreProfile, appProfile, pending
  *   - computed helpers
- *   - UI helpers (pill, cell, profileCore, profileApp)
+ *   - UI helpers (pill, cell, profile)
  *   - update helpers
  */
 export function useChef() {
@@ -30,7 +35,7 @@ export function useChef() {
   const create = useChefCreate()
 
   return {
-    profile: refs,
+    profileRefs: refs,
     coreProfile,
     appProfile,
     pending,

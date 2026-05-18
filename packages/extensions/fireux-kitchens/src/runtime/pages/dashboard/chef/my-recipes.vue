@@ -1,6 +1,6 @@
 <!-- FILE: packages/ecosystem/fireux-misebox/src/runtime/pages/dashboard/chef/my-recipes.vue -->
 <template>
-  <UDashboardPanel id="console-chef-my-recipes">
+  <UDashboardPanel id="dashboard-chef-my-recipes">
     <template #header>
       <LayoutsDashboardNavbar title="My Recipes" />
     </template>
