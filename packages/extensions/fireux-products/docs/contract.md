@@ -24,6 +24,7 @@ Composable stack canon:
 - `firestore/product/mutations` owns root Product writes.
 - `firestore/product/utils` owns root Product helpers, validation, and view/interface utilities.
 - `firestore/product/price/fetch` is the only allowed ProductPrice child reader exception because it reads `products/{productId}/prices/{priceId}`.
+- `product/create` owns Product create draft, price draft, preview payload, and submit authoring helpers.
 - Product create/edit/publish draft state belongs to the Product family first.
 - Product lifecycle state, such as draft, published, paused, or archived, belongs to the Product model and Product Firestore helpers.
 - Product authoring UI belongs under Product create/edit components or Product-owned composables.

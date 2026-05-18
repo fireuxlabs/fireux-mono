@@ -37,8 +37,8 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { ref } from 'vue'
-import { useCreatePricesState } from '../../../../composables/fireux/app/product-create/useCreatePricesState'
-import { useCreateProductState } from '../../../../composables/fireux/app/product-create/useCreateProductState'
+import { useCreatePricesState } from '../../../../composables/fireux/product/create/useCreatePricesState'
+import { useCreateProductState } from '../../../../composables/fireux/product/create/useCreateProductState'
 import { useProductCreate } from '../../../../composables/fireux/firestore/product/mutations/useProductCreate'
 import type { StripePriceInput } from '../../../../models/product.model'
 
