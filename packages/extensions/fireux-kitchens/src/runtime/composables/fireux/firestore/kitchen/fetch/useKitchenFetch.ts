@@ -7,7 +7,7 @@ import {
 import { getDemoKitchen } from '../../../app/utils/kitchen-demo-scenarios'
 import type { Kitchen } from '../../../../../models/kitchen.model'
 
-type KitchenFetchDoc = Partial<Kitchen> & {
+export type KitchenFetchDoc = Partial<Kitchen> & {
   id?: string
   route_scope?: 'live' | 'demo' | 'test'
 }
