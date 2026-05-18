@@ -78,7 +78,7 @@ Relationship is not console authority.
 - `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate.ts`
   - `ensurePlaceExists()` creates `places/{id}` if missing.
   - Hydrates via Google details if needed and uploads image to Firebase Storage when applicable.
-- `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/fetch/search/usePlacesSearch.ts`
+- `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/fetch/search/usePlaceSearch.ts`
   - Firestore-first + Google-supplement search pipeline.
 - `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/fetch/google/usePlacesGoogle.ts`
   - Google autocomplete/details client adapters.

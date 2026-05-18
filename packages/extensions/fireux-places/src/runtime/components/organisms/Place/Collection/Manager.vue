@@ -72,7 +72,7 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { computed } from 'vue'
-import { usePlacesInterface } from '../../../../composables/fireux/firestore/place/utils/view/usePlacesInterface'
+import { usePlaceInterface } from '../../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import type { BasePlace } from '../../../../models/place.model'
 
 const props = withDefaults(
@@ -120,7 +120,7 @@ const {
   interface: makeCard,
   pill: makePill,
   cell: makeCell,
-} = usePlacesInterface()
+} = usePlaceInterface()
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<BasePlace, NonNullable<ReturnType<typeof makeCard>>>({

@@ -51,14 +51,14 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
-import { usePlacesSearch } from '../../../../composables/fireux/firestore/place/fetch/search/usePlacesSearch'
+import { usePlaceSearch } from '../../../../composables/fireux/firestore/place/fetch/search/usePlaceSearch'
 import { usePlaceCreate } from '../../../../composables/fireux/firestore/place/mutations/usePlaceCreate'
 import {
     loadLogoForPlace,
     sanitizeLogoAvatar,
     usePlaceLogoState,
 } from '../../../../composables/fireux/firestore/place/utils/view/usePlaceLogos'
-import { usePlacesInterface } from '../../../../composables/fireux/firestore/place/utils/view/usePlacesInterface'
+import { usePlaceInterface } from '../../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import type {
     BasePlace,
     PlaceImageShade,
@@ -88,7 +88,7 @@ const showConfirmButton = computed(() => props.showConfirmButton ?? true)
 const showClearButton = computed(() => props.showClearButton ?? true)
 
 const { query, results, selected, isSearching, select: selectPlace, clear } =
-  usePlacesSearch({
+  usePlaceSearch({
     debugLabel: props.type === 'kitchen' ? 'kitchens' : undefined,
     type: props.type ?? null,
   })
@@ -112,7 +112,7 @@ const confirmLabel = computed(() =>
   selectedSource.value === 'google' ? `Add ${typeLabel.value}` : `Use ${typeLabel.value}`
 )
 
-const { pill: placeInterface } = usePlacesInterface()
+const { pill: placeInterface } = usePlaceInterface()
 const selectedCell = computed(() =>
   selectedPlace.value ? placeInterface(selectedPlace.value as any) : null
 )

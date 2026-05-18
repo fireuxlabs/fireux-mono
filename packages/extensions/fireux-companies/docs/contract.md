@@ -31,7 +31,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Firestore company docs.
 - Optional place-linked hydration read path.
 - Canonical family entry seam: `useCompany`.
-- `useCompanies` is a legacy compatibility alias only; read-many behavior belongs to `useCompanyCollection`.
+- Read-many behavior belongs to `useCompanyCollection`.
 
 ## 8) SEO hooks
 - When company pages are publicly indexed, provide:

@@ -62,7 +62,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { demoPlaceDocDataList, demoPlaceGoogleData } from '../../../../../../../../demo/place.demo'
-import { usePlacesInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlacesInterface'
+import { usePlaceInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import type { Place } from '../../../models/place.model'
 import { PlaceModel as PlaceModelRuntime } from '../../../models/place.model'
 
@@ -70,7 +70,7 @@ const emit = defineEmits<{
   (event: 'ready', place: Place): void
 }>()
 
-const { pill, cell, preview, profile } = usePlacesInterface()
+const { pill, cell, preview, profile } = usePlaceInterface()
 
 const demoPlaceList = demoPlaceDocDataList as Partial<Place>[]
 

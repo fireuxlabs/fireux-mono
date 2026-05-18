@@ -1,6 +1,6 @@
 import { computed, ref, watch, type ComputedRef, type Ref } from 'vue'
 import type { BasePlace } from 'fireux-places/runtime/models/place.model'
-import type { PlaceCard } from './usePlacesInterface'
+import type { PlaceCard } from './usePlaceInterface'
 
 const LOGO_ENDPOINT = '/api/places/logo'
 const DETAILS_ENDPOINT = '/api/places/details'

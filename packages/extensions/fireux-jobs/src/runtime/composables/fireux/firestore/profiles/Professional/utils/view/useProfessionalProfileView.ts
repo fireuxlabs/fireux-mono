@@ -1,8 +1,8 @@
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/google/usePlacesGoogle'
 import { mapPlaceToBasePlace } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/mapPlaceToBasePlace'
-import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlacesInterface'
-import { usePlacesInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlacesInterface'
+import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
+import { usePlaceInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import type { Place } from 'fireux-places/runtime/models/place.model'
 import { computed, shallowRef, watch, type Ref } from 'vue'
 import type { ProfessionalCard } from './useProfessionalInterface'
@@ -106,7 +106,7 @@ export function useProfessionalProfileView(
   }
 
   const toPlaceBase = mapPlaceToBasePlace()
-  const { pill: toPlaceCard } = usePlacesInterface()
+  const { pill: toPlaceCard } = usePlaceInterface()
 
   const placeCardLookup = computed(() => {
     const map = new Map<string, PlaceCard.Card | null>()

@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
 import { loadLogoForPlace } from '../../../../composables/fireux/firestore/place/utils/view/usePlaceLogos';
-import type { PlaceCard } from '../../../../composables/fireux/firestore/place/utils/view/usePlacesInterface';
+import type { PlaceCard } from '../../../../composables/fireux/firestore/place/utils/view/usePlaceInterface';
 import type { BasePlace, PlaceImageShade, PlaceSource } from '../../../../models/place.model';
 
 

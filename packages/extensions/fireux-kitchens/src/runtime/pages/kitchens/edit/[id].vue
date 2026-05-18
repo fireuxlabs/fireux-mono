@@ -87,7 +87,7 @@ import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { usePlacesInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlacesInterface'
+import { usePlaceInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import { computed } from 'vue'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import type { Kitchen } from '../../../models/kitchen.model'
@@ -117,7 +117,7 @@ const canEdit = computed(() => {
   return Boolean(isAdmin.value || currentUser.value?.id === claimedBy.value)
 })
 
-const { preview } = usePlacesInterface()
+const { preview } = usePlaceInterface()
 const placePreview = computed(() => preview(kitchen.value as any))
 const placePreviewDetails = computed(() => {
   const v = kitchen.value

@@ -337,7 +337,7 @@ Important:
 | `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/recipe/fetch/useRecipeFetch.ts`                         | Direct single fetch                        | Scoped child              | Single recipe inside selected or explicit kitchen scope                             |
 | `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/suppliers/fetch/useKitchenSupplierFetch.ts`     | Composite scoped reader                    | Scoped child + overlay    | Link collection merged with canonical supplier records                              |
 | `packages/extensions/fireux-orders/src/runtime/composables/useOrdersForKitchenFetch.ts`                                                       | Collection-backed selector fetch           | Scoped child              | Scope-aware kitchen orders plus legacy merge and selector                           |
-| `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/fetch/usePlacesFetch.ts`                                    | Direct single fetch                        | Public entity             | Singular place helper despite plural filename                                       |
+| `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/fetch/usePlaceFetch.ts`                                     | Direct single fetch                        | Public entity             | Canonical singular Place fetch seam                                                 |
 | `packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/fetch/useProductFetch.ts`                               | Collection-backed selector fetch           | Public entity / managed   | Product collection plus selector                                                    |
 | `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/fetch/usePortfolioFetch.ts`                         | Canon single fetch                         | Public entity / workspace | Single portfolio fetch                                                              |
 | `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/fetch/usePortfolioCollection.ts`                    | Canon collection fetch                     | Public entity / workspace | Portfolio collection                                                                |
@@ -598,7 +598,7 @@ This pass removes that edge and treats the main interface contract as the only r
 | `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/menu/utils/view/useMenuInterface.ts`        | Console operational child       | Kitchen console menu summary                         |
 | `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mise/utils/view/useMiseEnPlaceInterface.ts` | Console operational child       | Kitchen console mise child                           |
 | `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/recipe/utils/view/useRecipeInterface.ts`            | Console operational child       | Kitchen-owned recipe surface                         |
-| `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/utils/view/usePlacesInterface.ts`                       | Place-based public entity       | Canonical public place surface                       |
+| `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface.ts`                        | Place-based public entity       | Canonical public place surface                       |
 | `packages/extensions/fireux-products/src/runtime/composables/fireux/firestore/product/utils/view/useProductInterface.ts`                  | Content / opportunity           | Product listing and offering surface                 |
 | `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/client/utils/view/useClientInterface.ts`        | Console operational child       | Portfolio-scoped client record                       |
 | `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface.ts`            | Organization / workspace entity | Workspace identity, currently thin                   |
@@ -656,7 +656,7 @@ Examples:
 ## Current Seams To Watch
 
 - generic profile base reads in `fireux-core` are still foundational and need deliberate placement
-- `usePlacesFetch` still carries a plural filename even though it is a direct single helper
+- Place now uses `usePlaceFetch` as the canonical singular read helper
 - some read-model helpers, such as kitchen console computed state, need careful placement between overlay truth and convenience state
 - some composite scoped readers, such as kitchen supplier reads, may want future naming cleanup once the fetch canon settles
 

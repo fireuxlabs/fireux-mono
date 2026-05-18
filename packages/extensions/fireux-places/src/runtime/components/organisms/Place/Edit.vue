@@ -180,7 +180,7 @@ import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firesto
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { computed, ref } from 'vue'
 import { usePlaceClaim } from '../../../composables/fireux/firestore/place/mutations/usePlaceClaim'
-import { usePlacesInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlacesInterface'
+import { usePlaceInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import type { Place, PlaceImageShade } from '../../../models/place.model'
 
 const props = defineProps<{ place: Place | null }>()
@@ -188,7 +188,7 @@ const place = computed(() => props.place)
 const placeId = computed(() => place.value?.id ?? '')
 const { currentUser, isAdmin } = useUser()
 const isManual = computed(() => place.value?.source === 'manual')
-const { pill } = usePlacesInterface()
+const { pill } = usePlaceInterface()
 const placePill = computed(() => pill(place.value))
 
 const claimedUserId = computed(() => place.value?.claimed_by || '')

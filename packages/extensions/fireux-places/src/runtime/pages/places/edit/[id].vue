@@ -97,7 +97,7 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
-import { usePlacesInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlacesInterface'
+import { usePlaceInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import type { Place } from '../../../models/place.model'
 
 definePageMeta({
@@ -128,7 +128,7 @@ const canEdit = computed(() =>
   Boolean(isAdmin.value || (claimedBy.value && currentUser.value?.id === claimedBy.value))
 )
 
-const { preview } = usePlacesInterface()
+const { preview } = usePlaceInterface()
 const placePreview = computed(() => preview(place.value))
 const placePreviewDetails = computed(() => {
   const v = place.value

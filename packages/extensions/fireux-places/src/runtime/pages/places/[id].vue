@@ -150,7 +150,7 @@ import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firesto
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, ref } from 'vue'
 import { usePlaceClaim } from '../../composables/fireux/firestore/place/mutations/usePlaceClaim'
-import { usePlacesInterface } from '../../composables/fireux/firestore/place/utils/view/usePlacesInterface'
+import { usePlaceInterface } from '../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import type { Place } from '../../models/place.model'
 
 definePageMeta({
@@ -180,7 +180,7 @@ const pageDescription = computed(
 )
 const isDev = import.meta.dev
 
-const { profile } = usePlacesInterface()
+const { profile } = usePlaceInterface()
 const placeProfile = computed(() => profile(place.value))
 
 const claimedBy = computed(() => String(place.value?.claimed_by ?? '').trim())

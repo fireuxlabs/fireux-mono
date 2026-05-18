@@ -97,7 +97,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
-import type { PlaceCard } from '../../../../composables/fireux/firestore/place/utils/view/usePlacesInterface'
+import type { PlaceCard } from '../../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
 
 type Props = Pick<
   PlaceCard.Card,
