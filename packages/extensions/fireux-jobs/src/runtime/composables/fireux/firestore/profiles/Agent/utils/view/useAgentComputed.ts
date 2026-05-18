@@ -4,8 +4,8 @@ import { computed } from 'vue'
 
 /**
  * useAgentComputed
- * - Stubbed computed helpers for Agent profiles
- * - Accepts refs + pending but does not use them yet
+ * - Small, model-backed derived helpers for Agent profiles
+ * - Keeps business status and authority out of the identity capability seam
  * - Safe to spread into useAgent() return
  */
 export function useAgentComputed(

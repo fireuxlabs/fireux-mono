@@ -18,9 +18,9 @@ export type { ProfessionalCard, Professional }
  * useProfessional
  * - Runtime facade for Professional profiles
  * - Exposes:
- *   - raw refs: profile, coreProfile, appProfile, pending
+ *   - raw refs: profileRefs, coreProfile, appProfile, pending
  *   - computed helpers
- *   - UI helpers (pill, cell, profileCore, profileApp)
+ *   - UI helpers (pill, cell, profile)
  *   - update helpers
  */
 export function useProfessional() {
