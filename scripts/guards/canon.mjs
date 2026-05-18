@@ -125,6 +125,15 @@ const KNOWN_CONSOLE_OPERATION_SLICES_BY_ENTITY = new Map([
   ],
 ])
 
+const KNOWN_ENTITY_AUTHORING_RUNTIME_SLICES_BY_ENTITY = new Map([
+  [
+    'blog',
+    new Set([
+      'editor',
+    ]),
+  ],
+])
+
 const ALLOWED_FORBIDDEN_CONTEXT =
   /\b(avoid|do not|must not|non-canon|forbidden|mixed-bucket|cannot return)\b/i
 
@@ -509,6 +518,16 @@ function checkFirestoreEntityStackShape(repoRoot) {
         continue
       }
 
+      const knownEntityAuthoringSlices =
+        KNOWN_ENTITY_AUTHORING_RUNTIME_SLICES_BY_ENTITY.get(entity) ?? new Set()
+
+      if (knownEntityAuthoringSlices.has(child)) {
+        violations.push(
+          `- Entity authoring runtime belongs under composables/fireux/${entity}, not Firestore: ${childRel}`
+        )
+        continue
+      }
+
       warnings.push(
         `- Non-standard Firestore entity stack folder: ${childRel}`
       )
@@ -538,7 +557,7 @@ function checkProductsFirestoreStackShape(repoRoot) {
     const childPath = path.join(productRoot, child)
     if (!isDirectory(childPath)) continue
     violations.push(
-      `- Product UI/runtime state belongs under composables/fireux/app, not Firestore: ${toRepoRelative(
+      `- Product authoring runtime belongs to the Product family, not Firestore: ${toRepoRelative(
         repoRoot,
         childPath
       )}`

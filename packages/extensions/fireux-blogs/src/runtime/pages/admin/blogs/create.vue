@@ -39,8 +39,8 @@ import { useBlogPermissions } from '../../../composables/useBlogPermissions'
 // Nuxt UI provides useToast via auto-import in app context; fall back if unavailable
 const useToastFn = (globalThis as any).useToast as undefined | (() => any)
 const toast = useToastFn ? useToastFn() : undefined
-import { useBlogDraftState } from '../../../composables/fireux/firestore/blog/editor/useBlogDraftState'
-import { useBlogCreateSubmit } from '../../../composables/fireux/firestore/blog/editor/useBlogCreateSubmit'
+import { useBlogDraftState } from '../../../composables/fireux/blog/editor/useBlogDraftState'
+import { useBlogCreateSubmit } from '../../../composables/fireux/blog/editor/useBlogCreateSubmit'
 
 definePageMeta({
   layout: 'console',

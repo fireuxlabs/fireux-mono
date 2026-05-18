@@ -1,5 +1,6 @@
 # fireux-blogs Contract
 Authority: Tier1 (Authoritative)
+Updated: 2026-05-18
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -14,6 +15,12 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 4) Collections + paths
 - `blogs/{slug}`
 - Collection name sanity-check: runtime write/read composables currently use `blogs` (no alias collection configured).
+
+Composable stack canon:
+- `firestore/blog/fetch` owns root BlogPost reads.
+- `firestore/blog/mutations` owns root BlogPost writes.
+- `firestore/blog/utils` owns root BlogPost helpers and view/interface utilities.
+- BlogPost authoring/editor draft state belongs under `composables/fireux/blog/editor`, not under `firestore/blog`.
 
 ## 4a) Root scope fields
 - `source_app_id`
