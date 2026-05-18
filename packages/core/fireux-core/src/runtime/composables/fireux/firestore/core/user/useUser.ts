@@ -9,10 +9,15 @@ import { useUserInterface } from './utils/view/useUserInterface'
 export type { AppUser, User } from '../../../../../models/core/user.model'
 
 /**
- * useUser
- * - Resolves both coreUser (global) and appUser (tenant overlay)
- * - Defaults to the authenticated Firebase UID
- * - For arbitrary UID, call useUserFetch(uid) directly
+ * FireUX stack family: Active identity + app overlay.
+ * Entity: User.
+ * Canon:
+ * - docs/fireux-canon.md
+ * - packages/core/fireux-docs/src/runtime/concepts/stacks/README.md
+ *
+ * This seam resolves the active authenticated user, not an arbitrary root User.
+ * Root User is shared identity; AppUser carries app-specific role/capability state.
+ * For arbitrary uid reads, call useUserFetch(uid) directly.
  */
 export function useUser() {
   const { uid } = useAuth()

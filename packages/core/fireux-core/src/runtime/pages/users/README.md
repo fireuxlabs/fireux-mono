@@ -1,10 +1,11 @@
 # Users Pages
 
 Authority: Operational
-Updated: 2026-03-21
+Updated: 2026-05-18
 Scope: `packages/core/fireux-core/src/runtime/pages/users/*`.
 
-This folder owns the `User` public route tree and the current ensure-first create surface.
+This folder owns the `User` public route tree and the current ensure-first
+identity setup surface.
 
 ## Current Routes
 
@@ -15,8 +16,8 @@ This folder owns the `User` public route tree and the current ensure-first creat
 ## Local Contract
 
 - `index.vue` is the public users index
-- `[handle].vue` is the public user detail route
-- `create.vue` is an ensure-first create page, not free-form user CRUD
+- `[handle].vue` is the public user/profile detail route
+- `create.vue` is an ensure-first identity setup page, not free-form user CRUD
 
 `create.vue` should:
 - read the active auth user first
@@ -26,18 +27,27 @@ This folder owns the `User` public route tree and the current ensure-first creat
 
 ## Family
 
-This folder currently spans two route roles:
-- public identity pages
-- ensure-first platform create
+User is an active identity + public profile + app overlay family.
 
-That mix is acceptable for now because `User` is both public identity and active platform bootstrap.
+Route roles:
+- `/users` is public user/profile browse.
+- `/users/[handle]` is the public user/profile page.
+- `/dashboard/user-profile` manages the signed-in user's identity/profile.
+- `/apps/<appId>/users/<uid>` is the `AppUser` membership/capability overlay.
 
-## Not Aligned Yet
+This mix is intentional. `User` is not just a boring root entity: the active
+runtime seam resolves the signed-in identity, while public routes expose profile
+surfaces and `AppUser` carries app-specific role/capability state.
 
-- `create.vue` still reuses `UserCreateSystem`, even though the route is really setup and repair
-- public identity pages and ensure-first bootstrap still share one folder
+## AppUser Overlay
+
+App-specific role, capability, membership, premium, console, and onboarding
+state belongs in the `AppUser` overlay, not on root `User` identity.
+
+Root `User` remains shared identity truth.
 
 ## Short Version
 
 Keep `users/create.vue` truthful:
-it is a safe ensure page that happens to live at a `create` route.
+it is a safe identity/app-membership ensure page that happens to live at a
+`create` route.
