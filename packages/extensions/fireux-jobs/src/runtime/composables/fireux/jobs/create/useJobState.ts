@@ -20,7 +20,7 @@ const DEFAULT_DRAFT: JobDraft = {
  * - packages/extensions/fireux-jobs/docs/contract.md
  *
  * This file owns local Job create/post preview state.
- * It is not persisted Firestore data and should move out of firestore/jobs.
+ * It is not persisted Firestore data.
  */
 export function useJobState() {
   const preview = useState<JobDraft>('job-create-preview', () => ({

@@ -22,6 +22,18 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `professionals/{id}` and app-scoped professional overlays where configured
 - `apps/{appId}/professionals/{id}`
 
+Composable stack canon:
+- `firestore/jobs/useJob.ts` is the singular Job family entry seam.
+- `firestore/jobs/fetch/useJobFetch.ts` owns read-one Job reads.
+- `firestore/jobs/fetch/useJobCollection.ts` owns read-many Job reads.
+- `firestore/jobs/mutations/useJobCreate.ts` owns Job create persistence.
+- `firestore/jobs/mutations/useJobUpdate.ts` owns Job update persistence.
+- `firestore/jobs/mutations/useJobDelete.ts` owns Job delete/removal persistence.
+- `firestore/jobs/utils/view/useJobComputed.ts` owns derived Job facts.
+- `firestore/jobs/utils/view/useJobInterface.ts` owns Job UI projections.
+- `composables/fireux/jobs/create/useJobState.ts` owns local Job create/post preview state.
+- Job create/post authoring state belongs to the Job family first, not under `fireux/app` or `firestore/jobs`.
+
 ## 4a) Root scope fields
 - `source_app_id`
 - `source_ecosystem_id`
