@@ -4,13 +4,15 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Family: Kitchen-scoped
- * Storage: scoped recipe card
- * Path: /kitchens/<kitchenId>/recipes/<recipeId>
+ * Family: Kitchen-scoped publishable child
+ * Storage: selected-kitchen/app-scoped operational recipe card
+ * Path: apps/{appId}/kitchens/{kitchenId}/recipes/{recipeId}
  * Owner app scope: Kitchen
  *
- * Recipe is a simple recipe card in waiting. Steps, costing, allergens,
- * method, ingredient lines, yield, and service workflow are not active yet.
+ * Recipe is authored kitchen content. It is private/operational by default;
+ * public /recipes surfaces are future/deferred projection/search surfaces.
+ * Steps, costing, allergens, method, ingredient lines, yield, and service
+ * workflow are not active on the current model yet.
  */
 export type RecipeTranslatedText = Partial<Record<string, string>>
 

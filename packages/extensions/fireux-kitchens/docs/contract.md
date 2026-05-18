@@ -51,6 +51,21 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `apps/{appId}/kitchens/{kitchenId}/costs/{costId}`
 - Kitchen console mode mapping follows `docs/runtime-contract.md`.
 
+Recipe composable stack canon:
+- `Recipe` is a kitchen-scoped publishable child and authored kitchen content.
+- Canonical operational truth is selected-kitchen/app-scoped:
+  - `apps/{appId}/kitchens/{kitchenId}/recipes/{recipeId}`
+- Public `/recipes` and `/recipes/[slug]` are projection/search surfaces only.
+- There is no root `recipes/{recipeId}` canon yet.
+- `firestore/recipe/useRecipe.ts` is the singular Recipe family entry seam.
+- `firestore/recipe/fetch/useRecipeFetch.ts` owns read-one kitchen Recipe reads.
+- `firestore/recipe/fetch/useRecipeCollection.ts` owns read-many kitchen Recipe reads.
+- `firestore/recipe/mutations/useRecipeCreate.ts` owns kitchen Recipe creates.
+- `firestore/recipe/mutations/useRecipeUpdate.ts` owns kitchen Recipe updates.
+- `firestore/recipe/mutations/useRecipeDelete.ts` owns kitchen Recipe deletes/removals.
+- `firestore/recipe/utils/view/useRecipeComputed.ts` owns derived Recipe facts.
+- `firestore/recipe/utils/view/useRecipeInterface.ts` owns Recipe UI projections.
+
 Ingredient composable stack canon:
 - `firestore/ingredient/useIngredient.ts` is the singular Ingredient family entry seam.
 - `firestore/ingredient/fetch/useIngredientFetch.ts` owns read-one root Ingredient reads.

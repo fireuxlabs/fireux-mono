@@ -15,7 +15,7 @@ type UseRecipeFetchOptions = {
 }
 
 export function useRecipeFetch(
-  recipeId: string | Ref<string | null | undefined>,
+  recipeId?: string | Ref<string | null | undefined>,
   options: UseRecipeFetchOptions = {}
 ) {
   const db = useFirestore()
