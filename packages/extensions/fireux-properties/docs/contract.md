@@ -1,6 +1,6 @@
 # fireux-properties Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-17
+Updated: 2026-05-18
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -38,6 +38,11 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `app_scope_app_id`
 - Portfolio-owned operational children live under:
   - `apps/{appId}/portfolios/{portfolioId}/{childCollection}/{childId}`
+- Portfolio document operations are owned by `fireux-documents` and mounted as Portfolio console operations:
+  - `apps/{appId}/portfolios/{portfolioId}/documents/{documentId}`
+  - `apps/{appId}/portfolios/{portfolioId}/document-links/{linkId}`
+  - canonical seams live under `composables/fireux/console/portfolio/operations/documents/**`
+  - `Document` and `DocumentLink` are Portfolio-scoped console operation records, not root entities.
 - BuenoHost `Property` follows the same root/app console collection canon as other console entities:
   - `properties/{propertyId}`
   - `apps/{appId}/properties/{propertyId}`
