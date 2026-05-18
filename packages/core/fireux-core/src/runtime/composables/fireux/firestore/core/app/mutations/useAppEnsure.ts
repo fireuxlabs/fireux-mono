@@ -28,6 +28,11 @@ function resolveRuntimeProjectId(): string {
   return String(runtime.public?.firebaseEcosystem?.firebase?.projectId || '').trim()
 }
 
+function resolveRuntimeDatabaseId(): string {
+  const runtime = useRuntimeConfig()
+  return String(runtime.public?.firebaseEcosystem?.firebase?.databaseId || '').trim()
+}
+
 function pruneEmptyBootstrapValue(value: unknown): unknown {
   if (value == null) return undefined
 
@@ -56,11 +61,13 @@ function pruneEmptyBootstrapValue(value: unknown): unknown {
 }
 
 function buildCreatePayload(fireux: ReturnType<typeof useFireUXConfig>): CreateAppInput {
-  const runtimeProjectId = resolveRuntimeProjectId()
+  const projectId = asTrimmedString(fireux.ecosystem)
+  const databaseId = resolveRuntimeDatabaseId()
   const payload = pruneEmptyBootstrapValue({
     id: fireux.appId,
-    project_id: runtimeProjectId,
+    project_id: projectId,
     ecosystem_id: fireux.ecosystem,
+    database_id: databaseId,
     slug: fireux.appId,
     status: 'active',
     app_name: fireux.appName,
@@ -88,6 +95,8 @@ function buildRepairPatch(
 ) {
   const patch: Record<string, unknown> = {}
   const runtimeProjectId = resolveRuntimeProjectId()
+  const projectId = asTrimmedString(fireux.ecosystem)
+  const databaseId = resolveRuntimeDatabaseId()
 
   const ensureStringFields: Record<string, string> = {
     id: fireux.appId,
@@ -108,10 +117,15 @@ function buildRepairPatch(
 
   const existingProjectId = asTrimmedString(existing.project_id)
   if (
-    runtimeProjectId &&
-    (!existingProjectId || existingProjectId === fireux.ecosystem)
+    projectId &&
+    (!existingProjectId || existingProjectId === runtimeProjectId)
   ) {
-    patch.project_id = runtimeProjectId
+    patch.project_id = projectId
+  }
+
+  const existingDatabaseId = asTrimmedString(existing.database_id)
+  if (databaseId && !existingDatabaseId) {
+    patch.database_id = databaseId
   }
 
   const websiteUrl = asTrimmedString(fireux.siteUrl)

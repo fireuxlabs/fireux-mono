@@ -130,6 +130,9 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       id: slug,
       app_scope_state: 'root_only',
       app_scope_app_id: '',
+      operator_ids: Array.isArray(input?.operator_ids)
+        ? input.operator_ids
+        : [],
       name,
       tagline: normalizeString(input?.tagline),
       image_url: normalizeString(input?.image_url),
@@ -198,6 +201,9 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
         id: slug,
         app_scope_state: 'root_only',
         app_scope_app_id: '',
+        operator_ids: Array.isArray(input?.operator_ids)
+          ? input.operator_ids
+          : [],
         name,
         tagline: normalizeString(input?.tagline),
         image_url: normalizeString(input?.image_url),

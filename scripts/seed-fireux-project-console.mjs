@@ -147,6 +147,7 @@ function toRootPayload(seed, ownerUid, existing = null) {
   const now = Timestamp.now()
 
   return {
+    id: seed.id,
     name: seed.name,
     slug: seed.slug,
     description: seed.description,
@@ -160,6 +161,9 @@ function toRootPayload(seed, ownerUid, existing = null) {
     ecosystem_id: seed.ecosystem_id,
     firebase_project_id: seed.firebase_project_id,
     owner_user_id: ownerUid,
+    operator_ids: ownerUid ? [ownerUid] : [],
+    team_ids: ownerUid ? [ownerUid] : [],
+    join_requests: Array.isArray(existing?.join_requests) ? existing.join_requests : [],
     created: {
       at: existingCreated || now,
       by: normalizeString(existing?.created?.by) || ownerUid,
@@ -175,9 +179,11 @@ function toRootPayload(seed, ownerUid, existing = null) {
 function toOverlayPayload(ownerUid, existing = null) {
   const existingCreated = asTimestamp(existing?.created?.at)
   const now = Timestamp.now()
-  const adminIds = Array.from(
+  const operatorIds = Array.from(
     new Set(
       [
+        ...(Array.isArray(existing?.operator_ids) ? existing.operator_ids : []),
+        ...(Array.isArray(existing?.team_ids) ? existing.team_ids : []),
         ...(Array.isArray(existing?.admin_ids) ? existing.admin_ids : []),
         ownerUid,
       ]
@@ -188,9 +194,9 @@ function toOverlayPayload(ownerUid, existing = null) {
 
   return {
     id: normalizeString(existing?.id),
-    admin_ids: adminIds,
+    operator_ids: operatorIds,
+    team_ids: operatorIds,
     join_requests: Array.isArray(existing?.join_requests) ? existing.join_requests : [],
-    console_enabled: typeof existing?.console_enabled === 'boolean' ? existing.console_enabled : true,
     created: {
       at: existingCreated || now,
       by: normalizeString(existing?.created?.by) || ownerUid,

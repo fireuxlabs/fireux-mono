@@ -2,7 +2,14 @@
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import type { FireuxStamped } from './meta.model'
-import type { AppDerived, AppMedia, AppRole, AppSocialLinks } from './supporting/app'
+import type {
+  AppDerived,
+  AppMedia,
+  AppRepoMetadata,
+  AppRole,
+  AppSize,
+  AppSocialLinks,
+} from './supporting/app'
 
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
@@ -37,6 +44,7 @@ export const AppModel = {
   // Registry + hierarchy
   project_id: '',
   ecosystem_id: '',
+  database_id: '',
   slug: '',
   status: 'active' as AppStatus,
   team: '',
@@ -63,6 +71,17 @@ export const AppModel = {
     wordmark_dark_url: '',
     cover_url: '',
   } as AppMedia,
+
+  // FireUX repo/control-plane metadata.
+  fireux_native: false,
+  fireux_size: 'small' as AppSize,
+  fireux_repo: {
+    key: '',
+    workspace: '',
+    launch_order: 0,
+    console_families: [] as string[],
+    database_id: '',
+  } as AppRepoMetadata,
 
   // Governance
   join_requests: [] as string[],

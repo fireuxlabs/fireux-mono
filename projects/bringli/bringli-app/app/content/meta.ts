@@ -215,8 +215,8 @@ const sourceMeta = {
           entity: 'User',
           example: {
             id: 'user_demo_producer_01',
-            display_name: 'Demo Producer Operator',
-            handle: 'demo-producer-ops',
+            display_name: 'Iris Keller',
+            handle: 'iris-keller',
             userOf: ['bringli-app'],
           },
         },

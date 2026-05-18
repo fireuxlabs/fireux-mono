@@ -34,8 +34,8 @@ export const demoBuenoHostPublicProperties: DemoBuenoHostPublicProperty[] = [
     portfolio_id: 'buenohost-demo-properties',
     identity: {
       name: 'Luxurious Mountain Chalet',
-      address_line: 'Demo address hidden for public sample',
-      city: 'Example alpine stay',
+      address_line: 'Private road, shared after booking',
+      city: 'Interlaken',
       postcode: '',
       country: 'Switzerland',
       place_id: 'demo-stay',
@@ -50,12 +50,12 @@ export const demoBuenoHostPublicProperties: DemoBuenoHostPublicProperty[] = [
       welcome: {
         ...PropertyManualModel.welcome,
         welcome_note: 'Welcome to Luxurious Mountain Chalet.',
-        manager: 'Demo Host',
+        manager: 'Alpine Stay Host',
         phone: '+41 00 000 00 00',
         email: 'hello@example.invalid',
-        address: 'Example alpine stay',
-        wifi_network: 'DemoStay Guest',
-        wifi_password: 'demo-stay-2026',
+        address: 'Private road, shared after booking',
+        wifi_network: 'AlpineStay Guest',
+        wifi_password: 'alpine-stay-2026',
       },
     }),
     address_mode: 'area',
@@ -65,8 +65,8 @@ export const demoBuenoHostPublicProperties: DemoBuenoHostPublicProperty[] = [
     headline: 'Public sample stay companion for the BuenoHost landing page.',
     summary:
       'A fictional alpine property that shows how a house manual becomes a mobile stay companion without exposing a real host or address.',
-    price_hint: 'Demo only',
-    availability_hint: 'Demo only',
+    price_hint: 'From CHF 210 / night',
+    availability_hint: 'Seasonal availability shown for product preview',
     amenities: ['Wi-Fi', 'Stay companion', 'Check-in notes', 'Parking', 'Local recommendations'],
     public_notes: [
       'This is a fictional public sample for product demonstration.',

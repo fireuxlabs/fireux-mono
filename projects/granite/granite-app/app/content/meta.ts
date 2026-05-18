@@ -244,7 +244,7 @@ const sourceMeta = {
           entity: 'Portfolio',
           example: {
             id: 'portfolio_rivergate_demo',
-            name: 'Rivergate Holdings Demo Portfolio',
+            name: 'Rivergate Holdings Portfolio',
             owner_label: 'Rivergate Holdings Ltd',
             region_label: 'Zurich + Bern',
             strategy_label: 'Income stability',

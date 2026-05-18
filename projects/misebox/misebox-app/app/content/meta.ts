@@ -275,7 +275,7 @@ const sourceMeta = {
           entity: 'Kitchen',
           example: {
             id: 'k_demo_grill_yard',
-            name: 'Grill Yard Demo Kitchen',
+            name: 'Grill Yard Kitchen',
             short_address: 'Market Street 12',
             is_test_kitchen: false,
             image_url:

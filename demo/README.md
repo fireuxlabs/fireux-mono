@@ -39,6 +39,17 @@ demo<Entity>PreviewList
 
 For runtime console scenarios, do not add files here. Put them in the owning package runtime as `demo-scenarios` or `<domain>-demo-scenarios`.
 
+## Fiction
+
+Demo payloads should feel like one coherent fictional production world.
+
+Use real-sounding names, addresses, businesses, guests, suppliers, kitchens, and
+properties in fields a user can see. Avoid user-facing placeholders such as
+`Demo Apartment`, `Demo guest`, `Demo Team`, `Demo Street`, or sample addresses.
+
+Implementation ids may still include `demo-*` when that marks source mode or
+prevents collisions with live/test records.
+
 ## App-Local Demo Data
 
 If a demo record only exists for one app surface, put it under that app's demo folder:

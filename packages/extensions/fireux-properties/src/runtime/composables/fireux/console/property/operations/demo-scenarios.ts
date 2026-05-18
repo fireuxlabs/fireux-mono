@@ -35,8 +35,8 @@ export const getDemoPropertySimulations = (): Property[] => [
     id: 'alpine-apartment-demo',
     portfolio_id: 'buenohost-demo-properties',
     identity: identity({
-      name: 'Alpine Apartment',
-      address_line: 'Demo mountain road',
+      name: 'Alpine View Residence',
+      address_line: '8 Chaletstrasse',
       city: 'Interlaken',
       postcode: '3800',
       country: 'Switzerland',
@@ -56,7 +56,7 @@ export const getDemoPropertySimulations = (): Property[] => [
     portfolio_id: 'buenohost-demo-properties',
     identity: identity({
       name: 'City Guest Room',
-      address_line: 'Demo central street',
+      address_line: '18 Tib Street',
       city: 'Manchester',
       postcode: 'M1 1AA',
       country: 'United Kingdom',
@@ -76,7 +76,7 @@ export const getDemoPropertySimulations = (): Property[] => [
     portfolio_id: 'buenohost-demo-properties',
     identity: identity({
       name: 'Lakeside Holiday Home',
-      address_line: 'Demo lakeside lane',
+      address_line: '14 Seestrasse',
       city: 'Thun',
       postcode: '3600',
       country: 'Switzerland',

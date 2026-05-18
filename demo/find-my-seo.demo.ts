@@ -357,7 +357,7 @@ const demoSeoProviderSeeds: DemoSeoProviderSeed[] = [
     ],
     proofHighlights: [
       'Built SEO reporting tied to pipeline stages and opportunity influence',
-      'Lifted demo-intent organic traffic across key commercial pages',
+      'Lifted high-intent organic traffic across key commercial pages',
     ],
     featuredCaseStudyIds: ['case-saas-pipeline'],
   },
@@ -724,7 +724,7 @@ export const demoSeoCaseStudyList: DemoSeoCaseStudy[] = [
     actions: ['Rebuilt page segmentation around commercial intent', 'Added reporting against demo and opportunity stages', 'Aligned roadmap with demand generation priorities'],
     resultsSummary: 'Moved SEO reporting from vanity metrics to a pipeline contribution story buyers could trust.',
     metrics: [
-      { label: 'Demo-intent traffic lift', value: '61%' },
+      { label: 'High-intent traffic lift', value: '61%' },
       { label: 'Sales-qualified pipeline influence', value: '2.3x' },
     ],
     timeframeLabel: '6 months',
@@ -903,7 +903,7 @@ export const demoSeoLeadInbox: DemoSeoLeadInquiry[] = [
     contactEmail: 'luca@classloom.example',
     companyName: 'Classloom',
     sector: 'SaaS',
-    projectSummary: 'Need an SEO partner for a category and demo-intent growth program.',
+    projectSummary: 'Need an SEO partner for a category and high-intent growth program.',
     budgetRange: 'GBP7k / month',
     timeline: 'Q2 kickoff',
     consentContact: true,

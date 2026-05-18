@@ -14,38 +14,44 @@
     <div v-else class="flex flex-wrap justify-center gap-2">
       <UTooltip
         v-for="ecosystem in displayedEcosystems"
-        :key="ecosystem.key"
+        :key="ecosystem.key || ecosystem.id"
         :text="ecosystem.name"
       >
         <a
           v-if="ecosystem.href"
           :href="ecosystem.href"
           :aria-label="`Open ${ecosystem.name}`"
-          class="inline-flex rounded-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+          class="inline-flex items-center gap-2 rounded-xl border border-default bg-default/70 px-3 py-2 text-sm font-medium shadow-sm transition hover:-translate-y-0.5 hover:bg-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
         >
           <UAvatar
             :src="ecosystem.src"
             :alt="ecosystem.name"
             :text="ecosystem.text"
-            size="md"
+            size="xs"
             class="rounded-lg"
           />
+          <span>{{ ecosystem.name }}</span>
         </a>
-        <UAvatar
+        <span
           v-else
-          :src="ecosystem.src"
-          :alt="ecosystem.name"
-          :text="ecosystem.text"
-          size="md"
-          class="rounded-lg"
-        />
+          class="inline-flex items-center gap-2 rounded-xl border border-default bg-default/70 px-3 py-2 text-sm font-medium shadow-sm"
+        >
+          <UAvatar
+            :src="ecosystem.src"
+            :alt="ecosystem.name"
+            :text="ecosystem.text"
+            size="xs"
+            class="rounded-lg"
+          />
+          <span>{{ ecosystem.name }}</span>
+        </span>
       </UTooltip>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useLandingDirectory } from '../../composables/useLandingDirectory';
+import { useLandingDirectory } from '../../composables/useLandingDirectory'
 
 const { appsPending, displayedEcosystems } = useLandingDirectory()
 </script>

@@ -112,7 +112,7 @@ keyword planning, reporting, and opportunity tracking.
     answer: 'Yes. Northstar Content Kit covers briefs, calendars, and publishing handoff.',
     description: 'Content operations add-on for briefs, calendars, and editorial execution.',
     content: `
-Northstar Content Kit gives the demo world a clean editorial lane with
+Northstar Content Kit gives the shared scenario world a clean editorial lane with
 briefing, planning, and content handoff surfaces.
     `,
     price: 1000,
@@ -130,7 +130,7 @@ briefing, planning, and content handoff surfaces.
     answer: 'Yes. Harbor Service Kit covers prep, stations, dishes, and service flows.',
     description: 'Hospitality operations add-on for kitchens, prep, and service execution.',
     content: `
-Harbor Service Kit is the hospitality lane for the shared demo world.
+Harbor Service Kit is the hospitality lane for the shared scenario world.
 It is built around prep coordination, station clarity, and service rhythm.
     `,
     price: 1200,
@@ -167,7 +167,7 @@ incident, and document workflows.
     description: 'Site operations add-on for place records and property context.',
     content: `
 Cedar Site Kit rounds out the property lane with site and place context,
-so the demo world can connect portfolio views to real locations.
+so the shared scenario world can connect portfolio views to real locations.
     `,
     price: 900,
     features: ['Site records', 'Operational notes', 'Location context views'],

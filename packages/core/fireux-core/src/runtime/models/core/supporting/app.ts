@@ -31,3 +31,13 @@ export type AppMedia = {
 export type AppDerived = {
   user_count: number
 }
+
+export type AppRepoMetadata = {
+  key: string
+  workspace: string
+  launch_order: number
+  console_families: string[]
+  database_id: string
+}
+
+export type AppSize = 'big' | 'small'

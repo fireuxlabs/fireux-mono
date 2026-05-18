@@ -39,7 +39,7 @@ const scenarios: DemoKitchenScenario[] = [
   {
     id: 'deanos',
     name: 'Deanos',
-    label: 'Smashed burger kitchen demo',
+    label: 'Smashed burger kitchen',
     image_url: kitchenImage,
     menus: [
       {
@@ -1123,7 +1123,7 @@ const scenarios: DemoKitchenScenario[] = [
         supplier_product_categories: ['Meat', 'Dry Store'],
         supplier_delivery_areas: ['Central'],
         summary:
-          'Official supplier demo with active butcher-style catalogue coverage for burger beef, chicken, and kitchen-ready meat supply.',
+          'Official supplier record with active butcher-style catalogue coverage for burger beef, chicken, and kitchen-ready meat supply.',
         state: 'official',
         catalogue_state: 'integrated',
         linked_ingredient_ids: ['beef-smash-patties'],
@@ -1142,7 +1142,7 @@ const scenarios: DemoKitchenScenario[] = [
         supplier_headline: 'Buns and breads before service',
         supplier_product_categories: ['Bakery'],
         supplier_delivery_areas: ['Central'],
-        summary: 'Official supplier demo with a live bakery catalogue used across the demo kitchens.',
+        summary: 'Official supplier record with a live bakery catalogue used across service kitchens.',
         state: 'official',
         catalogue_state: 'integrated',
         linked_ingredient_ids: [
@@ -1428,7 +1428,7 @@ const scenarios: DemoKitchenScenario[] = [
   {
     id: 'prep-yard',
     name: 'Prep Yard',
-    label: 'High-volume prep workflow demo',
+    label: 'High-volume prep workflow',
     image_url: prepImage,
     menus: [],
     dishes: [],
@@ -1874,7 +1874,7 @@ const scenarios: DemoKitchenScenario[] = [
         supplier_product_categories: ['Meat', 'Dry Store'],
         supplier_delivery_areas: ['Central'],
         summary:
-          'Official supplier demo with active butcher-style catalogue coverage for burger beef, chicken, and kitchen-ready meat supply.',
+          'Official supplier record with active butcher-style catalogue coverage for burger beef, chicken, and kitchen-ready meat supply.',
         state: 'official',
         catalogue_state: 'integrated',
         linked_ingredient_ids: ['chicken-thigh'],
@@ -1893,7 +1893,7 @@ const scenarios: DemoKitchenScenario[] = [
         supplier_headline: 'Buns and breads before service',
         supplier_product_categories: ['Bakery'],
         supplier_delivery_areas: ['Central'],
-        summary: 'Official supplier demo with a live bakery catalogue used across the demo kitchens.',
+        summary: 'Official supplier record with a live bakery catalogue used across service kitchens.',
         state: 'official',
         catalogue_state: 'integrated',
         linked_ingredient_ids: ['sourdough-loaf'],

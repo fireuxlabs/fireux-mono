@@ -182,7 +182,7 @@ const sourceMeta = {
           example: {
             id: 'loc_demo_warehouse_west',
             app_id: 'cleanbox-app',
-            label: 'Warehouse West - Demo Site',
+            label: 'Warehouse West Service Site',
             city: 'Zurich',
             postcode: '8048',
             core_place_id: 'place_demo_zurich_west',
@@ -212,8 +212,8 @@ const sourceMeta = {
           entity: 'User',
           example: {
             id: 'user_demo_ops_01',
-            display_name: 'Demo Operations User',
-            handle: 'demo-ops-user',
+            display_name: 'Nora Meier',
+            handle: 'nora-meier',
             profiles: ['operator'],
             userOf: ['cleanbox-app'],
           },

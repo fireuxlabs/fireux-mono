@@ -2678,7 +2678,7 @@ async function runConsoleEntityTeams() {
     app: targetAppId || '(all)',
   })
 
-  const families = ['projects', 'kitchens', 'suppliers', 'portfolios']
+  const families = ['projects', 'kitchens', 'suppliers', 'portfolios', 'properties']
   const appDocs = targetAppId
     ? [await db.collection('apps').doc(targetAppId).get()].filter((docSnap) => docSnap.exists)
     : (await db.collection('apps').orderBy(FieldPath.documentId()).get()).docs
@@ -2701,16 +2701,22 @@ async function runConsoleEntityTeams() {
       for (const overlayDoc of overlaysSnap.docs) {
         processedDocs += 1
         const data = overlayDoc.data() || {}
+        const rootDoc = await db.collection(family).doc(overlayDoc.id).get()
+        const rootData = rootDoc.exists ? rootDoc.data() || {} : {}
         const currentTeamIds = sortedUniqueStrings(data.team_ids)
         const currentOperatorIds = sortedUniqueStrings(data.operator_ids)
         const nextTeamIds = sortedUniqueStrings([
           ...asStringArray(data.team_ids),
           ...asStringArray(data.admin_ids),
+          ...asStringArray(rootData.team_ids),
         ])
         const nextOperatorIds = sortedUniqueStrings([
           ...asStringArray(data.operator_ids),
           ...asStringArray(data.team_ids),
           ...asStringArray(data.admin_ids),
+          ...asStringArray(rootData.operator_ids),
+          ...asStringArray(rootData.team_ids),
+          asString(rootData.owner_user_id, ''),
         ])
         const patch = {}
         let needs = false

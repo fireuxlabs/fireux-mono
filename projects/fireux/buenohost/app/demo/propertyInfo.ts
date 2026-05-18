@@ -343,9 +343,9 @@ export const demoStayPropertyInfo: PropertyInfoCollection = {
       enabled: true,
       items: [
         { value: 'Welcome to Luxurious Mountain Chalet.' },
-        { label: 'Wi-Fi network', value: 'DemoStay Guest', tone: 'important' },
-        { label: 'Wi-Fi password', value: 'demo-stay-2026', tone: 'important' },
-        { label: 'Host contact', value: 'Use the BuenoHost chat button for demo support.' },
+        { label: 'Wi-Fi network', value: 'AlpineStay Guest', tone: 'important' },
+        { label: 'Wi-Fi password', value: 'alpine-stay-2026', tone: 'important' },
+        { label: 'Host contact', value: 'Use the BuenoHost chat button for stay support.' },
         { value: 'Keep this stay companion open during your stay for check-in, house rules and local tips.' },
       ],
     },

@@ -34,11 +34,11 @@ const MIGRATION_APP_ID = 'fireux-app'
 const MIGRATION_ACTOR = 'system:migrate-fireux-app-catalog'
 
 const ECOSYSTEM_PROJECT_IDS = {
-  fireux: 'fireux-2005',
-  misebox: 'misebox-78f9c',
-  cleanbox: 'cleanbox-f15bc',
-  bringli: 'bringli-b0517',
-  granite: 'granite-ecosystem',
+  fireux: 'fireux',
+  misebox: 'misebox',
+  cleanbox: 'cleanbox',
+  bringli: 'bringli',
+  granite: 'granite',
 }
 
 const APP_OVERRIDES = {
@@ -259,7 +259,66 @@ function buildPatch(seed, existing = {}) {
       : []
   }
 
+  if (Object.prototype.hasOwnProperty.call(existing, 'derived.user_count')) {
+    patch['derived.user_count'] = FieldValue.delete()
+  }
+
   return patch
+}
+
+function buildEcosystemPatch(ecosystem, seeds, existing = {}) {
+  const now = Timestamp.now()
+  const primarySeed =
+    seeds.find((seed) => seed.role === 'global') ??
+    seeds[0] ??
+    {}
+  const existingCreated = asTimestamp(existing?.created?.at)
+  const existingCreatedBy = normalizeString(existing?.created?.by)
+  const existingCreatedAppId = normalizeString(existing?.created?.app_id)
+  const apps = seeds
+    .map((seed) => seed.appId)
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b))
+
+  return {
+    id: ecosystem,
+    project_id: ecosystem,
+    name:
+      normalizeString(existing.name) ||
+      normalizeString(primarySeed.name) ||
+      ecosystem,
+    slug: ecosystem,
+    description:
+      normalizeString(existing.description) ||
+      normalizeString(primarySeed.description),
+    image_url: normalizeString(existing.image_url),
+    source_url:
+      normalizeString(existing.source_url) ||
+      normalizeString(primarySeed.siteUrl),
+    status: normalizeString(existing.status) || 'active',
+    team: normalizeString(existing.team),
+    apps,
+    created: {
+      at: existingCreated || now,
+      by: existingCreatedBy || MIGRATION_ACTOR,
+      app_id: existingCreatedAppId || MIGRATION_APP_ID,
+    },
+    updated: {
+      at: now,
+      by: MIGRATION_ACTOR,
+    },
+  }
+}
+
+function groupSeedsByEcosystem(seeds) {
+  return seeds.reduce((acc, seed) => {
+    const ecosystem = normalizeString(seed.ecosystem)
+    if (!ecosystem) return acc
+
+    acc[ecosystem] ||= []
+    acc[ecosystem].push(seed)
+    return acc
+  }, {})
 }
 
 async function loadServiceAccount(pathLike) {
@@ -300,10 +359,15 @@ async function main() {
   const db = getFirestore(adminApp, databaseId)
   const defaultDb = getFirestore(adminApp)
 
-  const appEntries = Object.values(APP_REGISTRY)
+  const allAppEntries = Object.values(APP_REGISTRY)
     .map((entry) => buildAppSeed(entry))
-    .filter((entry) => (appFilter ? entry.appId === appFilter : true))
     .sort((a, b) => a.launchOrder - b.launchOrder)
+  const appEntries = allAppEntries.filter((entry) =>
+    appFilter ? entry.appId === appFilter : true
+  )
+  const ecosystemEntries = appFilter
+    ? {}
+    : groupSeedsByEcosystem(allAppEntries)
 
   console.log('[migrate] fireux app catalog start', {
     firebaseProjectId: serviceAccount.projectId,
@@ -325,6 +389,7 @@ async function main() {
     updated: 0,
     appDatabaseCreated: 0,
     appDatabaseUpdated: 0,
+    ecosystemsUpdated: 0,
   }
 
   for (const seed of appEntries) {
@@ -382,6 +447,23 @@ async function main() {
       if (appDbSnap.exists) stats.appDatabaseUpdated += 1
       else stats.appDatabaseCreated += 1
     }
+  }
+
+  for (const [ecosystem, seeds] of Object.entries(ecosystemEntries)) {
+    if (!ecosystem || !Array.isArray(seeds) || !seeds.length) continue
+
+    const ref = db.collection('ecosystem').doc(ecosystem)
+    const snap = await ref.get()
+    const existing = snap.exists ? snap.data() || {} : {}
+    const patch = buildEcosystemPatch(ecosystem, seeds, existing)
+    stats.ecosystemsUpdated += 1
+
+    if (!commit) {
+      console.log('[dry-run] set', ref.path, patch)
+      continue
+    }
+
+    await ref.set(patch, { merge: true })
   }
 
   console.log('[migrate] fireux app catalog complete', stats)

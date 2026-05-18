@@ -53,12 +53,12 @@ const demoSuppliers: DemoSupplierListItem[] = [
     app_scope_state: 'parent_app',
     app_scope_app_id: 'misebox-app',
     supplier_organization_name: 'City Butchers',
-    tagline: 'Fresh produce and kitchen essentials for demo service',
+    tagline: 'Fresh produce and kitchen essentials for busy service',
     supplier_headline: 'Whole cuts, burger grind beef, and daily meat drops',
     supplier_product_categories: ['Meat', 'Dry Store'],
     supplier_delivery_areas: ['Central'],
     summary:
-      'Official supplier demo with active butcher-style catalogue coverage for burger beef, chicken, and kitchen-ready meat supply.',
+      'Official supplier record with active butcher-style catalogue coverage for burger beef, chicken, and kitchen-ready meat supply.',
     supplier_bio:
       'Claimed supplier record used by multiple kitchens for proteins, whole cuts, and in-house grind burger supply.',
     state: 'official',
@@ -73,11 +73,11 @@ const demoSuppliers: DemoSupplierListItem[] = [
     app_scope_state: 'parent_app',
     app_scope_app_id: 'misebox-app',
     supplier_organization_name: 'Daily Bakehouse',
-    tagline: 'Service-ready breads and buns for demo kitchens',
+    tagline: 'Service-ready breads and buns for busy kitchens',
     supplier_headline: 'Buns and breads before service',
     supplier_product_categories: ['Bakery'],
     supplier_delivery_areas: ['Central'],
-    summary: 'Official supplier demo with a live bakery catalogue used across the demo kitchens.',
+    summary: 'Official supplier record with a live bakery catalogue used across service kitchens.',
     supplier_bio:
       'Claimed supplier record focused on bread and bakehouse items for daily service.',
     state: 'official',
@@ -105,7 +105,7 @@ const demoSuppliers: DemoSupplierListItem[] = [
     summary:
       'Public supplier record already linked by kitchens while the official supplier catalogue is still pending.',
     supplier_bio:
-      'Unclaimed public supplier used in the demo world for leaves, herbs, and vegetable prep.',
+      'Unclaimed public supplier used for leaves, herbs, and vegetable prep.',
     state: 'public',
     catalogue_state: 'public_only',
     linked_ingredient_ids: [

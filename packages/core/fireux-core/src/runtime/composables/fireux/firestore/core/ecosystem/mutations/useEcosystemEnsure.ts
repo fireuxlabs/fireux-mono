@@ -39,14 +39,14 @@ export function useEcosystemEnsure() {
   async function ensureEcosystemDoc() {
     if (fireux.role !== 'global') return
 
-    const firebaseProjectId = normalizeString(
+    const runtimeProjectId = normalizeString(
       runtime.public?.firebaseEcosystem?.firebase?.projectId
     )
 
     const mainAppId = normalizeString(fireux.appId)
     const ecosystemId = normalizeSlug(fireux.ecosystem)
 
-    if (!firebaseProjectId || !mainAppId || !ecosystemId) return
+    if (!runtimeProjectId || !mainAppId || !ecosystemId) return
 
     const ref = await resolveFirestoreEcosystemRef(db, ecosystemId)
     const snap = await getDoc(ref)
@@ -58,7 +58,7 @@ export function useEcosystemEnsure() {
     if (!snap.exists()) {
       await setDoc(ref, {
         id: ref.id,
-        project_id: firebaseProjectId,
+        project_id: ecosystemId,
         name,
         slug: ecosystemId,
         description: '',
@@ -89,9 +89,9 @@ export function useEcosystemEnsure() {
 
     if (
       !normalizeString(data.project_id) ||
-      normalizeString(data.project_id) === ecosystemId
+      normalizeString(data.project_id) === runtimeProjectId
     ) {
-      patch.project_id = firebaseProjectId
+      patch.project_id = ecosystemId
     }
 
     if (!normalizeString(data.name)) {

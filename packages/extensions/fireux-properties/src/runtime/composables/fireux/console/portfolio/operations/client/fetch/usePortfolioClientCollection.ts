@@ -304,7 +304,7 @@ const buildDemoClients = (scenario: DemoPortfolioScenario): Client[] => {
 
     const propertyLabel =
       ownedProperties.length <= 1
-        ? safeString(ownedProperties[0]?.name) || portfolioName
+        ? safeString(ownedProperties[0]?.identity?.name) || portfolioName
         : `${ownedProperties.length} properties`
 
     return normalizeClient({

@@ -1,16 +1,11 @@
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
+import type { Firestore } from 'firebase-admin/firestore'
+import { getFirestoreDb } from '../../firebase-admin'
 
-type SourceEcosystem = {
-  key: 'fireux' | 'misebox' | 'cleanbox'
-  name: string
-  baseUrl: string
-}
-
-type RemoteAppsResponse = {
-  apps?: Array<Record<string, unknown>>
-}
+type RegistryDocument = Record<string, unknown> & { id?: string }
 
 type DirectoryApp = {
+  key: string
   id: string
   name: string
   ecosystem: string
@@ -22,6 +17,7 @@ type DirectoryApp = {
 
 type DirectoryEcosystem = {
   key: string
+  id: string
   name: string
   src: string
   text: string
@@ -29,17 +25,9 @@ type DirectoryEcosystem = {
 }
 
 type DirectoryError = {
-  ecosystem: string
-  url: string
-  status?: number
+  collection: string
   message: string
 }
-
-const ECOSYSTEM_SOURCES: SourceEcosystem[] = [
-  { key: 'fireux', name: 'FireUX', baseUrl: 'https://fireux.web.app' },
-  { key: 'misebox', name: 'Misebox', baseUrl: 'https://misebox.app' },
-  { key: 'cleanbox', name: 'Cleanbox', baseUrl: 'https://cleanbox.web.app' },
-]
 
 function initials(name: string) {
   return name
@@ -54,33 +42,71 @@ function asString(value: unknown) {
   return typeof value === 'string' ? value.trim() : ''
 }
 
-function asMedia(value: unknown) {
-  return value && typeof value === 'object' && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : null
+function asNumber(value: unknown) {
+  const next = Number(value)
+  return Number.isFinite(next) ? next : 0
 }
 
-function toDirectoryApp(
-  raw: Record<string, unknown>,
-  ecosystemBaseUrl: string
-): DirectoryApp | null {
+function asObject(value: unknown) {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {}
+}
+
+function asStringArray(value: unknown) {
+  return Array.isArray(value)
+    ? value.map((entry) => asString(entry)).filter(Boolean)
+    : []
+}
+
+async function fetchCollection(db: Firestore, collectionPath: string) {
+  const snapshot = await db.collection(collectionPath).get()
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+}
+
+function appLaunchOrder(app: RegistryDocument) {
+  return asNumber(asObject(app.fireux_repo).launch_order)
+}
+
+function toDirectoryApp(raw: RegistryDocument): DirectoryApp | null {
   const id = asString(raw.id)
-  const name = asString(raw.app_name)
-  const ecosystem = asString(raw.ecosystem)
+  const name = asString(raw.app_name) || asString(raw.name) || id
+  const ecosystem = asString(raw.ecosystem_id) || asString(raw.ecosystem)
   const role = asString(raw.role)
-  const media = asMedia(raw.media)
-  const logoUrl = asString(media?.logo_url)
+  const media = asObject(raw.media)
+  const socialLinks = asObject(raw.social_links)
+  const logoUrl = asString(media.logo_url) || asString(media.thumbnail_url)
+  const href = asString(socialLinks.website)
 
   if (!id || !name || !ecosystem || !role) return null
 
   return {
+    key: id,
     id,
     name,
     ecosystem,
     role,
     src: logoUrl,
     text: initials(name),
-    href: role === 'global' ? ecosystemBaseUrl : '',
+    href,
+  }
+}
+
+function toDirectoryEcosystem(raw: RegistryDocument): DirectoryEcosystem | null {
+  const id = asString(raw.id)
+  const name = asString(raw.name) || id
+  const imageUrl = asString(raw.image_url)
+  const sourceUrl = asString(raw.source_url)
+
+  if (!id || !name) return null
+
+  return {
+    key: id,
+    id,
+    name,
+    src: imageUrl,
+    text: initials(name),
+    href: sourceUrl || '/ecosystems',
   }
 }
 
@@ -91,66 +117,64 @@ export default defineEventHandler(async (event: H3Event) => {
   })
 
   const errors: DirectoryError[] = []
-  const appsByEcosystem = await Promise.all(
-    ECOSYSTEM_SOURCES.map(async (source) => {
-      const url = `${source.baseUrl}/api/public/apps`
 
-      try {
-        const res = await fetch(url, {
-          method: 'GET',
-          headers: { Accept: 'application/json' },
-        })
-
-        if (!res.ok) {
-          errors.push({
-            ecosystem: source.key,
-            url,
-            status: res.status,
-            message: `HTTP ${res.status}`,
-          })
-          return { source, apps: [] as DirectoryApp[] }
-        }
-
-        const json = (await res.json()) as RemoteAppsResponse
-        const rows = Array.isArray(json.apps) ? json.apps : []
-        const apps = rows
-          .map((row) =>
-            toDirectoryApp(
-              (row && typeof row === 'object' ? row : {}) as Record<string, unknown>,
-              source.baseUrl
-            )
-          )
-          .filter((row): row is DirectoryApp => Boolean(row))
-          .sort((a, b) => a.id.localeCompare(b.id))
-
-        return { source, apps }
-      } catch (error) {
+  try {
+    const db = await getFirestoreDb()
+    const [rawApps, rawEcosystems] = await Promise.all([
+      fetchCollection(db, 'apps').catch((error) => {
         errors.push({
-          ecosystem: source.key,
-          url,
-          message: error instanceof Error ? error.message : 'Request failed',
+          collection: 'apps',
+          message: error instanceof Error ? error.message : 'Unable to read apps',
         })
-        return { source, apps: [] as DirectoryApp[] }
-      }
-    })
-  )
+        return [] as RegistryDocument[]
+      }),
+      fetchCollection(db, 'ecosystem').catch((error) => {
+        errors.push({
+          collection: 'ecosystem',
+          message:
+            error instanceof Error ? error.message : 'Unable to read ecosystems',
+        })
+        return [] as RegistryDocument[]
+      }),
+    ])
 
-  const apps = appsByEcosystem.flatMap((entry) => entry.apps)
+    const apps = rawApps
+      .map(toDirectoryApp)
+      .filter((row): row is DirectoryApp => Boolean(row))
+      .sort((a, b) => {
+        const sourceA = rawApps.find((entry) => asString(entry.id) === a.id)
+        const sourceB = rawApps.find((entry) => asString(entry.id) === b.id)
+        const orderA = sourceA ? appLaunchOrder(sourceA) : 0
+        const orderB = sourceB ? appLaunchOrder(sourceB) : 0
+        if (orderA !== orderB) return orderA - orderB
+        return a.name.localeCompare(b.name)
+      })
 
-  const ecosystems: DirectoryEcosystem[] = appsByEcosystem.map(({ source, apps }) => {
-    const globalApp = apps.find((app) => app.role === 'global')
+    const ecosystems = rawEcosystems
+      .map((entry) => ({
+        ...entry,
+        appCount: asStringArray(entry.apps).length,
+      }))
+      .map(toDirectoryEcosystem)
+      .filter((row): row is DirectoryEcosystem => Boolean(row))
+      .sort((a, b) => a.name.localeCompare(b.name))
+
     return {
-      key: source.key,
-      name: source.name,
-      src: globalApp?.src || '',
-      text: initials(source.name),
-      href: source.baseUrl,
+      ecosystems,
+      apps,
+      errors,
     }
-  })
+  } catch (error) {
+    errors.push({
+      collection: 'landing-directory',
+      message:
+        error instanceof Error ? error.message : 'Unable to read landing directory',
+    })
 
-  return {
-    ecosystems,
-    apps,
-    errors,
+    return {
+      ecosystems: [],
+      apps: [],
+      errors,
+    }
   }
 })

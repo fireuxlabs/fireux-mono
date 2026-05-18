@@ -46,6 +46,18 @@ Use one demo location for one job:
 
 Do not put guest guides, sample info pages, public menus, provider cards, avatars, logos, entity records, concrete demo slugs, or smoke routes in app meta.
 
+## Fiction Rule
+
+Demo records should feel like one coherent fictional production world.
+
+Use real-sounding names, addresses, businesses, guests, suppliers, kitchens, and properties.
+Do not expose placeholder labels such as "Demo Apartment", "Demo guest", "Demo Team",
+"Demo Street", or "sample address" in user-facing fields.
+
+Implementation ids may still include `demo-*` when they mark source mode or prevent
+collisions with live/test records. Keep that marker out of display names, titles,
+addresses, guide copy, and card text.
+
 ## Source Evidence Rule
 
 When demo data starts from a real-world source, such as a host manual, the source is evidence.

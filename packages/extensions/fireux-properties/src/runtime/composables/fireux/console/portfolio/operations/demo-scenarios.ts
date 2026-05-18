@@ -1,5 +1,6 @@
 import type { Portfolio } from '../../../../../models/portfolio.model'
-import type { Property } from '../../../../../models/property.model'
+import { PropertyManualModel } from '../../../../../models/property.model'
+import type { Property, PropertyIdentity } from '../../../../../models/property.model'
 import type { Unit } from '../../../../../models/unit.model'
 
 export type DemoPortfolioProductFocus = 'granite' | 'buenohost'
@@ -18,6 +19,15 @@ export type DemoPortfolio = Portfolio & {
 }
 
 export type DemoProperty = Property
+
+type DemoPropertySeed = Omit<
+  Property,
+  'identity' | 'manual' | 'operator_ids' | 'slug'
+> &
+  PropertyIdentity & {
+    operator_ids?: string[]
+    slug?: string
+  }
 
 export type DemoUnit = Unit
 
@@ -153,6 +163,48 @@ const updateStamp = () => ({
   by: undefined,
 })
 
+const manual = (): Property['manual'] =>
+  JSON.parse(JSON.stringify(PropertyManualModel)) as Property['manual']
+
+const property = (seed: DemoPropertySeed): DemoProperty => {
+  const {
+    name,
+    address_line,
+    city,
+    postcode,
+    country,
+    place_id,
+    image_url,
+    property_type,
+    unit_count,
+    estimated_value,
+    estimated_value_currency,
+    operator_ids,
+    slug,
+    ...rest
+  } = seed
+
+  return {
+    ...rest,
+    slug: slug ?? seed.id,
+    operator_ids: operator_ids ?? [],
+    identity: {
+      name,
+      address_line,
+      city,
+      postcode,
+      country,
+      place_id,
+      image_url,
+      property_type,
+      unit_count,
+      estimated_value,
+      estimated_value_currency,
+    },
+    manual: manual(),
+  }
+}
+
 const demoPortfolioScenarios: DemoPortfolioScenario[] = [
   {
     id: 'rivergate-estate',
@@ -168,10 +220,10 @@ const demoPortfolioScenarios: DemoPortfolioScenario[] = [
       owner_label: 'Rivergate Holdings',
       strategy_label: 'Urban income and compliance',
       region_label: 'London',
-      notes: 'Demo portfolio for properties, documents, compliance, and tasks.',
+      notes: 'Mixed-use portfolio for properties, documents, compliance, and tasks.',
     },
     properties: [
-      {
+      property({
         id: 'rivergate-house',
         portfolio_id: 'rivergate-estate',
         name: 'Rivergate House',
@@ -189,8 +241,8 @@ const demoPortfolioScenarios: DemoPortfolioScenario[] = [
         status: 'active',
         created: stamp(),
         updated: updateStamp(),
-      },
-      {
+      }),
+      property({
         id: 'warehouse-lane',
         portfolio_id: 'rivergate-estate',
         name: 'Warehouse Lane',
@@ -208,7 +260,7 @@ const demoPortfolioScenarios: DemoPortfolioScenario[] = [
         status: 'active',
         created: stamp(),
         updated: updateStamp(),
-      },
+      }),
     ],
     units: [
       {
@@ -378,17 +430,17 @@ const demoPortfolioScenarios: DemoPortfolioScenario[] = [
       name: 'Alpine Stay Collection',
       tagline: 'Guest-ready property operations in Interlaken',
       slug: 'alpine-stay-collection',
-      owner_label: 'BuenoHost Demo Team',
+      owner_label: 'Alpine Stay Partners',
       strategy_label: 'Short-stay readiness and smooth turnovers',
       region_label: 'Bernese Oberland',
-      notes: 'Demo portfolio for guest guides, stays, cleaning, issues, and short-stay property operations.',
+      notes: 'Short-stay portfolio for guest guides, stays, cleaning, issues, and property operations.',
     },
     properties: [
-      {
+      property({
         id: 'alpine-view-apartment',
         portfolio_id: 'alpine-stay-collection',
         name: 'Alpine View Apartment',
-        address_line: 'Sample Chaletstrasse 8',
+        address_line: '8 Chaletstrasse',
         city: 'Interlaken',
         postcode: '3800',
         country: 'Switzerland',
@@ -402,12 +454,12 @@ const demoPortfolioScenarios: DemoPortfolioScenario[] = [
         status: 'active',
         created: stamp(),
         updated: updateStamp(),
-      },
-      {
+      }),
+      property({
         id: 'lakeside-studio',
         portfolio_id: 'alpine-stay-collection',
         name: 'Lakeside Studio',
-        address_line: 'Demo Quai 14',
+        address_line: '14 Seestrasse',
         city: 'Thun',
         postcode: '3600',
         country: 'Switzerland',
@@ -421,7 +473,7 @@ const demoPortfolioScenarios: DemoPortfolioScenario[] = [
         status: 'active',
         created: stamp(),
         updated: updateStamp(),
-      },
+      }),
     ],
     units: [
       {
@@ -543,10 +595,10 @@ const demoPortfolioScenarios: DemoPortfolioScenario[] = [
         id: 'guide-alpine-view-demo',
         portfolio_id: 'alpine-stay-collection',
         property_id: 'alpine-view-apartment',
-        slug: 'alpine-view-demo',
-        title: 'Alpine View Demo Stay',
-        wifi_network: 'BuenoHost Demo',
-        wifi_password: 'demo-stay-2026',
+        slug: 'alpine-view-stay',
+        title: 'Alpine View Guest Guide',
+        wifi_network: 'Alpine View Guest',
+        wifi_password: 'alpine-view-2026',
         check_in: 'Check-in from 15:00 with the lobby code from your booking message.',
         check_out: 'Check out by 10:00, start the dishwasher, and return the key to the lockbox.',
         house_rules: [
@@ -570,7 +622,7 @@ const demoPortfolioScenarios: DemoPortfolioScenario[] = [
         id: 'stay-lakeside-june-preview',
         portfolio_id: 'alpine-stay-collection',
         property_id: 'lakeside-studio',
-        guest_label: 'Demo guest',
+        guest_label: 'S. Keller',
         check_in_date: '2026-06-03',
         check_out_date: '2026-06-06',
         status: 'booked',
@@ -619,14 +671,14 @@ const demoPortfolioScenarios: DemoPortfolioScenario[] = [
       owner_label: 'City Nest Partners',
       strategy_label: 'Urban income, compliance, and short-stay growth',
       region_label: 'Manchester',
-      notes: 'Crossover demo for Granite-style owner oversight and BuenoHost-style property operations.',
+      notes: 'Crossover portfolio for Granite-style owner oversight and BuenoHost-style property operations.',
     },
     properties: [
-      {
+      property({
         id: 'northern-quarter-loft',
         portfolio_id: 'city-nest-hosts',
         name: 'Northern Quarter Loft',
-        address_line: '22 Demo Street',
+        address_line: '22 Tib Street',
         city: 'Manchester',
         postcode: 'M1 1AA',
         country: 'United Kingdom',
@@ -640,12 +692,12 @@ const demoPortfolioScenarios: DemoPortfolioScenario[] = [
         status: 'active',
         created: stamp(),
         updated: updateStamp(),
-      },
-      {
+      }),
+      property({
         id: 'canal-side-apartment',
         portfolio_id: 'city-nest-hosts',
         name: 'Canal Side Apartment',
-        address_line: '8 Sample Wharf',
+        address_line: '8 Cotton Wharf',
         city: 'Manchester',
         postcode: 'M4 2BB',
         country: 'United Kingdom',
@@ -659,7 +711,7 @@ const demoPortfolioScenarios: DemoPortfolioScenario[] = [
         status: 'active',
         created: stamp(),
         updated: updateStamp(),
-      },
+      }),
     ],
     units: [
       {
@@ -885,6 +937,9 @@ const toPortfolio = (scenario: DemoPortfolioScenario): DemoPortfolio => {
     id,
     app_scope_state: 'root_only',
     app_scope_app_id: '',
+    operator_ids: Array.isArray(portfolio.operator_ids)
+      ? [...portfolio.operator_ids]
+      : [],
     name:
       normalizeString(portfolio.name) || normalizeString(scenario.name) || id,
     tagline: normalizeString(portfolio.tagline),
