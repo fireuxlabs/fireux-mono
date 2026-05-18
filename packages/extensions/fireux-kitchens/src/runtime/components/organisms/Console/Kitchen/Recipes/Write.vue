@@ -49,6 +49,7 @@
 </template>
 
 <script setup lang="ts">
+import { navigateTo } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, ref } from 'vue'
 import { useKitchenConsoleRecipes } from '../../../../../composables/fireux/console/kitchen/operations/useKitchenConsoleRecipes'
@@ -113,6 +114,7 @@ const addRecipe = async () => {
     } else {
       toast.add({ title: 'Recipe created', icon: 'i-heroicons-check-circle' })
     }
+    await navigateTo(`/console/kitchen/recipes/${encodeURIComponent(result.id)}`)
   } catch (error) {
     const errorMessage = String((error as any)?.message || error || 'Create recipe failed.')
     message.value = errorMessage
