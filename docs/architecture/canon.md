@@ -211,20 +211,20 @@ Optional (only add when the UX exists):
 	- Add `Cards/Cell.vue` and `Cards/Profile.vue` when list/profile views exist.
 - **Cards variants rule:** entities may add bespoke cards (e.g. Blog “Article/Product/Page”), but treat them as variants; keep the canonical card slots when the entity is broadly browsable.
 - **CTA rule (pages vs CTA):** index pages should render the entity CTA component unconditionally; **all gating belongs inside the CTA**.
-- **Collection rule:** the canonical collection UI entrypoint is `Collection/View.vue`, backed by `Collection/Manager.vue` for data + orchestration. Any additional collection helpers (e.g. local/global variants) live alongside them in the same `Collection/` directory.
+- **Collection rule:** the canonical collection UI entrypoint is `Collection/Manager.vue`. `Collection/List.vue` may sit beside it as the render helper for cards/rows. Data loading belongs in pages or composables such as `useXCollection()`, not hidden provider/root wrappers inside `Collection/`.
 - **Create rule:** keep create flows stable (`Create/System.vue`, `Create/Write.vue`, `Create/Preview.vue`). Put optional extra create steps under `Create/utils/`.
 
-### `Collection.vue` meaning
+### `Collection/Manager.vue` meaning
 
-`Collection.vue` should represent the “canonical collection block” for the entity (header + empty state + list/grid of cards). If the entity has no special collection UX, `Collection.vue` can be a thin wrapper that delegates to `Cards/*` or `Sections/*`.
+`Collection/Manager.vue` represents the canonical collection block for the entity: header, controls, empty state, and list/grid of cards. If the entity has no special collection UX, the page or parent can call `useXCollection()` and pass the resulting collection directly to `Collection/Manager.vue`.
 
 ### Naming
 
 - Entity folder names are **PascalCase** (`Blog`, `Product`, `Chef`).
 - Subfolders use **PascalCase** for component folders (`Cards`, `Create`, `Edit`, `Sections`) and **lowercase** for `utils`.
-- Component filenames inside slots are **PascalCase** (`Preview.vue`) except for the canonical entrypoints (`CTA.vue`, `Collection.vue`).
+- Component filenames inside slots are **PascalCase** (`Preview.vue`) except for the canonical entrypoints (`CTA.vue`, `Collection/Manager.vue`).
 
-Note: the current repo canon is to **avoid** `List.vue` and standardize on `Collection.vue`.
+Note: `Collection/List.vue` is allowed as the render helper behind `Collection/Manager.vue`; it is not the collection entrypoint.
 
 ---
 

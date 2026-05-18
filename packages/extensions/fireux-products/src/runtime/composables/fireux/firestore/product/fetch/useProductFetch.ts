@@ -1,15 +1,15 @@
-import { computed } from 'vue'
-import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
-import { useProductCollection } from './useProductCollection'
+import type { FirebaseProduct } from '../../../../../models/product.model'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 
-/**
- * Hydrated/UI-ready products fetch.
- * Currently mirrors the Firestore collection until additional hydration is needed.
- */
 export function useProductFetch() {
-  const { products, pending } = useProductCollection()
-  const items = computed(() => products.value ?? [])
-  const { byId: product } = useCollectionById(items)
+  const { firestoreFetchDoc, getCollectionPath } = useFirestoreManager()
+  const collectionPath = getCollectionPath('products', false)
 
-  return { products: items, product, pending }
+  const fetchProduct = (id: string) =>
+    firestoreFetchDoc<FirebaseProduct>(collectionPath, id)
+
+  const fetchProductBySlug = (slug: string) =>
+    firestoreFetchDoc<FirebaseProduct>(collectionPath, slug)
+
+  return { fetchProduct, fetchProductBySlug }
 }

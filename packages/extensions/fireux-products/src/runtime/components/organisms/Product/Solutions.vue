@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { FirebaseProduct } from '../../../../models/product.model'
-import { useProductFetch } from '../../../composables/fireux/firestore/product/fetch/useProductFetch'
+import { useProductCollection } from '../../../composables/fireux/firestore/product/fetch/useProductCollection'
 import { useProductInterface } from '../../../composables/fireux/firestore/product/utils/view/useProductInterface'
 
 const SOLUTION_ROUTES: Record<string, string> = {
@@ -48,7 +48,7 @@ const SOLUTION_ROUTES: Record<string, string> = {
 }
 const SOLUTION_PRODUCT_IDS = Object.keys(SOLUTION_ROUTES)
 
-const { products } = useProductFetch()
+const { products } = useProductCollection()
 const { pill: mapCard } = useProductInterface()
 
 const solutionItems = computed(() =>

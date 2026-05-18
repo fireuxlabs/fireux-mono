@@ -13,10 +13,10 @@
 
 <script setup lang="ts">
 import { useRoute } from '#imports'
-import { useProducts } from '../../composables/fireux/firestore/product/useProducts'
+import { useProduct } from '../../composables/fireux/firestore/product/useProduct'
 
 const route = useRoute()
-const { fetchProduct, fetchProductPrices } = await useProducts()
+const { fetchProduct, fetchProductPrices } = useProduct()
 
 const product = await fetchProduct(route.params.slug as string)
 

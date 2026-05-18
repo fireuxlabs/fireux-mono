@@ -86,7 +86,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Price } from 'fireux-products/runtime/models/product.model'
-import { useProducts } from 'fireux-products/runtime/composables/fireux/firestore/product/useProducts'
+import { useProduct } from 'fireux-products/runtime/composables/fireux/firestore/product/useProduct'
 
 definePageMeta({
   layout: 'default',
@@ -94,7 +94,7 @@ definePageMeta({
   name: 'SolutionsFireuxAppPage',
 })
 
-const { fetchProductBySlug, fetchProductPrices } = await useProducts()
+const { fetchProductBySlug, fetchProductPrices } = useProduct()
 
 const product = await fetchProductBySlug('fireux-app')
 if (product?.id) {

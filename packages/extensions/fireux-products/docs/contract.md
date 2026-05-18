@@ -19,6 +19,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `products/{productId}/prices/{priceId}` (optional)
 
 Composable stack canon:
+- `firestore/product/useProduct.ts` is the singular Product family entry seam.
 - `firestore/product/fetch` owns root Product reads.
 - `firestore/product/mutations` owns root Product writes.
 - `firestore/product/utils` owns root Product helpers, validation, and view/interface utilities.
