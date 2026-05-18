@@ -174,7 +174,7 @@ import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/fires
 import { mapPlaceToBasePlace } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/mapPlaceToBasePlace'
 import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlacesInterface'
 import { usePlacesInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlacesInterface'
-import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceSave'
+import { usePlaceCreate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate'
 import { useCompanyCreate } from 'fireux-companies/runtime/composables/fireux/firestore/company/mutations/useCompanyCreate'
 import { useKitchenCreate } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenCreate'
 import type { Place, PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
@@ -211,7 +211,7 @@ const effectivePlaceType = computed(() => {
 })
 
 const db = useFirestore()
-const { ensurePlaceExists } = usePlaceSave()
+const { ensurePlaceExists } = usePlaceCreate()
 const { createKitchen } = useKitchenCreate()
 const { createCompany } = useCompanyCreate()
 

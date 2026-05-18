@@ -1,19 +1,11 @@
-import type { Ref } from 'vue'
-import { unref } from 'vue'
-import { usePlacesSearch } from './fetch/search/usePlacesSearch'
-import { usePlacesCollection } from './fetch/usePlacesCollection'
-import { usePlaceSave } from './mutations/usePlaceSave'
+import { usePlace, type UsePlaceOptions } from './usePlace'
 
-export interface UsePlacesOptions {
-  keyword?: string | null | undefined | Ref<string | null | undefined>
-  type?: string | null | undefined | Ref<string | null | undefined>
-  types?: string[]
-}
+export type UsePlacesOptions = UsePlaceOptions
 
+/**
+ * @deprecated Use `usePlace()` as the singular Place family entry seam.
+ * `usePlaces()` remains only as a compatibility alias for old callers.
+ */
 export function usePlaces(options: UsePlacesOptions = {}) {
-  return {
-    ...usePlacesCollection(),
-    ...usePlacesSearch(),
-    ...usePlaceSave({ type: unref(options.type), types: options.types }),
-  }
+  return usePlace(options)
 }

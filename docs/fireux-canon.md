@@ -155,6 +155,7 @@ Current learned examples:
 ## Entity Stack Canon
 - Entity stack DNA:
   - `XModel` stores truth.
+  - `useX()` is the singular family entry seam.
   - `useXFetch()` reads one.
   - `useXCollection()` reads many.
   - `useXInterface()` shapes UI.
@@ -166,19 +167,52 @@ Current learned examples:
   - dashboard/profile routes manage identity.
 - Entities should start from the standard FireUX stack before adding domain-specific seams:
   - `XModel`, `X`, `XCreateInput`, `XUpdateInput`
+  - `composables/fireux/firestore/<entity>/useX.ts`
+  - `composables/fireux/firestore/<entity>/fetch/`
+  - `composables/fireux/firestore/<entity>/mutations/`
+  - `composables/fireux/firestore/<entity>/utils/`
   - `useXFetch()`, `useXCollection()`, `useXInterface()`
   - `useXCreate()`, `useXUpdate()`, and `useXDelete()` where writes exist
   - `useXEnsure()` only where bootstrap/setup-if-missing is intended
   - `X/Collection/Manager.vue` where browse/manage UI exists
   - `X/Cards/*` or equivalent shared surfaces for `Pill`, `Cell`, `Preview`, and `Profile`
+- Normal root entity folders should be boring and predictable:
+
+```text
+composables/fireux/firestore/<entity>/
+  useX.ts
+  fetch/
+    useXFetch.ts
+    useXCollection.ts
+    search/            optional, if search is real read behaviour
+  mutations/
+    useXCreate.ts
+    useXUpdate.ts
+    useXDelete.ts
+    useXEnsure.ts      optional, only for setup-if-missing behaviour
+    validation/        optional, only for write-specific validation
+  utils/
+    view/
+      useXComputed.ts
+      useXInterface.ts
+    validation/        shared entity validation
+    normalize/         optional
+    paths/             optional
+```
+
+- One entity family has one top-level family entry seam. Use singular `useX.ts`; plural/read-many behaviour belongs to `useXCollection`, not a competing `useXs` barrel.
+- `useXComputed` owns derived entity truth such as status/display booleans; `useXInterface` owns UI projections such as `pill`, `cell`, `preview`, and `profile`.
+- Validation belongs in `utils/validation` when shared by UI/read/write surfaces, and in `mutations/validation` only when it protects create/update/delete/ensure behaviour.
 - Missing stack seams should be treated as alignment opportunities, not proof that the entity needs a new architecture.
-- Hydrated/read-time composites belong in fetch/runtime/interface seams, not in stored model files.
+- Hydrated/read-time composites belong in fetch, entity helper, or interface seams, not in stored model files.
 - If an entity cannot follow the standard stack, document which family it belongs to and why the delta is real.
 - `pnpm audit:usex` is report-only tooling for spotting repeated stack seams, missing seams, local deltas, and naming drift. It is not a blocking guard until the repo is intentionally tightened.
+- `src/runtime` means code that ships into the Nuxt/package runtime; it is not an ownership bucket by itself.
+- Inside runtime, ownership is by surface and family: app shell/context, entity stack, console workspace, route, component, or server seam.
 - Create/edit/post/publish state belongs to the entity family first.
 - Publishable entities such as `Product`, `BlogPost`, and `Job` may have lifecycle state and authoring flows, but those remain part of the Product, Blog, or Job stack unless the flow coordinates whole-app setup or multiple entity families.
 - `app/` is only for app-level orchestration, not normal entity authoring state.
-- Entity authoring helpers that are not raw Firestore belong in the entity-owned runtime family, such as `composables/fireux/product/create`, `composables/fireux/blog/editor`, or component-local create/edit helpers.
+- Entity authoring helpers that are not raw Firestore belong in the entity-owned composable family, such as `composables/fireux/product/create`, `composables/fireux/blog/editor`, or component-local create/edit helpers.
 
 ### Public Entity Route Add-Ons
 

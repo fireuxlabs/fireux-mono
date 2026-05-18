@@ -29,6 +29,18 @@ type UseKitchenConsoleOptions = {
   filter?: KitchenCollectionFilter | Ref<KitchenCollectionFilter | null | undefined> | null
 }
 
+/**
+ * FireUX stack family: Console-backed root entity.
+ * Entity: Kitchen.
+ * Canon:
+ * - docs/fireux-canon.md
+ * - packages/core/fireux-docs/src/runtime/concepts/stacks/README.md
+ * Contract:
+ * - packages/extensions/fireux-kitchens/docs/contract.md
+ *
+ * This file adapts Kitchen root/app authority sources into the private /console/kitchen selected runtime.
+ * It should not own Kitchen child operation records; those live under console/kitchen/operations.
+ */
 export function useKitchenConsole(
   options: UseKitchenConsoleOptions = {}
 ) {

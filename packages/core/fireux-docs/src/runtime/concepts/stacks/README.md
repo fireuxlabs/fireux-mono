@@ -60,8 +60,10 @@ The default expectation is deliberate repetition:
 
 ```text
 XModel          stores truth
+useX            gathers the family stack
 useXFetch      reads one
 useXCollection reads many
+useXComputed   derives entity truth
 useXInterface  shapes UI
 useXCreate     creates
 useXUpdate     patches
@@ -79,6 +81,20 @@ The surrounding runtime surfaces then follow the same family:
 - dashboard/profile routes only for signed-in user identity and profile-extension work
 
 Missing seams are alignment clues. They should usually prompt a small shared stack cleanup before app-local invention.
+
+For real Firestore entity stacks, the default folder shape is:
+
+```text
+composables/fireux/firestore/<entity>/
+  useX.ts
+  fetch/
+  mutations/
+  utils/
+```
+
+`useX.ts` is singular and is the only family entry seam. `useXFetch` and `useXCollection` carry the singular/read-one and plural/read-many dimensions inside that family.
+
+Validation belongs in `utils/validation` when the same rule is shared by UI, preview, route, and mutation surfaces. Validation belongs in `mutations/validation` only when it is specific to create/update/delete/ensure behaviour.
 
 If a new repeated pattern appears, promote it into `docs/fireux-canon.md` and the relevant stack/concept doc before it spreads as copy-paste.
 
@@ -113,6 +129,8 @@ The same stack DNA can appear in different modes. Do not force every mode to hav
 ## Create And Edit Modes
 
 CRUD uses shared Firestore primitives, but user-facing create/edit flows are allowed to differ by mode.
+
+`src/runtime` is the package delivery area for code that runs. It is not an ownership bucket. Inside runtime, ownership is still decided by family and surface: entity stack, console workspace, app shell/context, route, component, or server seam.
 
 Create, edit, post, and publish state belongs to the entity family first. Do not move normal entity authoring state into `app/` by default. Use `app/` only when a flow coordinates whole-app setup or multiple entity families.
 

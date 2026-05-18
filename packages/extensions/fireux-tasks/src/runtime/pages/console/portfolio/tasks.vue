@@ -138,7 +138,7 @@
 <script setup lang="ts">
 import {
   useActivePortfolio,
-  useRuntimePortfolioPath,
+  usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import { computed, ref } from 'vue'
 import { usePortfolioTaskCollection } from '../../../composables/fireux/firestore/tasks/fetch/usePortfolioTaskCollection'
@@ -167,7 +167,7 @@ definePageMeta({
 const runtimePortfolio = useActivePortfolio()
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const isDemo = computed(() => runtimePortfolio.isDemo.value)
-const tasksPath = useRuntimePortfolioPath(runtimePortfolio, 'tasks')
+const tasksPath = usePortfolioConsoleChildPath(runtimePortfolio, 'tasks')
 
 const { collection } = usePortfolioTaskCollection(runtimePortfolio)
 const { createTask } = useTaskCreate(runtimePortfolio)

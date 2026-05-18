@@ -1,7 +1,7 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import {
   useActivePortfolio,
-  useRuntimePortfolioPath,
+  usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import type { Task, TaskCreateInput } from '../../../../../models/task.model'
 
@@ -9,7 +9,7 @@ const normalize = (value: unknown) => String(value || '').trim()
 
 export function useTaskCreate(runtimePortfolio = useActivePortfolio()) {
   const { createDocument } = useFirestoreCreate()
-  const collectionPath = useRuntimePortfolioPath(runtimePortfolio, 'tasks')
+  const collectionPath = usePortfolioConsoleChildPath(runtimePortfolio, 'tasks')
 
   async function createTask(input: TaskCreateInput): Promise<string> {
     const portfolioId = normalize(runtimePortfolio.id.value)

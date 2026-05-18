@@ -14,6 +14,11 @@ export interface UsePlaceSaveOptions {
   types?: string[]
 }
 
+/**
+ * @deprecated Use `usePlaceCreate().ensurePlaceExists()` at call sites.
+ * This remains the legacy ensure/upsert implementation until Place create
+ * and provider-hydration flows are split into explicit seams.
+ */
 export function usePlaceSave(_options: UsePlaceSaveOptions = {}) {
   const { setDocument } = useFirestoreManager()
   const { upsertSeoIndexDoc } = useSeoIndexWrite()

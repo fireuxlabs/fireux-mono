@@ -39,14 +39,14 @@
 
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
-import { usePlaces } from '../../../composables/fireux/firestore/place/usePlaces'
-import { PlaceModel as PlaceModelRuntime, type Place as PlaceType } from '../../../models/place.model'
+import { usePlace } from '../../../composables/fireux/firestore/place/usePlace'
+import { PlaceModel as PlaceModelRuntime } from '../../../models/place.model'
 
 defineOptions({ name: 'DevPlaceSystem' })
 
 const placeModelRuntime = PlaceModelRuntime
 
-const { collection: places } = usePlaces<PlaceType>()
+const { collection: places } = usePlace()
 
 const {
   driftKind,

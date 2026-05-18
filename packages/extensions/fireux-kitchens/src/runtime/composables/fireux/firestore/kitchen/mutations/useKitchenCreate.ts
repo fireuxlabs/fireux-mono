@@ -19,7 +19,7 @@ import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/fires
 import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceSave'
+import { usePlaceCreate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import {
   readRuntimeSimulationFirestoreDatabaseId,
@@ -108,7 +108,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     databaseId: simulationDatabaseId,
   })
   const { upsertSeoIndexDoc } = useSeoIndexWrite()
-  const { ensurePlaceExists } = usePlaceSave()
+  const { ensurePlaceExists } = usePlaceCreate()
   const { ensureConsole } = useConsoleEnsure()
   const { uid, currentUser } = useAuth()
   const collectionPath =

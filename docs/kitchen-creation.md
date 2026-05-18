@@ -75,7 +75,7 @@ Relationship is not console authority.
 - `packages/extensions/fireux-places/src/runtime/components/organisms/Place/Search/Section.vue`
   - Search/select/confirm place flow.
   - Emits `{ placeId, place }` payload.
-- `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/mutations/usePlaceSave.ts`
+- `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate.ts`
   - `ensurePlaceExists()` creates `places/{id}` if missing.
   - Hydrates via Google details if needed and uploads image to Firebase Storage when applicable.
 - `packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/fetch/search/usePlacesSearch.ts`

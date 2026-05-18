@@ -23,6 +23,18 @@ type UsePropertyConsoleOptions = {
   filter?: PropertyCollectionFilter | Ref<PropertyCollectionFilter | null | undefined> | null
 }
 
+/**
+ * FireUX stack family: Console-backed root entity.
+ * Entity: Property.
+ * Canon:
+ * - docs/fireux-canon.md
+ * - packages/core/fireux-docs/src/runtime/concepts/stacks/README.md
+ * Contract:
+ * - packages/extensions/fireux-properties/docs/contract.md
+ *
+ * This file adapts Property root/app authority sources into the private /console/property selected runtime.
+ * It should not become a Portfolio management seam or a public property info page helper.
+ */
 export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
   const { uid } = useAuth()
   const userId = computed(() => normalizeString(uid.value))

@@ -88,8 +88,7 @@
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed, reactive } from 'vue'
 import type { CompanyHydrated } from '../../composables/fireux/firestore/company/fetch/types'
-import { useCompanyFetch } from '../../composables/fireux/firestore/company/fetch/useCompanyFetch'
-import { useCompanies } from '../../composables/fireux/firestore/company/useCompanies'
+import { useCompany } from '../../composables/fireux/firestore/company/useCompany'
 import type { Company } from '../../models/company.model'
 import { CompanyModel as CompanyModelRuntime } from '../../models/company.model'
 
@@ -117,8 +116,7 @@ const toggleSection = (key: keyof typeof openSections) => {
 
 const companyModelRuntime = CompanyModelRuntime
 
-const { collection } = useCompanies<Company>()
-const { companies: hydratedCompanies } = useCompanyFetch()
+const { collection, companies: hydratedCompanies } = useCompany<Company>()
 
 const companiesCollection = computed(() => collection.value ?? [])
 

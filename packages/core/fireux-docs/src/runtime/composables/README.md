@@ -12,7 +12,7 @@ This page is only for FireUX composable structure and canon seams.
 
 ## FireUX Rule
 
-`runtime/composables/` is where FireUX runtime state, reads, writes, adapters, and helpers live.
+`runtime/composables/` is where FireUX reads, writes, adapters, app context helpers, and entity-owned authoring helpers live.
 
 The main FireUX concern is not “what a composable is.”
 It is “which seam belongs where.”
@@ -35,7 +35,7 @@ Read that split like this:
 - `shared/`
   truly generic helpers
 - `fireux/`
-  actual FireUX product/runtime seams
+  actual FireUX product, entity, app, and console seams
 
 Loose top-level composable files should not live beside `dev/`, `shared/`,
 and `fireux/`.
@@ -75,9 +75,25 @@ Roadmap:
 3. Canonise normal Firestore entity composables as the usual root entity stack:
 
 ```text
-composables/fireux/firestore/<entity>/fetch/
-composables/fireux/firestore/<entity>/mutations/
-composables/fireux/firestore/<entity>/utils/
+composables/fireux/firestore/<entity>/
+  useX.ts
+  fetch/
+    useXFetch.ts
+    useXCollection.ts
+    search/            optional, if search is real read behaviour
+  mutations/
+    useXCreate.ts
+    useXUpdate.ts
+    useXDelete.ts
+    useXEnsure.ts      optional, only for setup-if-missing behaviour
+    validation/        optional, only for write-specific validation
+  utils/
+    view/
+      useXComputed.ts
+      useXInterface.ts
+    validation/        shared entity validation
+    normalize/         optional
+    paths/             optional
 ```
 
 4. Put console-backed entity runtime seams and operation data in a separate console stack:
@@ -108,6 +124,10 @@ Important FireUX seams include:
   read one entity or one read seam
 - `useXCollection`
   read collections
+- `useX`
+  singular family entry seam that gathers the entity stack
+- `useXComputed`
+  derived entity truth such as status/display booleans
 - `useXInterface`
   adapt read truth into UI surfaces
 - `useXSelection`
@@ -128,12 +148,15 @@ The important FireUX rule is:
 
 FireUX adds structure on top of ordinary composable usage:
 
+- `src/runtime` is a delivery area, not an ownership bucket; composable ownership is decided by surface and family
 - console state gets explicit seams rather than ad hoc page logic
 - Firestore reads and writes stay explicit under `fireux/firestore/`
 - Firestore read helper names must describe their runtime semantics:
   - `firestoreFetchCollection`, `firestoreFetchDoc`, and `firestoreQuery` are reactive VueFire read bindings
   - `firestoreLoadDocsByIds` is an exact-doc loader that reloads when path/ids change, but is not a live listener for later document updates
-- usual Firestore entity stacks stay boring: `fetch/`, `mutations/`, `utils/`
+- usual Firestore entity stacks stay boring: root `useX.ts`, `fetch/`, `mutations/`, and `utils/`
+- singular/plural read dimensions live inside the stack: `useXFetch` reads one and `useXCollection` reads many
+- validation belongs in `utils/validation` when it is shared by UI/read/write surfaces, and in `mutations/validation` only when it protects write behaviour
 - console-backed entity runtime seams live at the root of `fireux/console/<entity>/`
 - console operation records live under `fireux/console/<entity>/operations/`, not as child buckets under `fireux/firestore/<entity>/`
 - console operation stacks may have entity-specific child folders under `operations/`, but not vague architecture buckets such as `runtime-*`, `facade`, `stack`, `manager`, `processor`, `handler`, or `resolver`

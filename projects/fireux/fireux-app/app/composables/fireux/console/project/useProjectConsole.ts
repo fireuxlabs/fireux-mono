@@ -26,6 +26,16 @@ type UseProjectConsoleOptions = {
   filter?: ProjectCollectionFilter | Ref<ProjectCollectionFilter | null | undefined> | null
 }
 
+/**
+ * FireUX stack family: Console-backed root entity.
+ * Entity: Project.
+ * Canon:
+ * - docs/fireux-canon.md
+ * - packages/core/fireux-docs/src/runtime/concepts/stacks/README.md
+ *
+ * This file adapts root Project authority sources into the private /console/project selected runtime.
+ * It should not redefine generic Project collection reads or app-local project ownership.
+ */
 export function useProjectConsole(
   options: UseProjectConsoleOptions = {}
 ) {

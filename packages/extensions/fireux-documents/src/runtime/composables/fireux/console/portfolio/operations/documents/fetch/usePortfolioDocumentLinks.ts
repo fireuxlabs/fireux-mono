@@ -2,10 +2,10 @@ import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import {
   useActivePortfolio,
-  useRuntimePortfolioPath,
+  usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import type { DemoDocumentLink } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/demo-scenarios'
-import type { DocumentLink } from '../../../../../../models/document-link.model'
+import type { DocumentLink } from '../../../../../../../models/document-link.model'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
 
@@ -20,10 +20,20 @@ const toDocumentLink = (entry: DemoDocumentLink): DocumentLink => ({
   updated: { at: {} as any, by: undefined },
 })
 
-export function usePortfolioDocumentLinkCollection(runtimePortfolio = useActivePortfolio()) {
+/**
+ * FireUX stack family: Console operation record.
+ * Entity: DocumentLink.
+ * Canon:
+ * - docs/fireux-canon.md
+ * - packages/core/fireux-docs/src/runtime/composables/README.md
+ *
+ * This file reads Portfolio-scoped document attachment records for the selected /console/portfolio workspace.
+ * It belongs to console/portfolio/operations/documents, not root Firestore entity access.
+ */
+export function usePortfolioDocumentLinks(runtimePortfolio = useActivePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<DocumentLink[] | undefined> | null>
-  const collectionPath = useRuntimePortfolioPath(runtimePortfolio, 'document-links')
+  const collectionPath = usePortfolioConsoleChildPath(runtimePortfolio, 'document-links')
 
   watch(
     collectionPath,

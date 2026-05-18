@@ -29,6 +29,8 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 7) Runtime dependencies
 - Firestore place collection + provider search integration.
 - Server/API helpers for place autocomplete/details/logo integration.
+- Canonical family entry seam: `usePlace`.
+- `usePlaces` is a legacy compatibility alias only; read-many behavior belongs to the collection/search seams.
 
 ## 8) SEO hooks
 - If place detail pages are public/indexable, provide:
@@ -38,6 +40,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 9) Mutation entrypoints (write composables)
 - `usePlaceCreate`
 - `usePlaceUpdate`
+- `usePlaceSave` is legacy implementation detail while create/ensure behavior is split; do not use it as canon API language.
 
 ## 10) Non-goals / prohibited fallbacks
 - No silent fallback between provider IDs and canonical place IDs for selection/routing.

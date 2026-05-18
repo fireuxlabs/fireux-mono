@@ -24,6 +24,18 @@ type UseSupplierConsoleOptions = {
   filter?: SupplierCollectionFilter | Ref<SupplierCollectionFilter | null | undefined> | null
 }
 
+/**
+ * FireUX stack family: Console-backed root entity.
+ * Entity: Supplier.
+ * Canon:
+ * - docs/fireux-canon.md
+ * - packages/core/fireux-docs/src/runtime/concepts/stacks/README.md
+ * Contract:
+ * - packages/extensions/fireux-suppliers/docs/contract.md
+ *
+ * This file adapts Supplier root/app authority sources into the private /console/supplier selected runtime.
+ * It should not own Supplier catalogue or product operation records; those live under console/supplier/operations.
+ */
 export function useSupplierConsole(
   options: UseSupplierConsoleOptions = {}
 ) {

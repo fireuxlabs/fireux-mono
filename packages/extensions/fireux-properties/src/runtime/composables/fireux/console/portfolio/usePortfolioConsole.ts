@@ -37,6 +37,18 @@ type UsePortfolioConsoleOptions = {
     | null
 }
 
+/**
+ * FireUX stack family: Console-backed root entity.
+ * Entity: Portfolio.
+ * Canon:
+ * - docs/fireux-canon.md
+ * - packages/core/fireux-docs/src/runtime/concepts/stacks/README.md
+ * Contract:
+ * - packages/extensions/fireux-properties/docs/contract.md
+ *
+ * This file adapts Portfolio root/app authority sources into the private /console/portfolio selected runtime.
+ * It should not own Portfolio child operation records; those live under console/portfolio/operations.
+ */
 export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
   const { uid } = useAuth()
   const normalizedUid = computed(() => normalizeString(uid.value))

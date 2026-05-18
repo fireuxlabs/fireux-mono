@@ -6,7 +6,16 @@ import { useBlogUtils } from './utils/useBlogUtils.ts'
 import { useBlogInterface } from './utils/view/useBlogInterface.ts'
 
 /**
- * Canonical facade for blog posts: fetch + mutations + helpers.
+ * FireUX stack family: Publishable root entity.
+ * Entity: BlogPost.
+ * Canon:
+ * - docs/fireux-canon.md
+ * - packages/core/fireux-docs/src/runtime/concepts/stacks/README.md
+ * Contract:
+ * - packages/extensions/fireux-blogs/docs/contract.md
+ *
+ * This file is the BlogPost family entry seam for root reads, writes, and view helpers.
+ * Blog authoring/editor state belongs to the Blog family, not fireux/app or firestore/blog.
  */
 export function useBlog() {
   const { items, fetchBySlug } = useBlogFetch()

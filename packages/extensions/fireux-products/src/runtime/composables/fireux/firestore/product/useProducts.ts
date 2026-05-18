@@ -7,6 +7,18 @@ import { useProductCreate } from './mutations/useProductCreate'
 import { useProductUpdate } from './mutations/useProductUpdate'
 import { useProductDelete } from './mutations/useProductDelete'
 
+/**
+ * FireUX stack family: Publishable root entity.
+ * Entity: Product.
+ * Canon:
+ * - docs/fireux-canon.md
+ * - packages/core/fireux-docs/src/runtime/concepts/stacks/README.md
+ * Contract:
+ * - packages/extensions/fireux-products/docs/contract.md
+ *
+ * This file is the Product family entry seam for root reads, writes, and price reads.
+ * Create/edit/publish authoring state belongs to the Product family first, not fireux/app by default.
+ */
 export function useProducts() {
   const {
     firestoreFetchCollection,

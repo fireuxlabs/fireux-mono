@@ -16,7 +16,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - If that relationship changes later, update the models README first, then this file.
  */
 export const CompanyModel = {
-  id: '',
+  id: '' as string,
   created: {
     at: {} as FirebaseTimestamp,
   },

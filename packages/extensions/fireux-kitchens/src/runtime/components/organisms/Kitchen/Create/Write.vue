@@ -72,7 +72,7 @@ import type {
   ConsoleEnsureResult,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { doc, getDoc } from 'firebase/firestore'
-import { usePlaceSave } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceSave'
+import { usePlaceCreate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { computed, ref } from 'vue'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
@@ -91,7 +91,7 @@ const props = withDefaults(defineProps<{
 })
 
 const { createKitchen } = useKitchenCreate()
-const { ensurePlaceExists } = usePlaceSave()
+const { ensurePlaceExists } = usePlaceCreate()
 const { coreProfile, updateCoreProfile } = useChef()
 const { selectKitchen } = useKitchenConsole()
 const db = useFirestore()

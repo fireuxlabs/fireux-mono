@@ -97,7 +97,7 @@
 <script setup lang="ts">
 import {
   useActivePortfolio,
-  useRuntimePortfolioPath,
+  usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import { useTaskCreate } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/mutations/useTaskCreate'
 import { useTaskProjection } from 'fireux-tasks/runtime/composables/fireux/firestore/tasks/utils/projection/useTaskProjection'
@@ -127,7 +127,7 @@ const { collection } = usePortfolioComplianceRecordCollection(runtimePortfolio)
 const { pill: complianceInterface } = useComplianceInterface()
 const { createTask } = useTaskCreate(runtimePortfolio)
 const { fromComplianceRecord } = useTaskProjection(runtimePortfolio)
-const compliancePath = useRuntimePortfolioPath(
+const compliancePath = usePortfolioConsoleChildPath(
   runtimePortfolio,
   'compliance-records'
 )

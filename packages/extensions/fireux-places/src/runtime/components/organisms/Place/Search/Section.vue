@@ -52,7 +52,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
 import { usePlacesSearch } from '../../../../composables/fireux/firestore/place/fetch/search/usePlacesSearch'
-import { usePlaceSave } from '../../../../composables/fireux/firestore/place/mutations/usePlaceSave'
+import { usePlaceCreate } from '../../../../composables/fireux/firestore/place/mutations/usePlaceCreate'
 import {
     loadLogoForPlace,
     sanitizeLogoAvatar,
@@ -128,7 +128,7 @@ const selectedImageUrl = computed(
   () => selectedLogo.value || selectedCell.value?.imageUrl || ''
 )
 
-const { ensurePlaceExists } = usePlaceSave({ type: props.type })
+const { ensurePlaceExists } = usePlaceCreate({ type: props.type })
 const confirming = ref(false)
 
 function handleSelectPlace(place: BasePlace) {

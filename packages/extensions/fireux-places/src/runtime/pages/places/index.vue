@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { usePlaces } from '../../composables/fireux/firestore/place/usePlaces'
+import { usePlace } from '../../composables/fireux/firestore/place/usePlace'
 
 definePageMeta({
   layout: 'default',
@@ -43,7 +43,7 @@ const pageDescription = 'Canonical place index for the current runtime.'
 
 useHead({ title: `${appName} | ${pageTitle}` })
 
-const { collection } = usePlaces<Record<string, any>>()
+const { collection } = usePlace()
 const actions = [
   {
     label: 'Create',

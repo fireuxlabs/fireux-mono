@@ -171,16 +171,16 @@
 <script setup lang="ts">
 import {
   useActivePortfolio,
-  useRuntimePortfolioPath,
+  usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import { computed, ref } from 'vue'
-import { usePortfolioDocumentCollection } from '../../../composables/fireux/firestore/portfolio/document/fetch/usePortfolioDocumentCollection'
-import { usePortfolioDocumentLinkCollection } from '../../../composables/fireux/firestore/portfolio/document/fetch/usePortfolioDocumentLinkCollection'
-import { linkDocumentToEntity } from '../../../composables/fireux/firestore/portfolio/document/mutations/linkDocumentToEntity'
-import { useDocumentCreate } from '../../../composables/fireux/firestore/portfolio/document/mutations/useDocumentCreate'
-import { useDocumentStorage } from '../../../composables/fireux/firestore/portfolio/document/mutations/useDocumentStorage'
-import { documentLinkTargetTypes } from '../../../composables/fireux/firestore/portfolio/document/utils/validation/validateDocumentLinkTarget'
-import { useDocumentInterface } from '../../../composables/fireux/firestore/portfolio/document/utils/view/useDocumentInterface'
+import { usePortfolioDocuments } from '../../../composables/fireux/console/portfolio/operations/documents/fetch/usePortfolioDocuments'
+import { usePortfolioDocumentLinks } from '../../../composables/fireux/console/portfolio/operations/documents/fetch/usePortfolioDocumentLinks'
+import { linkDocumentToEntity } from '../../../composables/fireux/console/portfolio/operations/documents/mutations/linkDocumentToEntity'
+import { useDocumentCreate } from '../../../composables/fireux/console/portfolio/operations/documents/mutations/useDocumentCreate'
+import { useDocumentStorage } from '../../../composables/fireux/console/portfolio/operations/documents/mutations/useDocumentStorage'
+import { documentLinkTargetTypes } from '../../../composables/fireux/console/portfolio/operations/documents/utils/validation/validateDocumentLinkTarget'
+import { useDocumentInterface } from '../../../composables/fireux/console/portfolio/operations/documents/utils/view/useDocumentInterface'
 
 definePageMeta({
   layout: 'console',
@@ -203,12 +203,12 @@ const runtimePortfolio = useActivePortfolio()
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const isDemo = computed(() => runtimePortfolio.isDemo.value)
-const documentsPath = useRuntimePortfolioPath(runtimePortfolio, 'documents')
+const documentsPath = usePortfolioConsoleChildPath(runtimePortfolio, 'documents')
 
 const { collection: documentCollection } =
-  usePortfolioDocumentCollection(runtimePortfolio)
+  usePortfolioDocuments(runtimePortfolio)
 const { collection: linkCollection } =
-  usePortfolioDocumentLinkCollection(runtimePortfolio)
+  usePortfolioDocumentLinks(runtimePortfolio)
 const { pill: documentInterface } = useDocumentInterface()
 
 const documents = computed(() => documentCollection.value)

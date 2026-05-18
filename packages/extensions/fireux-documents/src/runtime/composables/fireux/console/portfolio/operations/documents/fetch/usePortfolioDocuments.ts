@@ -2,10 +2,10 @@ import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import {
   useActivePortfolio,
-  useRuntimePortfolioPath,
+  usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import type { DemoDocument } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/demo-scenarios'
-import type { Document } from '../../../../../../models/document.model'
+import type { Document } from '../../../../../../../models/document.model'
 
 const normalizeId = (value: unknown) => String(value || '').trim()
 
@@ -23,10 +23,10 @@ const toDocument = (entry: DemoDocument): Document => ({
   updated: { at: {} as any, by: undefined },
 })
 
-export function usePortfolioDocumentCollection(runtimePortfolio = useActivePortfolio()) {
+export function usePortfolioDocuments(runtimePortfolio = useActivePortfolio()) {
   const { firestoreFetchCollection } = useFirestoreRead()
   const sourceRef = shallowRef(null) as ShallowRef<Ref<Document[] | undefined> | null>
-  const collectionPath = useRuntimePortfolioPath(runtimePortfolio, 'documents')
+  const collectionPath = usePortfolioConsoleChildPath(runtimePortfolio, 'documents')
 
   watch(
     collectionPath,

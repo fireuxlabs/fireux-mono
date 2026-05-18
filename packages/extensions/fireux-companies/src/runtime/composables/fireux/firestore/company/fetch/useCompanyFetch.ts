@@ -42,11 +42,15 @@ export function useCompanyFetch() {
       computed(() => companyDoc.value),
       computed(() => placeDoc.value),
       computed(() => id),
-      (entry, place, docId): CompanyHydrated => ({
-        ...(place ?? {}),
-        ...(entry ?? {}),
-        id: docId,
-      })
+      (entry, place, docId): CompanyHydrated | undefined => {
+        if (!entry) return undefined
+
+        return {
+          ...(place ?? {}),
+          ...entry,
+          id: docId,
+        }
+      }
     )
   }
 

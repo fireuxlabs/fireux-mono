@@ -10,17 +10,16 @@ import { useJobDelete } from './mutations/useJobDelete'
 export type { Job } from '../../../../models/job.model'
 
 /**
- * useJob (canon)
- * - Fetches and manages a single Job document
- * - Takes an explicit jobId (string or Ref); there is no implicit default
- * - For collections, call useJobCollection() directly from its own composable
+ * FireUX stack family: Publishable root entity.
+ * Entity: Job.
+ * Canon:
+ * - docs/fireux-canon.md
+ * - packages/core/fireux-docs/src/runtime/concepts/stacks/README.md
+ * Contract:
+ * - packages/extensions/fireux-jobs/docs/contract.md
  *
- * Responsibilities:
- * - Fetch: useJobFetch(jobId) → { job, pending }
- * - Computed: useJobComputed(job, pending) → derived flags (status, ownership, etc.)
- * - Interface: useJobInterface(job) → card/pill props for UI
- * - Mutations: useJobCreate / useJobUpdate / useJobDelete
- * - State: useJobState() → local draft state for create/edit flows
+ * This file is the Job family entry seam for one explicit Job document.
+ * Job create/post authoring state belongs to the Job family first; it should not live under Firestore unless it is persisted truth.
  */
 export function useJob(jobId: string | Ref<string | null | undefined>) {
   const { job, pending } = useJobFetch(jobId)

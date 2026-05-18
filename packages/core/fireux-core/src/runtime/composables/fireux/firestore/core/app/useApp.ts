@@ -8,10 +8,14 @@ import { useAppInterface } from './utils/view/useAppInterface'
 export type { App } from '../../../../../models/core/app.model'
 
 /**
- * useApp
- * - Fetches and manages the runtime app
- * - Defaults to FireUXConfig.appId
- * - For arbitrary appId, call useAppFetch(appId) directly
+ * FireUX stack family: Active runtime singleton.
+ * Entity: App.
+ * Canon:
+ * - docs/fireux-canon.md
+ * - packages/core/fireux-docs/src/runtime/concepts/stacks/README.md
+ *
+ * This file manages the active runtime app from FireUXConfig.appId.
+ * For arbitrary app ids, use useAppFetch(appId).
  */
 export function useApp() {
   const { appId } = useFireUXConfig()

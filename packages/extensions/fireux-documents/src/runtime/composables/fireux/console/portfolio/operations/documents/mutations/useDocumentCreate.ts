@@ -1,15 +1,15 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import {
   useActivePortfolio,
-  useRuntimePortfolioPath,
+  usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
-import type { Document, DocumentCreateInput } from '../../../../../../models/document.model'
+import type { Document, DocumentCreateInput } from '../../../../../../../models/document.model'
 
 const normalize = (value: unknown) => String(value || '').trim()
 
 export function useDocumentCreate(runtimePortfolio = useActivePortfolio()) {
   const { createDocument } = useFirestoreCreate()
-  const collectionPath = useRuntimePortfolioPath(runtimePortfolio, 'documents')
+  const collectionPath = usePortfolioConsoleChildPath(runtimePortfolio, 'documents')
 
   async function createDocumentRecord(input: DocumentCreateInput): Promise<string> {
     const portfolioId = normalize(runtimePortfolio.id.value)
