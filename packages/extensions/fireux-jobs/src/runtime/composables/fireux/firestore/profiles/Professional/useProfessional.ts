@@ -39,7 +39,7 @@ export function useProfessional() {
   const create = useProfessionalCreate()
 
   return {
-    profile: refs,
+    profileRefs: refs,
     coreProfile,
     appProfile,
     pending,

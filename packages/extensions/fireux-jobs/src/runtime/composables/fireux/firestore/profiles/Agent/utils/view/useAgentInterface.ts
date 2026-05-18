@@ -49,7 +49,7 @@ export namespace AgentCard {
 }
 
 export function useAgentInterface(
-  profile?: ProfileRefs<Agent> | null,
+  profileRefs?: ProfileRefs<Agent> | null,
   userRef?: Ref<User | null | undefined>
 ) {
   type AgentPill = AgentCard.Card
@@ -120,7 +120,7 @@ export function useAgentInterface(
   function buildInterface(
     target?: AgentTarget | null | undefined
   ): AgentCard.Card | null {
-    const p = target ?? profile?.coreProfile?.value ?? null
+    const p = target ?? profileRefs?.coreProfile?.value ?? null
     if (!p) return null
     const u = resolveUser(target as AgentTarget | null)
     const mapped = map(p, u)

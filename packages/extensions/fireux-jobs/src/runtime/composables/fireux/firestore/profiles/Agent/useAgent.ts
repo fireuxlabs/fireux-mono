@@ -37,7 +37,7 @@ export function useAgent() {
   const create = useAgentCreate()
 
   return {
-    profile: refs,
+    profileRefs: refs,
     coreProfile,
     appProfile,
     agent,

@@ -19,22 +19,22 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  * - If this changes later, update the models README first, then this file.
  */
 export const AgentModel = {
-  id: '',
-  title: '',
-  summary: '',
-  agent_bio: '',
-  agent_image: '',
+  id: '' as string,
+  title: '' as string,
+  summary: '' as string,
+  agent_bio: '' as string,
+  agent_image: '' as string,
   agent_placement_types: [] as string[],
   agent_coverage_areas: [] as string[],
-  agent_contact_email: '',
-  agent_contact_phone: '',
-  agent_website_url: '',
-  subtitle: '',
-  tagline: '',
+  agent_contact_email: '' as string,
+  agent_contact_phone: '' as string,
+  agent_website_url: '' as string,
+  subtitle: '' as string,
+  tagline: '' as string,
   tags: [] as string[],
-  contact_email: '',
-  contact_phone: '',
-  website_url: '',
+  contact_email: '' as string,
+  contact_phone: '' as string,
+  website_url: '' as string,
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['created']['by'],
@@ -50,7 +50,7 @@ export type Agent = {
 }
 
 export const AppAgentModel = {
-  id: '',
+  id: '' as string,
   ...AppProfileStamps,
 } as const
 
