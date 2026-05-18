@@ -19,8 +19,7 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { computed } from 'vue'
-import { useBlogFetch } from '../../composables/fireux/firestore/blog/fetch/useBlogFetch'
+import { useBlogCollection } from '../../composables/fireux/firestore/blog/fetch/useBlogCollection'
 
 const { appName } = useFireUXConfig()
 
@@ -45,8 +44,7 @@ definePageMeta({
 
 useHead({ title: `${appName} | ${pageTitle}` })
 
-const { items } = useBlogFetch()
-const collection = computed(() => items.value ?? [])
+const { collection } = useBlogCollection()
 
 const actions = [
   {

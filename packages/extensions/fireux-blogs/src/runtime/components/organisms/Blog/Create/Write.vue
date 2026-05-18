@@ -83,7 +83,7 @@ import {
     shallowRef,
     watch,
 } from 'vue'
-import { useBlog } from '../../../../composables/fireux/firestore/blog/useBlog'
+import { useBlogUtils } from '../../../../composables/fireux/firestore/blog/utils/useBlogUtils'
 import { useBlogDraftState } from '../../../../composables/fireux/blog/editor/useBlogDraftState'
 
 const EditorContent = defineAsyncComponent(async () => {
@@ -93,9 +93,8 @@ const EditorContent = defineAsyncComponent(async () => {
 
 const editor = shallowRef<any>(null)
 
-const { utils } = useBlog()
+const { normalizeBlogSlug, computeReadingTime } = useBlogUtils()
 const { blogPost } = useBlogDraftState()
-const { normalizeBlogSlug, computeReadingTime } = utils
 
 onMounted(async () => {
   const [{ Editor }, { default: StarterKit }] = await Promise.all([

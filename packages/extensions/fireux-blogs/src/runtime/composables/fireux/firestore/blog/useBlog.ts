@@ -1,9 +1,22 @@
 import { useBlogFetch } from './fetch/useBlogFetch.ts'
+import { useBlogCollection } from './fetch/useBlogCollection'
 import { useBlogCreate } from './mutations/useBlogCreate.ts'
 import { useBlogUpdate } from './mutations/useBlogUpdate.ts'
 import { useBlogDelete } from './mutations/useBlogDelete.ts'
 import { useBlogUtils } from './utils/useBlogUtils.ts'
+import { useBlogComputed } from './utils/view/useBlogComputed'
 import { useBlogInterface } from './utils/view/useBlogInterface.ts'
+
+export {
+  useBlogFetch,
+  useBlogCollection,
+  useBlogCreate,
+  useBlogUpdate,
+  useBlogDelete,
+  useBlogUtils,
+  useBlogComputed,
+  useBlogInterface,
+}
 
 /**
  * FireUX stack family: Publishable root entity.
@@ -18,20 +31,14 @@ import { useBlogInterface } from './utils/view/useBlogInterface.ts'
  * Blog authoring/editor state belongs to the Blog family, not fireux/app or firestore/blog.
  */
 export function useBlog() {
-  const { items, fetchBySlug } = useBlogFetch()
-  const { createBlogPost } = useBlogCreate()
-  const { updateBlogPost } = useBlogUpdate()
-  const { deleteBlogPost } = useBlogDelete()
-  const utils = useBlogUtils()
-  const view = useBlogInterface()
-
   return {
-    items,
-    fetchBySlug,
-    createBlogPost,
-    updateBlogPost,
-    deleteBlogPost,
-    utils,
-    view,
+    ...useBlogCollection(),
+    ...useBlogFetch(),
+    ...useBlogCreate(),
+    ...useBlogUpdate(),
+    ...useBlogDelete(),
+    ...useBlogUtils(),
+    ...useBlogComputed(),
+    ...useBlogInterface(),
   }
 }

@@ -17,10 +17,16 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Collection name sanity-check: runtime write/read composables currently use `blogs` (no alias collection configured).
 
 Composable stack canon:
+- `firestore/blog/useBlog.ts` is the singular BlogPost family entry seam.
+- `firestore/blog/fetch/useBlogFetch.ts` owns read-one BlogPost reads.
+- `firestore/blog/fetch/useBlogCollection.ts` owns read-many BlogPost reads and default collection ordering.
 - `firestore/blog/fetch` owns root BlogPost reads.
 - `firestore/blog/mutations` owns root BlogPost writes.
 - `firestore/blog/utils` owns root BlogPost helpers and view/interface utilities.
-- BlogPost authoring/editor draft state belongs under `composables/fireux/blog/editor`, not under `firestore/blog`.
+- `firestore/blog/utils/view/useBlogComputed.ts` owns derived BlogPost facts.
+- `firestore/blog/utils/view/useBlogInterface.ts` owns BlogPost UI projections.
+- `composables/fireux/blog/editor` owns BlogPost authoring/editor draft and submit helpers.
+- BlogPost authoring/editor draft state belongs under `composables/fireux/blog/editor`, not under `fireux/app` or `firestore/blog`.
 
 ## 4a) Root scope fields
 - `source_app_id`
