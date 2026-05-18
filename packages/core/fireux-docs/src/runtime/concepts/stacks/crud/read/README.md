@@ -586,7 +586,7 @@ This pass removes that edge and treats the main interface contract as the only r
 | `packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/firestore/recipe/utils/view/useRecipeInterface.ts`                      | Content / opportunity           | Public recipe presentation                           |
 | `packages/extensions/fireux-blogs/src/runtime/composables/fireux/firestore/blog/utils/view/useBlogInterface.ts`                           | Content / opportunity           | Listing and teaser-first content surface             |
 | `packages/extensions/fireux-companies/src/runtime/composables/fireux/firestore/company/utils/view/useCompanyInterface.ts`                 | Place-based public entity       | Place-backed public company surface                  |
-| `packages/extensions/fireux-compliance/src/runtime/composables/fireux/firestore/compliance/utils/view/useComplianceInterface.ts`          | Console operational child       | Portfolio-scoped operational record                  |
+| `packages/extensions/fireux-compliance/src/runtime/composables/fireux/console/portfolio/operations/compliance/utils/view/useComplianceInterface.ts` | Console operational child       | Portfolio-scoped operational record                  |
 | `packages/extensions/fireux-documents/src/runtime/composables/fireux/console/portfolio/operations/documents/utils/view/useDocumentInterface.ts` | Console operational child       | Portfolio-scoped document record                     |
 | `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs/utils/view/useJobInterface.ts`                             | Content / opportunity           | Managed opportunity surface                          |
 | `packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface.ts`                 | Identity / people profile       | Agent public profile surface                         |
@@ -604,7 +604,7 @@ This pass removes that edge and treats the main interface contract as the only r
 | `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface.ts`            | Organization / workspace entity | Workspace identity, currently thin                   |
 | `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/property/utils/view/usePropertyInterface.ts`    | Console operational child       | Portfolio property record                            |
 | `packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/utils/view/useSupplierInterface.ts`               | Organization / workspace entity | Public organization surface with workspace crossover |
-| `packages/extensions/fireux-tasks/src/runtime/composables/fireux/firestore/tasks/utils/view/useTaskInterface.ts`                          | Console operational child       | Portfolio task record                                |
+| `packages/extensions/fireux-tasks/src/runtime/composables/fireux/console/portfolio/operations/tasks/utils/view/useTaskInterface.ts`       | Console operational child       | Portfolio task record                                |
 
 ## Current Edges To Watch
 

@@ -3,7 +3,7 @@ import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
-import type { Task, TaskCreateInput } from '../../../../../models/task.model'
+import type { Task, TaskCreateInput } from '../../../../../../../models/task.model'
 
 const normalize = (value: unknown) => String(value || '').trim()
 

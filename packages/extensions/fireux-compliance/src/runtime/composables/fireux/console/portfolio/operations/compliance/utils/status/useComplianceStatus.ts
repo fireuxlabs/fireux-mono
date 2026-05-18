@@ -1,5 +1,12 @@
 import { computed, unref, type Ref } from 'vue'
 
+/**
+ * FireUX stack family: Portfolio-scoped console operation record.
+ * Entity: ComplianceRecord.
+ *
+ * Compliance status is derived for selected Portfolio operations; it is not a
+ * root Compliance entity status seam.
+ */
 export type ComplianceDerivedStatus = 'ok' | 'dueSoon' | 'overdue'
 
 export type ComplianceStatusInput = {

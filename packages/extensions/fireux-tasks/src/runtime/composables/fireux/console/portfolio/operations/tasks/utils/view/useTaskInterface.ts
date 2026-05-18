@@ -1,4 +1,4 @@
-import type { Task } from '../../../../../../models/task.model'
+import type { Task } from '../../../../../../../../models/task.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 

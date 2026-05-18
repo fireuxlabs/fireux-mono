@@ -4,7 +4,7 @@ import {
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
-import type { ComplianceRecord } from '../../../../../models/compliance-record.model'
+import type { ComplianceRecord } from '../../../../../../../models/compliance-record.model'
 import type { DemoComplianceRecord } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/demo-scenarios'
 
 const normalizeId = (value: unknown) => String(value || '').trim()

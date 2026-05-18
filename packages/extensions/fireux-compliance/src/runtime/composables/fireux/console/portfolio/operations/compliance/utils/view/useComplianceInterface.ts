@@ -2,7 +2,7 @@ import {
   deriveComplianceStatus,
   type ComplianceDerivedStatus,
 } from '../status/useComplianceStatus'
-import type { ComplianceRecord } from '../../../../../../models/compliance-record.model'
+import type { ComplianceRecord } from '../../../../../../../../models/compliance-record.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 

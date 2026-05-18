@@ -5,7 +5,7 @@ import {
   usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 import type { DemoTask } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/demo-scenarios'
-import type { Task } from '../../../../../models/task.model'
+import type { Task } from '../../../../../../../models/task.model'
 
 const normalize = (value: unknown) => String(value || '').trim()
 
