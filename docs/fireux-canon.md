@@ -163,6 +163,8 @@ Current learned examples:
   - app admins answer from `/dashboard/chat`.
   - the related entity is the current app: `related_entity.family = 'apps'`.
 - Chat UI should use Nuxt UI chat primitives where available, while FireUX owns the Firestore conversation shape.
+- Conversation status/update/archive are explicit seams. Archive is the removal posture for now; do not introduce hard-delete conversation canon without a new decision.
+- Conversation UI can stay page-local until a second repeated chat/enquiry surface proves the reusable organism shape.
 - Public enquiry forms may create conversations, but private follow-up, reads, and replies must be participant-scoped or server-mediated before shipping.
 - BuenoHost uses conversations for property enquiries and guest support so public property pages can collect direct-booking interest without exposing private guest-guide details.
 - Find My SEO should converge provider leads onto conversations when moving beyond demo-only lead capture.
