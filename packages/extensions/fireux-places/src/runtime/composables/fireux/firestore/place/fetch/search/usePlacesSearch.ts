@@ -13,6 +13,10 @@ type UsePlacesSearchOptions = {
   type?: string | null
 }
 
+/**
+ * @deprecated Use `usePlaceSearch()` from `./usePlaceSearch`.
+ * This remains as a compatibility path for older callers.
+ */
 export function usePlacesSearch(options: UsePlacesSearchOptions = {}) {
   const { prefixSearch } = useFirestoreSearch()
   const db = useFirestore()
@@ -196,4 +200,3 @@ export type PlaceSearchCell = {
   lat?: number
   lng?: number
 }
-

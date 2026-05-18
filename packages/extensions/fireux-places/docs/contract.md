@@ -40,6 +40,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 9) Mutation entrypoints (write composables)
 - `usePlaceCreate`
 - `usePlaceUpdate`
+- `usePlaceDelete`
 - `usePlaceSave` is legacy implementation detail while create/ensure behavior is split; do not use it as canon API language.
 
 ## 10) Non-goals / prohibited fallbacks

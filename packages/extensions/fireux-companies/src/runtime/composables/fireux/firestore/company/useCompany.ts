@@ -1,7 +1,9 @@
 import { useCompanyCollection } from './fetch/useCompanyCollection'
 import { useCompanyFetch } from './fetch/useCompanyFetch'
 import { useCompanyCreate } from './mutations/useCompanyCreate'
+import { useCompanyDelete } from './mutations/useCompanyDelete'
 import { useCompanyUpdate } from './mutations/useCompanyUpdate'
+import { useCompanyComputed } from './utils/view/useCompanyComputed'
 import { useCompanyInterface } from './utils/view/useCompanyInterface'
 
 export {
@@ -9,6 +11,8 @@ export {
   useCompanyFetch,
   useCompanyCreate,
   useCompanyUpdate,
+  useCompanyDelete,
+  useCompanyComputed,
   useCompanyInterface,
 }
 
@@ -35,6 +39,8 @@ export function useCompany<
     ...useCompanyFetch(),
     ...useCompanyCreate(),
     ...useCompanyUpdate(),
+    ...useCompanyDelete(),
+    ...useCompanyComputed(),
     ...useCompanyInterface(),
   }
 }

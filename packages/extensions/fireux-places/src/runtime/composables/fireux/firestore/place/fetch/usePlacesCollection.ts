@@ -4,7 +4,10 @@ import type { Place } from 'fireux-places/runtime/models/place.model'
 
 const COLLECTION_PATH = 'places'
 
-// Raw Firestore places collection (no routing, no joins).
+/**
+ * @deprecated Use `usePlaceCollection()` from `./usePlaceCollection`.
+ * This remains as a compatibility path for older callers.
+ */
 export function usePlacesCollection() {
   const { firestoreFetchCollection } = useFirestoreRead()
   const source = firestoreFetchCollection<Place>(COLLECTION_PATH)

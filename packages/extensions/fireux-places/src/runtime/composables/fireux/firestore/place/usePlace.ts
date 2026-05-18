@@ -1,21 +1,25 @@
 import type { Ref } from 'vue'
 import { unref } from 'vue'
-import { usePlacesSearch } from './fetch/search/usePlacesSearch'
-import { usePlacesCollection } from './fetch/usePlacesCollection'
-import { usePlacesFetch } from './fetch/usePlacesFetch'
+import { usePlaceSearch } from './fetch/search/usePlaceSearch'
+import { usePlaceCollection } from './fetch/usePlaceCollection'
+import { usePlaceFetch } from './fetch/usePlaceFetch'
 import { usePlaceClaim } from './mutations/usePlaceClaim'
 import { usePlaceCreate } from './mutations/usePlaceCreate'
+import { usePlaceDelete } from './mutations/usePlaceDelete'
 import { usePlaceUpdate } from './mutations/usePlaceUpdate'
-import { usePlacesInterface } from './utils/view/usePlacesInterface'
+import { usePlaceComputed } from './utils/view/usePlaceComputed'
+import { usePlaceInterface } from './utils/view/usePlaceInterface'
 
 export {
-  usePlacesCollection as usePlaceCollection,
-  usePlacesFetch as usePlaceFetch,
-  usePlacesSearch as usePlaceSearch,
+  usePlaceCollection,
+  usePlaceFetch,
+  usePlaceSearch,
   usePlaceClaim,
   usePlaceCreate,
   usePlaceUpdate,
-  usePlacesInterface as usePlaceInterface,
+  usePlaceDelete,
+  usePlaceComputed,
+  usePlaceInterface,
 }
 
 export interface UsePlaceOptions {
@@ -38,12 +42,14 @@ export interface UsePlaceOptions {
  */
 export function usePlace(options: UsePlaceOptions = {}) {
   return {
-    ...usePlacesCollection(),
-    ...usePlacesFetch(),
-    ...usePlacesSearch(),
+    ...usePlaceCollection(),
+    ...usePlaceFetch(),
+    ...usePlaceSearch(),
     ...usePlaceCreate({ type: unref(options.type), types: options.types }),
     ...usePlaceUpdate(),
+    ...usePlaceDelete(),
     ...usePlaceClaim(),
-    ...usePlacesInterface(),
+    ...usePlaceComputed(),
+    ...usePlaceInterface(),
   }
 }

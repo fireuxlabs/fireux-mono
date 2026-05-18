@@ -88,6 +88,10 @@ export type PlaceProfile = {
   source?: PlaceSource
 }
 
+/**
+ * @deprecated Use `usePlaceInterface()` from `./usePlaceInterface`.
+ * This remains as a compatibility path for older callers.
+ */
 export function usePlacesInterface() {
   function map(place: BasePlace): PlaceCard.Card {
     const id = safeString(place.id).trim()

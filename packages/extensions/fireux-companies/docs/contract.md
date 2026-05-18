@@ -41,6 +41,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 ## 9) Mutation entrypoints (write composables)
 - `useCompanyCreate`
 - `useCompanyUpdate`
+- `useCompanyDelete`
 
 ## 10) Non-goals / prohibited fallbacks
 - No silent fallback selection between company ids.
