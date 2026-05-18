@@ -150,13 +150,15 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import {
   FIREUX_CORE_LANGUAGE_OPTIONS,
 } from 'fireux-translation/runtime/languages'
 import { computed, reactive, ref, watchEffect } from 'vue'
 import { useIngredient } from '../../composables/fireux/firestore/ingredient/useIngredient'
-import type { Ingredient } from '../../models/ingredient.model'
+import type {
+  Ingredient,
+  IngredientUpdateInput,
+} from '../../models/ingredient.model'
 
 definePageMeta({
   layout: 'default',
@@ -169,18 +171,18 @@ const route = useRoute()
 const raw = route.params.id
 const docId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
-const { ingredients, profile, deleteIngredient } = useIngredient()
+const {
+  fetchIngredient,
+  profile,
+  updateIngredient,
+  deleteIngredient,
+} = useIngredient()
 const { isAdmin } = useUser()
-const { updateDocument } = useFirestoreUpdate()
 const { uploadImage } = useImageStorage()
 const toast = useToastify()
 
-const ingredient = computed<Ingredient | null>(() => {
-  const list = ingredients.value ?? []
-  return list.find((item) => String(item.id) === docId) ?? null
-})
-
-const loading = computed(() => ingredients.value === undefined)
+const ingredient = fetchIngredient(docId)
+const loading = computed(() => ingredient.value === undefined)
 
 const ingredientProfile = computed(() => profile(ingredient.value))
 
@@ -293,7 +295,7 @@ const handleImageUpload = async (file: File) => {
   imageUploading.value = true
   try {
     const url = await uploadImage(`ingredients/${docId}/image_url`, file)
-    await updateDocument<Ingredient>('ingredients', docId, { image_url: url })
+    await updateIngredient(docId, { image_url: url })
     toast.success('Ingredient image updated')
   } catch (error: any) {
     toast.error(String(error?.message || 'Failed to update ingredient image'))
@@ -310,7 +312,7 @@ const saveChanges = async () => {
     const entry = ingredient.value
     const nextNames = buildNamesPatch(entry)
     const nextSourceLanguage = normalizeLanguageCode(form.source_language) || 'en'
-    const patch: Partial<Ingredient> = {}
+    const patch: IngredientUpdateInput = {}
 
     if (form.name.trim() !== String(entry.name ?? '').trim()) {
       patch.name = form.name.trim()
@@ -326,7 +328,7 @@ const saveChanges = async () => {
 
     if (!Object.keys(patch).length) return
 
-    await updateDocument<Ingredient>('ingredients', docId, patch)
+    await updateIngredient(docId, patch)
     toast.success('Ingredient updated')
   } catch (error: any) {
     toast.error(String(error?.message || 'Failed to update ingredient'))

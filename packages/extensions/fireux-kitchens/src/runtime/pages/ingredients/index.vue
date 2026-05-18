@@ -28,7 +28,7 @@
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useIngredientFetch } from '../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
+import { useIngredientCollection } from '../../composables/fireux/firestore/ingredient/fetch/useIngredientCollection'
 
 definePageMeta({
   layout: 'default',
@@ -48,7 +48,7 @@ definePageMeta({
 })
 
 const { isAdmin } = useUser()
-const { ingredients } = useIngredientFetch()
+const { ingredients } = useIngredientCollection()
 
 const pageTitle = 'Ingredients'
 const pageDescription =

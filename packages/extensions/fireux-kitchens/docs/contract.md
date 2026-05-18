@@ -51,6 +51,18 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `apps/{appId}/kitchens/{kitchenId}/costs/{costId}`
 - Kitchen console mode mapping follows `docs/runtime-contract.md`.
 
+Ingredient composable stack canon:
+- `firestore/ingredient/useIngredient.ts` is the singular Ingredient family entry seam.
+- `firestore/ingredient/fetch/useIngredientFetch.ts` owns read-one root Ingredient reads.
+- `firestore/ingredient/fetch/useIngredientCollection.ts` owns read-many root Ingredient reads.
+- `firestore/ingredient/mutations/useIngredientCreate.ts` owns root Ingredient creates.
+- `firestore/ingredient/mutations/useIngredientUpdate.ts` owns root Ingredient updates.
+- `firestore/ingredient/mutations/useIngredientDelete.ts` owns root Ingredient deletes/removals.
+- `firestore/ingredient/utils/view/useIngredientComputed.ts` owns derived root Ingredient facts.
+- `firestore/ingredient/utils/view/useIngredientInterface.ts` owns Ingredient UI projections.
+- `KitchenIngredient` and `KitchenSupplierIngredient` remain scoped usage/link records.
+- Selected kitchen ingredient operations live under `console/kitchen/operations/ingredients`.
+
 ## 4b) Public menu publishing
 - Public menu publishing uses root public children only:
   - `kitchens/{kitchenId}/menus/{menuId}`

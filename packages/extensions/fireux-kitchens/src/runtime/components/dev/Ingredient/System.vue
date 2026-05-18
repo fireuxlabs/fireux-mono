@@ -40,7 +40,7 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
-import { useIngredientFetch } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientFetch'
+import { useIngredientCollection } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientCollection'
 import {
     IngredientModel as IngredientModelRuntime,
     type Ingredient as IngredientType,
@@ -52,7 +52,7 @@ defineOptions({ name: 'DevIngredientSystem' })
 
 const ingredientModelRuntime = IngredientModelRuntime
 
-const { ingredients } = useIngredientFetch()
+const { ingredients } = useIngredientCollection()
 const ingredientsCollection = computed<IngredientType[]>(() => ingredients.value ?? [])
 
 const {
