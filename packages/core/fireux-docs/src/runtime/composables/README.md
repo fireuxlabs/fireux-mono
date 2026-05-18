@@ -1,7 +1,7 @@
 # Composables Directory
 
 Authority: Operational
-Updated: 2026-05-17
+Updated: 2026-05-18
 Scope: `packages/*/fireux-*/src/runtime/composables` only.
 
 This page documents FireUX rules for `runtime/composables/`.
@@ -138,6 +138,7 @@ FireUX adds structure on top of ordinary composable usage:
 - console operation records live under `fireux/console/<entity>/operations/`, not as child buckets under `fireux/firestore/<entity>/`
 - console operation stacks may have entity-specific child folders under `operations/`, but not vague architecture buckets such as `runtime-*`, `facade`, `stack`, `manager`, `processor`, `handler`, or `resolver`
 - FireUX app/runtime helpers stay explicit under `fireux/app/`
+- `fireux/app/` is not a dumping ground for entity create/edit/editor state; normal entity authoring helpers belong to the entity family first
 - generic helpers should not quietly absorb FireUX-specific behavior
 
 ## What This README Should Answer

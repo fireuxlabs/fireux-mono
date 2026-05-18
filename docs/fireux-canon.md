@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-17
+Updated: 2026-05-18
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -175,6 +175,10 @@ Current learned examples:
 - Hydrated/read-time composites belong in fetch/runtime/interface seams, not in stored model files.
 - If an entity cannot follow the standard stack, document which family it belongs to and why the delta is real.
 - `pnpm audit:usex` is report-only tooling for spotting repeated stack seams, missing seams, local deltas, and naming drift. It is not a blocking guard until the repo is intentionally tightened.
+- Create/edit/post/publish state belongs to the entity family first.
+- Publishable entities such as `Product`, `BlogPost`, and `Job` may have lifecycle state and authoring flows, but those remain part of the Product, Blog, or Job stack unless the flow coordinates whole-app setup or multiple entity families.
+- `app/` is only for app-level orchestration, not normal entity authoring state.
+- Entity authoring helpers that are not raw Firestore belong in the entity-owned runtime family, such as `composables/fireux/product/create`, `composables/fireux/blog/editor`, or component-local create/edit helpers.
 
 ### Public Entity Route Add-Ons
 
@@ -210,8 +214,8 @@ Current learned examples:
 | --- | --- | --- |
 | `quick-create` | User completes a small form and immediately creates the record | `Company`, `Place`, `Ingredient`, simple profile/entity creates |
 | `ensure-create` | Setup-if-missing and safe to rerun | `User`, `Profile`, `App`, `Ecosystem`, console target setup where canon allows |
-| `draft-preview-create` | Local draft state, preview, then publish/create | `Product` |
-| `onboarding-create` | Multi-step setup that may produce an entity plus supporting config/assets | `App`, product onboarding flows |
+| `draft-preview-create` | Local entity-family draft state, preview, then publish/create | `Product`, `BlogPost`, `Job` |
+| `onboarding-create` | Multi-step setup that may produce an entity plus supporting config/assets | `App`, product flows only when they coordinate whole-app setup or multiple entity families |
 | `simple-edit` | One document or root record is patched directly through `useXUpdate` or entity update helpers | `Company`, `Place`, `Kitchen`, `Supplier`, `Portfolio`, `Job`, `Blog`, `Dish`, `Recipe` |
 | `split-overlay-edit` | Edit is split because root truth and overlay truth are different records | `User` core/app edit, profile capability edits, root/scoped usage entities |
 | `scoped-console-edit` | Edits happen inside a selected workspace and must carry parent/console context | `Kitchen`, `Supplier`, `Portfolio`, project/portfolio child records |

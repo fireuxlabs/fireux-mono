@@ -1,7 +1,7 @@
 # Stacks Concept
 
 Authority: Operational
-Updated: 2026-05-17
+Updated: 2026-05-18
 Scope: FireUX entity-stack meaning across `models/`, `composables/`, `components/`, `pages/`, `server/`, and docs.
 
 This page documents the FireUX `stacks` concept.
@@ -114,12 +114,14 @@ The same stack DNA can appear in different modes. Do not force every mode to hav
 
 CRUD uses shared Firestore primitives, but user-facing create/edit flows are allowed to differ by mode.
 
+Create, edit, post, and publish state belongs to the entity family first. Do not move normal entity authoring state into `app/` by default. Use `app/` only when a flow coordinates whole-app setup or multiple entity families.
+
 | Mode | What it means | Current examples |
 | --- | --- | --- |
 | `quick-create` | Small form creates a real record immediately | `Company`, `Place`, `Ingredient`, simple profile/entity creates |
 | `ensure-create` | Bootstrap/setup-if-missing and safe to rerun | `User`, `Profile`, `App`, `Ecosystem`, console target setup where canon allows |
-| `draft-preview-create` | Local draft state, preview, then publish/create | `Product` |
-| `onboarding-create` | Multi-step setup that may create an entity plus supporting config/assets | `App`, product onboarding flows |
+| `draft-preview-create` | Local entity-family draft state, preview, then publish/create | `Product`, `BlogPost`, `Job` |
+| `onboarding-create` | Multi-step setup that may create an entity plus supporting config/assets | `App`, product flows only when they coordinate whole-app setup or multiple entity families |
 | `simple-edit` | One root record is patched through entity update helpers | `Company`, `Place`, `Kitchen`, `Supplier`, `Portfolio`, `Job`, `Blog`, `Dish`, `Recipe` |
 | `split-overlay-edit` | Edit is split because root truth and overlay truth are different records | `User` core/app edit, profile capability edits, root/scoped usage entities |
 | `scoped-console-edit` | Edit happens inside a selected workspace and must carry parent/console context | `Kitchen`, `Supplier`, `Portfolio`, project/portfolio child records |
