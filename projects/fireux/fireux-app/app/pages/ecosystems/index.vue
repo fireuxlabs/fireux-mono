@@ -9,9 +9,9 @@
     <UPageBody class="pagebody">
       <EntityIndexCta
         title="Ecosystems index"
-        description="Browse ecosystem records available in this FireUX workspace and move into the project console when you need to manage them."
+        description="Browse FireUX ecosystem identity records and move into the Project console when you need the management facade."
         family="project"
-        source="public ecosystem mirror"
+        source="system ecosystem identity"
         :count-label="`${count} ecosystem${count === 1 ? '' : 's'}`"
         :actions="actions"
       />
@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { useEcosystemCollection } from 'fireux-core/runtime/composables/fireux/firestore/system/ecosystem/fetch/useEcosystemCollection'
+import { useEcosystemCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/fetch/useEcosystemCollection'
 
 definePageMeta({
   tag: 'ecosystems',
@@ -44,7 +44,7 @@ definePageMeta({
 useSeoMeta({
   title: 'Ecosystems · FireUX',
   description:
-    'Entity index for FireUX ecosystems stored in the public ecosystem mirror.',
+    'Entity index for FireUX ecosystems stored as system-level product and app groupings.',
 })
 
 const { ecosystems, count } = useEcosystemCollection()

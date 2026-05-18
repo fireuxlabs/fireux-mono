@@ -76,7 +76,7 @@ import { useCollectionSearch } from '../../../../composables/shared/useCollectio
 import {
   useEcosystemInterface,
   type EcosystemInterfaceInput,
-} from '../../../../composables/fireux/firestore/system/ecosystem/utils/view/useEcosystemInterface'
+} from '../../../../composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
 
 const props = withDefaults(
   defineProps<{

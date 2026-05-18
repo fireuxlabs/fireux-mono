@@ -1,7 +1,7 @@
 <template>
   <UPageCTA
     title="Ecosystem collection"
-    description="This index reads from the public ecosystem mirror. If none exist yet, the list should stay at zero."
+    description="This index reads root Ecosystem identity records. Management happens through Project/App console facades."
     orientation="horizontal"
   >
     <template #links>

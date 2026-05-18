@@ -34,7 +34,9 @@ type UseProjectConsoleOptions = {
  * - packages/core/fireux-docs/src/runtime/concepts/stacks/README.md
  *
  * This file adapts root Project authority sources into the private /console/project selected runtime.
- * It should not redefine generic Project collection reads or app-local project ownership.
+ * Project stored truth lives at projects/{projectId}, and operator_ids on that root record is console authority.
+ * Project console can manage related App and Ecosystem surfaces as facades over their own stored truth.
+ * It should not redefine generic Project collection reads, app-local project ownership, or related entity identities.
  */
 export function useProjectConsole(
   options: UseProjectConsoleOptions = {}

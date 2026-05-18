@@ -100,6 +100,36 @@ If a new repeated pattern appears, promote it into `docs/fireux-canon.md` and th
 
 Use `pnpm audit:usex` to print a report-only map of current `useX` stack seams. The audit is intentionally non-blocking while existing entity stacks are being normalized.
 
+## System Management Family
+
+Project, Ecosystem, and App are real system entities, but their management surfaces are facades over stored truth.
+
+```text
+Project
+  stored truth: projects/{projectId}
+  family: console-backed system root entity
+  management: /console/project
+  authority: operator_ids on the root Project record
+
+Ecosystem
+  stored truth: ecosystem/{ecosystemId}
+  family: system-level product/app grouping
+  management: Project/App context
+  future private app state: apps/{appId}/ecosystem/{ecosystemId}
+
+App
+  stored truth: apps/{appId}
+  family: system root entity + active runtime singleton
+  active seam: useApp() from FireUXConfig.appId
+  management: Project/App console facade
+```
+
+Ecosystem may map to a Firebase project operationally, but Firebase is infrastructure backing, not the entity definition.
+
+`firestore/core/ecosystem` is the canonical root Ecosystem read/collection/interface/ensure seam. `firestore/system/ecosystem` is only for setup, control, or bootstrap adapters and must not duplicate root Ecosystem entity access.
+
+`fireux/app` is app shell, context, orchestration, and config space. It is not the storage home for App, Project, or Ecosystem entity truth.
+
 ## Public Entity Route Add-Ons
 
 Shared entity routes should stay simple first: plural collection at `/xs`, public detail at `/xs/:publicKey`, and public operator bridge at `/xs/:publicKey/operator`.
@@ -124,6 +154,7 @@ The same stack DNA can appear in different modes. Do not force every mode to hav
 | App membership overlay | App-specific membership and capability for a user | app-user collection/update helpers and membership UI; not a root entity stack | `AppUser` |
 | Scoped child entity | Operational record owned by a parent entity/workspace | parent-aware collection/fetch/writes; interface/card surfaces only where useful | `Task`, `Document`, `Compliance`, `PropertyUnit`, `PortfolioTask`, `PortfolioDocument`, `KitchenMise`, `KitchenOrder` |
 | Root plus scoped usage | Root truth linked into a workspace by a scoped usage record | root collection/interface plus scoped relationship helper | `Ingredient` root plus `KitchenIngredient` usage records |
+| System management entity/context | Stored system entity that may also be managed through Project/App context | root entity seam plus explicit management facade; stored truth is not duplicated by the facade | `Project`, `Ecosystem`, `App` |
 | System/adapter seam | Runtime helper around stack behaviour, not a stored domain entity | ensure/selection/adapter helpers; no full entity UI stack required | `Console`, `Firestore`, selection helpers |
 
 ## Create And Edit Modes

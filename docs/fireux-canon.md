@@ -98,6 +98,22 @@ Current learned examples:
 - Generic project collection and console project selection are not the same seam.
 - `useProjectCollection()` stays generic.
 - Console project visibility adds user/app scope above the generic collection rather than redefining it.
+- Project, Ecosystem, and App are real system entities. Their management surfaces are facades over stored truth, not separate stored identities.
+- Project is a console-backed system root entity:
+  - stored truth: `projects/{projectId}`
+  - management surface: `/console/project` in `fireux-app`
+  - authority: `operator_ids` on the root Project record
+- Ecosystem is a system-level product/app grouping managed through Project/App context:
+  - stored truth: `ecosystem/{ecosystemId}`
+  - possible future/private app state: `apps/{appId}/ecosystem/{ecosystemId}` only when implemented
+  - it may map to a Firebase project operationally, but Firebase is infrastructure backing, not entity definition
+- App is a system root entity and active runtime singleton:
+  - stored truth: `apps/{appId}`
+  - active seam: `useApp()` resolves `FireUXConfig.appId`
+  - Project/App console surfaces may manage App through facades over root App truth
+- `firestore/core/ecosystem` is the canonical root Ecosystem read/collection/interface/ensure seam.
+- `firestore/system/ecosystem` is only for setup/control/bootstrap adapters and must not duplicate root Ecosystem entity access.
+- `fireux/app` is app shell/context/orchestration space, not a bucket for App, Project, or Ecosystem entity truth.
 - Tenant apps are child app surfaces inside a FireUX ecosystem, not independent ecosystem canons.
 - Tenant apps may stay intentionally thin and do not justify new top-level domain/storage patterns on their own.
 - Placeholder tenant branding/assets are canonical until tenant-specific assets are explicitly provided.
@@ -238,6 +254,7 @@ composables/fireux/firestore/<entity>/
 | Console workspace entity | Root entity that can be selected and operated | root stack plus `useXConsole`/selection and `/console/<family>` surfaces | `Kitchen`, `Supplier`, `Portfolio`, `Project` |
 | Identity/profile capability | Something a signed-in user can be or manage about themself | dashboard/profile routes, profile fetch/ensure/update, no console family by default | `Professional`, `Chef`, `Agent`, base `Profile` |
 | App membership overlay | App-specific role/capability for a user | `useAppUserCollection`, app-user update helpers, app membership UI; not a root entity stack | `AppUser` |
+| System management entity/context | Stored system entity that may also be managed through Project/App context | root entity seam plus explicit management facade; stored truth is not duplicated by the facade | `Project`, `Ecosystem`, `App` |
 | Scoped child entity | Operational record owned by a parent workspace/entity | scoped collection/fetch helpers, interface/card surfaces only where needed, writes through parent-aware mutations | `Task`, `Document`, `Compliance`, `PropertyUnit`, `PortfolioTask`, `PortfolioDocument`, `KitchenMise`, `KitchenOrder` |
 | Root plus scoped usage | Root truth linked into a workspace by a scoped usage record | root model/collection/interface plus scoped relationship helper | `Ingredient` root plus `KitchenIngredient` usage records |
 | System/adapter seam | Runtime helper around stack behaviour, not an entity | adapter/ensure/selection helpers; no full entity UI stack required | `Console`, `Firestore`, selection helpers |

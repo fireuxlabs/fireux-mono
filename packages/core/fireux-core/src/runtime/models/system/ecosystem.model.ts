@@ -14,19 +14,22 @@ type WidenLiteral<T> =
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Family: System
- * Storage: root canonical record plus app-scoped record
+ * Family: System-level product/app grouping
+ * Storage: root canonical record; app-scoped private state is future unless implemented
  * Root path: /ecosystem/<ecosystemId>
- * App path: /apps/<appId>/ecosystem/<ecosystemId>
+ * Future app path: /apps/<appId>/ecosystem/<ecosystemId>
  *
  * Decision note:
- * - Ecosystem is a dependent public entity with its own root facade.
+ * - Ecosystem is a FireUX system-level managed entity/context, not a Firebase project mirror.
+ * - It groups products/apps and is managed through Project/App context.
+ * - It may map to a Firebase project operationally, but Firebase is infrastructure backing, not entity definition.
+ * - Ecosystem is a dependent public/system entity with its own root facade.
  * - An ecosystem cannot exist without a parent project, so `project_id` is required canon.
  * - A project may exist without an ecosystem.
  * - The root ecosystem record is the public-facing ecosystem identity used by FireUX public surfaces.
- * - The app-scoped ecosystem record holds app-local/private ecosystem state when needed.
+ * - The app-scoped ecosystem record is a future/private state shape until runtime code implements it.
  * - Keep this model versatile for repo use: public identity/media fields live at root, while app/runtime
- *   specifics can live in the app-scoped record or downstream scoped children.
+ *   specifics can later live in the app-scoped record or downstream scoped children.
  * - If this decision changes, update the models README first, then this file.
  */
 export const EcosystemModel = {
@@ -56,7 +59,11 @@ export const EcosystemModel = {
 export type Ecosystem = WidenLiteral<typeof EcosystemModel>
 
 /**
- * App-specific ecosystem record.
+ * Future app-specific ecosystem private state record.
+ *
+ * This model documents the possible app-scoped shape only. Current canonical
+ * Ecosystem truth remains the root /ecosystem/<ecosystemId> record unless a
+ * runtime implementation introduces this record explicitly.
  */
 export const AppEcosystemModel = {
   id: '',

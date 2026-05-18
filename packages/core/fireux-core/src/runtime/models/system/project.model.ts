@@ -23,16 +23,21 @@ type WidenLiteral<T> =
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Family: System
+ * Family: Console-backed system root entity
  * Storage: root canonical record plus app-scoped record
  * Root path: /projects/<projectId>
  * App path: /apps/<appId>/projects/<projectId>
+ * Management surface: /console/project in fireux-app
  *
  * Decision note:
  * - Project follows the shared root-plus-app canon used by Kitchen, Portfolio, and Supplier.
+ * - Canonical Project identity, membership, and authority live on the root Project record.
  * - Public project creation should create the root project record.
  * - App-scoped project creation should ensure the app-scoped project record and may create root first when missing.
  * - `owner_user_id` is a canonical root ownership hint, not a replacement for any app-level authority system.
+ * - `operator_ids` is canonical root Project console authority.
+ * - The Project console may manage related App and Ecosystem surfaces, but those are management facades over their own stored truth.
+ * - A Project management surface must not invent separate App or Ecosystem stored identities unless the model docs say so.
  * - Public facade depth can vary by family; Project may stay relatively thin publicly while still using the same root-plus-app pattern.
  * - If Project later grows operational child records, they should live under /apps/<appId>/projects/<projectId>/...
  * - Project still remains a system-level special case because endpoint enrichment and system metadata are central to its runtime.

@@ -6,6 +6,17 @@ import { useEcosystemInterface } from './utils/view/useEcosystemInterface'
 
 export type { Ecosystem } from '../../../../../models/system/ecosystem.model'
 
+/**
+ * FireUX stack family: Core/system root context.
+ * Entity: Ecosystem.
+ * Canon:
+ * - docs/fireux-canon.md
+ * - packages/core/fireux-docs/src/runtime/concepts/stacks/README.md
+ *
+ * This is the canonical root Ecosystem seam. Without an explicit id it resolves
+ * FireUXConfig.ecosystem; for arbitrary ids, pass the id directly.
+ * Ecosystem may map to Firebase infrastructure, but Firebase is not its identity truth.
+ */
 export function useEcosystem(id?: string | Ref<string>) {
   const fireux = useFireUXConfig()
 

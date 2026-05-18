@@ -7,13 +7,16 @@ import type { AppDerived, AppMedia, AppRole, AppSocialLinks } from './supporting
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Family: System
+ * Family: System root entity + active runtime singleton
  * Storage: root canonical model
  * Root path: /apps/<appId>
- * Runtime face: project-managed facade when apps are being handled inside a project runtime surface
+ * Active seam: useApp() resolves FireUXConfig.appId
+ * Runtime face: project-managed facade when apps are handled inside a Project/App console surface
  *
  * Decision note:
  * - App is stored once as canonical system truth.
+ * - Project/App console management surfaces are facades over root App truth, not separate stored identities.
+ * - `fireux/app` is for app shell, context, orchestration, and config helpers; App entity data belongs in the Firestore App stack.
  * - A runtime surface may manage App through a facade, but that does not justify a second stored app-scoped record yet.
  * - If real scoped stored state appears later, update the models README first, then this file.
  */
