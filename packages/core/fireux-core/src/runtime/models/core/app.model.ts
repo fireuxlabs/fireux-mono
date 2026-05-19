@@ -103,5 +103,81 @@ export const AppModel = {
 export type AppModel = WidenLiteral<typeof AppModel>
 export type App = AppModel
 
+/**
+ * App field ownership canon.
+ *
+ * App stored truth lives once at `apps/{appId}`. Dashboard, developer, and
+ * Project/App console surfaces are management facades over that stored truth.
+ */
+export const AppFieldOwnership = {
+  /**
+   * `/dashboard/admin`
+   *
+   * Public app profile and membership operations that app admins can safely
+   * operate without changing app identity, routing, hierarchy, or build config.
+   */
+  appAdminEditable: [
+    'tagline',
+    'description',
+    'short_bio',
+    'long_bio',
+    'social_links',
+    'join_requests',
+    'admin_ids',
+  ],
+
+  /**
+   * `/dashboard/developer`
+   *
+   * Build/config/asset fields owned by the configured developer uid.
+   */
+  developerEditable: [
+    'media',
+    'database_id',
+    'fireux_native',
+    'fireux_size',
+    'fireux_repo',
+  ],
+
+  /**
+   * FireUX Project/App console.
+   *
+   * Identity, lifecycle, routing, and hierarchy fields may require cascades into
+   * project/ecosystem registries, SEO indexes, public URLs, or runtime config.
+   */
+  controlPlaneOwned: [
+    'project_id',
+    'ecosystem_id',
+    'slug',
+    'status',
+    'team',
+    'role',
+    'ecosystem',
+    'app_name',
+    'app_short_name',
+  ],
+
+  /**
+   * System-maintained fields.
+   *
+   * These are not directly edited through normal product UI.
+   */
+  systemMaintained: [
+    'id',
+    'derived',
+    'created',
+    'updated',
+  ],
+} as const
+
+export type AppAdminEditableField =
+  typeof AppFieldOwnership.appAdminEditable[number]
+export type AppDeveloperEditableField =
+  typeof AppFieldOwnership.developerEditable[number]
+export type AppControlPlaneField =
+  typeof AppFieldOwnership.controlPlaneOwned[number]
+export type AppSystemMaintainedField =
+  typeof AppFieldOwnership.systemMaintained[number]
+
 export type AppCreateInput = Omit<App, 'id' | 'created' | 'updated'>
 export type AppUpdateInput = Partial<Omit<App, 'id' | 'created' | 'updated'>>

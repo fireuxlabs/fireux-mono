@@ -6,7 +6,8 @@
           <h3 class="text-base font-semibold">App identity</h3>
           <p class="text-xs text-dimmed">
             App admins can review these locked values. Developer settings own
-            env-backed identity, assets, and diagnostics.
+            env-backed identity, assets, and diagnostics. Project/App console owns
+            lifecycle, routing, and hierarchy changes that may require cascades.
           </p>
         </div>
 

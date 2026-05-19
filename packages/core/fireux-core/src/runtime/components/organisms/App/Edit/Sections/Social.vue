@@ -5,7 +5,8 @@
         <div class="section__copy">
           <h3 class="text-base font-semibold">Social</h3>
           <p class="text-xs text-dimmed">
-            Handles for Instagram/Twitter/YouTube (e.g. fireux.app). URLs for everything else.
+            App Admin editable public links. Handles for Instagram/Twitter/YouTube
+            (e.g. fireux.app). URLs for everything else.
           </p>
         </div>
       </div>

@@ -5,7 +5,8 @@
         <div class="section__copy">
           <h3 class="text-base font-semibold">About</h3>
           <p class="text-xs text-dimmed">
-            Keep the human-facing description up to date.
+            App Admin editable public content: tagline, description, short bio,
+            and long bio.
           </p>
         </div>
       </div>

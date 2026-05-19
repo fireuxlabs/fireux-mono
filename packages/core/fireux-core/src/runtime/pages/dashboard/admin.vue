@@ -56,8 +56,9 @@
                     </h1>
                     <p class="max-w-3xl text-sm leading-6 text-dimmed">
                       App admins manage the public app profile, members, join requests,
-                      and conversations. Developer settings are separated for build
-                      assets, locked config, and diagnostics.
+                      and conversations. Developer settings are separated for app
+                      assets and locked config. The local <span class="font-mono">/dev</span>
+                      workbench remains a dev-server inspection surface.
                     </p>
                   </div>
                 </div>
@@ -84,10 +85,19 @@
                   >
                     Developer settings
                   </UButton>
+                  <UButton
+                    v-if="isLocalDev"
+                    to="/dev"
+                    color="neutral"
+                    variant="ghost"
+                    icon="i-lucide-terminal"
+                  >
+                    Dev workbench
+                  </UButton>
                 </div>
               </div>
 
-              <div class="grid w-full gap-3 sm:grid-cols-2 xl:max-w-xl">
+              <div class="grid w-full gap-3 sm:grid-cols-2 xl:max-w-3xl xl:grid-cols-3">
                 <UCard variant="soft">
                   <div class="space-y-2">
                     <div class="flex items-center gap-2 text-sm font-medium text-default">
@@ -105,11 +115,11 @@
                   <div class="space-y-2">
                     <div class="flex items-center gap-2 text-sm font-medium text-default">
                       <Icon name="i-lucide-code" class="size-4 text-primary" />
-                      Developer scope
+                      Developer settings
                     </div>
                     <p class="text-xs leading-5 text-dimmed">
-                      App images, env-backed identity, asset checks, raw model review,
-                      and binding diagnostics.
+                      App images, env-backed identity, asset checks, and app model
+                      review for the configured developer uid.
                     </p>
                     <UBadge
                       size="xs"
@@ -117,6 +127,26 @@
                       variant="soft"
                     >
                       {{ isDeveloper ? 'Available to you' : 'Hidden for this user' }}
+                    </UBadge>
+                  </div>
+                </UCard>
+
+                <UCard variant="soft">
+                  <div class="space-y-2">
+                    <div class="flex items-center gap-2 text-sm font-medium text-default">
+                      <Icon name="i-lucide-terminal" class="size-4 text-primary" />
+                      Local /dev
+                    </div>
+                    <p class="text-xs leading-5 text-dimmed">
+                      Runtime inspection, collection drift, model JSON, image scans,
+                      and local-only debugging utilities.
+                    </p>
+                    <UBadge
+                      size="xs"
+                      :color="isLocalDev ? 'warning' : 'neutral'"
+                      variant="soft"
+                    >
+                      {{ isLocalDev ? 'Dev server only' : 'Not mounted in production' }}
                     </UBadge>
                   </div>
                 </UCard>
@@ -161,6 +191,7 @@ const { app, pending, pill: appToCard } = useApp()
 const { user, pill: userToCard } = useUser()
 const { model: appProfileModel } = useAppProfileView(app)
 const { isDeveloper } = useDeveloperAccess()
+const isLocalDev = import.meta.dev
 
 const appCard = computed(() => appToCard(app.value))
 const userCard = computed(() => userToCard(user.value))

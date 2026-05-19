@@ -1,5 +1,5 @@
 <template>
-  <UDashboardPanel id="console-developer">
+  <UDashboardPanel id="dashboard-developer">
     <template #header>
       <LayoutsDashboardNavbar title="Developer Settings" />
     </template>
@@ -22,6 +22,47 @@
             </UPageCard>
 
             <div v-else class="space-y-6">
+              <UPageCard variant="subtle">
+                <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                  <div class="space-y-3">
+                    <UBadge color="primary" variant="soft" class="w-fit">
+                      Developer settings
+                    </UBadge>
+                    <div class="space-y-2">
+                      <h1 class="text-2xl font-semibold tracking-tight text-default">
+                        App build and configuration surface
+                      </h1>
+                      <p class="max-w-3xl text-sm leading-6 text-dimmed">
+                        This page is gated by <span class="font-mono">DEVELOPER_ID</span>
+                        and owns app assets, env-backed identity checks, and app-level
+                        diagnostics. The local <span class="font-mono">/dev</span>
+                        workbench is separate and only exists on a dev server.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div class="flex flex-wrap gap-2">
+                    <UButton
+                      to="/dashboard/admin"
+                      color="neutral"
+                      variant="soft"
+                      icon="i-lucide-badge-check"
+                    >
+                      App Admin
+                    </UButton>
+                    <UButton
+                      v-if="isLocalDev"
+                      to="/dev"
+                      color="neutral"
+                      variant="ghost"
+                      icon="i-lucide-terminal"
+                    >
+                      Dev workbench
+                    </UButton>
+                  </div>
+                </div>
+              </UPageCard>
+
               <AppCardsPill
                 v-if="previewCard"
                 :to="previewCard.to"
@@ -53,6 +94,7 @@ const appSnapshot = computed(() => (pending.value ? null : app.value ?? null))
 const previewCard = computed(() => (
   appSnapshot.value ? appInterface(appSnapshot.value) : null
 ))
+const isLocalDev = import.meta.dev
 
 definePageMeta({
   layout: 'dashboard',

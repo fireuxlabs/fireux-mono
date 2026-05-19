@@ -77,10 +77,10 @@
         <template #header>
           <div class="section__header">
             <div class="section__copy">
-              <h3 class="text-base font-semibold">Field groups (draft)</h3>
+              <h3 class="text-base font-semibold">Field ownership</h3>
               <p class="text-xs text-dimmed">
-                Proposed separation to prevent “locked” values leaking into editable surfaces.
-                Confirm what should be editable and I’ll enforce it.
+                App field ownership canon. Keep app admin, developer settings,
+                control-plane, and system-maintained fields separate.
               </p>
             </div>
           </div>
@@ -89,33 +89,43 @@
         <div class="section__item">
           <div class="grid gap-4 sm:grid-cols-2">
             <div>
-              <div class="text-xs font-medium text-dimmed">Locked (config/system)</div>
+              <div class="text-xs font-medium text-dimmed">Project/App console</div>
               <ul class="mt-2 space-y-1 text-sm">
                 <li>
-                  <span class="font-mono">id</span>, <span class="font-mono">role</span>,
+                  <span class="font-mono">project_id</span>,
+                  <span class="font-mono">ecosystem_id</span>,
+                  <span class="font-mono">slug</span>,
+                  <span class="font-mono">status</span>
+                </li>
+                <li>
+                  <span class="font-mono">team</span>,
+                  <span class="font-mono">role</span>,
                   <span class="font-mono">ecosystem</span>
                 </li>
                 <li>
                   <span class="font-mono">app_name</span>,
                   <span class="font-mono">app_short_name</span>
                 </li>
+              </ul>
+            </div>
+
+            <div>
+              <div class="text-xs font-medium text-dimmed">Developer settings</div>
+              <ul class="mt-2 space-y-1 text-sm">
                 <li>
-                  <span class="font-mono">creator_id</span>
+                  <span class="font-mono">media</span>,
+                  <span class="font-mono">database_id</span>
                 </li>
                 <li>
-                  <span class="font-mono">created_at</span>,
-                  <span class="font-mono">updated_at</span>
-                </li>
-                <li>
-                  <span class="font-mono">admin_ids</span>,
-                  <span class="font-mono">derived.user_count</span>,
-                  <span class="font-mono">join_requests</span>
+                  <span class="font-mono">fireux_native</span>,
+                  <span class="font-mono">fireux_size</span>,
+                  <span class="font-mono">fireux_repo</span>
                 </li>
               </ul>
             </div>
 
             <div>
-              <div class="text-xs font-medium text-dimmed">Editable (public-facing content)</div>
+              <div class="text-xs font-medium text-dimmed">App Admin</div>
               <ul class="mt-2 space-y-1 text-sm">
                 <li>
                   <span class="font-mono">tagline</span>,
@@ -125,7 +135,25 @@
                   <span class="font-mono">short_bio</span>,
                   <span class="font-mono">long_bio</span>
                 </li>
-                <li><span class="font-mono">social_links</span></li>
+                <li>
+                  <span class="font-mono">social_links</span>,
+                  <span class="font-mono">join_requests</span>,
+                  <span class="font-mono">admin_ids</span>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <div class="text-xs font-medium text-dimmed">System-maintained</div>
+              <ul class="mt-2 space-y-1 text-sm">
+                <li>
+                  <span class="font-mono">id</span>,
+                  <span class="font-mono">derived</span>
+                </li>
+                <li>
+                  <span class="font-mono">created</span>,
+                  <span class="font-mono">updated</span>
+                </li>
               </ul>
             </div>
           </div>

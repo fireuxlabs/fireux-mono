@@ -65,6 +65,53 @@ This folder currently spans two route roles:
 
 That mix is acceptable for now because `App` is an active platform entity that still needs a fallback bootstrap surface.
 
+## Field Ownership
+
+`AppModel` is stored once as root truth at `apps/{appId}`. Dashboard and console
+surfaces are management facades over that record, not separate stored app
+identities.
+
+`/dashboard/admin` is the App Admin surface. It may edit public app content and
+membership operations:
+
+- `tagline`
+- `description`
+- `short_bio`
+- `long_bio`
+- `social_links`
+- `join_requests`
+- `admin_ids` / app user roles
+
+`/dashboard/developer` is the Developer Settings surface, gated by
+`DEVELOPER_ID`. It owns build/config/asset fields:
+
+- `media`
+- `database_id`
+- `fireux_native`
+- `fireux_size`
+- `fireux_repo`
+
+FireUX Project/App console owns identity, hierarchy, routing, and lifecycle
+fields because changes may require cascades into project/ecosystem registries,
+SEO indexes, public URLs, or runtime config:
+
+- `project_id`
+- `ecosystem_id`
+- `slug`
+- `status`
+- `team`
+- `role`
+- `ecosystem`
+- `app_name`
+- `app_short_name`
+
+System-maintained fields are not edited directly through product UI:
+
+- `id`
+- `derived`
+- `created`
+- `updated`
+
 ## Not Aligned Yet
 
 - app bootstrap still depends on runtime config and onboarding state rather than a simple record form

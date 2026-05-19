@@ -4,7 +4,10 @@
       <div class="section__header">
         <div class="section__copy">
           <h3 class="text-base font-semibold">Admins</h3>
-          <p class="text-xs text-dimmed">App administrators.</p>
+          <p class="text-xs text-dimmed">
+            App Admin membership operation. Admin role changes mirror app users
+            and root user admin lists.
+          </p>
         </div>
       </div>
     </template>

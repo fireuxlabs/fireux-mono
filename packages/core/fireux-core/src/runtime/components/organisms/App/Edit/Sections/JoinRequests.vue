@@ -5,7 +5,8 @@
         <div class="section__copy">
           <h3 class="text-base font-semibold">Join Requests</h3>
           <p class="text-xs text-dimmed">
-            Approve to add new members or clear pending invites.
+            App Admin membership operation. Approve to add new members or clear
+            pending invites.
           </p>
         </div>
       </div>
