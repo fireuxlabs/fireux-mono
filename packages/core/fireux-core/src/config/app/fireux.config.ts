@@ -7,7 +7,10 @@ import { configPwa } from './pwa'
 import { setRuntime, type RuntimeAppRole } from './runtime'
 import type { FireuxSeoConfig } from './seo'
 import { configViteWorkspace } from './vite'
-import { resolveFireuxBrandAssets } from '../../utils/brandAssets'
+import {
+  normalizePublicImgAsset,
+  resolveFireuxBrandAssets,
+} from '../../utils/brandAssets'
 import type { FireuxMetaContent } from '../../runtime/models/system/meta-content.model'
 
 declare module '@nuxt/schema' {
@@ -32,6 +35,10 @@ export type FireuxAppConfig = {
   appThumbnail?: string
   /** Optional app logo path/URL (preferred). Role-aware defaults apply when omitted. */
   appLogo?: string
+  /** Optional light-mode logo path/URL for UI surfaces. */
+  appLogoLight?: string
+  /** Optional dark-mode logo path/URL for UI surfaces. */
+  appLogoDark?: string
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
   role: RuntimeAppRole
@@ -247,6 +254,8 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       shortName: app.shortName,
       appThumbnail: brandAssets.thumbnail,
       appLogo: brandAssets.logo,
+      ...(app.appLogoLight ? { appLogoLight: normalizePublicImgAsset(app.appLogoLight) } : {}),
+      ...(app.appLogoDark ? { appLogoDark: normalizePublicImgAsset(app.appLogoDark) } : {}),
       ...(app.contactEmail ? { contactEmail: app.contactEmail } : {}),
       domain: envDomain,
       ...(app.seo?.siteUrl ? { siteUrl: app.seo.siteUrl } : {}),

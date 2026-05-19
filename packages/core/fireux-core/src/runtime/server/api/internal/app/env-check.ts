@@ -12,6 +12,11 @@ import {
 import { existsSync, readFileSync, statSync } from 'node:fs'
 import imageSize from 'image-size'
 import { fileURLToPath } from 'node:url'
+import {
+  APP_PUBLIC_ASSET_REQUIREMENTS,
+  validateAppAssetDimensions,
+  type AppAssetDimensionConstraints,
+} from '../../../../composables/fireux/firestore/core/app/utils/appMedia'
 
 type ISizeCalculationResult = ReturnType<typeof imageSize>
 
@@ -95,14 +100,6 @@ interface BrandAssetCheck {
   height?: number
 }
 
-interface BrandConstraints {
-  requiredWidth?: number
-  requiredHeight?: number
-  minWidth?: number
-  minHeight?: number
-  minAspect?: number
-}
-
 function findRepoRoot(start: string): string {
   let current = start
 
@@ -125,46 +122,17 @@ function findRepoRoot(start: string): string {
 function validateBrandDimensions(
   name: string,
   dim: ISizeCalculationResult,
-  constraints: BrandConstraints
+  constraints: AppAssetDimensionConstraints
 ): string | null {
-  const type = dim.type
-  if (!type) return 'Unknown file type'
-
-  const isSvg = type === 'svg'
-  const isPng = type === 'png'
-
-  const isWordmark = name === 'wordmark' || name.startsWith('wordmark-')
-
-  if (isWordmark && isSvg) return null
-
-  if (!isSvg && !isPng) return 'Must be SVG or PNG'
-
-  if (name === 'thumbnail' || name === 'logo') {
-    const { requiredWidth, requiredHeight } = constraints
-    if (!requiredWidth || !requiredHeight) return null
-    if (dim.width === requiredWidth && dim.height === requiredHeight)
-      return null
-    return `Must be exactly ${requiredWidth}×${requiredHeight} (got ${dim.width}×${dim.height})`
-  }
-
-  if (isWordmark) {
-    const minWidth = constraints.minWidth ?? 256
-    const minHeight = constraints.minHeight ?? 64
-    const minAspect = constraints.minAspect ?? 3
-    const width = dim.width ?? 0
-    const height = dim.height ?? 0
-    if (
-      width >= minWidth &&
-      height >= minHeight &&
-      height > 0 &&
-      width / height >= minAspect
-    ) {
-      return null
-    }
-    return `Must be ≥${minWidth}×${minHeight} with aspect ≥${minAspect}:1 (got ${width}×${height})`
-  }
-
-  return null
+  return validateAppAssetDimensions(
+    name,
+    {
+      width: dim.width,
+      height: dim.height,
+      type: dim.type,
+    },
+    constraints
+  )
 }
 
 /**
@@ -174,11 +142,7 @@ function checkBrandImage(
   name: string,
   relativePath: string,
   resolveAssetPath: (relative: string) => string | null,
-  requiredWidth?: number,
-  requiredHeight?: number,
-  minWidth?: number,
-  minHeight?: number,
-  minAspect?: number
+  constraints: AppAssetDimensionConstraints
 ): BrandAssetCheck {
   const absPath = resolveAssetPath(relativePath)
   const result: BrandAssetCheck = { name, path: relativePath, ok: false }
@@ -215,13 +179,7 @@ function checkBrandImage(
   result.width = dim.width
   result.height = dim.height
 
-  const validationError = validateBrandDimensions(name, dim, {
-    requiredWidth,
-    requiredHeight,
-    minWidth,
-    minHeight,
-    minAspect,
-  })
+  const validationError = validateBrandDimensions(name, dim, constraints)
 
   if (validationError) {
     result.reason = validationError
@@ -230,6 +188,13 @@ function checkBrandImage(
   }
 
   return result
+}
+
+function appAssetCheckName(relativePath: string): string {
+  return relativePath
+    .replace(/^img\/app\//, '')
+    .replace(/\.(?:ico|png)$/i, '')
+    .replace(/\//g, '-')
 }
 
 function createBrandAssetResolver(
@@ -525,81 +490,45 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
   const brandRequirements: Array<{
     name: string
     path: string
-    width?: number
-    height?: number
-    minWidth?: number
-    minHeight?: number
-    minAspect?: number
+    dimensions: AppAssetDimensionConstraints
   }> =
     brandNamespace === 'fireux'
       ? [
           {
             name: 'logo',
             path: 'img/core/brand/logo.png',
-            width: 512,
-            height: 512,
+            dimensions: {
+              requiredWidth: 512,
+              requiredHeight: 512,
+              acceptedTypes: ['png'],
+            },
           },
           {
             name: 'wordmark-light',
             path: 'img/core/brand/wordmark-light.png',
-            minWidth: 256,
-            minHeight: 64,
-            minAspect: 3,
+            dimensions: {
+              minWidth: 256,
+              minHeight: 64,
+              minAspect: 3,
+              acceptedTypes: ['png'],
+            },
           },
           {
             name: 'wordmark-dark',
             path: 'img/core/brand/wordmark-dark.png',
-            minWidth: 256,
-            minHeight: 64,
-            minAspect: 3,
+            dimensions: {
+              minWidth: 256,
+              minHeight: 64,
+              minAspect: 3,
+              acceptedTypes: ['png'],
+            },
           },
         ]
-      : [
-          {
-            name: 'logo',
-            path: 'img/app/logo.png',
-            width: 512,
-            height: 512,
-          },
-          {
-            name: 'cover',
-            path: 'img/app/cover.png',
-          },
-          {
-            name: 'thumbnail',
-            path: 'img/app/thumbnail.png',
-          },
-          {
-            name: 'favicon',
-            path: 'img/app/favicon.ico',
-          },
-          {
-            name: 'pwa-icon-192',
-            path: 'img/app/pwa/icon-192.png',
-            width: 192,
-            height: 192,
-          },
-          {
-            name: 'pwa-icon-512',
-            path: 'img/app/pwa/icon-512.png',
-            width: 512,
-            height: 512,
-          },
-          {
-            name: 'wordmark-light',
-            path: 'img/app/wordmark-light.png',
-            minWidth: 256,
-            minHeight: 64,
-            minAspect: 3,
-          },
-          {
-            name: 'wordmark-dark',
-            path: 'img/app/wordmark-dark.png',
-            minWidth: 256,
-            minHeight: 64,
-            minAspect: 3,
-          },
-        ]
+      : APP_PUBLIC_ASSET_REQUIREMENTS.map((asset) => ({
+          name: appAssetCheckName(asset.localRelativePath),
+          path: asset.localRelativePath,
+          dimensions: asset.dimensions,
+        }))
 
   // Check brand assets at the app-level paths only (public/img/app/*) to match figma-export guidance.
   const brandAssets: BrandAssetCheck[] = brandRequirements.map((asset) =>
@@ -607,11 +536,7 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
       asset.name,
       asset.path,
       resolveBrandAsset,
-      asset.width,
-      asset.height,
-      asset.minWidth,
-      asset.minHeight,
-      asset.minAspect
+      asset.dimensions
     )
   )
 

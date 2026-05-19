@@ -6,6 +6,8 @@ const fireuxConfig = defineFireuxConfig({
   id: 'la-tap-berne',
   name: 'La Tap Berne',
   shortName: 'La Tap Berne',
+  appLogoLight: '/img/app/logo-light.svg',
+  appLogoDark: '/img/app/logo-dark.svg',
   role: 'tenant',
   consoleFamilies: [],
   modules: [],

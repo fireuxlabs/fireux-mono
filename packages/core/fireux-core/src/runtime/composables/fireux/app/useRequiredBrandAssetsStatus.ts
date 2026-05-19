@@ -1,4 +1,5 @@
 import { computed, onMounted, ref } from 'vue'
+import { APP_PUBLIC_ASSET_REQUIREMENTS } from '../firestore/core/app/utils/appMedia'
 
 type RequiredBrandAsset = {
   key: string
@@ -6,32 +7,12 @@ type RequiredBrandAsset = {
   path: string
 }
 
-const REQUIRED_BRAND_ASSETS: RequiredBrandAsset[] = [
-  { key: 'logo', label: 'Logo', path: '/img/app/logo.png' },
-  {
-    key: 'wordmark-light',
-    label: 'Wordmark (light)',
-    path: '/img/app/wordmark-light.png',
-  },
-  {
-    key: 'wordmark-dark',
-    label: 'Wordmark (dark)',
-    path: '/img/app/wordmark-dark.png',
-  },
-  { key: 'thumbnail', label: 'Thumbnail', path: '/img/app/thumbnail.png' },
-  { key: 'cover', label: 'Cover', path: '/img/app/cover.png' },
-  { key: 'favicon', label: 'Favicon', path: '/img/app/favicon.ico' },
-  {
-    key: 'pwa-192',
-    label: 'PWA icon (192)',
-    path: '/img/app/pwa/icon-192.png',
-  },
-  {
-    key: 'pwa-512',
-    label: 'PWA icon (512)',
-    path: '/img/app/pwa/icon-512.png',
-  },
-]
+const REQUIRED_BRAND_ASSETS: RequiredBrandAsset[] =
+  APP_PUBLIC_ASSET_REQUIREMENTS.map((asset) => ({
+    key: asset.key,
+    label: asset.label,
+    path: asset.localPublicPath,
+  }))
 
 export function useRequiredBrandAssetsStatus() {
   const pending = ref(import.meta.client)

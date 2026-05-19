@@ -5,13 +5,16 @@ import { existsSync, readFileSync } from 'node:fs'
 import { extname, join, resolve as pathResolve } from 'node:path'
 import { FieldValue } from 'firebase-admin/firestore'
 import { getStorage } from 'firebase-admin/storage'
+import imageSize from 'image-size'
 import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
 import { getAdminApp } from '../../../utils/getAdmin'
 import {
   APP_IMAGE_SYNC_KINDS,
   appImageFirestoreField,
   appImageLocalPublicPath,
+  appImageRequirement,
   appImageStoragePath,
+  validateAppAssetDimensions,
   type AppImageKind,
   type AppMediaSyncFailure,
   type AppMediaSyncResponse,
@@ -100,6 +103,31 @@ async function uploadLocalAsset(
   const buffer = readFileSync(absPath)
   if (!buffer.length) {
     throw new Error(`Empty local asset: ${localPublicPath}`)
+  }
+
+  let dimensions: ReturnType<typeof imageSize>
+  try {
+    dimensions = imageSize(buffer)
+  } catch (error) {
+    const message =
+      error instanceof Error && error.message.trim()
+        ? error.message.trim()
+        : 'Unable to read image metadata'
+    throw new Error(`Invalid local asset ${localPublicPath}: ${message}`)
+  }
+
+  const requirement = appImageRequirement(kind)
+  const dimensionError = validateAppAssetDimensions(
+    requirement.label,
+    {
+      width: dimensions.width,
+      height: dimensions.height,
+      type: dimensions.type,
+    },
+    requirement.dimensions
+  )
+  if (dimensionError) {
+    throw new Error(`${localPublicPath}: ${dimensionError}`)
   }
 
   const objectPath = appImageStoragePath(appId, kind)

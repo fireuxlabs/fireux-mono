@@ -1,17 +1,20 @@
 <template>
-  <img
-    :src="displaySrc"
-    :alt="alt"
-    class="fx-brand-logo"
-    :class="sizeClass"
-    loading="lazy"
-    decoding="async"
-    @error="handleError"
-  />
+  <ClientOnly>
+    <img
+      :src="displaySrc"
+      :alt="alt"
+      class="fx-brand-logo"
+      :class="sizeClass"
+      loading="lazy"
+      decoding="async"
+      @error="handleError"
+    />
+  </ClientOnly>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useResolvedColorMode } from '../../../composables/fireux/app/useColorMode'
 import { useFireuxBrandAssets } from '../../../composables/fireux/app/useFireuxBrandAssets'
 import { CORE_BRAND_FALLBACK_ASSETS } from '../../../../utils/brandAssets'
 
@@ -21,6 +24,8 @@ type Props = {
   size?: BrandSize
   alt?: string
   src?: string
+  lightSrc?: string
+  darkSrc?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -28,22 +33,31 @@ const props = withDefaults(defineProps<Props>(), {
   alt: 'App logo',
 })
 const brandAssets = useFireuxBrandAssets()
-const resolvedSrc = computed(() => {
+const resolvedMode = useResolvedColorMode()
+const isDark = computed(() => resolvedMode.value === 'dark')
+const baseSrc = computed(() => {
   const raw = typeof props.src === 'string' ? props.src.trim() : ''
   return raw || brandAssets.value.logo
 })
-const failed = ref(false)
-const displaySrc = computed(() =>
-  failed.value ? CORE_BRAND_FALLBACK_ASSETS.logo : resolvedSrc.value
-)
+const themedSrc = computed(() => {
+  const raw = isDark.value ? props.darkSrc : props.lightSrc
+  return typeof raw === 'string' ? raw.trim() : ''
+})
+const resolvedSrc = computed(() => themedSrc.value || baseSrc.value)
+const failedSrcs = ref<string[]>([])
+const displaySrc = computed(() => {
+  if (!failedSrcs.value.includes(resolvedSrc.value)) return resolvedSrc.value
+  if (!failedSrcs.value.includes(baseSrc.value)) return baseSrc.value
+  return CORE_BRAND_FALLBACK_ASSETS.logo
+})
 
-watch(resolvedSrc, () => {
-  failed.value = false
+watch([resolvedSrc, baseSrc], () => {
+  failedSrcs.value = []
 })
 
 function handleError() {
   if (displaySrc.value === CORE_BRAND_FALLBACK_ASSETS.logo) return
-  failed.value = true
+  failedSrcs.value = [...failedSrcs.value, displaySrc.value]
 }
 
 const sizeClass = computed(() => ({

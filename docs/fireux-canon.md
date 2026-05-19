@@ -295,6 +295,15 @@ composables/fireux/firestore/<entity>/
 - The canonical brand asset path is `/public/img/app/*` for global, tenant, and standalone apps.
 - `/public` is filesystem-only; rendered/runtime URLs must start with `/img/...`.
 - App brand/media values in config or Firestore must be either external absolute URLs or canonical public-image URLs such as `/img/app/thumbnail.png`; bare filenames such as `thumbnail.png` and `wordmark-dark.png` are compatibility input only and must be normalized before rendering.
+- Standard app asset requirements are enforced by `/api/internal/app/env-check` and app media sync:
+  - `logo.png`: PNG, exactly `512x512`
+  - `thumbnail.png`: PNG, exactly `1200x630`
+  - `wordmark-light.png` and `wordmark-dark.png`: PNG, at least `256x64`, aspect at least `3:1`
+  - `cover.png`: PNG, `16:9`, at least `1280x720`
+  - `favicon.ico`: ICO or PNG, square, at least `32x32`
+  - `pwa/icon-192.png`: PNG, exactly `192x192`
+  - `pwa/icon-512.png`: PNG, exactly `512x512`
+- Syncable app media uses dedicated Storage objects under `apps/{appId}/media/{thumbnail|logo|wordmark-light|wordmark-dark|cover}` and writes the resolved download URLs to `apps/{appId}.media`.
 
 ## Demo Data Canon
 - Demo data is never canon by itself.

@@ -10,19 +10,19 @@
         <div class="flex flex-col items-center gap-4 text-center">
           <div class="flex flex-col items-center gap-2">
             <AppBrandLogo
-              v-if="isTenant"
               size="small"
               :alt="`${appName} logo`"
+              :light-src="appLogoLightSrc"
+              :dark-src="appLogoDarkSrc"
             />
             <AppBrandWordmark
               size="medium"
               :alt="appName"
-              :light-src="appWordmarkLightSrc"
-              :dark-src="appWordmarkDarkSrc"
             />
           </div>
-          <div class="text-sm text-gray-600 flex flex-col items-center gap-1">
+          <div class="flex flex-col items-center gap-2">
             <a
+              v-if="hasParentBrand"
               :href="providerHref"
               target="_blank"
               rel="noopener noreferrer"
@@ -32,24 +32,25 @@
               <img
                 :src="providerLogoSrc"
                 :alt="`${providerName} logo`"
-                class="h-4 w-4"
+                class="h-8 w-8"
               />
               <AppBrandWordmark
-                size="small"
+                size="medium"
                 :alt="providerName"
                 :light-src="providerWordmarkLight"
                 :dark-src="providerWordmarkDark"
               />
             </a>
-            <span>{{ providerName }} &copy; {{ currentYear }}</span>
+            <span class="text-xs text-muted">
+              {{ copyrightName }} &copy; {{ currentYear }}. All rights reserved.
+            </span>
             <a
               v-if="contactEmail"
               :href="`mailto:${contactEmail}`"
-              class="text-[color:var(--ui-primary)] hover:underline"
+              class="text-xs text-[color:var(--ui-primary)] hover:underline"
             >
               {{ contactEmail }}
             </a>
-            <span>All rights reserved.</span>
           </div>
         </div>
       </div>
@@ -66,10 +67,12 @@ const { contactEmail } = fireux
 const currentYear = new Date().getFullYear()
 const isTenant = fireux.isTenant
 const appName = String(fireux.appName || fireux.appShortName || fireux.appId).trim() || 'App'
-const appWordmarkLightSrc = isTenant ? '/img/app/wordmark-light.svg' : undefined
-const appWordmarkDarkSrc = isTenant ? '/img/app/wordmark-dark.svg' : undefined
+const appLogoLightSrc = fireux.appLogoLight
+const appLogoDarkSrc = fireux.appLogoDark
 const ecosystemSlug = String(fireux.ecosystem || '').trim().toLowerCase()
+const hasParentBrand = isTenant || (fireux.isGlobal && ecosystemSlug !== 'fireux')
 const providerName = isTenant ? labelizeEcosystemName(ecosystemSlug) : 'FIReUX'
+const copyrightName = hasParentBrand ? providerName : appName
 const providerHref = isTenant && ecosystemSlug
   ? `https://${ecosystemSlug}.app`
   : 'https://fireux.app'

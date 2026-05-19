@@ -18,7 +18,7 @@
               description="No app data found for this environment."
               variant="subtle"
             >
-              <UButton to="/" label="Go to FireUX.app" variant="soft" class="w-fit" />
+              <UButton to="/" label="Go to Home" variant="soft" class="w-fit" />
             </UPageCard>
 
             <div v-else class="space-y-6">
@@ -29,6 +29,7 @@
                 :display-name="previewCard.displayName"
                 :ecosystem="previewCard.ecosystem"
                 :badges="previewCard.badges"
+                :show-subtitle="false"
                 :link="Boolean(previewCard.to)"
                 class="block"
               />
@@ -48,8 +49,10 @@ import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 
 const { app, pending, pill: appInterface } = useApp()
 
-const appSnapshot = (pending.value ? null : app.value) ?? null
-const previewCard = computed(() => (appSnapshot ? appInterface(appSnapshot) : null))
+const appSnapshot = computed(() => (pending.value ? null : app.value ?? null))
+const previewCard = computed(() => (
+  appSnapshot.value ? appInterface(appSnapshot.value) : null
+))
 
 definePageMeta({
   layout: 'dashboard',

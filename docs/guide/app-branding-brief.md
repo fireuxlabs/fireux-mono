@@ -1,7 +1,7 @@
 ---
 title: App Branding Brief
 description: Designer-facing asset requirements for FireUX app logos, wordmarks, icons, and cover images.
-updated: 2026-05-14
+updated: 2026-05-19
 ---
 
 # App Branding Brief
@@ -16,10 +16,10 @@ Please provide these exact files:
 | File | Size | Ratio | Background |
 |---|---:|---:|---|
 | `logo.png` | 512 x 512 px | 1:1 | Transparent |
-| `thumbnail.png` | 512 x 512 px | 1:1 | Can be solid/brand background |
+| `thumbnail.png` | 1200 x 630 px | ~1.91:1 | Can be solid/brand background |
 | `wordmark-light.png` | 768 x 192 px | 4:1 | Transparent |
 | `wordmark-dark.png` | 768 x 192 px | 4:1 | Transparent |
-| `cover.png` | 1280 x 720 px | 16:9 | Designed background/image |
+| `cover.png` | 1280 x 720 px or larger | 16:9 | Designed background/image |
 | `favicon.ico` | 48 x 48 px or multi-size ICO | 1:1 | Transparent where possible |
 | `pwa/icon-192.png` | 192 x 192 px | 1:1 | Solid or transparent |
 | `pwa/icon-512.png` | 512 x 512 px | 1:1 | Solid or transparent |
@@ -65,11 +65,12 @@ Do not place these on white, black, grey, or coloured rectangles. The app UI sup
 
 `thumbnail.png`
 
-- Square app preview image.
-- Used in app indexes, app cards, and public showcase surfaces.
+- App preview/social image.
+- Used in app indexes, app cards, sharing previews, and public showcase surfaces.
 - Can include a brand background.
 - Should be legible at small card sizes.
-- Usually this can be logo plus brand colour background.
+- Runtime enforces 1200 x 630 as the standard social-card shape.
+- Make sure the main artwork crops safely when shown in square card/avatar surfaces.
 
 ### Wordmarks
 
@@ -134,7 +135,8 @@ Before handoff, confirm:
 
 - Logos and wordmarks have transparent backgrounds.
 - No accidental white/black rectangle behind transparent assets.
-- PNGs are exported at the exact pixel sizes above.
+- PNGs are exported at the exact pixel sizes above where the table marks them exact.
+- `thumbnail.png` must be 1200 x 630 and should keep the main artwork safe when cropped into square card/avatar surfaces.
 - The logo remains clear at 32 px.
 - The wordmark remains readable when scaled down.
 - File names match exactly.

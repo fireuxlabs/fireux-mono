@@ -44,6 +44,14 @@ Expected onboarding asset set:
 - `pwa/icon-512.png`
 - `favicon.ico`
 
+Standard dimensions:
+- `logo.png`: PNG, exactly `512x512`
+- `thumbnail.png`: PNG, exactly `1200x630`
+- `wordmark-light.png` / `wordmark-dark.png`: PNG, at least `256x64`, aspect at least `3:1`
+- `cover.png`: PNG, `16:9`, at least `1280x720`
+- `favicon.ico`: ICO or PNG, square, at least `32x32`
+- `pwa/icon-192.png` / `pwa/icon-512.png`: PNG, exactly `192x192` / `512x512`
+
 Operational rule:
 - drag and drop or copy the exported assets into the local app bucket before initializing onboarding
 - if `figma-export/apps/<app-id>/` is empty during local-only console work, you may temporarily loan another app's export to unblock development

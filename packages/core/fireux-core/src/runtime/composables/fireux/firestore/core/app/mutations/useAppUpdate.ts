@@ -6,10 +6,12 @@ import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import {
-    appImageFirestoreField,
-    appImageStoragePath,
-    isWordmarkKind,
-    type AppImageKind,
+  appImageRequirement,
+  appImageFirestoreField,
+  appImageStoragePath,
+  isWordmarkKind,
+  validateAppAssetDimensions,
+  type AppImageKind,
 } from '../utils/appMedia'
 
 export function useAppUpdate(appRef: Ref<App | null | undefined>) {
@@ -204,6 +206,65 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     return next
   }
 
+  function imageTypeFromBlob(blob: Blob): string {
+    const type = blob.type.toLowerCase()
+    if (type.includes('png')) return 'png'
+    if (type.includes('svg')) return 'svg'
+    if (type.includes('jpeg') || type.includes('jpg')) return 'jpg'
+    if (type.includes('ico') || type.includes('icon')) return 'ico'
+    return ''
+  }
+
+  async function readBrowserImageDimensions(blob: Blob) {
+    return new Promise<{ width: number; height: number; type: string }>(
+      (resolve, reject) => {
+        const objectUrl = URL.createObjectURL(blob)
+        const image = new Image()
+
+        const cleanup = () => URL.revokeObjectURL(objectUrl)
+
+        image.onload = () => {
+          const width = image.naturalWidth || image.width
+          const height = image.naturalHeight || image.height
+          cleanup()
+          resolve({ width, height, type: imageTypeFromBlob(blob) })
+        }
+
+        image.onerror = () => {
+          cleanup()
+          reject(new Error('Unable to read local image dimensions'))
+        }
+
+        image.src = objectUrl
+      }
+    )
+  }
+
+  async function readValidatedLocalAppImage(kind: AppImageKind, localPath: string) {
+    const response = await fetch(localPath, { cache: 'no-store' })
+    if (!response.ok) {
+      throw new Error(`Missing local asset: ${localPath}`)
+    }
+
+    const blob = await response.blob()
+    if (!blob.size) {
+      throw new Error(`Empty local asset: ${localPath}`)
+    }
+
+    const dimensions = await readBrowserImageDimensions(blob)
+    const requirement = appImageRequirement(kind)
+    const dimensionError = validateAppAssetDimensions(
+      requirement.label,
+      dimensions,
+      requirement.dimensions
+    )
+    if (dimensionError) {
+      throw new Error(`${localPath}: ${dimensionError}`)
+    }
+
+    return blob
+  }
+
   async function overwriteImageFromLocal(kind: AppImageKind, localPath: string) {
     if (!localPath || !localPath.startsWith('/')) {
       throw new Error('Local image path must start with /')
@@ -211,7 +272,8 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
     const id = ensureAppId()
     const path = appImageStoragePath(id, kind)
-    const url = await uploadImage(path, localPath)
+    const source = await readValidatedLocalAppImage(kind, localPath)
+    const url = await uploadImage(path, source)
     const next = cacheBust(url)
 
     const field = appImageFirestoreField(kind)

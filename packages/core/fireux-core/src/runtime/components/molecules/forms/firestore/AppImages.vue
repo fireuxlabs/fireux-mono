@@ -5,161 +5,174 @@
         <div class="section__header">
           <div class="section__copy">
             <h3 class="text-base font-semibold">Images</h3>
-          <p class="text-xs text-dimmed">
-              Firestore URLs are the canonical record values. Public assets are served from
-              <span class="font-mono">/public/img/app</span> and can be synced to overwrite Firestore.
+            <p class="text-xs text-dimmed">
+              Firestore + Storage URLs are canonical. Local public assets are the files served from
+              <span class="font-mono">/public/img/app</span>.
             </p>
             <p
               v-if="isDev"
               class="text-xs text-dimmed"
             >
-              In dev, missing app record URLs can fall back to local public assets for display only. This backup does not change canonical Firestore or Storage media.
+              In dev, local assets can be used as a display backup. Use Sync to Storage when the local file should become the app record media.
             </p>
           </div>
         </div>
       </template>
 
-      <div class="section__item space-y-5">
-        <div class="space-y-3">
-          <div class="text-xs font-medium text-dimmed">Firestore (record)</div>
+      <div class="section__item space-y-3">
+        <div class="rounded-md border border-default bg-muted/30 px-3 py-2 text-xs text-dimmed">
+          <span class="font-medium text-default">Local assets</span>
+          live in <span class="font-mono">/public/img/app</span>.
+          Syncable assets copy to <span class="font-mono">apps/{appId}/media/*</span>
+          and update the app record.
+        </div>
 
-          <div
-            v-for="item in firestoreItems"
-            :key="item.key"
-            class="space-y-2"
-          >
-            <div class="flex items-center justify-between gap-3">
-              <div class="min-w-0 flex-1">
-                <div class="flex min-w-0 items-baseline gap-2">
-                  <div class="shrink-0 text-sm font-medium">{{ item.label }}:</div>
+        <div class="overflow-hidden rounded-md border border-default">
+          <div class="flex items-center justify-between gap-3 border-b border-default bg-muted/30 px-3 py-2">
+            <div>
+              <div class="text-xs font-medium text-default">Syncable media</div>
+              <div class="text-[11px] text-dimmed">Compact previews only; dimensions are enforced by checks.</div>
+            </div>
+            <UBadge color="primary" variant="soft" size="sm">Storage</UBadge>
+          </div>
 
-                  <div v-if="item.url" class="inline-flex items-center gap-2">
-                    <a
-                      :href="item.url"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="inline-flex items-center text-dimmed"
-                      :aria-label="`Open ${item.label} URL`"
-                      :title="item.url"
+          <div class="divide-y divide-default">
+            <div
+              v-for="item in syncableItems"
+              :key="item.key"
+              class="grid gap-2 px-3 py-1.5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+            >
+              <div class="flex min-w-0 flex-wrap items-center gap-2.5 sm:flex-nowrap">
+                <div class="flex shrink-0 items-center gap-1.5">
+                  <div
+                    class="asset-preview-frame"
+                    :class="`asset-preview-frame--${item.shape}`"
+                    title="Storage preview"
+                  >
+                    <img
+                      v-if="item.url"
+                      :src="item.url"
+                      :alt="`Storage ${item.label}`"
+                      class="asset-preview-image"
+                      :class="`asset-preview-image--${item.shape}`"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <span v-else class="text-[9px] text-dimmed">-</span>
+                  </div>
+                  <div
+                    class="asset-preview-frame"
+                    :class="`asset-preview-frame--${item.shape}`"
+                    title="Local preview"
+                  >
+                    <img
+                      :src="item.path"
+                      :alt="`Local ${item.label}`"
+                      class="asset-preview-image"
+                      :class="`asset-preview-image--${item.shape}`"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                </div>
+
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-1.5">
+                    <div class="text-sm font-medium">{{ item.label }}</div>
+                    <UBadge
+                      :color="item.url ? 'success' : 'neutral'"
+                      variant="soft"
+                      size="sm"
                     >
-                      <UIcon name="i-lucide-external-link" class="size-4" />
-                    </a>
-                    <span class="text-xs text-dimmed">Open</span>
+                      {{ item.url ? 'Synced' : 'Missing' }}
+                    </UBadge>
                   </div>
-                  <span v-else class="text-xs text-dimmed italic">missing</span>
-                </div>
-
-                <div class="mt-1 space-y-1 text-xs text-dimmed">
-                  <div>
-                    Record field <span class="font-mono">{{ item.field }}</span>
-                  </div>
-                  <div>
-                    Storage path <span class="font-mono">{{ item.storagePath }}</span>
+                  <div class="text-[11px] text-dimmed" v-html="item.requirements" />
+                  <div class="hidden truncate text-[10px] text-dimmed md:block">
+                    <span class="font-mono">{{ item.field }}</span>
+                    <span class="px-1">-></span>
+                    <span class="font-mono">{{ item.storagePath || 'storage unavailable' }}</span>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div v-if="item.url" class="inline-flex max-w-full items-center">
-              <img
-                :src="item.url"
-                :alt="`Firestore ${item.label}`"
-                class="block max-w-[12rem]"
-                :class="item.previewClass"
-                loading="lazy"
-                decoding="async"
-              />
+              <div class="flex items-center gap-1.5 sm:justify-end">
+                <a
+                  :href="item.path"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex h-7 items-center rounded-md px-2 text-xs text-dimmed hover:bg-muted/50 hover:text-default"
+                >
+                  Local
+                </a>
+                <a
+                  v-if="item.url"
+                  :href="item.url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex h-7 items-center rounded-md px-2 text-xs text-dimmed hover:bg-muted/50 hover:text-default"
+                  :aria-label="`Open ${item.label} Storage URL`"
+                >
+                  Storage
+                </a>
+                <UButton
+                  icon="i-lucide-refresh-cw"
+                  label="Sync"
+                  variant="soft"
+                  size="xs"
+                  :loading="saving === item.syncKind"
+                  :disabled="Boolean(saving)"
+                  :title="`Sync local ${kindLabel[item.syncKind]} to Firebase Storage and Firestore`"
+                  @click="onOverwrite(item.syncKind)"
+                />
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="space-y-3">
-          <div class="text-xs font-medium text-dimmed">Public assets (syncable)</div>
-
-          <div
-            v-for="item in syncedItems"
-            :key="item.key"
-            class="space-y-2"
-          >
-            <div class="flex items-center justify-between gap-3">
-              <div class="min-w-0 flex-1">
-                <div class="flex min-w-0 items-baseline gap-2">
-                  <div class="shrink-0 text-sm font-medium">{{ item.label }}:</div>
-                  <a
-                    :href="item.path"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="min-w-0 text-xs text-dimmed underline break-all"
-                  >
-                    {{ item.path }}
-                  </a>
-                </div>
-              </div>
-
-              <UButton
-                icon="i-lucide-refresh-cw"
-                label="Sync"
-                variant="soft"
-                size="xs"
-                :loading="saving === item.syncKind"
-                :disabled="Boolean(saving)"
-                :title="`Sync local ${kindLabel[item.syncKind]} (overwrites Firestore URL)`"
-                @click="onOverwrite(item.syncKind)"
-              />
+        <div class="overflow-hidden rounded-md border border-default">
+          <div class="flex items-center justify-between gap-3 border-b border-default bg-muted/30 px-3 py-2">
+            <div>
+              <div class="text-xs font-medium text-default">Local-only files</div>
+              <div class="text-[11px] text-dimmed">Required browser/install assets.</div>
             </div>
-
-            <div class="inline-flex max-w-full items-center">
-              <img
-                :src="item.path"
-                :alt="`Local ${item.label}`"
-                class="block max-w-[12rem]"
-                :class="item.previewClass"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-
-            <div class="text-xs text-dimmed" v-html="item.requirements" />
+            <UBadge color="neutral" variant="soft" size="sm">Local</UBadge>
           </div>
-        </div>
 
-        <div class="space-y-3">
-          <div class="text-xs font-medium text-dimmed">Public assets (required, not synced)</div>
+          <div class="divide-y divide-default">
+            <div
+              v-for="item in requiredOnlyItems"
+              :key="item.key"
+              class="flex items-center justify-between gap-3 px-3 py-2"
+            >
+              <div class="flex min-w-0 items-center gap-2.5">
+                <div
+                  class="asset-preview-frame asset-preview-frame--square"
+                >
+                  <img
+                    :src="item.path"
+                    :alt="`Local ${item.label}`"
+                    class="asset-preview-image asset-preview-image--square"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
 
-          <div
-            v-for="item in requiredOnlyItems"
-            :key="item.key"
-            class="space-y-2"
-          >
-            <div class="flex items-center justify-between gap-3">
-              <div class="min-w-0 flex-1">
-                <div class="flex min-w-0 items-baseline gap-2">
-                  <div class="shrink-0 text-sm font-medium">{{ item.label }}:</div>
-                  <a
-                    :href="item.path"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="min-w-0 text-xs text-dimmed underline break-all"
-                  >
-                    {{ item.path }}
-                  </a>
+                <div class="min-w-0">
+                  <div class="text-sm font-medium">{{ item.label }}</div>
+                  <div class="text-[11px] text-dimmed" v-html="item.requirements" />
                 </div>
               </div>
-              <div class="text-xs text-dimmed">Not synced</div>
-            </div>
 
-            <div class="inline-flex max-w-full items-center">
-              <img
-                :src="item.path"
-                :alt="`Local ${item.label}`"
-                class="block max-w-[12rem]"
-                :class="item.previewClass"
-                loading="lazy"
-                decoding="async"
-              />
+              <a
+                :href="item.path"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex h-7 shrink-0 items-center rounded-md px-2 text-xs text-dimmed hover:bg-muted/50 hover:text-default"
+              >
+                Local
+              </a>
             </div>
-
-            <div class="text-xs text-dimmed" v-html="item.requirements" />
           </div>
         </div>
       </div>
@@ -171,7 +184,14 @@
 import { computed, ref } from 'vue'
 import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
 import { useAppUpdate } from '../../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
-import { appImageStoragePath } from '../../../../composables/fireux/firestore/core/app/utils/appMedia'
+import {
+  appImageFirestoreField,
+  appImageLocalPublicPath,
+  appImageRequirement,
+  appImageStoragePath,
+  appPublicAssetRequirement,
+  type AppImageKind,
+} from '../../../../composables/fireux/firestore/core/app/utils/appMedia'
 import type { AppModel } from '../../../../models/core/app.model'
 
 const props = withDefaults(defineProps<{ app?: AppModel | null }>(), { app: null })
@@ -182,105 +202,110 @@ const { overwriteImageFromLocal } = import.meta.client
   ? useAppUpdate(appRef)
   : { overwriteImageFromLocal: async () => '' }
 
-// Local public assets (served from each app's /public/img/app)
-const localThumbnailPath = '/img/app/thumbnail.png'
-const localCoverPath = '/img/app/cover.png'
-const localFaviconPath = '/img/app/favicon.ico'
-const localLogoPath = '/img/app/logo.png'
-const localPwa192Path = '/img/app/pwa/icon-192.png'
-const localPwa512Path = '/img/app/pwa/icon-512.png'
-const localWordmarkLightPath = '/img/app/wordmark-light.png'
-const localWordmarkDarkPath = '/img/app/wordmark-dark.png'
+const envCheckLabel =
+  ' <span class="text-dimmed">(validated by <span class="font-mono">/api/internal/app/env-check</span>)</span>.'
 const isDev = import.meta.dev
+
+type AssetPreviewShape = 'square' | 'wide' | 'wordmark'
 
 type ImageItemBase = {
   key: string
   label: string
   path: string
   requirements: string
-  previewClass: string
+  shape: AssetPreviewShape
 }
 
-type SyncedImageItem = ImageItemBase & { syncKind: SyncedImageKind }
+type SyncedImageKind = AppImageKind
+
+const validatedRequirement = (kind: SyncedImageKind) =>
+  `${appImageRequirement(kind).requirementsHtml}${envCheckLabel}`
+
+type SyncedImageItem = ImageItemBase & {
+  syncKind: SyncedImageKind
+}
+
+type ResolvedSyncedImageItem = SyncedImageItem & {
+  field: string
+  storagePath: string
+  url: string
+}
 
 const syncedItems: SyncedImageItem[] = [
   {
     key: 'logo',
     label: 'Logo',
-    path: localLogoPath,
-    requirements:
-      'Required. Must be exactly <span class="font-mono">512×512</span> (validated by <span class="font-mono">/api/internal/app/env-check</span>).',
-    previewClass: 'h-10 w-auto object-contain',
+    path: appImageLocalPublicPath('logo'),
+    requirements: validatedRequirement('logo'),
+    shape: 'square',
     syncKind: 'logo',
   },
   {
     key: 'wordmark-light',
     label: 'Wordmark (light)',
-    path: localWordmarkLightPath,
-    requirements:
-      'Required. Must be <span class="font-mono">≥256×64</span> and aspect <span class="font-mono">≥3:1</span> (validated by <span class="font-mono">/api/internal/app/env-check</span>).',
-    previewClass: 'h-8 w-auto object-contain',
+    path: appImageLocalPublicPath('wordmarkLight'),
+    requirements: validatedRequirement('wordmarkLight'),
+    shape: 'wordmark',
     syncKind: 'wordmarkLight',
   },
   {
     key: 'wordmark-dark',
     label: 'Wordmark (dark)',
-    path: localWordmarkDarkPath,
-    requirements:
-      'Required. Must be <span class="font-mono">≥256×64</span> and aspect <span class="font-mono">≥3:1</span> (validated by <span class="font-mono">/api/internal/app/env-check</span>).',
-    previewClass: 'h-8 w-auto object-contain',
+    path: appImageLocalPublicPath('wordmarkDark'),
+    requirements: validatedRequirement('wordmarkDark'),
+    shape: 'wordmark',
     syncKind: 'wordmarkDark',
   },
   {
     key: 'thumbnail',
     label: 'Thumbnail',
-    path: localThumbnailPath,
-    requirements:
-      'Required (<span class="font-mono">thumbnail.png</span>). No strict dimensions enforced today.',
-    previewClass: 'h-12 w-12 rounded object-cover',
+    path: appImageLocalPublicPath('thumbnail'),
+    requirements: validatedRequirement('thumbnail'),
+    shape: 'wide',
     syncKind: 'thumbnail',
+  },
+  {
+    key: 'cover',
+    label: 'Cover',
+    path: appImageLocalPublicPath('cover'),
+    requirements: validatedRequirement('cover'),
+    shape: 'wide',
+    syncKind: 'cover',
   },
 ]
 
 const requiredOnlyItems: ImageItemBase[] = [
   {
-    key: 'cover',
-    label: 'Cover',
-    path: localCoverPath,
-    requirements: 'Required. No strict dimensions enforced today.',
-    previewClass: 'h-10 w-auto rounded object-cover',
-  },
-  {
     key: 'favicon',
     label: 'Favicon',
-    path: localFaviconPath,
-    requirements: 'Required. No strict dimensions enforced today.',
-    previewClass: 'h-8 w-8 rounded object-contain',
+    path: appPublicAssetRequirement('favicon').localPublicPath,
+    requirements: appPublicAssetRequirement('favicon').requirementsHtml,
+    shape: 'square',
   },
   {
     key: 'pwa-192',
     label: 'PWA icon (192)',
-    path: localPwa192Path,
-    requirements: 'Required. Must be exactly <span class="font-mono">192×192</span>.',
-    previewClass: 'h-10 w-10 rounded object-contain',
+    path: appPublicAssetRequirement('pwaIcon192').localPublicPath,
+    requirements: appPublicAssetRequirement('pwaIcon192').requirementsHtml,
+    shape: 'square',
   },
   {
     key: 'pwa-512',
     label: 'PWA icon (512)',
-    path: localPwa512Path,
-    requirements: 'Required. Must be exactly <span class="font-mono">512×512</span>.',
-    previewClass: 'h-10 w-10 rounded object-contain',
+    path: appPublicAssetRequirement('pwaIcon512').localPublicPath,
+    requirements: appPublicAssetRequirement('pwaIcon512').requirementsHtml,
+    shape: 'square',
   },
 ]
 
-type SyncedImageKind = 'thumbnail' | 'logo' | 'wordmarkLight' | 'wordmarkDark'
 const saving = ref<SyncedImageKind | null>(null)
 
 const kindToLocalPath: Record<SyncedImageKind, string> = {
-  thumbnail: localThumbnailPath,
-  logo: localLogoPath,
-  wordmarkLight: localWordmarkLightPath,
-  wordmarkDark: localWordmarkDarkPath,
+  thumbnail: appImageLocalPublicPath('thumbnail'),
+  logo: appImageLocalPublicPath('logo'),
+  wordmarkLight: appImageLocalPublicPath('wordmarkLight'),
+  wordmarkDark: appImageLocalPublicPath('wordmarkDark'),
+  cover: appImageLocalPublicPath('cover'),
 }
 
 const kindLabel: Record<SyncedImageKind, string> = {
@@ -288,46 +313,34 @@ const kindLabel: Record<SyncedImageKind, string> = {
   logo: 'logo',
   wordmarkLight: 'wordmark (light)',
   wordmarkDark: 'wordmark (dark)',
+  cover: 'cover',
 }
 
-const firestoreItems = computed(() => {
+function mediaUrlForKind(value: AppModel | null | undefined, kind: AppImageKind) {
+  switch (kind) {
+    case 'thumbnail':
+      return value?.media?.thumbnail_url || ''
+    case 'logo':
+      return value?.media?.logo_url || ''
+    case 'wordmarkLight':
+      return value?.media?.wordmark_light_url || ''
+    case 'wordmarkDark':
+      return value?.media?.wordmark_dark_url || ''
+    case 'cover':
+      return value?.media?.cover_url || ''
+  }
+}
+
+const syncableItems = computed<ResolvedSyncedImageItem[]>(() => {
   const value = appRef.value
   const appId = value?.id || ''
 
-  return [
-    {
-      key: 'firestore-thumbnail',
-      label: 'Thumbnail',
-      field: 'media.thumbnail_url',
-      storagePath: appId ? appImageStoragePath(appId, 'thumbnail') : '',
-      url: value?.media?.thumbnail_url || '',
-      previewClass: 'h-12 w-12 rounded object-cover',
-    },
-    {
-      key: 'firestore-logo',
-      label: 'Logo',
-      field: 'media.logo_url',
-      storagePath: appId ? appImageStoragePath(appId, 'logo') : '',
-      url: value?.media?.logo_url || '',
-      previewClass: 'h-10 w-auto object-contain',
-    },
-    {
-      key: 'firestore-wordmark-light',
-      label: 'Wordmark (light)',
-      field: 'media.wordmark_light_url',
-      storagePath: appId ? appImageStoragePath(appId, 'wordmarkLight') : '',
-      url: value?.media?.wordmark_light_url || '',
-      previewClass: 'h-8 w-auto object-contain',
-    },
-    {
-      key: 'firestore-wordmark-dark',
-      label: 'Wordmark (dark)',
-      field: 'media.wordmark_dark_url',
-      storagePath: appId ? appImageStoragePath(appId, 'wordmarkDark') : '',
-      url: value?.media?.wordmark_dark_url || '',
-      previewClass: 'h-8 w-auto object-contain',
-    },
-  ]
+  return syncedItems.map((item) => ({
+    ...item,
+    field: appImageFirestoreField(item.syncKind),
+    storagePath: appId ? appImageStoragePath(appId, item.syncKind) : '',
+    url: mediaUrlForKind(value, item.syncKind),
+  }))
 })
 
 async function onOverwrite(kind: SyncedImageKind) {
@@ -344,3 +357,66 @@ async function onOverwrite(kind: SyncedImageKind) {
   }
 }
 </script>
+
+<style scoped>
+.asset-preview-frame {
+  --asset-preview-image-max-height: 100%;
+  --asset-preview-image-max-width: 100%;
+  --asset-preview-image-fit: contain;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  height: 3rem;
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius-sm, 0.25rem);
+  background: color-mix(in oklab, var(--ui-bg-muted) 45%, transparent);
+}
+
+.asset-preview-frame--square {
+  --asset-preview-image-max-height: 2.25rem;
+  --asset-preview-image-max-width: 2.25rem;
+  width: 3rem;
+}
+
+.asset-preview-frame--wide {
+  --asset-preview-image-fit: cover;
+  width: 5.25rem;
+}
+
+.asset-preview-frame--wordmark {
+  --asset-preview-image-max-height: 1.875rem;
+  --asset-preview-image-max-width: 7.25rem;
+  width: 8rem;
+}
+
+.asset-preview-image {
+  display: block;
+  max-width: var(--asset-preview-image-max-width);
+  max-height: var(--asset-preview-image-max-height);
+  object-fit: var(--asset-preview-image-fit);
+}
+
+.asset-preview-image--square {
+  width: auto;
+  height: auto;
+}
+
+.asset-preview-image--wide {
+  width: 100%;
+  height: 100%;
+}
+
+.asset-preview-image--wordmark {
+  width: auto;
+  height: auto;
+}
+
+@media (min-width: 640px) {
+  .asset-preview-frame--wordmark {
+    --asset-preview-image-max-width: 8.25rem;
+    width: 9rem;
+  }
+}
+</style>

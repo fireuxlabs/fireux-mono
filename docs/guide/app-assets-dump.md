@@ -1,7 +1,7 @@
 ---
 title: App Asset Dump
 description: How to drop designer-provided app image packs into the repo and publish them to Firebase Storage.
-updated: 2026-05-14
+updated: 2026-05-19
 ---
 
 # App Asset Dump
@@ -56,17 +56,20 @@ SVG files are useful for designers and future exports, but the app catalog and S
 Ask designers for:
 
 ```text
-thumbnail.png          512 x 512
+thumbnail.png          1200 x 630
 logo.png               512 x 512, transparent background if possible
 wordmark-light.png     768 x 192, for dark backgrounds
 wordmark-dark.png      768 x 192, for light backgrounds
-cover.png              1280 x 720
+cover.png              16:9, minimum 1280 x 720
 favicon.ico            48 x 48 or multi-size ICO
 pwa/icon-192.png       192 x 192
 pwa/icon-512.png       512 x 512
 ```
 
 Keep filenames exact. The sync scripts look for these names.
+
+`thumbnail.png` is the enforced preview/social image. Export it at 1200 x 630,
+and keep the main artwork safe when cropped into square card/avatar surfaces.
 
 ## Drop-In Workflow
 

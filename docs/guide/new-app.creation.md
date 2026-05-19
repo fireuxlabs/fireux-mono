@@ -281,6 +281,19 @@ projects/<ecosystem>/<app>/public/img/app/wordmark-dark.png
 projects/<ecosystem>/<app>/public/img/app/cover.png
 ```
 
+Standard dimensions are enforced by the developer setup check and media sync:
+
+```text
+thumbnail.png          PNG, exactly 1200x630
+logo.png               PNG, exactly 512x512
+wordmark-light.png     PNG, at least 256x64 and aspect at least 3:1
+wordmark-dark.png      PNG, at least 256x64 and aspect at least 3:1
+cover.png              PNG, 16:9 and at least 1280x720
+favicon.ico            ICO or PNG, square and at least 32x32
+pwa/icon-192.png       PNG, exactly 192x192
+pwa/icon-512.png       PNG, exactly 512x512
+```
+
 Canonical Storage objects:
 
 ```text
