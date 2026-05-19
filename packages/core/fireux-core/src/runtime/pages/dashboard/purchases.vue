@@ -8,6 +8,7 @@ definePageMeta({
     label: 'Purchases',
     icon: 'i-lucide-shopping-cart',
     position: 'bottom',
+    order: 30,
     desktop: true,
     layouts: ['dashboard'],
   },

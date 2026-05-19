@@ -35,9 +35,9 @@ definePageMeta({
   nav: {
     key: 'dashboard-home',
     label: 'Overview',
-    icon: 'i-lucide-terminal',
+    icon: 'i-lucide-layout-dashboard',
     position: 'top',
-    order: 20,
+    order: 10,
     desktop: true,
     mobile: true,
     layouts: ['dashboard'],

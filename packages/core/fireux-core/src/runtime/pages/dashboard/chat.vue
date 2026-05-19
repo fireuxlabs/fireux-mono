@@ -10,16 +10,14 @@
           <div class="space-y-5">
             <div>
               <div class="flex items-center justify-between gap-3">
-                <h2 class="font-semibold">Messages from visitors</h2>
+                <h2 class="font-semibold">{{ inboxTitle }}</h2>
 
                 <UBadge color="neutral" variant="soft">
                   {{ conversationsLabel }}
                 </UBadge>
               </div>
 
-              <p class="text-sm text-muted">
-                Messages people send to the app admin.
-              </p>
+              <p class="text-sm text-muted">{{ inboxDescription }}</p>
             </div>
 
             <div class="grid grid-cols-3 gap-2">
@@ -46,8 +44,8 @@
               v-if="!conversationSurfaces.length && !pending"
               color="neutral"
               variant="soft"
-              title="No messages yet"
-              description="When visitors chat with the admin, their messages appear here."
+              :title="emptyTitle"
+              :description="emptyDescription"
             >
               <template #actions>
                 <UButton to="/chat" color="primary" variant="soft" size="sm">
@@ -118,7 +116,7 @@
 
             <UChatPrompt
               v-model="reply"
-              placeholder="Reply as admin"
+              :placeholder="replyPlaceholder"
               :loading="submitting"
               @submit.prevent="sendReply"
             >
@@ -134,14 +132,20 @@
             v-else
             color="neutral"
             variant="soft"
-            title="Inbox is ready"
-            description="Open chat with the admin to create the first message, then answer it here."
+            :title="emptyTitle"
+            :description="emptyDescription"
           >
             <template #actions>
               <UButton to="/chat" color="primary" variant="soft" size="sm">
                 Open chat with admin
               </UButton>
-              <UButton to="/dashboard/admin" color="neutral" variant="ghost" size="sm">
+              <UButton
+                v-if="isAdmin"
+                to="/dashboard/admin"
+                color="neutral"
+                variant="ghost"
+                size="sm"
+              >
                 Back to admin
               </UButton>
             </template>
@@ -171,7 +175,7 @@ type ChatStatus = 'ready' | 'submitted' | 'streaming' | 'error'
 const fireux = useFireUXConfig()
 const route = useRoute()
 const router = useRouter()
-const { user } = useUser()
+const { user, isAdmin } = useUser()
 const reply = ref('')
 const submitting = ref(false)
 const failed = ref(false)
@@ -180,6 +184,7 @@ const { createConversationMessage } = useConversationMessageCreate()
 const { conversations, pending } = useConversationCollection({
   filter: computed(() => ({
     appId: fireux.appId,
+    participantId: isAdmin.value ? null : user.value?.id || '__no-user__',
   })),
 })
 
@@ -209,6 +214,25 @@ const conversationMetrics = computed(() => [
   { label: 'Pending', value: pendingCount.value },
   { label: 'Total', value: conversationSurfaces.value.length },
 ])
+const inboxTitle = computed(() =>
+  isAdmin.value ? 'Messages from visitors' : 'Your messages'
+)
+const inboxDescription = computed(() =>
+  isAdmin.value
+    ? 'Messages people send to the app admin.'
+    : 'Conversations you have with this app.'
+)
+const emptyTitle = computed(() =>
+  isAdmin.value ? 'No messages yet' : 'No messages yet'
+)
+const emptyDescription = computed(() =>
+  isAdmin.value
+    ? 'When visitors chat with the admin, their messages appear here.'
+    : 'Start a chat with the app admin when you need help.'
+)
+const replyPlaceholder = computed(() =>
+  isAdmin.value ? 'Reply as admin' : 'Write your reply'
+)
 const selectedConversationId = computed(() =>
   String(route.query.conversation || conversationSurfaces.value[0]?.id || '').trim()
 )
@@ -284,12 +308,11 @@ definePageMeta({
     label: 'Messages',
     icon: 'i-lucide-message-circle',
     position: 'top',
-    order: 9,
+    order: 20,
     desktop: true,
     mobile: true,
     layouts: ['dashboard'],
   },
   requiresAuth: true,
-  roles: ['admin'],
 })
 </script>

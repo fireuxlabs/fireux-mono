@@ -9,8 +9,8 @@ const fireuxConfig = defineFireuxConfig({
   appLogoLight: '/img/app/logo-light.svg',
   appLogoDark: '/img/app/logo-dark.svg',
   role: 'tenant',
-  consoleFamilies: [],
-  modules: [],
+  consoleFamilies: ['kitchen'],
+  modules: ['fireux-kitchens'],
 })
 
 export default defineNuxtConfig(fireuxConfig)

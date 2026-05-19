@@ -20,6 +20,7 @@ import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen
 
 definePageMeta({
   nav: {
+    hidden: true,
     visibility: { modules: ['fireux-kitchens'] },
     key: 'dashboard-kitchens',
     label: 'Kitchens',

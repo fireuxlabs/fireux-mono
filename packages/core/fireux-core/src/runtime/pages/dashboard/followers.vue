@@ -9,6 +9,7 @@ definePageMeta({
     label: 'Followers',
     icon: 'i-lucide-users',
     position: 'bottom',
+    order: 20,
     desktop: true,
     layouts: ['dashboard'],
   },

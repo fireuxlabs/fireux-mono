@@ -34,6 +34,7 @@ definePageMeta({
     label: 'Subscriptions',
     icon: 'i-lucide-credit-card',
     position: 'bottom',
+    order: 40,
     desktop: true,
     layouts: ['dashboard'],
   },

@@ -69,6 +69,7 @@
 import { computed, definePageMeta, onMounted, reactive, ref } from '#imports'
 import { useRoute } from 'vue-router'
 import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
+import { useAuth } from '../composables/fireux/firebase/useAuth'
 import { useConversationCreate } from '../composables/fireux/firestore/core/conversation/mutations/useConversationCreate'
 import { useConversationMessageCreate } from '../composables/fireux/firestore/core/conversation/mutations/useConversationMessageCreate'
 import { useConversationMessages } from '../composables/fireux/firestore/core/conversation/fetch/useConversationMessages'
@@ -77,6 +78,7 @@ type ChatStatus = 'ready' | 'submitted' | 'streaming' | 'error'
 
 const fireux = useFireUXConfig()
 const route = useRoute()
+const { uid, currentUser } = useAuth()
 const storageKey = `fireux:${fireux.appId}:admin-chat`
 const conversationId = ref('')
 const draft = ref('')
@@ -96,6 +98,10 @@ const { messages } = useConversationMessages(conversationId)
 const chatStatus = computed<ChatStatus>(() =>
   submitting.value ? 'submitted' : statusColor.value === 'error' ? 'error' : 'ready'
 )
+const senderName = computed(
+  () => currentUser.value?.displayName || guest.name || 'User'
+)
+const senderEmail = computed(() => currentUser.value?.email || guest.email)
 const chatMessages = computed(() =>
   messages.value.map((message) => ({
     id: message.id,
@@ -113,6 +119,7 @@ onMounted(() => {
 
 function requireGuestDetails() {
   if (conversationId.value) return true
+  if (uid.value) return true
 
   if (!guest.name.trim() || !guest.email.trim()) {
     statusColor.value = 'warning'
@@ -144,23 +151,26 @@ async function sendMessage() {
           label: fireux.appName,
         },
         guest_contact: {
-          name: guest.name,
-          email: guest.email,
+          name: senderName.value,
+          email: senderEmail.value,
           preferred_channel: 'chat',
         },
+        participant_ids: uid.value ? [uid.value] : [],
         source_route: route.fullPath,
         initial_message: {
           body,
-          sender_type: 'guest',
-          sender_name: guest.name,
+          sender_id: uid.value || '',
+          sender_type: uid.value ? 'user' : 'guest',
+          sender_name: senderName.value,
         },
       })
       localStorage.setItem(storageKey, conversationId.value)
     } else {
       await createConversationMessage(conversationId.value, {
         body,
-        sender_type: 'guest',
-        sender_name: guest.name || 'Guest',
+        sender_id: uid.value || '',
+        sender_type: uid.value ? 'user' : 'guest',
+        sender_name: senderName.value,
       })
     }
 

@@ -44,8 +44,8 @@ definePageMeta({
   nav: {
     key: 'dashboard-admin',
     label: 'App Admin',
-    icon: 'i-lucide-badge-check',
-    position: 'top',
+    icon: 'i-lucide-shield-check',
+    position: 'middle',
     order: 10,
     desktop: true,
     layouts: ['dashboard'],
