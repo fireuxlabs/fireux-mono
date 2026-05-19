@@ -69,6 +69,19 @@
             </UBadge>
           </div>
         </div>
+        <div v-if="showProceed" class="mt-4 border-t border-[var(--ui-border)] pt-4">
+          <button
+            type="button"
+            class="inline-flex min-h-10 w-full items-center justify-center rounded-md bg-gray-950 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
+            :disabled="proceedDisabled"
+            @click="emit('proceed')"
+          >
+            {{ proceedPending ? 'Initializing...' : 'Continue' }}
+          </button>
+          <p v-if="proceedDisabled && !proceedPending" class="mt-2 text-xs text-[var(--ui-text-muted)]">
+            Finish the required checks above to continue.
+          </p>
+        </div>
       </UCard>
 
       <UCard v-if="optionalClientVars.length">
@@ -205,17 +218,29 @@ const props = withDefaults(
     envData?: EnvCheckResponse | null
     pending?: boolean
     error?: string | null
+    showProceed?: boolean
+    proceedPending?: boolean
+    proceedDisabled?: boolean
   }>(),
   {
     envData: null,
     pending: false,
     error: null,
+    showProceed: false,
+    proceedPending: false,
+    proceedDisabled: true,
   }
 )
+const emit = defineEmits<{
+  (event: 'proceed'): void
+}>()
 
 const pending = computed(() => props.pending ?? false)
 const envData = computed(() => props.envData ?? null)
 const error = computed(() => props.error ?? null)
+const showProceed = computed(() => props.showProceed)
+const proceedPending = computed(() => props.proceedPending)
+const proceedDisabled = computed(() => props.proceedDisabled)
 
 const requiredVars = computed(() => envData.value?.required ?? [])
 const optionalClientVars = computed(() => {
@@ -335,10 +360,13 @@ const summaryRequired = computed(
   () => envData.value?.summary?.required ?? '0/0'
 )
 const summaryOptionalClient = computed(
-  () =>
-    envData.value?.summary?.optionalClient ??
-    envData.value?.summary?.optional ??
-    '0/0'
+  () => {
+    const summary = envData.value?.summary as
+      | (EnvCheckResponse['summary'] & { optional?: string })
+      | undefined
+
+    return summary?.optionalClient ?? summary?.optional ?? '0/0'
+  }
 )
 const summaryBrand = computed(
   () => envData.value?.summary?.brandAssets ?? '0/0'

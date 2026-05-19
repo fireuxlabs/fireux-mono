@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-label="La Tapberne Tapas-Gastropub">
+      
+      <g transform="translate(90 62)">
+        <circle cx="118" cy="118" r="112" fill="#F6EBD8" stroke="#C65A3A" stroke-width="12"/>
+        <circle cx="118" cy="118" r="76" fill="none" stroke="#C89B4A" stroke-width="7"/>
+        <path d="M73 151 C92 91, 143 91, 163 151" fill="none" stroke="#C65A3A" stroke-width="12" stroke-linecap="round"/>
+        <circle cx="91" cy="113" r="13" fill="#6F6A3B"/>
+        <circle cx="144" cy="113" r="13" fill="#6F6A3B"/>
+        <text x="118" y="151" font-family="Georgia, 'Times New Roman', serif" font-size="86" font-weight="700" text-anchor="middle" fill="#15110D">T</text>
+      </g>
+      
+        <text x="325" y="158" font-family="Georgia, 'Times New Roman', serif" font-size="72" font-weight="700" fill="#15110D">La Tapberne</text>
+        <text x="329" y="214" font-family="Arial, sans-serif" font-size="28" letter-spacing="6" fill="#6F6A3B">TAPAS-GASTROPUB</text>
+        <line x1="329" y1="240" x2="800" y2="240" stroke="#C65A3A" stroke-width="6" stroke-linecap="round"/>
+        
+    </svg>

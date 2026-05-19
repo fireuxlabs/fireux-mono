@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-label="La Tapberne logo">
+  <g transform="translate(112 112) scale(3.3898)">
+    <circle cx="118" cy="118" r="112" fill="#F6EBD8" stroke="#C65A3A" stroke-width="12"/>
+    <circle cx="118" cy="118" r="76" fill="none" stroke="#C89B4A" stroke-width="7"/>
+    <path d="M73 151 C92 91, 143 91, 163 151" fill="none" stroke="#C65A3A" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="91" cy="113" r="13" fill="#6F6A3B"/>
+    <circle cx="144" cy="113" r="13" fill="#6F6A3B"/>
+    <text x="118" y="151" font-family="Georgia, Times New Roman, serif" font-size="86" font-weight="700" text-anchor="middle" fill="#15110D">T</text>
+  </g>
+</svg>

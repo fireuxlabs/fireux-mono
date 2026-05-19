@@ -30,25 +30,17 @@
               {{ env?.isValid ? 'ready' : 'pending' }}
             </UBadge>
           </div>
-          <div class="flex items-center gap-2">
-            <UButton size="xs" variant="soft" @click="onRefreshEnv">Refresh</UButton>
-            <UButton
-              v-if="canProceed"
-              size="xs"
-              color="primary"
-              :loading="actionPending"
-              :disabled="actionPending"
-              @click="onProceed"
-            >
-              Continue
-            </UButton>
-          </div>
+          <UButton size="xs" variant="soft" @click="onRefreshEnv">Refresh</UButton>
         </header>
 
         <AppCreateOnboardingVariables
           :env-data="env"
           :pending="pending"
           :error="envError"
+          :show-proceed="Boolean(env)"
+          :proceed-pending="actionPending"
+          :proceed-disabled="!canProceed || actionPending"
+          @proceed="onProceed"
         />
 
         <div class="pt-2">

@@ -111,29 +111,6 @@
         title="🚫 Blocked"
         description="This app needs to be initialized."
       >
-        <template #actions>
-          <div
-            v-if="showOnboardingActions"
-            class="flex items-center gap-2"
-          >
-            <UBadge
-              :color="onboardingCanProceed ? 'success' : 'warning'"
-              variant="soft"
-            >
-              {{ onboardingCanProceed ? 'ready' : 'pending' }}
-            </UBadge>
-            <UButton
-              size="sm"
-              color="primary"
-              :loading="onboardingActionPending"
-              :disabled="!onboardingCanProceed || onboardingActionPending"
-              @click="proceedOnboarding"
-            >
-              Continue
-            </UButton>
-          </div>
-        </template>
-
         <template #body>
           <AppCreateSystem :state="onboarding" />
         </template>
@@ -143,7 +120,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, type CSSProperties } from 'vue'
 import { useRouter } from 'vue-router'
 import { useHead } from '#imports'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
@@ -157,12 +134,12 @@ const fireuxConfig = useFireUXConfig()
 const { panelOpen, notesVisible, supportsInlineNotes, toggleNotes, togglePanel } = useDevUi()
 const copiedNotes = ref(false)
 const canCopyNotes = computed(() => supportsInlineNotes.value && notesVisible.value)
-const devDockShellStyle = {
+const devDockShellStyle: CSSProperties = {
   position: 'fixed',
   left: '50vw',
   bottom: 'max(0px, env(safe-area-inset-bottom))',
   transform: 'translateX(calc(-200% - 6rem))',
-  zIndex: '2147483647',
+  zIndex: 2147483647,
 }
 
 const { isResolved, isInitialized } = import.meta.client
@@ -176,15 +153,6 @@ const showOnboardingModal = computed(
   () => isResolved.value && !isInitialized.value
 )
 const onboarding = import.meta.client ? useAppOnboarding() : null
-const showOnboardingActions = computed(() =>
-  Boolean(onboarding?.coreUser.value && onboarding?.isUnlocked.value)
-)
-const onboardingCanProceed = computed(() =>
-  Boolean(onboarding?.canProceed.value)
-)
-const onboardingActionPending = computed(() =>
-  Boolean(onboarding?.actionPending.value)
-)
 
 useHead({
   meta: fireuxConfig.isTenant
@@ -195,10 +163,6 @@ useHead({
 
 function goToDev() {
   router.push('/dev')
-}
-
-function proceedOnboarding() {
-  void onboarding?.onProceed()
 }
 
 async function copyVisibleNotes() {

@@ -1,7 +1,7 @@
 ---
 title: New App Creation
 description: Checklist and improvement notes for adding a first-class FireUX app.
-updated: 2026-05-15
+updated: 2026-05-19
 ---
 
 # New App Creation
@@ -105,6 +105,7 @@ After adding the app folder, wire the repo-level registration points:
 7. Check `package.json` has the expected `dev:<key>` script.
 8. If Firebase deploy is in scope, keep `firebase.json` aligned with the app id and hosting site.
 9. Before any real deploy, confirm the Firestore rules are acceptable for this ship.
+10. During the first browser initialization, verify the blocked setup screen shows a clearly visible `Continue` button under the requirements list, click it intentionally, then confirm the app document and admin membership were created. Do not mark initialization as complete from green environment checks alone.
 
 Do not hand-edit generated VS Code task/launch files unless the generator itself is wrong.
 
