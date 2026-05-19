@@ -1,0 +1,11 @@
+La Tapberne brand colours extracted from real tapberne.svg
+
+Primary ink: #000000
+Primary background: #FFFFFF
+
+Usage rules:
+- Icons/logo assets use the symbol only.
+- Wordmark assets use only the handwritten La Tapberne text.
+- "TAPAS-GASTROPUB" is not part of the wordmark assets.
+- "TAPAS-GASTROPUB" is included only in cover artwork.
+- Keep source logo SVG/vector-derived assets as the source of truth.
