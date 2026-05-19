@@ -173,8 +173,9 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   // Align Nitro defaults with our current baseline.
   // Prevents runtime fallback warnings during dev.
   ;(nuxt as any).compatibilityDate = '2025-12-22'
-  ;(nuxt.nitro as any) = {
-    ...((nuxt.nitro as any) || {}),
+  const nuxtWithNitro = nuxt as NuxtConfig & { nitro?: Record<string, any> }
+  nuxtWithNitro.nitro = {
+    ...(nuxtWithNitro.nitro || {}),
     compatibilityDate: '2025-12-22',
   }
   nuxt.experimental = {

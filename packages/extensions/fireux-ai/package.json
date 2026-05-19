@@ -27,9 +27,9 @@
     "fireux-core": "workspace:*"
   },
   "peerDependencies": {
-    "nuxt": "^4.1.0",
-    "@nuxt/kit": "^4.1.0",
-    "@nuxt/schema": "^4.1.0",
+    "nuxt": "^4.4.0",
+    "@nuxt/kit": "^4.4.0",
+    "@nuxt/schema": "^4.4.0",
     "vue": "^3.5.20",
     "vue-router": "^4.5.0"
   },

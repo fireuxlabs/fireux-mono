@@ -28,7 +28,7 @@ export function exposeRuntimeAlias(
   nuxt.options.alias ||= {}
   nuxt.options.alias[aliasKey] = runtimeDir
 
-  nuxt.hook('nitro:config', (nitroConfig: any) => {
+  ;(nuxt.hook as any)('nitro:config', (nitroConfig: any) => {
     nitroConfig.alias ||= {}
     nitroConfig.alias[aliasKey] = runtimeDir
   })

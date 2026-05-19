@@ -8,7 +8,8 @@ export type FireUXNitroConfig = {
 
 export function configNitroFirebase(nuxt: NuxtConfig, c: FireUXNitroConfig) {
   // TS-safe local handles (NuxtConfig's type won't reliably narrow on mutation)
-  const nitro = ((nuxt.nitro ||= {}) as any)
+  const nuxtWithNitro = nuxt as NuxtConfig & { nitro?: Record<string, any> }
+  const nitro = ((nuxtWithNitro.nitro ||= {}) as any)
 
   const isDev =
     process.env.NODE_ENV === 'development' || process.env.NUXT_DEV === 'true'
