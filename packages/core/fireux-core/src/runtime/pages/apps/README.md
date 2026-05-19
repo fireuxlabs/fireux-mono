@@ -67,12 +67,16 @@ That mix is acceptable for now because `App` is an active platform entity that s
 
 ## Field Ownership
 
-`AppModel` is stored once as root truth at `apps/{appId}`. Dashboard and console
-surfaces are management facades over that record, not separate stored app
-identities.
+`AppModel` is stored once as root truth at `apps/{appId}`.
 
-`/dashboard/admin` is the App Admin surface. It may edit public app content and
-membership operations:
+Simple rule:
+
+- If it changes how the app looks to users: App Admin.
+- If it changes how the app is built or checked: Developer.
+- If it changes where the app belongs: App Control.
+- If it is calculated or internal: System.
+
+App Admin runs the app. It may edit public app content and membership:
 
 - `tagline`
 - `description`
@@ -82,8 +86,8 @@ membership operations:
 - `join_requests`
 - `admin_ids` / app user roles
 
-`/dashboard/developer` is the Developer Settings surface, gated by
-`DEVELOPER_ID`. It owns build/config/asset fields:
+Developer builds and checks the app. `/dashboard/developer` is gated by
+`DEVELOPER_ID` and owns:
 
 - `media`
 - `database_id`
@@ -91,9 +95,9 @@ membership operations:
 - `fireux_size`
 - `fireux_repo`
 
-FireUX Project/App console owns identity, hierarchy, routing, and lifecycle
-fields because changes may require cascades into project/ecosystem registries,
-SEO indexes, public URLs, or runtime config:
+App Control changes where the app belongs, what it is called, and how it is
+found. These fields can affect other records, links, SEO, cards, or app identity,
+so they do not belong in App Admin:
 
 - `project_id`
 - `ecosystem_id`
@@ -105,7 +109,7 @@ SEO indexes, public URLs, or runtime config:
 - `app_name`
 - `app_short_name`
 
-System-maintained fields are not edited directly through product UI:
+System owns calculated/internal fields:
 
 - `id`
 - `derived`

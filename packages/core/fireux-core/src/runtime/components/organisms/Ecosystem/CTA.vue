@@ -1,7 +1,7 @@
 <template>
   <UPageCTA
     title="Ecosystem collection"
-    description="This index reads root Ecosystem identity records. Management happens through Project/App console facades."
+    description="This index reads root Ecosystem identity records. Project/App tools manage that same stored truth."
     orientation="horizontal"
   >
     <template #links>

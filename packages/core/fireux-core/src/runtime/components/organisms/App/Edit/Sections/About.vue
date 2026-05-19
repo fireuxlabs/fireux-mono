@@ -5,8 +5,7 @@
         <div class="section__copy">
           <h3 class="text-base font-semibold">About</h3>
           <p class="text-xs text-dimmed">
-            App Admin editable public content: tagline, description, short bio,
-            and long bio.
+            App Admin can edit the copy people read.
           </p>
         </div>
       </div>

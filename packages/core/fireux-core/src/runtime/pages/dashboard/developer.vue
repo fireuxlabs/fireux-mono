@@ -30,13 +30,13 @@
                     </UBadge>
                     <div class="space-y-2">
                       <h1 class="text-2xl font-semibold tracking-tight text-default">
-                        App build and configuration surface
+                        Build and check this app
                       </h1>
                       <p class="max-w-3xl text-sm leading-6 text-dimmed">
-                        This page is gated by <span class="font-mono">DEVELOPER_ID</span>
-                        and owns app assets, env-backed identity checks, and app-level
-                        diagnostics. The local <span class="font-mono">/dev</span>
-                        workbench is separate and only exists on a dev server.
+                        Developer settings are for app assets, build config,
+                        diagnostics, and repo metadata. The local
+                        <span class="font-mono">/dev</span> workbench is separate
+                        and only exists on a dev server.
                       </p>
                     </div>
                   </div>

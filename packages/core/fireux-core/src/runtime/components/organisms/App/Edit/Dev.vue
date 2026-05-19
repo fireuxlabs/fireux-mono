@@ -79,8 +79,8 @@
             <div class="section__copy">
               <h3 class="text-base font-semibold">Field ownership</h3>
               <p class="text-xs text-dimmed">
-                App field ownership canon. Keep app admin, developer settings,
-                control-plane, and system-maintained fields separate.
+                App Admin runs the app. Developer builds and checks it. App
+                Control changes where it belongs. System owns calculated fields.
               </p>
             </div>
           </div>
@@ -89,7 +89,7 @@
         <div class="section__item">
           <div class="grid gap-4 sm:grid-cols-2">
             <div>
-              <div class="text-xs font-medium text-dimmed">Project/App console</div>
+              <div class="text-xs font-medium text-dimmed">App Control</div>
               <ul class="mt-2 space-y-1 text-sm">
                 <li>
                   <span class="font-mono">project_id</span>,
@@ -110,7 +110,7 @@
             </div>
 
             <div>
-              <div class="text-xs font-medium text-dimmed">Developer settings</div>
+              <div class="text-xs font-medium text-dimmed">Developer</div>
               <ul class="mt-2 space-y-1 text-sm">
                 <li>
                   <span class="font-mono">media</span>,
@@ -144,7 +144,7 @@
             </div>
 
             <div>
-              <div class="text-xs font-medium text-dimmed">System-maintained</div>
+              <div class="text-xs font-medium text-dimmed">System</div>
               <ul class="mt-2 space-y-1 text-sm">
                 <li>
                   <span class="font-mono">id</span>,

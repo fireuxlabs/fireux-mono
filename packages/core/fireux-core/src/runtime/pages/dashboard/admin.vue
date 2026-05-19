@@ -55,10 +55,9 @@
                       Run {{ appDisplayName }}
                     </h1>
                     <p class="max-w-3xl text-sm leading-6 text-dimmed">
-                      App admins manage the public app profile, members, join requests,
-                      and conversations. Developer settings are separated for app
-                      assets and locked config. The local <span class="font-mono">/dev</span>
-                      workbench remains a dev-server inspection surface.
+                      App admins run this app: public content, members, join
+                      requests, and chat. Developers build and check the app.
+                      App Control changes where the app belongs.
                     </p>
                   </div>
                 </div>
@@ -105,8 +104,8 @@
                       Admin scope
                     </div>
                     <p class="text-xs leading-5 text-dimmed">
-                      Public content, social links, app members, join requests, and
-                      app conversations.
+                      Run the app: public content, members, join requests, and
+                      conversations.
                     </p>
                   </div>
                 </UCard>
@@ -118,8 +117,8 @@
                       Developer settings
                     </div>
                     <p class="text-xs leading-5 text-dimmed">
-                      App images, env-backed identity, asset checks, and app model
-                      review for the configured developer uid.
+                      Build and check the app: images, assets, repo metadata,
+                      and config diagnostics.
                     </p>
                     <UBadge
                       size="xs"
@@ -138,8 +137,8 @@
                       Local /dev
                     </div>
                     <p class="text-xs leading-5 text-dimmed">
-                      Runtime inspection, collection drift, model JSON, image scans,
-                      and local-only debugging utilities.
+                      Local workbench for runtime checks, model JSON, image scans,
+                      and debugging.
                     </p>
                     <UBadge
                       size="xs"
@@ -162,8 +161,8 @@
                 variant="subtle"
               >
                 <p class="text-sm text-dimmed">
-                  Locked runtime values stay read-only here. If you need assets or
-                  diagnostics, use the Developer Settings page.
+                  Locked values stay read-only here because they can affect
+                  routing, app identity, or project links.
                 </p>
               </UPageCard>
 

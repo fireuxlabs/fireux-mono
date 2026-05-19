@@ -36,9 +36,9 @@ type WidenLiteral<T> =
  * - App-scoped project creation should ensure the app-scoped project record and may create root first when missing.
  * - `owner_user_id` is a canonical root ownership hint, not a replacement for any app-level authority system.
  * - `operator_ids` is canonical root Project console authority.
- * - The Project console may manage related App and Ecosystem surfaces, but those are management facades over their own stored truth.
+ * - The Project console may manage related App and Ecosystem surfaces, but those surfaces edit each entity's own stored truth.
  * - A Project management surface must not invent separate App or Ecosystem stored identities unless the model docs say so.
- * - Public facade depth can vary by family; Project may stay relatively thin publicly while still using the same root-plus-app pattern.
+ * - Public page depth can vary by family; Project may stay relatively thin publicly while still using the same root-plus-app pattern.
  * - If Project later grows operational child records, they should live under /apps/<appId>/projects/<projectId>/...
  * - Project still remains a system-level special case because endpoint enrichment and system metadata are central to its runtime.
  * - If this decision changes, update the models README first, then this file.

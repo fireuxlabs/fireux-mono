@@ -18,13 +18,13 @@ import type {
  * Storage: root canonical model
  * Root path: /apps/<appId>
  * Active seam: useApp() resolves FireUXConfig.appId
- * Runtime face: project-managed facade when apps are handled inside a Project/App console surface
+ * Runtime face: App Control when apps are managed through FireUX project/app tools
  *
  * Decision note:
  * - App is stored once as canonical system truth.
- * - Project/App console management surfaces are facades over root App truth, not separate stored identities.
+ * - Dashboard and control surfaces edit the same root App record.
  * - `fireux/app` is for app shell, context, orchestration, and config helpers; App entity data belongs in the Firestore App stack.
- * - A runtime surface may manage App through a facade, but that does not justify a second stored app-scoped record yet.
+ * - A runtime surface may manage App, but that does not justify a second stored app-scoped record yet.
  * - If real scoped stored state appears later, update the models README first, then this file.
  */
 
@@ -72,7 +72,7 @@ export const AppModel = {
     cover_url: '',
   } as AppMedia,
 
-  // FireUX repo/control-plane metadata.
+  // FireUX repo/build metadata.
   fireux_native: false,
   fireux_size: 'small' as AppSize,
   fireux_repo: {
@@ -106,15 +106,19 @@ export type App = AppModel
 /**
  * App field ownership canon.
  *
- * App stored truth lives once at `apps/{appId}`. Dashboard, developer, and
- * Project/App console surfaces are management facades over that stored truth.
+ * App stored truth lives once at `apps/{appId}`.
+ *
+ * Simple rule:
+ * - App Admin runs the app.
+ * - Developer builds and checks the app.
+ * - App Control changes where the app belongs.
+ * - System maintains calculated/internal fields.
  */
 export const AppFieldOwnership = {
   /**
    * `/dashboard/admin`
    *
-   * Public app profile and membership operations that app admins can safely
-   * operate without changing app identity, routing, hierarchy, or build config.
+   * If it changes how the app looks to users, it belongs to App Admin.
    */
   appAdminEditable: [
     'tagline',
@@ -129,7 +133,7 @@ export const AppFieldOwnership = {
   /**
    * `/dashboard/developer`
    *
-   * Build/config/asset fields owned by the configured developer uid.
+   * If it changes how the app is built or checked, it belongs to Developer.
    */
   developerEditable: [
     'media',
@@ -140,12 +144,12 @@ export const AppFieldOwnership = {
   ],
 
   /**
-   * FireUX Project/App console.
+   * App Control.
    *
-   * Identity, lifecycle, routing, and hierarchy fields may require cascades into
-   * project/ecosystem registries, SEO indexes, public URLs, or runtime config.
+   * If it changes where the app belongs, how it is named, or how it is routed,
+   * it belongs to App Control.
    */
-  controlPlaneOwned: [
+  appControlOwned: [
     'project_id',
     'ecosystem_id',
     'slug',
@@ -174,8 +178,8 @@ export type AppAdminEditableField =
   typeof AppFieldOwnership.appAdminEditable[number]
 export type AppDeveloperEditableField =
   typeof AppFieldOwnership.developerEditable[number]
-export type AppControlPlaneField =
-  typeof AppFieldOwnership.controlPlaneOwned[number]
+export type AppControlField =
+  typeof AppFieldOwnership.appControlOwned[number]
 export type AppSystemMaintainedField =
   typeof AppFieldOwnership.systemMaintained[number]
 

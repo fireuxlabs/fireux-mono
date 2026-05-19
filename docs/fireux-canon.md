@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-18
+Updated: 2026-05-19
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -98,7 +98,7 @@ Current learned examples:
 - Generic project collection and console project selection are not the same seam.
 - `useProjectCollection()` stays generic.
 - Console project visibility adds user/app scope above the generic collection rather than redefining it.
-- Project, Ecosystem, and App are real system entities. Their management surfaces are facades over stored truth, not separate stored identities.
+- Project, Ecosystem, and App are real system entities. Their management surfaces edit stored truth; they do not create separate stored identities.
 - Project is a console-backed system root entity:
   - stored truth: `projects/{projectId}`
   - management surface: `/console/project` in `fireux-app`
@@ -110,7 +110,7 @@ Current learned examples:
 - App is a system root entity and active runtime singleton:
   - stored truth: `apps/{appId}`
   - active seam: `useApp()` resolves `FireUXConfig.appId`
-  - Project/App console surfaces may manage App through facades over root App truth
+  - Project/App console surfaces may manage the root App record
 - `firestore/core/ecosystem` is the canonical root Ecosystem read/collection/interface/ensure seam.
 - `firestore/system/ecosystem` is only for setup/control/bootstrap adapters and must not duplicate root Ecosystem entity access.
 - `fireux/app` is app shell/context/orchestration space, not a bucket for App, Project, or Ecosystem entity truth.
@@ -256,7 +256,7 @@ composables/fireux/firestore/<entity>/
 | Console workspace entity | Root entity that can be selected and operated | root stack plus `useXConsole`/selection and `/console/<family>` surfaces | `Kitchen`, `Supplier`, `Portfolio`, `Project` |
 | Identity/profile capability | Something a signed-in user can be or manage about themself | dashboard/profile routes, profile fetch/ensure/update, no console family by default | `Professional`, `Chef`, `Agent`, base `Profile` |
 | App membership overlay | App-specific role/capability for a user | `useAppUserCollection`, app-user update helpers, app membership UI; not a root entity stack | `AppUser` |
-| System management entity/context | Stored system entity that may also be managed through Project/App context | root entity seam plus explicit management facade; stored truth is not duplicated by the facade | `Project`, `Ecosystem`, `App` |
+| System management entity/context | Stored system entity that may also be managed through Project/App context | root entity seam plus explicit management surface; stored truth is not duplicated | `Project`, `Ecosystem`, `App` |
 | Scoped child entity | Operational record owned by a parent workspace/entity | scoped collection/fetch helpers, interface/card surfaces only where needed, writes through parent-aware mutations | `Task`, `Document`, `Compliance`, `PropertyUnit`, `PortfolioTask`, `PortfolioDocument`, `KitchenMise`, `KitchenOrder` |
 | Root plus scoped usage | Root truth linked into a workspace by a scoped usage record | root model/collection/interface plus scoped relationship helper | `Ingredient` root plus `KitchenIngredient` usage records |
 | System/adapter seam | Runtime helper around stack behaviour, not an entity | adapter/ensure/selection helpers; no full entity UI stack required | `Console`, `Firestore`, selection helpers |

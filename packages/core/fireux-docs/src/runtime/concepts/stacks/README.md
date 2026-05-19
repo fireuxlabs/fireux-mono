@@ -1,7 +1,7 @@
 # Stacks Concept
 
 Authority: Operational
-Updated: 2026-05-18
+Updated: 2026-05-19
 Scope: FireUX entity-stack meaning across `models/`, `composables/`, `components/`, `pages/`, `server/`, and docs.
 
 This page documents the FireUX `stacks` concept.
@@ -102,7 +102,7 @@ Use `pnpm audit:usex` to print a report-only map of current `useX` stack seams. 
 
 ## System Management Family
 
-Project, Ecosystem, and App are real system entities, but their management surfaces are facades over stored truth.
+Project, Ecosystem, and App are real system entities. Their management surfaces edit stored truth; they do not create separate stored identities.
 
 ```text
 Project
@@ -121,7 +121,7 @@ App
   stored truth: apps/{appId}
   family: system root entity + active runtime singleton
   active seam: useApp() from FireUXConfig.appId
-  management: Project/App console facade
+  management: Project/App console surface
 ```
 
 Ecosystem may map to a Firebase project operationally, but Firebase is infrastructure backing, not the entity definition.
@@ -154,7 +154,7 @@ The same stack DNA can appear in different modes. Do not force every mode to hav
 | App membership overlay | App-specific membership and capability for a user | app-user collection/update helpers and membership UI; not a root entity stack | `AppUser` |
 | Scoped child entity | Operational record owned by a parent entity/workspace | parent-aware collection/fetch/writes; interface/card surfaces only where useful | `Task`, `Document`, `Compliance`, `PropertyUnit`, `PortfolioTask`, `PortfolioDocument`, `KitchenMise`, `KitchenOrder` |
 | Root plus scoped usage | Root truth linked into a workspace by a scoped usage record | root collection/interface plus scoped relationship helper | `Ingredient` root plus `KitchenIngredient` usage records |
-| System management entity/context | Stored system entity that may also be managed through Project/App context | root entity seam plus explicit management facade; stored truth is not duplicated by the facade | `Project`, `Ecosystem`, `App` |
+| System management entity/context | Stored system entity that may also be managed through Project/App context | root entity seam plus explicit management surface; stored truth is not duplicated | `Project`, `Ecosystem`, `App` |
 | System/adapter seam | Runtime helper around stack behaviour, not a stored domain entity | ensure/selection/adapter helpers; no full entity UI stack required | `Console`, `Firestore`, selection helpers |
 
 ## Create And Edit Modes
