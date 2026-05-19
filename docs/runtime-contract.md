@@ -45,6 +45,11 @@ Updated: 2026-05-19
 - This keeps app config simple and avoids Nuxt's deep config type expansion when no local override is needed.
 - Standard app logo variants are always `/img/app/logo-light.svg` and `/img/app/logo-dark.svg`.
 - Do not declare light/dark logo paths in `defineFireuxConfig(...)`.
+- `modules` means the app installs shared package capability.
+- `consoles` means the app exposes selected console workspaces.
+- `profiles` means the app lets signed-in users create/manage those profile identities.
+- `publicProfiles` means the app exposes public profile directories and detail pages.
+- Installing a module must not automatically expose every page from that module.
 
 ## Entity Loading Contract
 - Entity index pages delivered through `Index.vue` + `CollectionManager` must use the normal client-side Firestore read path.

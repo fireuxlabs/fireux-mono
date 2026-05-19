@@ -11,6 +11,8 @@ const fireuxConfig = defineFireuxConfig({
   meta: metaContent,
   role: 'global',
   consoles: ['kitchen', 'supplier'],
+  profiles: ['chef', 'professional', 'agent'],
+  publicProfiles: ['chef', 'professional', 'agent'],
   seo: {
     siteUrl: 'https://misebox.app',
     staticPaths: ['/get-started', '/programme', '/luna-piccante', '/luna-piccante/menu'],

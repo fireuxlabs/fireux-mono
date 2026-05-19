@@ -64,7 +64,7 @@ export const KITCHEN_STARTER_LANGUAGE_SETTINGS: KitchenLanguageSettings = {
  * - The root record stays thin and canonical; the app-scoped record carries governance and private operational state.
  * - Public facade depth can vary by family; Kitchen is expected to have a richer public face than some other app-scoped entities.
  * - If Kitchen needs a richer public or operational read shape, that should be built in fetch/runtime/interface layers, not by complicating the stored model file.
- * - App authority stays user-based in the app-scoped record; Chef is a family-specific prerequisite or presentation layer, not the ownership model.
+ * - App authority stays user-based in the app-scoped record; Chef is an optional presentation/authorship layer, not the ownership model.
  * - Kitchen-owned operational children should live beneath the app-hosted record.
  * - If that rule changes later, update the models README first, then this file.
  */

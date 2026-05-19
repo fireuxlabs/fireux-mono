@@ -34,5 +34,9 @@
 <script setup lang="ts">
 import { useHead } from 'nuxt/app'
 
+definePageMeta({
+  visibility: { publicProfiles: ['agent'] },
+})
+
 useHead({ title: 'Agent Profile · Learn More' })
 </script>

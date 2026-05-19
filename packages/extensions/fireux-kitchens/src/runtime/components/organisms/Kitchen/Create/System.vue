@@ -22,7 +22,7 @@
         <ul data-dev-note-body class="list-disc space-y-1 pl-4">
           <li>Needs a confirmed real place selection.</li>
           <li v-if="isConsoleMode">Requires an authenticated user on the console route.</li>
-          <li v-else>If entered from the kitchen CTA, the flow normally ensures a Chef profile first.</li>
+          <li v-else>If entered from the kitchen CTA, a Chef profile may be offered later for public credit.</li>
           <li>
             The kitchen mutation creates or ensures
             <code>kitchens/&lt;id&gt;</code>.
@@ -35,7 +35,7 @@
             Route mode changes the entry and return flow, not the root/app write rule.
           </li>
           <li v-if="isConsoleMode">
-            Console entry also links the kitchen to the chef profile association and selects it for runtime.
+            Console entry selects the kitchen for runtime. Chef profile links stay optional display/authorship data.
           </li>
           <li v-if="isConsoleMode">
             Success routes to

@@ -74,6 +74,7 @@ import type { AppAgent, Agent } from '../../../models/profiles/Agent/Agent.model
 
 definePageMeta({
   layout: 'default',
+  visibility: { publicProfiles: ['agent'] },
   name: 'AgentsAdminEditPage',
   requiresAuth: true,
 })

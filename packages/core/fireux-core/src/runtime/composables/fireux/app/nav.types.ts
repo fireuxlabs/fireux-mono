@@ -3,6 +3,10 @@ export interface NavVisibility {
   ecosystems?: string[]
   modules?: string[]
   modulesAny?: string[]
+  profiles?: string[]
+  profilesAny?: string[]
+  publicProfiles?: string[]
+  publicProfilesAny?: string[]
 }
 
 export type NavPosition = 'top' | 'middle' | 'bottom'

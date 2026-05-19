@@ -71,6 +71,10 @@ import { computed, ref } from 'vue'
 import { useAgentInterface } from '../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
 import type { Agent } from '../../models/profiles/Agent/Agent.model'
 
+definePageMeta({
+  visibility: { publicProfiles: ['agent'] },
+})
+
 const route = useRoute()
 const agentId = computed(() => {
   const raw = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id

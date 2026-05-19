@@ -74,6 +74,7 @@ import type { AppChef, Chef } from '../../../models/profiles/Chef/Chef.model'
 
 definePageMeta({
   layout: 'default',
+  visibility: { publicProfiles: ['chef'] },
   name: 'ChefsAdminEditPage',
   requiresAuth: true,
 })

@@ -33,5 +33,9 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 
+definePageMeta({
+  visibility: { publicProfiles: ['chef'] },
+})
+
 useHead({ title: 'Chef Profile · Learn More' })
 </script>

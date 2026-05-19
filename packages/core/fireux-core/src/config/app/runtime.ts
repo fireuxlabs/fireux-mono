@@ -28,6 +28,8 @@ export type RuntimeApp = {
   ecosystem: string
   modules: readonly string[]
   consoles: readonly string[]
+  profiles: readonly string[]
+  publicProfiles: readonly string[]
 }
 
 export type RuntimeFirebaseEcosystem = {

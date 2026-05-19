@@ -90,7 +90,7 @@
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    visibility: { modules: ['fireux-jobs'] },
+    visibility: { modules: ['fireux-jobs'], profiles: ['professional'] },
     key: 'dashboard-professional-home',
     label: 'Professional Dashboard',
     icon: 'i-lucide-user-star',

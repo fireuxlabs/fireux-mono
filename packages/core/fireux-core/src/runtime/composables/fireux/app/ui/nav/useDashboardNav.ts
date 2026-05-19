@@ -1,4 +1,5 @@
 import type { NavItem, NavPosition } from '../../nav.types'
+import { computed } from 'vue'
 import { useUser } from '../../../firestore/core/user/useUser'
 import { useDeveloperAccess } from '../../useDeveloperAccess'
 import { useConsoleEntryCta } from './useConsoleEntryCta'
@@ -33,7 +34,7 @@ const canShowDashboardItem = (
 
 export const useDashboardNav = () => {
   const nav = useNav(['dashboard'])
-  const { isAdmin } = useUser()
+  const { isAdmin, user } = useUser()
   const { isDeveloper } = useDeveloperAccess()
   const { hasConsoleEntry } = useConsoleEntryCta()
 
@@ -72,10 +73,66 @@ export const useDashboardNav = () => {
       : 'bottom'
   }
 
+  const activeProfileIds = computed(
+    () =>
+      new Set(
+        (user.value?.profiles ?? []).filter(
+          (profileId): profileId is string =>
+            typeof profileId === 'string' && profileId.length > 0
+        )
+      )
+  )
+
+  const isProfileEntry = (item: NavItem) =>
+    item.group === 'profiles' && Boolean(item.profileId)
+
+  const isPreferredProfileEntry = (item: NavItem) =>
+    item.to.endsWith('/profile') || item.key?.endsWith('-profile')
+
+  const profileEntries = computed(() => {
+    const byProfileId = new Map<string, NavItem>()
+
+    for (const item of nav.desktop.value) {
+      if (!isProfileEntry(item) || !item.profileId) continue
+
+      const current = byProfileId.get(item.profileId)
+      const itemPreferred = isPreferredProfileEntry(item)
+      const currentPreferred = current ? isPreferredProfileEntry(current) : false
+
+      if (
+        !current ||
+        (itemPreferred && !currentPreferred) ||
+        (itemPreferred === currentPreferred && item.order < current.order)
+      ) {
+        byProfileId.set(item.profileId, item)
+      }
+    }
+
+    return [...byProfileId.values()].sort((a, b) => {
+      if (a.order !== b.order) return a.order - b.order
+      return a.label.localeCompare(b.label)
+    })
+  })
+
+  const activeProfileEntries = computed(() =>
+    profileEntries.value.filter(
+      (item) => item.profileId && activeProfileIds.value.has(item.profileId)
+    )
+  )
+
+  const availableProfileEntries = computed(() =>
+    profileEntries.value.filter(
+      (item) => item.profileId && !activeProfileIds.value.has(item.profileId)
+    )
+  )
+
   return {
     ...nav,
     topPriority,
     baseNavFilter,
     resolveItemPosition,
+    profileEntries,
+    activeProfileEntries,
+    availableProfileEntries,
   }
 }

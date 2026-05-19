@@ -88,6 +88,7 @@ import type {
 
 definePageMeta({
   layout: 'default',
+  visibility: { publicProfiles: ['professional'] },
   name: 'ProfessionalsAdminEditPage',
   requiresAuth: true,
 })

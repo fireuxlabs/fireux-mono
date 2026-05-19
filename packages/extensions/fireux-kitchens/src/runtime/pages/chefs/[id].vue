@@ -80,6 +80,10 @@ import { computed, ref } from 'vue'
 import { useChefInterface } from '../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
 import type { AppChef, Chef } from '../../models/profiles/Chef/Chef.model'
 
+definePageMeta({
+  visibility: { publicProfiles: ['chef'] },
+})
+
 useSeoMeta({
   title: 'Chef Profile',
   description: 'View chef profile',

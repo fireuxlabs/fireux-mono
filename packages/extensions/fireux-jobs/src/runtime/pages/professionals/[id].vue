@@ -101,6 +101,10 @@ import type {
   Professional,
 } from '../../models/profiles/Professional/Professional.model'
 
+definePageMeta({
+  visibility: { publicProfiles: ['professional'] },
+})
+
 const route = useRoute()
 const professionalId = computed(() => {
   const raw = Array.isArray(route.params.id)

@@ -34,5 +34,9 @@
 <script setup lang="ts">
 import { useHead } from 'nuxt/app'
 
+definePageMeta({
+  visibility: { publicProfiles: ['professional'] },
+})
+
 useHead({ title: 'Professional Profile · Learn More' })
 </script>

@@ -11,6 +11,8 @@ const fireuxConfig = defineFireuxConfig({
   meta: metaContent,
   role: 'standalone',
   consoles: [],
+  profiles: ['professional'],
+  publicProfiles: [],
   seo: {
     siteUrl: 'https://find-my-seo.web.app',
   },

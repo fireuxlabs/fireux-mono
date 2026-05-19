@@ -37,6 +37,10 @@ export type FireuxAppConfig = {
   role: RuntimeAppRole
   modules?: NonNullable<NuxtConfig['modules']>
   consoles?: string[]
+  /** Optional profile identities this app lets users create/manage. */
+  profiles?: string[]
+  /** Optional public profile directories/details this app consumes. */
+  publicProfiles?: string[]
   seo?: FireuxSeoConfig
   meta?: FireuxMetaContent
 }
@@ -262,6 +266,8 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       ecosystem: app.ecosystem,
       modules: moduleNames,
       consoles: app.consoles || [],
+      profiles: app.profiles || [],
+      publicProfiles: app.publicProfiles || [],
     },
 
     firebaseApp: {

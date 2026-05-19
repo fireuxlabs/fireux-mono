@@ -81,7 +81,7 @@
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    visibility: { modules: ['fireux-jobs'] },
+    visibility: { modules: ['fireux-jobs'], profiles: ['professional'] },
     key: 'dashboard-professional-my-work',
     label: 'My Work',
     icon: 'i-lucide-briefcase-business',

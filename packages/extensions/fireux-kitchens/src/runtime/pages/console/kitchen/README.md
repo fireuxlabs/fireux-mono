@@ -38,7 +38,7 @@ Kitchen-specific delta:
 - `index.vue` and `/kitchens` intentionally share the same chooser component
 - console create ensures `apps/<appId>/kitchens/<kitchenId>`
 - console create creates the public kitchen first when missing
-- console create seeds user-based console authority and may also link the kitchen to the Chef profile as a prerequisite/relationship side effect
+- console create seeds user-based console authority; Chef profile links are optional relationship/display data
 - operational records live under `apps/<appId>/kitchens/<kitchenId>/...`
 - app-scoped operation children include ingredients, mise, recipes, orders, team, stations, and suppliers
 - public menus and dishes are root public children, not private console operation records

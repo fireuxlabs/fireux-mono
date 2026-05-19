@@ -39,29 +39,18 @@ import { useState } from '#imports'
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useDashboardNav } from '../../../composables/fireux/app/ui/nav/useDashboardNav'
-import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 
 defineOptions({ name: 'LayoutsDashboardProfilesMenu' })
 defineProps<{ collapsed?: boolean }>()
 
-const { desktop } = useDashboardNav()
-const { user } = useUser()
+const { activeProfileEntries } = useDashboardNav()
 const router = useRouter()
 const activeProfileState = useState<string | null>(
   'fireux-dashboard-profile',
   () => null
 )
 
-const profiles = computed(() =>
-  desktop.value.filter((i) => i.group === 'profiles')
-)
-
-const menu = computed(() => {
-  const active = user.value?.profiles ?? []
-  return profiles.value.filter(
-    (i) => !i.profileId || active.includes(i.profileId)
-  )
-})
+const menu = computed(() => activeProfileEntries.value)
 
 type MenuItem = { label: string; icon?: string; to: string; profileId?: string }
 const selected = ref<MenuItem | null>(null)

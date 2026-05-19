@@ -71,6 +71,39 @@
             </template>
           </LayoutsDashboardProfileEdit>
         </ClientOnly>
+
+        <UPageCard
+          v-if="profileExtensionRows.length"
+          title="Profile extensions"
+          description="Add a work profile only when it is useful. These do not control console access."
+          variant="subtle"
+        >
+          <div class="grid gap-2 sm:grid-cols-2">
+            <div
+              v-for="entry in profileExtensionRows"
+              :key="entry.profileId"
+              class="flex items-center justify-between gap-3 rounded-lg border border-default px-3 py-2"
+            >
+              <div class="flex min-w-0 items-center gap-2">
+                <UIcon :name="entry.icon || 'i-lucide-user'" class="size-4 text-dimmed" />
+                <div class="min-w-0">
+                  <p class="truncate text-sm font-medium">{{ entry.label }}</p>
+                  <p class="text-xs text-dimmed">
+                    {{ entry.active ? 'Created' : 'Optional' }}
+                  </p>
+                </div>
+              </div>
+
+              <UButton
+                :to="entry.to"
+                :label="entry.active ? 'Open' : 'Create'"
+                color="neutral"
+                variant="soft"
+                size="xs"
+              />
+            </div>
+          </div>
+        </UPageCard>
       </div>
     </template>
   </UDashboardPanel>
@@ -79,6 +112,7 @@
 <script setup lang="ts">
 import { computed, definePageMeta, useHead, useRuntimeConfig } from '#imports'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useDashboardNav } from '../../composables/fireux/app/ui/nav/useDashboardNav'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
@@ -109,6 +143,7 @@ const {
   profile: userInterface,
 } = useUser()
 const { app, pill: appToCard } = useApp()
+const { activeProfileEntries, availableProfileEntries } = useDashboardNav()
 const { uid } = useAuth()
 const fireuxConfig = useFireUXConfig()
 const runtimeConfig = useRuntimeConfig()
@@ -126,6 +161,13 @@ const resolvedUser = computed(() => currentUser.value ?? null)
 
 const userCard = computed(() => (resolvedUser.value ? userInterface(resolvedUser.value) : null))
 const appCard = computed(() => appToCard(app.value))
+const profileExtensionRows = computed(() => [
+  ...activeProfileEntries.value.map((entry) => ({ ...entry, active: true })),
+  ...availableProfileEntries.value.map((entry) => ({
+    ...entry,
+    active: false,
+  })),
+])
 const appAdminIds = computed(() =>
   Array.isArray(app.value?.admin_ids)
     ? app.value.admin_ids.filter(

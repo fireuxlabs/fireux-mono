@@ -54,7 +54,7 @@ const view = ref<'profile' | 'edit'>('profile')
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    visibility: { modules: ['fireux-jobs'] },
+    visibility: { modules: ['fireux-jobs'], profiles: ['agent'] },
     key: 'dashboard-agent-profile',
     label: navLabel,
     icon: navIcon,

@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import { definePageMeta } from '#imports';
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useDashboardNav } from '../../composables/fireux/app/ui/nav/useDashboardNav'
 
 definePageMeta({
   nav: {
@@ -46,9 +46,7 @@ definePageMeta({
   layout: 'dashboard',
 })
 
-const router = useRouter()
-const routePaths = computed(() => new Set(router.getRoutes().map((route) => route.path)))
-const hasRoute = (path: string) => routePaths.value.has(path)
+const { activeProfileEntries } = useDashboardNav()
 
 const dashboardEntries = computed(() => [
   {
@@ -58,27 +56,12 @@ const dashboardEntries = computed(() => [
     cta: 'Open profile',
     icon: 'i-lucide-user',
   },
-  ...(hasRoute('/dashboard/professional/profile')
-    ? [
-        {
-          title: 'Professional',
-          description: 'Manage your professional profile extension.',
-          to: '/dashboard/professional/profile',
-          cta: 'Open professional profile',
-          icon: 'i-lucide-user-star',
-        },
-      ]
-    : []),
-  ...(hasRoute('/dashboard/agent/profile')
-    ? [
-        {
-          title: 'Agent',
-          description: 'Manage agent profile and hiring activity.',
-          to: '/dashboard/agent/profile',
-          cta: 'Open agent profile',
-          icon: 'i-lucide-briefcase-business',
-        },
-      ]
-    : []),
+  ...activeProfileEntries.value.map((entry) => ({
+    title: entry.label,
+    description: 'Manage this profile extension.',
+    to: entry.to,
+    cta: 'Open profile',
+    icon: entry.icon || 'i-lucide-user',
+  })),
 ])
 </script>

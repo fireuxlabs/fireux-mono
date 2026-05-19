@@ -59,7 +59,7 @@ const view = ref<'profile' | 'edit'>('profile')
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    visibility: { modules: ['fireux-jobs'] },
+    visibility: { modules: ['fireux-jobs'], profiles: ['professional'] },
     key: 'dashboard-professional-profile',
     label: navLabel,
     icon: navIcon,

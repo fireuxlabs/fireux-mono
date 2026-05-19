@@ -64,6 +64,30 @@ chef create         -> users/{uid}.profiles includes "chef"
 agent create        -> users/{uid}.profiles includes "agent"
 ```
 
+Profile identities that are available but not created yet should not appear as
+active dashboard identities. They may be offered from the user's Profile page or
+from a contextual workflow that explains why the profile is useful.
+
+Examples:
+
+```text
+Chef profile     -> optional public chef/authorship profile, not kitchen access
+Professional     -> optional career/provider profile, not a workspace
+Agent            -> optional hiring/agent identity, not a console
+```
+
+App config controls profile consumption:
+
+```ts
+profiles: ['chef']
+publicProfiles: ['chef']
+```
+
+`profiles` enables dashboard profile creation/management. `publicProfiles`
+enables public directories and detail pages such as `/chefs` and `/chefs/[id]`.
+Installing a module alone should not make every profile page part of a tenant
+app.
+
 An app with only one profile extension, such as Find My SEO today, may show only `Professional`.
 An app with several profile extensions, such as Misebox, may show several options.
 
@@ -137,4 +161,3 @@ Public collection routes may be plural:
 ```
 
 Console family keys are reserved for operated workspace/entity families.
-

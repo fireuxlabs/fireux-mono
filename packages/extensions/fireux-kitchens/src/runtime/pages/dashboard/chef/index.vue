@@ -89,7 +89,7 @@
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    visibility: { modules: ['fireux-kitchens'] },
+    visibility: { modules: ['fireux-kitchens'], profiles: ['chef'] },
     key: 'dashboard-chef-home',
     label: 'Chef',
     icon: 'i-lucide-chef-hat',

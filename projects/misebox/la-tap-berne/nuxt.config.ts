@@ -7,5 +7,7 @@ export default defineFireuxConfig({
   shortName: 'La Tap Berne',
   role: 'tenant',
   consoles: ['kitchen'],
+  profiles: [],
+  publicProfiles: [],
   modules: ['fireux-kitchens'],
 })

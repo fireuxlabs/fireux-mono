@@ -1,7 +1,10 @@
 import type { FireUXConfig } from '../../FireUXConfig'
 import type { NavVisibility } from '../../nav.types'
 
-type RuntimeScope = Pick<FireUXConfig, 'appId' | 'ecosystem' | 'modules'>
+type RuntimeScope = Pick<
+  FireUXConfig,
+  'appId' | 'ecosystem' | 'modules' | 'profiles' | 'publicProfiles'
+>
 
 function normaliseStringList(value: unknown): string[] {
   const values = Array.isArray(value) ? value : value ? [value] : []
@@ -24,8 +27,21 @@ export function normaliseNavVisibility(
   const ecosystems = normaliseStringList(visibility.ecosystems)
   const modules = normaliseStringList(visibility.modules)
   const modulesAny = normaliseStringList(visibility.modulesAny)
+  const profiles = normaliseStringList(visibility.profiles)
+  const profilesAny = normaliseStringList(visibility.profilesAny)
+  const publicProfiles = normaliseStringList(visibility.publicProfiles)
+  const publicProfilesAny = normaliseStringList(visibility.publicProfilesAny)
 
-  if (!apps.length && !ecosystems.length && !modules.length && !modulesAny.length) {
+  if (
+    !apps.length &&
+    !ecosystems.length &&
+    !modules.length &&
+    !modulesAny.length &&
+    !profiles.length &&
+    !profilesAny.length &&
+    !publicProfiles.length &&
+    !publicProfilesAny.length
+  ) {
     return undefined
   }
 
@@ -34,6 +50,10 @@ export function normaliseNavVisibility(
     ...(ecosystems.length ? { ecosystems } : {}),
     ...(modules.length ? { modules } : {}),
     ...(modulesAny.length ? { modulesAny } : {}),
+    ...(profiles.length ? { profiles } : {}),
+    ...(profilesAny.length ? { profilesAny } : {}),
+    ...(publicProfiles.length ? { publicProfiles } : {}),
+    ...(publicProfilesAny.length ? { publicProfilesAny } : {}),
   }
 }
 
@@ -47,6 +67,8 @@ export function isNavVisibleForScope(
   const appId = (scope.appId || '').trim().toLowerCase()
   const ecosystem = (scope.ecosystem || '').trim().toLowerCase()
   const modules = new Set(normaliseStringList(scope.modules))
+  const profiles = new Set(normaliseStringList(scope.profiles))
+  const publicProfiles = new Set(normaliseStringList(scope.publicProfiles))
 
   if (rule.apps?.length && !rule.apps.includes(appId)) return false
   if (rule.ecosystems?.length && !rule.ecosystems.includes(ecosystem)) return false
@@ -54,6 +76,24 @@ export function isNavVisibleForScope(
     return false
   }
   if (rule.modulesAny?.length && !rule.modulesAny.some((name) => modules.has(name))) {
+    return false
+  }
+  if (rule.profiles?.length && !rule.profiles.every((name) => profiles.has(name))) {
+    return false
+  }
+  if (rule.profilesAny?.length && !rule.profilesAny.some((name) => profiles.has(name))) {
+    return false
+  }
+  if (
+    rule.publicProfiles?.length &&
+    !rule.publicProfiles.every((name) => publicProfiles.has(name))
+  ) {
+    return false
+  }
+  if (
+    rule.publicProfilesAny?.length &&
+    !rule.publicProfilesAny.some((name) => publicProfiles.has(name))
+  ) {
     return false
   }
 
