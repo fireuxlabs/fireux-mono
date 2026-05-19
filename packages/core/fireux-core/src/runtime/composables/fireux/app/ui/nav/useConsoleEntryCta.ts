@@ -14,10 +14,10 @@ type ConsoleEntryFamily = {
 
 export function useConsoleEntryCta() {
   const fireux = useFireUXConfig()
-  const consoleFamilies = computed<ConsoleEntryFamily[]>(() =>
+  const consoles = computed<ConsoleEntryFamily[]>(() =>
     Array.from(
       new Set(
-        (fireux.consoleFamilies || [])
+        (fireux.consoles || [])
           .map((value) => normalizeConsoleFamily(value))
           .filter(Boolean)
       )
@@ -28,17 +28,17 @@ export function useConsoleEntryCta() {
       }))
   )
 
-  const hasConsoleFamilies = computed(() => consoleFamilies.value.length > 0)
-  const hasConsoleEntry = computed(() => hasConsoleFamilies.value)
+  const hasConsoles = computed(() => consoles.value.length > 0)
+  const hasConsoleEntry = computed(() => hasConsoles.value)
   const consoleEntryPath = computed(() =>
-    consoleFamilies.value[0]?.path || '/'
+    consoles.value[0]?.path || '/'
   )
 
   return {
-    hasConsoleFamilies,
+    hasConsoles,
     hasConsoleEntry,
     consoleEntryPath,
     consoleRootPath: CONSOLE_ROOT,
-    consoleFamilies,
+    consoles,
   }
 }

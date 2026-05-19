@@ -1,6 +1,6 @@
 # Runtime Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-17
+Updated: 2026-05-19
 ## Purpose
 - Define runtime selection, mode, collection path, and route policy across FireUX domains.
 
@@ -37,6 +37,14 @@ Updated: 2026-05-17
   - ecosystem-level Firebase `apiKey`
 - Missing app-specific `apiKey` is allowed only when the app intentionally uses the ecosystem default key.
 - New or migrated apps must be audited against the Firebase console web app snippet before deployment.
+
+## FireUX App Config Contract
+- Standard FireUX app `nuxt.config.ts` files should export `defineFireuxConfig(...)` directly.
+- Use `defineNuxtConfig({ ...fireuxConfig, ...localOverrides })` only when the app needs local Nuxt overrides.
+- Do not wrap a plain `defineFireuxConfig(...)` result in `defineNuxtConfig(fireuxConfig)`.
+- This keeps app config simple and avoids Nuxt's deep config type expansion when no local override is needed.
+- Standard app logo variants are always `/img/app/logo-light.svg` and `/img/app/logo-dark.svg`.
+- Do not declare light/dark logo paths in `defineFireuxConfig(...)`.
 
 ## Entity Loading Contract
 - Entity index pages delivered through `Index.vue` + `CollectionManager` must use the normal client-side Firestore read path.
@@ -153,11 +161,11 @@ Updated: 2026-05-17
 ## Console Canon Enforcement
 - A console family is current only when all of these exist:
   - route family under `runtime/pages/console/<routeSegment>` or the owning app's `app/pages/console/<routeSegment>`
-  - app config lists the canonical family key in `consoleFamilies` when the app should expose it
+  - app config lists the canonical family key in `consoles` when the app should expose it
   - app registry smoke routes include at least the family entry when the app is part of local smoke coverage
   - Tier1 package/app docs list the family key, route segment, and current child routes
 - If the route family does not exist, the family is proposed, not current.
-- If `consoleFamilies` does not list the family, the app must not present a user-facing CTA to that console family.
+- If `consoles` does not list the family, the app must not present a user-facing CTA to that console family.
 - If a product needs a console to inspect its canon, keep or add the minimal scaffold route before removing accidental old console access.
 - Console family route segments are singular. A console can manage multiple targets,
   but that is handled by `/console/<family>` target listing, not by plural route

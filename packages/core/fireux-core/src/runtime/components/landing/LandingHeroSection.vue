@@ -245,12 +245,12 @@ const rightPanelTagsResolved = computed<RightPanelTagItem[]>(() =>
         }))
 )
 
-const { hasConsoleEntry, consoleRootPath, consoleFamilies } = useConsoleEntryCta()
+const { hasConsoleEntry, consoleRootPath, consoles } = useConsoleEntryCta()
 
 const consoleCtas = computed(() => {
   if (!hasConsoleEntry.value) return []
 
-  if (!consoleFamilies.value.length) {
+  if (!consoles.value.length) {
     return [
       {
         key: 'console',
@@ -260,7 +260,7 @@ const consoleCtas = computed(() => {
     ]
   }
 
-  return consoleFamilies.value.map((entry) => ({
+  return consoles.value.map((entry) => ({
     key: entry.key,
     path: entry.path,
     label: `${toConsoleFamilyLabel(entry.key) || 'Console'} Console`,

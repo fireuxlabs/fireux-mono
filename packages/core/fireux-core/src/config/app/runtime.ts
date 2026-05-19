@@ -27,7 +27,7 @@ export type RuntimeApp = {
   role: RuntimeAppRole
   ecosystem: string
   modules: readonly string[]
-  consoleFamilies?: readonly string[]
+  consoles: readonly string[]
 }
 
 export type RuntimeFirebaseEcosystem = {

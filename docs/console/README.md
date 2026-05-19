@@ -33,7 +33,7 @@ Console pages must follow `docs/runtime-contract.md`:
 - `/console/<domain>/dev` = optional runtime snapshot/debug page
 
 Visibility rule:
-- `/console` must only list families declared in the current app's `consoleFamilies`
+- `/console` must only list families declared in the current app's `consoles`
 - a family can exist in shared code without being visible in every app
 
 ## Implementation Notes

@@ -10,7 +10,7 @@ const fireuxConfig = defineFireuxConfig({
   databaseId: 'buenohost',
   meta: metaContent,
   role: 'standalone',
-  consoleFamilies: ['property'],
+  consoles: ['property'],
   seo: {
     siteUrl: 'https://buenohost.web.app',
   },

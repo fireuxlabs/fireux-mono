@@ -81,7 +81,7 @@ Use `defineFireuxConfig(...)` in `nuxt.config.ts`. The important identity fields
 - `shortName`
 - `databaseId` for standalone apps with their own named Firestore database
 - `role`
-- `consoleFamilies`
+- `consoles`
 - `modules`
 - `meta`
 - `seo.siteUrl` when known
@@ -331,7 +331,7 @@ Console routes should follow `docs/console/README.md`:
 
 - `/console` is the shared console entry.
 - `/console/<domain>` is the family hub.
-- Visible families come from `consoleFamilies`, not route scanning.
+- Visible families come from `consoles`, not route scanning.
 
 If a console placeholder is intentionally light, keep it honest: show the domain name, rough entities, draft/published state, and what is coming next. Avoid creating fake editor complexity.
 
@@ -396,7 +396,7 @@ These are improvement notes from adding `projects/fireux/sproochli`:
 
 1. There is no single app creation command for standalone FireUX apps. `scripts/create-ecosystem.mjs` exists, but a thin `create:app` generator would save repeated manual wiring.
 2. App registration is split across the app folder, `projects/tsconfig.json`, `scripts/_lib/app-registry.mjs`, and generated dev workspace files. The registry is the best source of truth, but the new-app path should make that explicit.
-3. `consoleFamilies` accepts arbitrary strings, but route segment behavior is partly centralized in `consoleRoutes.ts`. A new family such as `info` works through the fallback path, but the intended pattern should be clearer.
+3. `consoles` accepts arbitrary strings, but route segment behavior is partly centralized in `consoleRoutes.ts`. A new family such as `info` works through the fallback path, but the intended pattern should be clearer.
 4. Dev server verification may fail in sandboxed tools when binding localhost. Document the approved command shape or let `dev-app-with-smoke.mjs` support a cheap `--port` override for one-off checks.
 5. App-level `nuxi prepare` creates ignored `.nuxt`, `.data`, and cache folders. That is fine, but new app creators should expect it and avoid treating those folders as source.
 6. API links in pages should use `<a href>` instead of `NuxtLink`; otherwise Vue Router may warn about unmatched API paths during SSR.

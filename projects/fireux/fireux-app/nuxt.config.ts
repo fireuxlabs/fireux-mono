@@ -1,15 +1,14 @@
-import { defineNuxtConfig } from 'nuxt/config'
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 import { metaContent } from './app/content/meta'
 
-const fireuxConfig = defineFireuxConfig({
+export default defineFireuxConfig({
   ecosystem: 'fireux',
   id: 'fireux-app',
   name: 'FireUX',
   shortName: 'FireUX',
   meta: metaContent,
   role: 'global',
-  consoleFamilies: ['project'],
+  consoles: ['project'],
   modules: [
     [
       'fireux-products',
@@ -28,5 +27,3 @@ const fireuxConfig = defineFireuxConfig({
     'fireux-blogs',
   ],
 })
-
-export default defineNuxtConfig(fireuxConfig)

@@ -10,7 +10,7 @@ const fireuxConfig = defineFireuxConfig({
   contactEmail: 'misebox@misebox.app',
   meta: metaContent,
   role: 'global',
-  consoleFamilies: ['kitchen', 'supplier'],
+  consoles: ['kitchen', 'supplier'],
   seo: {
     siteUrl: 'https://misebox.app',
     staticPaths: ['/get-started', '/programme', '/luna-piccante', '/luna-piccante/menu'],

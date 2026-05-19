@@ -2,6 +2,8 @@ export type FireuxBrandRole = 'global' | 'tenant' | 'standalone'
 
 export type ResolvedFireuxBrandAssets = {
   logo: string
+  logoLight: string
+  logoDark: string
   thumbnail: string
   cover: string
   favicon: string
@@ -13,6 +15,8 @@ export type ResolvedFireuxBrandAssets = {
 
 export const GLOBAL_BRAND_ASSETS: ResolvedFireuxBrandAssets = Object.freeze({
   logo: '/img/app/logo.png',
+  logoLight: '/img/app/logo-light.svg',
+  logoDark: '/img/app/logo-dark.svg',
   thumbnail: '/img/app/thumbnail.png',
   cover: '/img/app/cover.png',
   favicon: '/img/app/favicon.ico',

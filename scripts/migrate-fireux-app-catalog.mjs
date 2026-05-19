@@ -168,8 +168,8 @@ function buildAppSeed(entry) {
     launchOrder: Number(entry.launchOrder || 0),
     workspace: normalizeString(entry.workspace),
     databaseId: normalizeString(entry.databaseId || DATABASE_ID),
-    consoleFamilies: Array.isArray(entry.consoleFamilies)
-      ? uniqueStrings(entry.consoleFamilies)
+    consoles: Array.isArray(entry.consoles)
+      ? uniqueStrings(entry.consoles)
       : [],
     projectId: normalizeString(ECOSYSTEM_PROJECT_IDS[ecosystem]),
     name: normalizeString(overrides.name || entry.name || entry.appId),
@@ -206,7 +206,7 @@ function buildPatch(seed, existing = {}) {
       key: seed.key,
       workspace: seed.workspace,
       launch_order: seed.launchOrder,
-      console_families: seed.consoleFamilies,
+      console_families: seed.consoles,
       database_id: seed.databaseId,
     },
     created: {

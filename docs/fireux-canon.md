@@ -18,7 +18,7 @@ Updated: 2026-05-19
 - A proposed shape must be labelled `proposed`, `scaffold`, `TODO`, or `future`. Do not describe proposed routes, stores, or console families as current canon.
 - No paper canon:
   - a console family is not current unless its route family exists
-  - an app console entry is not current unless `consoleFamilies` exposes it
+  - an app console entry is not current unless `consoles` exposes it
   - a public route is not current unless the page files exist
   - a storage/composable bucket is not current unless files live in the documented bucket
   - a data shape is not current unless either live/test/demo fixtures use it or the docs explicitly say it is migration-only

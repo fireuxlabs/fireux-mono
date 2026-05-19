@@ -1,14 +1,11 @@
-import { defineNuxtConfig } from 'nuxt/config'
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 
-const fireuxConfig = defineFireuxConfig({
+export default defineFireuxConfig({
   ecosystem: 'misebox',
   id: 'niederhorn',
   name: 'Niederhorn',
   shortName: 'Niederhorn',
   role: 'tenant',
-  consoleFamilies: [],
+  consoles: [],
   modules: [],
 })
-
-export default defineNuxtConfig(fireuxConfig)

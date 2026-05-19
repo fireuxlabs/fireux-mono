@@ -10,7 +10,7 @@ Previous:
 - app console hubs could show families because shared routes existed, even when that app should not expose them
 
 Now:
-- apps declare visible console families through `consoleFamilies` in `nuxt.config.ts`
+- apps declare visible console families through `consoles` in `nuxt.config.ts`
 - examples:
   - FireUX app -> `projects`
   - Misebox app -> `kitchen`, `supplier`

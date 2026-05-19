@@ -26,7 +26,7 @@ This README only explains the Kitchen family delta.
 ## Local Contract
 
 - this folder is operational, not public
-- apps must opt into kitchen visibility through `consoleFamilies`
+- apps must opt into kitchen visibility through `consoles`
 - `index.vue` is the family-specific chooser in console shell
 - `overview.vue` is the first selected-kitchen workspace page
 - `preview.vue` is the console-only customer surface preview for the selected kitchen

@@ -1,16 +1,13 @@
-import { defineNuxtConfig } from 'nuxt/config'
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 
-const fireuxConfig = defineFireuxConfig({
+export default defineFireuxConfig({
   ecosystem: 'cleanbox',
   id: 'richies-reinigung',
   name: 'Richies',
   shortName: 'Richies',
   role: 'tenant',
-  consoleFamilies: [],
+  consoles: [],
   modules: [
     // tenant stays lean
   ],
 })
-
-export default defineNuxtConfig(fireuxConfig)

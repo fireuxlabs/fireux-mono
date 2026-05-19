@@ -30,15 +30,15 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const appId = () => String(fireuxRuntime().id || '').trim()
   const databaseId = () =>
     String(runtime.public?.firebaseEcosystem?.firebase?.databaseId || '').trim()
-  const consoleFamilies = () =>
-    Array.isArray(fireuxRuntime().consoleFamilies)
-      ? (fireuxRuntime().consoleFamilies as unknown[])
+  const consoles = () =>
+    Array.isArray(fireuxRuntime().consoles)
+      ? (fireuxRuntime().consoles as unknown[])
       : []
 
   if (isConsoleRootPath(path)) {
     const firstFamily = Array.from(
       new Set(
-        consoleFamilies()
+        consoles()
           .map((value) => normalizeConsoleFamily(value))
           .filter(Boolean)
       )

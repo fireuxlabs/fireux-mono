@@ -149,7 +149,7 @@ Recent repo truth:
 
 - runtime drift inspection now uses a dev-only server seam for collection snapshotting
 - collection managers remain component-owned, but direct subcollection discovery is now a runtime server concern
-- console family visibility is now an app-config concern through `consoleFamilies`
+- console family visibility is now an app-config concern through `consoles`
 - ecosystem apps now use a clear database split:
   - `(default)` is the registry/public-mirror database for `project` and `ecosystem`
   - the named ecosystem database is the operational database, including canonical `apps`

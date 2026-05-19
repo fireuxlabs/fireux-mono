@@ -40,13 +40,13 @@ Examples:
 - `Project`
 
 Visibility source of truth:
-- app config declares visible families through `consoleFamilies`
+- app config declares visible families through `consoles`
 - app config uses singular canonical family keys such as `project`, `property`, `kitchen`, `portfolio`, and `supplier`
 - core maps canonical family keys to route segments such as `/console/project`, `/console/property`, `/console/kitchen`, `/console/portfolio`, and `/console/supplier`
 - `/console` does not infer visible families by scanning every registered console route
-- an app with `consoleFamilies: []` should not expose console entry at all
+- an app with `consoles: []` should not expose console entry at all
 - a product CTA must not point at another family just because that route exists
-- a family listed in `consoleFamilies` must have a real route family; otherwise it is proposed, not current canon
+- a family listed in `consoles` must have a real route family; otherwise it is proposed, not current canon
 
 ### 2) Choose Target In A Mode
 

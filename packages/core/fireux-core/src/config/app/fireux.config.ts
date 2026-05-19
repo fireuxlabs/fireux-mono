@@ -7,10 +7,7 @@ import { configPwa } from './pwa'
 import { setRuntime, type RuntimeAppRole } from './runtime'
 import type { FireuxSeoConfig } from './seo'
 import { configViteWorkspace } from './vite'
-import {
-  normalizePublicImgAsset,
-  resolveFireuxBrandAssets,
-} from '../../utils/brandAssets'
+import { resolveFireuxBrandAssets } from '../../utils/brandAssets'
 import type { FireuxMetaContent } from '../../runtime/models/system/meta-content.model'
 
 declare module '@nuxt/schema' {
@@ -35,15 +32,11 @@ export type FireuxAppConfig = {
   appThumbnail?: string
   /** Optional app logo path/URL (preferred). Role-aware defaults apply when omitted. */
   appLogo?: string
-  /** Optional light-mode logo path/URL for UI surfaces. */
-  appLogoLight?: string
-  /** Optional dark-mode logo path/URL for UI surfaces. */
-  appLogoDark?: string
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
   role: RuntimeAppRole
   modules?: NonNullable<NuxtConfig['modules']>
-  consoleFamilies?: string[]
+  consoles?: string[]
   seo?: FireuxSeoConfig
   meta?: FireuxMetaContent
 }
@@ -259,8 +252,8 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       shortName: app.shortName,
       appThumbnail: brandAssets.thumbnail,
       appLogo: brandAssets.logo,
-      ...(app.appLogoLight ? { appLogoLight: normalizePublicImgAsset(app.appLogoLight) } : {}),
-      ...(app.appLogoDark ? { appLogoDark: normalizePublicImgAsset(app.appLogoDark) } : {}),
+      appLogoLight: brandAssets.logoLight,
+      appLogoDark: brandAssets.logoDark,
       ...(app.contactEmail ? { contactEmail: app.contactEmail } : {}),
       ...(envDeveloperId ? { developerId: envDeveloperId } : {}),
       domain: envDomain,
@@ -268,7 +261,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       role: app.role,
       ecosystem: app.ecosystem,
       modules: moduleNames,
-      ...(app.consoleFamilies ? { consoleFamilies: app.consoleFamilies } : {}),
+      consoles: app.consoles || [],
     },
 
     firebaseApp: {

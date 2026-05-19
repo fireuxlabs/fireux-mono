@@ -10,7 +10,7 @@ const fireuxConfig = defineFireuxConfig({
   databaseId: 'find-my-seo',
   meta: metaContent,
   role: 'standalone',
-  consoleFamilies: [],
+  consoles: [],
   seo: {
     siteUrl: 'https://find-my-seo.web.app',
   },

@@ -1,16 +1,13 @@
-import { defineNuxtConfig } from 'nuxt/config'
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 import { metaContent } from './app/content/meta'
 
-const fireuxConfig = defineFireuxConfig({
+export default defineFireuxConfig({
   ecosystem: 'cleanbox',
   id: 'cleanbox-app',
   name: 'Cleanbox',
   shortName: 'Cleanbox',
   meta: metaContent,
   role: 'global',
-  consoleFamilies: [],
+  consoles: [],
   modules: ['fireux-jobs', 'fireux-products', 'fireux-blogs'],
 })
-
-export default defineNuxtConfig(fireuxConfig)

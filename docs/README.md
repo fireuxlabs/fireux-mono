@@ -39,7 +39,7 @@ Only the Tier1 files above are authoritative canon. Folder names like `docs/cano
 Current operational note:
 - repo-wide drift inspection now depends on runtime collection-manager dev JSON showing raw docs and direct subcollections where they exist
 - the shared behavior is documented in the runtime `components/`, `composables/`, and `server/` branch READMEs
-- console visibility is now app-config driven through `consoleFamilies`; the shared `/console` hub no longer discovers families by route scanning
+- console visibility is now app-config driven through `consoles`; the shared `/console` hub no longer discovers families by route scanning
 - dev server scripts, VS Code tasks, and VS Code launch entries are now generated from `scripts/_lib/app-registry.mjs`; run `pnpm sync:dev-workspace` after changing app registry data, and note that `pnpm guard` now checks these generated files for drift
 
 ## Tier 3 (Tooling/History, non-authoritative)

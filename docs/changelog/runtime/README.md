@@ -42,7 +42,7 @@ Previous:
 - main console page ownership for `Project` and `Portfolio` was split across app, ecosystem, and domain layers
 
 Now:
-- apps declare visible console families through `consoleFamilies`
+- apps declare visible console families through `consoles`
 - the shared `/console` hub uses app config instead of route discovery as the visibility contract
 - `Project` main console pages are core-owned
 - `Portfolio` main console pages are extension-owned with Granite acting as delivery shell

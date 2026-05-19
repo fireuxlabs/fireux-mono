@@ -1,6 +1,6 @@
 const SHARED_ROUTES = ['/', '/dashboard', '/dashboard/user-profile']
 
-// Registry consoleFamilies are smoke-test route segments.
+// Registry consoles are smoke-test route segments.
 // Console family keys and route segments are singular:
 // `project`, `property`, `kitchen`, `portfolio`, and `supplier`.
 function unique(values) {
@@ -29,7 +29,7 @@ export const APP_REGISTRY = {
     role: 'global',
     workspace: './projects/fireux/fireux-app',
     port: 3000,
-    consoleFamilies: ['project'],
+    consoles: ['project'],
     launchOrder: 1,
   },
   misebox: {
@@ -41,7 +41,7 @@ export const APP_REGISTRY = {
     role: 'global',
     workspace: './projects/misebox/misebox-app',
     port: 3001,
-    consoleFamilies: ['kitchen', 'supplier'],
+    consoles: ['kitchen', 'supplier'],
     launchOrder: 2,
   },
   cleanbox: {
@@ -53,7 +53,7 @@ export const APP_REGISTRY = {
     role: 'global',
     workspace: './projects/cleanbox/cleanbox-app',
     port: 3002,
-    consoleFamilies: [],
+    consoles: [],
     launchOrder: 3,
   },
   niederhorn: {
@@ -65,7 +65,7 @@ export const APP_REGISTRY = {
     role: 'tenant',
     workspace: './projects/misebox/niederhorn',
     port: 3003,
-    consoleFamilies: [],
+    consoles: [],
     launchOrder: 4,
   },
   richies: {
@@ -77,7 +77,7 @@ export const APP_REGISTRY = {
     role: 'tenant',
     workspace: './projects/cleanbox/richies-reinigung',
     port: 3004,
-    consoleFamilies: [],
+    consoles: [],
     launchOrder: 5,
   },
   tenant: {
@@ -89,7 +89,7 @@ export const APP_REGISTRY = {
     role: 'tenant',
     workspace: './projects/fireux/tenant',
     port: 3005,
-    consoleFamilies: [],
+    consoles: [],
     launchOrder: 6,
   },
   bringli: {
@@ -101,7 +101,7 @@ export const APP_REGISTRY = {
     role: 'global',
     workspace: './projects/bringli/bringli-app',
     port: 3006,
-    consoleFamilies: ['supplier'],
+    consoles: ['supplier'],
     launchOrder: 7,
   },
   'find-my-seo': {
@@ -113,7 +113,7 @@ export const APP_REGISTRY = {
     role: 'standalone',
     workspace: './projects/fireux/find-my-seo-app',
     port: 3010,
-    consoleFamilies: [],
+    consoles: [],
     smokeRoutes: [
       '/',
       '/chat',
@@ -137,7 +137,7 @@ export const APP_REGISTRY = {
     role: 'standalone',
     workspace: './projects/fireux/sproochli',
     port: 3011,
-    consoleFamilies: [],
+    consoles: [],
     smokeRoutes: [
       '/',
       '/chat',
@@ -159,7 +159,7 @@ export const APP_REGISTRY = {
     role: 'standalone',
     workspace: './projects/fireux/buenohost',
     port: 3012,
-    consoleFamilies: ['property'],
+    consoles: ['property'],
     smokeRoutes: [
       '/',
       '/chat',
@@ -179,7 +179,7 @@ export const APP_REGISTRY = {
     role: 'global',
     workspace: './projects/granite/granite-app',
     port: 3007,
-    consoleFamilies: ['portfolio'],
+    consoles: ['portfolio'],
     launchOrder: 11,
   },
   'la-tap-berne': {
@@ -191,7 +191,7 @@ export const APP_REGISTRY = {
     role: 'tenant',
     workspace: './projects/misebox/la-tap-berne',
     port: 3008,
-    consoleFamilies: [],
+    consoles: ['kitchen'],
     launchOrder: 12,
   },
 }
@@ -213,7 +213,7 @@ export function getAppRegistryEntry(key) {
 
   const smokeRoutes = app.smokeRoutes?.length
     ? unique(app.smokeRoutes)
-    : unique([...SHARED_ROUTES, ...consoleRoutes(app.consoleFamilies)])
+    : unique([...SHARED_ROUTES, ...consoleRoutes(app.consoles)])
 
   return {
     ...app,

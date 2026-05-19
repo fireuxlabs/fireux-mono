@@ -1,7 +1,6 @@
-import { defineNuxtConfig } from 'nuxt/config'
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 
-const fireuxConfig = defineFireuxConfig({
+export default defineFireuxConfig({
   ecosystem: 'fireux',
   id: 'fireux-template',
   name: 'FireUX Template',
@@ -9,5 +8,3 @@ const fireuxConfig = defineFireuxConfig({
   role: 'tenant',
   modules: ['fireux-products', 'fireux-blogs'],
 })
-
-export default defineNuxtConfig(fireuxConfig)
