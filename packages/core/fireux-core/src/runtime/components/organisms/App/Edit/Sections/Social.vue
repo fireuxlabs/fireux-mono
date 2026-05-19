@@ -3,10 +3,9 @@
     <template #header>
       <div class="section__header">
         <div class="section__copy">
-          <h3 class="text-base font-semibold">Social</h3>
+          <h3 class="text-base font-semibold">Links</h3>
           <p class="text-xs text-dimmed">
-            App Admin can edit public links. Handles for Instagram/Twitter/YouTube
-            (e.g. fireux.app), URLs for everything else.
+            Edit public website, contact, and social links.
           </p>
         </div>
       </div>

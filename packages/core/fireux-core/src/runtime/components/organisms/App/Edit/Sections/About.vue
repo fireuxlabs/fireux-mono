@@ -3,9 +3,9 @@
     <template #header>
       <div class="section__header">
         <div class="section__copy">
-          <h3 class="text-base font-semibold">About</h3>
+          <h3 class="text-base font-semibold">Public Profile</h3>
           <p class="text-xs text-dimmed">
-            App Admin can edit the copy people read.
+            Edit the copy people see on public app surfaces.
           </p>
         </div>
       </div>

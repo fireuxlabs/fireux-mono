@@ -1,10 +1,6 @@
 <template>
-  <template v-if="app">
-    <div class="panels-masonry__item console-item mb-10">
-      <AppEditSectionsInfo :app="app" />
-    </div>
-
-    <div class="panels-masonry__item console-item mb-10">
+  <div v-if="app" class="space-y-6">
+    <div>
       <AppEditSectionsAbout
         :app="app"
         :handle-tagline-update="handleTaglineUpdate"
@@ -14,18 +10,14 @@
       />
     </div>
 
-    <div class="panels-masonry__item console-item mb-10">
-      <AppEditSectionsSurfaces :app-card="appCard" />
-    </div>
-
-    <div class="panels-masonry__item console-item mb-10">
+    <div>
       <AppEditSectionsSocial
         :app="app"
         :handle-update-social-links="handleUpdateSocialLinks"
       />
     </div>
 
-    <div class="panels-masonry__item console-item mb-10">
+    <div>
       <AppEditSectionsJoinRequests
         :items="joinRequestItems"
         :on-approve="onApprove"
@@ -33,7 +25,7 @@
       />
     </div>
 
-    <div class="panels-masonry__item console-item mb-10">
+    <div>
       <AppEditSectionsAdmins
         :rows="adminRows"
         :action-uid="adminActionUid"
@@ -42,10 +34,13 @@
       />
     </div>
 
-    <div class="panels-masonry__item console-item mb-10">
-      <AppEditSectionsTenantOverrides />
+    <div>
+      <AppEditSectionsMembers
+        :rows="teamRows"
+        :pill-for="adminPillFor"
+      />
     </div>
-  </template>
+  </div>
 
   <MoleculesStateCard
     v-else-if="pending"
@@ -63,7 +58,6 @@ import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
 import { useAppUpdate } from '../../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
 import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
 import { useAppJoinRequests } from '../../../../composables/fireux/firestore/core/app/utils/useAppJoinRequests'
-import { useAppInterface } from '../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useAppUserCollection } from '../../../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
 import { useUserFetch } from '../../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUserInterface, type UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
@@ -94,9 +88,6 @@ const {
 } = useAppUpdate(appRef)
 const { memberships: users, fulfilled: hydratedUsers } = useAppUserCollection()
 const { pill: userCard } = useUserInterface()
-
-const appInterface = useAppInterface(appRef)
-const appCard = computed(() => appInterface.pill())
 
 const withToast =
   <T>(operation: (value: T) => Promise<unknown>, ok: string, fail: string) =>
