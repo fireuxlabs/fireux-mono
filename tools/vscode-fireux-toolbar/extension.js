@@ -791,6 +791,18 @@ function activate(context) {
       tooltip: 'Start Granite dev (port 3007)',
       url: 'http://localhost:3007',
     },
+    {
+      key: 'la-tap-berne',
+      name: 'La Tap Berne',
+      icon: '$(tag)',
+      port: 3008,
+      commandId: 'fireuxToolbar.startLaTapBerne',
+      taskLabel: 'pnpm dev:la-tap-berne',
+      terminalName: 'La Tap Berne (3008)',
+      pnpmCommand: 'pnpm dev:la-tap-berne --host',
+      tooltip: 'Start La Tap Berne dev (port 3008)',
+      url: 'http://localhost:3008',
+    },
   ]
 
   const appByKey = new Map(apps.map((app) => [app.key, app]))

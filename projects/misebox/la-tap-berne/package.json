@@ -18,8 +18,10 @@
   "dependencies": {
     "@nuxt/icon": "2.x",
     "@nuxt/ui": "^4.0.0-alpha.2",
+    "firebase": "11.10.0",
     "firebase-functions": "^6.3.2",
     "fireux-core": "workspace:*",
+    "fireux-kitchens": "workspace:*",
     "fireux-misebox": "workspace:*",
     "nuxt": "4.1.2",
     "vue": "3.5.20",

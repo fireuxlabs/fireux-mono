@@ -106,12 +106,36 @@
       <UModal
         v-if="showOnboardingModal"
         :open="showOnboardingModal"
+        :dismissible="false"
         prevent-close
         title="🚫 Blocked"
         description="This app needs to be initialized."
       >
+        <template #actions>
+          <div
+            v-if="showOnboardingActions"
+            class="flex items-center gap-2"
+          >
+            <UBadge
+              :color="onboardingCanProceed ? 'success' : 'warning'"
+              variant="soft"
+            >
+              {{ onboardingCanProceed ? 'ready' : 'pending' }}
+            </UBadge>
+            <UButton
+              size="sm"
+              color="primary"
+              :loading="onboardingActionPending"
+              :disabled="!onboardingCanProceed || onboardingActionPending"
+              @click="proceedOnboarding"
+            >
+              Continue
+            </UButton>
+          </div>
+        </template>
+
         <template #body>
-          <AppCreateSystem />
+          <AppCreateSystem :state="onboarding" />
         </template>
       </UModal>
     </ClientOnly>
@@ -124,6 +148,7 @@ import { useRouter } from 'vue-router'
 import { useHead } from '#imports'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useDevUi } from '../../composables/fireux/app/ui/useDevUi'
+import { useAppOnboarding } from '../../composables/fireux/app/utils/useAppOnboarding'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 
 const isDev = import.meta.dev
@@ -150,6 +175,16 @@ const { isResolved, isInitialized } = import.meta.client
 const showOnboardingModal = computed(
   () => isResolved.value && !isInitialized.value
 )
+const onboarding = import.meta.client ? useAppOnboarding() : null
+const showOnboardingActions = computed(() =>
+  Boolean(onboarding?.coreUser.value && onboarding?.isUnlocked.value)
+)
+const onboardingCanProceed = computed(() =>
+  Boolean(onboarding?.canProceed.value)
+)
+const onboardingActionPending = computed(() =>
+  Boolean(onboarding?.actionPending.value)
+)
 
 useHead({
   meta: fireuxConfig.isTenant
@@ -160,6 +195,10 @@ useHead({
 
 function goToDev() {
   router.push('/dev')
+}
+
+function proceedOnboarding() {
+  void onboarding?.onProceed()
 }
 
 async function copyVisibleNotes() {

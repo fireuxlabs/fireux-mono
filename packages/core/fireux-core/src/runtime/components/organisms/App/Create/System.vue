@@ -23,14 +23,26 @@
     <!-- 3) Env check + proceed -->
     <template v-else>
       <div class="space-y-6 py-6">
-        <header class="flex items-center justify-between">
+        <header class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-2">
             <h2 class="text-lg font-semibold">Environment Check</h2>
             <UBadge :color="env?.isValid ? 'success' : 'warning'" variant="soft">
               {{ env?.isValid ? 'ready' : 'pending' }}
             </UBadge>
           </div>
-          <UButton size="xs" variant="soft" @click="onRefreshEnv">Refresh</UButton>
+          <div class="flex items-center gap-2">
+            <UButton size="xs" variant="soft" @click="onRefreshEnv">Refresh</UButton>
+            <UButton
+              v-if="canProceed"
+              size="xs"
+              color="primary"
+              :loading="actionPending"
+              :disabled="actionPending"
+              @click="onProceed"
+            >
+              Continue
+            </UButton>
+          </div>
         </header>
 
         <AppCreateOnboardingVariables
@@ -68,7 +80,12 @@
 </template>
 
 <script setup lang="ts">
+import type { AppOnboardingState } from '../../../../composables/fireux/app/utils/useAppOnboarding'
 import { useAppOnboarding } from '../../../../composables/fireux/app/utils/useAppOnboarding'
+
+const props = defineProps<{
+  state?: AppOnboardingState | null
+}>()
 
 const {
   coreUser,
@@ -86,5 +103,5 @@ const {
   checkPin,
   onRefreshEnv,
   onProceed,
-} = useAppOnboarding()
+} = props.state ?? useAppOnboarding()
 </script>
