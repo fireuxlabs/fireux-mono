@@ -18,7 +18,7 @@ import type {
  * Storage: root canonical model
  * Root path: /apps/<appId>
  * Active seam: useApp() resolves FireUXConfig.appId
- * Runtime face: App Control when apps are managed through FireUX project/app tools
+ * Management face: App Control when apps are managed through FireUX project/app tools
  *
  * Decision note:
  * - App is stored once as canonical system truth.
@@ -104,9 +104,11 @@ export type AppModel = WidenLiteral<typeof AppModel>
 export type App = AppModel
 
 /**
- * App field ownership canon.
+ * App field groups.
  *
  * App stored truth lives once at `apps/{appId}`.
+ * These groups do not create separate App records. They only say which surface
+ * should handle each field on the same root App record.
  *
  * Simple rule:
  * - App Admin runs the app.
@@ -114,13 +116,12 @@ export type App = AppModel
  * - App Control changes where the app belongs.
  * - System maintains calculated/internal fields.
  */
-export const AppFieldOwnership = {
+export const AppFieldGroups = {
   /**
-   * `/dashboard/admin`
-   *
-   * If it changes how the app looks to users, it belongs to App Admin.
+   * App Admin runs the app.
+   * These fields affect public content, members, join requests, and admins.
    */
-  appAdminEditable: [
+  admin: [
     'tagline',
     'description',
     'short_bio',
@@ -131,11 +132,10 @@ export const AppFieldOwnership = {
   ],
 
   /**
-   * `/dashboard/developer`
-   *
-   * If it changes how the app is built or checked, it belongs to Developer.
+   * Developer builds and checks the app.
+   * These fields affect assets, database/config, and repo metadata.
    */
-  developerEditable: [
+  developer: [
     'media',
     'database_id',
     'fireux_native',
@@ -144,12 +144,10 @@ export const AppFieldOwnership = {
   ],
 
   /**
-   * App Control.
-   *
-   * If it changes where the app belongs, how it is named, or how it is routed,
-   * it belongs to App Control.
+   * App Control changes where the app belongs.
+   * These fields can affect routing, identity, SEO, cards, and registries.
    */
-  appControlOwned: [
+  control: [
     'project_id',
     'ecosystem_id',
     'slug',
@@ -162,11 +160,10 @@ export const AppFieldOwnership = {
   ],
 
   /**
-   * System-maintained fields.
-   *
-   * These are not directly edited through normal product UI.
+   * System maintains these fields.
+   * Normal product UI should not edit them directly.
    */
-  systemMaintained: [
+  system: [
     'id',
     'derived',
     'created',
@@ -174,14 +171,14 @@ export const AppFieldOwnership = {
   ],
 } as const
 
-export type AppAdminEditableField =
-  typeof AppFieldOwnership.appAdminEditable[number]
-export type AppDeveloperEditableField =
-  typeof AppFieldOwnership.developerEditable[number]
+export type AppAdminField =
+  typeof AppFieldGroups.admin[number]
+export type AppDeveloperField =
+  typeof AppFieldGroups.developer[number]
 export type AppControlField =
-  typeof AppFieldOwnership.appControlOwned[number]
-export type AppSystemMaintainedField =
-  typeof AppFieldOwnership.systemMaintained[number]
+  typeof AppFieldGroups.control[number]
+export type AppSystemField =
+  typeof AppFieldGroups.system[number]
 
 export type AppCreateInput = Omit<App, 'id' | 'created' | 'updated'>
 export type AppUpdateInput = Partial<Omit<App, 'id' | 'created' | 'updated'>>

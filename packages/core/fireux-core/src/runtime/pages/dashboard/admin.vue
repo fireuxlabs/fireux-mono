@@ -55,17 +55,13 @@
                       Run {{ appDisplayName }}
                     </h1>
                     <p class="max-w-3xl text-sm leading-6 text-dimmed">
-                      App admins run this app: public content, members, join
-                      requests, and chat. Developers build and check the app.
-                      App Control changes where the app belongs.
+                      Use this page to keep public content, members, join
+                      requests, and admins up to date.
                     </p>
                   </div>
                 </div>
 
                 <div class="flex flex-wrap gap-2">
-                  <UButton to="/dashboard/chat" icon="i-lucide-message-circle">
-                    Open chat inbox
-                  </UButton>
                   <UButton
                     v-if="appRecordPath"
                     :to="appRecordPath"
@@ -95,76 +91,16 @@
                   </UButton>
                 </div>
               </div>
-
-              <div class="grid w-full gap-3 sm:grid-cols-2 xl:max-w-3xl xl:grid-cols-3">
-                <UCard variant="soft">
-                  <div class="space-y-2">
-                    <div class="flex items-center gap-2 text-sm font-medium text-default">
-                      <Icon name="i-lucide-badge-check" class="size-4 text-primary" />
-                      Admin scope
-                    </div>
-                    <p class="text-xs leading-5 text-dimmed">
-                      Run the app: public content, members, join requests, and
-                      conversations.
-                    </p>
-                  </div>
-                </UCard>
-
-                <UCard variant="soft">
-                  <div class="space-y-2">
-                    <div class="flex items-center gap-2 text-sm font-medium text-default">
-                      <Icon name="i-lucide-code" class="size-4 text-primary" />
-                      Developer settings
-                    </div>
-                    <p class="text-xs leading-5 text-dimmed">
-                      Build and check the app: images, assets, repo metadata,
-                      and config diagnostics.
-                    </p>
-                    <UBadge
-                      size="xs"
-                      :color="isDeveloper ? 'success' : 'neutral'"
-                      variant="soft"
-                    >
-                      {{ isDeveloper ? 'Available to you' : 'Hidden for this user' }}
-                    </UBadge>
-                  </div>
-                </UCard>
-
-                <UCard variant="soft">
-                  <div class="space-y-2">
-                    <div class="flex items-center gap-2 text-sm font-medium text-default">
-                      <Icon name="i-lucide-terminal" class="size-4 text-primary" />
-                      Local /dev
-                    </div>
-                    <p class="text-xs leading-5 text-dimmed">
-                      Local workbench for runtime checks, model JSON, image scans,
-                      and debugging.
-                    </p>
-                    <UBadge
-                      size="xs"
-                      :color="isLocalDev ? 'warning' : 'neutral'"
-                      variant="soft"
-                    >
-                      {{ isLocalDev ? 'Dev server only' : 'Not mounted in production' }}
-                    </UBadge>
-                  </div>
-                </UCard>
-              </div>
             </div>
           </UPageCard>
 
           <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)]">
             <div class="panels-masonry">
               <UPageCard
-                title="Admin work"
-                description="Keep the public profile useful, review incoming members, and maintain the admin team."
+                title="Editable sections"
+                description="Update the public profile, join requests, and admin team."
                 variant="subtle"
-              >
-                <p class="text-sm text-dimmed">
-                  Locked values stay read-only here because they can affect
-                  routing, app identity, or project links.
-                </p>
-              </UPageCard>
+              />
 
               <AppEditAdmin :app="app" />
             </div>

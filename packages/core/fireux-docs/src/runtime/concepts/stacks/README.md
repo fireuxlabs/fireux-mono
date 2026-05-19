@@ -122,9 +122,18 @@ App
   family: system root entity + active runtime singleton
   active seam: useApp() from FireUXConfig.appId
   management: Project/App console surface
+  field groups: admin, developer, control, system
 ```
 
 Ecosystem may map to a Firebase project operationally, but Firebase is infrastructure backing, not the entity definition.
+
+App field groups do not create separate App records. They only say which surface
+should handle each field on the same root `apps/{appId}` record:
+
+- `admin`: App Admin runs the app
+- `developer`: Developer builds and checks the app
+- `control`: App Control changes where the app belongs
+- `system`: System maintains calculated/internal fields
 
 `firestore/core/ecosystem` is the canonical root Ecosystem read/collection/interface/ensure seam. `firestore/system/ecosystem` is only for setup, control, or bootstrap adapters and must not duplicate root Ecosystem entity access.
 

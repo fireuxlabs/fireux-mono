@@ -111,6 +111,11 @@ Current learned examples:
   - stored truth: `apps/{appId}`
   - active seam: `useApp()` resolves `FireUXConfig.appId`
   - Project/App console surfaces may manage the root App record
+- App fields can be grouped by who should handle them, but those groups do not create separate App records:
+  - `admin`: App Admin runs the app
+  - `developer`: Developer builds and checks the app
+  - `control`: App Control changes where the app belongs
+  - `system`: System maintains calculated/internal fields
 - `firestore/core/ecosystem` is the canonical root Ecosystem read/collection/interface/ensure seam.
 - `firestore/system/ecosystem` is only for setup/control/bootstrap adapters and must not duplicate root Ecosystem entity access.
 - `fireux/app` is app shell/context/orchestration space, not a bucket for App, Project, or Ecosystem entity truth.

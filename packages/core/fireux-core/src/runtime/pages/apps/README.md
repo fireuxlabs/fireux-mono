@@ -65,9 +65,11 @@ This folder currently spans two route roles:
 
 That mix is acceptable for now because `App` is an active platform entity that still needs a fallback bootstrap surface.
 
-## Field Ownership
+## Field Groups
 
 `AppModel` is stored once as root truth at `apps/{appId}`.
+Field groups do not create separate App records. They only say which surface
+should handle each field on the same root App record.
 
 Simple rule:
 

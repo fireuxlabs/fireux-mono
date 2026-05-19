@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="chat">
     <template #header>
-      <LayoutsDashboardNavbar title="Chat" />
+      <LayoutsDashboardNavbar title="Messages" />
     </template>
 
     <template #body>
@@ -10,7 +10,7 @@
           <div class="space-y-5">
             <div>
               <div class="flex items-center justify-between gap-3">
-                <h2 class="font-semibold">Conversations</h2>
+                <h2 class="font-semibold">Messages from visitors</h2>
 
                 <UBadge color="neutral" variant="soft">
                   {{ conversationsLabel }}
@@ -18,7 +18,7 @@
               </div>
 
               <p class="text-sm text-muted">
-                Public messages sent to {{ fireux.appShortName || fireux.appName }}.
+                Messages people send to the app admin.
               </p>
             </div>
 
@@ -38,20 +38,20 @@
               v-if="pending"
               color="neutral"
               variant="soft"
-              title="Loading conversations"
-              description="Checking the shared conversation inbox for this app."
+              title="Loading messages"
+              description="Checking messages for this app."
             />
 
             <UAlert
               v-if="!conversationSurfaces.length && !pending"
               color="neutral"
               variant="soft"
-              title="No conversations yet"
-              description="When visitors use public chat, their messages appear here."
+              title="No messages yet"
+              description="When visitors chat with the admin, their messages appear here."
             >
               <template #actions>
                 <UButton to="/chat" color="primary" variant="soft" size="sm">
-                  Open public chat
+                  Open chat with admin
                 </UButton>
               </template>
             </UAlert>
@@ -135,11 +135,11 @@
             color="neutral"
             variant="soft"
             title="Inbox is ready"
-            description="Use public chat to create the first conversation, then answer it here."
+            description="Open chat with the admin to create the first message, then answer it here."
           >
             <template #actions>
               <UButton to="/chat" color="primary" variant="soft" size="sm">
-                Open public chat
+                Open chat with admin
               </UButton>
               <UButton to="/dashboard/admin" color="neutral" variant="ghost" size="sm">
                 Back to admin
@@ -281,7 +281,7 @@ definePageMeta({
   layout: 'dashboard',
   nav: {
     key: 'dashboard-chat',
-    label: 'Chat',
+    label: 'Messages',
     icon: 'i-lucide-message-circle',
     position: 'top',
     order: 9,

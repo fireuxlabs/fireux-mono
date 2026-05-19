@@ -1,12 +1,7 @@
 <template>
   <template v-if="app">
     <div class="panels-masonry__item console-item mb-10">
-      <AppEditSectionsLockedConfig
-        :app="app"
-        :is-developer="isDeveloper"
-        :noop-update="noopUpdate"
-        :handle-ecosystem-update="handleEcosystemUpdate"
-      />
+      <AppEditSectionsInfo :app="app" />
     </div>
 
     <div class="panels-masonry__item console-item mb-10">
@@ -65,7 +60,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
-import { useDeveloperAccess } from '../../../../composables/fireux/app/useDeveloperAccess'
 import { useAppUpdate } from '../../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
 import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
 import { useAppJoinRequests } from '../../../../composables/fireux/firestore/core/app/utils/useAppJoinRequests'
@@ -89,16 +83,11 @@ const pending = computed(() => (props.app ? false : internalPending.value))
 
 const toast = useToastify()
 
-const { isDeveloper } = useDeveloperAccess()
-
-const noopUpdate = async () => {}
-
 const {
   updateDescription,
   updateTagline,
   updateShortBio,
   updateLongBio,
-  updateEcosystem,
   updateSocialLinks,
   handleJoinRequests,
   setAppUserAdmin,
@@ -144,12 +133,6 @@ const handleLongBioUpdate = withToast(
   updateLongBio,
   'Long bio updated',
   'Failed to update long bio'
-)
-
-const handleEcosystemUpdate = withToast(
-  updateEcosystem,
-  'Ecosystem updated',
-  'Failed to update ecosystem'
 )
 
 const handleUpdateSocialLinks = withToast(
