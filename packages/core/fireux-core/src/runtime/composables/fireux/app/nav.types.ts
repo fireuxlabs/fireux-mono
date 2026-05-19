@@ -7,6 +7,8 @@ export interface NavVisibility {
   profilesAny?: string[]
   publicProfiles?: string[]
   publicProfilesAny?: string[]
+  dashboardPages?: string[]
+  dashboardPagesAny?: string[]
 }
 
 export type NavPosition = 'top' | 'middle' | 'bottom'

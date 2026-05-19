@@ -1,6 +1,6 @@
 # Runtime Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-19
+Updated: 2026-05-20
 ## Purpose
 - Define runtime selection, mode, collection path, and route policy across FireUX domains.
 
@@ -49,6 +49,7 @@ Updated: 2026-05-19
 - `consoles` means the app exposes selected console workspaces.
 - `profiles` means the app lets signed-in users create/manage those profile identities.
 - `publicProfiles` means the app exposes public profile directories and detail pages.
+- `dashboardPages` means the app exposes optional personal dashboard pages such as favorites, followers, purchases, or subscriptions.
 - Installing a module must not automatically expose every page from that module.
 
 ## Entity Loading Contract

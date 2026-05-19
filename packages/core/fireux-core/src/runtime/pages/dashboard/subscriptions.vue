@@ -1,5 +1,5 @@
 <template>
-  <UDashboardPanel id="console-subscriptions">
+  <UDashboardPanel id="dashboard-subscriptions">
     <template #header>
       <LayoutsDashboardNavbar title="Subscriptions" />
     </template>
@@ -30,6 +30,7 @@ import { definePageMeta } from '#imports'
 definePageMeta({
   layout: 'dashboard',
   nav: {
+    visibility: { dashboardPages: ['subscriptions'] },
     key: 'dashboard-subscriptions',
     label: 'Subscriptions',
     icon: 'i-lucide-credit-card',

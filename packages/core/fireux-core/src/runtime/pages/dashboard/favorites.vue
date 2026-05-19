@@ -1,5 +1,5 @@
 <template>
-  <UDashboardPanel id="console-favorites">
+  <UDashboardPanel id="dashboard-favorites">
     <template #header>
       <LayoutsDashboardNavbar title="Favorites" />
     </template>
@@ -23,6 +23,7 @@ import { definePageMeta } from '#imports'
 definePageMeta({
   layout: 'dashboard',
   nav: {
+    visibility: { dashboardPages: ['favorites'] },
     key: 'dashboard-favorites',
     label: 'Favorites',
     icon: 'i-lucide-heart',

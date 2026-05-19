@@ -41,6 +41,8 @@ export type FireuxAppConfig = {
   profiles?: string[]
   /** Optional public profile directories/details this app consumes. */
   publicProfiles?: string[]
+  /** Optional personal dashboard feature pages this app consumes. */
+  dashboardPages?: string[]
   seo?: FireuxSeoConfig
   meta?: FireuxMetaContent
 }
@@ -268,6 +270,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       consoles: app.consoles || [],
       profiles: app.profiles || [],
       publicProfiles: app.publicProfiles || [],
+      dashboardPages: app.dashboardPages || [],
     },
 
     firebaseApp: {

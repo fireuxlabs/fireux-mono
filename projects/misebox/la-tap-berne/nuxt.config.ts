@@ -9,5 +9,6 @@ export default defineFireuxConfig({
   consoles: ['kitchen'],
   profiles: [],
   publicProfiles: [],
+  dashboardPages: [],
   modules: ['fireux-kitchens'],
 })

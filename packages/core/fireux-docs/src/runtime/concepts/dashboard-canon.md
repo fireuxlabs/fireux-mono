@@ -1,7 +1,7 @@
 # Dashboard Canon
 
 Authority: Operational
-Updated: 2026-05-15
+Updated: 2026-05-20
 Scope: FireUX runtime dashboard meaning, profile extension routes, and dashboard/console separation.
 
 This note is the shared dashboard canon for FireUX runtime apps.
@@ -87,6 +87,15 @@ publicProfiles: ['chef']
 enables public directories and detail pages such as `/chefs` and `/chefs/[id]`.
 Installing a module alone should not make every profile page part of a tenant
 app.
+
+Optional personal dashboard pages use the same rule:
+
+```ts
+dashboardPages: ['favorites', 'followers', 'purchases', 'subscriptions']
+```
+
+If an app does not consume one of these pages, it should not appear in the
+dashboard sidebar and direct route visits should leave the hidden page.
 
 An app with only one profile extension, such as Find My SEO today, may show only `Professional`.
 An app with several profile extensions, such as Misebox, may show several options.

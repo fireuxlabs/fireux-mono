@@ -30,6 +30,7 @@ export type RuntimeApp = {
   consoles: readonly string[]
   profiles: readonly string[]
   publicProfiles: readonly string[]
+  dashboardPages: readonly string[]
 }
 
 export type RuntimeFirebaseEcosystem = {

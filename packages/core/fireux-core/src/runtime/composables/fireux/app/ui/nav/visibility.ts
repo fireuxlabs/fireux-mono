@@ -3,7 +3,12 @@ import type { NavVisibility } from '../../nav.types'
 
 type RuntimeScope = Pick<
   FireUXConfig,
-  'appId' | 'ecosystem' | 'modules' | 'profiles' | 'publicProfiles'
+  | 'appId'
+  | 'ecosystem'
+  | 'modules'
+  | 'profiles'
+  | 'publicProfiles'
+  | 'dashboardPages'
 >
 
 function normaliseStringList(value: unknown): string[] {
@@ -31,6 +36,8 @@ export function normaliseNavVisibility(
   const profilesAny = normaliseStringList(visibility.profilesAny)
   const publicProfiles = normaliseStringList(visibility.publicProfiles)
   const publicProfilesAny = normaliseStringList(visibility.publicProfilesAny)
+  const dashboardPages = normaliseStringList(visibility.dashboardPages)
+  const dashboardPagesAny = normaliseStringList(visibility.dashboardPagesAny)
 
   if (
     !apps.length &&
@@ -40,7 +47,9 @@ export function normaliseNavVisibility(
     !profiles.length &&
     !profilesAny.length &&
     !publicProfiles.length &&
-    !publicProfilesAny.length
+    !publicProfilesAny.length &&
+    !dashboardPages.length &&
+    !dashboardPagesAny.length
   ) {
     return undefined
   }
@@ -54,6 +63,8 @@ export function normaliseNavVisibility(
     ...(profilesAny.length ? { profilesAny } : {}),
     ...(publicProfiles.length ? { publicProfiles } : {}),
     ...(publicProfilesAny.length ? { publicProfilesAny } : {}),
+    ...(dashboardPages.length ? { dashboardPages } : {}),
+    ...(dashboardPagesAny.length ? { dashboardPagesAny } : {}),
   }
 }
 
@@ -69,6 +80,7 @@ export function isNavVisibleForScope(
   const modules = new Set(normaliseStringList(scope.modules))
   const profiles = new Set(normaliseStringList(scope.profiles))
   const publicProfiles = new Set(normaliseStringList(scope.publicProfiles))
+  const dashboardPages = new Set(normaliseStringList(scope.dashboardPages))
 
   if (rule.apps?.length && !rule.apps.includes(appId)) return false
   if (rule.ecosystems?.length && !rule.ecosystems.includes(ecosystem)) return false
@@ -93,6 +105,18 @@ export function isNavVisibleForScope(
   if (
     rule.publicProfilesAny?.length &&
     !rule.publicProfilesAny.some((name) => publicProfiles.has(name))
+  ) {
+    return false
+  }
+  if (
+    rule.dashboardPages?.length &&
+    !rule.dashboardPages.every((name) => dashboardPages.has(name))
+  ) {
+    return false
+  }
+  if (
+    rule.dashboardPagesAny?.length &&
+    !rule.dashboardPagesAny.some((name) => dashboardPages.has(name))
   ) {
     return false
   }

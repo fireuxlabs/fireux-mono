@@ -4,6 +4,7 @@ import { definePageMeta } from '#imports'
 definePageMeta({
   layout: 'dashboard',
   nav: {
+    visibility: { dashboardPages: ['purchases'] },
     key: 'dashboard-purchases',
     label: 'Purchases',
     icon: 'i-lucide-shopping-cart',
@@ -18,7 +19,7 @@ definePageMeta({
 
 <template>
   <!-- Note: If billing/subscription details are reintroduced, mirror archived cards from dash-old/dashboard/subscriptions.vue. -->
-  <UDashboardPanel id="console-purchases">
+  <UDashboardPanel id="dashboard-purchases">
     <template #header>
       <LayoutsDashboardNavbar title="Purchases" />
     </template>
