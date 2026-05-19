@@ -19,6 +19,8 @@ export type RuntimeApp = {
   appLogoDark?: string
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
+  /** Optional signed-in uid allowed to access developer-only dashboard tools. */
+  developerId?: string
   domain: string
   /** Optional canonical origin used for SEO surfaces (e.g. https://fireux.app). */
   siteUrl?: string

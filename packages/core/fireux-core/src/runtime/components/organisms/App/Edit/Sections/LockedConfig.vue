@@ -3,10 +3,14 @@
     <template #header>
       <div class="section__header">
         <div class="section__copy">
-          <h3 class="text-base font-semibold">locked app config</h3>
+          <h3 class="text-base font-semibold">App identity</h3>
+          <p class="text-xs text-dimmed">
+            App admins can review these locked values. Developer settings own
+            env-backed identity, assets, and diagnostics.
+          </p>
         </div>
 
-        <div v-if="isDev" class="shrink-0">
+        <div v-if="isDeveloper" class="shrink-0">
           <UButton
             to="/dashboard/developer"
             size="xs"
@@ -80,7 +84,7 @@ import type { AppModel } from '../../../../../models/core/app.model';
 
 defineProps<{
   app: AppModel
-  isDev: boolean
+  isDeveloper: boolean
   noopUpdate: () => Promise<void>
   handleEcosystemUpdate: (value: string) => Promise<unknown>
 }>()

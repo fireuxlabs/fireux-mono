@@ -3,7 +3,7 @@
     <div class="panels-masonry__item console-item mb-10">
       <AppEditSectionsLockedConfig
         :app="app"
-        :is-dev="isDev"
+        :is-developer="isDeveloper"
         :noop-update="noopUpdate"
         :handle-ecosystem-update="handleEcosystemUpdate"
       />
@@ -65,6 +65,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
+import { useDeveloperAccess } from '../../../../composables/fireux/app/useDeveloperAccess'
 import { useAppUpdate } from '../../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
 import { useApp } from '../../../../composables/fireux/firestore/core/app/useApp'
 import { useAppJoinRequests } from '../../../../composables/fireux/firestore/core/app/utils/useAppJoinRequests'
@@ -88,7 +89,7 @@ const pending = computed(() => (props.app ? false : internalPending.value))
 
 const toast = useToastify()
 
-const isDev = computed(() => import.meta.dev)
+const { isDeveloper } = useDeveloperAccess()
 
 const noopUpdate = async () => {}
 

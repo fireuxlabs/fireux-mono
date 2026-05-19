@@ -66,6 +66,6 @@ definePageMeta({
     layouts: ['dashboard'],
   },
   requiresAuth: true,
-  roles: ['admin'],
+  roles: ['developer'],
 })
 </script>

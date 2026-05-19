@@ -19,6 +19,7 @@ export interface FireUXConfig {
   appLogoLight?: string
   appLogoDark?: string
   contactEmail?: string
+  developerId?: string
 
   primaryColor?: string
   neutralColor?: string
@@ -107,6 +108,7 @@ function buildConfig(): Readonly<FireUXConfig> {
     appLogoLight: optString(fireux, 'appLogoLight'),
     appLogoDark: optString(fireux, 'appLogoDark'),
     contactEmail: optString(fireux, 'contactEmail'),
+    developerId: optString(fireux, 'developerId'),
 
     primaryColor: optString(fireux, 'primaryColor'),
     neutralColor: optString(fireux, 'neutralColor'),

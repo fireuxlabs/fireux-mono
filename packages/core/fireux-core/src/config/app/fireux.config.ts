@@ -230,6 +230,10 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
 
   const envDomain = reqEnv('APP_DOMAIN')
   const envPin = optEnv('DEVELOPER_PIN')
+  const envDeveloperId =
+    optEnv('DEVELOPER_ID') ||
+    optEnv('DEVELOPER_UID') ||
+    optEnv('NUXT_PUBLIC_DEVELOPER_ID')
   const envFirebaseApiKey = optEnv('NUXT_FIREBASE_API_KEY')
   const envFirebaseAppId = reqEnv('NUXT_FIREBASE_APP_ID')
   const envFirebaseMeasurementId = optEnv('NUXT_FIREBASE_MEASUREMENT_ID')
@@ -257,6 +261,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       ...(app.appLogoLight ? { appLogoLight: normalizePublicImgAsset(app.appLogoLight) } : {}),
       ...(app.appLogoDark ? { appLogoDark: normalizePublicImgAsset(app.appLogoDark) } : {}),
       ...(app.contactEmail ? { contactEmail: app.contactEmail } : {}),
+      ...(envDeveloperId ? { developerId: envDeveloperId } : {}),
       domain: envDomain,
       ...(app.seo?.siteUrl ? { siteUrl: app.seo.siteUrl } : {}),
       role: app.role,

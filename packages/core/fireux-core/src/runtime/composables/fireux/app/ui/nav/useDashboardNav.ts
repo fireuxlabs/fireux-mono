@@ -1,6 +1,6 @@
-import { computed } from 'vue'
 import type { NavItem, NavPosition } from '../../nav.types'
 import { useUser } from '../../../firestore/core/user/useUser'
+import { useDeveloperAccess } from '../../useDeveloperAccess'
 import { useNav } from './useNav'
 
 const canShowDashboardItem = (item: NavItem, isAdmin: boolean, isDev: boolean) => {
@@ -21,7 +21,7 @@ const canShowDashboardItem = (item: NavItem, isAdmin: boolean, isDev: boolean) =
 export const useDashboardNav = () => {
   const nav = useNav(['dashboard'])
   const { isAdmin } = useUser()
-  const isDev = computed(() => import.meta.dev)
+  const { isDeveloper } = useDeveloperAccess()
 
   const topPriority = [
     { key: 'dashboard-developer', to: '/dashboard/developer' },
@@ -33,7 +33,7 @@ export const useDashboardNav = () => {
   const baseNavFilter = (item: NavItem) =>
     item.group !== 'profiles' &&
     !item.profileId &&
-    canShowDashboardItem(item, isAdmin.value, isDev.value)
+    canShowDashboardItem(item, isAdmin.value, isDeveloper.value)
 
   const resolveItemPosition = (item: NavItem): NavPosition => {
     if (item.position) return item.position

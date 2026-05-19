@@ -27,10 +27,20 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return navigateTo(`/auth?redirect=${encodeURIComponent(to.fullPath)}`)
   }
 
-  const needsAdmin = Array.isArray(meta.roles) && meta.roles.includes('admin')
+  const runtime = useRuntimeConfig()
+  const roles = Array.isArray(meta.roles) ? meta.roles : []
+  const needsDeveloper = roles.includes('developer')
+
+  if (needsDeveloper) {
+    const developerId = String(runtime.public?.fireux?.developerId || '').trim()
+    if (!developerId || auth.uid !== developerId) {
+      return navigateTo('/dashboard')
+    }
+  }
+
+  const needsAdmin = roles.includes('admin')
   if (!needsAdmin) return
 
-  const runtime = useRuntimeConfig()
   const appId = String(runtime.public?.fireux?.id || '').trim()
   const databaseId = String(
     runtime.public?.firebaseEcosystem?.firebase?.databaseId || ''
