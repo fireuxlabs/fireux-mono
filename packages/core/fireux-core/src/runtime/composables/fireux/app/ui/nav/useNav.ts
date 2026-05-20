@@ -7,6 +7,8 @@ import { isNavVisibleForScope, normaliseNavVisibility } from './visibility'
 const DEFAULT_LAYOUT = 'default'
 const DEFAULT_ORDER = 999
 
+// Nav owns presentation: route-meta discovery, sidebar grouping, and
+// app-scope visibility. Canonical route keys/paths live under app/routing.
 type TargetLayouts = string | string[]
 
 type RouteMetaLike = {
@@ -130,6 +132,7 @@ function includeTenant(
   if (!item.tenant) return true
   if (item.tenant === 'tenant') return fireux.isTenant
   if (item.tenant === 'global') return fireux.isGlobal
+  if (item.tenant === 'standalone') return fireux.isStandalone
   return true
 }
 

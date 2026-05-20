@@ -5,8 +5,6 @@ export interface NavVisibility {
   modulesAny?: string[]
   profiles?: string[]
   profilesAny?: string[]
-  dashboardPages?: string[]
-  dashboardPagesAny?: string[]
 }
 
 export type NavPosition = 'top' | 'middle' | 'bottom'

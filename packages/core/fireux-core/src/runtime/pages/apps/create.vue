@@ -18,6 +18,7 @@ import AppCreateSystem from '../../components/organisms/App/Create/System.vue'
 
 definePageMeta({
   layout: 'default',
+  tenant: 'global',
   title: 'Initialize App',
   description: 'Create or repair the current app record safely from runtime config.',
   nav: {

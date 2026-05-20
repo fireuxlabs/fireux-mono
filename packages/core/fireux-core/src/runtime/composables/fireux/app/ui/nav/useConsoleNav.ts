@@ -2,9 +2,11 @@ import { computed } from 'vue'
 import { useRoute } from '#imports'
 import { useNav } from './useNav'
 import {
+  normalizeConsoleFamily,
   consoleFamilyFromPath,
 } from '../../routing/consoleRoutes'
 import { useConsole } from '../../console/useConsole'
+import { useFireUXConfig } from '../../FireUXConfig'
 import type { NavItem, NavPosition } from '../../nav.types'
 
 function normalizePath(value: unknown): string {
@@ -22,6 +24,15 @@ function isConsoleCreatePath(path: string) {
 export const useConsoleNav = () => {
   const nav = useNav(['console'])
   const route = useRoute()
+  const fireux = useFireUXConfig()
+  const enabledFamilies = computed(
+    () =>
+      new Set(
+        (fireux.consoles || [])
+          .map((value) => normalizeConsoleFamily(value))
+          .filter(Boolean)
+      )
+  )
   const activeFamily = computed(() => consoleFamilyFromPath(normalizePath(route.path)))
   const activeSelectionId = computed(() => {
     const family = activeFamily.value
@@ -39,6 +50,7 @@ export const useConsoleNav = () => {
 
     const itemFamily = consoleFamilyFromPath(path)
     if (!itemFamily) return false
+    if (!enabledFamilies.value.has(itemFamily)) return false
 
     const family = activeFamily.value
     if (!family) {

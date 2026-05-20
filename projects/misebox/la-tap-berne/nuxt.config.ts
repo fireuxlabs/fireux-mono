@@ -8,6 +8,5 @@ export default defineFireuxConfig({
   role: 'tenant',
   consoles: ['kitchen'],
   profiles: [],
-  dashboardPages: [],
   modules: ['fireux-kitchens'],
 })

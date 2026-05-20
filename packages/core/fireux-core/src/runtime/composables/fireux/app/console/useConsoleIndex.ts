@@ -1,8 +1,6 @@
 import { computed, reactive, ref, unref, watch, type ComputedRef, type Ref } from 'vue'
 import { useUser } from '../../firestore/core/user/useUser'
-import { normalizeConsoleString } from './useConsole'
-
-export type ConsoleMode = 'live' | 'demo' | 'test'
+import { normalizeConsoleString, type ConsoleMode } from './useConsole'
 
 type MaybeRef<T> = Ref<T> | ComputedRef<T>
 

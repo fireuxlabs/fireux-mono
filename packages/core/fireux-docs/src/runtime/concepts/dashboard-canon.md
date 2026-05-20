@@ -86,14 +86,11 @@ profiles: ['chef']
 creation/management and public pages such as `/chefs` and `/chefs/[id]`.
 Installing a module alone should not make every profile page part of a tenant app.
 
-Optional personal dashboard pages use the same rule:
-
-```ts
-dashboardPages: ['favorites', 'followers', 'purchases', 'subscriptions']
-```
-
-If an app does not consume one of these pages, it should not appear in the
-dashboard sidebar and direct route visits should leave the hidden page.
+Shared personal dashboard pages such as chat, favorites, followers, purchases,
+subscriptions, settings, and user profile are core dashboard surfaces. Do not
+add a second app-facing page registry until a real repeated route family needs
+it. Prefer deriving visibility from `role`, `modules`, `consoles`, and
+`profiles`.
 
 An app with only one profile extension, such as Find My SEO today, may show only `Professional`.
 An app with several profile extensions, such as Misebox, may show several options.

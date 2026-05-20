@@ -46,7 +46,13 @@
 </template>
 
 <script setup lang="ts">
-import { useAsyncData, useHead, useRuntimeConfig, useSeoMeta } from '#imports'
+import {
+  definePageMeta,
+  useAsyncData,
+  useHead,
+  useRuntimeConfig,
+  useSeoMeta,
+} from '#imports'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
@@ -55,6 +61,10 @@ import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 const route = useRoute()
 const runtime = useRuntimeConfig()
 const { appName } = useFireUXConfig()
+
+definePageMeta({
+  tenant: 'global',
+})
 
 const handle = computed(() => {
   const raw = Array.isArray(route.params.handle)

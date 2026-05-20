@@ -40,7 +40,6 @@ export const useDashboardNav = () => {
 
   const topPriority = [
     { key: 'dashboard-home', to: '/dashboard' },
-    { key: 'dashboard-chat', to: '/dashboard/chat' },
     { key: 'dashboard-user-profile', to: '/dashboard/user-profile' },
     { key: 'dashboard-admin', to: '/dashboard/admin' },
     { key: 'dashboard-developer', to: '/dashboard/developer' },

@@ -5,7 +5,6 @@ import { definePageMeta } from '#imports'
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    visibility: { dashboardPages: ['followers'] },
     key: 'dashboard-followers',
     label: 'Followers',
     icon: 'i-lucide-users',

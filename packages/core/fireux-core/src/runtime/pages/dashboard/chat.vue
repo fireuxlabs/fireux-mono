@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="chat">
     <template #header>
-      <LayoutsDashboardNavbar title="Messages" />
+      <LayoutsDashboardNavbar title="Chat" />
     </template>
 
     <template #body>
@@ -305,10 +305,10 @@ definePageMeta({
   layout: 'dashboard',
   nav: {
     key: 'dashboard-chat',
-    label: 'Messages',
+    label: 'Chat',
     icon: 'i-lucide-message-circle',
-    position: 'top',
-    order: 20,
+    position: 'bottom',
+    order: 900,
     desktop: true,
     mobile: true,
     layouts: ['dashboard'],

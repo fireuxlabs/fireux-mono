@@ -26,6 +26,7 @@ import { computed } from 'vue'
 import { useUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useUserCollection'
 
 definePageMeta({
+  tenant: 'global',
   nav: {
     key: 'users',
     label: 'Users',

@@ -4,9 +4,13 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
+import { definePageMeta, navigateTo } from '#imports'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+
+definePageMeta({
+  tenant: 'global',
+})
 
 const route = useRoute()
 

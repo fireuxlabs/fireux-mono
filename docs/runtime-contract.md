@@ -48,8 +48,9 @@ Updated: 2026-05-20
 - `modules` means the app installs shared package capability.
 - `consoles` means the app exposes selected console workspaces.
 - `profiles` means the app consumes those profile identities and their profile surfaces.
-- `dashboardPages` means the app exposes optional personal dashboard pages such as favorites, followers, purchases, or subscriptions.
-- Installing a module must not automatically expose every page from that module.
+- Shared personal dashboard pages such as chat, favorites, followers, purchases, subscriptions, settings, and user profile are core dashboard surfaces.
+- Installing a module must not automatically expose every profile or console surface from that module.
+- Do not add a second app-facing page registry until a real repeated route family needs it. Prefer deriving visibility from `role`, `modules`, `consoles`, and `profiles`.
 
 ## Entity Loading Contract
 - Entity index pages delivered through `Index.vue` + `CollectionManager` must use the normal client-side Firestore read path.

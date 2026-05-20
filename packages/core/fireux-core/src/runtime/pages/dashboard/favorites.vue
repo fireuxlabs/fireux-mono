@@ -23,7 +23,6 @@ import { definePageMeta } from '#imports'
 definePageMeta({
   layout: 'dashboard',
   nav: {
-    visibility: { dashboardPages: ['favorites'] },
     key: 'dashboard-favorites',
     label: 'Favorites',
     icon: 'i-lucide-heart',

@@ -35,6 +35,7 @@ import { useAppProfileView } from '../../composables/fireux/firestore/core/app/u
 
 definePageMeta({
   layout: 'default',
+  tenant: 'global',
   title: 'App',
   description: 'Canonical app record.',
   name: 'AppDetailPage',

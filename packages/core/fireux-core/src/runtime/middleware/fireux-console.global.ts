@@ -1,5 +1,6 @@
 import { defineNuxtRouteMiddleware, navigateTo, useRuntimeConfig } from '#imports'
 import {
+  consoleFamilyFromPath,
   normalizeConsoleFamily,
   toConsoleFamilyPath,
 } from '../composables/fireux/app/routing/consoleRoutes'
@@ -45,6 +46,17 @@ export default defineNuxtRouteMiddleware(async (to) => {
     )[0]
 
     return navigateTo(firstFamily ? toConsoleFamilyPath(firstFamily) : '/')
+  }
+
+  const enabledFamilies = new Set(
+    consoles()
+      .map((value) => normalizeConsoleFamily(value))
+      .filter(Boolean)
+  )
+  const routeFamily = consoleFamilyFromPath(path)
+
+  if (!routeFamily || !enabledFamilies.has(routeFamily)) {
+    return navigateTo('/', { replace: true })
   }
 
   const meta = to.meta as Record<string, unknown>
