@@ -1,28 +1,18 @@
 <template>
-  <KitchenMenuSurfaceKiosk
-    v-if="surface === 'kiosk'"
-    :surface="menuSurface"
-  />
-  <OrganismsMenuQR
-    v-else
-    :menu="menuSurface"
-  />
+  <main class="mx-auto max-w-2xl px-4 py-10">
+    <UAlert
+      color="neutral"
+      variant="soft"
+      title="Demo menu prototype retired"
+      description="The V1 menu stack uses real kitchen menus, sections, items, dishes, and published public URLs."
+    />
+  </main>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import KitchenMenuSurfaceKiosk from '../../../../../components/organisms/Menu/Public/KioskMenuSurface.vue'
-import MenuQR from '../../../../../components/organisms/Menu/QR.vue'
-import { useKitchenDemoMenuSurface } from '../../../../../composables/fireux/app/useKitchenDemoMenuSurface'
-
 definePageMeta({
-  layout: 'kitchen-menu',
-  title: 'Demo Kitchen Menu',
-  description: 'Demo kitchen menu preview.',
-  head: { title: 'Demo Kitchen Menu' },
-  name: 'DemoKitchenMenuDetailPage',
+  layout: 'default',
+  title: 'Demo Menu Retired',
+  description: 'Demo menu prototypes are not part of the V1 menu stack.',
 })
-
-const menuSurface = useKitchenDemoMenuSurface()
-const surface = computed(() => menuSurface.surface.value)
 </script>

@@ -5,57 +5,46 @@
     </template>
 
     <template #body>
-      <section class="space-y-4">
-        <UAlert
-          color="neutral"
-          variant="soft"
-          title="Preview only"
-          :description="previewDescription"
-        />
+      <UCard>
+        <template #header>
+          <h1 class="text-base font-semibold text-highlighted">Preview moved</h1>
+        </template>
 
-        <KitchenMenuSurfaceKiosk
-          v-if="surface === 'kiosk'"
-          :surface="menuSurface"
-        />
-        <OrganismsMenuQR
-          v-else
-          :menu="menuSurface"
-        />
-      </section>
+        <p class="text-sm text-dimmed">
+          Menus now preview through exact published public menu URLs. Create and publish a menu,
+          then open it from the menu QR page.
+        </p>
+
+        <template #footer>
+          <div class="flex flex-wrap gap-2">
+            <UButton to="/console/kitchen/menus" icon="i-lucide-book-open">
+              Manage menus
+            </UButton>
+            <UButton to="/console/kitchen/menus/qr" variant="soft" icon="i-lucide-qr-code">
+              Menu QR
+            </UButton>
+          </div>
+        </template>
+      </UCard>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import KitchenMenuSurfaceKiosk from '../../../components/organisms/Menu/Public/KioskMenuSurface.vue'
-import MenuQR from '../../../components/organisms/Menu/QR.vue'
-import { useKitchenConsoleMenuSurface } from '../../../composables/fireux/app/useKitchenConsoleMenuSurface'
-import { useKitchenConsole } from '../../../composables/fireux/console/kitchen/useKitchenConsole'
-
 definePageMeta({
   layout: 'console',
   nav: {
     visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-preview',
     label: 'Preview',
-    icon: 'i-lucide-smartphone',
+    icon: 'i-lucide-eye',
     position: 'top',
     requiresSelection: true,
-    order: 2,
-    desktop: true,
-    mobile: true,
+    hidden: true,
+    desktop: false,
+    mobile: false,
     layouts: ['console'],
   },
   requiresAuth: true,
 })
-
-const { selectedMode } = useKitchenConsole()
-const menuSurface = useKitchenConsoleMenuSurface()
-const surface = computed(() => menuSurface.surface.value)
-const previewDescription = computed(() =>
-  selectedMode.value === 'demo'
-    ? 'Demo kitchens render here as console previews. The basket is local to preview and checkout is disabled.'
-    : 'Selected kitchen menus render here as console previews. The basket is local to preview and checkout is disabled.'
-)
 </script>

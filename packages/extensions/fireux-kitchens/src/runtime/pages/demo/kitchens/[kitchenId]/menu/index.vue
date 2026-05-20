@@ -1,15 +1,18 @@
 <template>
-  <DemoKitchenMenuDetailPage />
+  <main class="mx-auto max-w-2xl px-4 py-10">
+    <UAlert
+      color="neutral"
+      variant="soft"
+      title="Demo menu prototype retired"
+      description="Use Kitchen Console menus for the current V1 flow."
+    />
+  </main>
 </template>
 
 <script setup lang="ts">
-import DemoKitchenMenuDetailPage from './[menuId].vue'
-
 definePageMeta({
-  layout: 'kitchen-menu',
-  title: 'Demo Kitchen Menu',
-  description: 'Demo kitchen menu preview.',
-  head: { title: 'Demo Kitchen Menu' },
-  name: 'DemoKitchenMenuIndexPage',
+  layout: 'default',
+  title: 'Demo Menu Retired',
+  description: 'Demo menu prototypes are not part of the V1 menu stack.',
 })
 </script>

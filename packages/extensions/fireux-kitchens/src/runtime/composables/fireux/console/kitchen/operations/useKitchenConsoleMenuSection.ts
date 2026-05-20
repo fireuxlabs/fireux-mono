@@ -1,104 +1,87 @@
 import { useRoute } from '#imports'
 import { computed } from 'vue'
 import type { Dish } from '../../../../../models/dish.model'
-import type { MenuSectionItem } from '../../../../../models/menu.model'
+import type { MenuItem, MenuSection } from '../../../../../models/menu.model'
 import { useKitchenConsoleDishes } from './useKitchenConsoleDishes'
 import { useKitchenConsoleMenu } from './useKitchenConsoleMenu'
+import { useKitchenMenuItemCollection } from './menu/fetch/useKitchenMenuItemCollection'
+import { useKitchenMenuItemMutations } from './menu/mutations/useKitchenMenuItemMutations'
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-const numberValue = (value: unknown, fallback = 0) => {
-  const next = Number(value)
-  return Number.isFinite(next) ? next : fallback
-}
+const clean = (value: unknown) => String(value ?? '').trim()
 
 export type KitchenMenuSectionItemRow = {
-  item: MenuSectionItem
   id: string
+  item: MenuItem
+  dish: Dish | null
   dishId: string
   label: string
-  dish: Dish | null
-  active: boolean
-  sortOrder: number
+  price: number
 }
 
 export function useKitchenConsoleMenuSection() {
   const route = useRoute()
   const menuState = useKitchenConsoleMenu()
-  const {
-    dishes,
-    pending: dishesPending,
-    collectionPath: dishesCollectionPath,
-  } = useKitchenConsoleDishes({ resolveMenuSections: false })
-
+  const dishState = useKitchenConsoleDishes()
   const sectionId = computed(() => {
     const raw = route.params.sectionId
-    return normalizeString(Array.isArray(raw) ? raw[0] : raw)
+    return clean(Array.isArray(raw) ? raw[0] : raw)
   })
-
-  const section = computed(
+  const section = computed<MenuSection | null>(
     () =>
-      menuState.menu.value?.sections?.find(
-        (item) => normalizeString(item?.id) === sectionId.value
-      ) ?? null
+      menuState.sections.value.find((item) => clean(item.id) === sectionId.value) ??
+      null
   )
-
+  const itemState = useKitchenMenuItemCollection(
+    menuState.kitchenId,
+    menuState.menuId,
+    sectionId,
+    {
+      kitchenCollectionPath: menuState.rootCollection,
+      databaseId: menuState.databaseId,
+    }
+  )
+  const itemMutations = useKitchenMenuItemMutations({
+    kitchenCollectionPath: menuState.rootCollection,
+    databaseId: menuState.databaseId,
+  })
   const dishesById = computed(() => {
     const map = new Map<string, Dish>()
-    dishes.value.forEach((dish) => {
-      const id = normalizeString(dish?.id)
+    dishState.dishes.value.forEach((dish) => {
+      const id = clean(dish.id)
       if (id) map.set(id, dish)
     })
     return map
   })
-
-  const items = computed(() =>
-    [...(section.value?.items ?? [])].sort(
-      (a, b) =>
-        numberValue(a?.sort_order) - numberValue(b?.sort_order) ||
-        normalizeString(a?.label || a?.dish_id || a?.id).localeCompare(
-          normalizeString(b?.label || b?.dish_id || b?.id)
-        )
-    )
-  )
-
   const itemRows = computed<KitchenMenuSectionItemRow[]>(() =>
-    items.value.map((item) => {
-      const dishId = normalizeString(item?.dish_id)
-      const dish = dishesById.value.get(dishId) ?? null
-      const label = normalizeString(dish?.name) || normalizeString(item?.label)
-
+    itemState.items.value.map((item) => {
+      const dish = dishesById.value.get(clean(item.dish_id)) ?? null
       return {
+        id: clean(item.id),
         item,
-        id: normalizeString(item?.id),
-        dishId,
-        label,
         dish,
-        active: item?.active !== false,
-        sortOrder: numberValue(item?.sort_order),
+        dishId: clean(item.dish_id),
+        label: clean(dish?.name) || clean(item.dish_id),
+        price: Number(item.price || 0),
       }
     })
   )
 
-  const debug = computed(() => ({
-    ...menuState.debug.value,
-    sectionId: sectionId.value,
-    hasSection: Boolean(section.value),
-    itemsCount: itemRows.value.length,
-    dishesCount: dishes.value.length,
-    dishesCollectionPath: dishesCollectionPath.value,
-    dishesPending: dishesPending.value,
-  }))
-
   return {
     ...menuState,
+    ...itemMutations,
     sectionId,
     section,
-    items,
+    items: itemState.items,
     itemRows,
-    dishes,
+    itemsPending: itemState.pending,
+    itemsCollectionPath: itemState.collectionPath,
+    dishes: dishState.dishes,
     dishesById,
-    dishesPending,
-    dishesCollectionPath,
-    debug,
+    debug: computed(() => ({
+      ...menuState.debug.value,
+      sectionId: sectionId.value,
+      hasSection: Boolean(section.value),
+      itemsCount: itemState.items.value.length,
+    })),
   }
 }

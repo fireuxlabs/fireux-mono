@@ -1,96 +1,37 @@
-// FILE: packages/extensions/fireux-kitchens/src/runtime/models/menu.model.ts
-
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ * Family: Kitchen-scoped presentation records.
  *
- * Family: Kitchen-scoped
- * Storage: scoped operational record
- * Path: /kitchens/<kitchenId>/menus/<menuId>
- * Owner app scope: Kitchen
+ * Kitchen runs the operation. Dish describes food. Menu presents selected
+ * dishes. QR points guests to one published menu URL.
  *
- * Decision note:
- * - Menu exists because a kitchen publishes and organizes it.
- * - It stays scoped to the kitchen even when the public site renders it.
- * - If that changes later, update the models README first, then this file.
+ * Canon paths:
+ * - kitchens/{kitchenId}/menus/{menuId}
+ * - kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}
+ * - kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}
  */
 
 export type MenuServiceMode = 'dine_in' | 'collection' | 'delivery'
+export type MenuStatus = 'draft' | 'published' | 'archived'
+export type MenuChildStatus = 'active' | 'archived'
 
 export type MenuDesign = {
-  background_hex?: string
-  text_hex?: string
-}
-
-export type MenuItemPriceOption = {
-  quantity: number
-  unit: 'piece' | 'gram' | string
-  price: number
-}
-
-export type MenuSectionItem = {
-  id: string
-  dish_id?: string
-
-  label?: string
-  labels?: Partial<Record<string, string>>
-  price?: number
-  price_options?: MenuItemPriceOption[]
-  sort_order: number
-
-  // Optional item overrides (resolved at runtime from section/menu defaults)
-  description?: string
-  descriptions?: Partial<Record<string, string>>
-  photo_url?: string
-  active?: boolean
-}
-
-export type MenuItemDefaults = {
-  active: boolean
-  description: string
-  photo_url: string
-}
-
-export type MenuSection = {
-  id: string
-  label: string
-  labels?: Partial<Record<string, string>>
-  description: string
-  items: MenuSectionItem[]
-  sort_order: number
-  render_excluded_ids?: string[]
-  render_excluded_terms?: string[]
-  defaults?: Partial<MenuItemDefaults>
+  color_mode: 'light' | 'dark'
 }
 
 export const MenuModel = {
   id: '' as string,
   kitchen_id: '' as string,
-
   name: '' as string,
   description: '' as string,
-  source_language: '' as string,
-  names: {} as Partial<Record<string, string>>,
-  descriptions: {} as Partial<Record<string, string>>,
-
-  // Publishing toggle for this menu record (separate from per-mode availability)
-  active: true as boolean,
-
-  defaults: {
-    active: true,
-    description: '',
-    photo_url: '',
-  } as Partial<MenuItemDefaults>,
-
-  // If empty/undefined in existing docs, treat as ['dine_in'] in view logic.
+  status: 'draft' as MenuStatus,
   service_modes: ['dine_in'] as MenuServiceMode[],
-
-  // Canon sectioned menu shape
-  sections: [] as MenuSection[],
   sort_order: 0 as number,
-
+  design: {
+    color_mode: 'light',
+  } as MenuDesign,
   created: {
     at: {} as FirebaseTimestamp,
     by: '' as FireuxStamped['created']['by'],
@@ -98,15 +39,55 @@ export const MenuModel = {
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: '' as FireuxStamped['created']['by'],
+    by: '' as FireuxStamped['updated']['by'],
   },
 } as const
 
-export type Menu = {
-  [K in keyof typeof MenuModel]: (typeof MenuModel)[K]
-} & {
-  design?: MenuDesign
+export const MenuSectionModel = {
+  id: '' as string,
+  kitchen_id: '' as string,
+  menu_id: '' as string,
+  label: '' as string,
+  description: '' as string,
+  status: 'active' as MenuChildStatus,
+  sort_order: 0 as number,
+  created: MenuModel.created,
+  updated: MenuModel.updated,
+} as const
+
+export const MenuItemModel = {
+  id: '' as string,
+  kitchen_id: '' as string,
+  menu_id: '' as string,
+  section_id: '' as string,
+  dish_id: '' as string,
+  price: 0 as number,
+  status: 'active' as MenuChildStatus,
+  sort_order: 0 as number,
+  created: MenuModel.created,
+  updated: MenuModel.updated,
+} as const
+
+type MutableModel<T> = {
+  -readonly [K in keyof T]: T[K]
 }
 
+export type Menu = MutableModel<typeof MenuModel>
+export type MenuSection = MutableModel<typeof MenuSectionModel>
+export type MenuItem = MutableModel<typeof MenuItemModel>
+
 export type MenuCreateInput = Omit<Menu, 'created' | 'updated'>
-export type MenuUpdateInput = Partial<Omit<Menu, 'id' | 'created' | 'updated' | 'kitchen_id'>>
+export type MenuUpdateInput = Partial<
+  Omit<Menu, 'id' | 'created' | 'updated' | 'kitchen_id'>
+>
+export type MenuSectionCreateInput = Omit<MenuSection, 'created' | 'updated'>
+export type MenuSectionUpdateInput = Partial<
+  Omit<MenuSection, 'id' | 'created' | 'updated' | 'kitchen_id' | 'menu_id'>
+>
+export type MenuItemCreateInput = Omit<MenuItem, 'created' | 'updated'>
+export type MenuItemUpdateInput = Partial<
+  Omit<
+    MenuItem,
+    'id' | 'created' | 'updated' | 'kitchen_id' | 'menu_id' | 'section_id'
+  >
+>

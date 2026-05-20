@@ -1,38 +1,23 @@
 import { computed } from 'vue'
-import { useKitchenMenuCollection } from './menu/fetch/useKitchenMenuCollection'
 import type { Menu } from '../../../../../models/menu.model'
 import { useKitchenConsole } from '../useKitchenConsole'
-import { useKitchenConsoleDishes } from './useKitchenConsoleDishes'
 import { useKitchenConsoleReadPage } from './useKitchenConsoleReadPage'
+import { useKitchenMenuCollection } from './menu/fetch/useKitchenMenuCollection'
+import { useKitchenMenuCreate } from './menu/mutations/useKitchenMenuCreate'
+import { useKitchenMenuUpdate } from './menu/mutations/useKitchenMenuUpdate'
 
-export function useKitchenConsoleMenus(options: { includeDishes?: boolean } = {}) {
-  const includeDishes = options.includeDishes !== false
-  const {
-    selectedKitchen,
-    selectedMode,
-    kitchenId,
-    rootCollection,
-    databaseId,
-    canWrite,
-  } = useKitchenConsole()
+export function useKitchenConsoleMenus() {
+  const consoleState = useKitchenConsole()
+  const { selectedKitchen, selectedMode, kitchenId, rootCollection, databaseId, canWrite } =
+    consoleState
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
-  const {
-    menus: liveMenus,
-    pending: livePending,
-    collectionPath,
-  } = useKitchenMenuCollection(fetchKitchenId, {
-    kitchenCollectionPath: rootCollection,
-    databaseId,
-  })
-  const dishState = includeDishes
-    ? useKitchenConsoleDishes({ resolveMenuSections: false })
-    : {
-        dishes: computed(() => []),
-        pending: computed(() => false),
-        collectionPath: computed(() => ''),
-      }
+  const { menus: liveMenus, pending: livePending, collectionPath } =
+    useKitchenMenuCollection(fetchKitchenId, {
+      kitchenCollectionPath: rootCollection,
+      databaseId,
+    })
   const page = useKitchenConsoleReadPage<Menu>({
     collectionName: 'menus',
     selectedKitchen,
@@ -44,36 +29,31 @@ export function useKitchenConsoleMenus(options: { includeDishes?: boolean } = {}
   })
   const menus = computed(() => page.collection.value.items)
   const pending = computed(() => page.collection.value.pending)
-  const debug = computed(() => ({
-    mode: selectedMode.value,
-    kitchenId: kitchenId.value,
-    rootCollection: rootCollection.value,
-    databaseId: databaseId.value,
-    collectionPath: collectionPath.value,
-    menusCount: menus.value.length,
-    pending: pending.value,
-    ...(includeDishes
-      ? {
-          dishesCollectionPath: dishState.collectionPath.value,
-          dishesCount: dishState.dishes.value.length,
-          dishesPending: dishState.pending.value,
-        }
-      : {}),
-    canWrite: canWrite.value,
-  }))
+  const create = useKitchenMenuCreate({
+    kitchenCollectionPath: rootCollection,
+    databaseId,
+  })
+  const update = useKitchenMenuUpdate({
+    kitchenCollectionPath: rootCollection,
+    databaseId,
+  })
 
   return {
     ...page,
-    selectedKitchen,
-    selectedMode,
-    kitchenId,
+    ...create,
+    ...update,
+    ...consoleState,
     collectionPath,
-    rootCollection,
-    databaseId,
     canWrite,
     menus,
-    dishes: dishState.dishes,
     pending,
-    debug,
+    debug: computed(() => ({
+      mode: selectedMode.value,
+      kitchenId: kitchenId.value,
+      collectionPath: collectionPath.value,
+      menusCount: menus.value.length,
+      pending: pending.value,
+      canWrite: canWrite.value,
+    })),
   }
 }

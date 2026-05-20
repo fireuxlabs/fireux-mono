@@ -1,9 +1,6 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Menu } from '../../../../../../../../models/menu.model'
 
-const stripKitchenPrefix = (value: string): string =>
-  value.replace(/^la\s+tapberne\s*[—-]\s*/i, '').trim()
-
 export namespace MenuCard {
   export type Card = {
     id: string
@@ -61,22 +58,12 @@ export function useMenuInterface() {
   }
 
   function map(menu: Menu): MenuCard.Card {
-    const extra = menu as Menu & {
-      menu_type?: unknown
-      order?: unknown
-    }
-    const active = Boolean(menu.active)
-    const sections = menu.sections ?? []
-    const items = sections.flatMap((section) => section.items ?? [])
     const id = safeString(menu.id).trim()
-    const rawName = safeString(menu.name).trim()
-    const name = stripKitchenPrefix(rawName) || rawName
-    const sortOrder = Number(menu.sort_order || extra.order || 0)
-    const menuType = safeString(extra.menu_type).trim()
-    const isActiveNow = active
-    const windowLabel = ''
+    const name = safeString(menu.name).trim()
+    const sortOrder = Number(menu.sort_order || 0)
+    const isPublished = menu.status === 'published'
     const description = safeString(menu.description).trim()
-    const itemLabel = `${items.length} ${items.length === 1 ? 'item' : 'items'}`
+    const status = safeString(menu.status).trim() || 'draft'
 
     return {
       id,
@@ -84,22 +71,16 @@ export function useMenuInterface() {
       imageUrl: '',
       title: name,
       subtitle: description,
-      meta: [
-        menuType ? `Type: ${menuType}` : '',
-        itemLabel,
-        windowLabel,
-      ]
-        .filter(Boolean)
-        .join(' · '),
-      status: active ? 'active' : 'inactive',
-      badges: [],
+      meta: status,
+      status,
+      badges: [status],
       summary: description,
       name,
       description,
-      active,
-      itemCount: items.length,
-      isActiveNow,
-      windowLabel,
+      active: isPublished,
+      itemCount: 0,
+      isActiveNow: isPublished,
+      windowLabel: '',
       sortOrder,
     }
   }
@@ -152,11 +133,8 @@ export function useMenuInterface() {
       description: base.description,
       badges: base.badges,
       details: [
-        { label: 'Active', value: base.active ? 'Yes' : 'No' },
-        { label: 'Items', value: base.itemCount },
-        ...(base.windowLabel
-          ? [{ label: 'Window', value: base.windowLabel }]
-          : []),
+        { label: 'Status', value: base.status },
+        { label: 'Sort order', value: base.sortOrder },
       ],
     }
   }

@@ -1,6 +1,6 @@
 # fireux-kitchens Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-17
+Updated: 2026-05-20
 References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.md`
 
 ## 1) Purpose
@@ -39,6 +39,8 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Global ingredients: `ingredients/{ingredientId}`
 - Root public kitchen children:
   - `kitchens/{kitchenId}/menus/{menuId}`
+  - `kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}`
+  - `kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}`
   - `kitchens/{kitchenId}/dishes/{dishId}`
 - App-scoped operational kitchen children:
   - `apps/{appId}/kitchens/{kitchenId}/ingredients/{ingredientId}`
@@ -81,10 +83,19 @@ Ingredient composable stack canon:
 ## 4b) Public menu publishing
 - Public menu publishing uses root public children only:
   - `kitchens/{kitchenId}/menus/{menuId}`
+  - `kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}`
+  - `kitchens/{kitchenId}/menus/{menuId}/sections/{sectionId}/items/{itemId}`
   - `kitchens/{kitchenId}/dishes/{dishId}`
-- Public menu and dish copy is translated directly from menu/dish text.
-- Public menu translation must not depend on private working `mise`.
-- Public menu code must not require kitchen operation lines to render or translate public copy.
+- Kitchen runs the operation.
+- `Dish` describes guest-facing food.
+- `Menu` presents selected dishes.
+- QR points guests to the exact published menu URL.
+- Menu items require a valid `dish_id`; public menus read dish name and description from `Dish`.
+- Menu owns presentation-only fields: name, description, status, service modes, sort order, simple design, section order, item order, and item price.
+- Public menu routes render published menus only.
+- Missing, unpublished, or invalid menus must show an explicit unavailable state.
+- There is no automatic first-menu, active-menu, slug-fallback, translation-engine, ordering, or demo-prototype canon in V1.
+- Kitchen/Menu runtime files must stay below 400 lines.
 - Future nutrition or production support may let `Dish` reference ingredients, mise, or recipes.
 - Those references are operational/data-enrichment links, not the public menu translation source.
 

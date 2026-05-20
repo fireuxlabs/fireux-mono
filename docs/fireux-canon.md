@@ -46,6 +46,12 @@ Current learned examples:
 - Dashboard versus console:
   - dashboard is for the signed-in user and profile extensions.
   - console is for selected operational workspaces such as kitchens, suppliers, portfolios, and projects.
+- Kitchen to menu:
+  - Kitchen runs the operation.
+  - Dish describes guest-facing food.
+  - Menu presents selected dishes.
+  - QR points guests to one exact published menu URL.
+  - Menu items require real `dish_id` links; public menus do not own dish copy.
 - App roles:
   - Admin runs the app.
   - Operator operates a console/workspace.
@@ -263,12 +269,12 @@ composables/fireux/firestore/<entity>/
 
 | Mode | Canon meaning | Expected seams | Current examples |
 | --- | --- | --- | --- |
-| Root entity | Canonical stored thing | `XModel`, `useXFetch`, `useXCollection`, `useXInterface`, writes where allowed, collection/card surfaces where browsable | `App`, `Blog`, `Chef`, `Company`, `Dish`, `Ecosystem`, `Job`, `Kitchen`, `Portfolio`, `Product`, `Professional`, `Recipe`, `Supplier`, `User` |
+| Root entity | Canonical stored thing | `XModel`, `useXFetch`, `useXCollection`, `useXInterface`, writes where allowed, collection/card surfaces where browsable | `App`, `Blog`, `Chef`, `Company`, `Ecosystem`, `Job`, `Kitchen`, `Portfolio`, `Product`, `Professional`, `Supplier`, `User` |
 | Console workspace entity | Root entity that can be selected and operated | root stack plus `useXConsole`/selection and `/console/<family>` surfaces | `Kitchen`, `Supplier`, `Portfolio`, `Project` |
 | Identity/profile capability | Something a signed-in user can be or manage about themself | dashboard/profile routes, profile fetch/ensure/update, no console family by default | `Professional`, `Chef`, `Agent`, base `Profile` |
 | App membership overlay | App-specific role/capability for a user | `useAppUserCollection`, app-user update helpers, app membership UI; not a root entity stack | `AppUser` |
 | System management entity/context | Stored system entity that may also be managed through Project/App context | root entity seam plus explicit management surface; stored truth is not duplicated | `Project`, `Ecosystem`, `App` |
-| Scoped child entity | Operational record owned by a parent workspace/entity | scoped collection/fetch helpers, interface/card surfaces only where needed, writes through parent-aware mutations | `Task`, `Document`, `Compliance`, `PropertyUnit`, `PortfolioTask`, `PortfolioDocument`, `KitchenMise`, `KitchenOrder` |
+| Scoped child entity | Operational record owned by a parent workspace/entity | scoped collection/fetch helpers, interface/card surfaces only where needed, writes through parent-aware mutations | `Task`, `Document`, `Compliance`, `PropertyUnit`, `PortfolioTask`, `PortfolioDocument`, `KitchenMise`, `KitchenOrder`, `Dish`, `Menu`, `MenuSection`, `MenuItem`, `Recipe` |
 | Root plus scoped usage | Root truth linked into a workspace by a scoped usage record | root model/collection/interface plus scoped relationship helper | `Ingredient` root plus `KitchenIngredient` usage records |
 | System/adapter seam | Runtime helper around stack behaviour, not an entity | adapter/ensure/selection helpers; no full entity UI stack required | `Console`, `Firestore`, selection helpers |
 

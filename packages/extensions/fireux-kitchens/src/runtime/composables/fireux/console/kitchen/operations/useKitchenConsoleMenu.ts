@@ -1,72 +1,48 @@
 import { useRoute } from '#imports'
 import { computed } from 'vue'
-import type { Menu, MenuSection } from '../../../../../models/menu.model'
+import type { Menu } from '../../../../../models/menu.model'
 import { useKitchenConsoleMenus } from './useKitchenConsoleMenus'
+import { useKitchenMenuSectionCollection } from './menu/fetch/useKitchenMenuSectionCollection'
+import { useKitchenMenuSectionMutations } from './menu/mutations/useKitchenMenuSectionMutations'
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-
-const menuItemsCount = (sections?: MenuSection[]) =>
-  Array.isArray(sections)
-    ? sections.reduce(
-        (count, section) =>
-          count + (Array.isArray(section?.items) ? section.items.length : 0),
-        0
-      )
-    : 0
+const clean = (value: unknown) => String(value ?? '').trim()
 
 export function useKitchenConsoleMenu() {
   const route = useRoute()
-  const {
-    selectedKitchen,
-    selectedMode,
-    kitchenId,
-    rootCollection,
-    collectionPath,
-    canWrite,
-    menus,
-    dishes,
-    pending,
-  } = useKitchenConsoleMenus({ includeDishes: false })
-
+  const state = useKitchenConsoleMenus()
   const menuId = computed(() => {
     const raw = route.params.menuId
-    return normalizeString(Array.isArray(raw) ? raw[0] : raw)
+    return clean(Array.isArray(raw) ? raw[0] : raw)
+  })
+  const menu = computed<Menu | null>(
+    () => state.menus.value.find((item) => clean(item.id) === menuId.value) ?? null
+  )
+  const sectionState = useKitchenMenuSectionCollection(
+    state.kitchenId,
+    menuId,
+    {
+      kitchenCollectionPath: state.rootCollection,
+      databaseId: state.databaseId,
+    }
+  )
+  const sectionMutations = useKitchenMenuSectionMutations({
+    kitchenCollectionPath: state.rootCollection,
+    databaseId: state.databaseId,
   })
 
-  const menu = computed<Menu | null>(
-    () =>
-      menus.value.find((item) => normalizeString(item?.id) === menuId.value) ??
-      null
-  )
-
-  const debug = computed(() => ({
-    mode: selectedMode.value,
-    kitchenId: kitchenId.value,
-    rootCollection: rootCollection.value,
-    collectionPath: collectionPath.value,
-    menuId: menuId.value,
-    hasMenu: Boolean(menu.value),
-    sectionsCount: Array.isArray(menu.value?.sections)
-      ? menu.value.sections.length
-      : 0,
-    itemsCount: menuItemsCount(menu.value?.sections),
-    dishesCount: dishes.value.length,
-    pending: pending.value,
-    canWrite: canWrite.value,
-  }))
-
   return {
-    selectedKitchen,
-    selectedMode,
-    kitchenId,
-    rootCollection,
-    collectionPath,
-    canWrite,
-    menus,
-    dishes,
-    pending,
+    ...state,
+    ...sectionMutations,
     menuId,
     menu,
-    debug,
+    sections: sectionState.sections,
+    sectionsPending: sectionState.pending,
+    sectionsCollectionPath: sectionState.collectionPath,
+    debug: computed(() => ({
+      ...state.debug.value,
+      menuId: menuId.value,
+      hasMenu: Boolean(menu.value),
+      sectionsCount: sectionState.sections.value.length,
+    })),
   }
 }

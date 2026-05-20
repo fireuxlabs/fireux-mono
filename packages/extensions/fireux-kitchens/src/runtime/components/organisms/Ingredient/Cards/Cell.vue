@@ -189,10 +189,10 @@ const warningDescription = computed(() => {
 
   const normalized = value.toLowerCase()
   if (normalized === 'unused') {
-    return 'Not used in recipes, mise, or active menu dishes'
+    return 'Not used in recipes, mise, or published menu dishes'
   }
   if (normalized === 'off menu') {
-    return 'Used in prep or recipes, but not on any active menu dish'
+    return 'Used in prep or recipes, but not on any published menu dish'
   }
 
   return ''

@@ -72,7 +72,7 @@ type UseKitchenChildCollectionOptions = {
 }
 
 export function useKitchenChildCollection<T>(
-  collectionName: string,
+  collectionName: string | Ref<string | null | undefined>,
   kitchenId: Ref<string> | string,
   options: UseKitchenChildCollectionOptions = {}
 ) {
@@ -87,11 +87,13 @@ export function useKitchenChildCollection<T>(
     resolveKitchenCollectionBasePath(unref(options.kitchenCollectionPath), appId)
   )
 
+  const resolvedCollectionName = computed(() => normalizeString(unref(collectionName)))
+
   const collectionPath = computed(() =>
     resolveKitchenChildCollectionPath({
       kitchenCollectionPath: kitchenCollectionPath.value,
       kitchenId: resolvedKitchenId.value,
-      collectionName,
+      collectionName: resolvedCollectionName.value,
       appId,
     })
   )
@@ -103,7 +105,7 @@ export function useKitchenChildCollection<T>(
   const collectionBinding = import.meta.server
     ? null
     : useCollection<T>(collectionQuery, {
-        ssrKey: computed(() => collectionPath.value || `${collectionName}-empty`),
+        ssrKey: computed(() => collectionPath.value || `${resolvedCollectionName.value}-empty`),
         transform: (docSnap: QueryDocumentSnapshot<T>) => {
           const value = {
             ...(docSnap.data() as T),
