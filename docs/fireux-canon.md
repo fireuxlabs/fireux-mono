@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-19
+Updated: 2026-05-20
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -46,6 +46,10 @@ Current learned examples:
 - Dashboard versus console:
   - dashboard is for the signed-in user and profile extensions.
   - console is for selected operational workspaces such as kitchens, suppliers, portfolios, and projects.
+- App roles:
+  - Admin runs the app.
+  - Operator operates a console/workspace.
+  - Developer builds and checks the app.
 - Demo data:
   - demo records follow live/test shape.
   - demo mode is explicit.
@@ -112,7 +116,7 @@ Current learned examples:
   - active seam: `useApp()` resolves `FireUXConfig.appId`
   - Project/App console surfaces may manage the root App record
 - App fields can be grouped by who should handle them, but those groups do not create separate App records:
-  - `admin`: App Admin runs the app
+  - `admin`: Admin runs the app
   - `developer`: Developer builds and checks the app
   - `control`: App Control changes where the app belongs
   - `system`: System maintains calculated/internal fields
@@ -121,11 +125,13 @@ Current learned examples:
 - `fireux/app` is app shell/context/orchestration space, not a bucket for App, Project, or Ecosystem entity truth.
 - Tenant apps are child app surfaces inside a FireUX ecosystem, not independent ecosystem canons.
 - Tenant apps may stay intentionally thin and do not justify new top-level domain/storage patterns on their own.
+- Tenant apps consume selected ecosystem capability; they do not automatically receive every module, profile, or console surface from the parent ecosystem.
 - Placeholder tenant branding/assets are canonical until tenant-specific assets are explicitly provided.
 - Existing tenant implementations do not define canon; shared tenant rules come from Tier1 and shared runtime.
 - Standalone apps are FireUX-hosted product apps inside the `fireux` ecosystem.
 - Standalone apps are not tenant children and are not ecosystem globals.
-- Standalone apps may use shared core/runtime foundations but must not claim project control or ecosystem-controller ownership.
+- Standalone apps consume core directly plus installed packages.
+- Standalone apps may use shared core/runtime foundations but must not claim project control, tenant inheritance, or ecosystem-controller ownership.
 - Phase 1 canon allows standalone apps only in the `fireux` ecosystem.
 - Landing page kind canon is:
   - `ecosystem`: broad parent-brand landing page for an ecosystem main app.
@@ -163,9 +169,9 @@ Current learned examples:
   - `guest_support`
   - `provider_lead`
   - `general`
-- The first universal chat pattern is app admin chat:
+- The first universal chat pattern is admin chat:
   - public `/chat` lets any visitor start a `general` conversation about the current app.
-  - app admins answer from `/dashboard/chat`.
+  - admins answer from `/dashboard/chat`.
   - the related entity is the current app: `related_entity.family = 'apps'`.
 - Chat UI should use Nuxt UI chat primitives where available, while FireUX owns the Firestore conversation shape.
 - Conversation status/update/archive are explicit seams. Archive is the removal posture for now; do not introduce hard-delete conversation canon without a new decision.

@@ -92,6 +92,10 @@ Core dashboard pages are grouped by strength:
 - medium pages appear when the app role, user role, or enabled console/profile calls for them
 - soft pages are optional helpers and can stay hidden until the app has a real use for them
 
+This applies to global ecosystem apps, ecosystem tenant apps, and standalone
+FireUX apps. Standalone apps consume core directly; tenant apps consume core
+plus selected ecosystem capability.
+
 Current hard dashboard pages:
 
 - dashboard home

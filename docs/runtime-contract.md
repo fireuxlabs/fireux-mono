@@ -48,6 +48,10 @@ Updated: 2026-05-20
 - `modules` means the app installs shared package capability.
 - `consoles` means the app exposes selected console workspaces.
 - `profiles` means the app consumes those profile identities and their profile surfaces.
+- Core provides the base app contract for global ecosystem apps, ecosystem tenant apps, and standalone FireUX apps.
+- Ecosystems add domain capability.
+- Tenants consume selected ecosystem capability.
+- Standalone apps consume core directly plus installed packages.
 - Core pages are grouped by how strongly FireUX provides them:
   - hard pages are always part of the core app shape
   - medium pages appear when the app role, user role, or enabled console/profile calls for them
@@ -123,10 +127,11 @@ Updated: 2026-05-20
 ## Tenant App Contract
 - Tenant apps are canonical thin child apps hosted inside a FireUX ecosystem.
 - Default tenant shape is:
-  - thin public/auth shell
-  - light dashboard only when explicitly needed
-  - no console family by default
+  - core public/auth/dashboard shell
+  - core hard pages
+  - no ecosystem profile or console family by default
 - Tenant apps must consume shared runtime/app contracts rather than defining tenant-local project control behavior.
+- Tenant apps consume selected ecosystem capability through app config; they do not automatically receive every module, profile, or console surface from the parent ecosystem.
 - Tenant apps must ship and use their own local app assets under `/public/img/app`.
 - Runtime URLs for local app assets must use `/img/app/*`; never render or store browser-facing `public/img/*` or bare filenames.
 - Standard app asset dimensions are enforced during setup and sync: `logo.png` exactly `512x512`, `thumbnail.png` exactly `1200x630`, wordmarks at least `256x64` with aspect at least `3:1`, `cover.png` `16:9` at least `1280x720`, favicon square at least `32x32`, and PWA icons exactly `192x192`/`512x512`.
@@ -136,7 +141,8 @@ Updated: 2026-05-20
 ## Standalone App Contract
 - Standalone apps are FireUX-hosted product apps inside the `fireux` ecosystem.
 - Standalone apps are not tenant children and are not the ecosystem global/main app.
-- Standalone apps may use shared runtime/app contracts and shared core modules.
+- Standalone apps consume core directly plus the packages they install.
+- Standalone apps may use shared runtime/app contracts and shared core modules, but they do not inherit tenant or ecosystem product surfaces.
 - Standalone apps are public/non-tenant by default:
   - indexable unless a page explicitly opts out
   - no tenant auth chrome
