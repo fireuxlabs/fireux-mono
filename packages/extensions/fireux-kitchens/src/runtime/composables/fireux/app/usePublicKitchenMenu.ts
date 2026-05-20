@@ -2,7 +2,7 @@ import { collection, getDocs } from 'firebase/firestore'
 import { computed, ref, watch, type Ref } from 'vue'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Dish } from '../../../models/dish.model'
-import type { MenuItem, MenuSection } from '../../../models/menu.model'
+import type { Menu, MenuItem, MenuSection } from '../../../models/menu.model'
 import { useDishCollection } from '../firestore/dish/fetch/useDishCollection'
 import { useKitchenCollection } from '../firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenMenuCollection } from '../console/kitchen/operations/menu/fetch/useKitchenMenuCollection'
@@ -22,8 +22,46 @@ type PublicMenuSectionRow = {
   items: PublicMenuItemRow[]
 }
 
+type EmbeddedMenuItem = MenuItem & {
+  active?: boolean
+  label?: string
+  description?: string
+  price_options?: Array<{ price?: number }>
+}
+
+type EmbeddedMenuSection = MenuSection & {
+  active?: boolean
+  items?: EmbeddedMenuItem[]
+}
+
+type MenuWithEmbeddedSections = {
+  sections?: EmbeddedMenuSection[]
+}
+
 const ROOT_KITCHENS = 'kitchens'
 const clean = (value: unknown) => String(value ?? '').trim()
+const cleanIdentity = (value: unknown) => clean(value).toLowerCase()
+const sortBySortOrder = <T extends { sort_order?: unknown }>(items: T[]) =>
+  [...items].sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0))
+const isActiveChild = <T extends { status?: unknown; active?: unknown }>(value: T) =>
+  value.status !== 'archived' && value.active !== false
+
+const isPublicMenu = (menu: Menu & { active?: unknown }) =>
+  clean(menu.status) === 'published' || (!clean(menu.status) && menu.active === true)
+
+const resolveItemPrice = (item: EmbeddedMenuItem | MenuItem): number => {
+  const price = Number(item.price || 0)
+  if (Number.isFinite(price) && price > 0) return price
+
+  const options = Array.isArray((item as EmbeddedMenuItem).price_options)
+    ? (item as EmbeddedMenuItem).price_options ?? []
+    : []
+  const optionPrice = Number(
+    options.find((option) => Number(option.price || 0) > 0)?.price || 0
+  )
+
+  return Number.isFinite(optionPrice) ? optionPrice : 0
+}
 
 export function usePublicKitchenMenu(
   kitchenSlug: Ref<string>,
@@ -33,14 +71,30 @@ export function usePublicKitchenMenu(
   const { kitchens, pending: kitchensPending } = useKitchenCollection()
   const kitchen = computed(
     () =>
-      kitchens.value.find((item) => clean((item as any).slug) === kitchenSlug.value) ??
+      kitchens.value.find(
+        (item) => cleanIdentity((item as any).slug) === cleanIdentity(kitchenSlug.value)
+      ) ??
       null
+  )
+  const kitchenByRouteId = computed(
+    () =>
+      kitchens.value.find(
+        (item) => cleanIdentity((item as any).id) === cleanIdentity(kitchenSlug.value)
+      ) ?? null
+  )
+  const canonicalSlug = computed(() => clean((kitchenByRouteId.value as any)?.slug))
+  const routeMatchesKitchenId = computed(
+    () =>
+      Boolean(kitchenByRouteId.value) &&
+      cleanIdentity((kitchenByRouteId.value as any)?.id) === cleanIdentity(kitchenSlug.value) &&
+      Boolean(canonicalSlug.value) &&
+      cleanIdentity(canonicalSlug.value) !== cleanIdentity(kitchenSlug.value)
   )
   const kitchenId = computed(() => clean(kitchen.value?.id))
   const menuRead = useKitchenMenuCollection(kitchenId, {
     kitchenCollectionPath: ROOT_KITCHENS,
   })
-  const menus = computed(() => menuRead.publishedMenus.value)
+  const menus = computed(() => menuRead.menus.value.filter(isPublicMenu))
   const menu = computed(() => {
     const id = clean(menuId?.value)
     return id ? menus.value.find((item) => clean(item.id) === id) ?? null : null
@@ -55,6 +109,47 @@ export function usePublicKitchenMenu(
   })
   const itemRows = ref<Array<{ sectionId: string; item: MenuItem }>>([])
   const itemsPending = ref(false)
+  const usesEmbeddedSections = computed(() =>
+    Array.isArray((menu.value as (Menu & MenuWithEmbeddedSections) | null)?.sections)
+  )
+  const embeddedSections = computed<MenuSection[]>(() => {
+    const sections = (menu.value as (Menu & MenuWithEmbeddedSections) | null)?.sections
+    if (!Array.isArray(sections)) return []
+
+    return sortBySortOrder(sections.filter(isActiveChild))
+  })
+  const embeddedItemRows = computed<Array<{ sectionId: string; item: MenuItem }>>(() => {
+    const sections = (menu.value as (Menu & MenuWithEmbeddedSections) | null)?.sections
+    if (!Array.isArray(sections)) return []
+
+    const rows: Array<{ sectionId: string; item: MenuItem }> = []
+    for (const section of sortBySortOrder(sections.filter(isActiveChild))) {
+      const sectionId = clean(section.id)
+      const items = Array.isArray(section.items) ? section.items : []
+      for (const item of sortBySortOrder(items.filter(isActiveChild))) {
+        rows.push({
+          sectionId,
+          item: {
+            ...item,
+            id: clean(item.id) || clean(item.dish_id),
+            kitchen_id: clean(item.kitchen_id) || kitchenId.value,
+            menu_id: clean(item.menu_id) || clean(menu.value?.id),
+            section_id: clean(item.section_id) || sectionId,
+            status: clean(item.status) === 'archived' ? 'archived' : 'active',
+            price: resolveItemPrice(item),
+          },
+        })
+      }
+    }
+
+    return rows
+  })
+  const sections = computed(() =>
+    usesEmbeddedSections.value ? embeddedSections.value : sectionRead.sections.value
+  )
+  const resolvedItemRows = computed(() =>
+    usesEmbeddedSections.value ? embeddedItemRows.value : itemRows.value
+  )
 
   watch(
     [kitchenId, menu, sectionRead.sections],
@@ -64,7 +159,7 @@ export function usePublicKitchenMenu(
       const sections = sectionRead.sections.value
       itemRows.value = []
 
-      if (!currentKitchenId || !currentMenuId || !sections.length) return
+      if (usesEmbeddedSections.value || !currentKitchenId || !currentMenuId || !sections.length) return
 
       itemsPending.value = true
       try {
@@ -100,22 +195,25 @@ export function usePublicKitchenMenu(
     })
     return map
   })
+
   const sectionRows = computed<PublicMenuSectionRow[]>(() =>
-    sectionRead.sections.value.map((section) => {
+    sections.value.map((section) => {
       const sectionId = clean(section.id)
-      const items = itemRows.value
+      const items = resolvedItemRows.value
         .filter((row) => row.sectionId === sectionId)
         .map<PublicMenuItemRow>((row) => {
           const dish = dishesById.value.get(clean(row.item.dish_id)) ?? null
+          const label = clean((row.item as EmbeddedMenuItem).label) || clean(dish?.name)
           return {
             item: row.item,
             dish,
-            label: clean(dish?.name),
-            description: clean(dish?.description),
-            price: Number(row.item.price || 0),
+            label,
+            description:
+              clean((row.item as EmbeddedMenuItem).description) || clean(dish?.description),
+            price: resolveItemPrice(row.item),
           }
         })
-        .filter((row) => row.dish && row.label)
+        .filter((row) => row.label)
 
       return { section, items }
     })
@@ -125,7 +223,7 @@ export function usePublicKitchenMenu(
     () =>
       kitchensPending.value ||
       menuRead.pending.value ||
-      sectionRead.pending.value ||
+      (!usesEmbeddedSections.value && sectionRead.pending.value) ||
       dishRead.pending.value ||
       itemsPending.value
   )
@@ -138,9 +236,11 @@ export function usePublicKitchenMenu(
   return {
     kitchen,
     kitchenId,
+    canonicalSlug,
+    routeMatchesKitchenId,
     menus,
     menu,
-    sections: sectionRead.sections,
+    sections,
     sectionRows,
     pending,
     unavailable,

@@ -528,6 +528,18 @@ function buildMenuPayload(menu, kitchenId, snap) {
       pt: normalizeString(LA_TAPBERNE_TRANSLATIONS.pt?.menu?.name ?? menu.name),
     },
     description: menu.description,
+    status: 'published',
+    public_menu_design: {
+      theme: 'la-tapberne',
+      background: '#FFFFFF',
+      text: '#000000',
+      muted_text: '#4A4A4A',
+      border: '#D9D9D9',
+      accent: '#000000',
+      font: 'system',
+      heading_font: 'display',
+      radius: '8px',
+    },
     descriptions: {
       de: normalizeString(menu.descriptions?.de ?? ''),
       en: normalizeString(menu.descriptions?.en ?? ''),
