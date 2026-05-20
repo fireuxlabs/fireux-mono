@@ -136,6 +136,14 @@ function includeTenant(
   return true
 }
 
+function includeAppNavKey(
+  item: NavItem,
+  fireux: ReturnType<typeof useFireUXConfig>
+) {
+  if (!item.key) return true
+  return !fireux.navHiddenKeys.includes(item.key)
+}
+
 export function useNav(
   targetLayouts: MaybeRefOrGetter<TargetLayouts> = [DEFAULT_LAYOUT]
 ) {
@@ -165,6 +173,7 @@ export function useNav(
 
     return result
       .filter((item) => includeTenant(item, fireux))
+      .filter((item) => includeAppNavKey(item, fireux))
       .filter((item) => isNavVisibleForScope(item.visibility, fireux))
       .sort((a, b) => {
         if (a.order !== b.order) return a.order - b.order

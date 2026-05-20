@@ -99,6 +99,14 @@ Ingredient composable stack canon:
 - Future nutrition or production support may let `Dish` reference ingredients, mise, or recipes.
 - Those references are operational/data-enrichment links, not the public menu translation source.
 
+Public menu copy packs:
+- Menu content remains Kitchen-owned data.
+- Reusable public menu chrome, such as `chooseMenu`, `loadingMenu`, and `menuNotFound`, is resolved from editable copy packs in the owning runtime database.
+- Ecosystem defaults live at `copy_packs/public-menu/locales/{language}`.
+- App/tenant overrides live at `apps/{appId}/copy_packs/public-menu/locales/{language}`.
+- Resolution order is app/tenant override, then ecosystem pack, then package fallback.
+- Sproochli may help manage or generate copy packs, but it does not own Kitchen menu truth.
+
 ## 5) Routes (public vs internal; slug vs id)
 - Public slug-based pages currently include:
   - `/kitchens/[slug]`

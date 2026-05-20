@@ -1,13 +1,13 @@
 <template>
   <main>
-    <h1>La Tap Berne data proof</h1>
+    <h1>La Tap Berne</h1>
     <p>
       Plain read-only view of the existing Kitchen/Menu data before migration,
       styling, ordering, or custom venue copy.
     </p>
     <p>
-      <NuxtLink to="/kitchens/la-tapberne/menus/main">
-        Open the La Tap menu proof
+      <NuxtLink to="/menu">
+        Open the menu
       </NuxtLink>
     </p>
   </main>
@@ -19,6 +19,6 @@ definePageMeta({
 })
 
 useHead({
-  title: 'La Tap Berne data proof',
+  title: 'La Tap Berne',
 })
 </script>

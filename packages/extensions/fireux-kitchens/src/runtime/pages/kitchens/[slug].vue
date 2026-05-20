@@ -218,11 +218,11 @@ import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/u
 import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceClaim'
 import { computed, ref } from 'vue'
 import {
-  getPublicKitchenChromeLabels,
   normalizePublicKitchenLanguage,
   resolvePublicKitchenLanguageOptions,
   resolvePublicKitchenChromeLanguage,
 } from '../../composables/fireux/app/public-kitchen-language'
+import { usePublicMenuLanguage } from '../../composables/fireux/app/kitchens/usePublicMenuLanguage'
 import { useKitchenMenuCollection } from '../../composables/fireux/console/kitchen/operations/menu/fetch/useKitchenMenuCollection'
 import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import type { Kitchen } from '../../models/kitchen.model'
@@ -303,7 +303,7 @@ const chromeLanguage = computed(() =>
     primaryLanguage: primaryLanguage.value,
   })
 )
-const chromeLabels = computed(() => getPublicKitchenChromeLabels(chromeLanguage.value))
+const { labels: chromeLabels } = usePublicMenuLanguage(chromeLanguage)
 const publicLanguageQuery = (language = selectedLanguage.value) =>
   language ? `?lang=${encodeURIComponent(language)}` : ''
 const routeQueryWithoutLanguage = computed(() =>

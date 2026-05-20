@@ -1,7 +1,7 @@
 <template>
   <main :dir="pageDirection">
     <p>
-      <NuxtLink to="/">La Tap Berne data proof</NuxtLink>
+      <NuxtLink to="/">La Tap Berne</NuxtLink>
     </p>
 
     <h1>{{ kitchenName }}</h1>
@@ -14,7 +14,7 @@
       <code>kitchens/{{ kitchenId }}</code>
     </p>
 
-    <p v-if="loading">Loading La Tap kitchen/menu data...</p>
+    <p v-if="loading">{{ chromeLabels.loadingMenu }}</p>
 
     <section v-if="languageOptions.length > 1" aria-label="Menu language">
       <h2>Language</h2>
@@ -87,11 +87,13 @@ import {
   isPublicKitchenCacheLanguage,
   isPublicKitchenRtlLanguage,
   normalizePublicKitchenLanguage,
+  resolvePublicKitchenChromeLanguage,
   resolvePublicKitchenLanguageOptions,
   resolvePublicKitchenLanguageState,
   resolvePublicTranslatedText,
   type PublicKitchenLanguageCode,
 } from 'fireux-kitchens/runtime/composables/fireux/app/public-kitchen-language'
+import { usePublicMenuLanguage } from 'fireux-kitchens/runtime/composables/fireux/app/kitchens/usePublicMenuLanguage'
 import { resolveKitchenChildCollectionPath } from 'fireux-kitchens/runtime/composables/fireux/console/kitchen/operations/collections/useKitchenChildCollection'
 import { useKitchenCollection } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import type { KitchenSurface } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
@@ -173,6 +175,14 @@ const dishesPath = computed(() =>
 )
 
 const languageState = computed(() => resolvePublicKitchenLanguageState(kitchen.value))
+const chromeLanguage = computed(() =>
+  resolvePublicKitchenChromeLanguage({
+    selectedLanguage: selectedLanguage.value,
+    primaryLanguage:
+      languageState.value.defaultLanguage || languageState.value.primaryLanguage,
+  })
+)
+const { labels: chromeLabels } = usePublicMenuLanguage(chromeLanguage)
 const selectedLanguageUsesCache = computed(() => {
   const language = selectedLanguage.value
   return Boolean(

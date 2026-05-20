@@ -14,6 +14,7 @@ export interface FireUXConfig {
   modules: string[]
   consoles: string[]
   profiles: string[]
+  navHiddenKeys: string[]
 
   appThumbnail?: string
   appLogo?: string
@@ -104,6 +105,7 @@ function buildConfig(): Readonly<FireUXConfig> {
     modules: toStringArray(fireux.modules),
     consoles: toStringArray(fireux.consoles),
     profiles: toStringArray(fireux.profiles),
+    navHiddenKeys: toStringArray(fireux.navHiddenKeys),
 
     appThumbnail: optString(fireux, 'appThumbnail'),
     appLogo: optString(fireux, 'appLogo'),

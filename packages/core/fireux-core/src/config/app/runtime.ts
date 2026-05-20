@@ -29,6 +29,7 @@ export type RuntimeApp = {
   modules: readonly string[]
   consoles: readonly string[]
   profiles: readonly string[]
+  navHiddenKeys?: readonly string[]
 }
 
 export type RuntimeFirebaseEcosystem = {

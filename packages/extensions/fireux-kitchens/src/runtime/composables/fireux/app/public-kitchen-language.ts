@@ -27,6 +27,39 @@ export type PublicKitchenLanguageState = {
   options: PublicKitchenLanguageOption[]
 }
 
+export const PUBLIC_MENU_COPY_PACK_ID = 'public-menu' as const
+
+export const PUBLIC_KITCHEN_CHROME_LABEL_KEYS = [
+  'menus',
+  'chooseMenu',
+  'openMenus',
+  'openMenu',
+  'loadingMenus',
+  'noMenusAvailable',
+  'noPublicMenus',
+  'loadingMenu',
+  'kitchenNotFound',
+  'menuNotFound',
+  'noSectionsFound',
+  'menuJson',
+  'section',
+  'sections',
+  'dish',
+  'dishes',
+] as const
+
+export type PublicKitchenChromeLabelKey =
+  (typeof PUBLIC_KITCHEN_CHROME_LABEL_KEYS)[number]
+
+export type PublicKitchenChromeLabels = Record<
+  PublicKitchenChromeLabelKey,
+  string
+>
+
+export type PublicMenuCopyPack = {
+  labels?: Partial<Record<PublicKitchenChromeLabelKey, unknown>>
+} & Partial<Record<PublicKitchenChromeLabelKey, unknown>>
+
 const PUBLIC_KITCHEN_LANGUAGE_LABELS: Record<PublicKitchenChromeLanguage, string> = {
   de: '🇩🇪',
   en: '🇬🇧',
@@ -59,206 +92,55 @@ export const PUBLIC_KITCHEN_LANGUAGE_OPTIONS: Array<{
   { code: 'bo', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.bo },
 ]
 
-export const PUBLIC_KITCHEN_CHROME_LABELS = {
-  de: {
-    menus: 'Menüs',
-    chooseMenu: 'Menü auswählen',
-    openMenus: 'Menüs öffnen',
-    openMenu: 'Menü öffnen',
-    loadingMenus: 'Menüs werden geladen...',
-    noMenusAvailable: 'Keine Menüs verfügbar',
-    noPublicMenus: 'Diese Küche hat noch keine öffentlichen Menüs.',
-    loadingMenu: 'Menü wird geladen...',
-    kitchenNotFound: 'Küche nicht gefunden',
-    menuNotFound: 'Menü nicht gefunden',
-    noSectionsFound: 'Keine Bereiche gefunden',
-    menuJson: 'Menü JSON',
-    section: 'Bereich',
-    sections: 'Bereiche',
-    dish: 'Gericht',
-    dishes: 'Gerichte',
-  },
-  en: {
-    menus: 'Menus',
-    chooseMenu: 'Choose a menu',
-    openMenus: 'Open menus',
-    openMenu: 'Open menu',
-    loadingMenus: 'Loading menus...',
-    noMenusAvailable: 'No menus available',
-    noPublicMenus: 'This kitchen does not have public menus available yet.',
-    loadingMenu: 'Loading menu...',
-    kitchenNotFound: 'Kitchen not found',
-    menuNotFound: 'Menu not found',
-    noSectionsFound: 'No sections found',
-    menuJson: 'Menu JSON',
-    section: 'section',
-    sections: 'sections',
-    dish: 'dish',
-    dishes: 'dishes',
-  },
-  it: {
-    menus: 'Menu',
-    chooseMenu: 'Scegli un menu',
-    openMenus: 'Apri i menu',
-    openMenu: 'Apri il menu',
-    loadingMenus: 'Caricamento dei menu...',
-    noMenusAvailable: 'Nessun menu disponibile',
-    noPublicMenus: 'Questo ristorante non ha ancora menu pubblici disponibili.',
-    loadingMenu: 'Caricamento del menu...',
-    kitchenNotFound: 'Ristorante non trovato',
-    menuNotFound: 'Menu non trovato',
-    noSectionsFound: 'Nessuna sezione trovata',
-    menuJson: 'Menu JSON',
-    section: 'sezione',
-    sections: 'sezioni',
-    dish: 'piatto',
-    dishes: 'piatti',
-  },
-  fr: {
-    menus: 'Menus',
-    chooseMenu: 'Choisir un menu',
-    openMenus: 'Ouvrir les menus',
-    openMenu: 'Ouvrir le menu',
-    loadingMenus: 'Chargement des menus...',
-    noMenusAvailable: 'Aucun menu disponible',
-    noPublicMenus: 'Cette cuisine n’a pas encore de menus publics.',
-    loadingMenu: 'Chargement du menu...',
-    kitchenNotFound: 'Cuisine introuvable',
-    menuNotFound: 'Menu introuvable',
-    noSectionsFound: 'Aucune section trouvée',
-    menuJson: 'Menu JSON',
-    section: 'section',
-    sections: 'sections',
-    dish: 'plat',
-    dishes: 'plats',
-  },
-  es: {
-    menus: 'Menús',
-    chooseMenu: 'Elige un menú',
-    openMenus: 'Abrir menús',
-    openMenu: 'Abrir menú',
-    loadingMenus: 'Cargando menús...',
-    noMenusAvailable: 'No hay menús disponibles',
-    noPublicMenus: 'Este restaurante aún no tiene menús públicos disponibles.',
-    loadingMenu: 'Cargando menú...',
-    kitchenNotFound: 'Restaurante no encontrado',
-    menuNotFound: 'Menú no encontrado',
-    noSectionsFound: 'No se encontraron secciones',
-    menuJson: 'Menu JSON',
-    section: 'sección',
-    sections: 'secciones',
-    dish: 'plato',
-    dishes: 'platos',
-  },
-  pt: {
-    menus: 'Menus',
-    chooseMenu: 'Escolha um menu',
-    openMenus: 'Abrir menus',
-    openMenu: 'Abrir menu',
-    loadingMenus: 'A carregar menus...',
-    noMenusAvailable: 'Nenhum menu disponível',
-    noPublicMenus: 'Este restaurante ainda não tem menus públicos disponíveis.',
-    loadingMenu: 'A carregar menu...',
-    kitchenNotFound: 'Restaurante não encontrado',
-    menuNotFound: 'Menu não encontrado',
-    noSectionsFound: 'Nenhuma secção encontrada',
-    menuJson: 'Menu JSON',
-    section: 'secção',
-    sections: 'secções',
-    dish: 'prato',
-    dishes: 'pratos',
-  },
-  ar: {
-    menus: 'القوائم',
-    chooseMenu: 'اختر قائمة',
-    openMenus: 'افتح القوائم',
-    openMenu: 'افتح القائمة',
-    loadingMenus: 'جاري تحميل القوائم...',
-    noMenusAvailable: 'لا توجد قوائم متاحة',
-    noPublicMenus: 'لا توجد قوائم عامة متاحة لهذا المطعم بعد.',
-    loadingMenu: 'جاري تحميل القائمة...',
-    kitchenNotFound: 'لم يتم العثور على المطعم',
-    menuNotFound: 'لم يتم العثور على القائمة',
-    noSectionsFound: 'لم يتم العثور على أقسام',
-    menuJson: 'Menu JSON',
-    section: 'قسم',
-    sections: 'أقسام',
-    dish: 'طبق',
-    dishes: 'أطباق',
-  },
-  he: {
-    menus: 'תפריטים',
-    chooseMenu: 'בחרו תפריט',
-    openMenus: 'פתחו תפריטים',
-    openMenu: 'פתחו תפריט',
-    loadingMenus: 'טוען תפריטים...',
-    noMenusAvailable: 'אין תפריטים זמינים',
-    noPublicMenus: 'למסעדה זו עדיין אין תפריטים ציבוריים.',
-    loadingMenu: 'טוען תפריט...',
-    kitchenNotFound: 'המסעדה לא נמצאה',
-    menuNotFound: 'התפריט לא נמצא',
-    noSectionsFound: 'לא נמצאו קטגוריות',
-    menuJson: 'Menu JSON',
-    section: 'קטגוריה',
-    sections: 'קטגוריות',
-    dish: 'מנה',
-    dishes: 'מנות',
-  },
-  ko: {
-    menus: '메뉴',
-    chooseMenu: '메뉴 선택',
-    openMenus: '메뉴 열기',
-    openMenu: '메뉴 열기',
-    loadingMenus: '메뉴를 불러오는 중...',
-    noMenusAvailable: '이용 가능한 메뉴가 없습니다',
-    noPublicMenus: '이 레스토랑에는 아직 공개 메뉴가 없습니다.',
-    loadingMenu: '메뉴를 불러오는 중...',
-    kitchenNotFound: '레스토랑을 찾을 수 없습니다',
-    menuNotFound: '메뉴를 찾을 수 없습니다',
-    noSectionsFound: '섹션을 찾을 수 없습니다',
-    menuJson: 'Menu JSON',
-    section: '섹션',
-    sections: '섹션',
-    dish: '요리',
-    dishes: '요리',
-  },
-  ja: {
-    menus: 'メニュー',
-    chooseMenu: 'メニューを選択',
-    openMenus: 'メニューを開く',
-    openMenu: 'メニューを開く',
-    loadingMenus: 'メニューを読み込み中...',
-    noMenusAvailable: '利用可能なメニューはありません',
-    noPublicMenus: 'このレストランにはまだ公開メニューがありません。',
-    loadingMenu: 'メニューを読み込み中...',
-    kitchenNotFound: 'レストランが見つかりません',
-    menuNotFound: 'メニューが見つかりません',
-    noSectionsFound: 'セクションが見つかりません',
-    menuJson: 'Menu JSON',
-    section: 'セクション',
-    sections: 'セクション',
-    dish: '料理',
-    dishes: '料理',
-  },
-  bo: {
-    menus: 'ཟས་ཐོ་',
-    chooseMenu: 'ཟས་ཐོ་འདེམས་',
-    openMenus: 'ཟས་ཐོ་ཁ་ཕྱེ་',
-    openMenu: 'ཟས་ཐོ་ཁ་ཕྱེ་',
-    loadingMenus: 'ཟས་ཐོ་འགེལ་བཞིན་ཡོད་...',
-    noMenusAvailable: 'ཟས་ཐོ་མེད་',
-    noPublicMenus: 'ཟ་ཁང་འདིར་ད་དུང་སྤྱི་སྤྱོད་ཟས་ཐོ་མེད།',
-    loadingMenu: 'ཟས་ཐོ་འགེལ་བཞིན་ཡོད་...',
-    kitchenNotFound: 'ཟ་ཁང་རྙེད་མ་སོང་',
-    menuNotFound: 'ཟས་ཐོ་རྙེད་མ་སོང་',
-    noSectionsFound: 'སྡེ་ཚན་རྙེད་མ་སོང་',
-    menuJson: 'Menu JSON',
-    section: 'སྡེ་ཚན་',
-    sections: 'སྡེ་ཚན་',
-    dish: 'ཟས་',
-    dishes: 'ཟས་',
-  },
-} as const
+export const PUBLIC_KITCHEN_CHROME_FALLBACK_LABELS: PublicKitchenChromeLabels = {
+  menus: 'Menus',
+  chooseMenu: 'Choose a menu',
+  openMenus: 'Open menus',
+  openMenu: 'Open menu',
+  loadingMenus: 'Loading menus...',
+  noMenusAvailable: 'No menus available',
+  noPublicMenus: 'This kitchen does not have public menus available yet.',
+  loadingMenu: 'Loading menu...',
+  kitchenNotFound: 'Kitchen not found',
+  menuNotFound: 'Menu not found',
+  noSectionsFound: 'No sections found',
+  menuJson: 'Menu JSON',
+  section: 'section',
+  sections: 'sections',
+  dish: 'dish',
+  dishes: 'dishes',
+}
+
+function readChromeLabels(value: unknown): Partial<PublicKitchenChromeLabels> {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
+
+  const record = value as PublicMenuCopyPack
+  const nested =
+    record.labels && typeof record.labels === 'object' && !Array.isArray(record.labels)
+      ? record.labels
+      : {}
+  const labels: Partial<PublicKitchenChromeLabels> = {}
+
+  for (const key of PUBLIC_KITCHEN_CHROME_LABEL_KEYS) {
+    const raw = nested[key] ?? record[key]
+    if (typeof raw === 'string' && raw.trim()) {
+      labels[key] = raw.trim()
+    }
+  }
+
+  return labels
+}
+
+export function resolvePublicKitchenChromeLabels(input: {
+  ecosystemPack?: unknown
+  tenantPack?: unknown
+} = {}): PublicKitchenChromeLabels {
+  return {
+    ...PUBLIC_KITCHEN_CHROME_FALLBACK_LABELS,
+    ...readChromeLabels(input.ecosystemPack),
+    ...readChromeLabels(input.tenantPack),
+  }
+}
 
 export function normalizePublicKitchenLanguage(
   value: unknown
@@ -279,6 +161,60 @@ export function normalizePublicKitchenLanguage(
     : ''
 }
 
+export function isPublicKitchenCacheLanguage(
+  value: unknown
+): value is Exclude<PublicKitchenLanguageCode, ''> {
+  return Boolean(normalizePublicKitchenLanguage(value))
+}
+
+function normalizePublicKitchenText(value: unknown): string {
+  if (typeof value === 'string') return value.trim()
+  if (typeof value === 'number' && Number.isFinite(value)) return String(value)
+  return ''
+}
+
+function resolveTranslationRecordText(value: unknown): string {
+  if (typeof value === 'string' || typeof value === 'number') {
+    return normalizePublicKitchenText(value)
+  }
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return ''
+
+  const record = value as Record<string, unknown>
+  return (
+    normalizePublicKitchenText(record.text) ||
+    normalizePublicKitchenText(record.value) ||
+    normalizePublicKitchenText(record.label) ||
+    normalizePublicKitchenText(record.name) ||
+    normalizePublicKitchenText(record.description)
+  )
+}
+
+export function resolvePublicTranslatedText(input: {
+  defaultText?: unknown
+  translations?: unknown
+  selectedLanguage?: unknown
+  cacheText?: unknown
+}): { text: string; source: 'cache' | 'translation' | 'default' | 'missing' } {
+  const cacheText = normalizePublicKitchenText(input.cacheText)
+  if (cacheText) return { text: cacheText, source: 'cache' }
+
+  const language = normalizePublicKitchenLanguage(input.selectedLanguage)
+  const translations =
+    input.translations && typeof input.translations === 'object' && !Array.isArray(input.translations)
+      ? (input.translations as Record<string, unknown>)
+      : null
+
+  if (language && translations) {
+    const translatedText = resolveTranslationRecordText(translations[language])
+    if (translatedText) return { text: translatedText, source: 'translation' }
+  }
+
+  const defaultText = normalizePublicKitchenText(input.defaultText)
+  return defaultText
+    ? { text: defaultText, source: 'default' }
+    : { text: '', source: 'missing' }
+}
+
 export function isPublicKitchenRtlLanguage(value: unknown): boolean {
   const language = normalizePublicKitchenLanguage(value)
   return language === 'ar' || language === 'he'
@@ -297,12 +233,12 @@ export function resolvePublicKitchenChromeLanguage(input: {
 
 export function getPublicKitchenChromeLabels(
   language: unknown
-): (typeof PUBLIC_KITCHEN_CHROME_LABELS)[PublicKitchenChromeLanguage] {
-  const chromeLanguage = resolvePublicKitchenChromeLanguage({
+): PublicKitchenChromeLabels {
+  resolvePublicKitchenChromeLanguage({
     selectedLanguage: language,
   })
 
-  return PUBLIC_KITCHEN_CHROME_LABELS[chromeLanguage]
+  return resolvePublicKitchenChromeLabels()
 }
 
 export function resolvePublicKitchenLanguageOptions(
