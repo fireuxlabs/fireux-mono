@@ -5,8 +5,6 @@ export interface NavVisibility {
   modulesAny?: string[]
   profiles?: string[]
   profilesAny?: string[]
-  publicProfiles?: string[]
-  publicProfilesAny?: string[]
   dashboardPages?: string[]
   dashboardPagesAny?: string[]
 }

@@ -7,7 +7,6 @@ type RuntimeScope = Pick<
   | 'ecosystem'
   | 'modules'
   | 'profiles'
-  | 'publicProfiles'
   | 'dashboardPages'
 >
 
@@ -34,8 +33,6 @@ export function normaliseNavVisibility(
   const modulesAny = normaliseStringList(visibility.modulesAny)
   const profiles = normaliseStringList(visibility.profiles)
   const profilesAny = normaliseStringList(visibility.profilesAny)
-  const publicProfiles = normaliseStringList(visibility.publicProfiles)
-  const publicProfilesAny = normaliseStringList(visibility.publicProfilesAny)
   const dashboardPages = normaliseStringList(visibility.dashboardPages)
   const dashboardPagesAny = normaliseStringList(visibility.dashboardPagesAny)
 
@@ -46,8 +43,6 @@ export function normaliseNavVisibility(
     !modulesAny.length &&
     !profiles.length &&
     !profilesAny.length &&
-    !publicProfiles.length &&
-    !publicProfilesAny.length &&
     !dashboardPages.length &&
     !dashboardPagesAny.length
   ) {
@@ -61,8 +56,6 @@ export function normaliseNavVisibility(
     ...(modulesAny.length ? { modulesAny } : {}),
     ...(profiles.length ? { profiles } : {}),
     ...(profilesAny.length ? { profilesAny } : {}),
-    ...(publicProfiles.length ? { publicProfiles } : {}),
-    ...(publicProfilesAny.length ? { publicProfilesAny } : {}),
     ...(dashboardPages.length ? { dashboardPages } : {}),
     ...(dashboardPagesAny.length ? { dashboardPagesAny } : {}),
   }
@@ -79,7 +72,6 @@ export function isNavVisibleForScope(
   const ecosystem = (scope.ecosystem || '').trim().toLowerCase()
   const modules = new Set(normaliseStringList(scope.modules))
   const profiles = new Set(normaliseStringList(scope.profiles))
-  const publicProfiles = new Set(normaliseStringList(scope.publicProfiles))
   const dashboardPages = new Set(normaliseStringList(scope.dashboardPages))
 
   if (rule.apps?.length && !rule.apps.includes(appId)) return false
@@ -94,18 +86,6 @@ export function isNavVisibleForScope(
     return false
   }
   if (rule.profilesAny?.length && !rule.profilesAny.some((name) => profiles.has(name))) {
-    return false
-  }
-  if (
-    rule.publicProfiles?.length &&
-    !rule.publicProfiles.every((name) => publicProfiles.has(name))
-  ) {
-    return false
-  }
-  if (
-    rule.publicProfilesAny?.length &&
-    !rule.publicProfilesAny.some((name) => publicProfiles.has(name))
-  ) {
     return false
   }
   if (

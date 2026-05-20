@@ -34,7 +34,7 @@
 import { useHead } from '#imports'
 
 definePageMeta({
-  visibility: { publicProfiles: ['chef'] },
+  visibility: { profiles: ['chef'] },
 })
 
 useHead({ title: 'Chef Profile · Learn More' })

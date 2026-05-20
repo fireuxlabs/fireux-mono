@@ -39,8 +39,6 @@ export type FireuxAppConfig = {
   consoles?: string[]
   /** Optional profile identities this app lets users create/manage. */
   profiles?: string[]
-  /** Optional public profile directories/details this app consumes. */
-  publicProfiles?: string[]
   /** Optional personal dashboard feature pages this app consumes. */
   dashboardPages?: string[]
   seo?: FireuxSeoConfig
@@ -269,7 +267,6 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       modules: moduleNames,
       consoles: app.consoles || [],
       profiles: app.profiles || [],
-      publicProfiles: app.publicProfiles || [],
       dashboardPages: app.dashboardPages || [],
     },
 

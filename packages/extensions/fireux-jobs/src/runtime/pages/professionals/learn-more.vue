@@ -35,7 +35,7 @@
 import { useHead } from 'nuxt/app'
 
 definePageMeta({
-  visibility: { publicProfiles: ['professional'] },
+  visibility: { profiles: ['professional'] },
 })
 
 useHead({ title: 'Professional Profile · Learn More' })

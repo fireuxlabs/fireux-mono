@@ -19,7 +19,7 @@ import { useChefFetch } from '../../composables/fireux/firestore/profiles/Chef/f
 definePageMeta({
   tag: 'chefs',
   nav: {
-    visibility: { publicProfiles: ['chef'] },
+    visibility: { profiles: ['chef'] },
     key: 'chefs',
     label: 'Chefs',
     icon: 'i-lucide-egg-fried',

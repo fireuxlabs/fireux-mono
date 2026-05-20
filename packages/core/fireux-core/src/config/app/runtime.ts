@@ -29,7 +29,6 @@ export type RuntimeApp = {
   modules: readonly string[]
   consoles: readonly string[]
   profiles: readonly string[]
-  publicProfiles: readonly string[]
   dashboardPages: readonly string[]
 }
 

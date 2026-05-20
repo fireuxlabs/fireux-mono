@@ -18,7 +18,7 @@ import { useAgentFetch } from '../../composables/fireux/firestore/profiles/Agent
 definePageMeta({
   tag: 'agents',
   nav: {
-    visibility: { publicProfiles: ['agent'] },
+    visibility: { profiles: ['agent'] },
     key: 'agents',
     label: 'Agents',
     icon: 'i-lucide-building-2',

@@ -21,7 +21,7 @@ import { useProfessionalFetch } from '../../composables/fireux/firestore/profile
 definePageMeta({
   tag: 'professionals',
   nav: {
-    visibility: { publicProfiles: ['professional'] },
+    visibility: { profiles: ['professional'] },
     key: 'professionals',
     label: 'Professionals',
     icon: 'i-lucide-briefcase',

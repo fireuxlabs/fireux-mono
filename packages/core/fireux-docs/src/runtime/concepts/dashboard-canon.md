@@ -80,13 +80,11 @@ App config controls profile consumption:
 
 ```ts
 profiles: ['chef']
-publicProfiles: ['chef']
 ```
 
-`profiles` enables dashboard profile creation/management. `publicProfiles`
-enables public directories and detail pages such as `/chefs` and `/chefs/[id]`.
-Installing a module alone should not make every profile page part of a tenant
-app.
+`profiles` enables the app's Chef profile surfaces, including dashboard profile
+creation/management and public pages such as `/chefs` and `/chefs/[id]`.
+Installing a module alone should not make every profile page part of a tenant app.
 
 Optional personal dashboard pages use the same rule:
 

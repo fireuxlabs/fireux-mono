@@ -35,7 +35,7 @@
 import { useHead } from 'nuxt/app'
 
 definePageMeta({
-  visibility: { publicProfiles: ['agent'] },
+  visibility: { profiles: ['agent'] },
 })
 
 useHead({ title: 'Agent Profile · Learn More' })

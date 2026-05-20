@@ -81,7 +81,7 @@ import { useChefInterface } from '../../composables/fireux/firestore/profiles/Ch
 import type { AppChef, Chef } from '../../models/profiles/Chef/Chef.model'
 
 definePageMeta({
-  visibility: { publicProfiles: ['chef'] },
+  visibility: { profiles: ['chef'] },
 })
 
 useSeoMeta({

@@ -72,7 +72,7 @@ import { useAgentInterface } from '../../composables/fireux/firestore/profiles/A
 import type { Agent } from '../../models/profiles/Agent/Agent.model'
 
 definePageMeta({
-  visibility: { publicProfiles: ['agent'] },
+  visibility: { profiles: ['agent'] },
 })
 
 const route = useRoute()

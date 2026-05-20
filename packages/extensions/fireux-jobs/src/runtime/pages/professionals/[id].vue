@@ -102,7 +102,7 @@ import type {
 } from '../../models/profiles/Professional/Professional.model'
 
 definePageMeta({
-  visibility: { publicProfiles: ['professional'] },
+  visibility: { profiles: ['professional'] },
 })
 
 const route = useRoute()
