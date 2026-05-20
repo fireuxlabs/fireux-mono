@@ -64,7 +64,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `/properties/[slug]/info/[infoId]`
   - `/properties/[slug]/operator`
 - `/properties/[slug]/operator` is the public-to-private operator bridge for the slug-based Property contract.
-- `companion` is legacy BuenoHost route language; public property information route canon is `info`.
+- `companion` is old BuenoHost route language; public property information route canon is `info`.
 - BuenoHost console scaffold routes:
   - `/console/property`
   - `/console/property/overview`

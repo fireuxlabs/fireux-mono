@@ -27,10 +27,8 @@ export function useJobFetch(
   const workplaceKitchenId = computed(() => {
     const current = data.value ?? null
     if (!current) return ''
-    const legacyKitchenId = String((current as any)?.kitchen_id ?? '')
-    const workplaceId = String((current as any)?.workplace_id ?? '') || legacyKitchenId
-    const workplaceType = String((current as any)?.workplace_type ?? '') ||
-      (legacyKitchenId ? 'kitchen' : '')
+    const workplaceId = String((current as any)?.workplace_id ?? '').trim()
+    const workplaceType = String((current as any)?.workplace_type ?? '').trim()
     if (workplaceType !== 'kitchen' || !workplaceId) return ''
     return String(workplaceId)
   })
@@ -39,10 +37,8 @@ export function useJobFetch(
   const job = computed<MiseboxJobResolved | null>(() => {
     const current = data.value ?? null
     if (!current) return null
-    const legacyKitchenId = String((current as any)?.kitchen_id ?? '')
-    const workplaceId = String((current as any)?.workplace_id ?? '') || legacyKitchenId
-    const workplaceType = String((current as any)?.workplace_type ?? '') ||
-      (legacyKitchenId ? 'kitchen' : '')
+    const workplaceId = String((current as any)?.workplace_id ?? '').trim()
+    const workplaceType = String((current as any)?.workplace_type ?? '').trim()
     return {
       ...current,
       workplace:

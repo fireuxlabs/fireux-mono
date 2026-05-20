@@ -232,7 +232,7 @@ function toEditableSocial(platform: SocialPlatform, raw: unknown): string {
     }
   }
 
-  // Legacy stored suffix.
+  // Stored suffix without a URL scheme.
   return value.replace(/^\/+/, '')
 }
 

@@ -30,7 +30,7 @@ type DateSortFields = {
 
 const normalizePlaceId = (value?: unknown) => {
   const raw = typeof value === 'string' ? value.trim() : ''
-  return raw.replace(/^places\//, '') // tolerate legacy "places/<id>"
+  return raw
 }
 
 export function useProfessionalUpdate(profile?: ProfileRefs<Professional> | null) {

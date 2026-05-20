@@ -1,6 +1,6 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
-import { registerReservedRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
+import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
 import { configureRuntime } from './config/module/runtime-config'
 import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
@@ -35,7 +35,7 @@ export default defineNuxtModule<ModuleOptions>({
   },
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
-    registerReservedRouteKeys(['documents'])
+    registerReservedRootRouteKeys(['documents'])
 
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) =>

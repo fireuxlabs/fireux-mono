@@ -20,7 +20,7 @@ type SupplierUpdateCollectionOptions = {
 /**
  * useSupplierUpdate
  * - Canon surface: global supplier record updates
- * - Legacy app-scope update remains exposed only for compatibility with older callers
+ * - App-scope updates target the supplier console overlay
  *
  * Shared update surface for v1 scoped fields.
  */

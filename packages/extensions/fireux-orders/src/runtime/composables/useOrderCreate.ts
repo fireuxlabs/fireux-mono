@@ -17,12 +17,10 @@ const makeOrderId = () => {
 }
 
 type CreateOrderInput = {
-  scope?: {
-    type?: OrderScopeType
-    id?: string
+  scope: {
+    type: OrderScopeType
+    id: string
   }
-  kitchen_id?: string
-  place_id?: string
   channel?: OrderChannel
   status?: OrderStatus
   service?: {
@@ -54,9 +52,8 @@ export function useOrderCreate() {
   const { setDocument } = useFirestoreCreate()
 
   const createOrder = async (input: CreateOrderInput) => {
-    const legacyKitchenId = String(input.kitchen_id || '').trim()
-    const scopeType = String(input.scope?.type || (legacyKitchenId ? 'kitchen' : '')).trim()
-    const scopeId = String(input.scope?.id || legacyKitchenId).trim()
+    const scopeType = String(input.scope.type || '').trim()
+    const scopeId = String(input.scope.id || '').trim()
 
     if (!scopeType || !scopeId) {
       throw new Error('Missing order scope')
@@ -78,14 +75,11 @@ export function useOrderCreate() {
     const currencyCode = String(lines[0]?.currency_code || 'CHF').trim().toUpperCase() || 'CHF'
 
     const orderId = makeOrderId()
-    const kitchenId = scopeType === 'kitchen' ? scopeId : ''
     const payload = {
       ...Order,
       id: orderId,
       scope_type: scopeType,
       scope_id: scopeId,
-      kitchen_id: kitchenId,
-      place_id: String(input.place_id || '').trim(),
       status: input.status || 'submitted',
       channel: input.channel || 'menu',
       service: {

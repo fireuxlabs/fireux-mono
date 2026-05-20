@@ -72,8 +72,3 @@ export function getReservedEntityRouteSegmentKeys(): string[] {
     .map(normalizeReservedRouteKey)
     .filter(Boolean)
 }
-
-// Compatibility aliases kept while modules migrate to root/entity naming.
-export const registerReservedRouteKeys = registerReservedRootRouteKeys
-export const getReservedRouteKeys = getReservedRootRouteKeys
-export const getBaseReservedRouteSegmentKeys = getReservedEntityRouteSegmentKeys

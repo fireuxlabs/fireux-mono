@@ -119,17 +119,11 @@ export function useOrderCheckoutState() {
     submitting.value = true
 
     try {
-      const legacyKitchenId =
-        resolvedScopeType === 'kitchen'
-          ? resolvedScopeId
-          : String(kitchenId.value || checkoutKitchenId.value || '').trim()
-
       const orderId = await createOrder({
         scope: {
           type: resolvedScopeType,
           id: resolvedScopeId,
         },
-        kitchen_id: legacyKitchenId,
         channel: 'menu',
         service: {
           mode: serviceMode.value,

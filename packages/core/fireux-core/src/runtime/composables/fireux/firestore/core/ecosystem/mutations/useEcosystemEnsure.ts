@@ -19,15 +19,7 @@ function normalizeString(value: unknown) {
 
 async function resolveFirestoreEcosystemRef(db: Firestore, ecosystemId: string) {
   const ecosystemCollection = collection(db, 'ecosystem')
-  const plainRef = doc(ecosystemCollection, ecosystemId)
-  const plainSnap = await getDoc(plainRef)
-  if (plainSnap.exists()) return plainRef
-
-  const legacyRef = doc(ecosystemCollection, `fireux-${ecosystemId}`)
-  const legacySnap = await getDoc(legacyRef)
-  if (legacySnap.exists()) return legacyRef
-
-  return plainRef
+  return doc(ecosystemCollection, ecosystemId)
 }
 
 export function useEcosystemEnsure() {

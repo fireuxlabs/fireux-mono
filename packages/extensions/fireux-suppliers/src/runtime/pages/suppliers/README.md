@@ -15,14 +15,12 @@ This README only explains the supplier delta.
 - `[id].vue`
 - `[id]/operator.vue`
 - `create.vue`
-- `admin/[id].vue`
 - `learn-more.vue`
 
 ## Local Contract
 
 - `index.vue`, `[id].vue`, and `learn-more.vue` are public supplier pages
 - `[id]/operator.vue` is the public-to-private operator bridge
-- `admin/[id].vue` is legacy redirect-only; public supplier route canon uses `operator`
 - `create.vue` is the public root-create page for `Supplier`
 - `console/supplier/create.vue` is the operational console create page
 

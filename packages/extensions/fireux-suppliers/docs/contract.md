@@ -26,7 +26,7 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - Root supplier records carry explicit app relationship metadata:
   - `app_scope_state`
   - `app_scope_app_id`
-- Legacy profile-style supplier paths are compatibility debt, not target design.
+- Profile-style supplier paths are not target design.
 - Supplier console governance belongs to `apps/{appId}/suppliers/{supplierId}`.
 - Supplier-owned product offers belong to `suppliers/{supplierId}/products/{supplierProductId}`.
 - SupplierProduct records must link to canonical Product identity through `product_id`.
@@ -41,7 +41,6 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
   - `/console/supplier/*`
   - `/dashboard/supplier/*`
 - `/suppliers/[id]/operator` is the public-to-private operator bridge.
-- `/suppliers/admin/[id]` is legacy redirect-only and must not be treated as supplier route canon.
 - Public `admin` route language is prohibited because app/platform admin is not the same thing as operating one supplier target.
 - `/console/supplier` is the family entry page:
   - `demo`: curated demo suppliers
@@ -76,6 +75,6 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 - `ensureSupplier` = test/bootstrap/setup-if-missing
 
 ## 10) Non-goals / prohibited fallbacks
-- No silent fallback to alternate supplier ids or legacy owner modules for canonical selection.
+- No silent fallback to alternate supplier ids or old owner modules for canonical selection.
 - No implicit routing substitution when supplier id is missing.
 - No treating supplier relationship or operator linkage as console permission.

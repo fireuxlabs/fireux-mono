@@ -14,18 +14,7 @@ const canShowDashboardItem = (
   if (item.roles?.includes('admin') && !isAdmin) return false
   if (item.roles?.includes('developer') && !isDev) return false
 
-  if (item.key === 'dashboard-admin' || item.to === '/dashboard/admin') {
-    return isAdmin
-  }
-
-  if (
-    item.key === 'dashboard-developer' ||
-    item.to === '/dashboard/developer'
-  ) {
-    return isDev
-  }
-
-  if (item.key === 'dashboard-console' || item.to === '/dashboard/console') {
+  if (item.key === 'dashboard-console') {
     return hasConsoleEntry
   }
 
@@ -38,13 +27,13 @@ export const useDashboardNav = () => {
   const { isDeveloper } = useDeveloperAccess()
   const { hasConsoleEntry } = useConsoleEntryCta()
 
-  const topPriority = [
-    { key: 'dashboard-home', to: '/dashboard' },
-    { key: 'dashboard-user-profile', to: '/dashboard/user-profile' },
-    { key: 'dashboard-admin', to: '/dashboard/admin' },
-    { key: 'dashboard-developer', to: '/dashboard/developer' },
-    { key: 'dashboard-console', to: '/dashboard/console' },
-  ]
+  const topPriorityKeys = new Set([
+    'dashboard-home',
+    'dashboard-user-profile',
+    'dashboard-admin',
+    'dashboard-developer',
+    'dashboard-console',
+  ])
 
   const baseNavFilter = (item: NavItem) =>
     item.group !== 'profiles' &&
@@ -63,13 +52,7 @@ export const useDashboardNav = () => {
       return 'middle'
     }
 
-    return topPriority.some(
-      (priority) =>
-        (priority.key && item.key === priority.key) ||
-        (priority.to && item.to === priority.to)
-    )
-      ? 'top'
-      : 'bottom'
+    return item.key && topPriorityKeys.has(item.key) ? 'top' : 'bottom'
   }
 
   const activeProfileIds = computed(
@@ -86,7 +69,7 @@ export const useDashboardNav = () => {
     item.group === 'profiles' && Boolean(item.profileId)
 
   const isPreferredProfileEntry = (item: NavItem) =>
-    item.to.endsWith('/profile') || item.key?.endsWith('-profile')
+    item.to.endsWith('/profile')
 
   const profileEntries = computed(() => {
     const byProfileId = new Map<string, NavItem>()
@@ -127,7 +110,6 @@ export const useDashboardNav = () => {
 
   return {
     ...nav,
-    topPriority,
     baseNavFilter,
     resolveItemPosition,
     profileEntries,

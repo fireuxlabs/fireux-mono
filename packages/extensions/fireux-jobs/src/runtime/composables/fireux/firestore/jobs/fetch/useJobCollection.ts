@@ -30,18 +30,14 @@ export function useJobCollection() {
     return allJobs.map((job) => ({
       ...job,
       kitchen: (() => {
-        const legacyKitchenId = String((job as any)?.kitchen_id ?? '')
-        const workplaceId = String((job as any)?.workplace_id ?? '') || legacyKitchenId
-        const workplaceType = String((job as any)?.workplace_type ?? '') ||
-          (legacyKitchenId ? 'kitchen' : '')
+        const workplaceId = String((job as any)?.workplace_id ?? '').trim()
+        const workplaceType = String((job as any)?.workplace_type ?? '').trim()
         if (workplaceType !== 'kitchen' || !workplaceId) return null
         return kitchenById.value.get(String(workplaceId)) ?? null
       })(),
       workplace: (() => {
-        const legacyKitchenId = String((job as any)?.kitchen_id ?? '')
-        const workplaceId = String((job as any)?.workplace_id ?? '') || legacyKitchenId
-        const workplaceType = String((job as any)?.workplace_type ?? '') ||
-          (legacyKitchenId ? 'kitchen' : '')
+        const workplaceId = String((job as any)?.workplace_id ?? '').trim()
+        const workplaceType = String((job as any)?.workplace_type ?? '').trim()
         if (workplaceType !== 'kitchen' || !workplaceId) return null
         return kitchenById.value.get(String(workplaceId)) ?? null
       })(),

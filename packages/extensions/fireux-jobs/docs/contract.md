@@ -73,6 +73,6 @@ Tenant and ecosystem job pages should filter the same root jobs through these fi
 
 ## 10) Non-goals / prohibited fallbacks
 - No silent fallback workplace/entity selection.
-- No implicit substitution between legacy and current job status/identity rules.
+- No implicit substitution between old and current job status/identity rules.
 - No `professionals` console family by default.
 - No treating a Professional profile as the selected workspace for operational work. Use the entity being operated, such as kitchen, supplier, portfolio, or project.

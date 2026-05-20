@@ -603,7 +603,7 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
       ...(detectedServiceAccountPath
         ? [`Service account file detected at ${detectedServiceAccountPath}.`]
         : [
-            'Admin SDK detection checks FIREBASE_SERVICE_ACCOUNT(_FILE), legacy project paths, or packages/ecosystem/fireux-<ecosystem>/src/config/firebase/service-account.json.',
+            'Admin SDK detection checks FIREBASE_SERVICE_ACCOUNT(_FILE), project service-account paths, or packages/ecosystem/fireux-<ecosystem>/src/config/firebase/service-account.json.',
           ]),
     ],
 

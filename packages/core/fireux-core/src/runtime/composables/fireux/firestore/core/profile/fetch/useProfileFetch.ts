@@ -15,19 +15,13 @@ import type {
  * - Fires global + app listeners (when path pieces exist)
  * - Returns refs directly (no computed merge)
  */
-export type ProfileRefs2<
+export type ProfileRefs<
   TCore extends ProfileBase = ProfileBase,
   TApp extends AppProfileBase = AppProfileBase,
 > = {
   coreProfile: Ref<TCore | undefined | null>
   appProfile: Ref<Partial<TApp> | undefined | null>
 }
-
-// Back-compat alias (most call sites only provide the core doc type)
-export type ProfileRefs<
-  TCore extends ProfileBase = ProfileBase,
-  TApp extends AppProfileBase = AppProfileBase,
-> = ProfileRefs2<TCore, TApp>
 
 export function useProfileFetch<
   TCore extends ProfileBase = ProfileBase,

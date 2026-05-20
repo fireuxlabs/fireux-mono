@@ -1,6 +1,6 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
-import { registerReservedRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
+import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
 import type { FireuxSeoExtendContext } from 'fireux-core/config/app/seo'
 import type { FireuxSeoSitemapsExtendContext } from 'fireux-core/config/app/seo'
 import { configurePlugins } from './config/module/plugins-config'
@@ -36,7 +36,7 @@ export default defineNuxtModule({
   },
   setup(options: FireuxProductsModuleOptions = {}, nuxt) {
     const resolver = createResolver(import.meta.url)
-    registerReservedRouteKeys(['products'])
+    registerReservedRootRouteKeys(['products'])
     nuxt.hook('fireux:seo:extend' as any, (ctx: FireuxSeoExtendContext) => {
       ctx.addHub('/products')
     })

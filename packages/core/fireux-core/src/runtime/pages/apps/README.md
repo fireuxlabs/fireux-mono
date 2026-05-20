@@ -63,7 +63,7 @@ This folder currently spans two route roles:
 - public system index
 - ensure-first platform bootstrap
 
-That mix is acceptable for now because `App` is an active platform entity that still needs a fallback bootstrap surface.
+That mix is acceptable for now because `App` is an active platform entity that still needs an ensure-first bootstrap surface.
 
 ## Field Groups
 

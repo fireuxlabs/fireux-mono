@@ -61,10 +61,6 @@ export const Order = {
   scope_type: '' as OrderScopeType,
   scope_id: '' as string,
 
-  // Deprecated fields retained temporarily for migration compatibility.
-  kitchen_id: '' as string,
-  place_id: '' as string,
-
   status: 'submitted' as OrderStatus,
   channel: 'menu' as OrderChannel,
 

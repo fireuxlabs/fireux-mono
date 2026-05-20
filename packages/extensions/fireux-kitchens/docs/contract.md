@@ -97,7 +97,7 @@ Ingredient composable stack canon:
   - `/ingredients/[id]`
 - `/kitchens/[slug]/operator` is the public-to-private operator bridge.
 - The operator bridge may show sign-in, request-access, or console-entry state, but it must not edit the kitchen directly.
-- The active public kitchen route family is `/kitchens/**`; singular `/kitchen/**` is legacy/stale.
+- The active public kitchen route family is `/kitchens/**`; singular `/kitchen/**` is stale.
 - Stored kitchen identity remains `kitchens/{kitchenId}` even when the public URL uses slug.
 - Console/internal:
   - `/console/kitchen/*`

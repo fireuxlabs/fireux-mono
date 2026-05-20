@@ -2,7 +2,7 @@ import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { defaultFireuxJobsConfig } from './config/jobs.config'
 import { configureRuntime } from './config/module/runtime-config'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
-import { registerReservedRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
+import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
 import type { FireuxSeoExtendContext } from 'fireux-core/config/app/seo'
 import type { FireuxSeoSitemapsExtendContext } from 'fireux-core/config/app/seo'
 import { configurePlugins } from './config/module/plugins-config'
@@ -36,7 +36,7 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: { prefix: 'Fire' },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
-    registerReservedRouteKeys(['jobs', 'agents', 'professionals'])
+    registerReservedRootRouteKeys(['jobs', 'agents', 'professionals'])
     nuxt.hook('fireux:seo:extend' as any, (ctx: FireuxSeoExtendContext) => {
       ctx.addHub('/jobs')
       ctx.addHub('/agents')

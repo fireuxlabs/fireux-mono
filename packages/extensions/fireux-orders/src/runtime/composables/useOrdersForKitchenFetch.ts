@@ -1,12 +1,7 @@
-import { collection, query, where, type Query } from 'firebase/firestore'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
-import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { computed, type Ref } from 'vue'
 import type { Order } from '../models/order.model'
 import { useOrdersFetchByScope } from './useOrdersFetchByScope'
-
-const ORDERS_COLLECTION = 'orders'
 
 const toMillis = (value: unknown): number => {
   if (!value) return 0
@@ -29,14 +24,10 @@ const toMillis = (value: unknown): number => {
 }
 
 export function useOrdersForKitchenFetch(kitchenId: Ref<string> | string) {
-  const db = useFirestore()
-  const { firestoreQuery } = useFirestoreRead()
-
   const resolvedKitchenId = computed(() =>
     String(typeof kitchenId === 'string' ? kitchenId : kitchenId.value || '').trim()
   )
 
-  const sourceRef = shallowRef(null) as ShallowRef<Ref<Order[] | undefined> | null>
   const { orders: scopeOrders } = useOrdersFetchByScope(
     computed(() =>
       resolvedKitchenId.value
@@ -48,30 +39,11 @@ export function useOrdersForKitchenFetch(kitchenId: Ref<string> | string) {
     )
   )
 
-  watch(
-    resolvedKitchenId,
-    (nextKitchenId) => {
-      if (!nextKitchenId) {
-        sourceRef.value = null
-        return
-      }
-
-      const q = query(
-        collection(db, ORDERS_COLLECTION),
-        where('kitchen_id', '==', nextKitchenId)
-      ) as Query<Order>
-
-      sourceRef.value = firestoreQuery<Order>(q, `${ORDERS_COLLECTION}-${nextKitchenId}`)
-    },
-    { immediate: true }
-  )
-
   const orders = computed<Order[]>(() => {
     const scoped = scopeOrders.value ?? []
-    const legacy = sourceRef.value?.value ?? []
     const deduped = new Map<string, Order>()
 
-    for (const order of [...scoped, ...legacy]) {
+    for (const order of scoped) {
       const id = String(order?.id || '').trim()
       if (!id) continue
       if (!deduped.has(id)) deduped.set(id, order)
