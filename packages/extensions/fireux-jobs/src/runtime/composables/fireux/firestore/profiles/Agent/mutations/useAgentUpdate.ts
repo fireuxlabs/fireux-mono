@@ -1,6 +1,5 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import type { Agent } from '../../../../../../models/profiles/Agent/Agent.model'
 
 /**
@@ -13,27 +12,17 @@ import type { Agent } from '../../../../../../models/profiles/Agent/Agent.model'
  */
 export function useAgentUpdate(profile?: ProfileRefs<Agent> | null) {
   const base = useProfileUpdateBase<Agent>('agents', profile)
-  const { upsertSeoIndexDoc } = useSeoIndexWrite()
   type UpdateOptions = { id?: string | null; scope?: 'core' | 'app' }
 
   /**
    * Update the CORE Agent profile
    * - global document (e.g. agents/{uid})
    */
-  const touchSeoIndex = async (id?: string | null) => {
-    const resolvedId = await base.resolveUid(id)
-    await upsertSeoIndexDoc('seo_index_agents', resolvedId, {
-      path: `/agents/${resolvedId}`,
-      isPublic: true,
-    })
-  }
-
   const updateCoreProfile = async (
     patch: Partial<Agent>,
     options: { id?: string | null } = {}
   ) => {
     await base.updateCoreProfile(patch, options)
-    await touchSeoIndex(options.id)
   }
 
   /**
@@ -46,9 +35,6 @@ export function useAgentUpdate(profile?: ProfileRefs<Agent> | null) {
     options: UpdateOptions = {}
   ) => {
     await base.commitUpdate(patch, options)
-    if (options.scope !== 'app') {
-      await touchSeoIndex(options.id)
-    }
   }
 
   const updateCore = async (

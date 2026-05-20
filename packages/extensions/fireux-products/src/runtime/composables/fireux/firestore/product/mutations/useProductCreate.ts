@@ -1,7 +1,6 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import type {
@@ -63,7 +62,6 @@ export const ProductStampOptions = {
 export function useProductCreate() {
   const db = useFirestore()
   const { setDocument, getCollectionPath } = useFirestoreManager()
-  const { upsertSeoIndexDoc } = useSeoIndexWrite()
   const fireux = useFireUXConfig()
 
   const collectionPath = getCollectionPath('products', false)
@@ -266,10 +264,6 @@ export function useProductCreate() {
       })
 
       await createProductPriceRecords(slug, normalizedPrices)
-      await upsertSeoIndexDoc('seo_index_products', slug, {
-        path: `/products/${slug}`,
-        isPublic: data.active !== false,
-      })
 
       return { success: true, id: slug }
     } catch (error) {

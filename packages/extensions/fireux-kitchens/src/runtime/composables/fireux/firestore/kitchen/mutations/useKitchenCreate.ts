@@ -16,7 +16,6 @@ import type {
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { usePlaceCreate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate'
@@ -38,7 +37,7 @@ import type {
   KitchenCreateInput,
 } from '../../../../../models/kitchen.model'
 
-const normalizeString = (value: unknown) => String(value || '').trim()
+const normalizeString = (value: unknown) => String(value ?? '').trim()
 const KITCHEN_SLUG_MAX_LENGTH = 80
 
 const validateKitchenSlug = (value: unknown) =>
@@ -55,7 +54,7 @@ const withSlugSuffix = (baseSlug: string, index: number) => {
   const base =
     baseSlug
       .slice(0, maxBaseLength)
-      .replace(/-+$/g, '') || 'kitchen'
+      .replace(/-+$/g, '')
 
   return `${base}${suffix}`
 }
@@ -107,7 +106,6 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
   const { updateDocument: updateSimulationDocument } = useFirestoreUpdate({
     databaseId: simulationDatabaseId,
   })
-  const { upsertSeoIndexDoc } = useSeoIndexWrite()
   const { ensurePlaceExists } = usePlaceCreate()
   const { ensureConsole } = useConsoleEnsure()
   const { uid, currentUser } = useAuth()
@@ -136,7 +134,6 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     placeSlug?: unknown
     name?: unknown
     shortName?: unknown
-    fallback?: unknown
   }) {
     const explicitSlug = normalizeString(input.explicitSlug)
 
@@ -152,7 +149,6 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       input.placeSlug,
       input.name,
       input.shortName,
-      input.fallback,
     ]
 
     for (const candidate of candidates) {
@@ -187,7 +183,6 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     placeSlug?: unknown
     name?: unknown
     shortName?: unknown
-    fallback?: unknown
   }) {
     const currentSlug = normalizeString(input.existing.slug)
     const validation = currentSlug ? validateKitchenSlug(currentSlug) : null
@@ -199,10 +194,9 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     const slug = await resolveUniqueKitchenSlug({
       kitchenId: input.kitchenId,
       explicitSlug: input.explicitSlug,
-      placeSlug: input.placeSlug || currentSlug,
-      name: input.name || input.existing.name,
-      shortName: input.shortName || input.existing.short_name,
-      fallback: input.fallback,
+      placeSlug: input.placeSlug ?? currentSlug,
+      name: input.name ?? input.existing.name,
+      shortName: input.shortName ?? input.existing.short_name,
     })
 
     await setDoc(
@@ -406,7 +400,6 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       placeSlug,
       name: resolvedName,
       shortName: resolvedShortName,
-      fallback: resolvedId,
     })
     resolvedPayload.slug = resolvedSlug
 
@@ -418,7 +411,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     const ref = doc(activeDb, collectionPath, resolvedId)
     const snap = await getDoc(ref)
     if (snap.exists()) {
-      const seoSlug = await repairExistingKitchenSlug({
+      await repairExistingKitchenSlug({
         kitchenId: resolvedId,
         ref,
         existing: snap.data() as Record<string, unknown>,
@@ -426,15 +419,8 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
         placeSlug,
         name: resolvedName,
         shortName: resolvedShortName,
-        fallback: resolvedId,
       })
 
-      if (!isTestKitchenCollection) {
-        await upsertSeoIndexDoc('seo_index_kitchens', resolvedId, {
-          path: `/kitchens/${seoSlug}`,
-          isPublic: true,
-        })
-      }
       return { id: resolvedId, created: false }
     }
 
@@ -446,12 +432,6 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
         creator: false,
       }
     )
-    if (!isTestKitchenCollection) {
-      await upsertSeoIndexDoc('seo_index_kitchens', resolvedId, {
-        path: `/kitchens/${resolvedSlug}`,
-        isPublic: true,
-      })
-    }
 
     return { id: resolvedId, created: true }
   }

@@ -3,7 +3,6 @@ import { configureRuntime } from './config/module/runtime-config'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
 import type { FireuxSeoExtendContext } from 'fireux-core/config/app/seo'
-import type { FireuxSeoSitemapsExtendContext } from 'fireux-core/config/app/seo'
 import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
 import { configureComponents } from './config/module/components-config'
@@ -49,16 +48,6 @@ export default defineNuxtModule<ModuleOptions>({
       ctx.addStaticPath('/kitchens/learn-more')
       ctx.addStaticPath('/kitchens/learn-more/dev')
       ctx.addStaticPath('/chefs/learn-more')
-    })
-    nuxt.hook('fireux:seo:sitemaps:extend' as any, (ctx: FireuxSeoSitemapsExtendContext) => {
-      ctx.addEntity({
-        entityKey: 'kitchens',
-        indexCollectionPath: 'seo_index_kitchens',
-      })
-      ctx.addEntity({
-        entityKey: 'chefs',
-        indexCollectionPath: 'seo_index_chefs',
-      })
     })
 
     configureFireuxModule(resolver, nuxt, {

@@ -1,14 +1,12 @@
 import { deleteDoc, doc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 type DeleteScope = 'auto' | 'core' | 'app' | 'both'
 
 export function useSupplierDelete() {
   const db = useFirestore()
-  const { deleteSeoIndexDoc } = useSeoIndexWrite()
   const { appId } = useFireUXConfig()
   const hasAppScope = Boolean(appId)
 
@@ -34,7 +32,6 @@ export function useSupplierDelete() {
       scope === 'core' || scope === 'both' || (!hasAppScope && scope === 'auto')
     if (shouldDeleteCore) {
       await deleteAtPath('suppliers', id)
-      await deleteSeoIndexDoc('seo_index_suppliers', id)
     }
 
     const deleteAppScope =

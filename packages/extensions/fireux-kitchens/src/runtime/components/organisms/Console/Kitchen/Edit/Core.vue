@@ -609,23 +609,17 @@ watch(
   (next) => {
     languageSettingsMessage.value = ''
     languageSettingsError.value = false
-    const legacy = next as (KitchenLanguageSettings & {
-      default_locale?: unknown
-      supported_locales?: unknown
-    }) | undefined
 
     const existingSupportedLanguages =
       Array.isArray(next?.supported_languages)
         ? next.supported_languages
-        : Array.isArray(legacy?.supported_locales)
-          ? legacy.supported_locales
-          : KITCHEN_STARTER_LANGUAGE_SETTINGS.supported_languages
+        : KITCHEN_STARTER_LANGUAGE_SETTINGS.supported_languages
     const supportedLanguages = existingSupportedLanguages
       .map((language) => normalizeLanguageCode(language))
       .filter(Boolean)
 
     const defaultLanguage =
-      normalizeLanguageCode(next?.default_language || legacy?.default_locale) ||
+      normalizeLanguageCode(next?.default_language) ||
       KITCHEN_STARTER_LANGUAGE_SETTINGS.default_language
 
     languageDefaultLanguage.value = defaultLanguage

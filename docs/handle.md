@@ -37,4 +37,4 @@ Scan scope:
 
 ## Recommendation
 - Canonical runtime routing should remain `users.handle`.
-- Keep `seo_index_*` only where entities are not yet migrated; `seo_index_users` is retired.
+- Runtime should not read or write `seo_index_*` for public route truth; `seo_index_users` is retired.

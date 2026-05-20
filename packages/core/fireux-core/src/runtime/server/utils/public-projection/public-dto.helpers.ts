@@ -47,11 +47,14 @@ export function asStringArray(input: unknown): string[] {
     .filter(Boolean)
 }
 
-export function fallbackDescription(primary: unknown, fallbackValue: string): string {
+export function resolvePublicDescription(
+  primary: unknown,
+  displayDefault: string
+): string {
   const base = safeString(primary)
   if (base) return base
-  const fallback = safeString(fallbackValue)
-  return fallback || 'Public page'
+  const defaultDescription = safeString(displayDefault)
+  return defaultDescription || 'Public page'
 }
 
 export function toIsoUpdatedAt(input: unknown): string {

@@ -1,6 +1,5 @@
 import { collection, deleteField, getDocs, query, where } from 'firebase/firestore'
 import { useDocumentUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/operations/useDocumentUpdateBase'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import type { Kitchen, KitchenUpdateInput } from '../../../../../models/kitchen.model'
@@ -9,7 +8,6 @@ const COLLECTION_PATH = 'kitchens'
 
 export function useKitchenUpdate() {
   const base = useDocumentUpdateBase<Kitchen>(COLLECTION_PATH, { resolvePath: false })
-  const { upsertSeoIndexDoc } = useSeoIndexWrite()
   const db = useFirestore()
 
   const resolveSlugUpdate = async (kitchenId: string, value: unknown) => {
@@ -51,13 +49,6 @@ export function useKitchenUpdate() {
     }
 
     await base.updateById(kitchenId, nextPatch, { prune: true })
-
-    if (hasSlugPatch && nextPatch.slug) {
-      await upsertSeoIndexDoc('seo_index_kitchens', kitchenId, {
-        path: `/kitchens/${String(nextPatch.slug).trim()}`,
-        isPublic: true,
-      })
-    }
   }
 
   return { updateKitchen }

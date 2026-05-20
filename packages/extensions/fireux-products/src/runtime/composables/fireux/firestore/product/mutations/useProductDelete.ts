@@ -1,10 +1,8 @@
 import { useCurrentUser } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 
 export function useProductDelete() {
   const { deleteDocument, getCollectionPath } = useFirestoreManager()
-  const { deleteSeoIndexDoc } = useSeoIndexWrite()
   const currentUser = useCurrentUser()
   const collectionPath = getCollectionPath('products', false)
 
@@ -19,7 +17,6 @@ export function useProductDelete() {
 
     console.log('🧩 [Stub] deleteProduct', { slug })
     await deleteDocument(collectionPath, slug)
-    await deleteSeoIndexDoc('seo_index_products', slug)
     return true
   }
 

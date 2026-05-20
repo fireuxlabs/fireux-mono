@@ -1,6 +1,6 @@
 # Server Projection Canon v1
 Authority: Tier2 (Operational report)
-Updated: 2026-03-02
+Updated: 2026-05-20
 Generated: 2026-03-02T09:05:13+01:00  
 Canon version: `server-projection-v1`  
 Scope: FireUX mono-repo public SEO surfaces and sitemap generation
@@ -16,7 +16,7 @@ Scope: FireUX mono-repo public SEO surfaces and sitemap generation
 
 - Console/Dashboard/Admin CRUD and Collection Manager patterns stay unchanged.
 - Existing client CRUD composables stay in place for private/operator surfaces.
-- Existing `seo_index_*` collections for non-migrated entities stay during rollout.
+- `seo_index_*` write helpers are retired from runtime mutation seams. Future SEO projections must be introduced as named generated outputs, not fallback route truth.
 
 ## Phased Migration
 
@@ -53,13 +53,13 @@ Scope: FireUX mono-repo public SEO surfaces and sitemap generation
 
 - Never index: `/console/**`, `/dashboard/**`, `/admin/**`, `/dev/**`, `/auth/**`, `/onboarding/**`.
 - Public pages must render meaningful SSR HTML without client-only Firestore dependence for initial meta/content.
-- Keep canonical source of truth in root docs; long-term remove projection collection dependence.
+- Keep canonical source of truth in root docs; sitemap runtime must not depend on projection collections.
 
 ## Transitional State Notes
 
 - `handles` legacy collection is retired; runtime profile routing resolves from `users.handle`.
 - `seo_index_users` is retired; users pages and sitemap resolve from canonical users docs.
-- Other `seo_index_*` collections remain until each entity migrates.
+- Existing `seo_index_*` data may remain in Firestore as stale stored data, but runtime should not write or read it for sitemap truth.
 
 ## Reports Must Stay Fresh
 

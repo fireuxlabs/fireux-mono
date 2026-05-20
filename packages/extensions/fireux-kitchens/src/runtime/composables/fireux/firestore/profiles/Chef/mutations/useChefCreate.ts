@@ -4,7 +4,6 @@
 
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserEnsure'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
@@ -16,7 +15,6 @@ export function useChefCreate() {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
   const { ensureUser } = useUserEnsure()
-  const { upsertSeoIndexDoc } = useSeoIndexWrite()
 
   async function ensureChefProfile(): Promise<{
     createdCore: boolean
@@ -70,11 +68,6 @@ export function useChefCreate() {
         createdApp = true
       }
     }
-
-    await upsertSeoIndexDoc('seo_index_chefs', uid, {
-      path: `/chefs/${uid}`,
-      isPublic: true,
-    })
 
     return { createdCore, createdApp, id: uid }
   }

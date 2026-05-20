@@ -1,7 +1,6 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { canonicalPlaceId, fetchPlaceDetails } from '../fetch/google/usePlacesGoogle'
@@ -16,7 +15,6 @@ export interface UsePlaceCreateOptions {
 
 export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
   const { setDocument } = useFirestoreManager()
-  const { upsertSeoIndexDoc } = useSeoIndexWrite()
   const { uploadFromUrl } = useImageStorage()
   const db = useFirestore()
 
@@ -31,10 +29,6 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
     const snapshot = await getDoc(ref)
 
     if (snapshot.exists()) {
-      await upsertSeoIndexDoc('seo_index_places', id, {
-        path: `/places/${id}`,
-        isPublic: true,
-      })
       if (import.meta.dev)
         console.log(`[fireux-places] Place already exists: ${id}`)
       return true
@@ -205,10 +199,6 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
     }
 
     await setDocument(collectionPath, id, payload, { creator: true })
-    await upsertSeoIndexDoc('seo_index_places', id, {
-      path: `/places/${id}`,
-      isPublic: true,
-    })
 
     if (import.meta.dev) console.log(`[fireux-places] Created new place: ${id}`)
 

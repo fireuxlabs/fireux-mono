@@ -2,8 +2,6 @@ import type { Property } from '../../../../../../models/property.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 const defaultCurrency = 'GBP'
-const propertyImagePlaceholder = (seed: string) =>
-  `https://picsum.photos/seed/${encodeURIComponent(`fireux-property-${seed || 'placeholder'}`)}/640/360`
 
 const formatEstimatedValue = (value: unknown, currency: unknown) => {
   const amount = Number(value)
@@ -81,7 +79,7 @@ export function usePropertyInterface() {
       title,
       subtitle,
       meta,
-      imageUrl: safeString(identity.image_url) || propertyImagePlaceholder(id),
+      imageUrl: safeString(identity.image_url),
       status: '',
       badges: [],
       summary: '',

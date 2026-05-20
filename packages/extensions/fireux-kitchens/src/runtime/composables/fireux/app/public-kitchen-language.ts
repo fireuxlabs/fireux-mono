@@ -27,13 +27,6 @@ export type PublicKitchenLanguageState = {
   options: PublicKitchenLanguageOption[]
 }
 
-export type PublicTranslatedTextResult = {
-  text: string
-  missingTranslation: boolean
-  requestedLanguage: PublicKitchenLanguageCode
-  fallbackUsed: boolean
-}
-
 const PUBLIC_KITCHEN_LANGUAGE_LABELS: Record<PublicKitchenChromeLanguage, string> = {
   de: '🇩🇪',
   en: '🇬🇧',
@@ -286,23 +279,6 @@ export function normalizePublicKitchenLanguage(
     : ''
 }
 
-export function isPublicKitchenCacheLanguage(
-  value: unknown
-): value is 'it' | 'fr' | 'ar' | 'es' | 'pt' | 'he' | 'ko' | 'ja' | 'bo' {
-  const language = normalizePublicKitchenLanguage(value)
-  return (
-    language === 'it' ||
-    language === 'fr' ||
-    language === 'ar' ||
-    language === 'es' ||
-    language === 'pt' ||
-    language === 'he' ||
-    language === 'ko' ||
-    language === 'ja' ||
-    language === 'bo'
-  )
-}
-
 export function isPublicKitchenRtlLanguage(value: unknown): boolean {
   const language = normalizePublicKitchenLanguage(value)
   return language === 'ar' || language === 'he'
@@ -327,69 +303,6 @@ export function getPublicKitchenChromeLabels(
   })
 
   return PUBLIC_KITCHEN_CHROME_LABELS[chromeLanguage]
-}
-
-export function resolvePublicTranslatedText(input: {
-  defaultText?: unknown
-  translations?: unknown
-  selectedLanguage?: unknown
-  cacheText?: unknown
-}): PublicTranslatedTextResult {
-  const sourceText = String(input.defaultText ?? '').trim()
-  const requestedLanguage = normalizePublicKitchenLanguage(input.selectedLanguage)
-
-  if (!requestedLanguage) {
-    return {
-      text: sourceText,
-      missingTranslation: false,
-      requestedLanguage,
-      fallbackUsed: false,
-    }
-  }
-
-  const cachedText = String(input.cacheText ?? '').trim()
-  if (cachedText) {
-    return {
-      text: cachedText,
-      missingTranslation: false,
-      requestedLanguage,
-      fallbackUsed: false,
-    }
-  }
-
-  if (
-    input.translations &&
-    typeof input.translations === 'object' &&
-    !Array.isArray(input.translations)
-  ) {
-    const translatedText = String(
-      (input.translations as Record<string, unknown>)[requestedLanguage] ?? ''
-    ).trim()
-    if (translatedText) {
-      return {
-        text: translatedText,
-        missingTranslation: false,
-        requestedLanguage,
-        fallbackUsed: false,
-      }
-    }
-  }
-
-  if (!sourceText) {
-    return {
-      text: '',
-      missingTranslation: false,
-      requestedLanguage,
-      fallbackUsed: false,
-    }
-  }
-
-  return {
-    text: `[missing ${requestedLanguage} translation]`,
-    missingTranslation: true,
-    requestedLanguage,
-    fallbackUsed: false,
-  }
 }
 
 export function resolvePublicKitchenLanguageOptions(
@@ -443,12 +356,7 @@ export function resolvePublicKitchenLanguageState(
     ...normalizeLanguageList(languageSettings.cache_languages),
     ...normalizeLanguageList(languageSettings.cached_languages),
   ].filter((language, index, languages) => languages.indexOf(language) === index)
-  // Public buttons are computed from language readiness. The kitchen primary/default
-  // language only sets context/chrome and does not make a translation selectable.
   const publicLanguages = normalizeLanguageList(languageSettings.public_languages)
-  const readyLanguages = publicLanguages.length
-    ? publicLanguages
-    : [...attachedLanguages, ...cachedLanguages]
   const seen = new Set<PublicKitchenLanguageCode>([''])
   const options: PublicKitchenLanguageOption[] = [
     { code: '', label: 'Original', source: 'original' },
@@ -468,14 +376,8 @@ export function resolvePublicKitchenLanguageState(
     })
   }
 
-  for (const language of readyLanguages) {
-    const source =
-      publicLanguages.length
-        ? 'public'
-        : attachedLanguages.includes(language)
-          ? 'attached'
-          : 'cache'
-    addLanguage(language, source)
+  for (const language of publicLanguages) {
+    addLanguage(language, 'public')
   }
 
   return {

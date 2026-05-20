@@ -34,6 +34,14 @@ Updated: 2026-05-20
 - Do not leave an app without a working path to inspect its own canon shape.
 - Guards should start narrow and become stricter as each drift area is cleaned. A guard that is too broad to pass is not enforcement; it is noise.
 
+## Fallback And Legacy Rule
+- Display defaults are allowed when they are visibly non-canonical and named as defaults, empty states, or unavailable states.
+- Hidden fallback truth is not allowed for identity, authority, routing, storage, config, SEO, publish state, or stored data.
+- Runtime product paths must not keep legacy compatibility branches, outdated readers, or alternate route/data chains.
+- Migration and dev drift tools may mention legacy only when their purpose is explicitly migration, inspection, or cleanup.
+- Empty stored values are preferred over invented identity data.
+- Public routes should return explicit unavailable or not-found states instead of guessing another canonical target.
+
 Current learned examples:
 - User identity:
   - `User` is the person.

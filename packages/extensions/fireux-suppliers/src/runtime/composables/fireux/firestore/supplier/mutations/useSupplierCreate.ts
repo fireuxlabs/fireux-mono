@@ -4,7 +4,6 @@ import type {
   ConsoleEnsureResult,
   ConsoleRootEnsureResult,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserEnsure'
 import { useConsoleEnsure } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleEnsure'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
@@ -45,7 +44,6 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
   const { ensureUser } = useUserEnsure()
-  const { upsertSeoIndexDoc } = useSeoIndexWrite()
   const { ensureConsole } = useConsoleEnsure()
   const { currentUser } = useAuth()
   const supplierCollection =
@@ -168,13 +166,6 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
         return payload as AppSupplier
       },
     })
-
-    if (!isTestSupplierCollection) {
-      await upsertSeoIndexDoc('seo_index_suppliers', result.id, {
-        path: `/suppliers/${result.id}`,
-        isPublic: true,
-      })
-    }
 
     return result
   }

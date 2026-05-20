@@ -18,8 +18,6 @@ import type {
   User,
 } from '../../../../../../models/core/user.model'
 import type { NotificationScope, UserNotification } from '../../../../../../models/core/supporting/user'
-import { useFireUXConfig } from '../../../../app/FireUXConfig'
-import { useImageStorage } from '../../../../firebase/useImageStorage'
 import { useRequireUser } from '../../../../firebase/useRequireUser'
 import { useFirestoreManager } from '../../../operations/useFirestoreManager'
 
@@ -45,30 +43,10 @@ function normalizePublicDisplayNameSeed(value: string): string {
     : trimmed
 }
 
-async function resolveCoreUserAvatar(
-  uid: string,
-  avatar?: string | null
-): Promise<string> {
+function resolveCoreUserAvatar(avatar?: string | null): string {
   const explicit = typeof avatar === 'string' ? avatar.trim() : ''
   if (explicit) return explicit
-
-  const cfg = useFireUXConfig()
-  const { uploadImage, getDefaultImageUrl } = useImageStorage()
-  const source = (cfg.appLogo || '').trim() || '/img/app/logo.png'
-  const fallback = getDefaultImageUrl(source)
-
-  try {
-    return await uploadImage(`users/${uid}/avatar`, source)
-  } catch (error) {
-    if (import.meta.dev) {
-      console.warn('[ensureCoreUserDocument] failed to upload default avatar', {
-        uid,
-        source,
-        error,
-      })
-    }
-    return fallback
-  }
+  return ''
 }
 
 export async function ensureCoreUserDocument(
@@ -86,7 +64,7 @@ export async function ensureCoreUserDocument(
       throw new Error('[ensureCoreUserDocument] Existing user missing display_name')
     }
 
-    // Backfill canon-required fields for older documents.
+    // Normalize canon-required fields without inventing identity data.
     const patch: Record<string, unknown> = {}
     const resolvedHandle =
       typeof data?.handle === 'string' && data.handle.trim()
@@ -94,7 +72,7 @@ export async function ensureCoreUserDocument(
         : makeHandle(existingName, uid)
     const existingAvatar = (data as any)?.avatar
     if (typeof existingAvatar !== 'string' || !existingAvatar.trim()) {
-      patch.avatar = await resolveCoreUserAvatar(uid, options.avatar)
+      patch.avatar = resolveCoreUserAvatar(options.avatar)
     }
     if (typeof (data as any)?.handle !== 'string' || !(data as any)?.handle?.trim()) {
       patch.handle = resolvedHandle
@@ -131,7 +109,7 @@ export async function ensureCoreUserDocument(
   if (!email) {
     throw new Error('[ensureCoreUserDocument] Missing email')
   }
-  const resolvedAvatar = await resolveCoreUserAvatar(uid, options.avatar)
+  const resolvedAvatar = resolveCoreUserAvatar(options.avatar)
   // EnsureCore is responsible for creating the core document, but should not
   // create membership side effects (like notifications) by default.
   const handle = makeHandle(displayName, uid)

@@ -4,11 +4,6 @@
       All assets should be on transparent backgrounds. Preferred formats:
       PNG for raster, SVG for vector. If you only have JPG, we can convert.
     </p>
-    <div class="asset-actions">
-      <UButton variant="subtle" color="primary" @click="applyRandomTestAssets">
-        Use random test images
-      </UButton>
-    </div>
     <div class="assets-grid">
       <div v-for="spec in onboardingAssetSpecs" :key="spec.key" class="asset-card">
         <p class="asset-label">{{ spec.label }}</p>
@@ -22,7 +17,7 @@
 <script setup lang="ts">
 import { useProductFulfillmentOnboarding } from '../../../../composables/fireux/app/product-onboarding/useProductFulfillmentOnboarding';
 
-const { onboardingAssetSpecs, applyRandomTestAssets } = useProductFulfillmentOnboarding()
+const { onboardingAssetSpecs } = useProductFulfillmentOnboarding()
 </script>
 
 <style scoped>
@@ -33,10 +28,6 @@ const { onboardingAssetSpecs, applyRandomTestAssets } = useProductFulfillmentOnb
 
 .asset-help {
   color: #6b7280;
-  margin-bottom: 1rem;
-}
-
-.asset-actions {
   margin-bottom: 1rem;
 }
 

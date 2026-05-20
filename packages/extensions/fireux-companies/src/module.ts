@@ -1,7 +1,6 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import type { FireuxSeoExtendContext } from 'fireux-core/config/app/seo'
-import type { FireuxSeoSitemapsExtendContext } from 'fireux-core/config/app/seo'
 import { configureRuntime } from './config/module/runtime-config'
 import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
@@ -37,12 +36,6 @@ export default defineNuxtModule<ModuleOptions>({
     nuxt.hook('fireux:seo:extend' as any, (ctx: FireuxSeoExtendContext) => {
       ctx.addHub('/companies')
       ctx.addStaticPath('/companies/learn-more')
-    })
-    nuxt.hook('fireux:seo:sitemaps:extend' as any, (ctx: FireuxSeoSitemapsExtendContext) => {
-      ctx.addEntity({
-        entityKey: 'companies',
-        indexCollectionPath: 'seo_index_companies',
-      })
     })
 
     configureFireuxModule(resolver, nuxt, {

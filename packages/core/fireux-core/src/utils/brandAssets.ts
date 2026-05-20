@@ -26,7 +26,7 @@ export const GLOBAL_BRAND_ASSETS: ResolvedFireuxBrandAssets = Object.freeze({
   pwaIcon512: '/img/app/pwa/icon-512.png',
 })
 
-export const CORE_BRAND_FALLBACK_ASSETS = Object.freeze({
+export const CORE_BRAND_DEFAULT_ASSETS = Object.freeze({
   logo: '/img/core/brand/logo.png',
   wordmarkLight: '/img/core/brand/wordmark-light.svg',
   wordmarkDark: '/img/core/brand/wordmark-dark.png',
@@ -42,10 +42,10 @@ const IMAGE_FILENAME_RE = /^[A-Za-z0-9._-]+\.(?:avif|gif|ico|jpe?g|png|svg|webp)
 
 export function normalizePublicImgAsset(
   value: string | null | undefined,
-  fallback = ''
+  defaultValue = ''
 ): string {
   const normalized = typeof value === 'string' ? value.trim() : ''
-  if (!normalized) return fallback
+  if (!normalized) return defaultValue
   if (
     normalized.startsWith('data:') ||
     normalized.startsWith('blob:') ||
@@ -62,7 +62,7 @@ export function normalizePublicImgAsset(
     return `/${normalized.replace(/^public\//, '')}`
   }
   if (IMAGE_FILENAME_RE.test(normalized)) return `/img/app/${normalized}`
-  return fallback
+  return defaultValue
 }
 
 export function resolveFireuxBrandAssets(

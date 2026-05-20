@@ -95,6 +95,7 @@ interface BrandAssetCheck {
   name: string
   path: string
   ok: boolean
+  source?: string
   reason?: string
   width?: number
   height?: number
@@ -135,6 +136,9 @@ function validateBrandDimensions(
   )
 }
 
+const hasText = (value: unknown): boolean =>
+  typeof value === 'string' && value.trim().length > 0
+
 /**
  * Utility: check if brand image exists and meets expected dimensions.
  */
@@ -151,6 +155,8 @@ function checkBrandImage(
     result.reason = `Missing file: /public/${relativePath}`
     return result
   }
+
+  result.source = relative(process.cwd(), absPath) || absPath
 
   const stat = statSync(absPath)
   if (!stat.isFile()) {
@@ -197,63 +203,11 @@ function appAssetCheckName(relativePath: string): string {
     .replace(/\//g, '-')
 }
 
-function createBrandAssetResolver(
-  repoRoot: string,
-  ecosystem?: string,
-  appNamespace?: string
-) {
-  const candidates = new Set<string>()
-  candidates.add(join(process.cwd(), 'public'))
-  candidates.add(join(repoRoot, 'public'))
-  candidates.add(
-    join(
-      repoRoot,
-      'packages',
-      'core',
-      'fireux-core',
-      'src',
-      'runtime',
-      'public'
-    )
-  )
-
-  const scoped = (ecosystem || '').trim()
-  if (scoped) {
-    candidates.add(
-      join(
-        repoRoot,
-        'packages',
-        'ecosystem',
-        `fireux-${scoped}`,
-        'src',
-        'runtime',
-        'public'
-      )
-    )
-    candidates.add(
-      join(repoRoot, 'projects', scoped, `${scoped}-app`, 'public')
-    )
-  }
-
-  const appScoped = (appNamespace || '').trim()
-  if (appScoped) {
-    candidates.add(
-      join(repoRoot, 'projects', appScoped, `${appScoped}`, 'public')
-    )
-    candidates.add(
-      join(repoRoot, 'projects', appScoped, `${appScoped}-app`, 'public')
-    )
-    candidates.add(join(repoRoot, 'packages', 'apps', appScoped, 'public'))
-  }
-
+function createCurrentAppAssetResolver() {
+  const appPublicPath = join(process.cwd(), 'public')
   return (relativePath: string) => {
-    for (const base of candidates) {
-      const fullPath = join(base, relativePath)
-      if (existsSync(fullPath)) {
-        return fullPath
-      }
-    }
-    return null
+    const fullPath = join(appPublicPath, relativePath)
+    return existsSync(fullPath) ? fullPath : null
   }
 }
 
@@ -294,81 +248,77 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
   >
   const firebaseApp = (publicRuntime.firebaseApp ?? {}) as Record<string, any>
   const appConfigColors = (appConfig?.ui?.colors ?? {}) as Record<string, any>
-  const ecosystem = fireux.ecosystem as string | undefined
-  const appNamespace =
-    (typeof fireux.id === 'string' ? fireux.id.trim() : '') ||
-    env.APP_ID?.trim()
   const here = dirname(fileURLToPath(import.meta.url))
   const repoRoot = findRepoRoot(here)
 
   const requiredClient = [
     {
       key: 'firebaseEcosystem.apiKey',
-      present: !!String(firebaseEcosystem.apiKey || '').trim(),
+      present: hasText(firebaseEcosystem.apiKey),
     },
     {
       key: 'firebaseEcosystem.authDomain',
-      present: !!String(firebaseEcosystem.authDomain || '').trim(),
+      present: hasText(firebaseEcosystem.authDomain),
     },
     {
       key: 'firebaseEcosystem.projectId',
-      present: !!String(firebaseEcosystem.projectId || '').trim(),
+      present: hasText(firebaseEcosystem.projectId),
     },
     {
       key: 'firebaseEcosystem.storageBucket',
-      present: !!String(firebaseEcosystem.storageBucket || '').trim(),
+      present: hasText(firebaseEcosystem.storageBucket),
     },
     {
       key: 'firebaseEcosystem.messagingSenderId',
-      present: !!String(firebaseEcosystem.messagingSenderId || '').trim(),
+      present: hasText(firebaseEcosystem.messagingSenderId),
     },
     {
       key: 'firebaseApp.appId',
-      present: !!String(firebaseApp.appId || '').trim(),
+      present: hasText(firebaseApp.appId),
     },
     {
       key: 'fireux.id',
-      present: !!String(fireux.id || '').trim(),
+      present: hasText(fireux.id),
     },
     {
       key: 'fireux.name',
-      present: !!String(fireux.name || '').trim(),
+      present: hasText(fireux.name),
     },
     {
       key: 'fireux.shortName',
-      present: !!String(fireux.shortName || '').trim(),
+      present: hasText(fireux.shortName),
     },
     {
       key: 'fireux.domain',
-      present: !!String(fireux.domain || '').trim(),
+      present: hasText(fireux.domain),
     },
   ]
 
   const optionalClient = [
     {
       key: 'firebaseApp.measurementId',
-      present: !!String(firebaseApp.measurementId || '').trim(),
+      present: hasText(firebaseApp.measurementId),
     },
     {
       key: 'fireux.primaryColor',
       present:
-        !!String(fireux.primaryColor || '').trim() ||
-        !!String(publicRuntime.primaryColor || '').trim() ||
-        !!String(appConfigColors.primary || '').trim(),
+        hasText(fireux.primaryColor) ||
+        hasText(publicRuntime.primaryColor) ||
+        hasText(appConfigColors.primary),
     },
     {
       key: 'fireux.neutralColor',
       present:
-        !!String(fireux.neutralColor || '').trim() ||
-        !!String(publicRuntime.neutralColor || '').trim() ||
-        !!String(appConfigColors.neutral || '').trim(),
+        hasText(fireux.neutralColor) ||
+        hasText(publicRuntime.neutralColor) ||
+        hasText(appConfigColors.neutral),
     },
     {
       key: 'fireux.secondaryColor',
       present:
-        !!String(fireux.secondaryColor || '').trim() ||
-        !!String(publicRuntime.secondaryColor || '').trim() ||
-        !!String(appConfigColors.secondary || '').trim(),
+        hasText(fireux.secondaryColor) ||
+        hasText(publicRuntime.secondaryColor) ||
+        hasText(appConfigColors.secondary),
     },
   ]
 
@@ -384,72 +334,6 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
   }
   if (env.GOOGLE_APPLICATION_CREDENTIALS) {
     serviceAccountPaths.add(env.GOOGLE_APPLICATION_CREDENTIALS)
-  }
-  if (ecosystem) {
-    serviceAccountPaths.add(
-      join(
-        repoRoot,
-        'packages',
-        'ecosystem',
-        `fireux-${ecosystem}`,
-        'src',
-        'config',
-        'firebase',
-        'service-account.json'
-      )
-    )
-    serviceAccountPaths.add(
-      join(
-        repoRoot,
-        'packages',
-        'ecosystem',
-        ecosystem,
-        'src',
-        'config',
-        'firebase',
-        'service-account.json'
-      )
-    )
-    serviceAccountPaths.add(
-      join(
-        repoRoot,
-        'packages',
-        'tenants',
-        `fireux-${ecosystem}`,
-        'config',
-        'service-account.json'
-      )
-    )
-    serviceAccountPaths.add(
-      join(
-        repoRoot,
-        'packages',
-        'tenants',
-        ecosystem,
-        'config',
-        'service-account.json'
-      )
-    )
-    serviceAccountPaths.add(
-      join(
-        repoRoot,
-        'projects',
-        ecosystem,
-        `${ecosystem}-app`,
-        'config',
-        'service-account.json'
-      )
-    )
-    serviceAccountPaths.add(
-      join(
-        repoRoot,
-        'projects',
-        ecosystem,
-        `fireux-${ecosystem}-app`,
-        'config',
-        'service-account.json'
-      )
-    )
   }
   let detectedServiceAccountPath: string | undefined
   const serverAuthFile = Array.from(serviceAccountPaths).some((candidate) => {
@@ -481,54 +365,16 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
   const presentOptionalClient = optionalClient.filter((entry) => entry.present)
 
   // Brand asset checks
-  const resolveBrandAsset = createBrandAssetResolver(
-    repoRoot,
-    ecosystem,
-    appNamespace
-  )
-  const brandNamespace = (appNamespace || ecosystem || 'fireux').trim()
+  const resolveBrandAsset = createCurrentAppAssetResolver()
   const brandRequirements: Array<{
     name: string
     path: string
     dimensions: AppAssetDimensionConstraints
-  }> =
-    brandNamespace === 'fireux'
-      ? [
-          {
-            name: 'logo',
-            path: 'img/core/brand/logo.png',
-            dimensions: {
-              requiredWidth: 512,
-              requiredHeight: 512,
-              acceptedTypes: ['png'],
-            },
-          },
-          {
-            name: 'wordmark-light',
-            path: 'img/core/brand/wordmark-light.png',
-            dimensions: {
-              minWidth: 256,
-              minHeight: 64,
-              minAspect: 3,
-              acceptedTypes: ['png'],
-            },
-          },
-          {
-            name: 'wordmark-dark',
-            path: 'img/core/brand/wordmark-dark.png',
-            dimensions: {
-              minWidth: 256,
-              minHeight: 64,
-              minAspect: 3,
-              acceptedTypes: ['png'],
-            },
-          },
-        ]
-      : APP_PUBLIC_ASSET_REQUIREMENTS.map((asset) => ({
-          name: appAssetCheckName(asset.localRelativePath),
-          path: asset.localRelativePath,
-          dimensions: asset.dimensions,
-        }))
+  }> = APP_PUBLIC_ASSET_REQUIREMENTS.map((asset) => ({
+    name: appAssetCheckName(asset.localRelativePath),
+    path: asset.localRelativePath,
+    dimensions: asset.dimensions,
+  }))
 
   // Check brand assets at the app-level paths only (public/img/app/*) to match figma-export guidance.
   const brandAssets: BrandAssetCheck[] = brandRequirements.map((asset) =>
@@ -546,7 +392,7 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
   const warnings: string[] = []
   if (!serverAuthConfigured) {
     warnings.push(
-      'Firebase Admin not configured (FIREBASE_SERVICE_ACCOUNT, split keys, or ecosystem service-account file). SSR/admin features will be limited.'
+      'Firebase Admin not configured (FIREBASE_SERVICE_ACCOUNT, split keys, FIREBASE_SERVICE_ACCOUNT_FILE, or GOOGLE_APPLICATION_CREDENTIALS). SSR/admin features will be limited.'
     )
   }
   // Stripe warnings removed for core onboarding; handled in products module.
@@ -597,13 +443,11 @@ export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
     notes: [
       'Role is enforced by Nuxt config (createFireuxConfig) and is not checked here.',
       'Runtime config and env values are fixed and non-editable via UI.',
-      brandNamespace === 'fireux'
-        ? 'Brand asset validation checks /img/core/brand/ for required files and dimensions.'
-        : 'Brand asset validation checks /img/app/ for required files and dimensions.',
+      'Brand asset validation checks this app only: public/img/app/. Shared core or ecosystem assets do not count.',
       ...(detectedServiceAccountPath
         ? [`Service account file detected at ${detectedServiceAccountPath}.`]
         : [
-            'Admin SDK detection checks FIREBASE_SERVICE_ACCOUNT(_FILE), project service-account paths, or packages/ecosystem/fireux-<ecosystem>/src/config/firebase/service-account.json.',
+            'Admin SDK detection checks only explicit configuration: FIREBASE_SERVICE_ACCOUNT, split keys, FIREBASE_SERVICE_ACCOUNT_FILE, or GOOGLE_APPLICATION_CREDENTIALS.',
           ]),
     ],
 

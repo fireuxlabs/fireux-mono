@@ -7,7 +7,6 @@ type AnyRecord = Record<string, unknown>
 
 export type RuntimeSitemapEntity = {
   entityKey: string
-  indexCollectionPath: string
   canonicalCollectionPath: string
   routePrefix: string
   slugField: string
@@ -39,9 +38,8 @@ function toEntityList(value: unknown): RuntimeSitemapEntity[] {
     if (!raw || typeof raw !== 'object' || Array.isArray(raw)) continue
     const entry = raw as Record<string, unknown>
     const entityKey = String(entry.entityKey ?? '').trim()
-    const indexCollectionPath = String(entry.indexCollectionPath ?? '').trim()
     const canonicalCollectionPath = String(entry.canonicalCollectionPath ?? '').trim()
-    if (!entityKey || (!indexCollectionPath && !canonicalCollectionPath)) continue
+    if (!entityKey || !canonicalCollectionPath) continue
     const pageSizeRaw = Number(entry.pageSize ?? 5000)
     const pageSize = Number.isFinite(pageSizeRaw)
       ? Math.max(100, Math.min(10000, Math.trunc(pageSizeRaw)))
@@ -57,7 +55,6 @@ function toEntityList(value: unknown): RuntimeSitemapEntity[] {
         : String(entry.publicField ?? 'isPublic').trim() || 'isPublic'
     out.push({
       entityKey,
-      indexCollectionPath,
       canonicalCollectionPath,
       routePrefix,
       slugField,
@@ -165,26 +162,8 @@ export function setSitemapResponseHeaders(
   })
 }
 
-export async function countPublicEntityIndexDocs(entity: RuntimeSitemapEntity): Promise<number> {
-  const canonicalCount = await countPublicCanonicalDocs(entity)
-  if (canonicalCount > 0) return canonicalCount
-
-  // Transitional fallback: use legacy seo_index_* projections until each entity
-  // is fully migrated to canonical collection reads.
-  if (!entity.indexCollectionPath) return 0
-  try {
-    const db = getRuntimeFirestore()
-    const snap = await db
-      .collection(entity.indexCollectionPath)
-      .where('isPublic', '==', true)
-      .count()
-      .get()
-
-    const count = Number((snap.data() as any)?.count ?? 0)
-    return Number.isFinite(count) ? Math.max(0, Math.trunc(count)) : 0
-  } catch {
-    return 0
-  }
+export async function countPublicEntitySitemapDocs(entity: RuntimeSitemapEntity): Promise<number> {
+  return countPublicCanonicalDocs(entity)
 }
 
 export type SitemapIndexEntry = {
@@ -313,45 +292,18 @@ async function fetchCanonicalEntitySitemapPage(
   return out
 }
 
-async function fetchLegacyEntitySitemapPage(
-  entity: RuntimeSitemapEntity,
-  page: number
-): Promise<SitemapIndexEntry[]> {
-  if (!entity.indexCollectionPath) return []
-  const pageSize = entity.pageSize || 5000
-  const offset = Math.max(0, (page - 1) * pageSize)
-  const db = getRuntimeFirestore()
-
-  const snap = await db
-    .collection(entity.indexCollectionPath)
-    .where('isPublic', '==', true)
-    .orderBy('__name__')
-    .offset(offset)
-    .limit(pageSize)
-    .get()
-
-  const out: SitemapIndexEntry[] = []
-  for (const doc of snap.docs) {
-    const data = (doc.data() || {}) as Record<string, unknown>
-    const rawPath = typeof data.path === 'string' ? data.path : ''
-    const path = normalizePath(rawPath)
-    if (!path) continue
-    const lastmod = toIsoString(data[entity.updatedAtField])
-    out.push(lastmod ? { path, lastmod } : { path })
-  }
-
-  return out
-}
-
 export async function fetchEntitySitemapPage(
   entity: RuntimeSitemapEntity,
   page: number
 ): Promise<SitemapIndexEntry[]> {
   try {
-    const canonicalEntries = await fetchCanonicalEntitySitemapPage(entity, page)
-    if (canonicalEntries.length) return canonicalEntries
+    return await fetchCanonicalEntitySitemapPage(entity, page)
   } catch {
-    // Transitional fallback path below.
+    if (import.meta.dev) {
+      console.warn(
+        `[seo-sitemaps] Failed to read canonical sitemap page for ${entity.entityKey}`
+      )
+    }
+    return []
   }
-  return fetchLegacyEntitySitemapPage(entity, page)
 }

@@ -183,6 +183,18 @@ function walkFiles(rootDir, exts = SCAN_EXTS) {
   return out
 }
 
+function isDevOrMigrationRuntimeFile(repoRoot, file) {
+  const rel = toRepoRelative(repoRoot, file)
+  return (
+    rel.includes('/runtime/composables/dev/') ||
+    rel.includes('/runtime/components/dev/') ||
+    rel.includes('/runtime/pages/dev/') ||
+    rel.includes('/scripts/migrations/') ||
+    rel.includes('/migrations/') ||
+    /(^|\/)migrate[-_]/.test(rel)
+  )
+}
+
 function walkDirs(rootDir) {
   const out = []
   const stack = [rootDir]
@@ -767,6 +779,18 @@ export async function run(ctx) {
   const reBackCompat = /Back-compat shim/gi
   const reLegacyProductPath = /firestore\/products\/product/gi
   const reUppercaseObjectImport = /firestore\/objects\/[A-Z]/g
+  const forbiddenRuntimeSmells = [
+    { label: 'fallback chain', re: /fallback chain/gi },
+    { label: 'legacy route', re: /legacy route/gi },
+    { label: 'old-shape', re: /old[- ]shape/gi },
+    { label: 'try old path', re: /try old path/gi },
+    { label: 'Core brand fallback asset export', re: /CORE_BRAND_FALLBACK_ASSETS/g },
+    { label: 'fallbackDescription helper', re: /fallbackDescription/g },
+    { label: 'Clearbit logo provider', re: /logo\.clearbit\.com/gi },
+    { label: 'Unavatar logo provider', re: /unavatar\.io/gi },
+    { label: 'Google favicon provider', re: /google\.com\/s2\/favicons/gi },
+    { label: 'Picsum placeholder provider', re: /picsum\.photos/gi },
+  ]
 
   for (const file of files) {
     let raw = ''
@@ -798,6 +822,20 @@ export async function run(ctx) {
       violations.push(
         `- Uppercase object path segment in ${toRepoRelative(repoRoot, file)}:${line} ("${hit.match}")`
       )
+    }
+
+    if (!isDevOrMigrationRuntimeFile(repoRoot, file)) {
+      for (const smell of forbiddenRuntimeSmells) {
+        for (const hit of findAllMatches(raw, smell.re)) {
+          const { line } = lineInfo(raw, hit.index)
+          violations.push(
+            `- Forbidden fallback/legacy runtime smell "${smell.label}" in ${toRepoRelative(
+              repoRoot,
+              file
+            )}:${line}`
+          )
+        }
+      }
     }
   }
 

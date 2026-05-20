@@ -8,7 +8,7 @@ import {
   asStringArray,
   asTrimmedString,
   buildPublicPath,
-  fallbackDescription,
+  resolvePublicDescription,
   toIsoUpdatedAt,
 } from '../../utils/public-projection/public-dto.helpers'
 import type {
@@ -65,7 +65,7 @@ function mapUserDocToDto(
       : userIsPublic(data, handle)
 
   const title = displayName
-  const description = fallbackDescription(bio, `Public profile for ${displayName}.`)
+  const description = resolvePublicDescription(bio, `Public profile for ${displayName}.`)
   const path = buildPublicPath('/users', handle)
   const updatedAt = toIsoUpdatedAt(
     data.updatedAt || (data.updated as any)?.at || data.updated_at || data.createdAt

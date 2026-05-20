@@ -1,7 +1,7 @@
 import { defineEventHandler } from 'h3'
 import {
   absoluteUrl,
-  countPublicEntityIndexDocs,
+  countPublicEntitySitemapDocs,
   escapeXml,
   readRuntimeSeoSitemaps,
   setSitemapResponseHeaders,
@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   const sitemapEntries = [absoluteUrl(siteUrl, '/sitemaps/static.xml')]
 
   for (const entity of entities) {
-    const count = await countPublicEntityIndexDocs(entity)
+    const count = await countPublicEntitySitemapDocs(entity)
     if (count <= 0) continue
 
     const pages = Math.ceil(count / entity.pageSize)

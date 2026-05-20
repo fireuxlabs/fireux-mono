@@ -4,7 +4,6 @@
 
 import { arrayUnion, doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserEnsure'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
@@ -18,7 +17,6 @@ export function useAgentCreate() {
   const { setDocument } = useFirestoreCreate()
   const { updateDocument } = useFirestoreUpdate()
   const { ensureUser } = useUserEnsure()
-  const { upsertSeoIndexDoc } = useSeoIndexWrite()
 
   async function ensureAgentProfile(): Promise<{
     createdCore: boolean
@@ -73,11 +71,6 @@ export function useAgentCreate() {
         createdApp = true
       }
     }
-
-    await upsertSeoIndexDoc('seo_index_agents', uid, {
-      path: `/agents/${uid}`,
-      isPublic: true,
-    })
 
     if (agentConfig.id) {
       try {

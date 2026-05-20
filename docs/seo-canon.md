@@ -1,6 +1,6 @@
 # SEO Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-03-31
+Updated: 2026-05-20
 ## Purpose
 - Define repo-wide SEO requirements for public FireUX entities and pages.
 
@@ -41,6 +41,11 @@ Updated: 2026-03-31
 - Sitemap is generated from published canonical public entities only.
 - Exclude admin, console, auth-only, and draft routes.
 - Public URLs in sitemap must use canonical slug routes where defined.
+- Runtime sitemap entity pages must read canonical public collection data.
+- `seo_index_*` projection collections are not sitemap fallback truth.
+- If a canonical collection/path is missing, skip that entity explicitly instead of reading an old projection collection.
+- Runtime mutation seams should not write `seo_index_*` records.
+- SEO projections may exist later only as deliberate generated output for a named feature, not as silent route truth.
 
 ## Extension Responsibility Pattern
 - Each extension with public pages must expose:
@@ -51,14 +56,15 @@ Updated: 2026-03-31
 ## Conflicts Resolved
 - Current permissive robots files do not define canon; this file defines intended indexing rules.
 - Console/admin indexing policy is canonicalized here and must be enforced in runtime/config changes in follow-up work.
+- Older server-projection notes allowed non-migrated entities to fall back to `seo_index_*`; that is no longer canon.
 
 ## TBD Decisions (Deano)
 - Slug rollout scope for currently id-based public entities (jobs/places/companies/kitchens):
   - Default: phase by extension
   - Note: products/blog already slug-first
 - SEO enforcement timing:
-  - Default: after Kitchen MVP polish (next sprint after console stability)
-  - Includes: robots/meta noindex, sitemap, JSON-LD helpers, canonical URLs
+  - Default: after sitemap fallback cleanup and active public surface inventory
+  - Includes: robots/meta noindex, JSON-LD helpers, canonical URLs, and per-extension public DTO/read plans
 - Tier3 AI memory location:
   - Default: keep Tier3 memory under `docs/ai/**`
   - Tier3 memory is tracked for auditability but is non-authoritative

@@ -8,7 +8,7 @@ import {
   asStringArray,
   asTrimmedString,
   buildPublicPath,
-  fallbackDescription,
+  resolvePublicDescription,
   toIsoUpdatedAt,
 } from '../../../utils/public-projection/public-dto.helpers'
 import type {
@@ -66,7 +66,7 @@ function mapUserDocToDto(
     bio,
     profiles: asStringArray(data.profiles),
     title: displayName,
-    description: fallbackDescription(bio, `Public profile for ${displayName}.`),
+    description: resolvePublicDescription(bio, `Public profile for ${displayName}.`),
     path: buildPublicPath('/users', handle),
     image: avatar || undefined,
     updatedAt: toIsoUpdatedAt(

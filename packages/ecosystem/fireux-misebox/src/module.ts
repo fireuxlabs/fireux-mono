@@ -2,7 +2,6 @@ import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 import { configureFireuxEcosystemModule } from 'fireux-core/config/module/ecosystem-wiring'
 import type { FireuxSeoExtendContext } from 'fireux-core/config/app/seo'
-import type { FireuxSeoSitemapsExtendContext } from 'fireux-core/config/app/seo'
 import { ecosystemConfig } from './config/firebase/ecosystem.config'
 import { configureComponents } from './config/module/components-config'
 import { configureImports } from './config/module/imports-config'
@@ -20,12 +19,6 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
     const resolver = createResolver(import.meta.url)
     nuxt.hook('fireux:seo:extend' as any, (ctx: FireuxSeoExtendContext) => {
       ctx.addHub('/recipes')
-    })
-    nuxt.hook('fireux:seo:sitemaps:extend' as any, (ctx: FireuxSeoSitemapsExtendContext) => {
-      ctx.addEntity({
-        entityKey: 'recipes',
-        indexCollectionPath: 'seo_index_recipes',
-      })
     })
     configureFireuxEcosystemModule(resolver, nuxt, {
       ecosystem: ecosystemConfig,

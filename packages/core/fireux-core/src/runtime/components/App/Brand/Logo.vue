@@ -16,7 +16,7 @@
 import { computed, ref, watch } from 'vue'
 import { useResolvedColorMode } from '../../../composables/fireux/app/useColorMode'
 import { useFireuxBrandAssets } from '../../../composables/fireux/app/useFireuxBrandAssets'
-import { CORE_BRAND_FALLBACK_ASSETS } from '../../../../utils/brandAssets'
+import { CORE_BRAND_DEFAULT_ASSETS } from '../../../../utils/brandAssets'
 
 type BrandSize = 'small' | 'medium' | 'large' | 'hero'
 
@@ -48,7 +48,7 @@ const failedSrcs = ref<string[]>([])
 const displaySrc = computed(() => {
   if (!failedSrcs.value.includes(resolvedSrc.value)) return resolvedSrc.value
   if (!failedSrcs.value.includes(baseSrc.value)) return baseSrc.value
-  return CORE_BRAND_FALLBACK_ASSETS.logo
+  return CORE_BRAND_DEFAULT_ASSETS.logo
 })
 
 watch([resolvedSrc, baseSrc], () => {
@@ -56,7 +56,7 @@ watch([resolvedSrc, baseSrc], () => {
 })
 
 function handleError() {
-  if (displaySrc.value === CORE_BRAND_FALLBACK_ASSETS.logo) return
+  if (displaySrc.value === CORE_BRAND_DEFAULT_ASSETS.logo) return
   failedSrcs.value = [...failedSrcs.value, displaySrc.value]
 }
 

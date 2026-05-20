@@ -1,7 +1,6 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import type { BlogPost, BlogPostEntry } from '../../../../../models/blogPost.model'
@@ -43,7 +42,6 @@ export const BlogStampOptions = {
 export function useBlogCreate() {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
-  const { upsertSeoIndexDoc } = useSeoIndexWrite()
 
   async function createBlogPost(
     payload: BlogPostEntry,
@@ -82,10 +80,6 @@ export function useBlogCreate() {
 
     await setDocument<BlogPost>('blogs', validatedSlug, data as BlogPost, {
       creator: true,
-    })
-    await upsertSeoIndexDoc('seo_index_blogs', validatedSlug, {
-      path: `/blog/${validatedSlug}`,
-      isPublic: true,
     })
 
     return true

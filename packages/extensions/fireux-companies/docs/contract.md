@@ -45,4 +45,4 @@ References: `docs/fireux-canon.md`, `docs/runtime-contract.md`, `docs/seo-canon.
 
 ## 10) Non-goals / prohibited fallbacks
 - No silent fallback selection between company ids.
-- No undocumented fallback chains for identity/routing decisions.
+- No undocumented fallback paths for identity/routing decisions.

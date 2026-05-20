@@ -6,8 +6,6 @@ const LOGO_ENDPOINT = '/api/places/logo'
 const DETAILS_ENDPOINT = '/api/places/details'
 
 const LOG_PREFIX = '[places][logos]'
-const MAX_LOGO_RETRIES = 3
-const RETRY_DELAY_MS = 80
 const DETAILS_TIMEOUT_MS = 4000
 
 const logoResultCache = new Map<string, string | null>()
@@ -38,7 +36,6 @@ export interface UsePlaceLogoStateOptions {
   timeoutMs?: number
   autoHydrate?: boolean
   priority?: boolean
-  retryOnEmpty?: boolean
   shouldHydrate?: (
     place: PlaceLogoTarget,
     currentAvatar: SanitizedAvatar
@@ -69,7 +66,6 @@ export function usePlaceLogoState(
   options: UsePlaceLogoStateOptions = {}
 ): PlaceLogoState {
   const timeoutMs = options.timeoutMs ?? DEFAULT_LOGO_TIMEOUT_MS
-  const retryOnEmpty = options.retryOnEmpty ?? true
   const autoHydrate = options.autoHydrate ?? true
   const basePriority = options.priority ?? false
   const emptyMessage = options.emptyMessage ?? null
@@ -143,19 +139,9 @@ export function usePlaceLogoState(
     }
 
     try {
-      const attemptOptions = buildAttemptOptions(
-        baseOptions,
-        overrides.forceReload ?? false,
-        retryOnEmpty
-      )
-
-      const { sanitized, aborted } = await executeLogoAttempts(
-        target,
-        attemptOptions,
-        token,
-        () => requestToken
-      )
-      if (aborted) return avatar.value
+      const logo = await loadLogoForPlace(toLogoCard(target), baseOptions)
+      if (token !== requestToken) return avatar.value
+      const sanitized = sanitizeLogoAvatar(logo)
 
       avatar.value = sanitized
       hasAttempted.value = true
@@ -255,47 +241,6 @@ function formatLogoError(error: unknown): string {
   }
 }
 
-function buildAttemptOptions(
-  base: LoadLogoOptions,
-  forceFirst: boolean,
-  retryOnEmpty: boolean
-) {
-  const attempts = retryOnEmpty ? 2 : 1
-  return Array.from({ length: attempts }, (_, index) => {
-    const options: LoadLogoOptions = {
-      ...base,
-    }
-    if (forceFirst || index > 0) {
-      options.forceReload = true
-    }
-    return options
-  })
-}
-
-async function executeLogoAttempts(
-  place: PlaceLogoTarget,
-  optionsList: LoadLogoOptions[],
-  expectedToken: number,
-  getToken: () => number
-): Promise<{ sanitized: string | null; aborted: boolean }> {
-  for (const options of optionsList) {
-    const logo = await loadLogoForPlace(toLogoCard(place), options)
-    if (expectedToken !== getToken()) {
-      return { sanitized: null, aborted: true }
-    }
-    const sanitized = sanitizeLogoAvatar(logo)
-    if (sanitized) {
-      return { sanitized, aborted: false }
-    }
-  }
-
-  if (expectedToken !== getToken()) {
-    return { sanitized: null, aborted: true }
-  }
-
-  return { sanitized: null, aborted: false }
-}
-
 interface PlaceDetailsResult {
   website?: string | null
   url?: string | null
@@ -308,7 +253,6 @@ interface LoadLogoOptions {
   priority?: boolean
   forceReload?: boolean
   timeoutMs?: number
-  fallbackAvatar?: string | null
 }
 
 export async function loadLogoForPlace(
@@ -395,7 +339,6 @@ export async function loadLogoForPlace(
     })
 
   const timeoutMs = options.timeoutMs ?? null
-  const fallbackAvatar = options.fallbackAvatar ?? (timeoutMs ? '' : null)
   let timeoutId: ReturnType<typeof setTimeout> | null = null
 
   const shouldApplyTimeout =
@@ -409,21 +352,16 @@ export async function loadLogoForPlace(
         new Promise<string | null>((resolve) => {
           timeoutId = setTimeout(() => {
             if (logoAbortControllers.get(placeId) === controller) {
-              const appliedFallback = fallbackAvatar ?? null
               logEvent('fetch:timeout', {
                 placeId,
                 requestId,
                 timeoutMs,
               })
               cancelLogoRequest(placeId, 'timeout')
-              if (appliedFallback) {
-                logoResultCache.set(placeId, appliedFallback)
-              } else {
-                logoResultCache.delete(placeId)
-              }
-              resolve(appliedFallback)
+              logoResultCache.delete(placeId)
+              resolve(null)
             } else {
-              resolve(fallbackAvatar ?? null)
+              resolve(null)
             }
           }, timeoutMs)
         }),
@@ -474,45 +412,19 @@ async function fetchLogo(
   placeId: string,
   signal?: AbortSignal
 ): Promise<string | null> {
-  for (let attempt = 1; attempt <= MAX_LOGO_RETRIES; attempt++) {
-    const attemptStart = performanceNow()
-    const allowDetails = attempt === 1
-    logEvent('fetch:attempt', {
-      placeId,
-      attempt,
-      allowDetails,
-    })
+  const attemptStart = performanceNow()
+  logEvent('fetch:attempt', { placeId })
 
-    try {
-      const url = await attemptLogoFetch(
-        place,
-        placeId,
-        signal,
-        allowDetails,
-        attemptStart
-      )
-      if (url) {
-        return url
-      }
-    } catch (error) {
-      if (isAbortError(error)) {
-        logEvent('fetch:attempt-abort', { placeId, attempt })
-        return null
-      }
-      logEvent('fetch:attempt-exception', { placeId, attempt, error })
+  try {
+    return await attemptLogoFetch(place, placeId, signal, attemptStart)
+  } catch (error) {
+    if (isAbortError(error)) {
+      logEvent('fetch:attempt-abort', { placeId })
+      return null
     }
-
-    if (attempt < MAX_LOGO_RETRIES) {
-      logEvent('fetch:retry-schedule', {
-        placeId,
-        attempt,
-        delayMs: RETRY_DELAY_MS * attempt,
-      })
-      await delay(RETRY_DELAY_MS * attempt)
-    }
+    logEvent('fetch:attempt-exception', { placeId, error })
+    return null
   }
-
-  return null
 }
 
 async function resolveWebsite(
@@ -627,30 +539,25 @@ async function attemptLogoFetch(
   place: PlaceCard.Card,
   placeId: string,
   signal: AbortSignal | undefined,
-  allowDetails: boolean,
   attemptStart: number
 ): Promise<string | null> {
   logEvent('fetch:request-build', {
     placeId,
     formattedAddress: sanitizeLogValue(place.formattedAddress),
     hasSignal: !!signal,
-    allowDetails,
   })
 
-  const hint = allowDetails
-    ? await resolveWebsite(placeId, signal, DETAILS_TIMEOUT_MS)
-    : null
+  const hint = await resolveWebsite(placeId, signal, DETAILS_TIMEOUT_MS)
 
   logEvent('fetch:hint', {
     placeId,
     website: sanitizeLogValue(hint?.website),
     url: sanitizeLogValue(hint?.url),
-    allowDetails,
     waitedMs: roundDuration(performanceNow() - attemptStart),
   })
 
   const logoUrl = new URL(LOGO_ENDPOINT, window.location.origin)
-  applyLogoSearchParams(logoUrl.searchParams, place, hint)
+  applyLogoSearchParams(logoUrl.searchParams, hint)
 
   try {
     const res = await fetch(logoUrl.toString(), {
@@ -684,41 +591,11 @@ async function attemptLogoFetch(
 
 function applyLogoSearchParams(
   params: URLSearchParams,
-  place: PlaceCard.Card,
   hint: PlaceDetailsResult | null
 ) {
-  params.set('q', place.name)
-
-  type Candidate = { key: 'website' | 'domain'; value: string | null }
-  const candidates: Candidate[] = []
-
   if (hint?.website) {
-    candidates.push({ key: 'website', value: hint.website })
-  } else if (hint?.url) {
-    candidates.push({ key: 'domain', value: extractDomain(hint.url) })
+    params.set('website', hint.website)
   }
-
-  candidates.push(
-    { key: 'domain', value: extractDomain(place.formattedAddress) },
-    { key: 'domain', value: extractDomain(place.name) }
-  )
-
-  for (const candidate of candidates) {
-    if (candidate.value) {
-      params.set(candidate.key, candidate.value)
-      break
-    }
-  }
-}
-
-function delay(ms: number) {
-  return new Promise<void>((resolve) => {
-    if (ms <= 0) {
-      resolve()
-      return
-    }
-    setTimeout(resolve, ms)
-  })
 }
 
 function mergeSignals(
@@ -738,21 +615,6 @@ function mergeSignals(
     signal.addEventListener('abort', onAbort, { once: true })
   }
   return controller.signal
-}
-
-function extractDomain(input?: string | null): string | null {
-  if (!input) return null
-  const normalized = normalizeUrl(input)
-  if (normalized) {
-    try {
-      const url = new URL(normalized)
-      if (url.hostname) return url.hostname
-    } catch {
-      // ignore
-    }
-  }
-  const match = /\b([a-z0-9-]+(?:\.[a-z0-9-]+)+)\b/i.exec(input)
-  return match ? match[1] : null
 }
 
 function normalizeUrl(value?: string | null): string | null {

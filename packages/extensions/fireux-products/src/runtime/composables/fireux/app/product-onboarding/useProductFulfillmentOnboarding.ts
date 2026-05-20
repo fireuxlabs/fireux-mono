@@ -53,19 +53,6 @@ export const onboardingAssetSpecs: Array<{
   },
 ]
 
-const randomTestImageByAsset: Record<AssetKey, string> = {
-  onboardingAssetLogo: 'https://picsum.photos/seed/fireux-logo/800/800',
-  onboardingAssetWordmarkLight:
-    'https://picsum.photos/seed/fireux-wordmark-light/1600/400',
-  onboardingAssetWordmarkDark:
-    'https://picsum.photos/seed/fireux-wordmark-dark/1600/400',
-  onboardingAssetCover: 'https://picsum.photos/seed/fireux-cover/1600/900',
-  onboardingAssetThumbnail:
-    'https://picsum.photos/seed/fireux-thumbnail/1200/1200',
-  onboardingAssetPwa192: 'https://picsum.photos/seed/fireux-pwa-192/192/192',
-  onboardingAssetPwa512: 'https://picsum.photos/seed/fireux-pwa-512/512/512',
-}
-
 export function useProductFulfillmentOnboarding(
   productRef?: Ref<Partial<FirebaseProduct> | undefined>
 ) {
@@ -187,12 +174,6 @@ export function useProductFulfillmentOnboarding(
     ctaHref.value = '/buy'
   }
 
-  const applyRandomTestAssets = () => {
-    onboardingAssetSpecs.forEach((spec) => {
-      assetDataByKey[spec.key].value = randomTestImageByAsset[spec.key]
-    })
-  }
-
   return {
     onboardingAssetSpecs,
     assetDataByKey,
@@ -215,6 +196,5 @@ export function useProductFulfillmentOnboarding(
     requiredContentComplete,
     appCreationPayload,
     applySampleContent,
-    applyRandomTestAssets,
   }
 }

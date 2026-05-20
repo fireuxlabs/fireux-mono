@@ -1,6 +1,6 @@
 # FireUX Progress Roadmap
 Authority: Tier2 (Operational roadmap)
-Updated: 2026-05-19
+Updated: 2026-05-20
 
 Purpose: keep multi-app FireUX work focused while the canon is turned into working product surfaces. Canon is mostly established; the next phase is aligning active apps against it while closing visible product gaps.
 
@@ -68,6 +68,7 @@ This pattern can serve La Tap Berne, Bären Ringgenberg, Sproochli, BuenoHost, F
 6. Data seeding/migration.
 7. Smoke testing/deploys.
 8. SEO/meta/public discovery.
+9. SEO runtime honesty: canonical sitemap data first, no old projection fallback.
 
 ## Next 2 Weeks
 
@@ -99,6 +100,12 @@ Apply the chosen pattern to the highest-priority app first. Current default is C
 
 Output: one demonstrable surface that proves the pattern.
 
+### Batch 5: SEO Canon Closure
+
+Remove silent SEO fallback paths before expanding SEO features.
+
+Output: sitemap runtime reads canonical public entity data only; each public extension either declares canonical sitemap reads or stays out of entity sitemap generation until it is ready.
+
 ## Decision Rules
 
 - Do not solve the same class of problem app-locally in multiple apps.
@@ -106,7 +113,8 @@ Output: one demonstrable surface that proves the pattern.
 - Prefer thin app pages over duplicated domain logic.
 - Public/SEO work should follow a believable demo surface.
 - Demo/read-only/live state must be visible and unavoidable where applicable.
-- Missing required data should be explicit, not hidden by fallback chains.
+- Missing required data should be explicit, not hidden by fallback paths.
+- Sitemap data must come from canonical public records, not `seo_index_*` fallback collections.
 - Hosted endpoint before iframe.
 - Iframe before API.
 - Take over an existing website only if access/domain handover is realistic.
@@ -131,9 +139,10 @@ Keep this balanced against the architecture priority:
 3. Misebox / Kitchen proof app.
 4. Supplier-lite support if needed by Kitchen.
 5. Public menu/demo polish.
-6. SEO/meta/public discovery.
-7. Granite / Portfolio proof.
-8. Buenohost / Sproochli alignment.
+6. SEO runtime honesty and public surface inventory.
+7. SEO/meta/public discovery.
+8. Granite / Portfolio proof.
+9. Buenohost / Sproochli alignment.
 
 ## Parking List
 
@@ -142,6 +151,7 @@ Use this list for good ideas that are not in the current core lane, proof app, o
 - Full supplier app.
 - Granite implementation beyond pattern validation.
 - SEO/public metadata expansion beyond demo readiness.
+- Per-extension canonical sitemap reads for Products, Blog, Jobs, Kitchens, Places, Companies, Suppliers, and profile directories.
 - Jobs application workflow beyond shared entity/create/edit/publish alignment.
 - Marketplace/profile mechanics before public profile surfaces exist.
 - Custom API integration before a hosted endpoint and iframe option are proven.

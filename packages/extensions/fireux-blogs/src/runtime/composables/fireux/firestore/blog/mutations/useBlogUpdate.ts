@@ -1,11 +1,9 @@
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate.ts'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import type { BlogPost } from '../../../../../models/blogPost.model'
 
 export function useBlogUpdate() {
   const { updateDocument } = useFirestoreUpdate()
-  const { upsertSeoIndexDoc } = useSeoIndexWrite()
 
   async function updateBlogPost(
     postId: string,
@@ -41,10 +39,6 @@ export function useBlogUpdate() {
     ) as Partial<BlogPost>
 
     await updateDocument('blogs', blogPostId, nextUpdates)
-    await upsertSeoIndexDoc('seo_index_blogs', blogPostId, {
-      path: `/blog/${blogPostId}`,
-      isPublic: true,
-    })
     if (import.meta.dev) {
       console.log(`✅ Blog post updated successfully: ${blogPostId}`)
     }

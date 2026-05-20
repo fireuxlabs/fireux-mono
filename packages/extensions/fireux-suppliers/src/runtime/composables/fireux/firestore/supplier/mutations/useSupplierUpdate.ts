@@ -4,7 +4,6 @@ import {
   resolveConsoleEntityCollectionPath,
   type ConsoleEntityRuntimeMode,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import type { AppSupplier, Supplier } from '../../../../../models/supplier/Supplier.model'
 import type { SupplierRefs } from '../fetch/useSupplierRecord'
@@ -30,7 +29,6 @@ export function useSupplierUpdate(
 ) {
   const { updateDocument } = useFirestoreUpdate()
   const { appId } = useFireUXConfig()
-  const { upsertSeoIndexDoc } = useSeoIndexWrite()
   const hasAppScope = Boolean(appId)
   type UpdateOptions = SupplierUpdateCollectionOptions & {
     id?: string | null
@@ -97,13 +95,6 @@ export function useSupplierUpdate(
    * Update the CORE Supplier record
    * - global document (e.g. suppliers/{uid})
    */
-  const touchSeoIndex = async (resolvedId: string) => {
-    await upsertSeoIndexDoc('seo_index_suppliers', resolvedId, {
-      path: `/suppliers/${resolvedId}`,
-      isPublic: true,
-    })
-  }
-
   const updateCoreSupplier = async (
     patch: Partial<Supplier>,
     options: UpdateOptions = {}
@@ -119,9 +110,6 @@ export function useSupplierUpdate(
       resolvedId,
       pruneUndefined(patch)
     )
-    if (collectionPath === supplierCollection) {
-      await touchSeoIndex(resolvedId)
-    }
   }
 
   const updateAppSupplier = async (

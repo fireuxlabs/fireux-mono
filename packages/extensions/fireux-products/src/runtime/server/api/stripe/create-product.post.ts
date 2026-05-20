@@ -35,8 +35,12 @@ export default defineEventHandler(async (event: H3Event) => {
     }
 
     if (!Stripe) {
-      console.warn('⚠️ [create-product] Stripe SDK not installed, using REST fallback')
+      throw createError({
+        statusCode: 501,
+        statusMessage: 'Stripe SDK not installed',
+      })
     }
+
     const body = await readBody(event)
     const { product, ping } = body
 
@@ -52,78 +56,7 @@ export default defineEventHandler(async (event: H3Event) => {
       console.log('🏓 [create-product] Ping received:', ping)
     }
 
-    const stripe = Stripe
-      ? new Stripe(secret, { apiVersion: STRIPE_API_VERSION })
-      : null
-
-    const stripePost = async (
-      path: string,
-      form: Record<string, string | number | undefined>,
-      idempotencyKey?: string
-    ) => {
-      const params = new URLSearchParams()
-      for (const [key, value] of Object.entries(form)) {
-        if (value === undefined || value === null) continue
-        params.set(key, String(value))
-      }
-      const headers: Record<string, string> = {
-        Authorization: `Bearer ${secret}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Stripe-Version': STRIPE_API_VERSION,
-      }
-      if (idempotencyKey) {
-        headers['Idempotency-Key'] = idempotencyKey
-      }
-      const response = await fetch(`https://api.stripe.com/v1/${path}`, {
-        method: 'POST',
-        headers,
-        body: params,
-      })
-      const json = (await response.json()) as Record<string, any>
-      if (!response.ok) {
-        const stripeMessage =
-          typeof json?.error?.message === 'string'
-            ? json.error.message
-            : `Stripe ${path} failed`
-        throw createError({
-          statusCode: 500,
-          statusMessage: stripeMessage,
-        })
-      }
-      return json
-    }
-
-    const stripeGet = async (
-      path: string,
-      query?: Record<string, string | number | undefined>
-    ) => {
-      const url = new URL(`https://api.stripe.com/v1/${path}`)
-      if (query) {
-        for (const [key, value] of Object.entries(query)) {
-          if (value === undefined || value === null) continue
-          url.searchParams.set(key, String(value))
-        }
-      }
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${secret}`,
-          'Stripe-Version': STRIPE_API_VERSION,
-        },
-      })
-      const json = (await response.json()) as Record<string, any>
-      if (!response.ok) {
-        const stripeMessage =
-          typeof json?.error?.message === 'string'
-            ? json.error.message
-            : `Stripe ${path} fetch failed`
-        throw createError({
-          statusCode: 500,
-          statusMessage: stripeMessage,
-        })
-      }
-      return json
-    }
+    const stripe = new Stripe(secret, { apiVersion: STRIPE_API_VERSION })
 
     const appId = String(product.source_app_id || product.appId || 'app').trim()
     const slugValidation = validatePublicSlug(product.slug, {
@@ -144,25 +77,13 @@ export default defineEventHandler(async (event: H3Event) => {
       const allProducts: any[] = []
       let startingAfter: string | undefined
       for (let pageIndex = 0; pageIndex < 20; pageIndex += 1) {
-        let pageData: any[] = []
-        let hasMore = false
-        if (stripe) {
-          const page = await stripe.products.list({
-            active: true,
-            limit: 100,
-            ...(startingAfter ? { starting_after: startingAfter } : {}),
-          })
-          pageData = page.data || []
-          hasMore = Boolean(page.has_more)
-        } else {
-          const page = await stripeGet('products', {
-            active: 'true',
-            limit: 100,
-            ...(startingAfter ? { starting_after: startingAfter } : {}),
-          })
-          pageData = Array.isArray(page.data) ? page.data : []
-          hasMore = Boolean(page.has_more)
-        }
+        const page = await stripe.products.list({
+          active: true,
+          limit: 100,
+          ...(startingAfter ? { starting_after: startingAfter } : {}),
+        })
+        const pageData = page.data || []
+        const hasMore = Boolean(page.has_more)
         allProducts.push(...pageData)
         if (!hasMore || !pageData.length) break
         startingAfter = String(pageData[pageData.length - 1]?.id || '')
@@ -182,55 +103,32 @@ export default defineEventHandler(async (event: H3Event) => {
     if (stripeProduct) {
       console.log('♻️ [create-product] Reusing Stripe product:', stripeProduct.id)
     } else {
-      if (stripe) {
-        stripeProduct = await stripe.products.create(
-          {
-            name: product.name,
-            description: product.description || '',
-            metadata: {
-              appId: product.appId || '',
-              source_app_id: product.source_app_id || product.appId || '',
-              slug,
-            },
+      stripeProduct = await stripe.products.create(
+        {
+          name: product.name,
+          description: product.description || '',
+          metadata: {
+            appId: product.appId || '',
+            source_app_id: product.source_app_id || product.appId || '',
+            slug,
           },
-          {
-            idempotencyKey: `products:${baseIdempotency}`,
-          }
-        )
-      } else {
-        stripeProduct = await stripePost(
-          'products',
-          {
-            name: product.name,
-            description: product.description || '',
-            'metadata[appId]': product.source_app_id || product.appId || '',
-            'metadata[source_app_id]': product.source_app_id || product.appId || '',
-            'metadata[slug]': slug,
-          },
-          `products:${baseIdempotency}`
-        )
-      }
+        },
+        {
+          idempotencyKey: `products:${baseIdempotency}`,
+        }
+      )
       console.log('✅ [create-product] Stripe product created:', stripeProduct.id)
     }
 
     // Create prices if provided
     const stripePrices: Array<{ id: string }> = []
     const existingPricesForProduct = [] as any[]
-    if (stripe) {
-      const list = await stripe.prices.list({
-        product: stripeProduct.id,
-        active: true,
-        limit: 100,
-      })
-      existingPricesForProduct.push(...(list.data || []))
-    } else {
-      const list = await stripeGet('prices', {
-        product: stripeProduct.id,
-        active: 'true',
-        limit: 100,
-      })
-      existingPricesForProduct.push(...(Array.isArray(list.data) ? list.data : []))
-    }
+    const list = await stripe.prices.list({
+      product: stripeProduct.id,
+      active: true,
+      limit: 100,
+    })
+    existingPricesForProduct.push(...(list.data || []))
 
     const findMatchingPrice = (inputPrice: Record<string, any>) =>
       existingPricesForProduct.find((entry) => {
@@ -273,9 +171,8 @@ export default defineEventHandler(async (event: H3Event) => {
           String(price.interval ?? ''),
           String(price.interval_count ?? ''),
         ].join(':')
-        let stripePrice: any
-        if (stripe) {
-          stripePrice = await stripe.prices.create({
+        const stripePrice = await stripe.prices.create(
+          {
             product: stripeProduct.id,
             unit_amount: price.unit_amount,
             currency: priceCurrency,
@@ -288,28 +185,11 @@ export default defineEventHandler(async (event: H3Event) => {
                     interval_count: price.interval_count || 1,
                   }
                 : undefined,
-          }, {
+          },
+          {
             idempotencyKey: priceKey,
-          })
-        } else {
-          const metadataEntries = Object.entries(price.metadata || {})
-          const metadataForm = Object.fromEntries(
-            metadataEntries.map(([key, value]) => [`metadata[${key}]`, value as string])
-          )
-          stripePrice = await stripePost('prices', {
-            product: stripeProduct.id,
-            unit_amount: price.unit_amount,
-            currency: priceCurrency,
-            billing_scheme: price.billing_scheme || 'per_unit',
-            ...(price.type === 'recurring'
-              ? {
-                  'recurring[interval]': price.interval,
-                  'recurring[interval_count]': price.interval_count || 1,
-                }
-              : {}),
-            ...metadataForm,
-          }, priceKey)
-        }
+          }
+        )
         stripePrices.push(stripePrice)
         existingPricesForProduct.push(stripePrice)
         console.log('✅ [create-product] Stripe price created:', stripePrice.id)

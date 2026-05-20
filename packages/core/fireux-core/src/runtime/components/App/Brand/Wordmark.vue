@@ -18,7 +18,7 @@
 import { computed, ref, watch } from 'vue'
 import { useResolvedColorMode } from '../../../composables/fireux/app/useColorMode'
 import { useFireuxBrandAssets } from '../../../composables/fireux/app/useFireuxBrandAssets'
-import { CORE_BRAND_FALLBACK_ASSETS } from '../../../../utils/brandAssets'
+import { CORE_BRAND_DEFAULT_ASSETS } from '../../../../utils/brandAssets'
 
 type BrandSize = 'card' | 'small' | 'medium' | 'large' | 'hero'
 
@@ -52,13 +52,13 @@ const resolvedSrc = computed(() => {
     : brandAssets.value.wordmarkLight
 })
 const failed = ref(false)
-const fallbackSrc = computed(() =>
+const defaultSrc = computed(() =>
   isDark.value
-    ? CORE_BRAND_FALLBACK_ASSETS.wordmarkDark
-    : CORE_BRAND_FALLBACK_ASSETS.wordmarkLight
+    ? CORE_BRAND_DEFAULT_ASSETS.wordmarkDark
+    : CORE_BRAND_DEFAULT_ASSETS.wordmarkLight
 )
 const displaySrc = computed(() =>
-  failed.value ? fallbackSrc.value : resolvedSrc.value
+  failed.value ? defaultSrc.value : resolvedSrc.value
 )
 
 watch([resolvedSrc, isDark], () => {
@@ -66,7 +66,7 @@ watch([resolvedSrc, isDark], () => {
 })
 
 function handleError() {
-  if (displaySrc.value === fallbackSrc.value) return
+  if (displaySrc.value === defaultSrc.value) return
   failed.value = true
 }
 

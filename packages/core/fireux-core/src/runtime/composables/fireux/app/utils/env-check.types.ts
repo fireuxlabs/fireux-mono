@@ -19,6 +19,7 @@ export type BrandAssetCheck = {
   name: string
   path: string
   ok: boolean
+  source?: string
   reason?: string
   width?: number
   height?: number

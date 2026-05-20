@@ -1,5 +1,4 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import { ref } from 'vue'
 import type { JobStatus } from '../../../../../models/job.model'
 import { useFireuxJobsConfig } from '../../../../config/useFireuxJobsConfig'
@@ -36,7 +35,6 @@ const DEFAULT_FORM: JobCreateForm = {
 
 export function useJobCreate() {
   const { createDocument } = useFirestoreCreate()
-  const { upsertSeoIndexDoc } = useSeoIndexWrite()
   const jobsConfig = useFireuxJobsConfig()
   const form = ref<JobCreateForm>({ ...DEFAULT_FORM })
 
@@ -52,11 +50,6 @@ export function useJobCreate() {
     const id = await createDocument<JobCreateInput>('jobs', data, {
       app: true,
       creator: true,
-    })
-
-    await upsertSeoIndexDoc('seo_index_jobs', id, {
-      path: `/jobs/${id}`,
-      isPublic: data.status === 'open',
     })
 
     return { created: true, id }

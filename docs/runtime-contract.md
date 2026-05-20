@@ -487,7 +487,7 @@ Updated: 2026-05-20
   - a public user route bypasses handle resolution and exposes uid routes as canonical.
 
 ## Selection vs Formatting
-- Selection/routing/identity must never rely on silent fallback chains.
+- Selection/routing/identity must never rely on silent fallback paths.
 - Deterministic field precedence inside one resolved entity is permitted when documented in Tier1 canon/contracts.
 
 ## Conflicts Resolved

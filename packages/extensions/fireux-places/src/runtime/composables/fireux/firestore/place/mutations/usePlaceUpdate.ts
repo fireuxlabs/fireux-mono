@@ -2,7 +2,6 @@
 // flag
 
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import { useSeoIndexWrite } from 'fireux-core/runtime/composables/fireux/firestore/seo/useSeoIndexWrite'
 import type { Place, PlaceImageShade } from 'fireux-places/runtime/models/place.model'
 
 type UpdateCtx = { id: string | null | undefined }
@@ -41,27 +40,17 @@ function toShade(value: unknown): PlaceImageShade {
  */
 export function usePlaceUpdate() {
   const { updateDocument } = useFirestoreUpdate()
-  const { upsertSeoIndexDoc } = useSeoIndexWrite()
-
-  const touchSeoIndex = async (id: string) => {
-    await upsertSeoIndexDoc('seo_index_places', id, {
-      path: `/places/${id}`,
-      isPublic: true,
-    })
-  }
 
   async function updateName(value: string, ctx: UpdateCtx) {
     const id = reqId(ctx)
     const name = sanitize(value) || 'Untitled place'
     await updateDocument<Place>('places', id, { name } as Partial<Place>)
-    await touchSeoIndex(id)
   }
 
   async function updateShortName(value: string, ctx: UpdateCtx) {
     const id = reqId(ctx)
     const short_name = sanitizeNullable(value)
     await updateDocument<Place>('places', id, { short_name } as Partial<Place>)
-    await touchSeoIndex(id)
   }
 
   async function updateFormattedAddress(value: string, ctx: UpdateCtx) {
@@ -70,35 +59,30 @@ export function usePlaceUpdate() {
     await updateDocument<Place>('places', id, {
       formatted_address,
     } as Partial<Place>)
-    await touchSeoIndex(id)
   }
 
   async function updateShortAddress(value: string, ctx: UpdateCtx) {
     const id = reqId(ctx)
     const short_address = sanitizeNullable(value)
     await updateDocument<Place>('places', id, { short_address } as Partial<Place>)
-    await touchSeoIndex(id)
   }
 
   async function updateSearchTerm(value: string, ctx: UpdateCtx) {
     const id = reqId(ctx)
     const search_term = sanitizeNullable(value).toLowerCase()
     await updateDocument<Place>('places', id, { search_term } as Partial<Place>)
-    await touchSeoIndex(id)
   }
 
   async function updateLat(value: string | number, ctx: UpdateCtx) {
     const id = reqId(ctx)
     const lat = toNumber(value)
     await updateDocument<Place>('places', id, { lat } as Partial<Place>)
-    await touchSeoIndex(id)
   }
 
   async function updateLng(value: string | number, ctx: UpdateCtx) {
     const id = reqId(ctx)
     const lng = toNumber(value)
     await updateDocument<Place>('places', id, { lng } as Partial<Place>)
-    await touchSeoIndex(id)
   }
 
   /**
@@ -109,14 +93,12 @@ export function usePlaceUpdate() {
     const id = reqId(ctx)
     const image_url = sanitizeNullable(value)
     await updateDocument<Place>('places', id, { image_url } as Partial<Place>)
-    await touchSeoIndex(id)
   }
 
   async function updateImageShade(value: PlaceImageShade | string, ctx: UpdateCtx) {
     const id = reqId(ctx)
     const image_shade = toShade(value)
     await updateDocument<Place>('places', id, { image_shade } as Partial<Place>)
-    await touchSeoIndex(id)
   }
 
   return {

@@ -6,7 +6,6 @@ const logError = (...args: unknown[]) => console.error('[places-logo]', ...args)
 
 const HOMEPAGE_TIMEOUT_MS = 4500
 const PROBE_CONCURRENCY = 4
-const CLEARBIT_SIZE = 256
 const NON_BRAND_ASSET_PATTERNS: Array<{ reason: string; pattern: RegExp }> = [
   { reason: 'tripadvisor widget', pattern: /tripadvisor/i },
   { reason: 'review widget', pattern: /wp[-_/]tripadvisor[-_/]review[-_/]slider/i },
@@ -29,210 +28,189 @@ const NON_BRAND_ASSET_PATTERNS: Array<{ reason: string; pattern: RegExp }> = [
   { reason: 'trustpilot asset', pattern: /\btrustpilot\b/i },
 ]
 
+type LogoSource = 'homepage-icon' | 'inline-logo' | 'common-path' | 'social-logo'
+type EmptyReason = 'missing-site' | 'fetch-failed' | 'not-found'
+
+type LogoCandidate = {
+  url: string
+  source: LogoSource
+}
+
+type LogoResponse = {
+  url: string | null
+  source: LogoSource | null
+  reason?: EmptyReason
+}
+
+const emptyLogo = (reason: EmptyReason): LogoResponse => ({
+  url: null,
+  source: null,
+  reason,
+})
+
 /**
- * Best-effort logo resolver.
- * Priority:
- *   1) <link rel="icon" ...> on homepage (SVG/PNG preferred)
- *   2) Common logo paths (/logo.svg|png|webp, /images/logo.*, etc.)
- *   3) Social meta images (og:image, twitter:image)
- *   4) Unavatar (site avatar) → Google S2 favicon
- *   5) Picsum placeholder
+ * Best-effort logo discovery.
  *
- * Pass the business website or domain if possible:
- *   /api/places/logo?website=https://yellow-velo.ch
- *   /api/places/logo?domain=yellow-velo.ch
- * Fallback (name only) will still return a placeholder chain.
+ * This endpoint only returns URLs discovered from the place's own website/domain.
+ * It never invents a logo through avatar services, Google favicons, placeholders,
+ * or name-only guesses.
  */
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<LogoResponse> => {
   const q = getQuery(event)
   const websiteParam = (q.website as string | undefined)?.trim()
   const domainParam = (q.domain as string | undefined)?.trim()
-  const nameParam = (q.q as string | undefined)?.trim() // optional, for placeholder seed
 
   log('incoming request', {
     website: websiteParam,
     domain: domainParam,
-    nameSeed: nameParam,
   })
 
-  // Resolve a base URL to crawl (homepage). Prefer website → domain.
   const baseUrl = resolveBaseUrl(websiteParam, domainParam)
   if (!baseUrl) {
-    // No site info: jump directly to avatar fallbacks & placeholder.
-    logWarn('no base url resolved, jumping to fallbacks')
-    const url = await fallbackChain('', nameParam)
-    log('fallback result (no base)', { url })
-    return { url }
+    logWarn('no website or domain provided')
+    return emptyLogo('missing-site')
   }
 
   log('resolved base url', { baseUrl })
 
   try {
-    // 1) Fetch homepage HTML (GET, follow redirects).
-    const homepageController = new AbortController()
-    const homepageTimeout = setTimeout(() => {
-      if (!homepageController.signal.aborted) {
-        homepageController.abort()
-      }
-    }, HOMEPAGE_TIMEOUT_MS)
-
-    let htmlRes: Response | null = null
-    let homepageError: unknown = null
-    try {
-      htmlRes = await fetch(baseUrl, {
-        redirect: 'follow',
-        signal: homepageController.signal,
-        headers: {
-          'user-agent': 'FireUX-LogoFetcher/1.0',
-          accept:
-            'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-        },
-      })
-    } catch (error) {
-      homepageError = error
-    } finally {
-      clearTimeout(homepageTimeout)
-    }
+    const htmlRes = await fetchHomepage(baseUrl)
     if (!htmlRes?.ok) {
-      const status = htmlRes?.status ?? null
-      const aborted = homepageError && isAbortError(homepageError)
       logWarn('homepage fetch failed', {
         baseUrl,
-        status,
-        aborted,
-        error: aborted ? undefined : homepageError,
+        status: htmlRes?.status ?? null,
       })
-      const url = await fallbackChain(baseUrl, nameParam)
-      log('fallback result (fetch not ok)', { url })
-      return { url }
+      return emptyLogo('fetch-failed')
     }
+
     const html = await htmlRes.text()
-
-    // Prepare an absolute URL helper using the *final* URL (after redirects).
     const finalHome = htmlRes.url || baseUrl
-    log('fetched homepage html', { finalHome })
-    const makeAbs = (u: string) => toAbsolute(finalHome, u)
-
-    // 2) Collect icon link candidates.
-    const iconLinks = filterBrandCandidateUrls(
-      extractIconLinks(html).map(makeAbs),
-      'icon links'
-    )
-
-    // 3) Collect social meta images (only keep if they look like logos).
-    const socialImgsRaw = filterBrandCandidateUrls(
-      extractSocialImages(html).map(makeAbs),
-      'social images'
-    )
-    const socialImgs = socialImgsRaw.filter((url) =>
-      /logo|icon|brand|mark/i.test(url)
-    )
-
-    // 4) Collect inline <img> logos (class/id/alt contains logo/brand/mark).
-    const inlineImgs = filterBrandCandidateUrls(
-      extractInlineLogoImages(html).map(makeAbs),
-      'inline images'
-    )
-
-    // 5) Common logo paths (HEAD probe first).
-    const commonPaths = [
-      '/logo.svg',
-      '/logo.png',
-      '/logo.webp',
-      '/assets/logo.svg',
-      '/assets/logo.png',
-      '/img/logo.svg',
-      '/img/logo.png',
-      '/images/logo.svg',
-      '/images/logo.png',
-      '/static/logo.svg',
-      '/static/logo.png',
-    ].map((p) => new URL(p, finalHome).toString())
-
-    // 6) Validate candidates with lightweight HEAD/GET and score.
-    const allCandidates = dedupe([
-      ...iconLinks,
-      ...inlineImgs,
-      ...commonPaths,
-      ...socialImgs,
-    ])
+    const candidates = buildCandidates(html, finalHome)
 
     log('candidate counts', {
-      iconLinks: iconLinks.length,
-      inlineImgs: inlineImgs.length,
-      commonPaths: commonPaths.length,
-      socialImgs: socialImgs.length,
-      socialImgsRaw: socialImgsRaw.length,
-      total: allCandidates.length,
+      homepageIcon: candidates.filter((x) => x.source === 'homepage-icon').length,
+      inlineLogo: candidates.filter((x) => x.source === 'inline-logo').length,
+      commonPath: candidates.filter((x) => x.source === 'common-path').length,
+      socialLogo: candidates.filter((x) => x.source === 'social-logo').length,
+      total: candidates.length,
     })
 
-    let scored = await probeCandidates(allCandidates)
+    const scored = await probeCandidates(candidates)
+    if (!scored.length) return emptyLogo('not-found')
 
-    if (!scored.length && socialImgsRaw.length) {
-      const fallbackCandidates = dedupe([
-        ...iconLinks,
-        ...inlineImgs,
-        ...commonPaths,
-        ...socialImgsRaw,
-      ])
-      log('fallback to social images', {
-        total: fallbackCandidates.length,
-      })
-      scored = await probeCandidates(fallbackCandidates)
-    }
-
-    // 6) Pick best or fallback chain.
-    if (scored.length) {
-      scored.sort((a, b) => b.score - a.score)
-      const winner = scored[0]
-      log('selected candidate', winner)
-      return { url: winner.url }
-    }
-
-    const url = await fallbackChain(finalHome, nameParam)
-    log('fallback result (no candidates)', { url })
-    return { url }
+    scored.sort((a, b) => b.score - a.score)
+    const winner = scored[0]
+    log('selected candidate', winner)
+    return { url: winner.url, source: winner.source }
   } catch (error) {
     logError('unexpected error during resolution', error)
-    const url = await fallbackChain(baseUrl, nameParam)
-    log('fallback result (error)', { url })
-    return { url }
+    return emptyLogo('fetch-failed')
   }
 })
 
-/* ───────────────── helpers ───────────────── */
+async function fetchHomepage(baseUrl: string): Promise<Response | null> {
+  const homepageController = new AbortController()
+  const homepageTimeout = setTimeout(() => {
+    if (!homepageController.signal.aborted) {
+      homepageController.abort()
+    }
+  }, HOMEPAGE_TIMEOUT_MS)
+
+  try {
+    return await fetch(baseUrl, {
+      redirect: 'follow',
+      signal: homepageController.signal,
+      headers: {
+        'user-agent': 'FireUX-LogoFetcher/1.0',
+        accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      },
+    })
+  } catch (error) {
+    logWarn('homepage request failed', {
+      baseUrl,
+      aborted: isAbortError(error),
+      error: isAbortError(error) ? undefined : error,
+    })
+    return null
+  } finally {
+    clearTimeout(homepageTimeout)
+  }
+}
+
+function buildCandidates(html: string, finalHome: string): LogoCandidate[] {
+  const makeAbs = (url: string) => toAbsolute(finalHome, url)
+  const iconCandidates = extractIconLinks(html).map((url) => ({
+    url: makeAbs(url),
+    source: 'homepage-icon' as const,
+  }))
+  const inlineCandidates = extractInlineLogoImages(html).map((url) => ({
+    url: makeAbs(url),
+    source: 'inline-logo' as const,
+  }))
+  const commonCandidates = [
+    '/logo.svg',
+    '/logo.png',
+    '/logo.webp',
+    '/assets/logo.svg',
+    '/assets/logo.png',
+    '/img/logo.svg',
+    '/img/logo.png',
+    '/images/logo.svg',
+    '/images/logo.png',
+    '/static/logo.svg',
+    '/static/logo.png',
+  ].map((path) => ({
+    url: new URL(path, finalHome).toString(),
+    source: 'common-path' as const,
+  }))
+  const socialCandidates = extractSocialImages(html)
+    .map(makeAbs)
+    .filter(isStrongLogoUrl)
+    .map((url) => ({
+      url,
+      source: 'social-logo' as const,
+    }))
+
+  return dedupeCandidates(
+    filterSameSiteCandidates(
+      finalHome,
+      filterBrandCandidates([
+        ...iconCandidates,
+        ...inlineCandidates,
+        ...commonCandidates,
+        ...socialCandidates,
+      ])
+    )
+  )
+}
 
 function resolveBaseUrl(website?: string, domain?: string): string | null {
-  if (website) {
-    try {
-      const u = new URL(website)
-      if (!u.protocol) return `https://${website}`
-      return u.toString()
-    } catch {
-      return `https://${website}`
-    }
-  }
-  if (domain) {
-    try {
-      const u = new URL(`https://${domain}`)
-      return u.toString()
-    } catch {
-      return null
-    }
-  }
+  if (website) return normalizeSiteUrl(website)
+  if (domain) return normalizeSiteUrl(domain)
   return null
+}
+
+function normalizeSiteUrl(value: string): string | null {
+  const trimmed = value.trim()
+  if (!trimmed) return null
+  const withProtocol = /^https?:\/\//i.test(trimmed)
+    ? trimmed
+    : `https://${trimmed}`
+  try {
+    return new URL(withProtocol).toString()
+  } catch {
+    return null
+  }
 }
 
 function toAbsolute(base: string, maybe: string): string {
   try {
-    const u = new URL(maybe, base)
-    return u.toString()
+    return new URL(maybe, base).toString()
   } catch {
     return maybe
   }
 }
 
-// Naive attribute parsing (good enough for link/meta scanning without a DOM lib)
 function getAttr(tag: string, name: string): string | null {
   const re = new RegExp(`${name}\\s*=\\s*("([^"]+)"|'([^']+)'|([^\\s>]+))`, 'i')
   const m = re.exec(tag)
@@ -302,6 +280,10 @@ function extractInlineLogoImages(html: string): string[] {
   return out
 }
 
+function isStrongLogoUrl(url: string): boolean {
+  return /logo|brand|wordmark|logomark/i.test(url)
+}
+
 function getNonBrandAssetReason(value: string): string | null {
   for (const { reason, pattern } of NON_BRAND_ASSET_PATTERNS) {
     if (pattern.test(value)) return reason
@@ -309,39 +291,69 @@ function getNonBrandAssetReason(value: string): string | null {
   return null
 }
 
-function filterBrandCandidateUrls(urls: string[], source: string): string[] {
-  const out: string[] = []
-  for (const url of urls) {
-    const rejectionReason = getNonBrandAssetReason(url)
+function filterBrandCandidates(candidates: LogoCandidate[]): LogoCandidate[] {
+  const out: LogoCandidate[] = []
+  for (const candidate of candidates) {
+    const rejectionReason = getNonBrandAssetReason(candidate.url)
     if (rejectionReason) {
       log('rejected non-brand candidate', {
-        source,
+        source: candidate.source,
         reason: rejectionReason,
-        url,
+        url: candidate.url,
       })
       continue
     }
-    out.push(url)
+    out.push(candidate)
   }
   return out
 }
 
-function dedupe(list: string[]): string[] {
-  const set = new Set<string>()
-  const out: string[] = []
-  for (const u of list) {
-    const key = u.trim()
-    if (!key || set.has(key)) continue
-    set.add(key)
-    out.push(key)
+function filterSameSiteCandidates(
+  finalHome: string,
+  candidates: LogoCandidate[]
+): LogoCandidate[] {
+  const out: LogoCandidate[] = []
+  for (const candidate of candidates) {
+    if (isSameSite(finalHome, candidate.url)) {
+      out.push(candidate)
+      continue
+    }
+    log('rejected off-site candidate', {
+      source: candidate.source,
+      url: candidate.url,
+    })
   }
   return out
 }
 
-/**
- * Quick check if the URL is an image: prefer HEAD, fall back to GET if needed.
- * Also tolerates SVG served as text/xml or image/svg+xml.
- */
+function isSameSite(finalHome: string, candidateUrl: string): boolean {
+  try {
+    const baseHost = normalizeHost(new URL(finalHome).hostname)
+    const candidateHost = normalizeHost(new URL(candidateUrl).hostname)
+    return (
+      candidateHost === baseHost || candidateHost.endsWith(`.${baseHost}`)
+    )
+  } catch {
+    return false
+  }
+}
+
+function normalizeHost(value: string) {
+  return value.toLowerCase().replace(/^www\./, '')
+}
+
+function dedupeCandidates(candidates: LogoCandidate[]): LogoCandidate[] {
+  const seen = new Set<string>()
+  const out: LogoCandidate[] = []
+  for (const candidate of candidates) {
+    const key = candidate.url.trim()
+    if (!key || seen.has(key)) continue
+    seen.add(key)
+    out.push({ ...candidate, url: key })
+  }
+  return out
+}
+
 async function looksLikeImage(url: string): Promise<boolean> {
   try {
     const head = await fetch(url, {
@@ -354,7 +366,7 @@ async function looksLikeImage(url: string): Promise<boolean> {
       return isImageContentType(ct)
     }
   } catch {
-    /* ignore and try GET */
+    // Some servers reject HEAD, so try GET before giving up.
   }
   try {
     const res = await fetch(url, {
@@ -371,77 +383,40 @@ async function looksLikeImage(url: string): Promise<boolean> {
 }
 
 function isImageContentType(ct: string): boolean {
-  return (
-    ct.startsWith('image/') || ct.includes('svg') || ct.includes('xml') // some servers send svg as text/xml
-  )
+  return ct.startsWith('image/') || ct.includes('svg') || ct.includes('xml')
 }
 
-function scoreCandidate(url: string): number {
+function scoreCandidate(candidate: LogoCandidate): number {
   let score = 0
-  const u = url.toLowerCase()
-  // Base by extension
-  if (u.endsWith('.svg')) score += 100
-  else if (u.endsWith('.png') || u.endsWith('.webp')) score += 90
-  else if (u.endsWith('.ico')) score += 80
-  else score += 70 // unknown but image-like
+  const url = candidate.url.toLowerCase()
 
-  // Path hints
-  if (u.includes('logo')) score += 15
-  if (u.includes('apple-touch-icon')) score += 10
-  if (u.includes('favicon')) score += 5
+  if (url.endsWith('.svg')) score += 100
+  else if (url.endsWith('.png') || url.endsWith('.webp')) score += 90
+  else if (url.endsWith('.ico')) score += 80
+  else score += 70
 
-  // Prefer not obviously tiny
-  if (u.includes('32x32') || u.includes('16x16')) score -= 15
-  if (u.includes('192x192') || u.includes('512x512')) score += 5
+  if (candidate.source === 'inline-logo') score += 20
+  if (candidate.source === 'common-path') score += 15
+  if (candidate.source === 'homepage-icon') score += 10
+  if (candidate.source === 'social-logo') score += 5
+
+  if (url.includes('logo')) score += 15
+  if (url.includes('apple-touch-icon')) score += 10
+  if (url.includes('favicon')) score += 5
+
+  if (url.includes('32x32') || url.includes('16x16')) score -= 15
+  if (url.includes('192x192') || url.includes('512x512')) score += 5
 
   return score
 }
 
-async function fallbackChain(
-  homeOrDomain: string,
-  seed?: string
-): Promise<string> {
-  // try unavatar (site avatar) → google s2 → picsum
-  const domain = safeDomain(homeOrDomain)
-  if (domain) {
-    log('fallback chain: resolved domain', { domain })
-    const clearbit = `https://logo.clearbit.com/${domain}?size=${CLEARBIT_SIZE}`
-    if (await looksLikeImage(clearbit)) {
-      log('fallback chain: using clearbit', { url: clearbit })
-      return clearbit
-    }
-    const unavatar = `https://unavatar.io/${domain}?fallback=false`
-    if (await looksLikeImage(unavatar)) {
-      log('fallback chain: using unavatar', { url: unavatar })
-      return unavatar
-    }
-
-    const s2 = `https://www.google.com/s2/favicons?sz=128&domain=${encodeURIComponent(
-      domain
-    )}`
-    if (await looksLikeImage(s2)) {
-      log('fallback chain: using google s2', { url: s2 })
-      return s2
-    }
-  }
-
-  const randSeed =
-    seed?.replace(/\s+/g, '-').toLowerCase() ||
-    Math.floor(Math.random() * 10_000).toString()
-  const placeholder = `https://picsum.photos/seed/${randSeed}/96/96`
-  log('fallback chain: using placeholder', { url: placeholder, seed })
-  return placeholder
-}
-
 async function probeCandidates(
-  urls: string[]
-): Promise<Array<{ url: string; score: number }>> {
-  const results: Array<{ url: string; score: number }> = []
-  const queue = [...urls]
+  candidates: LogoCandidate[]
+): Promise<Array<LogoCandidate & { score: number }>> {
+  const results: Array<LogoCandidate & { score: number }> = []
+  const queue = [...candidates]
   const workers = Array.from(
-    {
-      length: Math.min(PROBE_CONCURRENCY, queue.length || 1),
-    },
+    { length: Math.min(PROBE_CONCURRENCY, queue.length || 1) },
     () => worker()
   )
   await Promise.all(workers)
@@ -451,31 +426,12 @@ async function probeCandidates(
     while (queue.length) {
       const candidate = queue.shift()
       if (!candidate) return
-      const rejectionReason = getNonBrandAssetReason(candidate)
-      if (rejectionReason) {
-        log('candidate rejected before probe', {
-          candidate,
-          reason: rejectionReason,
-        })
-        continue
-      }
-      const ok = await looksLikeImage(candidate)
+      const ok = await looksLikeImage(candidate.url)
       if (!ok) continue
       const score = scoreCandidate(candidate)
-      log('candidate ok', { candidate, score })
-      results.push({ url: candidate, score })
+      log('candidate ok', { ...candidate, score })
+      results.push({ ...candidate, score })
     }
-  }
-}
-
-function safeDomain(input: string): string | null {
-  try {
-    const u = new URL(input)
-    return u.hostname || null
-  } catch {
-    // maybe raw domain
-    if (/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(input)) return input
-    return null
   }
 }
 
