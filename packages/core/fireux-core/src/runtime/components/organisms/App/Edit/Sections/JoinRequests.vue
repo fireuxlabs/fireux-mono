@@ -5,7 +5,7 @@
         <div class="section__copy">
           <h3 class="text-base font-semibold">Join Requests</h3>
           <p class="text-xs text-dimmed">
-            App Admin can approve new members or clear pending invites.
+            Admins can approve new members or clear pending invites.
           </p>
         </div>
       </div>

@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="app-admin">
     <template #header>
-      <LayoutsDashboardNavbar title="App Admin" />
+      <LayoutsDashboardNavbar title="Admin" />
     </template>
 
     <template #body>
@@ -43,7 +43,7 @@ definePageMeta({
   layout: 'dashboard',
   nav: {
     key: 'dashboard-admin',
-    label: 'App Admin',
+    label: 'Admin',
     icon: 'i-lucide-shield-check',
     position: 'middle',
     order: 10,

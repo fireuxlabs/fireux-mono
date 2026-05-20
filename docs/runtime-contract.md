@@ -48,7 +48,28 @@ Updated: 2026-05-20
 - `modules` means the app installs shared package capability.
 - `consoles` means the app exposes selected console workspaces.
 - `profiles` means the app consumes those profile identities and their profile surfaces.
-- Shared personal dashboard pages such as chat, favorites, followers, purchases, subscriptions, settings, and user profile are core dashboard surfaces.
+- Core pages are grouped by how strongly FireUX provides them:
+  - hard pages are always part of the core app shape
+  - medium pages appear when the app role, user role, or enabled console/profile calls for them
+  - soft pages are optional personal/product helpers and can stay hidden until the app has a real use for them
+- Current hard core pages:
+  - auth
+  - legal
+  - dashboard, settings, and user profile
+  - Admin, visible to admins
+  - Developer, visible to the configured developer user
+  - dev tools
+  - users and public user profiles
+  - purchases and subscriptions
+- Blog and products are hard FireUX product surfaces, but their implementation is package-owned rather than copied into `fireux-core`.
+- Current medium core pages:
+  - Console entry points when `consoles` enables a workspace
+  - Apps for global/project/app management surfaces
+  - Profile extension dashboard pages when `profiles` enables that profile identity
+- Current soft core pages:
+  - chat
+  - favorites
+  - followers
 - Installing a module must not automatically expose every profile or console surface from that module.
 - Do not add a second app-facing page registry until a real repeated route family needs it. Prefer deriving visibility from `role`, `modules`, `consoles`, and `profiles`.
 
@@ -80,8 +101,8 @@ Updated: 2026-05-20
 - Apps may create public enquiry conversations directly only while rules and product state allow it.
 - Shipping apps must restrict conversation reads/writes to participants, app operators, or trusted server endpoints.
 - Public product pages should use conversation creation instead of exposing private operational details such as access codes, lockbox notes, or stay-specific guest instructions.
-- `/chat` is the shared public app-admin chat entry point.
-- `/dashboard/chat` is the shared app-admin inbox and requires app admin access.
+- `/chat` is the shared public chat entry point when an app exposes it.
+- `/dashboard/chat` is the signed-in user's chat area. It is not Admin-only.
 
 ## Project Root Contract
 - `Project` is a root/core entity.

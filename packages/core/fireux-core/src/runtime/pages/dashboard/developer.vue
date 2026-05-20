@@ -48,7 +48,7 @@
                       variant="soft"
                       icon="i-lucide-badge-check"
                     >
-                      App Admin
+                      Admin
                     </UButton>
                     <UButton
                       v-if="isLocalDev"

@@ -111,7 +111,7 @@ export function useAppOnboarding(): AppOnboardingState {
       console.log('[proceed] ensureApp result', ensured)
 
       // Self-heal existing apps stuck in "not initialized" when admin mirrors are empty.
-      // After PIN, the current signed-in user becomes the app admin for onboarding.
+      // After PIN, the current signed-in user becomes an admin for onboarding.
       const currentUid = String(uid.value ?? coreUser.value?.id ?? '').trim()
       if (!currentUid || !appId) {
         throw new Error('Authenticated user is not ready yet. Please try again.')

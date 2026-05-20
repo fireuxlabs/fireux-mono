@@ -111,14 +111,14 @@ export type App = AppModel
  * should handle each field on the same root App record.
  *
  * Simple rule:
- * - App Admin runs the app.
+ * - Admin runs the app.
  * - Developer builds and checks the app.
  * - App Control changes where the app belongs.
  * - System maintains calculated/internal fields.
  */
 export const AppFieldGroups = {
   /**
-   * App Admin runs the app.
+   * Admin runs the app.
    * These fields affect public content, members, join requests, and admins.
    */
   admin: [

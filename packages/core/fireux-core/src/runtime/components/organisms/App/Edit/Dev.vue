@@ -12,7 +12,7 @@
             <div class="section__copy">
               <h3 class="text-base font-semibold">Binding check (app ↔ users)</h3>
               <p class="text-xs text-dimmed">
-                Compares app users against core user mirrors and app admin lists.
+                Compares app users against core user mirrors and admin lists.
                 Membership is authoritative in <span class="font-mono">/apps/{appId}/users</span>.
               </p>
             </div>
@@ -79,7 +79,7 @@
             <div class="section__copy">
               <h3 class="text-base font-semibold">Field ownership</h3>
               <p class="text-xs text-dimmed">
-                App Admin runs the app. Developer builds and checks it. App
+                Admin runs the app. Developer builds and checks it. App
                 Control changes where it belongs. System owns calculated fields.
               </p>
             </div>
@@ -125,7 +125,7 @@
             </div>
 
             <div>
-              <div class="text-xs font-medium text-dimmed">App Admin</div>
+              <div class="text-xs font-medium text-dimmed">Admin</div>
               <ul class="mt-2 space-y-1 text-sm">
                 <li>
                   <span class="font-mono">tagline</span>,

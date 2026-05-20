@@ -7,7 +7,7 @@
             Binding check (app ↔ users)
           </p>
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            Compares app users against core user mirrors and app admin lists.
+            Compares app users against core user mirrors and admin lists.
             Membership is authoritative in <span class="font-mono">/apps/{appId}/users</span>.
           </p>
         </div>

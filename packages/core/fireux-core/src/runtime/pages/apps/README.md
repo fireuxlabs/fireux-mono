@@ -73,12 +73,12 @@ should handle each field on the same root App record.
 
 Simple rule:
 
-- If it changes how the app looks to users: App Admin.
+- If it changes how the app looks to users: Admin.
 - If it changes how the app is built or checked: Developer.
 - If it changes where the app belongs: App Control.
 - If it is calculated or internal: System.
 
-App Admin runs the app. It may edit public app content and membership:
+Admin runs the app. It may edit public app content and membership:
 
 - `tagline`
 - `description`
@@ -99,7 +99,7 @@ Developer builds and checks the app. `/dashboard/developer` is gated by
 
 App Control changes where the app belongs, what it is called, and how it is
 found. These fields can affect other records, links, SEO, cards, or app identity,
-so they do not belong in App Admin:
+so they do not belong in Admin:
 
 - `project_id`
 - `ecosystem_id`

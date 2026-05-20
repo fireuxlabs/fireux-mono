@@ -86,10 +86,35 @@ profiles: ['chef']
 creation/management and public pages such as `/chefs` and `/chefs/[id]`.
 Installing a module alone should not make every profile page part of a tenant app.
 
-Shared personal dashboard pages such as chat, favorites, followers, purchases,
-subscriptions, settings, and user profile are core dashboard surfaces. Do not
-add a second app-facing page registry until a real repeated route family needs
-it. Prefer deriving visibility from `role`, `modules`, `consoles`, and
+Core dashboard pages are grouped by strength:
+
+- hard pages are part of the core app shape
+- medium pages appear when the app role, user role, or enabled console/profile calls for them
+- soft pages are optional helpers and can stay hidden until the app has a real use for them
+
+Current hard dashboard pages:
+
+- dashboard home
+- settings
+- user profile
+- Admin, visible to admins
+- Developer, visible to the configured developer user
+- purchases
+- subscriptions
+
+Current medium dashboard pages:
+
+- Console entry when `consoles` enables a workspace
+- profile extension pages when `profiles` enables that profile identity
+
+Current soft dashboard pages:
+
+- chat
+- favorites
+- followers
+
+Do not add a second app-facing page registry until a real repeated route family
+needs it. Prefer deriving visibility from `role`, `modules`, `consoles`, and
 `profiles`.
 
 An app with only one profile extension, such as Find My SEO today, may show only `Professional`.

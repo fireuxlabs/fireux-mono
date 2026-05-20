@@ -219,7 +219,7 @@ const inboxTitle = computed(() =>
 )
 const inboxDescription = computed(() =>
   isAdmin.value
-    ? 'Messages people send to the app admin.'
+    ? 'Messages people send to the admins.'
     : 'Conversations you have with this app.'
 )
 const emptyTitle = computed(() =>
@@ -228,7 +228,7 @@ const emptyTitle = computed(() =>
 const emptyDescription = computed(() =>
   isAdmin.value
     ? 'When visitors chat with the admin, their messages appear here.'
-    : 'Start a chat with the app admin when you need help.'
+    : 'Start a chat with the admins when you need help.'
 )
 const replyPlaceholder = computed(() =>
   isAdmin.value ? 'Reply as admin' : 'Write your reply'

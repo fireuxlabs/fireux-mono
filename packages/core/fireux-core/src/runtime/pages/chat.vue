@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       :title="`Chat with ${fireux.appShortName || fireux.appName}`"
-      description="Send a message to the app admin team. They can reply from the admin dashboard."
+      description="Send a message to the admin team. They can reply from the admin dashboard."
     >
       <template #headline>
         <UBadge color="primary" variant="soft">
@@ -53,7 +53,7 @@
             <template #footer>
               <div class="flex items-center justify-between gap-3">
                 <p class="text-xs text-muted">
-                  Public chat starts a private admin conversation for this app.
+                  Public chat starts a private conversation with the admins for this app.
                 </p>
                 <UChatPromptSubmit :status="chatStatus" label="Send" />
               </div>
@@ -193,6 +193,6 @@ definePageMeta({
 
 useSeoMeta({
   title: computed(() => `Chat with ${fireux.appShortName || fireux.appName}`),
-  description: 'Start a conversation with the app admin team.',
+  description: 'Start a conversation with the admin team.',
 })
 </script>

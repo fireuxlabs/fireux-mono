@@ -5,7 +5,7 @@
         <div class="section__copy">
           <h3 class="text-base font-semibold">Admins</h3>
           <p class="text-xs text-dimmed">
-            App Admin can manage who helps run this app.
+            Admins can manage who helps run this app.
           </p>
         </div>
       </div>

@@ -47,7 +47,6 @@
 
 <script setup lang="ts">
 import {
-  definePageMeta,
   useAsyncData,
   useHead,
   useRuntimeConfig,
@@ -61,10 +60,6 @@ import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 const route = useRoute()
 const runtime = useRuntimeConfig()
 const { appName } = useFireUXConfig()
-
-definePageMeta({
-  tenant: 'global',
-})
 
 const handle = computed(() => {
   const raw = Array.isArray(route.params.handle)

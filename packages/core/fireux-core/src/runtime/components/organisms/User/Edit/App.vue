@@ -50,7 +50,7 @@
               <USwitch
                 :model-value="isAppAdmin"
                 :loading="togglingAdmin"
-                label="App admin"
+                label="Admin"
                 @update:model-value="handleToggleAdmin"
               />
             </div>
@@ -76,7 +76,7 @@
                 Contact an admin to adjust your role.
               </p>
               <p v-if="!canManageAppMembership" class="mt-1">
-                You can view your app membership here, but only app admins can
+                You can view your app membership here, but only admins can
                 change roles or entitlements.
               </p>
             </div>

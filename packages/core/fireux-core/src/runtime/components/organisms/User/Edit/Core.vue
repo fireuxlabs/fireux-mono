@@ -17,7 +17,7 @@
               :model-value="isAppAdmin"
               :loading="togglingAdmin"
               :disabled="isOnlyAdmin && isAppAdmin"
-              label="App admin"
+              label="Admin"
               @update:model-value="handleToggleAdmin"
             />
           </div>
@@ -135,7 +135,7 @@ const togglingAdmin = ref(false)
 const handleToggleAdmin = async (nextValue: boolean) => {
   if (!props.user?.id) return
   if (!canManageAppMembership.value) {
-    toast.error('Only app admins can update app admin status')
+    toast.error('Only admins can update admin status')
     return
   }
   togglingAdmin.value = true
