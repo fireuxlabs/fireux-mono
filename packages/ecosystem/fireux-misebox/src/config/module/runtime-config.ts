@@ -13,6 +13,7 @@ const getPublicMenuDefaults = (appId: string) => {
       kitchenId: 'ChIJ08WSgYSjj0cRD6oE3RwUFk0',
       kitchenSlug: 'la-tapberne',
       menuId: 'main',
+      sproochli: true,
     }
   }
 
@@ -34,6 +35,7 @@ export const configureRuntimeConfig = (nuxt: Nuxt) => {
   const currentProducts = fireux.products
   const currentBlogs = fireux.blogs
   const currentMisebox = asRecord(fireux.misebox)
+  const currentSproochli = asRecord(fireux.sproochli)
 
   const placeDefaults = getPlacesConfig()
   const jobDefaults = getJobsConfig()
@@ -56,6 +58,12 @@ export const configureRuntimeConfig = (nuxt: Nuxt) => {
   fireux.blogs = currentBlogs && typeof currentBlogs === 'object'
     ? { ...blogDefaults, ...currentBlogs }
     : { ...blogDefaults }
+
+  fireux.sproochli = {
+    installed: true,
+    enabled: true,
+    ...currentSproochli,
+  }
 
   fireux.misebox = {
     ...currentMisebox,

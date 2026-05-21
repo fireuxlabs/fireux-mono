@@ -20,7 +20,7 @@ const DOMAIN = 'restaurant_menu'
 const GLOSSARY_VERSION = 'restaurant_menu_v1'
 const MENU_ID = 'main'
 const TARGET_LANGUAGE = 'bo'
-const ATTACHED_LANGUAGES = ['de', 'en']
+const ATTACHED_LANGUAGES = ['de', 'en', 'es', 'pt']
 
 const normalizeString = (value) => String(value ?? '').trim()
 
@@ -455,6 +455,10 @@ async function main() {
       : []),
     TARGET_LANGUAGE,
   ]))
+  const publicLanguages = Array.from(new Set([
+    ...ATTACHED_LANGUAGES,
+    ...cacheLanguages,
+  ]))
 
   console.log('[seed] la-tapberne-tibetan-translation-cache prepared', {
     commit,
@@ -490,12 +494,13 @@ async function main() {
       },
       language_settings: {
         default_language: 'de',
-        supported_languages: ATTACHED_LANGUAGES,
-        public_languages: FieldValue.delete(),
+        supported_languages: publicLanguages,
+        public_languages: publicLanguages,
         attached_languages: ATTACHED_LANGUAGES,
+        sproochli: true,
         cache_languages: cacheLanguages,
       },
-      supported_languages: ATTACHED_LANGUAGES,
+      supported_languages: publicLanguages,
       updated: updatedStamp(),
     },
     { merge: true }

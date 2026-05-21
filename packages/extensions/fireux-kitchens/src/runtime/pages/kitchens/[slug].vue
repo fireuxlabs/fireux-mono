@@ -51,18 +51,11 @@
             >
           </div>
 
-          <div class="inline-flex shrink-0 items-center gap-1 rounded-lg border border-default bg-default/80 p-1">
-            <UButton
-              v-for="language in publicLanguageOptions"
-              :key="language.code || 'original'"
-              size="xs"
-              :variant="selectedLanguage === language.code ? 'solid' : 'ghost'"
-              color="neutral"
-              @click="setPublicLanguage(language.code)"
-            >
-              {{ language.label }}
-            </UButton>
-          </div>
+          <OrganismsMenuSproochliLanguageTrigger
+            class="shrink-0"
+            :language-options="publicLanguageOptions"
+            :selected-language="selectedLanguage"
+          />
         </div>
 
         <DevJson
@@ -211,7 +204,7 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo, useHead, useRoute } from '#imports'
+import { navigateTo, useHead, useRoute, useRuntimeConfig } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
@@ -225,6 +218,7 @@ import {
 import { usePublicMenuLanguage } from '../../composables/fireux/app/kitchens/usePublicMenuLanguage'
 import { useKitchenMenuCollection } from '../../composables/fireux/console/kitchen/operations/menu/fetch/useKitchenMenuCollection'
 import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
+import OrganismsMenuSproochliLanguageTrigger from '../../components/organisms/Menu/SproochliLanguageTrigger.vue'
 import type { Kitchen } from '../../models/kitchen.model'
 import type { Menu } from '../../models/menu.model'
 
@@ -238,6 +232,18 @@ definePageMeta({
 
 const { appName } = useFireUXConfig()
 const route = useRoute()
+const runtimeConfig = useRuntimeConfig()
+const asRecord = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {}
+const publicConfig = runtimeConfig.public as Record<string, unknown>
+const fireuxConfig = asRecord(publicConfig.fireux)
+const miseboxConfig = asRecord(fireuxConfig.misebox)
+const publicMenuConfig = asRecord(miseboxConfig.publicMenu)
+const runtimeSproochli = asRecord(fireuxConfig.sproochli)
+const runtimeSproochliEnabled = computed(() => runtimeSproochli.enabled !== false)
+const publicMenuSproochliEnabled = computed(() => publicMenuConfig.sproochli !== false)
 const hasChildRoute = computed(() => {
   const path = String(route.path || '').trim()
   return /\/kitchens\/[^/]+\/menus?(?:\/|$)/.test(path)
@@ -259,7 +265,7 @@ const kitchen = computed<Kitchen | null>(() => {
     const slug = String((entry as any)?.slug ?? '').trim().toLowerCase()
     return slug.length > 0 && slug === slugKey
   })
-  return found ?? null
+  return (found as unknown as Kitchen) ?? null
 })
 
 const kitchenId = computed(() => String(kitchen.value?.id ?? '').trim())
@@ -281,10 +287,21 @@ const sortedMenus = computed(() =>
       String(a?.name || '').localeCompare(String(b?.name || ''))
   )
 )
+const languageSettings = computed(() => asRecord((kitchen.value as any)?.language_settings))
+const kitchenSproochliEnabled = computed(() => languageSettings.value.sproochli !== false)
+const sproochliEnabled = computed(
+  () =>
+    runtimeSproochliEnabled.value &&
+    publicMenuSproochliEnabled.value &&
+    kitchenSproochliEnabled.value
+)
 const publicLanguageOptions = computed(() =>
-  resolvePublicKitchenLanguageOptions(kitchen.value)
+  sproochliEnabled.value
+    ? resolvePublicKitchenLanguageOptions(kitchen.value)
+    : []
 )
 const selectedLanguage = computed(() => {
+  if (!sproochliEnabled.value) return ''
   const raw = route.query.lang || route.query.language
   const value = Array.isArray(raw) ? raw[0] : raw
   return normalizePublicKitchenLanguage(value)
@@ -306,21 +323,6 @@ const chromeLanguage = computed(() =>
 const { labels: chromeLabels } = usePublicMenuLanguage(chromeLanguage)
 const publicLanguageQuery = (language = selectedLanguage.value) =>
   language ? `?lang=${encodeURIComponent(language)}` : ''
-const routeQueryWithoutLanguage = computed(() =>
-  Object.fromEntries(
-    Object.entries(route.query).filter(
-      ([key]) => !['lang', 'language'].includes(key)
-    )
-  )
-)
-const setPublicLanguage = async (language: string) => {
-  await navigateTo({
-    path: route.path,
-    query: language
-      ? { ...routeQueryWithoutLanguage.value, lang: language }
-      : routeQueryWithoutLanguage.value,
-  })
-}
 const menuLink = (menuIdRaw: unknown) => {
   const publicKitchenSlug = String((kitchen.value as any)?.slug || '').trim()
   const menuId = String(menuIdRaw || '').trim()
@@ -346,7 +348,7 @@ const kitchenImageUrl = computed(() => String((kitchen.value as any)?.image_url 
 const kitchenImageAlt = computed(() => pageTitle.value)
 
 const { currentUser, isAdmin } = useUser()
-const claimedBy = computed(() => String(kitchen.value?.claimed_by || '').trim())
+const claimedBy = computed(() => String((kitchen.value as any)?.claimed_by || '').trim())
 const claimedByLabel = computed(() => claimedBy.value || '')
 const isOwner = computed(() => Boolean(claimedBy.value && currentUser.value?.id === claimedBy.value))
 const canEdit = computed(() => {

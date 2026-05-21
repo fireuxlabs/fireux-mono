@@ -3,6 +3,8 @@
     class="public-menu-surface min-h-screen"
     :class="publicMenuSurfaceClass"
     :style="menuDesignStyle"
+    :dir="menuDirection"
+    :lang="menuLanguage"
   >
     <section class="mx-auto w-full max-w-5xl px-4 py-6 sm:px-8 sm:py-10">
       <div class="public-menu-content">
@@ -20,6 +22,12 @@
             {{ menu.description }}
           </p>
           <div class="public-menu-accent-bg mx-auto mt-5 h-px w-28" />
+
+          <OrganismsMenuSproochliLanguageTrigger
+            class="mt-5 justify-center"
+            :language-options="languageOptions ?? []"
+            :selected-language="selectedLanguage"
+          />
         </header>
 
         <div class="public-menu-sections">
@@ -80,6 +88,12 @@ import {
   resolvePublicMenuDesignSource,
   resolvePublicMenuDesignStyle,
 } from '../../../composables/fireux/app/public-menu-design'
+import type {
+  PublicKitchenLanguageCode,
+  PublicKitchenLanguageOption,
+} from '../../../composables/fireux/app/public-kitchen-language'
+import { isPublicKitchenRtlLanguage } from '../../../composables/fireux/app/public-kitchen-language'
+import OrganismsMenuSproochliLanguageTrigger from './SproochliLanguageTrigger.vue'
 
 type PublicMenuSectionRow = {
   section: { id: string; label: string; description?: string }
@@ -95,10 +109,16 @@ const props = defineProps<{
   kitchenName: string
   menu: Menu
   sectionRows: PublicMenuSectionRow[]
+  languageOptions?: PublicKitchenLanguageOption[]
+  selectedLanguage?: PublicKitchenLanguageCode
 }>()
 
 const visibleSectionRows = computed(() =>
   props.sectionRows.filter((row) => row.items.length > 0)
+)
+const menuLanguage = computed(() => props.selectedLanguage || undefined)
+const menuDirection = computed(() =>
+  isPublicKitchenRtlLanguage(props.selectedLanguage) ? 'rtl' : 'ltr'
 )
 const menuDesignSource = computed(() => resolvePublicMenuDesignSource(props.menu))
 const publicMenuDesign = computed(() =>

@@ -8,6 +8,7 @@ import { isAbsolute, join, resolve } from 'node:path'
 import { parseArgs } from './_lib/args.mjs'
 import {
   LA_TAPBERNE_ATTACHED_LANGUAGES,
+  LA_TAPBERNE_CACHE_LANGUAGES,
   LA_TAPBERNE_TRANSLATIONS,
 } from './seed-la-tapberne-translation-cache.mjs'
 
@@ -21,6 +22,8 @@ const KITCHEN_SLUG = 'la-tapberne'
 const APP_ID = 'misebox-app'
 const SYSTEM_ACTOR = 'system:seed-la-tapberne-public-menus'
 const ATTACHED_LANGUAGES = LA_TAPBERNE_ATTACHED_LANGUAGES
+const CACHE_LANGUAGES = [...new Set([...LA_TAPBERNE_CACHE_LANGUAGES, 'bo'])]
+const PUBLIC_LANGUAGES = [...new Set([...ATTACHED_LANGUAGES, ...CACHE_LANGUAGES])]
 
 const normalizeString = (value) => String(value ?? '').trim()
 
@@ -635,10 +638,15 @@ async function main() {
     ? kitchenSnap.data().language_settings
     : {}
   const preservedCacheLanguages = reset
-    ? []
-    : Array.isArray(existingLanguageSettings.cache_languages)
-      ? existingLanguageSettings.cache_languages
-      : []
+    ? CACHE_LANGUAGES
+    : [
+        ...new Set([
+          ...(Array.isArray(existingLanguageSettings.cache_languages)
+            ? existingLanguageSettings.cache_languages
+            : []),
+          ...CACHE_LANGUAGES,
+        ]),
+      ]
   const effectiveMenuSnap = reset ? undefined : menuSnap
   const effectiveDishSnaps = reset ? [] : dishSnaps
   const planned = {
@@ -709,12 +717,13 @@ async function main() {
         public_menu_design: FieldValue.delete(),
         language_settings: {
           default_language: 'de',
-          supported_languages: ATTACHED_LANGUAGES,
-          public_languages: FieldValue.delete(),
+          supported_languages: PUBLIC_LANGUAGES,
+          public_languages: PUBLIC_LANGUAGES,
           attached_languages: ATTACHED_LANGUAGES,
+          sproochli: true,
           cache_languages: preservedCacheLanguages,
         },
-        supported_languages: ATTACHED_LANGUAGES,
+        supported_languages: PUBLIC_LANGUAGES,
         active: true,
         updated: updatedStamp(),
         created: createdStamp(kitchenSnap),

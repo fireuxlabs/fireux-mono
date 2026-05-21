@@ -18,6 +18,8 @@
       :kitchen-name="kitchenName"
       :menu="menu"
       :section-rows="sectionRows"
+      :language-options="languageOptions"
+      :selected-language="selectedLanguage"
     />
   </div>
 </template>
@@ -41,6 +43,8 @@ const {
   kitchen,
   menu,
   sectionRows,
+  languageOptions,
+  selectedLanguage,
   pending,
   unavailable,
   canonicalSlug,

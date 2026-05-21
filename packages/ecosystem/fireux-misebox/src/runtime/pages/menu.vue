@@ -1,6 +1,7 @@
 <template>
   <main
     :dir="pageDirection"
+    :lang="selectedLanguage || undefined"
     class="public-menu-page"
     :style="publicMenuDesignStyle"
   >
@@ -12,21 +13,10 @@
         {{ menuDescription }}
       </p>
 
-      <nav
-        v-if="languageOptions.length > 1"
-        class="public-menu-languages"
-        aria-label="Menu language"
-      >
-        <NuxtLink
-          v-for="option in languageOptions"
-          :key="option.code || 'original'"
-          :to="languageRoute(option.code)"
-          class="public-menu-language"
-          :class="{ 'is-active': languageOptionActive(option.code) }"
-        >
-          {{ option.label }}
-        </NuxtLink>
-      </nav>
+      <OrganismsMenuSproochliLanguageTrigger
+        :language-options="languageOptions"
+        :selected-language="selectedLanguage"
+      />
     </section>
 
     <p v-if="loading" class="public-menu-state">{{ chromeLabels.loadingMenu }}</p>
@@ -96,13 +86,13 @@ import {
   resolvePublicKitchenLanguageOptions,
   resolvePublicKitchenLanguageState,
   resolvePublicTranslatedText,
-  type PublicKitchenLanguageCode,
 } from 'fireux-kitchens/runtime/composables/fireux/app/public-kitchen-language'
 import { usePublicMenuLanguage } from 'fireux-kitchens/runtime/composables/fireux/app/kitchens/usePublicMenuLanguage'
 import {
   resolvePublicMenuDesignSource,
   resolvePublicMenuDesignStyle,
 } from 'fireux-kitchens/runtime/composables/fireux/app/public-menu-design'
+import OrganismsMenuSproochliLanguageTrigger from 'fireux-kitchens/runtime/components/organisms/Menu/SproochliLanguageTrigger.vue'
 import { resolveKitchenChildCollectionPath } from 'fireux-kitchens/runtime/composables/fireux/console/kitchen/operations/collections/useKitchenChildCollection'
 import type { KitchenSurface } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { Dish } from 'fireux-kitchens/runtime/models/dish.model'
@@ -119,6 +109,7 @@ type MiseboxPublicMenuConfig = {
   kitchenId?: unknown
   kitchenSlug?: unknown
   menuId?: unknown
+  sproochli?: unknown
 }
 
 type PublicMenuPriceOption = {
@@ -188,6 +179,20 @@ const publicMenuConfig = computed<MiseboxPublicMenuConfig>(() => {
     ? (publicMenu as MiseboxPublicMenuConfig)
     : {}
 })
+const sproochliRuntimeEnabled = computed(() => {
+  const publicConfig = runtimeConfig.public as Record<string, unknown>
+  const fireux = publicConfig.fireux as Record<string, unknown> | undefined
+  const sproochli = fireux?.sproochli
+  return !(
+    sproochli &&
+    typeof sproochli === 'object' &&
+    !Array.isArray(sproochli) &&
+    (sproochli as Record<string, unknown>).enabled === false
+  )
+})
+const publicMenuSproochliEnabled = computed(
+  () => publicMenuConfig.value.sproochli !== false
+)
 const routeKitchenSlug = computed(() =>
   normalizeString(publicMenuConfig.value.kitchenId) ||
   normalizeString(publicMenuConfig.value.kitchenSlug)
@@ -198,15 +203,6 @@ const routeMenuId = computed(
 const rootKitchenCollectionPath = computed(
   () =>
     normalizeString(publicMenuConfig.value.kitchenCollectionPath) || 'kitchens'
-)
-
-const selectedLanguage = computed(() =>
-  normalizePublicKitchenLanguage(
-    normalizeRouteQueryString(route.query.lang || route.query.language)
-  )
-)
-const pageDirection = computed(() =>
-  isPublicKitchenRtlLanguage(selectedLanguage.value) ? 'rtl' : 'ltr'
 )
 
 const resolveDb = useFirestoreResolver()
@@ -242,6 +238,31 @@ const dishesPath = computed(() =>
 )
 
 const languageState = computed(() => resolvePublicKitchenLanguageState(kitchen.value))
+const kitchenSproochliEnabled = computed(() => {
+  const settings = kitchen.value?.language_settings
+  return !(
+    settings &&
+    typeof settings === 'object' &&
+    !Array.isArray(settings) &&
+    (settings as Record<string, unknown>).sproochli === false
+  )
+})
+const sproochliEnabled = computed(
+  () =>
+    sproochliRuntimeEnabled.value &&
+    publicMenuSproochliEnabled.value &&
+    kitchenSproochliEnabled.value
+)
+const selectedLanguage = computed(() =>
+  sproochliEnabled.value
+    ? normalizePublicKitchenLanguage(
+        normalizeRouteQueryString(route.query.lang || route.query.language)
+      )
+    : ''
+)
+const pageDirection = computed(() =>
+  isPublicKitchenRtlLanguage(selectedLanguage.value) ? 'rtl' : 'ltr'
+)
 const chromeLanguage = computed(() =>
   resolvePublicKitchenChromeLanguage({
     selectedLanguage: selectedLanguage.value,
@@ -339,7 +360,9 @@ const translationCacheByField = computed(() => {
   return map
 })
 const languageOptions = computed(() =>
-  resolvePublicKitchenLanguageOptions(kitchen.value)
+  sproochliEnabled.value
+    ? resolvePublicKitchenLanguageOptions(kitchen.value)
+    : []
 )
 const loading = computed(() => {
   if (kitchenPending.value) return true
@@ -358,14 +381,6 @@ const currencyFormat = computed(() => {
   return currencyCode.value === 'CHF' ? 'dash' : 'symbol'
 })
 
-const languageRoute = (code: PublicKitchenLanguageCode) => ({
-  path: route.path,
-  query: code ? { lang: code } : {},
-})
-const languageOptionActive = (code: PublicKitchenLanguageCode) =>
-  code
-    ? code === activeContentLanguage.value
-    : !selectedLanguage.value
 const cacheTextFor = (fieldId: string) =>
   selectedLanguageUsesCache.value
     ? translationCacheByField.value.get(fieldId) || ''
@@ -693,32 +708,6 @@ useHead({
   margin: 0;
   color: var(--public-menu-muted, var(--ui-text-muted));
   font-size: 1rem;
-}
-
-.public-menu-languages {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding-top: 8px;
-}
-
-.public-menu-language {
-  display: inline-flex;
-  align-items: center;
-  min-height: 34px;
-  padding: 0 12px;
-  border: 1px solid var(--public-menu-border, var(--ui-border));
-  border-radius: var(--public-menu-radius, 999px);
-  color: var(--public-menu-muted, var(--ui-text-muted));
-  font-size: 0.875rem;
-  font-weight: 650;
-  text-decoration: none;
-}
-
-.public-menu-language.is-active {
-  border-color: var(--public-menu-accent, var(--ui-primary));
-  background: var(--public-menu-accent, var(--ui-primary));
-  color: var(--public-menu-bg, var(--ui-bg));
 }
 
 .public-menu-state {

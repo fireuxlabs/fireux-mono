@@ -24,6 +24,8 @@ export const LA_TAPBERNE_ATTACHED_LANGUAGES = ['de', 'en', 'es', 'pt']
 export const LA_TAPBERNE_CACHE_LANGUAGES = ['fr', 'it', 'ar', 'he', 'ko', 'ja']
 const ATTACHED_LANGUAGES = LA_TAPBERNE_ATTACHED_LANGUAGES
 const CACHE_LANGUAGES = LA_TAPBERNE_CACHE_LANGUAGES
+const PUBLIC_CACHE_LANGUAGES = [...new Set([...CACHE_LANGUAGES, 'bo'])]
+const PUBLIC_LANGUAGES = [...new Set([...ATTACHED_LANGUAGES, ...PUBLIC_CACHE_LANGUAGES])]
 const STALE_ATTACHED_CACHE_LANGUAGES = ['es', 'pt']
 
 const normalizeString = (value) => String(value ?? '').trim()
@@ -918,12 +920,13 @@ async function main() {
       },
       language_settings: {
         default_language: 'de',
-        supported_languages: ATTACHED_LANGUAGES,
-        public_languages: FieldValue.delete(),
+        supported_languages: PUBLIC_LANGUAGES,
+        public_languages: PUBLIC_LANGUAGES,
         attached_languages: ATTACHED_LANGUAGES,
-        cache_languages: CACHE_LANGUAGES,
+        sproochli: true,
+        cache_languages: PUBLIC_CACHE_LANGUAGES,
       },
-      supported_languages: ATTACHED_LANGUAGES,
+      supported_languages: PUBLIC_LANGUAGES,
       updated: updatedStamp(),
     },
     { merge: true }
@@ -960,7 +963,7 @@ async function main() {
     },
     language_settings: {
       attached_languages: ATTACHED_LANGUAGES,
-      cache_languages: CACHE_LANGUAGES,
+      cache_languages: PUBLIC_CACHE_LANGUAGES,
     },
     routes: CACHE_LANGUAGES.map(
       (language) => `/kitchens/la-tapberne/menus/main?lang=${language}`

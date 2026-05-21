@@ -1,5 +1,6 @@
 import { collection, getDocs } from 'firebase/firestore'
 import { computed, ref, watch, type Ref } from 'vue'
+import { useRoute, useRuntimeConfig } from '#imports'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Dish } from '../../../models/dish.model'
 import type { Menu, MenuItem, MenuSection } from '../../../models/menu.model'
@@ -8,6 +9,13 @@ import { useKitchenCollection } from '../firestore/kitchen/fetch/useKitchenColle
 import { useKitchenMenuCollection } from '../console/kitchen/operations/menu/fetch/useKitchenMenuCollection'
 import { useKitchenMenuSectionCollection } from '../console/kitchen/operations/menu/fetch/useKitchenMenuSectionCollection'
 import { kitchenMenuItemsPath } from '../console/kitchen/operations/menu/paths'
+import {
+  isPublicKitchenCacheLanguage,
+  normalizePublicKitchenLanguage,
+  resolvePublicKitchenLanguageOptions,
+  resolvePublicKitchenLanguageState,
+  resolvePublicTranslatedText,
+} from './public-kitchen-language'
 
 type PublicMenuItemRow = {
   item: MenuItem
@@ -25,22 +33,34 @@ type PublicMenuSectionRow = {
 type EmbeddedMenuItem = MenuItem & {
   active?: boolean
   label?: string
+  labels?: unknown
   description?: string
+  descriptions?: unknown
   price_options?: Array<{ price?: number }>
 }
 
 type EmbeddedMenuSection = MenuSection & {
   active?: boolean
+  labels?: unknown
+  descriptions?: unknown
   items?: EmbeddedMenuItem[]
 }
 
 type MenuWithEmbeddedSections = {
   sections?: EmbeddedMenuSection[]
+  names?: unknown
+  descriptions?: unknown
 }
 
 const ROOT_KITCHENS = 'kitchens'
 const clean = (value: unknown) => String(value ?? '').trim()
 const cleanIdentity = (value: unknown) => clean(value).toLowerCase()
+const asRecord = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {}
+const queryString = (value: unknown) =>
+  Array.isArray(value) ? clean(value[0]) : clean(value)
 const sortBySortOrder = <T extends { sort_order?: unknown }>(items: T[]) =>
   [...items].sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0))
 const isActiveChild = <T extends { status?: unknown; active?: unknown }>(value: T) =>
@@ -67,7 +87,16 @@ export function usePublicKitchenMenu(
   kitchenSlug: Ref<string>,
   menuId?: Ref<string>
 ) {
+  const route = useRoute()
+  const runtimeConfig = useRuntimeConfig()
   const resolveDb = useFirestoreResolver()
+  const publicConfig = runtimeConfig.public as Record<string, unknown>
+  const fireuxConfig = asRecord(publicConfig.fireux)
+  const miseboxConfig = asRecord(fireuxConfig.misebox)
+  const publicMenuConfig = asRecord(miseboxConfig.publicMenu)
+  const runtimeSproochli = asRecord(fireuxConfig.sproochli)
+  const runtimeSproochliEnabled = computed(() => runtimeSproochli.enabled !== false)
+  const publicMenuSproochliEnabled = computed(() => publicMenuConfig.sproochli !== false)
   const { kitchens, pending: kitchensPending } = useKitchenCollection()
   const kitchen = computed(
     () =>
@@ -83,6 +112,37 @@ export function usePublicKitchenMenu(
       ) ?? null
   )
   const canonicalSlug = computed(() => clean((kitchenByRouteId.value as any)?.slug))
+  const languageSettings = computed(() => asRecord((kitchen.value as any)?.language_settings))
+  const kitchenSproochliEnabled = computed(() => languageSettings.value.sproochli !== false)
+  const sproochliEnabled = computed(
+    () =>
+      runtimeSproochliEnabled.value &&
+      publicMenuSproochliEnabled.value &&
+      kitchenSproochliEnabled.value
+  )
+  const selectedLanguage = computed(() =>
+    sproochliEnabled.value
+      ? normalizePublicKitchenLanguage(
+          queryString(route.query.lang || route.query.language)
+        )
+      : ''
+  )
+  const languageState = computed(() => resolvePublicKitchenLanguageState(kitchen.value))
+  const activeContentLanguage = computed(
+    () =>
+      selectedLanguage.value ||
+      languageState.value.defaultLanguage ||
+      languageState.value.primaryLanguage ||
+      ''
+  )
+  const selectedLanguageUsesCache = computed(() => {
+    const language = selectedLanguage.value
+    return Boolean(
+      language &&
+        isPublicKitchenCacheLanguage(language) &&
+        languageState.value.cachedLanguages.includes(language)
+    )
+  })
   const routeMatchesKitchenId = computed(
     () =>
       Boolean(kitchenByRouteId.value) &&
@@ -95,10 +155,19 @@ export function usePublicKitchenMenu(
     kitchenCollectionPath: ROOT_KITCHENS,
   })
   const menus = computed(() => menuRead.menus.value.filter(isPublicMenu))
+  const requestedMenuId = computed(() => clean(menuId?.value))
   const menu = computed(() => {
-    const id = clean(menuId?.value)
+    const id = requestedMenuId.value
     return id ? menus.value.find((item) => clean(item.id) === id) ?? null : null
   })
+  const translationCachePath = computed(() =>
+    kitchenId.value && clean(menu.value?.id) && selectedLanguageUsesCache.value
+      ? `${ROOT_KITCHENS}/${kitchenId.value}/menus/${clean(menu.value?.id)}/translation_cache`
+      : ''
+  )
+  const translationCacheRows = ref<Record<string, unknown>[]>([])
+  const translationCachePending = ref(false)
+  let translationCacheRequestId = 0
   const sectionRead = useKitchenMenuSectionCollection(
     kitchenId,
     computed(() => clean(menu.value?.id)),
@@ -187,6 +256,35 @@ export function usePublicKitchenMenu(
     { immediate: true }
   )
 
+  watch(
+    [translationCachePath, selectedLanguageUsesCache],
+    async ([path, usesCache]) => {
+      const requestId = ++translationCacheRequestId
+      translationCacheRows.value = []
+
+      if (!usesCache || !path) {
+        translationCachePending.value = false
+        return
+      }
+
+      translationCachePending.value = true
+      try {
+        const snap = await getDocs(collection(resolveDb(), path))
+        if (requestId !== translationCacheRequestId) return
+
+        translationCacheRows.value = snap.docs.map((docSnap) => ({
+          ...docSnap.data(),
+          id: docSnap.id,
+        }))
+      } finally {
+        if (requestId === translationCacheRequestId) {
+          translationCachePending.value = false
+        }
+      }
+    },
+    { immediate: true }
+  )
+
   const dishesById = computed(() => {
     const map = new Map<string, Dish>()
     dishRead.dishes.value.forEach((dish) => {
@@ -195,37 +293,148 @@ export function usePublicKitchenMenu(
     })
     return map
   })
+  const translationCacheByField = computed(() => {
+    const map = new Map<string, string>()
+    if (!selectedLanguageUsesCache.value) return map
+
+    for (const row of translationCacheRows.value) {
+      const fieldId = clean(row.field_id)
+      const targetLanguage = clean(row.target_language)
+      const translatedText = clean(row.translated_text)
+      if (fieldId && targetLanguage === selectedLanguage.value && translatedText) {
+        map.set(fieldId, translatedText)
+      }
+    }
+
+    return map
+  })
+  const cacheTextFor = (fieldId: string) =>
+    selectedLanguageUsesCache.value
+      ? translationCacheByField.value.get(fieldId) || ''
+      : ''
+  const textForLanguage = (
+    defaultText: unknown,
+    translations: unknown,
+    cacheFieldId = ''
+  ) =>
+    resolvePublicTranslatedText({
+      defaultText,
+      translations,
+      selectedLanguage: activeContentLanguage.value,
+      cacheText: cacheTextFor(cacheFieldId),
+    }).text
+  const menuFieldId = (menu: Pick<Menu, 'id'>, field: string) =>
+    `menu:${clean(menu.id)}:${field}`
+  const sectionFieldId = (
+    menu: Pick<Menu, 'id'>,
+    section: Pick<MenuSection, 'id'>,
+    field: string
+  ) => `menu:${clean(menu.id)}:section:${clean(section.id)}:${field}`
+  const itemFieldId = (
+    menu: Pick<Menu, 'id'>,
+    section: Pick<MenuSection, 'id'>,
+    item: Pick<MenuItem, 'id'>,
+    field: string
+  ) => `menu:${clean(menu.id)}:section:${clean(section.id)}:item:${clean(item.id)}:${field}`
+  const dishFieldId = (dish: Pick<Dish, 'id'>, field: string) =>
+    `dish:${clean(dish.id)}:${field}`
+  const displayMenu = computed<Menu | null>(() => {
+    if (!menu.value) return null
+
+    const source = menu.value as Menu & MenuWithEmbeddedSections
+    return {
+      ...menu.value,
+      name:
+        textForLanguage(source.name, source.names, menuFieldId(source, 'name')) ||
+        menu.value.name,
+      description:
+        textForLanguage(
+          source.description,
+          source.descriptions,
+          menuFieldId(source, 'description')
+        ) || menu.value.description,
+    }
+  })
 
   const sectionRows = computed<PublicMenuSectionRow[]>(() =>
     sections.value.map((section) => {
       const sectionId = clean(section.id)
+      const sourceSection = section as EmbeddedMenuSection
       const items = resolvedItemRows.value
         .filter((row) => row.sectionId === sectionId)
         .map<PublicMenuItemRow>((row) => {
+          const sourceItem = row.item as EmbeddedMenuItem
           const dish = dishesById.value.get(clean(row.item.dish_id)) ?? null
-          const label = clean((row.item as EmbeddedMenuItem).label) || clean(dish?.name)
+          const sourceDish = dish as (Dish & { names?: unknown; descriptions?: unknown }) | null
+          const itemLabel = textForLanguage(
+            sourceItem.label,
+            sourceItem.labels,
+            itemFieldId(menu.value as Menu, sourceSection, sourceItem, 'label')
+          )
+          const label = sourceDish
+            ? textForLanguage(
+                sourceDish.name,
+                sourceDish.names,
+                dishFieldId(sourceDish, 'name')
+              ) || itemLabel
+            : itemLabel
+          const itemDescription = textForLanguage(
+            sourceItem.description,
+            sourceItem.descriptions,
+            itemFieldId(menu.value as Menu, sourceSection, sourceItem, 'description')
+          )
+          const dishDescription = sourceDish
+            ? textForLanguage(
+                sourceDish.description,
+                sourceDish.descriptions,
+                dishFieldId(sourceDish, 'description')
+              )
+            : ''
           return {
             item: row.item,
             dish,
             label,
-            description:
-              clean((row.item as EmbeddedMenuItem).description) || clean(dish?.description),
+            description: itemDescription || dishDescription,
             price: resolveItemPrice(row.item),
           }
         })
         .filter((row) => row.label)
 
-      return { section, items }
+      return {
+        section: {
+          ...section,
+          label:
+            textForLanguage(
+              sourceSection.label,
+              sourceSection.labels,
+              sectionFieldId(menu.value as Menu, sourceSection, 'label')
+            ) || section.label,
+          description:
+            textForLanguage(
+              sourceSection.description,
+              sourceSection.descriptions,
+              sectionFieldId(menu.value as Menu, sourceSection, 'description')
+            ) || section.description,
+        },
+        items,
+      }
     })
+  )
+  const languageOptions = computed(() =>
+    sproochliEnabled.value
+      ? resolvePublicKitchenLanguageOptions(kitchen.value)
+      : []
   )
 
   const pending = computed(
     () =>
       kitchensPending.value ||
       menuRead.pending.value ||
-      (!usesEmbeddedSections.value && sectionRead.pending.value) ||
-      dishRead.pending.value ||
-      itemsPending.value
+      (Boolean(requestedMenuId.value) &&
+        ((!usesEmbeddedSections.value && sectionRead.pending.value) ||
+          dishRead.pending.value ||
+          itemsPending.value ||
+          translationCachePending.value))
   )
   const unavailable = computed(
     () =>
@@ -239,9 +448,12 @@ export function usePublicKitchenMenu(
     canonicalSlug,
     routeMatchesKitchenId,
     menus,
-    menu,
+    menu: displayMenu,
     sections,
     sectionRows,
+    selectedLanguage,
+    languageOptions,
+    sproochliEnabled,
     pending,
     unavailable,
   }

@@ -15,6 +15,7 @@ export type PublicKitchenLanguageCode = '' | PublicKitchenChromeLanguage
 export type PublicKitchenLanguageOption = {
   code: PublicKitchenLanguageCode
   label: string
+  name: string
   source?: 'original' | 'attached' | 'cache' | 'public'
 }
 
@@ -74,22 +75,37 @@ const PUBLIC_KITCHEN_LANGUAGE_LABELS: Record<PublicKitchenChromeLanguage, string
   bo: 'བོད་སྐད་',
 }
 
+const PUBLIC_KITCHEN_LANGUAGE_NAMES: Record<PublicKitchenChromeLanguage, string> = {
+  de: 'Deutsch',
+  en: 'English',
+  it: 'Italiano',
+  fr: 'Français',
+  ar: 'العربية',
+  es: 'Español',
+  pt: 'Português',
+  he: 'עברית',
+  ko: '한국어',
+  ja: '日本語',
+  bo: 'བོད་སྐད་',
+}
+
 export const PUBLIC_KITCHEN_LANGUAGE_OPTIONS: Array<{
   code: PublicKitchenLanguageCode
   label: string
+  name: string
 }> = [
-  { code: '', label: 'Original' },
-  { code: 'de', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.de },
-  { code: 'en', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.en },
-  { code: 'it', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.it },
-  { code: 'fr', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.fr },
-  { code: 'ar', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.ar },
-  { code: 'es', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.es },
-  { code: 'pt', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.pt },
-  { code: 'he', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.he },
-  { code: 'ko', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.ko },
-  { code: 'ja', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.ja },
-  { code: 'bo', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.bo },
+  { code: '', label: 'Original', name: 'Original' },
+  { code: 'de', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.de, name: PUBLIC_KITCHEN_LANGUAGE_NAMES.de },
+  { code: 'en', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.en, name: PUBLIC_KITCHEN_LANGUAGE_NAMES.en },
+  { code: 'it', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.it, name: PUBLIC_KITCHEN_LANGUAGE_NAMES.it },
+  { code: 'fr', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.fr, name: PUBLIC_KITCHEN_LANGUAGE_NAMES.fr },
+  { code: 'ar', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.ar, name: PUBLIC_KITCHEN_LANGUAGE_NAMES.ar },
+  { code: 'es', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.es, name: PUBLIC_KITCHEN_LANGUAGE_NAMES.es },
+  { code: 'pt', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.pt, name: PUBLIC_KITCHEN_LANGUAGE_NAMES.pt },
+  { code: 'he', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.he, name: PUBLIC_KITCHEN_LANGUAGE_NAMES.he },
+  { code: 'ko', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.ko, name: PUBLIC_KITCHEN_LANGUAGE_NAMES.ko },
+  { code: 'ja', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.ja, name: PUBLIC_KITCHEN_LANGUAGE_NAMES.ja },
+  { code: 'bo', label: PUBLIC_KITCHEN_LANGUAGE_LABELS.bo, name: PUBLIC_KITCHEN_LANGUAGE_NAMES.bo },
 ]
 
 export const PUBLIC_KITCHEN_CHROME_FALLBACK_LABELS: PublicKitchenChromeLabels = {
@@ -295,7 +311,7 @@ export function resolvePublicKitchenLanguageState(
   const publicLanguages = normalizeLanguageList(languageSettings.public_languages)
   const seen = new Set<PublicKitchenLanguageCode>([''])
   const options: PublicKitchenLanguageOption[] = [
-    { code: '', label: 'Original', source: 'original' },
+    { code: '', label: 'Original', name: 'Original', source: 'original' },
   ]
   const addLanguage = (
     value: unknown,
@@ -308,6 +324,7 @@ export function resolvePublicKitchenLanguageState(
     options.push({
       code,
       label: PUBLIC_KITCHEN_LANGUAGE_LABELS[code],
+      name: PUBLIC_KITCHEN_LANGUAGE_NAMES[code],
       source,
     })
   }
