@@ -530,15 +530,10 @@ function buildMenuPayload(menu, kitchenId, snap) {
     description: menu.description,
     status: 'published',
     public_menu_design: {
+      preset: 'dark-gold',
       theme: 'la-tapberne',
-      background: '#FFFFFF',
-      text: '#000000',
-      muted_text: '#4A4A4A',
-      border: '#D9D9D9',
-      accent: '#000000',
-      font: 'system',
-      heading_font: 'display',
-      radius: '8px',
+      color_mode: 'dark',
+      accent: '#F0C84D',
     },
     descriptions: {
       de: normalizeString(menu.descriptions?.de ?? ''),

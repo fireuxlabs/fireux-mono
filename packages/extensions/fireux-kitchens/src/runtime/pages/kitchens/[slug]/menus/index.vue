@@ -52,11 +52,48 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from '#imports'
+import { computed, watchEffect } from 'vue'
+import { navigateTo, useRoute } from '#imports'
 import { usePublicKitchenMenu } from '../../../../composables/fireux/app/usePublicKitchenMenu'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || '').trim())
-const { kitchen, menus, pending } = usePublicKitchenMenu(slug)
+const {
+  kitchen,
+  menus,
+  pending,
+  canonicalSlug,
+  routeMatchesKitchenId,
+} = usePublicKitchenMenu(slug)
+const routeSlug = computed(() =>
+  routeMatchesKitchenId.value && canonicalSlug.value ? canonicalSlug.value : slug.value
+)
+
+watchEffect(() => {
+  if (pending.value || !kitchen.value) return
+
+  const slugValue = routeSlug.value
+  if (!slugValue) return
+
+  if (menus.value.length === 1) {
+    navigateTo(
+      {
+        path: `/kitchens/${encodeURIComponent(slugValue)}/menus/${encodeURIComponent(menus.value[0].id)}`,
+        query: route.query,
+      },
+      { replace: true }
+    )
+    return
+  }
+
+  if (routeMatchesKitchenId.value && canonicalSlug.value) {
+    navigateTo(
+      {
+        path: `/kitchens/${encodeURIComponent(canonicalSlug.value)}/menus`,
+        query: route.query,
+      },
+      { replace: true }
+    )
+  }
+})
 </script>

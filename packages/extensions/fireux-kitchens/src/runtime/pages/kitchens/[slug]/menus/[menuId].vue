@@ -1,17 +1,5 @@
 <template>
-  <main>
-    <div class="mx-auto w-full max-w-3xl px-4 pt-6">
-      <UButton
-        :to="`/kitchens/${encodeURIComponent(slug)}/menus`"
-        color="neutral"
-        variant="ghost"
-        icon="i-lucide-arrow-left"
-        size="sm"
-      >
-        Back to menus
-      </UButton>
-    </div>
-
+  <div class="contents">
     <div v-if="pending" class="mx-auto max-w-3xl px-4 py-8 text-sm text-dimmed">
       Loading menu...
     </div>
@@ -31,7 +19,7 @@
       :menu="menu"
       :section-rows="sectionRows"
     />
-  </main>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -39,6 +27,12 @@ import { computed, watchEffect } from 'vue'
 import { navigateTo, useRoute } from '#imports'
 import { usePublicKitchenMenu } from '../../../../composables/fireux/app/usePublicKitchenMenu'
 import OrganismsMenuPublic from '../../../../components/organisms/Menu/Public.vue'
+
+definePageMeta({
+  layout: 'public-menu',
+  name: 'KitchenPublicMenusDetailPage',
+  key: (route) => route.fullPath,
+})
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || '').trim())
