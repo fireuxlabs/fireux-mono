@@ -82,6 +82,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRuntimeConfig } from '#imports'
 import type { Menu } from '../../../models/menu.model'
 import {
   resolvePublicMenuDesign,
@@ -111,8 +112,18 @@ const props = defineProps<{
   sectionRows: PublicMenuSectionRow[]
   languageOptions?: PublicKitchenLanguageOption[]
   selectedLanguage?: PublicKitchenLanguageCode
+  designSources?: unknown[]
 }>()
 
+const runtimeConfig = useRuntimeConfig()
+const asRecord = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {}
+const publicConfig = runtimeConfig.public as Record<string, unknown>
+const fireuxConfig = asRecord(publicConfig.fireux)
+const miseboxConfig = asRecord(fireuxConfig.misebox)
+const publicMenuConfig = asRecord(miseboxConfig.publicMenu)
 const visibleSectionRows = computed(() =>
   props.sectionRows.filter((row) => row.items.length > 0)
 )
@@ -120,9 +131,17 @@ const menuLanguage = computed(() => props.selectedLanguage || undefined)
 const menuDirection = computed(() =>
   isPublicKitchenRtlLanguage(props.selectedLanguage) ? 'rtl' : 'ltr'
 )
-const menuDesignSource = computed(() => resolvePublicMenuDesignSource(props.menu))
+const menuDesignSources = computed(() => [
+  props.menu,
+  ...(props.designSources ?? []),
+  publicMenuConfig,
+  fireuxConfig,
+])
+const menuDesignSource = computed(() =>
+  resolvePublicMenuDesignSource(...menuDesignSources.value)
+)
 const publicMenuDesign = computed(() =>
-  resolvePublicMenuDesign(undefined, props.menu)
+  resolvePublicMenuDesign(...menuDesignSources.value)
 )
 const publicMenuSurfaceClass = computed(
   () => `public-menu-surface--${publicMenuDesign.value.color_mode}`

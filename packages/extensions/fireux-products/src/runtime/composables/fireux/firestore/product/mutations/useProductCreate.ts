@@ -1,5 +1,6 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
@@ -63,6 +64,7 @@ export function useProductCreate() {
   const db = useFirestore()
   const { setDocument, getCollectionPath } = useFirestoreManager()
   const fireux = useFireUXConfig()
+  const { currentUser } = useAuth()
 
   const collectionPath = getCollectionPath('products', false)
 
@@ -116,9 +118,17 @@ export function useProductCreate() {
     sourceAppId: string
     priceInputs: StripePriceInput[]
   }): Promise<StripeProvisionResult> => {
+    const headers: Record<string, string> = {
+      'content-type': 'application/json',
+    }
+    const idToken = await currentUser.value?.getIdToken()
+    if (idToken) {
+      headers.authorization = `Bearer ${idToken}`
+    }
+
     const stripeResponse = await fetch('/api/stripe/create-product', {
       method: 'POST',
-      headers: { 'content-type': 'application/json' },
+      headers,
       body: JSON.stringify({
         product: {
           name: input.payload.name,

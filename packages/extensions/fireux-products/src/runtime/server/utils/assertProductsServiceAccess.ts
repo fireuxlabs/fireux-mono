@@ -1,6 +1,8 @@
 import { useRuntimeConfig } from '#imports'
 import { timingSafeEqual } from 'node:crypto'
 import { createError, getHeader, type H3Event } from 'h3'
+import { getFirestore } from 'firebase-admin/firestore'
+import { getProductsAdmin } from './getAdmin'
 
 function firstString(...values: unknown[]): string {
   for (const value of values) {
@@ -29,6 +31,11 @@ function serviceKeyFromRequest(event: H3Event): string {
   )
 }
 
+function bearerTokenFromRequest(event: H3Event): string {
+  const authorization = firstString(getHeader(event, 'authorization'))
+  return firstString(authorization.match(/^Bearer\s+(.+)$/i)?.[1])
+}
+
 function configuredServiceKey(event: H3Event): string {
   const runtime = useRuntimeConfig(event) as any
   const fireuxProducts = runtime?.fireuxProducts || {}
@@ -45,16 +52,73 @@ function configuredServiceKey(event: H3Event): string {
   )
 }
 
-export function assertProductsServiceAccess(event: H3Event) {
+async function hasAppAdminAccess(event: H3Event): Promise<boolean> {
+  const token = bearerTokenFromRequest(event)
+  if (!token) return false
+
+  try {
+    const runtime = useRuntimeConfig(event) as any
+    const appId = firstString(runtime?.public?.fireux?.id)
+    const databaseId = firstString(
+      runtime?.public?.firebaseEcosystem?.firebase?.databaseId
+    )
+
+    if (!appId) return false
+
+    const admin = getProductsAdmin()
+    const decoded = await admin.auth().verifyIdToken(token)
+    const uid = firstString(decoded?.uid)
+    if (!uid) return false
+
+    const db = databaseId
+      ? getFirestore(admin.app(), databaseId)
+      : admin.firestore()
+
+    const [appSnap, appUserSnap, userSnap] = await Promise.all([
+      db.doc(`apps/${appId}`).get(),
+      db.doc(`apps/${appId}/users/${uid}`).get(),
+      db.doc(`users/${uid}`).get(),
+    ])
+
+    const appData = appSnap.data() || {}
+    const appUserData = appUserSnap.data() || {}
+    const userData = userSnap.data() || {}
+
+    const adminIds = Array.isArray(appData.admin_ids) ? appData.admin_ids : []
+    const adminOf = Array.isArray(userData.adminOf) ? userData.adminOf : []
+
+    return (
+      adminIds.includes(uid) ||
+      adminOf.includes(appId) ||
+      appUserData.role === 'admin' ||
+      appUserData.canManageProducts === true
+    )
+  } catch (error) {
+    if (import.meta.dev) {
+      console.warn('[fireux-products] admin token access check failed', error)
+    }
+    return false
+  }
+}
+
+export async function assertProductsServiceAccess(event: H3Event) {
   const serviceKey = configuredServiceKey(event)
-  if (!serviceKey) {
+  const requestKey = serviceKeyFromRequest(event)
+
+  if (serviceKey && requestKey && safeEquals(requestKey, serviceKey)) {
+    return
+  }
+
+  if (await hasAppAdminAccess(event)) {
+    return
+  }
+
+  if (!serviceKey && !requestKey) {
     throw createError({ statusCode: 404, statusMessage: 'Not found' })
   }
 
-  if (!safeEquals(serviceKeyFromRequest(event), serviceKey)) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: 'Unauthorized FireUX products request.',
-    })
-  }
+  throw createError({
+    statusCode: 401,
+    statusMessage: 'Unauthorized FireUX products request.',
+  })
 }

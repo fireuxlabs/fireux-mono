@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-20
+Updated: 2026-05-21
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -141,6 +141,8 @@ Current learned examples:
 - Tenant apps may stay intentionally thin and do not justify new top-level domain/storage patterns on their own.
 - Tenant apps consume selected ecosystem capability; they do not automatically receive every module, profile, or console surface from the parent ecosystem.
 - Placeholder tenant branding/assets are canonical until tenant-specific assets are explicitly provided.
+- Tenant visual treatment is resolved through app/runtime design packs. Core owns the resolver contract, ecosystems may provide inherited defaults, and tenants may provide local packs until promotion/migration gives the ecosystem a stored source of truth.
+- Shared extensions consume surface design tokens such as `design_packs.public_menu`; they must not hardcode tenant-specific colours, fonts, or route styling.
 - Existing tenant implementations do not define canon; shared tenant rules come from Tier1 and shared runtime.
 - Standalone apps are FireUX-hosted product apps inside the `fireux` ecosystem.
 - Standalone apps are not tenant children and are not ecosystem globals.

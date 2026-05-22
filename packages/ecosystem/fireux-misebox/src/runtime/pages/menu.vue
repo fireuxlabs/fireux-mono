@@ -3,6 +3,7 @@
     :dir="pageDirection"
     :lang="selectedLanguage || undefined"
     class="public-menu-page"
+    :class="publicMenuPageClass"
     :style="publicMenuDesignStyle"
   >
     <section class="public-menu-hero">
@@ -89,6 +90,7 @@ import {
 } from 'fireux-kitchens/runtime/composables/fireux/app/public-kitchen-language'
 import { usePublicMenuLanguage } from 'fireux-kitchens/runtime/composables/fireux/app/kitchens/usePublicMenuLanguage'
 import {
+  resolvePublicMenuDesign,
   resolvePublicMenuDesignSource,
   resolvePublicMenuDesignStyle,
 } from 'fireux-kitchens/runtime/composables/fireux/app/public-menu-design'
@@ -256,7 +258,7 @@ const sproochliEnabled = computed(
 const selectedLanguage = computed(() =>
   sproochliEnabled.value
     ? normalizePublicKitchenLanguage(
-        normalizeRouteQueryString(route.query.lang || route.query.language)
+        normalizeRouteQueryString(route.query.sproochli)
       )
     : ''
 )
@@ -331,9 +333,21 @@ const selectedMenu = computed<PublicMenuRecord | null>(() => {
   const list = menus.value ?? []
   return list.find((entry) => normalizeString(entry.id) === routeMenuId.value) ?? null
 })
+const publicMenuDesignSources = computed(() => [
+  selectedMenu.value,
+  kitchen.value,
+  publicMenuConfig.value,
+  (runtimeConfig.public as Record<string, unknown>).fireux,
+])
+const publicMenuDesign = computed(() =>
+  resolvePublicMenuDesign(...publicMenuDesignSources.value)
+)
+const publicMenuPageClass = computed(
+  () => `public-menu-page--${publicMenuDesign.value.color_mode}`
+)
 const publicMenuDesignStyle = computed(() =>
   resolvePublicMenuDesignStyle(
-    resolvePublicMenuDesignSource(selectedMenu.value, kitchen.value)
+    resolvePublicMenuDesignSource(...publicMenuDesignSources.value)
   )
 )
 const dishesById = computed(() => {
@@ -664,11 +678,27 @@ useHead({
 
 <style scoped>
 .public-menu-page {
+  --public-menu-bg: #fffaf2;
+  --public-menu-text: #211915;
+  --public-menu-toned: #4f4037;
+  --public-menu-muted: #756a60;
+  --public-menu-border: rgba(34, 25, 20, 0.16);
+  --public-menu-accent: var(--ui-primary);
   width: min(100%, 980px);
+  min-height: 100vh;
   margin: 0 auto;
   padding: 48px 16px 72px;
+  background: var(--public-menu-bg);
   color: var(--public-menu-text, var(--ui-text-highlighted));
   font-family: var(--public-menu-font, inherit);
+}
+
+.public-menu-page--dark {
+  --public-menu-bg: #090806;
+  --public-menu-text: #fff7e8;
+  --public-menu-toned: #e2d2b8;
+  --public-menu-muted: #bba98b;
+  --public-menu-border: rgba(255, 255, 255, 0.18);
 }
 
 .public-menu-hero {

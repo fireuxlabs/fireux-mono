@@ -115,7 +115,7 @@ const triggerLabel = computed(
 const passThroughQuery = computed(() =>
   Object.fromEntries(
     Object.entries(route.query).filter(
-      ([key]) => !['lang', 'language'].includes(key)
+      ([key]) => !['sproochli', 'lang', 'language'].includes(key)
     )
   )
 )
@@ -138,7 +138,7 @@ const languageHref = (language: PublicKitchenLanguageCode) => {
   Object.entries(passThroughQuery.value).forEach(([key, value]) => {
     appendQueryValue(params, key, value)
   })
-  if (language) params.set('lang', language)
+  if (language) params.set('sproochli', language)
   const query = params.toString()
   return query ? `${route.path}?${query}` : route.path
 }

@@ -7,7 +7,7 @@ import {
   type H3Event,
 } from 'h3'
 import { STRIPE_API_VERSION } from '../../stripe/version'
-import { getProductsAdmin } from '../../utils/getAdmin'
+import { getProductsFirestore } from '../../utils/getAdmin'
 
 type CreateCheckoutSessionBody = {
   appId?: string
@@ -31,8 +31,12 @@ function normalizeString(value: unknown): string {
 
 function baseUrlFromEvent(event: H3Event) {
   const configured = process.env.APP_DOMAIN?.trim()
-  if (configured) return configured.replace(/\/$/, '')
   const url = getRequestURL(event)
+  if (configured) {
+    const normalized = configured.replace(/\/$/, '')
+    if (/^https?:\/\//i.test(normalized)) return normalized
+    return `${url.protocol}//${normalized}`
+  }
   return `${url.protocol}//${url.host}`
 }
 
@@ -153,8 +157,7 @@ async function assertCheckoutProductAndPrice(input: {
     })
   }
 
-  const admin = getProductsAdmin()
-  const db = admin.firestore()
+  const db = getProductsFirestore()
   const productSnap = await db.doc(`products/${input.productId}`).get()
   if (!productSnap.exists) {
     throw createError({

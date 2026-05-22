@@ -106,7 +106,7 @@ const sproochliEnabled = computed(
 const selectedLanguage = computed(() =>
   sproochliEnabled.value
     ? normalizePublicKitchenLanguage(
-        queryString(route.query.lang || route.query.language)
+        queryString(route.query.sproochli)
       )
     : ''
 )
@@ -116,18 +116,21 @@ const languageOptions = computed(() =>
     : []
 )
 const publicLanguageQuery = computed(() =>
-  selectedLanguage.value ? `?lang=${encodeURIComponent(selectedLanguage.value)}` : ''
+  selectedLanguage.value ? `?sproochli=${encodeURIComponent(selectedLanguage.value)}` : ''
 )
 const menuRead = useKitchenMenuCollection(kitchenId, {
   kitchenCollectionPath: 'kitchens',
 })
+const menuIsPublicVisible = (menu: Menu) => {
+  if ((menu as any).active === false) return false
+
+  const status = clean(menu.status).toLowerCase()
+  if (!status) return true
+  return !['archived', 'draft', 'inactive', 'private'].includes(status)
+}
 const menus = computed(() =>
   [...menuRead.menus.value]
-    .filter(
-      (menu) =>
-        clean(menu.status) === 'published' ||
-        (!clean(menu.status) && (menu as any).active === true)
-    )
+    .filter(menuIsPublicVisible)
     .sort(
       (a, b) =>
         Number(a.sort_order || 0) - Number(b.sort_order || 0) ||

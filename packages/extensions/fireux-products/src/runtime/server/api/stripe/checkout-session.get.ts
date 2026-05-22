@@ -9,7 +9,7 @@ import { STRIPE_API_VERSION } from '../../stripe/version'
 import { assertProductsServiceAccess } from '../../utils/assertProductsServiceAccess'
 
 export default defineEventHandler(async (event: H3Event) => {
-  assertProductsServiceAccess(event)
+  await assertProductsServiceAccess(event)
 
   const secret = process.env.STRIPE_SECRET_KEY
   if (!secret) {

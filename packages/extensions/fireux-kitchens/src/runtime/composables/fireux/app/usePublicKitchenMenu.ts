@@ -123,7 +123,7 @@ export function usePublicKitchenMenu(
   const selectedLanguage = computed(() =>
     sproochliEnabled.value
       ? normalizePublicKitchenLanguage(
-          queryString(route.query.lang || route.query.language)
+          queryString(route.query.sproochli)
         )
       : ''
   )

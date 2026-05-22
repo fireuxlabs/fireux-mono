@@ -13,7 +13,7 @@ import { assertProductsServiceAccess } from '../../utils/assertProductsServiceAc
 
 export default defineEventHandler(async (event: H3Event) => {
   try {
-    assertProductsServiceAccess(event)
+    await assertProductsServiceAccess(event)
 
     // Quick guard: if no secret key, return 501 (not configured) instead of crashing
     const secret = process.env.STRIPE_SECRET_KEY

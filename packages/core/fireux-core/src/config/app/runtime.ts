@@ -19,6 +19,10 @@ export type RuntimeApp = {
   appLogoDark?: string
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
+  /** Optional app-level design pack. Surface-specific packs belong in designPacks. */
+  designPack?: Record<string, unknown>
+  /** Optional app-level surface design packs, e.g. designPacks.publicMenu. */
+  designPacks?: Record<string, Record<string, unknown>>
   /** Optional signed-in uid allowed to access developer-only dashboard tools. */
   developerId?: string
   domain: string

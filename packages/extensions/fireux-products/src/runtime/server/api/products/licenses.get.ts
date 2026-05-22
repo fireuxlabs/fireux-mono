@@ -1,9 +1,9 @@
 import { createError, defineEventHandler, getQuery, type H3Event } from 'h3'
-import { getProductsAdmin } from '../../utils/getAdmin'
+import { getProductsFirestore } from '../../utils/getAdmin'
 import { assertProductsServiceAccess } from '../../utils/assertProductsServiceAccess'
 
 export default defineEventHandler(async (event: H3Event) => {
-  assertProductsServiceAccess(event)
+  await assertProductsServiceAccess(event)
 
   try {
     const query = getQuery(event)
@@ -13,8 +13,7 @@ export default defineEventHandler(async (event: H3Event) => {
       throw createError({ statusCode: 400, statusMessage: 'Missing appId query param' })
     }
 
-    const admin = getProductsAdmin()
-    const db = admin.firestore()
+    const db = getProductsFirestore()
     const snapshot = await db.collection(`apps/${appId}/licenses`).get()
 
     const licenses = snapshot.docs.map((doc) => ({

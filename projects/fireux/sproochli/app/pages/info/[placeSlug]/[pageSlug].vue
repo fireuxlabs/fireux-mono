@@ -79,7 +79,7 @@ import type { InfoBlockType } from 'fireux-sproochli/runtime/info'
 const route = useRoute()
 const placeSlug = computed(() => String(route.params.placeSlug || ''))
 const pageSlug = computed(() => String(route.params.pageSlug || ''))
-const requestedLanguage = computed(() => String(route.query.lang || 'en'))
+const requestedLanguage = computed(() => String(route.query.sproochli || 'en'))
 
 const info = computed(() =>
   resolveSproochliInfoPage(placeSlug.value, pageSlug.value, requestedLanguage.value)
@@ -93,7 +93,9 @@ if (!info.value) {
 }
 
 const resolvedInfo = computed(() => info.value!)
-const languages = sproochliLanguages
+const languages = computed(() =>
+  sproochliLanguages.filter((language) => resolvedInfo.value.place.supported_languages.includes(language.code))
+)
 
 const sourceLabel = computed(() => {
   if (resolvedInfo.value.translation_source === 'original') return 'Original owner-written content'
@@ -102,7 +104,7 @@ const sourceLabel = computed(() => {
 })
 
 function languagePath(language: SproochliLanguage) {
-  return `/info/${placeSlug.value}/${pageSlug.value}?lang=${language}`
+  return `/info/${placeSlug.value}/${pageSlug.value}?sproochli=${language}`
 }
 
 function blockIcon(type: InfoBlockType) {

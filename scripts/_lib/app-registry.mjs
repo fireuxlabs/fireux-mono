@@ -170,6 +170,23 @@ export const APP_REGISTRY = {
     ],
     launchOrder: 10,
   },
+  qrdoc: {
+    key: 'qrdoc',
+    name: 'QRdoc',
+    appId: 'qrdoc',
+    ecosystem: 'fireux',
+    databaseId: 'qrdoc',
+    role: 'standalone',
+    workspace: './projects/fireux/qrdoc',
+    port: 3013,
+    consoles: [],
+    smokeRoutes: [
+      '/',
+      '/d/yellow-velo-rental-terms',
+      '/d/yellow-velo-tour-participant-agreement',
+    ],
+    launchOrder: 11,
+  },
   granite: {
     key: 'granite',
     name: 'Granite',
@@ -180,7 +197,7 @@ export const APP_REGISTRY = {
     workspace: './projects/granite/granite-app',
     port: 3007,
     consoles: ['portfolio'],
-    launchOrder: 11,
+    launchOrder: 12,
   },
   'la-tap-berne': {
     key: 'la-tap-berne',
@@ -192,14 +209,14 @@ export const APP_REGISTRY = {
     workspace: './projects/misebox/la-tap-berne',
     port: 3008,
     consoles: ['kitchen'],
-    launchOrder: 12,
+    launchOrder: 13,
   },
 }
 
 export const APP_GROUPS = {
   all: ['fireux', 'misebox', 'cleanbox'],
   'all-extended': ['fireux', 'misebox', 'cleanbox', 'niederhorn', 'richies', 'tenant'],
-  full: ['fireux', 'misebox', 'cleanbox', 'niederhorn', 'richies', 'tenant', 'bringli', 'find-my-seo', 'sproochli', 'buenohost', 'granite', 'la-tap-berne'],
+  full: ['fireux', 'misebox', 'cleanbox', 'niederhorn', 'richies', 'tenant', 'bringli', 'find-my-seo', 'sproochli', 'buenohost', 'qrdoc', 'granite', 'la-tap-berne'],
 }
 
 export const APP_KEYS = Object.keys(APP_REGISTRY)

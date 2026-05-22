@@ -12,7 +12,7 @@
         <p v-if="product?.default_price" class="cell-price">
           {{ formatDefaultPrice(product) }}
         </p>
-        <div class="purchace-buttons">
+        <div class="purchase-buttons">
           <UButton
             :disabled="props.mode === 'preview' || isBuying"
             color="primary"
@@ -20,7 +20,6 @@
           >
             {{ isBuying ? 'Starting checkout...' : 'Buy Now' }}
           </UButton>
-          <UButton :disabled="props.mode === 'preview'" variant="outline">Add to Basket</UButton>
         </div>
       </div>
     </div>
@@ -31,7 +30,7 @@
       </p>
       <p>{{ display(product?.description) }}</p>
       <p v-if="product?.default_price">{{ formatDefaultPrice(product) }}</p>
-      <div class="purchace-buttons">
+      <div class="purchase-buttons">
         <UButton
           :disabled="props.mode === 'preview' || isBuying"
           color="primary"
@@ -39,7 +38,6 @@
         >
           {{ isBuying ? 'Starting checkout...' : 'Buy Now' }}
         </UButton>
-        <UButton :disabled="props.mode === 'preview'" variant="outline">Add to Basket</UButton>
       </div>
     </div>
 
@@ -90,27 +88,17 @@
               <p class="product-summary">{{ display(product?.description) }}</p>
             </div>
             <div class="product-price">
-              <span class="price-label">From</span>
+              <span class="price-label">{{ priceLabel(product) }}</span>
               <span class="price-value">{{ formatDefaultPrice(product) || 'Custom' }}</span>
-              <span class="price-note">Hosted and maintained</span>
             </div>
           </header>
 
-          <section class="product-section">
+          <section v-if="product?.content" class="product-section">
             <h2>Overview</h2>
-            <div v-html="product?.content" v-if="product?.content" />
-            <p v-else class="missing">!</p>
+            <div v-html="product.content" />
           </section>
 
-          <section class="product-section">
-            <h2>Questions</h2>
-            <div class="qa">
-              <p class="qa-q">{{ display(product?.Q) }}</p>
-              <p class="qa-a">{{ display(product?.A) }}</p>
-            </div>
-          </section>
-
-          <div class="purchace-buttons">
+          <div class="purchase-buttons">
             <UButton
               :disabled="props.mode === 'preview' || isBuying"
               color="primary"
@@ -118,7 +106,6 @@
             >
               {{ isBuying ? 'Starting checkout...' : 'Buy now' }}
             </UButton>
-            <UButton :disabled="props.mode === 'preview'" variant="outline">Book a call</UButton>
           </div>
         </div>
       </div>
@@ -172,6 +159,10 @@ function formatDefaultPrice(product?: Partial<FirebaseProduct>): string {
   return product.default_price.interval
     ? `${base}/${product.default_price.interval}`
     : base
+}
+
+function priceLabel(product?: Partial<FirebaseProduct>): string {
+  return product?.default_price?.interval ? 'From' : 'Price'
 }
 
 const notify = (
@@ -319,7 +310,7 @@ async function startCheckout() {
   font-weight: bold;
 }
 
-.purchace-buttons {
+.purchase-buttons {
   margin-top: 1rem;
   display: flex;
   gap: 0.75rem;
@@ -380,31 +371,9 @@ async function startCheckout() {
   margin: 0.25rem 0;
 }
 
-.price-note {
-  display: block;
-  font-size: 0.8rem;
-  color: #6b7280;
-}
-
 .product-section h2 {
   margin: 0 0 0.75rem;
   font-size: 1.1rem;
-}
-
-.qa {
-  padding: 1rem;
-  border: 1px solid var(--ui-border);
-  border-radius: var(--radius-md);
-  background: var(--ui-bg);
-}
-
-.qa-q {
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-.qa-a {
-  color: #4b5563;
 }
 
 </style>

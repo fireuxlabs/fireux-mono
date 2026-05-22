@@ -780,6 +780,18 @@ function activate(context) {
       url: 'http://localhost:3012',
     },
     {
+      key: 'qrdoc',
+      name: 'QRdoc',
+      icon: '$(file-media)',
+      port: 3013,
+      commandId: 'fireuxToolbar.startQrdoc',
+      taskLabel: 'pnpm dev:qrdoc',
+      terminalName: 'QRdoc (3013)',
+      pnpmCommand: 'pnpm dev:qrdoc --host',
+      tooltip: 'Start QRdoc dev (port 3013)',
+      url: 'http://localhost:3013',
+    },
+    {
       key: 'granite',
       name: 'Granite',
       icon: '$(database)',

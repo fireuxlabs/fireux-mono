@@ -1,4 +1,8 @@
 import * as admin from 'firebase-admin'
+import { getFirestore } from 'firebase-admin/firestore'
+import { useRuntimeConfig } from '#imports'
+
+const firebaseAdmin = ((admin as any).default ?? admin) as typeof admin
 
 function readEnv(key: string) {
   const value = process.env[key]
@@ -41,14 +45,23 @@ function getServiceAccountFromEnv():
   }
 }
 
+function hasDefaultAdminApp() {
+  try {
+    firebaseAdmin.app()
+    return true
+  } catch {
+    return false
+  }
+}
+
 export function getProductsAdmin() {
-  if (!admin.apps.length) {
+  if (!hasDefaultAdminApp()) {
     const serviceAccount = getServiceAccountFromEnv()
     const storageBucket = normalizeStorageBucket(readEnv('FIREBASE_STORAGE_BUCKET'))
 
     if (serviceAccount) {
-      admin.initializeApp({
-        credential: admin.credential.cert({
+      firebaseAdmin.initializeApp({
+        credential: firebaseAdmin.credential.cert({
           projectId: serviceAccount.projectId,
           clientEmail: serviceAccount.clientEmail,
           privateKey: serviceAccount.privateKey,
@@ -56,12 +69,24 @@ export function getProductsAdmin() {
         ...(storageBucket ? { storageBucket } : {}),
       })
     } else {
-      admin.initializeApp({
-        credential: admin.credential.applicationDefault(),
+      firebaseAdmin.initializeApp({
+        credential: firebaseAdmin.credential.applicationDefault(),
         ...(storageBucket ? { storageBucket } : {}),
       })
     }
   }
 
-  return admin
+  return firebaseAdmin
+}
+
+export function getProductsFirestore(databaseId?: string) {
+  const runtime = useRuntimeConfig()
+  const configuredDatabaseId = String(
+    databaseId || runtime.public?.firebaseEcosystem?.firebase?.databaseId || ''
+  ).trim()
+  const admin = getProductsAdmin()
+
+  return configuredDatabaseId
+    ? getFirestore(admin.app(), configuredDatabaseId)
+    : getFirestore(admin.app())
 }

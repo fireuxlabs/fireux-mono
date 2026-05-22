@@ -142,6 +142,17 @@
       }
     },
     {
+      "name": "QRdoc dev (3013)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:qrdoc",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 11
+      }
+    },
+    {
       "name": "Granite dev (3007)",
       "type": "node-terminal",
       "request": "launch",
@@ -149,7 +160,7 @@
       "cwd": "${workspaceFolder}",
       "presentation": {
         "group": "Dev Servers",
-        "order": 11
+        "order": 12
       }
     },
     {
@@ -160,7 +171,7 @@
       "cwd": "${workspaceFolder}",
       "presentation": {
         "group": "Dev Servers",
-        "order": 12
+        "order": 13
       }
     }
   ],
@@ -197,6 +208,7 @@
         "Find My SEO dev (3010)",
         "Sproochli dev (3011)",
         "BuenoHost dev (3012)",
+        "QRdoc dev (3013)",
         "Granite dev (3007)",
         "La Tap Berne dev (3008)"
       ]

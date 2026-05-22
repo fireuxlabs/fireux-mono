@@ -10,8 +10,7 @@ const getPublicMenuDefaults = (appId: string) => {
   if (appId === 'la-tap-berne') {
     return {
       kitchenCollectionPath: 'kitchens',
-      kitchenId: 'ChIJ08WSgYSjj0cRD6oE3RwUFk0',
-      kitchenSlug: 'la-tapberne',
+      kitchenId: 'la-tapberne',
       menuId: 'main',
       sproochli: true,
     }
@@ -36,6 +35,7 @@ export const configureRuntimeConfig = (nuxt: Nuxt) => {
   const currentBlogs = fireux.blogs
   const currentMisebox = asRecord(fireux.misebox)
   const currentSproochli = asRecord(fireux.sproochli)
+  const currentDesignPacks = asRecord(fireux.designPacks)
 
   const placeDefaults = getPlacesConfig()
   const jobDefaults = getJobsConfig()
@@ -63,6 +63,13 @@ export const configureRuntimeConfig = (nuxt: Nuxt) => {
     installed: true,
     enabled: true,
     ...currentSproochli,
+  }
+
+  fireux.designPacks = {
+    publicMenu: {
+      preset: 'classic',
+    },
+    ...currentDesignPacks,
   }
 
   fireux.misebox = {

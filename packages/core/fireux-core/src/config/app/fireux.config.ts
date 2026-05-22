@@ -34,6 +34,10 @@ export type FireuxAppConfig = {
   appLogo?: string
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
+  /** Optional app-level design pack. Surface-specific packs belong in designPacks. */
+  designPack?: Record<string, unknown>
+  /** Optional app-level surface design packs, e.g. designPacks.publicMenu. */
+  designPacks?: Record<string, Record<string, unknown>>
   role: RuntimeAppRole
   modules?: NonNullable<NuxtConfig['modules']>
   consoles?: string[]
@@ -259,6 +263,8 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       appLogoLight: brandAssets.logoLight,
       appLogoDark: brandAssets.logoDark,
       ...(app.contactEmail ? { contactEmail: app.contactEmail } : {}),
+      ...(app.designPack ? { designPack: app.designPack } : {}),
+      ...(app.designPacks ? { designPacks: app.designPacks } : {}),
       ...(envDeveloperId ? { developerId: envDeveloperId } : {}),
       domain: envDomain,
       ...(app.seo?.siteUrl ? { siteUrl: app.seo.siteUrl } : {}),

@@ -21,6 +21,12 @@ const GLOSSARY_VERSION = 'restaurant_menu_v1'
 const MENU_ID = 'main'
 const TARGET_LANGUAGE = 'bo'
 const ATTACHED_LANGUAGES = ['de', 'en', 'es', 'pt']
+const LA_TAP_PUBLIC_MENU_DESIGN_PACK = {
+  preset: 'dark-gold',
+  theme: 'la-tapberne',
+  color_mode: 'dark',
+  accent: '#F0C84D',
+}
 
 const normalizeString = (value) => String(value ?? '').trim()
 
@@ -491,6 +497,9 @@ async function main() {
       show: true,
       design: {
         color_mode: 'dark',
+      },
+      design_packs: {
+        public_menu: LA_TAP_PUBLIC_MENU_DESIGN_PACK,
       },
       language_settings: {
         default_language: 'de',

@@ -1,7 +1,7 @@
 ---
 title: New App Creation
 description: Checklist and improvement notes for adding a first-class FireUX app.
-updated: 2026-05-19
+updated: 2026-05-22
 ---
 
 # New App Creation
@@ -103,9 +103,10 @@ After adding the app folder, wire the repo-level registration points:
 5. When a new Firestore database is created for a demo/preflight app, add explicit temporary rules for that database.
 6. Run `pnpm sync:dev-workspace` so `package.json`, `.vscode/tasks.json`, and `.vscode/launch.json` are generated from the registry.
 7. Check `package.json` has the expected `dev:<key>` script.
-8. If Firebase deploy is in scope, keep `firebase.json` aligned with the app id and hosting site.
-9. Before any real deploy, confirm the Firestore rules are acceptable for this ship.
-10. During the first browser initialization, verify the blocked setup screen shows a clearly visible `Continue` button under the requirements list, click it intentionally, then confirm the app document and admin membership were created. Do not mark initialization as complete from green environment checks alone.
+8. If Firebase deploy is in scope, create/confirm the Firebase Hosting site and keep `firebase.json` aligned with the app id and hosting site.
+9. Create/confirm the Firebase Web App config, record app-specific env values, and add the deployed app domain to Firebase Auth authorized domains.
+10. Before any real deploy, confirm the Firestore rules are acceptable for this ship.
+11. During the first browser initialization, verify the blocked setup screen shows a clearly visible `Continue` button under the requirements list, click it intentionally, then confirm the app document and admin membership were created. Do not mark initialization as complete from green environment checks alone.
 
 Do not hand-edit generated VS Code task/launch files unless the generator itself is wrong.
 
@@ -237,6 +238,79 @@ sproochli / buenohost use a different Firebase API key.
 ```
 
 This is expected and canonical.
+
+## Firebase Hosting And Auth Domains
+
+When adding a deployable app, do the hosting work at the same time as the app shell.
+
+Create or confirm the Firebase Hosting site:
+
+```sh
+firebase hosting:sites:create <site-id> --project <firebase-project-id>
+```
+
+Then make sure the app `firebase.json` points at that exact site:
+
+```json
+{
+  "hosting": {
+    "site": "<site-id>"
+  }
+}
+```
+
+Example:
+
+```json
+{
+  "hosting": {
+    "site": "qrdoc"
+  }
+}
+```
+
+Create or confirm a Firebase Web App for the deployed app in the Firebase console. From the Firebase web app snippet, map values like this:
+
+```text
+firebaseConfig.apiKey         -> NUXT_FIREBASE_API_KEY
+firebaseConfig.appId          -> NUXT_FIREBASE_APP_ID
+firebaseConfig.measurementId  -> NUXT_FIREBASE_MEASUREMENT_ID
+```
+
+Keep shared Firebase project fields in ecosystem config unless the app genuinely overrides them:
+
+```text
+authDomain
+projectId
+storageBucket
+messagingSenderId
+```
+
+Set the deployed domain in env/deploy config:
+
+```text
+APP_DOMAIN=<site-id>.web.app
+```
+
+Then add the deployed domain to Firebase Auth authorized domains:
+
+```text
+Firebase Console
+  -> Authentication
+  -> Settings
+  -> Authorized domains
+  -> add <site-id>.web.app
+```
+
+Example:
+
+```text
+qrdoc.web.app
+```
+
+Do not treat `firebase.json` hosting config as enough on its own. If the deployed domain is missing from Auth authorized domains, Google sign-in can fail even when Hosting deploys correctly.
+
+Do not paste real Firebase config snippets or API keys into repo docs. Use app `.env`, deploy configuration, or secrets/runtime config as appropriate.
 
 Run the app catalog migration after adding registry data:
 

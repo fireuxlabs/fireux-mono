@@ -1,7 +1,7 @@
 # Concepts Directory
 
 Authority: Operational
-Updated: 2026-05-15
+Updated: 2026-05-21
 Scope: `packages/core/fireux-docs/src/runtime/concepts/*`.
 
 Learn how FireUX runtime concepts are documented when they span more than one runtime branch.
@@ -31,6 +31,8 @@ The current concept map is:
   authenticated user and profile-extension dashboard meaning
 - `demo-data-canon.md`
   demo identity, profile fixture, app membership, and collection source behaviour
+- `design-packs.md`
+  app, ecosystem, tenant, and extension visual token ownership
 - `firestore-rules-canon.md`
   manual Firestore rules workflow for app databases during preflight, demo, and shipping phases
 - `spine/`

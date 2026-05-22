@@ -12,15 +12,14 @@
 </template>
 
 <script setup lang="ts">
-import { useRoute } from '#imports'
-import { useProduct } from '../../composables/fireux/firestore/product/useProduct'
+import { useAsyncData, useRoute } from '#imports'
+import type { FirebaseProduct } from '../../models/product.model'
 
 const route = useRoute()
-const { fetchProduct, fetchProductPrices } = useProduct()
+const slug = String(route.params.slug || '').trim()
 
-const product = await fetchProduct(route.params.slug as string)
-
-if (product && product.id) {
-  product.prices = await fetchProductPrices(product.id)
-}
+const { data: product } = await useAsyncData(
+  `product-${slug}`,
+  () => $fetch<FirebaseProduct>(`/api/products/${encodeURIComponent(slug)}`)
+)
 </script>

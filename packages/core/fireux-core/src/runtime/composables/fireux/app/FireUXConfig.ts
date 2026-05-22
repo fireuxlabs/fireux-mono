@@ -21,6 +21,8 @@ export interface FireUXConfig {
   appLogoLight?: string
   appLogoDark?: string
   contactEmail?: string
+  designPack?: Record<string, unknown>
+  designPacks?: Record<string, Record<string, unknown>>
   developerId?: string
 
   primaryColor?: string
@@ -59,6 +61,12 @@ function optString(src: AnyRecord, key: string): string | undefined {
   const v = src[key]
   if (!isNonEmptyString(v)) return undefined
   return v.trim()
+}
+
+function optRecord(src: AnyRecord, key: string): Record<string, unknown> | undefined {
+  const v = src[key]
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return undefined
+  return v as Record<string, unknown>
 }
 
 function toStringArray(v: unknown): string[] {
@@ -112,6 +120,10 @@ function buildConfig(): Readonly<FireUXConfig> {
     appLogoLight: optString(fireux, 'appLogoLight'),
     appLogoDark: optString(fireux, 'appLogoDark'),
     contactEmail: optString(fireux, 'contactEmail'),
+    designPack: optRecord(fireux, 'designPack'),
+    designPacks: optRecord(fireux, 'designPacks') as
+      | Record<string, Record<string, unknown>>
+      | undefined,
     developerId: optString(fireux, 'developerId'),
 
     primaryColor: optString(fireux, 'primaryColor'),

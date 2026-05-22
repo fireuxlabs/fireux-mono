@@ -302,7 +302,7 @@ const publicLanguageOptions = computed(() =>
 )
 const selectedLanguage = computed(() => {
   if (!sproochliEnabled.value) return ''
-  const raw = route.query.lang || route.query.language
+  const raw = route.query.sproochli
   const value = Array.isArray(raw) ? raw[0] : raw
   return normalizePublicKitchenLanguage(value)
 })
@@ -322,7 +322,7 @@ const chromeLanguage = computed(() =>
 )
 const { labels: chromeLabels } = usePublicMenuLanguage(chromeLanguage)
 const publicLanguageQuery = (language = selectedLanguage.value) =>
-  language ? `?lang=${encodeURIComponent(language)}` : ''
+  language ? `?sproochli=${encodeURIComponent(language)}` : ''
 const menuLink = (menuIdRaw: unknown) => {
   const publicKitchenSlug = String((kitchen.value as any)?.slug || '').trim()
   const menuId = String(menuIdRaw || '').trim()
