@@ -25,6 +25,12 @@
           <p class="mt-1 text-xs text-muted">
             Printable QR found at {{ qrPreviewUrl }}
           </p>
+          <p
+            v-if="documentSlugTaken"
+            class="mt-1 text-xs text-error"
+          >
+            This document path is already taken.
+          </p>
         </UFormField>
 
         <UCheckbox
@@ -32,13 +38,22 @@
           label="Process with AI"
           @update:model-value="setProcessWithAi"
         />
+
+        <UButton
+          icon="i-lucide-qr-code"
+          block
+          size="lg"
+          :disabled="!canCreateQr"
+        >
+          Create QR doc
+        </UButton>
       </div>
     </UContainer>
   </main>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 const maxFileSizeMb = 10
 const maxFileSizeBytes = maxFileSizeMb * 1024 * 1024
@@ -47,6 +62,9 @@ const documentFile = ref<File | null>(null)
 const documentSlug = ref('')
 const processWithAi = ref(false)
 const uploadError = ref('')
+const documentSlugTaken = ref(false)
+let availabilityTimer: number | undefined
+let availabilityRequest = 0
 
 const uploadDescription = computed(() => {
   return uploadError.value || `PDF, image, DOC or DOCX. Max ${maxFileSizeMb} MB.`
@@ -55,6 +73,42 @@ const uploadDescription = computed(() => {
 const qrPreviewUrl = computed(() => {
   const slug = documentSlug.value.trim() || 'my-doc'
   return `https://qrdoc.web.app/docs/${slug}/qr`
+})
+
+const canCreateQr = computed(() => {
+  return Boolean(
+    documentFile.value &&
+    documentSlug.value.trim() &&
+    !documentSlugTaken.value &&
+    !uploadError.value
+  )
+})
+
+watch(documentSlug, (value) => {
+  if (availabilityTimer) window.clearTimeout(availabilityTimer)
+
+  const id = value.trim()
+  documentSlugTaken.value = false
+
+  if (!id || id.includes('/') || id === '.' || id === '..') return
+
+  availabilityTimer = window.setTimeout(async () => {
+    const requestId = ++availabilityRequest
+
+    try {
+      const response = await $fetch<{ taken?: boolean }>('/api/docs/availability', {
+        query: { id },
+      })
+
+      if (requestId === availabilityRequest) {
+        documentSlugTaken.value = Boolean(response.taken)
+      }
+    } catch {
+      if (requestId === availabilityRequest) {
+        documentSlugTaken.value = false
+      }
+    }
+  }, 250)
 })
 
 function setProcessWithAi(value: boolean | 'indeterminate') {

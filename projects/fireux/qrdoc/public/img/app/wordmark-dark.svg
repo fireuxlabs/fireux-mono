@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="768" height="192" viewBox="0 0 768 192" role="img" aria-label="QRdoc">
+  <rect width="768" height="192" rx="40" fill="#020617"/>
+  <rect x="48" y="48" width="96" height="96" rx="24" fill="#6ee7b7"/>
+  <path d="M68 68h28v28H68zM104 68h20v20h-20zM68 104h20v20H68zM96 104h28v20H96z" fill="#020617"/>
+  <text x="180" y="119" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="800">QRdoc</text>
+</svg>
