@@ -14,6 +14,7 @@ const fireuxConfig = defineFireuxConfig({
   seo: {
     siteUrl: 'https://qrdocs.web.app',
     staticPaths: [
+      '/food-menu',
       '/pricing',
       '/terms',
       '/privacy',
