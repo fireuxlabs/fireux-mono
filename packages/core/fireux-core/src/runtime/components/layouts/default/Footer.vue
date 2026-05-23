@@ -3,6 +3,21 @@
   <UFooter>
     <UContainer>
       <div class="flex w-full flex-col items-center gap-6">
+        <nav
+          v-if="footerItems.length"
+          aria-label="Footer navigation"
+          class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm"
+        >
+          <NuxtLink
+            v-for="item in footerItems"
+            :key="item.key || item.to"
+            :to="item.to"
+            class="text-muted hover:text-highlighted"
+          >
+            {{ item.label }}
+          </NuxtLink>
+        </nav>
+
         <ClientOnly>
           <LayoutsDefaultFooterAdmins class="w-full max-w-4xl" :show-badges="false" />
         </ClientOnly>
@@ -59,7 +74,10 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { useNav } from '../../../composables/fireux/app/ui/nav/useNav'
 
 // Footer uses UFooter + UContainer from Nuxt UI 4
 const fireux = useFireUXConfig()
@@ -70,7 +88,10 @@ const appName = String(fireux.appName || fireux.appShortName || fireux.appId).tr
 const appLogoLightSrc = fireux.appLogoLight
 const appLogoDarkSrc = fireux.appLogoDark
 const ecosystemSlug = String(fireux.ecosystem || '').trim().toLowerCase()
-const hasParentBrand = isTenant || (fireux.isGlobal && ecosystemSlug !== 'fireux')
+const hasParentBrand =
+  isTenant ||
+  fireux.isStandalone ||
+  (fireux.isGlobal && ecosystemSlug !== 'fireux')
 const providerName = isTenant ? labelizeEcosystemName(ecosystemSlug) : 'FIReUX'
 const copyrightName = hasParentBrand ? providerName : appName
 const providerHref = isTenant && ecosystemSlug
@@ -85,6 +106,17 @@ const providerWordmarkLight = isTenant
 const providerWordmarkDark = isTenant
   ? '/img/ecosystem/wordmark-dark.png'
   : '/img/core/brand/wordmark-dark.png'
+
+const route = useRoute()
+const currentLayout = computed(() =>
+  typeof route.meta?.layout === 'string' && route.meta.layout.trim().length > 0
+    ? route.meta.layout
+    : 'default'
+)
+const { items: navItems } = useNav(currentLayout)
+const footerItems = computed(() =>
+  navItems.value.filter((item) => item.position === 'bottom')
+)
 
 function labelizeEcosystemName(value: string) {
   return value

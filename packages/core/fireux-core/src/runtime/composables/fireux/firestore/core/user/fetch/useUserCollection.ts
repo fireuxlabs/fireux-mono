@@ -1,7 +1,11 @@
 import { collection, query as fsq, type Query, type QueryDocumentSnapshot } from 'firebase/firestore'
 import { computed, ref, type Ref } from 'vue'
 import type { User } from '../../../../../../models/core/user.model'
-import { useCollection, useFirestore } from '../../../vuefire'
+import {
+  readRuntimeIdentityFirestoreDatabaseId,
+  useCollection,
+  useFirestore,
+} from '../../../vuefire'
 
 function isOfflineFirestoreError(error: unknown): boolean {
   const code = typeof (error as any)?.code === 'string' ? (error as any).code : ''
@@ -39,7 +43,7 @@ export function useUserCollection() {
     }
   }
 
-  const db = useFirestore()
+  const db = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
   const binding = useCollection<User>(
     fsq(collection(db, 'users')) as Query<User>,
     {

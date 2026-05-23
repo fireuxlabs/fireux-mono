@@ -3,6 +3,7 @@ import { computed, isRef, shallowRef, watch, type Ref, type ShallowRef } from 'v
 import type { AppUser, User } from '../../../../../../models/core/user.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
+import { readRuntimeIdentityFirestoreDatabaseId } from '../../../vuefire'
 
 type EnrichedUser = {
   id: string
@@ -22,12 +23,16 @@ type AppUserCollectionAppId =
   | Ref<string | null | undefined>
 
 /**
- * Streams `/apps/{appId}/users` and hydrates each membership with `/users/{id}`.
+ * Streams `/apps/{appId}/users` from the app database and hydrates each
+ * membership with `/users/{id}` from the ecosystem identity database.
  * Uses the runtime app by default, but can read an explicit app when needed.
  */
 export function useAppUserCollection(appId?: AppUserCollectionAppId) {
   const { appId: runtimeAppId } = useFireUXConfig()
-  const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreRead()
+  const appRead = useFirestoreRead()
+  const identityRead = useFirestoreRead({
+    databaseId: readRuntimeIdentityFirestoreDatabaseId(),
+  })
   const nuxtApp = useNuxtApp()
 
   const resolvedAppId = computed(() => {
@@ -41,7 +46,7 @@ export function useAppUserCollection(appId?: AppUserCollectionAppId) {
     resolvedAppId,
     (nextAppId) => {
       membershipsRef.value = nextAppId
-        ? firestoreFetchCollection<AppUser>(`apps/${nextAppId}/users`)
+        ? appRead.firestoreFetchCollection<AppUser>(`apps/${nextAppId}/users`)
         : null
     },
     { immediate: true }
@@ -58,7 +63,7 @@ export function useAppUserCollection(appId?: AppUserCollectionAppId) {
     if (!id) return undefined
     if (!userCache.has(id)) {
       const ref = nuxtApp.runWithContext(() =>
-        firestoreFetchDoc<User>('users', id)
+        identityRead.firestoreFetchDoc<User>('users', id)
       ) as Ref<User | undefined>
       userCache.set(id, ref)
     }

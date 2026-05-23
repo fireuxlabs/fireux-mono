@@ -1,6 +1,10 @@
 import { useNuxtApp } from '#imports'
 import { collection } from 'firebase/firestore'
-import { useCollection, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import {
+  readRuntimeIdentityFirestoreDatabaseId,
+  useCollection,
+  useFirestore,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Ref } from 'vue'
 import { computed, watchEffect } from 'vue'
 import type {
@@ -23,22 +27,26 @@ type UserSummary = {
 export function useProfileCollection<
   TProfile extends ProfileBase = ProfileBase
 >(config: ProfileConfig) {
-  const db = useFirestore()
+  const appDb = useFirestore()
+  const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
+  const identityDb = useFirestore(identityDatabaseId)
   const nuxtApp = useNuxtApp()
   const { appId } = useFireUXConfig()
-  const { firestoreFetchDoc } = useFirestoreRead()
+  const { firestoreFetchDoc } = useFirestoreRead({
+    databaseId: identityDatabaseId,
+  })
 
   const idFieldOptions = { idField: 'id' } as Record<string, unknown>
 
   const globalProfiles = useCollection<TProfile>(
-    collection(db, config.collectionName) as any,
+    collection(identityDb, config.collectionName) as any,
     idFieldOptions as any
   )
 
   const localProfiles =
     appId
       ? useCollection<Partial<TProfile>>(
-          collection(db, 'apps', appId, config.collectionName) as any,
+          collection(appDb, 'apps', appId, config.collectionName) as any,
           idFieldOptions as any
         )
       : null

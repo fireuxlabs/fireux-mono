@@ -264,7 +264,7 @@ Example:
 ```json
 {
   "hosting": {
-    "site": "qrdoc"
+    "site": "go-qr"
   }
 }
 ```
@@ -305,7 +305,7 @@ Firebase Console
 Example:
 
 ```text
-qrdoc.web.app
+go-qr.web.app
 ```
 
 Do not treat `firebase.json` hosting config as enough on its own. If the deployed domain is missing from Auth authorized domains, Google sign-in can fail even when Hosting deploys correctly.

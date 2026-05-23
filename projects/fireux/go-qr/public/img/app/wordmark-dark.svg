@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="768" height="192" viewBox="0 0 768 192" role="img" aria-label="Go QR">
+  <rect x="40" y="40" width="112" height="112" rx="28" fill="#22c55e"/>
+  <path d="M64 64h28v28H64zM104 64h24v24h-24zM64 104h24v24H64zM96 104h32v24H96z" fill="#0b1220"/>
+  <text x="184" y="119" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="800">Go QR</text>
+  <text x="188" y="148" fill="#94a3b8" font-family="Inter, Arial, sans-serif" font-size="24">doc to QR</text>
+</svg>

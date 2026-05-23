@@ -115,11 +115,14 @@ const desktopItems = computed(() =>
   Array.isArray(desktop.value)
     ? desktop.value
         .filter(Boolean)
+        .filter((item) => item.position !== 'bottom')
         .filter((item) => normalizePath(item.to) !== normalizePath(route.path))
     : []
 )
 const mobileItems = computed(() =>
-  Array.isArray(mobile.value) ? mobile.value.filter(Boolean) : []
+  Array.isArray(mobile.value)
+    ? mobile.value.filter(Boolean).filter((item) => item.position !== 'bottom')
+    : []
 )
 
 /** Auth */

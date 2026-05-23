@@ -2,6 +2,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
+import { readRuntimeIdentityFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { ProfileBase } from 'fireux-core/runtime/models/core/profile.model'
 
 type Scope = 'core' | 'app'
@@ -10,7 +11,10 @@ export function useProfileUpdateBase<TCore extends ProfileBase>(
   collectionName: string,
   profile?: ProfileRefs<TCore> | null
 ) {
-  const { updateDocument } = useFirestoreUpdate()
+  const identityUpdate = useFirestoreUpdate({
+    databaseId: readRuntimeIdentityFirestoreDatabaseId(),
+  })
+  const appUpdate = useFirestoreUpdate()
   const { appId, role } = useFireUXConfig()
   const hasAppScope = Boolean(appId)
   const isTenant = role === 'tenant' && Boolean(appId)
@@ -60,7 +64,11 @@ export function useProfileUpdateBase<TCore extends ProfileBase>(
     options: { id?: string | null } = {}
   ): Promise<void> => {
     const uid = await resolveUid(options.id)
-    await updateDocument<TCore>(collectionName, uid, pruneUndefined(patch))
+    await identityUpdate.updateDocument<TCore>(
+      collectionName,
+      uid,
+      pruneUndefined(patch)
+    )
   }
 
   const updateAppProfile = async (
@@ -74,7 +82,7 @@ export function useProfileUpdateBase<TCore extends ProfileBase>(
     }
 
     const uid = await resolveUid(options.id)
-    await updateDocument<TCore>(
+    await appUpdate.updateDocument<TCore>(
       `apps/${appId}/${collectionName}`,
       uid,
       pruneUndefined(patch)

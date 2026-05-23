@@ -15,7 +15,7 @@ const fireuxConfig = defineFireuxConfig({
   seo: {
     siteUrl: 'https://find-my-seo.web.app',
   },
-  modules: ['fireux-jobs'],
+  modules: ['fireux-jobs', 'fireux-products'],
 })
 
 function keepFindMySeoJobsRoute(file: string) {

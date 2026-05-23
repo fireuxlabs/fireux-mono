@@ -31,9 +31,9 @@ definePageMeta({
     label: 'Products',
     icon: 'i-lucide-box',
     order: 20,
-    desktop: false,
-    mobile: false,
-    layouts: ['default'],
+    desktop: true,
+    mobile: true,
+    layouts: ['default', 'landing'],
   },
   name: 'ProductsIndexPage',
 })

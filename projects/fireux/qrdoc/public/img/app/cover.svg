@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-label="QRdocs cover">
-  <rect width="1280" height="720" fill="#0f172a"/>
-  <rect x="96" y="96" width="320" height="320" rx="64" fill="#34d399"/>
-  <path d="M144 144h96v96h-96zM272 144h72v72h-72zM144 272h72v72h-72zM240 272h104v72H240z" fill="#0f172a"/>
-  <text x="480" y="308" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="112" font-weight="800">QRdocs</text>
-  <text x="488" y="376" fill="#cbd5e1" font-family="Inter, Arial, sans-serif" font-size="36" font-weight="500">Upload a document. Get a QR code.</text>
-</svg>

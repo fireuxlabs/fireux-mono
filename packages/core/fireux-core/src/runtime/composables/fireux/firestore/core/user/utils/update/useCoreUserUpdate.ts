@@ -1,5 +1,8 @@
 import { addDoc, arrayRemove, arrayUnion, collection } from 'firebase/firestore'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import {
+  readRuntimeIdentityFirestoreDatabaseId,
+  useFirestore,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type {
     User,
 } from '../../../../../../../models/core/user.model'
@@ -26,11 +29,14 @@ function avatarFileExtension(source: File | Blob): string {
 }
 
 export function useCoreUserUpdate(user: UserRefs) {
-  const { updateDocument } = useFirestoreUpdate()
+  const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
+  const { updateDocument } = useFirestoreUpdate({
+    databaseId: identityDatabaseId,
+  })
   const { uploadImage } = useImageStorage()
   const { DisplayName, AvatarUrl, Bio, Handle } = useUserFormattingAndValidation()
   const { claimHandle } = useUserHandleClaim()
-  const db = useFirestore()
+  const db = useFirestore(identityDatabaseId)
 
   const core = user.coreUser as { value: User | undefined }
 

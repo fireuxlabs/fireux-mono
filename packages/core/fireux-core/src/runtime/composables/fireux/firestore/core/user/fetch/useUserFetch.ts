@@ -1,5 +1,9 @@
 import { doc } from 'firebase/firestore'
-import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import {
+  readRuntimeIdentityFirestoreDatabaseId,
+  useDocument,
+  useFirestore,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Ref } from 'vue'
 import { computed, isRef } from 'vue'
 import type {
@@ -91,10 +95,11 @@ export function useUserFetch(
     return { user, coreUser, appUser, pending }
   }
 
-  const db = useFirestore()
+  const appDb = useFirestore()
+  const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
 
   const coreDoc = computed(() =>
-    uid.value ? (doc(db, 'users', uid.value) as any) : null
+    uid.value ? (doc(identityDb, 'users', uid.value) as any) : null
   )
 
   /**
@@ -107,7 +112,7 @@ export function useUserFetch(
    */
   const appDoc = computed(() =>
     uid.value && appId
-      ? (doc(db, 'apps', appId, 'users', uid.value) as any)
+      ? (doc(appDb, 'apps', appId, 'users', uid.value) as any)
       : null
   )
 

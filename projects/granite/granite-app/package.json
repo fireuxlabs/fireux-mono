@@ -26,6 +26,7 @@
     "fireux-core": "workspace:*",
     "fireux-granite": "workspace:*",
     "fireux-properties": "workspace:*",
+    "fireux-products": "workspace:*",
     "fireux-compliance": "workspace:*",
     "fireux-documents": "workspace:*",
     "fireux-tasks": "workspace:*",

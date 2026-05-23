@@ -20,6 +20,7 @@
     "@nuxt/ui": "^4.0.0-alpha.2",
     "fireux-bringli": "workspace:*",
     "fireux-core": "workspace:*",
+    "fireux-products": "workspace:*",
     "fireux-suppliers": "workspace:*",
     "nuxt": "4.4.6",
     "vue": "3.5.20",

@@ -1,7 +1,7 @@
 # Layouts Directory
 
 Authority: Operational
-Updated: 2026-05-17
+Updated: 2026-05-24
 Scope: `packages/*/fireux-*/src/runtime/layouts` and actual runtime layout usage across `packages/` and `projects/`.
 
 This directory documents the real runtime layout system, not an abstract ideal.
@@ -73,6 +73,14 @@ Used by:
 - ecosystem landing pages
 - tenant home pages
 - pricing/about/get-started families
+
+Public navigation rule:
+- top/header nav is reserved for real product pages and actions such as home, products, conversion pages, get-started, create flows, and intentional sibling-product bridge pages
+- footer nav is for system/support/legal pages such as pricing, help, terms, privacy, contact, and support
+- pricing moves into top/header nav only when pricing comparison is a primary buyer decision surface
+- pricing page layout should come from the shared core pricing page shell; app pages own the plan data and copy
+- on `default` and `landing` layouts, route meta `nav.position: 'bottom'` means the link belongs in the shared footer and should be excluded from the shared header
+- apps should not rebuild their own header/footer lists for this split; mark the route meta correctly and let the shared layout render it
 
 #### `dashboard`
 

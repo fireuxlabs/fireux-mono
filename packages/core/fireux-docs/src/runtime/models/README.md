@@ -167,6 +167,15 @@ Important:
 - `apps/<appId>.admin_ids` may mirror the admin set for fast reads, but it is not the authority source
 - if no app-local admin membership exists, the app needs initialization even when the root app record exists
 
+Core identity has a separate storage rule:
+- `users/<uid>` is the canonical ecosystem identity record
+- canonical identity stores display name, handle, avatar, email, bio, and profile-level fields
+- profile root collections linked to users follow the same ecosystem identity database rule
+- `apps/<appId>/users/<uid>` is an app membership/role overlay
+- `apps/<appId>/<profileCollection>/<uid>` is an app profile overlay
+- standalone product apps may use their own app database for operational collections, but should still read/write root identity through the parent ecosystem identity database
+- tenant apps may share the same physical database as the ecosystem, but identity and membership remain separate model layers
+
 Preferred model-file shape for system models:
 - `XModel`
 - `X`

@@ -7,7 +7,7 @@
             Binding check (app ↔ users)
           </p>
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            Compares app users against core user mirrors and admin lists.
+            Compares app users against ecosystem identity mirrors and admin lists.
             Membership is authoritative in <span class="font-mono">/apps/{appId}/users</span>.
           </p>
         </div>
@@ -83,7 +83,10 @@
 <script setup lang="ts">
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore'
 import { computed, ref, watch } from 'vue'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import {
+  readRuntimeIdentityFirestoreDatabaseId,
+  useFirestore,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import type { AppModel } from '../../models/core/app.model'
 import type { AppUser, User } from '../../models/core/user.model'
@@ -111,7 +114,8 @@ const scopeLabel = computed(() => {
   return bindingAppId.value || 'unknown'
 })
 
-const db = useFirestore()
+const appDb = useFirestore()
+const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
 const bindingPending = ref(false)
 const binding = ref({
   missingCore: [] as string[],
@@ -167,7 +171,7 @@ const loadBinding = async () => {
     const adminIds = Array.isArray(app.admin_ids) ? app.admin_ids : []
     bindingAdminIdsCount.value += adminIds.length
 
-    const snap = await getDocs(collection(db, 'apps', appId, 'users'))
+    const snap = await getDocs(collection(appDb, 'apps', appId, 'users'))
     const users = snap.docs.map((docSnap) => ({
       id: docSnap.id,
       ...(docSnap.data() as AppUser),
@@ -182,7 +186,7 @@ const loadBinding = async () => {
   await Promise.all(
     Array.from(userIds).map(async (id) => {
       try {
-        const snap = await getDoc(doc(db, 'users', id) as any)
+        const snap = await getDoc(doc(identityDb, 'users', id) as any)
         coreUsers.set(id, snap.exists() ? (snap.data() as User) : null)
       } catch {
         coreUsers.set(id, null)

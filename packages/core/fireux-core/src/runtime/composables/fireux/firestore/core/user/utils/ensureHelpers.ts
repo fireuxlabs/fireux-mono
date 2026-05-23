@@ -7,10 +7,14 @@ import {
   getDoc,
   increment,
   serverTimestamp,
+  updateDoc,
   writeBatch,
   type DocumentSnapshot,
 } from 'firebase/firestore'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import {
+  readRuntimeIdentityFirestoreDatabaseId,
+  useFirestore,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 
 import type { FirebaseTimestamp } from '../../../../../../../types/firebase'
 import type {
@@ -19,7 +23,8 @@ import type {
 } from '../../../../../../models/core/user.model'
 import type { NotificationScope, UserNotification } from '../../../../../../models/core/supporting/user'
 import { useRequireUser } from '../../../../firebase/useRequireUser'
-import { useFirestoreManager } from '../../../operations/useFirestoreManager'
+import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
+import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 
 export type EnsureCoreOptions = {
   displayName?: string
@@ -53,7 +58,8 @@ export async function ensureCoreUserDocument(
   uid: string,
   options: EnsureCoreOptions = {}
 ): Promise<EnsureCoreResult> {
-  const db = useFirestore()
+  const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
+  const db = useFirestore(identityDatabaseId)
   const ref = doc(db, 'users', uid)
   const snapshot = await getDoc(ref)
 
@@ -89,7 +95,9 @@ export async function ensureCoreUserDocument(
     }
 
     if (Object.keys(patch).length) {
-      const { updateDocument } = useFirestoreManager()
+      const { updateDocument } = useFirestoreUpdate({
+        databaseId: identityDatabaseId,
+      })
       await updateDocument<User>('users', uid, patch as any)
     }
 
@@ -126,7 +134,9 @@ export async function ensureCoreUserDocument(
     notifications: [],
   }
 
-  const { setDocument } = useFirestoreManager()
+  const { setDocument } = useFirestoreCreate({
+    databaseId: identityDatabaseId,
+  })
   await setDocument<User>('users', uid, payload as unknown as User)
 
   return { created: true, displayName, handle }
@@ -140,12 +150,13 @@ export async function ensureUserAppMembership(
   membershipRole: 'admin' | 'user'
 ): Promise<EnsureMembershipResult> {
   const actor = await useRequireUser()
-  const db = useFirestore()
+  const appDb = useFirestore()
+  const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
 
-  const appUsersRef = collection(db, 'apps', appId, 'users')
-  const appUserRef = doc(db, 'apps', appId, 'users', uid)
-  const appRef = doc(db, 'apps', appId)
-  const userRef = doc(db, 'users', uid)
+  const appUsersRef = collection(appDb, 'apps', appId, 'users')
+  const appUserRef = doc(appDb, 'apps', appId, 'users', uid)
+  const appRef = doc(appDb, 'apps', appId)
+  const userRef = doc(identityDb, 'users', uid)
 
   const [appUserSnap, appSnap, userSnap] = await Promise.all([
     getDoc(appUserRef),
@@ -189,7 +200,7 @@ export async function ensureUserAppMembership(
       }
     }
   }
-  const batch = writeBatch(db)
+  const batch = writeBatch(appDb)
 
   // 1) Canonical membership overlay
   if (appUserSnap.exists()) {
@@ -264,7 +275,7 @@ export async function ensureUserAppMembership(
   // Mirrors: apps/{appId}.admin_ids[], users/{uid}.adminOf[]
   batch.update(appRef, appPatch as any)
 
-  // 3) Core user mirrors (and ensure core user exists)
+  // 3) Core user mirrors (ecosystem identity database)
   const membershipUpdates: any = {
     userOf: arrayUnion(appId) as unknown as string[],
     adminOf: (membershipRole === 'admin'
@@ -276,9 +287,8 @@ export async function ensureUserAppMembership(
     },
   }
 
-  batch.update(userRef, membershipUpdates as any)
-
   await batch.commit()
+  await updateDoc(userRef, membershipUpdates as any)
   return { created }
 }
 
@@ -289,11 +299,12 @@ export async function removeUserAppMembership(
   uid: string
 ): Promise<RemoveMembershipResult> {
   const actor = await useRequireUser()
-  const db = useFirestore()
+  const appDb = useFirestore()
+  const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
 
-  const appUserRef = doc(db, 'apps', appId, 'users', uid)
-  const appRef = doc(db, 'apps', appId)
-  const userRef = doc(db, 'users', uid)
+  const appUserRef = doc(appDb, 'apps', appId, 'users', uid)
+  const appRef = doc(appDb, 'apps', appId)
+  const userRef = doc(identityDb, 'users', uid)
 
   const [appUserSnap, userSnap] = await Promise.all([
     getDoc(appUserRef),
@@ -301,7 +312,7 @@ export async function removeUserAppMembership(
   ])
   const existed = appUserSnap.exists()
 
-  const batch = writeBatch(db)
+  const batch = writeBatch(appDb)
   batch.delete(appUserRef)
 
   if (existed) {
@@ -322,8 +333,9 @@ export async function removeUserAppMembership(
     },
   })
 
+  await batch.commit()
   if (userSnap.exists()) {
-    batch.update(userRef, {
+    await updateDoc(userRef, {
       userOf: arrayRemove(appId) as unknown as string[],
       adminOf: arrayRemove(appId) as unknown as string[],
       updated: {
@@ -332,8 +344,6 @@ export async function removeUserAppMembership(
       },
     } as any)
   }
-
-  await batch.commit()
   return { removed: existed }
 }
 

@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-23
+Updated: 2026-05-24
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -136,6 +136,14 @@ Current learned examples:
   - onboarding creates or repairs the current app record, then creates the first app-local admin membership
   - `apps/{appId}.admin_ids` is a mirror for cards, guards, and cheap checks; it must not replace `AppUser` membership as authority
   - parent ecosystem/app registry records may list or discover apps, but they do not initialize child or standalone apps
+- User identity is ecosystem-owned, not standalone-app-owned:
+  - `users/{uid}` stores canonical identity: display name, handle, avatar, email, bio, and profile-level fields
+  - profile root collections linked to users follow the same ecosystem identity database rule
+  - standalone apps with their own runtime database still resolve root identity through the parent ecosystem identity database
+  - `apps/{appId}/users/{uid}` stores app-local membership, role, premium state, console access, and presentation overrides only
+  - `apps/{appId}/{profileCollection}/{uid}` stores app-local profile presentation/capability overlays only
+  - tenant apps often share the same physical ecosystem database, so identity and app membership can live in the same database while remaining different model layers
+  - standalone apps may split identity database and app database; this must not create a second canonical `users/{uid}` identity
 - App fields can be grouped by who should handle them, but those groups do not create separate App records:
   - `admin`: Admin runs the app
   - `developer`: Developer builds and checks the app
@@ -170,8 +178,43 @@ Current learned examples:
   - exactly two hero CTAs
   - one short supporting sentence
 - Product landing heroes should use Nuxt UI primitives first. Avoid ecosystem-style module overviews, three-way hero action grids, large bespoke hero visuals, and heavy scoped CSS until the product surface is stable.
+- Simple public pages such as help, terms, privacy, and support pages should use the shared core simple page shell before inventing app-local layouts.
+- App-local simple public pages own their copy and route meta; core owns the page frame, spacing, and return-link shape.
+- Pricing pages should use the shared core pricing page shell before inventing app-local pricing layouts.
+- App-local pricing pages own plan copy, product framing, routes, and SEO; core owns the pricing frame, header, spacing, plan section, and CTA area.
+- Public header navigation is for real product pages and user actions:
+  - product landing/home
+  - product or conversion pages
+  - pricing when it is part of the product decision
+  - get-started/create flows
+  - sibling-product bridge pages when they are intentional discovery routes
+- Public footer navigation is for system/support/legal pages:
+  - help
+  - terms
+  - privacy
+  - contact/support
+  - other pages the product needs to expose but should not sell as primary navigation
+- In route meta, `nav.position: 'bottom'` marks a public landing/default link as footer navigation and must not appear in the top header.
 - Product apps must not expose orphan console-family routes. If the app does not have a selected workspace/entity family, use public routes and a personal/provider dashboard instead of adding a console family.
 - Product apps that do expose a console family must expose a real family route and a discoverable CTA. Do not point product CTAs at another product's console just because that route exists.
+- Products and pricing are not the same surface:
+  - `Product` is stored commerce truth: a buyable, subscribable, claimable, or commercially packaged thing.
+  - `ProductPrice` stores the commercial terms for a `Product`.
+  - A `pricing` page is app-local marketing/explanation copy for tiers, comparisons, or buying context.
+  - A `pricing` page must not replace product records when the app has real things to buy.
+- Product routes expose commercial records:
+  - `/products`
+  - `/products/{slug}`
+- Pricing routes explain commercial structure:
+  - `/pricing`
+  - optional child routes such as `/pricing/apps`, `/pricing/users`, or `/pricing/ecosystems` only when the explanation needs separate pages.
+- Pricing routes should stay presentation/explanation surfaces. They may link to Products or Checkout, but should not become product storage or payment logic.
+- Ecosystem main apps intended to sell access, subscriptions, tenant app setup, hosting, services, or operator plans should expose both Products and Pricing.
+- Tenant apps may have products, such as memberships, merch, events, vouchers, deposits, or app-specific services. Tenant apps usually should not expose a pricing page unless the tenant has a real tier/package comparison to explain.
+- Standalone apps intended to make money should expose both Products and Pricing.
+- Public top nav should include `Products` for product-capable ecosystem and standalone apps.
+- Public footer nav should include `Pricing` beside Help, Terms, and Privacy by default.
+- Public top nav may include `Pricing` only when pricing comparison is a primary buyer decision page.
 - App meta is for identity, positioning, product language, SEO language, CTAs, lists, and conceptual entities.
 - App meta must not be used as a route registry or demo route holder.
 - Concrete demo slugs and sample entity routes belong in app-local demo fixtures and smoke tooling, not in app meta.

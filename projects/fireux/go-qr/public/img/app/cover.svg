@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-label="Go QR cover">
+  <rect width="1280" height="720" fill="#0b1220"/>
+  <rect x="96" y="96" width="1088" height="528" rx="36" fill="#ffffff" opacity=".08"/>
+  <rect x="146" y="176" width="220" height="220" rx="44" fill="#22c55e"/>
+  <path d="M190 220h56v56h-56zM270 220h48v48h-48zM190 300h48v48h-48zM254 300h64v48h-64z" fill="#0b1220"/>
+  <text x="420" y="294" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="108" font-weight="800">Go QR</text>
+  <text x="426" y="374" fill="#cbd5e1" font-family="Inter, Arial, sans-serif" font-size="42">Upload a doc. Get a QR code.</text>
+</svg>

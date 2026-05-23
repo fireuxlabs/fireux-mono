@@ -8,14 +8,20 @@ import { useUserEnsure } from 'fireux-core/runtime/composables/fireux/firestore/
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import {
+  readRuntimeIdentityFirestoreDatabaseId,
+  useFirestore,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { AppAgent, Agent } from '../../../../../../models/profiles/Agent/Agent.model'
 import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
 
 export function useAgentCreate() {
-  const db = useFirestore()
-  const { setDocument } = useFirestoreCreate()
-  const { updateDocument } = useFirestoreUpdate()
+  const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
+  const appDb = useFirestore()
+  const identityDb = useFirestore(identityDatabaseId)
+  const appCreate = useFirestoreCreate()
+  const identityCreate = useFirestoreCreate({ databaseId: identityDatabaseId })
+  const identityUpdate = useFirestoreUpdate({ databaseId: identityDatabaseId })
   const { ensureUser } = useUserEnsure()
 
   async function ensureAgentProfile(): Promise<{
@@ -30,7 +36,7 @@ export function useAgentCreate() {
     let createdCore = false
     let createdApp = false
 
-    const coreRef = doc(db, agentConfig.collectionName, uid)
+    const coreRef = doc(identityDb, agentConfig.collectionName, uid)
     const coreSnap = await getDoc(coreRef)
     if (!coreSnap.exists()) {
       const payload = {
@@ -51,30 +57,38 @@ export function useAgentCreate() {
         website_url: '',
       } satisfies Omit<Agent, 'created' | 'updated' | 'id'>
 
-      await setDocument<Agent>(agentConfig.collectionName, uid, payload as Agent, {
-        creator: true,
-      })
+      await identityCreate.setDocument<Agent>(
+        agentConfig.collectionName,
+        uid,
+        payload as Agent,
+        { creator: true }
+      )
       createdCore = true
     }
 
     if (appId) {
       const appCollection = `apps/${appId}/${agentConfig.collectionName}`
-      const appRef = doc(db, 'apps', appId, agentConfig.collectionName, uid)
+      const appRef = doc(appDb, 'apps', appId, agentConfig.collectionName, uid)
       const appSnap = await getDoc(appRef)
       if (!appSnap.exists()) {
         const payload = {} satisfies Omit<AppAgent, 'created' | 'updated' | 'id'>
 
-        await setDocument<AppAgent>(appCollection, uid, payload as AppAgent, {
-          app: true,
-          creator: true,
-        })
+        await appCreate.setDocument<AppAgent>(
+          appCollection,
+          uid,
+          payload as AppAgent,
+          {
+            app: true,
+            creator: true,
+          }
+        )
         createdApp = true
       }
     }
 
     if (agentConfig.id) {
       try {
-        await updateDocument('users', uid, {
+        await identityUpdate.updateDocument('users', uid, {
           profiles: arrayUnion(agentConfig.id) as unknown as string[],
         })
       } catch (error) {

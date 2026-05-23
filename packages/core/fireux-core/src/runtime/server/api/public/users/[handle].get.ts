@@ -15,9 +15,7 @@ import type {
   PublicDetailResponse,
   PublicUserDto,
 } from '../../../utils/public-projection/public-dto.types'
-import {
-  readFirstPublicDocByField,
-} from '../../../utils/public-projection/public-firestore'
+import { getRuntimeIdentityFirestore } from '../../../utils/getRuntimeFirestore'
 
 const CACHE_CONTROL = 'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
 
@@ -79,7 +77,12 @@ function mapUserDocToDto(
 async function readCanonicalUserByHandle(
   handle: string
 ): Promise<PublicUserDto | null> {
-  const doc = await readFirstPublicDocByField('users', 'handle', handle)
+  const snap = await getRuntimeIdentityFirestore()
+    .collection('users')
+    .where('handle', '==', handle)
+    .limit(1)
+    .get()
+  const doc = snap.docs[0] || null
   if (!doc) return null
   const dto = mapUserDocToDto(doc)
   if (!dto?.isPublic) return null

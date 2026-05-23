@@ -1,0 +1,30 @@
+{
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "go-qr-ssr",
+      "runtime": "nodejs22",
+      "entryPoint": "goQr"
+    }
+  ],
+  "hosting": {
+    "site": "go-qr",
+    "public": ".output/public",
+    "cleanUrls": true,
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "function": {
+          "functionId": "goQr",
+          "codebase": "go-qr-ssr",
+          "region": "europe-west1"
+        }
+      }
+    ]
+  }
+}

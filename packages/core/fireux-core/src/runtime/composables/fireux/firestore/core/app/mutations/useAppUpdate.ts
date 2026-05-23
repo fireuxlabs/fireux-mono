@@ -5,6 +5,7 @@ import type { AppSocialLinks } from '../../../../../../models/core/supporting/ap
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
+import { readRuntimeIdentityFirestoreDatabaseId } from '../../../vuefire'
 import {
   appImageRequirement,
   appImageFirestoreField,
@@ -17,6 +18,9 @@ import {
 export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   const cfg = useFireUXConfig()
   const { updateDocument } = useFirestoreUpdate()
+  const identityUpdate = useFirestoreUpdate({
+    databaseId: readRuntimeIdentityFirestoreDatabaseId(),
+  })
   const { uploadImage, getDownloadUrlForPath } = useImageStorage()
 
   const ensureAppId = () => {
@@ -36,7 +40,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     const userId = String(uid ?? '').trim()
     if (!userId) throw new Error('[useAppUpdate] Missing uid')
 
-    await updateDocument('users', userId, {
+    await identityUpdate.updateDocument('users', userId, {
       userOf: arrayUnion(appId) as unknown as string[],
       adminOf:
         membershipRole === 'admin'

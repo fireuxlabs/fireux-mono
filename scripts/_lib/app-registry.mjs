@@ -170,14 +170,14 @@ export const APP_REGISTRY = {
     ],
     launchOrder: 10,
   },
-  qrdoc: {
-    key: 'qrdoc',
-    name: 'QRdocs',
-    appId: 'qrdoc',
+  'go-qr': {
+    key: 'go-qr',
+    name: 'Go QR',
+    appId: 'go-qr',
     ecosystem: 'fireux',
-    databaseId: 'qrdoc',
+    databaseId: 'go-qr',
     role: 'standalone',
-    workspace: './projects/fireux/qrdoc',
+    workspace: './projects/fireux/go-qr',
     port: 3013,
     consoles: [],
     smokeRoutes: ['/'],
@@ -212,7 +212,7 @@ export const APP_REGISTRY = {
 export const APP_GROUPS = {
   all: ['fireux', 'misebox', 'cleanbox'],
   'all-extended': ['fireux', 'misebox', 'cleanbox', 'niederhorn', 'richies', 'tenant'],
-  full: ['fireux', 'misebox', 'cleanbox', 'niederhorn', 'richies', 'tenant', 'bringli', 'find-my-seo', 'sproochli', 'buenohost', 'qrdoc', 'granite', 'la-tap-berne'],
+  full: ['fireux', 'misebox', 'cleanbox', 'niederhorn', 'richies', 'tenant', 'bringli', 'find-my-seo', 'sproochli', 'buenohost', 'go-qr', 'granite', 'la-tap-berne'],
 }
 
 export const APP_KEYS = Object.keys(APP_REGISTRY)

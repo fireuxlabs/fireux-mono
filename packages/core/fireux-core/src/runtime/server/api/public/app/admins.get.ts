@@ -1,7 +1,10 @@
 import { useRuntimeConfig } from '#imports'
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
-import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
+import {
+  getRuntimeFirestore,
+  getRuntimeIdentityFirestore,
+} from '../../../utils/getRuntimeFirestore'
 
 type PublicAppAdmin = {
   id: string
@@ -56,7 +59,8 @@ function mapUser(uid: string, data: Record<string, unknown> | null): PublicAppAd
 export default defineEventHandler(async (event: H3Event) => {
   const cfg = useFireUXConfig()
   const runtime = useRuntimeConfig(event)
-  const db = getRuntimeFirestore()
+  const appDb = getRuntimeFirestore()
+  const identityDb = getRuntimeIdentityFirestore()
   const limit = normalizeLimit(
     (runtime.public as Record<string, unknown> | undefined)?.footerAdminLimit
   )
@@ -66,7 +70,7 @@ export default defineEventHandler(async (event: H3Event) => {
     'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600',
   })
 
-  const memberships = await db
+  const memberships = await appDb
     .collection('apps')
     .doc(cfg.appId)
     .collection('users')
@@ -80,7 +84,7 @@ export default defineEventHandler(async (event: H3Event) => {
     const uid = membership.id.trim()
     if (!uid) continue
 
-    const userSnap = await db.collection('users').doc(uid).get()
+    const userSnap = await identityDb.collection('users').doc(uid).get()
     admins.push(mapUser(uid, userSnap.exists ? userSnap.data() || {} : null))
   }
 

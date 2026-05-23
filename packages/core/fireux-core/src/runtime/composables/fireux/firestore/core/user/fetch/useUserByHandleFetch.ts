@@ -8,7 +8,10 @@ import {
 import { computed, isRef, watch } from 'vue'
 import type { Ref } from 'vue'
 import { useNuxtApp } from '#imports'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import {
+  readRuntimeIdentityFirestoreDatabaseId,
+  useFirestore,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import { normalizeUserHandle } from '../utils/identity/useUserHandleIdentity'
 import { useUserFetch } from './useUserFetch'
@@ -21,7 +24,7 @@ type HandleUserMatch = {
 export function useUserByHandleFetch(
   handle: string | null | undefined | Ref<string | null | undefined>
 ) {
-  const db = useFirestore()
+  const db = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
   const { firestoreQuery } = useFirestoreRead()
   const nuxtApp = useNuxtApp()
   const rawHandle = computed(() => (isRef(handle) ? handle.value : handle))

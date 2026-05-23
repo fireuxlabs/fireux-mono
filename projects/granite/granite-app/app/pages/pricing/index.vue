@@ -1,21 +1,8 @@
 <template>
-  <div class="space-y-16 pb-20">
-    <section class="border-b border-gray-200/60 py-16 dark:border-gray-800/50">
-      <UContainer class="space-y-6">
-        <UBadge color="primary" variant="soft">Granite Pricing</UBadge>
-
-        <h1 class="text-4xl font-semibold text-gray-900 dark:text-white">
-          Pricing
-        </h1>
-      </UContainer>
-    </section>
-
-    <section>
-      <UContainer>
-        <UPricingPlans :plans="hubPlans" />
-      </UContainer>
-    </section>
-  </div>
+  <PublicPricingPage
+    description="Granite ecosystem pricing for users, apps, and reseller operators."
+    :plans="hubPlans"
+  />
 </template>
 
 <script setup lang="ts">
@@ -70,6 +57,16 @@ const hubPlans = [
 
 definePageMeta({
   layout: 'landing',
+  nav: {
+    key: 'pricing',
+    label: 'Pricing',
+    icon: 'i-lucide-badge-dollar-sign',
+    order: 80,
+    position: 'bottom',
+    desktop: true,
+    mobile: true,
+    layouts: ['landing'],
+  },
 })
 
 useSeoMeta({

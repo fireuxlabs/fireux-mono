@@ -15,6 +15,17 @@ export function readRuntimeFirestoreDatabaseId() {
   return databaseId || undefined
 }
 
+export function readRuntimeIdentityFirestoreDatabaseId() {
+  const runtime = useRuntimeConfig()
+  const firebase = runtime.public?.firebaseEcosystem?.firebase as
+    | Record<string, unknown>
+    | undefined
+  const databaseId = String(
+    firebase?.identityDatabaseId || firebase?.databaseId || ''
+  ).trim()
+  return databaseId || undefined
+}
+
 export function readRuntimeSimulationFirestoreDatabaseId() {
   const runtime = useRuntimeConfig()
   const databaseId = String(

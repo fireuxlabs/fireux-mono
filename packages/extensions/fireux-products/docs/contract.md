@@ -36,6 +36,19 @@ SupplierProduct records should wrap canonical `Product` identity rather than rep
 
 Product creation follows the standard `useXCreate` pattern. For saleable products, creation may also provision transaction-provider records such as Stripe products and prices. Firestore remains canonical for FireUX product identity. Provider ids are stored as integration metadata and on `ProductPrice` records.
 
+## 3a) Product vs pricing pages
+- `Product` is stored commerce truth: a buyable, subscribable, claimable, or commercially packaged thing.
+- `ProductPrice` owns the price/term records for a `Product`.
+- A `/pricing` page is app-local marketing or explanation copy. It is not the commerce model and must not replace Product/ProductPrice records.
+- Apps may expose both:
+  - `/products` and `/products/{slug}` for real published products
+  - `/pricing` for tier comparison, package explanation, or buying context
+- Product-capable ecosystem and standalone apps should expose both products and pricing.
+- Pricing pages must point at, explain, or prepare buyers for real products or packages.
+- Ecosystem main apps need products for premium subscriptions, tenant-app purchase/setup, hosting, and ecosystem services.
+- Tenant apps may have products for tenant-owned commerce such as memberships, merch, tickets, vouchers, or app-specific services, but usually do not need a pricing page.
+- Standalone apps intended to make money should use products for monetization and app-local pricing for buyer explanation.
+
 ## 4a) Root scope fields
 - `source_app_id`
 - `source_ecosystem_id`

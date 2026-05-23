@@ -15,9 +15,7 @@ import type {
   PublicCollectionResponse,
   PublicUserDto,
 } from '../../utils/public-projection/public-dto.types'
-import {
-  readPublicCollectionPage,
-} from '../../utils/public-projection/public-firestore'
+import { getRuntimeIdentityFirestore } from '../../utils/getRuntimeFirestore'
 
 const CACHE_CONTROL = 'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
 
@@ -88,13 +86,14 @@ function mapUserDocToDto(
 }
 
 async function readCanonicalUsers(limit: number): Promise<PublicUserDto[]> {
-  const docs = await readPublicCollectionPage('users', {
-    orderByField: 'handle',
-    limit,
-  })
+  const snap = await getRuntimeIdentityFirestore()
+    .collection('users')
+    .orderBy('handle')
+    .limit(limit)
+    .get()
 
   const out: PublicUserDto[] = []
-  for (const doc of docs) {
+  for (const doc of snap.docs) {
     const dto = mapUserDocToDto(doc)
     if (!dto?.isPublic) continue
     out.push(dto)

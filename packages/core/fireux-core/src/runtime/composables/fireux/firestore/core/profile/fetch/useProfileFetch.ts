@@ -1,6 +1,10 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch.ts
 import { doc, type DocumentSnapshot } from 'firebase/firestore'
-import { useFirestore, useDocument } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import {
+  readRuntimeIdentityFirestoreDatabaseId,
+  useDocument,
+  useFirestore,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, isRef } from 'vue'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import type { Ref } from 'vue'
@@ -30,13 +34,14 @@ export function useProfileFetch<
   id: string | null | undefined | Ref<string | null | undefined>,
   config: ProfileConfig
 ) {
-  const db = useFirestore()
+  const appDb = useFirestore()
+  const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
   const { appId } = useFireUXConfig()
 
   const uid = computed(() => (isRef(id) ? id.value : id))
 
   const coreDoc = computed(() =>
-    uid.value ? (doc(db, config.collectionName, uid.value) as any) : null
+    uid.value ? (doc(identityDb, config.collectionName, uid.value) as any) : null
   )
 
   /**
@@ -48,7 +53,7 @@ export function useProfileFetch<
    */
   const appDoc = computed(() =>
     uid.value && appId
-      ? (doc(db, 'apps', appId, config.collectionName, uid.value) as any)
+      ? (doc(appDb, 'apps', appId, config.collectionName, uid.value) as any)
       : null
   )
 

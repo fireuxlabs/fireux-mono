@@ -80,10 +80,10 @@ const APP_OVERRIDES = {
     description:
       'Standalone FireUX app for mobile guest manuals, host information, emergency notes, Wi-Fi, checkout, and local guidance.',
   },
-  qrdoc: {
-    name: 'QRdocs',
-    shortName: 'QRdocs',
-    siteUrl: 'https://qrdocs.web.app',
+  'go-qr': {
+    name: 'Go QR',
+    shortName: 'Go QR',
+    siteUrl: 'https://go-qr.web.app',
     tagline: 'Document hosting and QR codes for small businesses.',
     description:
       'Standalone FireUX app for uploading documents, hosting public document pages, and generating printable QR codes.',

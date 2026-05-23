@@ -12,3 +12,17 @@ export function getRuntimeFirestore(databaseId?: string) {
     ? getFirestore(getAdminApp(), configuredDatabaseId)
     : getFirestore(getAdminApp())
 }
+
+export function getRuntimeIdentityFirestore(databaseId?: string) {
+  const runtime = useRuntimeConfig()
+  const firebase = runtime.public?.firebaseEcosystem?.firebase as
+    | Record<string, unknown>
+    | undefined
+  const configuredDatabaseId = String(
+    databaseId || firebase?.identityDatabaseId || firebase?.databaseId || ''
+  ).trim()
+
+  return configuredDatabaseId
+    ? getFirestore(getAdminApp(), configuredDatabaseId)
+    : getFirestore(getAdminApp())
+}

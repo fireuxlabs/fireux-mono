@@ -9,5 +9,5 @@ export default defineFireuxConfig({
   meta: metaContent,
   role: 'global',
   consoles: ['supplier'],
-  modules: ['fireux-suppliers'],
+  modules: ['fireux-suppliers', 'fireux-products'],
 })

@@ -47,6 +47,7 @@ export type RuntimeFirebaseEcosystem = {
     storageBucket: string
     messagingSenderId: string
     databaseId?: string
+    identityDatabaseId?: string
     simulationDatabaseId?: string
   }
 }

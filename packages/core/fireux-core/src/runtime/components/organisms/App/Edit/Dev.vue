@@ -12,7 +12,7 @@
             <div class="section__copy">
               <h3 class="text-base font-semibold">Binding check (app ↔ users)</h3>
               <p class="text-xs text-dimmed">
-                Compares app users against core user mirrors and admin lists.
+                Compares app users against ecosystem identity mirrors and admin lists.
                 Membership is authoritative in <span class="font-mono">/apps/{appId}/users</span>.
               </p>
             </div>
@@ -182,7 +182,10 @@
 
 <script setup lang="ts">
 import { doc, getDoc } from 'firebase/firestore'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import {
+  readRuntimeIdentityFirestoreDatabaseId,
+  useFirestore,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, ref, watch } from 'vue'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import { useAppUserCollection } from '../../../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
@@ -196,7 +199,7 @@ const { appId: configAppId } = useFireUXConfig()
 const driftAppId = computed(() => app.value?.id ?? configAppId ?? '')
 
 const { memberships: appUsers, pending: appUsersPending } = useAppUserCollection()
-const db = useFirestore()
+const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
 const coreUsers = ref<Map<string, User | null>>(new Map())
 const driftPending = ref(false)
 
@@ -219,7 +222,7 @@ watch(
     await Promise.all(
       ids.map(async (id) => {
         try {
-          const snap = await getDoc(doc(db, 'users', id) as any)
+          const snap = await getDoc(doc(identityDb, 'users', id) as any)
           next.set(id, snap.exists() ? (snap.data() as User) : null)
         } catch {
           next.set(id, null)

@@ -15,6 +15,7 @@ type EcosystemFirebase = {
     storageBucket: string
     messagingSenderId: string
     databaseId?: string
+    identityDatabaseId?: string
     simulationDatabaseId?: string
   }
 }
@@ -72,7 +73,12 @@ export function configureFireuxEcosystemModule(
     id: options.ecosystem.id,
     name: options.ecosystem.name,
     description: options.ecosystem.description,
-    firebase: options.ecosystem.firebase,
+    firebase: {
+      ...options.ecosystem.firebase,
+      identityDatabaseId:
+        options.ecosystem.firebase.identityDatabaseId ||
+        options.ecosystem.firebase.databaseId,
+    },
   })
 
   options.configureRuntimeConfig?.(nuxt)

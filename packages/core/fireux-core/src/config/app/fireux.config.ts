@@ -147,6 +147,7 @@ function createAppDatabaseRuntimeModule(databaseId?: string) {
       const pub = ((runtime.public ||= {}) as Record<string, any>)
       const ecosystem = ((pub.firebaseEcosystem ||= {}) as Record<string, any>)
       const firebase = ((ecosystem.firebase ||= {}) as Record<string, any>)
+      firebase.identityDatabaseId ||= firebase.databaseId || resolvedDatabaseId
       firebase.databaseId = resolvedDatabaseId
     },
   })

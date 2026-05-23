@@ -24,7 +24,7 @@
     "dev:sproochli": "node scripts/dev-app-with-smoke.mjs --app sproochli",
     "dev:granite": "node scripts/dev-app-with-smoke.mjs --app granite",
     "dev:la-tap-berne": "node scripts/dev-app-with-smoke.mjs --app la-tap-berne",
-    "dev:qrdoc": "node scripts/dev-app-with-smoke.mjs --app qrdoc",
+    "dev:go-qr": "node scripts/dev-app-with-smoke.mjs --app go-qr",
     "dev:all": "node scripts/dev-app-group.mjs --group all",
     "dev:all-extended": "node scripts/dev-app-group.mjs --group all-extended",
     "dev:full": "node scripts/dev-app-group.mjs --group full",

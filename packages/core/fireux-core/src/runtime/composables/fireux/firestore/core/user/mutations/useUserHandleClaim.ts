@@ -8,7 +8,10 @@ import {
     serverTimestamp,
     where,
 } from 'firebase/firestore'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import {
+    readRuntimeIdentityFirestoreDatabaseId,
+    useFirestore,
+} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { validateUserHandleForPublicRoute } from '../utils/identity/useUserHandleIdentity'
 
 type ClaimHandleResult = {
@@ -18,7 +21,7 @@ type ClaimHandleResult = {
 }
 
 export function useUserHandleClaim() {
-  const db = useFirestore()
+  const db = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
 
   const claimHandle = async (
     uid: string,

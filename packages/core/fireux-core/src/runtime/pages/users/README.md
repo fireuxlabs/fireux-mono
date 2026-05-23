@@ -21,7 +21,7 @@ identity setup surface.
 
 `create.vue` should:
 - read the active auth user first
-- create `/users/<uid>` only when missing
+- create `/users/<uid>` in the ecosystem identity database only when missing
 - ensure `/apps/<appId>/users/<uid>` when the active app needs the overlay
 - stay safe to run multiple times
 
@@ -44,7 +44,10 @@ surfaces and `AppUser` carries app-specific role/capability state.
 App-specific role, capability, membership, premium, console, and onboarding
 state belongs in the `AppUser` overlay, not on root `User` identity.
 
-Root `User` remains shared identity truth.
+Root `User` remains shared identity truth. In standalone product apps, the
+active app database may differ from the ecosystem identity database; user
+routes and profile hydration should still resolve canonical identity from the
+ecosystem identity database.
 
 ## Short Version
 

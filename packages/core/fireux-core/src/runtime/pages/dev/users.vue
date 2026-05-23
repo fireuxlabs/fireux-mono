@@ -139,7 +139,7 @@ const usersErrorMessage = computed(() => {
   const error = usersError.value as { code?: string; message?: string } | undefined
   if (!error) return ''
   if (error.code === 'permission-denied') {
-    return 'This runtime cannot list the root /users collection with the current Firestore rules. Check the Granite database rules or use a more scoped developer view.'
+    return 'This runtime cannot list the ecosystem identity /users collection with the current Firestore rules. Use a more scoped developer view or check the identity database rules.'
   }
   return error.message || 'Unable to read the root /users collection.'
 })

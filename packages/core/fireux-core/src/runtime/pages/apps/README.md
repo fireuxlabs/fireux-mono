@@ -25,6 +25,7 @@ This folder owns the public app index and the current ensure-first app create su
 - treat app-local admin membership as initialization authority
 - create or repair `/apps/<appId>/users/<uid>` with `role: 'admin'` when onboarding succeeds
 - repair `admin_ids` as a mirror of membership, not as the authority source
+- keep canonical `/users/<uid>` identity in the parent ecosystem identity database, even when the app has its own operational database
 - re-run onboarding and bootstrap state safely
 - stay safe to run multiple times
 

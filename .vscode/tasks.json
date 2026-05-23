@@ -330,11 +330,11 @@
       }
     },
     {
-      "label": "pnpm dev:qrdoc",
+      "label": "pnpm dev:go-qr",
       "type": "shell",
       "command": "pnpm",
       "args": [
-        "dev:qrdoc"
+        "dev:go-qr"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
