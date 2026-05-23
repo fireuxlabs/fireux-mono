@@ -2,6 +2,8 @@ import { createError, defineEventHandler, readMultipartFormData } from 'h3'
 import {
   assertDocumentId,
   createQrdocDocumentRecord,
+  assertDocumentType,
+  normalizeDocumentType,
   normalizeDocumentId,
   qrdocDocumentRef,
   qrdocStorageBucket,
@@ -20,8 +22,10 @@ export default defineEventHandler(async (event) => {
   const parts = await readMultipartFormData(event)
   const filePart = parts?.find((part) => part.name === 'file' && part.filename)
   const slug = normalizeDocumentId(fieldValue(parts, 'slug'))
+  const type = normalizeDocumentType(fieldValue(parts, 'type'))
 
   assertDocumentId(slug)
+  assertDocumentType(type)
 
   if (!filePart?.data?.length) {
     throw createError({
@@ -61,6 +65,7 @@ export default defineEventHandler(async (event) => {
 
   const record = createQrdocDocumentRecord({
     slug,
+    type,
     fileName,
     fileType,
     storagePath,

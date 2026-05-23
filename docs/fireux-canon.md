@@ -1,6 +1,6 @@
 # FireUX Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-21
+Updated: 2026-05-23
 ## Purpose
 - Define FireUX-wide structural and behavioral rules that all extensions and apps follow.
 - Resolve authority drift by making this file the source of truth for cross-domain canon.
@@ -129,6 +129,13 @@ Current learned examples:
   - stored truth: `apps/{appId}`
   - active seam: `useApp()` resolves `FireUXConfig.appId`
   - Project/App console surfaces may manage the root App record
+- App initialization is app-local, not parent-ecosystem-owned:
+  - the active app reads initialization state from its own resolved runtime database
+  - app admin authority lives in `apps/{appId}/users/{uid}.role == 'admin'`
+  - an app is uninitialized when it has no app-local admin membership
+  - onboarding creates or repairs the current app record, then creates the first app-local admin membership
+  - `apps/{appId}.admin_ids` is a mirror for cards, guards, and cheap checks; it must not replace `AppUser` membership as authority
+  - parent ecosystem/app registry records may list or discover apps, but they do not initialize child or standalone apps
 - App fields can be grouped by who should handle them, but those groups do not create separate App records:
   - `admin`: Admin runs the app
   - `developer`: Developer builds and checks the app

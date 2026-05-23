@@ -1,56 +1,89 @@
 <template>
   <main class="min-h-screen bg-default text-default">
     <UContainer class="py-8 sm:py-10">
-      <div class="mx-auto max-w-xl space-y-4">
-        <UFileUpload
-          :model-value="documentFile"
-          accept="application/pdf,image/*,.doc,.docx"
-          :color="uploadError ? 'error' : 'primary'"
-          :highlight="Boolean(uploadError)"
-          label="Drop your document here"
-          :description="uploadDescription"
-          size="xl"
-          variant="area"
-          class="w-full"
-          :ui="{ base: 'min-h-72' }"
-          @update:model-value="setDocumentFile"
-        />
-
-        <UFormField>
-          <UInput
-            v-model="documentSlug"
-            placeholder="my-doc"
-            class="w-full"
-          />
-          <p class="mt-1 text-xs text-muted">
-            {{ qrPreviewUrl }}
-          </p>
-          <p
-            v-if="documentSlugTaken"
-            class="mt-1 text-xs text-error"
-          >
-            This document path is already taken.
-          </p>
-        </UFormField>
-
-        <UButton
-          icon="i-lucide-qr-code"
-          block
-          size="lg"
-          :disabled="!canCreateQr"
-          :loading="isCreating"
-          @click="createQrDoc"
-        >
-          {{ isCreating ? 'Creating...' : 'Create QR doc' }}
-        </UButton>
-
-        <p
-          v-if="createErrorMessage"
-          class="text-xs text-error"
-        >
-          {{ createErrorMessage }}
+      <header class="mx-auto mb-6 max-w-xl space-y-3">
+        <h1 class="text-4xl font-semibold tracking-normal text-highlighted sm:text-5xl">
+          Upload a doc.<br />
+          Get a QR code.
+        </h1>
+        <p class="text-base text-muted sm:text-lg">
+          Turn a public doc into a shareable QR page.
         </p>
-      </div>
+        <p class="text-sm text-muted">
+          Made for information people need to scan and read.
+        </p>
+        <nav class="flex flex-wrap gap-3 text-sm">
+          <NuxtLink to="/pricing" class="text-primary hover:underline">
+            Pricing
+          </NuxtLink>
+          <NuxtLink to="/help" class="text-primary hover:underline">
+            Help
+          </NuxtLink>
+          <NuxtLink to="/terms" class="text-primary hover:underline">
+            Terms
+          </NuxtLink>
+          <NuxtLink to="/privacy" class="text-primary hover:underline">
+            Privacy
+          </NuxtLink>
+        </nav>
+      </header>
+
+      <ClientOnly>
+        <div class="mx-auto max-w-xl space-y-4">
+          <p class="rounded-md border border-default bg-muted/30 px-3 py-2 text-sm text-muted">
+            QRdocs are for public information. Anyone with the link or QR code can view your doc.
+          </p>
+
+          <UFileUpload
+            :model-value="documentFile"
+            accept="application/pdf,image/*,.doc,.docx"
+            :color="uploadError ? 'error' : 'primary'"
+            :highlight="Boolean(uploadError)"
+            label="Drop your doc here"
+            :description="uploadDescription"
+            size="xl"
+            variant="area"
+            class="w-full"
+            :ui="{ base: 'min-h-72' }"
+            @update:model-value="setDocumentFile"
+          />
+
+          <UFormField>
+            <UInput
+              v-model="documentSlug"
+              placeholder="my-doc"
+              class="w-full"
+            />
+            <p class="mt-1 text-xs text-muted">
+              {{ qrPreviewUrl }}
+            </p>
+            <p
+              v-if="documentSlugTaken"
+              class="mt-1 text-xs text-error"
+            >
+              This doc path is already taken.
+            </p>
+          </UFormField>
+
+          <UButton
+            icon="i-lucide-qr-code"
+            block
+            size="lg"
+            :disabled="!canCreateQr"
+            :loading="isCreating"
+            @click="createQrDoc"
+          >
+            {{ isCreating ? 'Creating...' : 'Create your first QRdoc free' }}
+          </UButton>
+
+          <p
+            v-if="createErrorMessage"
+            class="text-xs text-error"
+          >
+            {{ createErrorMessage }}
+          </p>
+        </div>
+      </ClientOnly>
     </UContainer>
   </main>
 </template>
@@ -74,7 +107,7 @@ let availabilityTimer: number | undefined
 let availabilityRequest = 0
 
 const uploadDescription = computed(() => {
-  return uploadError.value || `PDF, image, DOC or DOCX. Max ${maxFileSizeMb} MB.`
+  return uploadError.value || `Max ${maxFileSizeMb} MB.`
 })
 
 const qrPreviewUrl = computed(() => {
@@ -162,7 +195,11 @@ async function createQrDoc() {
 }
 
 useSeoMeta({
-  title: 'QRdocs',
-  description: 'Turn any document into a public URL and QR code.',
+  title: 'QRdocs - Upload a doc. Get a QR code.',
+  ogTitle: 'QRdocs - Upload a doc. Get a QR code.',
+  twitterTitle: 'QRdocs - Upload a doc. Get a QR code.',
+  description: 'Turn a public doc into a shareable QR page. Create your first QRdoc free.',
+  ogDescription: 'Turn a public doc into a shareable QR page. Create your first QRdoc free.',
+  twitterDescription: 'Turn a public doc into a shareable QR page. Create your first QRdoc free.',
 })
 </script>

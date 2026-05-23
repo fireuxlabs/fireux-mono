@@ -73,11 +73,6 @@ export async function resolveClientAuthState(
   )
 }
 
-function stringArray(value: unknown): string[] {
-  if (!Array.isArray(value)) return []
-  return value.filter((item): item is string => typeof item === 'string')
-}
-
 export async function resolveClientAppAdmin(
   options: AdminGuardOptions
 ): Promise<boolean> {
@@ -94,29 +89,10 @@ export async function resolveClientAppAdmin(
     const databaseId = String(options.databaseId || '').trim()
     const db = databaseId ? getFirestore(app, databaseId) : getFirestore(app)
 
-    const [coreUserResult, appUserResult, appResult] = await Promise.allSettled([
-      getDoc(doc(db, 'users', uid)),
-      getDoc(doc(db, 'apps', appId, 'users', uid)),
-      getDoc(doc(db, 'apps', appId)),
-    ])
+    const appUserSnap = await getDoc(doc(db, 'apps', appId, 'users', uid))
+    if (!appUserSnap.exists()) return false
 
-    const appUser =
-      appUserResult.status === 'fulfilled' && appUserResult.value.exists()
-        ? appUserResult.value.data()
-        : null
-    if (appUser?.role === 'admin') return true
-
-    const coreUser =
-      coreUserResult.status === 'fulfilled' && coreUserResult.value.exists()
-        ? coreUserResult.value.data()
-        : null
-    if (stringArray(coreUser?.adminOf).includes(appId)) return true
-
-    const appDoc =
-      appResult.status === 'fulfilled' && appResult.value.exists()
-        ? appResult.value.data()
-        : null
-    return stringArray(appDoc?.admin_ids).includes(uid)
+    return appUserSnap.data()?.role === 'admin'
   }
 
   return withTimeout(run(), options.timeoutMs, false)

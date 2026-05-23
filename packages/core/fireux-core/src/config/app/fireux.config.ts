@@ -1,6 +1,8 @@
 // FILE: packages/core/fireux-core/config/app/fireux.config.ts
 import type { NuxtConfig } from '@nuxt/schema'
 import { defineNuxtModule } from '@nuxt/kit'
+import { existsSync } from 'node:fs'
+import { resolve } from 'node:path'
 
 import { configNitroFirebase } from './nitro'
 import { configPwa } from './pwa'
@@ -178,6 +180,18 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   nuxtWithNitro.nitro = {
     ...(nuxtWithNitro.nitro || {}),
     compatibilityDate: '2025-12-22',
+  }
+  const projectPublicDir = resolve(process.cwd(), 'public')
+  if (existsSync(projectPublicDir)) {
+    const publicAssets = ((nuxtWithNitro.nitro as any).publicAssets ||= []) as Array<
+      string | { dir: string; maxAge?: number; baseURL?: string }
+    >
+    const already = publicAssets.some((entry) =>
+      typeof entry === 'string'
+        ? entry === projectPublicDir
+        : entry?.dir === projectPublicDir
+    )
+    if (!already) publicAssets.push({ dir: projectPublicDir })
   }
   nuxt.experimental = {
     ...(nuxt.experimental || {}),

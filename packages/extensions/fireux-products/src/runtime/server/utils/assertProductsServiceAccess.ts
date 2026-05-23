@@ -74,22 +74,10 @@ async function hasAppAdminAccess(event: H3Event): Promise<boolean> {
       ? getFirestore(admin.app(), databaseId)
       : admin.firestore()
 
-    const [appSnap, appUserSnap, userSnap] = await Promise.all([
-      db.doc(`apps/${appId}`).get(),
-      db.doc(`apps/${appId}/users/${uid}`).get(),
-      db.doc(`users/${uid}`).get(),
-    ])
-
-    const appData = appSnap.data() || {}
+    const appUserSnap = await db.doc(`apps/${appId}/users/${uid}`).get()
     const appUserData = appUserSnap.data() || {}
-    const userData = userSnap.data() || {}
-
-    const adminIds = Array.isArray(appData.admin_ids) ? appData.admin_ids : []
-    const adminOf = Array.isArray(userData.adminOf) ? userData.adminOf : []
 
     return (
-      adminIds.includes(uid) ||
-      adminOf.includes(appId) ||
       appUserData.role === 'admin' ||
       appUserData.canManageProducts === true
     )

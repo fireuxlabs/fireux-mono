@@ -124,8 +124,7 @@ useHead({
 const isSelf = computed(() => Boolean(docId && user.value?.id === docId))
 
 const isAdminUser = computed(
-  () =>
-    appUser.value?.role === 'admin' || Boolean(coreUser.value?.adminOf?.length)
+  () => appUser.value?.role === 'admin'
 )
 
 const { ensure } = useSupplierEnsure()

@@ -1,6 +1,6 @@
 # Runtime Contract
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-20
+Updated: 2026-05-23
 ## Purpose
 - Define runtime selection, mode, collection path, and route policy across FireUX domains.
 
@@ -76,6 +76,21 @@ Updated: 2026-05-20
   - followers
 - Installing a module must not automatically expose every profile or console surface from that module.
 - Do not add a second app-facing page registry until a real repeated route family needs it. Prefer deriving visibility from `role`, `modules`, `consoles`, and `profiles`.
+
+## App Initialization Contract
+- App initialization is resolved inside the active app's own runtime database.
+- The active app identity is still `apps/{appId}`, but app admin authority is the app membership overlay:
+  - `apps/{appId}/users/{uid}.role == 'admin'`
+- An app is initialized only when at least one app-local admin membership exists.
+- If the app record exists but the app-local admin set is empty, the app is still uninitialized and should show the initialization/repair surface.
+- Onboarding must:
+  - ensure the current `apps/{appId}` record in the active runtime database
+  - ensure the signed-in initializer's root `users/{uid}` record
+  - ensure `apps/{appId}/users/{uid}` with `role: 'admin'`
+  - repair mirrors such as `apps/{appId}.admin_ids` from membership, not treat mirrors as authority
+- `apps/{appId}.admin_ids` is allowed as a denormalized mirror for fast cards, guards, and diagnostics.
+- Parent ecosystem, control-plane, or registry records may discover apps, but they must not decide whether a standalone or tenant app is initialized.
+- Do not use parent app admin lists as fallbacks for child/standalone app initialization.
 
 ## Entity Loading Contract
 - Entity index pages delivered through `Index.vue` + `CollectionManager` must use the normal client-side Firestore read path.

@@ -58,9 +58,24 @@
                 color="neutral"
                 aria-label="Open QR"
               />
+              <ClientOnly>
+                <UButton
+                  v-if="isAdmin"
+                  icon="i-lucide-trash-2"
+                  variant="ghost"
+                  color="error"
+                  :loading="deletingSlug === document.slug"
+                  :aria-label="`Delete ${document.slug}`"
+                  @click="deleteDocument(document)"
+                />
+              </ClientOnly>
             </div>
           </article>
         </div>
+
+        <p v-if="deleteError" class="text-sm text-error">
+          {{ deleteError }}
+        </p>
       </div>
     </UContainer>
   </main>
@@ -72,7 +87,9 @@ import {
   useAsyncData,
   useSeoMeta,
 } from '#imports'
-import { computed } from 'vue'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { computed, ref } from 'vue'
 
 type PublicQrdocDocument = {
   id: string
@@ -81,7 +98,18 @@ type PublicQrdocDocument = {
   file_name: string
 }
 
-const { data } = await useAsyncData(
+const { currentUser } = useAuth()
+const { isAdmin } = useUser()
+const deletingSlug = ref('')
+const deleteError = ref('')
+
+definePageMeta({
+  index: false,
+  sitemap: false,
+  robots: 'noindex, nofollow',
+})
+
+const { data, refresh } = await useAsyncData(
   'qrdocs-documents-index',
   () => $fetch<{ documents: PublicQrdocDocument[] }>('/api/docs')
 )
@@ -95,8 +123,31 @@ if (!data.value) {
 
 const documents = computed(() => data.value?.documents || [])
 
+async function deleteDocument(document: PublicQrdocDocument) {
+  if (!isAdmin.value || deletingSlug.value) return
+  if (!window.confirm(`Delete ${document.slug}?`)) return
+
+  deletingSlug.value = document.slug
+  deleteError.value = ''
+
+  try {
+    const token = await currentUser.value?.getIdToken()
+    await $fetch(`/api/docs/${encodeURIComponent(document.slug)}`, {
+      method: 'DELETE',
+      headers: token ? { authorization: `Bearer ${token}` } : undefined,
+    })
+    await refresh()
+  } catch (error) {
+    deleteError.value =
+      error instanceof Error ? error.message : 'Could not delete document.'
+  } finally {
+    deletingSlug.value = ''
+  }
+}
+
 useSeoMeta({
   title: 'Documents · QRdocs',
   description: 'Public QRdocs document index.',
+  robots: 'noindex, nofollow',
 })
 </script>

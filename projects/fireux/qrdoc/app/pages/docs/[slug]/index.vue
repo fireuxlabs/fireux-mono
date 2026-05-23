@@ -73,6 +73,12 @@ type PublicQrdocDocument = {
 const route = useRoute()
 const slug = String(route.params.slug || '').trim()
 
+definePageMeta({
+  index: false,
+  sitemap: false,
+  robots: 'noindex, nofollow',
+})
+
 const { data: documentData } = await useAsyncData(
   `qrdoc-document-${slug}`,
   () => $fetch<PublicQrdocDocument>(`/api/docs/${encodeURIComponent(slug)}`)
@@ -92,5 +98,6 @@ const documentLabel = computed(() => documentRecord.value.slug)
 useSeoMeta({
   title: computed(() => `${documentLabel.value} · QRdocs`),
   description: computed(() => `QRdocs document ${documentLabel.value}`),
+  robots: 'noindex, nofollow',
 })
 </script>

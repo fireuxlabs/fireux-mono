@@ -28,34 +28,67 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useAppUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
+import { computed, onMounted, ref } from 'vue'
 import type { UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
-const { pending, fulfilled } = useAppUserCollection()
-const { pill: userInterface } = useUserInterface()
 
-const adminEntries = computed(() =>
-  (fulfilled?.value ?? []).filter(
-    (entry) => entry.appUser?.role?.trim().toLowerCase() === 'admin'
-  )
-)
+type PublicAppAdmin = {
+  id: string
+  displayName: string
+  handle: string
+  avatar: string
+  profiles: string[]
+  unavailable?: boolean
+}
+
+const admins = ref<PublicAppAdmin[]>([])
+const pending = ref(true)
+
+onMounted(async () => {
+  pending.value = true
+
+  try {
+    const response = await $fetch<{ admins: PublicAppAdmin[] }>(
+      '/api/public/app/admins'
+    )
+    admins.value = response.admins || []
+  } catch (error) {
+    if (import.meta.dev) {
+      console.warn('[FooterAdmins] failed to load public app admins', error)
+    }
+    admins.value = []
+  } finally {
+    pending.value = false
+  }
+})
 
 const adminCards = computed(() => {
-  const entries = adminEntries.value
+  const entries = admins.value
   const result: Array<{ key: string; card: UserCard.Card }> = []
 
-  entries.forEach((record, index) => {
-    const payload = userInterface(record as any)
-    if (!payload) return
+  entries.forEach((record: PublicAppAdmin, index: number) => {
+    const handle = record.handle ? `@${record.handle}` : ''
+    const to = record.handle ? `/users/${encodeURIComponent(record.handle)}` : ''
 
     result.push({
       key: record.id || `${index}`,
       card: {
-        ...payload,
-        displayName: payload.displayName,
+        id: record.id,
+        to,
+        imageUrl: record.avatar,
+        avatarUrl: record.avatar,
+        secondaryAvatarUrl: '',
+        displayName: record.displayName,
+        title: '',
+        subtitle: handle,
+        summary: '',
+        handle,
         badges: [],
+        contactEmail: '',
+        contactPhone: '',
+        websiteUrl: '',
+        bio: '',
         profiles: [],
+        appsLabel: '',
       },
     })
   })

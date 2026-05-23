@@ -3,6 +3,7 @@ import { useFirestoreApiCreate } from 'fireux-core/runtime/composables/fireux/fi
 export type QrdocCreateInput = {
   file: File
   slug: string
+  type: 'doc' | 'food-menu'
 }
 
 export type QrdocCreateResult = {
@@ -19,6 +20,7 @@ export function useQrdocCreate() {
     const formData = new FormData()
     formData.append('file', input.file)
     formData.append('slug', input.slug.trim())
+    formData.append('type', input.type)
 
     return await createApiDocument<QrdocCreateResult, FormData>(
       '/api/docs/create',

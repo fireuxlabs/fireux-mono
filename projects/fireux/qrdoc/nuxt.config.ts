@@ -13,8 +13,22 @@ const fireuxConfig = defineFireuxConfig({
   consoles: [],
   seo: {
     siteUrl: 'https://qrdocs.web.app',
+    staticPaths: [
+      '/pricing',
+      '/terms',
+      '/privacy',
+      '/help',
+    ],
+    noindexPaths: [
+      '/console',
+      '/console/**',
+      '/admin',
+      '/admin/**',
+      '/docs',
+      '/docs/**',
+    ],
   },
-  modules: ['fireux-products', 'fireux-blogs'],
+  modules: [],
 })
 
 export default defineNuxtConfig({

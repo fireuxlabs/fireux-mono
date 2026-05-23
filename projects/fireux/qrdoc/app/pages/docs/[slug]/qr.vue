@@ -63,6 +63,12 @@ const requestUrl = useRequestURL()
 const slug = String(route.params.slug || '').trim()
 const qrDataUrl = ref('')
 
+definePageMeta({
+  index: false,
+  sitemap: false,
+  robots: 'noindex, nofollow',
+})
+
 const { data: documentData } = await useAsyncData(
   `qrdoc-document-qr-${slug}`,
   () => $fetch<PublicQrdocDocument>(`/api/docs/${encodeURIComponent(slug)}`)
@@ -94,5 +100,6 @@ onMounted(async () => {
 useSeoMeta({
   title: computed(() => `${documentLabel.value} QR · QRdocs`),
   description: computed(() => `Printable QR for ${documentLabel.value}`),
+  robots: 'noindex, nofollow',
 })
 </script>

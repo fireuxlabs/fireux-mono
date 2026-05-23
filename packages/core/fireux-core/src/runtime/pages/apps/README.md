@@ -1,7 +1,7 @@
 # Apps Pages
 
 Authority: Operational
-Updated: 2026-04-08
+Updated: 2026-05-23
 Scope: `packages/core/fireux-core/src/runtime/pages/apps/*`.
 
 This folder owns the public app index and the current ensure-first app create surface.
@@ -22,6 +22,9 @@ This folder owns the public app index and the current ensure-first app create su
 `create.vue` should:
 - read runtime config first
 - create `/apps/<appId>` only when missing
+- treat app-local admin membership as initialization authority
+- create or repair `/apps/<appId>/users/<uid>` with `role: 'admin'` when onboarding succeeds
+- repair `admin_ids` as a mirror of membership, not as the authority source
 - re-run onboarding and bootstrap state safely
 - stay safe to run multiple times
 
@@ -86,7 +89,8 @@ Admin runs the app. It may edit public app content and membership:
 - `long_bio`
 - `social_links`
 - `join_requests`
-- `admin_ids` / app user roles
+- app user roles at `/apps/<appId>/users/<uid>`
+- `admin_ids` as a mirror only
 
 Developer builds and checks the app. `/dashboard/developer` is gated by
 `DEVELOPER_ID` and owns:
@@ -121,6 +125,7 @@ System owns calculated/internal fields:
 ## Not Aligned Yet
 
 - app bootstrap still depends on runtime config and onboarding state rather than a simple record form
+- app initialization UI still has runtime surfaces that read `admin_ids`; those should be repaired toward app-local membership authority
 - there is no separate app repair or diagnostics tree because the create route already carries that load
 
 ## Short Version

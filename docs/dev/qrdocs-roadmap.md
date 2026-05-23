@@ -127,16 +127,48 @@ The server API can still write because Firebase Admin bypasses Firestore client 
 
 ### Recommended Firestore Rule Shape
 
-For the `qrdoc` database, the release rule should be conceptually:
+For the `qrdoc` database, the release rule must leave the FireUX app shell readable.
+
+QRdocs still uses the shared FireUX shell, so the browser must be able to read:
+
+- `apps/qrdoc`
+- the signed-in user's own `users/{uid}` record
+- the signed-in user's own `apps/qrdoc/users/{uid}` app membership record
+
+The app-specific document product records can stay public-read/server-write.
 
 ```js
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /qrdoc_documents/{documentId} {
-      allow get: if resource.data.is_public == true;
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    match /apps/qrdoc {
+      allow get: if true;
       allow list: if false;
+      allow create, update, delete: if false;
+    }
+
+    match /users/{uid} {
+      allow get: if isSelf(uid);
+      allow create, update: if isSelf(uid);
+      allow delete: if false;
+    }
+
+    match /apps/qrdoc/users/{uid} {
+      allow get: if isSelf(uid);
+      allow create, update, delete: if false;
+    }
+
+    match /qrdoc_documents/{documentId} {
+      allow get, list: if resource.data.is_public == true;
       allow create, update, delete: if false;
     }
 
@@ -149,13 +181,15 @@ service cloud.firestore {
 
 Important details:
 
-- `create`, `update`, and `delete` are denied for clients.
-- Public document metadata can be read only when `is_public == true`.
-- Listing is denied by default so public users cannot browse every document directly through Firestore.
-- The public `/docs/:slug` and `/docs/:slug/qr` routes can use server/API reads instead.
-- Admin/dashboard mutations should also go through server endpoints, not direct Firestore writes.
+- `apps/qrdoc` must be readable or the app shell will think QRdocs is not initialized.
+- Signed-in users need self-read/write access for the core FireUX user profile sync.
+- App membership writes should not be client-owned for QRdocs release; if app membership creation becomes needed, add a server sync endpoint rather than letting users grant their own app role.
+- `qrdoc_documents` public metadata can be read when `is_public == true`.
+- `qrdoc_documents` create, update, and delete are denied for clients.
+- QRdocs document creation still goes through `/api/docs/create`.
+- Admin/dashboard document mutations should also go through server endpoints, not direct Firestore writes.
 
-If the app later needs client-side document lists, add a deliberate signed-in rule for owner-owned records, not a broad public list rule.
+If account-owned private documents are added later, add explicit owner/private rules instead of broadening the public document rule.
 
 ### What Firebase Rules Do Not Cover
 

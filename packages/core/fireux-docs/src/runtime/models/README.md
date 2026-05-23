@@ -1,7 +1,7 @@
 # Models Directory
 
 Authority: Operational
-Updated: 2026-04-27
+Updated: 2026-05-23
 Scope: `packages/*/fireux-*/src/runtime/models` and child directories under `models/*`.
 
 Learn how FireUX runtime models are classified, how they are stored, and how future model decisions should be explained.
@@ -10,6 +10,7 @@ Current repo truth:
 - the main model families are normalized around simple stored-shape contracts
 - model files describe stored things, not hydrated or read-time composites
 - combined read shapes belong in fetch, runtime, and interface seams
+- app initialization authority lives in app-local `AppUser` membership records; root app admin arrays are mirrors
 
 ## Models Directory
 
@@ -162,6 +163,9 @@ Important:
 - do not treat `(default)` as the home for ordinary operational domain collections
 - `App` stays canonical at `/apps/<appId>` in the named operational database
 - the named operational database should carry the day-to-day domain collections
+- initialization is app-local: `apps/<appId>/users/<uid>.role == 'admin'` is the admin authority
+- `apps/<appId>.admin_ids` may mirror the admin set for fast reads, but it is not the authority source
+- if no app-local admin membership exists, the app needs initialization even when the root app record exists
 
 Preferred model-file shape for system models:
 - `XModel`
