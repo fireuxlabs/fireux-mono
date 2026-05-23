@@ -156,6 +156,7 @@ FireUX adds structure on top of ordinary composable usage:
   - `firestoreLoadDocsByIds` is an exact-doc loader that reloads when path/ids change, but is not a live listener for later document updates
 - usual Firestore entity stacks stay boring: root `useX.ts`, `fetch/`, `mutations/`, and `utils/`
 - singular/plural read dimensions live inside the stack: `useXFetch` reads one and `useXCollection` reads many
+- create surfaces should keep the domain seam stable: pages call `useXCreate`, while `useXCreate` chooses `useFirestoreCreate` for client-rule-protected writes or `useFirestoreApiCreate` for server-gated writes
 - validation belongs in `utils/validation` when it is shared by UI/read/write surfaces, and in `mutations/validation` only when it protects write behaviour
 - console-backed entity runtime seams live at the root of `fireux/console/<entity>/`
 - console operation records live under `fireux/console/<entity>/operations/`, not as child buckets under `fireux/firestore/<entity>/`

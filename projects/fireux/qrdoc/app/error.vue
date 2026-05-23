@@ -5,7 +5,7 @@
         <div class="mx-auto max-w-2xl space-y-6">
           <div class="space-y-2">
             <p class="text-sm font-semibold uppercase text-primary">
-              QRdoc
+              QRdocs
             </p>
             <h1 class="text-4xl font-semibold tracking-normal text-highlighted">
               {{ title }}
@@ -16,7 +16,7 @@
           </div>
 
           <UButton to="/" icon="i-lucide-arrow-left" variant="soft">
-            Back to QRdoc
+            Back to QRdocs
           </UButton>
         </div>
       </UContainer>

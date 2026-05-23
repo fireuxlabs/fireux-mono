@@ -23,7 +23,7 @@
             class="w-full"
           />
           <p class="mt-1 text-xs text-muted">
-            Printable QR found at {{ qrPreviewUrl }}
+            {{ qrPreviewUrl }}
           </p>
           <p
             v-if="documentSlugTaken"
@@ -33,36 +33,43 @@
           </p>
         </UFormField>
 
-        <UCheckbox
-          :model-value="processWithAi"
-          label="Process with AI"
-          @update:model-value="setProcessWithAi"
-        />
-
         <UButton
           icon="i-lucide-qr-code"
           block
           size="lg"
           :disabled="!canCreateQr"
+          :loading="isCreating"
+          @click="createQrDoc"
         >
-          Create QR doc
+          {{ isCreating ? 'Creating...' : 'Create QR doc' }}
         </UButton>
+
+        <p
+          v-if="createErrorMessage"
+          class="text-xs text-error"
+        >
+          {{ createErrorMessage }}
+        </p>
       </div>
     </UContainer>
   </main>
 </template>
 
 <script setup lang="ts">
+import { navigateTo, useSeoMeta } from '#imports'
 import { computed, ref, watch } from 'vue'
+import { useQrdocCreate } from '../composables/qrdoc/useQrdocCreate'
 
 const maxFileSizeMb = 10
 const maxFileSizeBytes = maxFileSizeMb * 1024 * 1024
 
 const documentFile = ref<File | null>(null)
 const documentSlug = ref('')
-const processWithAi = ref(false)
 const uploadError = ref('')
 const documentSlugTaken = ref(false)
+const isCreating = ref(false)
+const createErrorMessage = ref('')
+const { createDocument } = useQrdocCreate()
 let availabilityTimer: number | undefined
 let availabilityRequest = 0
 
@@ -72,7 +79,7 @@ const uploadDescription = computed(() => {
 
 const qrPreviewUrl = computed(() => {
   const slug = documentSlug.value.trim() || 'my-doc'
-  return `https://qrdoc.web.app/docs/${slug}/qr`
+  return `https://qrdocs.web.app/docs/${slug}/qr`
 })
 
 const canCreateQr = computed(() => {
@@ -80,7 +87,8 @@ const canCreateQr = computed(() => {
     documentFile.value &&
     documentSlug.value.trim() &&
     !documentSlugTaken.value &&
-    !uploadError.value
+    !uploadError.value &&
+    !isCreating.value
   )
 })
 
@@ -111,10 +119,6 @@ watch(documentSlug, (value) => {
   }, 250)
 })
 
-function setProcessWithAi(value: boolean | 'indeterminate') {
-  processWithAi.value = value === true
-}
-
 function setDocumentFile(value: File | File[] | null | undefined) {
   const file = Array.isArray(value) ? value[0] || null : value || null
 
@@ -134,8 +138,31 @@ function setDocumentFile(value: File | File[] | null | undefined) {
   documentFile.value = file
 }
 
+async function createQrDoc() {
+  if (!canCreateQr.value || !documentFile.value) return
+
+  isCreating.value = true
+  createErrorMessage.value = ''
+
+  try {
+    const slug = documentSlug.value.trim()
+
+    const response = await createDocument({
+      file: documentFile.value,
+      slug,
+    })
+
+    await navigateTo(response.path || `/docs/${encodeURIComponent(slug)}`)
+  } catch (error) {
+    createErrorMessage.value =
+      error instanceof Error ? error.message : 'Could not create QR doc.'
+  } finally {
+    isCreating.value = false
+  }
+}
+
 useSeoMeta({
-  title: 'QRdoc',
+  title: 'QRdocs',
   description: 'Turn any document into a public URL and QR code.',
 })
 </script>

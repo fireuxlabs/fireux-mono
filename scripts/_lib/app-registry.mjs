@@ -172,7 +172,7 @@ export const APP_REGISTRY = {
   },
   qrdoc: {
     key: 'qrdoc',
-    name: 'QRdoc',
+    name: 'QRdocs',
     appId: 'qrdoc',
     ecosystem: 'fireux',
     databaseId: 'qrdoc',
@@ -180,11 +180,7 @@ export const APP_REGISTRY = {
     workspace: './projects/fireux/qrdoc',
     port: 3013,
     consoles: [],
-    smokeRoutes: [
-      '/',
-      '/d/yellow-velo-rental-terms',
-      '/d/yellow-velo-tour-participant-agreement',
-    ],
+    smokeRoutes: ['/'],
     launchOrder: 11,
   },
   granite: {

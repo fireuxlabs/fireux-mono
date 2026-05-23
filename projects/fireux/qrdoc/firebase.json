@@ -2,13 +2,13 @@
   "functions": [
     {
       "source": ".output/server",
-      "codebase": "qrdoc-ssr",
+      "codebase": "qrdocs-ssr",
       "runtime": "nodejs22",
-      "entryPoint": "qrdoc"
+      "entryPoint": "qrdocs"
     }
   ],
   "hosting": {
-    "site": "qrdoc",
+    "site": "qrdocs",
     "public": ".output/public",
     "cleanUrls": true,
     "ignore": [
@@ -20,8 +20,8 @@
       {
         "source": "**",
         "function": {
-          "functionId": "qrdoc",
-          "codebase": "qrdoc-ssr",
+          "functionId": "qrdocs",
+          "codebase": "qrdocs-ssr",
           "region": "europe-west1"
         }
       }
