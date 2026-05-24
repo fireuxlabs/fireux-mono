@@ -13,7 +13,6 @@ definePageMeta({
   adminSurface: {
     surface: true,
     key: 'apps',
-    domain: 'apps',
     label: 'Apps',
     description: 'Feature app slugs on public app surfaces.',
     icon: 'i-lucide-app-window',

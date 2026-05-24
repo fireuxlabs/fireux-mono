@@ -1,13 +1,11 @@
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 import { defineNuxtConfig } from 'nuxt/config'
-import { metaContent } from './app/content/meta'
 
 const fireuxConfig = defineFireuxConfig({
   ecosystem: 'granite',
   id: 'granite-app',
   name: 'Granite',
   shortName: 'Granite',
-  meta: metaContent,
   role: 'global',
   consoles: ['portfolio'],
   modules: [

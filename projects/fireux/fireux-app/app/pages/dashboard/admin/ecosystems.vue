@@ -13,7 +13,6 @@ definePageMeta({
   adminSurface: {
     surface: true,
     key: 'ecosystems',
-    domain: 'ecosystems',
     label: 'Ecosystems',
     description: 'Feature ecosystem slugs on public ecosystem surfaces.',
     icon: 'i-lucide-orbit',

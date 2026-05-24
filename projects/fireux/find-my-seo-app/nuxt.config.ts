@@ -1,6 +1,5 @@
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 import { defineNuxtConfig } from 'nuxt/config'
-import { metaContent } from './app/content/meta'
 
 const fireuxConfig = defineFireuxConfig({
   ecosystem: 'fireux',
@@ -8,7 +7,6 @@ const fireuxConfig = defineFireuxConfig({
   name: 'Find My SEO',
   shortName: 'FindMySEO',
   databaseId: 'find-my-seo',
-  meta: metaContent,
   role: 'standalone',
   consoles: [],
   domains: ['professionals'],

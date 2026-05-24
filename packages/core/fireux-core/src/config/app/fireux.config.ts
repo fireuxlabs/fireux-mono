@@ -1,6 +1,7 @@
 // FILE: packages/core/fireux-core/config/app/fireux.config.ts
 import type { NuxtConfig } from '@nuxt/schema'
 import { defineNuxtModule } from '@nuxt/kit'
+import { createJiti } from 'jiti'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 
@@ -136,6 +137,29 @@ function validateFireuxAppConfig(app: FireuxAppConfig): void {
   }
 }
 
+function loadFireuxAppMetaContent(explicitMeta?: FireuxMetaContent): FireuxMetaContent | undefined {
+  if (explicitMeta) return explicitMeta
+
+  const candidates = [
+    resolve(process.cwd(), 'app/content/meta.ts'),
+    resolve(process.cwd(), 'app/meta.ts'),
+  ]
+  const appMeta = candidates.find((candidate) => existsSync(candidate))
+  if (!appMeta) return undefined
+
+  try {
+    const loadTypeScriptModule = createJiti(import.meta.url)
+    const loaded = loadTypeScriptModule(appMeta) as { metaContent?: FireuxMetaContent }
+    if (!loaded.metaContent) {
+      throw new Error(`[fireux] App meta file must export metaContent: ${appMeta}`)
+    }
+    return loaded.metaContent
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    throw new Error(`[fireux] Failed to load app meta from ${appMeta}: ${message}`)
+  }
+}
+
 function createAppDatabaseRuntimeModule(databaseId?: string) {
   const resolvedDatabaseId = typeof databaseId === 'string' ? databaseId.trim() : ''
   if (!resolvedDatabaseId) return null
@@ -263,6 +287,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   const moduleNames = (nuxt.modules || [])
     .map(moduleName)
     .filter(Boolean) as string[]
+  const metaContent = loadFireuxAppMetaContent(app.meta)
 
   if (envPlacesApiKey) {
     const rc = ((nuxt as any).runtimeConfig ||= {}) as Record<string, any>
@@ -303,7 +328,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     private: {
       developerPin: envPin,
       ...(app.seo ? { seo: app.seo } : {}),
-      ...(app.meta ? { meta: app.meta } : {}),
+      ...(metaContent ? { meta: metaContent } : {}),
     },
   })
 

@@ -1,6 +1,5 @@
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 import { defineNuxtConfig } from 'nuxt/config'
-import { metaContent } from './app/content/meta'
 
 const fireuxConfig = defineFireuxConfig({
   ecosystem: 'misebox',
@@ -8,7 +7,6 @@ const fireuxConfig = defineFireuxConfig({
   name: 'Misebox',
   shortName: 'Misebox',
   contactEmail: 'misebox@misebox.app',
-  meta: metaContent,
   role: 'global',
   consoles: ['kitchen', 'supplier'],
   domains: ['kitchens', 'suppliers', 'jobs', 'chefs', 'ingredients'],

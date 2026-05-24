@@ -13,7 +13,6 @@ definePageMeta({
   adminSurface: {
     surface: true,
     key: 'modules',
-    domain: 'modules',
     label: 'Modules',
     description: 'Feature module slugs on public module surfaces.',
     icon: 'i-lucide-puzzle',

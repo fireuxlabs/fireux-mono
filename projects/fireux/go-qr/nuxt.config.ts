@@ -1,6 +1,5 @@
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 import { defineNuxtConfig } from 'nuxt/config'
-import { metaContent } from './app/meta'
 
 const fireuxConfig = defineFireuxConfig({
   ecosystem: 'fireux',
@@ -8,7 +7,6 @@ const fireuxConfig = defineFireuxConfig({
   name: 'Go QR',
   shortName: 'Go QR',
   databaseId: 'go-qr',
-  meta: metaContent,
   role: 'standalone',
   consoles: [],
   seo: {

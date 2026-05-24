@@ -17,14 +17,31 @@ Installed packages provide capabilities.
 
 Apps consume domains explicitly.
 
-If an app consumes a domain, the provider should make the domain's public and
-admin curation surfaces available to that app.
+If an app consumes a provider-packaged domain, the provider should make the
+domain's public and admin curation surfaces available to that app.
+
+App-local domain pages are different. If an app owns the page files directly,
+the file tree is the declaration and no `domains` entry is needed.
 
 The current config key for this is:
 
 ```ts
 domains: ['kitchens', 'suppliers']
 ```
+
+Use `domains` for provider-packaged domains such as `kitchens`, `suppliers`,
+or `jobs`.
+
+Do not use `domains` for FireUX App's own local pages such as:
+
+- `/apps`
+- `/ecosystems`
+- `/projects`
+- `/modules`
+- `/dashboard/admin/apps`
+- `/dashboard/admin/ecosystems`
+- `/dashboard/admin/projects`
+- `/dashboard/admin/modules`
 
 Products and Blog posts are excluded from this matrix because they are baseline
 FireUX app tools, not opt-in domain surfaces:
@@ -72,10 +89,10 @@ Legend:
 
 | Domain | Provider | Index | Detail | Create | Edit ownership | Operator | Admin curation | Current read |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `apps` | `fireux-core` / FireUX app | yes | yes | yes | partial | missing | yes | Consumed by FireUX to show apps in the ecosystem. |
-| `ecosystems` | FireUX app/core model | yes | yes | missing | console-managed | missing | yes | FireUX-only domain. |
-| `projects` | FireUX app/core model | yes | yes | yes | console-managed | yes | yes | Project console is the real edit surface. |
-| `modules` | FireUX app / Products-like | yes | yes | missing | partial | missing | yes | May be product-kind rather than a true domain. |
+| `apps` | FireUX app-local/core | yes | yes | yes | partial | missing | yes | FireUX App owns this out of the box; no `domains` entry needed. |
+| `ecosystems` | FireUX app-local/core model | yes | yes | missing | console-managed | missing | yes | FireUX-only app-local domain; no `domains` entry needed. |
+| `projects` | FireUX app-local/core model | yes | yes | yes | console-managed | yes | yes | FireUX App owns this out of the box; Project console is the real edit surface. |
+| `modules` | FireUX app-local / Products-like | yes | yes | missing | partial | missing | yes | FireUX App owns this page; may become product-kind rather than true domain. |
 | `kitchens` | `fireux-kitchens` | yes | yes | yes | console-managed plus simple edit | yes | yes | Strong reference domain. |
 | `chefs` | `fireux-kitchens` | yes | yes | missing | profile/admin-managed | partial | yes | Profile-ish; likely opt in only where useful. |
 | `ingredients` | `fireux-kitchens` | yes | yes | partial | console-managed | missing | yes | Public stack exists; curation is slug-only. |

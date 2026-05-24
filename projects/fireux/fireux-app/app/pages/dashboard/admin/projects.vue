@@ -13,7 +13,6 @@ definePageMeta({
   adminSurface: {
     surface: true,
     key: 'projects',
-    domain: 'projects',
     label: 'Projects',
     description: 'Feature project slugs on public project surfaces.',
     icon: 'i-lucide-folders',

@@ -199,7 +199,8 @@ Current learned examples:
   - other pages the product needs to expose but should not sell as primary navigation
 - In route meta, `nav.position: 'bottom'` marks a public landing/default link as footer navigation and must not appear in the top header.
 - Admin index routes that should appear in `/dashboard/admin` declare `adminSurface` route meta. The dashboard discovers those surfaces from registered routes instead of hard-coding entity names.
-- Domain provider packages may ship `/dashboard/admin/{domain}` pages, but those pages appear only when the app opts into the domain with `domains`.
+- App-local admin pages are declared by the app's page files and do not need a `domains` opt-in.
+- Domain provider packages may ship `/dashboard/admin/{domain}` pages, but those pages appear only when the app opts into the provider domain with `domains`.
 - Domain admin pages are curation-only for now. They manage one comma-separated featured/pinned slug field in app-local public settings, not full CRUD.
 - Featured public domain sections are selected by explicit slug arrays in app-local public settings, such as `apps/{appId}/settings/public.featured_app_slugs`, `featured_ecosystem_slugs`, and `featured_kitchen_slugs`.
 - Canonical product app public pages are `/`, `/about`, `/get-started`, `/pricing`, `/help`, `/terms`, and `/privacy` by default. Product-capable apps should also expose `/products`. Missing pages should be an explicit product decision, not accidental drift.
