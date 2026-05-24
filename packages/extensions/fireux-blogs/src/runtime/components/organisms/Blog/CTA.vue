@@ -1,6 +1,7 @@
 <template>
   <UPageCTA
     class="cta"
+    data-entity-cta-family="admin-managed"
     v-if="showCTA"
     title="Publish a post"
     :description="ctaDescription"

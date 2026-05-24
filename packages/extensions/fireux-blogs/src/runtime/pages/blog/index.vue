@@ -6,7 +6,7 @@
       <EntityIndexCta
         title="Blog index"
         description="Browse published articles for this runtime. Editorial authoring remains in the admin blog workspace."
-        family="special"
+        family="admin-managed"
         source="blogs collection"
         :count-label="`${collection.length} post${collection.length === 1 ? '' : 's'}`"
         :actions="actions"

@@ -1,5 +1,5 @@
 <template>
-  <main class="min-h-screen bg-default text-default">
+  <main class="min-h-screen bg-default text-default" data-entity-cta-family="utility-managed">
     <UContainer class="py-6 sm:py-8">
       <div class="mx-auto max-w-3xl space-y-5">
         <header class="flex items-center justify-between gap-3 border-b border-default pb-4">

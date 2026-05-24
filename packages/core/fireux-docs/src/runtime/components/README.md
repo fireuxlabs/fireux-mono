@@ -37,6 +37,8 @@ The main repo-wide component seams are:
 
 - `**/Create/System.vue`
 - `**/Collection/Manager.vue`
+- `**/Main.vue`
+- `**/Featured.vue`
 - `**/Cards/*.vue`
 - `public/SimplePage.vue`
 - `public/PricingPage.vue`
@@ -48,6 +50,10 @@ Read them like this:
   FireUX create behavior surface
 - `Collection/Manager.vue`
   FireUX collection browse shell
+- `Main.vue`
+  Optional entity-owned public growth layer between the entity CTA and collection manager
+- `Featured.vue`
+  Optional entity-owned highlighted subset that must not replace the full collection manager
 - `Cards/*`
   FireUX presentational entity surfaces such as `pill`, `cell`, `preview`, and `profile`
 - `public/SimplePage.vue`
@@ -57,12 +63,24 @@ Read them like this:
 - `public/PartnerPricingPage.vue`
   FireUX shell for ecosystem partner pricing details; app pages provide only the route and page meta
 
+`EntityIndexCta` uses management-path families:
+
+- `console`
+- `console-managed`
+- `admin-managed`
+- `profile-managed`
+- `domain-managed`
+- `utility-managed`
+
+Use the family that says where the entity is managed. Do not use pricing, help, about, or other page surfaces as entity families.
+
 ## FireUX Override
 
 FireUX adds stronger behavior rules on top of ordinary component placement:
 
 - create ownership may start in pages, but create behavior usually lives in `Create/System.vue`
 - collection browse behavior should stay consistent across domains through the collection manager seam
+- entity index pages may add an entity-owned `Main.vue` layer for richer public presentation, but the collection manager remains the canonical full browse/manage surface
 - profile cards should move toward prop-in, render-out rather than local read logic
 - simple public pages should keep app-local copy in pages while sharing the core page frame, spacing, and return-link behavior
 - pricing pages should keep app-local plans and route meta in pages while sharing the core pricing frame, plan sections, canonical link handling, generated structured data, and CTA area

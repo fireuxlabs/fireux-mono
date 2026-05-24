@@ -2,7 +2,7 @@
   <EntityIndexCta
     title="Products index"
     description="Browse canonical product records for this runtime. Publishing and merchandising actions stay in the admin product workspace."
-    family="special"
+    family="admin-managed"
     source="products collection"
     :count-label="`${count} product${count === 1 ? '' : 's'}`"
     :actions="actions"

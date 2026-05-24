@@ -1,6 +1,7 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/organisms/User/CTA.vue -->
 <template>
   <UPageCTA
+    data-entity-cta-family="profile-managed"
     :class="['cta', { 'cta--usage': isResolved && isInitialized && currentUser }]"
     :title="isResolved && isInitialized && currentUser ? undefined : 'Current User'"
     :description="isResolved && isInitialized && currentUser ? undefined : 'Sign in to view or create your profile.'"

@@ -7,6 +7,15 @@
     />
 
     <UPageBody class="pagebody">
+      <EntityIndexCta
+        title="Properties index"
+        description="Properties are console workspaces. Select a property, then manage the public guest guide and operational property sections in the property console."
+        family="console"
+        source="properties collection"
+        :count-label="`${properties.length} propert${properties.length === 1 ? 'y' : 'ies'}`"
+        :actions="actions"
+      />
+
       <div
         v-if="showDevNotes"
         data-dev-note="true"
@@ -92,4 +101,13 @@ const {
   devPropertyCount,
   setSourceMode,
 } = useProperties()
+
+const actions = [
+  {
+    label: 'Console',
+    cta: 'Open console',
+    to: '/console/property',
+    icon: 'i-lucide-layout-dashboard',
+  },
+] as const
 </script>

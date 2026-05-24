@@ -48,6 +48,14 @@
 </template>
 
 <script setup lang="ts">
+type EntityIndexCtaFamily =
+  | 'console'
+  | 'console-managed'
+  | 'admin-managed'
+  | 'profile-managed'
+  | 'domain-managed'
+  | 'utility-managed'
+
 type EntityIndexAction = {
   label: string
   cta: string
@@ -60,7 +68,7 @@ withDefaults(defineProps<{
   description: string
   source?: string
   countLabel?: string
-  family?: 'project' | 'profile' | 'post' | 'console' | 'special'
+  family?: EntityIndexCtaFamily
   actions?: EntityIndexAction[]
 }>(), {
   actions: () => [],

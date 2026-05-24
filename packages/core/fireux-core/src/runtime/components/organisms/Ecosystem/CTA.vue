@@ -1,5 +1,6 @@
 <template>
   <UPageCTA
+    data-entity-cta-family="console"
     title="Ecosystem collection"
     description="This index reads root Ecosystem identity records. Project/App tools manage that same stored truth."
     orientation="horizontal"

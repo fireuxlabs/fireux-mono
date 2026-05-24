@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
     <UPageBody class="pagebody">
-      <PortfolioCTA />
+      <PortfolioCTA :count="portfolios.length" />
 
       <UCard v-if="pending">
         <p>Loading portfolios…</p>

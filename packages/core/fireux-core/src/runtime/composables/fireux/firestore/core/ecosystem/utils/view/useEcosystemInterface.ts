@@ -106,7 +106,7 @@ export function useEcosystemInterface() {
     return {
       id: resolvedId,
       to: safeString(target.href) || (slug ? `/ecosystems/${encodeURIComponent(slug)}` : ''),
-      imageUrl: safeString(target.src),
+      imageUrl: safeString(target.src) || safeString(target.image_url),
       avatarText: safeString(target.text) || name || key,
       title: name || key || 'Untitled ecosystem',
       subtitle: slug || key || '',

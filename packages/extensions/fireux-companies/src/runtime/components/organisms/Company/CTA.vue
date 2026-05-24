@@ -2,7 +2,7 @@
   <EntityIndexCta
     title="Companies index"
     description="Browse company records derived from places, then use the company creation flow when a claimed place is ready for a company layer."
-    family="special"
+    family="domain-managed"
     source="companies collection"
     :count-label="`${count} compan${count === 1 ? 'y' : 'ies'}`"
     :actions="actions"

@@ -5,7 +5,7 @@
       <EntityIndexCta
         title="Apps index"
         description="Browse canonical app records for the current ecosystem. Apps are managed as core ecosystem records, not as their own console runtime."
-        family="special"
+        family="console"
         source="apps collection"
         :count-label="`${collection.length} app${collection.length === 1 ? '' : 's'}`"
       />

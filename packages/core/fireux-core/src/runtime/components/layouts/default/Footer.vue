@@ -1,26 +1,27 @@
 <!-- COMMENT: app/components/layouts/default/Footer.vue -->
 <template>
-  <UFooter>
-    <UContainer>
+  <footer class="border-t border-default">
+    <UContainer class="py-8">
       <div class="flex w-full flex-col items-center gap-6">
-        <nav
-          v-if="footerItems.length"
-          aria-label="Footer navigation"
-          class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm"
-        >
-          <NuxtLink
-            v-for="item in footerItems"
-            :key="item.key || item.to"
-            :to="item.to"
-            class="text-muted hover:text-highlighted"
-          >
-            {{ item.label }}
-          </NuxtLink>
-        </nav>
-
         <ClientOnly>
           <LayoutsDefaultFooterAdmins class="w-full max-w-4xl" :show-badges="false" />
         </ClientOnly>
+
+        <UFooter
+          v-if="footerItems.length"
+          as="div"
+          :ui="{
+            root: 'w-full border-0',
+            container: 'justify-center py-0 lg:py-0',
+          }"
+        >
+          <UNavigationMenu
+            :items="footerNavItems"
+            variant="link"
+            aria-label="Footer navigation"
+            class="justify-center"
+          />
+        </UFooter>
 
         <div class="flex flex-col items-center gap-4 text-center">
           <div class="flex flex-col items-center gap-2">
@@ -70,7 +71,7 @@
         </div>
       </div>
     </UContainer>
-  </UFooter>
+  </footer>
 </template>
 
 <script setup lang="ts">
@@ -116,6 +117,9 @@ const currentLayout = computed(() =>
 const { items: navItems } = useNav(currentLayout)
 const footerItems = computed(() =>
   navItems.value.filter((item) => item.position === 'bottom')
+)
+const footerNavItems = computed(() =>
+  footerItems.value.map(({ icon: _icon, ...item }) => item)
 )
 
 function labelizeEcosystemName(value: string) {

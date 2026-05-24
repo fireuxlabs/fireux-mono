@@ -6,7 +6,7 @@
       :description="pageDescription"
     />
     <UPageBody class="pagebody">
-      <OrganismsKitchenCTA />
+      <OrganismsKitchenCTA :count="kitchens.length" />
 
       <div
         v-if="showDevNotes"

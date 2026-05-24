@@ -108,8 +108,10 @@ const isLoading = computed(() => Boolean(pending.value))
 .footer-admins__header {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.15rem;
   margin-bottom: 0.75rem;
+  text-align: center;
 }
 
 .footer-admins__label {
@@ -126,10 +128,15 @@ const isLoading = computed(() => Boolean(pending.value))
 }
 
 .footer-admins__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 0.75rem;
   width: 100%;
+}
+
+.footer-admins__grid > * {
+  width: min(100%, 260px);
 }
 
 .footer-admins__loading {

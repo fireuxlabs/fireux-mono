@@ -4,7 +4,7 @@
     <UPageHeader class="pageheader" :title="pageTitle" :description="pageDescription" />
 
     <UPageBody class="pagebody">
-      <SupplierCTA />
+      <SupplierCTA :count="suppliers.length" />
 
       <UCard v-if="pending">
         <p>Loading suppliers…</p>

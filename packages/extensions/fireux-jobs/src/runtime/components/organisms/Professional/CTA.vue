@@ -1,6 +1,7 @@
 <template>
   <UPageCTA
     class="cta"
+    data-entity-cta-family="profile-managed"
     title="Professional profile"
     :description="ctaDescription"
     variant="subtle"

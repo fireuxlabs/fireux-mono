@@ -354,6 +354,21 @@ composables/fireux/firestore/<entity>/
 | Root plus scoped usage | Root truth linked into a workspace by a scoped usage record | root model/collection/interface plus scoped relationship helper | `Ingredient` root plus `KitchenIngredient` usage records |
 | System/adapter seam | Runtime helper around stack behaviour, not an entity | adapter/ensure/selection helpers; no full entity UI stack required | `Console`, `Firestore`, selection helpers |
 
+### Entity CTA Family Matrix
+
+Entity index CTA surfaces classify the management path, not the marketing copy.
+
+| CTA family | Canon meaning | Current examples |
+| --- | --- | --- |
+| `console` | Main selectable workspace/root thing managed through a console or project/operator surface | `Project`, `Ecosystem`, `App`, `Module`, `Kitchen`, `Supplier`, `Portfolio`, `Property` |
+| `console-managed` | Child or operational record managed inside a selected console/root thing | `Menu`, `Dish`, `Recipe`, `Ingredient`, `Mise`, `Station`, `Team`, `KitchenOrder`, supplier catalogue items, `Client`, `Unit`, `Document`, `ComplianceRecord`, `Task` |
+| `admin-managed` | App-admin published or commercial entity | `BlogPost`, `Product` |
+| `profile-managed` | Person/account identity entity | `User`, `Chef`, `Agent`, `Professional` |
+| `domain-managed` | Public domain record without a dedicated console workspace today | `Place`, `Company`, `Job` |
+| `utility-managed` | App-local tool output that is not yet a shared entity stack | Go QR uploaded docs and QR pages |
+
+Pricing pages, help pages, about pages, and app-authored page copy are surfaces, not entity families, unless a future product deliberately promotes them into entity stacks.
+
 ### Create And Edit Mode Matrix
 
 | Mode | Canon meaning | Current examples |
@@ -474,6 +489,12 @@ composables/fireux/firestore/<entity>/
 
 ## Endpoint Canon
 - Entity index pages that are rendered through `Index.vue` + `CollectionManager` are client-side Firestore surfaces.
+- Entity index pages may add an entity-owned growth layer between CTA and CollectionManager when the family needs richer public presentation:
+  - `EntityIndexCta`
+  - optional `<Entity>Main` layer, such as `EcosystemMain`
+  - `<Entity>CollectionManager`
+- The `Main` layer may contain family-specific featured, pricing, project/operator, or explainer components, but it must not replace the CollectionManager browse surface.
+- Ecosystem records are managed through Project Console; Ecosystem is not its own console family.
 - Canon examples:
   - `/apps`
   - `/users`

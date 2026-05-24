@@ -2,6 +2,7 @@
 <template>
   <UPageCTA
     class="cta"
+    data-entity-cta-family="domain-managed"
     title="Create a place"
     description="Create a place from Google if it is not in our database."
     variant="naked"
