@@ -108,17 +108,15 @@ const APP_OVERRIDES = {
     shortName: 'Granite',
     siteUrl: 'https://granite-os.web.app',
   },
-  niederhorn: {
-    name: 'Niederhorn',
-    shortName: 'Niederhorn',
-  },
   'la-tap-berne': {
     name: 'La Tap Berne',
     shortName: 'La Tap Berne',
+    siteUrl: 'https://la-tap-berne.web.app',
   },
   'richies-reinigung': {
     name: 'Richies',
     shortName: 'Richies',
+    siteUrl: 'https://richies-reinigung.web.app',
   },
 }
 
@@ -245,9 +243,21 @@ function buildPatch(seed, existing = {}) {
 
   if (seed.siteUrl) {
     const existingMedia = asObject(existing.media)
+    const mediaDefaults = resolveMediaDefaults(seed.siteUrl)
     patch.media = {
-      ...resolveMediaDefaults(seed.siteUrl),
       ...existingMedia,
+      thumbnail_url:
+        normalizeString(existingMedia.thumbnail_url) || mediaDefaults.thumbnail_url,
+      logo_url:
+        normalizeString(existingMedia.logo_url) || mediaDefaults.logo_url,
+      wordmark_light_url:
+        normalizeString(existingMedia.wordmark_light_url) ||
+        mediaDefaults.wordmark_light_url,
+      wordmark_dark_url:
+        normalizeString(existingMedia.wordmark_dark_url) ||
+        mediaDefaults.wordmark_dark_url,
+      cover_url:
+        normalizeString(existingMedia.cover_url) || mediaDefaults.cover_url,
     }
   }
 

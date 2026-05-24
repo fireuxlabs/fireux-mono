@@ -68,6 +68,10 @@ function appLaunchOrder(app: RegistryDocument) {
   return asNumber(asObject(app.fireux_repo).launch_order)
 }
 
+function isActive(raw: RegistryDocument) {
+  return asString(raw.status) === 'active'
+}
+
 function toDirectoryApp(raw: RegistryDocument): DirectoryApp | null {
   const id = asString(raw.id)
   const name = asString(raw.app_name) || asString(raw.name) || id
@@ -139,6 +143,7 @@ export default defineEventHandler(async (event: H3Event) => {
     ])
 
     const apps = rawApps
+      .filter(isActive)
       .map(toDirectoryApp)
       .filter((row): row is DirectoryApp => Boolean(row))
       .sort((a, b) => {

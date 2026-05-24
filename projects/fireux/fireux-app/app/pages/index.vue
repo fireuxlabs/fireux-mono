@@ -12,19 +12,19 @@
     :hero-bullets="appMeta.heroBullets"
     :right-panel-items="appMeta.heroPanelItems"
   >
-    <template #get-started>
-      <LandingGetStarted />
+    <template #before-get-started>
+      <LandingApps />
+      <LandingEcosystems />
     </template>
 
-    <template #apps>
-      <LandingApps />
+    <template #get-started>
+      <LandingGetStarted />
     </template>
 
     <template #after-products>
       <LandingFuel />
       <LandingFeatures first />
       <LandingSkillsIcons />
-      <LandingEcosystems />
     </template>
   </LandingHeroSection>
 </template>

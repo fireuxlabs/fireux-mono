@@ -46,7 +46,7 @@ export function useProfileFetch<
 
   /**
    * Canon: App profile overlay (domain deltas)
-   * - Path: `apps/{appId}/{domainCollection}/{uid}` (e.g. `apps/niederhorn/chefs/{uid}`)
+   * - Path: `apps/{appId}/{domainCollection}/{uid}` (e.g. `apps/misebox/chefs/{uid}`)
    * - This is the app-scoped domain profile layer for the current app, including global apps.
    * - The first scoped facade should usually live in the global app, then migrate or extend later
    *   when a dedicated app becomes real.

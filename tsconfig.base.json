@@ -260,7 +260,6 @@
         "./projects/bringli/bringli-app/app/*",
         "./projects/granite/granite-app/app/*",
         "./projects/misebox/misebox-app/app/*",
-        "./projects/misebox/niederhorn/app/*",
         "./projects/cleanbox/cleanbox-app/app/*",
         "./projects/cleanbox/richies-reinigung/app/*"
       ],
@@ -270,7 +269,6 @@
         "./projects/bringli/bringli-app/app/*",
         "./projects/granite/granite-app/app/*",
         "./projects/misebox/misebox-app/app/*",
-        "./projects/misebox/niederhorn/app/*",
         "./projects/cleanbox/cleanbox-app/app/*",
         "./projects/cleanbox/richies-reinigung/app/*"
       ],
@@ -280,7 +278,6 @@
         "./projects/bringli/bringli-app/*",
         "./projects/granite/granite-app/*",
         "./projects/misebox/misebox-app/*",
-        "./projects/misebox/niederhorn/*",
         "./projects/cleanbox/cleanbox-app/*",
         "./projects/cleanbox/richies-reinigung/*"
       ],
@@ -290,7 +287,6 @@
         "./projects/bringli/bringli-app/*",
         "./projects/granite/granite-app/*",
         "./projects/misebox/misebox-app/*",
-        "./projects/misebox/niederhorn/*",
         "./projects/cleanbox/cleanbox-app/*",
         "./projects/cleanbox/richies-reinigung/*"
       ],

@@ -76,11 +76,6 @@
         "icon": "$(beaker)"
       },
       {
-        "command": "fireuxToolbar.startNiederhorn",
-        "title": "Dev: Niederhorn",
-        "icon": "$(mountain)"
-      },
-      {
         "command": "fireuxToolbar.startRichies",
         "title": "Dev: Richies",
         "icon": "$(tools)"

@@ -696,18 +696,6 @@ function activate(context) {
       url: 'http://localhost:3002',
     },
     {
-      key: 'niederhorn',
-      name: 'Niederhorn',
-      icon: '$(mountain)',
-      port: 3003,
-      commandId: 'fireuxToolbar.startNiederhorn',
-      taskLabel: 'dev:niederhorn (3003)',
-      terminalName: 'Niederhorn (3003)',
-      pnpmCommand: 'pnpm dev:niederhorn --host',
-      tooltip: 'Start Niederhorn dev (port 3003)',
-      url: 'http://localhost:3003',
-    },
-    {
       key: 'richies',
       name: 'Richies',
       icon: '$(tools)',

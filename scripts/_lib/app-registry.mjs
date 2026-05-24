@@ -56,18 +56,6 @@ export const APP_REGISTRY = {
     consoles: [],
     launchOrder: 3,
   },
-  niederhorn: {
-    key: 'niederhorn',
-    name: 'Niederhorn',
-    appId: 'niederhorn',
-    ecosystem: 'misebox',
-    databaseId: 'misebox',
-    role: 'tenant',
-    workspace: './projects/misebox/niederhorn',
-    port: 3003,
-    consoles: [],
-    launchOrder: 4,
-  },
   richies: {
     key: 'richies',
     name: 'Richies Reinigung',
@@ -78,7 +66,7 @@ export const APP_REGISTRY = {
     workspace: './projects/cleanbox/richies-reinigung',
     port: 3004,
     consoles: [],
-    launchOrder: 5,
+    launchOrder: 4,
   },
   tenant: {
     key: 'tenant',
@@ -90,7 +78,7 @@ export const APP_REGISTRY = {
     workspace: './projects/fireux/tenant',
     port: 3005,
     consoles: [],
-    launchOrder: 6,
+    launchOrder: 5,
   },
   bringli: {
     key: 'bringli',
@@ -102,7 +90,7 @@ export const APP_REGISTRY = {
     workspace: './projects/bringli/bringli-app',
     port: 3006,
     consoles: ['supplier'],
-    launchOrder: 7,
+    launchOrder: 6,
   },
   'find-my-seo': {
     key: 'find-my-seo',
@@ -126,7 +114,7 @@ export const APP_REGISTRY = {
       '/dashboard',
       '/dashboard/professional/profile',
     ],
-    launchOrder: 8,
+    launchOrder: 7,
   },
   sproochli: {
     key: 'sproochli',
@@ -148,7 +136,7 @@ export const APP_REGISTRY = {
       '/bnb/holiday-with-nats',
       '/bnb/holiday-with-nats/wifi',
     ],
-    launchOrder: 9,
+    launchOrder: 8,
   },
   buenohost: {
     key: 'buenohost',
@@ -168,7 +156,7 @@ export const APP_REGISTRY = {
       '/properties/holiday-with-nats/companion/check-in',
       '/console/property',
     ],
-    launchOrder: 10,
+    launchOrder: 9,
   },
   'go-qr': {
     key: 'go-qr',
@@ -181,7 +169,7 @@ export const APP_REGISTRY = {
     port: 3013,
     consoles: [],
     smokeRoutes: ['/'],
-    launchOrder: 11,
+    launchOrder: 10,
   },
   granite: {
     key: 'granite',
@@ -193,7 +181,7 @@ export const APP_REGISTRY = {
     workspace: './projects/granite/granite-app',
     port: 3007,
     consoles: ['portfolio'],
-    launchOrder: 12,
+    launchOrder: 11,
   },
   'la-tap-berne': {
     key: 'la-tap-berne',
@@ -205,14 +193,14 @@ export const APP_REGISTRY = {
     workspace: './projects/misebox/la-tap-berne',
     port: 3008,
     consoles: ['kitchen'],
-    launchOrder: 13,
+    launchOrder: 12,
   },
 }
 
 export const APP_GROUPS = {
   all: ['fireux', 'misebox', 'cleanbox'],
-  'all-extended': ['fireux', 'misebox', 'cleanbox', 'niederhorn', 'richies', 'tenant'],
-  full: ['fireux', 'misebox', 'cleanbox', 'niederhorn', 'richies', 'tenant', 'bringli', 'find-my-seo', 'sproochli', 'buenohost', 'go-qr', 'granite', 'la-tap-berne'],
+  'all-extended': ['fireux', 'misebox', 'cleanbox', 'richies', 'tenant'],
+  full: ['fireux', 'misebox', 'cleanbox', 'richies', 'tenant', 'bringli', 'find-my-seo', 'sproochli', 'buenohost', 'go-qr', 'granite', 'la-tap-berne'],
 }
 
 export const APP_KEYS = Object.keys(APP_REGISTRY)

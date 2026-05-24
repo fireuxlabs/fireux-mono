@@ -155,6 +155,7 @@
       </div>
     </slot>
 
+    <slot name="before-get-started" />
     <slot name="get-started" />
     <slot name="apps" />
     <slot name="products" />

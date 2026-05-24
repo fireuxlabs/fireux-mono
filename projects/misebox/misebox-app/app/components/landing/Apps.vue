@@ -38,11 +38,10 @@
 <script setup lang="ts">
 import { useRuntimeConfig } from 'nuxt/app'
 
-type AppKey = 'misebox' | 'niederhorn'
+type AppKey = 'misebox'
 
 const apps = [
   { key: 'misebox', name: 'Misebox', text: 'M', src: '/img/app/logo.png' },
-  { key: 'niederhorn', name: 'Niederhorn', text: 'N', src: '' },
 ] as const
 
 const publicApps = (useRuntimeConfig().public as any)?.apps as
@@ -52,7 +51,6 @@ const publicApps = (useRuntimeConfig().public as any)?.apps as
 const devBaseUrl = (key: AppKey) =>
   ({
     misebox: 'http://localhost:3001',
-    niederhorn: 'http://localhost:3003',
   })[key]
 
 const hrefFor = (key: AppKey) => {

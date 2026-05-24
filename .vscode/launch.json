@@ -65,17 +65,6 @@
       }
     },
     {
-      "name": "Niederhorn dev (3003)",
-      "type": "node-terminal",
-      "request": "launch",
-      "command": "pnpm dev:niederhorn",
-      "cwd": "${workspaceFolder}",
-      "presentation": {
-        "group": "Dev Servers",
-        "order": 4
-      }
-    },
-    {
       "name": "Richies Reinigung dev (3004)",
       "type": "node-terminal",
       "request": "launch",
@@ -190,7 +179,6 @@
         "FireUX dev (3000)",
         "Misebox dev (3001)",
         "Cleanbox dev (3002)",
-        "Niederhorn dev (3003)",
         "Richies Reinigung dev (3004)",
         "FireUX Tenant dev (3005)"
       ]
@@ -201,7 +189,6 @@
         "FireUX dev (3000)",
         "Misebox dev (3001)",
         "Cleanbox dev (3002)",
-        "Niederhorn dev (3003)",
         "Richies Reinigung dev (3004)",
         "FireUX Tenant dev (3005)",
         "Bringli dev (3006)",
