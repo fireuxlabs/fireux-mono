@@ -38,7 +38,7 @@ definePageMeta({
     key: 'pricing',
     label: 'Pricing',
     icon: 'i-lucide-badge-dollar-sign',
-    order: 20,
+    order: 80,
     position: 'bottom',
     desktop: true,
     mobile: true,
