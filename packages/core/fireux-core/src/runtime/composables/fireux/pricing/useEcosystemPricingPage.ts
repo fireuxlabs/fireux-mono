@@ -7,6 +7,11 @@ const detailButton = {
   trailingIcon: 'i-lucide-arrow-right',
 }
 
+function toPriceAmount(price: string): string {
+  if (price.toLowerCase() === 'free') return '0'
+  return price.replace(/[^0-9.]/g, '') || '0'
+}
+
 export function useEcosystemPricingPage() {
   const fireux = useFireUXConfig()
 
@@ -15,19 +20,19 @@ export function useEcosystemPricingPage() {
   )
 
   const description = computed(() =>
-    `Pricing for testing ${ecosystemName.value}, upgrading operator access, and launching tenant apps.`
+    `${ecosystemName.value} pricing.`
   )
 
   const plans = computed(() => [
     {
       id: 'free',
       title: 'Free',
-      description: `Try the ${ecosystemName.value} console before you commit.`,
+      description: 'Basic ecosystem access.',
       price: 'Free',
       features: [
-        'Test console access',
-        'Create your account',
-        'Explore public ecosystem pages',
+        'Starter console',
+        'Public pages',
+        'Test workspace',
       ],
       button: {
         ...detailButton,
@@ -38,13 +43,13 @@ export function useEcosystemPricingPage() {
     {
       id: 'premium',
       title: 'Premium',
-      description: `For people actively operating records inside ${ecosystemName.value}.`,
+      description: 'For active operators who need private tools.',
       price: '$5',
       billingCycle: '/month',
       features: [
-        'Operator console access',
+        'Operator console',
+        'Private records',
         'Private workflow tools',
-        'Priority access to ecosystem features',
       ],
       button: {
         ...detailButton,
@@ -63,8 +68,6 @@ export function useEcosystemPricingPage() {
         'Console seats: $5/month',
         `Hosted inside ${ecosystemName.value}`,
       ],
-      highlight: true,
-      scale: true,
       button: {
         ...detailButton,
         label: 'Details',
@@ -90,13 +93,48 @@ export function useEcosystemPricingPage() {
     },
   ])
 
+  const planGroups = computed(() => [
+    {
+      id: 'users',
+      title: 'Users',
+      plans: plans.value.filter((plan) => ['free', 'premium'].includes(plan.id)),
+    },
+    {
+      id: 'systems',
+      title: 'Systems',
+      plans: plans.value.filter((plan) => ['tenant-app', 'partner'].includes(plan.id)),
+    },
+  ])
+
   const seoTitle = computed(() => `Pricing · ${ecosystemName.value}`)
-  const seoDescription = computed(() => description.value)
+  const seoDescription = computed(() =>
+    `${ecosystemName.value} pricing for user access, premium operator tools, tenant app setup, and partner-led customer systems.`
+  )
+  const pricingJsonLd = computed(() => ({
+    '@context': 'https://schema.org',
+    '@type': 'OfferCatalog',
+    name: `${ecosystemName.value} Pricing`,
+    description: seoDescription.value,
+    itemListElement: planGroups.value.map((group) => ({
+      '@type': 'OfferCatalog',
+      name: group.title,
+      itemListElement: group.plans.map((plan) => ({
+        '@type': 'Offer',
+        name: plan.title,
+        description: plan.description,
+        price: toPriceAmount(plan.price),
+        priceCurrency: 'USD',
+        category: group.title,
+      })),
+    })),
+  }))
 
   return {
     ecosystemName,
     description,
     plans,
+    planGroups,
+    pricingJsonLd,
     seoTitle,
     seoDescription,
   }

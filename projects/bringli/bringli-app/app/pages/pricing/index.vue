@@ -1,7 +1,8 @@
 <template>
   <PublicPricingPage
     :description="description"
-    :plans="plans"
+    :plan-groups="planGroups"
+    :json-ld="pricingJsonLd"
   />
 </template>
 
@@ -10,7 +11,8 @@ import { useEcosystemPricingPage } from 'fireux-core/runtime/composables/fireux/
 
 const {
   description,
-  plans,
+  planGroups,
+  pricingJsonLd,
   seoTitle,
   seoDescription,
 } = useEcosystemPricingPage()
@@ -32,5 +34,10 @@ definePageMeta({
 useSeoMeta({
   title: seoTitle,
   description: seoDescription,
+  ogTitle: seoTitle,
+  ogDescription: seoDescription,
+  twitterCard: 'summary',
+  twitterTitle: seoTitle,
+  twitterDescription: seoDescription,
 })
 </script>

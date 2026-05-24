@@ -229,6 +229,7 @@ definePageMeta({
     key: 'about',
     label: 'About',
     icon: 'i-lucide-info',
+    position: 'bottom',
     desktop: true,
     mobile: true,
     layouts: ['landing'],
