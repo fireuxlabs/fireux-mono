@@ -95,10 +95,10 @@ import type { EcosystemInterfaceInput } from '../../../composables/fireux/firest
 
 const props = withDefaults(defineProps<{
   collection?: EcosystemInterfaceInput[]
-  limit?: number
+  featuredSlugs?: string[]
 }>(), {
   collection: () => [],
-  limit: 3,
+  featuredSlugs: () => [],
 })
 
 const clean = (value: unknown) => String(value ?? '').trim()
@@ -110,7 +110,13 @@ const countApps = (apps: unknown, appCount?: number) => {
 }
 
 const featured = computed(() =>
-  props.collection
+  props.featuredSlugs
+    .map((slug) => clean(slug))
+    .filter(Boolean)
+    .map((slug) =>
+      props.collection.find((entry) => clean(entry.slug) === slug)
+    )
+    .filter((entry): entry is EcosystemInterfaceInput => Boolean(entry))
     .filter((entry) => clean(entry.status) === 'active')
     .map((entry) => {
       const id = clean(entry.id)
@@ -129,10 +135,5 @@ const featured = computed(() =>
       }
     })
     .filter((entry) => entry.id && entry.slug)
-    .sort((a, b) => {
-      if (a.appCount !== b.appCount) return b.appCount - a.appCount
-      return a.name.localeCompare(b.name)
-    })
-    .slice(0, props.limit)
 )
 </script>

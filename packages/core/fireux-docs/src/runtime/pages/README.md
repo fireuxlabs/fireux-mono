@@ -49,6 +49,22 @@ Important FireUX rule:
 
 For dashboard profile-extension canon, see `runtime/concepts/dashboard-canon.md`.
 
+## FireUX Admin Surfaces
+
+Admin index pages that should appear in `/dashboard/admin` declare `adminSurface` route meta.
+
+That keeps the dashboard scalable:
+
+- Products declares the Products admin surface.
+- Blogs declares the Blog posts admin surface.
+- App-local admin pages can declare app-specific surfaces such as Apps or Ecosystems.
+- `/dashboard/admin` discovers registered admin surfaces instead of hard-coding every entity.
+
+Public index display choices belong to app-local public settings, not the
+entities being displayed. For example, featured Apps and Ecosystems are stored
+on `apps/{appId}/settings/public` as slug arrays, while the App and Ecosystem
+records remain canonical identity records.
+
 ## FireUX Console Override
 
 FireUX adds a stronger console-entry canon than plain Nuxt gives us.

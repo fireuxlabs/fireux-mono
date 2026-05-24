@@ -28,6 +28,15 @@ const pageDescription = 'Manage blog posts for this runtime.'
 definePageMeta({
   layout: 'console',
   title: 'Admin Blog',
+  adminSurface: {
+    surface: true,
+    key: 'blogs',
+    label: 'Blog posts',
+    description: 'Manage public posts and app updates.',
+    icon: 'i-lucide-newspaper',
+    order: 20,
+    createTo: '/admin/blogs/create',
+  },
   requiresAuth: true,
   roles: ['admin'],
 })

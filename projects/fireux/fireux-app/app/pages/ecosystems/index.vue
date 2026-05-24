@@ -16,7 +16,10 @@
         :actions="actions"
       />
 
-      <EcosystemMain :collection="publishedEcosystems" />
+      <EcosystemMain
+        :collection="publishedEcosystems"
+        :featured-slugs="featuredEcosystemSlugs"
+      />
 
       <EcosystemCollectionManager
         :collection="publishedEcosystems"
@@ -31,6 +34,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import EcosystemMain from 'fireux-core/runtime/components/organisms/Ecosystem/Main.vue'
+import { useAppPublicSettings } from 'fireux-core/runtime/composables/fireux/app/useAppPublicSettings'
 import { useEcosystemCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/fetch/useEcosystemCollection'
 
 definePageMeta({
@@ -57,6 +61,7 @@ useSeoMeta({
 })
 
 const { ecosystems } = useEcosystemCollection()
+const { featuredEcosystemSlugs } = useAppPublicSettings()
 
 const clean = (value: unknown) => String(value ?? '').trim()
 

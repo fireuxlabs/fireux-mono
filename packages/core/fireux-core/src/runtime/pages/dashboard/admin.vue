@@ -81,52 +81,64 @@
 </template>
 
 <script setup lang="ts">
-import { definePageMeta, useRuntimeConfig } from '#imports'
+import { definePageMeta, useRouter } from '#imports'
 import { computed } from 'vue'
 import { useAppProfileView } from '../../composables/fireux/firestore/core/app/utils/view/useAppProfileView'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 
 const { app, pending } = useApp()
 const { model: appProfileModel } = useAppProfileView(app)
-const runtimeConfig = useRuntimeConfig()
+const router = useRouter()
 
-const fireuxConfig = computed(
-  () => ((runtimeConfig.public as any)?.fireux ?? {}) as Record<string, any>
-)
+type AdminSurfaceMeta = {
+  surface?: boolean
+  key?: string
+  label?: string
+  description?: string
+  icon?: string
+  order?: number
+  to?: string
+  createTo?: string
+}
+
+type AdminTool = {
+  key: string
+  label: string
+  description: string
+  icon: string
+  to: string
+  createTo?: string
+  order: number
+}
 
 const adminTools = computed(() => {
-  const tools: Array<{
-    key: string
-    label: string
-    description: string
-    icon: string
-    to: string
-    createTo?: string
-  }> = []
+  const seen = new Set<string>()
 
-  if (fireuxConfig.value.products?.enabled === true) {
-    tools.push({
-      key: 'products',
-      label: 'Products',
-      description: 'Manage public products, pricing, and product pages.',
-      icon: 'i-lucide-package',
-      to: '/admin/products',
-      createTo: '/admin/products/create',
+  return router
+    .getRoutes()
+    .filter((route) => !(route as { aliasOf?: unknown }).aliasOf)
+    .map((route) => {
+      const surface = (route.meta as { adminSurface?: AdminSurfaceMeta })
+        .adminSurface
+
+      if (surface?.surface !== true) return null
+
+      const key = surface.key || String(route.name || route.path)
+      if (seen.has(key)) return null
+      seen.add(key)
+
+      return {
+        key,
+        label: surface.label || key,
+        description: surface.description || '',
+        icon: surface.icon || 'i-lucide-settings',
+        to: surface.to || route.path,
+        createTo: surface.createTo,
+        order: Number.isFinite(surface.order) ? Number(surface.order) : 1000,
+      } satisfies AdminTool
     })
-  }
-
-  if (fireuxConfig.value.blogs?.enabled === true) {
-    tools.push({
-      key: 'blogs',
-      label: 'Blog',
-      description: 'Manage public posts and app updates.',
-      icon: 'i-lucide-newspaper',
-      to: '/admin/blogs',
-      createTo: '/admin/blogs/create',
-    })
-  }
-
-  return tools
+    .filter((tool): tool is AdminTool => tool !== null)
+    .sort((a, b) => a.order - b.order || a.label.localeCompare(b.label))
 })
 
 definePageMeta({

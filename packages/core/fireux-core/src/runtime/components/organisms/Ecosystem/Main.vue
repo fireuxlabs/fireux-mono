@@ -2,7 +2,10 @@
   <section class="space-y-6">
     <slot name="before" />
     <EcosystemProjectCta />
-    <EcosystemFeatured :collection="collection" />
+    <EcosystemFeatured
+      :collection="collection"
+      :featured-slugs="featuredSlugs"
+    />
     <slot />
   </section>
 </template>
@@ -14,7 +17,9 @@ import type { EcosystemInterfaceInput } from '../../../composables/fireux/firest
 
 withDefaults(defineProps<{
   collection?: EcosystemInterfaceInput[]
+  featuredSlugs?: string[]
 }>(), {
   collection: () => [],
+  featuredSlugs: () => [],
 })
 </script>

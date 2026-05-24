@@ -29,6 +29,15 @@ const pageDescription = 'Manage products for this runtime.'
 definePageMeta({
   layout: 'console',
   title: 'Admin Products',
+  adminSurface: {
+    surface: true,
+    key: 'products',
+    label: 'Products',
+    description: 'Manage public products, pricing, and product pages.',
+    icon: 'i-lucide-package',
+    order: 10,
+    createTo: '/admin/products/create',
+  },
   requiresAuth: true,
   roles: ['admin'],
 })
