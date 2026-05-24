@@ -13,6 +13,7 @@
 
 <script setup lang="ts">
 import { useAsyncData, useRoute } from '#imports'
+import { useProductSeo } from '../../composables/fireux/firestore/product/seo/useProductSeo'
 import type { FirebaseProduct } from '../../models/product.model'
 
 const route = useRoute()
@@ -22,4 +23,6 @@ const { data: product } = await useAsyncData(
   `product-${slug}`,
   () => $fetch<FirebaseProduct>(`/api/products/${encodeURIComponent(slug)}`)
 )
+
+useProductSeo(product)
 </script>

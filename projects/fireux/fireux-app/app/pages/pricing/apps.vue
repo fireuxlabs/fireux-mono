@@ -62,7 +62,7 @@ const appPlans = [
     scale: true,
     button: {
       label: 'View ecosystems',
-      to: '/pricing/ecosystems',
+      to: '/ecosystems/pricing',
       color: 'neutral',
       variant: 'soft',
       trailingIcon: 'i-lucide-arrow-right',
@@ -76,7 +76,7 @@ const appPlans = [
     billingPeriod: 'setup',
     features: [
       'Maintenance: $60/month',
-      'Hosted inside fireux-fireux',
+      'Hosted inside FireUX',
       'Managed platform operations',
     ],
     button: {

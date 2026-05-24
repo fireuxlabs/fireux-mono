@@ -88,8 +88,8 @@ export function useEcosystemInterface() {
   ): EcosystemInterfaceCard | null {
     if (!target) return null
 
-    const key =
-      safeString(target.key) || safeString(target.id) || safeString(target.slug)
+    const slug = safeString(target.slug)
+    const key = safeString(target.key) || safeString(target.id) || slug
     const name = safeString(target.name)
     const resolvedId = safeString(target.id) || key || name
 
@@ -105,11 +105,11 @@ export function useEcosystemInterface() {
 
     return {
       id: resolvedId,
-      to: safeString(target.href),
+      to: safeString(target.href) || (slug ? `/ecosystems/${encodeURIComponent(slug)}` : ''),
       imageUrl: safeString(target.src),
       avatarText: safeString(target.text) || name || key,
       title: name || key || 'Untitled ecosystem',
-      subtitle: key || '',
+      subtitle: slug || key || '',
       meta: [
         safeString(target.team) ? `team: ${safeString(target.team)}` : '',
         `apps: ${apps}`,

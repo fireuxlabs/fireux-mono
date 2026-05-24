@@ -204,8 +204,7 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo, useHead, useRoute, useRuntimeConfig } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { navigateTo, useRoute, useRuntimeConfig } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceClaim'
@@ -218,6 +217,7 @@ import {
 import { usePublicMenuLanguage } from '../../composables/fireux/app/kitchens/usePublicMenuLanguage'
 import { useKitchenMenuCollection } from '../../composables/fireux/console/kitchen/operations/menu/fetch/useKitchenMenuCollection'
 import { useKitchenCollection } from '../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
+import { useKitchenSeo } from '../../composables/fireux/firestore/kitchen/seo/useKitchenSeo'
 import OrganismsMenuSproochliLanguageTrigger from '../../components/organisms/Menu/SproochliLanguageTrigger.vue'
 import type { Kitchen } from '../../models/kitchen.model'
 import type { Menu } from '../../models/menu.model'
@@ -230,7 +230,6 @@ definePageMeta({
   name: 'KitchensDetailPage',
 })
 
-const { appName } = useFireUXConfig()
 const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
 const asRecord = (value: unknown): Record<string, unknown> =>
@@ -398,7 +397,5 @@ const goToEdit = async () => {
   await navigateTo(`/kitchens/edit/${encodeURIComponent(kitchenId.value)}`)
 }
 
-useHead({
-  title: computed(() => `${appName} | ${pageTitle.value}`),
-})
+useKitchenSeo(kitchen)
 </script>

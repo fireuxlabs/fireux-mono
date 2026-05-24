@@ -14,7 +14,7 @@
 
         <p class="text-sm text-dimmed">
           Ecosystem documents are read from
-          <code>db.collections.ecosystem</code> and normalized for cards:
+          <code>db.collections.ecosystems</code> and normalized for cards:
           <code>{ key, name, team, apps, src, text, href }</code>.
         </p>
       </UCard>
@@ -26,7 +26,7 @@
 
         <div class="space-y-2 text-sm">
           <div class="rounded border border-default p-3">
-            <p class="font-mono">Firestore collection: ecosystem</p>
+            <p class="font-mono">Firestore collection: ecosystems</p>
             <p class="text-dimmed">
               Primary source for <code>/ecosystems</code> entity index.
             </p>

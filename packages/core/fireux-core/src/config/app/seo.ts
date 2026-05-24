@@ -68,6 +68,7 @@ export type FireuxSitemapEntity = {
   routePrefix?: string
   slugField?: string
   publicField?: string
+  publicValue?: boolean | string | number
   pageSize?: number
   updatedAtField?: string
 }
@@ -78,6 +79,7 @@ export type FireuxSitemapEntityRuntime = {
   routePrefix: string
   slugField: string
   publicField: string
+  publicValue: boolean | string | number
   pageSize: number
   updatedAtField: string
 }
@@ -334,6 +336,7 @@ function normalizeSitemapEntity(input: FireuxSitemapEntity): FireuxSitemapEntity
     routePrefix: String(input?.routePrefix ?? `/${entityKey}`).trim() || `/${entityKey}`,
     slugField: String(input?.slugField ?? 'slug').trim() || 'slug',
     publicField,
+    publicValue: input.publicValue ?? true,
     pageSize: normalizePageSize(input.pageSize),
     updatedAtField: String(input.updatedAtField || 'updatedAt').trim() || 'updatedAt',
   }

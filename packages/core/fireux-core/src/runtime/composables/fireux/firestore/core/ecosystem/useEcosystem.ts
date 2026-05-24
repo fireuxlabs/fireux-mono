@@ -2,6 +2,8 @@ import { computed, isRef, type Ref } from 'vue'
 import { useFireUXConfig } from '../../../app/FireUXConfig'
 import { useEcosystemFetch } from './fetch/useEcosystemFetch'
 import { useEcosystemEnsure } from './mutations/useEcosystemEnsure'
+import { useEcosystemPublish } from './mutations/useEcosystemPublish'
+import { useEcosystemSeo } from './seo/useEcosystemSeo'
 import { useEcosystemInterface } from './utils/view/useEcosystemInterface'
 
 export type { Ecosystem } from '../../../../../models/system/ecosystem.model'
@@ -35,5 +37,7 @@ export function useEcosystem(id?: string | Ref<string>) {
     pending,
     ...useEcosystemInterface(),
     ...useEcosystemEnsure(),
+    ...useEcosystemPublish(),
+    useEcosystemSeo,
   }
 }

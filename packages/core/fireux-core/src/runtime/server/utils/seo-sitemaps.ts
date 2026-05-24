@@ -11,6 +11,7 @@ export type RuntimeSitemapEntity = {
   routePrefix: string
   slugField: string
   publicField: string
+  publicValue: boolean | string | number
   pageSize: number
   updatedAtField: string
 }
@@ -59,11 +60,24 @@ function toEntityList(value: unknown): RuntimeSitemapEntity[] {
       routePrefix,
       slugField,
       publicField,
+      publicValue: normalizePublicValue(entry.publicValue),
       pageSize,
       updatedAtField,
     })
   }
   return out.sort((a, b) => a.entityKey.localeCompare(b.entityKey))
+}
+
+function normalizePublicValue(value: unknown): boolean | string | number {
+  if (
+    typeof value === 'boolean' ||
+    typeof value === 'string' ||
+    typeof value === 'number'
+  ) {
+    return value
+  }
+
+  return true
 }
 
 function normalizePath(input: string): string | null {
@@ -219,7 +233,7 @@ function isCanonicalDocPublic(
 ): boolean {
   if (entity.publicField) {
     const explicit = data[entity.publicField]
-    if (typeof explicit === 'boolean') return explicit
+    return explicit === entity.publicValue
   }
 
   const isPublic = data.isPublic
@@ -231,7 +245,7 @@ function isCanonicalDocPublic(
 
   // Users migration canon: handle presence is enough to publish a stable route.
   if (entity.entityKey === 'users') return Boolean(slug)
-  return Boolean(slug)
+  return false
 }
 
 async function countPublicCanonicalDocs(entity: RuntimeSitemapEntity): Promise<number> {
@@ -241,7 +255,7 @@ async function countPublicCanonicalDocs(entity: RuntimeSitemapEntity): Promise<n
     let query: FirebaseFirestore.Query = db.collection(entity.canonicalCollectionPath)
 
     if (entity.publicField) {
-      query = query.where(entity.publicField, '==', true)
+      query = query.where(entity.publicField, '==', entity.publicValue)
     }
     const snap = await query.count().get()
     const count = Number((snap.data() as any)?.count ?? 0)
@@ -264,7 +278,7 @@ async function fetchCanonicalEntitySitemapPage(
 
   let query: FirebaseFirestore.Query = db.collection(entity.canonicalCollectionPath)
   if (entity.publicField) {
-    query = query.where(entity.publicField, '==', true)
+    query = query.where(entity.publicField, '==', entity.publicValue)
   }
   query = query.orderBy('__name__')
 

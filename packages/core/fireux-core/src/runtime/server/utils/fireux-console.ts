@@ -282,7 +282,7 @@ async function readCurrentEcosystem(
   control: FireuxConsoleProjectControl
 ): Promise<FireuxConsoleEcosystem | null> {
   const db = getFirestore(getAdminApp())
-  const snapshot = await db.collection('ecosystem').get()
+  const snapshot = await db.collection('ecosystems').get()
   const target = normalizeString(control.main_ecosystem_id)
 
   const docs = snapshot.docs.map((doc) =>

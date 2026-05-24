@@ -1,6 +1,6 @@
 # SEO Canon
 Authority: Tier1 (Authoritative)
-Updated: 2026-05-20
+Updated: 2026-05-24
 ## Purpose
 - Define repo-wide SEO requirements for public FireUX entities and pages.
 
@@ -8,6 +8,7 @@ Updated: 2026-05-20
 - Public/indexable entities must have a slug.
 - Slug is required before publish.
 - Slug changes require redirect coverage from previous canonical slug(s).
+- Existing id-keyed public families may register `id` as the explicit sitemap route key only while their extension contract still defines id-based public routing. That is not a fallback chain.
 
 ## Slug Immutability and Redirects
 - Default policy: slug is immutable after publish.
@@ -42,6 +43,8 @@ Updated: 2026-05-20
 - Exclude admin, console, auth-only, and draft routes.
 - Public URLs in sitemap must use canonical slug routes where defined.
 - Runtime sitemap entity pages must read canonical public collection data.
+- Runtime sitemap entity registration must declare explicit publication truth, such as `show === true`, `isPublic === true`, or `visibility === 'public'`.
+- Slug presence alone is not publication truth, except for a documented handle-index migration exception.
 - `seo_index_*` projection collections are not sitemap fallback truth.
 - If a canonical collection/path is missing, skip that entity explicitly instead of reading an old projection collection.
 - Runtime mutation seams should not write `seo_index_*` records.
@@ -52,6 +55,8 @@ Updated: 2026-05-20
   - `use<Entity>Seo` helper for metadata
   - `build<Entity>JsonLd` helper for structured data
 - Extensions must keep SEO helpers aligned with their `docs/contract.md` or `docs/canon.md`.
+- Entity SEO helpers may delegate shared tag/canonical mechanics to core `useSeo()`.
+- Entity SEO helpers own indexability. Core must not infer publication from a slug/id alone.
 
 ## Conflicts Resolved
 - Current permissive robots files do not define canon; this file defines intended indexing rules.

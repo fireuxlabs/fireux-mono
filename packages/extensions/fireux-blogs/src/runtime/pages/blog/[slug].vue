@@ -22,6 +22,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useBlog } from '../../composables/fireux/firestore/blog/useBlog'
+import { useBlogSeo } from '../../composables/fireux/firestore/blog/seo/useBlogSeo'
 
 const route = useRoute()
 const { fetchBySlug } = useBlog()
@@ -29,4 +30,6 @@ const { fetchBySlug } = useBlog()
 const postRef = await fetchBySlug(String(route.params.slug ?? ''))
 const post = computed(() => postRef.value ?? undefined)
 const pending = computed(() => postRef.value === undefined)
+
+useBlogSeo(post)
 </script>

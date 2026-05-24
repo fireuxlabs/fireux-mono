@@ -122,8 +122,8 @@ Current learned examples:
   - management surface: `/console/project` in `fireux-app`
   - authority: `operator_ids` on the root Project record
 - Ecosystem is a system-level product/app grouping managed through Project/App context:
-  - stored truth: `ecosystem/{ecosystemId}`
-  - possible future/private app state: `apps/{appId}/ecosystem/{ecosystemId}` only when implemented
+  - stored truth: `ecosystems/{ecosystemId}`
+  - possible future/private app state: `apps/{appId}/ecosystems/{ecosystemId}` only when implemented
   - it may map to a Firebase project operationally, but Firebase is infrastructure backing, not entity definition
 - App is a system root entity and active runtime singleton:
   - stored truth: `apps/{appId}`
@@ -211,7 +211,8 @@ Current learned examples:
   - `/products/{slug}`
 - Pricing routes explain commercial structure:
   - `/pricing`
-  - optional child routes such as `/pricing/apps`, `/pricing/users`, `/pricing/partners`, or `/pricing/ecosystems` only when the explanation needs separate pages.
+  - optional child routes such as `/pricing/apps`, `/pricing/users`, or `/pricing/partners` only when the explanation needs separate pages.
+  - FireUX ecosystem creation pricing lives at `/ecosystems/pricing`; individual ecosystem pricing belongs to that ecosystem's main app, such as `misebox.app/pricing`.
 - Pricing routes should stay presentation/explanation surfaces. They may link to Products or Checkout, but should not become product storage or payment logic.
 - Ecosystem main apps intended to sell access, subscriptions, tenant app setup, hosting, services, or operator plans should expose both Products and Pricing.
 - Ecosystem main-app pricing defaults to Free, Premium, Tenant App, and Ecosystem Partner. Partner pricing must be framed as revenue share for bringing other businesses into the ecosystem, not a cheaper self-serve tenant-app path.
@@ -262,6 +263,8 @@ Current learned examples:
   - `useXInterface()` shapes UI.
   - `useXCreate()` creates.
   - `useXUpdate()` patches.
+  - `useXPublish()` makes public/indexable publication explicit where the entity supports publishing.
+  - `useXSeo()` owns public metadata and JSON-LD where the entity has public pages.
   - `useXDelete()` removes.
   - `useXEnsure()` bootstraps.
   - `useXConsole()` selects and operates a workspace.
@@ -273,7 +276,8 @@ Current learned examples:
   - `composables/fireux/firestore/<entity>/mutations/`
   - `composables/fireux/firestore/<entity>/utils/`
   - `useXFetch()`, `useXCollection()`, `useXInterface()`
-  - `useXCreate()`, `useXUpdate()`, and `useXDelete()` where writes exist
+  - `useXCreate()`, `useXUpdate()`, `useXPublish()`, and `useXDelete()` where writes/publication exist
+  - `useXSeo()` where public entity metadata/JSON-LD exists
   - `useXEnsure()` only where bootstrap/setup-if-missing is intended
   - `X/Collection/Manager.vue` where browse/manage UI exists
   - `X/Cards/*` or equivalent shared surfaces for `Pill`, `Cell`, `Preview`, and `Profile`
@@ -289,9 +293,12 @@ composables/fireux/firestore/<entity>/
   mutations/
     useXCreate.ts
     useXUpdate.ts
+    useXPublish.ts    optional, only for public/indexable publication
     useXDelete.ts
     useXEnsure.ts      optional, only for setup-if-missing behaviour
     validation/        optional, only for write-specific validation
+  seo/
+    useXSeo.ts         optional, only for public entity metadata/JSON-LD
   utils/
     view/
       useXComputed.ts
@@ -312,6 +319,8 @@ composables/fireux/firestore/<entity>/
 - Inside runtime, ownership is by surface and family: app shell/context, entity stack, console workspace, route, component, or server seam.
 - Create/edit/post/publish state belongs to the entity family first.
 - Publishable entities such as `Product`, `BlogPost`, and `Job` may have lifecycle state and authoring flows, but those remain part of the Product, Blog, or Job stack unless the flow coordinates whole-app setup or multiple entity families.
+- Entity pages and components call entity-owned publication seams such as `useKitchenPublish()` or `useProductPublish()`. Those seams may delegate shared write mechanics to core `usePublish()`, but readiness rules, public flags, and canonical route meaning stay entity-owned.
+- Public entity pages call entity-owned SEO seams such as `useKitchenSeo()` or `useProductSeo()`. Those seams may delegate shared metadata mechanics to core `useSeo()`, but title/description fields, JSON-LD type, route path, and public/indexable truth stay entity-owned.
 - `app/` is only for app-level orchestration, not normal entity authoring state.
 - Entity authoring helpers that are not raw Firestore belong in the entity-owned composable family, such as `composables/fireux/product/create`, `composables/fireux/blog/editor`, or component-local create/edit helpers.
 
@@ -325,6 +334,7 @@ composables/fireux/firestore/<entity>/
 - Child pages use stable semantic ids, such as `/properties/:slug/info/:infoId`.
 - Current public key canon:
   - Kitchen: `slug`
+  - Ecosystem: `slug`
   - Property: `slug`
   - Project: `slug`
   - Supplier: `id`

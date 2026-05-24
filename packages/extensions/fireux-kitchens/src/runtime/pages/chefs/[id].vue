@@ -70,23 +70,19 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo, useHead, useRoute, useSeoMeta } from '#imports'
+import { navigateTo, useRoute } from '#imports'
 import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
 import { computed, ref } from 'vue'
+import { useChefSeo } from '../../composables/fireux/firestore/profiles/Chef/seo/useChefSeo'
 import { useChefInterface } from '../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
 import type { AppChef, Chef } from '../../models/profiles/Chef/Chef.model'
 
 definePageMeta({
   visibility: { profiles: ['chef'] },
-})
-
-useSeoMeta({
-  title: 'Chef Profile',
-  description: 'View chef profile',
 })
 
 const route = useRoute()
@@ -131,11 +127,7 @@ const pageDescription = computed(() =>
 )
 const isDev = import.meta.dev
 
-useHead({
-  title: computed(() =>
-    displayName.value ? `${displayName.value} - Chef Profile` : 'Chef Profile'
-  ),
-})
+useChefSeo(profile, { id: docId, displayName })
 
 const isSelf = computed(() =>
   Boolean(docId.value && user.value?.id === docId.value)

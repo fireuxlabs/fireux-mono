@@ -7,6 +7,7 @@ import { usePlaceClaim } from './mutations/usePlaceClaim'
 import { usePlaceCreate } from './mutations/usePlaceCreate'
 import { usePlaceDelete } from './mutations/usePlaceDelete'
 import { usePlaceUpdate } from './mutations/usePlaceUpdate'
+import { usePlaceSeo } from './seo/usePlaceSeo'
 import { usePlaceComputed } from './utils/view/usePlaceComputed'
 import { usePlaceInterface } from './utils/view/usePlaceInterface'
 
@@ -18,6 +19,7 @@ export {
   usePlaceCreate,
   usePlaceUpdate,
   usePlaceDelete,
+  usePlaceSeo,
   usePlaceComputed,
   usePlaceInterface,
 }
@@ -51,5 +53,6 @@ export function usePlace(options: UsePlaceOptions = {}) {
     ...usePlaceClaim(),
     ...usePlaceComputed(),
     ...usePlaceInterface(),
+    usePlaceSeo,
   }
 }

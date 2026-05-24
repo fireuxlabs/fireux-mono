@@ -126,12 +126,12 @@ import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { useHead } from 'nuxt/app'
 import { computed, defineComponent, ref, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import JobCardsProfile from '../../components/organisms/Job/Cards/Profile.vue'
 import { useJobFetch } from '../../composables/fireux/firestore/jobs/fetch/useJobFetch'
 import { useJobUpdate } from '../../composables/fireux/firestore/jobs/mutations/useJobUpdate'
+import { useJobSeo } from '../../composables/fireux/firestore/jobs/seo/useJobSeo'
 import { useJobInterface } from '../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 import type { JobStatus } from '../../models/job.model'
 
@@ -221,5 +221,5 @@ definePageMeta({
   layout: 'default',
 })
 
-useHead(() => ({ title: jobTitle.value }))
+useJobSeo(job)
 </script>

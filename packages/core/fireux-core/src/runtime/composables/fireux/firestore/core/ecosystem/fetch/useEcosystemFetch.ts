@@ -21,7 +21,7 @@ export function useEcosystemFetch(id: string | { value: string }) {
   )
 
   const docRef = computed(() =>
-    ecosystemId.value ? (doc(db, 'ecosystem', ecosystemId.value) as any) : null
+    ecosystemId.value ? (doc(db, 'ecosystems', ecosystemId.value) as any) : null
   )
 
   const docState =

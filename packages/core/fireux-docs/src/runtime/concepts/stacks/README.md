@@ -1,7 +1,7 @@
 # Stacks Concept
 
 Authority: Operational
-Updated: 2026-05-19
+Updated: 2026-05-24
 Scope: FireUX entity-stack meaning across `models/`, `composables/`, `components/`, `pages/`, `server/`, and docs.
 
 This page documents the FireUX `stacks` concept.
@@ -67,6 +67,8 @@ useXComputed   derives entity truth
 useXInterface  shapes UI
 useXCreate     creates
 useXUpdate     patches
+useXPublish    publishes public/indexable entities
+useXSeo        owns public metadata and JSON-LD for entity pages
 useXDelete     removes
 useXEnsure     bootstraps
 useXConsole    selects and operates a workspace

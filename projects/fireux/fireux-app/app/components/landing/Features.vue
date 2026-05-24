@@ -61,7 +61,7 @@ const defaults: FeatureItem[] = [
     key: 'whitelabel',
     icon: 'i-lucide-layers-2',
     title: 'White-Label',
-    description: 'Rebrand and resell with tenant theming.',
+    description: 'Rebrand and launch tenant apps with shared theming.',
   },
   {
     key: 'low-code',

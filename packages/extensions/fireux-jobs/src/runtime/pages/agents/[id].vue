@@ -61,13 +61,14 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo, useHead, useRoute } from '#imports'
+import { navigateTo, useRoute } from '#imports'
 import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
 import { computed, ref } from 'vue'
+import { useAgentSeo } from '../../composables/fireux/firestore/profiles/Agent/seo/useAgentSeo'
 import { useAgentInterface } from '../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
 import type { Agent } from '../../models/profiles/Agent/Agent.model'
 
@@ -99,14 +100,6 @@ const resolveName = (p: any) =>
   p?.professional_name ||
   'Profile'
 
-useHead({
-  title: computed(() =>
-    agentProfile.value
-      ? `${resolveName(agentProfile.value)} · Agent Profile`
-      : 'Agent Profile'
-  ),
-})
-
 const displayName = computed(() =>
   userRefs.user.value?.display_name || (agentProfile.value ? resolveName(agentProfile.value) : null)
 )
@@ -125,6 +118,8 @@ const isSelf = computed(() =>
 const isAdminUser = computed(() =>
   appUser.value?.role === 'admin'
 )
+
+useAgentSeo(agentProfile, { id: agentId, displayName })
 
 const { ensure } = useProfileEnsure(agentConfig)
 const isCreating = ref(false)

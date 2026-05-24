@@ -67,6 +67,14 @@ export default defineNuxtModule({
 
     nuxt.hook('fireux:seo:sitemaps:extend' as any, (ctx: any) => {
       ctx?.addEntity?.({
+        entityKey: 'ecosystems',
+        canonicalCollectionPath: 'ecosystems',
+        routePrefix: '/ecosystems',
+        slugField: 'slug',
+        publicField: 'status',
+        publicValue: 'active',
+      })
+      ctx?.addEntity?.({
         entityKey: 'users',
         canonicalCollectionPath: 'users',
         routePrefix: '/users',

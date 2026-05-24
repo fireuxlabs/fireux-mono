@@ -9,11 +9,11 @@
         </h1>
 
         <p class="max-w-3xl text-lg text-gray-600 dark:text-gray-300">
-          Partners can bring new businesses into {{ ecosystemName }} and share setup and maintenance revenue.
+          Partners can bring customer apps into {{ ecosystemName }} and share setup and maintenance revenue.
         </p>
 
         <p class="max-w-3xl text-gray-600 dark:text-gray-300">
-          This is for customer apps you sell into the ecosystem. If you are launching your own app, use Tenant App pricing.
+          Use Partner pricing for customer apps you bring into the ecosystem. Use Tenant App pricing when a business launches its own app.
         </p>
       </UContainer>
     </section>
@@ -26,7 +26,7 @@
           </template>
 
           <p class="text-sm text-gray-600 dark:text-gray-300">
-            Partner pricing applies when you bring another business into the ecosystem.
+            Partner pricing applies when you bring a customer business into the ecosystem.
           </p>
 
           <div class="mt-6 grid grid-cols-3 gap-4 text-sm">
@@ -92,7 +92,7 @@
           </template>
 
           <p class="text-sm text-gray-600 dark:text-gray-300">
-            Partner pricing is for bringing other businesses into {{ ecosystemName }}. It is not a discount for launching your own tenant app.
+            Partner pricing is the customer-app path for partners. Tenant App pricing is the direct launch path for a business.
           </p>
         </UCard>
       </UContainer>

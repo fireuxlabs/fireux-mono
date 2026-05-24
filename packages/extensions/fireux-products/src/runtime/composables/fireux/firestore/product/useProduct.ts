@@ -2,8 +2,10 @@ import { useProductCollection } from './fetch/useProductCollection'
 import { useProductFetch } from './fetch/useProductFetch'
 import { useProductCreate } from './mutations/useProductCreate'
 import { useProductDelete } from './mutations/useProductDelete'
+import { useProductPublish } from './mutations/useProductPublish'
 import { useProductUpdate } from './mutations/useProductUpdate'
 import { useProductPrices } from './price/fetch/useProductPrices'
+import { useProductSeo } from './seo/useProductSeo'
 import { useProductFormatting } from './utils/useProductFormatting'
 import { useProductComputed } from './utils/view/useProductComputed'
 import { useProductInterface } from './utils/view/useProductInterface'
@@ -13,8 +15,10 @@ export {
   useProductFetch,
   useProductCreate,
   useProductUpdate,
+  useProductPublish,
   useProductDelete,
   useProductPrices,
+  useProductSeo,
   useProductFormatting,
   useProductComputed,
   useProductInterface,
@@ -39,10 +43,12 @@ export function useProduct() {
     ...useProductFetch(),
     ...useProductCreate(),
     ...useProductUpdate(),
+    ...useProductPublish(),
     ...useProductDelete(),
     ...useProductPrices(),
     ...useProductFormatting(),
     ...useProductComputed(),
     ...useProductInterface(),
+    useProductSeo,
   }
 }

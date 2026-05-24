@@ -72,13 +72,13 @@ export function useEcosystemPricingPage() {
     {
       id: 'partner',
       title: `${ecosystemName.value} Partner`,
-      description: `For partners bringing new businesses into ${ecosystemName.value}.`,
+      description: `For partners bringing customer apps into ${ecosystemName.value}.`,
       price: '$300',
       billingPeriod: 'per tenant app setup',
       features: [
-        'Partner setup share',
-        'Maintenance share: $25/month',
-        'For new customer apps, not your own app',
+        'Customer app setup',
+        'Maintenance: $25/month',
+        'Partner revenue share',
       ],
       button: {
         ...detailButton,

@@ -3,6 +3,8 @@ import { useBlogCollection } from './fetch/useBlogCollection'
 import { useBlogCreate } from './mutations/useBlogCreate.ts'
 import { useBlogUpdate } from './mutations/useBlogUpdate.ts'
 import { useBlogDelete } from './mutations/useBlogDelete.ts'
+import { useBlogPublish } from './mutations/useBlogPublish'
+import { useBlogSeo } from './seo/useBlogSeo'
 import { useBlogUtils } from './utils/useBlogUtils.ts'
 import { useBlogComputed } from './utils/view/useBlogComputed'
 import { useBlogInterface } from './utils/view/useBlogInterface.ts'
@@ -12,7 +14,9 @@ export {
   useBlogCollection,
   useBlogCreate,
   useBlogUpdate,
+  useBlogPublish,
   useBlogDelete,
+  useBlogSeo,
   useBlogUtils,
   useBlogComputed,
   useBlogInterface,
@@ -36,9 +40,11 @@ export function useBlog() {
     ...useBlogFetch(),
     ...useBlogCreate(),
     ...useBlogUpdate(),
+    ...useBlogPublish(),
     ...useBlogDelete(),
     ...useBlogUtils(),
     ...useBlogComputed(),
     ...useBlogInterface(),
+    useBlogSeo,
   }
 }

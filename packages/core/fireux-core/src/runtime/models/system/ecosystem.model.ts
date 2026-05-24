@@ -16,8 +16,8 @@ type WidenLiteral<T> =
  *
  * Family: System-level product/app grouping
  * Storage: root canonical record; app-scoped private state is future unless implemented
- * Root path: /ecosystem/<ecosystemId>
- * Future app path: /apps/<appId>/ecosystem/<ecosystemId>
+ * Root path: /ecosystems/<ecosystemId>
+ * Future app path: /apps/<appId>/ecosystems/<ecosystemId>
  *
  * Decision note:
  * - Ecosystem is a FireUX system-level managed entity/context, not a Firebase project mirror.
@@ -62,7 +62,7 @@ export type Ecosystem = WidenLiteral<typeof EcosystemModel>
  * Future app-specific ecosystem private state record.
  *
  * This model documents the possible app-scoped shape only. Current canonical
- * Ecosystem truth remains the root /ecosystem/<ecosystemId> record unless a
+ * Ecosystem truth remains the root /ecosystems/<ecosystemId> record unless a
  * runtime implementation introduces this record explicitly.
  */
 export const AppEcosystemModel = {

@@ -6,7 +6,7 @@
         <div v-if="$slots.action"><slot name="action" /></div>
       </div>
       <p class="mx-auto max-w-2xl text-[color:var(--ui-text-muted)]">
-        Ecosystem apps you can use and resell.
+        Ecosystem apps you can use, launch, and partner around.
       </p>
     </div>
 

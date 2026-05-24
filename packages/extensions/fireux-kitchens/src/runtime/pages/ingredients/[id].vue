@@ -145,8 +145,7 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo, useHead, useRoute } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { navigateTo, useRoute } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
@@ -154,6 +153,7 @@ import {
   FIREUX_CORE_LANGUAGE_OPTIONS,
 } from 'fireux-translation/runtime/languages'
 import { computed, reactive, ref, watchEffect } from 'vue'
+import { useIngredientSeo } from '../../composables/fireux/firestore/ingredient/seo/useIngredientSeo'
 import { useIngredient } from '../../composables/fireux/firestore/ingredient/useIngredient'
 import type {
   Ingredient,
@@ -166,7 +166,6 @@ definePageMeta({
   description: 'View a saved ingredient.',
 })
 
-const { appName } = useFireUXConfig()
 const route = useRoute()
 const raw = route.params.id
 const docId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
@@ -366,7 +365,5 @@ const pageTitle = computed(() => ingredient.value?.name || 'Ingredient')
 const pageDescription = computed(() => 'Ingredient details.')
 const isDev = import.meta.dev
 
-useHead({
-  title: computed(() => `${appName} | ${pageTitle.value}`),
-})
+useIngredientSeo(ingredient)
 </script>

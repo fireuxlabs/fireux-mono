@@ -74,20 +74,17 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo, useHead, useRoute, useSeoMeta } from '#imports'
+import { navigateTo, useRoute } from '#imports'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, ref } from 'vue'
 import { useSupplierEnsure } from '../../composables/fireux/firestore/supplier/mutations/useSupplierEnsure'
+import { useSupplierSeo } from '../../composables/fireux/firestore/supplier/seo/useSupplierSeo'
 import { useSupplierInterface } from '../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
 
 const supplierCollection = 'suppliers'
 const supplierCreateCta =
   'Create your supplier workspace record to appear in listings.'
-useSeoMeta({
-  title: 'Supplier',
-  description: 'View supplier record',
-})
 
 const route = useRoute()
 const raw = route.params.id
@@ -115,11 +112,7 @@ const pageDescription = computed(() =>
 )
 const isDev = import.meta.dev
 
-useHead({
-  title: computed(() =>
-    displayName.value ? `${displayName.value} - Supplier` : 'Supplier'
-  ),
-})
+useSupplierSeo(supplierRecord)
 
 const isSelf = computed(() => Boolean(docId && user.value?.id === docId))
 

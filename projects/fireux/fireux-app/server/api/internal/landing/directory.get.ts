@@ -128,9 +128,9 @@ export default defineEventHandler(async (event: H3Event) => {
         })
         return [] as RegistryDocument[]
       }),
-      fetchCollection(db, 'ecosystem').catch((error) => {
+      fetchCollection(db, 'ecosystems').catch((error) => {
         errors.push({
-          collection: 'ecosystem',
+          collection: 'ecosystems',
           message:
             error instanceof Error ? error.message : 'Unable to read ecosystems',
         })

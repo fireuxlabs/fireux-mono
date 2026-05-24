@@ -18,7 +18,7 @@ function normalizeString(value: unknown) {
 }
 
 async function resolveFirestoreEcosystemRef(db: Firestore, ecosystemId: string) {
-  const ecosystemCollection = collection(db, 'ecosystem')
+  const ecosystemCollection = collection(db, 'ecosystems')
   return doc(ecosystemCollection, ecosystemId)
 }
 

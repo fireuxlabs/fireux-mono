@@ -47,11 +47,11 @@ const hubPlans = [
     description: 'Run your own ecosystem.',
     price: '$1,000',
     billingPeriod: 'setup',
-    features: ['Maintenance: $50/month'],
+    features: ['Tenant apps from $300 setup'],
     button: {
       ...detailButton,
       label: 'Details',
-      to: '/pricing/ecosystems',
+      to: '/ecosystems/pricing',
     },
   },
 ] as const

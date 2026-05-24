@@ -141,8 +141,7 @@
 </template>
 
 <script setup lang="ts">
-import { useHead, useRoute } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useRoute } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
@@ -150,6 +149,7 @@ import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firesto
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed, ref } from 'vue'
 import { usePlaceClaim } from '../../composables/fireux/firestore/place/mutations/usePlaceClaim'
+import { usePlaceSeo } from '../../composables/fireux/firestore/place/seo/usePlaceSeo'
 import { usePlaceInterface } from '../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import type { Place } from '../../models/place.model'
 
@@ -159,8 +159,6 @@ definePageMeta({
   description: 'View a saved place.',
   head: { title: 'Place' },
 })
-
-const { appName } = useFireUXConfig()
 
 const route = useRoute()
 const raw = route.params.id
@@ -284,7 +282,5 @@ const editTo = computed(() =>
   docId ? `/places/edit/${encodeURIComponent(docId)}` : '/places'
 )
 
-useHead({
-  title: computed(() => `${appName} | ${pageTitle.value}`),
-})
+usePlaceSeo(place)
 </script>

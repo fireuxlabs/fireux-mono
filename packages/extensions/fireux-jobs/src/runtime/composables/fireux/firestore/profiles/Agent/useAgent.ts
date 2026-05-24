@@ -9,6 +9,7 @@ import { useAgentComputed } from './utils/view/useAgentComputed'
 import { useAgentInterface, type AgentCard } from './utils/view/useAgentInterface'
 import { useAgentUpdate } from './mutations/useAgentUpdate'
 import { useAgentCreate } from './mutations/useAgentCreate'
+import { useAgentSeo } from './seo/useAgentSeo'
 
 export type AgentState = {
   user: unknown | null
@@ -47,5 +48,6 @@ export function useAgent() {
     ...ui,
     ...update,
     ...create,
+    useAgentSeo,
   }
 }

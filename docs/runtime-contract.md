@@ -43,7 +43,7 @@ Updated: 2026-05-23
 - Use `defineNuxtConfig({ ...fireuxConfig, ...localOverrides })` only when the app needs local Nuxt overrides.
 - Do not wrap a plain `defineFireuxConfig(...)` result in `defineNuxtConfig(fireuxConfig)`.
 - This keeps app config simple and avoids Nuxt's deep config type expansion when no local override is needed.
-- Standard app logo variants are always `/img/app/logo-light.svg` and `/img/app/logo-dark.svg`.
+- Standard app logo source is `/img/app/logo.png`; light/dark display variants use wordmarks, not separate logo files.
 - Do not declare light/dark logo paths in `defineFireuxConfig(...)`.
 - `modules` means the app installs shared package capability.
 - `consoles` means the app exposes selected console workspaces.

@@ -40,6 +40,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { usePortfolioCollection } from '../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
+import { usePortfolioSeo } from '../../composables/fireux/firestore/portfolio/seo/usePortfolioSeo'
 import { usePortfolioInterface } from '../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
 
 definePageMeta({
@@ -61,4 +62,6 @@ const pageTitle = computed(() =>
 const pageDescription = computed(() =>
   portfolioCard.value?.summary || 'Portfolio public information surface.'
 )
+
+usePortfolioSeo(portfolio)
 </script>

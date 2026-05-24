@@ -365,7 +365,6 @@ async function main() {
     `migrate-fireux-app-catalog-${Date.now()}`
   )
   const db = getFirestore(adminApp, databaseId)
-  const defaultDb = getFirestore(adminApp)
 
   const allAppEntries = Object.values(APP_REGISTRY)
     .map((entry) => buildAppSeed(entry))
@@ -417,7 +416,7 @@ async function main() {
     if (!commit) {
       console.log('[dry-run] set', ref.path, patch)
       if (seed.ecosystem === 'fireux') {
-        console.log('[dry-run] arrayUnion ecosystem/fireux-fireux.apps', seed.appId)
+        console.log('[dry-run] arrayUnion ecosystems/fireux.apps', seed.appId)
       }
       if (shouldWriteAppDatabase) {
         console.log(
@@ -432,8 +431,8 @@ async function main() {
     await ref.set(patch, { merge: true })
 
     if (seed.ecosystem === 'fireux') {
-      const defaultEcosystemRef = defaultDb.collection('ecosystem').doc('fireux-fireux')
-      await defaultEcosystemRef.set(
+      const ecosystemRef = db.collection('ecosystems').doc('fireux')
+      await ecosystemRef.set(
         {
           apps: FieldValue.arrayUnion(seed.appId),
           updated: {
@@ -460,7 +459,7 @@ async function main() {
   for (const [ecosystem, seeds] of Object.entries(ecosystemEntries)) {
     if (!ecosystem || !Array.isArray(seeds) || !seeds.length) continue
 
-    const ref = db.collection('ecosystem').doc(ecosystem)
+    const ref = db.collection('ecosystems').doc(ecosystem)
     const snap = await ref.get()
     const existing = snap.exists ? snap.data() || {} : {}
     const patch = buildEcosystemPatch(ecosystem, seeds, existing)

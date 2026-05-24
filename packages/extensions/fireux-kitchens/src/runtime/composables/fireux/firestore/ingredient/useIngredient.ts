@@ -4,6 +4,7 @@ import { useIngredientFetch } from './fetch/useIngredientFetch'
 import { useIngredientCreate } from './mutations/useIngredientCreate'
 import { useIngredientDelete } from './mutations/useIngredientDelete'
 import { useIngredientUpdate } from './mutations/useIngredientUpdate'
+import { useIngredientSeo } from './seo/useIngredientSeo'
 import { useIngredientComputed } from './utils/view/useIngredientComputed'
 import { useIngredientInterface } from './utils/view/useIngredientInterface'
 
@@ -15,6 +16,7 @@ export {
   useIngredientCreate,
   useIngredientUpdate,
   useIngredientDelete,
+  useIngredientSeo,
   useIngredientComputed,
   useIngredientInterface,
 }
@@ -28,5 +30,6 @@ export function useIngredient() {
     ...useIngredientDelete(),
     ...useIngredientComputed(),
     ...useIngredientInterface(),
+    useIngredientSeo,
   }
 }

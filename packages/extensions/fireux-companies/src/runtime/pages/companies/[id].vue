@@ -112,8 +112,7 @@
 </template>
 
 <script setup lang="ts">
-import { useHead, useRoute } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useRoute } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
@@ -121,6 +120,7 @@ import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firesto
 import { usePlaceClaim } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceClaim'
 import { computed, ref } from 'vue'
 import { useCompanyFetch } from '../../composables/fireux/firestore/company/fetch/useCompanyFetch'
+import { useCompanySeo } from '../../composables/fireux/firestore/company/seo/useCompanySeo'
 import { useCompanyInterface } from '../../composables/fireux/firestore/company/utils/view/useCompanyInterface'
 import type { CompanyHydrated } from '../../composables/fireux/firestore/company/fetch/types'
 
@@ -130,8 +130,6 @@ definePageMeta({
   description: 'View a saved company.',
   head: { title: 'Company' },
 })
-
-const { appName } = useFireUXConfig()
 
 const route = useRoute()
 const raw = route.params.id
@@ -237,8 +235,6 @@ const onClaim = async () => {
   }
 }
 
-useHead({
-  title: computed(() => `${appName} | ${pageTitle.value}`),
-})
+useCompanySeo(company)
 
 </script>

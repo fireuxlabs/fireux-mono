@@ -3,7 +3,10 @@ import { defaultFireuxJobsConfig } from './config/jobs.config'
 import { configureRuntime } from './config/module/runtime-config'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
-import type { FireuxSeoExtendContext } from 'fireux-core/config/app/seo'
+import type {
+  FireuxSeoExtendContext,
+  FireuxSeoSitemapsExtendContext,
+} from 'fireux-core/config/app/seo'
 import { configurePlugins } from './config/module/plugins-config'
 import { configureComposables } from './config/module/composables-config'
 import { configureComponents } from './config/module/components-config'
@@ -43,6 +46,16 @@ export default defineNuxtModule<ModuleOptions>({
       ctx.addStaticPath('/jobs/learn-more')
       ctx.addStaticPath('/agents/learn-more')
       ctx.addStaticPath('/professionals/learn-more')
+    })
+    nuxt.hook('fireux:seo:sitemaps:extend' as any, (ctx: FireuxSeoSitemapsExtendContext) => {
+      ctx.addEntity({
+        entityKey: 'jobs',
+        canonicalCollectionPath: 'jobs',
+        routePrefix: '/jobs',
+        slugField: 'id',
+        publicField: 'visibility',
+        publicValue: 'public',
+      })
     })
     const workplaces = Array.isArray(options?.workplaces)
       ? options.workplaces

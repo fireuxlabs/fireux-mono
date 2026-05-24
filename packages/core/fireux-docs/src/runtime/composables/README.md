@@ -84,9 +84,12 @@ composables/fireux/firestore/<entity>/
   mutations/
     useXCreate.ts
     useXUpdate.ts
+    useXPublish.ts    optional, only for public/indexable publication
     useXDelete.ts
     useXEnsure.ts      optional, only for setup-if-missing behaviour
     validation/        optional, only for write-specific validation
+  seo/
+    useXSeo.ts         optional, only for public entity metadata/JSON-LD
   utils/
     view/
       useXComputed.ts
@@ -164,6 +167,8 @@ FireUX adds structure on top of ordinary composable usage:
 - usual Firestore entity stacks stay boring: root `useX.ts`, `fetch/`, `mutations/`, and `utils/`
 - singular/plural read dimensions live inside the stack: `useXFetch` reads one and `useXCollection` reads many
 - create surfaces should keep the domain seam stable: pages call `useXCreate`, while `useXCreate` chooses `useFirestoreCreate` for client-rule-protected writes or `useFirestoreApiCreate` for server-gated writes
+- publish surfaces should keep the same shape: pages call `useXPublish`, while `useXPublish` owns entity readiness rules and can delegate shared write mechanics to core `fireux/publishing/usePublish`
+- sitemap registration must use explicit publication truth such as `show === true` or `visibility === 'public'`; missing publication fields must not fall back to slug presence
 - validation belongs in `utils/validation` when it is shared by UI/read/write surfaces, and in `mutations/validation` only when it protects write behaviour
 - console-backed entity runtime seams live at the root of `fireux/console/<entity>/`
 - console operation records live under `fireux/console/<entity>/operations/`, not as child buckets under `fireux/firestore/<entity>/`

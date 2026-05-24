@@ -150,7 +150,7 @@ FireUX apps have two levels of registration:
 For a FireUX-owned app, ensure:
 
 ```text
-(default)/ecosystem/fireux-fireux.apps contains <appId>
+fireux/ecosystems/fireux.apps contains <appId>
 fireux/apps/<appId> exists
 ```
 
@@ -322,7 +322,7 @@ That migration should create/update:
 
 ```text
 fireux/apps/<appId>
-(default)/ecosystem/fireux-fireux.apps
+fireux/ecosystems/fireux.apps
 ```
 
 If the app has static proof data, add a seed script before pretending the console is real. The seed script should say where it migrates from and where it writes. For example, BuenoHost's first guest-guide proof migrates from:

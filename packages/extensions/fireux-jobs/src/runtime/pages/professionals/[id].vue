@@ -86,13 +86,14 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo, useHead, useRoute } from '#imports'
+import { navigateTo, useRoute } from '#imports'
 import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileEnsure } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileEnsure'
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
 import { computed, ref } from 'vue'
+import { useProfessionalSeo } from '../../composables/fireux/firestore/profiles/Professional/seo/useProfessionalSeo'
 import { useProfessionalComputed } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalComputed'
 import { useProfessionalInterface } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import { useProfessionalProfileView } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfileView'
@@ -145,14 +146,6 @@ const { model: professionalProfileView } = useProfessionalProfileView(
 
 const displayName = computed(() => user.value?.display_name ?? '')
 
-useHead({
-  title: computed(() =>
-    displayName.value
-      ? `${displayName.value} · Professional Profile`
-      : 'Professional Profile'
-  ),
-})
-
 const pageTitle = computed(() => displayName.value || 'Professional Profile')
 const pageDescription = computed(() => {
   const positions = professionalProfile.value?.positions ?? []
@@ -176,6 +169,8 @@ const createError = ref<string | null>(null)
 const isDev = import.meta.dev
 const showBusinessCard = ref(false)
 const canShowQr = computed(() => Boolean(sessionUser.value?.id))
+
+useProfessionalSeo(professionalProfile, { id: professionalId, displayName })
 
 const createProfile = async () => {
   if (isCreating.value || !professionalId.value) return

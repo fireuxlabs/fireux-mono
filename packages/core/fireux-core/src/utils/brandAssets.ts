@@ -15,8 +15,8 @@ export type ResolvedFireuxBrandAssets = {
 
 export const GLOBAL_BRAND_ASSETS: ResolvedFireuxBrandAssets = Object.freeze({
   logo: '/img/app/logo.png',
-  logoLight: '/img/app/logo-light.svg',
-  logoDark: '/img/app/logo-dark.svg',
+  logoLight: '/img/app/logo.png',
+  logoDark: '/img/app/logo.png',
   thumbnail: '/img/app/thumbnail.png',
   cover: '/img/app/cover.png',
   favicon: '/img/app/favicon.ico',

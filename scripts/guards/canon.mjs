@@ -84,6 +84,7 @@ const FORBIDDEN_CONSOLE_COMPOSABLE_PATTERNS = [
 const FIRESTORE_ENTITY_STACK_ALLOWED_CHILDREN = new Set([
   'fetch',
   'mutations',
+  'seo',
   'utils',
 ])
 
@@ -849,7 +850,7 @@ export async function run(ctx) {
       '- Ensure Firestore objects live under: composables/fireux/firestore/objects/<thing> (lowercase)',
       '- Do not create composables under: firestore/products/product',
       '- Do not create mixed-bucket kitchen paths such as firestore/runtime-kitchen',
-      '- Keep usual Firestore entity stacks boring: root useX.ts plus fetch/, mutations/, utils/',
+      '- Keep usual Firestore entity stacks boring: root useX.ts plus fetch/, mutations/, seo/, utils/',
       '- Put console entity seams under: composables/fireux/console/<entity>/',
       '- Put console operation buckets under: composables/fireux/console/<entity>/operations/',
       '- Keep console operation buckets flexible, but do not add vague architecture buckets such as runtime-*, facade, stack, manager, processor, handler, or resolver',

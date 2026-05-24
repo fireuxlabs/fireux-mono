@@ -1334,7 +1334,7 @@ async function runEcosystemProjectIdFix() {
 
   const now = Timestamp.now()
   const migrationBy = 'system:migration'
-  const ecosystemSnap = await db.collection('ecosystem').orderBy(FieldPath.documentId()).get()
+  const ecosystemSnap = await db.collection('ecosystems').orderBy(FieldPath.documentId()).get()
   let processed = 0
   let updated = 0
 
@@ -1381,7 +1381,7 @@ async function runAppsDeleteRoot() {
   const liveDocIds = snap.docs.map((docSnap) => docSnap.id)
   const appIds = new Set(liveDocIds)
 
-  const ecosystemSnap = await db.collection('ecosystem').get()
+  const ecosystemSnap = await db.collection('ecosystems').get()
   for (const docSnap of ecosystemSnap.docs) {
     const apps = Array.isArray(docSnap.data()?.apps) ? docSnap.data().apps : []
     for (const appId of apps) {
