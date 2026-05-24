@@ -182,6 +182,7 @@ Current learned examples:
 - App-local simple public pages own their copy and route meta; core owns the page frame, spacing, and return-link shape.
 - Pricing pages should use the shared core pricing page shell before inventing app-local pricing layouts.
 - App-local pricing pages own plan copy, product framing, routes, and SEO; core owns the pricing frame, header, spacing, plan section, and CTA area.
+- Ecosystem pricing pages should use the shared ecosystem pricing helper unless they have a real ecosystem-specific offer that differs from the default Free, Premium, Tenant App, and Ecosystem Partner framing.
 - Public header navigation is for real product pages and user actions:
   - product landing/home
   - product or conversion pages
@@ -207,9 +208,10 @@ Current learned examples:
   - `/products/{slug}`
 - Pricing routes explain commercial structure:
   - `/pricing`
-  - optional child routes such as `/pricing/apps`, `/pricing/users`, or `/pricing/ecosystems` only when the explanation needs separate pages.
+  - optional child routes such as `/pricing/apps`, `/pricing/users`, `/pricing/partners`, or `/pricing/ecosystems` only when the explanation needs separate pages.
 - Pricing routes should stay presentation/explanation surfaces. They may link to Products or Checkout, but should not become product storage or payment logic.
 - Ecosystem main apps intended to sell access, subscriptions, tenant app setup, hosting, services, or operator plans should expose both Products and Pricing.
+- Ecosystem main-app pricing defaults to Free, Premium, Tenant App, and Ecosystem Partner. Partner pricing must be framed as revenue share for bringing other businesses into the ecosystem, not a cheaper self-serve tenant-app path.
 - Tenant apps may have products, such as memberships, merch, events, vouchers, deposits, or app-specific services. Tenant apps usually should not expose a pricing page unless the tenant has a real tier/package comparison to explain.
 - Standalone apps intended to make money should expose both Products and Pricing.
 - Public top nav should include `Products` for product-capable ecosystem and standalone apps.

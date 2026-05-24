@@ -3,7 +3,7 @@
     <UPageHeader
       class="pageheader"
       title="Learn More: Dev"
-      description="Operator and reseller reference for FireUX learn-more surfaces and endpoints."
+      description="Operator and partner reference for FireUX learn-more surfaces and endpoints."
     />
 
     <UPageBody class="pagebody space-y-6">
@@ -49,7 +49,7 @@
       <UAlert
         color="primary"
         variant="soft"
-        title="For resellers and operators"
+        title="For partners and operators"
         description="Use this route as the canonical technical entry point, then drill into each stack-specific /learn-more/dev page."
       />
     </UPageBody>

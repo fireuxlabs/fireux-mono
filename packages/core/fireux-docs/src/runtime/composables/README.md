@@ -1,7 +1,7 @@
 # Composables Directory
 
 Authority: Operational
-Updated: 2026-05-18
+Updated: 2026-05-24
 Scope: `packages/*/fireux-*/src/runtime/composables` only.
 
 This page documents FireUX rules for `runtime/composables/`.
@@ -114,7 +114,14 @@ composables/fireux/app/<context>-runtime/
 composables/fireux/app/console/
 ```
 
-6. Only after `fireux/` is stable, revisit the small `shared/` follow-ups.
+6. Keep shared pricing explanation helpers under `fireux/pricing/`.
+
+```text
+composables/fireux/pricing/
+  useEcosystemPricingPage.ts
+```
+
+7. Only after `fireux/` is stable, revisit the small `shared/` follow-ups.
 
 ## FireUX Canon Seams
 

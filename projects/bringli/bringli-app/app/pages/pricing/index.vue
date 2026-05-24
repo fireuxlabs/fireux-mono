@@ -1,59 +1,19 @@
 <template>
   <PublicPricingPage
-    description="Bringli ecosystem pricing for users, apps, and reseller operators."
-    :plans="hubPlans"
+    :description="description"
+    :plans="plans"
   />
 </template>
 
 <script setup lang="ts">
-const detailButton = {
-  color: 'neutral' as const,
-  variant: 'soft' as const,
-  trailingIcon: 'i-lucide-arrow-right',
-}
+import { useEcosystemPricingPage } from 'fireux-core/runtime/composables/fireux/pricing/useEcosystemPricingPage'
 
-const hubPlans = [
-  {
-    id: 'users',
-    title: 'Users',
-    description: 'Join the ecosystem and create your account.',
-    price: 'Free',
-    features: ['Upgrade to console access at $5/month'],
-    button: {
-      ...detailButton,
-      label: 'Details',
-      to: '/pricing/users',
-    },
-  },
-  {
-    id: 'apps',
-    title: 'Apps',
-    description: 'Launch your app in the Bringli ecosystem.',
-    price: '$600',
-    billingPeriod: 'setup',
-    features: ['Maintenance: $50/month', 'Console seats: $5/month'],
-    highlight: true,
-    scale: true,
-    button: {
-      ...detailButton,
-      label: 'Details',
-      to: '/pricing/apps',
-    },
-  },
-  {
-    id: 'resellers',
-    title: 'Resellers',
-    description: 'Operate and resell apps in your market.',
-    price: '$300',
-    billingPeriod: 'per app setup',
-    features: ['Maintenance: $25/month', 'Console seats: $2.50/month'],
-    button: {
-      ...detailButton,
-      label: 'Details',
-      to: '/pricing/resellers',
-    },
-  },
-] as const
+const {
+  description,
+  plans,
+  seoTitle,
+  seoDescription,
+} = useEcosystemPricingPage()
 
 definePageMeta({
   layout: 'landing',
@@ -70,7 +30,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Pricing · Bringli',
-  description: 'Bringli ecosystem pricing for users, apps, and reseller operators.',
+  title: seoTitle,
+  description: seoDescription,
 })
 </script>

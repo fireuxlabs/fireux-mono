@@ -5,11 +5,11 @@
         <UBadge color="primary" variant="soft">Cleanbox Dev Guide</UBadge>
         <h1 class="text-4xl font-semibold text-gray-900 dark:text-white">Learn More: Dev</h1>
         <p class="text-lg text-gray-600 dark:text-gray-300">
-          Operator reference for Cleanbox entity flow and reseller-ready implementation surfaces.
+          Operator reference for Cleanbox entity flow and partner-ready implementation surfaces.
         </p>
         <div class="flex flex-wrap gap-2">
           <UButton to="/learn-more" color="primary" icon="i-lucide-book-open">Public learn more</UButton>
-          <UButton to="/pricing/resellers" color="neutral" variant="soft" icon="i-lucide-handshake">Reseller model</UButton>
+          <UButton to="/pricing/partners" color="neutral" variant="soft" icon="i-lucide-handshake">Partner model</UButton>
         </div>
       </UContainer>
     </section>
@@ -41,8 +41,8 @@
               <p class="text-dimmed">App setup and maintenance model.</p>
             </div>
             <div class="rounded border border-default p-3">
-              <p class="font-mono">GET /pricing/resellers</p>
-              <p class="text-dimmed">Reseller economics and operator route.</p>
+              <p class="font-mono">GET /pricing/partners</p>
+              <p class="text-dimmed">Partner economics and operator route.</p>
             </div>
           </div>
         </UCard>
@@ -59,6 +59,6 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Learn More: Dev · Cleanbox',
-  description: 'Operator reference for Cleanbox entities, routes, and reseller implementation.',
+  description: 'Operator reference for Cleanbox entities, routes, and partner implementation.',
 })
 </script>

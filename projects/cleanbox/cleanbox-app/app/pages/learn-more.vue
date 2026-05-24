@@ -36,7 +36,7 @@
           <div class="flex flex-wrap gap-2">
             <UButton to="/pricing/apps" color="primary" variant="soft" icon="i-lucide-app-window">App model</UButton>
             <UButton to="/pricing/users" color="neutral" variant="soft" icon="i-lucide-users">User access</UButton>
-            <UButton to="/pricing/resellers" color="neutral" variant="soft" icon="i-lucide-handshake">Resellers</UButton>
+            <UButton to="/pricing/partners" color="neutral" variant="soft" icon="i-lucide-handshake">Partners</UButton>
           </div>
         </UCard>
       </UContainer>

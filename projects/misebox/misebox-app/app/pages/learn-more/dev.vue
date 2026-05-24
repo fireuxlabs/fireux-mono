@@ -5,7 +5,7 @@
         <UBadge color="primary" variant="soft">Misebox Dev Guide</UBadge>
         <h1 class="text-4xl font-semibold text-gray-900 dark:text-white">Learn More: Dev</h1>
         <p class="text-lg text-gray-600 dark:text-gray-300">
-          Operator reference for Misebox entities, routes, and reseller implementation flow.
+          Operator reference for Misebox entities, routes, and partner implementation flow.
         </p>
         <div class="flex flex-wrap gap-2">
           <UButton to="/learn-more" color="primary" icon="i-lucide-book-open">Public learn more</UButton>
@@ -41,8 +41,8 @@
               <p class="text-dimmed">App operating model for ecosystem buyers.</p>
             </div>
             <div class="rounded border border-default p-3">
-              <p class="font-mono">GET /pricing/resellers</p>
-              <p class="text-dimmed">Reseller economics and operator path.</p>
+              <p class="font-mono">GET /pricing/partners</p>
+              <p class="text-dimmed">Partner economics and operator path.</p>
             </div>
           </div>
         </UCard>
@@ -59,6 +59,6 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Learn More: Dev · Misebox',
-  description: 'Operator reference for Misebox entities, routes, and reseller implementation.',
+  description: 'Operator reference for Misebox entities, routes, and partner implementation.',
 })
 </script>
